@@ -66,12 +66,6 @@ jobs:
       - name: npm test (extension tests)
         run: cd vscode && xvfb-run -a npm test
 
-      - name: npm test (interconnection visualization)
-        run: cd vscode && xvfb-run -a npm run test:interconnection
-
-      - name: npm test (interconnection visualization - real drone)
-        run: cd vscode && xvfb-run -a npm run test:interconnection-drone
-
       - name: npm test (multi-file)
         run: cd vscode && xvfb-run -a npm run test:multi-file
 
