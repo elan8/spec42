@@ -48,10 +48,8 @@ import {
     slugify
 } from './helpers';
 import { renderSequenceView as renderSequenceViewModule } from './renderers/sequence';
-import { renderIbdView as renderIbdViewModule } from './renderers/ibd';
 import { renderActivityView as renderActivityViewModule } from './renderers/activity';
 import { renderStateView as renderStateViewModule } from './renderers/state';
-import { renderGeneralViewD3 } from './renderers/generalView';
 import { createExportHandler } from './export';
 import { postJumpToElement } from './jumpToElement';
 import { buildGeneralViewGraph } from './graphBuilders';
@@ -776,13 +774,14 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
     function canUseBackendRenderedDiagram(view, renderedDiagram, dataToRender) {
         if (!renderedDiagram) return false;
-        if (view === 'general-view') {
-            return selectedDiagramIndex === 0;
-        }
         if (view === 'interconnection-view') {
             const backendSelection = renderedDiagram?.viewState?.selection || null;
             const selectedRoot = dataToRender?.selectedIbdRoot || selectedIbdRoot || null;
             return !selectedRoot || !backendSelection || selectedRoot === backendSelection;
+        }
+        if (view === 'general-view') {
+            // General View is rendered exclusively by the backend SVG.
+            return true;
         }
         return false;
     }
@@ -1559,8 +1558,22 @@ import { buildGeneralViewGraph } from './graphBuilders';
             }
         });
 
-        if ((view === 'general-view' || view === 'interconnection-view') &&
-            canUseBackendRenderedDiagram(view, backendRenderedDiagram, dataToRender)) {
+        if (view === 'general-view' || view === 'interconnection-view') {
+            const canRenderBackend = canUseBackendRenderedDiagram(view, backendRenderedDiagram, dataToRender);
+            if (!canRenderBackend) {
+                const label = VIEW_OPTIONS[view]?.label || view;
+                renderPlaceholderView(
+                    width,
+                    height,
+                    label,
+                    'This view is rendered by the backend, but no rendered SVG is available for the current selection. Try refreshing the visualizer or switching back to the default selection.',
+                    dataToRender
+                );
+                isRendering = false;
+                hideLoading();
+                lastView = view;
+                return;
+            }
             const rendered = renderBackendSvgDiagram(
                 backendRenderedDiagram,
                 shouldPreserveZoom,
@@ -1577,40 +1590,8 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 isRendering = false;
                 hideLoading();
             }
-        } else if (view === 'general-view') {
-            const generalCtx = {
-                ...buildRenderContext(width, height),
-                buildGeneralViewGraph: buildGeneralViewGraphForView,
-                renderGeneralChips,
-                elkWorkerUrl
-            };
-            renderGeneralViewD3(generalCtx, dataToRender).then(() => {
-                setTimeout(() => {
-                    zoomToFit('auto');
-                    updateDimensionsDisplay();
-                    isRendering = false;
-                    hideLoading();
-                }, 100);
-            }).catch((err) => {
-                console.error('[General View] Render failed:', err);
-                isRendering = false;
-                hideLoading();
-            });
         } else if (view === 'sequence-view') {
                 renderSequenceViewModule(buildRenderContext(width, height), dataToRender);
-            } else if (view === 'interconnection-view') {
-                renderIbdViewModule(buildRenderContext(width, height), dataToRender).then(() => {
-                    setTimeout(() => {
-                        zoomToFit('auto');
-                        updateDimensionsDisplay();
-                        isRendering = false;
-                        hideLoading();
-                    }, 100);
-                }).catch((err) => {
-                    console.error('[Interconnection View] Render failed:', err);
-                    isRendering = false;
-                    hideLoading();
-                });
             } else if (view === 'action-flow-view') {
                 renderActivityViewModule(buildRenderContext(width, height), dataToRender);
             } else if (view === 'state-transition-view') {
