@@ -298,7 +298,10 @@ export function activate(context: vscode.ExtensionContext): void {
   log("Extension activating");
   setServerHealth(context, "starting", "Preparing SysML language server.");
 
-  const serverPath = getConfigString("serverPath");
+  // In CI/test environments we may provide an explicit server path via env to
+  // avoid workspace/OS-specific settings issues.
+  const envServerPath = (process.env.SPEC42_SERVER_PATH || "").trim();
+  const serverPath = envServerPath || getConfigString("serverPath");
   const libraryPathsRaw = getConfigStringArray("libraryPaths") ?? [];
   const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "";
   const libraryPaths = libraryPathsRaw.map((p) =>
@@ -308,7 +311,7 @@ export function activate(context: vscode.ExtensionContext): void {
   let serverCommand: string;
   if (!serverPath || isDefaultServerPath(serverPath)) {
     serverCommand = getBundledServerCommand(context.extensionPath);
-  } else if (path.isAbsolute(serverPath)) {
+  } else if (path.isAbsolute(serverPath) || path.win32.isAbsolute(serverPath)) {
     serverCommand = serverPath;
   } else {
     serverCommand = path.resolve(workspaceRoot, serverPath);
