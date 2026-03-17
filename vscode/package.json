@@ -324,7 +324,7 @@
         },
         "spec42.visualization.defaultView": {
           "type": "string",
-          "enum": ["general-view", "interconnection-view"],
+          "enum": ["general-view"],
           "default": "general-view",
           "description": "Default view when opening the SysML Model Visualizer (SysML v2 frameless-view types)."
         },

@@ -197,6 +197,10 @@ import { buildGeneralViewGraph } from './graphBuilders';
         if (!viewDropdownMenu) return;
         viewDropdownMenu.innerHTML = '';
         enabledViews.forEach((viewId) => {
+            if (viewId === 'interconnection-view') {
+                // Temporarily disabled: keep it out of the UI even if it slips into enabledViews.
+                return;
+            }
             const option = VIEW_OPTIONS[viewId];
             if (!option) return;
             const item = document.createElement('button');

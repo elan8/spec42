@@ -207,7 +207,6 @@ function getVisualizationViews(): Array<{ id: string; label: string; description
   const enabledViews = getEnabledVisualizationViewIds();
   return [
     { id: "general-view", label: "General", description: "General view (SysML v2 general-view)" },
-    { id: "interconnection-view", label: "Interconnection", description: "Parts, ports, and connections" },
     { id: "action-flow-view", label: "Action Flow", description: "Experimental: behavior and flow rendering" },
     { id: "state-transition-view", label: "State Transition", description: "Experimental: state-machine rendering" },
     { id: "sequence-view", label: "Sequence", description: "Experimental: interaction rendering" },
