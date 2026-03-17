@@ -82,6 +82,13 @@ jobs:
             "${SPEC42_SERVER_PATH}" --help || true
           fi
 
+      - name: Diagnose fixture serverPath settings (CI)
+        run: |
+          echo "single-file settings.json:"
+          cat "${{ github.workspace }}/vscode/testFixture/workspaces/single-file/.vscode/settings.json" || true
+          echo "large-workspace settings.json:"
+          cat "${{ github.workspace }}/vscode/testFixture/workspaces/large-workspace/.vscode/settings.json" || true
+
       - name: npm ci (vscode)
         run: cd vscode && npm ci
 

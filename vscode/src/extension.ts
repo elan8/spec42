@@ -341,6 +341,13 @@ export function activate(context: vscode.ExtensionContext): void {
   }
 
   log("Server command:", serverCommand, "libraryPaths:", libraryPaths);
+  // Also log to console so CI captures the resolved command.
+  try {
+    // eslint-disable-next-line no-console
+    console.log("[SysML] Server command:", serverCommand);
+  } catch {
+    // ignore
+  }
 
   let restartCount = 0;
   let manualStopInProgress = false;

@@ -41,6 +41,13 @@ export function logError(msg: string, err?: unknown): void {
   if (err instanceof Error && err.stack) {
     channel.appendLine(err.stack);
   }
+  // Mirror errors to the extension host console so CI logs capture root causes.
+  try {
+    // eslint-disable-next-line no-console
+    console.error(`[SysML] ERROR: ${msg}`, err ?? "");
+  } catch {
+    // ignore
+  }
 }
 
 /**
