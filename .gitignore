@@ -1,0 +1,9 @@
+target/
+vscode/node_modules/
+vscode/.vscode-test/
+vscode/testFixture/test-output/
+temp
+sysml-parser/test-logs/
+vscode/out/
+vscode/media/webview/visualizer.js
+vscode/media/webview/visualizer.js.map

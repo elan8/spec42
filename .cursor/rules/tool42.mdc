@@ -1,0 +1,12 @@
+---
+description: Use Tool42 MCP for Rust in Spec42
+globs: "**/*.rs"
+alwaysApply: true
+---
+
+# Tool42 for Spec42
+
+Use Tool42 MCP for all cargo commands in this product.
+
+- **working_directory:** The path to this repository root.
+- Use `tool42_cargo` for check, build, test; use `tool42_cargo` with command `clippy` for linting.

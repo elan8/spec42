@@ -1,0 +1,26 @@
+[package]
+name = "spec42"
+version = "0.5.0"
+edition = "2021"
+description = "Language server for SysML v2 (LSP over stdio)"
+
+[[bin]]
+name = "spec42"
+path = "src/main.rs"
+
+[dependencies]
+sysml-parser = { git = "https://github.com/elan8/sysml-parser" }
+tower-lsp = "0.20"
+tokio = { version = "1", features = ["full"] }
+walkdir = "2"
+petgraph = "0.8"
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+clap = { workspace = true }
+sysml-diagrams = { path = "../sysml-diagrams" }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+tempfile = "3"
+url = "2"

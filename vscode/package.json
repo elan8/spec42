@@ -1,0 +1,392 @@
+{
+  "name": "spec42",
+  "displayName": "SysML v2 Editor",
+  "publisher": "Elan8",
+  "icon": "logo/logo.png",
+  "description": "Language support for SysML v2 including syntax validation, navigation and diagnostics.",
+  "version": "0.5.0",
+  "license": "MIT",
+  "keywords": [
+    "sysml",
+    "sysml-v2",
+    "mbse",
+    "systems engineering",
+    "model based systems engineering"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elan8/spec42.git"
+  },
+  "homepage": "https://github.com/elan8/spec42#readme",
+  "bugs": {
+    "url": "https://github.com/elan8/spec42/issues"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters"
+  ],
+  "activationEvents": [
+    "onLanguage:sysml",
+    "onLanguage:kerml",
+    "workspaceContains:**/*.sysml",
+    "workspaceContains:**/*.kerml",
+    "onWebviewPanel:sysmlVisualizer",
+    "onCommand:sysml.showModelExplorer",
+    "onCommand:sysml.showVisualizer",
+    "onCommand:sysml.formatDocument",
+    "onCommand:sysml.validateModel",
+    "onCommand:sysml.restartServer",
+    "onCommand:sysml.clearCache",
+    "onCommand:sysml.visualizePackage",
+    "onCommand:sysml.switchToByFile",
+    "onCommand:sysml.switchToSemanticModel",
+    "onCommand:sysml.toggleWorkspaceViewMode",
+    "onCommand:sysml.visualizeFolder",
+    "onCommand:sysml.showOutput",
+    "onCommand:sysml.changeVisualizerView",
+    "onCommand:sysml.exportVisualization",
+    "onCommand:sysml.refreshVisualization",
+    "onCommand:sysml.visualizeFolderWithView",
+    "onCommand:sysml.debugSemanticTokenAtCursor"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "sysml",
+        "aliases": [
+          "SysML",
+          "SysML v2"
+        ],
+        "extensions": [
+          ".sysml"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "kerml",
+        "aliases": [
+          "KerML",
+          "Kernel Modeling Language"
+        ],
+        "extensions": [
+          ".kerml"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "sysml",
+        "path": "./snippets/sysml.json"
+      },
+      {
+        "language": "kerml",
+        "path": "./snippets/sysml.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "sysml.formatDocument",
+        "title": "Format SysML Document",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.validateModel",
+        "title": "Validate SysML Model",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.restartServer",
+        "title": "Restart SysML Language Server",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.showModelExplorer",
+        "title": "Show SysML Model Explorer",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.refreshModelTree",
+        "title": "Refresh SysML Model Explorer",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.showVisualizer",
+        "title": "Show SysML Visualizer",
+        "icon": "$(eye)",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.clearCache",
+        "title": "Clear SysML Parse Cache",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.visualizePackage",
+        "title": "Visualize Package",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.switchToByFile",
+        "title": "Switch to By File",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.switchToSemanticModel",
+        "title": "Switch to Semantic Model",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.toggleWorkspaceViewMode",
+        "title": "Toggle Model View Mode",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.visualizeFolder",
+        "title": "Visualize Folder (SysML)",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.showOutput",
+        "title": "Show SysML Output (Logs)",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.changeVisualizerView",
+        "title": "Change Visualizer View",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.exportVisualization",
+        "title": "Export Visualization (PNG/SVG)",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.refreshVisualization",
+        "title": "Refresh Visualization",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.visualizeFolderWithView",
+        "title": "Visualize Folder with View...",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.debugSemanticTokenAtCursor",
+        "title": "Debug: Semantic Token at Cursor",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.debugDumpGraphForGeneralView",
+        "title": "Debug: Dump Graph for General View",
+        "category": "SysML"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "sysml.switchToByFile",
+          "when": "view == sysmlModelExplorer && sysml.hasWorkspace && sysml.workspaceViewMode != 'byFile'",
+          "group": "navigation"
+        },
+        {
+          "command": "sysml.switchToSemanticModel",
+          "when": "view == sysmlModelExplorer && sysml.hasWorkspace && sysml.workspaceViewMode != 'bySemantic'",
+          "group": "navigation"
+        },
+        {
+          "command": "sysml.refreshModelTree",
+          "when": "view == sysmlModelExplorer",
+          "group": "navigation"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "sysml.showVisualizer",
+          "when": "resourceLangId == sysml || resourceLangId == kerml",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "sysml.visualizeFolder",
+          "when": "explorerResourceIsFolder",
+          "group": "navigation"
+        },
+        {
+          "command": "sysml.visualizeFolderWithView",
+          "when": "explorerResourceIsFolder",
+          "group": "navigation"
+        },
+        {
+          "command": "sysml.visualizeFolder",
+          "when": "resourceExtname == .sysml || resourceExtname == .kerml",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "sysml.visualizePackage",
+          "when": "view == sysmlModelExplorer && viewItem == sysmlPackage"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "sysml.formatDocument",
+          "when": "resourceLangId == sysml || resourceLangId == kerml"
+        },
+        {
+          "command": "sysml.validateModel",
+          "when": "resourceLangId == sysml || resourceLangId == kerml"
+        },
+        {
+          "command": "sysml.restartServer"
+        },
+        {
+          "command": "sysml.showModelExplorer"
+        },
+        {
+          "command": "sysml.refreshModelTree"
+        },
+        {
+          "command": "sysml.showVisualizer"
+        },
+        {
+          "command": "sysml.clearCache"
+        },
+        {
+          "command": "sysml.showOutput"
+        },
+        {
+          "command": "sysml.changeVisualizerView"
+        },
+        {
+          "command": "sysml.exportVisualization"
+        },
+        {
+          "command": "sysml.refreshVisualization"
+        }
+      ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "sysmlModelExplorer",
+          "name": "SysML Model Explorer",
+          "when": "sysml.modelLoaded"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "sysmlModelExplorer",
+        "contents": "No SysML model loaded.\\n\\n- Open a `.sysml` or `.kerml` file\\n- Or run **SysML: Show SysML Model Explorer**"
+      }
+    ],
+    "configuration": {
+      "title": "Spec42",
+      "properties": {
+        "spec42.serverPath": {
+          "type": "string",
+          "default": "spec42",
+          "description": "Path to the Spec42 server binary (or 'spec42' if on PATH)."
+        },
+        "spec42.libraryPaths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Paths to SysML library roots (e.g. SysML-v2-Release clone or custom libraries). Files under these paths are indexed for hover, go-to-definition, and completion."
+        },
+        "spec42.statusBar.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a SysML status bar item with error/warning counts for the active SysML/KerML file."
+        },
+        "spec42.workspace.maxFilesPerPattern": {
+          "type": "number",
+          "default": 500,
+          "minimum": 50,
+          "description": "Maximum number of .sysml or .kerml files to discover per workspace folder and file type during workspace indexing. Increase for larger repositories at the cost of slower loading."
+        },
+        "spec42.debug": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable debug logging to the SysML output channel (View → Output → SysML)."
+        },
+        "spec42.debug.dumpSemanticTokens": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, dump semantic tokens received from the server to semantic_tokens_frontend_dump.txt in the workspace root (for debugging highlighting)."
+        },
+        "spec42.visualization.defaultView": {
+          "type": "string",
+          "enum": ["general-view", "interconnection-view"],
+          "default": "general-view",
+          "description": "Default view when opening the SysML Model Visualizer (SysML v2 frameless-view types)."
+        },
+        "spec42.visualization.enableExperimentalViews": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable experimental diagram views in the visualizer UI, such as interconnection, action flow, state transition, and sequence views."
+        },
+        "spec42.visualization.exportScale": {
+          "type": "number",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 4,
+          "description": "Scale factor for PNG/SVG export of the visualization."
+        },
+        "spec42.visualization.generalViewPalette": {
+          "type": "string",
+          "enum": ["distinct", "classic"],
+          "default": "distinct",
+          "description": "Color palette for General View: 'distinct' (semantic SysML pillar colors) or 'classic' (VS Code default syntax colors)."
+        }
+      }
+    },
+    "configurationDefaults": {
+      "[sysml]": {
+        "editor.semanticHighlighting.enabled": true
+      },
+      "[kerml]": {
+        "editor.semanticHighlighting.enabled": true
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build:webview-assets && npm run build:webview && npm run compile",
+    "build:webview-assets": "node scripts/copy-webview-assets.js",
+    "build:webview": "node scripts/build-webview.js",
+    "verify:package-layout": "node scripts/verify-package-layout.js",
+    "extract-styles": "node scripts/extract-styles.js",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "vscode-test",
+    "test:interconnection": "vscode-test --config .vscode-test.interconnection.mjs",
+    "test:interconnection-drone": "vscode-test --config .vscode-test.interconnection-drone.mjs",
+    "test:multi-file": "vscode-test --config .vscode-test.multi-file.mjs",
+    "test:workspace-smoke": "vscode-test --config .vscode-test.workspace-smoke.mjs",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@vscode/codicons": "0.0.44",
+    "esbuild": "^0.24.0",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.4.1",
+    "@vscode/vsce": "^3.2.2",
+    "typescript": "~5.6.0"
+  },
+  "dependencies": {
+    "d3": "^7.9.0",
+    "elkjs": "^0.8.2",
+    "vscode-languageclient": "^9.0.0",
+    "vscode-languageserver-protocol": "^3.17.0"
+  }
+}

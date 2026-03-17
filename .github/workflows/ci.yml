@@ -1,0 +1,77 @@
+# CI: build, test, and (optional) run SysML v2 validation suite
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: cargo test
+        run: cargo test
+
+      - name: cargo clippy
+        run: cargo clippy -- -W clippy::all
+
+  extension-tests:
+    name: VS Code extension tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: vscode/package-lock.json
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build server (debug for extension test host)
+        run: cargo build -p spec42
+
+      - name: Build server (release for packaging parity)
+        run: cargo build --release -p spec42
+
+      - name: Add server to PATH
+        run: |
+          echo "${{ github.workspace }}/target/debug" >> $GITHUB_PATH
+          echo "${{ github.workspace }}/target/release" >> $GITHUB_PATH
+
+      - name: npm ci (vscode)
+        run: cd vscode && npm ci
+
+      - name: Build extension and webview
+        run: cd vscode && npm run build:webview-assets && npm run build:webview && npm run compile
+
+      - name: npm test (extension tests)
+        run: cd vscode && xvfb-run -a npm test
+
+      - name: npm test (interconnection visualization)
+        run: cd vscode && xvfb-run -a npm run test:interconnection
+
+      - name: npm test (interconnection visualization - real drone)
+        run: cd vscode && xvfb-run -a npm run test:interconnection-drone
+
+      - name: npm test (multi-file)
+        run: cd vscode && xvfb-run -a npm run test:multi-file
+
+      - name: npm test (workspace smoke)
+        run: cd vscode && xvfb-run -a npm run test:workspace-smoke

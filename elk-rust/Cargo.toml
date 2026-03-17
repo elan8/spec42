@@ -1,0 +1,15 @@
+[workspace]
+members = ["crates/elk-core", "crates/elk-layered", "crates/elk-testkit"]
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+license = "MIT"
+rust-version = "1.85"
+version = "0.1.0"
+authors = ["Elan8"]
+
+[workspace.lints.clippy]
+dbg_macro = "warn"
+todo = "warn"
+unwrap_used = "warn"

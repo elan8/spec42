@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src {{CSP_SOURCE}} 'unsafe-inline'; script-src 'nonce-{{NONCE}}'; img-src {{CSP_SOURCE}} data:; font-src {{CSP_SOURCE}}; worker-src blob:;">
+<title>SysML Model Visualizer</title>
+<link rel="stylesheet" href="{{CODICONS_CSS_URI}}">
+<script nonce="{{NONCE}}" src="{{D3_URI}}"></script>
+<script nonce="{{NONCE}}" src="{{ELK_URI}}"></script>
+<style nonce="{{NONCE}}">{{STYLES}}</style>
+</head>
+<body>
+<div id="controls">
+    <div style="display: flex; align-items: center; gap: 4px 8px; flex-wrap: wrap; padding: 2px 0;">
+        <div class="view-dropdown">
+            <button id="view-dropdown-btn" class="view-btn" title="Switch between visualization views">
+                <span class="codicon codicon-chevron-down"></span> View
+            </button>
+            <div id="view-dropdown-menu" class="view-dropdown-menu"></div>
+        </div>
+        <span style="color: var(--vscode-panel-border);">|</span>
+        <button id="reset-btn" class="action-btn" title="Reset zoom"><span class="codicon codicon-sync"></span></button>
+        <button id="layout-direction-btn" class="action-btn" title="Toggle layout direction"><span class="codicon codicon-arrow-right"></span> LR</button>
+        <button id="legend-btn" class="action-btn" title="Show diagram legend"><span class="codicon codicon-key"></span> Legend</button>
+        <button id="activity-debug-btn" class="action-btn" title="Show Labels on Forks and Joins" style="display: none;">🏷️ Show Labels</button>
+        <span style="color: var(--vscode-panel-border);">|</span>
+        <div class="export-dropdown" style="position: relative; display: inline-block;">
+            <button id="export-btn" class="action-btn" title="Export diagram"><span class="codicon codicon-desktop-download"></span> Export</button>
+            <div id="export-menu" class="export-menu">
+                <div class="export-submenu-container">
+                    <button class="export-menu-item" data-format="png-parent">PNG</button>
+                    <div class="export-submenu">
+                        <button class="export-menu-item" data-format="png" data-scale="1">1x - Original</button>
+                        <button class="export-menu-item" data-format="png" data-scale="2">2x - Double ✓</button>
+                        <button class="export-menu-item" data-format="png" data-scale="3">3x - Triple</button>
+                        <button class="export-menu-item" data-format="png" data-scale="4">4x - Quadruple</button>
+                    </div>
+                </div>
+                <button class="export-menu-item" data-format="svg">SVG</button>
+                <button class="export-menu-item" data-format="json">JSON</button>
+            </div>
+        </div>
+    </div>
+    <div id="general-chips"></div>
+</div>
+<div id="view-status-banner"></div>
+
+<div id="visualization-wrapper">
+    <div id="pkg-dropdown">
+        <div class="selector-stack">
+            <button id="pkg-dropdown-btn" class="view-btn" title="Filter by package or diagram">
+                <span class="codicon codicon-chevron-down"></span> <span id="pkg-dropdown-label">Package</span>
+            </button>
+            <div id="pkg-dropdown-summary" class="selector-summary"></div>
+        </div>
+        <div id="pkg-dropdown-menu" class="view-dropdown-menu"></div>
+    </div>
+    <div id="visualization"></div>
+    <!-- Legend popup overlay -->
+    <div id="legend-popup">
+        <div id="legend-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid var(--vscode-panel-border); padding-bottom: 8px; cursor: grab; user-select: none;">
+            <span style="font-weight: 600; font-size: 13px;">Diagram Legend</span>
+            <button id="legend-close-btn" class="codicon codicon-close" style="background: none; border: none; color: var(--vscode-editor-foreground); cursor: pointer; font-size: 16px; padding: 0 2px; opacity: 0.7;" title="Close legend"></button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+            <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; margin-top: 2px;">Relationships</div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="40" height="12"><line x1="0" y1="6" x2="32" y2="6" stroke="#5B8FC4" stroke-width="2" stroke-dasharray="5,3"/><polygon points="32,2 40,6 32,10" fill="#5B8FC4"/></svg>
+                <span>Typing <code style="font-size: 10px; opacity: 0.8;">: Type</code></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="40" height="12"><line x1="0" y1="6" x2="32" y2="6" stroke="#0E7C7B" stroke-width="2"/><polygon points="32,2 40,6 32,10" fill="#0E7C7B"/></svg>
+                <span>Specialization <code style="font-size: 10px; opacity: 0.8;">:&gt;</code></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="40" height="14"><polygon points="0,3 7,7 0,11" fill="#2D8A6E"/><line x1="7" y1="7" x2="40" y2="7" stroke="#2D8A6E" stroke-width="2"/></svg>
+                <span>Containment <code style="font-size: 10px; opacity: 0.8;">◆</code></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="40" height="12"><line x1="0" y1="6" x2="40" y2="6" stroke="#7BAA7D" stroke-width="2.5"/></svg>
+                <span>Connection</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="40" height="12"><line x1="0" y1="6" x2="32" y2="6" stroke="#7BAA7D" stroke-width="2.5"/><circle cx="36" cy="6" r="4" fill="none" stroke="#7BAA7D" stroke-width="1.5"/></svg>
+                <span>Interface</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="40" height="12"><line x1="0" y1="6" x2="32" y2="6" stroke="#2D8A6E" stroke-width="2.5"/><polygon points="32,2 40,6 32,10" fill="#2D8A6E"/></svg>
+                <span>Flow</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="40" height="12"><line x1="0" y1="6" x2="40" y2="6" stroke="#808080" stroke-width="1.5" stroke-dasharray="4,3"/></svg>
+                <span>Binding <code style="font-size: 10px; opacity: 0.8;">=</code></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="40" height="12"><line x1="0" y1="6" x2="32" y2="6" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="6,3"/><polygon points="32,2 40,6 32,10" fill="#9CA3AF"/></svg>
+                <span>Allocation</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="40" height="12"><line x1="0" y1="6" x2="32" y2="6" stroke="#9CA3AF" stroke-width="1.5" stroke-dasharray="5,3"/><polygon points="32,2 40,6 32,10" fill="#9CA3AF"/></svg>
+                <span>Dependency</span>
+            </div>
+            <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; margin-top: 6px;">Structure</div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="40" height="12"><line x1="0" y1="6" x2="32" y2="6" stroke="#5A9B6E" stroke-width="1.5" stroke-dasharray="2,3"/><polygon points="32,2 40,6 32,10" fill="#5A9B6E"/></svg>
+                <span>Hierarchy <span style="font-size: 10px; opacity: 0.7;">(parent→child)</span></span>
+            </div>
+            <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; margin-top: 6px;">Interconnection View</div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="46" height="16">
+                    <rect x="2" y="1" width="12" height="12" fill="#0E7C7B" stroke="white" stroke-width="1.5"></rect>
+                    <line x1="4" y1="7" x2="11" y2="7" stroke="white" stroke-width="1.4"></line>
+                    <polyline points="8,4 11,7 8,10" fill="none" stroke="white" stroke-width="1.4"></polyline>
+                </svg>
+                <span>Input port <span style="font-size: 10px; opacity: 0.7;">(teal)</span></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="46" height="16">
+                    <rect x="2" y="1" width="12" height="12" fill="#2D8A6E" stroke="white" stroke-width="1.5"></rect>
+                    <line x1="4" y1="7" x2="11" y2="7" stroke="white" stroke-width="1.4"></line>
+                    <polyline points="8,4 11,7 8,10" fill="none" stroke="white" stroke-width="1.4"></polyline>
+                </svg>
+                <span>Output port <span style="font-size: 10px; opacity: 0.7;">(green)</span></span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="46" height="16">
+                    <rect x="2" y="1" width="12" height="12" fill="#4A9B7F" stroke="white" stroke-width="1.5"></rect>
+                    <line x1="5" y1="7" x2="11" y2="7" stroke="white" stroke-width="1.4"></line>
+                </svg>
+                <span>Bidirectional port <span style="font-size: 10px; opacity: 0.7;">(both sides)</span></span>
+            </div>
+        </div>
+    </div>
+    <!-- Loading overlay (outside visualization to avoid being removed) -->
+    <div id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Parsing SysML model...</div>
+        <div class="loading-progress-container">
+            <div class="loading-progress-bar"></div>
+        </div>
+    </div>
+</div>
+
+<script nonce="{{NONCE}}">window.__VIZ_INIT={elkWorkerUrl:'{{ELK_WORKER_URI}}',enabledViews:{{ENABLED_VIEW_IDS_JSON}},experimentalViews:{{EXPERIMENTAL_VIEW_IDS_JSON}}};</script>
+<script nonce="{{NONCE}}" src="{{VISUALIZER_JS_URI}}"></script>
+</body>
+</html>
+

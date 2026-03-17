@@ -1,0 +1,308 @@
+//! Relationship edge logic: typing, specializes, connection, bind, cross-document resolution.
+
+use sysml_parser::ast::{PackageBody, PackageBodyElement};
+use sysml_parser::RootNamespace;
+
+use super::root_element_body;
+use tower_lsp::lsp_types::Url;
+
+use crate::ast_util::identification_name;
+use crate::semantic_model::{NodeId, RelationshipKind, SemanticGraph};
+
+/// Normalizes "a.b.c" to "a::b::c" for node lookup (SysML uses dot for feature access).
+pub(crate) fn normalize_for_lookup(s: &str) -> String {
+    s.replace('.', "::")
+}
+
+/// Returns candidate qualified names for resolving an unqualified type reference.
+/// If type_ref already contains "::", returns it as-is. Otherwise tries package prefixes
+/// from container_prefix (e.g. "SurveillanceDrone::Propulsion" -> "SurveillanceDrone::PropulsionUnit").
+pub(crate) fn type_ref_candidates(container_prefix: Option<&str>, type_ref: &str) -> Vec<String> {
+    if type_ref.contains("::") {
+        return vec![type_ref.to_string()];
+    }
+    let mut candidates = vec![type_ref.to_string()];
+    if let Some(prefix) = container_prefix {
+        let segments: Vec<&str> = prefix.split("::").filter(|s| !s.is_empty()).collect();
+        for i in 1..=segments.len() {
+            let pkg_prefix = segments[..i].join("::");
+            candidates.push(format!("{}::{}", pkg_prefix, type_ref));
+        }
+    }
+    candidates
+}
+
+/// Like type_ref_candidates but also includes #kind-suffixed variants for disambiguated nodes
+/// (e.g. when a package and part def share the same name).
+pub(crate) fn type_ref_candidates_with_kind(
+    container_prefix: Option<&str>,
+    type_ref: &str,
+    kind: &str,
+) -> Vec<String> {
+    let base = type_ref_candidates(container_prefix, type_ref);
+    let kind_suffix = kind.replace(' ', "_");
+    let mut out = base.clone();
+    for c in base {
+        if !c.contains('#') {
+            out.push(format!("{}#{}", c, kind_suffix));
+        }
+    }
+    out
+}
+
+/// Returns true if the edge was added.
+pub(crate) fn add_edge_if_both_exist(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    source_qualified: &str,
+    target_qualified: &str,
+    kind: RelationshipKind,
+) -> bool {
+    add_edge_if_both_exist_opt(g, uri, source_qualified, target_qualified, kind, None)
+}
+
+/// Like add_edge_if_both_exist but for typing/specializes: only adds when target is a type
+/// (part def, port def, interface). Avoids matching a package that shares the same name.
+fn add_edge_if_both_exist_opt(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    source_qualified: &str,
+    target_qualified: &str,
+    kind: RelationshipKind,
+    target_kinds: Option<&[&str]>,
+) -> bool {
+    let src_key = normalize_for_lookup(source_qualified);
+    let tgt_key = normalize_for_lookup(target_qualified);
+    let src_id = NodeId::new(uri, &src_key);
+    let tgt_id = NodeId::new(uri, &tgt_key);
+    let (Some(&src_idx), Some(tgt_node)) = (g.node_index_by_id.get(&src_id), g.get_node(&tgt_id))
+    else {
+        return false;
+    };
+    if let Some(kinds) = target_kinds {
+        let ek = tgt_node.element_kind.as_str();
+        if !kinds.iter().any(|k| ek == *k) {
+            return false;
+        }
+    }
+    let Some(tgt_idx) = g.node_index_by_id.get(&tgt_id).copied() else {
+        return false;
+    };
+    g.graph.add_edge(src_idx, tgt_idx, kind);
+    true
+}
+
+/// Adds a typing edge if source exists and target can be resolved. Tries type_ref as-is,
+/// then qualified with package prefixes, then #kind-suffixed variants for disambiguated nodes.
+/// Only matches targets that are actual types (part def, port def, interface) to avoid
+/// matching a package that shares the same name.
+pub(crate) fn add_typing_edge_if_exists(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    source_qualified: &str,
+    type_ref: &str,
+    container_prefix: Option<&str>,
+) {
+    const TYPING_TARGET_KINDS: &[&str] = &[
+        "part def",
+        "port def",
+        "interface",
+        "item def",
+        "attribute def",
+    ];
+    for kind in ["part_def", "port_def"] {
+        for tgt in type_ref_candidates_with_kind(container_prefix, type_ref, kind) {
+            if add_edge_if_both_exist_opt(
+                g,
+                uri,
+                source_qualified,
+                &tgt,
+                RelationshipKind::Typing,
+                Some(TYPING_TARGET_KINDS),
+            ) {
+                return;
+            }
+        }
+    }
+}
+
+/// Adds a specializes edge if source exists and target can be resolved. Same resolution as typing:
+/// specializes target may be unqualified (e.g. "SurveillanceQuadrotorDrone") while the node
+/// has qualified name (e.g. "SurveillanceDrone::SurveillanceQuadrotorDrone").
+/// Only matches PartDef targets to avoid matching a package.
+pub(crate) fn add_specializes_edge_if_exists(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    source_qualified: &str,
+    specializes_ref: &str,
+    container_prefix: Option<&str>,
+) {
+    const SPECIALIZES_TARGET_KINDS: &[&str] = &["part def"];
+    for tgt in type_ref_candidates_with_kind(container_prefix, specializes_ref, "part_def") {
+        if add_edge_if_both_exist_opt(
+            g,
+            uri,
+            source_qualified,
+            &tgt,
+            RelationshipKind::Specializes,
+            Some(SPECIALIZES_TARGET_KINDS),
+        ) {
+            break;
+        }
+    }
+}
+
+/// Finds a PartDef in the root by qualified name by walking PackageBodyElements.
+pub(crate) fn find_part_def_in_root<'a>(
+    root: &'a RootNamespace,
+    qualified: &str,
+) -> Option<(&'a sysml_parser::Node<sysml_parser::PartDef>, String)> {
+    let mut prefix = String::new();
+    for node in &root.elements {
+        let elements = match root_element_body(&node.value) {
+            Some((elements, _, _, _)) => elements,
+            None => continue,
+        };
+        if let Some(found) = find_part_def_in_elements(elements, &mut prefix, qualified) {
+            return Some(found);
+        }
+    }
+    None
+}
+
+pub(crate) fn find_part_def_in_elements<'a>(
+    elements: &'a [sysml_parser::Node<PackageBodyElement>],
+    prefix: &mut String,
+    target: &str,
+) -> Option<(&'a sysml_parser::Node<sysml_parser::PartDef>, String)> {
+    for node in elements {
+        match &node.value {
+            PackageBodyElement::Package(pkg) => {
+                let name = identification_name(&pkg.identification);
+                let prev = std::mem::take(prefix);
+                *prefix = if prev.is_empty() {
+                    name.clone()
+                } else {
+                    format!("{}::{}", prev, name)
+                };
+                if let PackageBody::Brace { elements: inner } = &pkg.body {
+                    if let Some(found) = find_part_def_in_elements(inner, prefix, target) {
+                        return Some(found);
+                    }
+                }
+                *prefix = prev;
+            }
+            PackageBodyElement::PartDef(pd) => {
+                let name = identification_name(&pd.identification);
+                let q = if prefix.is_empty() {
+                    name.clone()
+                } else {
+                    format!("{}::{}", prefix, name)
+                };
+                if q == target {
+                    return Some((pd, q));
+                }
+            }
+            _ => {}
+        }
+    }
+    None
+}
+
+/// Adds typing/specializes edges from nodes in the given URI to targets that may be in other files.
+/// Called after merge so the full graph contains nodes from all documents.
+pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
+    let node_ids: Vec<NodeId> = g
+        .nodes_by_uri
+        .get(uri)
+        .map(|ids| ids.clone())
+        .unwrap_or_default();
+    let mut work: Vec<(NodeId, String, Option<String>, RelationshipKind)> = Vec::new();
+    for node_id in &node_ids {
+        let Some(node) = g.get_node(node_id) else {
+            continue;
+        };
+        let prefix: Option<String> = node
+            .parent_id
+            .as_ref()
+            .and_then(|pid| g.get_node(pid))
+            .map(|p| p.id.qualified_name.clone());
+
+        if let Some(v) = node
+            .attributes
+            .get("partType")
+            .or_else(|| node.attributes.get("attributeType"))
+            .or_else(|| node.attributes.get("portType"))
+            .or_else(|| node.attributes.get("actorType"))
+            .or_else(|| node.attributes.get("itemType"))
+        {
+            if let Some(type_ref) = v.as_str() {
+                work.push((
+                    node_id.clone(),
+                    type_ref.to_string(),
+                    prefix.clone(),
+                    RelationshipKind::Typing,
+                ));
+            }
+        }
+        if let Some(v) = node.attributes.get("specializes") {
+            if let Some(s) = v.as_str() {
+                work.push((
+                    node_id.clone(),
+                    s.to_string(),
+                    prefix.clone(),
+                    RelationshipKind::Specializes,
+                ));
+            }
+        }
+    }
+    for (node_id, type_ref, prefix, kind) in work {
+        add_typing_edge_cross_document(g, &node_id, &type_ref, prefix.as_deref(), kind);
+    }
+}
+
+/// Adds a typing or specializes edge when target may be in a different URI.
+/// Only matches targets that are actual types (part def, port def, interface for typing;
+/// part def only for specializes).
+fn add_typing_edge_cross_document(
+    g: &mut SemanticGraph,
+    src_id: &NodeId,
+    type_ref: &str,
+    container_prefix: Option<&str>,
+    kind: RelationshipKind,
+) {
+    let target_element_kinds: &[&str] = match kind {
+        RelationshipKind::Typing => &[
+            "part def",
+            "port def",
+            "interface",
+            "item def",
+            "attribute def",
+        ],
+        RelationshipKind::Specializes => &["part def"],
+        _ => &[],
+    };
+    let src_idx = match g.node_index_by_id.get(src_id) {
+        Some(&idx) => idx,
+        None => return,
+    };
+    let suffix_kinds = ["part_def", "port_def"];
+    let candidates: Vec<String> = suffix_kinds
+        .iter()
+        .flat_map(|k| type_ref_candidates_with_kind(container_prefix, type_ref, k))
+        .collect();
+    for tgt_qualified in candidates {
+        let tgt_qualified = normalize_for_lookup(&tgt_qualified);
+        for uri in g.nodes_by_uri.keys() {
+            let tgt_id = NodeId::new(uri, &tgt_qualified);
+            if let Some(tgt_node) = g.get_node(&tgt_id) {
+                if target_element_kinds.contains(&tgt_node.element_kind.as_str()) {
+                    if let Some(&tgt_idx) = g.node_index_by_id.get(&tgt_id) {
+                        g.graph.add_edge(src_idx, tgt_idx, kind.clone());
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}

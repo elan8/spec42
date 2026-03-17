@@ -1,0 +1,8 @@
+# Do not add server/ here; the release workflow injects server binaries for bundling.
+.vscode/**
+.vscode-test/**
+node_modules
+src/**
+**/*.map
+tsconfig.json
+.gitignore

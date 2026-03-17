@@ -1,0 +1,3 @@
+[submodule "vendor/elk-rust"]
+	path = vendor/elk-rust
+	url = https://github.com/elan8/elk-rust.git

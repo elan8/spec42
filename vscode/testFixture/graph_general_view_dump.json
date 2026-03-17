@@ -1,0 +1,2000 @@
+{
+  "nodes": [
+    {
+      "attributes": {},
+      "id": "Real",
+      "name": "Real",
+      "range": {
+        "end": {
+          "character": 20,
+          "line": 9
+        },
+        "start": {
+          "character": 1,
+          "line": 9
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {},
+      "id": "MassValue",
+      "name": "MassValue",
+      "range": {
+        "end": {
+          "character": 25,
+          "line": 10
+        },
+        "start": {
+          "character": 1,
+          "line": 10
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {},
+      "id": "TimeValue",
+      "name": "TimeValue",
+      "range": {
+        "end": {
+          "character": 25,
+          "line": 11
+        },
+        "start": {
+          "character": 1,
+          "line": 11
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {},
+      "id": "DistanceValue",
+      "name": "DistanceValue",
+      "range": {
+        "end": {
+          "character": 29,
+          "line": 12
+        },
+        "start": {
+          "character": 1,
+          "line": 12
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {},
+      "id": "SpeedValue",
+      "name": "SpeedValue",
+      "range": {
+        "end": {
+          "character": 26,
+          "line": 13
+        },
+        "start": {
+          "character": 1,
+          "line": 13
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {},
+      "id": "MotorCommandPort",
+      "name": "MotorCommandPort",
+      "range": {
+        "end": {
+          "character": 62,
+          "line": 16
+        },
+        "start": {
+          "character": 1,
+          "line": 16
+        }
+      },
+      "type": "port def"
+    },
+    {
+      "attributes": {},
+      "id": "GimbalCommandPort",
+      "name": "GimbalCommandPort",
+      "range": {
+        "end": {
+          "character": 101,
+          "line": 20
+        },
+        "start": {
+          "character": 1,
+          "line": 20
+        }
+      },
+      "type": "port def"
+    },
+    {
+      "attributes": {},
+      "id": "CameraControlPort",
+      "name": "CameraControlPort",
+      "range": {
+        "end": {
+          "character": 118,
+          "line": 26
+        },
+        "start": {
+          "character": 1,
+          "line": 26
+        }
+      },
+      "type": "port def"
+    },
+    {
+      "attributes": {},
+      "id": "TelemetryPort",
+      "name": "TelemetryPort",
+      "range": {
+        "end": {
+          "character": 136,
+          "line": 32
+        },
+        "start": {
+          "character": 1,
+          "line": 32
+        }
+      },
+      "type": "port def"
+    },
+    {
+      "attributes": {},
+      "id": "PowerPort",
+      "name": "PowerPort",
+      "range": {
+        "end": {
+          "character": 71,
+          "line": 39
+        },
+        "start": {
+          "character": 1,
+          "line": 39
+        }
+      },
+      "type": "port def"
+    },
+    {
+      "attributes": {},
+      "id": "SensorDataPort",
+      "name": "SensorDataPort",
+      "range": {
+        "end": {
+          "character": 132,
+          "line": 44
+        },
+        "start": {
+          "character": 1,
+          "line": 44
+        }
+      },
+      "type": "port def"
+    },
+    {
+      "attributes": {},
+      "id": "RCCommandPort",
+      "name": "RCCommandPort",
+      "range": {
+        "end": {
+          "character": 84,
+          "line": 51
+        },
+        "start": {
+          "character": 1,
+          "line": 51
+        }
+      },
+      "type": "port def"
+    },
+    {
+      "attributes": {},
+      "id": "Airframe",
+      "name": "Airframe",
+      "range": {
+        "end": {
+          "character": 273,
+          "line": 57
+        },
+        "start": {
+          "character": 1,
+          "line": 57
+        }
+      },
+      "type": "part def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "Airframe::wheelbase",
+      "name": "wheelbase",
+      "parentId": "Airframe",
+      "range": {
+        "end": {
+          "character": 29,
+          "line": 59
+        },
+        "start": {
+          "character": 2,
+          "line": 59
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "MassValue"
+      },
+      "id": "Airframe::weight",
+      "name": "weight",
+      "parentId": "Airframe",
+      "range": {
+        "end": {
+          "character": 31,
+          "line": 60
+        },
+        "start": {
+          "character": 2,
+          "line": 60
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "MassValue"
+      },
+      "id": "Airframe::maxPayloadCapacity",
+      "name": "maxPayloadCapacity",
+      "parentId": "Airframe",
+      "range": {
+        "end": {
+          "character": 43,
+          "line": 61
+        },
+        "start": {
+          "character": 2,
+          "line": 61
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "String"
+      },
+      "id": "Airframe::foldableArms",
+      "name": "foldableArms",
+      "parentId": "Airframe",
+      "range": {
+        "end": {
+          "character": 34,
+          "line": 62
+        },
+        "start": {
+          "character": 2,
+          "line": 62
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "String"
+      },
+      "id": "Airframe::ipRating",
+      "name": "ipRating",
+      "parentId": "Airframe",
+      "range": {
+        "end": {
+          "character": 30,
+          "line": 63
+        },
+        "start": {
+          "character": 2,
+          "line": 63
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {},
+      "id": "PropulsionUnit",
+      "name": "PropulsionUnit",
+      "range": {
+        "end": {
+          "character": 259,
+          "line": 66
+        },
+        "start": {
+          "character": 1,
+          "line": 66
+        }
+      },
+      "type": "part def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "PropulsionUnit::thrust",
+      "name": "thrust",
+      "parentId": "PropulsionUnit",
+      "range": {
+        "end": {
+          "character": 26,
+          "line": 68
+        },
+        "start": {
+          "character": 2,
+          "line": 68
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "PropulsionUnit::hoverThrottle",
+      "name": "hoverThrottle",
+      "parentId": "PropulsionUnit",
+      "range": {
+        "end": {
+          "character": 33,
+          "line": 69
+        },
+        "start": {
+          "character": 2,
+          "line": 69
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "PropulsionUnit::maxCurrent",
+      "name": "maxCurrent",
+      "parentId": "PropulsionUnit",
+      "range": {
+        "end": {
+          "character": 30,
+          "line": 70
+        },
+        "start": {
+          "character": 2,
+          "line": 70
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "portType": "~MotorCommandPort"
+      },
+      "id": "PropulsionUnit::cmd",
+      "name": "cmd",
+      "parentId": "PropulsionUnit",
+      "range": {
+        "end": {
+          "character": 31,
+          "line": 71
+        },
+        "start": {
+          "character": 2,
+          "line": 71
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "~PowerPort"
+      },
+      "id": "PropulsionUnit::pwr",
+      "name": "pwr",
+      "parentId": "PropulsionUnit",
+      "range": {
+        "end": {
+          "character": 24,
+          "line": 72
+        },
+        "start": {
+          "character": 2,
+          "line": 72
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {},
+      "id": "Propulsion",
+      "name": "Propulsion",
+      "range": {
+        "end": {
+          "character": 293,
+          "line": 75
+        },
+        "start": {
+          "character": 1,
+          "line": 75
+        }
+      },
+      "type": "part def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "Propulsion::thrustTotal",
+      "name": "thrustTotal",
+      "parentId": "Propulsion",
+      "range": {
+        "end": {
+          "character": 31,
+          "line": 81
+        },
+        "start": {
+          "character": 2,
+          "line": 81
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {},
+      "id": "FlightController",
+      "name": "FlightController",
+      "range": {
+        "end": {
+          "character": 385,
+          "line": 84
+        },
+        "start": {
+          "character": 1,
+          "line": 84
+        }
+      },
+      "type": "part def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "FlightController::updateRate",
+      "name": "updateRate",
+      "parentId": "FlightController",
+      "range": {
+        "end": {
+          "character": 30,
+          "line": 86
+        },
+        "start": {
+          "character": 2,
+          "line": 86
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "String"
+      },
+      "id": "FlightController::supportedModes",
+      "name": "supportedModes",
+      "parentId": "FlightController",
+      "range": {
+        "end": {
+          "character": 36,
+          "line": 87
+        },
+        "start": {
+          "character": 2,
+          "line": 87
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "portType": "~MotorCommandPort"
+      },
+      "id": "FlightController::motorCmd",
+      "name": "motorCmd",
+      "parentId": "FlightController",
+      "range": {
+        "end": {
+          "character": 36,
+          "line": 88
+        },
+        "start": {
+          "character": 2,
+          "line": 88
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "~GimbalCommandPort"
+      },
+      "id": "FlightController::gimbalCmd",
+      "name": "gimbalCmd",
+      "parentId": "FlightController",
+      "range": {
+        "end": {
+          "character": 38,
+          "line": 89
+        },
+        "start": {
+          "character": 2,
+          "line": 89
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "TelemetryPort"
+      },
+      "id": "FlightController::telemetryOut",
+      "name": "telemetryOut",
+      "parentId": "FlightController",
+      "range": {
+        "end": {
+          "character": 36,
+          "line": 90
+        },
+        "start": {
+          "character": 2,
+          "line": 90
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "~RCCommandPort"
+      },
+      "id": "FlightController::rcIn",
+      "name": "rcIn",
+      "parentId": "FlightController",
+      "range": {
+        "end": {
+          "character": 29,
+          "line": 91
+        },
+        "start": {
+          "character": 2,
+          "line": 91
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "~SensorDataPort"
+      },
+      "id": "FlightController::sensorIn",
+      "name": "sensorIn",
+      "parentId": "FlightController",
+      "range": {
+        "end": {
+          "character": 34,
+          "line": 92
+        },
+        "start": {
+          "character": 2,
+          "line": 92
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "~PowerPort"
+      },
+      "id": "FlightController::pwr",
+      "name": "pwr",
+      "parentId": "FlightController",
+      "range": {
+        "end": {
+          "character": 24,
+          "line": 93
+        },
+        "start": {
+          "character": 2,
+          "line": 93
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {},
+      "id": "IMU",
+      "name": "IMU",
+      "range": {
+        "end": {
+          "character": 111,
+          "line": 96
+        },
+        "start": {
+          "character": 1,
+          "line": 96
+        }
+      },
+      "type": "part def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "IMU::sampleRate",
+      "name": "sampleRate",
+      "parentId": "IMU",
+      "range": {
+        "end": {
+          "character": 30,
+          "line": 97
+        },
+        "start": {
+          "character": 2,
+          "line": 97
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "portType": "SensorDataPort"
+      },
+      "id": "IMU::dataOut",
+      "name": "dataOut",
+      "parentId": "IMU",
+      "range": {
+        "end": {
+          "character": 32,
+          "line": 98
+        },
+        "start": {
+          "character": 2,
+          "line": 98
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "~PowerPort"
+      },
+      "id": "IMU::pwr",
+      "name": "pwr",
+      "parentId": "IMU",
+      "range": {
+        "end": {
+          "character": 24,
+          "line": 99
+        },
+        "start": {
+          "character": 2,
+          "line": 99
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {},
+      "id": "Barometer",
+      "name": "Barometer",
+      "range": {
+        "end": {
+          "character": 89,
+          "line": 102
+        },
+        "start": {
+          "character": 1,
+          "line": 102
+        }
+      },
+      "type": "part def"
+    },
+    {
+      "attributes": {
+        "portType": "SensorDataPort"
+      },
+      "id": "Barometer::altitudeOut",
+      "name": "altitudeOut",
+      "parentId": "Barometer",
+      "range": {
+        "end": {
+          "character": 36,
+          "line": 103
+        },
+        "start": {
+          "character": 2,
+          "line": 103
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "~PowerPort"
+      },
+      "id": "Barometer::pwr",
+      "name": "pwr",
+      "parentId": "Barometer",
+      "range": {
+        "end": {
+          "character": 24,
+          "line": 104
+        },
+        "start": {
+          "character": 2,
+          "line": 104
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {},
+      "id": "GNSSReceiver",
+      "name": "GNSSReceiver",
+      "range": {
+        "end": {
+          "character": 92,
+          "line": 107
+        },
+        "start": {
+          "character": 1,
+          "line": 107
+        }
+      },
+      "type": "part def"
+    },
+    {
+      "attributes": {
+        "portType": "SensorDataPort"
+      },
+      "id": "GNSSReceiver::positionOut",
+      "name": "positionOut",
+      "parentId": "GNSSReceiver",
+      "range": {
+        "end": {
+          "character": 36,
+          "line": 108
+        },
+        "start": {
+          "character": 2,
+          "line": 108
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "~PowerPort"
+      },
+      "id": "GNSSReceiver::pwr",
+      "name": "pwr",
+      "parentId": "GNSSReceiver",
+      "range": {
+        "end": {
+          "character": 24,
+          "line": 109
+        },
+        "start": {
+          "character": 2,
+          "line": 109
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {},
+      "id": "FlightControlAndSensing",
+      "name": "FlightControlAndSensing",
+      "range": {
+        "end": {
+          "character": 482,
+          "line": 112
+        },
+        "start": {
+          "character": 1,
+          "line": 112
+        }
+      },
+      "type": "part def"
+    },
+    {
+      "attributes": {
+        "attributeType": "String"
+      },
+      "id": "FlightControlAndSensing::geofenceBehavior",
+      "name": "geofenceBehavior",
+      "parentId": "FlightControlAndSensing",
+      "range": {
+        "end": {
+          "character": 38,
+          "line": 121
+        },
+        "start": {
+          "character": 2,
+          "line": 121
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "String"
+      },
+      "id": "FlightControlAndSensing::failsafeLogic",
+      "name": "failsafeLogic",
+      "parentId": "FlightControlAndSensing",
+      "range": {
+        "end": {
+          "character": 35,
+          "line": 122
+        },
+        "start": {
+          "character": 2,
+          "line": 122
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {},
+      "id": "Gimbal",
+      "name": "Gimbal",
+      "range": {
+        "end": {
+          "character": 335,
+          "line": 125
+        },
+        "start": {
+          "character": 1,
+          "line": 125
+        }
+      },
+      "type": "part def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "Gimbal::panRange",
+      "name": "panRange",
+      "parentId": "Gimbal",
+      "range": {
+        "end": {
+          "character": 28,
+          "line": 127
+        },
+        "start": {
+          "character": 2,
+          "line": 127
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "Gimbal::tiltRange",
+      "name": "tiltRange",
+      "parentId": "Gimbal",
+      "range": {
+        "end": {
+          "character": 29,
+          "line": 128
+        },
+        "start": {
+          "character": 2,
+          "line": 128
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "Gimbal::maxAngularRate",
+      "name": "maxAngularRate",
+      "parentId": "Gimbal",
+      "range": {
+        "end": {
+          "character": 34,
+          "line": 129
+        },
+        "start": {
+          "character": 2,
+          "line": 129
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "MassValue"
+      },
+      "id": "Gimbal::payloadCapacity",
+      "name": "payloadCapacity",
+      "parentId": "Gimbal",
+      "range": {
+        "end": {
+          "character": 40,
+          "line": 130
+        },
+        "start": {
+          "character": 2,
+          "line": 130
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "portType": "~GimbalCommandPort"
+      },
+      "id": "Gimbal::cmd",
+      "name": "cmd",
+      "parentId": "Gimbal",
+      "range": {
+        "end": {
+          "character": 32,
+          "line": 131
+        },
+        "start": {
+          "character": 2,
+          "line": 131
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "CameraControlPort"
+      },
+      "id": "Gimbal::cameraCtrl",
+      "name": "cameraCtrl",
+      "parentId": "Gimbal",
+      "range": {
+        "end": {
+          "character": 38,
+          "line": 132
+        },
+        "start": {
+          "character": 2,
+          "line": 132
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "~PowerPort"
+      },
+      "id": "Gimbal::pwr",
+      "name": "pwr",
+      "parentId": "Gimbal",
+      "range": {
+        "end": {
+          "character": 24,
+          "line": 133
+        },
+        "start": {
+          "character": 2,
+          "line": 133
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {},
+      "id": "CameraPayload",
+      "name": "CameraPayload",
+      "range": {
+        "end": {
+          "character": 310,
+          "line": 136
+        },
+        "start": {
+          "character": 1,
+          "line": 136
+        }
+      },
+      "type": "part def"
+    },
+    {
+      "attributes": {
+        "attributeType": "String"
+      },
+      "id": "CameraPayload::resolution",
+      "name": "resolution",
+      "parentId": "CameraPayload",
+      "range": {
+        "end": {
+          "character": 32,
+          "line": 138
+        },
+        "start": {
+          "character": 2,
+          "line": 138
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "CameraPayload::frameRate",
+      "name": "frameRate",
+      "parentId": "CameraPayload",
+      "range": {
+        "end": {
+          "character": 29,
+          "line": 139
+        },
+        "start": {
+          "character": 2,
+          "line": 139
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "CameraPayload::fov",
+      "name": "fov",
+      "parentId": "CameraPayload",
+      "range": {
+        "end": {
+          "character": 23,
+          "line": 140
+        },
+        "start": {
+          "character": 2,
+          "line": 140
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "CameraPayload::zoomRange",
+      "name": "zoomRange",
+      "parentId": "CameraPayload",
+      "range": {
+        "end": {
+          "character": 29,
+          "line": 141
+        },
+        "start": {
+          "character": 2,
+          "line": 141
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "portType": "TelemetryPort"
+      },
+      "id": "CameraPayload::videoOut",
+      "name": "videoOut",
+      "parentId": "CameraPayload",
+      "range": {
+        "end": {
+          "character": 32,
+          "line": 142
+        },
+        "start": {
+          "character": 2,
+          "line": 142
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "~CameraControlPort"
+      },
+      "id": "CameraPayload::control",
+      "name": "control",
+      "parentId": "CameraPayload",
+      "range": {
+        "end": {
+          "character": 36,
+          "line": 143
+        },
+        "start": {
+          "character": 2,
+          "line": 143
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "~PowerPort"
+      },
+      "id": "CameraPayload::pwr",
+      "name": "pwr",
+      "parentId": "CameraPayload",
+      "range": {
+        "end": {
+          "character": 24,
+          "line": 144
+        },
+        "start": {
+          "character": 2,
+          "line": 144
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {},
+      "id": "Communication",
+      "name": "Communication",
+      "range": {
+        "end": {
+          "character": 307,
+          "line": 147
+        },
+        "start": {
+          "character": 1,
+          "line": 147
+        }
+      },
+      "type": "part def"
+    },
+    {
+      "attributes": {
+        "attributeType": "DistanceValue"
+      },
+      "id": "Communication::range",
+      "name": "range",
+      "parentId": "Communication",
+      "range": {
+        "end": {
+          "character": 34,
+          "line": 149
+        },
+        "start": {
+          "character": 2,
+          "line": 149
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "TimeValue"
+      },
+      "id": "Communication::latency",
+      "name": "latency",
+      "parentId": "Communication",
+      "range": {
+        "end": {
+          "character": 32,
+          "line": 150
+        },
+        "start": {
+          "character": 2,
+          "line": 150
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "Communication::bandwidth",
+      "name": "bandwidth",
+      "parentId": "Communication",
+      "range": {
+        "end": {
+          "character": 29,
+          "line": 151
+        },
+        "start": {
+          "character": 2,
+          "line": 151
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "portType": "RCCommandPort"
+      },
+      "id": "Communication::c2In",
+      "name": "c2In",
+      "parentId": "Communication",
+      "range": {
+        "end": {
+          "character": 28,
+          "line": 152
+        },
+        "start": {
+          "character": 2,
+          "line": 152
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "~TelemetryPort"
+      },
+      "id": "Communication::telemetryIn",
+      "name": "telemetryIn",
+      "parentId": "Communication",
+      "range": {
+        "end": {
+          "character": 36,
+          "line": 153
+        },
+        "start": {
+          "character": 2,
+          "line": 153
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "~TelemetryPort"
+      },
+      "id": "Communication::videoIn",
+      "name": "videoIn",
+      "parentId": "Communication",
+      "range": {
+        "end": {
+          "character": 32,
+          "line": 154
+        },
+        "start": {
+          "character": 2,
+          "line": 154
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "~PowerPort"
+      },
+      "id": "Communication::pwr",
+      "name": "pwr",
+      "parentId": "Communication",
+      "range": {
+        "end": {
+          "character": 24,
+          "line": 155
+        },
+        "start": {
+          "character": 2,
+          "line": 155
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {},
+      "id": "Battery",
+      "name": "Battery",
+      "range": {
+        "end": {
+          "character": 188,
+          "line": 158
+        },
+        "start": {
+          "character": 1,
+          "line": 158
+        }
+      },
+      "type": "part def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "Battery::nominalVoltage",
+      "name": "nominalVoltage",
+      "parentId": "Battery",
+      "range": {
+        "end": {
+          "character": 34,
+          "line": 159
+        },
+        "start": {
+          "character": 2,
+          "line": 159
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "Battery::capacity",
+      "name": "capacity",
+      "parentId": "Battery",
+      "range": {
+        "end": {
+          "character": 28,
+          "line": 160
+        },
+        "start": {
+          "character": 2,
+          "line": 160
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "Real"
+      },
+      "id": "Battery::maxDischargeRate",
+      "name": "maxDischargeRate",
+      "parentId": "Battery",
+      "range": {
+        "end": {
+          "character": 36,
+          "line": 161
+        },
+        "start": {
+          "character": 2,
+          "line": 161
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "attributeType": "MassValue"
+      },
+      "id": "Battery::weight",
+      "name": "weight",
+      "parentId": "Battery",
+      "range": {
+        "end": {
+          "character": 31,
+          "line": 162
+        },
+        "start": {
+          "character": 2,
+          "line": 162
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {
+        "portType": "PowerPort"
+      },
+      "id": "Battery::pwrOut",
+      "name": "pwrOut",
+      "parentId": "Battery",
+      "range": {
+        "end": {
+          "character": 26,
+          "line": 163
+        },
+        "start": {
+          "character": 2,
+          "line": 163
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {},
+      "id": "PowerDistribution",
+      "name": "PowerDistribution",
+      "range": {
+        "end": {
+          "character": 132,
+          "line": 166
+        },
+        "start": {
+          "character": 1,
+          "line": 166
+        }
+      },
+      "type": "part def"
+    },
+    {
+      "attributes": {
+        "portType": "~PowerPort"
+      },
+      "id": "PowerDistribution::mainPower",
+      "name": "mainPower",
+      "parentId": "PowerDistribution",
+      "range": {
+        "end": {
+          "character": 30,
+          "line": 167
+        },
+        "start": {
+          "character": 2,
+          "line": 167
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "PowerPort"
+      },
+      "id": "PowerDistribution::regulated5V",
+      "name": "regulated5V",
+      "parentId": "PowerDistribution",
+      "range": {
+        "end": {
+          "character": 31,
+          "line": 168
+        },
+        "start": {
+          "character": 2,
+          "line": 168
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {
+        "portType": "PowerPort"
+      },
+      "id": "PowerDistribution::regulated12V",
+      "name": "regulated12V",
+      "parentId": "PowerDistribution",
+      "range": {
+        "end": {
+          "character": 32,
+          "line": 169
+        },
+        "start": {
+          "character": 2,
+          "line": 169
+        }
+      },
+      "type": "port"
+    },
+    {
+      "attributes": {},
+      "id": "Power",
+      "name": "Power",
+      "range": {
+        "end": {
+          "character": 192,
+          "line": 172
+        },
+        "start": {
+          "character": 1,
+          "line": 172
+        }
+      },
+      "type": "part def"
+    },
+    {
+      "attributes": {
+        "attributeType": "TimeValue"
+      },
+      "id": "Power::flightTimeNominal",
+      "name": "flightTimeNominal",
+      "parentId": "Power",
+      "range": {
+        "end": {
+          "character": 42,
+          "line": 176
+        },
+        "start": {
+          "character": 2,
+          "line": 176
+        }
+      },
+      "type": "attribute def"
+    },
+    {
+      "attributes": {},
+      "id": "SurveillanceQuadrotorDrone",
+      "name": "SurveillanceQuadrotorDrone",
+      "range": {
+        "end": {
+          "character": 1695,
+          "line": 180
+        },
+        "start": {
+          "character": 1,
+          "line": 180
+        }
+      },
+      "type": "part def"
+    },
+    {
+      "attributes": {
+        "partType": "SurveillanceQuadrotorDrone"
+      },
+      "id": "droneInstance",
+      "name": "droneInstance",
+      "range": {
+        "end": {
+          "character": 49,
+          "line": 275
+        },
+        "start": {
+          "character": 1,
+          "line": 275
+        }
+      },
+      "type": "part"
+    },
+    {
+      "attributes": {},
+      "id": "ExecutePatrol",
+      "name": "ExecutePatrol",
+      "range": {
+        "end": {
+          "character": 201,
+          "line": 333
+        },
+        "start": {
+          "character": 1,
+          "line": 333
+        }
+      },
+      "type": "action def"
+    },
+    {
+      "attributes": {},
+      "id": "ExecuteOrbit",
+      "name": "ExecuteOrbit",
+      "range": {
+        "end": {
+          "character": 166,
+          "line": 341
+        },
+        "start": {
+          "character": 1,
+          "line": 341
+        }
+      },
+      "type": "action def"
+    },
+    {
+      "attributes": {},
+      "id": "ControlGimbal",
+      "name": "ControlGimbal",
+      "range": {
+        "end": {
+          "character": 146,
+          "line": 349
+        },
+        "start": {
+          "character": 1,
+          "line": 349
+        }
+      },
+      "type": "action def"
+    },
+    {
+      "attributes": {},
+      "id": "CaptureVideo",
+      "name": "CaptureVideo",
+      "range": {
+        "end": {
+          "character": 105,
+          "line": 356
+        },
+        "start": {
+          "character": 1,
+          "line": 356
+        }
+      },
+      "type": "action def"
+    },
+    {
+      "attributes": {
+        "specializes": "SurveillanceQuadrotorDrone"
+      },
+      "id": "SurveillanceQuadrotorDroneWithBehavior",
+      "name": "SurveillanceQuadrotorDroneWithBehavior",
+      "range": {
+        "end": {
+          "character": 443,
+          "line": 362
+        },
+        "start": {
+          "character": 1,
+          "line": 362
+        }
+      },
+      "type": "part def"
+    }
+  ],
+  "edges": [
+    {
+      "source": "droneInstance",
+      "target": "SurveillanceQuadrotorDrone",
+      "type": "typing"
+    },
+    {
+      "source": "SurveillanceQuadrotorDroneWithBehavior",
+      "target": "SurveillanceQuadrotorDrone",
+      "type": "specializes"
+    },
+    {
+      "source": "FlightController::telemetryOut",
+      "target": "TelemetryPort",
+      "type": "typing"
+    },
+    {
+      "source": "IMU::dataOut",
+      "target": "SensorDataPort",
+      "type": "typing"
+    },
+    {
+      "source": "Barometer::altitudeOut",
+      "target": "SensorDataPort",
+      "type": "typing"
+    },
+    {
+      "source": "GNSSReceiver::positionOut",
+      "target": "SensorDataPort",
+      "type": "typing"
+    },
+    {
+      "source": "Gimbal::cameraCtrl",
+      "target": "CameraControlPort",
+      "type": "typing"
+    },
+    {
+      "source": "CameraPayload::videoOut",
+      "target": "TelemetryPort",
+      "type": "typing"
+    },
+    {
+      "source": "Communication::c2In",
+      "target": "RCCommandPort",
+      "type": "typing"
+    },
+    {
+      "source": "Battery::pwrOut",
+      "target": "PowerPort",
+      "type": "typing"
+    },
+    {
+      "source": "PowerDistribution::regulated5V",
+      "target": "PowerPort",
+      "type": "typing"
+    },
+    {
+      "source": "PowerDistribution::regulated12V",
+      "target": "PowerPort",
+      "type": "typing"
+    },
+    {
+      "source": "droneInstance",
+      "target": "SurveillanceQuadrotorDrone",
+      "type": "typing"
+    },
+    {
+      "source": "SurveillanceQuadrotorDroneWithBehavior",
+      "target": "SurveillanceQuadrotorDrone",
+      "type": "specializes"
+    },
+    {
+      "source": "Airframe",
+      "target": "Airframe::wheelbase",
+      "type": "contains"
+    },
+    {
+      "source": "Airframe",
+      "target": "Airframe::weight",
+      "type": "contains"
+    },
+    {
+      "source": "Airframe",
+      "target": "Airframe::maxPayloadCapacity",
+      "type": "contains"
+    },
+    {
+      "source": "Airframe",
+      "target": "Airframe::foldableArms",
+      "type": "contains"
+    },
+    {
+      "source": "Airframe",
+      "target": "Airframe::ipRating",
+      "type": "contains"
+    },
+    {
+      "source": "PropulsionUnit",
+      "target": "PropulsionUnit::thrust",
+      "type": "contains"
+    },
+    {
+      "source": "PropulsionUnit",
+      "target": "PropulsionUnit::hoverThrottle",
+      "type": "contains"
+    },
+    {
+      "source": "PropulsionUnit",
+      "target": "PropulsionUnit::maxCurrent",
+      "type": "contains"
+    },
+    {
+      "source": "PropulsionUnit",
+      "target": "PropulsionUnit::cmd",
+      "type": "contains"
+    },
+    {
+      "source": "PropulsionUnit",
+      "target": "PropulsionUnit::pwr",
+      "type": "contains"
+    },
+    {
+      "source": "Propulsion",
+      "target": "Propulsion::thrustTotal",
+      "type": "contains"
+    },
+    {
+      "source": "FlightController",
+      "target": "FlightController::updateRate",
+      "type": "contains"
+    },
+    {
+      "source": "FlightController",
+      "target": "FlightController::supportedModes",
+      "type": "contains"
+    },
+    {
+      "source": "FlightController",
+      "target": "FlightController::motorCmd",
+      "type": "contains"
+    },
+    {
+      "source": "FlightController",
+      "target": "FlightController::gimbalCmd",
+      "type": "contains"
+    },
+    {
+      "source": "FlightController",
+      "target": "FlightController::telemetryOut",
+      "type": "contains"
+    },
+    {
+      "source": "FlightController",
+      "target": "FlightController::rcIn",
+      "type": "contains"
+    },
+    {
+      "source": "FlightController",
+      "target": "FlightController::sensorIn",
+      "type": "contains"
+    },
+    {
+      "source": "FlightController",
+      "target": "FlightController::pwr",
+      "type": "contains"
+    },
+    {
+      "source": "IMU",
+      "target": "IMU::sampleRate",
+      "type": "contains"
+    },
+    {
+      "source": "IMU",
+      "target": "IMU::dataOut",
+      "type": "contains"
+    },
+    {
+      "source": "IMU",
+      "target": "IMU::pwr",
+      "type": "contains"
+    },
+    {
+      "source": "Barometer",
+      "target": "Barometer::altitudeOut",
+      "type": "contains"
+    },
+    {
+      "source": "Barometer",
+      "target": "Barometer::pwr",
+      "type": "contains"
+    },
+    {
+      "source": "GNSSReceiver",
+      "target": "GNSSReceiver::positionOut",
+      "type": "contains"
+    },
+    {
+      "source": "GNSSReceiver",
+      "target": "GNSSReceiver::pwr",
+      "type": "contains"
+    },
+    {
+      "source": "FlightControlAndSensing",
+      "target": "FlightControlAndSensing::geofenceBehavior",
+      "type": "contains"
+    },
+    {
+      "source": "FlightControlAndSensing",
+      "target": "FlightControlAndSensing::failsafeLogic",
+      "type": "contains"
+    },
+    {
+      "source": "Gimbal",
+      "target": "Gimbal::panRange",
+      "type": "contains"
+    },
+    {
+      "source": "Gimbal",
+      "target": "Gimbal::tiltRange",
+      "type": "contains"
+    },
+    {
+      "source": "Gimbal",
+      "target": "Gimbal::maxAngularRate",
+      "type": "contains"
+    },
+    {
+      "source": "Gimbal",
+      "target": "Gimbal::payloadCapacity",
+      "type": "contains"
+    },
+    {
+      "source": "Gimbal",
+      "target": "Gimbal::cmd",
+      "type": "contains"
+    },
+    {
+      "source": "Gimbal",
+      "target": "Gimbal::cameraCtrl",
+      "type": "contains"
+    },
+    {
+      "source": "Gimbal",
+      "target": "Gimbal::pwr",
+      "type": "contains"
+    },
+    {
+      "source": "CameraPayload",
+      "target": "CameraPayload::resolution",
+      "type": "contains"
+    },
+    {
+      "source": "CameraPayload",
+      "target": "CameraPayload::frameRate",
+      "type": "contains"
+    },
+    {
+      "source": "CameraPayload",
+      "target": "CameraPayload::fov",
+      "type": "contains"
+    },
+    {
+      "source": "CameraPayload",
+      "target": "CameraPayload::zoomRange",
+      "type": "contains"
+    },
+    {
+      "source": "CameraPayload",
+      "target": "CameraPayload::videoOut",
+      "type": "contains"
+    },
+    {
+      "source": "CameraPayload",
+      "target": "CameraPayload::control",
+      "type": "contains"
+    },
+    {
+      "source": "CameraPayload",
+      "target": "CameraPayload::pwr",
+      "type": "contains"
+    },
+    {
+      "source": "Communication",
+      "target": "Communication::range",
+      "type": "contains"
+    },
+    {
+      "source": "Communication",
+      "target": "Communication::latency",
+      "type": "contains"
+    },
+    {
+      "source": "Communication",
+      "target": "Communication::bandwidth",
+      "type": "contains"
+    },
+    {
+      "source": "Communication",
+      "target": "Communication::c2In",
+      "type": "contains"
+    },
+    {
+      "source": "Communication",
+      "target": "Communication::telemetryIn",
+      "type": "contains"
+    },
+    {
+      "source": "Communication",
+      "target": "Communication::videoIn",
+      "type": "contains"
+    },
+    {
+      "source": "Communication",
+      "target": "Communication::pwr",
+      "type": "contains"
+    },
+    {
+      "source": "Battery",
+      "target": "Battery::nominalVoltage",
+      "type": "contains"
+    },
+    {
+      "source": "Battery",
+      "target": "Battery::capacity",
+      "type": "contains"
+    },
+    {
+      "source": "Battery",
+      "target": "Battery::maxDischargeRate",
+      "type": "contains"
+    },
+    {
+      "source": "Battery",
+      "target": "Battery::weight",
+      "type": "contains"
+    },
+    {
+      "source": "Battery",
+      "target": "Battery::pwrOut",
+      "type": "contains"
+    },
+    {
+      "source": "PowerDistribution",
+      "target": "PowerDistribution::mainPower",
+      "type": "contains"
+    },
+    {
+      "source": "PowerDistribution",
+      "target": "PowerDistribution::regulated5V",
+      "type": "contains"
+    },
+    {
+      "source": "PowerDistribution",
+      "target": "PowerDistribution::regulated12V",
+      "type": "contains"
+    },
+    {
+      "source": "Power",
+      "target": "Power::flightTimeNominal",
+      "type": "contains"
+    }
+  ]
+}

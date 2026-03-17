@@ -1,0 +1,88 @@
+{
+  "SysML: package": {
+    "prefix": "package",
+    "body": ["package ${1:Name} {", "\t$0", "}"],
+    "description": "Create a package block"
+  },
+  "SysML: library package": {
+    "prefix": "library",
+    "body": ["library package ${1:Name} {", "\t$0", "}"],
+    "description": "Create a library package"
+  },
+  "SysML: part def": {
+    "prefix": "partdef",
+    "body": ["part def ${1:TypeName}${2: : ${3:SuperType}} {", "\t$0", "}"],
+    "description": "Define a part type"
+  },
+  "SysML: part usage": {
+    "prefix": "part",
+    "body": ["part ${1:name} : ${2:Type};$0"],
+    "description": "Declare a part usage"
+  },
+  "SysML: attribute def": {
+    "prefix": "attrdef",
+    "body": ["attribute def ${1:AttrName} : ${2:Type};$0"],
+    "description": "Define an attribute"
+  },
+  "SysML: attribute usage": {
+    "prefix": "attr",
+    "body": ["attribute ${1:name} : ${2:Type};$0"],
+    "description": "Declare an attribute usage"
+  },
+  "SysML: port def": {
+    "prefix": "portdef",
+    "body": ["port def ${1:PortType}${2: : ${3:Interface}};$0"],
+    "description": "Define a port"
+  },
+  "SysML: port usage": {
+    "prefix": "port",
+    "body": ["port ${1:name} : ${2:PortType};$0"],
+    "description": "Declare a port usage"
+  },
+  "SysML: interface": {
+    "prefix": "interface",
+    "body": ["interface ${1:Name} {", "\t$0", "}"],
+    "description": "Define an interface"
+  },
+  "SysML: item def": {
+    "prefix": "itemdef",
+    "body": ["item def ${1:ItemType};$0"],
+    "description": "Define an item type"
+  },
+  "SysML: action def": {
+    "prefix": "actiondef",
+    "body": ["action def ${1:ActionName} {", "\t$0", "}"],
+    "description": "Define an action"
+  },
+  "SysML: state def": {
+    "prefix": "statedef",
+    "body": ["state def ${1:StateName} {", "\t$0", "}"],
+    "description": "Define a state"
+  },
+  "SysML: requirement def": {
+    "prefix": "reqdef",
+    "body": ["requirement def ${1:ReqName} {", "\t$0", "}"],
+    "description": "Define a requirement"
+  },
+  "SysML: enum def": {
+    "prefix": "enumdef",
+    "body": ["enum def ${1:Name} {", "\t$0", "}"],
+    "description": "Define an enumeration"
+  },
+  "SysML: import": {
+    "prefix": "import",
+    "body": ["import ${1:PackageOrLibrary};$0"],
+    "description": "Import a package/library"
+  },
+  "SysML: connection": {
+    "prefix": "connect",
+    "body": ["connection ${1:name} (${2:a}, ${3:b});$0"],
+    "description": "Create a connection"
+  },
+  "SysML: flow": {
+    "prefix": "flow",
+    "body": ["flow ${1:from} -> ${2:to};$0"],
+    "description": "Create a flow"
+  }
+}
+

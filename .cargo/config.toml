@@ -1,0 +1,3 @@
+# Optional: uncomment to fail the build on warnings locally.
+# [build]
+# rustflags = ["-D", "warnings"]
