@@ -4,6 +4,7 @@ mod dto;
 mod ibd;
 mod language;
 mod model;
+mod semantic_checks;
 mod semantic_model;
 mod semantic_tokens;
 mod sysml_model;
@@ -1174,7 +1175,7 @@ impl Backend {
     async fn publish_diagnostics_for_document(&self, uri: tower_lsp::lsp_types::Url, text: &str) {
         let mut diagnostics = Vec::new();
         let result = sysml_parser::parse_with_diagnostics(text);
-        for e in result.errors {
+        for e in &result.errors {
             let range = e
                 .to_lsp_range()
                 .map(|(sl, sc, el, ec)| Range {
@@ -1195,7 +1196,7 @@ impl Backend {
             diagnostics.push(Diagnostic {
                 range,
                 severity: Some(severity),
-                code: e.code.map(tower_lsp::lsp_types::NumberOrString::String),
+                code: e.code.clone().map(tower_lsp::lsp_types::NumberOrString::String),
                 code_description: None,
                 source: Some("sysml".to_string()),
                 message: e.message.clone(),
@@ -1203,6 +1204,15 @@ impl Backend {
                 tags: None,
                 data: None,
             });
+        }
+        // When parse succeeded, add semantic diagnostics (port connectivity, type compatibility).
+        if result.errors.is_empty() {
+            let uri_norm = util::normalize_file_uri(&uri);
+            let state = self.state.read().await;
+            let semantic_diags =
+                semantic_checks::compute_semantic_diagnostics(&state.semantic_graph, &uri_norm);
+            drop(state);
+            diagnostics.extend(semantic_diags);
         }
         self.client
             .publish_diagnostics(uri, diagnostics, None)

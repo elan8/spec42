@@ -276,6 +276,44 @@ impl SemanticGraph {
         targets
     }
 
+    /// Returns connection edges that touch the given URI, as (source NodeId, target NodeId).
+    /// Used for semantic checks (port type compatibility, endpoint kind).
+    pub fn connection_edge_node_pairs_for_uri(&self, uri: &Url) -> Vec<(NodeId, NodeId)> {
+        let ids: std::collections::HashSet<_> = self
+            .nodes_by_uri
+            .get(uri)
+            .into_iter()
+            .flatten()
+            .cloned()
+            .collect();
+        if ids.is_empty() {
+            return Vec::new();
+        }
+        let id_by_idx: HashMap<NodeIndex, NodeId> = self
+            .node_index_by_id
+            .iter()
+            .map(|(k, v)| (*v, k.clone()))
+            .collect();
+        let mut out = Vec::new();
+        for e in self.graph.edge_references() {
+            if *e.weight() != RelationshipKind::Connection {
+                continue;
+            }
+            let src_id = match id_by_idx.get(&e.source()) {
+                Some(id) => id.clone(),
+                None => continue,
+            };
+            let tgt_id = match id_by_idx.get(&e.target()) {
+                Some(id) => id.clone(),
+                None => continue,
+            };
+            if ids.contains(&src_id) || ids.contains(&tgt_id) {
+                out.push((src_id, tgt_id));
+            }
+        }
+        out
+    }
+
     /// Returns edges incident to nodes in the given URI as (source, target, kind, optional edge name).
     /// Used for sysml/model relationships.
     pub fn edges_for_uri_as_strings(

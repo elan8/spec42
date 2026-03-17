@@ -11,7 +11,8 @@ fn is_part_like(kind: &str) -> bool {
     k.contains("part def") || k == "part" || (k.contains("part") && !k.contains("def"))
 }
 
-fn is_port_like(kind: &str) -> bool {
+/// True if the element kind represents a port (port def or port usage). Public for semantic_checks.
+pub fn is_port_like(kind: &str) -> bool {
     let k = kind.to_lowercase();
     k.contains("port def") || k == "port"
 }
