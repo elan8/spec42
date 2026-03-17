@@ -1439,6 +1439,7 @@ fn layout_ports(
     let respect_port_order = node_layout
         .respect_port_order
         .unwrap_or(options.layered.respect_port_order);
+
     let mut grouped: BTreeMap<PortSide, Vec<PortId>> = BTreeMap::new();
     for port_id in port_ids {
         let side = graph.port(port_id).side;

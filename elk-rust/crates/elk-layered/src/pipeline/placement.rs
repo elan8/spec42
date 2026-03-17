@@ -8,6 +8,273 @@ use crate::pipeline::util::{
     set_node_minor_start,
 };
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum BkVDirection {
+    Down,
+    Up,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum BkHDirection {
+    Right,
+    Left,
+}
+
+fn bk_assign_minor_positions(ir: &mut LayeredIr, options: &LayoutOptions) {
+    // Brandes–Köpf-inspired coordinate assignment (minor axis) for InterconnectionView.
+    // This is not a full ELK port yet (no type-1 conflict marking / port inside-block shifting),
+    // but it follows the same overall structure: build alignments then compact blocks.
+    if options.view_profile != elk_core::ViewProfile::InterconnectionView {
+        return;
+    }
+    if options.layered.direction != LayoutDirection::TopToBottom {
+        return;
+    }
+
+    let n = ir.nodes.len();
+    if n == 0 || ir.layers.len() <= 1 {
+        return;
+    }
+    let spacing = options.layered.spacing.node_spacing.max(12.0);
+
+    // Precompute immediate-layer neighbors (pred/succ) by layer adjacency.
+    let mut preds: Vec<Vec<IrNodeId>> = vec![Vec::new(); n];
+    let mut succs: Vec<Vec<IrNodeId>> = vec![Vec::new(); n];
+    for e in &ir.normalized_edges {
+        let from_layer = ir.nodes[e.from].layer;
+        let to_layer = ir.nodes[e.to].layer;
+        if to_layer == from_layer + 1 {
+            preds[e.to].push(e.from);
+            succs[e.from].push(e.to);
+        }
+    }
+    for v in 0..n {
+        preds[v].sort_by_key(|nid| ir.nodes[*nid].order);
+        preds[v].dedup();
+        succs[v].sort_by_key(|nid| ir.nodes[*nid].order);
+        succs[v].dedup();
+    }
+
+    let mut half_width: Vec<f32> = Vec::with_capacity(n);
+    for v in 0..n {
+        half_width.push(
+            minor_size(ir.nodes[v].size, LayoutDirection::TopToBottom) / 2.0
+                + placeholder_padding(ir, v) / 2.0,
+        );
+    }
+    let sep = |u: IrNodeId, v: IrNodeId| -> f32 { half_width[u] + half_width[v] + spacing };
+
+    #[derive(Clone)]
+    struct Layout {
+        x_center: Vec<f32>,
+        width: f32,
+    }
+
+    let mut layouts: Vec<Layout> = Vec::with_capacity(4);
+    for (vdir, hdir) in [
+        (BkVDirection::Down, BkHDirection::Right),
+        (BkVDirection::Down, BkHDirection::Left),
+        (BkVDirection::Up, BkHDirection::Right),
+        (BkVDirection::Up, BkHDirection::Left),
+    ] {
+        // --- Vertical alignment (build blocks) ---
+        let mut root: Vec<IrNodeId> = (0..n).collect();
+        let mut align: Vec<IrNodeId> = (0..n).collect();
+        let mut pos_in_layer: Vec<usize> = vec![0; n];
+        for layer in &ir.layers {
+            for (i, &v) in layer.iter().enumerate() {
+                pos_in_layer[v] = i;
+            }
+        }
+
+        let layer_range: Box<dyn Iterator<Item = usize>> = match vdir {
+            BkVDirection::Down => Box::new(1..ir.layers.len()),
+            BkVDirection::Up => Box::new((0..ir.layers.len() - 1).rev()),
+        };
+
+        for li in layer_range {
+            let layer = ir.layers[li].clone();
+            let iter: Box<dyn Iterator<Item = IrNodeId>> = match hdir {
+                BkHDirection::Right => Box::new(layer.into_iter()),
+                BkHDirection::Left => Box::new(layer.into_iter().rev()),
+            };
+
+            for v in iter {
+                let neigh = match vdir {
+                    BkVDirection::Down => &preds[v],
+                    BkVDirection::Up => &succs[v],
+                };
+                if neigh.is_empty() {
+                    continue;
+                }
+                // median neighbor by layer order (ELK uses neighborhood info + conflicts; we skip conflicts).
+                let median = neigh[neigh.len() / 2];
+                // Align if median is “close” in order to reduce extreme widening.
+                let dv = pos_in_layer[v] as i32 - pos_in_layer[median] as i32;
+                if dv.abs() > 6 {
+                    continue;
+                }
+                align[v] = median;
+                root[v] = root[median];
+                align[median] = v;
+            }
+        }
+
+        // --- Horizontal compaction (place blocks) ---
+        let mut sink: Vec<IrNodeId> = (0..n).collect();
+        let mut shift: Vec<f32> = vec![f32::INFINITY; n];
+        let mut x: Vec<f32> = vec![0.0; n]; // block/root coordinates
+        let mut placed: Vec<bool> = vec![false; n];
+
+        fn place_block(
+            v: IrNodeId,
+            ir: &LayeredIr,
+            hdir: BkHDirection,
+            vdir: BkVDirection,
+            preds: &Vec<Vec<IrNodeId>>,
+            succs: &Vec<Vec<IrNodeId>>,
+            align: &Vec<IrNodeId>,
+            root: &Vec<IrNodeId>,
+            sink: &mut Vec<IrNodeId>,
+            shift: &mut Vec<f32>,
+            x: &mut Vec<f32>,
+            placed: &mut Vec<bool>,
+            sep: &dyn Fn(IrNodeId, IrNodeId) -> f32,
+            pos_in_layer: &Vec<usize>,
+        ) {
+            let rv = root[v];
+            if placed[rv] {
+                return;
+            }
+            placed[rv] = true;
+            x[rv] = 0.0;
+
+            // Walk through the block via align pointers.
+            let mut w = v;
+            let mut steps = 0usize;
+            let max_steps = ir.nodes.len().saturating_add(2);
+            loop {
+                steps += 1;
+                if steps > max_steps {
+                    // Defensive: alignment pointers should form a simple cycle back to `v`,
+                    // but if they don't, break to avoid infinite loops.
+                    break;
+                }
+                // Determine neighbor in same layer that constrains w (predecessor/successor by hdir).
+                let layer = ir.nodes[w].layer;
+                let layer_nodes = &ir.layers[layer];
+                let idx = pos_in_layer[w];
+                let neighbor_same_layer: Option<IrNodeId> = match hdir {
+                    BkHDirection::Right => idx.checked_sub(1).and_then(|i| layer_nodes.get(i).copied()),
+                    BkHDirection::Left => layer_nodes.get(idx + 1).copied(),
+                };
+
+                if let Some(u) = neighbor_same_layer {
+                    let ru = root[u];
+                    place_block(
+                        u, ir, hdir, vdir, preds, succs, align, root, sink, shift, x, placed, sep,
+                        pos_in_layer,
+                    );
+                    let delta = match hdir {
+                        BkHDirection::Right => sep(u, w),
+                        BkHDirection::Left => sep(w, u),
+                    };
+                    if sink[rv] == rv {
+                        sink[rv] = sink[ru];
+                    }
+                    if sink[rv] == sink[ru] {
+                        x[rv] = x[rv].max(x[ru] + delta);
+                    } else {
+                        shift[sink[ru]] = shift[sink[ru]].min(x[rv] - (x[ru] + delta));
+                    }
+                }
+
+                w = align[w];
+                if w == v {
+                    break;
+                }
+                // Avoid pathological cycles if alignment got weird.
+                if align[w] == w {
+                    break;
+                }
+            }
+        }
+
+        // Place blocks in traversal order.
+        let layers_iter: Box<dyn Iterator<Item = usize>> = match vdir {
+            BkVDirection::Down => Box::new(0..ir.layers.len()),
+            BkVDirection::Up => Box::new((0..ir.layers.len()).rev()),
+        };
+        for li in layers_iter {
+            let layer = ir.layers[li].clone();
+            let iter: Box<dyn Iterator<Item = IrNodeId>> = match hdir {
+                BkHDirection::Right => Box::new(layer.into_iter()),
+                BkHDirection::Left => Box::new(layer.into_iter().rev()),
+            };
+            for v in iter {
+                place_block(
+                    v,
+                    ir,
+                    hdir,
+                    vdir,
+                    &preds,
+                    &succs,
+                    &align,
+                    &root,
+                    &mut sink,
+                    &mut shift,
+                    &mut x,
+                    &mut placed,
+                    &sep,
+                    &pos_in_layer,
+                );
+            }
+        }
+        for i in 0..n {
+            if shift[i].is_infinite() {
+                shift[i] = 0.0;
+            }
+        }
+
+        // Resolve final center x for each node.
+        let mut x_center = vec![0.0f32; n];
+        for v in 0..n {
+            let rv = root[v];
+            let s = sink[rv];
+            x_center[v] = x[rv] + shift[s];
+        }
+
+        // Normalize to start at 0 and compute width.
+        let mut min_start = f32::MAX;
+        let mut max_end = 0.0f32;
+        for v in 0..n {
+            let start = x_center[v] - half_width[v];
+            let end = x_center[v] + half_width[v];
+            min_start = min_start.min(start);
+            max_end = max_end.max(end);
+        }
+        for v in 0..n {
+            x_center[v] -= min_start;
+        }
+        let width = (max_end - min_start).max(0.0);
+        layouts.push(Layout { x_center, width });
+    }
+
+    // Choose tightest layout (ELK would consider errors + balanced median; we start with tightest).
+    let mut best = 0usize;
+    for i in 1..layouts.len() {
+        if layouts[i].width < layouts[best].width {
+            best = i;
+        }
+    }
+
+    // Apply best layout to node minor starts.
+    for v in 0..n {
+        let start = layouts[best].x_center[v] - half_width[v];
+        set_node_minor_start(ir, v, LayoutDirection::TopToBottom, start.max(0.0));
+    }
+}
+
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct PlacementSummary {
     pub bounds: Rect,
@@ -26,6 +293,7 @@ pub(crate) fn place_nodes(ir: &mut LayeredIr, options: &LayoutOptions) -> Placem
     );
 
     initialize_minor_positions(ir, options);
+    bk_assign_minor_positions(ir, options);
     for _ in 0..4 {
         for layer_index in 0..ir.layers.len() {
             compact_layer(ir, layer_index, options, true);

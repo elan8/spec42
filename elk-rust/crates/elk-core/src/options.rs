@@ -171,6 +171,9 @@ pub struct LayeredOptions {
     pub prioritize_straight_edges: bool,
     pub compactness: f32,
     pub component_packing: bool,
+    /// Target aspect ratio used when packing connected components into rows.
+    /// Values > 1 make the result wider; values < 1 make it taller.
+    pub component_packing_aspect_ratio: f32,
     pub preferred_connector_lanes: usize,
 }
 
@@ -187,6 +190,7 @@ impl Default for LayeredOptions {
             prioritize_straight_edges: true,
             compactness: 0.7,
             component_packing: false,
+            component_packing_aspect_ratio: 1.2,
             preferred_connector_lanes: 3,
         }
     }
@@ -268,13 +272,16 @@ impl LayoutOptions {
                 self.layered.spacing.label_clearance = 16.0;
                 self.layered.compactness = 0.58;
                 self.layered.component_packing = true;
+                self.layered.component_packing_aspect_ratio = 1.35;
                 self.layered.preferred_connector_lanes = 2;
                 self.element_defaults.content_alignment = Some(ContentAlignment::Start);
                 self.element_defaults.node_label_placement =
                     Some(NodeLabelPlacement::OutsideTopCenter);
             }
             ViewProfile::InterconnectionView => {
-                self.layered.direction = LayoutDirection::TopToBottom;
+                // InterconnectionView primarily connects ports on left/right sides.
+                // Use a Left-to-Right flow by default so routing matches the authored port sides.
+                self.layered.direction = LayoutDirection::LeftToRight;
                 self.layered.edge_routing = EdgeRouting::Orthogonal;
                 self.layered.spacing.node_spacing = 44.0;
                 self.layered.spacing.layer_spacing = 88.0;
@@ -285,6 +292,7 @@ impl LayoutOptions {
                 self.layered.spacing.label_clearance = 18.0;
                 self.layered.compactness = 0.72;
                 self.layered.component_packing = true;
+                self.layered.component_packing_aspect_ratio = 1.15;
                 self.layered.preferred_connector_lanes = 5;
                 self.element_defaults.port_constraint = Some(PortConstraint::FixedOrder);
                 self.element_defaults.port_label_placement =
