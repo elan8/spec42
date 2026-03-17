@@ -25,6 +25,8 @@ pub fn spawn_server() -> Child {
     let bin = server_binary_path();
     assert!(bin.exists(), "server binary not found at {:?}", bin);
     Command::new(&bin)
+        // Enable extra routing diagnostics in elk-layered for integration tests.
+        .env("SPEC42_ELK_DEBUG", "1")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::null())

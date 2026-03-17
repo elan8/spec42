@@ -7,7 +7,9 @@ use elk_core::{
 };
 
 use crate::ir::{IrEdge, LayeredIr, NormalizedEdge};
-use crate::pipeline::util::{dedup_points, ensure_orthogonal_path, simplify_orthogonal_points};
+use crate::pipeline::util::{
+    dedup_points, ensure_orthogonal_path_prefer_major, simplify_orthogonal_points,
+};
 
 pub(crate) fn export_to_graph(
     graph: &mut Graph,
@@ -17,6 +19,17 @@ pub(crate) fn export_to_graph(
     warnings: &mut Vec<String>,
     stats: &mut LayoutStats,
 ) -> usize {
+    let debug_enabled = std::env::var("SPEC42_ELK_DEBUG").as_deref() == Ok("1");
+    let debug_profile = matches!(
+        options.view_profile,
+        ViewProfile::InterconnectionView | ViewProfile::GeneralView
+    );
+    if debug_enabled && debug_profile {
+        warnings.push(format!(
+            "elk-layered debug enabled (view_profile={:?}, direction={:?})",
+            options.view_profile, options.layered.direction
+        ));
+    }
     for node in &ir.nodes {
         if let crate::ir::IrNodeKind::Real(node_id) = node.kind {
             let old_origin = graph.node(node_id).bounds.origin;
@@ -34,6 +47,7 @@ pub(crate) fn export_to_graph(
     }
 
     let mut routed_segments = 0usize;
+    let subgraph_bounds = graph_bounds_for_subgraph(graph, local_nodes);
     for (edge_index, edge) in ir.edges.iter().enumerate() {
         if !local_nodes.contains(&edge.effective_source)
             || !local_nodes.contains(&edge.effective_target)
@@ -47,6 +61,18 @@ pub(crate) fn export_to_graph(
                 "self-loop edge {} routed with stable loop fallback",
                 edge.original_edge
             ));
+            if debug_enabled && debug_profile && edge.original_edge.index() < 12 {
+                warnings.push(format!(
+                    "debug edge {} self_loop=true effective=({:?}->{:?}) source=(node={:?},port={:?}) target=(node={:?},port={:?})",
+                    edge.original_edge,
+                    edge.effective_source,
+                    edge.effective_target,
+                    edge.source.node,
+                    edge.source.port,
+                    edge.target.node,
+                    edge.target.port
+                ));
+            }
             routed_segments += 1;
             let section = graph.edge(edge.original_edge).sections[0].clone();
             stats.bend_points += section.bend_points.len();
@@ -91,6 +117,25 @@ pub(crate) fn export_to_graph(
             ),
             EdgeRouting::Orthogonal => {
                 let raw = orthogonal_path(ir, edge_index, routed_start, routed_end, options);
+                if debug_enabled && debug_profile && edge.original_edge.index() < 12 {
+                    warnings.push(format!(
+                        "debug edge {} nonloop effective=({:?}->{:?}) source=(node={:?},port={:?}) target=(node={:?},port={:?}) start_side={:?} end_side={:?} start={:?} routed_start={:?} routed_end={:?} end={:?} raw={:?}",
+                        edge.original_edge,
+                        edge.effective_source,
+                        edge.effective_target,
+                        edge.source.node,
+                        edge.source.port,
+                        edge.target.node,
+                        edge.target.port,
+                        start_side,
+                        end_side,
+                        start,
+                        routed_start,
+                        routed_end,
+                        end,
+                        raw
+                    ));
+                }
                 join_with_endpoint_stubs(
                     start,
                     routed_start,
@@ -105,7 +150,11 @@ pub(crate) fn export_to_graph(
             .chain(bends)
             .chain(std::iter::once(end))
             .collect();
-        let orthogonal = ensure_orthogonal_path(full_path);
+        let orthogonal = ensure_orthogonal_path_prefer_major(full_path, options.layered.direction);
+        // `ensure_orthogonal_path_*` fixes diagonal adjacency, but some upstream steps may still
+        // produce non-orthogonal pairs due to numeric jitter or corner ordering. Run a final
+        // enforcement pass to guarantee manhattan geometry.
+        let orthogonal = crate::pipeline::util::ensure_orthogonal_path(orthogonal);
         let (start_orth, mid, end_orth) = if orthogonal.len() >= 2 {
             let start_orth = orthogonal[0];
             let end_orth = *orthogonal.last().unwrap();
@@ -115,8 +164,16 @@ pub(crate) fn export_to_graph(
             (start, vec![], end)
         };
 
-        let bounds = graph_bounds(graph);
+        let bounds = subgraph_bounds;
         let margin = options.layered.spacing.edge_spacing.max(8.0);
+        // When edges connect to ports, bend points often sit exactly on the port-aligned
+        // boundary. Clamping with a large margin can shift bends away from the port axis and
+        // reintroduce diagonal segments. Use a smaller clamp margin in that case.
+        let bend_margin = if edge.source.port.is_some() || edge.target.port.is_some() {
+            0.0
+        } else {
+            margin
+        };
         // Keep port endpoints exact: clamping can shift section start/end away from the port center.
         // We still clamp bend points so detours stay on-canvas.
         let section_start = if edge.source.port.is_some() {
@@ -133,10 +190,55 @@ pub(crate) fn export_to_graph(
             start: section_start,
             bend_points: mid
                 .into_iter()
-                .map(|p| clamp_point_to_rect(p, bounds, margin))
+                .map(|p| clamp_point_to_rect(p, bounds, bend_margin))
                 .collect(),
             end: section_end,
         };
+        // Final safety net: after clamping, enforce manhattan geometry again. Clamping can
+        // move bend points off-axis relative to port endpoints.
+        let mut section_points = Vec::with_capacity(section.bend_points.len() + 2);
+        section_points.push(section.start);
+        section_points.extend(section.bend_points.iter().copied());
+        section_points.push(section.end);
+        let enforced =
+            crate::pipeline::util::ensure_orthogonal_path(crate::pipeline::util::dedup_points(
+                section_points,
+            ));
+        let (start_final, bend_final, end_final) = if enforced.len() >= 2 {
+            (
+                enforced[0],
+                enforced[1..enforced.len() - 1].to_vec(),
+                *enforced.last().unwrap(),
+            )
+        } else {
+            (section.start, Vec::new(), section.end)
+        };
+        let section = EdgeSection {
+            start: start_final,
+            bend_points: bend_final,
+            end: end_final,
+        };
+        if debug_enabled
+            && options.view_profile == ViewProfile::InterconnectionView
+            && section_has_diagonal(&section)
+        {
+            warnings.push(format!(
+                "edge {} still has diagonal segment after enforcement: start={:?} first_bend={:?}",
+                edge.original_edge,
+                section.start,
+                section.bend_points.first().copied().unwrap_or(section.end)
+            ));
+        }
+        if debug_enabled && debug_profile && edge.original_edge.index() < 12 {
+            let mut pts = Vec::with_capacity(section.bend_points.len() + 2);
+            pts.push(section.start);
+            pts.extend(section.bend_points.iter().copied());
+            pts.push(section.end);
+            warnings.push(format!(
+                "debug edge {} final_section_points={:?} clamp_bounds={:?} margin={} bend_margin={}",
+                edge.original_edge, pts, bounds, margin, bend_margin
+            ));
+        }
         let edge_mut = graph.edge_mut(edge.original_edge);
         edge_mut.was_reversed = edge.reversed;
         edge_mut.sections = vec![section.clone()];
@@ -146,6 +248,14 @@ pub(crate) fn export_to_graph(
     }
 
     routed_segments
+}
+
+fn section_has_diagonal(section: &EdgeSection) -> bool {
+    let mut points = Vec::with_capacity(section.bend_points.len() + 2);
+    points.push(section.start);
+    points.extend(section.bend_points.iter().copied());
+    points.push(section.end);
+    points.windows(2).any(|w| (w[0].x - w[1].x).abs() > 0.1 && (w[0].y - w[1].y).abs() > 0.1)
 }
 
 fn edge_routing_for_edge(graph: &Graph, edge: &IrEdge, options: &LayoutOptions) -> EdgeRouting {
@@ -191,15 +301,33 @@ fn orthogonal_path(
     let direction = options.layered.direction;
     let segment_spacing = options.layered.spacing.segment_spacing.max(12.0);
     let edge = &ir.edges[edge_index];
+    let interconnection = options.view_profile == elk_core::ViewProfile::InterconnectionView;
     let points = chain_points(ir, edge, start, end);
     let segments = edge_segments_for_edge(ir, edge_index);
     let mut bends = Vec::new();
 
     for (segment_index, window) in points.windows(2).enumerate() {
-        let lane = segments
-            .get(segment_index)
-            .map(|segment| alternating_lane_offset(segment.lane, segment_spacing))
-            .unwrap_or_default();
+        let lane = if interconnection
+            && edge.effective_source == edge.effective_target
+            && edge.source.port.is_some()
+            && edge.target.port.is_some()
+        {
+            // Slot-like routing for dense port-to-port connections on the same container:
+            // assign a deterministic minor-axis lane to reduce overlap and improve obstacle avoidance.
+            let lanes = options.layered.preferred_connector_lanes.max(2) as i32;
+            let idx = (edge_index as i32).rem_euclid(lanes);
+            let lane_id = idx - (lanes / 2);
+            alternating_lane_offset(lane_id, segment_spacing)
+        } else if interconnection {
+            // Temporary stabilization for other cases: prefer strict manhattan routing over
+            // lane-offset bends until the full ELK-style slot router is implemented.
+            0.0
+        } else {
+            segments
+                .get(segment_index)
+                .map(|segment| alternating_lane_offset(segment.lane, segment_spacing))
+                .unwrap_or_default()
+        };
         let mut segment_bends = orthogonal_segment(window[0], window[1], lane, direction);
         bends.append(&mut segment_bends);
     }
@@ -1080,6 +1208,60 @@ fn graph_bounds(graph: &Graph) -> Rect {
             )
         },
     );
+    let (min_x, min_y, max_x, max_y) = graph.ports.iter().fold(
+        (min_x, min_y, max_x, max_y),
+        |(min_x, min_y, max_x, max_y), port| {
+            let r = port.bounds;
+            (
+                min_x.min(r.origin.x),
+                min_y.min(r.origin.y),
+                max_x.max(r.max_x()),
+                max_y.max(r.max_y()),
+            )
+        },
+    );
+    if min_x <= max_x && min_y <= max_y {
+        Rect::new(
+            Point::new(min_x, min_y),
+            Size::new(max_x - min_x, max_y - min_y),
+        )
+    } else {
+        Rect::new(Point::new(0.0, 0.0), Size::new(1000.0, 1000.0))
+    }
+}
+
+/// Bounding rect of the current subgraph (local roots + descendants + their ports).
+fn graph_bounds_for_subgraph(graph: &Graph, local_nodes: &BTreeSet<NodeId>) -> Rect {
+    let mut stack: Vec<NodeId> = local_nodes.iter().copied().collect();
+    let mut seen: BTreeSet<NodeId> = BTreeSet::new();
+    let mut min_x = f32::MAX;
+    let mut min_y = f32::MAX;
+    let mut max_x = f32::NEG_INFINITY;
+    let mut max_y = f32::NEG_INFINITY;
+
+    while let Some(node_id) = stack.pop() {
+        if !seen.insert(node_id) {
+            continue;
+        }
+        let node = graph.node(node_id);
+        let r = node.bounds;
+        min_x = min_x.min(r.origin.x);
+        min_y = min_y.min(r.origin.y);
+        max_x = max_x.max(r.max_x());
+        max_y = max_y.max(r.max_y());
+
+        for child in graph.children_of(node_id) {
+            stack.push(*child);
+        }
+        for port_id in &node.ports {
+            let pr = graph.port(*port_id).bounds;
+            min_x = min_x.min(pr.origin.x);
+            min_y = min_y.min(pr.origin.y);
+            max_x = max_x.max(pr.max_x());
+            max_y = max_y.max(pr.max_y());
+        }
+    }
+
     if min_x <= max_x && min_y <= max_y {
         Rect::new(
             Point::new(min_x, min_y),
@@ -1124,5 +1306,79 @@ fn segment_intersects_rect(start: Point, end: Point, rect: Rect) -> bool {
         y >= rect.origin.y && y <= rect.max_y() && max_x >= rect.origin.x && min_x <= rect.max_x()
     } else {
         false
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::BTreeSet;
+
+    use elk_core::{EdgeEndpoint, Graph, LayoutOptions, Size, ViewProfile};
+
+    use crate::pipeline::{
+        break_cycles, export_to_graph, import_graph, normalize_edges, place_nodes, assign_layers,
+    };
+
+    fn assert_section_is_manhattan(section: &elk_core::EdgeSection) {
+        let mut points = vec![section.start];
+        points.extend(section.bend_points.iter().copied());
+        points.push(section.end);
+        for window in points.windows(2) {
+            let a = window[0];
+            let b = window[1];
+            assert!(
+                (a.x - b.x).abs() <= 0.1 || (a.y - b.y).abs() <= 0.1,
+                "expected manhattan segment, got {a:?} -> {b:?} (dx={}, dy={}); full_points={points:?}",
+                (a.x - b.x).abs(),
+                (a.y - b.y).abs()
+            );
+        }
+    }
+
+    #[test]
+    fn export_inserts_corners_for_interconnection_view_ports() {
+        let mut graph = Graph::new();
+        let a = graph.add_node(Size::new(120.0, 80.0));
+        let b = graph.add_node(Size::new(120.0, 80.0));
+        // Put the nodes at different x/y to force diagonal if corners are missing.
+        graph.node_mut(a).preferred_position = Some(elk_core::Point::new(40.0, 40.0));
+        graph.node_mut(b).preferred_position = Some(elk_core::Point::new(360.0, 200.0));
+        let a_out = graph.add_port(a, elk_core::PortSide::East, elk_core::Size::new(8.0, 8.0));
+        let b_in = graph.add_port(b, elk_core::PortSide::West, elk_core::Size::new(8.0, 8.0));
+        graph.add_edge(EdgeEndpoint::port(a, a_out), EdgeEndpoint::port(b, b_in));
+
+        let options = LayoutOptions::default().with_view_profile(ViewProfile::InterconnectionView);
+        let nodes = graph.top_level_nodes();
+        let local: BTreeSet<_> = nodes.iter().copied().collect();
+        let mut ir = import_graph(&graph, &nodes, &local, &options);
+        break_cycles(&mut ir);
+        assign_layers(&mut ir, &options);
+        normalize_edges(&mut ir, &options);
+        let _ = place_nodes(&mut ir, &options);
+
+        let mut graph_copy = graph.clone();
+        let mut warnings = Vec::new();
+        let mut stats = elk_core::LayoutStats::default();
+        export_to_graph(
+            &mut graph_copy,
+            &ir,
+            &local,
+            &options,
+            &mut warnings,
+            &mut stats,
+        );
+
+        let section = &graph_copy.edges[0].sections[0];
+        // Sanity check the utility: it must be able to orthogonalize diagonal pairs.
+        let sanity = crate::pipeline::util::ensure_orthogonal_path(vec![
+            elk_core::Point::new(144.0, 64.0),
+            elk_core::Point::new(116.0, 232.0),
+            elk_core::Point::new(24.0, 232.0),
+        ]);
+        assert!(
+            sanity.len() >= 4,
+            "expected ensure_orthogonal_path to insert a corner, got {sanity:?}"
+        );
+        assert_section_is_manhattan(section);
     }
 }

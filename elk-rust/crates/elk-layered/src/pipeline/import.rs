@@ -99,7 +99,12 @@ pub(crate) fn import_graph(
             label_size,
             chain: Vec::new(),
             label_placeholder: None,
-            self_loop: effective_source == effective_target,
+            // Treat as a self-loop only when it truly loops on a node anchor.
+            // Port-to-port connections on the same node should still be routed normally.
+            self_loop: effective_source == effective_target
+                && (edge.source.port.is_none()
+                    || edge.target.port.is_none()
+                    || edge.source.port == edge.target.port),
             model_order: edge_options.model_order.unwrap_or(edge_order),
             bundle_key: edge_options.edge_bundle_key,
         });

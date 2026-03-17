@@ -76,12 +76,44 @@ pub(crate) fn compute_layout(
 
     apply_graph_hints(&mut elk_graph, graph, &node_ids, config);
 
-    let options = map_layout_options(config);
-    let report = LayeredLayoutEngine::new()
-        .layout(&mut elk_graph, &options)
-        .map_err(|error| crate::layout::DiagramError::LayoutFailure(error.to_string()))?;
-    let layout = map_layout_back(graph, &elk_graph, &node_ids, &port_ids)?;
-    let warnings = collect_warnings(graph, &report);
+    let mut options = map_layout_options(config);
+
+    // For Interconnection View, try both main directions and keep the one that yields a
+    // closer-to-square canvas. This is a pragmatic stopgap until routing/packing parity
+    // improves enough that a single fixed direction always looks good.
+    let (report, layout, warnings) = if matches!(config.view_profile, LayoutViewProfile::InterconnectionView)
+    {
+        let candidates = [ElkLayoutDirection::TopToBottom, ElkLayoutDirection::LeftToRight];
+        let mut best: Option<(f32, ElkGraph, elk_core::LayoutReport)> = None;
+        for dir in candidates {
+            let mut g = elk_graph.clone();
+            options.layered.direction = dir;
+            let report = LayeredLayoutEngine::new()
+                .layout(&mut g, &options)
+                .map_err(|error| crate::layout::DiagramError::LayoutFailure(error.to_string()))?;
+            let b = g.bounds;
+            let ar = if b.size.height > 0.0 {
+                b.size.width / b.size.height
+            } else {
+                f32::MAX
+            };
+            let score = (ar.ln()).abs(); // 0 is perfect square
+            if best.as_ref().is_none_or(|(best_score, _, _)| score < *best_score) {
+                best = Some((score, g, report));
+            }
+        }
+        let (_score, best_graph, report) = best.expect("interconnection candidates");
+        let layout = map_layout_back(graph, &best_graph, &node_ids, &port_ids)?;
+        let warnings = collect_warnings(graph, &report);
+        (report, layout, warnings)
+    } else {
+        let report = LayeredLayoutEngine::new()
+            .layout(&mut elk_graph, &options)
+            .map_err(|error| crate::layout::DiagramError::LayoutFailure(error.to_string()))?;
+        let layout = map_layout_back(graph, &elk_graph, &node_ids, &port_ids)?;
+        let warnings = collect_warnings(graph, &report);
+        (report, layout, warnings)
+    };
 
     Ok(LayoutComputation {
         layout,
@@ -305,7 +337,10 @@ fn apply_graph_hints(
 fn map_direction(config: &LayoutConfig) -> ElkLayoutDirection {
     match config.view_profile {
         LayoutViewProfile::GeneralView => ElkLayoutDirection::TopToBottom,
-        LayoutViewProfile::InterconnectionView => ElkLayoutDirection::LeftToRight,
+        // Interconnection views tend to get excessively wide with LTR layering due to dense
+        // port-to-port connectors. Prefer TTB as a more stable default; auto-direction selection
+        // can further refine this in the future.
+        LayoutViewProfile::InterconnectionView => ElkLayoutDirection::TopToBottom,
         LayoutViewProfile::Default => match (&config.root_layer_direction, &config.layer_direction) {
             (LayerDirection::HorizontalRows, _) => ElkLayoutDirection::TopToBottom,
             (LayerDirection::VerticalColumns, LayerDirection::HorizontalRows) => {
@@ -410,6 +445,33 @@ fn section_points(section: &elk_core::EdgeSection) -> Vec<Point> {
     points.push(map_point(section.start));
     points.extend(section.bend_points.iter().copied().map(map_point));
     points.push(map_point(section.end));
+    ensure_manhattan_points(points)
+}
+
+fn ensure_manhattan_points(mut points: Vec<Point>) -> Vec<Point> {
+    // Some upstream routers may emit only start/end for orthogonal edges even when the
+    // endpoints differ on both axes. Insert a corner to ensure Manhattan geometry.
+    // Keep this local and dependency-free; prefer a single extra corner.
+    const EPS: f32 = 0.001;
+    if points.len() == 2 {
+        let a = points[0];
+        let b = points[1];
+        let dx = (a.x - b.x).abs();
+        let dy = (a.y - b.y).abs();
+        if dx > EPS && dy > EPS {
+            // Heuristic: move along the larger delta first.
+            let corner = if dx >= dy {
+                Point { x: b.x, y: a.y }
+            } else {
+                Point { x: a.x, y: b.y }
+            };
+            if (corner.x - a.x).abs() > EPS || (corner.y - a.y).abs() > EPS {
+                if (corner.x - b.x).abs() > EPS || (corner.y - b.y).abs() > EPS {
+                    points.insert(1, corner);
+                }
+            }
+        }
+    }
     points
 }
 

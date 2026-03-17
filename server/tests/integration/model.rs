@@ -26,6 +26,68 @@ fn write_rendered_svg(name: &str, svg: &str) {
     });
 }
 
+fn write_rendered_debug(name: &str, text: &str) {
+    let output_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("tests")
+        .join("output");
+    fs::create_dir_all(&output_dir).expect("create tests/output");
+    let path = output_dir.join(name);
+    fs::write(&path, text).unwrap_or_else(|err| {
+        panic!("write rendered debug to {}: {err}", path.display());
+    });
+}
+
+fn extract_edge_connection_paths(svg: &str, limit: usize) -> Vec<String> {
+    // Keep this dependency-free (no regex): find edge-connection <path> elements,
+    // then extract their `d="..."` attribute.
+    let mut out = Vec::new();
+    let mut cursor = 0usize;
+    while out.len() < limit {
+        let Some(hit) = svg[cursor..].find("class=\"diagram-edge edge-connection\"") else {
+            break;
+        };
+        cursor += hit;
+        let Some(d_attr) = svg[cursor..].find(" d=\"") else {
+            cursor += 10;
+            continue;
+        };
+        let quote = cursor + d_attr + 3; // points at the opening quote of d="
+        let start = quote + 1;
+        let Some(end_quote) = svg[start..].find('"') else {
+            break;
+        };
+        let end = start + end_quote;
+        out.push(svg[start..end].to_string());
+        cursor = end;
+    }
+    out
+}
+
+fn extract_edge_paths(svg: &str, limit: usize) -> Vec<String> {
+    // Extract `d="..."` for any diagram edge path elements.
+    let mut out = Vec::new();
+    let mut cursor = 0usize;
+    while out.len() < limit {
+        let Some(hit) = svg[cursor..].find("class=\"diagram-edge") else {
+            break;
+        };
+        cursor += hit;
+        let Some(d_attr) = svg[cursor..].find(" d=\"") else {
+            cursor += 10;
+            continue;
+        };
+        let quote = cursor + d_attr + 3;
+        let start = quote + 1;
+        let Some(end_quote) = svg[start..].find('"') else {
+            break;
+        };
+        let end = start + end_quote;
+        out.push(svg[start..end].to_string());
+        cursor = end;
+    }
+    out
+}
+
 fn force_dark_test_theme(svg: &str) -> String {
     let injection = "<style>.diagram-root{--diagram-paper:#1e1e1e;--diagram-ink:#d4d4d4;--diagram-muted:#a0a0a0;--diagram-faint:#6b6b6b;}</style>";
     svg.replacen('>', &format!(">{injection}"), 1)
@@ -499,7 +561,35 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
         "renderedDiagrams.interconnectionView should be present: {result:#}"
     );
     let svg = rendered["svg"].as_str().unwrap_or_default();
+    let metrics = &rendered["metrics"];
+    let aspect_ratio = metrics["aspectRatio"].as_f64().unwrap_or(0.0);
+    let intrusions = metrics["edgeNodeIntrusionCount"].as_u64().unwrap_or(u64::MAX);
+    let orthogonal_violations = metrics["orthogonalViolationCount"].as_u64().unwrap_or(u64::MAX);
+    let warnings = rendered["warnings"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default()
+        .into_iter()
+        .filter_map(|v| v.as_str().map(|s| s.to_string()))
+        .collect::<Vec<_>>();
     write_rendered_svg("interconnection-view-full-drone.svg", svg);
+    let mut debug = String::new();
+    debug.push_str("interconnection-view-full-drone debug\n");
+    debug.push_str(&format!("aspect_ratio={aspect_ratio}\n"));
+    debug.push_str(&format!("edge_node_intrusions={intrusions}\n"));
+    debug.push_str(&format!("orthogonal_violations={orthogonal_violations}\n"));
+    debug.push_str(&format!("warnings_count={}\n", warnings.len()));
+    if !warnings.is_empty() {
+        debug.push_str("\nwarnings:\n");
+        for (idx, warning) in warnings.iter().enumerate() {
+            debug.push_str(&format!("{idx}: {warning}\n"));
+        }
+    }
+    debug.push_str("\nedge_connection_paths:\n");
+    for (idx, path) in extract_edge_connection_paths(svg, 40).into_iter().enumerate() {
+        debug.push_str(&format!("{idx}: {path}\n"));
+    }
+    write_rendered_debug("interconnection-view-full-drone.debug.txt", &debug);
     assert!(
         svg.contains("diagram-root interconnection-view"),
         "expected backend interconnection svg, got: {}",
@@ -526,6 +616,18 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
     assert!(
         svg.matches("edge-connection").count() >= 8,
         "expected interconnection view to include multiple routed connections"
+    );
+    assert!(
+        orthogonal_violations == 0,
+        "expected orthogonal routing (no violations), got {orthogonal_violations} (aspect_ratio={aspect_ratio})"
+    );
+    assert!(
+        intrusions <= 200,
+        "expected edge-node intrusions to stay bounded (improving toward 0), got {intrusions} (aspect_ratio={aspect_ratio})"
+    );
+    assert!(
+        aspect_ratio > 0.0 && aspect_ratio < 9.5,
+        "expected interconnection view to stay within a sanity aspect ratio bound (<9.5) to prevent runaway canvas growth, got {aspect_ratio}"
     );
 
     let _ = child.kill();
@@ -629,6 +731,17 @@ fn lsp_sysml_model_includes_rendered_general_diagram_for_full_drone_fixture() {
     );
     let svg = rendered["svg"].as_str().unwrap_or_default();
     write_rendered_svg("general-view-full-drone.svg", svg);
+    let mut debug = String::new();
+    debug.push_str("general-view-full-drone debug\n");
+    debug.push_str(&format!(
+        "edge_paths_count_sampled={}\n",
+        extract_edge_paths(svg, 40).len()
+    ));
+    debug.push_str("\nedge_paths:\n");
+    for (idx, path) in extract_edge_paths(svg, 40).into_iter().enumerate() {
+        debug.push_str(&format!("{idx}: {path}\n"));
+    }
+    write_rendered_debug("general-view-full-drone.debug.txt", &debug);
     assert!(
         svg.contains("diagram-root general-view"),
         "expected backend general svg, got: {}",

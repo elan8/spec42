@@ -1,0 +1,53 @@
+interconnection-view-full-drone debug
+aspect_ratio=8.098654747009277
+edge_node_intrusions=129
+orthogonal_violations=0
+warnings_count=27
+
+warnings:
+0: debug edge EdgeId(0) final_section_points=[Point { x: 462.8889, y: 820.0 }, Point { x: 462.8889, y: 72.0 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 68.0 }, size: Size { width: 7036.0, height: 756.0 } } margin=28 bend_margin=0
+1: debug edge EdgeId(0) nonloop effective=(NodeId(0)->NodeId(0)) source=(node=NodeId(0),port=Some(PortId(34))) target=(node=NodeId(0),port=Some(PortId(35))) start_side=None end_side=None start=Point { x: 462.8889, y: 820.0 } routed_start=Point { x: 462.8889, y: 820.0 } routed_end=Point { x: 462.8889, y: 72.0 } end=Point { x: 462.8889, y: 72.0 } raw=[]
+2: debug edge EdgeId(1) final_section_points=[Point { x: 853.7778, y: 820.0 }, Point { x: 853.7778, y: 72.0 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 68.0 }, size: Size { width: 7036.0, height: 756.0 } } margin=28 bend_margin=0
+3: debug edge EdgeId(1) nonloop effective=(NodeId(0)->NodeId(0)) source=(node=NodeId(0),port=Some(PortId(36))) target=(node=NodeId(0),port=Some(PortId(37))) start_side=None end_side=None start=Point { x: 853.7778, y: 820.0 } routed_start=Point { x: 853.7778, y: 820.0 } routed_end=Point { x: 853.7778, y: 72.0 } end=Point { x: 853.7778, y: 72.0 } raw=[]
+4: debug edge EdgeId(10) final_section_points=[Point { x: 4371.778, y: 820.0 }, Point { x: 4371.778, y: 72.0 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 68.0 }, size: Size { width: 7036.0, height: 756.0 } } margin=28 bend_margin=0
+5: debug edge EdgeId(10) nonloop effective=(NodeId(0)->NodeId(0)) source=(node=NodeId(0),port=Some(PortId(54))) target=(node=NodeId(0),port=Some(PortId(55))) start_side=None end_side=None start=Point { x: 4371.778, y: 820.0 } routed_start=Point { x: 4371.778, y: 820.0 } routed_end=Point { x: 4371.778, y: 72.0 } end=Point { x: 4371.778, y: 72.0 } raw=[]
+6: debug edge EdgeId(11) final_section_points=[Point { x: 4762.667, y: 820.0 }, Point { x: 4762.667, y: 72.0 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 68.0 }, size: Size { width: 7036.0, height: 756.0 } } margin=28 bend_margin=0
+7: debug edge EdgeId(11) nonloop effective=(NodeId(0)->NodeId(0)) source=(node=NodeId(0),port=Some(PortId(56))) target=(node=NodeId(0),port=Some(PortId(57))) start_side=None end_side=None start=Point { x: 4762.667, y: 820.0 } routed_start=Point { x: 4762.667, y: 820.0 } routed_end=Point { x: 4762.667, y: 72.0 } end=Point { x: 4762.667, y: 72.0 } raw=[]
+8: debug edge EdgeId(2) final_section_points=[Point { x: 1244.6667, y: 820.0 }, Point { x: 1244.6667, y: 72.0 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 68.0 }, size: Size { width: 7036.0, height: 756.0 } } margin=28 bend_margin=0
+9: debug edge EdgeId(2) nonloop effective=(NodeId(0)->NodeId(0)) source=(node=NodeId(0),port=Some(PortId(38))) target=(node=NodeId(0),port=Some(PortId(39))) start_side=None end_side=None start=Point { x: 1244.6667, y: 820.0 } routed_start=Point { x: 1244.6667, y: 820.0 } routed_end=Point { x: 1244.6667, y: 72.0 } end=Point { x: 1244.6667, y: 72.0 } raw=[]
+10: debug edge EdgeId(3) final_section_points=[Point { x: 1635.5555, y: 820.0 }, Point { x: 1635.5555, y: 72.0 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 68.0 }, size: Size { width: 7036.0, height: 756.0 } } margin=28 bend_margin=0
+11: debug edge EdgeId(3) nonloop effective=(NodeId(0)->NodeId(0)) source=(node=NodeId(0),port=Some(PortId(40))) target=(node=NodeId(0),port=Some(PortId(41))) start_side=None end_side=None start=Point { x: 1635.5555, y: 820.0 } routed_start=Point { x: 1635.5555, y: 820.0 } routed_end=Point { x: 1635.5555, y: 72.0 } end=Point { x: 1635.5555, y: 72.0 } raw=[]
+12: debug edge EdgeId(4) final_section_points=[Point { x: 2026.4446, y: 820.0 }, Point { x: 2026.4446, y: 72.0 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 68.0 }, size: Size { width: 7036.0, height: 756.0 } } margin=28 bend_margin=0
+13: debug edge EdgeId(4) nonloop effective=(NodeId(0)->NodeId(0)) source=(node=NodeId(0),port=Some(PortId(42))) target=(node=NodeId(0),port=Some(PortId(43))) start_side=None end_side=None start=Point { x: 2026.4446, y: 820.0 } routed_start=Point { x: 2026.4446, y: 820.0 } routed_end=Point { x: 2026.4446, y: 72.0 } end=Point { x: 2026.4446, y: 72.0 } raw=[]
+14: debug edge EdgeId(5) final_section_points=[Point { x: 2417.3335, y: 820.0 }, Point { x: 2417.3335, y: 72.0 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 68.0 }, size: Size { width: 7036.0, height: 756.0 } } margin=28 bend_margin=0
+15: debug edge EdgeId(5) nonloop effective=(NodeId(0)->NodeId(0)) source=(node=NodeId(0),port=Some(PortId(44))) target=(node=NodeId(0),port=Some(PortId(45))) start_side=None end_side=None start=Point { x: 2417.3335, y: 820.0 } routed_start=Point { x: 2417.3335, y: 820.0 } routed_end=Point { x: 2417.3335, y: 72.0 } end=Point { x: 2417.3335, y: 72.0 } raw=[]
+16: debug edge EdgeId(6) final_section_points=[Point { x: 2808.2222, y: 820.0 }, Point { x: 2808.2222, y: 72.0 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 68.0 }, size: Size { width: 7036.0, height: 756.0 } } margin=28 bend_margin=0
+17: debug edge EdgeId(6) nonloop effective=(NodeId(0)->NodeId(0)) source=(node=NodeId(0),port=Some(PortId(46))) target=(node=NodeId(0),port=Some(PortId(47))) start_side=None end_side=None start=Point { x: 2808.2222, y: 820.0 } routed_start=Point { x: 2808.2222, y: 820.0 } routed_end=Point { x: 2808.2222, y: 72.0 } end=Point { x: 2808.2222, y: 72.0 } raw=[]
+18: debug edge EdgeId(7) final_section_points=[Point { x: 3199.111, y: 820.0 }, Point { x: 3199.111, y: 72.0 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 68.0 }, size: Size { width: 7036.0, height: 756.0 } } margin=28 bend_margin=0
+19: debug edge EdgeId(7) nonloop effective=(NodeId(0)->NodeId(0)) source=(node=NodeId(0),port=Some(PortId(48))) target=(node=NodeId(0),port=Some(PortId(49))) start_side=None end_side=None start=Point { x: 3199.111, y: 820.0 } routed_start=Point { x: 3199.111, y: 820.0 } routed_end=Point { x: 3199.111, y: 72.0 } end=Point { x: 3199.111, y: 72.0 } raw=[]
+20: debug edge EdgeId(8) final_section_points=[Point { x: 3590.0, y: 820.0 }, Point { x: 3590.0, y: 72.0 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 68.0 }, size: Size { width: 7036.0, height: 756.0 } } margin=28 bend_margin=0
+21: debug edge EdgeId(8) nonloop effective=(NodeId(0)->NodeId(0)) source=(node=NodeId(0),port=Some(PortId(50))) target=(node=NodeId(0),port=Some(PortId(51))) start_side=None end_side=None start=Point { x: 3590.0, y: 820.0 } routed_start=Point { x: 3590.0, y: 820.0 } routed_end=Point { x: 3590.0, y: 72.0 } end=Point { x: 3590.0, y: 72.0 } raw=[]
+22: debug edge EdgeId(9) final_section_points=[Point { x: 3980.8892, y: 820.0 }, Point { x: 3980.8892, y: 72.0 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 68.0 }, size: Size { width: 7036.0, height: 756.0 } } margin=28 bend_margin=0
+23: debug edge EdgeId(9) nonloop effective=(NodeId(0)->NodeId(0)) source=(node=NodeId(0),port=Some(PortId(52))) target=(node=NodeId(0),port=Some(PortId(53))) start_side=None end_side=None start=Point { x: 3980.8892, y: 820.0 } routed_start=Point { x: 3980.8892, y: 820.0 } routed_end=Point { x: 3980.8892, y: 72.0 } end=Point { x: 3980.8892, y: 72.0 } raw=[]
+24: elk-layered debug enabled (view_profile=InterconnectionView, direction=TopToBottom)
+25: elk-rust compound routing is still maturing for cross-hierarchy edges; inspect nested diagrams visually.
+26: elk-rust edge label placement is still partial; SVG labels are rendered by sysml-language-server.
+
+edge_connection_paths:
+0: M 796.0 212.0 L 928.0 212.0 L 928.0 232.8
+1: M 2044.0 330.7 L 928.0 330.7 L 928.0 203.2
+2: M 1784.0 250.4 L 3308.0 250.4 L 3308.0 189.3
+3: M 2044.0 273.3 L 5236.0 273.3 L 5236.0 278.0
+4: M 2044.0 273.3 L 5628.0 273.3 L 5628.0 278.0
+5: M 2044.0 273.3 L 6020.0 273.3 L 6020.0 278.0
+6: M 2044.0 273.3 L 6412.0 273.3 L 6412.0 278.0
+7: M 3568.0 212.0 L 536.0 212.0 L 536.0 189.3
+8: M 4032.0 272.0 L 4164.0 272.0 L 4164.0 284.0
+9: M 4424.0 261.3 L 536.0 261.3 L 536.0 234.7
+10: M 4424.0 261.3 L 928.0 261.3 L 928.0 262.4
+11: M 4424.0 261.3 L 1784.0 261.3 L 1784.0 353.6
+12: M 4424.0 261.3 L 3308.0 261.3 L 3308.0 234.7
+13: M 4424.0 261.3 L 4976.0 261.3 L 4976.0 278.0
+14: M 4424.0 261.3 L 5368.0 261.3 L 5368.0 278.0
+15: M 4424.0 261.3 L 5760.0 261.3 L 5760.0 278.0
+16: M 4424.0 261.3 L 6152.0 261.3 L 6152.0 278.0

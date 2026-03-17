@@ -133,6 +133,41 @@ pub(crate) fn ensure_orthogonal_path(points: Vec<Point>) -> Vec<Point> {
     out
 }
 
+/// Like [`ensure_orthogonal_path`], but chooses the inserted corner to prefer moving
+/// along the layout's major axis first (reduces early detours/intrusions in layered routing).
+pub(crate) fn ensure_orthogonal_path_prefer_major(
+    points: Vec<Point>,
+    direction: LayoutDirection,
+) -> Vec<Point> {
+    const EPS: f32 = 1e-6;
+    if points.len() < 2 {
+        return points;
+    }
+    let horizontal_major = matches!(
+        direction,
+        LayoutDirection::LeftToRight | LayoutDirection::RightToLeft
+    );
+    let mut out = Vec::with_capacity(points.len() * 2);
+    out.push(points[0]);
+    for i in 1..points.len() {
+        let a = out.last().copied().unwrap();
+        let b = points[i];
+        if (a.x - b.x).abs() > EPS && (a.y - b.y).abs() > EPS {
+            // Prefer a corner that moves along the major axis first.
+            // - Horizontal-major: go (b.x, a.y) first (horizontal), then vertical.
+            // - Vertical-major: go (a.x, b.y) first (vertical), then horizontal.
+            let corner = if horizontal_major {
+                Point::new(b.x, a.y)
+            } else {
+                Point::new(a.x, b.y)
+            };
+            out.push(corner);
+        }
+        out.push(b);
+    }
+    out
+}
+
 #[cfg(test)]
 mod tests {
     use elk_core::Point;
