@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import { VisualizationPanel } from "../../visualization/visualizationPanel";
 import {
     configureServerForTests,
-    getExternalFixturePath,
+    getFixturePath,
     getTestWorkspaceFolder,
     waitFor,
     waitForLanguageServerReady,
@@ -11,7 +11,7 @@ import {
 
 const VIEW_IDS = ["general-view"];
 
-const REAL_DRONE_FIXTURE = getExternalFixturePath("C:\\Git\\sysml-examples\\drone\\sysml\\SurveillanceDrone.sysml");
+const REAL_DRONE_FIXTURE = getFixturePath("SurveillanceDrone.sysml");
 
 describe("Visualization Diagram Views", () => {
     before(async function () {
