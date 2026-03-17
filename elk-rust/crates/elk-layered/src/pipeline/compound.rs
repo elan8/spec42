@@ -78,8 +78,15 @@ pub fn preprocess_cross_hierarchy_edges(
             continue;
         };
 
-        let is_cross_hierarchy = edge.source.node != effective_source
-            || edge.target.node != effective_target;
+        // Only treat as cross-hierarchy when the endpoints belong to *different* local ancestors
+        // at the current layout level.
+        //
+        // If both endpoints share the same effective ancestor, that edge should be routed inside
+        // that ancestor's child subgraph during recursive layout (IncludeChildren). Lifting it to
+        // this level would collapse it into a self-loop and prevent the child layout from ever
+        // seeing the edge.
+        let is_cross_hierarchy = effective_source != effective_target
+            && (edge.source.node != effective_source || edge.target.node != effective_target);
 
         if is_cross_hierarchy {
             to_process.push((
@@ -120,19 +127,27 @@ pub fn postprocess_cross_hierarchy_edges(
     map: &CompoundRoutingMap,
 ) {
     for (edge_id, (original_source, original_target)) in &map.originals {
-        let start_center = original_source.port.map(|p| graph.port(p).bounds.center());
-        let end_center = original_target.port.map(|p| graph.port(p).bounds.center());
+        // Compute desired endpoints before mutably borrowing the edge.
+        let start_center = if let Some(p) = original_source.port {
+            graph.port(p).bounds.center()
+        } else {
+            graph.node(original_source.node).bounds.center()
+        };
+        let end_center = if let Some(p) = original_target.port {
+            graph.port(p).bounds.center()
+        } else {
+            graph.node(original_target.node).bounds.center()
+        };
 
         let edge = graph.edge_mut(*edge_id);
+        // Restore original endpoints so downstream consumers don't see synthetic hierarchical ports.
+        edge.source = *original_source;
+        edge.target = *original_target;
         if edge.sections.is_empty() {
             continue;
         }
         let section = &mut edge.sections[0];
-        if let Some(c) = start_center {
-            section.start = c;
-        }
-        if let Some(c) = end_center {
-            section.end = c;
-        }
+        section.start = start_center;
+        section.end = end_center;
     }
 }

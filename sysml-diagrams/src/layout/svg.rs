@@ -100,12 +100,27 @@ pub(crate) fn render_svg(layout: &DiagramLayout, options: &SvgRenderOptions) -> 
 
         if is_interconnection_root {
             let bar_height = 40.0;
+            // Draw a full container (root) with a header bar.
+            node_groups.push_str(&format!(
+                "<rect class=\"node-background\" x=\"{:.1}\" y=\"{:.1}\" width=\"{:.1}\" height=\"{:.1}\" rx=\"4.0\" ry=\"4.0\" style=\"fill:var(--diagram-paper);stroke:var(--diagram-ink);stroke-width:1.6px;stroke-dasharray:none\"/>",
+                node.bounds.x,
+                node.bounds.y,
+                node.bounds.width,
+                node.bounds.height
+            ));
             node_groups.push_str(&format!(
                 "<rect class=\"node-background\" x=\"{:.1}\" y=\"{:.1}\" width=\"{:.1}\" height=\"{:.1}\" rx=\"4.0\" ry=\"4.0\" style=\"fill:var(--diagram-paper);stroke:var(--diagram-ink);stroke-width:1.6px;stroke-dasharray:none\"/>",
                 node.bounds.x,
                 node.bounds.y,
                 node.bounds.width,
                 bar_height
+            ));
+            node_groups.push_str(&format!(
+                "<line class=\"diagram-divider\" x1=\"{:.1}\" y1=\"{:.1}\" x2=\"{:.1}\" y2=\"{:.1}\" style=\"stroke:var(--diagram-faint)\"/>",
+                node.bounds.x + 6.0,
+                node.bounds.y + bar_height,
+                node.bounds.right() - 6.0,
+                node.bounds.y + bar_height
             ));
             node_groups.push_str(&format!(
                 "<text x=\"{:.1}\" y=\"{:.1}\" class=\"diagram-stereotype\" text-anchor=\"middle\">{}</text>",

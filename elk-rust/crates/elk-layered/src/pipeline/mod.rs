@@ -6,6 +6,7 @@ mod layering;
 mod normalization;
 mod placement;
 mod routing;
+mod orthogonal_routing_generator;
 mod util;
 
 use std::collections::{BTreeMap, BTreeSet, VecDeque};

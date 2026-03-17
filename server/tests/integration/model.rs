@@ -88,6 +88,103 @@ fn extract_edge_paths(svg: &str, limit: usize) -> Vec<String> {
     out
 }
 
+#[derive(Clone, Debug)]
+struct SvgPort {
+    id: String,
+    x: f32,
+    y: f32,
+}
+
+fn extract_svg_ports(svg: &str, limit: usize) -> Vec<SvgPort> {
+    // Dependency-free parsing: find `<circle class="diagram-port" ... cx=".." cy=".." ... data-port-id="..."/>`
+    let mut out = Vec::new();
+    let mut cursor = 0usize;
+    while out.len() < limit {
+        let Some(hit) = svg[cursor..].find("class=\"diagram-port\"") else {
+            break;
+        };
+        cursor += hit;
+        // Scan a small window ahead to capture the whole element.
+        let tail = &svg[cursor..svg.len().min(cursor + 400)];
+        let Some(cx_idx) = tail.find("cx=\"") else {
+            cursor += 16;
+            continue;
+        };
+        let cx_start = cx_idx + 4;
+        let Some(cx_end) = tail[cx_start..].find('"') else {
+            break;
+        };
+        let cx_str = &tail[cx_start..cx_start + cx_end];
+        let Some(cy_idx) = tail.find("cy=\"") else {
+            cursor += 16;
+            continue;
+        };
+        let cy_start = cy_idx + 4;
+        let Some(cy_end) = tail[cy_start..].find('"') else {
+            break;
+        };
+        let cy_str = &tail[cy_start..cy_start + cy_end];
+        let Some(id_idx) = tail.find("data-port-id=\"") else {
+            cursor += 16;
+            continue;
+        };
+        let id_start = id_idx + "data-port-id=\"".len();
+        let Some(id_end) = tail[id_start..].find('"') else {
+            break;
+        };
+        let id = tail[id_start..id_start + id_end].to_string();
+        let Ok(x) = cx_str.parse::<f32>() else {
+            cursor += 16;
+            continue;
+        };
+        let Ok(y) = cy_str.parse::<f32>() else {
+            cursor += 16;
+            continue;
+        };
+        out.push(SvgPort { id, x, y });
+        cursor += 16;
+    }
+    out
+}
+
+fn parse_path_endpoints(d: &str) -> Option<((f32, f32), (f32, f32))> {
+    // Supports strings like: `M x y L x y ...`
+    let mut nums: Vec<f32> = Vec::new();
+    let mut current = String::new();
+    for ch in d.chars() {
+        if ch.is_ascii_digit() || ch == '.' || ch == '-' {
+            current.push(ch);
+        } else if !current.is_empty() {
+            if let Ok(v) = current.parse::<f32>() {
+                nums.push(v);
+            }
+            current.clear();
+        }
+    }
+    if !current.is_empty() {
+        if let Ok(v) = current.parse::<f32>() {
+            nums.push(v);
+        }
+    }
+    if nums.len() < 4 {
+        return None;
+    }
+    let start = (nums[0], nums[1]);
+    let end = (nums[nums.len() - 2], nums[nums.len() - 1]);
+    Some((start, end))
+}
+
+fn nearest_port<'a>(ports: &'a [SvgPort], x: f32, y: f32) -> Option<(&'a SvgPort, f32)> {
+    ports
+        .iter()
+        .map(|p| {
+            let dx = p.x - x;
+            let dy = p.y - y;
+            (p, (dx * dx + dy * dy).sqrt())
+        })
+        .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal))
+}
+
 fn force_dark_test_theme(svg: &str) -> String {
     let injection = "<style>.diagram-root{--diagram-paper:#1e1e1e;--diagram-ink:#d4d4d4;--diagram-muted:#a0a0a0;--diagram-faint:#6b6b6b;}</style>";
     svg.replacen('>', &format!(">{injection}"), 1)
@@ -586,8 +683,26 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
         }
     }
     debug.push_str("\nedge_connection_paths:\n");
-    for (idx, path) in extract_edge_connection_paths(svg, 40).into_iter().enumerate() {
+    let ports = extract_svg_ports(svg, 300);
+    let paths = extract_edge_connection_paths(svg, 60);
+    for (idx, path) in paths.iter().cloned().enumerate() {
         debug.push_str(&format!("{idx}: {path}\n"));
+    }
+    debug.push_str("\nedge_endpoint_nearest_ports:\n");
+    for (idx, path) in paths.into_iter().enumerate() {
+        if let Some(((sx, sy), (ex, ey))) = parse_path_endpoints(&path) {
+            let start_near = nearest_port(&ports, sx, sy);
+            let end_near = nearest_port(&ports, ex, ey);
+            debug.push_str(&format!(
+                "{idx}: start=({sx:.1},{sy:.1}) nearest_start_port={} dist={:.2} end=({ex:.1},{ey:.1}) nearest_end_port={} dist={:.2}\n",
+                start_near.map(|(p, _)| p.id.as_str()).unwrap_or("<none>"),
+                start_near.map(|(_, d)| d).unwrap_or(f32::INFINITY),
+                end_near.map(|(p, _)| p.id.as_str()).unwrap_or("<none>"),
+                end_near.map(|(_, d)| d).unwrap_or(f32::INFINITY),
+            ));
+        } else {
+            debug.push_str(&format!("{idx}: (failed to parse endpoints) {path}\n"));
+        }
     }
     write_rendered_debug("interconnection-view-full-drone.debug.txt", &debug);
     assert!(

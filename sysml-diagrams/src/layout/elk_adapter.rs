@@ -379,6 +379,17 @@ fn map_layout_back(
         });
     }
 
+    // Debug: detect systematic edge endpoint offsets from ports after layout mapping.
+    // This should be empty in normal operation; any entries indicate a routing/compound bug
+    // (e.g. hierarchical ports not restored, or missing subtree edge translation).
+    let debug_enabled = std::env::var("SPEC42_ELK_DEBUG").as_deref() == Ok("1");
+    let mut port_pos_by_id: HashMap<&str, Point> = HashMap::new();
+    for node in &nodes {
+        for port in &node.ports {
+            port_pos_by_id.insert(port.id.as_str(), port.position);
+        }
+    }
+
     let mut edges = Vec::with_capacity(graph.edges.len());
     for (index, edge) in graph.edges.iter().enumerate() {
         let elk_edge = &elk_graph.edges[index];
@@ -387,6 +398,44 @@ fn map_layout_back(
         } else {
             fallback_edge_points(elk_graph, elk_edge)
         };
+        if debug_enabled && points.len() >= 2 {
+            if let Some(src_port) = edge.source_port.as_deref() {
+                let normalized = normalize_port_id(src_port);
+                if let Some(expected) = port_pos_by_id
+                    .get(src_port)
+                    .or_else(|| port_pos_by_id.get(normalized.as_str()))
+                    .copied()
+                {
+                    let got = points[0];
+                    let dx = (got.x - expected.x).abs();
+                    let dy = (got.y - expected.y).abs();
+                    if dx > 1.0 || dy > 1.0 {
+                        eprintln!(
+                            "sysml-diagrams: edge {} source_port_offset port={} expected=({:.1},{:.1}) got=({:.1},{:.1}) dx={:.1} dy={:.1}",
+                            edge.id, src_port, expected.x, expected.y, got.x, got.y, dx, dy
+                        );
+                    }
+                }
+            }
+            if let Some(tgt_port) = edge.target_port.as_deref() {
+                let normalized = normalize_port_id(tgt_port);
+                if let Some(expected) = port_pos_by_id
+                    .get(tgt_port)
+                    .or_else(|| port_pos_by_id.get(normalized.as_str()))
+                    .copied()
+                {
+                    let got = *points.last().unwrap();
+                    let dx = (got.x - expected.x).abs();
+                    let dy = (got.y - expected.y).abs();
+                    if dx > 1.0 || dy > 1.0 {
+                        eprintln!(
+                            "sysml-diagrams: edge {} target_port_offset port={} expected=({:.1},{:.1}) got=({:.1},{:.1}) dx={:.1} dy={:.1}",
+                            edge.id, tgt_port, expected.x, expected.y, got.x, got.y, dx, dy
+                        );
+                    }
+                }
+            }
+        }
         edges.push(EdgeLayout {
             id: edge.id.clone(),
             source_node: edge.source_node.clone(),
@@ -445,33 +494,6 @@ fn section_points(section: &elk_core::EdgeSection) -> Vec<Point> {
     points.push(map_point(section.start));
     points.extend(section.bend_points.iter().copied().map(map_point));
     points.push(map_point(section.end));
-    ensure_manhattan_points(points)
-}
-
-fn ensure_manhattan_points(mut points: Vec<Point>) -> Vec<Point> {
-    // Some upstream routers may emit only start/end for orthogonal edges even when the
-    // endpoints differ on both axes. Insert a corner to ensure Manhattan geometry.
-    // Keep this local and dependency-free; prefer a single extra corner.
-    const EPS: f32 = 0.001;
-    if points.len() == 2 {
-        let a = points[0];
-        let b = points[1];
-        let dx = (a.x - b.x).abs();
-        let dy = (a.y - b.y).abs();
-        if dx > EPS && dy > EPS {
-            // Heuristic: move along the larger delta first.
-            let corner = if dx >= dy {
-                Point { x: b.x, y: a.y }
-            } else {
-                Point { x: a.x, y: b.y }
-            };
-            if (corner.x - a.x).abs() > EPS || (corner.y - a.y).abs() > EPS {
-                if (corner.x - b.x).abs() > EPS || (corner.y - b.y).abs() > EPS {
-                    points.insert(1, corner);
-                }
-            }
-        }
-    }
     points
 }
 

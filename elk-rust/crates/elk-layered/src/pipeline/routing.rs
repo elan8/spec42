@@ -1,4 +1,5 @@
 use std::collections::{BTreeMap, BTreeSet};
+use std::collections::HashMap;
 
 use elk_core::{
     ContentAlignment, EdgeEndpoint, EdgeLabelPlacement, EdgeRouting, EdgeSection, Graph,
@@ -10,6 +11,7 @@ use crate::ir::{IrEdge, LayeredIr, NormalizedEdge};
 use crate::pipeline::util::{
     dedup_points, ensure_orthogonal_path_prefer_major, simplify_orthogonal_points,
 };
+use crate::pipeline::orthogonal_routing_generator as ortho_gen;
 
 pub(crate) fn export_to_graph(
     graph: &mut Graph,
@@ -48,6 +50,90 @@ pub(crate) fn export_to_graph(
 
     let mut routed_segments = 0usize;
     let subgraph_bounds = graph_bounds_for_subgraph(graph, local_nodes);
+
+    // For InterconnectionView, precompute deterministic slot assignments inspired by ELK's
+    // OrthogonalRoutingGenerator, but do it per *layer gap segment* (ELK-style) using
+    // `normalized_edges` instead of one segment per whole edge.
+    let interconnection_slots: Option<Vec<Vec<Option<InterconnectionSlot>>>> =
+        if options.view_profile == ViewProfile::InterconnectionView {
+            Some(assign_interconnection_segment_slots(graph, ir, local_nodes, options))
+        } else {
+            None
+        };
+
+    // InterconnectionView: compute per-(port,bundle_key) stub/junction points so edges of the same
+    // type at the same port overlap at the endpoint (ELK-style bundling).
+    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+    struct BundlePortKey {
+        port: PortId,
+        bundle_key: u32,
+        // Distinguish source vs target endpoint so a port used on both sides doesn't mix.
+        is_source: bool,
+    }
+    let mut bundle_stub_point: HashMap<BundlePortKey, Point> = HashMap::new();
+    let mut bundle_stub_rank: HashMap<BundlePortKey, i32> = HashMap::new();
+    if options.view_profile == ViewProfile::InterconnectionView {
+        // First pass: collect bundle keys and representative slot per endpoint.
+        let mut port_bundles: HashMap<(PortId, bool), HashMap<u32, i32>> = HashMap::new();
+        for (edge_index, edge) in ir.edges.iter().enumerate() {
+            if edge.self_loop {
+                continue;
+            }
+            if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
+                continue;
+            }
+            let Some(bundle_key) = edge.bundle_key else {
+                continue;
+            };
+            // For source endpoint use segment 0; for target use last segment.
+            if let Some(port_id) = edge.source.port {
+                let slot = interconnection_slots
+                    .as_ref()
+                    .and_then(|t| t.get(edge_index))
+                    .and_then(|v| v.get(0).and_then(|s| *s))
+                    .map(|s| s.slot)
+                    .unwrap_or(0);
+                port_bundles
+                    .entry((port_id, true))
+                    .or_default()
+                    .entry(bundle_key)
+                    .and_modify(|cur| *cur = (*cur).min(slot))
+                    .or_insert(slot);
+            }
+            if let Some(port_id) = edge.target.port {
+                let last_seg = edge_segments_for_edge(ir, edge_index).len().saturating_sub(1);
+                let slot = interconnection_slots
+                    .as_ref()
+                    .and_then(|t| t.get(edge_index))
+                    .and_then(|v| v.get(last_seg).and_then(|s| *s))
+                    .map(|s| s.slot)
+                    .unwrap_or(0);
+                port_bundles
+                    .entry((port_id, false))
+                    .or_default()
+                    .entry(bundle_key)
+                    .and_modify(|cur| *cur = (*cur).min(slot))
+                    .or_insert(slot);
+            }
+        }
+        // Assign a compact rank per port that separates bundles, not edges within a bundle.
+        for ((port_id, is_source), bundles) in port_bundles {
+            let mut entries: Vec<(u32, i32)> = bundles.into_iter().collect();
+            entries.sort_by(|a, b| a.1.cmp(&b.1).then_with(|| a.0.cmp(&b.0)));
+            let center = (entries.len() as i32 - 1) / 2;
+            for (idx, (bundle_key, _slot)) in entries.into_iter().enumerate() {
+                let relative = idx as i32 - center;
+                bundle_stub_rank.insert(
+                    BundlePortKey {
+                        port: port_id,
+                        bundle_key,
+                        is_source,
+                    },
+                    relative,
+                );
+            }
+        }
+    }
     for (edge_index, edge) in ir.edges.iter().enumerate() {
         if !local_nodes.contains(&edge.effective_source)
             || !local_nodes.contains(&edge.effective_target)
@@ -101,12 +187,76 @@ pub(crate) fn export_to_graph(
         let start_side = endpoint_anchor_side(graph, edge.source, start_hint, options.view_profile);
         let end_side = endpoint_anchor_side(graph, edge.target, end_hint, options.view_profile);
         let stub_len = options.layered.spacing.edge_spacing.clamp(12.0, 24.0);
-        let routed_start = start_side
-            .map(|side| extend_from_side(start, side, stub_len))
-            .unwrap_or(start);
-        let routed_end = end_side
-            .map(|side| extend_from_side(end, side, stub_len))
-            .unwrap_or(end);
+        let interconnection = options.view_profile == ViewProfile::InterconnectionView;
+        let fan_step = options.layered.spacing.edge_spacing.max(20.0) * 0.45;
+
+        let routed_start = if interconnection {
+            if let (Some(port_id), Some(bundle_key), Some(side)) = (
+                edge.source.port,
+                edge.bundle_key,
+                start_side,
+            ) {
+                let key = BundlePortKey {
+                    port: port_id,
+                    bundle_key,
+                    is_source: true,
+                };
+                *bundle_stub_point.entry(key).or_insert_with(|| {
+                    let mut p = extend_from_side(start, side, stub_len);
+                    let rank = bundle_stub_rank.get(&key).copied().unwrap_or(0) as f32;
+                    let fan = rank * fan_step;
+                    match side {
+                        PortSide::East => p.x += fan,
+                        PortSide::West => p.x -= fan,
+                        PortSide::North => p.y -= fan,
+                        PortSide::South => p.y += fan,
+                    }
+                    p
+                })
+            } else {
+                start_side
+                    .map(|side| extend_from_side(start, side, stub_len))
+                    .unwrap_or(start)
+            }
+        } else {
+            start_side
+                .map(|side| extend_from_side(start, side, stub_len))
+                .unwrap_or(start)
+        };
+
+        let routed_end = if interconnection {
+            if let (Some(port_id), Some(bundle_key), Some(side)) = (
+                edge.target.port,
+                edge.bundle_key,
+                end_side,
+            ) {
+                let key = BundlePortKey {
+                    port: port_id,
+                    bundle_key,
+                    is_source: false,
+                };
+                *bundle_stub_point.entry(key).or_insert_with(|| {
+                    let mut p = extend_from_side(end, side, stub_len);
+                    let rank = bundle_stub_rank.get(&key).copied().unwrap_or(0) as f32;
+                    let fan = rank * fan_step;
+                    match side {
+                        PortSide::East => p.x += fan,
+                        PortSide::West => p.x -= fan,
+                        PortSide::North => p.y -= fan,
+                        PortSide::South => p.y += fan,
+                    }
+                    p
+                })
+            } else {
+                end_side
+                    .map(|side| extend_from_side(end, side, stub_len))
+                    .unwrap_or(end)
+            }
+        } else {
+            end_side
+                .map(|side| extend_from_side(end, side, stub_len))
+                .unwrap_or(end)
+        };
         let bends = match edge_routing_for_edge(graph, edge, options) {
             EdgeRouting::Straight => join_with_endpoint_stubs(
                 start,
@@ -116,7 +266,16 @@ pub(crate) fn export_to_graph(
                 end,
             ),
             EdgeRouting::Orthogonal => {
-                let raw = orthogonal_path(ir, edge_index, routed_start, routed_end, options);
+                let raw = orthogonal_path(
+                    graph,
+                    ir,
+                    edge_index,
+                    routed_start,
+                    routed_end,
+                    options,
+                    interconnection_slots.as_ref(),
+                    subgraph_bounds,
+                );
                 if debug_enabled && debug_profile && edge.original_edge.index() < 12 {
                     warnings.push(format!(
                         "debug edge {} nonloop effective=({:?}->{:?}) source=(node={:?},port={:?}) target=(node={:?},port={:?}) start_side={:?} end_side={:?} start={:?} routed_start={:?} routed_end={:?} end={:?} raw={:?}",
@@ -139,7 +298,18 @@ pub(crate) fn export_to_graph(
                 join_with_endpoint_stubs(
                     start,
                     routed_start,
-                    obstacle_aware_bends(graph, edge, routed_start, routed_end, raw, options),
+                    {
+                        // InterconnectionView: slot/corridor routing already aims to stay in the
+                        // between-layer windows. The generic obstacle detours often produce huge
+                        // escape rectangles that increase total intrusions. Prefer the slot path
+                        // and skip obstacle detours for now (we'll reintroduce corridor-aware
+                        // detours later).
+                        if options.view_profile == ViewProfile::InterconnectionView {
+                            raw
+                        } else {
+                            obstacle_aware_bends(graph, edge, routed_start, routed_end, raw, options)
+                        }
+                    },
                     routed_end,
                     end,
                 )
@@ -218,6 +388,31 @@ pub(crate) fn export_to_graph(
             bend_points: bend_final,
             end: end_final,
         };
+        let section = enforce_port_perpendiculars(graph, edge, section);
+        if debug_enabled && debug_profile {
+            if let Some(port_id) = edge.source.port {
+                let expected = graph.port(port_id).bounds.center();
+                let dx = (section.start.x - expected.x).abs();
+                let dy = (section.start.y - expected.y).abs();
+                if dx > 1.0 || dy > 1.0 {
+                    warnings.push(format!(
+                        "edge {} source_port_mismatch port={:?} expected={:?} got_start={:?} (dx={:.1},dy={:.1})",
+                        edge.original_edge, port_id, expected, section.start, dx, dy
+                    ));
+                }
+            }
+            if let Some(port_id) = edge.target.port {
+                let expected = graph.port(port_id).bounds.center();
+                let dx = (section.end.x - expected.x).abs();
+                let dy = (section.end.y - expected.y).abs();
+                if dx > 1.0 || dy > 1.0 {
+                    warnings.push(format!(
+                        "edge {} target_port_mismatch port={:?} expected={:?} got_end={:?} (dx={:.1},dy={:.1})",
+                        edge.original_edge, port_id, expected, section.end, dx, dy
+                    ));
+                }
+            }
+        }
         if debug_enabled
             && options.view_profile == ViewProfile::InterconnectionView
             && section_has_diagonal(&section)
@@ -248,6 +443,259 @@ pub(crate) fn export_to_graph(
     }
 
     routed_segments
+}
+
+fn assign_interconnection_segment_slots(
+    graph: &Graph,
+    ir: &LayeredIr,
+    local_nodes: &BTreeSet<NodeId>,
+    options: &LayoutOptions,
+) -> Vec<Vec<Option<InterconnectionSlot>>> {
+    use std::collections::{BTreeMap, HashMap};
+
+    let direction = options.layered.direction;
+    let minor_is_x = matches!(
+        direction,
+        LayoutDirection::TopToBottom | LayoutDirection::BottomToTop
+    );
+    let spacing = options.layered.spacing.segment_spacing.max(12.0);
+
+    // Determine max segment order per edge (needed to recognize first/last segments).
+    let mut max_order: Vec<usize> = vec![0; ir.edges.len()];
+    for ne in &ir.normalized_edges {
+        max_order[ne.edge_index] = max_order[ne.edge_index].max(ne.segment_order);
+    }
+
+    // slots[edge_index][segment_order] = slot info
+    let mut slots: Vec<Vec<Option<InterconnectionSlot>>> = max_order
+        .iter()
+        .map(|&m| vec![None; m.saturating_add(1)])
+        .collect();
+
+    // Build per-gap segment lists. For port-incident segments, collapse by (gap, port, bundle_key)
+    // so edges of the same type connected to the same port share the same slot (ELK-style bundling).
+    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+    struct GroupKey {
+        gap: usize,
+        port: PortId,
+        bundle_key: u32,
+        is_source: bool,
+    }
+
+    #[derive(Clone)]
+    struct SegMeta {
+        members: Vec<(usize, usize)>, // (edge_index, segment_order)
+        segment: ortho_gen::HyperEdgeSegment,
+    }
+
+    let mut by_gap: BTreeMap<usize, Vec<SegMeta>> = BTreeMap::new();
+    let mut group_index_by_gap: BTreeMap<usize, HashMap<GroupKey, usize>> = BTreeMap::new();
+
+    for ne in &ir.normalized_edges {
+        let edge = &ir.edges[ne.edge_index];
+        if edge.self_loop {
+            continue;
+        }
+        if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
+            continue;
+        }
+
+        let from_layer = ir.nodes[ne.from].layer;
+        let to_layer = ir.nodes[ne.to].layer;
+        let gap = from_layer.min(to_layer);
+
+        // Compute endpoint coordinates on the minor axis.
+        // First/last segment use actual port endpoints when available; intermediate segments use
+        // dummy/real node centers.
+        let is_first = ne.segment_order == 0;
+        let is_last = ne.segment_order == max_order[ne.edge_index];
+
+        let (start_pt, end_pt) = if is_first && is_last {
+            (endpoint_center(graph, edge.source), endpoint_center(graph, edge.target))
+        } else if is_first {
+            (endpoint_center(graph, edge.source), ir.nodes[ne.to].center())
+        } else if is_last {
+            (ir.nodes[ne.from].center(), endpoint_center(graph, edge.target))
+        } else {
+            (ir.nodes[ne.from].center(), ir.nodes[ne.to].center())
+        };
+
+        let start_c = if minor_is_x { start_pt.x } else { start_pt.y };
+        let end_c = if minor_is_x { end_pt.x } else { end_pt.y };
+
+        // Decide whether to bundle this segment: only for segments incident to an actual port
+        // (first/last) AND only when edge has a bundle key.
+        let bundle = edge.bundle_key;
+        let group_key = if is_first {
+            edge.source.port.and_then(|p| bundle.map(|k| GroupKey { gap, port: p, bundle_key: k, is_source: true }))
+        } else if is_last {
+            edge.target.port.and_then(|p| bundle.map(|k| GroupKey { gap, port: p, bundle_key: k, is_source: false }))
+        } else {
+            None
+        };
+
+        if let Some(gk) = group_key {
+            let idx_map = group_index_by_gap.entry(gap).or_default();
+            let list = by_gap.entry(gap).or_default();
+            let idx = *idx_map.entry(gk).or_insert_with(|| {
+                // Create a new grouped segment meta.
+                let seg = ortho_gen::HyperEdgeSegment {
+                    id: 0, // reindexed per gap below
+                    start_coordinate: start_c,
+                    end_coordinate: end_c,
+                    // Collect all opposite-side coordinates for the group.
+                    incoming_connection_coordinates: vec![end_c],
+                    outgoing_connection_coordinates: vec![start_c],
+                    routing_slot: 0,
+                    in_weight: 0,
+                    out_weight: 0,
+                    incoming: Vec::new(),
+                    outgoing: Vec::new(),
+                    split_partner: None,
+                    split_by: None,
+                    mark: -1,
+                };
+                list.push(SegMeta {
+                    members: Vec::new(),
+                    segment: seg,
+                });
+                list.len() - 1
+            });
+
+            let meta = &mut list[idx];
+            meta.members.push((ne.edge_index, ne.segment_order));
+            // Expand segment model to reflect all members.
+            meta.segment.start_coordinate = meta.segment.start_coordinate.min(start_c);
+            meta.segment.end_coordinate = meta.segment.end_coordinate.max(end_c);
+            meta.segment.incoming_connection_coordinates.push(end_c);
+            meta.segment.outgoing_connection_coordinates.push(start_c);
+        } else {
+            let seg = ortho_gen::HyperEdgeSegment {
+                id: 0, // reindexed per gap below
+                start_coordinate: start_c,
+                end_coordinate: end_c,
+                incoming_connection_coordinates: vec![end_c],
+                outgoing_connection_coordinates: vec![start_c],
+                routing_slot: 0,
+                in_weight: 0,
+                out_weight: 0,
+                incoming: Vec::new(),
+                outgoing: Vec::new(),
+                split_partner: None,
+                split_by: None,
+                mark: -1,
+            };
+            by_gap.entry(gap).or_default().push(SegMeta {
+                members: vec![(ne.edge_index, ne.segment_order)],
+                segment: seg,
+            });
+        }
+    }
+
+    // Assign slots per gap and write into lookup table.
+    for metas in by_gap.values_mut() {
+        // Reindex ids densely for this gap so `assign_routing_slots` can return a compact vec.
+        for (i, meta) in metas.iter_mut().enumerate() {
+            meta.segment.id = i;
+            meta.segment
+                .incoming_connection_coordinates
+                .sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+            meta.segment
+                .outgoing_connection_coordinates
+                .sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        }
+        let segs: Vec<ortho_gen::HyperEdgeSegment> =
+            metas.iter().map(|m| m.segment.clone()).collect();
+        let slot_vec = ortho_gen::assign_routing_slots(segs, spacing);
+        let (min_slot, max_slot) = slot_vec.iter().fold((i32::MAX, i32::MIN), |acc, &s| {
+            (acc.0.min(s), acc.1.max(s))
+        });
+        for meta in metas.iter() {
+            let slot = slot_vec
+                .get(meta.segment.id)
+                .copied()
+                .unwrap_or_default();
+            for &(edge_index, segment_order) in &meta.members {
+                if let Some(list) = slots.get_mut(edge_index) {
+                    if let Some(cell) = list.get_mut(segment_order) {
+                        *cell = Some(InterconnectionSlot {
+                            slot,
+                            min_slot,
+                            max_slot,
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    slots
+}
+
+#[derive(Clone, Copy, Debug)]
+struct InterconnectionSlot {
+    slot: i32,
+    min_slot: i32,
+    max_slot: i32,
+}
+
+fn enforce_port_perpendiculars(graph: &Graph, edge: &IrEdge, mut section: EdgeSection) -> EdgeSection {
+    // Ensure the segment adjacent to a port is perpendicular to the port's owning side.
+    // This is stricter than general Manhattan enforcement: it enforces *orientation* at ports.
+    const EPS: f32 = 0.001;
+
+    // Start (source)
+    if let Some(port_id) = edge.source.port {
+        let side = graph.port(port_id).side;
+        let next = section.bend_points.first().copied().unwrap_or(section.end);
+        let dx = (next.x - section.start.x).abs();
+        let dy = (next.y - section.start.y).abs();
+        let should_be_horizontal = matches!(side, PortSide::East | PortSide::West);
+        let violates = if should_be_horizontal { dx <= EPS && dy > EPS } else { dy <= EPS && dx > EPS };
+        if violates {
+            let stub = if should_be_horizontal {
+                Point::new(next.x, section.start.y)
+            } else {
+                Point::new(section.start.x, next.y)
+            };
+            if (stub.x - section.start.x).abs() > EPS || (stub.y - section.start.y).abs() > EPS {
+                section.bend_points.insert(0, stub);
+            }
+        }
+    }
+
+    // End (target)
+    if let Some(port_id) = edge.target.port {
+        let side = graph.port(port_id).side;
+        let prev = section.bend_points.last().copied().unwrap_or(section.start);
+        let dx = (section.end.x - prev.x).abs();
+        let dy = (section.end.y - prev.y).abs();
+        let should_be_horizontal = matches!(side, PortSide::East | PortSide::West);
+        let violates = if should_be_horizontal { dx <= EPS && dy > EPS } else { dy <= EPS && dx > EPS };
+        if violates {
+            let stub = if should_be_horizontal {
+                Point::new(prev.x, section.end.y)
+            } else {
+                Point::new(section.end.x, prev.y)
+            };
+            if (stub.x - section.end.x).abs() > EPS || (stub.y - section.end.y).abs() > EPS {
+                section.bend_points.push(stub);
+            }
+        }
+    }
+
+    // Final cleanup: keep it orthogonal and remove duplicates.
+    let mut pts = Vec::with_capacity(section.bend_points.len() + 2);
+    pts.push(section.start);
+    pts.extend(section.bend_points.iter().copied());
+    pts.push(section.end);
+    let enforced = crate::pipeline::util::ensure_orthogonal_path(dedup_points(pts));
+    if enforced.len() >= 2 {
+        section.start = enforced[0];
+        section.end = *enforced.last().unwrap();
+        section.bend_points = enforced[1..enforced.len() - 1].to_vec();
+    }
+    section
 }
 
 fn section_has_diagonal(section: &EdgeSection) -> bool {
@@ -292,11 +740,14 @@ fn straight_path(ir: &LayeredIr, edge: &IrEdge, start: Point, end: Point) -> Vec
 }
 
 fn orthogonal_path(
+    graph: &Graph,
     ir: &LayeredIr,
     edge_index: usize,
     start: Point,
     end: Point,
     options: &LayoutOptions,
+    interconnection_slots: Option<&Vec<Vec<Option<InterconnectionSlot>>>>,
+    bounds: Rect,
 ) -> Vec<Point> {
     let direction = options.layered.direction;
     let segment_spacing = options.layered.spacing.segment_spacing.max(12.0);
@@ -307,16 +758,41 @@ fn orthogonal_path(
     let mut bends = Vec::new();
 
     for (segment_index, window) in points.windows(2).enumerate() {
+        // Slot-driven channel routing for InterconnectionView (ELK-inspired, per layer gap).
+        if interconnection {
+            let slot = interconnection_slots
+                .and_then(|table| table.get(edge_index))
+                .and_then(|per_edge| per_edge.get(segment_index).and_then(|v| *v));
+            if let Some(slot) = slot {
+                let corridor = between_layer_corridor(graph, ir, &segments, segment_index, direction, bounds);
+                let channel_bends = interconnection_channel_bends(
+                    window[0],
+                    window[1],
+                    slot,
+                    direction,
+                    corridor,
+                    options.layered.spacing.edge_spacing.max(20.0),
+                );
+                bends.extend(channel_bends);
+                continue;
+            }
+        }
         let lane = if interconnection
             && edge.effective_source == edge.effective_target
             && edge.source.port.is_some()
             && edge.target.port.is_some()
         {
-            // Slot-like routing for dense port-to-port connections on the same container:
-            // assign a deterministic minor-axis lane to reduce overlap and improve obstacle avoidance.
-            let lanes = options.layered.preferred_connector_lanes.max(2) as i32;
-            let idx = (edge_index as i32).rem_euclid(lanes);
-            let lane_id = idx - (lanes / 2);
+            // ELK-style slot assignment (simplified): use precomputed slot if available,
+            // otherwise fall back to deterministic distribution.
+            let lane_id = interconnection_slots
+                .and_then(|table| table.get(edge_index))
+                .and_then(|per_edge| per_edge.get(segment_index).and_then(|v| *v))
+                .map(|s| s.slot)
+                .unwrap_or_else(|| {
+                let lanes = options.layered.preferred_connector_lanes.max(2) as i32;
+                let idx = (edge_index as i32).rem_euclid(lanes);
+                idx - (lanes / 2)
+            });
             alternating_lane_offset(lane_id, segment_spacing)
         } else if interconnection {
             // Temporary stabilization for other cases: prefer strict manhattan routing over
@@ -340,6 +816,132 @@ fn orthogonal_path(
         Vec::new()
     } else {
         simplified[1..simplified.len() - 1].to_vec()
+    }
+}
+
+fn interconnection_channel_bends(
+    start: Point,
+    end: Point,
+    slot: InterconnectionSlot,
+    direction: LayoutDirection,
+    corridor: Rect,
+    spacing: f32,
+) -> Vec<Point> {
+    match direction {
+        LayoutDirection::TopToBottom | LayoutDirection::BottomToTop => {
+            // Route via a horizontal channel within the between-layer corridor.
+            let min_y = corridor.origin.y + 2.0;
+            let max_y = corridor.max_y() - 2.0;
+            let usable = (max_y - min_y).max(0.0);
+            let range = (slot.max_slot - slot.min_slot).abs().max(1) as f32;
+            // Distribute lanes across the full corridor to avoid collapsing multiple slots
+            // onto the same clamped coordinate when the corridor is tight.
+            // We still respect a minimum step so lanes don't become identical due to rounding.
+            let step = (usable / (range + 1.0)).max(2.0).min(spacing.max(2.0) * 3.0);
+            let center_slot = (slot.min_slot + slot.max_slot) as f32 / 2.0;
+            let offset = (slot.slot as f32 - center_slot) * step;
+            let mid_y = corridor.origin.y + corridor.size.height / 2.0;
+            let channel_y = (mid_y + offset).clamp(min_y, max_y);
+            // Port escape/approach fanout is handled by the stub points in `export_to_graph`.
+            dedup_points(vec![Point::new(start.x, channel_y), Point::new(end.x, channel_y)])
+        }
+        LayoutDirection::LeftToRight | LayoutDirection::RightToLeft => {
+            // Route via a vertical channel within the between-layer corridor.
+            let min_x = corridor.origin.x + 2.0;
+            let max_x = corridor.max_x() - 2.0;
+            let usable = (max_x - min_x).max(0.0);
+            let range = (slot.max_slot - slot.min_slot).abs().max(1) as f32;
+            let step = (usable / (range + 1.0)).max(2.0).min(spacing.max(2.0) * 3.0);
+            let center_slot = (slot.min_slot + slot.max_slot) as f32 / 2.0;
+            let offset = (slot.slot as f32 - center_slot) * step;
+            let mid_x = corridor.origin.x + corridor.size.width / 2.0;
+            let channel_x = (mid_x + offset).clamp(min_x, max_x);
+            dedup_points(vec![
+                Point::new(channel_x, start.y),
+                Point::new(channel_x, end.y),
+            ])
+        }
+    }
+}
+
+fn between_layer_corridor(
+    graph: &Graph,
+    ir: &LayeredIr,
+    segments: &[&NormalizedEdge],
+    segment_index: usize,
+    direction: LayoutDirection,
+    fallback: Rect,
+) -> Rect {
+    // Determine which gap this segment traverses (best effort).
+    let (from_layer, to_layer) = segments
+        .get(segment_index)
+        .map(|ne| (ir.nodes[ne.from].layer, ir.nodes[ne.to].layer))
+        .unwrap_or_else(|| (0, 1));
+    let l0 = from_layer.min(to_layer);
+    let l1 = l0.saturating_add(1);
+    if l0 >= ir.layers.len() || l1 >= ir.layers.len() {
+        return fallback;
+    }
+
+    // Compute a corridor rectangle between the two adjacent layers along the major axis.
+    // TTB/BTB: corridor is horizontal strip between bottom(layer0) and top(layer1).
+    // LTR/RTL: corridor is vertical strip between right(layer0) and left(layer1).
+    let mut layer0_extents: Option<(f32, f32)> = None;
+    let mut layer1_extents: Option<(f32, f32)> = None;
+
+    for &ir_id in &ir.layers[l0] {
+        if let crate::ir::IrNodeKind::Real(node_id) = ir.nodes[ir_id].kind {
+            let b = graph.node(node_id).bounds;
+            let (start, end) = match direction {
+                LayoutDirection::TopToBottom | LayoutDirection::BottomToTop => (b.origin.y, b.max_y()),
+                LayoutDirection::LeftToRight | LayoutDirection::RightToLeft => (b.origin.x, b.max_x()),
+            };
+            layer0_extents = Some(match layer0_extents {
+                None => (start, end),
+                Some((s, e)) => (s.min(start), e.max(end)),
+            });
+        }
+    }
+    for &ir_id in &ir.layers[l1] {
+        if let crate::ir::IrNodeKind::Real(node_id) = ir.nodes[ir_id].kind {
+            let b = graph.node(node_id).bounds;
+            let (start, end) = match direction {
+                LayoutDirection::TopToBottom | LayoutDirection::BottomToTop => (b.origin.y, b.max_y()),
+                LayoutDirection::LeftToRight | LayoutDirection::RightToLeft => (b.origin.x, b.max_x()),
+            };
+            layer1_extents = Some(match layer1_extents {
+                None => (start, end),
+                Some((s, e)) => (s.min(start), e.max(end)),
+            });
+        }
+    }
+
+    let (_l0_start, l0_end) = layer0_extents.unwrap_or((fallback.origin.y, fallback.max_y()));
+    let (l1_start, _l1_end) = layer1_extents.unwrap_or((fallback.origin.y, fallback.max_y()));
+
+    match direction {
+        LayoutDirection::TopToBottom | LayoutDirection::BottomToTop => {
+            let y0 = l0_end;
+            let y1 = l1_start;
+            if y1 <= y0 + 1.0 {
+                return fallback;
+            }
+            Rect::new(
+                Point::new(fallback.origin.x, y0),
+                Size::new(fallback.size.width, y1 - y0),
+            )
+        }
+        LayoutDirection::LeftToRight | LayoutDirection::RightToLeft => {
+            let x0 = l0_end;
+            let x1 = l1_start;
+            if x1 <= x0 + 1.0 {
+                return fallback;
+            }
+            Rect::new(
+                Point::new(x0, fallback.origin.y),
+                Size::new(x1 - x0, fallback.size.height),
+            )
+        }
     }
 }
 
@@ -459,14 +1061,16 @@ fn obstacle_aware_bends(
     points.extend(bends.iter().copied());
     points.push(end);
 
+    let endpoint_nodes = [
+        endpoint_obstacle_node(graph, edge.source),
+        endpoint_obstacle_node(graph, edge.target),
+        endpoint_obstacle_node(graph, edge.routed_source),
+        endpoint_obstacle_node(graph, edge.routed_target),
+    ];
+
     for (segment_index, window) in points.windows(2).enumerate() {
         for node in &graph.nodes {
-            if node.id == edge.routed_source.node
-                || node.id == edge.routed_target.node
-                || node.id == edge.source.node
-                || node.id == edge.target.node
-                || shares_endpoint_hierarchy(graph, node.id, edge)
-            {
+            if endpoint_nodes.contains(&node.id) {
                 continue;
             }
             if segment_intersects_rect(
@@ -474,11 +1078,45 @@ fn obstacle_aware_bends(
                 window[1],
                 inflate_rect(node.bounds, options.layered.spacing.edge_spacing / 2.0),
             ) {
-                return splice_detour(
+                let mut rerouted = splice_detour(
                     &points,
                     segment_index,
                     detour_around_rect(window[0], window[1], node.bounds, options),
                 );
+                // Try a few additional local detours; the interconnection view often needs
+                // multiple obstacle deflections to keep routes inside free space.
+                let mut budget = 6usize;
+                while budget > 0 {
+                    budget -= 1;
+                    let mut changed = false;
+                    'outer: for (seg_idx, seg) in rerouted.windows(2).enumerate() {
+                        for cand in &graph.nodes {
+                            if endpoint_nodes.contains(&cand.id) {
+                                continue;
+                            }
+                            if segment_intersects_rect(
+                                seg[0],
+                                seg[1],
+                                inflate_rect(
+                                    cand.bounds,
+                                    options.layered.spacing.edge_spacing / 2.0,
+                                ),
+                            ) {
+                                rerouted = splice_detour(
+                                    &rerouted,
+                                    seg_idx,
+                                    detour_around_rect(seg[0], seg[1], cand.bounds, options),
+                                );
+                                changed = true;
+                                break 'outer;
+                            }
+                        }
+                    }
+                    if !changed {
+                        break;
+                    }
+                }
+                return rerouted;
             }
         }
 
@@ -509,7 +1147,8 @@ fn obstacle_aware_bends(
     let mut points = vec![start];
     points.extend(bends);
     points.push(end);
-    let simplified = simplify_orthogonal_points(points);
+    let enforced = crate::pipeline::util::ensure_orthogonal_path(dedup_points(points));
+    let simplified = simplify_orthogonal_points(enforced);
     if simplified.len() <= 2 {
         Vec::new()
     } else {
@@ -517,28 +1156,12 @@ fn obstacle_aware_bends(
     }
 }
 
-fn shares_endpoint_hierarchy(graph: &Graph, candidate: NodeId, edge: &IrEdge) -> bool {
-    [
-        edge.source.node,
-        edge.target.node,
-        edge.routed_source.node,
-        edge.routed_target.node,
-    ]
-    .into_iter()
-    .any(|endpoint| {
-        is_ancestor(graph, candidate, endpoint) || is_ancestor(graph, endpoint, candidate)
-    })
-}
-
-fn is_ancestor(graph: &Graph, ancestor: NodeId, node: NodeId) -> bool {
-    let mut current = graph.node(node).parent;
-    while let Some(parent) = current {
-        if parent == ancestor {
-            return true;
-        }
-        current = graph.node(parent).parent;
+fn endpoint_obstacle_node(graph: &Graph, endpoint: EdgeEndpoint) -> NodeId {
+    if let Some(port_id) = endpoint.port {
+        graph.port(port_id).node
+    } else {
+        endpoint.node
     }
-    false
 }
 
 fn splice_detour(points: &[Point], segment_index: usize, detour: Vec<Point>) -> Vec<Point> {
@@ -546,6 +1169,7 @@ fn splice_detour(points: &[Point], segment_index: usize, detour: Vec<Point>) -> 
     rerouted.extend_from_slice(&points[..=segment_index]);
     rerouted.extend(detour);
     rerouted.extend_from_slice(&points[segment_index + 1..]);
+    let rerouted = crate::pipeline::util::ensure_orthogonal_path(dedup_points(rerouted));
     let rerouted = simplify_orthogonal_points(rerouted);
     if rerouted.len() <= 2 {
         Vec::new()
@@ -562,11 +1186,16 @@ fn detour_around_rect(start: Point, end: Point, rect: Rect, options: &LayoutOpti
         direction,
         LayoutDirection::TopToBottom | LayoutDirection::BottomToTop
     ) {
-        let detour_y = if end.y <= rect.origin.y {
+        // Interconnection diagrams are dense; large detours tend to create many additional
+        // intrusions. Prefer *local* detours near the current segment.
+        let mut detour_y = if end.y <= rect.origin.y {
             rect.origin.y - gap
         } else {
             rect.max_y() + gap
         };
+        let local_min = start.y.min(end.y) - gap * 3.0;
+        let local_max = start.y.max(end.y) + gap * 3.0;
+        detour_y = detour_y.clamp(local_min, local_max);
         let candidates = [
             vec![
                 Point::new(rect.origin.x - gap, start.y),
@@ -587,6 +1216,10 @@ fn detour_around_rect(start: Point, end: Point, rect: Rect, options: &LayoutOpti
     } else {
         rect.max_x() + gap
     };
+    // Same idea for LTR/RTL: clamp detour x locally to avoid huge escapes.
+    let local_min = start.x.min(end.x) - gap * 3.0;
+    let local_max = start.x.max(end.x) + gap * 3.0;
+    let detour_x = detour_x.clamp(local_min, local_max);
     let candidates = [
         vec![
             Point::new(start.x, rect.origin.y - gap),
@@ -715,32 +1348,79 @@ fn best_label_anchor(section: &EdgeSection) -> (Point, bool) {
 }
 
 fn translate_descendants(graph: &mut Graph, parent: NodeId, delta: Point) {
-    let children = graph.children_of(parent).to_vec();
-    for child in children {
-        let (ports, labels) = {
-            let node = graph.node_mut(child);
-            node.bounds.origin.x += delta.x;
-            node.bounds.origin.y += delta.y;
-            (node.ports.clone(), node.labels.clone())
-        };
-        for port_id in ports {
-            let label_ids = {
-                let port = graph.port_mut(port_id);
-                port.bounds.origin.x += delta.x;
-                port.bounds.origin.y += delta.y;
-                port.labels.clone()
-            };
-            for label_id in label_ids {
+    // When laying out compound graphs, child subgraphs may already have routed edges with
+    // absolute section coordinates. If we later translate the whole subtree (e.g. because the
+    // parent moved), we must translate those edge sections too; otherwise all edges appear with a
+    // constant (dx, dy) offset relative to the moved nodes/ports.
+    fn translate_edge_sections(graph: &mut Graph, node_set: &BTreeSet<NodeId>, delta: Point) {
+        for edge in &mut graph.edges {
+            if !node_set.contains(&edge.source.node) || !node_set.contains(&edge.target.node) {
+                continue;
+            }
+            for section in &mut edge.sections {
+                section.start.x += delta.x;
+                section.start.y += delta.y;
+                for p in &mut section.bend_points {
+                    p.x += delta.x;
+                    p.y += delta.y;
+                }
+                section.end.x += delta.x;
+                section.end.y += delta.y;
+            }
+            for label_id in edge.labels.clone() {
                 graph.labels[label_id.index()].position.x += delta.x;
                 graph.labels[label_id.index()].position.y += delta.y;
             }
         }
-        for label_id in labels {
-            graph.labels[label_id.index()].position.x += delta.x;
-            graph.labels[label_id.index()].position.y += delta.y;
-        }
-        translate_descendants(graph, child, delta);
     }
+
+    fn collect_descendant_nodes(graph: &Graph, root: NodeId, out: &mut BTreeSet<NodeId>) {
+        for child in graph.children_of(root) {
+            if out.insert(*child) {
+                collect_descendant_nodes(graph, *child, out);
+            }
+        }
+    }
+
+    fn translate_descendants_nodes_only(graph: &mut Graph, parent: NodeId, delta: Point) {
+        let children = graph.children_of(parent).to_vec();
+        for child in children {
+            let (ports, labels) = {
+                let node = graph.node_mut(child);
+                node.bounds.origin.x += delta.x;
+                node.bounds.origin.y += delta.y;
+                (node.ports.clone(), node.labels.clone())
+            };
+            for port_id in ports {
+                let label_ids = {
+                    let port = graph.port_mut(port_id);
+                    port.bounds.origin.x += delta.x;
+                    port.bounds.origin.y += delta.y;
+                    port.labels.clone()
+                };
+                for label_id in label_ids {
+                    graph.labels[label_id.index()].position.x += delta.x;
+                    graph.labels[label_id.index()].position.y += delta.y;
+                }
+            }
+            for label_id in labels {
+                graph.labels[label_id.index()].position.x += delta.x;
+                graph.labels[label_id.index()].position.y += delta.y;
+            }
+            translate_descendants_nodes_only(graph, child, delta);
+        }
+    }
+
+    // Translate edges exactly once for this subtree move (including sibling-to-sibling edges),
+    // then translate nodes/ports/labels recursively. Avoid translating edges again in recursion,
+    // which would produce a constant extra offset (e.g. +72,+72) for intra-subtree edges.
+    let mut subtree: BTreeSet<NodeId> = BTreeSet::new();
+    subtree.insert(parent);
+    collect_descendant_nodes(graph, parent, &mut subtree);
+    translate_edge_sections(graph, &subtree, delta);
+    translate_descendants_nodes_only(graph, parent, delta);
+
+    // Note: recursion is handled by `translate_descendants_nodes_only`.
 }
 
 fn layout_ports(
@@ -963,8 +1643,9 @@ fn endpoint_anchor_side(
     toward: Point,
     profile: ViewProfile,
 ) -> Option<PortSide> {
-    if endpoint.port.is_some() {
-        return None;
+    if let Some(port_id) = endpoint.port {
+        // Always exit/enter perpendicular to the port boundary.
+        return Some(graph.port(port_id).side);
     }
     Some(choose_anchor_side(
         endpoint_node_bounds(graph, endpoint.node),
