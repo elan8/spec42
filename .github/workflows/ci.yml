@@ -55,7 +55,21 @@ jobs:
           echo "${{ github.workspace }}/target/debug" >> $GITHUB_PATH
           echo "${{ github.workspace }}/target/release" >> $GITHUB_PATH
           # Ensure VS Code extension tests use the in-repo server binary (avoid PATH/order flakiness).
-          echo "SPEC42_SERVER_PATH=${{ github.workspace }}/target/release/spec42" >> $GITHUB_ENV
+          # Prefer debug (built for the test host), fallback to release.
+          if [ -x "${{ github.workspace }}/target/debug/spec42" ]; then
+            chmod +x "${{ github.workspace }}/target/debug/spec42" || true
+            echo "SPEC42_SERVER_PATH=${{ github.workspace }}/target/debug/spec42" >> $GITHUB_ENV
+            echo "SPEC42_SERVER_PATH set to debug binary"
+          elif [ -x "${{ github.workspace }}/target/release/spec42" ]; then
+            chmod +x "${{ github.workspace }}/target/release/spec42" || true
+            echo "SPEC42_SERVER_PATH=${{ github.workspace }}/target/release/spec42" >> $GITHUB_ENV
+            echo "SPEC42_SERVER_PATH set to release binary"
+          else
+            echo "WARNING: spec42 binary not found in target/{debug,release}"
+            ls -la "${{ github.workspace }}/target" || true
+            ls -la "${{ github.workspace }}/target/debug" || true
+            ls -la "${{ github.workspace }}/target/release" || true
+          fi
 
       - name: npm ci (vscode)
         run: cd vscode && npm ci
