@@ -71,6 +71,17 @@ jobs:
             ls -la "${{ github.workspace }}/target/release" || true
           fi
 
+      - name: Diagnose server binary (CI)
+        run: |
+          echo "SPEC42_SERVER_PATH=${SPEC42_SERVER_PATH:-"(unset)"}"
+          if [ -n "${SPEC42_SERVER_PATH:-}" ]; then
+            ls -la "${SPEC42_SERVER_PATH}" || true
+            file "${SPEC42_SERVER_PATH}" || true
+            ldd "${SPEC42_SERVER_PATH}" || true
+            "${SPEC42_SERVER_PATH}" --version || true
+            "${SPEC42_SERVER_PATH}" --help || true
+          fi
+
       - name: npm ci (vscode)
         run: cd vscode && npm ci
 
