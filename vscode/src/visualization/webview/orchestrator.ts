@@ -582,6 +582,25 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
     function clearVisualHighlights() {
         // Remove visual highlights without refreshing the view
+        // New backend-SVG highlight mechanism: only node border rects.
+        d3.selectAll('.outline-highlighted').each(function() {
+            const t = d3.select(this);
+            t.classed('outline-highlighted', false);
+            const origStroke = t.attr('data-original-stroke');
+            const origWidth = t.attr('data-original-width');
+            if (origStroke) {
+                t.style('stroke', origStroke);
+            } else {
+                t.style('stroke', null);
+            }
+            if (origWidth) {
+                t.style('stroke-width', origWidth);
+            } else {
+                t.style('stroke-width', null);
+            }
+        });
+
+        // Back-compat: if any stale highlighted-element classes exist, remove them.
         d3.selectAll('.highlighted-element').classed('highlighted-element', false);
         d3.selectAll('.selected').classed('selected', false);
 
@@ -839,7 +858,16 @@ import { buildGeneralViewGraph } from './graphBuilders';
         }
 
         svg.on('click', (event) => {
-            if (event.target === svg.node() || event.target === g.node()) {
+            // Clear highlights when clicking outside a node (background, edges, etc.)
+            // Node clicks call stopPropagation, so this mainly handles outside clicks.
+            try {
+                const target = event?.target;
+                const el = target && target instanceof Element ? target : null;
+                const withinNode = Boolean(el?.closest?.('[data-element-name]'));
+                if (!withinNode) {
+                    clearVisualHighlights();
+                }
+            } catch {
                 clearVisualHighlights();
             }
         });
@@ -856,10 +884,22 @@ import { buildGeneralViewGraph } from './graphBuilders';
             const qualifiedName = target.attr('data-qualified-name') || undefined;
             if (elementName) {
                 clearVisualHighlights();
-                target.classed('highlighted-element', true);
-                target.select('.node-background, rect')
-                    .style('stroke', '#FFD700')
-                    .style('stroke-width', '3px');
+                // Do not apply any "header highlight" styling; we only highlight via node outline stroke.
+                // Backend SVG nodes have multiple rects; only `rect.node-background` is the outer border.
+                // Capture original stroke/width once so we can restore it on clear.
+                target.selectAll('rect.node-background').each(function() {
+                    const t = d3.select(this);
+                    if (!t.attr('data-original-stroke')) {
+                        const computed = (this instanceof Element) ? getComputedStyle(this) : null;
+                        const stroke = computed?.stroke || t.style('stroke') || '';
+                        const width = computed?.strokeWidth || t.style('stroke-width') || '';
+                        if (stroke) t.attr('data-original-stroke', stroke);
+                        if (width) t.attr('data-original-width', width);
+                    }
+                    t.style('stroke', '#FFD700')
+                        .style('stroke-width', '3px')
+                        .classed('outline-highlighted', true);
+                });
                 const hit = hitMapByQualifiedName.get(qualifiedName || elementName);
                 vscode.postMessage({
                     command: 'jumpToElement',
