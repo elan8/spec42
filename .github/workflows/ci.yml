@@ -54,6 +54,8 @@ jobs:
         run: |
           echo "${{ github.workspace }}/target/debug" >> $GITHUB_PATH
           echo "${{ github.workspace }}/target/release" >> $GITHUB_PATH
+          # Ensure VS Code extension tests use the in-repo server binary (avoid PATH/order flakiness).
+          echo "SPEC42_SERVER_PATH=${{ github.workspace }}/target/release/spec42" >> $GITHUB_ENV
 
       - name: npm ci (vscode)
         run: cd vscode && npm ci

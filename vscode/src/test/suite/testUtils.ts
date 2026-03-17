@@ -27,6 +27,32 @@ export function getExternalFixturePath(absolutePath: string): string {
   return absolutePath;
 }
 
+function tryResolveServerBinary(extensionPath: string): string {
+  const platform = process.platform;
+  const arch = process.arch;
+  const binaryName = platform === "win32" ? "spec42.exe" : "spec42";
+
+  // Allow CI to override explicitly.
+  const fromEnv = (process.env.SPEC42_SERVER_PATH || "").trim();
+  if (fromEnv) {
+    return fromEnv;
+  }
+
+  // Repo-local cargo outputs (common for CI and local dev).
+  const repoRoot = path.resolve(extensionPath, "..");
+  const debugPath = path.join(repoRoot, "target", "debug", binaryName);
+  if (fs.existsSync(debugPath)) return debugPath;
+  const releasePath = path.join(repoRoot, "target", "release", binaryName);
+  if (fs.existsSync(releasePath)) return releasePath;
+
+  // Bundled server inside the extension (packaged layout).
+  const bundledPath = path.join(extensionPath, "server", `${platform}-${arch}`, binaryName);
+  if (fs.existsSync(bundledPath)) return bundledPath;
+
+  // Fallback: rely on PATH.
+  return "spec42";
+}
+
 export async function waitFor<T>(
   label: string,
   producer: () => PromiseLike<T | undefined>,
@@ -54,21 +80,13 @@ export async function configureServerForTests(): Promise<void> {
   );
   assert.ok(extension, "SysML Language Server extension should be installed");
 
-  const binaryName =
-    process.platform === "win32"
-      ? "spec42.exe"
-      : "spec42";
-  const serverPath = path.resolve(
-    extension.extensionPath,
-    "..",
-    "target",
-    "debug",
-    binaryName
-  );
-  assert.ok(
-    fs.existsSync(serverPath),
-    `Expected built server binary for tests at ${serverPath}. Run cargo build first.`
-  );
+  const serverPath = tryResolveServerBinary(extension.extensionPath);
+  if (serverPath !== "spec42") {
+    assert.ok(
+      fs.existsSync(serverPath),
+      `Expected SysML server binary for tests at ${serverPath}.`
+    );
+  }
 
   await vscode.workspace
     .getConfiguration("spec42")
