@@ -48,7 +48,9 @@ describe("Workspace Indexing Smoke Test", () => {
       (value) =>
         Boolean(
           value?.workspaceIndexSummary &&
-          value.workspaceIndexSummary.scannedFiles >= 3 &&
+          // In truncated mode the scan may stop at the configured per-pattern limit.
+          // The large-workspace fixture sets maxFilesPerPattern=2, so scannedFiles can be 2.
+          value.workspaceIndexSummary.scannedFiles >= 2 &&
           value.workspaceIndexSummary.truncated
         ),
       25000,

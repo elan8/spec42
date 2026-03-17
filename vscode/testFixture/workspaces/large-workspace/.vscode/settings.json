@@ -1,5 +1,5 @@
 {
-  "spec42.serverPath": "../../../../target/debug/spec42",
+  "spec42.serverPath": "C:\\Git\\spec42\\target\\debug\\spec42.exe",
   "spec42.workspace.maxFilesPerPattern": 2,
   "spec42.debug": true
 }
