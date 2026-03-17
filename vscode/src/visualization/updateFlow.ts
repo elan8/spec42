@@ -61,7 +61,10 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
             return;
         }
 
-        if (!panel.visible) {
+        // During session restore the panel may exist but not yet be considered
+        // visible. Allow forced updates (initial render / webviewReady) to run
+        // so the visualizer doesn't get stuck in the loading state.
+        if (!panel.visible && !forceUpdate) {
             setNeedsUpdateWhenVisible(true);
             return;
         }
