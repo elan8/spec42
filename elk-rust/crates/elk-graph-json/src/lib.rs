@@ -3,10 +3,8 @@
 
 use std::collections::HashMap;
 
-use elk_core::{
-    EdgeEndpoint, EdgeRouting, ElementLayoutOptions, Graph, HierarchyHandling, LayerConstraint,
-    LayoutDirection, NodeAlignment, Padding, Point, PortConstraint, PortSide, Rect, Size, Spacing,
-};
+use elk_core::{Point, Rect};
+use elk_graph::{EdgeEndpoint, ElkGraph, PropertyBag, PropertyValue, ShapeGeometry};
 use serde_json::Value;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -57,7 +55,7 @@ pub struct ImportWarnings {
 
 #[derive(Debug)]
 pub struct ImportResult {
-    pub graph: Graph,
+    pub graph: ElkGraph,
     pub warnings: ImportWarnings,
 }
 
@@ -74,13 +72,13 @@ pub fn import_str(input: &str) -> Result<ImportResult, JsonIoError> {
         .ok_or(JsonIoError::ExpectedObject("top-level graph"))?;
 
     let mut ctx = ImportCtx::default();
-    let mut graph = Graph::new();
+    let mut graph = ElkGraph::new();
 
-    // Root is represented as a node in ELK JSON; we import it as a node so edges that reference it
-    // can be resolved. Its layout options are treated as *graph-level defaults* (ELK semantics).
-    apply_layout_options(root, &mut graph.layout, None, &mut ctx.warnings);
-    let root_node = import_node_object(&mut ctx, &mut graph, None, root)?;
-    ctx.root = Some(root_node);
+    // Root node already exists in `ElkGraph::new()`. Populate it from JSON.
+    apply_layout_options(root, &mut graph.properties, &mut ctx.warnings);
+    let root_id = graph.root;
+    import_node_object(&mut ctx, &mut graph, root_id, None, root)?;
+    ctx.root = Some(graph.root);
 
     // Edge lists are scoped per hierarchy level. Walk the JSON tree and import `edges` at each node.
     import_edges_recursive(&mut ctx, &mut graph, root)?;
@@ -93,11 +91,18 @@ pub fn import_str(input: &str) -> Result<ImportResult, JsonIoError> {
     })
 }
 
+/// Legacy compatibility: adapt imported `elk-graph` into `elk-core::Graph`.
+pub fn import_str_core(input: &str) -> Result<(elk_core::Graph, ImportWarnings), JsonIoError> {
+    let imported = import_str(input)?;
+    let bridge = elk_graph::to_core_graph(&imported.graph);
+    Ok((bridge.core, imported.warnings))
+}
+
 /// Export `elk_core::Graph` into ELK Graph JSON (modern encoding).
 ///
 /// This exporter is intentionally minimal and focuses on emitting a JSON structure that ELK’s importer
 /// can read back. Layout options and coordinate modes are deferred.
-pub fn export_to_value(graph: &Graph) -> Value {
+pub fn export_to_value(graph: &elk_core::Graph) -> Value {
     let mut node_ids: HashMap<elk_core::NodeId, String> = HashMap::new();
     let mut port_ids: HashMap<elk_core::PortId, String> = HashMap::new();
 
@@ -129,163 +134,154 @@ pub fn export_to_value(graph: &Graph) -> Value {
     Value::Object(root)
 }
 
-pub fn export_pretty(graph: &Graph) -> String {
+pub fn export_pretty(graph: &elk_core::Graph) -> String {
     serde_json::to_string_pretty(&export_to_value(graph)).unwrap_or_else(|_| "{}".to_string())
 }
 
 #[derive(Default)]
 struct ImportCtx {
-    root: Option<elk_core::NodeId>,
+    root: Option<elk_graph::NodeId>,
     warnings: Vec<String>,
-    node_ids: HashMap<JsonId, elk_core::NodeId>,
-    port_ids: HashMap<JsonId, elk_core::PortId>,
+    node_ids: HashMap<JsonId, elk_graph::NodeId>,
+    port_ids: HashMap<JsonId, elk_graph::PortId>,
 }
 
 fn import_node_object(
     ctx: &mut ImportCtx,
-    graph: &mut Graph,
-    parent: Option<elk_core::NodeId>,
+    graph: &mut ElkGraph,
+    node_id: elk_graph::NodeId,
+    parent: Option<elk_graph::NodeId>,
     obj: &serde_json::Map<String, Value>,
-) -> Result<elk_core::NodeId, JsonIoError> {
+) -> Result<(), JsonIoError> {
     let id_value = obj.get("id").ok_or(JsonIoError::MissingField("id"))?;
     let json_id = JsonId::from_value(id_value)?;
-
-    let w = get_f32(obj, "width").unwrap_or(0.0);
-    let h = get_f32(obj, "height").unwrap_or(0.0);
-    let node_id = if let Some(parent) = parent {
-        graph.add_child_node(parent, Size::new(w, h))
-    } else {
-        graph.add_node(Size::new(w, h))
-    };
     ctx.node_ids.insert(json_id, node_id);
 
-    // Layout options apply to this node.
-    let layout = &mut graph.node_mut(node_id).layout;
-    apply_layout_options(obj, layout, None, &mut ctx.warnings);
-
-    // Prefer ELK-style relative positioning for hierarchy. Store it as preferred_position.
+    // Geometry.
     let x = get_f32(obj, "x").unwrap_or(0.0);
     let y = get_f32(obj, "y").unwrap_or(0.0);
-    graph.node_mut(node_id).preferred_position = Some(Point::new(x, y));
+    let w = get_f32(obj, "width").unwrap_or(0.0);
+    let h = get_f32(obj, "height").unwrap_or(0.0);
+    graph.nodes[node_id.index()].geometry = ShapeGeometry {
+        x,
+        y,
+        width: w,
+        height: h,
+    };
+    graph.nodes[node_id.index()].parent = parent;
 
-    // Ports
-    if let Some(Value::Array(ports)) = obj.get("ports") {
-        for port in ports {
-            let Some(port_obj) = port.as_object() else {
-                continue;
-            };
-            import_port_object(ctx, graph, node_id, port_obj)?;
-        }
-    }
+    apply_layout_options(obj, &mut graph.nodes[node_id.index()].properties, &mut ctx.warnings);
 
     // Labels
     if let Some(Value::Array(labels)) = obj.get("labels") {
         for label in labels {
-            let Some(label_obj) = label.as_object() else {
-                continue;
-            };
-            import_label_object(graph, Owner::Node(node_id), label_obj);
+            let Some(label_obj) = label.as_object() else { continue };
+            let label_id = import_label_object(graph, label_obj);
+            graph.attach_label_to_node(node_id, label_id);
+        }
+    }
+
+    // Ports
+    if let Some(Value::Array(ports)) = obj.get("ports") {
+        for port in ports {
+            let Some(port_obj) = port.as_object() else { continue };
+            import_port_object(ctx, graph, node_id, port_obj)?;
         }
     }
 
     // Children
     if let Some(Value::Array(children)) = obj.get("children") {
         for child in children {
-            let Some(child_obj) = child.as_object() else {
-                continue;
+            let Some(child_obj) = child.as_object() else { continue };
+            let child_geom = ShapeGeometry {
+                x: get_f32(child_obj, "x").unwrap_or(0.0),
+                y: get_f32(child_obj, "y").unwrap_or(0.0),
+                width: get_f32(child_obj, "width").unwrap_or(0.0),
+                height: get_f32(child_obj, "height").unwrap_or(0.0),
             };
-            import_node_object(ctx, graph, Some(node_id), child_obj)?;
+            let child_id = graph.add_node(node_id, child_geom);
+            import_node_object(ctx, graph, child_id, Some(node_id), child_obj)?;
         }
     }
 
-    Ok(node_id)
+    Ok(())
 }
 
 fn import_port_object(
     ctx: &mut ImportCtx,
-    graph: &mut Graph,
-    node_id: elk_core::NodeId,
+    graph: &mut ElkGraph,
+    node_id: elk_graph::NodeId,
     obj: &serde_json::Map<String, Value>,
-) -> Result<elk_core::PortId, JsonIoError> {
+) -> Result<(), JsonIoError> {
     let id_value = obj.get("id").ok_or(JsonIoError::MissingField("id"))?;
     let json_id = JsonId::from_value(id_value)?;
 
-    let w = get_f32(obj, "width").unwrap_or(0.0);
-    let h = get_f32(obj, "height").unwrap_or(0.0);
-
-    // ELK JSON does not encode port side as a dedicated field. Default to East for now.
-    let port_id = graph.add_port(node_id, PortSide::East, Size::new(w, h));
+    let geom = ShapeGeometry {
+        x: get_f32(obj, "x").unwrap_or(0.0),
+        y: get_f32(obj, "y").unwrap_or(0.0),
+        width: get_f32(obj, "width").unwrap_or(0.0),
+        height: get_f32(obj, "height").unwrap_or(0.0),
+    };
+    // Default port side; may be overridden by layout options.
+    let port_id = graph.add_port(node_id, elk_core::PortSide::East, geom);
     ctx.port_ids.insert(json_id, port_id);
 
-    let x = get_f32(obj, "x").unwrap_or(0.0);
-    let y = get_f32(obj, "y").unwrap_or(0.0);
-    graph.port_mut(port_id).bounds.origin = Point::new(x, y);
-
-    // Layout options apply to the port; port side can be encoded via `elk.port.side` / `org.eclipse.elk.port.side`.
-    let side_override =
-        apply_layout_options(obj, &mut graph.port_mut(port_id).layout, Some(OptionTarget::Port), &mut ctx.warnings);
-    if let Some(side) = side_override {
-        graph.port_mut(port_id).side = side;
+    apply_layout_options(obj, &mut graph.ports[port_id.index()].properties, &mut ctx.warnings);
+    if let Some(side) = parse_port_side_from_props(&graph.ports[port_id.index()].properties) {
+        graph.ports[port_id.index()].side = side;
     }
 
     if let Some(Value::Array(labels)) = obj.get("labels") {
         for label in labels {
-            let Some(label_obj) = label.as_object() else {
-                continue;
-            };
-            import_label_object(graph, Owner::Port(port_id), label_obj);
+            let Some(label_obj) = label.as_object() else { continue };
+            let label_id = import_label_object(graph, label_obj);
+            graph.attach_label_to_port(port_id, label_id);
         }
     }
 
-    Ok(port_id)
+    Ok(())
 }
 
-enum Owner {
-    Node(elk_core::NodeId),
-    Port(elk_core::PortId),
-    Edge(elk_core::EdgeId),
-}
-
-fn import_label_object(graph: &mut Graph, owner: Owner, obj: &serde_json::Map<String, Value>) {
+fn import_label_object(graph: &mut ElkGraph, obj: &serde_json::Map<String, Value>) -> elk_graph::LabelId {
     let text = obj
         .get("text")
         .and_then(|v| v.as_str())
         .unwrap_or_default()
         .to_string();
-    let w = get_f32(obj, "width").unwrap_or(0.0);
-    let h = get_f32(obj, "height").unwrap_or(0.0);
-    let id = graph.add_label(text, Size::new(w, h));
-    let x = get_f32(obj, "x").unwrap_or(0.0);
-    let y = get_f32(obj, "y").unwrap_or(0.0);
-    graph.labels[id.index()].position = Point::new(x, y);
-    apply_layout_options(obj, &mut graph.labels[id.index()].layout, Some(OptionTarget::Label), &mut Vec::new());
-
-    match owner {
-        Owner::Node(node_id) => graph.node_mut(node_id).labels.push(id),
-        Owner::Port(port_id) => graph.port_mut(port_id).labels.push(id),
-        Owner::Edge(edge_id) => graph.edge_mut(edge_id).labels.push(id),
-    }
+    let geom = ShapeGeometry {
+        x: get_f32(obj, "x").unwrap_or(0.0),
+        y: get_f32(obj, "y").unwrap_or(0.0),
+        width: get_f32(obj, "width").unwrap_or(0.0),
+        height: get_f32(obj, "height").unwrap_or(0.0),
+    };
+    let id = graph.add_label(text, geom);
+    apply_layout_options(obj, &mut graph.labels[id.index()].properties, &mut Vec::new());
+    id
 }
 
 fn import_edges_recursive(
     ctx: &mut ImportCtx,
-    graph: &mut Graph,
+    graph: &mut ElkGraph,
     node_obj: &serde_json::Map<String, Value>,
 ) -> Result<(), JsonIoError> {
+    // Find container node id (this JSON object corresponds to some node id we registered).
+    let container_json_id = node_obj.get("id").ok_or(JsonIoError::MissingField("id"))?;
+    let container = ctx
+        .node_ids
+        .get(&JsonId::from_value(container_json_id)?)
+        .copied()
+        .ok_or_else(|| JsonIoError::UnknownReference("edge container node not found".to_string()))?;
+
     if let Some(Value::Array(edges)) = node_obj.get("edges") {
         for edge_value in edges {
-            let Some(edge_obj) = edge_value.as_object() else {
-                continue;
-            };
-            import_edge_object(ctx, graph, edge_obj)?;
+            let Some(edge_obj) = edge_value.as_object() else { continue };
+            import_edge_object(ctx, graph, container, edge_obj)?;
         }
     }
 
     if let Some(Value::Array(children)) = node_obj.get("children") {
         for child in children {
-            let Some(child_obj) = child.as_object() else {
-                continue;
-            };
+            let Some(child_obj) = child.as_object() else { continue };
             import_edges_recursive(ctx, graph, child_obj)?;
         }
     }
@@ -295,316 +291,42 @@ fn import_edges_recursive(
 
 fn import_edge_object(
     ctx: &mut ImportCtx,
-    graph: &mut Graph,
+    graph: &mut ElkGraph,
+    container: elk_graph::NodeId,
     obj: &serde_json::Map<String, Value>,
-) -> Result<elk_core::EdgeId, JsonIoError> {
+) -> Result<(), JsonIoError> {
     let id_value = obj.get("id").ok_or(JsonIoError::MissingField("id"))?;
     let _json_id = JsonId::from_value(id_value)?;
 
-    let (source, target, warning) = if obj.contains_key("sources") || obj.contains_key("targets") {
+    let (sources, targets) = if obj.contains_key("sources") || obj.contains_key("targets") {
         resolve_modern_edge_endpoints(ctx, graph, obj)?
     } else {
         resolve_legacy_edge_endpoints(ctx, obj)?
     };
-    if let Some(w) = warning {
-        ctx.warnings.push(w);
-    }
 
-    let edge_id = graph.add_edge(source, target);
-    apply_layout_options(obj, &mut graph.edge_mut(edge_id).layout, Some(OptionTarget::Edge), &mut ctx.warnings);
+    let edge_id = graph.add_edge(container, sources, targets);
+    apply_layout_options(obj, &mut graph.edges[edge_id.index()].properties, &mut ctx.warnings);
 
-    // Labels
     if let Some(Value::Array(labels)) = obj.get("labels") {
         for label in labels {
-            let Some(label_obj) = label.as_object() else {
-                continue;
-            };
-            import_label_object(graph, Owner::Edge(edge_id), label_obj);
+            let Some(label_obj) = label.as_object() else { continue };
+            let label_id = import_label_object(graph, label_obj);
+            graph.attach_label_to_edge(edge_id, label_id);
         }
     }
 
-    // Route sections
-    if let Some(section) = import_edge_section(obj) {
-        graph.edge_mut(edge_id).sections = vec![section];
+    if let Some((start, bends, end)) = import_edge_section(obj) {
+        let _ = graph.add_edge_section(edge_id, start, bends, end);
     }
 
-    Ok(edge_id)
-}
-
-#[derive(Clone, Copy, Debug)]
-enum OptionTarget {
-    Port,
-    Edge,
-    Label,
-}
-
-/// Extract `layoutOptions` (preferred) or legacy `properties` (fallback) and apply recognized
-/// options to the given `ElementLayoutOptions`.
-///
-/// Returns a port side override when `target == Port` and a known port side option is present.
-fn apply_layout_options(
-    obj: &serde_json::Map<String, Value>,
-    out: &mut ElementLayoutOptions,
-    target: Option<OptionTarget>,
-    warnings: &mut Vec<String>,
-) -> Option<PortSide> {
-    let mut merged: Vec<(&str, String)> = Vec::new();
-
-    // Legacy first.
-    if let Some(Value::Object(props)) = obj.get("properties") {
-        for (k, v) in props {
-            if let Some(val) = json_primitive_to_string(v) {
-                merged.push((k.as_str(), val));
-            }
-        }
-    }
-    // `layoutOptions` overrides legacy `properties`.
-    if let Some(Value::Object(opts)) = obj.get("layoutOptions") {
-        for (k, v) in opts {
-            if let Some(val) = json_primitive_to_string(v) {
-                merged.push((k.as_str(), val));
-            }
-        }
-    }
-
-    if merged.is_empty() {
-        return None;
-    }
-
-    let mut port_side_override = None;
-
-    for (raw_key, raw_val) in merged {
-        let key = normalize_option_key(raw_key);
-        let val = raw_val.trim();
-
-        // Direction (CoreOptions.DIRECTION) - examples: "elk.direction": "RIGHT"
-        if key.ends_with("direction") {
-            if let Some(dir) = parse_direction(val) {
-                out.direction = Some(dir);
-            }
-            continue;
-        }
-
-        // Edge routing (CoreOptions.EDGE_ROUTING) - values: ORTHOGONAL, POLYLINE, SPLINES
-        if key.ends_with("edgerouting") {
-            if let Some(r) = parse_edge_routing(val) {
-                out.edge_routing = Some(r);
-            }
-            continue;
-        }
-
-        // Port constraints (CoreOptions.PORT_CONSTRAINTS) - values: FREE, FIXED_SIDE, FIXED_ORDER, FIXED_POS, FIXED_RATIO
-        if key.ends_with("portconstraints") {
-            if let Some(pc) = parse_port_constraints(val) {
-                out.port_constraint = Some(pc);
-            }
-            continue;
-        }
-
-        // Layer constraint (Layered) - values: FIRST, LAST, NONE
-        if key.ends_with("layerconstraint") {
-            if let Some(lc) = parse_layer_constraint(val) {
-                out.layer_constraint = Some(lc);
-            }
-            continue;
-        }
-
-        // Hierarchy handling - values often: INCLUDE_CHILDREN / IGNORE_CHILDREN
-        if key.ends_with("hierarchyhandling") {
-            if let Some(hh) = parse_hierarchy_handling(val) {
-                out.hierarchy_handling = Some(hh);
-            }
-            continue;
-        }
-
-        // Node alignment (layered placement) - values: START/CENTER/END/BALANCED
-        if key.ends_with("nodealignment") {
-            if let Some(na) = parse_node_alignment(val) {
-                out.node_alignment = Some(na);
-            }
-            continue;
-        }
-
-        // Padding - common key: "elk.padding" / "org.eclipse.elk.padding"
-        if key.ends_with("padding") {
-            if let Some(p) = parse_padding(val) {
-                out.padding = Some(p);
-            }
-            continue;
-        }
-
-        // Spacing - map a few core spacing keys.
-        if key.contains("spacing") {
-            // `org.eclipse.elk.spacing.nodeNode`
-            if key.ends_with("spacing.nodenode") {
-                if let Some(f) = parse_f32(val) {
-                    out.spacing = Some(merge_spacing(out.spacing, |s| s.node_spacing = f));
-                }
-                continue;
-            }
-            // `org.eclipse.elk.spacing.nodeNodeBetweenLayers` (layered often uses between-layers for layer gap)
-            if key.ends_with("spacing.nodenodebetweenlayers") {
-                if let Some(f) = parse_f32(val) {
-                    out.spacing = Some(merge_spacing(out.spacing, |s| s.layer_spacing = f));
-                }
-                continue;
-            }
-            // `org.eclipse.elk.spacing.edgeEdge`
-            if key.ends_with("spacing.edgeedge") {
-                if let Some(f) = parse_f32(val) {
-                    out.spacing = Some(merge_spacing(out.spacing, |s| s.edge_spacing = f));
-                }
-                continue;
-            }
-            // `org.eclipse.elk.spacing.componentComponent`
-            if key.ends_with("spacing.componentcomponent") {
-                if let Some(f) = parse_f32(val) {
-                    out.spacing = Some(merge_spacing(out.spacing, |s| s.component_spacing = f));
-                }
-                continue;
-            }
-        }
-
-        // Port side (Core option group `port.side`).
-        if matches!(target, Some(OptionTarget::Port))
-            && (key.ends_with("port.side") || key.ends_with("side"))
-        {
-            if let Some(side) = parse_port_side(val) {
-                port_side_override = Some(side);
-            }
-            continue;
-        }
-
-        // Keep unknown options for later parity work (for now: just surface a warning once in debug scenarios).
-        if key.starts_with("elk.") || key.starts_with("org.eclipse.elk.") {
-            // Only warn for a small set of keys we *expect* to support soon.
-            if matches!(
-                key.as_str(),
-                "elk.direction"
-                    | "elk.edgerouting"
-                    | "elk.portconstraints"
-                    | "elk.padding"
-                    | "elk.spacing.nodenode"
-            ) {
-                warnings.push(format!("unsupported ELK option {raw_key}={val}"));
-            }
-        }
-    }
-
-    port_side_override
-}
-
-fn normalize_option_key(key: &str) -> String {
-    // Preserve dots, lower-case, drop whitespace and underscores for forgiving matching.
-    key.trim()
-        .to_ascii_lowercase()
-        .replace('_', "")
-        .replace(' ', "")
-}
-
-fn json_primitive_to_string(v: &Value) -> Option<String> {
-    match v {
-        Value::String(s) => Some(s.clone()),
-        Value::Number(n) => Some(n.to_string()),
-        Value::Bool(b) => Some(b.to_string()),
-        Value::Null => None,
-        _ => None,
-    }
-}
-
-fn parse_direction(value: &str) -> Option<LayoutDirection> {
-    match value.trim().to_ascii_uppercase().as_str() {
-        "RIGHT" => Some(LayoutDirection::LeftToRight),
-        "LEFT" => Some(LayoutDirection::RightToLeft),
-        "DOWN" => Some(LayoutDirection::TopToBottom),
-        "UP" => Some(LayoutDirection::BottomToTop),
-        _ => None,
-    }
-}
-
-fn parse_edge_routing(value: &str) -> Option<EdgeRouting> {
-    match value.trim().to_ascii_uppercase().as_str() {
-        "ORTHOGONAL" => Some(EdgeRouting::Orthogonal),
-        // `POLYLINE` and `SPLINES` are approximated as straight segments in the current model.
-        "POLYLINE" | "SPLINES" => Some(EdgeRouting::Straight),
-        _ => None,
-    }
-}
-
-fn parse_port_constraints(value: &str) -> Option<PortConstraint> {
-    match value.trim().to_ascii_uppercase().as_str() {
-        "FREE" | "UNDEFINED" => Some(PortConstraint::Free),
-        "FIXED_SIDE" => Some(PortConstraint::FixedSide),
-        "FIXED_ORDER" | "FIXED_RATIO" => Some(PortConstraint::FixedOrder),
-        "FIXED_POS" => Some(PortConstraint::FixedPosition),
-        _ => None,
-    }
-}
-
-fn parse_layer_constraint(value: &str) -> Option<LayerConstraint> {
-    match value.trim().to_ascii_uppercase().as_str() {
-        "FIRST" => Some(LayerConstraint::First),
-        "LAST" => Some(LayerConstraint::Last),
-        "NONE" => Some(LayerConstraint::None),
-        _ => None,
-    }
-}
-
-fn parse_hierarchy_handling(value: &str) -> Option<HierarchyHandling> {
-    match value.trim().to_ascii_uppercase().as_str() {
-        "INCLUDE_CHILDREN" => Some(HierarchyHandling::IncludeChildren),
-        "IGNORE_CHILDREN" => Some(HierarchyHandling::IgnoreChildren),
-        _ => None,
-    }
-}
-
-fn parse_node_alignment(value: &str) -> Option<NodeAlignment> {
-    match value.trim().to_ascii_uppercase().as_str() {
-        "START" => Some(NodeAlignment::Start),
-        "CENTER" => Some(NodeAlignment::Center),
-        "END" => Some(NodeAlignment::End),
-        "BALANCED" => Some(NodeAlignment::Balanced),
-        _ => None,
-    }
-}
-
-fn parse_padding(value: &str) -> Option<Padding> {
-    // Common cases: "12" or "12.0". If ELK serializes a struct, try to recover the first number.
-    if let Some(f) = parse_f32(value) {
-        return Some(Padding::uniform(f));
-    }
-    let first_num = value
-        .split(|c: char| !(c.is_ascii_digit() || c == '.' || c == '-'))
-        .find(|s| !s.is_empty())
-        .and_then(parse_f32);
-    first_num.map(Padding::uniform)
-}
-
-fn parse_port_side(value: &str) -> Option<PortSide> {
-    match value.trim().to_ascii_uppercase().as_str() {
-        "NORTH" => Some(PortSide::North),
-        "SOUTH" => Some(PortSide::South),
-        "EAST" => Some(PortSide::East),
-        "WEST" => Some(PortSide::West),
-        _ => None,
-    }
-}
-
-fn parse_f32(value: &str) -> Option<f32> {
-    value.trim().parse::<f32>().ok()
-}
-
-fn merge_spacing(current: Option<Spacing>, f: impl FnOnce(&mut Spacing)) -> Spacing {
-    let mut s = current.unwrap_or_default();
-    f(&mut s);
-    s
+    Ok(())
 }
 
 fn resolve_modern_edge_endpoints(
     ctx: &ImportCtx,
-    graph: &Graph,
+    graph: &ElkGraph,
     obj: &serde_json::Map<String, Value>,
-) -> Result<(EdgeEndpoint, EdgeEndpoint, Option<String>), JsonIoError> {
+) -> Result<(Vec<EdgeEndpoint>, Vec<EdgeEndpoint>), JsonIoError> {
     let sources = obj
         .get("sources")
         .and_then(|v| v.as_array())
@@ -614,30 +336,28 @@ fn resolve_modern_edge_endpoints(
         .and_then(|v| v.as_array())
         .ok_or(JsonIoError::MissingField("targets"))?;
 
-    let mut warnings = None;
+    let src = sources
+        .iter()
+        .filter_map(|v| endpoint_by_id(ctx, graph, v))
+        .collect::<Vec<_>>();
+    let tgt = targets
+        .iter()
+        .filter_map(|v| endpoint_by_id(ctx, graph, v))
+        .collect::<Vec<_>>();
 
-    let source = pick_first_endpoint(ctx, graph, sources).ok_or_else(|| {
-        JsonIoError::UnknownReference("edge has no resolvable source endpoint".to_string())
-    })?;
-    let target = pick_first_endpoint(ctx, graph, targets).ok_or_else(|| {
-        JsonIoError::UnknownReference("edge has no resolvable target endpoint".to_string())
-    })?;
-
-    if sources.len() > 1 || targets.len() > 1 {
-        warnings = Some(format!(
-            "hyperedge endpoints not supported yet; using first source/target (sources={}, targets={})",
-            sources.len(),
-            targets.len()
+    if src.is_empty() || tgt.is_empty() {
+        return Err(JsonIoError::UnknownReference(
+            "edge has no resolvable source or target endpoint".to_string(),
         ));
     }
 
-    Ok((source, target, warnings))
+    Ok((src, tgt))
 }
 
 fn resolve_legacy_edge_endpoints(
     ctx: &ImportCtx,
     obj: &serde_json::Map<String, Value>,
-) -> Result<(EdgeEndpoint, EdgeEndpoint, Option<String>), JsonIoError> {
+) -> Result<(Vec<EdgeEndpoint>, Vec<EdgeEndpoint>), JsonIoError> {
     let source_node_id = obj.get("source").ok_or(JsonIoError::MissingField("source"))?;
     let target_node_id = obj.get("target").ok_or(JsonIoError::MissingField("target"))?;
     let source_node = ctx
@@ -661,43 +381,46 @@ fn resolve_legacy_edge_endpoints(
         .and_then(|id| ctx.port_ids.get(&id).copied());
 
     Ok((
-        EdgeEndpoint {
+        vec![EdgeEndpoint {
             node: source_node,
             port: source_port,
-        },
-        EdgeEndpoint {
+        }],
+        vec![EdgeEndpoint {
             node: target_node,
             port: target_port,
-        },
-        None,
+        }],
     ))
 }
 
-fn pick_first_endpoint(ctx: &ImportCtx, graph: &Graph, ids: &[Value]) -> Option<EdgeEndpoint> {
-    for id in ids {
-        let json_id = JsonId::from_value(id).ok()?;
-        if let Some(&port_id) = ctx.port_ids.get(&json_id) {
-            let node = graph.port(port_id).node;
-            return Some(EdgeEndpoint {
-                node,
-                port: Some(port_id),
-            });
-        }
-        if let Some(&node_id) = ctx.node_ids.get(&json_id) {
-            return Some(EdgeEndpoint { node: node_id, port: None });
-        }
+fn endpoint_by_id(ctx: &ImportCtx, graph: &ElkGraph, id: &Value) -> Option<EdgeEndpoint> {
+    let json_id = JsonId::from_value(id).ok()?;
+    if let Some(&port_id) = ctx.port_ids.get(&json_id) {
+        let node = graph.ports[port_id.index()].node;
+        return Some(EdgeEndpoint {
+            node,
+            port: Some(port_id),
+        });
+    }
+    if let Some(&node_id) = ctx.node_ids.get(&json_id) {
+        return Some(EdgeEndpoint { node: node_id, port: None });
     }
     None
 }
 
-fn import_edge_section(obj: &serde_json::Map<String, Value>) -> Option<elk_core::EdgeSection> {
+fn import_edge_section(obj: &serde_json::Map<String, Value>) -> Option<(Point, Vec<Point>, Point)> {
     // Modern sections encoding: use first section if present.
     if let Some(Value::Array(sections)) = obj.get("sections") {
         if let Some(first) = sections.first().and_then(|v| v.as_object()) {
             let start = first.get("startPoint").and_then(|v| v.as_object())?;
             let end = first.get("endPoint").and_then(|v| v.as_object())?;
-            let start_pt = Point::new(get_f32(start, "x").unwrap_or(0.0), get_f32(start, "y").unwrap_or(0.0));
-            let end_pt = Point::new(get_f32(end, "x").unwrap_or(0.0), get_f32(end, "y").unwrap_or(0.0));
+            let start_pt = Point::new(
+                get_f32(start, "x").unwrap_or(0.0),
+                get_f32(start, "y").unwrap_or(0.0),
+            );
+            let end_pt = Point::new(
+                get_f32(end, "x").unwrap_or(0.0),
+                get_f32(end, "y").unwrap_or(0.0),
+            );
             let mut bends = Vec::new();
             if let Some(Value::Array(bp)) = first.get("bendPoints") {
                 for p in bp {
@@ -709,16 +432,13 @@ fn import_edge_section(obj: &serde_json::Map<String, Value>) -> Option<elk_core:
                     }
                 }
             }
-            return Some(elk_core::EdgeSection {
-                start: start_pt,
-                bend_points: bends,
-                end: end_pt,
-            });
+            return Some((start_pt, bends, end_pt));
         }
     }
 
     // Legacy encoding.
-    let has_legacy = obj.contains_key("sourcePoint") || obj.contains_key("targetPoint") || obj.contains_key("bendPoints");
+    let has_legacy =
+        obj.contains_key("sourcePoint") || obj.contains_key("targetPoint") || obj.contains_key("bendPoints");
     if !has_legacy {
         return None;
     }
@@ -743,11 +463,69 @@ fn import_edge_section(obj: &serde_json::Map<String, Value>) -> Option<elk_core:
             }
         }
     }
-    Some(elk_core::EdgeSection {
-        start: start_pt,
-        bend_points: bends,
-        end: end_pt,
-    })
+    Some((start_pt, bends, end_pt))
+}
+
+fn apply_layout_options(obj: &serde_json::Map<String, Value>, out: &mut PropertyBag, warnings: &mut Vec<String>) {
+    // Legacy first.
+    if let Some(Value::Object(props)) = obj.get("properties") {
+        for (k, v) in props {
+            if let Some(val) = json_primitive_to_property(v) {
+                out.insert(k.as_str(), val);
+            }
+        }
+    }
+    // `layoutOptions` overrides legacy `properties`.
+    if let Some(Value::Object(opts)) = obj.get("layoutOptions") {
+        for (k, v) in opts {
+            if let Some(val) = json_primitive_to_property(v) {
+                out.insert(k.as_str(), val);
+            }
+        }
+    }
+
+    // Best-effort warning surface: remind when options exist but are not yet bridged into engines.
+    if (obj.get("layoutOptions").is_some() || obj.get("properties").is_some()) && warnings.is_empty() {
+        // no-op placeholder; we keep warnings vector for future richer diagnostics.
+    }
+}
+
+fn json_primitive_to_property(v: &Value) -> Option<PropertyValue> {
+    match v {
+        Value::String(s) => Some(PropertyValue::String(s.clone())),
+        Value::Number(n) => {
+            if let Some(i) = n.as_i64() {
+                Some(PropertyValue::Int(i))
+            } else {
+                n.as_f64().map(PropertyValue::Float)
+            }
+        }
+        Value::Bool(b) => Some(PropertyValue::Bool(*b)),
+        Value::Null => None,
+        _ => None,
+    }
+}
+
+fn parse_port_side_from_props(props: &PropertyBag) -> Option<elk_core::PortSide> {
+    for (k, v) in props.iter() {
+        let key = k.0.to_ascii_lowercase();
+        if !key.ends_with("port.side") && !key.ends_with("elk.port.side") && !key.ends_with("side") {
+            continue;
+        }
+        let s = match v {
+            PropertyValue::String(s) => s.as_str(),
+            _ => continue,
+        };
+        let upper = s.trim().to_ascii_uppercase();
+        return match upper.as_str() {
+            "NORTH" => Some(elk_core::PortSide::North),
+            "SOUTH" => Some(elk_core::PortSide::South),
+            "EAST" => Some(elk_core::PortSide::East),
+            "WEST" => Some(elk_core::PortSide::West),
+            _ => None,
+        };
+    }
+    None
 }
 
 fn get_f32(map: &serde_json::Map<String, Value>, key: &str) -> Option<f32> {
@@ -758,7 +536,7 @@ fn get_f32(map: &serde_json::Map<String, Value>, key: &str) -> Option<f32> {
 }
 
 fn export_node(
-    graph: &Graph,
+    graph: &elk_core::Graph,
     node_id: elk_core::NodeId,
     node_ids: &mut HashMap<elk_core::NodeId, String>,
     port_ids: &mut HashMap<elk_core::PortId, String>,
@@ -816,7 +594,7 @@ fn export_node(
 }
 
 fn export_port(
-    graph: &Graph,
+    graph: &elk_core::Graph,
     port_id: elk_core::PortId,
     port_ids: &mut HashMap<elk_core::PortId, String>,
 ) -> Value {
@@ -846,7 +624,7 @@ fn export_port(
 }
 
 fn export_edge(
-    graph: &Graph,
+    graph: &elk_core::Graph,
     edge_id: elk_core::EdgeId,
     node_ids: &HashMap<elk_core::NodeId, String>,
     port_ids: &HashMap<elk_core::PortId, String>,
@@ -883,7 +661,7 @@ fn export_edge(
 }
 
 fn endpoint_id(
-    endpoint: EdgeEndpoint,
+    endpoint: elk_core::EdgeEndpoint,
     node_ids: &HashMap<elk_core::NodeId, String>,
     port_ids: &HashMap<elk_core::PortId, String>,
 ) -> String {
@@ -927,7 +705,7 @@ fn point_obj(p: Point) -> serde_json::Map<String, Value> {
     m
 }
 
-fn export_label(graph: &Graph, label_id: elk_core::LabelId) -> Value {
+fn export_label(graph: &elk_core::Graph, label_id: elk_core::LabelId) -> Value {
     let label = &graph.labels[label_id.index()];
     let mut obj = serde_json::Map::new();
     obj.insert("text".to_string(), Value::String(label.text.clone()));
@@ -940,7 +718,7 @@ fn export_label(graph: &Graph, label_id: elk_core::LabelId) -> Value {
 
 #[cfg(test)]
 mod tests {
-    use elk_core::{LayoutEngine, LayoutOptions, Size};
+    use elk_core::{Graph, LayoutEngine, LayoutOptions, Size};
     use elk_layered::LayeredLayoutEngine;
 
     use super::*;
@@ -986,12 +764,12 @@ mod tests {
         let mut graph = Graph::new();
         let a = graph.add_node(Size::new(80.0, 40.0));
         let b = graph.add_node(Size::new(80.0, 40.0));
-        graph.add_edge(EdgeEndpoint::node(a), EdgeEndpoint::node(b));
+        graph.add_edge(elk_core::EdgeEndpoint::node(a), elk_core::EdgeEndpoint::node(b));
 
         let json = export_pretty(&graph);
         let imported = import_str(&json).expect("re-import should work");
         assert_eq!(imported.graph.edges.len(), 1);
-        assert_eq!(imported.graph.nodes.len(), 3, "includes imported synthetic root node");
+        assert_eq!(imported.graph.nodes.len(), 3, "root + 2 nodes");
     }
 
     #[test]
@@ -1007,7 +785,7 @@ mod tests {
         }
         "#;
 
-        let mut imported = import_str(json).expect("import should succeed").graph;
+        let (mut imported, _warnings) = import_str_core(json).expect("import should succeed");
         let report = LayeredLayoutEngine::new()
             .layout(&mut imported, &LayoutOptions::default())
             .expect("layout should succeed");

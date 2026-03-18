@@ -317,6 +317,13 @@ pub fn run_layered_with_options(
     LayeredLayoutEngine::new().layout(graph, &options).expect("layered layout should succeed")
 }
 
+pub fn run_layered_elk_graph_with_options(
+    graph: &mut elk_graph::ElkGraph,
+    options: LayoutOptions,
+) -> elk_core::LayoutReport {
+    elk_layered::layout_elk_graph(graph, &options).expect("layered layout should succeed")
+}
+
 pub fn assert_no_overlap(graph: &Graph, nodes: &[NodeId]) {
     for (index, left) in nodes.iter().enumerate() {
         for right in nodes.iter().skip(index + 1) {

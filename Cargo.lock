@@ -333,10 +333,18 @@ name = "elk-core"
 version = "0.1.0"
 
 [[package]]
+name = "elk-graph"
+version = "0.1.0"
+dependencies = [
+ "elk-core",
+]
+
+[[package]]
 name = "elk-graph-json"
 version = "0.1.0"
 dependencies = [
  "elk-core",
+ "elk-graph",
  "elk-layered",
  "serde",
  "serde_json",
@@ -347,6 +355,7 @@ name = "elk-layered"
 version = "0.1.0"
 dependencies = [
  "elk-core",
+ "elk-graph",
 ]
 
 [[package]]
@@ -355,6 +364,7 @@ version = "0.1.0"
 dependencies = [
  "criterion",
  "elk-core",
+ "elk-graph",
  "elk-graph-json",
  "elk-layered",
  "proptest",

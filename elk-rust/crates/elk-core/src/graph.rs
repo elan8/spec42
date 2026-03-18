@@ -5,6 +5,7 @@ use crate::{
     NodeLabelPlacement, Point, PortConstraint, PortId, PortLabelPlacement, Rect, Size,
 };
 
+#[deprecated(note = "Legacy graph model. New work should use the ELK-like model in the `elk-graph` crate.")]
 #[derive(Clone, Debug)]
 pub struct Graph {
     pub id: GraphId,
@@ -170,6 +171,7 @@ pub struct GraphStats {
     pub label_count: usize,
 }
 
+#[deprecated(note = "Legacy graph model. New work should use the ELK-like model in the `elk-graph` crate.")]
 #[derive(Clone, Debug)]
 pub struct Node {
     pub id: NodeId,
@@ -201,6 +203,7 @@ impl Node {
     }
 }
 
+#[deprecated(note = "Legacy graph model. New work should use the ELK-like model in the `elk-graph` crate.")]
 #[derive(Clone, Debug)]
 pub struct Port {
     pub id: PortId,
@@ -238,6 +241,7 @@ pub enum PortSide {
     West,
 }
 
+#[deprecated(note = "Legacy graph model. New work should use the ELK-like model in the `elk-graph` crate.")]
 #[derive(Clone, Debug)]
 pub struct Edge {
     pub id: EdgeId,
@@ -264,6 +268,7 @@ impl Edge {
     }
 }
 
+#[deprecated(note = "Legacy graph model. New work should use the ELK-like model in the `elk-graph` crate.")]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct EdgeEndpoint {
     pub node: NodeId,
@@ -285,6 +290,7 @@ impl EdgeEndpoint {
     }
 }
 
+#[deprecated(note = "Legacy graph model. New work should use the ELK-like model in the `elk-graph` crate.")]
 #[derive(Clone, Debug, PartialEq)]
 pub struct EdgeSection {
     pub start: Point,
@@ -292,6 +298,7 @@ pub struct EdgeSection {
     pub end: Point,
 }
 
+#[deprecated(note = "Legacy graph model. New work should use the ELK-like model in the `elk-graph` crate.")]
 #[derive(Clone, Debug)]
 pub struct Label {
     pub id: LabelId,

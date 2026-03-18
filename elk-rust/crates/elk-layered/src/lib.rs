@@ -66,6 +66,20 @@ impl LayoutEngine for LayeredLayoutEngine {
     }
 }
 
+/// Compatibility entry point: run layered layout on an `elk-graph` model.
+///
+/// This uses the `elk-graph -> elk-core` bridge so we can migrate incrementally without rewriting
+/// the full pipeline in one step.
+pub fn layout_elk_graph(
+    graph: &mut elk_graph::ElkGraph,
+    options: &LayoutOptions,
+) -> Result<LayoutReport, LayoutError> {
+    let mut bridge = elk_graph::to_core_graph(graph);
+    let report = LayeredLayoutEngine::new().layout(&mut bridge.core, options)?;
+    bridge.apply_core_layout_to_elk_graph(graph);
+    Ok(report)
+}
+
 fn validate_graph(graph: &Graph) -> Result<(), LayoutError> {
     for edge in &graph.edges {
         if edge.source.node.index() >= graph.nodes.len()

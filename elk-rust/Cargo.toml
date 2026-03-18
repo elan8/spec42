@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "crates/elk-core",
+    "crates/elk-graph",
     "crates/elk-layered",
     "crates/elk-testkit",
     "crates/elk-graph-json",
