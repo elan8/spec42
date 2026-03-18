@@ -329,6 +329,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "48c757948c5ede0e46177b7add2e67155f70e33c07fea8284df6576da70b3719"
 
 [[package]]
+name = "elk-alg-common"
+version = "0.1.0"
+dependencies = [
+ "elk-core",
+ "elk-graph",
+ "elk-meta",
+]
+
+[[package]]
 name = "elk-core"
 version = "0.1.0"
 
@@ -354,7 +363,16 @@ dependencies = [
 name = "elk-layered"
 version = "0.1.0"
 dependencies = [
+ "elk-alg-common",
  "elk-core",
+ "elk-graph",
+ "elk-meta",
+]
+
+[[package]]
+name = "elk-meta"
+version = "0.1.0"
+dependencies = [
  "elk-graph",
 ]
 

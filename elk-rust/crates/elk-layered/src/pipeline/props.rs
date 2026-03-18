@@ -14,29 +14,22 @@ pub(crate) fn decode_layout_from_props(props: &PropertyBag) -> ElementLayoutOpti
 }
 
 pub(crate) fn apply_layout_from_props(props: &PropertyBag, out: &mut ElementLayoutOptions) {
-    let mut by_key: BTreeMap<String, &PropertyValue> = BTreeMap::new();
-    for (k, v) in props.iter() {
-        by_key.insert(k.0.to_ascii_lowercase(), v);
-    }
+    let by_key: BTreeMap<String, &PropertyValue> = elk_alg_common::options::casefold_map(props);
+    let meta = elk_meta::default_registry();
 
     // direction
-    if let Some(PropertyValue::String(dir)) =
-        find_value(&by_key, &["elk.direction", "org.eclipse.elk.direction"])
-    {
+    if let Some(PropertyValue::String(dir)) = elk_alg_common::options::find_option(
+        &meta,
+        &by_key,
+        "elk.direction",
+    ) {
         out.direction = parse_direction(dir).or(out.direction);
     }
 
     // edgeRouting
-    if let Some(PropertyValue::String(r)) = find_value(
-        &by_key,
-        &[
-            "elk.edgerouting",
-            "elk.edgerouting",
-            "elk.edgeRouting",
-            "org.eclipse.elk.edgeRouting",
-            "org.eclipse.elk.edgerouting",
-        ],
-    ) {
+    if let Some(PropertyValue::String(r)) =
+        elk_alg_common::options::find_option(&meta, &by_key, "elk.edgeRouting")
+    {
         out.edge_routing = parse_edge_routing(r).or(out.edge_routing);
     }
 

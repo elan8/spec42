@@ -81,10 +81,14 @@ pub fn preprocess_cross_hierarchy_edges(
         let Some(original_target) = edge.targets.first().copied() else {
             continue;
         };
-        let Some(effective_source) = nearest_ancestor_in_set(graph, original_source.node, local_nodes) else {
+        let Some(effective_source) =
+            elk_alg_common::graph::nearest_ancestor_in_set(graph, original_source.node, local_nodes)
+        else {
             continue;
         };
-        let Some(effective_target) = nearest_ancestor_in_set(graph, original_target.node, local_nodes) else {
+        let Some(effective_target) =
+            elk_alg_common::graph::nearest_ancestor_in_set(graph, original_target.node, local_nodes)
+        else {
             continue;
         };
 
@@ -160,17 +164,4 @@ pub fn postprocess_cross_hierarchy_edges(
     }
 }
 
-fn nearest_ancestor_in_set(
-    graph: &ElkGraph,
-    node: NodeId,
-    local_nodes: &std::collections::BTreeSet<NodeId>,
-) -> Option<NodeId> {
-    let mut current = Some(node);
-    while let Some(candidate) = current {
-        if local_nodes.contains(&candidate) {
-            return Some(candidate);
-        }
-        current = graph.nodes[candidate.index()].parent;
-    }
-    None
-}
+// moved to `elk-alg-common`

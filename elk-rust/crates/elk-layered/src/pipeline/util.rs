@@ -2,6 +2,7 @@ use elk_core::{LayoutDirection, Point, Size};
 use elk_graph::{EdgeEndpoint, ElkGraph, LabelId, NodeId, PortId};
 
 use crate::ir::{IrNodeId, LayeredIr};
+pub(crate) use elk_alg_common::geometry::{dedup_points, simplify_orthogonal_points_vec as simplify_orthogonal_points};
 
 pub(crate) fn major_size(size: Size, direction: LayoutDirection) -> f32 {
     match direction {
@@ -63,55 +64,6 @@ pub(crate) fn node_minor_center(
     direction: LayoutDirection,
 ) -> f32 {
     node_minor_start(ir, node_id, direction) + minor_size(ir.nodes[node_id].size, direction) / 2.0
-}
-
-pub(crate) fn dedup_points(points: Vec<Point>) -> Vec<Point> {
-    let mut deduped = Vec::new();
-    for point in points {
-        if deduped.last().copied() != Some(point) {
-            deduped.push(point);
-        }
-    }
-    deduped
-}
-
-/// Tolerance for treating points as collinear (removes near-redundant bends).
-const COLLINEAR_TOLERANCE: f32 = 1.0;
-
-pub(crate) fn simplify_orthogonal_points(points: Vec<Point>) -> Vec<Point> {
-    let mut simplified = dedup_points(points);
-    if simplified.len() < 3 {
-        return simplified;
-    }
-
-    loop {
-        let mut changed = false;
-        let mut next = Vec::with_capacity(simplified.len());
-        next.push(simplified[0]);
-
-        for window in simplified.windows(3) {
-            let previous = window[0];
-            let current = window[1];
-            let following = window[2];
-            if is_collinear(previous, current, following) {
-                changed = true;
-                continue;
-            }
-            next.push(current);
-        }
-
-        next.push(*simplified.last().unwrap());
-        simplified = dedup_points(next);
-
-        if !changed || simplified.len() < 3 {
-            return simplified;
-        }
-    }
-}
-
-fn is_collinear(a: Point, b: Point, c: Point) -> bool {
-    ((a.x - b.x).abs() <= COLLINEAR_TOLERANCE && (b.x - c.x).abs() <= COLLINEAR_TOLERANCE)
-        || ((a.y - b.y).abs() <= COLLINEAR_TOLERANCE && (b.y - c.y).abs() <= COLLINEAR_TOLERANCE)
 }
 
 /// Ensures every consecutive pair of points is axis-aligned by inserting one intermediate

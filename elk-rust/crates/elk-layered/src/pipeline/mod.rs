@@ -147,142 +147,67 @@ fn pack_components(
     stats: &mut elk_core::LayoutStats,
     bounds: &mut Rect,
 ) {
-    let components = components(ir);
-    stats.component_count = stats.component_count.max(components.len());
-    if components.len() <= 1 {
+    let comps = components(ir);
+    stats.component_count = stats.component_count.max(comps.len());
+    if comps.len() <= 1 {
         return;
     }
 
-    // Pack connected components into rows, targeting a configurable aspect ratio, mirroring
-    // upstream ELK's SimpleRowGraphPlacer.
+    // Adapt LayeredIr to the shared packing helper.
+    struct IrView<'a> {
+        ir: &'a mut crate::ir::LayeredIr,
+        adjacency: BTreeMap<usize, Vec<usize>>,
+    }
+
+    impl<'a> elk_alg_common::components::ComponentGraphView for IrView<'a> {
+        type Node = usize;
+
+        fn nodes(&self) -> Vec<Self::Node> {
+            (0..self.ir.nodes.len()).collect()
+        }
+
+        fn neighbors(&self, n: Self::Node) -> Vec<Self::Node> {
+            self.adjacency.get(&n).cloned().unwrap_or_default()
+        }
+
+        fn bounds(&self, n: Self::Node) -> Rect {
+            let node = &self.ir.nodes[n];
+            Rect::new(node.position, node.size)
+        }
+
+        fn translate(&mut self, n: Self::Node, dx: f32, dy: f32) {
+            self.ir.nodes[n].position.x += dx;
+            self.ir.nodes[n].position.y += dy;
+        }
+    }
+
+    let mut adjacency: BTreeMap<usize, Vec<usize>> = BTreeMap::new();
+    for node_id in 0..ir.nodes.len() {
+        adjacency.entry(node_id).or_default();
+    }
+    for edge in &ir.normalized_edges {
+        adjacency.entry(edge.from).or_default().push(edge.to);
+        adjacency.entry(edge.to).or_default().push(edge.from);
+    }
+
     let padding = options.layered.padding;
-    let spacing = options.layered.spacing.component_spacing;
-    let target_aspect = options
-        .layered
-        .component_packing_aspect_ratio
-        .clamp(0.4, 3.0);
-
-    #[derive(Clone)]
-    struct CompMeta {
-        rect: Rect,
-        nodes: Vec<usize>,
-        min_model_order: usize,
-        min_real_index: usize,
-        area: f32,
-    }
-
-    let mut metas: Vec<CompMeta> = components
-        .into_iter()
-        .map(|component| {
-            let min_x = component
-                .iter()
-                .map(|node_id| ir.nodes[*node_id].position.x)
-                .fold(f32::MAX, f32::min);
-            let min_y = component
-                .iter()
-                .map(|node_id| ir.nodes[*node_id].position.y)
-                .fold(f32::MAX, f32::min);
-            let max_x = component
-                .iter()
-                .map(|node_id| ir.nodes[*node_id].position.x + ir.nodes[*node_id].size.width)
-                .fold(0.0, f32::max);
-            let max_y = component
-                .iter()
-                .map(|node_id| ir.nodes[*node_id].position.y + ir.nodes[*node_id].size.height)
-                .fold(0.0, f32::max);
-
-            let min_model_order = component
-                .iter()
-                .map(|node_id| ir.nodes[*node_id].model_order)
-                .min()
-                .unwrap_or(usize::MAX);
-
-            let min_real_index = component
-                .iter()
-                .filter_map(|node_id| match ir.nodes[*node_id].kind {
-                    crate::ir::IrNodeKind::Real(real) => Some(real.index()),
-                    _ => None,
-                })
-                .min()
-                .unwrap_or(usize::MAX);
-
-            let rect = Rect::new(
-                Point::new(min_x, min_y),
-                Size::new(max_x - min_x, max_y - min_y),
-            );
-            let area = rect.size.width.max(1.0) * rect.size.height.max(1.0);
-            CompMeta {
-                rect,
-                nodes: component,
-                min_model_order,
-                min_real_index,
-                area,
-            }
-        })
-        .collect();
-
-    // Stable, balanced ordering: primarily preserve model order, then larger areas first, then ids.
-    metas.sort_by(|a, b| {
-        a.min_model_order
-            .cmp(&b.min_model_order)
-            .then_with(|| b.area.partial_cmp(&a.area).unwrap_or(std::cmp::Ordering::Equal))
-            .then_with(|| a.min_real_index.cmp(&b.min_real_index))
-            .then_with(|| {
-                a.rect
-                    .origin
-                    .x
-                    .partial_cmp(&b.rect.origin.x)
-                    .unwrap_or(std::cmp::Ordering::Equal)
-            })
-            .then_with(|| {
-                a.rect
-                    .origin
-                    .y
-                    .partial_cmp(&b.rect.origin.y)
-                    .unwrap_or(std::cmp::Ordering::Equal)
-            })
-    });
-
-    let mut max_box_width = 0.0f32;
-    let mut total_area = 0.0f32;
-    for meta in &metas {
-        max_box_width = max_box_width.max(meta.rect.size.width);
-        total_area += meta.area;
-    }
-    let mut max_row_width = (total_area.sqrt() * target_aspect).max(max_box_width);
-    // If spacing dominates, ensure at least some room for multiple columns.
-    max_row_width = max_row_width.max(max_box_width + spacing * 2.0);
-
-    let mut cursor_x = padding.left;
-    let mut cursor_y = padding.top;
-    let mut row_height = 0.0f32;
-    let mut broadest_row = padding.left;
-
-    for meta in metas {
-        let w = meta.rect.size.width;
-        let h = meta.rect.size.height;
-        if cursor_x > padding.left && cursor_x + w > padding.left + max_row_width {
-            cursor_x = padding.left;
-            cursor_y += row_height + spacing;
-            row_height = 0.0;
-        }
-
-        let target_origin = Point::new(cursor_x, cursor_y);
-        let delta = Point::new(target_origin.x - meta.rect.origin.x, target_origin.y - meta.rect.origin.y);
-        for node_id in meta.nodes {
-            ir.nodes[node_id].position.x += delta.x;
-            ir.nodes[node_id].position.y += delta.y;
-        }
-
-        broadest_row = broadest_row.max(cursor_x + w);
-        row_height = row_height.max(h);
-        cursor_x += w + spacing;
-        stats.packed_components += 1;
-    }
-
-    let packed_width = (broadest_row + padding.right).max(bounds.size.width);
-    let packed_height = (cursor_y + row_height + padding.bottom).max(bounds.size.height);
-    bounds.size = Size::new(packed_width, packed_height);
+    let pad = padding
+        .top
+        .max(padding.right)
+        .max(padding.bottom)
+        .max(padding.left);
+    let mut view = IrView { ir, adjacency };
+    let packed_bounds = elk_alg_common::components::pack_components_in_rows(
+        &mut view,
+        elk_alg_common::components::RowPackingOptions {
+            spacing: options.layered.spacing.component_spacing,
+            padding: pad,
+            target_aspect_ratio: options.layered.component_packing_aspect_ratio,
+        },
+    );
+    stats.packed_components += stats.component_count.saturating_sub(1);
+    bounds.size.width = bounds.size.width.max(packed_bounds.size.width);
+    bounds.size.height = bounds.size.height.max(packed_bounds.size.height);
 }
 
 fn components(ir: &crate::ir::LayeredIr) -> Vec<Vec<usize>> {

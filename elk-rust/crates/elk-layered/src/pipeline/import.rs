@@ -79,11 +79,13 @@ pub(crate) fn import_graph(
         let Some(target) = edge.targets.first().copied() else {
             continue;
         };
-        let Some(effective_source) = nearest_ancestor_in_set(graph, source.node, local_nodes)
+        let Some(effective_source) =
+            elk_alg_common::graph::nearest_ancestor_in_set(graph, source.node, local_nodes)
         else {
             continue;
         };
-        let Some(effective_target) = nearest_ancestor_in_set(graph, target.node, local_nodes)
+        let Some(effective_target) =
+            elk_alg_common::graph::nearest_ancestor_in_set(graph, target.node, local_nodes)
         else {
             continue;
         };
@@ -162,17 +164,4 @@ fn combined_port_label_size(graph: &ElkGraph, port_ids: &[PortId]) -> Size {
     Size::new(width, height)
 }
 
-fn nearest_ancestor_in_set(
-    graph: &ElkGraph,
-    node: NodeId,
-    local_nodes: &BTreeSet<NodeId>,
-) -> Option<NodeId> {
-    let mut current = Some(node);
-    while let Some(candidate) = current {
-        if local_nodes.contains(&candidate) {
-            return Some(candidate);
-        }
-        current = graph.nodes[candidate.index()].parent;
-    }
-    None
-}
+// moved to `elk-alg-common`
