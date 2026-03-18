@@ -1,0 +1,20 @@
+{
+  "id": "root",
+  "layoutOptions": { "elk.algorithm": "org.eclipse.elk.mrtree", "elk.direction": "DOWN" },
+  "children": [
+    { "id": "r", "width": 90, "height": 50 },
+    { "id": "c1", "width": 60, "height": 40 },
+    { "id": "c2", "width": 60, "height": 40 },
+    { "id": "c3", "width": 60, "height": 40 },
+    { "id": "c4", "width": 60, "height": 40 },
+    { "id": "c5", "width": 60, "height": 40 }
+  ],
+  "edges": [
+    { "id": "e1", "sources": ["r"], "targets": ["c1"] },
+    { "id": "e2", "sources": ["r"], "targets": ["c2"] },
+    { "id": "e3", "sources": ["r"], "targets": ["c3"] },
+    { "id": "e4", "sources": ["r"], "targets": ["c4"] },
+    { "id": "e5", "sources": ["r"], "targets": ["c5"] }
+  ]
+}
+

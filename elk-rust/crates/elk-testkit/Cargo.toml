@@ -10,6 +10,7 @@ elk-core = { path = "../elk-core" }
 elk-layered = { path = "../elk-layered" }
 elk-graph-json = { path = "../elk-graph-json" }
 elk-graph = { path = "../elk-graph" }
+elk-service = { path = "../elk-service" }
 
 [dev-dependencies]
 criterion = "0.5"

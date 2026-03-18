@@ -17,7 +17,7 @@ This matrix is scoped to **headless kernel parity** (graph model + algorithms + 
 | `org.eclipse.elk.alg.layered` (layered)                  | `elk-layered`              | **Partial** | End-to-end pipeline exists, but ELK Layered has a large option/processor surface and many specialized routing/placement variants not yet ported.                     |
 | `org.eclipse.elk.alg.force` (force)                      | (none)                     | **Missing** | Not yet ported.                                                                                                                                                      |
 | `org.eclipse.elk.alg.radial` (radial)                    | (none)                     | **Missing** | Not yet ported.                                                                                                                                                      |
-| `org.eclipse.elk.alg.mrtree` (tree)                      | (none)                     | **Missing** | Not yet ported.                                                                                                                                                      |
+| `org.eclipse.elk.alg.mrtree` (tree)                      | `elk-tree`                 | **Implemented (smoke)** | Basic rooted tree layout on `ElkGraph` + minimal routing; dispatchable via `elk-service` using `elk.algorithm=org.eclipse.elk.mrtree`.                                |
 | `org.eclipse.elk.alg.rectpacking` (packing)              | (none)                     | **Missing** | Not yet ported.                                                                                                                                                      |
 | `org.eclipse.elk.alg.spore`                              | (none)                     | **Missing** | Not yet ported.                                                                                                                                                      |
 | `org.eclipse.elk.alg.topdownpacking`                     | (none)                     | **Missing** | Not yet ported.                                                                                                                                                      |
@@ -40,7 +40,7 @@ This matrix is scoped to **headless kernel parity** (graph model + algorithms + 
 | **Edge labels**                       | **Partial**                  | Labels exist and are placed for edges in `elk-layered`, but parity vs ELK’s label strategies is not yet proven.                       |
 | **JSON I/O (ELK Graph JSON)**         | **Implemented (baseline)**   | `elk-graph-json` supports import; export exists for `ElkGraph` and round-trip is tested on fixtures (including rich properties/hyperedges). |
 | **Option meta-model + compatibility** | **Implemented (baseline)**   | `elk-meta` provides option-key aliasing and validation; defaults/constraints can be expanded incrementally toward ELK parity.          |
-| **Additional algorithms**             | **Missing**                  | Only Layered is present today.                                                                                                        |
+| **Additional algorithms**             | **Partial**                  | `elk-layered` + `elk-tree` (mrtree smoke) are present; others pending.                                                                 |
 
 
 ## Rough completeness (pragmatic)

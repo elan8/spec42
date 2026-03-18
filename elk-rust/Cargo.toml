@@ -8,6 +8,7 @@ members = [
     "crates/elk-meta",
     "crates/elk-service",
     "crates/elk-alg-common",
+    "crates/elk-tree",
 ]
 resolver = "2"
 

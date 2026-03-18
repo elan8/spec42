@@ -377,6 +377,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "elk-service"
+version = "0.1.0"
+dependencies = [
+ "elk-core",
+ "elk-graph",
+ "elk-graph-json",
+ "elk-layered",
+ "elk-meta",
+ "elk-tree",
+]
+
+[[package]]
 name = "elk-testkit"
 version = "0.1.0"
 dependencies = [
@@ -385,8 +397,19 @@ dependencies = [
  "elk-graph",
  "elk-graph-json",
  "elk-layered",
+ "elk-service",
  "proptest",
  "serde_json",
+]
+
+[[package]]
+name = "elk-tree"
+version = "0.1.0"
+dependencies = [
+ "elk-alg-common",
+ "elk-core",
+ "elk-graph",
+ "elk-meta",
 ]
 
 [[package]]

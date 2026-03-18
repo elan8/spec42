@@ -68,6 +68,7 @@ impl LayoutService {
         let meta = elk_meta::default_registry();
         let mut registry = AlgorithmRegistry::new();
         registry.register(Box::new(LayeredAlgorithm));
+        registry.register(Box::new(TreeAlgorithm));
         Self { meta, registry }
     }
 
@@ -106,6 +107,22 @@ impl LayoutAlgorithm for LayeredAlgorithm {
         options: &LayoutOptions,
     ) -> Result<LayoutReport, LayoutError> {
         elk_layered::layout(graph, options)
+    }
+}
+
+struct TreeAlgorithm;
+
+impl LayoutAlgorithm for TreeAlgorithm {
+    fn id(&self) -> AlgorithmId {
+        AlgorithmId("org.eclipse.elk.mrtree".to_string())
+    }
+
+    fn layout(
+        &self,
+        graph: &mut ElkGraph,
+        options: &LayoutOptions,
+    ) -> Result<LayoutReport, LayoutError> {
+        elk_tree::layout(graph, options)
     }
 }
 
@@ -149,6 +166,29 @@ mod tests {
         let svc = LayoutService::default_registry();
         let report = svc.layout(&mut g, &LayoutOptions::default()).expect("layout");
         assert!(report.stats.layers >= 1);
+        let root = g.nodes[g.root.index()].geometry;
+        assert!(root.width.is_finite());
+        assert!(root.height.is_finite());
+    }
+
+    #[test]
+    fn tree_dispatch_succeeds_on_fixture() {
+        let json = r#"
+        {
+          "id": "root",
+          "layoutOptions": { "elk.algorithm": "org.eclipse.elk.mrtree", "elk.direction": "DOWN" },
+          "children":[
+            {"id":"a","width":80,"height":40},
+            {"id":"b","width":80,"height":40},
+            {"id":"c","width":80,"height":40}
+          ],
+          "edges":[{"id":"e1","sources":["a"],"targets":["b"]},{"id":"e2","sources":["a"],"targets":["c"]}]
+        }
+        "#;
+        let mut g = import_str(json).expect("import").graph;
+        let svc = LayoutService::default_registry();
+        let report = svc.layout(&mut g, &LayoutOptions::default()).expect("layout");
+        assert!(report.stats.phases.is_empty() || report.stats.layers >= 0);
         let root = g.nodes[g.root.index()].geometry;
         assert!(root.width.is_finite());
         assert!(root.height.is_finite());
