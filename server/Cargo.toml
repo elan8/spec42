@@ -10,7 +10,7 @@ path = "src/lib.rs"
 
 [[bin]]
 name = "spec42"
-path = "src/main_thin.rs"
+path = "src/main.rs"
 
 [dependencies]
 spec42-core = { path = "../spec42-core" }
