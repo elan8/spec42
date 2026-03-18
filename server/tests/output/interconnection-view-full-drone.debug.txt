@@ -1,74 +1,50 @@
 interconnection-view-full-drone debug
 aspect_ratio=0.9395509362220764
-edge_crossings=11
-edge_node_intrusions=131
-bend_count=59
+edge_crossings=4
+edge_node_intrusions=89
+bend_count=13
 orthogonal_violations=0
-warnings_count=27
+warnings_count=3
 
 warnings:
-0: debug edge EdgeId(0) final_section_points=[Point { x: 2156.0, y: 1287.3652 }, Point { x: 2172.0, y: 1287.3652 }, Point { x: 2172.0, y: 1533.2024 }, Point { x: 2244.0, y: 1533.2024 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 217.34943 }, size: Size { width: 2432.0, height: 2417.6062 } } margin=28 bend_margin=0
-1: debug edge EdgeId(0) nonloop effective=(NodeId(2)->NodeId(3)) source=(node=NodeId(2),port=Some(PortId(0))) target=(node=NodeId(3),port=Some(PortId(5))) start_side=Some(East) end_side=Some(West) start=Point { x: 2156.0, y: 1287.3652 } routed_start=Point { x: 2180.0, y: 1287.3652 } routed_end=Point { x: 2220.0, y: 1533.2024 } end=Point { x: 2244.0, y: 1533.2024 } raw=[Point { x: 2172.0, y: 1287.3652 }, Point { x: 2172.0, y: 1533.2024 }]
-2: debug edge EdgeId(1) final_section_points=[Point { x: 1244.0, y: 786.1228 }, Point { x: 1268.0, y: 786.1228 }, Point { x: 1344.0, y: 786.1228 }, Point { x: 1344.0, y: 315.45612 }, Point { x: 1862.5, y: 315.45612 }, Point { x: 1862.5, y: 488.13715 }, Point { x: 1862.5, y: 1428.8 }, Point { x: 2200.0, y: 1428.8 }, Point { x: 2220.0, y: 1428.8 }, Point { x: 2220.0, y: 1503.6023 }, Point { x: 2244.0, y: 1503.6023 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 217.34943 }, size: Size { width: 2432.0, height: 2417.6062 } } margin=28 bend_margin=0
-3: debug edge EdgeId(1) nonloop effective=(NodeId(4)->NodeId(3)) source=(node=NodeId(9),port=Some(PortId(14))) target=(node=NodeId(3),port=Some(PortId(4))) start_side=Some(East) end_side=Some(West) start=Point { x: 1244.0, y: 786.1228 } routed_start=Point { x: 1268.0, y: 786.1228 } routed_end=Point { x: 2220.0, y: 1503.6023 } end=Point { x: 2244.0, y: 1503.6023 } raw=[Point { x: 1343.2, y: 786.1228 }, Point { x: 1343.2, y: 488.13715 }, Point { x: 1862.5, y: 488.13715 }, Point { x: 1862.5, y: 1428.8 }, Point { x: 2200.0, y: 1428.8 }, Point { x: 2200.0, y: 1503.6023 }]
-4: debug edge EdgeId(10) final_section_points=[Point { x: 752.0, y: 1074.6555 }, Point { x: 776.0, y: 1074.6555 }, Point { x: 1326.4, y: 1074.6555 }, Point { x: 1326.4, y: 1455.456 }, Point { x: 2220.0, y: 1455.456 }, Point { x: 2220.0, y: 1562.8024 }, Point { x: 2244.0, y: 1562.8024 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 217.34943 }, size: Size { width: 2432.0, height: 2417.6062 } } margin=28 bend_margin=0
-5: debug edge EdgeId(10) nonloop effective=(NodeId(6)->NodeId(3)) source=(node=NodeId(13),port=Some(PortId(24))) target=(node=NodeId(3),port=Some(PortId(6))) start_side=Some(East) end_side=Some(West) start=Point { x: 752.0, y: 1074.6555 } routed_start=Point { x: 776.0, y: 1074.6555 } routed_end=Point { x: 2220.0, y: 1562.8024 } end=Point { x: 2244.0, y: 1562.8024 } raw=[Point { x: 868.0, y: 1074.6555 }, Point { x: 868.0, y: 1474.6841 }, Point { x: 1326.4, y: 1474.6841 }, Point { x: 1326.4, y: 554.3588 }, Point { x: 1883.5, y: 554.3588 }, Point { x: 1883.5, y: 1494.0283 }, Point { x: 2228.0, y: 1494.0283 }, Point { x: 2228.0, y: 1562.8024 }]
-6: debug edge EdgeId(11) final_section_points=[Point { x: 752.0, y: 1074.6555 }, Point { x: 852.0, y: 1074.6555 }, Point { x: 960.0, y: 1074.6555 }, Point { x: 960.0, y: 809.05615 }, Point { x: 984.0, y: 809.05615 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 217.34943 }, size: Size { width: 2432.0, height: 2417.6062 } } margin=28 bend_margin=0
-7: debug edge EdgeId(11) nonloop effective=(NodeId(6)->NodeId(4)) source=(node=NodeId(13),port=Some(PortId(24))) target=(node=NodeId(9),port=Some(PortId(17))) start_side=Some(East) end_side=Some(West) start=Point { x: 752.0, y: 1074.6555 } routed_start=Point { x: 776.0, y: 1074.6555 } routed_end=Point { x: 960.0, y: 809.05615 } end=Point { x: 984.0, y: 809.05615 } raw=[Point { x: 868.0, y: 1074.6555 }, Point { x: 868.0, y: 809.05615 }]
-8: debug edge EdgeId(2) final_section_points=[Point { x: 984.0, y: 705.8561 }, Point { x: 1344.0, y: 705.8561 }, Point { x: 1380.0, y: 705.8561 }, Point { x: 1380.0, y: 262.68277 }, Point { x: 1404.0, y: 262.68277 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 217.34943 }, size: Size { width: 2432.0, height: 2417.6062 } } margin=28 bend_margin=0
-9: debug edge EdgeId(2) nonloop effective=(NodeId(4)->NodeId(5)) source=(node=NodeId(9),port=Some(PortId(13))) target=(node=NodeId(5),port=Some(PortId(7))) start_side=Some(West) end_side=Some(West) start=Point { x: 984.0, y: 705.8561 } routed_start=Point { x: 960.0, y: 705.8561 } routed_end=Point { x: 1380.0, y: 262.68277 } end=Point { x: 1404.0, y: 262.68277 } raw=[Point { x: 1360.0, y: 705.8561 }, Point { x: 1360.0, y: 262.68277 }]
-10: debug edge EdgeId(3) final_section_points=[Point { x: 1244.0, y: 728.7894 }, Point { x: 1344.0, y: 728.7894 }, Point { x: 1760.0, y: 728.7894 }, Point { x: 1760.0, y: 1500.9556 }, Point { x: 1736.0, y: 1500.9556 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 217.34943 }, size: Size { width: 2432.0, height: 2417.6062 } } margin=28 bend_margin=0
-11: debug edge EdgeId(3) nonloop effective=(NodeId(4)->NodeId(7)) source=(node=NodeId(9),port=Some(PortId(12))) target=(node=NodeId(14),port=Some(PortId(26))) start_side=Some(East) end_side=Some(East) start=Point { x: 1244.0, y: 728.7894 } routed_start=Point { x: 1268.0, y: 728.7894 } routed_end=Point { x: 1760.0, y: 1500.9556 } end=Point { x: 1736.0, y: 1500.9556 } raw=[Point { x: 1360.0, y: 728.7894 }, Point { x: 1360.0, y: 1500.9556 }]
-12: debug edge EdgeId(4) final_section_points=[Point { x: 1244.0, y: 728.7894 }, Point { x: 1344.0, y: 728.7894 }, Point { x: 1760.0, y: 728.7894 }, Point { x: 1760.0, y: 1756.9556 }, Point { x: 1736.0, y: 1756.9556 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 217.34943 }, size: Size { width: 2432.0, height: 2417.6062 } } margin=28 bend_margin=0
-13: debug edge EdgeId(4) nonloop effective=(NodeId(4)->NodeId(7)) source=(node=NodeId(9),port=Some(PortId(12))) target=(node=NodeId(15),port=Some(PortId(28))) start_side=Some(East) end_side=Some(East) start=Point { x: 1244.0, y: 728.7894 } routed_start=Point { x: 1268.0, y: 728.7894 } routed_end=Point { x: 1760.0, y: 1756.9556 } end=Point { x: 1736.0, y: 1756.9556 } raw=[Point { x: 1360.0, y: 728.7894 }, Point { x: 1360.0, y: 1756.9556 }]
-14: debug edge EdgeId(5) final_section_points=[Point { x: 1244.0, y: 728.7894 }, Point { x: 1344.0, y: 728.7894 }, Point { x: 1760.0, y: 728.7894 }, Point { x: 1760.0, y: 2012.9556 }, Point { x: 1736.0, y: 2012.9556 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 217.34943 }, size: Size { width: 2432.0, height: 2417.6062 } } margin=28 bend_margin=0
-15: debug edge EdgeId(5) nonloop effective=(NodeId(4)->NodeId(7)) source=(node=NodeId(9),port=Some(PortId(12))) target=(node=NodeId(16),port=Some(PortId(30))) start_side=Some(East) end_side=Some(East) start=Point { x: 1244.0, y: 728.7894 } routed_start=Point { x: 1268.0, y: 728.7894 } routed_end=Point { x: 1760.0, y: 2012.9556 } end=Point { x: 1736.0, y: 2012.9556 } raw=[Point { x: 1360.0, y: 728.7894 }, Point { x: 1360.0, y: 2012.9556 }]
-16: debug edge EdgeId(6) final_section_points=[Point { x: 1244.0, y: 728.7894 }, Point { x: 1344.0, y: 728.7894 }, Point { x: 1760.0, y: 728.7894 }, Point { x: 1760.0, y: 2268.9556 }, Point { x: 1736.0, y: 2268.9556 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 217.34943 }, size: Size { width: 2432.0, height: 2417.6062 } } margin=28 bend_margin=0
-17: debug edge EdgeId(6) nonloop effective=(NodeId(4)->NodeId(7)) source=(node=NodeId(9),port=Some(PortId(12))) target=(node=NodeId(17),port=Some(PortId(32))) start_side=Some(East) end_side=Some(East) start=Point { x: 1244.0, y: 728.7894 } routed_start=Point { x: 1268.0, y: 728.7894 } routed_end=Point { x: 1760.0, y: 2268.9556 } end=Point { x: 1736.0, y: 2268.9556 } raw=[Point { x: 1360.0, y: 728.7894 }, Point { x: 1360.0, y: 2268.9556 }]
-18: debug edge EdgeId(7) final_section_points=[Point { x: 1664.0, y: 285.34943 }, Point { x: 1820.5, y: 285.34943 }, Point { x: 1820.5, y: 1264.6986 }, Point { x: 1896.0, y: 1264.6986 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 217.34943 }, size: Size { width: 2432.0, height: 2417.6062 } } margin=28 bend_margin=0
-19: debug edge EdgeId(7) nonloop effective=(NodeId(5)->NodeId(2)) source=(node=NodeId(5),port=Some(PortId(8))) target=(node=NodeId(2),port=Some(PortId(1))) start_side=Some(East) end_side=Some(West) start=Point { x: 1664.0, y: 285.34943 } routed_start=Point { x: 1688.0, y: 285.34943 } routed_end=Point { x: 1872.0, y: 1264.6986 } end=Point { x: 1896.0, y: 1264.6986 } raw=[Point { x: 1820.5, y: 285.34943 }, Point { x: 1820.5, y: 1264.6986 }]
-20: debug edge EdgeId(8) final_section_points=[Point { x: 332.0, y: 151.25 }, Point { x: 432.0, y: 151.25 }, Point { x: 396.0, y: 151.25 }, Point { x: 396.0, y: 140.0 }, Point { x: 420.0, y: 140.0 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 72.0 }, size: Size { width: 612.0, height: 136.0 } } margin=28 bend_margin=0
-21: debug edge EdgeId(8) nonloop effective=(NodeId(12)->NodeId(13)) source=(node=NodeId(12),port=Some(PortId(22))) target=(node=NodeId(13),port=Some(PortId(23))) start_side=Some(East) end_side=Some(West) start=Point { x: 332.0, y: 151.25 } routed_start=Point { x: 356.0, y: 151.25 } routed_end=Point { x: 396.0, y: 140.0 } end=Point { x: 420.0, y: 140.0 } raw=[Point { x: 376.0, y: 151.25 }, Point { x: 376.0, y: 140.0 }]
-22: debug edge EdgeId(9) final_section_points=[Point { x: 752.0, y: 1074.6555 }, Point { x: 868.0, y: 1074.6555 }, Point { x: 868.0, y: 217.34943 }, Point { x: 1393.6, y: 217.34943 }, Point { x: 1872.0, y: 217.34943 }, Point { x: 1872.0, y: 1310.0319 }, Point { x: 1896.0, y: 1310.0319 }] clamp_bounds=Rect { origin: Point { x: 72.0, y: 217.34943 }, size: Size { width: 2432.0, height: 2417.6062 } } margin=28 bend_margin=0
-23: debug edge EdgeId(9) nonloop effective=(NodeId(6)->NodeId(2)) source=(node=NodeId(13),port=Some(PortId(24))) target=(node=NodeId(2),port=Some(PortId(2))) start_side=Some(East) end_side=Some(West) start=Point { x: 752.0, y: 1074.6555 } routed_start=Point { x: 776.0, y: 1074.6555 } routed_end=Point { x: 1872.0, y: 1310.0319 } end=Point { x: 1896.0, y: 1310.0319 } raw=[Point { x: 868.0, y: 1074.6555 }, Point { x: 868.0, y: 184.23474 }, Point { x: 1393.6, y: 184.23474 }, Point { x: 1393.6, y: 400.5777 }, Point { x: 1841.5, y: 400.5777 }, Point { x: 1841.5, y: 1310.0319 }]
-24: elk-layered debug enabled (view_profile=InterconnectionView, direction=LeftToRight)
-25: elk-rust compound routing is still maturing for cross-hierarchy edges; inspect nested diagrams visually.
-26: elk-rust edge label placement is still partial; SVG labels are rendered by sysml-language-server.
+0: elk-layered: simplified ElkGraph router active
+1: elk-rust compound routing is still maturing for cross-hierarchy edges; inspect nested diagrams visually.
+2: elk-rust edge label placement is still partial; SVG labels are rendered by sysml-language-server.
 
 edge_connection_paths:
-0: M 2228.0 1359.4 L 2244.0 1359.4 L 2244.0 1605.2 L 2316.0 1605.2
-1: M 1316.0 858.1 L 1340.0 858.1 L 1416.0 858.1 L 1416.0 387.5 L 1934.5 387.5 L 1934.5 560.1 L 1934.5 1500.8 L 2272.0 1500.8 L 2292.0 1500.8 L 2292.0 1575.6 L 2316.0 1575.6
-2: M 1056.0 777.9 L 1416.0 777.9 L 1452.0 777.9 L 1452.0 334.7 L 1476.0 334.7
-3: M 1316.0 800.8 L 1416.0 800.8 L 1832.0 800.8 L 1832.0 1573.0 L 1808.0 1573.0
-4: M 1316.0 800.8 L 1416.0 800.8 L 1832.0 800.8 L 1832.0 1829.0 L 1808.0 1829.0
-5: M 1316.0 800.8 L 1416.0 800.8 L 1832.0 800.8 L 1832.0 2085.0 L 1808.0 2085.0
-6: M 1316.0 800.8 L 1416.0 800.8 L 1832.0 800.8 L 1832.0 2341.0 L 1808.0 2341.0
-7: M 1736.0 357.3 L 1892.5 357.3 L 1892.5 1336.7 L 1968.0 1336.7
-8: M 476.0 1180.6 L 576.0 1180.6 L 540.0 1180.6 L 540.0 1169.3 L 564.0 1169.3
-9: M 824.0 1146.7 L 940.0 1146.7 L 940.0 289.3 L 1465.6 289.3 L 1944.0 289.3 L 1944.0 1382.0 L 1968.0 1382.0
-10: M 824.0 1146.7 L 848.0 1146.7 L 1398.4 1146.7 L 1398.4 1527.5 L 2292.0 1527.5 L 2292.0 1634.8 L 2316.0 1634.8
-11: M 824.0 1146.7 L 924.0 1146.7 L 1032.0 1146.7 L 1032.0 881.1 L 1056.0 881.1
-12: M 824.0 1146.7 L 940.0 1146.7 L 1452.0 1146.7 L 1452.0 380.0 L 1476.0 380.0
-13: M 824.0 1146.7 L 940.0 1146.7 L 1524.0 1146.7 L 1524.0 1573.0 L 1548.0 1573.0
-14: M 824.0 1146.7 L 940.0 1146.7 L 1524.0 1146.7 L 1524.0 1829.0 L 1548.0 1829.0
-15: M 824.0 1146.7 L 940.0 1146.7 L 1524.0 1146.7 L 1524.0 2085.0 L 1548.0 2085.0
-16: M 824.0 1146.7 L 940.0 1146.7 L 1524.0 1146.7 L 1524.0 2341.0 L 1548.0 2341.0
+0: M 2156.0 1287.4 L 2244.0 1287.4 L 2244.0 1533.2
+1: M 332.0 186.7 L 2244.0 186.7 L 2244.0 1503.6
+2: M 72.0 106.4 L 1404.0 106.4 L 1404.0 262.7
+3: M 332.0 129.3 L 332.0 134.0
+4: M 332.0 129.3 L 332.0 390.0
+5: M 332.0 129.3 L 332.0 646.0
+6: M 332.0 129.3 L 332.0 902.0
+7: M 1664.0 285.3 L 1896.0 285.3 L 1896.0 1264.7
+8: M 332.0 151.2 L 420.0 151.2 L 420.0 140.0
+9: M 680.0 117.3 L 1896.0 117.3 L 1896.0 1310.0
+10: M 680.0 117.3 L 2244.0 117.3 L 2244.0 1562.8
+11: M 680.0 117.3 L 72.0 117.3 L 72.0 209.6
+12: M 680.0 117.3 L 1404.0 117.3 L 1404.0 308.0
+13: M 680.0 117.3 L 72.0 117.3 L 72.0 134.0
+14: M 680.0 117.3 L 72.0 117.3 L 72.0 390.0
+15: M 680.0 117.3 L 72.0 117.3 L 72.0 646.0
+16: M 680.0 117.3 L 72.0 117.3 L 72.0 902.0
 
 edge_endpoint_nearest_ports:
-0: start=(2228.0,1359.4) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.videoOut dist=0.00 end=(2316.0,1605.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.communication.videoIn dist=0.00
-1: start=(1316.0,858.1) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.telemetryOut dist=0.00 end=(2316.0,1575.6) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.communication.telemetryIn dist=0.00
-2: start=(1056.0,777.9) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.gimbalCmd dist=0.00 end=(1476.0,334.7) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cmd dist=0.00
-3: start=(1316.0,800.8) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(1808.0,1573.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit1.cmd dist=0.00
-4: start=(1316.0,800.8) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(1808.0,1829.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit2.cmd dist=0.00
-5: start=(1316.0,800.8) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(1808.0,2085.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit3.cmd dist=0.00
-6: start=(1316.0,800.8) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(1808.0,2341.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit4.cmd dist=0.00
-7: start=(1736.0,357.3) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cameraCtrl dist=0.00 end=(1968.0,1336.7) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.control dist=0.00
-8: start=(476.0,1180.6) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.battery.pwrOut dist=0.00 end=(564.0,1169.3) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.mainPower dist=0.00
-9: start=(824.0,1146.7) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(1968.0,1382.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.pwr dist=0.00
-10: start=(824.0,1146.7) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(2316.0,1634.8) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.communication.pwr dist=0.00
-11: start=(824.0,1146.7) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(1056.0,881.1) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.pwr dist=0.00
-12: start=(824.0,1146.7) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(1476.0,380.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.pwr dist=0.00
-13: start=(824.0,1146.7) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(1548.0,1573.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit1.pwr dist=0.00
-14: start=(824.0,1146.7) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(1548.0,1829.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit2.pwr dist=0.00
-15: start=(824.0,1146.7) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(1548.0,2085.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit3.pwr dist=0.00
-16: start=(824.0,1146.7) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(1548.0,2341.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit4.pwr dist=0.00
+0: start=(2156.0,1287.4) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.videoOut dist=0.00 end=(2244.0,1533.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.communication.videoIn dist=0.00
+1: start=(332.0,186.7) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.telemetryOut dist=0.00 end=(2244.0,1503.6) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.communication.telemetryIn dist=0.00
+2: start=(72.0,106.4) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.gimbalCmd dist=0.00 end=(1404.0,262.7) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cmd dist=0.00
+3: start=(332.0,129.3) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(332.0,134.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit1.cmd dist=0.00
+4: start=(332.0,129.3) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(332.0,390.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit2.cmd dist=0.00
+5: start=(332.0,129.3) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(332.0,646.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit3.cmd dist=0.00
+6: start=(332.0,129.3) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(332.0,902.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit4.cmd dist=0.00
+7: start=(1664.0,285.3) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cameraCtrl dist=0.00 end=(1896.0,1264.7) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.control dist=0.00
+8: start=(332.0,151.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.battery.pwrOut dist=0.00 end=(420.0,140.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.mainPower dist=0.00
+9: start=(680.0,117.3) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(1896.0,1310.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.pwr dist=0.00
+10: start=(680.0,117.3) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(2244.0,1562.8) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.communication.pwr dist=0.00
+11: start=(680.0,117.3) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(72.0,209.6) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.pwr dist=0.00
+12: start=(680.0,117.3) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(1404.0,308.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.pwr dist=0.00
+13: start=(680.0,117.3) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(72.0,134.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit1.pwr dist=0.00
+14: start=(680.0,117.3) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(72.0,390.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit2.pwr dist=0.00
+15: start=(680.0,117.3) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(72.0,646.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit3.pwr dist=0.00
+16: start=(680.0,117.3) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(72.0,902.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit4.pwr dist=0.00

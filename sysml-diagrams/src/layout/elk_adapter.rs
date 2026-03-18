@@ -1,10 +1,12 @@
 use std::collections::{HashMap, HashSet};
 
 use elk_core::{
-    EdgeEndpoint, ElementLayoutOptions, Graph as ElkGraph, LayerConstraint,
-    LayoutDirection as ElkLayoutDirection, LayoutEngine, LayoutOptions, NodeAlignment,
+    ElementLayoutOptions, LayoutDirection as ElkLayoutDirection, LayoutOptions, NodeAlignment,
     Padding as ElkPadding, Point as ElkPoint, PortConstraint, PortSide as ElkPortSide,
     Rect as ElkRect, Size as ElkSize, Spacing as ElkSpacing, ViewProfile as ElkViewProfile,
+};
+use elk_graph::{
+    EdgeEndpoint, ElkGraph, NodeId, PortId, PropertyBag, PropertyValue, ShapeGeometry,
 };
 use elk_layered::LayeredLayoutEngine;
 
@@ -26,8 +28,8 @@ pub(crate) fn compute_layout(
 ) -> Result<LayoutComputation> {
     let mut elk_graph = ElkGraph::new();
     let ordered_nodes = sort_nodes_for_hierarchy(&graph.nodes)?;
-    let mut node_ids = HashMap::new();
-    let mut port_ids = HashMap::new();
+    let mut node_ids: HashMap<String, NodeId> = HashMap::new();
+    let mut port_ids: HashMap<String, PortId> = HashMap::new();
 
     for (index, node) in ordered_nodes.iter().enumerate() {
         let elk_node_id = add_node(&mut elk_graph, node, &node_ids)?;
@@ -43,9 +45,17 @@ pub(crate) fn compute_layout(
             let elk_port_id = elk_graph.add_port(
                 elk_node_id,
                 map_port_side(&port.side),
-                ElkSize::new(8.0, 8.0),
+                ShapeGeometry {
+                    x: 0.0,
+                    y: 0.0,
+                    width: 8.0,
+                    height: 8.0,
+                },
             );
-            elk_graph.port_mut(elk_port_id).layout.model_order = Some(index);
+            elk_graph.ports[elk_port_id.index()].properties.insert(
+                "elk.port.index",
+                PropertyValue::Int(index as i64),
+            );
             port_ids.insert(port.id.clone(), elk_port_id);
             let normalized = normalize_port_id(&port.id);
             if normalized != port.id {
@@ -67,11 +77,7 @@ pub(crate) fn compute_layout(
             &node_ids,
             &port_ids,
         )?;
-        let edge_id = elk_graph.add_edge(source, target);
-        let model_order = elk_graph.edge(edge_id).id.index();
-        let layout = &mut elk_graph.edge_mut(edge_id).layout;
-        layout.model_order = Some(model_order);
-        layout.edge_bundle_key = Some(edge_bundle_key(&edge.kind));
+        let _edge_id = elk_graph.add_edge(elk_graph.root, vec![source], vec![target]);
     }
 
     apply_graph_hints(&mut elk_graph, graph, &node_ids, config);
@@ -91,9 +97,9 @@ pub(crate) fn compute_layout(
             let report = LayeredLayoutEngine::new()
                 .layout(&mut g, &options)
                 .map_err(|error| crate::layout::DiagramError::LayoutFailure(error.to_string()))?;
-            let b = g.bounds;
-            let ar = if b.size.height > 0.0 {
-                b.size.width / b.size.height
+            let root = &g.nodes[g.root.index()].geometry;
+            let ar = if root.height > 0.0 {
+                root.width / root.height
             } else {
                 f32::MAX
             };
@@ -173,41 +179,45 @@ fn node_depth<'a>(
 fn add_node(
     elk_graph: &mut ElkGraph,
     node: &DiagramNode,
-    node_ids: &HashMap<String, elk_core::NodeId>,
-) -> Result<elk_core::NodeId> {
+    node_ids: &HashMap<String, NodeId>,
+) -> Result<NodeId> {
     let width = if node.width <= 0.0 { 1.0 } else { node.width };
     let height = if node.height <= 0.0 { 1.0 } else { node.height };
-    let size = ElkSize::new(width, height);
-    Ok(match node.parent_id.as_deref() {
-        Some(parent_id) => {
-            let parent = *node_ids
-                .get(parent_id)
-                .ok_or_else(|| crate::layout::DiagramError::MissingParent(parent_id.to_string()))?;
-            elk_graph.add_child_node(parent, size)
-        }
-        None => elk_graph.add_node(size),
-    })
+    let geometry = ShapeGeometry {
+        x: 0.0,
+        y: 0.0,
+        width,
+        height,
+    };
+    let parent = match node.parent_id.as_deref() {
+        Some(parent_id) => *node_ids
+            .get(parent_id)
+            .ok_or_else(|| crate::layout::DiagramError::MissingParent(parent_id.to_string()))?,
+        None => elk_graph.root,
+    };
+    Ok(elk_graph.add_node(parent, geometry))
 }
 
 fn apply_node_hints(
     elk_graph: &mut ElkGraph,
-    node_id: elk_core::NodeId,
+    node_id: NodeId,
     node: &DiagramNode,
-    index: usize,
+    _index: usize,
     _config: &LayoutConfig,
 ) {
-    let layout = &mut elk_graph.node_mut(node_id).layout;
-    layout.model_order = Some(index);
     if node.kind == "layout-branch" && node.parent_id.is_none() {
-        layout.layer_constraint = Some(LayerConstraint::First);
+        elk_graph.nodes[node_id.index()].properties.insert(
+            "elk.layerConstraint",
+            PropertyValue::String("FIRST".into()),
+        );
     }
 }
 
 fn map_endpoint(
     node_id: &str,
     port_id: Option<&str>,
-    node_ids: &HashMap<String, elk_core::NodeId>,
-    port_ids: &HashMap<String, elk_core::PortId>,
+    node_ids: &HashMap<String, NodeId>,
+    port_ids: &HashMap<String, PortId>,
 ) -> Result<EdgeEndpoint> {
     let node = *node_ids
         .get(node_id)
@@ -304,7 +314,7 @@ fn map_view_profile(profile: &LayoutViewProfile) -> ElkViewProfile {
 fn apply_graph_hints(
     elk_graph: &mut ElkGraph,
     graph: &DiagramGraph,
-    node_ids: &HashMap<String, elk_core::NodeId>,
+    node_ids: &HashMap<String, NodeId>,
     config: &LayoutConfig,
 ) {
     if !matches!(config.view_profile, LayoutViewProfile::GeneralView) {
@@ -323,13 +333,20 @@ fn apply_graph_hints(
             continue;
         };
         let kind = node.kind.trim().to_ascii_lowercase();
-        let layout = &mut elk_graph.node_mut(elk_node_id).layout;
         let in_count = incoming.get(node.id.as_str()).copied().unwrap_or_default();
         let out_count = outgoing.get(node.id.as_str()).copied().unwrap_or_default();
-        if kind.contains("part def") && in_count == 0 && out_count > 0 {
-            layout.layer_constraint = Some(LayerConstraint::First);
+        let prop = if kind.contains("part def") && in_count == 0 && out_count > 0 {
+            Some("FIRST")
         } else if !kind.contains("part") && out_count == 0 && in_count > 0 {
-            layout.layer_constraint = Some(LayerConstraint::Last);
+            Some("LAST")
+        } else {
+            None
+        };
+        if let Some(s) = prop {
+            elk_graph.nodes[elk_node_id.index()].properties.insert(
+                "elk.layerConstraint",
+                PropertyValue::String(s.into()),
+            );
         }
     }
 }
@@ -354,22 +371,21 @@ fn map_direction(config: &LayoutConfig) -> ElkLayoutDirection {
 fn map_layout_back(
     graph: &DiagramGraph,
     elk_graph: &ElkGraph,
-    node_ids: &HashMap<String, elk_core::NodeId>,
-    port_ids: &HashMap<String, elk_core::PortId>,
+    node_ids: &HashMap<String, NodeId>,
+    port_ids: &HashMap<String, PortId>,
 ) -> Result<DiagramLayout> {
     let mut nodes = Vec::with_capacity(graph.nodes.len());
     for node in &graph.nodes {
-        let elk_node = elk_graph.node(
-            *node_ids
-                .get(node.id.as_str())
-                .ok_or_else(|| crate::layout::DiagramError::MissingNode(node.id.clone()))?,
-        );
+        let elk_node_id = *node_ids
+            .get(node.id.as_str())
+            .ok_or_else(|| crate::layout::DiagramError::MissingNode(node.id.clone()))?;
+        let elk_node = &elk_graph.nodes[elk_node_id.index()];
         nodes.push(NodeLayout {
             id: node.id.clone(),
             label: node.label.clone(),
             kind: node.kind.clone(),
             detail_lines: node.detail_lines.clone(),
-            bounds: map_rect(elk_node.bounds),
+            bounds: map_geometry_to_bounds(elk_node.geometry),
             parent_id: node.parent_id.clone(),
             ports: node
                 .ports
@@ -393,7 +409,8 @@ fn map_layout_back(
     let mut edges = Vec::with_capacity(graph.edges.len());
     for (index, edge) in graph.edges.iter().enumerate() {
         let elk_edge = &elk_graph.edges[index];
-        let points = if let Some(section) = elk_edge.sections.first() {
+        let points = if let Some(&section_id) = elk_edge.sections.first() {
+            let section = &elk_graph.edge_sections[section_id.index()];
             section_points(section)
         } else {
             fallback_edge_points(elk_graph, elk_edge)
@@ -446,7 +463,12 @@ fn map_layout_back(
         });
     }
 
-    let canvas = canvas_bounds(&nodes, &edges, elk_graph.bounds);
+    let root_geom = elk_graph.nodes[elk_graph.root.index()].geometry;
+    let fallback_rect = ElkRect::new(
+        ElkPoint::new(root_geom.x, root_geom.y),
+        ElkSize::new(root_geom.width, root_geom.height),
+    );
+    let canvas = canvas_bounds(&nodes, &edges, fallback_rect);
 
     Ok(DiagramLayout {
         width: canvas.width,
@@ -456,12 +478,12 @@ fn map_layout_back(
     })
 }
 
-fn map_rect(rect: ElkRect) -> Bounds {
+fn map_geometry_to_bounds(g: ShapeGeometry) -> Bounds {
     Bounds {
-        x: rect.origin.x,
-        y: rect.origin.y,
-        width: rect.size.width,
-        height: rect.size.height,
+        x: g.x,
+        y: g.y,
+        width: g.width,
+        height: g.height,
     }
 }
 
@@ -469,27 +491,25 @@ fn map_port_layout(
     node_id: &str,
     port: &DiagramPort,
     elk_graph: &ElkGraph,
-    port_ids: &HashMap<String, elk_core::PortId>,
+    port_ids: &HashMap<String, PortId>,
 ) -> Result<PortLayout> {
-    let elk_port = elk_graph.port(
-        *port_ids
-            .get(port.id.as_str())
-            .ok_or_else(|| crate::layout::DiagramError::MissingPort(port.id.clone()))?,
-    );
-    let center = elk_port.bounds.center();
+    let elk_port_id = *port_ids
+        .get(port.id.as_str())
+        .ok_or_else(|| crate::layout::DiagramError::MissingPort(port.id.clone()))?;
+    let elk_port = &elk_graph.ports[elk_port_id.index()];
+    let g = &elk_port.geometry;
+    let center_x = g.x + g.width / 2.0;
+    let center_y = g.y + g.height / 2.0;
     Ok(PortLayout {
         id: port.id.clone(),
         name: port.name.clone(),
         node_id: node_id.to_string(),
         side: port.side.clone(),
-        position: Point {
-            x: center.x,
-            y: center.y,
-        },
+        position: Point { x: center_x, y: center_y },
     })
 }
 
-fn section_points(section: &elk_core::EdgeSection) -> Vec<Point> {
+fn section_points(section: &elk_graph::EdgeSection) -> Vec<Point> {
     let mut points = Vec::with_capacity(section.bend_points.len() + 2);
     points.push(map_point(section.start));
     points.extend(section.bend_points.iter().copied().map(map_point));
@@ -497,18 +517,32 @@ fn section_points(section: &elk_core::EdgeSection) -> Vec<Point> {
     points
 }
 
-fn fallback_edge_points(elk_graph: &ElkGraph, edge: &elk_core::Edge) -> Vec<Point> {
-    vec![
-        endpoint_center(elk_graph, edge.source),
-        endpoint_center(elk_graph, edge.target),
-    ]
+fn fallback_edge_points(elk_graph: &ElkGraph, edge: &elk_graph::Edge) -> Vec<Point> {
+    let src = edge.sources.first().map(|e| endpoint_center(elk_graph, *e));
+    let tgt = edge.targets.first().map(|e| endpoint_center(elk_graph, *e));
+    match (src, tgt) {
+        (Some(s), Some(t)) => vec![s, t],
+        (Some(s), None) => vec![s],
+        (None, Some(t)) => vec![t],
+        (None, None) => vec![],
+    }
 }
 
 fn endpoint_center(elk_graph: &ElkGraph, endpoint: EdgeEndpoint) -> Point {
     if let Some(port_id) = endpoint.port {
-        return map_point(elk_graph.port(port_id).bounds.center());
+        let p = &elk_graph.ports[port_id.index()];
+        let g = &p.geometry;
+        return Point {
+            x: g.x + g.width / 2.0,
+            y: g.y + g.height / 2.0,
+        };
     }
-    map_point(elk_graph.node(endpoint.node).bounds.center())
+    let n = &elk_graph.nodes[endpoint.node.index()];
+    let g = &n.geometry;
+    Point {
+        x: g.x + g.width / 2.0,
+        y: g.y + g.height / 2.0,
+    }
 }
 
 fn map_point(point: ElkPoint) -> Point {

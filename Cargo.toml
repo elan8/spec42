@@ -4,6 +4,7 @@ members = [
   "sysml-diagrams",
   "server",
   "elk-rust/crates/elk-core",
+  "elk-rust/crates/elk-graph",
   "elk-rust/crates/elk-layered",
   "elk-rust/crates/elk-testkit",
 ]
@@ -21,4 +22,5 @@ thiserror = "2"
 clap = { version = "4", features = ["derive"] }
 petgraph = "0.8"
 elk-core = { path = "elk-rust/crates/elk-core" }
+elk-graph = { path = "elk-rust/crates/elk-graph" }
 elk-layered = { path = "elk-rust/crates/elk-layered" }

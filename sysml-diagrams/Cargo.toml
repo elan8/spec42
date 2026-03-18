@@ -10,4 +10,5 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 elk-core = { workspace = true }
+elk-graph = { workspace = true }
 elk-layered = { workspace = true }

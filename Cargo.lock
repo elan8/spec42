@@ -1392,6 +1392,7 @@ name = "sysml-diagrams"
 version = "0.5.0"
 dependencies = [
  "elk-core",
+ "elk-graph",
  "elk-layered",
  "serde",
  "serde_json",
