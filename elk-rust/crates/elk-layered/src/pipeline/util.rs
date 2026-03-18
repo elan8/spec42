@@ -1,4 +1,5 @@
 use elk_core::{LayoutDirection, Point, Size};
+use elk_graph::{EdgeEndpoint, ElkGraph, LabelId, NodeId, PortId};
 
 use crate::ir::{IrNodeId, LayeredIr};
 
@@ -166,6 +167,43 @@ pub(crate) fn ensure_orthogonal_path_prefer_major(
         out.push(b);
     }
     out
+}
+
+pub(crate) fn node_abs_origin(graph: &ElkGraph, node: NodeId) -> Point {
+    let n = &graph.nodes[node.index()];
+    Point::new(n.geometry.x, n.geometry.y)
+}
+
+pub(crate) fn node_abs_size(graph: &ElkGraph, node: NodeId) -> Size {
+    let n = &graph.nodes[node.index()];
+    Size::new(n.geometry.width, n.geometry.height)
+}
+
+pub(crate) fn node_abs_center(graph: &ElkGraph, node: NodeId) -> Point {
+    let o = node_abs_origin(graph, node);
+    let s = node_abs_size(graph, node);
+    Point::new(o.x + s.width / 2.0, o.y + s.height / 2.0)
+}
+
+pub(crate) fn port_abs_center(graph: &ElkGraph, port: PortId) -> Point {
+    let p = &graph.ports[port.index()];
+    Point::new(
+        p.geometry.x + p.geometry.width / 2.0,
+        p.geometry.y + p.geometry.height / 2.0,
+    )
+}
+
+pub(crate) fn endpoint_abs_center(graph: &ElkGraph, endpoint: EdgeEndpoint) -> Point {
+    if let Some(port) = endpoint.port {
+        port_abs_center(graph, port)
+    } else {
+        node_abs_center(graph, endpoint.node)
+    }
+}
+
+pub(crate) fn label_size(graph: &ElkGraph, label: LabelId) -> Size {
+    let l = &graph.labels[label.index()];
+    Size::new(l.geometry.width, l.geometry.height)
 }
 
 #[cfg(test)]

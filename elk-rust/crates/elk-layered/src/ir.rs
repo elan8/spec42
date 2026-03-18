@@ -1,8 +1,7 @@
 use std::collections::BTreeMap;
 
-use elk_core::{
-    EdgeEndpoint, EdgeId, LabelId, LayerConstraint, NodeId, Point, PortConstraint, PortSide, Size,
-};
+use elk_core::{LayerConstraint, Point, PortConstraint, PortSide, Size};
+use elk_graph::{EdgeEndpoint, EdgeId, LabelId, NodeId};
 
 pub type IrNodeId = usize;
 

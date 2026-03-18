@@ -1,10 +1,9 @@
 use std::fs;
 
-use elk_core::{LayoutEngine, LayoutOptions, PortSide};
+use elk_core::{LayoutOptions, PortSide};
 use elk_graph::{PropertyValue};
-use elk_graph_json::{import_str, import_str_core};
-use elk_layered::LayeredLayoutEngine;
-use elk_layered::layout_elk_graph;
+use elk_graph_json::import_str;
+use elk_layered::layout;
 
 fn read_fixture(name: &str) -> String {
     let path = format!("{}/fixtures/elkjson/{}", env!("CARGO_MANIFEST_DIR"), name);
@@ -57,12 +56,12 @@ fn json_port_constraints_and_port_sides_are_applied() {
 fn imported_fixtures_can_be_laid_out() {
     for fixture in ["direction_down.json", "ports_and_constraints.json"] {
         let json = read_fixture(fixture);
-        let (mut imported, _warnings) = import_str_core(&json).expect("import should succeed");
-        let report = LayeredLayoutEngine::new()
-            .layout(&mut imported, &LayoutOptions::default())
+        let mut imported = import_str(&json).expect("import should succeed").graph;
+        let report = layout(&mut imported, &LayoutOptions::default())
             .expect("layered layout should succeed");
         assert!(report.stats.layers >= 1);
-        assert!(imported.bounds.size.width.is_finite());
+        let root_geom = imported.nodes[imported.root.index()].geometry;
+        assert!(root_geom.width.is_finite());
     }
 }
 
@@ -71,7 +70,7 @@ fn direction_option_changes_layout_orientation() {
     // DOWN should primarily separate nodes vertically.
     let json = read_fixture("direction_down.json");
     let mut g = import_str(&json).expect("import should succeed").graph;
-    let _report = layout_elk_graph(&mut g, &LayoutOptions::default()).expect("layout should succeed");
+    let _report = layout(&mut g, &LayoutOptions::default()).expect("layout should succeed");
     let n1 = g.nodes[1].geometry;
     let n2 = g.nodes[2].geometry;
     assert!(
@@ -84,7 +83,7 @@ fn direction_option_changes_layout_orientation() {
 fn fixed_order_ports_respects_port_index_ordering() {
     let json = read_fixture("port_order_index.json");
     let mut g = import_str(&json).expect("import should succeed").graph;
-    let _report = layout_elk_graph(&mut g, &LayoutOptions::default()).expect("layout should succeed");
+    let _report = layout(&mut g, &LayoutOptions::default()).expect("layout should succeed");
 
     // Ports were created in JSON order: p2 then p0. With FIXED_ORDER and port.index,
     // we expect p0 to appear before p2 along the EAST side (smaller y for top-to-bottom ordering).
@@ -119,7 +118,7 @@ fn spacing_option_increases_layer_gaps() {
     }
     "#;
     let mut base = import_str(baseline_json).expect("import should succeed").graph;
-    let _ = layout_elk_graph(&mut base, &LayoutOptions::default()).expect("layout should succeed");
+    let _ = layout(&mut base, &LayoutOptions::default()).expect("layout should succeed");
     let b1 = base.nodes[1].geometry;
     let b2 = base.nodes[2].geometry;
     let b3 = base.nodes[3].geometry;
@@ -129,7 +128,7 @@ fn spacing_option_increases_layer_gaps() {
     // Configured spacing.
     let json = read_fixture("layer_spacing_large.json");
     let mut g = import_str(&json).expect("import should succeed").graph;
-    let _ = layout_elk_graph(&mut g, &LayoutOptions::default()).expect("layout should succeed");
+    let _ = layout(&mut g, &LayoutOptions::default()).expect("layout should succeed");
     let n1 = g.nodes[1].geometry;
     let n2 = g.nodes[2].geometry;
     let n3 = g.nodes[3].geometry;

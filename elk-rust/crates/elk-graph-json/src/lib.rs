@@ -91,13 +91,6 @@ pub fn import_str(input: &str) -> Result<ImportResult, JsonIoError> {
     })
 }
 
-/// Legacy compatibility: adapt imported `elk-graph` into `elk-core::Graph`.
-pub fn import_str_core(input: &str) -> Result<(elk_core::Graph, ImportWarnings), JsonIoError> {
-    let imported = import_str(input)?;
-    let bridge = elk_graph::to_core_graph(&imported.graph);
-    Ok((bridge.core, imported.warnings))
-}
-
 /// Export `elk_core::Graph` into ELK Graph JSON (modern encoding).
 ///
 /// This exporter is intentionally minimal and focuses on emitting a JSON structure that ELK’s importer
@@ -785,12 +778,12 @@ mod tests {
         }
         "#;
 
-        let (mut imported, _warnings) = import_str_core(json).expect("import should succeed");
-        let report = LayeredLayoutEngine::new()
-            .layout(&mut imported, &LayoutOptions::default())
+        let mut imported = import_str(json).expect("import should succeed").graph;
+        let _report = elk_layered::layout(&mut imported, &LayoutOptions::default())
             .expect("layout should succeed");
-        assert!(report.stats.layers >= 1);
-        assert!(imported.bounds.size.width.is_finite());
+        let root = imported.nodes[imported.root.index()].geometry;
+        assert!(root.width.is_finite());
+        assert!(root.height.is_finite());
     }
 }
 

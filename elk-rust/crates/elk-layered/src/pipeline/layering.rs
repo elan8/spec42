@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
-use elk_core::{LayerConstraint, LayoutOptions, NodeId};
+use elk_core::{LayerConstraint, LayoutOptions};
+use elk_graph::NodeId;
 
 use crate::ir::{IrNodeKind, LayeredIr};
 

@@ -7,8 +7,11 @@
 use std::collections::BTreeMap;
 
 use elk_core::{
-    EdgeEndpoint, EdgeId, Graph, LayoutDirection, LayoutOptions, NodeId, PortSide, Size,
+    LayoutDirection, LayoutOptions, PortSide,
 };
+use elk_graph::{EdgeEndpoint, EdgeId, ElkGraph, NodeId, ShapeGeometry};
+
+use crate::pipeline::util::endpoint_abs_center;
 
 /// Map from edge id to original (source, target) endpoints for compound edges.
 /// Used to restore port-anchored start/end after routing.
@@ -56,25 +59,32 @@ fn hierarchical_port_side(direction: LayoutDirection, is_source: bool) -> PortSi
 /// Preprocess cross-hierarchy edges: replace endpoints with hierarchical ports on boundaries.
 /// Returns a map of original endpoints for postprocessing.
 pub fn preprocess_cross_hierarchy_edges(
-    graph: &mut Graph,
+    graph: &mut ElkGraph,
     local_nodes: &std::collections::BTreeSet<NodeId>,
     options: &LayoutOptions,
 ) -> CompoundRoutingMap {
     let direction = options.layered.direction;
     let mut map = CompoundRoutingMap::default();
-    let port_size = Size::new(8.0, 8.0);
+    let port_geom = ShapeGeometry {
+        x: 0.0,
+        y: 0.0,
+        width: 8.0,
+        height: 8.0,
+    };
 
     // Collect cross-hierarchy edges to avoid borrow conflicts
     let mut to_process: Vec<(EdgeId, NodeId, NodeId, EdgeEndpoint, EdgeEndpoint)> = Vec::new();
     for edge in &graph.edges {
-        let Some(effective_source) =
-            graph.nearest_ancestor_in_set(edge.source.node, local_nodes)
-        else {
+        let Some(original_source) = edge.sources.first().copied() else {
             continue;
         };
-        let Some(effective_target) =
-            graph.nearest_ancestor_in_set(edge.target.node, local_nodes)
-        else {
+        let Some(original_target) = edge.targets.first().copied() else {
+            continue;
+        };
+        let Some(effective_source) = nearest_ancestor_in_set(graph, original_source.node, local_nodes) else {
+            continue;
+        };
+        let Some(effective_target) = nearest_ancestor_in_set(graph, original_target.node, local_nodes) else {
             continue;
         };
 
@@ -86,15 +96,15 @@ pub fn preprocess_cross_hierarchy_edges(
         // this level would collapse it into a self-loop and prevent the child layout from ever
         // seeing the edge.
         let is_cross_hierarchy = effective_source != effective_target
-            && (edge.source.node != effective_source || edge.target.node != effective_target);
+            && (original_source.node != effective_source || original_target.node != effective_target);
 
         if is_cross_hierarchy {
             to_process.push((
                 edge.id,
                 effective_source,
                 effective_target,
-                edge.source,
-                edge.target,
+                original_source,
+                original_target,
             ));
         }
     }
@@ -105,15 +115,16 @@ pub fn preprocess_cross_hierarchy_edges(
         let hp_source_side = hierarchical_port_side(direction, true);
         let hp_target_side = hierarchical_port_side(direction, false);
 
-        let hp_source = graph.add_port(effective_source, hp_source_side, port_size);
-        let hp_target = graph.add_port(effective_target, hp_target_side, port_size);
+        let hp_source = graph.add_port(effective_source, hp_source_side, port_geom);
+        let hp_target = graph.add_port(effective_target, hp_target_side, port_geom);
 
-        graph.port_mut(hp_source).is_hierarchical = true;
-        graph.port_mut(hp_target).is_hierarchical = true;
-
-        let edge = graph.edge_mut(edge_id);
-        edge.source = EdgeEndpoint::port(effective_source, hp_source);
-        edge.target = EdgeEndpoint::port(effective_target, hp_target);
+        let edge = &mut graph.edges[edge_id.index()];
+        if let Some(first) = edge.sources.first_mut() {
+            *first = EdgeEndpoint::port(effective_source, hp_source);
+        }
+        if let Some(first) = edge.targets.first_mut() {
+            *first = EdgeEndpoint::port(effective_target, hp_target);
+        }
 
         map.originals.insert(edge_id, (original_source, original_target));
     }
@@ -123,31 +134,43 @@ pub fn preprocess_cross_hierarchy_edges(
 
 /// Postprocess: snap section start/end back to original port positions.
 pub fn postprocess_cross_hierarchy_edges(
-    graph: &mut Graph,
+    graph: &mut ElkGraph,
     map: &CompoundRoutingMap,
 ) {
     for (edge_id, (original_source, original_target)) in &map.originals {
         // Compute desired endpoints before mutably borrowing the edge.
-        let start_center = if let Some(p) = original_source.port {
-            graph.port(p).bounds.center()
-        } else {
-            graph.node(original_source.node).bounds.center()
-        };
-        let end_center = if let Some(p) = original_target.port {
-            graph.port(p).bounds.center()
-        } else {
-            graph.node(original_target.node).bounds.center()
-        };
+        let start_center = endpoint_abs_center(graph, *original_source);
+        let end_center = endpoint_abs_center(graph, *original_target);
 
-        let edge = graph.edge_mut(*edge_id);
+        let edge = &mut graph.edges[edge_id.index()];
         // Restore original endpoints so downstream consumers don't see synthetic hierarchical ports.
-        edge.source = *original_source;
-        edge.target = *original_target;
+        if let Some(first) = edge.sources.first_mut() {
+            *first = *original_source;
+        }
+        if let Some(first) = edge.targets.first_mut() {
+            *first = *original_target;
+        }
         if edge.sections.is_empty() {
             continue;
         }
-        let section = &mut edge.sections[0];
+        let sec_id = edge.sections[0];
+        let section = &mut graph.edge_sections[sec_id.index()];
         section.start = start_center;
         section.end = end_center;
     }
+}
+
+fn nearest_ancestor_in_set(
+    graph: &ElkGraph,
+    node: NodeId,
+    local_nodes: &std::collections::BTreeSet<NodeId>,
+) -> Option<NodeId> {
+    let mut current = Some(node);
+    while let Some(candidate) = current {
+        if local_nodes.contains(&candidate) {
+            return Some(candidate);
+        }
+        current = graph.nodes[candidate.index()].parent;
+    }
+    None
 }

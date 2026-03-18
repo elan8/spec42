@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use elk_core::NodeId;
+use elk_graph::NodeId;
 
 use crate::ir::{IrNodeKind, LayeredIr};
 
