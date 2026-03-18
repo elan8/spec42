@@ -19,3 +19,8 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 clap = { workspace = true }
+tempfile = "3.27.0"
+
+[dev-dependencies]
+# Used by LSP integration tests when constructing `file://` URIs.
+url = "2"

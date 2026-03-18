@@ -14,18 +14,12 @@ path = "src/main_thin.rs"
 
 [dependencies]
 spec42-core = { path = "../spec42-core" }
-sysml-parser = { git = "https://github.com/elan8/sysml-parser" }
-tower-lsp = "0.20"
 tokio = { version = "1", features = ["full"] }
-walkdir = "2"
-petgraph = "0.8"
-serde = { workspace = true }
 serde_json = { workspace = true }
-thiserror = { workspace = true }
-clap = { workspace = true }
 sysml-diagrams = { path = "../sysml-diagrams" }
 
 [dev-dependencies]
+sysml-parser = { git = "https://github.com/elan8/sysml-parser" }
 serde_json = { workspace = true }
 tempfile = "3"
 url = "2"
