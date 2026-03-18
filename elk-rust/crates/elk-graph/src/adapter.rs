@@ -1,6 +1,9 @@
 use std::collections::BTreeMap;
 
-use elk_core::{EdgeEndpoint as CoreEndpoint, Graph as CoreGraph, Point, Size};
+use elk_core::{
+    EdgeEndpoint as CoreEndpoint, EdgeRouting, ElementLayoutOptions, Graph as CoreGraph,
+    LayoutDirection, Padding, Point, PortConstraint, Size, Spacing,
+};
 
 use crate::{EdgeEndpoint, ElkGraph, PropertyValue, ShapeGeometry};
 
@@ -65,12 +68,17 @@ impl CoreBridge {
 pub fn to_core_graph(elk: &ElkGraph) -> CoreBridge {
     let mut core = CoreGraph::new();
 
+    // Apply graph-level defaults from ELK properties (root layoutOptions in JSON).
+    apply_layout_from_props(&elk.properties, &mut core.layout);
+
     // Allocate nodes (excluding synthetic root semantics in elk-core; we'll import root as a node too).
     let mut node_map: Vec<elk_core::NodeId> = Vec::with_capacity(elk.nodes.len());
     for node in &elk.nodes {
         let id = core.add_node(Size::new(node.geometry.width, node.geometry.height));
         // Keep preferred position (ELK style) to help stable routing until placement runs.
         core.node_mut(id).preferred_position = Some(Point::new(node.geometry.x, node.geometry.y));
+        // Apply per-node options.
+        apply_layout_from_props(&node.properties, &mut core.node_mut(id).layout);
         node_map.push(id);
     }
 
@@ -94,6 +102,13 @@ pub fn to_core_graph(elk: &ElkGraph) -> CoreBridge {
             Size::new(port.geometry.width, port.geometry.height),
         );
         core.port_mut(pid).bounds.origin = Point::new(port.geometry.x, port.geometry.y);
+        // Apply per-port options.
+        apply_layout_from_props(&port.properties, &mut core.port_mut(pid).layout);
+        // Port ordering index (ELK's `port.index`) maps naturally to model_order in our core model.
+        if let Some(order) = prop_usize(&port.properties, &["elk.port.index", "org.eclipse.elk.port.index", "port.index"])
+        {
+            core.port_mut(pid).layout.model_order = Some(order);
+        }
         port_map.push(pid);
     }
 
@@ -105,6 +120,7 @@ pub fn to_core_graph(elk: &ElkGraph) -> CoreBridge {
             Size::new(label.geometry.width, label.geometry.height),
         );
         core.labels[lid.index()].position = Point::new(label.geometry.x, label.geometry.y);
+        apply_layout_from_props(&label.properties, &mut core.labels[lid.index()].layout);
         label_map.push(lid);
     }
     // Attach labels to owners.
@@ -142,6 +158,7 @@ pub fn to_core_graph(elk: &ElkGraph) -> CoreBridge {
         let core_source = endpoint_to_core(source, &node_map, &port_map);
         let core_target = endpoint_to_core(target, &node_map, &port_map);
         let eid = core.add_edge(core_source, core_target);
+        apply_layout_from_props(&edge.properties, &mut core.edge_mut(eid).layout);
         // If sections exist, transfer first section geometry.
         if let Some(sec_id) = edge.sections.first() {
             let sec = &elk.edge_sections[sec_id.index()];
@@ -158,9 +175,11 @@ pub fn to_core_graph(elk: &ElkGraph) -> CoreBridge {
         edge_map.push(eid);
     }
 
-    // Graph-level options compatibility: map known properties into `core.layout`.
-    // This is intentionally small; JSON importer already maps a typed subset into `core.layout` in legacy mode.
-    apply_core_layout_defaults_from_properties(elk, &mut core);
+    // If port constraints indicate fixed ordering, ensure we honor per-port indices by sorting.
+    // `elk-core` currently interprets `respect_port_order=false` as “use model_order sorting”.
+    if core.layout.port_constraint == Some(PortConstraint::FixedOrder) {
+        core.layout.respect_port_order = Some(false);
+    }
 
     CoreBridge {
         core,
@@ -180,23 +199,171 @@ fn endpoint_to_core(
     CoreEndpoint { node, port }
 }
 
-fn apply_core_layout_defaults_from_properties(elk: &ElkGraph, core: &mut CoreGraph) {
-    // Look for ELK-ish keys stored as strings in PropertyBag.
+fn apply_layout_from_props(props: &crate::PropertyBag, out: &mut ElementLayoutOptions) {
     let mut by_key: BTreeMap<String, &PropertyValue> = BTreeMap::new();
-    for (k, v) in elk.properties.iter() {
+    for (k, v) in props.iter() {
         by_key.insert(k.0.to_ascii_lowercase(), v);
     }
-    if let Some(PropertyValue::String(dir)) = by_key.get("elk.direction") {
-        let mapped = match dir.trim().to_ascii_uppercase().as_str() {
-            "RIGHT" => Some(elk_core::LayoutDirection::LeftToRight),
-            "LEFT" => Some(elk_core::LayoutDirection::RightToLeft),
-            "DOWN" => Some(elk_core::LayoutDirection::TopToBottom),
-            "UP" => Some(elk_core::LayoutDirection::BottomToTop),
-            _ => None,
-        };
-        if let Some(d) = mapped {
-            core.layout.direction = Some(d);
+
+    // direction
+    if let Some(PropertyValue::String(dir)) = find_value(&by_key, &["elk.direction", "org.eclipse.elk.direction"]) {
+        out.direction = parse_direction(dir).or(out.direction);
+    }
+
+    // edgeRouting
+    if let Some(PropertyValue::String(r)) =
+        find_value(&by_key, &["elk.edgerouting", "elk.edgeRouting", "org.eclipse.elk.edgeRouting", "org.eclipse.elk.edgerouting"])
+    {
+        out.edge_routing = parse_edge_routing(r).or(out.edge_routing);
+    }
+
+    // portConstraints
+    if let Some(PropertyValue::String(pc)) = find_value(
+        &by_key,
+        &["elk.portconstraints", "elk.portConstraints", "org.eclipse.elk.portConstraints", "org.eclipse.elk.portconstraints"],
+    ) {
+        out.port_constraint = parse_port_constraint(pc).or(out.port_constraint);
+    }
+
+    // padding (uniform)
+    if let Some(value) = find_value(&by_key, &["elk.padding", "org.eclipse.elk.padding"]) {
+        if let Some(p) = parse_padding(value) {
+            out.padding = Some(p);
         }
     }
+
+    // spacing subset
+    if let Some(value) = find_value(&by_key, &["elk.spacing.nodenode", "org.eclipse.elk.spacing.nodenode"]) {
+        if let Some(f) = parse_f32(value) {
+            out.spacing = Some(merge_spacing(out.spacing, |s| s.node_spacing = f));
+        }
+    }
+    // Edge-node clearance / separation (best-effort mapping to `edge_spacing` in our simplified model).
+    if let Some(value) = find_value(&by_key, &["elk.spacing.edgenode", "org.eclipse.elk.spacing.edgenode"]) {
+        if let Some(f) = parse_f32(value) {
+            out.spacing = Some(merge_spacing(out.spacing, |s| s.edge_spacing = f));
+        }
+    }
+    if let Some(value) = find_value(
+        &by_key,
+        &[
+            "elk.spacing.nodenodebetweenlayers",
+            "org.eclipse.elk.spacing.nodenodebetweenlayers",
+            "org.eclipse.elk.alg.layered.spacing.nodenodebetweenlayers",
+        ],
+    ) {
+        if let Some(f) = parse_f32(value) {
+            out.spacing = Some(merge_spacing(out.spacing, |s| s.layer_spacing = f));
+        }
+    }
+    if let Some(value) = find_value(&by_key, &["elk.spacing.edgeedge", "org.eclipse.elk.spacing.edgeedge"]) {
+        if let Some(f) = parse_f32(value) {
+            out.spacing = Some(merge_spacing(out.spacing, |s| s.edge_spacing = f));
+        }
+    }
+    // Edge label spacing (map to `label_spacing`).
+    if let Some(value) = find_value(&by_key, &["elk.spacing.edgelabel", "org.eclipse.elk.spacing.edgelabel"]) {
+        if let Some(f) = parse_f32(value) {
+            out.spacing = Some(merge_spacing(out.spacing, |s| s.label_spacing = f));
+        }
+    }
+    // Node label spacing (map to `label_spacing`).
+    if let Some(value) = find_value(&by_key, &["elk.spacing.labelnode", "org.eclipse.elk.spacing.labelnode"]) {
+        if let Some(f) = parse_f32(value) {
+            out.spacing = Some(merge_spacing(out.spacing, |s| s.label_spacing = f));
+        }
+    }
+    // Label clearance (map to `label_clearance`).
+    if let Some(value) = find_value(&by_key, &["elk.spacing.labellabel", "org.eclipse.elk.spacing.labellabel"]) {
+        if let Some(f) = parse_f32(value) {
+            out.spacing = Some(merge_spacing(out.spacing, |s| s.label_clearance = f));
+        }
+    }
+    if let Some(value) = find_value(
+        &by_key,
+        &["elk.spacing.componentcomponent", "org.eclipse.elk.spacing.componentcomponent"],
+    ) {
+        if let Some(f) = parse_f32(value) {
+            out.spacing = Some(merge_spacing(out.spacing, |s| s.component_spacing = f));
+        }
+    }
+}
+
+fn find_value<'a>(
+    by_key: &'a BTreeMap<String, &'a PropertyValue>,
+    keys: &[&str],
+) -> Option<&'a PropertyValue> {
+    for key in keys {
+        if let Some(v) = by_key.get(&key.to_ascii_lowercase()) {
+            return Some(*v);
+        }
+    }
+    None
+}
+
+fn prop_usize(props: &crate::PropertyBag, keys: &[&str]) -> Option<usize> {
+    let mut by_key: BTreeMap<String, &PropertyValue> = BTreeMap::new();
+    for (k, v) in props.iter() {
+        by_key.insert(k.0.to_ascii_lowercase(), v);
+    }
+    let v = find_value(&by_key, keys)?;
+    match v {
+        PropertyValue::Int(i) => (*i).try_into().ok(),
+        PropertyValue::Float(f) => (*f as i64).try_into().ok(),
+        PropertyValue::String(s) => s.trim().parse::<usize>().ok(),
+        _ => None,
+    }
+}
+
+fn parse_direction(value: &str) -> Option<LayoutDirection> {
+    match value.trim().to_ascii_uppercase().as_str() {
+        "RIGHT" => Some(LayoutDirection::LeftToRight),
+        "LEFT" => Some(LayoutDirection::RightToLeft),
+        "DOWN" => Some(LayoutDirection::TopToBottom),
+        "UP" => Some(LayoutDirection::BottomToTop),
+        _ => None,
+    }
+}
+
+fn parse_edge_routing(value: &str) -> Option<EdgeRouting> {
+    match value.trim().to_ascii_uppercase().as_str() {
+        "ORTHOGONAL" => Some(EdgeRouting::Orthogonal),
+        "POLYLINE" | "SPLINES" => Some(EdgeRouting::Straight),
+        _ => None,
+    }
+}
+
+fn parse_port_constraint(value: &str) -> Option<PortConstraint> {
+    match value.trim().to_ascii_uppercase().as_str() {
+        "FREE" | "UNDEFINED" => Some(PortConstraint::Free),
+        "FIXED_SIDE" => Some(PortConstraint::FixedSide),
+        "FIXED_ORDER" | "FIXED_RATIO" => Some(PortConstraint::FixedOrder),
+        "FIXED_POS" => Some(PortConstraint::FixedPosition),
+        _ => None,
+    }
+}
+
+fn parse_padding(value: &PropertyValue) -> Option<Padding> {
+    match value {
+        PropertyValue::Int(i) => Some(Padding::uniform(*i as f32)),
+        PropertyValue::Float(f) => Some(Padding::uniform(*f as f32)),
+        PropertyValue::String(s) => s.trim().parse::<f32>().ok().map(Padding::uniform),
+        _ => None,
+    }
+}
+
+fn parse_f32(value: &PropertyValue) -> Option<f32> {
+    match value {
+        PropertyValue::Int(i) => Some(*i as f32),
+        PropertyValue::Float(f) => Some(*f as f32),
+        PropertyValue::String(s) => s.trim().parse::<f32>().ok(),
+        _ => None,
+    }
+}
+
+fn merge_spacing(current: Option<Spacing>, f: impl FnOnce(&mut Spacing)) -> Spacing {
+    let mut s = current.unwrap_or_default();
+    f(&mut s);
+    s
 }
 
