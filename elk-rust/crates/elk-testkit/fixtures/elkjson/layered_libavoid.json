@@ -1,0 +1,19 @@
+{
+  "id": "root",
+  "layoutOptions": {
+    "elk.direction": "DOWN",
+    "elk.edgeRouting": "ORTHOGONAL",
+    "elk.layered.routingBackend": "libavoid",
+    "elk.spacing.nodeNodeBetweenLayers": 60
+  },
+  "children": [
+    { "id": "n1", "width": 80, "height": 40 },
+    { "id": "n2", "width": 80, "height": 40 },
+    { "id": "n3", "width": 80, "height": 40 }
+  ],
+  "edges": [
+    { "id": "e1", "sources": ["n1"], "targets": ["n2"] },
+    { "id": "e2", "sources": ["n2"], "targets": ["n3"] },
+    { "id": "e3", "sources": ["n1"], "targets": ["n3"] }
+  ]
+}

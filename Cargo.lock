@@ -366,6 +366,17 @@ dependencies = [
  "elk-alg-common",
  "elk-core",
  "elk-graph",
+ "elk-libavoid",
+ "elk-meta",
+]
+
+[[package]]
+name = "elk-libavoid"
+version = "0.1.0"
+dependencies = [
+ "elk-alg-common",
+ "elk-core",
+ "elk-graph",
  "elk-meta",
 ]
 
@@ -377,6 +388,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "elk-rectpacking"
+version = "0.1.0"
+dependencies = [
+ "elk-alg-common",
+ "elk-core",
+ "elk-graph",
+ "elk-meta",
+]
+
+[[package]]
 name = "elk-service"
 version = "0.1.0"
 dependencies = [
@@ -384,7 +405,10 @@ dependencies = [
  "elk-graph",
  "elk-graph-json",
  "elk-layered",
+ "elk-libavoid",
  "elk-meta",
+ "elk-rectpacking",
+ "elk-topdownpacking",
  "elk-tree",
 ]
 
@@ -400,6 +424,15 @@ dependencies = [
  "elk-service",
  "proptest",
  "serde_json",
+]
+
+[[package]]
+name = "elk-topdownpacking"
+version = "0.1.0"
+dependencies = [
+ "elk-core",
+ "elk-graph",
+ "elk-meta",
 ]
 
 [[package]]

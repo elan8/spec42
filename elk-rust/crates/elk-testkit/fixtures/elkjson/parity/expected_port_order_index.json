@@ -1,0 +1,123 @@
+{
+  "children": [
+    {
+      "height": 120.0,
+      "id": "n1",
+      "ports": [
+        {
+          "height": 10.0,
+          "id": "p0",
+          "layoutOptions": {
+            "elk.port.index": 2,
+            "elk.port.side": "EAST",
+            "port.side": "EAST"
+          },
+          "width": 10.0,
+          "x": 159.0,
+          "y": 99.0
+        },
+        {
+          "height": 10.0,
+          "id": "p1",
+          "layoutOptions": {
+            "elk.port.index": 0,
+            "elk.port.side": "EAST",
+            "port.side": "EAST"
+          },
+          "width": 10.0,
+          "x": 159.0,
+          "y": 59.0
+        }
+      ],
+      "width": 140.0,
+      "x": 24.0,
+      "y": 24.0
+    },
+    {
+      "height": 120.0,
+      "id": "n2",
+      "ports": [
+        {
+          "height": 10.0,
+          "id": "p2",
+          "layoutOptions": {
+            "elk.port.index": 0,
+            "elk.port.side": "WEST",
+            "port.side": "WEST"
+          },
+          "width": 10.0,
+          "x": 239.0,
+          "y": 79.0
+        }
+      ],
+      "width": 140.0,
+      "x": 244.0,
+      "y": 24.0
+    }
+  ],
+  "edges": [
+    {
+      "id": "e0",
+      "sections": [
+        {
+          "bendPoints": [
+            {
+              "x": 244.0,
+              "y": 104.0
+            }
+          ],
+          "endPoint": {
+            "x": 244.0,
+            "y": 84.0
+          },
+          "startPoint": {
+            "x": 164.0,
+            "y": 104.0
+          }
+        }
+      ],
+      "sources": [
+        "p0"
+      ],
+      "targets": [
+        "p2"
+      ]
+    },
+    {
+      "id": "e1",
+      "sections": [
+        {
+          "bendPoints": [
+            {
+              "x": 244.0,
+              "y": 64.0
+            }
+          ],
+          "endPoint": {
+            "x": 244.0,
+            "y": 84.0
+          },
+          "startPoint": {
+            "x": 164.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "sources": [
+        "p1"
+      ],
+      "targets": [
+        "p2"
+      ]
+    }
+  ],
+  "height": 208.0,
+  "id": "root",
+  "layoutOptions": {
+    "elk.direction": "RIGHT",
+    "elk.portConstraints": "FIXED_ORDER"
+  },
+  "width": 408.0,
+  "x": 0.0,
+  "y": 0.0
+}

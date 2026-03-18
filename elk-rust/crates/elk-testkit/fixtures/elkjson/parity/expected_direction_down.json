@@ -1,0 +1,51 @@
+{
+  "children": [
+    {
+      "height": 40.0,
+      "id": "n1",
+      "width": 80.0,
+      "x": 24.0,
+      "y": 24.0
+    },
+    {
+      "height": 40.0,
+      "id": "n2",
+      "width": 80.0,
+      "x": 24.0,
+      "y": 144.0
+    }
+  ],
+  "edges": [
+    {
+      "id": "e0",
+      "sections": [
+        {
+          "endPoint": {
+            "x": 64.0,
+            "y": 164.0
+          },
+          "startPoint": {
+            "x": 64.0,
+            "y": 44.0
+          }
+        }
+      ],
+      "sources": [
+        "n1"
+      ],
+      "targets": [
+        "n2"
+      ]
+    }
+  ],
+  "height": 208.0,
+  "id": "root",
+  "layoutOptions": {
+    "elk.direction": "DOWN",
+    "elk.edgeRouting": "ORTHOGONAL",
+    "elk.spacing.nodeNode": 44
+  },
+  "width": 172.0,
+  "x": 0.0,
+  "y": 0.0
+}

@@ -9,6 +9,9 @@ members = [
     "crates/elk-service",
     "crates/elk-alg-common",
     "crates/elk-tree",
+    "crates/elk-rectpacking",
+    "crates/elk-topdownpacking",
+    "crates/elk-libavoid",
 ]
 resolver = "2"
 

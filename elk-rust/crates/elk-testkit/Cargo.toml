@@ -7,10 +7,11 @@ version = "0.1.0"
 
 [dependencies]
 elk-core = { path = "../elk-core" }
-elk-layered = { path = "../elk-layered" }
-elk-graph-json = { path = "../elk-graph-json" }
 elk-graph = { path = "../elk-graph" }
+elk-graph-json = { path = "../elk-graph-json" }
+elk-layered = { path = "../elk-layered" }
 elk-service = { path = "../elk-service" }
+serde_json = "1"
 
 [dev-dependencies]
 criterion = "0.5"

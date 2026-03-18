@@ -1,5 +1,5 @@
 [package]
-name = "elk-layered"
+name = "elk-rectpacking"
 edition = "2024"
 license = "MIT"
 rust-version = "1.85"
@@ -9,5 +9,5 @@ version = "0.1.0"
 elk-core = { path = "../elk-core" }
 elk-graph = { path = "../elk-graph" }
 elk-alg-common = { path = "../elk-alg-common" }
-elk-libavoid = { path = "../elk-libavoid" }
 elk-meta = { path = "../elk-meta" }
+

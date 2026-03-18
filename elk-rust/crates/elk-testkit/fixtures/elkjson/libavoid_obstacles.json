@@ -1,0 +1,12 @@
+{
+  "id": "root",
+  "layoutOptions": { "elk.algorithm": "org.eclipse.elk.libavoid" },
+  "children": [
+    { "id": "a", "x": 0, "y": 0, "width": 60, "height": 40 },
+    { "id": "b", "x": 200, "y": 0, "width": 60, "height": 40 },
+    { "id": "block", "x": 90, "y": 30, "width": 80, "height": 60 }
+  ],
+  "edges": [
+    { "id": "e1", "sources": ["a"], "targets": ["b"] }
+  ]
+}

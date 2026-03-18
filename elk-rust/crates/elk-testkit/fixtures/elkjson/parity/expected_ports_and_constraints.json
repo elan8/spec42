@@ -1,0 +1,79 @@
+{
+  "children": [
+    {
+      "height": 80.0,
+      "id": "n1",
+      "ports": [
+        {
+          "height": 10.0,
+          "id": "p0",
+          "layoutOptions": {
+            "elk.port.side": "EAST",
+            "port.side": "EAST"
+          },
+          "width": 10.0,
+          "x": 139.0,
+          "y": 59.0
+        }
+      ],
+      "width": 120.0,
+      "x": 24.0,
+      "y": 24.0
+    },
+    {
+      "height": 80.0,
+      "id": "n2",
+      "ports": [
+        {
+          "height": 10.0,
+          "id": "p1",
+          "layoutOptions": {
+            "elk.port.side": "WEST",
+            "port.side": "WEST"
+          },
+          "width": 10.0,
+          "x": 219.0,
+          "y": 59.0
+        }
+      ],
+      "width": 120.0,
+      "x": 224.0,
+      "y": 24.0
+    }
+  ],
+  "edges": [
+    {
+      "id": "e0",
+      "layoutOptions": {
+        "elk.edgeRouting": "POLYLINE"
+      },
+      "sections": [
+        {
+          "endPoint": {
+            "x": 224.0,
+            "y": 64.0
+          },
+          "startPoint": {
+            "x": 144.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "sources": [
+        "p0"
+      ],
+      "targets": [
+        "p1"
+      ]
+    }
+  ],
+  "height": 168.0,
+  "id": "root",
+  "layoutOptions": {
+    "elk.direction": "RIGHT",
+    "elk.portConstraints": "FIXED_ORDER"
+  },
+  "width": 368.0,
+  "x": 0.0,
+  "y": 0.0
+}

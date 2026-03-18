@@ -11,6 +11,9 @@ elk-graph = { path = "../elk-graph" }
 elk-meta = { path = "../elk-meta" }
 elk-layered = { path = "../elk-layered" }
 elk-tree = { path = "../elk-tree" }
+elk-rectpacking = { path = "../elk-rectpacking" }
+elk-topdownpacking = { path = "../elk-topdownpacking" }
+elk-libavoid = { path = "../elk-libavoid" }
 
 [dev-dependencies]
 elk-graph-json = { path = "../elk-graph-json" }

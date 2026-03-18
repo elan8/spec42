@@ -1,0 +1,17 @@
+{
+  "id": "root",
+  "layoutOptions": { "elk.algorithm": "org.eclipse.elk.topdownpacking" },
+  "children": [
+    {
+      "id": "container",
+      "width": 200,
+      "height": 160,
+      "children": [
+        { "id": "a", "width": 70, "height": 40 },
+        { "id": "b", "width": 70, "height": 40 },
+        { "id": "c", "width": 70, "height": 40 }
+      ]
+    },
+    { "id": "leaf", "width": 80, "height": 50 }
+  ]
+}

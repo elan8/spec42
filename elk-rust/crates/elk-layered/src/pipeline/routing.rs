@@ -1,7 +1,7 @@
 use std::collections::BTreeSet;
 
 use elk_core::{EdgeRouting, LayoutOptions, LayoutStats, Point, PortSide, Rect, Size};
-use elk_graph::{ElkGraph, NodeId, PortId};
+use elk_graph::{ElkGraph, EdgeId, NodeId, PortId};
 
 use crate::ir::{IrEdge, LayeredIr};
 use crate::pipeline::props::decode_layout_from_props;
@@ -28,36 +28,89 @@ pub(crate) fn export_to_graph(
         }
     }
 
-    // Route edges (simple orthogonal or straight) and place edge labels.
+    // Route edges: libavoid backend (if opted in) or simple 1-bend router.
+    let use_libavoid = routing_backend_is_libavoid(graph);
     let mut routed = 0usize;
-    for edge in &ir.edges {
-        if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
-            continue;
-        }
-        let start = endpoint_abs_center(graph, edge.source);
-        let end = endpoint_abs_center(graph, edge.target);
-        let routing = edge_routing_for_edge(graph, edge, options);
 
-        let mut bends = Vec::new();
-        if routing == EdgeRouting::Orthogonal
-            && (start.x - end.x).abs() > f32::EPSILON
-            && (start.y - end.y).abs() > f32::EPSILON
-        {
-            bends.push(Point::new(end.x, start.y));
+    if use_libavoid {
+        let local_edge_ids: Vec<EdgeId> = ir.edges
+            .iter()
+            .filter(|e| local_nodes.contains(&e.effective_source) && local_nodes.contains(&e.effective_target))
+            .map(|e| e.original_edge)
+            .collect();
+        if !local_edge_ids.is_empty() {
+            if let Err(e) = elk_libavoid::route_edges(graph, &local_edge_ids) {
+                warnings.push(format!("elk-layered: libavoid routing failed: {e}"));
+            } else {
+                routed = local_edge_ids.len();
+                for edge in &ir.edges {
+                    if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
+                        continue;
+                    }
+                    let (start, end) = section_endpoints(graph, edge.original_edge);
+                    for &sid in &graph.edges[edge.original_edge.index()].sections {
+                        stats.bend_points += graph.edge_sections[sid.index()].bend_points.len();
+                    }
+                    place_edge_labels(graph, edge, start, end, options, stats);
+                }
+            }
         }
-        bends = dedup_points(bends);
-
-        // Overwrite/create a single edge section.
-        let edge_idx = edge.original_edge.index();
-        graph.edges[edge_idx].sections.clear();
-        let _ = graph.add_edge_section(edge.original_edge, start, bends.clone(), end);
-        stats.bend_points += bends.len();
-        routed += 1;
-        place_edge_labels(graph, edge, start, end, options, stats);
+        if routed > 0 {
+            warnings.push("elk-layered: libavoid routing backend active".to_string());
+        }
     }
 
-    warnings.push("elk-layered: simplified ElkGraph router active".to_string());
+    if !use_libavoid || routed == 0 {
+        for edge in &ir.edges {
+            if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
+                continue;
+            }
+            let start = endpoint_abs_center(graph, edge.source);
+            let end = endpoint_abs_center(graph, edge.target);
+            let routing = edge_routing_for_edge(graph, edge, options);
+
+            let mut bends = Vec::new();
+            if routing == EdgeRouting::Orthogonal
+                && (start.x - end.x).abs() > f32::EPSILON
+                && (start.y - end.y).abs() > f32::EPSILON
+            {
+                bends.push(Point::new(end.x, start.y));
+            }
+            bends = dedup_points(bends);
+
+            let edge_idx = edge.original_edge.index();
+            graph.edges[edge_idx].sections.clear();
+            let _ = graph.add_edge_section(edge.original_edge, start, bends.clone(), end);
+            stats.bend_points += bends.len();
+            routed += 1;
+            place_edge_labels(graph, edge, start, end, options, stats);
+        }
+        if routed > 0 {
+            warnings.push("elk-layered: simplified ElkGraph router active".to_string());
+        }
+    }
+
     routed
+}
+
+fn routing_backend_is_libavoid(graph: &ElkGraph) -> bool {
+    let meta = elk_meta::default_registry();
+    let by_key = elk_alg_common::options::casefold_map(&graph.properties);
+    let v = elk_alg_common::options::find_option(&meta, &by_key, "elk.layered.routingbackend");
+    v.and_then(elk_graph::PropertyValue::as_str)
+        .map(|s| s.trim().eq_ignore_ascii_case("libavoid"))
+        .unwrap_or(false)
+}
+
+fn section_endpoints(graph: &ElkGraph, edge_id: EdgeId) -> (Point, Point) {
+    let e = &graph.edges[edge_id.index()];
+    if let (Some(&first_id), Some(&last_id)) = (e.sections.first(), e.sections.last()) {
+        let first = &graph.edge_sections[first_id.index()];
+        let last = &graph.edge_sections[last_id.index()];
+        (first.start, last.end)
+    } else {
+        (Point::new(0.0, 0.0), Point::new(0.0, 0.0))
+    }
 }
 
 fn node_rect(graph: &ElkGraph, node: NodeId) -> Rect {

@@ -1,6 +1,11 @@
 #![forbid(unsafe_code)]
 
+mod parity;
+mod routing_invariants;
 mod svg;
+
+pub use parity::{compare_layout_json, node_ids_from_json};
+pub use routing_invariants::{assert_routed_paths_avoid_obstacles, segment_intersects_rect_interior};
 
 pub use svg::{maybe_write_svg_snapshot, render_graph_svg, snapshot_dir, snapshot_file_name};
 

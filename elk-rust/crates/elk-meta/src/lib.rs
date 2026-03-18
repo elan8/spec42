@@ -185,16 +185,92 @@ pub fn option_type_of(v: &PropertyValue) -> OptionType {
 #[must_use]
 pub fn default_registry() -> OptionRegistry {
     let mut reg = OptionRegistry::new();
-    let scopes_graph = [OptionScope::Graph].into_iter().collect();
+    let scopes_graph: BTreeSet<OptionScope> = [OptionScope::Graph].into_iter().collect();
 
     reg.register(OptionMeta {
         id: OptionId("elk.algorithm".to_string()),
         option_type: OptionType::String,
         default_value: None,
-        allowed_scopes: scopes_graph,
+        allowed_scopes: scopes_graph.clone(),
         aliases: vec!["org.eclipse.elk.algorithm".to_string()],
         doc: "Algorithm id used for dispatch.",
     });
+
+    // Algorithm ids (aliases) for non-layered algorithms we’re porting.
+    // Note: the service layer matches ids case-insensitively; these are for validation/compatibility.
+    reg.register(OptionMeta {
+        id: OptionId("org.eclipse.elk.rectpacking".to_string()),
+        option_type: OptionType::String,
+        default_value: None,
+        allowed_scopes: scopes_graph.clone(),
+        aliases: vec![
+            "elk.rectpacking".to_string(),
+            "org.eclipse.elk.alg.rectpacking".to_string(),
+        ],
+        doc: "Rectpacking algorithm id (compat).",
+    });
+    reg.register(OptionMeta {
+        id: OptionId("org.eclipse.elk.topdownpacking".to_string()),
+        option_type: OptionType::String,
+        default_value: None,
+        allowed_scopes: scopes_graph.clone(),
+        aliases: vec![
+            "elk.topdownpacking".to_string(),
+            "org.eclipse.elk.alg.topdownpacking".to_string(),
+        ],
+        doc: "Topdownpacking algorithm id (compat).",
+    });
+    reg.register(OptionMeta {
+        id: OptionId("org.eclipse.elk.libavoid".to_string()),
+        option_type: OptionType::String,
+        default_value: None,
+        allowed_scopes: scopes_graph.clone(),
+        aliases: vec![
+            "elk.libavoid".to_string(),
+            "org.eclipse.elk.alg.libavoid".to_string(),
+        ],
+        doc: "Libavoid algorithm id (compat).",
+    });
+
+    // Libavoid routing options (graph/edge scope).
+    let scopes_graph_edge = [OptionScope::Graph, OptionScope::Edge]
+        .into_iter()
+        .collect::<BTreeSet<_>>();
+    for (id, aliases, doc) in [
+        (
+            "elk.libavoid.clearance",
+            vec!["org.eclipse.elk.libavoid.clearance"],
+            "Clearance between route and obstacles.",
+        ),
+        (
+            "elk.libavoid.bendpenalty",
+            vec!["org.eclipse.elk.libavoid.bendPenalty", "org.eclipse.elk.libavoid.bendpenalty"],
+            "Penalty per bend in A* cost.",
+        ),
+        (
+            "elk.libavoid.segmentpenalty",
+            vec!["org.eclipse.elk.libavoid.segmentPenalty", "org.eclipse.elk.libavoid.segmentpenalty"],
+            "Penalty per segment in A* cost.",
+        ),
+        (
+            "elk.libavoid.routingstyle",
+            vec!["org.eclipse.elk.libavoid.routingStyle", "org.eclipse.elk.libavoid.routingstyle"],
+            "Polyline or orthogonal.",
+        ),
+    ] {
+        reg.register(OptionMeta {
+            id: OptionId(id.to_string()),
+            option_type: if id.contains("clearance") || id.contains("penalty") {
+                OptionType::Float
+            } else {
+                OptionType::String
+            },
+            default_value: None,
+            allowed_scopes: scopes_graph_edge.clone(),
+            aliases: aliases.into_iter().map(String::from).collect(),
+            doc,
+        });
+    }
     reg.register(OptionMeta {
         id: OptionId("elk.direction".to_string()),
         option_type: OptionType::String,
@@ -214,6 +290,17 @@ pub fn default_registry() -> OptionRegistry {
             "org.eclipse.elk.edgerouting".to_string(),
         ],
         doc: "Edge routing style.",
+    });
+    reg.register(OptionMeta {
+        id: OptionId("elk.layered.routingbackend".to_string()),
+        option_type: OptionType::String,
+        default_value: None,
+        allowed_scopes: [OptionScope::Graph].into_iter().collect(),
+        aliases: vec![
+            "elk.routing".to_string(),
+            "org.eclipse.elk.layered.routingBackend".to_string(),
+        ],
+        doc: "Layered routing backend: default (simple) or libavoid.",
     });
     reg.register(OptionMeta {
         id: OptionId("elk.portconstraints".to_string()),

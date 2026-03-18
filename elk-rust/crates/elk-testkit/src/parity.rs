@@ -1,0 +1,272 @@
+//! Java-vs-Rust JSON parity comparison with tolerant numeric checks.
+//!
+//! Compares layout output (node positions, edge sections) between two ELK graph JSON
+//! trees. Used to validate Rust output against checked-in expected outputs (from Java ELK
+//! or from a previous Rust run).
+
+use std::collections::BTreeSet;
+
+/// Compares two ELK graph JSON root objects. Returns `Ok(())` if structure matches
+/// and all numeric layout fields are within `coord_eps`. Order of children and edges
+/// must match (same indices); node/edge ids must match.
+pub fn compare_layout_json(
+    actual: &serde_json::Value,
+    expected: &serde_json::Value,
+    coord_eps: f32,
+) -> Result<(), String> {
+    let a = actual
+        .as_object()
+        .ok_or_else(|| "actual root is not an object".to_string())?;
+    let e = expected
+        .as_object()
+        .ok_or_else(|| "expected root is not an object".to_string())?;
+    compare_node_object(a, e, coord_eps, "root")
+}
+
+fn compare_node_object(
+    actual: &serde_json::Map<String, serde_json::Value>,
+    expected: &serde_json::Map<String, serde_json::Value>,
+    eps: f32,
+    path: &str,
+) -> Result<(), String> {
+    compare_str_key(actual, expected, "id", path)?;
+    compare_f32_key(actual, expected, "x", eps, path)?;
+    compare_f32_key(actual, expected, "y", eps, path)?;
+    compare_f32_key(actual, expected, "width", eps, path)?;
+    compare_f32_key(actual, expected, "height", eps, path)?;
+
+    let a_children = actual.get("children").and_then(|v| v.as_array());
+    let e_children = expected.get("children").and_then(|v| v.as_array());
+    match (a_children, e_children) {
+        (None, None) => {}
+        (Some(ac), Some(ec)) => {
+            if ac.len() != ec.len() {
+                return Err(format!(
+                    "{}: children length {} != {}",
+                    path,
+                    ac.len(),
+                    ec.len()
+                ));
+            }
+            for (i, (ac_obj, ec_obj)) in ac.iter().zip(ec.iter()).enumerate() {
+                let ac_map = ac_obj
+                    .as_object()
+                    .ok_or_else(|| format!("{}: actual child {} is not object", path, i))?;
+                let ec_map = ec_obj
+                    .as_object()
+                    .ok_or_else(|| format!("{}: expected child {} is not object", path, i))?;
+                let child_id = ec_map
+                    .get("id")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("?");
+                compare_node_object(ac_map, ec_map, eps, &format!("{}.children[{}](id={})", path, i, child_id))?;
+            }
+        }
+        _ => {
+            return Err(format!(
+                "{}: children presence mismatch (actual has children: {}, expected: {})",
+                path,
+                a_children.is_some(),
+                e_children.is_some()
+            ));
+        }
+    }
+
+    let a_edges = actual.get("edges").and_then(|v| v.as_array());
+    let e_edges = expected.get("edges").and_then(|v| v.as_array());
+    match (a_edges, e_edges) {
+        (None, None) => {}
+        (Some(ae), Some(ee)) => {
+            if ae.len() != ee.len() {
+                return Err(format!(
+                    "{}: edges length {} != {}",
+                    path,
+                    ae.len(),
+                    ee.len()
+                ));
+            }
+            for (i, (ae_obj, ee_obj)) in ae.iter().zip(ee.iter()).enumerate() {
+                compare_edge_object(ae_obj, ee_obj, eps, &format!("{}.edges[{}]", path, i))?;
+            }
+        }
+        _ => {
+            return Err(format!(
+                "{}: edges presence mismatch (actual has edges: {}, expected: {})",
+                path,
+                a_edges.is_some(),
+                e_edges.is_some()
+            ));
+        }
+    }
+
+    Ok(())
+}
+
+fn compare_edge_object(
+    actual: &serde_json::Value,
+    expected: &serde_json::Value,
+    eps: f32,
+    path: &str,
+) -> Result<(), String> {
+    let a = actual
+        .as_object()
+        .ok_or_else(|| format!("{}: actual edge is not object", path))?;
+    let e = expected
+        .as_object()
+        .ok_or_else(|| format!("{}: expected edge is not object", path))?;
+    compare_str_key(a, e, "id", path)?;
+
+    let a_sections = a.get("sections").and_then(|v| v.as_array());
+    let e_sections = e.get("sections").and_then(|v| v.as_array());
+    match (a_sections, e_sections) {
+        (None, None) => {}
+        (Some(asec), Some(esec)) => {
+            if asec.len() != esec.len() {
+                return Err(format!(
+                    "{}: section count {} != {}",
+                    path,
+                    asec.len(),
+                    esec.len()
+                ));
+            }
+            for (i, (asec_val, esec_val)) in asec.iter().zip(esec.iter()).enumerate() {
+                compare_section_value(asec_val, esec_val, eps, &format!("{}.sections[{}]", path, i))?;
+            }
+        }
+        _ => {
+            return Err(format!(
+                "{}: sections presence mismatch",
+                path
+            ));
+        }
+    }
+
+    Ok(())
+}
+
+fn compare_section_value(
+    actual: &serde_json::Value,
+    expected: &serde_json::Value,
+    eps: f32,
+    path: &str,
+) -> Result<(), String> {
+    // ELK JSON: section is object with startPoint {x,y}, endPoint {x,y}, bendPoints [{x,y},...]
+    // or wrapped in array of one element (legacy).
+    let a_sec = section_object(actual).ok_or_else(|| format!("{}: actual section not object/array", path))?;
+    let e_sec = section_object(expected).ok_or_else(|| format!("{}: expected section not object/array", path))?;
+    compare_point_key(a_sec, e_sec, "startPoint", eps, path)?;
+    compare_point_key(a_sec, e_sec, "endPoint", eps, path)?;
+    let a_bends = a_sec.get("bendPoints").and_then(|v| v.as_array());
+    let e_bends = e_sec.get("bendPoints").and_then(|v| v.as_array());
+    match (a_bends, e_bends) {
+        (None, None) => {}
+        (Some(ab), Some(eb)) => {
+            if ab.len() != eb.len() {
+                return Err(format!("{}: bend point count {} != {}", path, ab.len(), eb.len()));
+            }
+            for (i, (pb_a, pb_e)) in ab.iter().zip(eb.iter()).enumerate() {
+                let pa = pb_a.as_object().ok_or_else(|| format!("{}: bend[{}] not object", path, i))?;
+                let pe = pb_e.as_object().ok_or_else(|| format!("{}: expected bend[{}] not object", path, i))?;
+                compare_f32_key(pa, pe, "x", eps, &format!("{}.bend[{}]", path, i))?;
+                compare_f32_key(pa, pe, "y", eps, &format!("{}.bend[{}]", path, i))?;
+            }
+        }
+        _ => {}
+    }
+    Ok(())
+}
+
+fn compare_point_key(
+    actual: &serde_json::Map<String, serde_json::Value>,
+    expected: &serde_json::Map<String, serde_json::Value>,
+    key: &str,
+    eps: f32,
+    path: &str,
+) -> Result<(), String> {
+    let a_pt = actual.get(key).and_then(|v| v.as_object());
+    let e_pt = expected.get(key).and_then(|v| v.as_object());
+    match (a_pt, e_pt) {
+        (Some(ap), Some(ep)) => {
+            compare_f32_key(ap, ep, "x", eps, &format!("{}.{}", path, key))?;
+            compare_f32_key(ap, ep, "y", eps, &format!("{}.{}", path, key))?;
+        }
+        (None, None) => {}
+        _ => return Err(format!("{}: {} presence mismatch", path, key)),
+    }
+    Ok(())
+}
+
+fn section_object(v: &serde_json::Value) -> Option<&serde_json::Map<String, serde_json::Value>> {
+    if let Some(arr) = v.as_array() {
+        if let Some(first) = arr.first() {
+            return first.as_object();
+        }
+    }
+    v.as_object()
+}
+
+fn compare_str_key(
+    actual: &serde_json::Map<String, serde_json::Value>,
+    expected: &serde_json::Map<String, serde_json::Value>,
+    key: &str,
+    path: &str,
+) -> Result<(), String> {
+    let a = actual.get(key).and_then(|v| v.as_str());
+    let e = expected.get(key).and_then(|v| v.as_str());
+    match (a, e) {
+        (Some(aa), Some(ee)) if aa == ee => Ok(()),
+        (Some(aa), Some(ee)) => Err(format!("{}: {} {:?} != {:?}", path, key, aa, ee)),
+        (None, None) => Ok(()),
+        _ => Err(format!("{}: {} presence mismatch", path, key)),
+    }
+}
+
+fn compare_f32_key(
+    actual: &serde_json::Map<String, serde_json::Value>,
+    expected: &serde_json::Map<String, serde_json::Value>,
+    key: &str,
+    eps: f32,
+    path: &str,
+) -> Result<(), String> {
+    let a = get_f32(actual, key);
+    let e = get_f32(expected, key);
+    match (a, e) {
+        (Some(aa), Some(ee)) => {
+            if (aa - ee).abs() <= eps {
+                Ok(())
+            } else {
+                Err(format!("{}: {} {} != {} (eps {})", path, key, aa, ee, eps))
+            }
+        }
+        (None, None) => Ok(()),
+        _ => Err(format!("{}: {} presence mismatch", path, key)),
+    }
+}
+
+fn get_f32(m: &serde_json::Map<String, serde_json::Value>, key: &str) -> Option<f32> {
+    let v = m.get(key)?;
+    match v {
+        serde_json::Value::Number(n) => n.as_f64().map(|f| f as f32),
+        serde_json::Value::String(s) => s.trim().parse::<f32>().ok(),
+        _ => None,
+    }
+}
+
+/// Collects all node ids (as strings) from a root JSON object for structure checks.
+pub fn node_ids_from_json(root: &serde_json::Value) -> BTreeSet<String> {
+    let mut set = BTreeSet::new();
+    collect_node_ids(root, &mut set);
+    set
+}
+
+fn collect_node_ids(v: &serde_json::Value, out: &mut BTreeSet<String>) {
+    let Some(obj) = v.as_object() else { return };
+    if let Some(id) = obj.get("id").and_then(|x| x.as_str()) {
+        out.insert(id.to_string());
+    }
+    if let Some(children) = obj.get("children").and_then(|x| x.as_array()) {
+        for c in children {
+            collect_node_ids(c, out);
+        }
+    }
+}
