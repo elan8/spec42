@@ -1,4 +1,4 @@
-use elk_core::{LayoutDirection, Point, Size};
+use elk_core::{LayoutDirection, Point, PortSide, Size};
 use elk_graph::{EdgeEndpoint, ElkGraph, LabelId, NodeId, PortId};
 
 use crate::ir::{IrNodeId, LayeredIr};
@@ -152,6 +152,21 @@ pub(crate) fn endpoint_abs_center(graph: &ElkGraph, endpoint: EdgeEndpoint) -> P
         port_abs_center(graph, port)
     } else {
         node_abs_center(graph, endpoint.node)
+    }
+}
+
+/// Port side for an endpoint, if it is a port; otherwise `None`.
+pub(crate) fn endpoint_port_side(graph: &ElkGraph, endpoint: EdgeEndpoint) -> Option<PortSide> {
+    endpoint.port.map(|pid| graph.ports[pid.index()].side)
+}
+
+/// Point obtained by moving from the port center along the outward normal (away from the node).
+pub(crate) fn point_along_outward_normal(center: Point, side: PortSide, delta: f32) -> Point {
+    match side {
+        PortSide::North => Point::new(center.x, center.y - delta),
+        PortSide::South => Point::new(center.x, center.y + delta),
+        PortSide::East => Point::new(center.x + delta, center.y),
+        PortSide::West => Point::new(center.x - delta, center.y),
     }
 }
 

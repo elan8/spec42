@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
-use crate::layout::{DiagramGraph, LayerDirection, LayoutConfig, LayoutViewProfile};
+use crate::layout::{DiagramGraph, DiagramPort, LayerDirection, LayoutConfig, LayoutViewProfile, PortSide};
 
 use crate::{
     shared::{build_rendered_diagram_with_config, default_node, detail_lines, edge},
@@ -18,13 +18,25 @@ pub fn render(nodes: &[GraphNodeInput], edges: &[GraphEdgeInput]) -> Result<Rend
         .filter(|node| kept_ids.contains(node.id.as_str()))
         .map(|node| {
             let detail = general_detail_lines(node);
+            let ports = vec![
+                DiagramPort {
+                    id: format!("{}::north", node.id),
+                    name: "north".to_string(),
+                    side: PortSide::Top,
+                },
+                DiagramPort {
+                    id: format!("{}::south", node.id),
+                    name: "south".to_string(),
+                    side: PortSide::Bottom,
+                },
+            ];
             default_node(
                 node.id.clone(),
                 node.name.clone(),
                 node.element_type.clone(),
                 None,
                 detail,
-                Vec::new(),
+                ports,
                 220.0,
                 64.0 + node.attributes.len().min(2) as f32 * 14.0,
             )
@@ -181,8 +193,8 @@ fn collect_general_edges(
             format!("general-edge-{index}"),
             edge_item.source.clone(),
             edge_item.target.clone(),
-            None,
-            None,
+            Some(format!("{}::south", edge_item.source)),
+            Some(format!("{}::north", edge_item.target)),
             edge_item
                 .name
                 .clone()

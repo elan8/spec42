@@ -5,7 +5,10 @@ use elk_graph::{ElkGraph, EdgeId, NodeId, PortId};
 
 use crate::ir::{IrEdge, LayeredIr};
 use crate::pipeline::props::decode_layout_from_props;
-use crate::pipeline::util::{dedup_points, endpoint_abs_center, label_size, node_abs_origin};
+use crate::pipeline::util::{
+    dedup_points, endpoint_abs_center, endpoint_port_side, label_size, node_abs_origin,
+    point_along_outward_normal,
+};
 
 pub(crate) fn export_to_graph(
     graph: &mut ElkGraph,
@@ -74,7 +77,20 @@ pub(crate) fn export_to_graph(
                 && (start.x - end.x).abs() > f32::EPSILON
                 && (start.y - end.y).abs() > f32::EPSILON
             {
-                bends.push(Point::new(end.x, start.y));
+                let source_side = endpoint_port_side(graph, edge.source);
+                let target_side = endpoint_port_side(graph, edge.target);
+                const PORT_NORMAL_OFFSET: f32 = 8.0;
+                if let (Some(ss), Some(ts)) = (source_side, target_side) {
+                    // Attach orthogonally to both ports: first segment perpendicular to source,
+                    // last segment perpendicular to target. Exit/entry are outside the nodes.
+                    let exit = point_along_outward_normal(start, ss, PORT_NORMAL_OFFSET);
+                    let entry = point_along_outward_normal(end, ts, PORT_NORMAL_OFFSET);
+                    bends.push(exit);
+                    bends.push(Point::new(entry.x, exit.y));
+                    bends.push(entry);
+                } else {
+                    bends.push(Point::new(end.x, start.y));
+                }
             }
             bends = dedup_points(bends);
 

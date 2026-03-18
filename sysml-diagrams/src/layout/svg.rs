@@ -66,6 +66,7 @@ pub(crate) fn render_svg(layout: &DiagramLayout, options: &SvgRenderOptions) -> 
     }
 
     let is_interconnection_view = options.class_name.contains("interconnection-view");
+    let is_general_view = options.class_name.contains("general-view");
 
     for node in &layout.nodes {
         let kind = normalize_kind(&node.kind);
@@ -231,42 +232,44 @@ pub(crate) fn render_svg(layout: &DiagramLayout, options: &SvgRenderOptions) -> 
                 ));
             }
         }
-        for port in &node.ports {
-            node_groups.push_str(&format!(
-                "<circle class=\"diagram-port\" cx=\"{:.1}\" cy=\"{:.1}\" r=\"4\" data-port-id=\"{}\"/>",
-                port.position.x,
-                port.position.y,
-                escape_text(&port.id)
-            ));
-            let (label_x, anchor) = match port.side {
-                PortSide::Left => (port.position.x + 8.0, "start"),
-                PortSide::Right => (port.position.x - 8.0, "end"),
-                PortSide::Top | PortSide::Bottom => (port.position.x, "middle"),
-            };
-            let label_y = match port.side {
-                PortSide::Top => port.position.y + 14.0,
-                PortSide::Bottom => port.position.y - 6.0,
-                PortSide::Left | PortSide::Right => port.position.y + 4.0,
-            };
-            node_groups.push_str(&format!(
-                "<text class=\"diagram-port-label\" x=\"{:.1}\" y=\"{:.1}\" text-anchor=\"{}\">{}</text>",
-                label_x,
-                label_y,
-                anchor,
-                escape_text(&port.name)
-            ));
-            hit_regions.push(HitRegion {
-                id: port.id.clone(),
-                kind: HitRegionKind::Port,
-                element_id: port.node_id.clone(),
-                qualified_name: Some(format!("{}::{}", port.node_id, port.id)),
-                bounds: Bounds {
-                    x: port.position.x - 6.0,
-                    y: port.position.y - 6.0,
-                    width: 12.0,
-                    height: 12.0,
-                },
-            });
+        if !is_general_view {
+            for port in &node.ports {
+                node_groups.push_str(&format!(
+                    "<circle class=\"diagram-port\" cx=\"{:.1}\" cy=\"{:.1}\" r=\"4\" data-port-id=\"{}\"/>",
+                    port.position.x,
+                    port.position.y,
+                    escape_text(&port.id)
+                ));
+                let (label_x, anchor) = match port.side {
+                    PortSide::Left => (port.position.x + 8.0, "start"),
+                    PortSide::Right => (port.position.x - 8.0, "end"),
+                    PortSide::Top | PortSide::Bottom => (port.position.x, "middle"),
+                };
+                let label_y = match port.side {
+                    PortSide::Top => port.position.y + 14.0,
+                    PortSide::Bottom => port.position.y - 6.0,
+                    PortSide::Left | PortSide::Right => port.position.y + 4.0,
+                };
+                node_groups.push_str(&format!(
+                    "<text class=\"diagram-port-label\" x=\"{:.1}\" y=\"{:.1}\" text-anchor=\"{}\">{}</text>",
+                    label_x,
+                    label_y,
+                    anchor,
+                    escape_text(&port.name)
+                ));
+                hit_regions.push(HitRegion {
+                    id: port.id.clone(),
+                    kind: HitRegionKind::Port,
+                    element_id: port.node_id.clone(),
+                    qualified_name: Some(format!("{}::{}", port.node_id, port.id)),
+                    bounds: Bounds {
+                        x: port.position.x - 6.0,
+                        y: port.position.y - 6.0,
+                        width: 12.0,
+                        height: 12.0,
+                    },
+                });
+            }
         }
         node_groups.push_str("</g>");
         hit_regions.push(HitRegion {
