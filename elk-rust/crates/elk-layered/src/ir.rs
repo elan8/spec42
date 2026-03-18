@@ -53,6 +53,7 @@ pub struct IrNode {
 
 impl IrNode {
     #[must_use]
+    #[allow(dead_code)]
     pub fn center(&self) -> Point {
         Point::new(
             self.position.x + self.size.width / 2.0,

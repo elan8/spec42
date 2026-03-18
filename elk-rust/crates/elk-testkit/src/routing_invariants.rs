@@ -1,7 +1,7 @@
 //! Helpers to assert that routed edge paths do not cross obstacle (node) interiors.
 
 use elk_core::{Point, Rect, Size};
-use elk_graph::{EdgeSection, ElkGraph, NodeId};
+use elk_graph::{ElkGraph, NodeId};
 
 const DEFAULT_TOL: f32 = 1e-4;
 

@@ -1,4 +1,5 @@
 #![forbid(unsafe_code)]
+#![allow(deprecated)]
 
 mod parity;
 mod routing_invariants;
@@ -10,10 +11,9 @@ pub use routing_invariants::{assert_routed_paths_avoid_obstacles, segment_inters
 pub use svg::{maybe_write_svg_snapshot, render_graph_svg, snapshot_dir, snapshot_file_name};
 
 use elk_core::{
-    EdgeEndpoint, Graph, LayoutDirection, LayoutEngine, LayoutOptions, LayerConstraint, NodeId,
+    EdgeEndpoint, Graph, LayoutDirection, LayoutOptions, LayerConstraint, NodeId,
     Point, PortConstraint, PortSide, Rect, Size, ViewProfile,
 };
-use elk_layered::LayeredLayoutEngine;
 use elk_graph::ElkGraph;
 
 #[derive(Clone, Copy, Debug)]

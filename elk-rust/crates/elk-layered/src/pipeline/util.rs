@@ -2,7 +2,7 @@ use elk_core::{LayoutDirection, Point, Size};
 use elk_graph::{EdgeEndpoint, ElkGraph, LabelId, NodeId, PortId};
 
 use crate::ir::{IrNodeId, LayeredIr};
-pub(crate) use elk_alg_common::geometry::{dedup_points, simplify_orthogonal_points_vec as simplify_orthogonal_points};
+pub(crate) use elk_alg_common::geometry::dedup_points;
 
 pub(crate) fn major_size(size: Size, direction: LayoutDirection) -> f32 {
     match direction {
@@ -66,8 +66,9 @@ pub(crate) fn node_minor_center(
     node_minor_start(ir, node_id, direction) + minor_size(ir.nodes[node_id].size, direction) / 2.0
 }
 
-/// Ensures every consecutive pair of points is axis-aligned by inserting one intermediate
+//// Ensures every consecutive pair of points is axis-aligned by inserting one intermediate
 /// point where needed. Use after routing so that the final path has only orthogonal segments.
+#[allow(dead_code)]
 pub(crate) fn ensure_orthogonal_path(points: Vec<Point>) -> Vec<Point> {
     const EPS: f32 = 1e-6;
     if points.len() < 2 {
@@ -88,6 +89,7 @@ pub(crate) fn ensure_orthogonal_path(points: Vec<Point>) -> Vec<Point> {
 
 /// Like [`ensure_orthogonal_path`], but chooses the inserted corner to prefer moving
 /// along the layout's major axis first (reduces early detours/intrusions in layered routing).
+#[allow(dead_code)]
 pub(crate) fn ensure_orthogonal_path_prefer_major(
     points: Vec<Point>,
     direction: LayoutDirection,
@@ -160,9 +162,8 @@ pub(crate) fn label_size(graph: &ElkGraph, label: LabelId) -> Size {
 
 #[cfg(test)]
 mod tests {
+    use elk_alg_common::geometry::simplify_orthogonal_points_vec;
     use elk_core::Point;
-
-    use super::simplify_orthogonal_points;
 
     #[test]
     fn simplify_orthogonal_points_removes_collinear_vertices() {
@@ -174,7 +175,7 @@ mod tests {
         ];
 
         assert_eq!(
-            simplify_orthogonal_points(points),
+            simplify_orthogonal_points_vec(points),
             vec![
                 Point::new(0.0, 0.0),
                 Point::new(0.0, 20.0),

@@ -10,6 +10,7 @@ mod options;
 
 pub use error::LayoutError;
 pub use geometry::{Point, Rect, Size};
+#[allow(deprecated)]
 pub use graph::{Edge, EdgeEndpoint, EdgeSection, Graph, GraphStats, Label, Node, Port, PortSide};
 pub use ids::{EdgeId, GraphId, LabelId, NodeId, PortId};
 pub use layout::{LayoutEngine, LayoutPhaseStat, LayoutReport, LayoutStats};

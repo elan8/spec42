@@ -5,6 +5,8 @@ use crate::layout::{
     LayoutPhaseReport, LayoutPipelineReport, Result,
 };
 
+/// Convenience wrapper for callers that do not need the layout report.
+#[allow(dead_code)]
 pub(crate) fn layout(graph: &DiagramGraph, config: &LayoutConfig) -> Result<DiagramLayout> {
     layout_with_report(graph, config).map(|(layout, _)| layout)
 }

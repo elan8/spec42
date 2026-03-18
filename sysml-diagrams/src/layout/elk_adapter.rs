@@ -6,7 +6,7 @@ use elk_core::{
     Rect as ElkRect, Size as ElkSize, Spacing as ElkSpacing, ViewProfile as ElkViewProfile,
 };
 use elk_graph::{
-    EdgeEndpoint, ElkGraph, NodeId, PortId, PropertyBag, PropertyValue, ShapeGeometry,
+    EdgeEndpoint, ElkGraph, NodeId, PortId, PropertyValue, ShapeGeometry,
 };
 use elk_layered::LayeredLayoutEngine;
 
@@ -627,6 +627,8 @@ fn normalize_port_id(value: &str) -> String {
 }
 
 /// Hash edge kind to a u32 bundle key so same-type edges share connection points.
+/// Reserved for future use when elk-layered props support edge bundle keys.
+#[allow(dead_code)]
 fn edge_bundle_key(kind: &str) -> u32 {
     let mut h: u32 = 0u32.wrapping_sub(1);
     for b in kind.bytes() {

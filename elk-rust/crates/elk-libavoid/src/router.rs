@@ -2,7 +2,7 @@
 
 use std::collections::{BTreeMap, BinaryHeap};
 
-use elk_core::{Point, Rect, Size};
+use elk_core::{Point, Rect};
 
 const EPS: f32 = 1e-5;
 

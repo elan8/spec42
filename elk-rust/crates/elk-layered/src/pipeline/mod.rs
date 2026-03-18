@@ -15,7 +15,7 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::time::Instant;
 
 use elk_core::{
-    HierarchyHandling, LayoutError, LayoutOptions, LayoutPhaseStat, LayoutReport, Point, Rect, Size,
+    HierarchyHandling, LayoutError, LayoutOptions, LayoutPhaseStat, LayoutReport, Point, Rect,
 };
 use elk_graph::{ElkGraph, NodeId};
 

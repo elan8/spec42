@@ -1,3 +1,6 @@
+// Legacy graph model kept for backward compatibility; deprecation nudges new code to elk-graph.
+#![allow(deprecated)]
+
 use std::collections::BTreeSet;
 
 use crate::{

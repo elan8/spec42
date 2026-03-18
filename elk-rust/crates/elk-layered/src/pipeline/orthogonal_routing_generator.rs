@@ -1,6 +1,8 @@
-use std::collections::VecDeque;
+//! Minimal port of ELK's `OrthogonalRoutingGenerator` slot assignment logic.
+//! Reserved for future routing slot assignment; allow dead_code until wired in.
+#![allow(dead_code)]
 
-/// Minimal port of ELK's `OrthogonalRoutingGenerator` slot assignment logic.
+use std::collections::VecDeque;
 ///
 /// The upstream implementation builds hyperedge segments, creates a dependency graph based on
 /// conflict / crossing penalties, breaks cycles, and assigns routing slots using topological

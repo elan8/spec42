@@ -4,6 +4,7 @@ use elk_core::{LayoutError, LayoutOptions};
 use elk_graph::{EdgeEndpoint, EdgeId, ElkGraph, NodeId};
 
 #[derive(Clone, Debug)]
+#[allow(dead_code)]
 pub struct TreeModel {
     pub root: NodeId,
     /// parent -> children

@@ -1,4 +1,5 @@
 #![forbid(unsafe_code)]
+#![allow(deprecated)]
 #![doc = "Import/export support for ELK Graph JSON."]
 
 use std::collections::HashMap;
