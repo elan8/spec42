@@ -3,6 +3,7 @@ use std::fs;
 use elk_core::{LayoutOptions, PortSide};
 use elk_graph::{PropertyValue};
 use elk_graph_json::import_str;
+use elk_graph_json::export_elk_graph_to_value;
 use elk_layered::layout;
 
 fn read_fixture(name: &str) -> String {
@@ -54,7 +55,11 @@ fn json_port_constraints_and_port_sides_are_applied() {
 
 #[test]
 fn imported_fixtures_can_be_laid_out() {
-    for fixture in ["direction_down.json", "ports_and_constraints.json"] {
+    for fixture in [
+        "direction_down.json",
+        "ports_and_constraints.json",
+        "hyperedge_and_rich_props.json",
+    ] {
         let json = read_fixture(fixture);
         let mut imported = import_str(&json).expect("import should succeed").graph;
         let report = layout(&mut imported, &LayoutOptions::default())
@@ -63,6 +68,41 @@ fn imported_fixtures_can_be_laid_out() {
         let root_geom = imported.nodes[imported.root.index()].geometry;
         assert!(root_geom.width.is_finite());
     }
+}
+
+#[test]
+fn rich_properties_and_hyperedge_endpoints_round_trip() {
+    let json = read_fixture("hyperedge_and_rich_props.json");
+    let imported = import_str(&json).expect("import should succeed");
+    let graph = imported.graph;
+
+    assert!(graph.validate().is_ok(), "imported graph should validate");
+    assert_eq!(graph.edges.len(), 1);
+    assert_eq!(graph.edges[0].sources.len(), 2);
+    assert_eq!(graph.edges[0].targets.len(), 2);
+
+    let value = export_elk_graph_to_value(&graph);
+    let json2 = serde_json::to_string(&value).expect("export should serialize");
+    let imported2 = import_str(&json2).expect("re-import should succeed");
+    let graph2 = imported2.graph;
+
+    assert!(graph2.validate().is_ok(), "round-tripped graph should validate");
+
+    let arr = graph2
+        .properties
+        .get(&elk_graph::PropertyKey("elk.someArray".to_string()));
+    assert!(
+        matches!(arr, Some(PropertyValue::Array(v)) if v.len() == 4),
+        "expected elk.someArray to round-trip as array, got {arr:?}"
+    );
+
+    let obj = graph2
+        .properties
+        .get(&elk_graph::PropertyKey("elk.someObject".to_string()));
+    assert!(
+        matches!(obj, Some(PropertyValue::Object(m)) if m.contains_key("a") && m.contains_key("b") && m.contains_key("c")),
+        "expected elk.someObject to round-trip as object, got {obj:?}"
+    );
 }
 
 #[test]

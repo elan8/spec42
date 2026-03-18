@@ -131,6 +131,236 @@ pub fn export_pretty(graph: &elk_core::Graph) -> String {
     serde_json::to_string_pretty(&export_to_value(graph)).unwrap_or_else(|_| "{}".to_string())
 }
 
+/// Export an `elk_graph::ElkGraph` into ELK Graph JSON (modern encoding).
+///
+/// IDs are synthesized from indices (`n1`, `p0`, `e0`, ...). The exporter focuses on structural
+/// fidelity and lossless properties round-tripping rather than preserving original JSON IDs.
+pub fn export_elk_graph_to_value(graph: &ElkGraph) -> Value {
+    fn node_id_str(graph: &ElkGraph, node: elk_graph::NodeId) -> String {
+        if node == graph.root {
+            "root".to_string()
+        } else {
+            format!("n{}", node.index())
+        }
+    }
+    fn port_id_str(port: elk_graph::PortId) -> String {
+        format!("p{}", port.index())
+    }
+    fn edge_id_str(edge: elk_graph::EdgeId) -> String {
+        format!("e{}", edge.index())
+    }
+    fn label_id_str(label: elk_graph::LabelId) -> String {
+        format!("l{}", label.index())
+    }
+    fn property_to_json(v: &PropertyValue) -> Value {
+        match v {
+            PropertyValue::Null => Value::Null,
+            PropertyValue::Bool(b) => Value::Bool(*b),
+            PropertyValue::Int(i) => Value::from(*i),
+            PropertyValue::Float(f) => Value::from(*f),
+            PropertyValue::String(s) => Value::String(s.clone()),
+            PropertyValue::Array(arr) => Value::Array(arr.iter().map(property_to_json).collect()),
+            PropertyValue::Object(obj) => {
+                let mut map = serde_json::Map::new();
+                for (k, v) in obj {
+                    map.insert(k.clone(), property_to_json(v));
+                }
+                Value::Object(map)
+            }
+        }
+    }
+    fn write_layout_options(out: &mut serde_json::Map<String, Value>, props: &PropertyBag) {
+        if props.is_empty() {
+            return;
+        }
+        let mut map = serde_json::Map::new();
+        for (k, v) in props.iter() {
+            map.insert(k.0.clone(), property_to_json(v));
+        }
+        out.insert("layoutOptions".to_string(), Value::Object(map));
+    }
+
+    fn export_label(graph: &ElkGraph, label: elk_graph::LabelId) -> Value {
+        let l = &graph.labels[label.index()];
+        let mut obj = serde_json::Map::new();
+        obj.insert("id".to_string(), Value::String(label_id_str(label)));
+        obj.insert("text".to_string(), Value::String(l.text.clone()));
+        obj.insert("x".to_string(), Value::from(l.geometry.x));
+        obj.insert("y".to_string(), Value::from(l.geometry.y));
+        obj.insert("width".to_string(), Value::from(l.geometry.width));
+        obj.insert("height".to_string(), Value::from(l.geometry.height));
+        write_layout_options(&mut obj, &l.properties);
+        Value::Object(obj)
+    }
+
+    fn export_port(graph: &ElkGraph, port: elk_graph::PortId) -> Value {
+        let p = &graph.ports[port.index()];
+        let mut obj = serde_json::Map::new();
+        obj.insert("id".to_string(), Value::String(port_id_str(port)));
+        obj.insert("x".to_string(), Value::from(p.geometry.x));
+        obj.insert("y".to_string(), Value::from(p.geometry.y));
+        obj.insert("width".to_string(), Value::from(p.geometry.width));
+        obj.insert("height".to_string(), Value::from(p.geometry.height));
+
+        // Ensure `port.side` is preserved even if not present in properties.
+        if p.properties.get(&elk_graph::PropertyKey("port.side".to_string())).is_none() {
+            let side = match p.side {
+                elk_core::PortSide::North => "NORTH",
+                elk_core::PortSide::South => "SOUTH",
+                elk_core::PortSide::East => "EAST",
+                elk_core::PortSide::West => "WEST",
+            };
+            let mut props = p.properties.clone();
+            props.insert("port.side", PropertyValue::String(side.to_string()));
+            write_layout_options(&mut obj, &props);
+        } else {
+            write_layout_options(&mut obj, &p.properties);
+        }
+
+        if !p.labels.is_empty() {
+            obj.insert(
+                "labels".to_string(),
+                Value::Array(p.labels.iter().copied().map(|l| export_label(graph, l)).collect()),
+            );
+        }
+        Value::Object(obj)
+    }
+
+    fn export_edge_section(graph: &ElkGraph, sec: elk_graph::EdgeSectionId) -> Value {
+        let s = &graph.edge_sections[sec.index()];
+        let mut obj = serde_json::Map::new();
+        let mut start = serde_json::Map::new();
+        start.insert("x".to_string(), Value::from(s.start.x));
+        start.insert("y".to_string(), Value::from(s.start.y));
+        let mut end = serde_json::Map::new();
+        end.insert("x".to_string(), Value::from(s.end.x));
+        end.insert("y".to_string(), Value::from(s.end.y));
+        obj.insert("startPoint".to_string(), Value::Object(start));
+        obj.insert("endPoint".to_string(), Value::Object(end));
+        if !s.bend_points.is_empty() {
+            let bps = s
+                .bend_points
+                .iter()
+                .map(|p| {
+                    let mut m = serde_json::Map::new();
+                    m.insert("x".to_string(), Value::from(p.x));
+                    m.insert("y".to_string(), Value::from(p.y));
+                    Value::Object(m)
+                })
+                .collect();
+            obj.insert("bendPoints".to_string(), Value::Array(bps));
+        }
+        write_layout_options(&mut obj, &s.properties);
+        Value::Object(obj)
+    }
+
+    fn export_edge(graph: &ElkGraph, edge: elk_graph::EdgeId) -> Value {
+        let e = &graph.edges[edge.index()];
+        let mut obj = serde_json::Map::new();
+        obj.insert("id".to_string(), Value::String(edge_id_str(edge)));
+        obj.insert(
+            "sources".to_string(),
+            Value::Array(
+                e.sources
+                    .iter()
+                    .map(|ep| {
+                        if let Some(pid) = ep.port {
+                            Value::String(port_id_str(pid))
+                        } else {
+                            Value::String(node_id_str(graph, ep.node))
+                        }
+                    })
+                    .collect(),
+            ),
+        );
+        obj.insert(
+            "targets".to_string(),
+            Value::Array(
+                e.targets
+                    .iter()
+                    .map(|ep| {
+                        if let Some(pid) = ep.port {
+                            Value::String(port_id_str(pid))
+                        } else {
+                            Value::String(node_id_str(graph, ep.node))
+                        }
+                    })
+                    .collect(),
+            ),
+        );
+        write_layout_options(&mut obj, &e.properties);
+        if !e.labels.is_empty() {
+            obj.insert(
+                "labels".to_string(),
+                Value::Array(e.labels.iter().copied().map(|l| export_label(graph, l)).collect()),
+            );
+        }
+        if !e.sections.is_empty() {
+            obj.insert(
+                "sections".to_string(),
+                Value::Array(
+                    e.sections
+                        .iter()
+                        .copied()
+                        .map(|s| export_edge_section(graph, s))
+                        .collect(),
+                ),
+            );
+        }
+        Value::Object(obj)
+    }
+
+    fn export_node(graph: &ElkGraph, node: elk_graph::NodeId) -> Value {
+        let n = &graph.nodes[node.index()];
+        let mut obj = serde_json::Map::new();
+        obj.insert("id".to_string(), Value::String(node_id_str(graph, node)));
+        obj.insert("x".to_string(), Value::from(n.geometry.x));
+        obj.insert("y".to_string(), Value::from(n.geometry.y));
+        obj.insert("width".to_string(), Value::from(n.geometry.width));
+        obj.insert("height".to_string(), Value::from(n.geometry.height));
+        write_layout_options(&mut obj, &n.properties);
+
+        if !n.labels.is_empty() {
+            obj.insert(
+                "labels".to_string(),
+                Value::Array(n.labels.iter().copied().map(|l| export_label(graph, l)).collect()),
+            );
+        }
+        if !n.ports.is_empty() {
+            obj.insert(
+                "ports".to_string(),
+                Value::Array(n.ports.iter().copied().map(|p| export_port(graph, p)).collect()),
+            );
+        }
+        if !n.edges.is_empty() {
+            obj.insert(
+                "edges".to_string(),
+                Value::Array(n.edges.iter().copied().map(|e| export_edge(graph, e)).collect()),
+            );
+        }
+        if !n.children.is_empty() {
+            obj.insert(
+                "children".to_string(),
+                Value::Array(
+                    n.children
+                        .iter()
+                        .copied()
+                        .map(|c| export_node(graph, c))
+                        .collect(),
+                ),
+            );
+        }
+        Value::Object(obj)
+    }
+
+    export_node(graph, graph.root)
+}
+
+pub fn export_elk_graph_pretty(graph: &ElkGraph) -> String {
+    serde_json::to_string_pretty(&export_elk_graph_to_value(graph))
+        .unwrap_or_else(|_| "{}".to_string())
+}
+
 #[derive(Default)]
 struct ImportCtx {
     root: Option<elk_graph::NodeId>,
@@ -463,17 +693,13 @@ fn apply_layout_options(obj: &serde_json::Map<String, Value>, out: &mut Property
     // Legacy first.
     if let Some(Value::Object(props)) = obj.get("properties") {
         for (k, v) in props {
-            if let Some(val) = json_primitive_to_property(v) {
-                out.insert(k.as_str(), val);
-            }
+            out.insert(k.as_str(), json_to_property(v));
         }
     }
     // `layoutOptions` overrides legacy `properties`.
     if let Some(Value::Object(opts)) = obj.get("layoutOptions") {
         for (k, v) in opts {
-            if let Some(val) = json_primitive_to_property(v) {
-                out.insert(k.as_str(), val);
-            }
+            out.insert(k.as_str(), json_to_property(v));
         }
     }
 
@@ -483,19 +709,26 @@ fn apply_layout_options(obj: &serde_json::Map<String, Value>, out: &mut Property
     }
 }
 
-fn json_primitive_to_property(v: &Value) -> Option<PropertyValue> {
+fn json_to_property(v: &Value) -> PropertyValue {
     match v {
-        Value::String(s) => Some(PropertyValue::String(s.clone())),
+        Value::Null => PropertyValue::Null,
+        Value::Bool(b) => PropertyValue::Bool(*b),
         Value::Number(n) => {
             if let Some(i) = n.as_i64() {
-                Some(PropertyValue::Int(i))
+                PropertyValue::Int(i)
             } else {
-                n.as_f64().map(PropertyValue::Float)
+                PropertyValue::Float(n.as_f64().unwrap_or(0.0))
             }
         }
-        Value::Bool(b) => Some(PropertyValue::Bool(*b)),
-        Value::Null => None,
-        _ => None,
+        Value::String(s) => PropertyValue::String(s.clone()),
+        Value::Array(arr) => PropertyValue::Array(arr.iter().map(json_to_property).collect()),
+        Value::Object(obj) => {
+            let mut out = std::collections::BTreeMap::new();
+            for (k, v) in obj {
+                out.insert(k.clone(), json_to_property(v));
+            }
+            PropertyValue::Object(out)
+        }
     }
 }
 

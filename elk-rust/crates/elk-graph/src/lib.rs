@@ -7,7 +7,8 @@ mod properties;
 
 pub use ids::{EdgeId, EdgeSectionId, LabelId, NodeId, PortId};
 pub use model::{
-    Edge, EdgeEndpoint, EdgeSection, ElkGraph, Label, Node, Port, ShapeGeometry,
+    Edge, EdgeEndpoint, EdgeSection, ElkGraph, ElkGraphValidationError, Label, Node, Port,
+    ShapeGeometry,
 };
 pub use properties::{PropertyBag, PropertyKey, PropertyValue};
 
