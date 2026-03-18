@@ -1,249 +1,40 @@
-//! DTOs and conversion helpers for sysml/model and related responses.
+//! Re-export DTOs from spec42-core and convert sysml_diagrams output to core types for LSP response.
 
-use serde::Serialize;
-use tower_lsp::lsp_types::Range;
+pub use spec42_core::dto::*;
 
-use crate::ibd;
-use crate::model;
+use spec42_core::diagram_types::{Bounds, HitRegion, HitRegionKind, LayoutMetrics, RenderedDiagram, ViewState};
 
-#[allow(dead_code)] // reserved for legacy/expanded frontend payloads
-#[derive(Debug, Clone, Serialize)]
-pub struct PositionDto {
-    pub line: u32,
-    pub character: u32,
-}
-
-#[allow(dead_code)] // reserved for legacy/expanded frontend payloads
-#[derive(Debug, Clone, Serialize)]
-pub struct RangeDto {
-    pub start: PositionDto,
-    pub end: PositionDto,
-}
-
-#[allow(dead_code)] // reserved for legacy/expanded frontend payloads
-#[derive(Debug, Clone, Serialize)]
-pub struct RelationshipDto {
-    #[serde(rename = "type")]
-    pub rel_type: String,
-    pub source: String,
-    pub target: String,
-    pub name: Option<String>,
-}
-
-/// Graph node for frontend (qualified name as id).
-#[derive(Debug, Clone, Serialize)]
-pub struct GraphNodeDto {
-    pub id: String,
-    #[serde(rename = "type")]
-    pub element_type: String,
-    pub name: String,
-    #[serde(skip_serializing_if = "Option::is_none", rename = "parentId")]
-    pub parent_id: Option<String>,
-    pub range: RangeDto,
-    pub attributes: std::collections::HashMap<String, serde_json::Value>,
-}
-
-/// Graph edge (source/target are node ids).
-#[derive(Debug, Clone, Serialize)]
-pub struct GraphEdgeDto {
-    pub source: String,
-    pub target: String,
-    #[serde(rename = "type")]
-    pub rel_type: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
-}
-
-#[derive(Debug, Clone, Serialize)]
-pub struct SysmlGraphDto {
-    pub nodes: Vec<GraphNodeDto>,
-    pub edges: Vec<GraphEdgeDto>,
-}
-
-#[allow(dead_code)] // reserved for legacy/expanded frontend payloads
-#[derive(Debug, Clone, Serialize)]
-pub struct SysmlElementDto {
-    #[serde(rename = "type")]
-    pub element_type: String,
-    pub name: String,
-    pub range: RangeDto,
-    pub children: Vec<SysmlElementDto>,
-    pub attributes: std::collections::HashMap<String, serde_json::Value>,
-    pub relationships: Vec<RelationshipDto>,
-    pub errors: Option<Vec<String>>,
-}
-
-#[derive(Debug, Clone, Serialize)]
-pub struct SysmlModelStatsDto {
-    #[serde(rename = "totalElements")]
-    pub total_elements: u32,
-    #[serde(rename = "resolvedElements")]
-    pub resolved_elements: u32,
-    #[serde(rename = "unresolvedElements")]
-    pub unresolved_elements: u32,
-    #[serde(rename = "parseTimeMs")]
-    pub parse_time_ms: u32,
-    #[serde(rename = "modelBuildTimeMs")]
-    pub model_build_time_ms: u32,
-    #[serde(rename = "parseCached")]
-    pub parse_cached: bool,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct DiagramBoundsDto {
-    pub x: f32,
-    pub y: f32,
-    pub width: f32,
-    pub height: f32,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct HitRegionDto {
-    pub id: String,
-    pub kind: String,
-    pub element_id: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub qualified_name: Option<String>,
-    pub bounds: DiagramBoundsDto,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct DiagramMetricsDto {
-    pub node_count: usize,
-    pub edge_count: usize,
-    pub overlap_count: usize,
-    pub overlap_area: f32,
-    pub edge_crossing_count: usize,
-    pub edge_node_intrusion_count: usize,
-    pub total_edge_length: f32,
-    pub bend_count: usize,
-    pub orthogonal_violation_count: usize,
-    pub minimum_node_clearance: f32,
-    pub canvas_area: f32,
-    pub aspect_ratio: f32,
-    pub compactness: f32,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct DiagramViewStateDto {
-    pub view: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub selection: Option<String>,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct RenderedDiagramDto {
-    pub svg: String,
-    pub hit_map: Vec<HitRegionDto>,
-    pub bounds: DiagramBoundsDto,
-    pub metrics: DiagramMetricsDto,
-    pub warnings: Vec<String>,
-    pub view_state: DiagramViewStateDto,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct RenderedDiagramsDto {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub general_view: Option<RenderedDiagramDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub interconnection_view: Option<RenderedDiagramDto>,
-}
-
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SysmlModelResultDto {
-    pub version: u32,
-    pub graph: Option<SysmlGraphDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub activity_diagrams: Option<Vec<model::ActivityDiagramDto>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub sequence_diagrams: Option<Vec<model::SequenceDiagramDto>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ibd: Option<ibd::IbdDataDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub rendered_diagrams: Option<RenderedDiagramsDto>,
-    pub stats: Option<SysmlModelStatsDto>,
-}
-
-#[derive(Debug, Serialize)]
-pub struct SysmlServerStatsDto {
-    pub uptime: u64,
-    pub memory: SysmlServerMemoryDto,
-    pub caches: SysmlServerCachesDto,
-}
-
-#[derive(Debug, Serialize)]
-pub struct SysmlServerMemoryDto {
-    /// Resident set size in MB (best-effort). Currently 0 when not available.
-    pub rss: u64,
-}
-
-#[derive(Debug, Serialize)]
-pub struct SysmlServerCachesDto {
-    pub documents: usize,
-    #[serde(rename = "symbolTables")]
-    pub symbol_tables: usize,
-    #[serde(rename = "semanticTokens")]
-    pub semantic_tokens: usize,
-}
-
-#[derive(Debug, Serialize)]
-pub struct SysmlClearCacheResultDto {
-    pub documents: usize,
-    #[serde(rename = "symbolTables")]
-    pub symbol_tables: usize,
-    #[serde(rename = "semanticTokens")]
-    pub semantic_tokens: usize,
-}
-
-pub fn range_to_dto(r: Range) -> RangeDto {
-    RangeDto {
-        start: PositionDto {
-            line: r.start.line,
-            character: r.start.character,
-        },
-        end: PositionDto {
-            line: r.end.line,
-            character: r.end.character,
-        },
-    }
-}
-
-pub fn bounds_to_dto(bounds: sysml_diagrams::Bounds) -> DiagramBoundsDto {
-    DiagramBoundsDto {
-        x: bounds.x,
-        y: bounds.y,
-        width: bounds.width,
-        height: bounds.height,
-    }
-}
-
+/// Converts sysml_diagrams::RenderedDiagram to spec42_core::RenderedDiagram and then to RenderedDiagramDto.
 pub fn rendered_diagram_to_dto(diagram: sysml_diagrams::RenderedDiagram) -> RenderedDiagramDto {
-    RenderedDiagramDto {
+    let core_diagram = RenderedDiagram {
         svg: diagram.svg,
         hit_map: diagram
             .hit_map
             .into_iter()
-            .map(|hit| HitRegionDto {
+            .map(|hit| HitRegion {
                 id: hit.id,
                 kind: match hit.kind {
-                    sysml_diagrams::HitRegionKind::Node => "node".to_string(),
-                    sysml_diagrams::HitRegionKind::Port => "port".to_string(),
-                    sysml_diagrams::HitRegionKind::EdgeLabel => "label".to_string(),
+                    sysml_diagrams::HitRegionKind::Node => HitRegionKind::Node,
+                    sysml_diagrams::HitRegionKind::Port => HitRegionKind::Port,
+                    sysml_diagrams::HitRegionKind::EdgeLabel => HitRegionKind::EdgeLabel,
                 },
                 element_id: hit.element_id,
                 qualified_name: hit.qualified_name,
-                bounds: bounds_to_dto(hit.bounds),
+                bounds: Bounds {
+                    x: hit.bounds.x,
+                    y: hit.bounds.y,
+                    width: hit.bounds.width,
+                    height: hit.bounds.height,
+                },
             })
             .collect(),
-        bounds: bounds_to_dto(diagram.bounds),
-        metrics: DiagramMetricsDto {
+        bounds: Bounds {
+            x: diagram.bounds.x,
+            y: diagram.bounds.y,
+            width: diagram.bounds.width,
+            height: diagram.bounds.height,
+        },
+        metrics: LayoutMetrics {
             node_count: diagram.metrics.node_count,
             edge_count: diagram.metrics.edge_count,
             overlap_count: diagram.metrics.overlap_count,
@@ -259,9 +50,10 @@ pub fn rendered_diagram_to_dto(diagram: sysml_diagrams::RenderedDiagram) -> Rend
             compactness: diagram.metrics.compactness,
         },
         warnings: diagram.warnings,
-        view_state: DiagramViewStateDto {
+        view_state: ViewState {
             view: diagram.view_state.view,
             selection: diagram.view_state.selection,
         },
-    }
+    };
+    spec42_core::dto::rendered_diagram_to_dto(core_diagram)
 }

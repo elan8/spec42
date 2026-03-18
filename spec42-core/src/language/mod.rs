@@ -1,0 +1,598 @@
+//! Helpers for hover and completion: position/word resolution, keywords, and AST name collection.
+//! Also provides definition/reference ranges for Go to definition and Find references.
+
+mod keywords;
+mod position;
+mod symbols;
+
+pub use keywords::*;
+pub use position::*;
+pub use symbols::*;
+
+use crate::ast_util::identification_name;
+use sysml_parser::ast::{PackageBody, RootElement};
+use tower_lsp::lsp_types::{
+    CodeAction, FormattingOptions, OneOf, OptionalVersionedTextDocumentIdentifier, Position, Range,
+    TextDocumentEdit, TextEdit, Url, WorkspaceEdit,
+};
+
+/// Formats the whole document: trim trailing whitespace per line, single trailing newline, indent by brace depth.
+pub fn format_document(source: &str, options: &FormattingOptions) -> Vec<TextEdit> {
+    let lines: Vec<&str> = source.lines().collect();
+    if lines.is_empty() {
+        let range = Range::new(Position::new(0, 0), Position::new(0, 0));
+        return vec![TextEdit {
+            range,
+            new_text: "\n".to_string(),
+        }];
+    }
+    let indent_unit = if options.insert_spaces {
+        " ".repeat(options.tab_size as usize)
+    } else {
+        "\t".to_string()
+    };
+    let mut depth: i32 = 0;
+    let mut formatted_lines: Vec<String> = Vec::with_capacity(lines.len());
+    for line in &lines {
+        let trimmed = line.trim();
+        let mut open_braces = 0i32;
+        let mut close_braces = 0i32;
+        for ch in trimmed.chars() {
+            match ch {
+                '{' => open_braces += 1,
+                '}' => close_braces += 1,
+                _ => {}
+            }
+        }
+        // Closing braces indent at the depth they close (before subtracting)
+        let indent_depth = (depth - close_braces).max(0);
+        depth += open_braces - close_braces;
+        let indent = indent_unit.repeat(indent_depth as usize);
+        let content = if trimmed.is_empty() {
+            String::new()
+        } else {
+            format!("{}{}", indent, trimmed)
+        };
+        formatted_lines.push(content);
+    }
+    let new_text = if formatted_lines.is_empty() {
+        "\n".to_string()
+    } else {
+        format!("{}\n", formatted_lines.join("\n"))
+    };
+    let last_line = (lines.len() - 1) as u32;
+    let last_char = lines.last().map(|l| l.len()).unwrap_or(0) as u32;
+    let range = Range::new(Position::new(0, 0), Position::new(last_line, last_char));
+    vec![TextEdit { range, new_text }]
+}
+
+/// Suggests a "Wrap in package" code action when the document has top-level members (one package with empty name and members).
+pub fn suggest_wrap_in_package(source: &str, uri: &Url) -> Option<CodeAction> {
+    let root = sysml_parser::parse(source).ok()?;
+    let packages: Vec<_> = root
+        .elements
+        .iter()
+        .filter_map(|n| match &n.value {
+            RootElement::Package(p) => Some(p),
+            _ => None,
+        })
+        .collect();
+    if packages.len() != 1 {
+        return None;
+    }
+    let pkg = packages[0];
+    if !identification_name(&pkg.identification).is_empty() {
+        return None;
+    }
+    let has_members = match &pkg.body {
+        PackageBody::Brace { elements } => !elements.is_empty(),
+        _ => false,
+    };
+    if !has_members {
+        return None;
+    }
+    let lines: Vec<&str> = source.lines().collect();
+    let last_line = lines.len().saturating_sub(1) as u32;
+    let last_char = lines.last().map(|l| l.len()).unwrap_or(0) as u32;
+    let range = Range::new(Position::new(0, 0), Position::new(last_line, last_char));
+    let new_text = format!("package Generated {{\n{}\n}}\n", source.trim_end());
+    let edit = WorkspaceEdit {
+        changes: None,
+        document_changes: Some(tower_lsp::lsp_types::DocumentChanges::Edits(vec![
+            TextDocumentEdit {
+                text_document: OptionalVersionedTextDocumentIdentifier {
+                    uri: uri.clone(),
+                    version: None,
+                },
+                edits: vec![OneOf::Left(TextEdit { range, new_text })],
+            },
+        ])),
+        change_annotations: None,
+    };
+    Some(CodeAction {
+        title: "Wrap in package".to_string(),
+        kind: Some(tower_lsp::lsp_types::CodeActionKind::REFACTOR),
+        diagnostics: None,
+        edit: Some(edit),
+        command: None,
+        is_preferred: None,
+        disabled: None,
+        data: None,
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tower_lsp::lsp_types::Url;
+
+    #[test]
+    fn test_position_to_byte_offset() {
+        let text = "abc\ndef\nghi";
+        assert_eq!(position_to_byte_offset(text, 0, 0), Some(0));
+        assert_eq!(position_to_byte_offset(text, 0, 2), Some(2));
+        assert_eq!(position_to_byte_offset(text, 1, 0), Some(4));
+        assert_eq!(position_to_byte_offset(text, 1, 3), Some(7));
+        assert_eq!(position_to_byte_offset(text, 2, 0), Some(8));
+        assert_eq!(position_to_byte_offset(text, 3, 0), None);
+        assert_eq!(position_to_byte_offset(text, 0, 10), None);
+    }
+
+    #[test]
+    fn test_position_to_byte_offset_multibyte_utf8() {
+        // "café" = c,a,f,é = 4 chars, 5 bytes (é is 2 bytes)
+        let text = "café\n";
+        assert_eq!(position_to_byte_offset(text, 0, 0), Some(0));
+        assert_eq!(position_to_byte_offset(text, 0, 3), Some(3));
+        assert_eq!(position_to_byte_offset(text, 0, 4), Some(5));
+        assert_eq!(position_to_byte_offset(text, 0, 5), None);
+        // Japanese: 日本 = 2 chars, 6 bytes
+        let text2 = "日本\n";
+        assert_eq!(position_to_byte_offset(text2, 0, 2), Some(6));
+    }
+
+    #[test]
+    fn test_position_to_byte_offset_utf16_surrogate_pair() {
+        let text = "a😀b\n";
+        assert_eq!(position_to_byte_offset(text, 0, 0), Some(0));
+        assert_eq!(position_to_byte_offset(text, 0, 1), Some(1));
+        assert_eq!(position_to_byte_offset(text, 0, 2), None);
+        assert_eq!(position_to_byte_offset(text, 0, 3), Some(5));
+        assert_eq!(position_to_byte_offset(text, 0, 4), Some(6));
+    }
+
+    #[test]
+    fn test_word_at_position() {
+        let text = "  part foo : Bar  ";
+        let (line, start, end, word) = word_at_position(text, 0, 5).unwrap();
+        assert_eq!(line, 0);
+        assert_eq!(start, 2);
+        assert_eq!(end, 6);
+        assert_eq!(word, "part");
+
+        let (_, _, _, w) = word_at_position(text, 0, 8).unwrap();
+        assert_eq!(w, "foo");
+        let (_, _, _, w) = word_at_position(text, 0, 13).unwrap();
+        assert_eq!(w, "Bar");
+    }
+
+    #[test]
+    fn test_word_at_position_non_ascii() {
+        let text = "part café : String";
+        let (_, _, _, w) = word_at_position(text, 0, 6).unwrap();
+        assert_eq!(w, "café");
+        let text2 = "part 部品 : Type";
+        let (_, _, _, w2) = word_at_position(text2, 0, 6).unwrap();
+        assert_eq!(w2, "部品");
+    }
+
+    #[test]
+    fn test_word_at_position_empty_line() {
+        let text = "abc";
+        assert!(word_at_position(text, 0, 0).is_some());
+        let (_, _, _, w) = word_at_position(text, 0, 0).unwrap();
+        assert_eq!(w, "abc");
+    }
+
+    #[test]
+    fn test_line_prefix_at_position() {
+        let text = "  part foo";
+        let prefix = line_prefix_at_position(text, 0, 7);
+        assert_eq!(prefix, "  part ");
+        let prefix = line_prefix_at_position(text, 0, 8);
+        assert_eq!(prefix, "  part f");
+    }
+
+    #[test]
+    fn test_completion_prefix() {
+        assert_eq!(completion_prefix("  part "), "part");
+        assert_eq!(completion_prefix("  part f"), "f");
+        assert_eq!(completion_prefix("  pac"), "pac");
+    }
+
+    #[test]
+    fn test_completion_prefix_multibyte() {
+        assert_eq!(completion_prefix("  café "), "café");
+        assert_eq!(completion_prefix("part 部品 "), "部品");
+    }
+
+    #[test]
+    fn test_keyword_doc() {
+        assert!(keyword_doc("part").is_some());
+        assert!(keyword_doc("unknown").is_none());
+    }
+
+    #[test]
+    fn test_sysml_keywords_contains_common() {
+        let kw = sysml_keywords();
+        assert!(kw.contains(&"package"));
+        assert!(kw.contains(&"part"));
+        assert!(kw.contains(&"attribute"));
+    }
+
+    #[test]
+    fn test_sysml_keywords_subset_of_reserved() {
+        for kw in sysml_keywords() {
+            assert!(
+                is_reserved_keyword(kw),
+                "sysml_keywords() must only contain reserved keywords; '{}' is not reserved",
+                kw
+            );
+        }
+    }
+
+    #[test]
+    fn test_position_not_reserved() {
+        assert!(!is_reserved_keyword("position"));
+    }
+
+    #[test]
+    fn test_collect_named_elements_empty() {
+        let root = sysml_parser::RootNamespace { elements: vec![] };
+        let el = collect_named_elements(&root);
+        assert!(el.is_empty());
+    }
+
+    #[test]
+    fn test_collect_named_elements_from_package() {
+        let text = "package P { part def Engine { } }";
+        let root = sysml_parser::parse(text).expect("parse");
+        let el = collect_named_elements(&root);
+        assert_eq!(el.len(), 2); // package P + part Engine
+        let names: Vec<_> = el.iter().map(|(n, _)| n.as_str()).collect();
+        assert!(names.contains(&"P"));
+        assert!(names.contains(&"Engine"));
+    }
+
+    #[test]
+    fn test_source_position_to_range() {
+        let pos = SourcePosition {
+            line: 0,
+            character: 2,
+            length: 5,
+        };
+        let range = source_position_to_range(&pos);
+        assert_eq!(range.start.line, 0);
+        assert_eq!(range.start.character, 2);
+        assert_eq!(range.end.line, 0);
+        assert_eq!(range.end.character, 7);
+    }
+
+    #[test]
+    fn test_collect_definition_ranges_empty() {
+        let root = sysml_parser::RootNamespace { elements: vec![] };
+        let ranges = collect_definition_ranges(&root);
+        assert!(ranges.is_empty());
+    }
+
+    #[test]
+    fn test_collect_definition_ranges_package() {
+        let text = "package P { }";
+        let root = sysml_parser::parse(text).expect("parse");
+        let ranges = collect_definition_ranges(&root);
+        assert_eq!(ranges.len(), 1);
+        assert_eq!(ranges[0].0, "P");
+    }
+
+    #[test]
+    fn test_collect_definition_ranges_part_def() {
+        // sysml-parser requires package/namespace at root; part def must be nested
+        let text = "package P { part def Engine { } }";
+        let root = sysml_parser::parse(text).expect("parse");
+        let ranges = collect_definition_ranges(&root);
+        assert_eq!(ranges.len(), 2); // package P + part Engine
+        assert_eq!(ranges[0].0, "P");
+        assert_eq!(ranges[1].0, "Engine");
+    }
+
+    #[test]
+    fn test_find_reference_ranges_empty() {
+        let ranges = find_reference_ranges("hello world", "foo");
+        assert!(ranges.is_empty());
+    }
+
+    #[test]
+    fn test_find_reference_ranges_once() {
+        let ranges = find_reference_ranges("hello foo world", "foo");
+        assert_eq!(ranges.len(), 1);
+        assert_eq!(ranges[0].start.character, 6);
+        assert_eq!(ranges[0].end.character, 9);
+    }
+
+    #[test]
+    fn test_find_reference_ranges_multiple() {
+        let ranges = find_reference_ranges("foo bar foo baz foo", "foo");
+        assert_eq!(ranges.len(), 3);
+    }
+
+    #[test]
+    fn test_find_reference_ranges_word_boundary() {
+        // "foo" in "foobar" must not match
+        let ranges = find_reference_ranges("foobar", "foo");
+        assert!(ranges.is_empty());
+        // "foo" in "foo bar" must match
+        let ranges = find_reference_ranges("foo bar", "foo");
+        assert_eq!(ranges.len(), 1);
+    }
+
+    #[test]
+    fn test_collect_document_symbols_empty() {
+        let root = sysml_parser::RootNamespace { elements: vec![] };
+        let symbols = collect_document_symbols(&root);
+        assert!(symbols.is_empty());
+    }
+
+    #[test]
+    fn test_collect_document_symbols_package() {
+        let text = "package P { }";
+        let root = sysml_parser::parse(text).expect("parse");
+        let symbols = collect_document_symbols(&root);
+        assert_eq!(symbols.len(), 1);
+        assert_eq!(symbols[0].name, "P");
+        assert_eq!(symbols[0].detail.as_deref(), Some("package"));
+        assert_eq!(symbols[0].kind, tower_lsp::lsp_types::SymbolKind::MODULE);
+    }
+
+    #[test]
+    fn test_collect_document_symbols_nested() {
+        let text = "package P { part def Engine { } }";
+        let root = sysml_parser::parse(text).expect("parse");
+        let symbols = collect_document_symbols(&root);
+        assert_eq!(symbols.len(), 1);
+        assert_eq!(symbols[0].name, "P");
+        let children = symbols[0].children.as_ref().expect("children");
+        assert_eq!(children.len(), 1);
+        assert_eq!(children[0].name, "Engine");
+        assert_eq!(children[0].detail.as_deref(), Some("part def"));
+        assert_eq!(children[0].kind, tower_lsp::lsp_types::SymbolKind::CLASS);
+    }
+
+    #[test]
+    fn test_collect_symbol_entries_empty() {
+        let root = sysml_parser::RootNamespace { elements: vec![] };
+        let uri = Url::parse("file:///test.sysml").unwrap();
+        let entries = collect_symbol_entries(&root, &uri);
+        assert!(entries.is_empty());
+    }
+
+    #[test]
+    fn test_collect_symbol_entries_package() {
+        let text = "package P { }";
+        let root = sysml_parser::parse(text).expect("parse");
+        let uri = Url::parse("file:///test.sysml").unwrap();
+        let entries = collect_symbol_entries(&root, &uri);
+        // collect_symbol_entries is currently stubbed (returns empty)
+        assert!(entries.is_empty());
+    }
+
+    #[test]
+    fn test_collect_symbol_entries_nested() {
+        let text = "package P { part def Engine { } }";
+        let root = sysml_parser::parse(text).expect("parse");
+        let uri = Url::parse("file:///test.sysml").unwrap();
+        let entries = collect_symbol_entries(&root, &uri);
+        // collect_symbol_entries is currently stubbed (returns empty)
+        assert!(entries.is_empty());
+    }
+
+    #[test]
+    fn test_suggest_wrap_in_package_empty() {
+        let uri = Url::parse("file:///test.sysml").unwrap();
+        let action = suggest_wrap_in_package("", &uri);
+        assert!(action.is_none());
+    }
+
+    #[test]
+    fn test_suggest_wrap_in_package_named_package() {
+        let uri = Url::parse("file:///test.sysml").unwrap();
+        let action = suggest_wrap_in_package("package P { }", &uri);
+        assert!(action.is_none());
+    }
+
+    #[test]
+    fn test_suggest_wrap_in_package_unwrapped_member() {
+        let uri = Url::parse("file:///test.sysml").unwrap();
+        // When source is a single top-level part def, sysml-parser may parse it as one anonymous package
+        // with one member, in which case we suggest "Wrap in package".
+        let source = "part def X { }";
+        if let Some(action) = suggest_wrap_in_package(source, &uri) {
+            assert!(action.title.contains("Wrap"));
+            let edit = action.edit.expect("has edit");
+            let doc_edits = edit.document_changes.as_ref().expect("document_changes");
+            use tower_lsp::lsp_types::DocumentChanges;
+            let edits = match doc_edits {
+                DocumentChanges::Edits(v) => v,
+                _ => panic!("expected Edits"),
+            };
+            assert_eq!(edits.len(), 1);
+            assert_eq!(edits[0].edits.len(), 1);
+            let text_edit = match &edits[0].edits[0] {
+                tower_lsp::lsp_types::OneOf::Left(te) => te,
+                _ => panic!("expected TextEdit"),
+            };
+            assert!(text_edit.new_text.contains("package Generated"));
+            assert!(text_edit.new_text.contains("part def X"));
+        }
+    }
+
+    #[test]
+    fn test_format_document_empty() {
+        let options = tower_lsp::lsp_types::FormattingOptions {
+            tab_size: 4,
+            insert_spaces: true,
+            ..Default::default()
+        };
+        let edits = format_document("", &options);
+        assert_eq!(edits.len(), 1);
+        assert_eq!(edits[0].new_text, "\n");
+    }
+
+    #[test]
+    fn test_format_document_trim_trailing_whitespace() {
+        let options = tower_lsp::lsp_types::FormattingOptions {
+            tab_size: 4,
+            insert_spaces: true,
+            ..Default::default()
+        };
+        let edits = format_document("package P {   \n  part def X { }  \n", &options);
+        assert_eq!(edits.len(), 1);
+        assert!(edits[0].new_text.contains("package P {"));
+        assert!(edits[0].new_text.contains("part def X { }"));
+        assert!(!edits[0].new_text.contains("   \n"));
+        assert!(!edits[0].new_text.contains("  \n"));
+    }
+
+    #[test]
+    fn test_format_document_indent_by_braces() {
+        let options = tower_lsp::lsp_types::FormattingOptions {
+            tab_size: 2,
+            insert_spaces: true,
+            ..Default::default()
+        };
+        let source = "package P {\npart def X {\n}\n}\n";
+        let edits = format_document(source, &options);
+        assert_eq!(edits.len(), 1);
+        let expected = "package P {\n  part def X {\n  }\n}\n";
+        assert_eq!(edits[0].new_text, expected);
+    }
+
+    /// Validation test: parse VehicleDefinitions.sysml and write semantic tokens and symbol table
+    /// to target/ for review (semantic_tokens_vehicle_definitions.txt, symbol_table_vehicle_definitions.txt).
+    #[test]
+    fn test_vehicle_definitions_validation_output() {
+        let release_root = std::env::var_os("SYSML_V2_RELEASE_DIR")
+            .map(std::path::PathBuf::from)
+            .unwrap_or_else(|| {
+                std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                    .parent()
+                    .unwrap()
+                    .join("temp")
+                    .join("SysML-v2-Release-2026-01")
+            });
+        let path = release_root
+            .join("sysml")
+            .join("src")
+            .join("examples")
+            .join("Vehicle Example")
+            .join("VehicleDefinitions.sysml");
+        if !path.exists() {
+            return; // skip when Vehicle Example not present (e.g. SYSML_V2_RELEASE_DIR unset)
+        }
+        let content = std::fs::read_to_string(&path).expect("read VehicleDefinitions.sysml");
+        let root = sysml_parser::parse(&content).expect("parse");
+        let uri = Url::from_file_path(&path)
+            .unwrap_or_else(|_| Url::parse("file:///VehicleDefinitions.sysml").unwrap());
+
+        // Semantic tokens (using server's ast_semantic_ranges)
+        let ranges = crate::semantic_tokens::ast_semantic_ranges(&root);
+        let target_dir = std::env::var_os("CARGO_TARGET_DIR")
+            .map(std::path::PathBuf::from)
+            .unwrap_or_else(|| {
+                std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                    .parent()
+                    .unwrap()
+                    .join("target")
+            });
+        let _ = std::fs::create_dir_all(&target_dir);
+        let tokens_path = target_dir.join("semantic_tokens_vehicle_definitions.txt");
+        write_semantic_ranges_for_review(&content, &ranges, &tokens_path);
+
+        // Symbol table (stubbed collect_symbol_entries returns empty)
+        let entries = collect_symbol_entries(&root, &uri);
+        let table_path = target_dir.join("symbol_table_vehicle_definitions.txt");
+        write_symbol_table_for_review(&entries, &table_path);
+    }
+
+    #[cfg(test)]
+    fn range_text_from_source(source: &str, r: &crate::ast_util::SourceRange) -> String {
+        let lines: Vec<&str> = source.lines().collect();
+        let line = match lines.get(r.start_line as usize) {
+            Some(l) => l,
+            None => return String::new(),
+        };
+        let start = r.start_character as usize;
+        let end = r.end_character as usize;
+        let n_chars = line.chars().count();
+        if start >= n_chars || end > n_chars || start >= end {
+            return String::new();
+        }
+        line.chars().skip(start).take(end - start).collect()
+    }
+
+    #[cfg(test)]
+    fn write_semantic_ranges_for_review(
+        source: &str,
+        ranges: &[(crate::ast_util::SourceRange, u32)],
+        out_path: &std::path::Path,
+    ) {
+        use std::io::Write;
+        if let Ok(mut f) = std::fs::File::create(out_path) {
+            let _ = writeln!(
+                f,
+                "# Semantic token ranges (line/char 0-based, type index)\n"
+            );
+            for (r, type_index) in ranges {
+                let text = range_text_from_source(source, r);
+                let text_escaped = text.replace('\n', "\\n").replace('\r', "\\r");
+                let _ = writeln!(
+                    f,
+                    "{}:{}..{}:{} type_index={} \"{}\"",
+                    r.start_line,
+                    r.start_character,
+                    r.end_line,
+                    r.end_character,
+                    type_index,
+                    text_escaped
+                );
+            }
+        }
+    }
+
+    #[cfg(test)]
+    fn write_symbol_table_for_review(entries: &[SymbolEntry], out_path: &std::path::Path) {
+        use std::io::Write;
+        if let Ok(mut f) = std::fs::File::create(out_path) {
+            let _ = writeln!(
+                f,
+                "# Symbol table (name | kind | container | range | signature)\n"
+            );
+            for e in entries {
+                let range_str = format!(
+                    "{}:{}..{}:{}",
+                    e.range.start.line,
+                    e.range.start.character,
+                    e.range.end.line,
+                    e.range.end.character
+                );
+                let kind_str = format!("{:?}", e.kind);
+                let container = e.container_name.as_deref().unwrap_or("-");
+                let sig = e.signature.as_deref().unwrap_or("-");
+                let _ = writeln!(
+                    f,
+                    "{} | {} | {} | {} | {}",
+                    e.name, kind_str, container, range_str, sig
+                );
+            }
+        }
+    }
+}

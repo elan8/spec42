@@ -1,16 +1,16 @@
 //! SysML v2 language server (LSP over stdio).
-mod ast_util;
-mod dto;
-mod ibd;
-mod language;
-mod model;
-mod semantic_checks;
-mod semantic_model;
-mod semantic_tokens;
-mod sysml_model;
-mod util;
+//! This module hosts the LSP server implementation and is meant to be reused by
+//! multiple binaries (e.g. `spec42` and `spec42-pro`) via an injected [`Spec42Config`].
 
-use semantic_tokens::{ast_semantic_ranges, legend, semantic_tokens_full, semantic_tokens_range};
+use crate::config::Spec42Config;
+use crate::dto;
+use crate::semantic_model;
+use crate::sysml_model;
+use crate::util;
+
+use crate::semantic_tokens::{
+    ast_semantic_ranges, legend, semantic_tokens_full, semantic_tokens_range,
+};
 use std::sync::Arc;
 use std::time::Instant;
 use sysml_parser::RootNamespace;
@@ -20,7 +20,7 @@ use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 use walkdir::WalkDir;
 
-use language::{
+use crate::language::{
     collect_definition_ranges, collect_document_symbols, collect_folding_ranges, completion_prefix,
     find_reference_ranges, format_document, is_reserved_keyword, keyword_doc,
     keyword_hover_markdown, line_prefix_at_position, suggest_wrap_in_package, sysml_keywords,
@@ -133,7 +133,9 @@ fn update_semantic_graph_for_uri(state: &mut ServerState, uri: &Url, doc: Option
 struct Backend {
     client: Client,
     state: Arc<RwLock<ServerState>>,
+    config: Arc<Spec42Config>,
     start_time: Instant,
+    server_name: String,
 }
 
 #[tower_lsp::async_trait]
@@ -155,7 +157,7 @@ impl LanguageServer for Backend {
         }
         Ok(InitializeResult {
             server_info: Some(ServerInfo {
-                name: "spec42".to_string(),
+                name: self.server_name.clone(),
                 version: Some(env!("CARGO_PKG_VERSION").to_string()),
             }),
             capabilities: ServerCapabilities {
@@ -193,7 +195,7 @@ impl LanguageServer for Backend {
 
     async fn initialized(&self, _: InitializedParams) {
         self.client
-            .log_message(MessageType::INFO, "spec42 initialized")
+            .log_message(MessageType::INFO, format!("{} initialized", self.server_name))
             .await;
         let state = Arc::clone(&self.state);
         let (workspace_roots, library_paths) = {
@@ -1133,7 +1135,7 @@ impl Backend {
                 return Ok(sysml_model::empty_model_response(build_start));
             }
         };
-        Ok(sysml_model::build_sysml_model_response(
+        Ok(crate::build_sysml_model_response(
             &entry.content,
             entry.parsed.as_ref(),
             &state.semantic_graph,
@@ -1141,6 +1143,7 @@ impl Backend {
             &scope,
             build_start,
             &self.client,
+            &self.config.diagram_providers,
         )
         .await)
     }
@@ -1205,14 +1208,14 @@ impl Backend {
                 data: None,
             });
         }
-        // When parse succeeded, add semantic diagnostics (port connectivity, type compatibility).
+        // When parse succeeded, add semantic diagnostics from all check providers.
         if result.errors.is_empty() {
             let uri_norm = util::normalize_file_uri(&uri);
             let state = self.state.read().await;
-            let semantic_diags =
-                semantic_checks::compute_semantic_diagnostics(&state.semantic_graph, &uri_norm);
+            for provider in &self.config.check_providers {
+                diagnostics.extend(provider.compute_diagnostics(&state.semantic_graph, &uri_norm));
+            }
             drop(state);
-            diagnostics.extend(semantic_diags);
         }
         self.client
             .publish_diagnostics(uri, diagnostics, None)
@@ -1220,19 +1223,24 @@ impl Backend {
     }
 }
 
-#[tokio::main]
-async fn main() {
+/// Run the Spec42 LSP server using the provided configuration.
+pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     let (stdin, stdout) = (tokio::io::stdin(), tokio::io::stdout());
     let state = Arc::new(RwLock::new(ServerState::default()));
     let start_time = Instant::now();
+    let server_name = server_name.to_string();
+
     let (service, socket) = LspService::build(move |client| Backend {
         client,
         state: Arc::clone(&state),
+        config: Arc::clone(&config),
         start_time,
+        server_name: server_name.clone(),
     })
     .custom_method("sysml/model", Backend::sysml_model)
     .custom_method("sysml/serverStats", Backend::sysml_server_stats)
     .custom_method("sysml/clearCache", Backend::sysml_clear_cache)
     .finish();
+
     Server::new(stdin, stdout, socket).serve(service).await;
 }

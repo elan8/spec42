@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+  "spec42-core",
   "sysml-diagrams",
   "server",
   "elk-rust/crates/elk-core",

@@ -4,11 +4,16 @@ version = "0.5.0"
 edition = "2021"
 description = "Language server for SysML v2 (LSP over stdio)"
 
+[lib]
+name = "spec42"
+path = "src/lib.rs"
+
 [[bin]]
 name = "spec42"
-path = "src/main.rs"
+path = "src/main_thin.rs"
 
 [dependencies]
+spec42-core = { path = "../spec42-core" }
 sysml-parser = { git = "https://github.com/elan8/sysml-parser" }
 tower-lsp = "0.20"
 tokio = { version = "1", features = ["full"] }

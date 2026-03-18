@@ -1,0 +1,21 @@
+[package]
+name = "spec42-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Core library for Spec42 LSP server: semantic model, DTOs, extension traits"
+
+[lib]
+name = "spec42_core"
+
+[dependencies]
+sysml-parser = { git = "https://github.com/elan8/sysml-parser" }
+tower-lsp = "0.20"
+tokio = { version = "1", features = ["full"] }
+walkdir = "2"
+petgraph = "0.8"
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+clap = { workspace = true }
