@@ -522,11 +522,34 @@ fn compact_layer(ir: &mut LayeredIr, layer_index: usize, options: &LayoutOptions
         tail = (placed - spacing.node_spacing * compactness.max(0.2)).max(0.0);
     }
 
-    for node_id in layer {
-        let blended = forward[&node_id] * compactness + backward[&node_id] * (1.0 - compactness);
-        set_node_minor_start(ir, node_id, direction, blended.max(0.0));
-        let center = node_minor_center(ir, node_id, direction);
-        ir.nodes[node_id].aligned = (center - ir.nodes[node_id].desired_minor).abs()
+    for node_id in &layer {
+        let blended = forward[node_id] * compactness + backward[node_id] * (1.0 - compactness);
+        set_node_minor_start(ir, *node_id, direction, blended.max(0.0));
+    }
+
+    // Overlap-resolution pass: blending can reorder nodes; enforce minimum separation.
+    let mut resolved: Vec<(IrNodeId, f32, f32)> = layer
+        .iter()
+        .map(|&node_id| {
+            let start = node_minor_start(ir, node_id, direction);
+            let footprint =
+                minor_size(ir.nodes[node_id].size, direction) + placeholder_padding(ir, node_id);
+            (node_id, start, footprint)
+        })
+        .collect();
+    resolved.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
+    let mut prev_end = 0.0f32;
+    for (node_id, start, footprint) in &mut resolved {
+        let min_start = prev_end;
+        let actual = (*start).max(min_start);
+        *start = actual;
+        set_node_minor_start(ir, *node_id, direction, actual);
+        prev_end = actual + *footprint + spacing.node_spacing;
+    }
+
+    for node_id in &layer {
+        let center = node_minor_center(ir, *node_id, direction);
+        ir.nodes[*node_id].aligned = (center - ir.nodes[*node_id].desired_minor).abs()
             <= options.layered.spacing.segment_spacing.max(12.0);
     }
 }
