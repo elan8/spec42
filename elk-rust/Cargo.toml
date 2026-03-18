@@ -5,6 +5,8 @@ members = [
     "crates/elk-layered",
     "crates/elk-testkit",
     "crates/elk-graph-json",
+    "crates/elk-meta",
+    "crates/elk-service",
 ]
 resolver = "2"
 
