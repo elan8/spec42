@@ -1,0 +1,29 @@
+{
+  "id": "root",
+  "layoutOptions": {
+    "elk.direction": "RIGHT",
+    "elk.portConstraints": "FIXED_ORDER"
+  },
+  "children": [
+    {
+      "id": "left",
+      "width": 120,
+      "height": 80,
+      "ports": [
+        { "id": "p_out", "width": 10, "height": 10, "layoutOptions": { "elk.port.side": "EAST" } }
+      ]
+    },
+    {
+      "id": "right",
+      "width": 120,
+      "height": 80,
+      "ports": [
+        { "id": "p_in", "width": 10, "height": 10, "layoutOptions": { "elk.port.side": "WEST" } }
+      ]
+    }
+  ],
+  "edges": [
+    { "id": "e1", "sources": ["p_out"], "targets": ["p_in"], "layoutOptions": { "elk.edgeRouting": "POLYLINE" } }
+  ]
+}
+

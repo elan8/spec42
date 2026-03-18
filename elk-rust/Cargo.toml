@@ -1,5 +1,10 @@
 [workspace]
-members = ["crates/elk-core", "crates/elk-layered", "crates/elk-testkit"]
+members = [
+    "crates/elk-core",
+    "crates/elk-layered",
+    "crates/elk-testkit",
+    "crates/elk-graph-json",
+]
 resolver = "2"
 
 [workspace.package]

@@ -1,0 +1,16 @@
+{
+  "id": "root",
+  "layoutOptions": {
+    "elk.direction": "DOWN",
+    "elk.edgeRouting": "ORTHOGONAL",
+    "elk.spacing.nodeNode": 44
+  },
+  "children": [
+    { "id": "n1", "width": 80, "height": 40 },
+    { "id": "n2", "width": 80, "height": 40 }
+  ],
+  "edges": [
+    { "id": "e1", "sources": ["n1"], "targets": ["n2"] }
+  ]
+}
+

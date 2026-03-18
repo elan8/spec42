@@ -30,6 +30,29 @@ impl LayoutEngine for LayeredLayoutEngine {
 
         let mut effective_options = options.clone();
         effective_options.apply_view_profile_defaults();
+        // Allow graph-level overrides coming from interchange formats (e.g. ELK Graph JSON's
+        // `layoutOptions`). This mirrors ELK's behavior where the root node carries global defaults.
+        if let Some(direction) = graph.layout.direction {
+            effective_options.layered.direction = direction;
+        }
+        if let Some(edge_routing) = graph.layout.edge_routing {
+            effective_options.layered.edge_routing = edge_routing;
+        }
+        if let Some(hierarchy_handling) = graph.layout.hierarchy_handling {
+            effective_options.layered.hierarchy_handling = hierarchy_handling;
+        }
+        if let Some(respect_port_order) = graph.layout.respect_port_order {
+            effective_options.layered.respect_port_order = respect_port_order;
+        }
+        if let Some(node_alignment) = graph.layout.node_alignment {
+            effective_options.layered.node_alignment = node_alignment;
+        }
+        if let Some(padding) = graph.layout.padding {
+            effective_options.layered.padding = padding;
+        }
+        if let Some(spacing) = graph.layout.spacing {
+            effective_options.layered.spacing = spacing;
+        }
 
         let mut report = LayoutReport::default();
         let top_level = graph.top_level_nodes();

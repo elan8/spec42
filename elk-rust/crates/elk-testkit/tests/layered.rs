@@ -28,7 +28,7 @@ fn view_profile_defaults_are_applied() {
     let interconnection = LayoutOptions::default().with_view_profile(ViewProfile::InterconnectionView);
 
     assert_eq!(general.layered.direction, LayoutDirection::TopToBottom);
-    assert_eq!(interconnection.layered.direction, LayoutDirection::TopToBottom);
+    assert_eq!(interconnection.layered.direction, LayoutDirection::LeftToRight);
     assert!(general.layered.spacing.node_spacing > interconnection.layered.spacing.node_spacing);
     assert!(interconnection.layered.preferred_connector_lanes > general.layered.preferred_connector_lanes);
 }

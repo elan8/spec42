@@ -8,6 +8,7 @@ version = "0.1.0"
 [dependencies]
 elk-core = { path = "../elk-core" }
 elk-layered = { path = "../elk-layered" }
+elk-graph-json = { path = "../elk-graph-json" }
 
 [dev-dependencies]
 criterion = "0.5"
