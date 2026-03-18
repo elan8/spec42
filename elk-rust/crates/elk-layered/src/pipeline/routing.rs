@@ -55,7 +55,7 @@ pub(crate) fn export_to_graph(
     // OrthogonalRoutingGenerator, but do it per *layer gap segment* (ELK-style) using
     // `normalized_edges` instead of one segment per whole edge.
     let interconnection_slots: Option<Vec<Vec<Option<InterconnectionSlot>>>> =
-        if options.view_profile == ViewProfile::InterconnectionView {
+        if options.layered.endpoint_fanout {
             Some(assign_interconnection_segment_slots(graph, ir, local_nodes, options))
         } else {
             None
@@ -72,7 +72,7 @@ pub(crate) fn export_to_graph(
     }
     let mut bundle_stub_point: HashMap<BundlePortKey, Point> = HashMap::new();
     let mut bundle_stub_rank: HashMap<BundlePortKey, i32> = HashMap::new();
-    if options.view_profile == ViewProfile::InterconnectionView {
+    if options.layered.endpoint_fanout {
         // First pass: collect bundle keys and representative slot per endpoint.
         let mut port_bundles: HashMap<(PortId, bool), HashMap<u32, i32>> = HashMap::new();
         for (edge_index, edge) in ir.edges.iter().enumerate() {
@@ -168,26 +168,12 @@ pub(crate) fn export_to_graph(
 
         let start_hint = endpoint_center(graph, edge.target);
         let end_hint = endpoint_center(graph, edge.source);
-        let start = spread_anchor_point_towards(
-            graph,
-            ir,
-            edge_index,
-            edge.source,
-            start_hint,
-            options.view_profile,
-        );
-        let end = spread_anchor_point_towards(
-            graph,
-            ir,
-            edge_index,
-            edge.target,
-            end_hint,
-            options.view_profile,
-        );
-        let start_side = endpoint_anchor_side(graph, edge.source, start_hint, options.view_profile);
-        let end_side = endpoint_anchor_side(graph, edge.target, end_hint, options.view_profile);
+        let start = spread_anchor_point_towards(graph, ir, edge_index, edge.source, start_hint, options);
+        let end = spread_anchor_point_towards(graph, ir, edge_index, edge.target, end_hint, options);
+        let start_side = endpoint_anchor_side(graph, edge.source, start_hint, options);
+        let end_side = endpoint_anchor_side(graph, edge.target, end_hint, options);
         let stub_len = options.layered.spacing.edge_spacing.clamp(12.0, 24.0);
-        let interconnection = options.view_profile == ViewProfile::InterconnectionView;
+        let interconnection = options.layered.endpoint_fanout;
         let fan_step = options.layered.spacing.edge_spacing.max(20.0) * 0.45;
 
         let routed_start = if interconnection {
@@ -295,24 +281,9 @@ pub(crate) fn export_to_graph(
                         raw
                     ));
                 }
-                join_with_endpoint_stubs(
-                    start,
-                    routed_start,
-                    {
-                        // InterconnectionView: slot/corridor routing already aims to stay in the
-                        // between-layer windows. The generic obstacle detours often produce huge
-                        // escape rectangles that increase total intrusions. Prefer the slot path
-                        // and skip obstacle detours for now (we'll reintroduce corridor-aware
-                        // detours later).
-                        if options.view_profile == ViewProfile::InterconnectionView {
-                            raw
-                        } else {
-                            obstacle_aware_bends(graph, edge, routed_start, routed_end, raw, options)
-                        }
-                    },
-                    routed_end,
-                    end,
-                )
+                let routed =
+                    obstacle_aware_bends(graph, edge, routed_start, routed_end, raw, options);
+                join_with_endpoint_stubs(start, routed_start, routed, routed_end, end)
             }
         };
 
@@ -414,7 +385,7 @@ pub(crate) fn export_to_graph(
             }
         }
         if debug_enabled
-            && options.view_profile == ViewProfile::InterconnectionView
+            && options.layered.endpoint_fanout
             && section_has_diagonal(&section)
         {
             warnings.push(format!(
@@ -752,7 +723,7 @@ fn orthogonal_path(
     let direction = options.layered.direction;
     let segment_spacing = options.layered.spacing.segment_spacing.max(12.0);
     let edge = &ir.edges[edge_index];
-    let interconnection = options.view_profile == elk_core::ViewProfile::InterconnectionView;
+    let interconnection = options.layered.endpoint_fanout;
     let points = chain_points(ir, edge, start, end);
     let segments = edge_segments_for_edge(ir, edge_index);
     let mut bends = Vec::new();
@@ -1076,12 +1047,12 @@ fn obstacle_aware_bends(
             if segment_intersects_rect(
                 window[0],
                 window[1],
-                inflate_rect(node.bounds, options.layered.spacing.edge_spacing / 2.0),
+                inflate_rect(node.bounds, options.layered.spacing.edge_spacing),
             ) {
                 let mut rerouted = splice_detour(
                     &points,
                     segment_index,
-                    detour_around_rect(window[0], window[1], node.bounds, options),
+                    detour_around_rect(graph, &endpoint_nodes, window[0], window[1], node.bounds, options),
                 );
                 // Try a few additional local detours; the interconnection view often needs
                 // multiple obstacle deflections to keep routes inside free space.
@@ -1099,13 +1070,13 @@ fn obstacle_aware_bends(
                                 seg[1],
                                 inflate_rect(
                                     cand.bounds,
-                                    options.layered.spacing.edge_spacing / 2.0,
+                                    options.layered.spacing.edge_spacing,
                                 ),
                             ) {
                                 rerouted = splice_detour(
                                     &rerouted,
                                     seg_idx,
-                                    detour_around_rect(seg[0], seg[1], cand.bounds, options),
+                                    detour_around_rect(graph, &endpoint_nodes, seg[0], seg[1], cand.bounds, options),
                                 );
                                 changed = true;
                                 break 'outer;
@@ -1178,9 +1149,26 @@ fn splice_detour(points: &[Point], segment_index: usize, detour: Vec<Point>) -> 
     }
 }
 
-fn detour_around_rect(start: Point, end: Point, rect: Rect, options: &LayoutOptions) -> Vec<Point> {
+fn detour_around_rect(
+    graph: &Graph,
+    endpoint_nodes: &[NodeId; 4],
+    start: Point,
+    end: Point,
+    rect: Rect,
+    options: &LayoutOptions,
+) -> Vec<Point> {
     let gap = options.layered.spacing.edge_spacing.max(20.0);
     let direction = options.layered.direction;
+
+    let obstacle_margin = options.layered.spacing.edge_spacing;
+    let obstacles = || {
+        graph
+            .nodes
+            .iter()
+            .filter(|node| !endpoint_nodes.contains(&node.id))
+            .map(|node| inflate_rect(node.bounds, obstacle_margin))
+            .collect::<Vec<_>>()
+    };
 
     if matches!(
         direction,
@@ -1208,7 +1196,7 @@ fn detour_around_rect(start: Point, end: Point, rect: Rect, options: &LayoutOpti
                 Point::new(end.x, detour_y),
             ],
         ];
-        return best_detour(candidates);
+        return best_detour_avoiding_obstacles(candidates, start, end, &obstacles());
     }
 
     let detour_x = if end.x <= rect.origin.x {
@@ -1232,19 +1220,45 @@ fn detour_around_rect(start: Point, end: Point, rect: Rect, options: &LayoutOpti
             Point::new(detour_x, end.y),
         ],
     ];
-    best_detour(candidates)
+    best_detour_avoiding_obstacles(candidates, start, end, &obstacles())
 }
 
-fn best_detour<const N: usize>(candidates: [Vec<Point>; N]) -> Vec<Point> {
+fn best_detour_avoiding_obstacles<const N: usize>(
+    candidates: [Vec<Point>; N],
+    start: Point,
+    end: Point,
+    obstacles: &[Rect],
+) -> Vec<Point> {
     candidates
         .into_iter()
         .map(dedup_points)
         .min_by(|left, right| {
-            route_length(left)
-                .partial_cmp(&route_length(right))
-                .unwrap_or(std::cmp::Ordering::Equal)
+            let left_score = detour_score(left, start, end, obstacles);
+            let right_score = detour_score(right, start, end, obstacles);
+            left_score.cmp(&right_score)
         })
         .unwrap_or_default()
+}
+
+fn detour_score(points: &[Point], start: Point, end: Point, obstacles: &[Rect]) -> (usize, i32, i32) {
+    let mut route = Vec::with_capacity(points.len() + 2);
+    route.push(start);
+    route.extend(points.iter().copied());
+    route.push(end);
+
+    let mut hits = 0usize;
+    for seg in route.windows(2) {
+        for rect in obstacles {
+            if segment_intersects_rect(seg[0], seg[1], *rect) {
+                hits += 1;
+            }
+        }
+    }
+
+    // Prefer fewer intersections first, then fewer bends, then shorter routes.
+    let bends = route.len().saturating_sub(2) as i32;
+    let length = route_length(&route).round() as i32;
+    (hits, bends, length)
 }
 
 fn route_length(points: &[Point]) -> f32 {
@@ -1627,14 +1641,14 @@ fn spread_anchor_point_towards(
     edge_index: usize,
     endpoint: EdgeEndpoint,
     toward: Point,
-    profile: ViewProfile,
+    options: &LayoutOptions,
 ) -> Point {
     if let Some(port_id) = endpoint.port {
         return graph.port(port_id).bounds.center();
     }
     let bounds = endpoint_node_bounds(graph, endpoint.node);
-    let side = choose_anchor_side(bounds, toward, profile);
-    let offset = incident_anchor_offset(graph, ir, edge_index, endpoint.node, side);
+    let side = choose_anchor_side(bounds, toward, options);
+    let offset = incident_anchor_offset(graph, ir, edge_index, endpoint.node, side, options);
     base_anchor_point(bounds, side, offset)
 }
 
@@ -1642,7 +1656,7 @@ fn endpoint_anchor_side(
     graph: &Graph,
     endpoint: EdgeEndpoint,
     toward: Point,
-    profile: ViewProfile,
+    options: &LayoutOptions,
 ) -> Option<PortSide> {
     if let Some(port_id) = endpoint.port {
         // Always exit/enter perpendicular to the port boundary.
@@ -1651,16 +1665,16 @@ fn endpoint_anchor_side(
     Some(choose_anchor_side(
         endpoint_node_bounds(graph, endpoint.node),
         toward,
-        profile,
+        options,
     ))
 }
 
-fn choose_anchor_side(bounds: Rect, toward: Point, profile: ViewProfile) -> PortSide {
+fn choose_anchor_side(bounds: Rect, toward: Point, options: &LayoutOptions) -> PortSide {
     let center = bounds.center();
     let dx = toward.x - center.x;
     let dy = toward.y - center.y;
 
-    if matches!(profile, ViewProfile::InterconnectionView) {
+    if options.layered.anchor_side_by_delta {
         if dx.abs() >= dy.abs() {
             if dx >= 0.0 {
                 PortSide::East
@@ -1685,6 +1699,7 @@ fn incident_anchor_offset(
     edge_index: usize,
     node_id: NodeId,
     side: PortSide,
+    options: &LayoutOptions,
 ) -> f32 {
     let bounds = endpoint_node_bounds(graph, node_id);
     let span = if matches!(side, PortSide::East | PortSide::West) {
@@ -1710,7 +1725,7 @@ fn incident_anchor_offset(
                 return None;
             }
             let toward = endpoint_center(graph, endpoint);
-            let candidate_side = choose_anchor_side(bounds, toward, ViewProfile::InterconnectionView);
+            let candidate_side = choose_anchor_side(bounds, toward, options);
             if candidate_side != side {
                 return None;
             }
@@ -1832,13 +1847,13 @@ fn route_self_loop(graph: &mut Graph, edge: &IrEdge, options: &LayoutOptions) {
         graph,
         edge.routed_source,
         Point::new(node_bounds.max_x() + 1.0, node_bounds.origin.y),
-        options.view_profile,
+        options,
     );
     let end = anchor_point_towards(
         graph,
         edge.routed_target,
         Point::new(node_bounds.origin.x, node_bounds.origin.y - 1.0),
-        options.view_profile,
+        options,
     );
     let gap = options.layered.spacing.edge_spacing.max(18.0);
     let loop_right = Point::new(
@@ -1857,12 +1872,17 @@ fn route_self_loop(graph: &mut Graph, edge: &IrEdge, options: &LayoutOptions) {
     }];
 }
 
-fn anchor_point_towards(graph: &Graph, endpoint: EdgeEndpoint, toward: Point, profile: ViewProfile) -> Point {
+fn anchor_point_towards(
+    graph: &Graph,
+    endpoint: EdgeEndpoint,
+    toward: Point,
+    options: &LayoutOptions,
+) -> Point {
     if let Some(port_id) = endpoint.port {
         return graph.port(port_id).bounds.center();
     }
     let bounds = endpoint_node_bounds(graph, endpoint.node);
-    let side = choose_anchor_side(bounds, toward, profile);
+    let side = choose_anchor_side(bounds, toward, options);
     base_anchor_point(bounds, side, 0.0)
 }
 
@@ -1874,42 +1894,6 @@ fn inflate_rect(rect: Rect, amount: f32) -> Rect {
             rect.size.height + amount * 2.0,
         ),
     )
-}
-
-/// Bounding rect of all nodes in the graph so edge detours stay on-canvas.
-fn graph_bounds(graph: &Graph) -> Rect {
-    let (min_x, min_y, max_x, max_y) = graph.nodes.iter().fold(
-        (f32::MAX, f32::MAX, f32::NEG_INFINITY, f32::NEG_INFINITY),
-        |(min_x, min_y, max_x, max_y), node| {
-            let r = node.bounds;
-            (
-                min_x.min(r.origin.x),
-                min_y.min(r.origin.y),
-                max_x.max(r.max_x()),
-                max_y.max(r.max_y()),
-            )
-        },
-    );
-    let (min_x, min_y, max_x, max_y) = graph.ports.iter().fold(
-        (min_x, min_y, max_x, max_y),
-        |(min_x, min_y, max_x, max_y), port| {
-            let r = port.bounds;
-            (
-                min_x.min(r.origin.x),
-                min_y.min(r.origin.y),
-                max_x.max(r.max_x()),
-                max_y.max(r.max_y()),
-            )
-        },
-    );
-    if min_x <= max_x && min_y <= max_y {
-        Rect::new(
-            Point::new(min_x, min_y),
-            Size::new(max_x - min_x, max_y - min_y),
-        )
-    } else {
-        Rect::new(Point::new(0.0, 0.0), Size::new(1000.0, 1000.0))
-    }
 }
 
 /// Bounding rect of the current subgraph (local roots + descendants + their ports).

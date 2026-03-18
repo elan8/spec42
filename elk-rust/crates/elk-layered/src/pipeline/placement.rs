@@ -21,10 +21,10 @@ enum BkHDirection {
 }
 
 fn bk_assign_minor_positions(ir: &mut LayeredIr, options: &LayoutOptions) {
-    // Brandes–Köpf-inspired coordinate assignment (minor axis) for InterconnectionView.
+    // Brandes–Köpf-inspired coordinate assignment (minor axis) for dense diagrams.
     // This is not a full ELK port yet (no type-1 conflict marking / port inside-block shifting),
     // but it follows the same overall structure: build alignments then compact blocks.
-    if options.view_profile != elk_core::ViewProfile::InterconnectionView {
+    if !options.layered.minor_axis_bk {
         return;
     }
     if options.layered.direction != LayoutDirection::TopToBottom {

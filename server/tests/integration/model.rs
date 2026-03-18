@@ -660,7 +660,9 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
     let svg = rendered["svg"].as_str().unwrap_or_default();
     let metrics = &rendered["metrics"];
     let aspect_ratio = metrics["aspectRatio"].as_f64().unwrap_or(0.0);
+    let crossings = metrics["edgeCrossingCount"].as_u64().unwrap_or(u64::MAX);
     let intrusions = metrics["edgeNodeIntrusionCount"].as_u64().unwrap_or(u64::MAX);
+    let bends = metrics["bendCount"].as_u64().unwrap_or(u64::MAX);
     let orthogonal_violations = metrics["orthogonalViolationCount"].as_u64().unwrap_or(u64::MAX);
     let warnings = rendered["warnings"]
         .as_array()
@@ -673,7 +675,9 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
     let mut debug = String::new();
     debug.push_str("interconnection-view-full-drone debug\n");
     debug.push_str(&format!("aspect_ratio={aspect_ratio}\n"));
+    debug.push_str(&format!("edge_crossings={crossings}\n"));
     debug.push_str(&format!("edge_node_intrusions={intrusions}\n"));
+    debug.push_str(&format!("bend_count={bends}\n"));
     debug.push_str(&format!("orthogonal_violations={orthogonal_violations}\n"));
     debug.push_str(&format!("warnings_count={}\n", warnings.len()));
     if !warnings.is_empty() {
@@ -737,8 +741,16 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
         "expected orthogonal routing (no violations), got {orthogonal_violations} (aspect_ratio={aspect_ratio})"
     );
     assert!(
-        intrusions <= 200,
-        "expected edge-node intrusions to stay bounded (improving toward 0), got {intrusions} (aspect_ratio={aspect_ratio})"
+        intrusions <= 150,
+        "expected edge-node intrusions to stay bounded (improving toward 0), got {intrusions} (aspect_ratio={aspect_ratio}, crossings={crossings}, bends={bends})"
+    );
+    assert!(
+        crossings <= 25,
+        "expected edge crossings to stay bounded, got {crossings} (aspect_ratio={aspect_ratio}, intrusions={intrusions}, bends={bends})"
+    );
+    assert!(
+        bends <= 100,
+        "expected bend count to stay bounded, got {bends} (aspect_ratio={aspect_ratio}, intrusions={intrusions}, crossings={crossings})"
     );
     assert!(
         aspect_ratio > 0.0 && aspect_ratio < 9.5,

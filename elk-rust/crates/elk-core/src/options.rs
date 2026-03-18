@@ -175,6 +175,14 @@ pub struct LayeredOptions {
     /// Values > 1 make the result wider; values < 1 make it taller.
     pub component_packing_aspect_ratio: f32,
     pub preferred_connector_lanes: usize,
+    /// If enabled, fan out multiple edges that share the same endpoint anchor.
+    pub endpoint_fanout: bool,
+    /// If enabled, apply a layer-merge heuristic before routing.
+    pub merge_layers: bool,
+    /// If enabled, run a Brandes–Köpf-inspired minor-axis assignment used for dense diagrams.
+    pub minor_axis_bk: bool,
+    /// If enabled, choose node anchor sides based on the larger of |dx| / |dy|.
+    pub anchor_side_by_delta: bool,
 }
 
 impl Default for LayeredOptions {
@@ -192,6 +200,10 @@ impl Default for LayeredOptions {
             component_packing: false,
             component_packing_aspect_ratio: 1.2,
             preferred_connector_lanes: 3,
+            endpoint_fanout: false,
+            merge_layers: false,
+            minor_axis_bk: false,
+            anchor_side_by_delta: false,
         }
     }
 }
@@ -294,6 +306,10 @@ impl LayoutOptions {
                 self.layered.component_packing = true;
                 self.layered.component_packing_aspect_ratio = 1.15;
                 self.layered.preferred_connector_lanes = 5;
+                self.layered.endpoint_fanout = true;
+                self.layered.merge_layers = true;
+                self.layered.minor_axis_bk = true;
+                self.layered.anchor_side_by_delta = true;
                 self.element_defaults.port_constraint = Some(PortConstraint::FixedOrder);
                 self.element_defaults.port_label_placement =
                     Some(PortLabelPlacement::NextToPortIfPossible);

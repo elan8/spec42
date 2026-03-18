@@ -736,6 +736,7 @@ fn reverse_dependency(segments: &mut [HyperEdgeSegment], dep: Dependency) {
 fn topological_numbering(segments: &mut [HyperEdgeSegment]) {
     // initialize weights and sources
     let mut sources: VecDeque<usize> = VecDeque::new();
+    let mut rightward_targets: VecDeque<usize> = VecDeque::new();
     for seg in segments.iter_mut() {
         seg.in_weight = seg.incoming.len() as i32;
         seg.out_weight = seg.outgoing.len() as i32;
@@ -744,6 +745,9 @@ fn topological_numbering(segments: &mut [HyperEdgeSegment]) {
     for seg in segments.iter() {
         if seg.in_weight == 0 {
             sources.push_back(seg.id);
+        }
+        if seg.out_weight == 0 && seg.incoming_connection_coordinates.is_empty() {
+            rightward_targets.push_back(seg.id);
         }
     }
 
@@ -762,8 +766,30 @@ fn topological_numbering(segments: &mut [HyperEdgeSegment]) {
         }
     }
 
-    // The ELK adjustment for "rightward targets" is direction-specific. We keep the base
-    // numbering only; the bend generator can decide final direction bias.
-    let _ = max_rank;
+    // ELK adjustment: if a segment has no leftward horizontal segments (incoming coords empty),
+    // move it as far right as possible to avoid pushing back edges too far away from targets.
+    if max_rank > -1 {
+        let targets: Vec<usize> = rightward_targets.iter().copied().collect();
+        for node in targets {
+            segments[node].routing_slot = max_rank;
+        }
+
+        while let Some(node) = rightward_targets.pop_front() {
+            let incoming = segments[node].incoming.clone();
+            for dep in incoming {
+                let source = dep.source;
+                if !segments[source].incoming_connection_coordinates.is_empty() {
+                    continue;
+                }
+
+                segments[source].routing_slot =
+                    segments[source].routing_slot.min(segments[node].routing_slot - 1);
+                segments[source].out_weight -= 1;
+                if segments[source].out_weight == 0 {
+                    rightward_targets.push_back(source);
+                }
+            }
+        }
+    }
 }
 

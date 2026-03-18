@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use elk_core::{LayerConstraint, LayoutOptions, NodeId, ViewProfile};
+use elk_core::{LayerConstraint, LayoutOptions, NodeId};
 
 use crate::ir::{IrNodeKind, LayeredIr};
 
@@ -117,7 +117,7 @@ pub(crate) fn assign_layers(ir: &mut LayeredIr, options: &LayoutOptions) {
         ir.layers[layer_index] = layer;
     }
 
-    if options.view_profile == ViewProfile::InterconnectionView {
+    if options.layered.merge_layers {
         merge_layers_for_interconnection_view(ir);
     }
 }
