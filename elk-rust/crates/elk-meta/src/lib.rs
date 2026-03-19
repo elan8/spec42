@@ -36,6 +36,7 @@ pub struct OptionMeta {
     pub default_value: Option<PropertyValue>,
     pub allowed_scopes: BTreeSet<OptionScope>,
     pub aliases: Vec<String>,
+    pub deprecated_aliases: Vec<String>,
     pub doc: &'static str,
 }
 
@@ -50,6 +51,7 @@ pub enum ValidationIssueKind {
     UnknownKey,
     WrongType { expected: OptionType, actual: OptionType },
     DisallowedScope { scope: OptionScope },
+    DeprecatedKey { replacement: String },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -65,6 +67,8 @@ pub struct OptionRegistry {
     by_id: BTreeMap<String, OptionMeta>,
     /// alias -> canonical_id
     alias_to_id: BTreeMap<String, String>,
+    /// keys that should be replaced by canonical ids
+    deprecated_keys: BTreeSet<String>,
 }
 
 impl OptionRegistry {
@@ -89,8 +93,23 @@ impl OptionRegistry {
             *alias = a.clone();
             self.alias_to_id.insert(a, canonical.clone());
         }
+        for alias in meta.deprecated_aliases.iter_mut() {
+            let a = Self::canonicalize_key(alias);
+            *alias = a.clone();
+            self.alias_to_id.insert(a.clone(), canonical.clone());
+            self.deprecated_keys.insert(a);
+        }
 
         self.by_id.insert(canonical, meta);
+    }
+
+    #[must_use]
+    pub fn canonical_key(&self, key: &str) -> Option<String> {
+        let k = Self::canonicalize_key(key);
+        if self.by_id.contains_key(&k) {
+            return Some(k);
+        }
+        self.alias_to_id.get(&k).cloned()
     }
 
     #[must_use]
@@ -129,6 +148,7 @@ impl OptionRegistry {
         let mut issues = Vec::new();
         for (key, value) in bag.iter() {
             let key_str = key.0.clone();
+            let key_canonical = Self::canonicalize_key(&key_str);
             let Some(meta) = self.lookup(&key_str) else {
                 issues.push(ValidationIssue {
                     severity: ValidationSeverity::Warning,
@@ -137,6 +157,16 @@ impl OptionRegistry {
                 });
                 continue;
             };
+
+            if self.deprecated_keys.contains(&key_canonical) {
+                issues.push(ValidationIssue {
+                    severity: ValidationSeverity::Warning,
+                    key: key_str.clone(),
+                    kind: ValidationIssueKind::DeprecatedKey {
+                        replacement: meta.id.0.clone(),
+                    },
+                });
+            }
 
             if !meta.allowed_scopes.is_empty() && !meta.allowed_scopes.contains(&scope) {
                 issues.push(ValidationIssue {
@@ -159,6 +189,25 @@ impl OptionRegistry {
             }
         }
         issues
+    }
+
+    /// Produce a normalized property bag where known aliases/deprecated keys are
+    /// replaced with canonical option ids.
+    ///
+    /// If both alias and canonical key exist, canonical value wins.
+    #[must_use]
+    pub fn normalize_bag(&self, bag: &PropertyBag) -> PropertyBag {
+        let mut out = PropertyBag::default();
+        for (key, value) in bag.iter() {
+            let canonical = self
+                .canonical_key(&key.0)
+                .unwrap_or_else(|| key.0.clone());
+            let canonical_key = PropertyKey(canonical.clone());
+            if out.get(&canonical_key).is_none() {
+                out.insert(PropertyKey(canonical), value.clone());
+            }
+        }
+        out
     }
 }
 
@@ -193,6 +242,7 @@ pub fn default_registry() -> OptionRegistry {
         default_value: None,
         allowed_scopes: scopes_graph.clone(),
         aliases: vec!["org.eclipse.elk.algorithm".to_string()],
+        deprecated_aliases: Vec::new(),
         doc: "Algorithm id used for dispatch.",
     });
 
@@ -205,6 +255,8 @@ pub fn default_registry() -> OptionRegistry {
         allowed_scopes: scopes_graph.clone(),
         aliases: vec![
             "elk.rectpacking".to_string(),
+        ],
+        deprecated_aliases: vec![
             "org.eclipse.elk.alg.rectpacking".to_string(),
         ],
         doc: "Rectpacking algorithm id (compat).",
@@ -216,6 +268,8 @@ pub fn default_registry() -> OptionRegistry {
         allowed_scopes: scopes_graph.clone(),
         aliases: vec![
             "elk.topdownpacking".to_string(),
+        ],
+        deprecated_aliases: vec![
             "org.eclipse.elk.alg.topdownpacking".to_string(),
         ],
         doc: "Topdownpacking algorithm id (compat).",
@@ -227,6 +281,8 @@ pub fn default_registry() -> OptionRegistry {
         allowed_scopes: scopes_graph.clone(),
         aliases: vec![
             "elk.libavoid".to_string(),
+        ],
+        deprecated_aliases: vec![
             "org.eclipse.elk.alg.libavoid".to_string(),
         ],
         doc: "Libavoid algorithm id (compat).",
@@ -268,6 +324,7 @@ pub fn default_registry() -> OptionRegistry {
             default_value: None,
             allowed_scopes: scopes_graph_edge.clone(),
             aliases: aliases.into_iter().map(String::from).collect(),
+            deprecated_aliases: Vec::new(),
             doc,
         });
     }
@@ -277,6 +334,7 @@ pub fn default_registry() -> OptionRegistry {
         default_value: None,
         allowed_scopes: [OptionScope::Graph, OptionScope::Node].into_iter().collect(),
         aliases: vec!["org.eclipse.elk.direction".to_string()],
+        deprecated_aliases: Vec::new(),
         doc: "Overall layout direction.",
     });
     reg.register(OptionMeta {
@@ -289,6 +347,7 @@ pub fn default_registry() -> OptionRegistry {
             "org.eclipse.elk.edgeRouting".to_string(),
             "org.eclipse.elk.edgerouting".to_string(),
         ],
+        deprecated_aliases: Vec::new(),
         doc: "Edge routing style.",
     });
     reg.register(OptionMeta {
@@ -300,6 +359,7 @@ pub fn default_registry() -> OptionRegistry {
             "elk.routing".to_string(),
             "org.eclipse.elk.layered.routingBackend".to_string(),
         ],
+        deprecated_aliases: Vec::new(),
         doc: "Layered routing backend: default (simple) or libavoid.",
     });
     reg.register(OptionMeta {
@@ -312,6 +372,7 @@ pub fn default_registry() -> OptionRegistry {
             "org.eclipse.elk.portConstraints".to_string(),
             "org.eclipse.elk.portconstraints".to_string(),
         ],
+        deprecated_aliases: Vec::new(),
         doc: "Port constraints.",
     });
 
@@ -359,6 +420,7 @@ pub fn default_registry() -> OptionRegistry {
             default_value: None,
             allowed_scopes: BTreeSet::new(),
             aliases: aliases.into_iter().map(|s| s.to_string()).collect(),
+            deprecated_aliases: Vec::new(),
             doc,
         });
     }
@@ -384,6 +446,59 @@ mod tests {
         bag.insert("elk.unknownOption", PropertyValue::Bool(true));
         let issues = reg.validate_bag(OptionScope::Graph, &bag);
         assert!(issues.iter().any(|i| matches!(i.kind, ValidationIssueKind::UnknownKey)));
+    }
+
+    #[test]
+    fn validate_bag_flags_wrong_type_and_scope() {
+        let reg = default_registry();
+        let mut bag = PropertyBag::default();
+        bag.insert("elk.direction", PropertyValue::Int(42));
+        let issues = reg.validate_bag(OptionScope::Port, &bag);
+        assert!(issues.iter().any(|i| {
+            matches!(
+                i.kind,
+                ValidationIssueKind::WrongType {
+                    expected: OptionType::String,
+                    actual: OptionType::Int
+                }
+            )
+        }));
+        assert!(issues.iter().any(|i| matches!(i.kind, ValidationIssueKind::DisallowedScope { .. })));
+    }
+
+    #[test]
+    fn normalize_bag_rewrites_deprecated_aliases() {
+        let reg = default_registry();
+        let mut bag = PropertyBag::default();
+        bag.insert(
+            "org.eclipse.elk.alg.rectpacking",
+            PropertyValue::String("org.eclipse.elk.alg.rectpacking".to_string()),
+        );
+        let normalized = reg.normalize_bag(&bag);
+        assert!(normalized.get(&PropertyKey("org.eclipse.elk.alg.rectpacking".to_string())).is_none());
+        let value = normalized
+            .get(&PropertyKey("org.eclipse.elk.rectpacking".to_string()))
+            .and_then(PropertyValue::as_str);
+        assert_eq!(value, Some("org.eclipse.elk.alg.rectpacking"));
+    }
+
+    #[test]
+    fn validate_bag_flags_deprecated_key() {
+        let reg = default_registry();
+        let mut bag = PropertyBag::default();
+        bag.insert(
+            "org.eclipse.elk.alg.rectpacking",
+            PropertyValue::String("org.eclipse.elk.alg.rectpacking".to_string()),
+        );
+        let issues = reg.validate_bag(OptionScope::Graph, &bag);
+        assert!(issues.iter().any(|i| {
+            matches!(
+                i.kind,
+                ValidationIssueKind::DeprecatedKey {
+                    ref replacement
+                } if replacement == "org.eclipse.elk.rectpacking"
+            )
+        }));
     }
 }
 

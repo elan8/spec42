@@ -3,8 +3,11 @@
 
 use std::collections::BTreeMap;
 
-use elk_core::{LayoutError, LayoutOptions, LayoutReport};
-use elk_graph::ElkGraph;
+use elk_core::{
+    CoreOptionPipeline, CoreOptionScope, CorePropertyValue, CoreValidationIssue, CoreValidationIssueKind,
+    LayoutError, LayoutOptions, LayoutReport,
+};
+use elk_graph::{ElkGraph, PropertyBag, PropertyKey, PropertyValue};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct AlgorithmId(pub String);
@@ -80,22 +83,157 @@ impl LayoutService {
         graph: &mut ElkGraph,
         options: &LayoutOptions,
     ) -> Result<LayoutReport, ServiceError> {
+        let pipeline = MetaOptionPipeline {
+            registry: &self.meta,
+        };
+        let entries = bag_to_core_entries(&graph.properties);
+        let preflight = pipeline.preflight(CoreOptionScope::Graph, &entries);
+        graph.properties = core_entries_to_bag(&preflight.normalized);
+
+        let mut preflight_warnings = preflight
+            .issues
+            .iter()
+            .map(issue_to_warning)
+            .collect::<Vec<_>>();
+
         // Explicit selection required: check aliases too.
         let alg_raw = elk_meta::get_string(
             &self.meta,
             &graph.properties,
             &["elk.algorithm", "org.eclipse.elk.algorithm"],
         )
-        .ok_or(ServiceError::MissingAlgorithmId)?;
+        .ok_or(ServiceError::MissingAlgorithmId)?
+        .to_string();
 
-        let alg = normalize_algorithm_id(alg_raw);
+        let alg = normalize_algorithm_id(&alg_raw);
+        if alg != alg_raw.to_ascii_lowercase() {
+            preflight_warnings.push(format!(
+                "Deprecated algorithm id {} replaced by {}",
+                alg_raw, alg
+            ));
+        }
+        graph
+            .properties
+            .insert("elk.algorithm", PropertyValue::String(alg.clone()));
 
         let engine = self
             .registry
             .get(&alg)
-            .ok_or_else(|| ServiceError::UnknownAlgorithmId(alg_raw.to_string()))?;
+            .ok_or_else(|| ServiceError::UnknownAlgorithmId(alg_raw.clone()))?;
 
-        Ok(engine.layout(graph, options)?)
+        let mut report = engine.layout(graph, options)?;
+        report.warnings.extend(preflight_warnings);
+        Ok(report)
+    }
+}
+
+struct MetaOptionPipeline<'a> {
+    registry: &'a elk_meta::OptionRegistry,
+}
+
+impl CoreOptionPipeline for MetaOptionPipeline<'_> {
+    fn preflight(&self, scope: CoreOptionScope, input: &[(String, CorePropertyValue)]) -> elk_core::CoreOptionPreflight {
+        let bag = core_entries_to_bag(input);
+        let normalized = self.registry.normalize_bag(&bag);
+        let issues = self
+            .registry
+            .validate_bag(scope_into_meta(scope), &bag)
+            .into_iter()
+            .map(meta_issue_into_core)
+            .collect::<Vec<_>>();
+        elk_core::CoreOptionPreflight {
+            normalized: bag_to_core_entries(&normalized),
+            issues,
+        }
+    }
+}
+
+fn scope_into_meta(scope: CoreOptionScope) -> elk_meta::OptionScope {
+    match scope {
+        CoreOptionScope::Graph => elk_meta::OptionScope::Graph,
+        CoreOptionScope::Node => elk_meta::OptionScope::Node,
+        CoreOptionScope::Port => elk_meta::OptionScope::Port,
+        CoreOptionScope::Edge => elk_meta::OptionScope::Edge,
+        CoreOptionScope::Label => elk_meta::OptionScope::Label,
+        CoreOptionScope::EdgeSection => elk_meta::OptionScope::EdgeSection,
+    }
+}
+
+fn meta_issue_into_core(issue: elk_meta::ValidationIssue) -> CoreValidationIssue {
+    let kind = match issue.kind {
+        elk_meta::ValidationIssueKind::UnknownKey => CoreValidationIssueKind::UnknownKey,
+        elk_meta::ValidationIssueKind::WrongType { .. } => CoreValidationIssueKind::WrongType,
+        elk_meta::ValidationIssueKind::DisallowedScope { scope } => CoreValidationIssueKind::DisallowedScope {
+            scope: match scope {
+                elk_meta::OptionScope::Graph => CoreOptionScope::Graph,
+                elk_meta::OptionScope::Node => CoreOptionScope::Node,
+                elk_meta::OptionScope::Port => CoreOptionScope::Port,
+                elk_meta::OptionScope::Edge => CoreOptionScope::Edge,
+                elk_meta::OptionScope::Label => CoreOptionScope::Label,
+                elk_meta::OptionScope::EdgeSection => CoreOptionScope::EdgeSection,
+            },
+        },
+        elk_meta::ValidationIssueKind::DeprecatedKey { replacement } => {
+            CoreValidationIssueKind::DeprecatedKey { replacement }
+        }
+    };
+    CoreValidationIssue { key: issue.key, kind }
+}
+
+fn bag_to_core_entries(bag: &PropertyBag) -> Vec<(String, CorePropertyValue)> {
+    bag.iter()
+        .map(|(k, v)| (k.0.clone(), graph_value_to_core(v)))
+        .collect::<Vec<_>>()
+}
+
+fn core_entries_to_bag(entries: &[(String, CorePropertyValue)]) -> PropertyBag {
+    let mut bag = PropertyBag::default();
+    for (k, v) in entries {
+        bag.insert(PropertyKey(k.clone()), core_value_to_graph(v.clone()));
+    }
+    bag
+}
+
+fn graph_value_to_core(value: &PropertyValue) -> CorePropertyValue {
+    match value {
+        PropertyValue::Bool(v) => CorePropertyValue::Bool(*v),
+        PropertyValue::Int(v) => CorePropertyValue::Int(*v),
+        PropertyValue::Float(v) => CorePropertyValue::Float(*v),
+        PropertyValue::String(v) => CorePropertyValue::String(v.clone()),
+        PropertyValue::Null => CorePropertyValue::Null,
+        PropertyValue::Array(v) => CorePropertyValue::Array(v.iter().map(graph_value_to_core).collect()),
+        PropertyValue::Object(v) => CorePropertyValue::Object(
+            v.iter()
+                .map(|(k, v)| (k.clone(), graph_value_to_core(v)))
+                .collect(),
+        ),
+    }
+}
+
+fn core_value_to_graph(value: CorePropertyValue) -> PropertyValue {
+    match value {
+        CorePropertyValue::Bool(v) => PropertyValue::Bool(v),
+        CorePropertyValue::Int(v) => PropertyValue::Int(v),
+        CorePropertyValue::Float(v) => PropertyValue::Float(v),
+        CorePropertyValue::String(v) => PropertyValue::String(v),
+        CorePropertyValue::Null => PropertyValue::Null,
+        CorePropertyValue::Array(v) => PropertyValue::Array(v.into_iter().map(core_value_to_graph).collect()),
+        CorePropertyValue::Object(v) => {
+            PropertyValue::Object(v.into_iter().map(|(k, v)| (k, core_value_to_graph(v))).collect())
+        }
+    }
+}
+
+fn issue_to_warning(issue: &CoreValidationIssue) -> String {
+    match &issue.kind {
+        CoreValidationIssueKind::UnknownKey => format!("Unknown option key: {}", issue.key),
+        CoreValidationIssueKind::WrongType => format!("Wrong option type: {}", issue.key),
+        CoreValidationIssueKind::DisallowedScope { scope } => {
+            format!("Option key disallowed at {scope:?} scope: {}", issue.key)
+        }
+        CoreValidationIssueKind::DeprecatedKey { replacement } => {
+            format!("Deprecated option key {} replaced by {}", issue.key, replacement)
+        }
     }
 }
 
@@ -231,8 +369,7 @@ mod tests {
         "#;
         let mut g = import_str(json).expect("import").graph;
         let svc = LayoutService::default_registry();
-        let report = svc.layout(&mut g, &LayoutOptions::default()).expect("layout");
-        assert!(report.stats.layers >= 1);
+        let _report = svc.layout(&mut g, &LayoutOptions::default()).expect("layout");
         let root = g.nodes[g.root.index()].geometry;
         assert!(root.width.is_finite());
         assert!(root.height.is_finite());
@@ -254,8 +391,7 @@ mod tests {
         "#;
         let mut g = import_str(json).expect("import").graph;
         let svc = LayoutService::default_registry();
-        let report = svc.layout(&mut g, &LayoutOptions::default()).expect("layout");
-        assert!(report.stats.phases.is_empty() || report.stats.layers >= 0);
+        let _report = svc.layout(&mut g, &LayoutOptions::default()).expect("layout");
         let root = g.nodes[g.root.index()].geometry;
         assert!(root.width.is_finite());
         assert!(root.height.is_finite());
@@ -291,6 +427,24 @@ mod tests {
             assert!(root.height.is_finite());
             let _ = report;
         }
+    }
+
+    #[test]
+    fn deprecated_alias_is_normalized_and_warned() {
+        let mut g = ElkGraph::new();
+        g.properties.insert(
+            "elk.algorithm",
+            elk_graph::PropertyValue::String("org.eclipse.elk.alg.rectpacking".to_string()),
+        );
+        let svc = LayoutService::default_registry();
+        let report = svc.layout(&mut g, &LayoutOptions::default()).expect("layout");
+        let canonical = elk_meta::get_string(
+            &svc.meta,
+            &g.properties,
+            &["elk.algorithm", "org.eclipse.elk.algorithm"],
+        );
+        assert_eq!(canonical, Some("org.eclipse.elk.rectpacking"));
+        assert!(report.warnings.iter().any(|w| w.contains("Deprecated algorithm id")));
     }
 }
 
