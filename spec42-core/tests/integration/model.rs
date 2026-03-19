@@ -653,6 +653,10 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
         serde_json::from_str(&model_resp).expect("parse sysml/model response");
     let result = &model_json["result"];
     let rendered = result["renderedDiagrams"]["interconnectionView"].clone();
+    let ibd_parts = result["ibd"]["parts"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
     assert!(
         !rendered.is_null(),
         "renderedDiagrams.interconnectionView should be present: {result:#}"
@@ -680,6 +684,15 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
     debug.push_str(&format!("bend_count={bends}\n"));
     debug.push_str(&format!("orthogonal_violations={orthogonal_violations}\n"));
     debug.push_str(&format!("warnings_count={}\n", warnings.len()));
+    let router_warnings = warnings
+        .iter()
+        .filter(|warning| {
+            warning.contains("router active")
+                || warning.contains("routing failed")
+                || warning.contains("libavoid")
+        })
+        .count();
+    debug.push_str(&format!("router_warning_count={router_warnings}\n"));
     if !warnings.is_empty() {
         debug.push_str("\nwarnings:\n");
         for (idx, warning) in warnings.iter().enumerate() {
@@ -691,6 +704,12 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
     let paths = extract_edge_connection_paths(svg, 60);
     for (idx, path) in paths.iter().cloned().enumerate() {
         debug.push_str(&format!("{idx}: {path}\n"));
+    }
+    debug.push_str("\nibd_parts_sample:\n");
+    for part in ibd_parts.iter().take(40) {
+        let qn = part["qualifiedName"].as_str().unwrap_or("<missing-qn>");
+        let container = part["containerId"].as_str().unwrap_or("<none>");
+        debug.push_str(&format!("{qn} | container={container}\n"));
     }
     debug.push_str("\nedge_endpoint_nearest_ports:\n");
     for (idx, path) in paths.into_iter().enumerate() {
@@ -751,6 +770,14 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
     assert!(
         bends <= 100,
         "expected bend count to stay bounded, got {bends} (aspect_ratio={aspect_ratio}, intrusions={intrusions}, crossings={crossings})"
+    );
+    assert!(
+        warnings.iter().any(|warning| {
+            warning.contains("router active")
+                || warning.contains("routing failed")
+                || warning.contains("libavoid")
+        }),
+        "expected interconnection warnings to include routing backend diagnostics, got: {warnings:?}"
     );
     assert!(
         aspect_ratio > 0.0 && aspect_ratio < 9.5,

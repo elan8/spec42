@@ -125,7 +125,13 @@ pub(crate) fn ensure_orthogonal_path_prefer_major(
 
 pub(crate) fn node_abs_origin(graph: &ElkGraph, node: NodeId) -> Point {
     let n = &graph.nodes[node.index()];
-    Point::new(n.geometry.x, n.geometry.y)
+    match n.parent {
+        Some(parent) if parent != graph.root => {
+            let p = node_abs_origin(graph, parent);
+            Point::new(p.x + n.geometry.x, p.y + n.geometry.y)
+        }
+        _ => Point::new(n.geometry.x, n.geometry.y),
+    }
 }
 
 pub(crate) fn node_abs_size(graph: &ElkGraph, node: NodeId) -> Size {

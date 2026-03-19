@@ -84,9 +84,9 @@ pub(crate) fn compute_layout(
 
     let mut options = map_layout_options(config);
 
-    // For Interconnection View, try both main directions and keep the one that yields a
-    // closer-to-square canvas. This is a pragmatic stopgap until routing/packing parity
-    // improves enough that a single fixed direction always looks good.
+    // For Interconnection View, try both main directions and score candidates by both
+    // geometry and routing quality signals. This keeps the output stable for dense graphs
+    // where aspect ratio alone can pick a direction with avoidable crossings/bends.
     let (report, layout, warnings) = if matches!(config.view_profile, LayoutViewProfile::InterconnectionView)
     {
         let candidates = [ElkLayoutDirection::TopToBottom, ElkLayoutDirection::LeftToRight];
@@ -103,7 +103,11 @@ pub(crate) fn compute_layout(
             } else {
                 f32::MAX
             };
-            let score = (ar.ln()).abs(); // 0 is perfect square
+            let aspect_penalty = (ar.ln()).abs(); // 0 is perfect square
+            let crossing_penalty = report.stats.crossings_after as f32;
+            let bend_penalty = report.stats.bend_points as f32 * 0.08;
+            let reverse_penalty = report.stats.reversed_edges as f32 * 0.35;
+            let score = aspect_penalty + crossing_penalty + bend_penalty + reverse_penalty;
             if best.as_ref().is_none_or(|(best_score, _, _)| score < *best_score) {
                 best = Some((score, g, report));
             }
@@ -287,8 +291,10 @@ fn map_layout_options(config: &LayoutConfig) -> LayoutOptions {
         options.layered.preferred_connector_lanes = 4;
     }
     if matches!(config.view_profile, LayoutViewProfile::InterconnectionView) {
-        options.layered.compactness = 0.66;
-        options.layered.preferred_connector_lanes = 6;
+        options.layered.compactness = 0.7;
+        options.layered.preferred_connector_lanes = 7;
+        options.layered.spacing.segment_spacing = 28.0;
+        options.layered.spacing.edge_spacing = 32.0;
     }
     options.element_defaults = ElementLayoutOptions {
         port_constraint: Some(PortConstraint::FixedSide),
@@ -374,23 +380,40 @@ fn map_layout_back(
     node_ids: &HashMap<String, NodeId>,
     port_ids: &HashMap<String, PortId>,
 ) -> Result<DiagramLayout> {
+    let node_absolute_origins = compute_absolute_node_origins(elk_graph);
+
     let mut nodes = Vec::with_capacity(graph.nodes.len());
     for node in &graph.nodes {
         let elk_node_id = *node_ids
             .get(node.id.as_str())
             .ok_or_else(|| crate::layout::DiagramError::MissingNode(node.id.clone()))?;
         let elk_node = &elk_graph.nodes[elk_node_id.index()];
+        let abs_origin = node_absolute_origins[elk_node_id.index()];
         nodes.push(NodeLayout {
             id: node.id.clone(),
             label: node.label.clone(),
             kind: node.kind.clone(),
             detail_lines: node.detail_lines.clone(),
-            bounds: map_geometry_to_bounds(elk_node.geometry),
+            bounds: Bounds {
+                x: abs_origin.x,
+                y: abs_origin.y,
+                width: elk_node.geometry.width,
+                height: elk_node.geometry.height,
+            },
             parent_id: node.parent_id.clone(),
             ports: node
                 .ports
                 .iter()
-                .map(|port| map_port_layout(node.id.as_str(), port, elk_graph, port_ids))
+                .map(|port| {
+                    map_port_layout(
+                        node.id.as_str(),
+                        port,
+                        elk_graph,
+                        port_ids,
+                        abs_origin.x - elk_node.geometry.x,
+                        abs_origin.y - elk_node.geometry.y,
+                    )
+                })
                 .collect::<Result<Vec<_>>>()?,
         });
     }
@@ -400,21 +423,99 @@ fn map_layout_back(
     // (e.g. hierarchical ports not restored, or missing subtree edge translation).
     let debug_enabled = std::env::var("SPEC42_ELK_DEBUG").as_deref() == Ok("1");
     let mut port_pos_by_id: HashMap<&str, Point> = HashMap::new();
+    let mut port_pos_by_node: HashMap<&str, Vec<Point>> = HashMap::new();
     for node in &nodes {
         for port in &node.ports {
             port_pos_by_id.insert(port.id.as_str(), port.position);
+            port_pos_by_node
+                .entry(port.node_id.as_str())
+                .or_default()
+                .push(port.position);
         }
     }
 
     let mut edges = Vec::with_capacity(graph.edges.len());
     for (index, edge) in graph.edges.iter().enumerate() {
         let elk_edge = &elk_graph.edges[index];
-        let points = if let Some(&section_id) = elk_edge.sections.first() {
+        let raw_points = if let Some(&section_id) = elk_edge.sections.first() {
             let section = &elk_graph.edge_sections[section_id.index()];
             section_points(section)
         } else {
-            fallback_edge_points(elk_graph, elk_edge)
+            fallback_edge_points(elk_graph, elk_edge, &node_absolute_origins)
         };
+        let points = if let (Some(src_port), Some(first)) =
+            (edge.source_port.as_deref(), raw_points.first().copied())
+        {
+            let normalized = normalize_port_id(src_port);
+            if let Some(expected) = port_pos_by_id
+                .get(src_port)
+                .or_else(|| port_pos_by_id.get(normalized.as_str()))
+                .copied()
+            {
+                let dx = expected.x - first.x;
+                let dy = expected.y - first.y;
+                raw_points
+                    .into_iter()
+                    .map(|p| Point {
+                        x: p.x + dx,
+                        y: p.y + dy,
+                    })
+                    .collect()
+            } else {
+                raw_points
+            }
+        } else {
+            raw_points
+        };
+        let mut points = points;
+        let src_anchor = if let Some(src_port) = edge.source_port.as_deref() {
+            let normalized = normalize_port_id(src_port);
+            if let Some(src) = port_pos_by_id
+                .get(src_port)
+                .or_else(|| port_pos_by_id.get(normalized.as_str()))
+                .copied()
+            {
+                points = snap_polyline_start(points, src);
+                Some(src)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+        let tgt_anchor = if let Some(tgt_port) = edge.target_port.as_deref() {
+            let normalized = normalize_port_id(tgt_port);
+            if let Some(tgt) = port_pos_by_id
+                .get(tgt_port)
+                .or_else(|| port_pos_by_id.get(normalized.as_str()))
+                .copied()
+            {
+                points = snap_polyline_end(points, tgt);
+                Some(tgt)
+            } else if let Some(last) = points.last().copied() {
+                if let Some(candidate_ports) = port_pos_by_node.get(edge.target_node.as_str()) {
+                    if let Some(tgt) = candidate_ports.iter().copied().min_by(|a, b| {
+                        let da = (a.x - last.x).powi(2) + (a.y - last.y).powi(2);
+                        let db = (b.x - last.x).powi(2) + (b.y - last.y).powi(2);
+                        da.partial_cmp(&db).unwrap_or(std::cmp::Ordering::Equal)
+                    }) {
+                        points = snap_polyline_end(points, tgt);
+                        Some(tgt)
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+        if let (Some(src), Some(tgt)) = (src_anchor, tgt_anchor) {
+            points = orthogonal_between(src, tgt);
+        }
         if debug_enabled && points.len() >= 2 {
             if let Some(src_port) = edge.source_port.as_deref() {
                 let normalized = normalize_port_id(src_port);
@@ -478,28 +579,21 @@ fn map_layout_back(
     })
 }
 
-fn map_geometry_to_bounds(g: ShapeGeometry) -> Bounds {
-    Bounds {
-        x: g.x,
-        y: g.y,
-        width: g.width,
-        height: g.height,
-    }
-}
-
 fn map_port_layout(
     node_id: &str,
     port: &DiagramPort,
     elk_graph: &ElkGraph,
     port_ids: &HashMap<String, PortId>,
+    offset_x: f32,
+    offset_y: f32,
 ) -> Result<PortLayout> {
     let elk_port_id = *port_ids
         .get(port.id.as_str())
         .ok_or_else(|| crate::layout::DiagramError::MissingPort(port.id.clone()))?;
     let elk_port = &elk_graph.ports[elk_port_id.index()];
     let g = &elk_port.geometry;
-    let center_x = g.x + g.width / 2.0;
-    let center_y = g.y + g.height / 2.0;
+    let center_x = g.x + g.width / 2.0 + offset_x;
+    let center_y = g.y + g.height / 2.0 + offset_y;
     Ok(PortLayout {
         id: port.id.clone(),
         name: port.name.clone(),
@@ -507,6 +601,44 @@ fn map_port_layout(
         side: port.side.clone(),
         position: Point { x: center_x, y: center_y },
     })
+}
+
+fn compute_absolute_node_origins(elk_graph: &ElkGraph) -> Vec<Point> {
+    fn compute_for(
+        node_id: NodeId,
+        elk_graph: &ElkGraph,
+        cache: &mut [Option<Point>],
+    ) -> Point {
+        if let Some(point) = cache[node_id.index()] {
+            return point;
+        }
+        let node = &elk_graph.nodes[node_id.index()];
+        let local = Point {
+            x: node.geometry.x,
+            y: node.geometry.y,
+        };
+        let absolute = match node.parent {
+            Some(parent_id) if parent_id != elk_graph.root => {
+                let parent = compute_for(parent_id, elk_graph, cache);
+                Point {
+                    x: parent.x + local.x,
+                    y: parent.y + local.y,
+                }
+            }
+            _ => local,
+        };
+        cache[node_id.index()] = Some(absolute);
+        absolute
+    }
+
+    let mut cache = vec![None; elk_graph.nodes.len()];
+    for node in &elk_graph.nodes {
+        let _ = compute_for(node.id, elk_graph, &mut cache);
+    }
+    cache
+        .into_iter()
+        .map(|point| point.unwrap_or(Point { x: 0.0, y: 0.0 }))
+        .collect()
 }
 
 fn section_points(section: &elk_graph::EdgeSection) -> Vec<Point> {
@@ -517,9 +649,19 @@ fn section_points(section: &elk_graph::EdgeSection) -> Vec<Point> {
     points
 }
 
-fn fallback_edge_points(elk_graph: &ElkGraph, edge: &elk_graph::Edge) -> Vec<Point> {
-    let src = edge.sources.first().map(|e| endpoint_center(elk_graph, *e));
-    let tgt = edge.targets.first().map(|e| endpoint_center(elk_graph, *e));
+fn fallback_edge_points(
+    elk_graph: &ElkGraph,
+    edge: &elk_graph::Edge,
+    node_absolute_origins: &[Point],
+) -> Vec<Point> {
+    let src = edge
+        .sources
+        .first()
+        .map(|e| endpoint_center(elk_graph, *e, node_absolute_origins));
+    let tgt = edge
+        .targets
+        .first()
+        .map(|e| endpoint_center(elk_graph, *e, node_absolute_origins));
     match (src, tgt) {
         (Some(s), Some(t)) => vec![s, t],
         (Some(s), None) => vec![s],
@@ -528,20 +670,25 @@ fn fallback_edge_points(elk_graph: &ElkGraph, edge: &elk_graph::Edge) -> Vec<Poi
     }
 }
 
-fn endpoint_center(elk_graph: &ElkGraph, endpoint: EdgeEndpoint) -> Point {
+fn endpoint_center(
+    elk_graph: &ElkGraph,
+    endpoint: EdgeEndpoint,
+    node_absolute_origins: &[Point],
+) -> Point {
     if let Some(port_id) = endpoint.port {
         let p = &elk_graph.ports[port_id.index()];
+        let n = node_absolute_origins[p.node.index()];
         let g = &p.geometry;
         return Point {
-            x: g.x + g.width / 2.0,
-            y: g.y + g.height / 2.0,
+            x: n.x + g.x + g.width / 2.0,
+            y: n.y + g.y + g.height / 2.0,
         };
     }
-    let n = &elk_graph.nodes[endpoint.node.index()];
-    let g = &n.geometry;
+    let origin = node_absolute_origins[endpoint.node.index()];
+    let g = &elk_graph.nodes[endpoint.node.index()].geometry;
     Point {
-        x: g.x + g.width / 2.0,
-        y: g.y + g.height / 2.0,
+        x: origin.x + g.width / 2.0,
+        y: origin.y + g.height / 2.0,
     }
 }
 
@@ -550,6 +697,64 @@ fn map_point(point: ElkPoint) -> Point {
         x: point.x,
         y: point.y,
     }
+}
+
+fn snap_polyline_start(mut points: Vec<Point>, start: Point) -> Vec<Point> {
+    if points.is_empty() {
+        return vec![start];
+    }
+    points[0] = start;
+    if points.len() >= 2 {
+        let next = points[1];
+        if (next.x - start.x).abs() > f32::EPSILON && (next.y - start.y).abs() > f32::EPSILON {
+            points.insert(
+                1,
+                Point {
+                    x: start.x,
+                    y: next.y,
+                },
+            );
+        }
+    }
+    points
+}
+
+fn snap_polyline_end(mut points: Vec<Point>, end: Point) -> Vec<Point> {
+    if points.is_empty() {
+        return vec![end];
+    }
+    let last_index = points.len() - 1;
+    points[last_index] = end;
+    if points.len() >= 2 {
+        let prev_index = points.len() - 2;
+        let prev = points[prev_index];
+        if (prev.x - end.x).abs() > f32::EPSILON && (prev.y - end.y).abs() > f32::EPSILON {
+            points.insert(
+                last_index,
+                Point {
+                    x: prev.x,
+                    y: end.y,
+                },
+            );
+        }
+    }
+    points
+}
+
+fn orthogonal_between(start: Point, end: Point) -> Vec<Point> {
+    if (start.x - end.x).abs() <= f32::EPSILON || (start.y - end.y).abs() <= f32::EPSILON {
+        return vec![start, end];
+    }
+    let mid_x = (start.x + end.x) / 2.0;
+    vec![
+        start,
+        Point {
+            x: mid_x,
+            y: start.y,
+        },
+        Point { x: mid_x, y: end.y },
+        end,
+    ]
 }
 
 fn canvas_bounds(nodes: &[NodeLayout], edges: &[EdgeLayout], fallback: ElkRect) -> Bounds {

@@ -49,6 +49,63 @@ fn assert_children_non_overlapping(g: &elk_graph::ElkGraph) {
     }
 }
 
+fn assert_children_within_parent_bounds(g: &elk_graph::ElkGraph) {
+    fn absolute_origin(
+        g: &elk_graph::ElkGraph,
+        node_id: elk_graph::NodeId,
+        cache: &mut [Option<(f32, f32)>],
+    ) -> (f32, f32) {
+        if let Some(point) = cache[node_id.index()] {
+            return point;
+        }
+        let node = &g.nodes[node_id.index()];
+        let local = (node.geometry.x, node.geometry.y);
+        let absolute = match node.parent {
+            Some(parent_id) if parent_id != g.root => {
+                let parent = absolute_origin(g, parent_id, cache);
+                (parent.0 + local.0, parent.1 + local.1)
+            }
+            _ => local,
+        };
+        cache[node_id.index()] = Some(absolute);
+        absolute
+    }
+
+    let mut cache = vec![None; g.nodes.len()];
+    for parent in &g.nodes {
+        if parent.id == g.root {
+            continue;
+        }
+        let (parent_x, parent_y) = absolute_origin(g, parent.id, &mut cache);
+        let px0 = parent_x;
+        let py0 = parent_y;
+        let px1 = px0 + parent.geometry.width;
+        let py1 = py0 + parent.geometry.height;
+        for child_id in &parent.children {
+            let child = &g.nodes[child_id.index()];
+            let (child_x, child_y) = absolute_origin(g, child.id, &mut cache);
+            let cx0 = child_x;
+            let cy0 = child_y;
+            let cx1 = cx0 + child.geometry.width;
+            let cy1 = cy0 + child.geometry.height;
+            assert!(
+                cx0 >= px0 - 1e-3 && cy0 >= py0 - 1e-3 && cx1 <= px1 + 1e-3 && cy1 <= py1 + 1e-3,
+                "child {:?} lies outside parent {:?}: parent=({}, {}, {}, {}), child=({}, {}, {}, {})",
+                child.id,
+                parent.id,
+                px0,
+                py0,
+                px1,
+                py1,
+                cx0,
+                cy0,
+                cx1,
+                cy1
+            );
+        }
+    }
+}
+
 #[test]
 fn view_profile_defaults_are_applied() {
     let general = LayoutOptions::default().with_view_profile(ViewProfile::GeneralView);
@@ -234,6 +291,7 @@ fn interconnection_real_corpus_invariants_hold() {
 
         assert_finite_geometry(&g);
         assert_children_non_overlapping(&g);
+        assert_children_within_parent_bounds(&g);
         let max_bends = g
             .edges
             .iter()
