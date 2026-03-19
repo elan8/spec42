@@ -42,6 +42,21 @@
         "fanout_and_fanin",
         "nested_boundary_anchors"
       ]
+    },
+    {
+      "name": "interconnection_real_full_drone_like",
+      "complexity": "dense",
+      "source": "drone_like_regression",
+      "layout_options": {
+        "view_profile": "InterconnectionView",
+        "algorithm": "org.eclipse.elk.layered",
+        "routing_backend": "libavoid"
+      },
+      "tricky_constructs": [
+        "multi_level_nested_compounds",
+        "power_bus_fanout",
+        "cross_subtree_telemetry_and_video_links"
+      ]
     }
   ]
 }

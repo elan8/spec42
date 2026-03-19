@@ -7,6 +7,7 @@ This note captures the current Java-vs-Rust re-baseline for dense SysML Intercon
 - `interconnection_real_small`
 - `interconnection_real_medium`
 - `interconnection_real_dense`
+- `interconnection_real_full_drone_like`
 
 ## Delta Classes Tracked
 
@@ -24,3 +25,16 @@ This note captures the current Java-vs-Rust re-baseline for dense SysML Intercon
 ## Remaining Risk Area
 
 - Dense visual similarity (exact lane geometry and connector aesthetics) is still partial; current gate is metric-based, not pixel-identical.
+
+## Java Port Candidates (Routing Focus)
+
+Gate prerequisite: keep `interconnection_real_full_drone_like` green on invariants, bend budgets, and deterministic route signature before/after each port.
+
+- `org.eclipse.elk.alg.layered.p5edges.OrthogonalEdgeRouter`
+  - Primary orthogonal path construction and segment shaping logic for layered.
+- `org.eclipse.elk.alg.layered.intermediate.HierarchicalPortOrthogonalEdgeRouter`
+  - Cross-hierarchy boundary routing for nested compounds and port anchoring.
+- `org.eclipse.elk.alg.layered.intermediate.OrthogonalRoutingGenerator`
+  - Additional route-chain generation behavior used by layered orthogonal stages.
+- `org.eclipse.elk.alg.layered.intermediate.HyperedgeDummyMerger` (if needed for bundled fanout behavior)
+  - Candidate for dense fanout readability and bend-complexity improvements.

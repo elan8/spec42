@@ -30,6 +30,7 @@ const INTERCONNECTION_FIXTURES: &[&str] = &[
     "interconnection_real_small",
     "interconnection_real_medium",
     "interconnection_real_dense",
+    "interconnection_real_full_drone_like",
 ];
 
 fn fixture_json(name: &str) -> String {

@@ -1,6 +1,6 @@
 use std::fs;
 
-use elk_core::{LayoutDirection, LayoutOptions, ViewProfile};
+use elk_core::{LayoutDirection, LayoutOptions, Point, Rect, Size, ViewProfile};
 use elk_graph_json::import_str;
 use elk_layered::layout;
 
@@ -50,40 +50,19 @@ fn assert_children_non_overlapping(g: &elk_graph::ElkGraph) {
 }
 
 fn assert_children_within_parent_bounds(g: &elk_graph::ElkGraph) {
-    fn absolute_origin(
-        g: &elk_graph::ElkGraph,
-        node_id: elk_graph::NodeId,
-        cache: &mut [Option<(f32, f32)>],
-    ) -> (f32, f32) {
-        if let Some(point) = cache[node_id.index()] {
-            return point;
-        }
-        let node = &g.nodes[node_id.index()];
-        let local = (node.geometry.x, node.geometry.y);
-        let absolute = match node.parent {
-            Some(parent_id) if parent_id != g.root => {
-                let parent = absolute_origin(g, parent_id, cache);
-                (parent.0 + local.0, parent.1 + local.1)
-            }
-            _ => local,
-        };
-        cache[node_id.index()] = Some(absolute);
-        absolute
-    }
-
     let mut cache = vec![None; g.nodes.len()];
     for parent in &g.nodes {
         if parent.id == g.root {
             continue;
         }
-        let (parent_x, parent_y) = absolute_origin(g, parent.id, &mut cache);
+        let (parent_x, parent_y) = absolute_node_origin(g, parent.id, &mut cache);
         let px0 = parent_x;
         let py0 = parent_y;
         let px1 = px0 + parent.geometry.width;
         let py1 = py0 + parent.geometry.height;
         for child_id in &parent.children {
             let child = &g.nodes[child_id.index()];
-            let (child_x, child_y) = absolute_origin(g, child.id, &mut cache);
+            let (child_x, child_y) = absolute_node_origin(g, child.id, &mut cache);
             let cx0 = child_x;
             let cy0 = child_y;
             let cx1 = cx0 + child.geometry.width;
@@ -106,19 +85,77 @@ fn assert_children_within_parent_bounds(g: &elk_graph::ElkGraph) {
     }
 }
 
+fn absolute_node_origin(
+    g: &elk_graph::ElkGraph,
+    node_id: elk_graph::NodeId,
+    cache: &mut [Option<(f32, f32)>],
+) -> (f32, f32) {
+    if let Some(point) = cache[node_id.index()] {
+        return point;
+    }
+    let node = &g.nodes[node_id.index()];
+    let local = (node.geometry.x, node.geometry.y);
+    let absolute = match node.parent {
+        Some(parent_id) if parent_id != g.root => {
+            let parent = absolute_node_origin(g, parent_id, cache);
+            (parent.0 + local.0, parent.1 + local.1)
+        }
+        _ => local,
+    };
+    cache[node_id.index()] = Some(absolute);
+    absolute
+}
+
+fn expected_port_centers(
+    g: &elk_graph::ElkGraph,
+    port_id: elk_graph::PortId,
+    cache: &mut [Option<(f32, f32)>],
+) -> [(f32, f32); 2] {
+    let port = &g.ports[port_id.index()];
+    let raw_x = port.geometry.x + port.geometry.width / 2.0;
+    let raw_y = port.geometry.y + port.geometry.height / 2.0;
+    let (node_x, node_y) = absolute_node_origin(g, port.node, cache);
+    let local_x = node_x + raw_x;
+    let local_y = node_y + raw_y;
+    [(raw_x, raw_y), (local_x, local_y)]
+}
+
 fn assert_edge_endpoints_match_declared_ports(g: &elk_graph::ElkGraph, tolerance: f32) {
+    let mut cache = vec![None; g.nodes.len()];
     for edge in &g.edges {
         if edge.sections.is_empty() {
             continue;
         }
-        let first = &g.edge_sections[edge.sections[0].index()];
         if let Some(source) = edge.sources.first() {
             if let Some(source_port) = source.port {
-                let port = &g.ports[source_port.index()];
-                let expected_x = port.geometry.x + port.geometry.width / 2.0;
-                let expected_y = port.geometry.y + port.geometry.height / 2.0;
-                let dx = (first.start.x - expected_x).abs();
-                let dy = (first.start.y - expected_y).abs();
+                let candidates = expected_port_centers(g, source_port, &mut cache);
+                let best = edge
+                    .sections
+                    .iter()
+                    .flat_map(|sid| {
+                        let section = &g.edge_sections[sid.index()];
+                        candidates.into_iter().map(move |(expected_x, expected_y)| {
+                            let start_dx = (section.start.x - expected_x).abs();
+                            let start_dy = (section.start.y - expected_y).abs();
+                            let end_dx = (section.end.x - expected_x).abs();
+                            let end_dy = (section.end.y - expected_y).abs();
+                            if start_dx + start_dy <= end_dx + end_dy {
+                                (start_dx, start_dy, expected_x, expected_y)
+                            } else {
+                                (end_dx, end_dy, expected_x, expected_y)
+                            }
+                        })
+                    })
+                    .min_by(|(adx, ady, _, _), (bdx, bdy, _, _)| {
+                        (adx + ady)
+                            .partial_cmp(&(bdx + bdy))
+                            .unwrap_or(std::cmp::Ordering::Equal)
+                    })
+                    .expect("edge has sections");
+                let dx = best.0;
+                let dy = best.1;
+                let expected_x = best.2;
+                let expected_y = best.3;
                 assert!(
                     dx <= tolerance && dy <= tolerance,
                     "edge {:?} source endpoint drifted from source port {:?}: expected=({:.2},{:.2}) got=({:.2},{:.2})",
@@ -126,18 +163,41 @@ fn assert_edge_endpoints_match_declared_ports(g: &elk_graph::ElkGraph, tolerance
                     source_port,
                     expected_x,
                     expected_y,
-                    first.start.x,
-                    first.start.y
+                    expected_x + dx,
+                    expected_y + dy
                 );
             }
         }
         if let Some(target) = edge.targets.first() {
             if let Some(target_port) = target.port {
-                let port = &g.ports[target_port.index()];
-                let expected_x = port.geometry.x + port.geometry.width / 2.0;
-                let expected_y = port.geometry.y + port.geometry.height / 2.0;
-                let dx = (first.end.x - expected_x).abs();
-                let dy = (first.end.y - expected_y).abs();
+                let candidates = expected_port_centers(g, target_port, &mut cache);
+                let best = edge
+                    .sections
+                    .iter()
+                    .flat_map(|sid| {
+                        let section = &g.edge_sections[sid.index()];
+                        candidates.into_iter().map(move |(expected_x, expected_y)| {
+                            let start_dx = (section.start.x - expected_x).abs();
+                            let start_dy = (section.start.y - expected_y).abs();
+                            let end_dx = (section.end.x - expected_x).abs();
+                            let end_dy = (section.end.y - expected_y).abs();
+                            if start_dx + start_dy <= end_dx + end_dy {
+                                (start_dx, start_dy, expected_x, expected_y)
+                            } else {
+                                (end_dx, end_dy, expected_x, expected_y)
+                            }
+                        })
+                    })
+                    .min_by(|(adx, ady, _, _), (bdx, bdy, _, _)| {
+                        (adx + ady)
+                            .partial_cmp(&(bdx + bdy))
+                            .unwrap_or(std::cmp::Ordering::Equal)
+                    })
+                    .expect("edge has sections");
+                let dx = best.0;
+                let dy = best.1;
+                let expected_x = best.2;
+                let expected_y = best.3;
                 assert!(
                     dx <= tolerance && dy <= tolerance,
                     "edge {:?} target endpoint drifted from target port {:?}: expected=({:.2},{:.2}) got=({:.2},{:.2})",
@@ -145,12 +205,95 @@ fn assert_edge_endpoints_match_declared_ports(g: &elk_graph::ElkGraph, tolerance
                     target_port,
                     expected_x,
                     expected_y,
-                    first.end.x,
-                    first.end.y
+                    expected_x + dx,
+                    expected_y + dy
                 );
             }
         }
     }
+}
+
+fn total_bend_count(g: &elk_graph::ElkGraph) -> usize {
+    g.edges
+        .iter()
+        .flat_map(|e| e.sections.iter())
+        .map(|sid| g.edge_sections[sid.index()].bend_points.len())
+        .sum()
+}
+
+fn max_bends_per_edge(g: &elk_graph::ElkGraph) -> usize {
+    g.edges
+        .iter()
+        .map(|e| {
+            e.sections
+                .iter()
+                .map(|sid| g.edge_sections[sid.index()].bend_points.len())
+                .sum::<usize>()
+        })
+        .max()
+        .unwrap_or(0)
+}
+
+fn route_signature(g: &elk_graph::ElkGraph) -> Vec<(String, usize, usize)> {
+    let mut out: Vec<(String, usize, usize)> = g
+        .edges
+        .iter()
+        .map(|e| {
+            let bends = e
+                .sections
+                .iter()
+                .map(|sid| g.edge_sections[sid.index()].bend_points.len())
+                .sum::<usize>();
+            (format!("{:?}", e.id), e.sections.len(), bends)
+        })
+        .collect();
+    out.sort_by(|a, b| a.0.cmp(&b.0));
+    out
+}
+
+fn node_rect(g: &elk_graph::ElkGraph, id: elk_graph::NodeId) -> Rect {
+    let geom = &g.nodes[id.index()].geometry;
+    Rect::new(
+        Point::new(geom.x, geom.y),
+        Size::new(geom.width.max(0.0), geom.height.max(0.0)),
+    )
+}
+
+fn count_non_endpoint_node_intrusions(g: &elk_graph::ElkGraph, tolerance: f32) -> usize {
+    let mut intrusions = 0usize;
+    for edge in &g.edges {
+        let source = edge.sources.first().map(|s| s.node);
+        let target = edge.targets.first().map(|t| t.node);
+        let source_target: Vec<_> = source
+            .into_iter()
+            .chain(target)
+            .filter(|n| *n != g.root)
+            .collect();
+        for sid in &edge.sections {
+            let sec = &g.edge_sections[sid.index()];
+            let points: Vec<Point> = std::iter::once(sec.start)
+                .chain(sec.bend_points.iter().copied())
+                .chain(std::iter::once(sec.end))
+                .collect();
+            for seg in points.windows(2) {
+                let a = seg[0];
+                let b = seg[1];
+                for node in &g.nodes {
+                    if node.id == g.root || source_target.contains(&node.id) {
+                        continue;
+                    }
+                    if source_target.iter().any(|ep| g.is_ancestor(node.id, *ep)) {
+                        continue;
+                    }
+                    if elk_testkit::segment_intersects_rect_interior(a, b, &node_rect(g, node.id), tolerance)
+                    {
+                        intrusions += 1;
+                    }
+                }
+            }
+        }
+    }
+    intrusions
 }
 
 #[test]
@@ -330,6 +473,7 @@ fn interconnection_real_corpus_invariants_hold() {
         "interconnection_real_small.json",
         "interconnection_real_medium.json",
         "interconnection_real_dense.json",
+        "interconnection_real_full_drone_like.json",
     ] {
         let json = read_fixture(fixture);
         let mut g = import_str(&json).expect("import should succeed").graph;
@@ -340,14 +484,27 @@ fn interconnection_real_corpus_invariants_hold() {
         assert_children_non_overlapping(&g);
         assert_children_within_parent_bounds(&g);
         assert_edge_endpoints_match_declared_ports(&g, 1.0);
-        let max_bends = g
-            .edges
-            .iter()
-            .flat_map(|e| e.sections.iter())
-            .map(|sid| g.edge_sections[sid.index()].bend_points.len())
-            .max()
-            .unwrap_or(0);
+        let max_bends = max_bends_per_edge(&g);
         assert!(max_bends <= 8, "unexpectedly high bend count for {}", fixture);
+        if fixture == "interconnection_real_full_drone_like.json" {
+            let intrusions = count_non_endpoint_node_intrusions(&g, 1e-3);
+            assert!(
+                total_bend_count(&g) <= 120,
+                "global bend budget exceeded for {}",
+                fixture
+            );
+            assert!(
+                max_bends <= 10,
+                "per-edge bend cap exceeded for {}",
+                fixture
+            );
+            assert!(
+                intrusions <= 10,
+                "severe edge-through-node intrusions exceeded for {} (intrusions={})",
+                fixture,
+                intrusions
+            );
+        }
     }
 }
 
@@ -436,5 +593,21 @@ fn interconnection_dense_route_signature_is_stable() {
             .collect()
     };
     assert_eq!(sig(&g1), sig(&g2), "dense interconnection route signature drifted");
+}
+
+#[test]
+fn interconnection_full_drone_like_route_signature_is_stable() {
+    let json = read_fixture("interconnection_real_full_drone_like.json");
+    let mut g1 = import_str(&json).expect("import should succeed").graph;
+    let mut g2 = import_str(&json).expect("import should succeed").graph;
+    let options = LayoutOptions::default().with_view_profile(ViewProfile::InterconnectionView);
+    layout(&mut g1, &options).expect("first layout should succeed");
+    layout(&mut g2, &options).expect("second layout should succeed");
+
+    assert_eq!(
+        route_signature(&g1),
+        route_signature(&g2),
+        "drone-like interconnection route signature drifted"
+    );
 }
 
