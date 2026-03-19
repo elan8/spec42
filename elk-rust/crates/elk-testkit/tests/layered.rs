@@ -106,6 +106,53 @@ fn assert_children_within_parent_bounds(g: &elk_graph::ElkGraph) {
     }
 }
 
+fn assert_edge_endpoints_match_declared_ports(g: &elk_graph::ElkGraph, tolerance: f32) {
+    for edge in &g.edges {
+        if edge.sections.is_empty() {
+            continue;
+        }
+        let first = &g.edge_sections[edge.sections[0].index()];
+        if let Some(source) = edge.sources.first() {
+            if let Some(source_port) = source.port {
+                let port = &g.ports[source_port.index()];
+                let expected_x = port.geometry.x + port.geometry.width / 2.0;
+                let expected_y = port.geometry.y + port.geometry.height / 2.0;
+                let dx = (first.start.x - expected_x).abs();
+                let dy = (first.start.y - expected_y).abs();
+                assert!(
+                    dx <= tolerance && dy <= tolerance,
+                    "edge {:?} source endpoint drifted from source port {:?}: expected=({:.2},{:.2}) got=({:.2},{:.2})",
+                    edge.id,
+                    source_port,
+                    expected_x,
+                    expected_y,
+                    first.start.x,
+                    first.start.y
+                );
+            }
+        }
+        if let Some(target) = edge.targets.first() {
+            if let Some(target_port) = target.port {
+                let port = &g.ports[target_port.index()];
+                let expected_x = port.geometry.x + port.geometry.width / 2.0;
+                let expected_y = port.geometry.y + port.geometry.height / 2.0;
+                let dx = (first.end.x - expected_x).abs();
+                let dy = (first.end.y - expected_y).abs();
+                assert!(
+                    dx <= tolerance && dy <= tolerance,
+                    "edge {:?} target endpoint drifted from target port {:?}: expected=({:.2},{:.2}) got=({:.2},{:.2})",
+                    edge.id,
+                    target_port,
+                    expected_x,
+                    expected_y,
+                    first.end.x,
+                    first.end.y
+                );
+            }
+        }
+    }
+}
+
 #[test]
 fn view_profile_defaults_are_applied() {
     let general = LayoutOptions::default().with_view_profile(ViewProfile::GeneralView);
@@ -292,6 +339,7 @@ fn interconnection_real_corpus_invariants_hold() {
         assert_finite_geometry(&g);
         assert_children_non_overlapping(&g);
         assert_children_within_parent_bounds(&g);
+        assert_edge_endpoints_match_declared_ports(&g, 1.0);
         let max_bends = g
             .edges
             .iter()

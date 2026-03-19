@@ -423,14 +423,9 @@ fn map_layout_back(
     // (e.g. hierarchical ports not restored, or missing subtree edge translation).
     let debug_enabled = std::env::var("SPEC42_ELK_DEBUG").as_deref() == Ok("1");
     let mut port_pos_by_id: HashMap<&str, Point> = HashMap::new();
-    let mut port_pos_by_node: HashMap<&str, Vec<Point>> = HashMap::new();
     for node in &nodes {
         for port in &node.ports {
             port_pos_by_id.insert(port.id.as_str(), port.position);
-            port_pos_by_node
-                .entry(port.node_id.as_str())
-                .or_default()
-                .push(port.position);
         }
     }
 
@@ -467,55 +462,7 @@ fn map_layout_back(
         } else {
             raw_points
         };
-        let mut points = points;
-        let src_anchor = if let Some(src_port) = edge.source_port.as_deref() {
-            let normalized = normalize_port_id(src_port);
-            if let Some(src) = port_pos_by_id
-                .get(src_port)
-                .or_else(|| port_pos_by_id.get(normalized.as_str()))
-                .copied()
-            {
-                points = snap_polyline_start(points, src);
-                Some(src)
-            } else {
-                None
-            }
-        } else {
-            None
-        };
-        let tgt_anchor = if let Some(tgt_port) = edge.target_port.as_deref() {
-            let normalized = normalize_port_id(tgt_port);
-            if let Some(tgt) = port_pos_by_id
-                .get(tgt_port)
-                .or_else(|| port_pos_by_id.get(normalized.as_str()))
-                .copied()
-            {
-                points = snap_polyline_end(points, tgt);
-                Some(tgt)
-            } else if let Some(last) = points.last().copied() {
-                if let Some(candidate_ports) = port_pos_by_node.get(edge.target_node.as_str()) {
-                    if let Some(tgt) = candidate_ports.iter().copied().min_by(|a, b| {
-                        let da = (a.x - last.x).powi(2) + (a.y - last.y).powi(2);
-                        let db = (b.x - last.x).powi(2) + (b.y - last.y).powi(2);
-                        da.partial_cmp(&db).unwrap_or(std::cmp::Ordering::Equal)
-                    }) {
-                        points = snap_polyline_end(points, tgt);
-                        Some(tgt)
-                    } else {
-                        None
-                    }
-                } else {
-                    None
-                }
-            } else {
-                None
-            }
-        } else {
-            None
-        };
-        if let (Some(src), Some(tgt)) = (src_anchor, tgt_anchor) {
-            points = orthogonal_between(src, tgt);
-        }
+        let points = points;
         if debug_enabled && points.len() >= 2 {
             if let Some(src_port) = edge.source_port.as_deref() {
                 let normalized = normalize_port_id(src_port);
@@ -699,63 +646,6 @@ fn map_point(point: ElkPoint) -> Point {
     }
 }
 
-fn snap_polyline_start(mut points: Vec<Point>, start: Point) -> Vec<Point> {
-    if points.is_empty() {
-        return vec![start];
-    }
-    points[0] = start;
-    if points.len() >= 2 {
-        let next = points[1];
-        if (next.x - start.x).abs() > f32::EPSILON && (next.y - start.y).abs() > f32::EPSILON {
-            points.insert(
-                1,
-                Point {
-                    x: start.x,
-                    y: next.y,
-                },
-            );
-        }
-    }
-    points
-}
-
-fn snap_polyline_end(mut points: Vec<Point>, end: Point) -> Vec<Point> {
-    if points.is_empty() {
-        return vec![end];
-    }
-    let last_index = points.len() - 1;
-    points[last_index] = end;
-    if points.len() >= 2 {
-        let prev_index = points.len() - 2;
-        let prev = points[prev_index];
-        if (prev.x - end.x).abs() > f32::EPSILON && (prev.y - end.y).abs() > f32::EPSILON {
-            points.insert(
-                last_index,
-                Point {
-                    x: prev.x,
-                    y: end.y,
-                },
-            );
-        }
-    }
-    points
-}
-
-fn orthogonal_between(start: Point, end: Point) -> Vec<Point> {
-    if (start.x - end.x).abs() <= f32::EPSILON || (start.y - end.y).abs() <= f32::EPSILON {
-        return vec![start, end];
-    }
-    let mid_x = (start.x + end.x) / 2.0;
-    vec![
-        start,
-        Point {
-            x: mid_x,
-            y: start.y,
-        },
-        Point { x: mid_x, y: end.y },
-        end,
-    ]
-}
 
 fn canvas_bounds(nodes: &[NodeLayout], edges: &[EdgeLayout], fallback: ElkRect) -> Bounds {
     let mut max_x = fallback.origin.x + fallback.size.width;

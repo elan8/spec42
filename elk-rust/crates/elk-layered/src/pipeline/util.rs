@@ -147,9 +147,10 @@ pub(crate) fn node_abs_center(graph: &ElkGraph, node: NodeId) -> Point {
 
 pub(crate) fn port_abs_center(graph: &ElkGraph, port: PortId) -> Point {
     let p = &graph.ports[port.index()];
+    let parent_origin = node_abs_origin(graph, p.node);
     Point::new(
-        p.geometry.x + p.geometry.width / 2.0,
-        p.geometry.y + p.geometry.height / 2.0,
+        parent_origin.x + p.geometry.x + p.geometry.width / 2.0,
+        parent_origin.y + p.geometry.y + p.geometry.height / 2.0,
     )
 }
 
