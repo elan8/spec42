@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use elk_core::{EdgeRouting, LayoutOptions, LayoutStats, Point, PortSide, Rect, Size};
 use elk_graph::{ElkGraph, EdgeId, NodeId, PortId};
@@ -63,14 +63,22 @@ pub(crate) fn export_to_graph(
         }
     }
 
+    let edge_lane_by_index = edge_lane_by_ir_index(ir);
+    let keep_unnecessary_bends = keep_unnecessary_bends(graph);
+
     if !use_libavoid || routed == 0 {
         for edge in &ir.edges {
             if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
                 continue;
             }
-            let start = endpoint_abs_center(graph, edge.source);
-            let end = endpoint_abs_center(graph, edge.target);
+            let mut start = endpoint_abs_center(graph, edge.source);
+            let mut end = endpoint_abs_center(graph, edge.target);
+            apply_hierarchy_boundary_anchors(graph, edge, &mut start, &mut end);
             let routing = edge_routing_for_edge(graph, edge, options);
+            let lane = edge_lane_by_index
+                .get(&edge.original_edge.index())
+                .copied()
+                .unwrap_or(0);
 
             let mut bends = Vec::new();
             if routing == EdgeRouting::Orthogonal
@@ -89,10 +97,11 @@ pub(crate) fn export_to_graph(
                     bends.push(Point::new(entry.x, exit.y));
                     bends.push(entry);
                 } else {
-                    bends.push(Point::new(end.x, start.y));
+                    bends.extend(build_lane_orthogonal_bends(start, end, lane, options));
                 }
             }
-            bends = dedup_points(bends);
+            bends = normalize_bends(bends, keep_unnecessary_bends);
+            bends = correct_terminal_slants(start, end, bends);
 
             let edge_idx = edge.original_edge.index();
             graph.edges[edge_idx].sections.clear();
@@ -241,5 +250,136 @@ fn place_edge_labels(
         l.geometry.x = mid.x - size.width / 2.0;
         l.geometry.y = mid.y - size.height - spacing;
     }
+}
+
+fn edge_lane_by_ir_index(ir: &LayeredIr) -> BTreeMap<usize, i32> {
+    let mut lane_sum: BTreeMap<usize, (i32, i32)> = BTreeMap::new();
+    for ne in &ir.normalized_edges {
+        let entry = lane_sum.entry(ne.original_edge.index()).or_insert((0, 0));
+        entry.0 += ne.lane;
+        entry.1 += 1;
+    }
+    lane_sum
+        .into_iter()
+        .map(|(edge_idx, (sum, cnt))| (edge_idx, if cnt == 0 { 0 } else { sum / cnt }))
+        .collect()
+}
+
+fn build_lane_orthogonal_bends(
+    start: Point,
+    end: Point,
+    lane: i32,
+    options: &LayoutOptions,
+) -> Vec<Point> {
+    let lane_offset = lane as f32 * options.layered.spacing.segment_spacing.max(8.0);
+    let dx = (end.x - start.x).abs();
+    let dy = (end.y - start.y).abs();
+    if dx >= dy {
+        let mid_x = (start.x + end.x) * 0.5 + lane_offset;
+        vec![Point::new(mid_x, start.y), Point::new(mid_x, end.y)]
+    } else {
+        let mid_y = (start.y + end.y) * 0.5 + lane_offset;
+        vec![Point::new(start.x, mid_y), Point::new(end.x, mid_y)]
+    }
+}
+
+fn normalize_bends(mut bends: Vec<Point>, keep_unnecessary_bends: bool) -> Vec<Point> {
+    bends = dedup_points(bends);
+    if keep_unnecessary_bends {
+        return bends;
+    }
+    if bends.len() <= 1 {
+        return bends;
+    }
+    let mut out = Vec::with_capacity(bends.len());
+    for (i, p) in bends.iter().enumerate() {
+        if i == 0 || i + 1 == bends.len() {
+            out.push(*p);
+            continue;
+        }
+        let prev = bends[i - 1];
+        let next = bends[i + 1];
+        let same_x = (prev.x - p.x).abs() <= f32::EPSILON && (p.x - next.x).abs() <= f32::EPSILON;
+        let same_y = (prev.y - p.y).abs() <= f32::EPSILON && (p.y - next.y).abs() <= f32::EPSILON;
+        if !(same_x || same_y) {
+            out.push(*p);
+        }
+    }
+    dedup_points(out)
+}
+
+fn keep_unnecessary_bends(graph: &ElkGraph) -> bool {
+    let by_key = elk_alg_common::options::casefold_map(&graph.properties);
+    for key in [
+        "elk.layered.unnecessarybendpoints",
+        "org.eclipse.elk.layered.unnecessaryBendpoints",
+    ] {
+        if let Some(v) = by_key.get(&key.to_ascii_lowercase()) {
+            match v {
+                elk_graph::PropertyValue::Bool(b) => return *b,
+                elk_graph::PropertyValue::String(s) => {
+                    let t = s.trim().to_ascii_lowercase();
+                    if t == "true" {
+                        return true;
+                    }
+                    if t == "false" {
+                        return false;
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+    false
+}
+
+fn apply_hierarchy_boundary_anchors(
+    graph: &ElkGraph,
+    edge: &IrEdge,
+    start: &mut Point,
+    end: &mut Point,
+) {
+    // For cross-hierarchy edges without explicit ports, anchor at the container boundary
+    // nearest to the opposite endpoint, mirroring Java layered's boundary-aware behavior.
+    if edge.source.port.is_none() && edge.source.node != edge.effective_source {
+        *start = boundary_anchor_towards(graph, edge.effective_source, *end);
+    }
+    if edge.target.port.is_none() && edge.target.node != edge.effective_target {
+        *end = boundary_anchor_towards(graph, edge.effective_target, *start);
+    }
+}
+
+fn boundary_anchor_towards(graph: &ElkGraph, node: NodeId, toward: Point) -> Point {
+    let r = node_rect(graph, node);
+    let center = Point::new(r.origin.x + r.size.width * 0.5, r.origin.y + r.size.height * 0.5);
+    let dx = toward.x - center.x;
+    let dy = toward.y - center.y;
+    if dx.abs() >= dy.abs() {
+        if dx >= 0.0 {
+            Point::new(r.max_x(), center.y)
+        } else {
+            Point::new(r.origin.x, center.y)
+        }
+    } else if dy >= 0.0 {
+        Point::new(center.x, r.max_y())
+    } else {
+        Point::new(center.x, r.origin.y)
+    }
+}
+
+fn correct_terminal_slants(start: Point, end: Point, bends: Vec<Point>) -> Vec<Point> {
+    if bends.is_empty() {
+        return bends;
+    }
+    let mut out = bends;
+    let first = out[0];
+    if (first.x - start.x).abs() > f32::EPSILON && (first.y - start.y).abs() > f32::EPSILON {
+        out.insert(0, Point::new(first.x, start.y));
+    }
+    let last = *out.last().unwrap_or(&end);
+    if (last.x - end.x).abs() > f32::EPSILON && (last.y - end.y).abs() > f32::EPSILON {
+        out.push(Point::new(last.x, end.y));
+    }
+    dedup_points(out)
 }
 

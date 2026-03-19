@@ -179,6 +179,18 @@ pub(crate) fn apply_layout_from_props(props: &PropertyBag, out: &mut ElementLayo
             out.model_order = Some(u);
         }
     }
+    if let Some(value) = find_value(
+        &by_key,
+        &[
+            "elk.edge.bundle",
+            "org.eclipse.elk.edge.bundle",
+            "elk.layered.edgebundle",
+        ],
+    ) {
+        if let Some(u) = parse_usize(value) {
+            out.edge_bundle_key = Some(u as u32);
+        }
+    }
 }
 
 fn find_value<'a>(

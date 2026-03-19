@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use elk_core::{LayoutDirection, LayoutOptions, NodeAlignment, Point, Rect, Size};
 
 use crate::ir::{IrNodeId, IrNodeKind, LayeredIr};
+use crate::pipeline::orthogonal_routing_generator::{HyperEdgeSegment, assign_routing_slots};
 use crate::pipeline::util::{
     major_size, minor_size, node_minor_center, node_minor_start, placeholder_padding,
     set_node_minor_start,
@@ -466,6 +467,59 @@ pub(crate) fn assign_lanes(ir: &mut LayeredIr, options: &LayoutOptions) {
                 for &edge_index in bundle {
                     ir.normalized_edges[edge_index].lane = lane;
                 }
+            }
+        }
+    }
+
+    // Java-like refinement for orthogonal routing: use slot assignment with
+    // conflict/crossing heuristics and deterministic cycle handling.
+    refine_lanes_with_orthogonal_slots(ir, options);
+}
+
+fn refine_lanes_with_orthogonal_slots(ir: &mut LayeredIr, options: &LayoutOptions) {
+    let mut groups: BTreeMap<usize, Vec<usize>> = BTreeMap::new();
+    for (idx, edge) in ir.normalized_edges.iter().enumerate() {
+        let from_layer = ir.nodes[edge.from].layer;
+        let to_layer = ir.nodes[edge.to].layer;
+        if from_layer == to_layer {
+            continue;
+        }
+        groups.entry(from_layer.min(to_layer)).or_default().push(idx);
+    }
+
+    for indices in groups.values() {
+        if indices.len() <= 1 {
+            continue;
+        }
+        let mut segments = Vec::with_capacity(indices.len());
+        for (seg_id, &edge_idx) in indices.iter().enumerate() {
+            let edge = &ir.normalized_edges[edge_idx];
+            let from_center = node_minor_center(ir, edge.from, options.layered.direction);
+            let to_center = node_minor_center(ir, edge.to, options.layered.direction);
+            let mut incoming = vec![from_center];
+            let mut outgoing = vec![to_center];
+            incoming.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+            outgoing.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+            segments.push(HyperEdgeSegment {
+                id: seg_id,
+                start_coordinate: from_center,
+                end_coordinate: to_center,
+                incoming_connection_coordinates: incoming,
+                outgoing_connection_coordinates: outgoing,
+                routing_slot: 0,
+                in_weight: 0,
+                out_weight: 0,
+                incoming: Vec::new(),
+                outgoing: Vec::new(),
+                split_partner: None,
+                split_by: None,
+                mark: 0,
+            });
+        }
+        let slots = assign_routing_slots(segments, options.layered.spacing.edge_spacing.max(1.0));
+        for (seg_id, &edge_idx) in indices.iter().enumerate() {
+            if let Some(slot) = slots.get(seg_id) {
+                ir.normalized_edges[edge_idx].lane = *slot;
             }
         }
     }

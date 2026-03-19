@@ -363,6 +363,15 @@ pub fn default_registry() -> OptionRegistry {
         doc: "Layered routing backend: default (simple) or libavoid.",
     });
     reg.register(OptionMeta {
+        id: OptionId("elk.layered.unnecessarybendpoints".to_string()),
+        option_type: OptionType::Bool,
+        default_value: None,
+        allowed_scopes: [OptionScope::Graph].into_iter().collect(),
+        aliases: vec!["org.eclipse.elk.layered.unnecessaryBendpoints".to_string()],
+        deprecated_aliases: Vec::new(),
+        doc: "Keep unnecessary bend points after long-edge join-like simplification.",
+    });
+    reg.register(OptionMeta {
         id: OptionId("elk.portconstraints".to_string()),
         option_type: OptionType::String,
         default_value: None,

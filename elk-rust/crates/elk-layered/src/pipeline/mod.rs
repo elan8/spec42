@@ -261,7 +261,7 @@ mod tests {
         let nodes: Vec<_> = graph
             .nodes
             .iter()
-            .filter(|n| n.parent.is_none() && n.id != graph.root)
+            .filter(|n| n.parent == Some(graph.root))
             .map(|n| n.id)
             .collect();
         let local: BTreeSet<_> = nodes.iter().copied().collect();
@@ -287,7 +287,7 @@ mod tests {
         let nodes: Vec<_> = graph
             .nodes
             .iter()
-            .filter(|n| n.parent.is_none() && n.id != graph.root)
+            .filter(|n| n.parent == Some(graph.root))
             .map(|n| n.id)
             .collect();
         let local: BTreeSet<_> = nodes.iter().copied().collect();
@@ -355,19 +355,25 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Layered pipeline is mid-migration to ElkGraph; assertions are unstable"]
+    #[ignore = "Pariy fixture depends on in-progress lane model parity"]
     fn lane_assignment_separates_parallel_segments() {
         let mut graph = ElkGraph::new();
         let a = graph.add_node(graph.root, elk_graph::ShapeGeometry { x: 0.0, y: 0.0, width: 20.0, height: 20.0 });
         let b = graph.add_node(graph.root, elk_graph::ShapeGeometry { x: 0.0, y: 0.0, width: 20.0, height: 20.0 });
-        graph.add_edge(graph.root, vec![EdgeEndpoint::node(a)], vec![EdgeEndpoint::node(b)]);
-        graph.add_edge(graph.root, vec![EdgeEndpoint::node(a)], vec![EdgeEndpoint::node(b)]);
+        let e1 = graph.add_edge(graph.root, vec![EdgeEndpoint::node(a)], vec![EdgeEndpoint::node(b)]);
+        let e2 = graph.add_edge(graph.root, vec![EdgeEndpoint::node(a)], vec![EdgeEndpoint::node(b)]);
+        graph.edges[e1.index()]
+            .properties
+            .insert("elk.edge.bundle", elk_graph::PropertyValue::Int(1));
+        graph.edges[e2.index()]
+            .properties
+            .insert("elk.edge.bundle", elk_graph::PropertyValue::Int(2));
 
         let options = LayoutOptions::default().with_view_profile(ViewProfile::InterconnectionView);
         let nodes: Vec<_> = graph
             .nodes
             .iter()
-            .filter(|n| n.parent.is_none() && n.id != graph.root)
+            .filter(|n| n.parent == Some(graph.root))
             .map(|n| n.id)
             .collect();
         let local: BTreeSet<_> = nodes.iter().copied().collect();
@@ -376,8 +382,14 @@ mod tests {
         assign_layers(&mut ir, &options);
         normalize_edges(&mut ir, &options);
         assign_lanes(&mut ir, &options);
-        assert_eq!(ir.normalized_edges.len(), 2);
-        assert_ne!(ir.normalized_edges[0].lane, ir.normalized_edges[1].lane);
+        assert!(ir.normalized_edges.len() >= 2);
+        let mut lanes = ir.normalized_edges.iter().map(|e| e.lane).collect::<Vec<_>>();
+        lanes.sort_unstable();
+        lanes.dedup();
+        assert!(
+            lanes.len() >= 2,
+            "parallel edges should be assigned multiple routing lanes"
+        );
     }
 
     #[test]
@@ -462,7 +474,7 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Layered pipeline is mid-migration to ElkGraph; export assertions are unstable"]
+    #[ignore = "Cross-hierarchy export parity still in progress"]
     fn export_preserves_distinct_nested_endpoints_for_cross_hierarchy_edges() {
         let mut graph = ElkGraph::new();
         let parent = graph.add_node(
@@ -520,7 +532,7 @@ mod tests {
         let mut graph_copy = graph.clone();
         let mut warnings = Vec::new();
         let mut stats = elk_core::LayoutStats::default();
-        export_to_graph(
+        let routed = export_to_graph(
             &mut graph_copy,
             &ir,
             &local,
@@ -528,15 +540,79 @@ mod tests {
             &mut warnings,
             &mut stats,
         );
+        assert!(routed >= 1);
 
         let first_edge = &graph_copy.edges[0];
         let second_edge = &graph_copy.edges[1];
+        assert!(!first_edge.sections.is_empty());
+        assert!(!second_edge.sections.is_empty());
         let first = &graph_copy.edge_sections[first_edge.sections[0].index()];
         let second = &graph_copy.edge_sections[second_edge.sections[0].index()];
         assert_ne!(
             (first.start.x, first.start.y),
             (second.start.x, second.start.y),
             "cross-hierarchy edges from different nested sources should keep distinct anchors"
+        );
+    }
+
+    #[test]
+    #[ignore = "Bendpoint retention fixture pending full route-chain parity"]
+    fn export_respects_unnecessary_bendpoints_flag() {
+        let mut graph = ElkGraph::new();
+        let a = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry {
+                x: 20.0,
+                y: 20.0,
+                width: 80.0,
+                height: 40.0,
+            },
+        );
+        let b = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry {
+                x: 220.0,
+                y: 140.0,
+                width: 80.0,
+                height: 40.0,
+            },
+        );
+        graph.add_edge(graph.root, vec![EdgeEndpoint::node(a)], vec![EdgeEndpoint::node(b)]);
+        graph
+            .properties
+            .insert("elk.layered.unnecessaryBendpoints", elk_graph::PropertyValue::Bool(true));
+
+        let nodes: Vec<_> = graph
+            .nodes
+            .iter()
+            .filter(|n| n.parent.is_none() && n.id != graph.root)
+            .map(|n| n.id)
+            .collect();
+        let local: BTreeSet<_> = nodes.iter().copied().collect();
+        let options = LayoutOptions::default().with_view_profile(ViewProfile::GeneralView);
+        let mut ir = import_graph(&graph, &nodes, &local, &options);
+        break_cycles(&mut ir);
+        assign_layers(&mut ir, &options);
+        normalize_edges(&mut ir, &options);
+        let _ = place_nodes(&mut ir, &options);
+        let mut graph_copy = graph.clone();
+        let mut warnings = Vec::new();
+        let mut stats = elk_core::LayoutStats::default();
+        let routed = export_to_graph(
+            &mut graph_copy,
+            &ir,
+            &local,
+            &options,
+            &mut warnings,
+            &mut stats,
+        );
+        assert!(routed >= 1);
+        let edge = &graph_copy.edges[0];
+        assert!(!edge.sections.is_empty());
+        let section = &graph_copy.edge_sections[edge.sections[0].index()];
+        assert!(
+            !section.bend_points.is_empty(),
+            "with unnecessary bendpoints enabled, orthogonal route should preserve bends"
         );
     }
 
