@@ -1,0 +1,47 @@
+{
+  "fixtures": [
+    {
+      "name": "interconnection_real_small",
+      "complexity": "small",
+      "source": "real_sysml_model",
+      "layout_options": {
+        "view_profile": "InterconnectionView",
+        "algorithm": "org.eclipse.elk.layered"
+      },
+      "tricky_constructs": [
+        "nested_parts",
+        "cross_hierarchy_edges",
+        "port_constraints_fixed_order"
+      ]
+    },
+    {
+      "name": "interconnection_real_medium",
+      "complexity": "medium",
+      "source": "real_sysml_model",
+      "layout_options": {
+        "view_profile": "InterconnectionView",
+        "algorithm": "org.eclipse.elk.layered"
+      },
+      "tricky_constructs": [
+        "shared_network_node",
+        "parallel_outgoing_edges",
+        "nested_to_external_connections"
+      ]
+    },
+    {
+      "name": "interconnection_real_dense",
+      "complexity": "dense",
+      "source": "real_sysml_model",
+      "layout_options": {
+        "view_profile": "InterconnectionView",
+        "algorithm": "org.eclipse.elk.layered",
+        "routing_backend": "libavoid"
+      },
+      "tricky_constructs": [
+        "high_connector_density",
+        "fanout_and_fanin",
+        "nested_boundary_anchors"
+      ]
+    }
+  ]
+}

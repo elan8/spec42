@@ -9,6 +9,46 @@ fn read_fixture(name: &str) -> String {
     fs::read_to_string(path).expect("fixture should be readable")
 }
 
+fn assert_finite_geometry(g: &elk_graph::ElkGraph) {
+    for n in &g.nodes {
+        assert!(n.geometry.x.is_finite());
+        assert!(n.geometry.y.is_finite());
+        assert!(n.geometry.width.is_finite());
+        assert!(n.geometry.height.is_finite());
+    }
+    for e in &g.edges {
+        for sid in &e.sections {
+            let s = &g.edge_sections[sid.index()];
+            assert!(s.start.x.is_finite() && s.start.y.is_finite());
+            assert!(s.end.x.is_finite() && s.end.y.is_finite());
+            for p in &s.bend_points {
+                assert!(p.x.is_finite() && p.y.is_finite());
+            }
+        }
+    }
+}
+
+fn rects_overlap(a: &elk_graph::ShapeGeometry, b: &elk_graph::ShapeGeometry) -> bool {
+    let ax2 = a.x + a.width;
+    let ay2 = a.y + a.height;
+    let bx2 = b.x + b.width;
+    let by2 = b.y + b.height;
+    a.x < bx2 && b.x < ax2 && a.y < by2 && b.y < ay2
+}
+
+fn assert_children_non_overlapping(g: &elk_graph::ElkGraph) {
+    for parent in &g.nodes {
+        let children = &parent.children;
+        for i in 0..children.len() {
+            for j in (i + 1)..children.len() {
+                let a = &g.nodes[children[i].index()].geometry;
+                let b = &g.nodes[children[j].index()].geometry;
+                assert!(!rects_overlap(a, b), "child nodes overlap in parent {:?}", parent.id);
+            }
+        }
+    }
+}
+
 #[test]
 fn view_profile_defaults_are_applied() {
     let general = LayoutOptions::default().with_view_profile(ViewProfile::GeneralView);
@@ -178,5 +218,60 @@ fn layered_with_libavoid_backend_routes_and_avoids_obstacles() {
         assert!(!edge.sections.is_empty(), "each edge should have routed sections");
     }
     elk_testkit::assert_routed_paths_avoid_obstacles(&g, 1e-3);
+}
+
+#[test]
+fn interconnection_real_corpus_invariants_hold() {
+    for fixture in [
+        "interconnection_real_small.json",
+        "interconnection_real_medium.json",
+        "interconnection_real_dense.json",
+    ] {
+        let json = read_fixture(fixture);
+        let mut g = import_str(&json).expect("import should succeed").graph;
+        let options = LayoutOptions::default().with_view_profile(ViewProfile::InterconnectionView);
+        layout(&mut g, &options).expect("layout should succeed");
+
+        assert_finite_geometry(&g);
+        assert_children_non_overlapping(&g);
+        let max_bends = g
+            .edges
+            .iter()
+            .flat_map(|e| e.sections.iter())
+            .map(|sid| g.edge_sections[sid.index()].bend_points.len())
+            .max()
+            .unwrap_or(0);
+        assert!(max_bends <= 8, "unexpectedly high bend count for {}", fixture);
+    }
+}
+
+#[test]
+fn interconnection_option_aliases_are_accepted() {
+    let json = r#"{
+      "id":"root",
+      "layoutOptions":{
+        "elk.algorithm":"org.eclipse.elk.layered",
+        "org.eclipse.elk.direction":"RIGHT",
+        "org.eclipse.elk.edgeRouting":"ORTHOGONAL",
+        "org.eclipse.elk.layered.routingBackend":"libavoid",
+        "org.eclipse.elk.spacing.nodeNode":32
+      },
+      "children":[
+        {"id":"a","width":100,"height":60},
+        {"id":"b","width":100,"height":60},
+        {"id":"c","width":100,"height":60}
+      ],
+      "edges":[
+        {"id":"e1","sources":["a"],"targets":["b"],"layoutOptions":{"org.eclipse.elk.edge.bundle":"alpha"}},
+        {"id":"e2","sources":["a"],"targets":["b"],"layoutOptions":{"org.eclipse.elk.edge.bundle":"beta"}},
+        {"id":"e3","sources":["b"],"targets":["c"]}
+      ]
+    }"#;
+    let mut g = import_str(json).expect("import should succeed").graph;
+    layout(&mut g, &LayoutOptions::default()).expect("layout should succeed");
+    assert!(
+        g.edges.iter().all(|e| !e.sections.is_empty()),
+        "expected all edges to be routed"
+    );
 }
 

@@ -1,0 +1,45 @@
+{
+  "id": "root",
+  "layoutOptions": {
+    "elk.algorithm": "org.eclipse.elk.layered",
+    "elk.direction": "RIGHT",
+    "elk.edgeRouting": "ORTHOGONAL",
+    "elk.spacing.nodeNode": 36,
+    "elk.spacing.nodeNodeBetweenLayers": 70
+  },
+  "children": [
+    {
+      "id": "platform",
+      "width": 320,
+      "height": 220,
+      "children": [
+        { "id": "sensorA", "width": 90, "height": 60 },
+        { "id": "sensorB", "width": 90, "height": 60 },
+        { "id": "ctrl", "width": 110, "height": 70 }
+      ]
+    },
+    {
+      "id": "net",
+      "width": 150,
+      "height": 90
+    },
+    {
+      "id": "externalA",
+      "width": 130,
+      "height": 80
+    },
+    {
+      "id": "externalB",
+      "width": 130,
+      "height": 80
+    }
+  ],
+  "edges": [
+    { "id": "e1", "sources": ["sensorA"], "targets": ["ctrl"] },
+    { "id": "e2", "sources": ["sensorB"], "targets": ["ctrl"] },
+    { "id": "e3", "sources": ["ctrl"], "targets": ["net"] },
+    { "id": "e4", "sources": ["sensorA"], "targets": ["net"] },
+    { "id": "e5", "sources": ["net"], "targets": ["externalA"] },
+    { "id": "e6", "sources": ["net"], "targets": ["externalB"] }
+  ]
+}

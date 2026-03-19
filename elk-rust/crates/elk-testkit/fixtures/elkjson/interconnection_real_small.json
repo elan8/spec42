@@ -1,0 +1,35 @@
+{
+  "id": "root",
+  "layoutOptions": {
+    "elk.algorithm": "org.eclipse.elk.layered",
+    "elk.direction": "RIGHT",
+    "elk.edgeRouting": "ORTHOGONAL"
+  },
+  "children": [
+    {
+      "id": "system",
+      "width": 260,
+      "height": 200,
+      "children": [
+        { "id": "sensor", "width": 90, "height": 60 },
+        { "id": "controller", "width": 100, "height": 70 }
+      ]
+    },
+    {
+      "id": "gateway",
+      "width": 130,
+      "height": 80
+    },
+    {
+      "id": "actuator",
+      "width": 130,
+      "height": 80
+    }
+  ],
+  "edges": [
+    { "id": "e1", "sources": ["sensor"], "targets": ["controller"] },
+    { "id": "e2", "sources": ["controller"], "targets": ["gateway"] },
+    { "id": "e3", "sources": ["sensor"], "targets": ["gateway"] },
+    { "id": "e4", "sources": ["gateway"], "targets": ["actuator"] }
+  ]
+}

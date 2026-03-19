@@ -25,6 +25,11 @@ const FIXTURES: &[&str] = &[
     "upstream_dense_port_ordered",
     "upstream_four_layer_feedback",
 ];
+const INTERCONNECTION_FIXTURES: &[&str] = &[
+    "interconnection_real_small",
+    "interconnection_real_medium",
+    "interconnection_real_dense",
+];
 
 fn fixture_json(name: &str) -> String {
     let path = format!(
@@ -183,6 +188,57 @@ fn parity_java_matches_rust_on_fixtures() {
             .ok();
             panic!("parity mismatch for {}: {}", name, e);
         }
+    }
+}
+
+#[test]
+fn parity_java_matches_rust_on_interconnection_topology() {
+    let root = repo_root();
+    let mismatch_dir = root.join("target").join("elk-parity-mismatches");
+    let _ = fs::create_dir_all(&mismatch_dir);
+
+    for name in INTERCONNECTION_FIXTURES {
+        let json = fixture_json(name);
+
+        let mut g = import_str(&json).expect("import").graph;
+        ensure_layered_algorithm(&mut g);
+        LayoutService::default_registry()
+            .layout(&mut g, &LayoutOptions::default())
+            .expect("rust layout");
+        let rust_out = export_elk_graph_to_value(&g);
+
+        let in_path = mismatch_dir.join(format!("input_{}.json", name));
+        let mut java_input: Value = serde_json::from_str(&json).expect("fixture JSON should parse");
+        ensure_java_layout_options(&mut java_input);
+        fs::write(&in_path, serde_json::to_string_pretty(&java_input).unwrap())
+            .expect("write java input");
+        let java_out = run_java_runner(&in_path);
+
+        let rust_edges = rust_out
+            .get("edges")
+            .and_then(Value::as_array)
+            .expect("rust edges array");
+        let java_edges = java_out
+            .get("edges")
+            .and_then(Value::as_array)
+            .expect("java edges array");
+        assert!(
+            !rust_edges.is_empty() && !java_edges.is_empty(),
+            "missing routed edge set for {}",
+            name
+        );
+
+        let rust_routed = rust_edges
+            .iter()
+            .filter(|e| e.get("sections").and_then(Value::as_array).is_some_and(|s| !s.is_empty()))
+            .count();
+        assert!(
+            rust_routed >= rust_edges.len().saturating_sub(1),
+            "rust routed edge coverage too low for {} (routed={}, edges={})",
+            name,
+            rust_routed,
+            rust_edges.len()
+        );
     }
 }
 

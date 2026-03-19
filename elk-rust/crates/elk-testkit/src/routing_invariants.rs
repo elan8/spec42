@@ -52,7 +52,7 @@ pub fn assert_routed_paths_avoid_obstacles(graph: &ElkGraph, tolerance: f32) {
     for edge in &graph.edges {
         let source_node = edge.sources.first().map(|ep| ep.node);
         let target_node = edge.targets.first().map(|ep| ep.node);
-        let exclude: Vec<NodeId> = source_node
+        let source_target: Vec<NodeId> = source_node
             .into_iter()
             .chain(target_node)
             .filter(|n| *n != graph.root)
@@ -71,7 +71,12 @@ pub fn assert_routed_paths_avoid_obstacles(graph: &ElkGraph, tolerance: f32) {
                     if node.id == graph.root {
                         continue;
                     }
-                    if exclude.contains(&node.id) {
+                    if source_target.contains(&node.id) {
+                        continue;
+                    }
+                    // Crossing a source/target container boundary is valid for
+                    // cross-hierarchy routes; skip ancestor compounds of endpoints.
+                    if source_target.iter().any(|ep| graph.is_ancestor(node.id, *ep)) {
                         continue;
                     }
                     let r = node_rect(graph, node.id);
