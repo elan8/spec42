@@ -275,3 +275,60 @@ fn interconnection_option_aliases_are_accepted() {
     );
 }
 
+#[test]
+fn dense_parallel_edges_with_symbolic_bundle_keys_are_routable() {
+    let json = r#"{
+      "id":"root",
+      "layoutOptions":{
+        "elk.algorithm":"org.eclipse.elk.layered",
+        "elk.direction":"RIGHT",
+        "elk.edgeRouting":"ORTHOGONAL"
+      },
+      "children":[
+        {"id":"left","width":120,"height":80},
+        {"id":"right","width":120,"height":80}
+      ],
+      "edges":[
+        {"id":"e1","sources":["left"],"targets":["right"],"layoutOptions":{"org.eclipse.elk.layered.edgeBundle":"alpha"}},
+        {"id":"e2","sources":["left"],"targets":["right"],"layoutOptions":{"org.eclipse.elk.layered.edgeBundle":"beta"}}
+      ]
+    }"#;
+    let mut g = import_str(json).expect("import should succeed").graph;
+    layout(&mut g, &LayoutOptions::default().with_view_profile(ViewProfile::InterconnectionView))
+        .expect("layout should succeed");
+    assert_eq!(g.edges.len(), 2);
+    for edge in &g.edges {
+        assert!(!edge.sections.is_empty(), "edge should be routed");
+    }
+    assert!(
+        g.edges.iter().all(|e| !e.sections.is_empty()),
+        "bundle-keyed dense parallels should remain routable"
+    );
+}
+
+#[test]
+fn interconnection_dense_route_signature_is_stable() {
+    let json = read_fixture("interconnection_real_dense.json");
+    let mut g1 = import_str(&json).expect("import should succeed").graph;
+    let mut g2 = import_str(&json).expect("import should succeed").graph;
+    let options = LayoutOptions::default().with_view_profile(ViewProfile::InterconnectionView);
+    layout(&mut g1, &options).expect("first layout should succeed");
+    layout(&mut g2, &options).expect("second layout should succeed");
+
+    let sig = |g: &elk_graph::ElkGraph| -> Vec<(usize, usize)> {
+        g.edges
+            .iter()
+            .enumerate()
+            .map(|(i, e)| {
+                let bends = e
+                    .sections
+                    .iter()
+                    .map(|sid| g.edge_sections[sid.index()].bend_points.len())
+                    .sum::<usize>();
+                (i, bends)
+            })
+            .collect()
+    };
+    assert_eq!(sig(&g1), sig(&g2), "dense interconnection route signature drifted");
+}
+

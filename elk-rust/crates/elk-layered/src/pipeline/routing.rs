@@ -78,7 +78,8 @@ pub(crate) fn export_to_graph(
             let lane = edge_lane_by_index
                 .get(&edge.original_edge.index())
                 .copied()
-                .unwrap_or(0);
+                .unwrap_or(0)
+                + edge_bundle_lane_offset(graph, edge.original_edge);
 
             let mut bends = Vec::new();
             if routing == EdgeRouting::Orthogonal
@@ -348,7 +349,7 @@ fn apply_hierarchy_boundary_anchors(
             edge.effective_source,
             *end,
             inner,
-            edge.source.node.index(),
+            edge.source.node.index().wrapping_mul(31) + edge.original_edge.index(),
         );
     }
     if edge.target.port.is_none() && edge.target.node != edge.effective_target {
@@ -358,7 +359,7 @@ fn apply_hierarchy_boundary_anchors(
             edge.effective_target,
             *start,
             inner,
-            edge.target.node.index(),
+            edge.target.node.index().wrapping_mul(31) + edge.original_edge.index(),
         );
     }
 }
@@ -406,5 +407,15 @@ fn correct_terminal_slants(start: Point, end: Point, bends: Vec<Point>) -> Vec<P
         out.push(Point::new(last.x, end.y));
     }
     dedup_points(out)
+}
+
+fn edge_bundle_lane_offset(graph: &ElkGraph, edge_id: EdgeId) -> i32 {
+    let edge = &graph.edges[edge_id.index()];
+    let opts = decode_layout_from_props(&edge.properties);
+    if let Some(k) = opts.edge_bundle_key {
+        // Keep offsets small and deterministic; this is only a tie-breaker.
+        return ((k % 5) as i32) - 2;
+    }
+    0
 }
 

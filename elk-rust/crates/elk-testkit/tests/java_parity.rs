@@ -12,6 +12,7 @@ use elk_graph_json::{export_elk_graph_to_value, import_str};
 use elk_service::LayoutService;
 use elk_testkit::compare_layout_json_relaxed;
 use serde_json::Value;
+use std::collections::BTreeMap;
 
 const FIXTURES: &[&str] = &[
     "direction_down",
@@ -146,6 +147,33 @@ fn ensure_java_layout_options(json: &mut Value) {
     );
 }
 
+fn edge_bend_counts(json: &Value) -> BTreeMap<String, usize> {
+    let mut out = BTreeMap::new();
+    if let Some(edges) = json.get("edges").and_then(Value::as_array) {
+        for e in edges {
+            let Some(id) = e.get("id").and_then(Value::as_str) else {
+                continue;
+            };
+            let bends = e
+                .get("sections")
+                .and_then(Value::as_array)
+                .map(|sections| {
+                    sections
+                        .iter()
+                        .map(|s| {
+                            s.get("bendPoints")
+                                .and_then(Value::as_array)
+                                .map_or(0, |bp| bp.len())
+                        })
+                        .sum::<usize>()
+                })
+                .unwrap_or(0);
+            out.insert(id.to_string(), bends);
+        }
+    }
+    out
+}
+
 #[test]
 fn parity_java_matches_rust_on_fixtures() {
     let root = repo_root();
@@ -239,6 +267,26 @@ fn parity_java_matches_rust_on_interconnection_topology() {
             rust_routed,
             rust_edges.len()
         );
+
+        // Stronger but robust similarity gate: compare bend-complexity for shared edge IDs.
+        let rust_bends = edge_bend_counts(&rust_out);
+        let java_bends = edge_bend_counts(&java_out);
+        let mut shared = 0usize;
+        for (id, rb) in &rust_bends {
+            if let Some(jb) = java_bends.get(id) {
+                shared += 1;
+                let delta = rb.abs_diff(*jb);
+                assert!(
+                    delta <= 3,
+                    "edge bend complexity diverged for {} edge {} (rust={}, java={})",
+                    name,
+                    id,
+                    rb,
+                    jb
+                );
+            }
+        }
+        assert!(shared >= 1, "expected at least one shared edge id for {}", name);
     }
 }
 

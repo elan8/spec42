@@ -38,7 +38,7 @@ This matrix is scoped to **headless kernel parity** (graph model + algorithms + 
 | **Compound nodes (hierarchy)**        | **Partial**                  | Recursive child layout exists; cross-hierarchy handling exists but is not yet validated against ELK’s full behavior set.              |
 | **Edge routing**                      | **Partial**                  | Orthogonal routing includes lane slot refinement + boundary-anchor shaping and optional unnecessary-bendpoint retention; ELK still has additional hierarchy processors and route-chain semantics not yet ported.                   |
 | **Edge labels**                       | **Partial**                  | Labels exist and are placed for edges in `elk-layered`, but parity vs ELK’s label strategies is not yet proven.                       |
-| **SysML v2 Interconnection view**     | **Partial (gated corpus)**   | Real-model corpus fixtures are registered with deterministic invariants and Java topology checks in `elk-testkit`; dense lane/anchor visual parity still has known deltas. |
+| **SysML v2 Interconnection view**     | **Partial (dense-gated)**    | Real-model corpus fixtures are registered with deterministic invariants plus Java topology-and-bend-complexity checks in `elk-testkit`; dense lane/anchor visual parity still has known deltas. |
 | **JSON I/O (ELK Graph JSON)**         | **Implemented (baseline)**   | `elk-graph-json` supports import; export exists for `ElkGraph` and round-trip is tested on fixtures (including rich properties/hyperedges). |
 | **Option meta-model + compatibility** | **Implemented (baseline)**   | `elk-meta` provides alias/deprecated-key normalization and validation (unknown key, wrong type, disallowed scope); defaults/constraints can be expanded incrementally toward ELK parity. |
 | **Additional algorithms**             | **Partial**                  | `elk-layered`, `elk-tree` (mrtree), `elk-rectpacking`, `elk-topdownpacking`, `elk-libavoid` (routing-only) are present; others pending. |
@@ -48,5 +48,6 @@ This matrix is scoped to **headless kernel parity** (graph model + algorithms + 
 
 - **Algorithm set coverage**: ~**50%** (layered, tree, rectpacking, topdownpacking, libavoid vs ~12 headless `org.eclipse.elk.alg.*` plugins).
 - **Headless parity readiness**: ~**40–50%** (core model, JSON I/O, meta, service, and several algorithms in place).
-- **Interconnection readiness**: **emerging** (corpus + acceptance harness in place; remaining risk concentrated in dense connector lane/anchor visual similarity against Java ELK).
+- **Interconnection readiness**: **emerging** (corpus + acceptance harness in place, now including route-signature stability and bend-complexity checks; remaining risk concentrated in dense connector lane/anchor visual similarity against Java ELK).
+- **Dense delta tracking**: documented in `docs/interconnection-dense-delta-notes.md`.
 

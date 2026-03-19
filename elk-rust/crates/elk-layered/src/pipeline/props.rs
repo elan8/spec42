@@ -185,10 +185,11 @@ pub(crate) fn apply_layout_from_props(props: &PropertyBag, out: &mut ElementLayo
             "elk.edge.bundle",
             "org.eclipse.elk.edge.bundle",
             "elk.layered.edgebundle",
+            "org.eclipse.elk.layered.edgeBundle",
         ],
     ) {
-        if let Some(u) = parse_usize(value) {
-            out.edge_bundle_key = Some(u as u32);
+        if let Some(u) = parse_edge_bundle_key(value) {
+            out.edge_bundle_key = Some(u);
         }
     }
 }
@@ -317,9 +318,61 @@ fn parse_usize(value: &PropertyValue) -> Option<usize> {
     }
 }
 
+fn parse_edge_bundle_key(value: &PropertyValue) -> Option<u32> {
+    match value {
+        PropertyValue::Int(i) => (*i).try_into().ok(),
+        PropertyValue::Float(f) => (*f as i64).try_into().ok(),
+        PropertyValue::String(s) => {
+            let t = s.trim();
+            if t.is_empty() {
+                return None;
+            }
+            if let Ok(n) = t.parse::<u32>() {
+                return Some(n);
+            }
+            // Stable fallback for symbolic bundle keys such as "alpha", "beta".
+            let mut h: u32 = 0x811C9DC5;
+            for b in t.as_bytes() {
+                h ^= u32::from(*b);
+                h = h.wrapping_mul(0x01000193);
+            }
+            Some(h)
+        }
+        _ => None,
+    }
+}
+
 fn merge_spacing(current: Option<Spacing>, f: impl FnOnce(&mut Spacing)) -> Spacing {
     let mut s = current.unwrap_or_default();
     f(&mut s);
     s
+}
+
+#[cfg(test)]
+mod tests {
+    use super::decode_layout_from_props;
+    use elk_graph::{PropertyBag, PropertyValue};
+
+    #[test]
+    fn edge_bundle_alias_accepts_symbolic_values() {
+        let mut bag = PropertyBag::default();
+        bag.insert(
+            "org.eclipse.elk.layered.edgeBundle",
+            PropertyValue::String("alpha".to_string()),
+        );
+        let opts = decode_layout_from_props(&bag);
+        assert!(opts.edge_bundle_key.is_some());
+    }
+
+    #[test]
+    fn edge_bundle_different_symbols_produce_different_keys() {
+        let mut a = PropertyBag::default();
+        a.insert("org.eclipse.elk.edge.bundle", PropertyValue::String("alpha".to_string()));
+        let mut b = PropertyBag::default();
+        b.insert("org.eclipse.elk.edge.bundle", PropertyValue::String("beta".to_string()));
+        let ka = decode_layout_from_props(&a).edge_bundle_key;
+        let kb = decode_layout_from_props(&b).edge_bundle_key;
+        assert_ne!(ka, kb);
+    }
 }
 
