@@ -16,6 +16,17 @@ This note captures the current Java-vs-Rust re-baseline for dense SysML Intercon
 - Bend simplification differences
 - Option alias / precedence mismatches for Interconnection-critical keys
 
+## Fixture Coverage Mapping
+
+| Fixture | Primary delta classes | Current status |
+| --- | --- | --- |
+| `interconnection_real_small` | boundary/frame mismatch, option aliasing | stable |
+| `interconnection_real_medium` | channel selection mismatch, lane stability | stable |
+| `interconnection_real_dense` | channel graph deficiency, lane collapse risk | stable with metric gate |
+| `interconnection_real_full_drone_like` | scope selection mismatch, fallback-path mismatch | stable with fallback guardrails |
+| `libavoid_obstacles` | direct libavoid obstacle/channel behavior | stable |
+| `libavoid_narrow` | narrow-corridor channel selection | stable |
+
 ## Current Baseline
 
 - No critical topology regressions in the current corpus gate.

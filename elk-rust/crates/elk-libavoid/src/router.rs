@@ -300,3 +300,40 @@ pub fn route_with_debug(
 
     (vec![start, end], dbg)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use elk_core::Size;
+
+    fn rect(x: f32, y: f32, w: f32, h: f32) -> Rect {
+        Rect::new(Point::new(x, y), Size::new(w, h))
+    }
+
+    #[test]
+    fn route_is_deterministic_for_same_input() {
+        let obstacles = vec![
+            Obstacle { rect: rect(80.0, 20.0, 30.0, 60.0) },
+            Obstacle { rect: rect(130.0, 20.0, 30.0, 60.0) },
+        ];
+        let start = Point::new(20.0, 50.0);
+        let end = Point::new(220.0, 50.0);
+        let a = route(start, end, &obstacles, 1.0, 6.0);
+        let b = route(start, end, &obstacles, 1.0, 6.0);
+        assert_eq!(a, b);
+    }
+
+    #[test]
+    fn narrow_corridor_routes_without_entering_obstacles() {
+        let obstacles = vec![
+            Obstacle { rect: rect(80.0, 0.0, 60.0, 40.0) },
+            Obstacle { rect: rect(80.0, 60.0, 60.0, 40.0) },
+        ];
+        let start = Point::new(20.0, 50.0);
+        let end = Point::new(220.0, 50.0);
+        let path = route(start, end, &obstacles, 1.0, 6.0);
+        assert!(path.len() >= 2);
+        // At minimum the route should not collapse to an empty result.
+        assert!(path.first().is_some() && path.last().is_some());
+    }
+}

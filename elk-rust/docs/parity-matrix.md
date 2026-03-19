@@ -22,7 +22,7 @@ This matrix is scoped to **headless kernel parity** (graph model + algorithms + 
 | `org.eclipse.elk.alg.spore`                              | (none)                     | **Missing** | Not yet ported.                                                                                                                                                      |
 | `org.eclipse.elk.alg.topdownpacking`                     | `elk-topdownpacking`       | **Implemented (baseline)** | Hierarchy-aware packing (post-order size, pre-order placement); compounds pack children; dispatch via `elk.algorithm=org.eclipse.elk.topdownpacking`.               |
 | `org.eclipse.elk.alg.vertiflex`                          | (none)                     | **Missing** | Not yet ported.                                                                                                                                                      |
-| `org.eclipse.elk.alg.libavoid` (routing)                 | `elk-libavoid`             | **Implemented (baseline)** | Native Rust obstacle-avoiding router (visibility graph + A*); routes edges only; dispatch via `elk.algorithm=org.eclipse.elk.libavoid`.                              |
+| `org.eclipse.elk.alg.libavoid` (routing)                 | `elk-libavoid`             | **Implemented (advanced baseline)** | Native Rust obstacle-avoiding router (visibility graph + A*) with deterministic channel midpoint candidates, graph+edge penalty option handling, and layered scope integration; routes edges only via `elk.algorithm=org.eclipse.elk.libavoid`.                              |
 
 
 ## Functional capability coverage (headless)
@@ -49,5 +49,6 @@ This matrix is scoped to **headless kernel parity** (graph model + algorithms + 
 - **Algorithm set coverage**: ~**50%** (layered, tree, rectpacking, topdownpacking, libavoid vs ~12 headless `org.eclipse.elk.alg.*` plugins).
 - **Headless parity readiness**: ~**40–50%** (core model, JSON I/O, meta, service, and several algorithms in place).
 - **Interconnection readiness**: **emerging** (corpus + acceptance harness in place, now including route-signature stability and bend-complexity checks; remaining risk concentrated in dense connector lane/anchor visual similarity against Java ELK).
+- **Libavoid readiness**: **advanced baseline** (direct + layered backend tests and Java bend-complexity topology checks are green; remaining gap is strict visual equivalence in dense nested cases).
 - **Dense delta tracking**: documented in `docs/interconnection-dense-delta-notes.md`.
 

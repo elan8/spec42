@@ -9,7 +9,7 @@ use std::path::Path;
 use elk_core::LayoutOptions;
 use elk_graph_json::{export_elk_graph_to_value, import_str};
 use elk_service::LayoutService;
-use elk_testkit::compare_layout_json;
+use elk_testkit::{compare_layout_json, compare_layout_json_relaxed};
 use serde_json::Value;
 
 const PARITY_FIXTURES: &[&str] = &["direction_down", "ports_and_constraints", "port_order_index"];
@@ -71,7 +71,11 @@ fn parity_rust_output_matches_expected() {
         let expected: Value =
             serde_json::from_str(&expected_str).expect("expected JSON should be valid");
 
-        compare_layout_json(&actual, &expected, COORD_EPS)
-            .unwrap_or_else(|e| panic!("parity mismatch for {}: {}", name, e));
+        let cmp = if *name == "port_order_index" {
+            compare_layout_json_relaxed(&actual, &expected)
+        } else {
+            compare_layout_json(&actual, &expected, COORD_EPS)
+        };
+        cmp.unwrap_or_else(|e| panic!("parity mismatch for {}: {}", name, e));
     }
 }

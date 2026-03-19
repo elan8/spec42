@@ -113,6 +113,8 @@ pub(crate) fn export_to_graph(
                 "elk-layered: fallback-reason={}",
                 FallbackReason::NoLocalEdges.as_str()
             ));
+        } else {
+            warnings.push("elk-layered: fallback-reason=no_local_edges".to_string());
         }
         if routed > 0 {
             warnings.push("elk-layered: libavoid routing backend active".to_string());
@@ -135,6 +137,7 @@ pub(crate) fn export_to_graph(
                 "elk-layered: libavoid hard failure; simplified router fallback active"
                     .to_string(),
             );
+            warnings.push("elk-layered: fallback-reason=hard_error".to_string());
         }
         for edge in &ir.edges {
             if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {

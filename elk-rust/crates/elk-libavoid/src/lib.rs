@@ -14,6 +14,22 @@ const DEFAULT_CLEARANCE: f32 = 4.0;
 const DEFAULT_SEGMENT_PENALTY: f32 = 1.0;
 const DEFAULT_BEND_PENALTY: f32 = 6.0;
 
+fn read_penalty_f32(
+    by_key: &std::collections::BTreeMap<String, &elk_graph::PropertyValue>,
+    keys: &[&str],
+    default: f32,
+    min: f32,
+) -> f32 {
+    for key in keys {
+        if let Some(v) = by_key.get(&key.to_ascii_lowercase()) {
+            if let Some(x) = elk_alg_common::options::value_to_f32(v) {
+                return x.max(min);
+            }
+        }
+    }
+    default.max(min)
+}
+
 #[derive(Debug, Default, Clone, Copy)]
 pub struct LibavoidLayoutEngine;
 
@@ -31,20 +47,36 @@ impl LibavoidLayoutEngine {
     ) -> Result<LayoutReport, LayoutError> {
         graph.validate().map_err(|e| LayoutError::Validation(format!("{e:?}")))?;
 
-        let meta = elk_meta::default_registry();
         let by_key = elk_alg_common::options::casefold_map(&graph.properties);
-        let clearance = elk_alg_common::options::find_option(&meta, &by_key, "elk.libavoid.clearance")
-            .and_then(elk_alg_common::options::value_to_f32)
-            .unwrap_or(DEFAULT_CLEARANCE)
-            .max(0.0);
-        let segment_penalty = elk_alg_common::options::find_option(&meta, &by_key, "elk.libavoid.segmentpenalty")
-            .and_then(elk_alg_common::options::value_to_f32)
-            .unwrap_or(DEFAULT_SEGMENT_PENALTY)
-            .max(1e-6);
-        let bend_penalty = elk_alg_common::options::find_option(&meta, &by_key, "elk.libavoid.bendpenalty")
-            .and_then(elk_alg_common::options::value_to_f32)
-            .unwrap_or(DEFAULT_BEND_PENALTY)
-            .max(0.0);
+        let clearance = read_penalty_f32(
+            &by_key,
+            &[
+                "elk.libavoid.clearance",
+                "org.eclipse.elk.libavoid.clearance",
+            ],
+            DEFAULT_CLEARANCE,
+            0.0,
+        );
+        let segment_penalty = read_penalty_f32(
+            &by_key,
+            &[
+                "elk.libavoid.segmentpenalty",
+                "org.eclipse.elk.libavoid.segmentPenalty",
+                "org.eclipse.elk.libavoid.segmentpenalty",
+            ],
+            DEFAULT_SEGMENT_PENALTY,
+            1e-6,
+        );
+        let bend_penalty = read_penalty_f32(
+            &by_key,
+            &[
+                "elk.libavoid.bendpenalty",
+                "org.eclipse.elk.libavoid.bendPenalty",
+                "org.eclipse.elk.libavoid.bendpenalty",
+            ],
+            DEFAULT_BEND_PENALTY,
+            0.0,
+        );
 
         let mut edge_ids: Vec<EdgeId> = graph.edges.iter().map(|e| e.id).collect();
         edge_ids.sort_by_key(|e| e.index());
@@ -106,20 +138,36 @@ pub fn route_edges_with_diagnostics_in_scope(
     scope_nodes: Option<&BTreeSet<NodeId>>,
 ) -> Result<Vec<String>, LayoutError> {
     graph.validate().map_err(|e| LayoutError::Validation(format!("{e:?}")))?;
-    let meta = elk_meta::default_registry();
     let by_key = elk_alg_common::options::casefold_map(&graph.properties);
-    let clearance = elk_alg_common::options::find_option(&meta, &by_key, "elk.libavoid.clearance")
-        .and_then(elk_alg_common::options::value_to_f32)
-        .unwrap_or(DEFAULT_CLEARANCE)
-        .max(0.0);
-    let segment_penalty = elk_alg_common::options::find_option(&meta, &by_key, "elk.libavoid.segmentpenalty")
-        .and_then(elk_alg_common::options::value_to_f32)
-        .unwrap_or(DEFAULT_SEGMENT_PENALTY)
-        .max(1e-6);
-    let bend_penalty = elk_alg_common::options::find_option(&meta, &by_key, "elk.libavoid.bendpenalty")
-        .and_then(elk_alg_common::options::value_to_f32)
-        .unwrap_or(DEFAULT_BEND_PENALTY)
-        .max(0.0);
+    let root_clearance = read_penalty_f32(
+        &by_key,
+        &[
+            "elk.libavoid.clearance",
+            "org.eclipse.elk.libavoid.clearance",
+        ],
+        DEFAULT_CLEARANCE,
+        0.0,
+    );
+    let root_segment_penalty = read_penalty_f32(
+        &by_key,
+        &[
+            "elk.libavoid.segmentpenalty",
+            "org.eclipse.elk.libavoid.segmentPenalty",
+            "org.eclipse.elk.libavoid.segmentpenalty",
+        ],
+        DEFAULT_SEGMENT_PENALTY,
+        1e-6,
+    );
+    let root_bend_penalty = read_penalty_f32(
+        &by_key,
+        &[
+            "elk.libavoid.bendpenalty",
+            "org.eclipse.elk.libavoid.bendPenalty",
+            "org.eclipse.elk.libavoid.bendpenalty",
+        ],
+        DEFAULT_BEND_PENALTY,
+        0.0,
+    );
 
     let mut sorted_ids: Vec<EdgeId> = edge_ids.to_vec();
     sorted_ids.sort_by_key(|e| e.index());
@@ -127,6 +175,9 @@ pub fn route_edges_with_diagnostics_in_scope(
     let mut diagnostics = Vec::new();
 
     for edge_id in sorted_ids {
+        let clearance = root_clearance;
+        let segment_penalty = root_segment_penalty;
+        let bend_penalty = root_bend_penalty;
         let (start_abs, end_abs) = endpoints_center(graph, edge_id);
         let start = to_local(start_abs, scope_origin_abs);
         let end = to_local(end_abs, scope_origin_abs);
