@@ -1,0 +1,18 @@
+{
+  "id": "root",
+  "layoutOptions": {
+    "elk.algorithm": "org.eclipse.elk.layered",
+    "elk.direction": "RIGHT",
+    "elk.edgeRouting": "ORTHOGONAL"
+  },
+  "children": [
+    { "id": "left_top", "width": 80, "height": 40 },
+    { "id": "left_bottom", "width": 80, "height": 40 },
+    { "id": "right_bottom", "width": 80, "height": 40 }
+  ],
+  "edges": [
+    { "id": "e1", "sources": ["left_top"], "targets": ["right_bottom"] },
+    { "id": "e2", "sources": ["left_top"], "targets": ["right_bottom"] },
+    { "id": "e3", "sources": ["left_bottom"], "targets": ["right_bottom"] }
+  ]
+}

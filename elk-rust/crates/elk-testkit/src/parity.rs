@@ -30,8 +30,14 @@ fn compare_node_object(
     path: &str,
 ) -> Result<(), String> {
     compare_str_key(actual, expected, "id", path)?;
-    compare_f32_key(actual, expected, "x", eps, path)?;
-    compare_f32_key(actual, expected, "y", eps, path)?;
+    // Some ELK exporters omit root x/y while Rust export keeps explicit zero origin.
+    if path == "root" {
+        compare_f32_key_if_both_present(actual, expected, "x", eps, path)?;
+        compare_f32_key_if_both_present(actual, expected, "y", eps, path)?;
+    } else {
+        compare_f32_key(actual, expected, "x", eps, path)?;
+        compare_f32_key(actual, expected, "y", eps, path)?;
+    }
     compare_f32_key(actual, expected, "width", eps, path)?;
     compare_f32_key(actual, expected, "height", eps, path)?;
 
@@ -114,7 +120,9 @@ fn compare_edge_object(
     let e = expected
         .as_object()
         .ok_or_else(|| format!("{}: expected edge is not object", path))?;
-    compare_str_key(a, e, "id", path)?;
+    // Edge ids are not stable between Java and Rust exports.
+    compare_str_array_key(a, e, "sources", path)?;
+    compare_str_array_key(a, e, "targets", path)?;
 
     let a_sections = a.get("sections").and_then(|v| v.as_array());
     let e_sections = e.get("sections").and_then(|v| v.as_array());
@@ -243,6 +251,57 @@ fn compare_f32_key(
     }
 }
 
+fn compare_f32_key_if_both_present(
+    actual: &serde_json::Map<String, serde_json::Value>,
+    expected: &serde_json::Map<String, serde_json::Value>,
+    key: &str,
+    eps: f32,
+    path: &str,
+) -> Result<(), String> {
+    let a = get_f32(actual, key);
+    let e = get_f32(expected, key);
+    match (a, e) {
+        (Some(aa), Some(ee)) => {
+            if (aa - ee).abs() <= eps {
+                Ok(())
+            } else {
+                Err(format!("{}: {} {} != {} (eps {})", path, key, aa, ee, eps))
+            }
+        }
+        _ => Ok(()),
+    }
+}
+
+fn compare_str_array_key(
+    actual: &serde_json::Map<String, serde_json::Value>,
+    expected: &serde_json::Map<String, serde_json::Value>,
+    key: &str,
+    path: &str,
+) -> Result<(), String> {
+    let a = actual.get(key).and_then(|v| v.as_array());
+    let e = expected.get(key).and_then(|v| v.as_array());
+    match (a, e) {
+        (Some(aa), Some(ee)) => {
+            if aa.len() != ee.len() {
+                return Err(format!("{}: {} length {} != {}", path, key, aa.len(), ee.len()));
+            }
+            for (i, (av, ev)) in aa.iter().zip(ee.iter()).enumerate() {
+                let as_ = av.as_str();
+                let es_ = ev.as_str();
+                if as_ != es_ {
+                    return Err(format!(
+                        "{}: {}[{}] {:?} != {:?}",
+                        path, key, i, as_, es_
+                    ));
+                }
+            }
+            Ok(())
+        }
+        (None, None) => Ok(()),
+        _ => Err(format!("{}: {} presence mismatch", path, key)),
+    }
+}
+
 fn get_f32(m: &serde_json::Map<String, serde_json::Value>, key: &str) -> Option<f32> {
     let v = m.get(key)?;
     match v {
@@ -269,4 +328,75 @@ fn collect_node_ids(v: &serde_json::Value, out: &mut BTreeSet<String>) {
             collect_node_ids(c, out);
         }
     }
+}
+
+/// Relaxed Java-vs-Rust parity check:
+/// - node/edge/port counts must match exactly
+/// - non-root nodes must expose finite x/y/width/height numbers in both trees
+pub fn compare_layout_json_relaxed(
+    actual: &serde_json::Value,
+    expected: &serde_json::Value,
+) -> Result<(), String> {
+    let a_stats = graph_stats(actual)?;
+    let e_stats = graph_stats(expected)?;
+    if a_stats != e_stats {
+        return Err(format!(
+            "graph stats differ: actual(nodes={}, edges={}, ports={}) expected(nodes={}, edges={}, ports={})",
+            a_stats.0, a_stats.1, a_stats.2, e_stats.0, e_stats.1, e_stats.2
+        ));
+    }
+
+    check_node_geometry(actual, true, "actual")?;
+    check_node_geometry(expected, true, "expected")?;
+    Ok(())
+}
+
+fn graph_stats(v: &serde_json::Value) -> Result<(usize, usize, usize), String> {
+    let Some(obj) = v.as_object() else {
+        return Ok((0, 0, 0));
+    };
+    let mut nodes = 1usize;
+    let mut edges = 0usize;
+    let mut ports = 0usize;
+
+    if let Some(edge_arr) = obj.get("edges").and_then(|e| e.as_array()) {
+        edges += edge_arr.len();
+    }
+
+    if let Some(ps) = obj.get("ports").and_then(|p| p.as_array()) {
+        ports += ps.len();
+    }
+
+    if let Some(children) = obj.get("children").and_then(|c| c.as_array()) {
+        for child in children {
+            let (cn, ce, cp) = graph_stats(child)?;
+            nodes += cn;
+            edges += ce;
+            ports += cp;
+        }
+    }
+    Ok((nodes, edges, ports))
+}
+
+fn check_node_geometry(v: &serde_json::Value, is_root: bool, side: &str) -> Result<(), String> {
+    let Some(obj) = v.as_object() else { return Ok(()) };
+    let id = obj.get("id").and_then(|x| x.as_str()).unwrap_or("?");
+    let path = format!("{} node {}", side, id);
+
+    if !is_root {
+        for key in ["x", "y", "width", "height"] {
+            let n = get_f32(obj, key).ok_or_else(|| format!("{}: missing {}", path, key))?;
+            if !n.is_finite() {
+                return Err(format!("{}: {} is not finite", path, key));
+            }
+        }
+    }
+
+    if let Some(children) = obj.get("children").and_then(|c| c.as_array()) {
+        for child in children {
+            check_node_geometry(child, false, side)?;
+        }
+    }
+
+    Ok(())
 }
