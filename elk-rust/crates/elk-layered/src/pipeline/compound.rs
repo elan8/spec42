@@ -154,13 +154,12 @@ pub fn postprocess_cross_hierarchy_edges(
         if let Some(first) = edge.targets.first_mut() {
             *first = *original_target;
         }
-        if edge.sections.is_empty() {
-            continue;
+        if let Some(first_id) = edge.sections.first().copied() {
+            graph.edge_sections[first_id.index()].start = start_center;
         }
-        let sec_id = edge.sections[0];
-        let section = &mut graph.edge_sections[sec_id.index()];
-        section.start = start_center;
-        section.end = end_center;
+        if let Some(last_id) = edge.sections.last().copied() {
+            graph.edge_sections[last_id.index()].end = end_center;
+        }
     }
 }
 

@@ -64,6 +64,7 @@ pub(crate) fn export_to_graph(
     }
 
     let edge_lane_by_index = edge_lane_by_ir_index(ir);
+    let fanout_lane_bias_by_index = fanout_lane_bias_by_edge_index(ir);
     let keep_unnecessary_bends = keep_unnecessary_bends(graph);
 
     if !use_libavoid || routed == 0 {
@@ -79,28 +80,21 @@ pub(crate) fn export_to_graph(
                 .get(&edge.original_edge.index())
                 .copied()
                 .unwrap_or(0)
-                + edge_bundle_lane_offset(graph, edge.original_edge);
+                + edge_bundle_lane_offset(graph, edge.original_edge)
+                + fanout_lane_bias_by_index
+                    .get(&edge.original_edge.index())
+                    .copied()
+                    .unwrap_or(0);
 
-            let mut bends = Vec::new();
-            if routing == EdgeRouting::Orthogonal
-                && (start.x - end.x).abs() > f32::EPSILON
-                && (start.y - end.y).abs() > f32::EPSILON
-            {
-                let source_side = endpoint_port_side(graph, edge.source);
-                let target_side = endpoint_port_side(graph, edge.target);
-                const PORT_NORMAL_OFFSET: f32 = 8.0;
-                if let (Some(ss), Some(ts)) = (source_side, target_side) {
-                    // Attach orthogonally to both ports: first segment perpendicular to source,
-                    // last segment perpendicular to target. Exit/entry are outside the nodes.
-                    let exit = point_along_outward_normal(start, ss, PORT_NORMAL_OFFSET);
-                    let entry = point_along_outward_normal(end, ts, PORT_NORMAL_OFFSET);
-                    bends.push(exit);
-                    bends.push(Point::new(entry.x, exit.y));
-                    bends.push(entry);
+            let mut bends = if routing == EdgeRouting::Orthogonal {
+                if use_experimental_orthogonal_core(graph) {
+                    build_staged_orthogonal_bends(graph, edge, start, end, lane, options)
                 } else {
-                    bends.extend(build_lane_orthogonal_bends(start, end, lane, options));
+                    build_legacy_orthogonal_bends(graph, edge, start, end, lane, options)
                 }
-            }
+            } else {
+                Vec::new()
+            };
             bends = normalize_bends(bends, keep_unnecessary_bends);
             bends = correct_terminal_slants(start, end, bends);
 
@@ -117,6 +111,33 @@ pub(crate) fn export_to_graph(
     }
 
     routed
+}
+
+fn fanout_lane_bias_by_edge_index(ir: &LayeredIr) -> BTreeMap<usize, i32> {
+    let mut groups: BTreeMap<(NodeId, Option<u32>), Vec<(usize, usize, usize)>> = BTreeMap::new();
+    for edge in &ir.edges {
+        groups
+            .entry((edge.effective_source, edge.bundle_key))
+            .or_default()
+            .push((
+                edge.original_edge.index(),
+                edge.model_order,
+                edge.original_edge.index(),
+            ));
+    }
+
+    let mut out = BTreeMap::new();
+    for mut edges in groups.into_values() {
+        if edges.len() <= 1 {
+            continue;
+        }
+        edges.sort_by_key(|(_, model_order, edge_idx)| (*model_order, *edge_idx));
+        let center = (edges.len() as i32 - 1) / 2;
+        for (i, (edge_idx, _, _)) in edges.into_iter().enumerate() {
+            out.insert(edge_idx, i as i32 - center);
+        }
+    }
+    out
 }
 
 fn routing_backend_is_libavoid(graph: &ElkGraph) -> bool {
@@ -254,16 +275,121 @@ fn place_edge_labels(
 }
 
 fn edge_lane_by_ir_index(ir: &LayeredIr) -> BTreeMap<usize, i32> {
-    let mut lane_sum: BTreeMap<usize, (i32, i32)> = BTreeMap::new();
+    let mut by_edge: BTreeMap<usize, Vec<(usize, i32)>> = BTreeMap::new();
     for ne in &ir.normalized_edges {
-        let entry = lane_sum.entry(ne.original_edge.index()).or_insert((0, 0));
-        entry.0 += ne.lane;
-        entry.1 += 1;
+        by_edge
+            .entry(ne.original_edge.index())
+            .or_default()
+            .push((ne.segment_order, ne.lane));
     }
-    lane_sum
+    by_edge
         .into_iter()
-        .map(|(edge_idx, (sum, cnt))| (edge_idx, if cnt == 0 { 0 } else { sum / cnt }))
+        .map(|(edge_idx, mut lanes)| {
+            lanes.sort_by_key(|(segment_order, lane)| (*segment_order, *lane));
+            let primary_lane = lanes.first().map(|(_, lane)| *lane).unwrap_or(0);
+            let mut only_lanes: Vec<i32> = lanes.iter().map(|(_, lane)| *lane).collect();
+            only_lanes.sort_unstable();
+            let median_lane = only_lanes
+                .get(only_lanes.len() / 2)
+                .copied()
+                .unwrap_or(primary_lane);
+            lanes.sort_unstable();
+            let lane = if (primary_lane - median_lane).abs() <= 1 {
+                primary_lane
+            } else {
+                median_lane
+            };
+            (edge_idx, lane)
+        })
         .collect()
+}
+
+fn build_legacy_orthogonal_bends(
+    graph: &ElkGraph,
+    edge: &IrEdge,
+    start: Point,
+    end: Point,
+    lane: i32,
+    options: &LayoutOptions,
+) -> Vec<Point> {
+    if (start.x - end.x).abs() <= f32::EPSILON || (start.y - end.y).abs() <= f32::EPSILON {
+        return Vec::new();
+    }
+    let source_side = endpoint_port_side(graph, edge.source);
+    let target_side = endpoint_port_side(graph, edge.target);
+    const PORT_NORMAL_OFFSET: f32 = 8.0;
+    if let (Some(ss), Some(ts)) = (source_side, target_side) {
+        let exit = point_along_outward_normal(start, ss, PORT_NORMAL_OFFSET);
+        let entry = point_along_outward_normal(end, ts, PORT_NORMAL_OFFSET);
+        vec![exit, Point::new(entry.x, exit.y), entry]
+    } else {
+        build_lane_orthogonal_bends(start, end, lane, options)
+    }
+}
+
+fn build_staged_orthogonal_bends(
+    graph: &ElkGraph,
+    edge: &IrEdge,
+    start: Point,
+    end: Point,
+    lane: i32,
+    options: &LayoutOptions,
+) -> Vec<Point> {
+    if (start.x - end.x).abs() <= f32::EPSILON || (start.y - end.y).abs() <= f32::EPSILON {
+        return Vec::new();
+    }
+
+    // Stage 1: terminal attachment from source/target ports.
+    let (exit, entry, mut bends) = terminal_attachment(graph, edge, start, end);
+
+    // Stage 2: trunk path generation with slot/lane guidance.
+    bends.extend(build_lane_orthogonal_bends(exit, entry, lane, options));
+
+    // Stage 3: detour generation for degenerate orthogonal trunks.
+    if bends.is_empty() {
+        bends.extend(default_elbow(exit, entry));
+    }
+
+    // Stage 4: enforce final terminal orthogonality and simplification happens later.
+    if let Some(last) = bends.last().copied() {
+        if (last.x - entry.x).abs() > f32::EPSILON && (last.y - entry.y).abs() > f32::EPSILON {
+            bends.push(Point::new(last.x, entry.y));
+        }
+    }
+    bends
+}
+
+fn terminal_attachment(
+    graph: &ElkGraph,
+    edge: &IrEdge,
+    start: Point,
+    end: Point,
+) -> (Point, Point, Vec<Point>) {
+    const PORT_NORMAL_OFFSET: f32 = 8.0;
+    let source_side = endpoint_port_side(graph, edge.source);
+    let target_side = endpoint_port_side(graph, edge.target);
+    let mut bends = Vec::new();
+    let exit = if let Some(side) = source_side {
+        let p = point_along_outward_normal(start, side, PORT_NORMAL_OFFSET);
+        bends.push(p);
+        p
+    } else {
+        start
+    };
+    let entry = if let Some(side) = target_side {
+        point_along_outward_normal(end, side, PORT_NORMAL_OFFSET)
+    } else {
+        end
+    };
+    (exit, entry, bends)
+}
+
+fn default_elbow(start: Point, end: Point) -> Vec<Point> {
+    if (end.x - start.x).abs() >= (end.y - start.y).abs() {
+        vec![Point::new(end.x, start.y)]
+    } else {
+        vec![Point::new(start.x, end.y)]
+    }
 }
 
 fn build_lane_orthogonal_bends(
@@ -349,7 +475,6 @@ fn apply_hierarchy_boundary_anchors(
             edge.effective_source,
             *end,
             inner,
-            edge.source.node.index().wrapping_mul(31) + edge.original_edge.index(),
         );
     }
     if edge.target.port.is_none() && edge.target.node != edge.effective_target {
@@ -359,7 +484,6 @@ fn apply_hierarchy_boundary_anchors(
             edge.effective_target,
             *start,
             inner,
-            edge.target.node.index().wrapping_mul(31) + edge.original_edge.index(),
         );
     }
 }
@@ -369,22 +493,20 @@ fn boundary_anchor_for_inner_point(
     node: NodeId,
     toward: Point,
     inner: Point,
-    spread_seed: usize,
 ) -> Point {
     let r = node_rect(graph, node);
     let center = Point::new(r.origin.x + r.size.width * 0.5, r.origin.y + r.size.height * 0.5);
     let dx = toward.x - center.x;
     let dy = toward.y - center.y;
-    let spread = ((spread_seed % 7) as f32 - 3.0) * 4.0;
     if dx.abs() >= dy.abs() {
-        let y = (inner.y + spread).clamp(r.origin.y, r.max_y());
+        let y = inner.y.clamp(r.origin.y, r.max_y());
         if dx >= 0.0 {
             Point::new(r.max_x(), y)
         } else {
             Point::new(r.origin.x, y)
         }
     } else {
-        let x = (inner.x + spread).clamp(r.origin.x, r.max_x());
+        let x = inner.x.clamp(r.origin.x, r.max_x());
         if dy >= 0.0 {
             Point::new(x, r.max_y())
         } else {
@@ -417,5 +539,30 @@ fn edge_bundle_lane_offset(graph: &ElkGraph, edge_id: EdgeId) -> i32 {
         return ((k % 5) as i32) - 2;
     }
     0
+}
+
+fn use_experimental_orthogonal_core(graph: &ElkGraph) -> bool {
+    let by_key = elk_alg_common::options::casefold_map(&graph.properties);
+    for key in [
+        "elk.layered.experimentalorthogonalcore",
+        "org.eclipse.elk.layered.experimentalOrthogonalCore",
+    ] {
+        if let Some(v) = by_key.get(&key.to_ascii_lowercase()) {
+            match v {
+                elk_graph::PropertyValue::Bool(b) => return *b,
+                elk_graph::PropertyValue::String(s) => {
+                    let t = s.trim().to_ascii_lowercase();
+                    if t == "true" {
+                        return true;
+                    }
+                    if t == "false" {
+                        return false;
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+    true
 }
 
