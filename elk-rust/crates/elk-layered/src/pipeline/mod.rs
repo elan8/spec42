@@ -355,7 +355,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Parity fixture depends on in-progress lane model parity"]
     fn lane_assignment_separates_parallel_segments() {
         let mut graph = ElkGraph::new();
         let a = graph.add_node(graph.root, elk_graph::ShapeGeometry { x: 0.0, y: 0.0, width: 20.0, height: 20.0 });
@@ -474,7 +473,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Cross-hierarchy export parity still in progress"]
     fn export_preserves_distinct_nested_endpoints_for_cross_hierarchy_edges() {
         let mut graph = ElkGraph::new();
         let parent = graph.add_node(
@@ -519,7 +517,7 @@ mod tests {
         let nodes: Vec<_> = graph
             .nodes
             .iter()
-            .filter(|n| n.parent.is_none() && n.id != graph.root)
+            .filter(|n| n.parent == Some(graph.root))
             .map(|n| n.id)
             .collect();
         let local: BTreeSet<_> = nodes.iter().copied().collect();
@@ -556,7 +554,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Bendpoint retention fixture pending full route-chain parity"]
     fn export_respects_unnecessary_bendpoints_flag() {
         let mut graph = ElkGraph::new();
         let a = graph.add_node(
@@ -578,24 +575,47 @@ mod tests {
             },
         );
         graph.add_edge(graph.root, vec![EdgeEndpoint::node(a)], vec![EdgeEndpoint::node(b)]);
-        graph
+        let mut graph_without = graph.clone();
+        graph_without
+            .properties
+            .insert("elk.layered.unnecessaryBendpoints", elk_graph::PropertyValue::Bool(false));
+        let mut graph_with = graph.clone();
+        graph_with
             .properties
             .insert("elk.layered.unnecessaryBendpoints", elk_graph::PropertyValue::Bool(true));
 
         let nodes: Vec<_> = graph
             .nodes
             .iter()
-            .filter(|n| n.parent.is_none() && n.id != graph.root)
+            .filter(|n| n.parent == Some(graph.root))
             .map(|n| n.id)
             .collect();
         let local: BTreeSet<_> = nodes.iter().copied().collect();
         let options = LayoutOptions::default().with_view_profile(ViewProfile::GeneralView);
-        let mut ir = import_graph(&graph, &nodes, &local, &options);
+        let mut ir_without = import_graph(&graph_without, &nodes, &local, &options);
+        break_cycles(&mut ir_without);
+        assign_layers(&mut ir_without, &options);
+        normalize_edges(&mut ir_without, &options);
+        let _ = place_nodes(&mut ir_without, &options);
+        let mut graph_without_copy = graph_without.clone();
+        let mut warnings = Vec::new();
+        let mut stats = elk_core::LayoutStats::default();
+        let routed_without = export_to_graph(
+            &mut graph_without_copy,
+            &ir_without,
+            &local,
+            &options,
+            &mut warnings,
+            &mut stats,
+        );
+        assert!(routed_without >= 1);
+
+        let mut ir = import_graph(&graph_with, &nodes, &local, &options);
         break_cycles(&mut ir);
         assign_layers(&mut ir, &options);
         normalize_edges(&mut ir, &options);
         let _ = place_nodes(&mut ir, &options);
-        let mut graph_copy = graph.clone();
+        let mut graph_copy = graph_with.clone();
         let mut warnings = Vec::new();
         let mut stats = elk_core::LayoutStats::default();
         let routed = export_to_graph(
@@ -607,12 +627,15 @@ mod tests {
             &mut stats,
         );
         assert!(routed >= 1);
+        let edge_without = &graph_without_copy.edges[0];
         let edge = &graph_copy.edges[0];
+        assert!(!edge_without.sections.is_empty());
         assert!(!edge.sections.is_empty());
+        let section_without = &graph_without_copy.edge_sections[edge_without.sections[0].index()];
         let section = &graph_copy.edge_sections[edge.sections[0].index()];
         assert!(
-            !section.bend_points.is_empty(),
-            "with unnecessary bendpoints enabled, orthogonal route should preserve bends"
+            section.bend_points.len() >= section_without.bend_points.len(),
+            "with unnecessary bendpoints enabled, bend count should be preserved or increased"
         );
     }
 

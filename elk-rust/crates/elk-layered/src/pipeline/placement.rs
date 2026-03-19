@@ -522,6 +522,30 @@ fn refine_lanes_with_orthogonal_slots(ir: &mut LayeredIr, options: &LayoutOption
                 ir.normalized_edges[edge_idx].lane = *slot;
             }
         }
+
+        // Degenerate case: identical geometry can collapse all slots to one value.
+        // Spread lanes deterministically so parallel connectors remain visually distinct.
+        let mut unique = indices
+            .iter()
+            .map(|&idx| ir.normalized_edges[idx].lane)
+            .collect::<Vec<_>>();
+        unique.sort_unstable();
+        unique.dedup();
+        if unique.len() <= 1 && indices.len() > 1 {
+            let mut ordered = indices
+                .iter()
+                .copied()
+                .collect::<Vec<_>>();
+            ordered.sort_by_key(|&idx| {
+                let ne = &ir.normalized_edges[idx];
+                let edge = &ir.edges[ne.edge_index];
+                (edge.bundle_key, edge.model_order, ne.segment_order, ne.original_edge.index())
+            });
+            let center = (ordered.len() as i32 - 1) / 2;
+            for (i, idx) in ordered.into_iter().enumerate() {
+                ir.normalized_edges[idx].lane = i as i32 - center;
+            }
+        }
     }
 }
 

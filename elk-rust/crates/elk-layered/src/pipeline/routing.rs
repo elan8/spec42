@@ -342,28 +342,53 @@ fn apply_hierarchy_boundary_anchors(
     // For cross-hierarchy edges without explicit ports, anchor at the container boundary
     // nearest to the opposite endpoint, mirroring Java layered's boundary-aware behavior.
     if edge.source.port.is_none() && edge.source.node != edge.effective_source {
-        *start = boundary_anchor_towards(graph, edge.effective_source, *end);
+        let inner = endpoint_abs_center(graph, edge.source);
+        *start = boundary_anchor_for_inner_point(
+            graph,
+            edge.effective_source,
+            *end,
+            inner,
+            edge.source.node.index(),
+        );
     }
     if edge.target.port.is_none() && edge.target.node != edge.effective_target {
-        *end = boundary_anchor_towards(graph, edge.effective_target, *start);
+        let inner = endpoint_abs_center(graph, edge.target);
+        *end = boundary_anchor_for_inner_point(
+            graph,
+            edge.effective_target,
+            *start,
+            inner,
+            edge.target.node.index(),
+        );
     }
 }
 
-fn boundary_anchor_towards(graph: &ElkGraph, node: NodeId, toward: Point) -> Point {
+fn boundary_anchor_for_inner_point(
+    graph: &ElkGraph,
+    node: NodeId,
+    toward: Point,
+    inner: Point,
+    spread_seed: usize,
+) -> Point {
     let r = node_rect(graph, node);
     let center = Point::new(r.origin.x + r.size.width * 0.5, r.origin.y + r.size.height * 0.5);
     let dx = toward.x - center.x;
     let dy = toward.y - center.y;
+    let spread = ((spread_seed % 7) as f32 - 3.0) * 4.0;
     if dx.abs() >= dy.abs() {
+        let y = (inner.y + spread).clamp(r.origin.y, r.max_y());
         if dx >= 0.0 {
-            Point::new(r.max_x(), center.y)
+            Point::new(r.max_x(), y)
         } else {
-            Point::new(r.origin.x, center.y)
+            Point::new(r.origin.x, y)
         }
-    } else if dy >= 0.0 {
-        Point::new(center.x, r.max_y())
     } else {
-        Point::new(center.x, r.origin.y)
+        let x = (inner.x + spread).clamp(r.origin.x, r.max_x());
+        if dy >= 0.0 {
+            Point::new(x, r.max_y())
+        } else {
+            Point::new(x, r.origin.y)
+        }
     }
 }
 
