@@ -1,10 +1,13 @@
 //! Shared LSP integration test harness: spawn server, send/read JSON-RPC messages.
 
 use std::io::{Read, Write};
+use std::path::PathBuf;
 use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicI64, Ordering};
 
 pub static NEXT_ID: AtomicI64 = AtomicI64::new(1);
+
+pub const INTEGRATION_LAUNCH_MODE: &str = "cargo-run";
 
 pub fn server_binary_path() -> std::path::PathBuf {
     let current_exe = std::env::current_exe().expect("current_exe");
@@ -22,16 +25,31 @@ pub fn server_binary_path() -> std::path::PathBuf {
 }
 
 pub fn spawn_server() -> Child {
-    let bin = server_binary_path();
-    assert!(bin.exists(), "server binary not found at {:?}", bin);
-    Command::new(&bin)
+    let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .expect("spec42-core has workspace parent")
+        .to_path_buf();
+    // Always launch through cargo so integration tests run current workspace code.
+    eprintln!("spec42 integration harness launch_mode={INTEGRATION_LAUNCH_MODE}");
+    Command::new("cargo")
+        .current_dir(&workspace_root)
+        .arg("run")
+        .arg("-p")
+        .arg("spec42")
+        .arg("--quiet")
+        .arg("--")
         // Enable extra routing diagnostics in elk-layered for integration tests.
         .env("SPEC42_ELK_DEBUG", "1")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::null())
         .spawn()
-        .expect("spawn server")
+        .expect("spawn server via cargo run -p spec42")
+}
+
+#[test]
+fn harness_launch_mode_uses_cargo_run() {
+    assert_eq!(INTEGRATION_LAUNCH_MODE, "cargo-run");
 }
 
 /// LSP message framing: "Content-Length: N\r\n\r\n" + body (UTF-8).

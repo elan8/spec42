@@ -478,7 +478,7 @@ fn interconnection_real_corpus_invariants_hold() {
         let json = read_fixture(fixture);
         let mut g = import_str(&json).expect("import should succeed").graph;
         let options = LayoutOptions::default().with_view_profile(ViewProfile::InterconnectionView);
-        layout(&mut g, &options).expect("layout should succeed");
+        let report = layout(&mut g, &options).expect("layout should succeed");
 
         assert_finite_geometry(&g);
         assert_children_non_overlapping(&g);
@@ -503,6 +503,41 @@ fn interconnection_real_corpus_invariants_hold() {
                 "severe edge-through-node intrusions exceeded for {} (intrusions={})",
                 fixture,
                 intrusions
+            );
+            assert!(
+                !report
+                    .warnings
+                    .iter()
+                    .any(|w| w.contains("endpoint out-of-bounds")),
+                "unexpected libavoid endpoint out-of-bounds warning for {}: {:?}",
+                fixture,
+                report.warnings
+            );
+            assert!(
+                !report
+                    .warnings
+                    .iter()
+                    .any(|w| w.contains("canonicalization_skipped_large_delta")),
+                "unexpected large-delta canonicalization skip warning for {}: {:?}",
+                fixture,
+                report.warnings
+            );
+            assert!(
+                !report.warnings.iter().any(|w| {
+                    w.contains("libavoid terminal canonicalization adjusted edge")
+                }),
+                "unexpected mixed-frame canonicalization adjustment for {}: {:?}",
+                fixture,
+                report.warnings
+            );
+            assert!(
+                !report.warnings.iter().any(|w| {
+                    w.contains("simplified router fallback active")
+                        || w.contains("fallback-reason=hard_error")
+                }),
+                "unexpected fallback activation for {}: {:?}",
+                fixture,
+                report.warnings
             );
         }
     }

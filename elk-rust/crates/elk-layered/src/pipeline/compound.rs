@@ -6,9 +6,7 @@
 
 use std::collections::BTreeMap;
 
-use elk_core::{
-    LayoutDirection, LayoutOptions, PortSide,
-};
+use elk_core::{LayoutDirection, LayoutOptions, PortSide};
 use elk_graph::{EdgeEndpoint, EdgeId, ElkGraph, NodeId, ShapeGeometry};
 
 use crate::pipeline::util::endpoint_abs_center;
@@ -21,37 +19,62 @@ pub struct CompoundRoutingMap {
     pub originals: BTreeMap<EdgeId, (EdgeEndpoint, EdgeEndpoint)>,
 }
 
-/// Infer hierarchical port side from layout direction.
-/// Source boundary gets the "outgoing" side, target gets the "incoming" side.
-fn hierarchical_port_side(direction: LayoutDirection, is_source: bool) -> PortSide {
-    match direction {
-        LayoutDirection::LeftToRight => {
-            if is_source {
-                PortSide::East
-            } else {
-                PortSide::West
-            }
+impl CompoundRoutingMap {
+    #[must_use]
+    pub fn edge_count(&self) -> usize {
+        self.originals.len()
+    }
+}
+
+fn hierarchical_port_side_for_edge(
+    _direction: LayoutDirection,
+    source_center: elk_core::Point,
+    target_center: elk_core::Point,
+    is_source: bool,
+) -> PortSide {
+    let dx = target_center.x - source_center.x;
+    let dy = target_center.y - source_center.y;
+    if dx.abs() >= dy.abs() {
+        if is_source {
+            if dx >= 0.0 { PortSide::East } else { PortSide::West }
+        } else if dx >= 0.0 {
+            PortSide::West
+        } else {
+            PortSide::East
         }
-        LayoutDirection::RightToLeft => {
-            if is_source {
-                PortSide::West
-            } else {
-                PortSide::East
-            }
+    } else if is_source {
+        if dy >= 0.0 { PortSide::South } else { PortSide::North }
+    } else if dy >= 0.0 {
+        PortSide::North
+    } else {
+        PortSide::South
+    }
+}
+
+fn place_hierarchical_port_on_boundary(
+    graph: &mut ElkGraph,
+    node_id: NodeId,
+    port_id: elk_graph::PortId,
+    side: PortSide,
+) {
+    let n = graph.nodes[node_id.index()].geometry;
+    let p = &mut graph.ports[port_id.index()].geometry;
+    match side {
+        PortSide::North => {
+            p.x = (n.width - p.width).max(0.0) / 2.0;
+            p.y = -p.height / 2.0;
         }
-        LayoutDirection::TopToBottom => {
-            if is_source {
-                PortSide::South
-            } else {
-                PortSide::North
-            }
+        PortSide::South => {
+            p.x = (n.width - p.width).max(0.0) / 2.0;
+            p.y = n.height - p.height / 2.0;
         }
-        LayoutDirection::BottomToTop => {
-            if is_source {
-                PortSide::North
-            } else {
-                PortSide::South
-            }
+        PortSide::East => {
+            p.x = n.width - p.width / 2.0;
+            p.y = (n.height - p.height).max(0.0) / 2.0;
+        }
+        PortSide::West => {
+            p.x = -p.width / 2.0;
+            p.y = (n.height - p.height).max(0.0) / 2.0;
         }
     }
 }
@@ -116,11 +139,15 @@ pub fn preprocess_cross_hierarchy_edges(
     for (edge_id, effective_source, effective_target, original_source, original_target) in
         to_process
     {
-        let hp_source_side = hierarchical_port_side(direction, true);
-        let hp_target_side = hierarchical_port_side(direction, false);
+        let source_center = endpoint_abs_center(graph, original_source);
+        let target_center = endpoint_abs_center(graph, original_target);
+        let hp_source_side = hierarchical_port_side_for_edge(direction, source_center, target_center, true);
+        let hp_target_side = hierarchical_port_side_for_edge(direction, source_center, target_center, false);
 
         let hp_source = graph.add_port(effective_source, hp_source_side, port_geom);
         let hp_target = graph.add_port(effective_target, hp_target_side, port_geom);
+        place_hierarchical_port_on_boundary(graph, effective_source, hp_source, hp_source_side);
+        place_hierarchical_port_on_boundary(graph, effective_target, hp_target, hp_target_side);
 
         let edge = &mut graph.edges[edge_id.index()];
         if let Some(first) = edge.sources.first_mut() {

@@ -323,6 +323,12 @@ fn apply_graph_hints(
     node_ids: &HashMap<String, NodeId>,
     config: &LayoutConfig,
 ) {
+    if matches!(config.view_profile, LayoutViewProfile::InterconnectionView) {
+        elk_graph.properties.insert(
+            "elk.layered.routingBackend",
+            PropertyValue::String("libavoid".into()),
+        );
+    }
     if !matches!(config.view_profile, LayoutViewProfile::GeneralView) {
         return;
     }
@@ -438,31 +444,9 @@ fn map_layout_back(
         } else {
             fallback_edge_points(elk_graph, elk_edge, &node_absolute_origins)
         };
-        let points = if let (Some(src_port), Some(first)) =
-            (edge.source_port.as_deref(), raw_points.first().copied())
-        {
-            let normalized = normalize_port_id(src_port);
-            if let Some(expected) = port_pos_by_id
-                .get(src_port)
-                .or_else(|| port_pos_by_id.get(normalized.as_str()))
-                .copied()
-            {
-                let dx = expected.x - first.x;
-                let dy = expected.y - first.y;
-                raw_points
-                    .into_iter()
-                    .map(|p| Point {
-                        x: p.x + dx,
-                        y: p.y + dy,
-                    })
-                    .collect()
-            } else {
-                raw_points
-            }
-        } else {
-            raw_points
-        };
-        let points = points;
+        // Keep adapter pass-through: endpoint anchoring must be fixed in elk-layered, not by
+        // post-translation here.
+        let points = raw_points;
         if debug_enabled && points.len() >= 2 {
             if let Some(src_port) = edge.source_port.as_deref() {
                 let normalized = normalize_port_id(src_port);

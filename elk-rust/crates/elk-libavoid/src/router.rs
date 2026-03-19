@@ -1,4 +1,4 @@
-//! Deterministic A* routing on a visibility graph with rectangular obstacles.
+//! Deterministic A* routing on an orthogonal visibility graph with rectangular obstacles.
 
 use std::collections::{BTreeMap, BinaryHeap};
 
@@ -12,20 +12,16 @@ pub struct Obstacle {
     pub rect: Rect,
 }
 
-impl Obstacle {
-    #[must_use]
-    pub fn corners(&self) -> [Point; 4] {
-        let r = &self.rect;
-        [
-            Point::new(r.origin.x, r.origin.y),
-            Point::new(r.origin.x + r.size.width, r.origin.y),
-            Point::new(r.origin.x + r.size.width, r.origin.y + r.size.height),
-            Point::new(r.origin.x, r.origin.y + r.size.height),
-        ]
-    }
+#[derive(Clone, Debug, Default)]
+pub struct RouteDebug {
+    pub candidate_points: usize,
+    pub expanded_states: usize,
+    pub neighbor_checks: usize,
+    pub accepted_neighbors: usize,
+    pub blocked_neighbors: usize,
+    pub path_found: bool,
 }
 
-/// Segment from (0,0) to (dx,dy) for direction checks.
 fn rect_contains(r: &Rect, p: Point) -> bool {
     p.x >= r.origin.x + EPS
         && p.x <= r.origin.x + r.size.width - EPS
@@ -79,24 +75,33 @@ fn segment_intersects_obstacle(a: Point, b: Point, obstacles: &[Obstacle]) -> bo
     false
 }
 
-/// Visibility graph vertex: index into points slice.
-fn visible_neighbors(
+fn orthogonal_visible_neighbors(
     from: Point,
     points: &[Point],
     obstacles: &[Obstacle],
     from_idx: usize,
-) -> Vec<(usize, f32)> {
+) -> Vec<(usize, f32, Axis)> {
     let mut out = Vec::new();
     for (i, &p) in points.iter().enumerate() {
         if i == from_idx {
             continue;
         }
-        let dist = ((p.x - from.x).powi(2) + (p.y - from.y).powi(2)).sqrt();
+        let axis = if (p.x - from.x).abs() < EPS {
+            Some(Axis::Vertical)
+        } else if (p.y - from.y).abs() < EPS {
+            Some(Axis::Horizontal)
+        } else {
+            None
+        };
+        let Some(axis) = axis else {
+            continue;
+        };
+        let dist = (p.x - from.x).abs() + (p.y - from.y).abs();
         if dist < EPS {
             continue;
         }
         if !segment_intersects_obstacle(from, p, obstacles) {
-            out.push((i, dist));
+            out.push((i, dist, axis));
         }
     }
     out
@@ -106,8 +111,9 @@ fn visible_neighbors(
 #[derive(Clone, Copy, Debug)]
 struct State {
     f: f32,
-    tie: u32,
+    tie: usize,
     idx: usize,
+    axis: Option<Axis>,
 }
 
 impl PartialEq for State {
@@ -134,12 +140,61 @@ impl Ord for State {
     }
 }
 
-fn collinear(a: Point, b: Point, c: Point, eps: f32) -> bool {
-    let vx = b.x - a.x;
-    let vy = b.y - a.y;
-    let wx = c.x - b.x;
-    let wy = c.y - b.y;
-    (vx * wy - vy * wx).abs() < eps
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Axis {
+    Horizontal,
+    Vertical,
+}
+
+fn obstacle_channels(obstacles: &[Obstacle]) -> (Vec<f32>, Vec<f32>) {
+    let mut xs = Vec::new();
+    let mut ys = Vec::new();
+    for o in obstacles {
+        let r = o.rect;
+        xs.push(r.origin.x);
+        xs.push(r.origin.x + r.size.width);
+        ys.push(r.origin.y);
+        ys.push(r.origin.y + r.size.height);
+    }
+    xs.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+    ys.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+    xs.dedup_by(|a, b| (*a - *b).abs() < EPS);
+    ys.dedup_by(|a, b| (*a - *b).abs() < EPS);
+    (xs, ys)
+}
+
+fn inside_any_obstacle(p: Point, obstacles: &[Obstacle]) -> bool {
+    obstacles.iter().any(|o| rect_contains(&o.rect, p))
+}
+
+fn candidate_points(start: Point, end: Point, obstacles: &[Obstacle]) -> Vec<Point> {
+    let (xs, ys) = obstacle_channels(obstacles);
+    let mut points = vec![start, end];
+    let mut all_x = xs;
+    let mut all_y = ys;
+    all_x.push(start.x);
+    all_x.push(end.x);
+    all_y.push(start.y);
+    all_y.push(end.y);
+    all_x.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+    all_y.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+    all_x.dedup_by(|a, b| (*a - *b).abs() < EPS);
+    all_y.dedup_by(|a, b| (*a - *b).abs() < EPS);
+    for x in &all_x {
+        for y in &all_y {
+            let p = Point::new(*x, *y);
+            if !inside_any_obstacle(p, obstacles) {
+                points.push(p);
+            }
+        }
+    }
+    points.sort_by(|a, b| {
+        a.x.partial_cmp(&b.x)
+            .unwrap_or(std::cmp::Ordering::Equal)
+            .then_with(|| a.y.partial_cmp(&b.y).unwrap_or(std::cmp::Ordering::Equal))
+    });
+    points.dedup_by(|a, b| (a.x - b.x).abs() < EPS && (a.y - b.y).abs() < EPS);
+    points
 }
 
 /// Route from start to end avoiding obstacles. Returns path [start, ...bends..., end].
@@ -152,23 +207,22 @@ pub fn route(
     segment_penalty: f32,
     bend_penalty: f32,
 ) -> Vec<Point> {
-    let mut points = vec![start, end];
-    for o in obstacles {
-        for c in o.corners() {
-            if points.iter().all(|p| (p.x - c.x).abs() > EPS || (p.y - c.y).abs() > EPS) {
-                points.push(c);
-            }
-        }
-    }
-    // Sort for deterministic ordering when building graph.
-    points.sort_by(|a, b| {
-        a.x.partial_cmp(&b.x).unwrap_or(std::cmp::Ordering::Equal).then_with(|| {
-            a.y.partial_cmp(&b.y).unwrap_or(std::cmp::Ordering::Equal)
-        })
-    });
-    points.dedup_by(|a, b| (a.x - b.x).abs() < EPS && (a.y - b.y).abs() < EPS);
+    route_with_debug(start, end, obstacles, segment_penalty, bend_penalty).0
+}
+
+#[must_use]
+pub fn route_with_debug(
+    start: Point,
+    end: Point,
+    obstacles: &[Obstacle],
+    segment_penalty: f32,
+    bend_penalty: f32,
+) -> (Vec<Point>, RouteDebug) {
+    let mut dbg = RouteDebug::default();
+    let points = candidate_points(start, end, obstacles);
+    dbg.candidate_points = points.len();
     if points.is_empty() {
-        return vec![start, end];
+        return (vec![start, end], dbg);
     }
     let start_idx = points
         .iter()
@@ -179,23 +233,26 @@ pub fn route(
         .position(|p| (p.x - end.x).abs() < EPS && (p.y - end.y).abs() < EPS)
         .unwrap_or(1);
     if start_idx == end_idx {
-        return vec![start, end];
+        return (vec![start, end], dbg);
     }
 
     let seg_penalty = segment_penalty.max(1e-6);
     let mut g_score: BTreeMap<usize, f32> = BTreeMap::new();
     g_score.insert(start_idx, 0.0);
     let mut came_from: BTreeMap<usize, usize> = BTreeMap::new();
-    let mut open = BinaryHeap::new();
+    let mut open: BinaryHeap<State> = BinaryHeap::new();
     let h_start = ((points[end_idx].x - start.x).powi(2) + (points[end_idx].y - start.y).powi(2)).sqrt() * seg_penalty;
     open.push(State {
         f: h_start,
-        tie: start_idx as u32,
+        tie: start_idx,
         idx: start_idx,
+        axis: None,
     });
-    let mut tie_counter = 0u32;
+    let mut best_axis: BTreeMap<usize, Option<Axis>> = BTreeMap::new();
+    best_axis.insert(start_idx, None);
 
-    while let Some(State { idx: u, .. }) = open.pop() {
+    while let Some(State { idx: u, axis: incoming_axis, .. }) = open.pop() {
+        dbg.expanded_states += 1;
         if u == end_idx {
             let mut path = vec![points[end_idx]];
             let mut cur = end_idx;
@@ -204,33 +261,42 @@ pub fn route(
                 cur = prev;
             }
             path.reverse();
-            return path;
+            dbg.path_found = true;
+            return (path, dbg);
         }
         let current = points[u];
         let g_u = g_score.get(&u).copied().unwrap_or(f32::MAX);
-        let prev_opt = came_from.get(&u).copied();
-        for (v, w) in visible_neighbors(current, &points, obstacles, u) {
+        for (v, w, axis) in orthogonal_visible_neighbors(current, &points, obstacles, u) {
+            dbg.neighbor_checks += 1;
             let edge_cost = w * seg_penalty;
-            let bend = prev_opt
-                .map(|prev| !collinear(points[prev], current, points[v], EPS))
-                .unwrap_or(false);
-            let tentative = g_u + edge_cost + if bend { bend_penalty } else { 0.0 };
+            let bend = incoming_axis.map(|prev_axis| prev_axis != axis).unwrap_or(false);
+            let mut tentative = g_u + edge_cost + if bend { bend_penalty.max(1.0) } else { 0.0 };
+            // Prefer monotone progress toward target to avoid route oscillations.
+            let prev_dist = (points[end_idx].x - current.x).abs() + (points[end_idx].y - current.y).abs();
+            let next_dist = (points[end_idx].x - points[v].x).abs() + (points[end_idx].y - points[v].y).abs();
+            if next_dist > prev_dist + EPS {
+                tentative += 0.35 * seg_penalty;
+            }
             if tentative < g_score.get(&v).copied().unwrap_or(f32::MAX) {
+                dbg.accepted_neighbors += 1;
                 came_from.insert(v, u);
                 g_score.insert(v, tentative);
-                tie_counter = tie_counter.wrapping_add(1);
+                best_axis.insert(v, Some(axis));
                 let h_v = ((points[end_idx].x - points[v].x).powi(2)
                     + (points[end_idx].y - points[v].y).powi(2))
                     .sqrt()
                     * seg_penalty;
                 open.push(State {
                     f: tentative + h_v,
-                    tie: tie_counter,
+                    tie: v,
                     idx: v,
+                    axis: Some(axis),
                 });
+            } else {
+                dbg.blocked_neighbors += 1;
             }
         }
     }
 
-    vec![start, end]
+    (vec![start, end], dbg)
 }

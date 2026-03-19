@@ -147,10 +147,9 @@ pub(crate) fn node_abs_center(graph: &ElkGraph, node: NodeId) -> Point {
 
 pub(crate) fn port_abs_center(graph: &ElkGraph, port: PortId) -> Point {
     let p = &graph.ports[port.index()];
-    let parent_origin = node_abs_origin(graph, p.node);
     Point::new(
-        parent_origin.x + p.geometry.x + p.geometry.width / 2.0,
-        parent_origin.y + p.geometry.y + p.geometry.height / 2.0,
+        p.geometry.x + p.geometry.width / 2.0,
+        p.geometry.y + p.geometry.height / 2.0,
     )
 }
 
@@ -159,6 +158,46 @@ pub(crate) fn endpoint_abs_center(graph: &ElkGraph, endpoint: EdgeEndpoint) -> P
         port_abs_center(graph, port)
     } else {
         node_abs_center(graph, endpoint.node)
+    }
+}
+
+/// Explicit local<->absolute coordinate transform for one recursive layout scope.
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct LocalScopeFrame {
+    pub origin_abs: Point,
+}
+
+impl LocalScopeFrame {
+    #[must_use]
+    pub const fn new(origin_abs: Point) -> Self {
+        Self { origin_abs }
+    }
+
+    #[must_use]
+    pub fn to_local(self, abs: Point) -> Point {
+        Point::new(abs.x - self.origin_abs.x, abs.y - self.origin_abs.y)
+    }
+
+    #[must_use]
+    pub fn to_abs(self, local: Point) -> Point {
+        Point::new(local.x + self.origin_abs.x, local.y + self.origin_abs.y)
+    }
+}
+
+/// Compute a deterministic local scope origin for a set of nodes.
+#[must_use]
+pub(crate) fn local_scope_frame(graph: &ElkGraph, scope_nodes: &std::collections::BTreeSet<NodeId>) -> LocalScopeFrame {
+    let mut min_x = f32::INFINITY;
+    let mut min_y = f32::INFINITY;
+    for &node_id in scope_nodes {
+        let o = node_abs_origin(graph, node_id);
+        min_x = min_x.min(o.x);
+        min_y = min_y.min(o.y);
+    }
+    if min_x.is_finite() && min_y.is_finite() {
+        LocalScopeFrame::new(Point::new(min_x, min_y))
+    } else {
+        LocalScopeFrame::new(Point::new(0.0, 0.0))
     }
 }
 

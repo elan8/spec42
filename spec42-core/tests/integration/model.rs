@@ -712,16 +712,24 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
         debug.push_str(&format!("{qn} | container={container}\n"));
     }
     debug.push_str("\nedge_endpoint_nearest_ports:\n");
+    let mut max_start_drift = 0.0f32;
+    let mut max_end_drift = 0.0f32;
+    let mut parsed_endpoint_paths = 0usize;
     for (idx, path) in paths.into_iter().enumerate() {
         if let Some(((sx, sy), (ex, ey))) = parse_path_endpoints(&path) {
             let start_near = nearest_port(&ports, sx, sy);
             let end_near = nearest_port(&ports, ex, ey);
+            let start_dist = start_near.map(|(_, d)| d).unwrap_or(f32::INFINITY);
+            let end_dist = end_near.map(|(_, d)| d).unwrap_or(f32::INFINITY);
+            max_start_drift = max_start_drift.max(start_dist);
+            max_end_drift = max_end_drift.max(end_dist);
+            parsed_endpoint_paths += 1;
             debug.push_str(&format!(
                 "{idx}: start=({sx:.1},{sy:.1}) nearest_start_port={} dist={:.2} end=({ex:.1},{ey:.1}) nearest_end_port={} dist={:.2}\n",
                 start_near.map(|(p, _)| p.id.as_str()).unwrap_or("<none>"),
-                start_near.map(|(_, d)| d).unwrap_or(f32::INFINITY),
+                start_dist,
                 end_near.map(|(p, _)| p.id.as_str()).unwrap_or("<none>"),
-                end_near.map(|(_, d)| d).unwrap_or(f32::INFINITY),
+                end_dist,
             ));
         } else {
             debug.push_str(&format!("{idx}: (failed to parse endpoints) {path}\n"));
@@ -760,12 +768,12 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
         "expected orthogonal routing (no violations), got {orthogonal_violations} (aspect_ratio={aspect_ratio})"
     );
     assert!(
-        intrusions <= 150,
-        "expected edge-node intrusions to stay bounded (improving toward 0), got {intrusions} (aspect_ratio={aspect_ratio}, crossings={crossings}, bends={bends})"
+        intrusions <= 60,
+        "expected edge-node intrusions to stay below quality gate, got {intrusions} (aspect_ratio={aspect_ratio}, crossings={crossings}, bends={bends})"
     );
     assert!(
-        crossings <= 25,
-        "expected edge crossings to stay bounded, got {crossings} (aspect_ratio={aspect_ratio}, intrusions={intrusions}, bends={bends})"
+        crossings <= 6,
+        "expected edge crossings to stay below quality gate, got {crossings} (aspect_ratio={aspect_ratio}, intrusions={intrusions}, bends={bends})"
     );
     assert!(
         bends <= 100,
@@ -778,6 +786,32 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
                 || warning.contains("libavoid")
         }),
         "expected interconnection warnings to include routing backend diagnostics, got: {warnings:?}"
+    );
+    assert!(
+        !warnings
+            .iter()
+            .any(|warning| warning.contains("endpoint out-of-bounds")),
+        "expected no libavoid endpoint out-of-bounds warnings, got: {warnings:?}"
+    );
+    assert!(
+        !warnings
+            .iter()
+            .any(|warning| warning.contains("canonicalization_skipped_large_delta")),
+        "expected no large-delta canonicalization skip warnings, got: {warnings:?}"
+    );
+    assert!(
+        !warnings
+            .iter()
+            .any(|warning| warning.contains("libavoid terminal canonicalization adjusted edge")),
+        "expected no mixed-frame terminal canonicalization adjustments, got: {warnings:?}"
+    );
+    assert!(
+        parsed_endpoint_paths >= 8,
+        "expected enough parsed edge paths for drift checks, got {parsed_endpoint_paths}"
+    );
+    assert!(
+        max_start_drift <= 24.0 && max_end_drift <= 24.0,
+        "expected edge endpoints to stay near declared ports (<=24px drift), got start_max={max_start_drift:.2}, end_max={max_end_drift:.2}"
     );
     assert!(
         aspect_ratio > 0.0 && aspect_ratio < 9.5,

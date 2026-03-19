@@ -26,6 +26,24 @@ This note captures the current Java-vs-Rust re-baseline for dense SysML Intercon
 
 - Dense visual similarity (exact lane geometry and connector aesthetics) is still partial; current gate is metric-based, not pixel-identical.
 
+## Root-Cause Buckets (Debug Mapping)
+
+The active debug gate for `interconnection_real_full_drone_like` classifies bad edges into concrete
+root-cause buckets to avoid patchwork tuning:
+
+- **FrameMismatch** (`layered/routing` + `libavoid/lib`):
+  - Symptoms: endpoint out-of-bounds, nearest-port drift spikes, endpoint canonicalization deltas.
+  - Java parity anchor: `OrthogonalEdgeRouter` endpoint coordinate usage must stay consistent per scope.
+- **ScopeSelectionMismatch** (`layered/routing` + `pipeline/compound`):
+  - Symptoms: edge appears at wrong recursion level, `no_local_edges` / deferred cross-hierarchy routing.
+  - Java parity anchor: `HierarchicalPortOrthogonalEdgeRouter` split/restore flow by hierarchy level.
+- **DummyRestorationMismatch** (`pipeline/compound`):
+  - Symptoms: source/target identity not preserved after hierarchical dummy replacement.
+  - Java parity anchor: post-route correction in `HierarchicalPortOrthogonalEdgeRouter`.
+- **ChannelGraphDeficiency** (`libavoid/router`):
+  - Symptoms: straight-line fallback-like routes through crowded regions despite available channels.
+  - Java parity anchor: route generation behavior in `OrthogonalRoutingGenerator`.
+
 ## Java Port Candidates (Routing Focus)
 
 Gate prerequisite: keep `interconnection_real_full_drone_like` green on invariants, bend budgets, and deterministic route signature before/after each port.

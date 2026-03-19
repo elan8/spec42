@@ -57,6 +57,12 @@ impl LayeredLayoutEngine {
         let top_level_set: BTreeSet<NodeId> = top_level.iter().copied().collect();
         let compound_map =
             preprocess_cross_hierarchy_edges(graph, &top_level_set, &effective_options);
+        if std::env::var_os("SPEC42_ELK_DEBUG").is_some() {
+            report.warnings.push(format!(
+                "elk-layered: compound-scope cross_hierarchy_edges={}",
+                compound_map.edge_count()
+            ));
+        }
         let bounds = layout_subgraph(graph, &top_level, &effective_options, &mut report)?;
         postprocess_cross_hierarchy_edges(graph, &compound_map);
         // Store graph bounds on the synthetic root node geometry.

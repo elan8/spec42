@@ -4,10 +4,11 @@ use elk_core::{EdgeRouting, LayoutOptions, LayoutStats, Point, PortSide, Rect, S
 use elk_graph::{ElkGraph, EdgeId, NodeId, PortId};
 
 use crate::ir::{IrEdge, LayeredIr};
+use crate::pipeline::orthogonal_routing_generator::{assign_routing_slots, HyperEdgeSegment};
 use crate::pipeline::props::decode_layout_from_props;
 use crate::pipeline::util::{
-    dedup_points, endpoint_abs_center, endpoint_port_side, label_size, node_abs_origin,
-    point_along_outward_normal,
+    dedup_points, endpoint_abs_center, endpoint_port_side, label_size, local_scope_frame,
+    node_abs_origin, point_along_outward_normal,
 };
 
 pub(crate) fn export_to_graph(
@@ -18,6 +19,7 @@ pub(crate) fn export_to_graph(
     warnings: &mut Vec<String>,
     stats: &mut LayoutStats,
 ) -> usize {
+    let debug_enabled = std::env::var_os("SPEC42_ELK_DEBUG").is_some();
     // Write node positions/sizes.
     for node in &ir.nodes {
         if let crate::ir::IrNodeKind::Real(node_id) = node.kind {
@@ -32,8 +34,12 @@ pub(crate) fn export_to_graph(
     }
 
     // Route edges: libavoid backend (if opted in) or simple 1-bend router.
-    let use_libavoid = routing_backend_is_libavoid(graph);
+    let use_libavoid = should_use_libavoid(graph, options);
     let mut routed = 0usize;
+    let mut libavoid_failed = false;
+    if !use_libavoid && matches!(options.view_profile, elk_core::ViewProfile::InterconnectionView) {
+        warnings.push("elk-layered: libavoid not selected for interconnection; using simplified router fallback".to_string());
+    }
 
     if use_libavoid {
         let local_edge_ids: Vec<EdgeId> = ir.edges
@@ -41,22 +47,72 @@ pub(crate) fn export_to_graph(
             .filter(|e| local_nodes.contains(&e.effective_source) && local_nodes.contains(&e.effective_target))
             .map(|e| e.original_edge)
             .collect();
+        if debug_enabled {
+            let deferred_cross_hierarchy = ir
+                .edges
+                .iter()
+                .filter(|e| {
+                    local_nodes.contains(&e.effective_source) ^ local_nodes.contains(&e.effective_target)
+                })
+                .count();
+            warnings.push(format!(
+                "elk-layered: routing-scope local_nodes={} local_edges={} deferred_cross_hierarchy={}",
+                local_nodes.len(),
+                local_edge_ids.len(),
+                deferred_cross_hierarchy
+            ));
+        }
         if !local_edge_ids.is_empty() {
-            if let Err(e) = elk_libavoid::route_edges(graph, &local_edge_ids) {
-                warnings.push(format!("elk-layered: libavoid routing failed: {e}"));
-            } else {
+            let scope_frame = local_scope_frame(graph, local_nodes);
+            match elk_libavoid::route_edges_with_diagnostics_in_scope(
+                graph,
+                &local_edge_ids,
+                scope_frame.origin_abs,
+                Some(local_nodes),
+            ) {
+                Err(e) => {
+                    warnings.push(format!("elk-layered: libavoid routing failed: {e}"));
+                    libavoid_failed = true;
+                    if debug_enabled {
+                        warnings.push(format!(
+                            "elk-layered: fallback-reason={}",
+                            FallbackReason::HardError.as_str()
+                        ));
+                    }
+                }
+                Ok(diag_lines) => {
+                    if debug_enabled {
+                        warnings.extend(diag_lines.into_iter());
+                    }
                 routed = local_edge_ids.len();
                 for edge in &ir.edges {
                     if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
                         continue;
                     }
+                    if debug_enabled {
+                        warnings.push(format!(
+                            "elk-layered: edge-scope edge={:?} src_scope={:?} dst_scope={:?} src_frame={} dst_frame={}",
+                            edge.original_edge,
+                            edge.effective_source,
+                            edge.effective_target,
+                            endpoint_frame_debug(graph, edge.source),
+                            endpoint_frame_debug(graph, edge.target)
+                        ));
+                    }
+                    canonicalize_libavoid_terminals(graph, edge, warnings);
                     let (start, end) = section_endpoints(graph, edge.original_edge);
                     for &sid in &graph.edges[edge.original_edge.index()].sections {
                         stats.bend_points += graph.edge_sections[sid.index()].bend_points.len();
                     }
                     place_edge_labels(graph, edge, start, end, options, stats);
                 }
+                }
             }
+        } else if debug_enabled {
+            warnings.push(format!(
+                "elk-layered: fallback-reason={}",
+                FallbackReason::NoLocalEdges.as_str()
+            ));
         }
         if routed > 0 {
             warnings.push("elk-layered: libavoid routing backend active".to_string());
@@ -67,7 +123,19 @@ pub(crate) fn export_to_graph(
     let fanout_lane_bias_by_index = fanout_lane_bias_by_edge_index(ir);
     let keep_unnecessary_bends = keep_unnecessary_bends(graph);
 
-    if !use_libavoid || routed == 0 {
+    if !use_libavoid || libavoid_failed {
+        if debug_enabled && !use_libavoid {
+            warnings.push(format!(
+                "elk-layered: fallback-reason={}",
+                FallbackReason::BackendNotSelected.as_str()
+            ));
+        }
+        if use_libavoid && libavoid_failed {
+            warnings.push(
+                "elk-layered: libavoid hard failure; simplified router fallback active"
+                    .to_string(),
+            );
+        }
         for edge in &ir.edges {
             if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
                 continue;
@@ -113,6 +181,136 @@ pub(crate) fn export_to_graph(
     routed
 }
 
+#[derive(Clone, Copy, Debug)]
+enum FallbackReason {
+    BackendNotSelected,
+    HardError,
+    NoLocalEdges,
+}
+
+impl FallbackReason {
+    const fn as_str(self) -> &'static str {
+        match self {
+            Self::BackendNotSelected => "backend_not_selected",
+            Self::HardError => "hard_error",
+            Self::NoLocalEdges => "no_local_edges",
+        }
+    }
+}
+
+fn canonicalize_libavoid_terminals(graph: &mut ElkGraph, edge: &IrEdge, warnings: &mut Vec<String>) {
+    let edge_ref = &graph.edges[edge.original_edge.index()];
+    let Some(first_id) = edge_ref.sections.first().copied() else {
+        return;
+    };
+    let Some(last_id) = edge_ref.sections.last().copied() else {
+        return;
+    };
+    let observed_start = graph.edge_sections[first_id.index()].start;
+    let observed_end = graph.edge_sections[last_id.index()].end;
+    let start_endpoint = graph.edges[edge.original_edge.index()]
+        .sources
+        .first()
+        .copied()
+        .unwrap_or(edge.source);
+    let end_endpoint = graph.edges[edge.original_edge.index()]
+        .targets
+        .first()
+        .copied()
+        .unwrap_or(edge.target);
+    let start = endpoint_abs_center(graph, start_endpoint);
+    let end = endpoint_abs_center(graph, end_endpoint);
+    let start_d = ((observed_start.x - start.x).powi(2) + (observed_start.y - start.y).powi(2)).sqrt();
+    let end_d = ((observed_end.x - end.x).powi(2) + (observed_end.y - end.y).powi(2)).sqrt();
+    graph.edge_sections[first_id.index()].start = start;
+    graph.edge_sections[last_id.index()].end = end;
+
+    if std::env::var_os("SPEC42_ELK_DEBUG").is_some() {
+        if start_d > 64.0 || end_d > 64.0 {
+            warnings.push(format!(
+                "elk-layered: libavoid terminal canonicalization adjusted edge {:?} (start_delta={:.1}, end_delta={:.1})",
+                edge.original_edge, start_d, end_d
+            ));
+        }
+        let extent = graph_layout_extent(graph);
+        let margin = 64.0f32;
+        let out = |p: Point| -> bool {
+            p.x < -margin
+                || p.y < -margin
+                || p.x > extent.max_x + margin
+                || p.y > extent.max_y + margin
+        };
+        if out(observed_start) || out(observed_end) || out(start) || out(end) {
+            warnings.push(format!(
+                "elk-layered: libavoid edge {:?} endpoint out-of-bounds observed=({:.1},{:.1})->({:.1},{:.1}) chosen=({:.1},{:.1})->({:.1},{:.1}) root=({:.1}x{:.1})",
+                edge.original_edge,
+                observed_start.x,
+                observed_start.y,
+                observed_end.x,
+                observed_end.y,
+                start.x,
+                start.y,
+                end.x,
+                end.y,
+                extent.max_x,
+                extent.max_y
+            ));
+        }
+    }
+}
+
+struct LayoutExtent {
+    max_x: f32,
+    max_y: f32,
+}
+
+fn endpoint_frame_debug(graph: &ElkGraph, endpoint: elk_graph::EdgeEndpoint) -> String {
+    match endpoint.port {
+        Some(port_id) => {
+            let p = &graph.ports[port_id.index()];
+            let n = &graph.nodes[p.node.index()];
+            let abs = endpoint_abs_center(graph, endpoint);
+            format!(
+                "port(node={:?},port={:?},node_xy=({:.1},{:.1}),raw=({:.1},{:.1}),abs=({:.1},{:.1}))",
+                p.node,
+                port_id,
+                n.geometry.x,
+                n.geometry.y,
+                p.geometry.x + p.geometry.width / 2.0,
+                p.geometry.y + p.geometry.height / 2.0,
+                abs.x,
+                abs.y
+            )
+        }
+        None => {
+            let n = &graph.nodes[endpoint.node.index()];
+            let abs = endpoint_abs_center(graph, endpoint);
+            format!(
+                "node(node={:?},raw=({:.1},{:.1}),abs=({:.1},{:.1}))",
+                endpoint.node,
+                n.geometry.x + n.geometry.width / 2.0,
+                n.geometry.y + n.geometry.height / 2.0,
+                abs.x,
+                abs.y
+            )
+        }
+    }
+}
+
+fn graph_layout_extent(graph: &ElkGraph) -> LayoutExtent {
+    let mut max_x = 0.0f32;
+    let mut max_y = 0.0f32;
+    for node in &graph.nodes {
+        if node.id == graph.root {
+            continue;
+        }
+        let o = node_abs_origin(graph, node.id);
+        max_x = max_x.max(o.x + node.geometry.width.max(0.0));
+        max_y = max_y.max(o.y + node.geometry.height.max(0.0));
+    }
+    LayoutExtent { max_x, max_y }
+}
+
 fn fanout_lane_bias_by_edge_index(ir: &LayeredIr) -> BTreeMap<usize, i32> {
     let mut groups: BTreeMap<(NodeId, Option<u32>), Vec<(usize, usize, usize)>> = BTreeMap::new();
     for edge in &ir.edges {
@@ -137,16 +335,41 @@ fn fanout_lane_bias_by_edge_index(ir: &LayeredIr) -> BTreeMap<usize, i32> {
             out.insert(edge_idx, i as i32 - center);
         }
     }
-    out
+    merge_adjacent_fanout_biases(out)
 }
 
-fn routing_backend_is_libavoid(graph: &ElkGraph) -> bool {
-    let meta = elk_meta::default_registry();
+fn merge_adjacent_fanout_biases(mut biases: BTreeMap<usize, i32>) -> BTreeMap<usize, i32> {
+    // Hyperedge-dummy-merger style smoothing: collapse near-identical adjacent fanout offsets
+    // so dense bundles share trunks longer before splitting.
+    let mut entries: Vec<(usize, i32)> = biases.iter().map(|(k, v)| (*k, *v)).collect();
+    entries.sort_by_key(|(edge_idx, _)| *edge_idx);
+    for i in 1..entries.len() {
+        let prev = entries[i - 1].1;
+        let cur = entries[i].1;
+        if (cur - prev).abs() <= 1 {
+            entries[i].1 = prev;
+        }
+    }
+    biases.clear();
+    for (k, v) in entries {
+        biases.insert(k, v);
+    }
+    biases
+}
+
+fn should_use_libavoid(graph: &ElkGraph, options: &LayoutOptions) -> bool {
     let by_key = elk_alg_common::options::casefold_map(&graph.properties);
-    let v = elk_alg_common::options::find_option(&meta, &by_key, "elk.layered.routingbackend");
-    v.and_then(elk_graph::PropertyValue::as_str)
-        .map(|s| s.trim().eq_ignore_ascii_case("libavoid"))
-        .unwrap_or(false)
+    let backend = by_key
+        .get("elk.layered.routingbackend")
+        .or_else(|| by_key.get("org.eclipse.elk.layered.routingbackend"))
+        .and_then(|v| elk_graph::PropertyValue::as_str(v))
+        .map(|s| s.trim().to_ascii_lowercase());
+    match backend.as_deref() {
+        Some("libavoid") => true,
+        Some("default") | Some("simple") | Some("elkgraph") => false,
+        Some(_) => false,
+        None => matches!(options.view_profile, elk_core::ViewProfile::InterconnectionView),
+    }
 }
 
 fn section_endpoints(graph: &ElkGraph, edge_id: EdgeId) -> (Point, Point) {
@@ -282,7 +505,7 @@ fn edge_lane_by_ir_index(ir: &LayeredIr) -> BTreeMap<usize, i32> {
             .or_default()
             .push((ne.segment_order, ne.lane));
     }
-    by_edge
+    let base_lanes: BTreeMap<usize, i32> = by_edge
         .into_iter()
         .map(|(edge_idx, mut lanes)| {
             lanes.sort_by_key(|(segment_order, lane)| (*segment_order, *lane));
@@ -301,7 +524,52 @@ fn edge_lane_by_ir_index(ir: &LayeredIr) -> BTreeMap<usize, i32> {
             };
             (edge_idx, lane)
         })
-        .collect()
+        .collect();
+    apply_orthogonal_slot_refinement(base_lanes, ir)
+}
+
+fn apply_orthogonal_slot_refinement(
+    base_lanes: BTreeMap<usize, i32>,
+    ir: &LayeredIr,
+) -> BTreeMap<usize, i32> {
+    if base_lanes.len() <= 2 {
+        return base_lanes;
+    }
+    let mut edge_order: Vec<usize> = base_lanes.keys().copied().collect();
+    edge_order.sort_unstable();
+    let mut segments = Vec::with_capacity(edge_order.len());
+    for (seg_id, edge_idx) in edge_order.iter().copied().enumerate() {
+        let lane = base_lanes.get(&edge_idx).copied().unwrap_or_default();
+        let model_order = ir
+            .edges
+            .iter()
+            .find(|e| e.original_edge.index() == edge_idx)
+            .map(|e| e.model_order as f32)
+            .unwrap_or(edge_idx as f32);
+        segments.push(HyperEdgeSegment {
+            id: seg_id,
+            start_coordinate: lane as f32,
+            end_coordinate: lane as f32 + 0.001,
+            incoming_connection_coordinates: vec![model_order],
+            outgoing_connection_coordinates: vec![edge_idx as f32],
+            routing_slot: 0,
+            in_weight: 0,
+            out_weight: 0,
+            incoming: Vec::new(),
+            outgoing: Vec::new(),
+            split_partner: None,
+            split_by: None,
+            mark: -1,
+        });
+    }
+    let slots = assign_routing_slots(segments, 1.0);
+    let mut out = BTreeMap::new();
+    for (seg_id, edge_idx) in edge_order.into_iter().enumerate() {
+        let base = base_lanes.get(&edge_idx).copied().unwrap_or_default();
+        let refined = slots.get(seg_id).copied().unwrap_or(0);
+        out.insert(edge_idx, base + refined);
+    }
+    out
 }
 
 fn build_legacy_orthogonal_bends(
