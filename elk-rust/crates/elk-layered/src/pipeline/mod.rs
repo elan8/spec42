@@ -355,7 +355,7 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Pariy fixture depends on in-progress lane model parity"]
+    #[ignore = "Parity fixture depends on in-progress lane model parity"]
     fn lane_assignment_separates_parallel_segments() {
         let mut graph = ElkGraph::new();
         let a = graph.add_node(graph.root, elk_graph::ShapeGeometry { x: 0.0, y: 0.0, width: 20.0, height: 20.0 });
