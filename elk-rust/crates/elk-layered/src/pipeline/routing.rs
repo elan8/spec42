@@ -790,14 +790,14 @@ fn boundary_anchor_for_inner_point(
     let dx = toward.x - center.x;
     let dy = toward.y - center.y;
     if dx.abs() >= dy.abs() {
-        let y = inner.y;
+        let y = inner.y.clamp(r.origin.y, r.max_y());
         if dx >= 0.0 {
             Point::new(r.max_x(), y)
         } else {
             Point::new(r.origin.x, y)
         }
     } else {
-        let x = inner.x;
+        let x = inner.x.clamp(r.origin.x, r.max_x());
         if dy >= 0.0 {
             Point::new(x, r.max_y())
         } else {
