@@ -446,15 +446,18 @@ fn map_layout_back(
         } else {
             fallback_edge_points(elk_graph, elk_edge, &node_absolute_origins)
         };
-        let points = orthogonalize_polyline(
-            raw_points,
-            edge.source_port
-                .as_deref()
-                .and_then(|id| port_side_by_id.get(id).cloned()),
-            edge.target_port
-                .as_deref()
-                .and_then(|id| port_side_by_id.get(id).cloned()),
-        );
+        let mut points = simplify_polyline(raw_points);
+        if !polyline_is_orthogonal(&points) {
+            points = orthogonalize_polyline(
+                points,
+                edge.source_port
+                    .as_deref()
+                    .and_then(|id| port_side_by_id.get(id).cloned()),
+                edge.target_port
+                    .as_deref()
+                    .and_then(|id| port_side_by_id.get(id).cloned()),
+            );
+        }
         if debug_enabled && points.len() >= 2 {
             if let Some(src_port) = edge.source_port.as_deref() {
                 let normalized = normalize_port_id(src_port);
@@ -737,6 +740,17 @@ fn simplify_polyline(points: Vec<Point>) -> Vec<Point> {
         }
     }
     out
+}
+
+fn polyline_is_orthogonal(points: &[Point]) -> bool {
+    const EPS: f32 = 1e-5;
+    points.windows(2).all(|segment| {
+        let a = segment[0];
+        let b = segment[1];
+        let dx = (a.x - b.x).abs();
+        let dy = (a.y - b.y).abs();
+        dx <= EPS || dy <= EPS
+    })
 }
 
 

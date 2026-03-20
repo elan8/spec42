@@ -136,7 +136,7 @@ pub(crate) fn layout_subgraph(
         name: "edge_routing",
         duration: started.elapsed(),
     });
-    postprocess_cross_hierarchy_edges(graph, &compound_map);
+    postprocess_cross_hierarchy_edges(graph, &compound_map, &mut report.warnings);
 
     Ok(placement.bounds)
 }

@@ -48,9 +48,14 @@ pub(crate) fn evaluate(layout: &DiagramLayout) -> LayoutMetrics {
 
     let mut edge_node_intrusion_count = 0usize;
     for edge in &layout.edges {
+        let source_ancestors = ancestor_chain(layout, edge.source_node.as_str());
+        let target_ancestors = ancestor_chain(layout, edge.target_node.as_str());
         for segment in edge.points.windows(2) {
             for node in &layout.nodes {
                 if node.id == edge.source_node || node.id == edge.target_node {
+                    continue;
+                }
+                if source_ancestors.contains(node.id.as_str()) || target_ancestors.contains(node.id.as_str()) {
                     continue;
                 }
                 if segment_hits_rect(segment[0], segment[1], node.bounds) {
@@ -160,6 +165,22 @@ fn segment_hits_rect(left: Point, right: Point, rect: Bounds) -> bool {
     !(max_x < rect.x || min_x > rect.right() || max_y < rect.y || min_y > rect.bottom())
 }
 
+fn ancestor_chain<'a>(layout: &'a DiagramLayout, node_id: &'a str) -> std::collections::HashSet<&'a str> {
+    let mut by_id = std::collections::HashMap::new();
+    for node in &layout.nodes {
+        by_id.insert(node.id.as_str(), node.parent_id.as_deref());
+    }
+    let mut ancestors = std::collections::HashSet::new();
+    let mut current = by_id.get(node_id).copied().flatten();
+    while let Some(parent_id) = current {
+        if !ancestors.insert(parent_id) {
+            break;
+        }
+        current = by_id.get(parent_id).copied().flatten();
+    }
+    ancestors
+}
+
 fn segments_cross(a1: Point, a2: Point, b1: Point, b2: Point) -> bool {
     fn orientation(p: Point, q: Point, r: Point) -> f32 {
         (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
@@ -171,4 +192,3 @@ fn segments_cross(a1: Point, a2: Point, b1: Point, b2: Point) -> bool {
     (o1 > 0.0 && o2 < 0.0 || o1 < 0.0 && o2 > 0.0)
         && (o3 > 0.0 && o4 < 0.0 || o3 < 0.0 && o4 > 0.0)
 }
-

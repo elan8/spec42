@@ -89,6 +89,12 @@ pub(crate) fn export_to_graph(
                     if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
                         continue;
                     }
+                    orthogonalize_edge_sections_with_sides(
+                        graph,
+                        edge.original_edge,
+                        endpoint_port_side(graph, edge.source),
+                        endpoint_port_side(graph, edge.target),
+                    );
                     if debug_enabled {
                         warnings.push(format!(
                             "elk-layered: edge-scope edge={:?} src_scope={:?} dst_scope={:?} src_frame={} dst_frame={}",
@@ -634,6 +640,15 @@ fn orthogonalize_edge_sections_with_sides(
                 None
             },
         );
+        let orthogonal = ensure_terminal_normals(
+            orthogonal,
+            if section_idx == 0 { source_side } else { None },
+            if section_idx == last_section_idx {
+                target_side
+            } else {
+                None
+            },
+        );
         if orthogonal.len() < 2 {
             continue;
         }
@@ -641,6 +656,85 @@ fn orthogonalize_edge_sections_with_sides(
         section_mut.start = orthogonal[0];
         section_mut.end = *orthogonal.last().unwrap_or(&orthogonal[0]);
         section_mut.bend_points = orthogonal[1..orthogonal.len() - 1].to_vec();
+    }
+}
+
+fn ensure_terminal_normals(
+    mut points: Vec<Point>,
+    start_side: Option<PortSide>,
+    end_side: Option<PortSide>,
+) -> Vec<Point> {
+    if let Some(side) = start_side {
+        points = ensure_start_terminal_normal(points, side);
+    }
+    if let Some(side) = end_side {
+        points = ensure_end_terminal_normal(points, side);
+    }
+    simplify_orthogonal_points(points)
+}
+
+fn ensure_start_terminal_normal(points: Vec<Point>, side: PortSide) -> Vec<Point> {
+    const PORT_NORMAL_OFFSET: f32 = 8.0;
+    if points.len() < 2 {
+        return points;
+    }
+    let start = points[0];
+    let next = points[1];
+    if terminal_matches_side(start, next, side) {
+        return points;
+    }
+    let route = point_along_outward_normal(start, side, PORT_NORMAL_OFFSET);
+    let mut rebuilt = Vec::with_capacity(points.len() + 2);
+    rebuilt.push(start);
+    if rebuilt.last().copied() != Some(route) {
+        rebuilt.push(route);
+    }
+    if route != next {
+        let bridge = match side {
+            PortSide::East | PortSide::West => Point::new(route.x, next.y),
+            PortSide::North | PortSide::South => Point::new(next.x, route.y),
+        };
+        if bridge != route && bridge != next {
+            rebuilt.push(bridge);
+        }
+    }
+    rebuilt.extend(points.into_iter().skip(1));
+    rebuilt
+}
+
+fn ensure_end_terminal_normal(points: Vec<Point>, side: PortSide) -> Vec<Point> {
+    const PORT_NORMAL_OFFSET: f32 = 8.0;
+    if points.len() < 2 {
+        return points;
+    }
+    let end = *points.last().unwrap_or(&Point::new(0.0, 0.0));
+    let prev = points[points.len() - 2];
+    if terminal_matches_side(end, prev, side) {
+        return points;
+    }
+    let route = point_along_outward_normal(end, side, PORT_NORMAL_OFFSET);
+    let mut rebuilt = Vec::with_capacity(points.len() + 2);
+    rebuilt.extend(points.iter().copied().take(points.len() - 1));
+    if rebuilt.last().copied() != Some(route) {
+        let bridge = match side {
+            PortSide::East | PortSide::West => Point::new(route.x, prev.y),
+            PortSide::North | PortSide::South => Point::new(prev.x, route.y),
+        };
+        if rebuilt.last().copied() != Some(bridge) && bridge != route && bridge != end {
+            rebuilt.push(bridge);
+        }
+        rebuilt.push(route);
+    }
+    rebuilt.push(end);
+    rebuilt
+}
+
+fn terminal_matches_side(endpoint: Point, neighbor: Point, side: PortSide) -> bool {
+    match side {
+        PortSide::East => (neighbor.y - endpoint.y).abs() <= 1e-5 && neighbor.x >= endpoint.x - 1e-5,
+        PortSide::West => (neighbor.y - endpoint.y).abs() <= 1e-5 && neighbor.x <= endpoint.x + 1e-5,
+        PortSide::North => (neighbor.x - endpoint.x).abs() <= 1e-5 && neighbor.y <= endpoint.y + 1e-5,
+        PortSide::South => (neighbor.x - endpoint.x).abs() <= 1e-5 && neighbor.y >= endpoint.y - 1e-5,
     }
 }
 
