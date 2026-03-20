@@ -261,7 +261,7 @@ pub fn postprocess_cross_hierarchy_edges(
                 format_polyline(&decision.rebuilt_points)
             ));
             warnings.push(format!(
-                "elk-layered compound: edge={:?} legacy_bends={} rebuilt_bends={} legacy_inside_start={} rebuilt_inside_start={} legacy_inside_end={} rebuilt_inside_end={} legacy_sibling_intrusions={} rebuilt_sibling_intrusions={}",
+                "elk-layered compound: edge={:?} legacy_bends={} rebuilt_bends={} legacy_inside_start={} rebuilt_inside_start={} legacy_inside_end={} rebuilt_inside_end={} legacy_endpoint_intrusions={} rebuilt_endpoint_intrusions={} legacy_sibling_intrusions={} rebuilt_sibling_intrusions={}",
                 edge_id,
                 decision.legacy_bends,
                 decision.rebuilt_bends,
@@ -269,6 +269,8 @@ pub fn postprocess_cross_hierarchy_edges(
                 decision.rebuilt_inside_start,
                 decision.legacy_inside_end,
                 decision.rebuilt_inside_end,
+                decision.legacy_endpoint_intrusions,
+                decision.rebuilt_endpoint_intrusions,
                 decision.legacy_sibling_intrusions,
                 decision.rebuilt_sibling_intrusions,
             ));
@@ -324,6 +326,8 @@ struct CandidateDecision {
     rebuilt_inside_start: bool,
     legacy_inside_end: bool,
     rebuilt_inside_end: bool,
+    legacy_endpoint_intrusions: usize,
+    rebuilt_endpoint_intrusions: usize,
     legacy_sibling_intrusions: usize,
     rebuilt_sibling_intrusions: usize,
 }
@@ -345,6 +349,8 @@ fn choose_best_candidate(
         terminal_approaches_from_inside(graph, &legacy_points, record.original_target, false);
     let rebuilt_inside_end =
         terminal_approaches_from_inside(graph, &rebuilt_points, record.original_target, false);
+    let legacy_endpoint_intrusions = count_endpoint_node_intrusions(graph, &legacy_points, record);
+    let rebuilt_endpoint_intrusions = count_endpoint_node_intrusions(graph, &rebuilt_points, record);
     let legacy_sibling_intrusions = count_crossed_sibling_obstacles(graph, &legacy_points, record);
     let rebuilt_sibling_intrusions = count_crossed_sibling_obstacles(graph, &rebuilt_points, record);
     let decision = |reason: &'static str,
@@ -363,6 +369,8 @@ fn choose_best_candidate(
                 rebuilt_inside_start,
                 legacy_inside_end,
                 rebuilt_inside_end,
+                legacy_endpoint_intrusions,
+                rebuilt_endpoint_intrusions,
                 legacy_sibling_intrusions,
                 rebuilt_sibling_intrusions,
             },
@@ -376,7 +384,9 @@ fn choose_best_candidate(
     }
     let rebuilt_within_hard_cap = rebuilt_bends <= REBUILT_BEND_HARD_CAP;
     if (legacy_inside_start && !rebuilt_inside_start) || (legacy_inside_end && !rebuilt_inside_end) {
-        if rebuilt_within_hard_cap || legacy_sibling_intrusions > rebuilt_sibling_intrusions {
+        if (rebuilt_within_hard_cap || legacy_sibling_intrusions > rebuilt_sibling_intrusions)
+            && rebuilt_endpoint_intrusions <= legacy_endpoint_intrusions
+        {
             return decision(
                 "rebuilt-fixes-inside-approach",
                 rebuilt_points.clone(),
@@ -386,6 +396,22 @@ fn choose_best_candidate(
         }
         return decision(
             "legacy-preserves-bend-cap",
+            legacy_points.clone(),
+            legacy_points,
+            rebuilt_points,
+        );
+    }
+    if rebuilt_endpoint_intrusions != legacy_endpoint_intrusions {
+        if rebuilt_endpoint_intrusions < legacy_endpoint_intrusions && rebuilt_within_hard_cap {
+            return decision(
+                "rebuilt-reduces-endpoint-node-intrusions",
+                rebuilt_points.clone(),
+                legacy_points,
+                rebuilt_points,
+            );
+        }
+        return decision(
+            "legacy-avoids-endpoint-node-intrusions",
             legacy_points.clone(),
             legacy_points,
             rebuilt_points,
@@ -664,6 +690,37 @@ fn count_crossed_sibling_obstacles(
         + count_endpoint_sibling_intrusions(graph, points, record.effective_target, record.original_target.node)
 }
 
+fn count_endpoint_node_intrusions(
+    graph: &ElkGraph,
+    points: &[Point],
+    record: &CompoundRouteRecord,
+) -> usize {
+    count_specific_node_intrusions(graph, points, record.original_source, true)
+        + count_specific_node_intrusions(graph, points, record.original_target, false)
+}
+
+fn count_specific_node_intrusions(
+    graph: &ElkGraph,
+    points: &[Point],
+    endpoint: EdgeEndpoint,
+    is_start: bool,
+) -> usize {
+    let rect = node_abs_rect(graph, endpoint.node);
+    points
+        .windows(2)
+        .enumerate()
+        .filter(|(index, segment)| {
+            let is_terminal_segment = if is_start {
+                *index == 0
+            } else {
+                *index + 1 == points.len() - 1
+            };
+            !is_terminal_segment
+                && orthogonal_segment_intersects_rect_interior(segment[0], segment[1], rect)
+        })
+        .count()
+}
+
 fn count_endpoint_sibling_intrusions(
     graph: &ElkGraph,
     points: &[Point],
@@ -732,10 +789,22 @@ fn choose_clear_horizontal_corridor(
         outer_rect.origin.y + 1.0,
         outer_rect.max_y() - 1.0,
         |candidate| {
-            horizontal_branch_intrusions(outward, boundary_point, candidate, sibling_obstacles) == 0
+            horizontal_branch_intrusions(
+                outward,
+                boundary_point,
+                candidate,
+                endpoint_rect,
+                sibling_obstacles,
+            ) == 0
         },
         |candidate| {
-            horizontal_branch_intrusions(outward, boundary_point, candidate, sibling_obstacles)
+            horizontal_branch_intrusions(
+                outward,
+                boundary_point,
+                candidate,
+                endpoint_rect,
+                sibling_obstacles,
+            )
         },
         |candidate| (candidate - preferred_y).abs() + 0.25 * (candidate - outward.y).abs(),
     )
@@ -764,9 +833,23 @@ fn choose_clear_vertical_corridor(
         outer_rect.origin.x + 1.0,
         outer_rect.max_x() - 1.0,
         |candidate| {
-            vertical_branch_intrusions(outward, boundary_point, candidate, sibling_obstacles) == 0
+            vertical_branch_intrusions(
+                outward,
+                boundary_point,
+                candidate,
+                endpoint_rect,
+                sibling_obstacles,
+            ) == 0
         },
-        |candidate| vertical_branch_intrusions(outward, boundary_point, candidate, sibling_obstacles),
+        |candidate| {
+            vertical_branch_intrusions(
+                outward,
+                boundary_point,
+                candidate,
+                endpoint_rect,
+                sibling_obstacles,
+            )
+        },
         |candidate| (candidate - preferred_x).abs() + 0.25 * (candidate - outward.x).abs(),
     )
 }
@@ -821,38 +904,38 @@ fn horizontal_branch_intrusions(
     outward: Point,
     boundary_point: Point,
     corridor_y: f32,
+    endpoint_rect: Rect,
     obstacles: &[Rect],
 ) -> usize {
-    count_branch_intrusions(
-        &[
-            (outward, Point::new(outward.x, corridor_y)),
-            (
-                Point::new(outward.x, corridor_y),
-                Point::new(boundary_point.x, corridor_y),
-            ),
-            (Point::new(boundary_point.x, corridor_y), boundary_point),
-        ],
-        obstacles,
-    )
+    let segments = [
+        (outward, Point::new(outward.x, corridor_y)),
+        (
+            Point::new(outward.x, corridor_y),
+            Point::new(boundary_point.x, corridor_y),
+        ),
+        (Point::new(boundary_point.x, corridor_y), boundary_point),
+    ];
+    count_branch_intrusions(&segments, obstacles)
+        + count_endpoint_rect_intrusions(&segments, endpoint_rect)
 }
 
 fn vertical_branch_intrusions(
     outward: Point,
     boundary_point: Point,
     corridor_x: f32,
+    endpoint_rect: Rect,
     obstacles: &[Rect],
 ) -> usize {
-    count_branch_intrusions(
-        &[
-            (outward, Point::new(corridor_x, outward.y)),
-            (
-                Point::new(corridor_x, outward.y),
-                Point::new(corridor_x, boundary_point.y),
-            ),
-            (Point::new(corridor_x, boundary_point.y), boundary_point),
-        ],
-        obstacles,
-    )
+    let segments = [
+        (outward, Point::new(corridor_x, outward.y)),
+        (
+            Point::new(corridor_x, outward.y),
+            Point::new(corridor_x, boundary_point.y),
+        ),
+        (Point::new(corridor_x, boundary_point.y), boundary_point),
+    ];
+    count_branch_intrusions(&segments, obstacles)
+        + count_endpoint_rect_intrusions(&segments, endpoint_rect)
 }
 
 fn count_branch_intrusions(segments: &[(Point, Point)], obstacles: &[Rect]) -> usize {
@@ -865,6 +948,18 @@ fn count_branch_intrusions(segments: &[(Point, Point)], obstacles: &[Rect]) -> u
                 .count()
         })
         .sum()
+}
+
+fn count_endpoint_rect_intrusions(segments: &[(Point, Point)], endpoint_rect: Rect) -> usize {
+    segments
+        .iter()
+        .enumerate()
+        .filter(|(index, (a, b))| {
+            // The first segment is the perpendicular terminal stub from the port to the outside.
+            // That segment is allowed to touch the endpoint node because it is the actual terminal approach.
+            *index > 0 && orthogonal_segment_intersects_rect_interior(*a, *b, endpoint_rect)
+        })
+        .count()
 }
 
 fn orthogonal_segment_intersects_rect_interior(a: Point, b: Point, rect: Rect) -> bool {
