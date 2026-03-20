@@ -228,8 +228,8 @@ fn canonicalize_libavoid_terminals(graph: &mut ElkGraph, edge: &IrEdge, warnings
     let end = endpoint_abs_center(graph, end_endpoint);
     let start_d = ((observed_start.x - start.x).powi(2) + (observed_start.y - start.y).powi(2)).sqrt();
     let end_d = ((observed_end.x - end.x).powi(2) + (observed_end.y - end.y).powi(2)).sqrt();
-    graph.edge_sections[first_id.index()].start = start;
-    graph.edge_sections[last_id.index()].end = end;
+    set_section_start_preserve_orthogonality(&mut graph.edge_sections[first_id.index()], start);
+    set_section_end_preserve_orthogonality(&mut graph.edge_sections[last_id.index()], end);
 
     if std::env::var_os("SPEC42_ELK_DEBUG").is_some() {
         if start_d > 64.0 || end_d > 64.0 {
@@ -275,12 +275,50 @@ fn restore_nested_endpoint_terminals(graph: &mut ElkGraph, edge: &IrEdge) {
     };
 
     if edge.source.port.is_none() && edge.source.node != edge.effective_source {
-        graph.edge_sections[first_id.index()].start = endpoint_abs_center(graph, edge.source);
+        let start = endpoint_abs_center(graph, edge.source);
+        set_section_start_preserve_orthogonality(&mut graph.edge_sections[first_id.index()], start);
     }
     if edge.target.port.is_none() && edge.target.node != edge.effective_target {
-        graph.edge_sections[last_id.index()].end = endpoint_abs_center(graph, edge.target);
+        let end = endpoint_abs_center(graph, edge.target);
+        set_section_end_preserve_orthogonality(&mut graph.edge_sections[last_id.index()], end);
     }
 }
+
+fn set_section_start_preserve_orthogonality(section: &mut elk_graph::EdgeSection, start: Point) {
+    section.start = start;
+    if section.bend_points.is_empty() {
+        return;
+    }
+    let first = section.bend_points[0];
+    if (first.x - start.x).abs() > f32::EPSILON && (first.y - start.y).abs() > f32::EPSILON {
+        let dx = (first.x - start.x).abs();
+        let dy = (first.y - start.y).abs();
+        section.bend_points[0] = if dx <= dy {
+            Point::new(start.x, first.y)
+        } else {
+            Point::new(first.x, start.y)
+        };
+    }
+}
+
+fn set_section_end_preserve_orthogonality(section: &mut elk_graph::EdgeSection, end: Point) {
+    section.end = end;
+    if section.bend_points.is_empty() {
+        return;
+    }
+    let last_idx = section.bend_points.len() - 1;
+    let last = section.bend_points[last_idx];
+    if (last.x - end.x).abs() > f32::EPSILON && (last.y - end.y).abs() > f32::EPSILON {
+        let dx = (last.x - end.x).abs();
+        let dy = (last.y - end.y).abs();
+        section.bend_points[last_idx] = if dx <= dy {
+            Point::new(end.x, last.y)
+        } else {
+            Point::new(last.x, end.y)
+        };
+    }
+}
+
 
 struct LayoutExtent {
     max_x: f32,
@@ -380,7 +418,7 @@ fn merge_adjacent_fanout_biases(mut biases: BTreeMap<usize, i32>) -> BTreeMap<us
     biases
 }
 
-fn should_use_libavoid(graph: &ElkGraph, options: &LayoutOptions) -> bool {
+pub(crate) fn should_use_libavoid(graph: &ElkGraph, options: &LayoutOptions) -> bool {
     let by_key = elk_alg_common::options::casefold_map(&graph.properties);
     let backend = by_key
         .get("elk.layered.routingbackend")
@@ -412,9 +450,41 @@ fn node_rect(graph: &ElkGraph, node: NodeId) -> Rect {
     Rect::new(o, Size::new(n.geometry.width, n.geometry.height))
 }
 
+pub(crate) fn refresh_all_port_positions(graph: &mut ElkGraph, options: &LayoutOptions) {
+    let node_ids: Vec<NodeId> = graph
+        .nodes
+        .iter()
+        .map(|n| n.id)
+        .filter(|id| *id != graph.root)
+        .collect();
+    for node_id in node_ids {
+        layout_ports(graph, node_id, options);
+    }
+}
+
+pub(crate) fn snap_all_edge_terminals_to_endpoints(graph: &mut ElkGraph) {
+    let edge_ids: Vec<EdgeId> = graph.edges.iter().map(|e| e.id).collect();
+    for edge_id in edge_ids {
+        let edge = &graph.edges[edge_id.index()];
+        let (Some(source), Some(target), Some(&first_id), Some(&last_id)) = (
+            edge.sources.first().copied(),
+            edge.targets.first().copied(),
+            edge.sections.first(),
+            edge.sections.last(),
+        ) else {
+            continue;
+        };
+        let start = endpoint_abs_center(graph, source);
+        let end = endpoint_abs_center(graph, target);
+        set_section_start_preserve_orthogonality(&mut graph.edge_sections[first_id.index()], start);
+        set_section_end_preserve_orthogonality(&mut graph.edge_sections[last_id.index()], end);
+    }
+}
+
 fn layout_ports(graph: &mut ElkGraph, node_id: NodeId, options: &LayoutOptions) {
-    let bounds = node_rect(graph, node_id);
     let node = graph.nodes[node_id.index()].clone();
+    let node_width = node.geometry.width;
+    let node_height = node.geometry.height;
     let graph_defaults = decode_layout_from_props(&graph.properties);
     let node_options = decode_layout_from_props(&node.properties).inherit_from(&graph_defaults);
     let respect_port_order = node_options
@@ -445,20 +515,20 @@ fn layout_ports(graph: &mut ElkGraph, node_id: NodeId, options: &LayoutOptions) 
             );
             let origin = match side {
                 PortSide::North => Point::new(
-                    bounds.origin.x + bounds.size.width * fraction - size.width / 2.0,
-                    bounds.origin.y - size.height / 2.0,
+                    node_width * fraction - size.width / 2.0,
+                    -size.height / 2.0,
                 ),
                 PortSide::South => Point::new(
-                    bounds.origin.x + bounds.size.width * fraction - size.width / 2.0,
-                    bounds.max_y() - size.height / 2.0,
+                    node_width * fraction - size.width / 2.0,
+                    node_height - size.height / 2.0,
                 ),
                 PortSide::East => Point::new(
-                    bounds.max_x() - size.width / 2.0,
-                    bounds.origin.y + bounds.size.height * fraction - size.height / 2.0,
+                    node_width - size.width / 2.0,
+                    node_height * fraction - size.height / 2.0,
                 ),
                 PortSide::West => Point::new(
-                    bounds.origin.x - size.width / 2.0,
-                    bounds.origin.y + bounds.size.height * fraction - size.height / 2.0,
+                    -size.width / 2.0,
+                    node_height * fraction - size.height / 2.0,
                 ),
             };
             let p = &mut graph.ports[port_id.index()];

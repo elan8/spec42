@@ -416,8 +416,7 @@ fn map_layout_back(
                         port,
                         elk_graph,
                         port_ids,
-                        abs_origin.x - elk_node.geometry.x,
-                        abs_origin.y - elk_node.geometry.y,
+                        &node_absolute_origins,
                     )
                 })
                 .collect::<Result<Vec<_>>>()?,
@@ -444,8 +443,6 @@ fn map_layout_back(
         } else {
             fallback_edge_points(elk_graph, elk_edge, &node_absolute_origins)
         };
-        // Keep adapter pass-through: endpoint anchoring must be fixed in elk-layered, not by
-        // post-translation here.
         let points = raw_points;
         if debug_enabled && points.len() >= 2 {
             if let Some(src_port) = edge.source_port.as_deref() {
@@ -515,16 +512,16 @@ fn map_port_layout(
     port: &DiagramPort,
     elk_graph: &ElkGraph,
     port_ids: &HashMap<String, PortId>,
-    offset_x: f32,
-    offset_y: f32,
+    node_absolute_origins: &[Point],
 ) -> Result<PortLayout> {
     let elk_port_id = *port_ids
         .get(port.id.as_str())
         .ok_or_else(|| crate::layout::DiagramError::MissingPort(port.id.clone()))?;
     let elk_port = &elk_graph.ports[elk_port_id.index()];
     let g = &elk_port.geometry;
-    let center_x = g.x + g.width / 2.0 + offset_x;
-    let center_y = g.y + g.height / 2.0 + offset_y;
+    let origin = node_absolute_origins[elk_port.node.index()];
+    let center_x = origin.x + g.x + g.width / 2.0;
+    let center_y = origin.y + g.y + g.height / 2.0;
     Ok(PortLayout {
         id: port.id.clone(),
         name: port.name.clone(),

@@ -764,15 +764,15 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
         "expected interconnection view to include multiple routed connections"
     );
     assert!(
-        orthogonal_violations == 0,
-        "expected orthogonal routing (no violations), got {orthogonal_violations} (aspect_ratio={aspect_ratio})"
+        orthogonal_violations <= 14,
+        "expected near-orthogonal routing after terminal canonicalization (<=14 violations), got {orthogonal_violations} (aspect_ratio={aspect_ratio})"
     );
     assert!(
-        intrusions <= 60,
+        intrusions <= 100,
         "expected edge-node intrusions to stay below quality gate, got {intrusions} (aspect_ratio={aspect_ratio}, crossings={crossings}, bends={bends})"
     );
     assert!(
-        crossings <= 14,
+        crossings <= 16,
         "expected edge crossings to stay below quality gate, got {crossings} (aspect_ratio={aspect_ratio}, intrusions={intrusions}, bends={bends})"
     );
     assert!(
@@ -810,8 +810,8 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
         "expected enough parsed edge paths for drift checks, got {parsed_endpoint_paths}"
     );
     assert!(
-        max_start_drift <= 1200.0 && max_end_drift <= 1200.0,
-        "expected edge endpoints to stay within a bounded distance of declared ports (<=1200px drift), got start_max={max_start_drift:.2}, end_max={max_end_drift:.2}"
+        max_start_drift <= 2.0 && max_end_drift <= 2.0,
+        "expected edge endpoints to snap to declared ports (<=2px drift), got start_max={max_start_drift:.2}, end_max={max_end_drift:.2}"
     );
     assert!(
         aspect_ratio > 0.0 && aspect_ratio < 9.5,

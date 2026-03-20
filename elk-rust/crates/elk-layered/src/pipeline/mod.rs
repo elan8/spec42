@@ -21,6 +21,7 @@ use elk_graph::{ElkGraph, NodeId};
 
 use crossing::{count_crossings, minimize_crossings};
 use cycle_breaking::break_cycles;
+use crate::pipeline::compound::{postprocess_cross_hierarchy_edges, preprocess_cross_hierarchy_edges};
 use import::import_graph;
 use layering::assign_layers;
 use normalization::normalize_edges;
@@ -28,6 +29,7 @@ use normalization::normalize_edges;
 use placement::assign_lanes;
 use placement::place_nodes;
 use routing::export_to_graph;
+pub(crate) use routing::{refresh_all_port_positions, snap_all_edge_terminals_to_endpoints};
 
 pub(crate) fn layout_subgraph(
     graph: &mut ElkGraph,
@@ -37,6 +39,7 @@ pub(crate) fn layout_subgraph(
 ) -> Result<Rect, LayoutError> {
     let padding = options.layered.padding;
     let local_nodes: BTreeSet<NodeId> = nodes.iter().copied().collect();
+    let compound_map = preprocess_cross_hierarchy_edges(graph, &local_nodes, options);
 
     if options.layered.hierarchy_handling == HierarchyHandling::IncludeChildren {
         for node_id in nodes {
@@ -133,6 +136,7 @@ pub(crate) fn layout_subgraph(
         name: "edge_routing",
         duration: started.elapsed(),
     });
+    postprocess_cross_hierarchy_edges(graph, &compound_map);
 
     Ok(placement.bounds)
 }
@@ -248,7 +252,7 @@ fn components(ir: &crate::ir::LayeredIr) -> Vec<Vec<usize>> {
 mod tests {
     use std::collections::BTreeSet;
 
-    use elk_core::{LayoutDirection, LayoutOptions, Size, ViewProfile};
+    use elk_core::{LayoutDirection, LayoutOptions, ViewProfile};
     use elk_graph::{EdgeEndpoint, ElkGraph};
 
     use super::{

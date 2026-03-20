@@ -66,7 +66,7 @@ pub(crate) fn node_minor_center(
     node_minor_start(ir, node_id, direction) + minor_size(ir.nodes[node_id].size, direction) / 2.0
 }
 
-//// Ensures every consecutive pair of points is axis-aligned by inserting one intermediate
+/// Ensures every consecutive pair of points is axis-aligned by inserting one intermediate
 /// point where needed. Use after routing so that the final path has only orthogonal segments.
 #[allow(dead_code)]
 pub(crate) fn ensure_orthogonal_path(points: Vec<Point>) -> Vec<Point> {
@@ -147,9 +147,10 @@ pub(crate) fn node_abs_center(graph: &ElkGraph, node: NodeId) -> Point {
 
 pub(crate) fn port_abs_center(graph: &ElkGraph, port: PortId) -> Point {
     let p = &graph.ports[port.index()];
+    let n = node_abs_origin(graph, p.node);
     Point::new(
-        p.geometry.x + p.geometry.width / 2.0,
-        p.geometry.y + p.geometry.height / 2.0,
+        n.x + p.geometry.x + p.geometry.width / 2.0,
+        n.y + p.geometry.y + p.geometry.height / 2.0,
     )
 }
 

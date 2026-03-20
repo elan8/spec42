@@ -300,22 +300,34 @@ fn edge_endpoint_nodes(graph: &ElkGraph, edge_id: EdgeId) -> Vec<NodeId> {
     let edge = &graph.edges[edge_id.index()];
     let mut nodes = Vec::new();
     if let Some(source) = edge.sources.first() {
-        nodes.push(source.node);
+        push_node_and_ancestors(graph, &mut nodes, source.node);
     }
     if let Some(target) = edge.targets.first() {
-        if !nodes.contains(&target.node) {
-            nodes.push(target.node);
-        }
+        push_node_and_ancestors(graph, &mut nodes, target.node);
     }
     nodes
+}
+
+fn push_node_and_ancestors(graph: &ElkGraph, out: &mut Vec<NodeId>, node_id: NodeId) {
+    let mut cursor = Some(node_id);
+    while let Some(current) = cursor {
+        if current == graph.root {
+            break;
+        }
+        if !out.contains(&current) {
+            out.push(current);
+        }
+        cursor = graph.nodes[current.index()].parent;
+    }
 }
 
 fn endpoint_center(graph: &ElkGraph, ep: EdgeEndpoint) -> Point {
     if let Some(port_id) = ep.port {
         let p = &graph.ports[port_id.index()];
+        let o = node_abs_origin(graph, p.node);
         Point::new(
-            p.geometry.x + p.geometry.width / 2.0,
-            p.geometry.y + p.geometry.height / 2.0,
+            o.x + p.geometry.x + p.geometry.width / 2.0,
+            o.y + p.geometry.y + p.geometry.height / 2.0,
         )
     } else {
         let n = &graph.nodes[ep.node.index()];
