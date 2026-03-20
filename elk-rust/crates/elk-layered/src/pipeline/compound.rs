@@ -261,7 +261,7 @@ pub fn postprocess_cross_hierarchy_edges(
                 format_polyline(&decision.rebuilt_points)
             ));
             warnings.push(format!(
-                "elk-layered compound: edge={:?} legacy_bends={} rebuilt_bends={} legacy_inside_start={} rebuilt_inside_start={} legacy_inside_end={} rebuilt_inside_end={}",
+                "elk-layered compound: edge={:?} legacy_bends={} rebuilt_bends={} legacy_inside_start={} rebuilt_inside_start={} legacy_inside_end={} rebuilt_inside_end={} legacy_sibling_intrusions={} rebuilt_sibling_intrusions={}",
                 edge_id,
                 decision.legacy_bends,
                 decision.rebuilt_bends,
@@ -269,6 +269,8 @@ pub fn postprocess_cross_hierarchy_edges(
                 decision.rebuilt_inside_start,
                 decision.legacy_inside_end,
                 decision.rebuilt_inside_end,
+                decision.legacy_sibling_intrusions,
+                decision.rebuilt_sibling_intrusions,
             ));
         }
 
@@ -322,6 +324,8 @@ struct CandidateDecision {
     rebuilt_inside_start: bool,
     legacy_inside_end: bool,
     rebuilt_inside_end: bool,
+    legacy_sibling_intrusions: usize,
+    rebuilt_sibling_intrusions: usize,
 }
 
 fn choose_best_candidate(
@@ -330,6 +334,7 @@ fn choose_best_candidate(
     legacy_points: Vec<Point>,
     rebuilt_points: Vec<Point>,
 ) -> (Vec<Point>, CandidateDecision) {
+    const REBUILT_BEND_HARD_CAP: usize = 8;
     let legacy_bends = legacy_points.len().saturating_sub(2);
     let rebuilt_bends = rebuilt_points.len().saturating_sub(2);
     let legacy_inside_start =
@@ -340,6 +345,8 @@ fn choose_best_candidate(
         terminal_approaches_from_inside(graph, &legacy_points, record.original_target, false);
     let rebuilt_inside_end =
         terminal_approaches_from_inside(graph, &rebuilt_points, record.original_target, false);
+    let legacy_sibling_intrusions = count_crossed_sibling_obstacles(graph, &legacy_points, record);
+    let rebuilt_sibling_intrusions = count_crossed_sibling_obstacles(graph, &rebuilt_points, record);
     let decision = |reason: &'static str,
                     chosen: Vec<Point>,
                     legacy_points: Vec<Point>,
@@ -356,6 +363,8 @@ fn choose_best_candidate(
                 rebuilt_inside_start,
                 legacy_inside_end,
                 rebuilt_inside_end,
+                legacy_sibling_intrusions,
+                rebuilt_sibling_intrusions,
             },
         )
     };
@@ -365,8 +374,38 @@ fn choose_best_candidate(
     if legacy_points.len() < 2 {
         return decision("legacy-invalid", rebuilt_points.clone(), legacy_points, rebuilt_points);
     }
+    let rebuilt_within_hard_cap = rebuilt_bends <= REBUILT_BEND_HARD_CAP;
     if (legacy_inside_start && !rebuilt_inside_start) || (legacy_inside_end && !rebuilt_inside_end) {
-        return decision("rebuilt-fixes-inside-approach", rebuilt_points.clone(), legacy_points, rebuilt_points);
+        if rebuilt_within_hard_cap || legacy_sibling_intrusions > rebuilt_sibling_intrusions {
+            return decision(
+                "rebuilt-fixes-inside-approach",
+                rebuilt_points.clone(),
+                legacy_points,
+                rebuilt_points,
+            );
+        }
+        return decision(
+            "legacy-preserves-bend-cap",
+            legacy_points.clone(),
+            legacy_points,
+            rebuilt_points,
+        );
+    }
+    if rebuilt_sibling_intrusions != legacy_sibling_intrusions {
+        if rebuilt_sibling_intrusions < legacy_sibling_intrusions && rebuilt_within_hard_cap {
+            return decision(
+                "rebuilt-avoids-sibling-obstacles",
+                rebuilt_points.clone(),
+                legacy_points,
+                rebuilt_points,
+            );
+        }
+        return decision(
+            "legacy-preserves-bend-cap",
+            legacy_points.clone(),
+            legacy_points,
+            rebuilt_points,
+        );
     }
     if rebuilt_bends <= legacy_bends + 1 {
         decision("rebuilt-within-bend-budget", rebuilt_points.clone(), legacy_points, rebuilt_points)
@@ -438,7 +477,7 @@ fn should_reverse_points(points: &[Point], source_boundary: Point, target_bounda
 fn build_endpoint_branch(
     graph: &ElkGraph,
     endpoint: EdgeEndpoint,
-    _outer_node: NodeId,
+    outer_node: NodeId,
     boundary_point: Point,
     boundary_side: Option<PortSide>,
 ) -> Vec<Point> {
@@ -448,21 +487,21 @@ fn build_endpoint_branch(
         let port_side = graph.ports[port_id.index()].side;
         let outward = point_along_outward_normal(points[0], port_side, BRANCH_CLEARANCE);
         let node_rect = node_abs_rect(graph, endpoint.node);
+        let outer_rect = node_abs_rect(graph, outer_node);
+        let sibling_obstacles = sibling_obstacle_rects(graph, outer_node, endpoint.node);
         append_orthogonal_connection(&mut points, outward, Some(port_side));
         match port_side {
             PortSide::East | PortSide::West => {
-                let boundary_crosses_node_band =
-                    boundary_point.y > node_rect.origin.y && boundary_point.y < node_rect.max_y();
-                if boundary_crosses_node_band {
-                    let top_detour = node_rect.origin.y - BRANCH_CLEARANCE;
-                    let bottom_detour = node_rect.max_y() + BRANCH_CLEARANCE;
-                    let detour_y = if (boundary_point.y - top_detour).abs()
-                        <= (bottom_detour - boundary_point.y).abs()
-                    {
-                        top_detour
-                    } else {
-                        bottom_detour
-                    };
+                let detour_y = choose_clear_horizontal_corridor(
+                    outward,
+                    boundary_point,
+                    boundary_point.y,
+                    outer_rect,
+                    node_rect,
+                    &sibling_obstacles,
+                    BRANCH_CLEARANCE,
+                );
+                if let Some(detour_y) = detour_y {
                     append_orthogonal_connection(
                         &mut points,
                         Point::new(outward.x, detour_y),
@@ -479,18 +518,16 @@ fn build_endpoint_branch(
                 }
             }
             PortSide::North | PortSide::South => {
-                let boundary_crosses_node_band =
-                    boundary_point.x > node_rect.origin.x && boundary_point.x < node_rect.max_x();
-                if boundary_crosses_node_band {
-                    let left_detour = node_rect.origin.x - BRANCH_CLEARANCE;
-                    let right_detour = node_rect.max_x() + BRANCH_CLEARANCE;
-                    let detour_x = if (boundary_point.x - left_detour).abs()
-                        <= (right_detour - boundary_point.x).abs()
-                    {
-                        left_detour
-                    } else {
-                        right_detour
-                    };
+                let detour_x = choose_clear_vertical_corridor(
+                    outward,
+                    boundary_point,
+                    boundary_point.x,
+                    outer_rect,
+                    node_rect,
+                    &sibling_obstacles,
+                    BRANCH_CLEARANCE,
+                );
+                if let Some(detour_x) = detour_x {
                     append_orthogonal_connection(
                         &mut points,
                         Point::new(detour_x, outward.y),
@@ -616,6 +653,241 @@ fn distance_squared(a: Point, b: Point) -> f32 {
     let dx = a.x - b.x;
     let dy = a.y - b.y;
     dx * dx + dy * dy
+}
+
+fn count_crossed_sibling_obstacles(
+    graph: &ElkGraph,
+    points: &[Point],
+    record: &CompoundRouteRecord,
+) -> usize {
+    count_endpoint_sibling_intrusions(graph, points, record.effective_source, record.original_source.node)
+        + count_endpoint_sibling_intrusions(graph, points, record.effective_target, record.original_target.node)
+}
+
+fn count_endpoint_sibling_intrusions(
+    graph: &ElkGraph,
+    points: &[Point],
+    outer_node: NodeId,
+    endpoint_node: NodeId,
+) -> usize {
+    let obstacles = sibling_obstacle_rects(graph, outer_node, endpoint_node);
+    points
+        .windows(2)
+        .map(|segment| {
+            obstacles
+                .iter()
+                .filter(|rect| orthogonal_segment_intersects_rect_interior(segment[0], segment[1], **rect))
+                .count()
+        })
+        .sum()
+}
+
+fn sibling_obstacle_rects(graph: &ElkGraph, outer_node: NodeId, endpoint_node: NodeId) -> Vec<Rect> {
+    let Some(self_child) = direct_child_on_path(graph, outer_node, endpoint_node) else {
+        return Vec::new();
+    };
+    graph.nodes[outer_node.index()]
+        .children
+        .iter()
+        .copied()
+        .filter(|child| *child != self_child)
+        .map(|child| node_abs_rect(graph, child))
+        .collect()
+}
+
+fn direct_child_on_path(graph: &ElkGraph, ancestor: NodeId, node_id: NodeId) -> Option<NodeId> {
+    if ancestor == node_id {
+        return Some(node_id);
+    }
+    let mut current = node_id;
+    loop {
+        let parent = graph.nodes[current.index()].parent?;
+        if parent == ancestor {
+            return Some(current);
+        }
+        current = parent;
+    }
+}
+
+fn choose_clear_horizontal_corridor(
+    outward: Point,
+    boundary_point: Point,
+    preferred_y: f32,
+    outer_rect: Rect,
+    endpoint_rect: Rect,
+    sibling_obstacles: &[Rect],
+    clearance: f32,
+) -> Option<f32> {
+    let mut candidates = vec![
+        preferred_y,
+        endpoint_rect.origin.y - clearance,
+        endpoint_rect.max_y() + clearance,
+    ];
+    for rect in sibling_obstacles {
+        candidates.push(rect.origin.y - clearance);
+        candidates.push(rect.max_y() + clearance);
+    }
+    choose_best_axis_candidate(
+        candidates,
+        outer_rect.origin.y + 1.0,
+        outer_rect.max_y() - 1.0,
+        |candidate| {
+            horizontal_branch_intrusions(outward, boundary_point, candidate, sibling_obstacles) == 0
+        },
+        |candidate| {
+            horizontal_branch_intrusions(outward, boundary_point, candidate, sibling_obstacles)
+        },
+        |candidate| (candidate - preferred_y).abs() + 0.25 * (candidate - outward.y).abs(),
+    )
+}
+
+fn choose_clear_vertical_corridor(
+    outward: Point,
+    boundary_point: Point,
+    preferred_x: f32,
+    outer_rect: Rect,
+    endpoint_rect: Rect,
+    sibling_obstacles: &[Rect],
+    clearance: f32,
+) -> Option<f32> {
+    let mut candidates = vec![
+        preferred_x,
+        endpoint_rect.origin.x - clearance,
+        endpoint_rect.max_x() + clearance,
+    ];
+    for rect in sibling_obstacles {
+        candidates.push(rect.origin.x - clearance);
+        candidates.push(rect.max_x() + clearance);
+    }
+    choose_best_axis_candidate(
+        candidates,
+        outer_rect.origin.x + 1.0,
+        outer_rect.max_x() - 1.0,
+        |candidate| {
+            vertical_branch_intrusions(outward, boundary_point, candidate, sibling_obstacles) == 0
+        },
+        |candidate| vertical_branch_intrusions(outward, boundary_point, candidate, sibling_obstacles),
+        |candidate| (candidate - preferred_x).abs() + 0.25 * (candidate - outward.x).abs(),
+    )
+}
+
+fn choose_best_axis_candidate<F, G, H>(
+    candidates: Vec<f32>,
+    min_value: f32,
+    max_value: f32,
+    is_clear: F,
+    intrusion_count: G,
+    cost: H,
+) -> Option<f32>
+where
+    F: Fn(f32) -> bool,
+    G: Fn(f32) -> usize,
+    H: Fn(f32) -> f32,
+{
+    let mut best_clear: Option<(f32, f32)> = None;
+    let mut best_fallback: Option<(usize, f32, f32)> = None;
+    let mut seen = Vec::new();
+    for mut candidate in candidates {
+        if !candidate.is_finite() {
+            continue;
+        }
+        candidate = candidate.clamp(min_value, max_value);
+        if seen.iter().any(|seen_value: &f32| (seen_value - candidate).abs() <= 1e-3) {
+            continue;
+        }
+        seen.push(candidate);
+        let candidate_cost = cost(candidate);
+        if is_clear(candidate) {
+            match best_clear {
+                Some((_, best_cost)) if best_cost <= candidate_cost => {}
+                _ => best_clear = Some((candidate, candidate_cost)),
+            }
+            continue;
+        }
+        let candidate_intrusions = intrusion_count(candidate);
+        match best_fallback {
+            Some((best_intrusions, _, best_cost))
+                if best_intrusions < candidate_intrusions
+                    || (best_intrusions == candidate_intrusions && best_cost <= candidate_cost) => {}
+            _ => best_fallback = Some((candidate_intrusions, candidate, candidate_cost)),
+        }
+    }
+    best_clear
+        .map(|(candidate, _)| candidate)
+        .or_else(|| best_fallback.map(|(_, candidate, _)| candidate))
+}
+
+fn horizontal_branch_intrusions(
+    outward: Point,
+    boundary_point: Point,
+    corridor_y: f32,
+    obstacles: &[Rect],
+) -> usize {
+    count_branch_intrusions(
+        &[
+            (outward, Point::new(outward.x, corridor_y)),
+            (
+                Point::new(outward.x, corridor_y),
+                Point::new(boundary_point.x, corridor_y),
+            ),
+            (Point::new(boundary_point.x, corridor_y), boundary_point),
+        ],
+        obstacles,
+    )
+}
+
+fn vertical_branch_intrusions(
+    outward: Point,
+    boundary_point: Point,
+    corridor_x: f32,
+    obstacles: &[Rect],
+) -> usize {
+    count_branch_intrusions(
+        &[
+            (outward, Point::new(corridor_x, outward.y)),
+            (
+                Point::new(corridor_x, outward.y),
+                Point::new(corridor_x, boundary_point.y),
+            ),
+            (Point::new(corridor_x, boundary_point.y), boundary_point),
+        ],
+        obstacles,
+    )
+}
+
+fn count_branch_intrusions(segments: &[(Point, Point)], obstacles: &[Rect]) -> usize {
+    segments
+        .iter()
+        .map(|(a, b)| {
+            obstacles
+                .iter()
+                .filter(|rect| orthogonal_segment_intersects_rect_interior(*a, *b, **rect))
+                .count()
+        })
+        .sum()
+}
+
+fn orthogonal_segment_intersects_rect_interior(a: Point, b: Point, rect: Rect) -> bool {
+    const EPS: f32 = 1e-4;
+    if (a.x - b.x).abs() <= EPS {
+        let x = a.x;
+        if x <= rect.origin.x + EPS || x >= rect.max_x() - EPS {
+            return false;
+        }
+        let seg_min = a.y.min(b.y);
+        let seg_max = a.y.max(b.y);
+        seg_max > rect.origin.y + EPS && seg_min < rect.max_y() - EPS
+    } else if (a.y - b.y).abs() <= EPS {
+        let y = a.y;
+        if y <= rect.origin.y + EPS || y >= rect.max_y() - EPS {
+            return false;
+        }
+        let seg_min = a.x.min(b.x);
+        let seg_max = a.x.max(b.x);
+        seg_max > rect.origin.x + EPS && seg_min < rect.max_x() - EPS
+    } else {
+        false
+    }
 }
 
 fn orthogonalize_edge_sections_with_sides(
@@ -832,3 +1104,74 @@ fn polyline_is_orthogonal(points: &[elk_core::Point]) -> bool {
 }
 
 // moved to `elk-alg-common`
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use elk_core::PortSide;
+    use elk_graph::ShapeGeometry;
+
+    #[test]
+    fn endpoint_branch_avoids_sibling_obstacle_inside_outer_container() {
+        let mut graph = ElkGraph::new();
+        let outer = graph.add_node(
+            graph.root,
+            ShapeGeometry {
+                x: 100.0,
+                y: 100.0,
+                width: 420.0,
+                height: 420.0,
+            },
+        );
+        let sibling = graph.add_node(
+            outer,
+            ShapeGeometry {
+                x: 72.0,
+                y: 120.0,
+                width: 260.0,
+                height: 124.0,
+            },
+        );
+        let endpoint_node = graph.add_node(
+            outer,
+            ShapeGeometry {
+                x: 72.0,
+                y: 272.0,
+                width: 260.0,
+                height: 124.0,
+            },
+        );
+        let endpoint_port = graph.add_port(
+            endpoint_node,
+            PortSide::East,
+            ShapeGeometry {
+                x: 256.0,
+                y: 58.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+
+        let branch = build_endpoint_branch(
+            &graph,
+            EdgeEndpoint::port(endpoint_node, endpoint_port),
+            outer,
+            Point::new(100.0, 282.0),
+            Some(PortSide::West),
+        );
+
+        let sibling_rect = node_abs_rect(&graph, sibling);
+        assert!(
+            branch.windows(2).all(|segment| {
+                !orthogonal_segment_intersects_rect_interior(segment[0], segment[1], sibling_rect)
+            }),
+            "branch should avoid sibling obstacle, got {}",
+            format_polyline(&branch)
+        );
+        assert!(
+            branch.iter().any(|point| point.y < sibling_rect.origin.y || point.y > sibling_rect.max_y()),
+            "branch should detour outside sibling band, got {}",
+            format_polyline(&branch)
+        );
+    }
+}

@@ -14,11 +14,14 @@ const DEFAULT_CLEARANCE: f32 = 4.0;
 const DEFAULT_SEGMENT_PENALTY: f32 = 1.0;
 const DEFAULT_BEND_PENALTY: f32 = 6.0;
 const TERMINAL_NORMAL_OFFSET: f32 = 12.0;
+const TERMINAL_TANGENT_SPACING: f32 = 18.0;
 
 #[derive(Clone, Copy, Debug)]
 struct RoutePlan {
     actual_start_abs: Point,
     actual_end_abs: Point,
+    start_lead_abs: Point,
+    end_lead_abs: Point,
     route_start_local: Point,
     route_end_local: Point,
     source_side: Option<PortSide>,
@@ -108,6 +111,8 @@ impl LibavoidLayoutEngine {
                 path,
                 plan.actual_start_abs,
                 plan.actual_end_abs,
+                plan.start_lead_abs,
+                plan.end_lead_abs,
                 plan.route_start_local,
                 plan.route_end_local,
                 Point::new(0.0, 0.0),
@@ -228,6 +233,8 @@ pub fn route_edges_with_diagnostics_in_scope(
             path,
             plan.actual_start_abs,
             plan.actual_end_abs,
+            plan.start_lead_abs,
+            plan.end_lead_abs,
             plan.route_start_local,
             plan.route_end_local,
             scope_origin_abs,
@@ -297,16 +304,28 @@ fn build_route_plan(
         .unwrap_or_else(|| Point::new(0.0, 0.0));
     let source_side = source.and_then(|ep| endpoint_port_side(graph, ep));
     let target_side = target.and_then(|ep| endpoint_port_side(graph, ep));
+    let source_slot = endpoint_slot(graph, edge_id, true);
+    let target_slot = endpoint_slot(graph, edge_id, false);
     let lead = (clearance + TERMINAL_NORMAL_OFFSET).max(clearance + 1.0);
-    let route_start_abs = source_side
-        .map(|side| point_along_outward_normal(actual_start_abs, side, lead))
+    let source_lead = lead + source_slot.max(0) as f32 * (TERMINAL_TANGENT_SPACING * 0.75);
+    let target_lead = lead + target_slot.max(0) as f32 * (TERMINAL_TANGENT_SPACING * 0.75);
+    let start_lead_abs = source_side
+        .map(|side| point_along_outward_normal(actual_start_abs, side, source_lead))
         .unwrap_or(actual_start_abs);
-    let route_end_abs = target_side
-        .map(|side| point_along_outward_normal(actual_end_abs, side, lead))
+    let end_lead_abs = target_side
+        .map(|side| point_along_outward_normal(actual_end_abs, side, target_lead))
         .unwrap_or(actual_end_abs);
+    let route_start_abs = source_side
+        .map(|side| point_along_tangent(start_lead_abs, side, source_slot as f32 * TERMINAL_TANGENT_SPACING))
+        .unwrap_or(start_lead_abs);
+    let route_end_abs = target_side
+        .map(|side| point_along_tangent(end_lead_abs, side, target_slot as f32 * TERMINAL_TANGENT_SPACING))
+        .unwrap_or(end_lead_abs);
     RoutePlan {
         actual_start_abs,
         actual_end_abs,
+        start_lead_abs,
+        end_lead_abs,
         route_start_local: to_local(route_start_abs, scope_origin_abs),
         route_end_local: to_local(route_end_abs, scope_origin_abs),
         source_side,
@@ -318,6 +337,8 @@ fn finalize_route_path(
     route_path_local: Vec<Point>,
     actual_start_abs: Point,
     actual_end_abs: Point,
+    start_lead_abs: Point,
+    end_lead_abs: Point,
     route_start_local: Point,
     route_end_local: Point,
     scope_origin_abs: Point,
@@ -332,6 +353,8 @@ fn finalize_route_path(
         path_abs,
         actual_start_abs,
         actual_end_abs,
+        start_lead_abs,
+        end_lead_abs,
         route_start_abs,
         route_end_abs,
     )
@@ -341,6 +364,8 @@ fn sanitize_orthogonal_path(
     mut points: Vec<Point>,
     actual_start: Point,
     actual_end: Point,
+    start_lead: Point,
+    end_lead: Point,
     route_start: Point,
     route_end: Point,
 ) -> Result<Vec<Point>, String> {
@@ -359,6 +384,9 @@ fn sanitize_orthogonal_path(
     }
     let mut out = Vec::with_capacity(points.len() + 4);
     out.push(actual_start);
+    if out.last().copied() != Some(start_lead) {
+        out.push(start_lead);
+    }
     if out.last().copied() != Some(route_start) {
         out.push(route_start);
     }
@@ -384,6 +412,9 @@ fn sanitize_orthogonal_path(
     if out.last().copied() != Some(route_end) {
         out.push(route_end);
     }
+    if out.last().copied() != Some(end_lead) {
+        out.push(end_lead);
+    }
     if out.last().copied() != Some(actual_end) {
         out.push(actual_end);
     }
@@ -399,6 +430,26 @@ fn sanitize_orthogonal_path(
         return Err("non-orthogonal segment remained after sanitization".to_string());
     }
     Ok(out)
+}
+
+fn endpoint_slot(graph: &ElkGraph, edge_id: EdgeId, is_source: bool) -> i32 {
+    let key = elk_graph::PropertyKey::from(if is_source {
+        "spec42.endpoint.slot.source"
+    } else {
+        "spec42.endpoint.slot.target"
+    });
+    graph.edges[edge_id.index()]
+        .properties
+        .get(&key)
+        .and_then(|value| value.as_i64())
+        .unwrap_or(0) as i32
+}
+
+fn point_along_tangent(point: Point, side: PortSide, offset: f32) -> Point {
+    match side {
+        PortSide::East | PortSide::West => Point::new(point.x, point.y + offset),
+        PortSide::North | PortSide::South => Point::new(point.x + offset, point.y),
+    }
 }
 
 fn routing_failure_to_layout_error(edge_id: EdgeId, failure: RoutingFailure) -> LayoutError {
