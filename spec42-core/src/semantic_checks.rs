@@ -14,12 +14,38 @@ use crate::semantic_model::{NodeId, SemanticGraph, SemanticNode};
 pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Diagnostic> {
     let mut diagnostics = Vec::new();
 
+    // 0) Explicit builder diagnostics (e.g. ambiguous endpoint resolution).
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "diagnostic" {
+            continue;
+        }
+        let code = node
+            .attributes
+            .get("code")
+            .and_then(|v| v.as_str())
+            .unwrap_or("semantic_diagnostic");
+        let message = node
+            .attributes
+            .get("message")
+            .and_then(|v| v.as_str())
+            .unwrap_or("semantic diagnostic")
+            .to_string();
+        diagnostics.push(diag(
+            diagnostic_range(graph, node, None),
+            DiagnosticSeverity::WARNING,
+            "semantic",
+            code,
+            message,
+        ));
+    }
+
     // 1) Connection endpoints must be ports; port types must be compatible
-    for (src_id, tgt_id) in graph.connection_edge_node_pairs_for_uri(uri) {
+    let connection_occurrences = graph.connection_edge_occurrences_for_uri(uri);
+    for (src_id, tgt_id, connection_range) in connection_occurrences {
         if let (Some(src), Some(tgt)) = (graph.get_node(&src_id), graph.get_node(&tgt_id)) {
             if !is_port_like(&src.element_kind) {
                 diagnostics.push(diag(
-                    src.range,
+                    diagnostic_range(graph, src, Some(tgt)),
                     DiagnosticSeverity::WARNING,
                     "semantic",
                     "connection_endpoint_not_port",
@@ -31,7 +57,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
             }
             if !is_port_like(&tgt.element_kind) {
                 diagnostics.push(diag(
-                    tgt.range,
+                    diagnostic_range(graph, tgt, Some(src)),
                     DiagnosticSeverity::WARNING,
                     "semantic",
                     "connection_endpoint_not_port",
@@ -44,7 +70,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
             if is_port_like(&src.element_kind) && is_port_like(&tgt.element_kind) {
                 if let Some(msg) = port_type_mismatch(src, tgt) {
                     diagnostics.push(diag(
-                        src.range,
+                        connection_range,
                         DiagnosticSeverity::WARNING,
                         "semantic",
                         "port_type_mismatch",
@@ -56,16 +82,25 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
     }
 
     // 2) Unconnected ports (ports in this URI that are not an endpoint of any connection)
-    let connected_port_ids: HashSet<NodeId> = graph
+    let connected_port_keys: HashSet<String> = graph
         .connection_edge_node_pairs_for_uri(uri)
         .into_iter()
         .flat_map(|(a, b)| [a, b])
+        .filter_map(|id| graph.get_node(&id))
+        .filter_map(port_anchor_key)
         .collect();
 
     for node in graph.nodes_for_uri(uri) {
-        if is_port_like(&node.element_kind) && !connected_port_ids.contains(&node.id) {
+        if is_port_like(&node.element_kind)
+            && node.element_kind == "port"
+            && !is_synthetic(node)
+            && is_declaration_port(graph, node)
+            && port_anchor_key(node)
+                .as_ref()
+                .is_some_and(|key| !connected_port_keys.contains(key))
+        {
             diagnostics.push(diag(
-                node.range,
+                diagnostic_range(graph, node, None),
                 DiagnosticSeverity::INFORMATION,
                 "semantic",
                 "unconnected_port",
@@ -81,7 +116,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
         if !seen_pairs.insert(pair) {
             if let Some(tgt) = graph.get_node(&tgt_id) {
                 diagnostics.push(diag(
-                    tgt.range,
+                    diagnostic_range(graph, tgt, None),
                     DiagnosticSeverity::INFORMATION,
                     "semantic",
                     "duplicate_connection",
@@ -116,6 +151,97 @@ fn diag(
         tags: None,
         data: None,
     }
+}
+
+fn is_unknown_range(range: Range) -> bool {
+    range.start.line == 0
+        && range.start.character == 0
+        && range.end.line == 0
+        && range.end.character == 0
+}
+
+fn is_declaration_port(graph: &SemanticGraph, node: &SemanticNode) -> bool {
+    let Some(parent_id) = &node.parent_id else {
+        return false;
+    };
+    let Some(parent) = graph.get_node(parent_id) else {
+        return false;
+    };
+    parent.element_kind == "part def" || parent.element_kind == "part"
+}
+
+fn is_synthetic(node: &SemanticNode) -> bool {
+    node.attributes
+        .get("synthetic")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false)
+}
+
+fn parse_origin_range(node: &SemanticNode) -> Option<Range> {
+    let origin = node.attributes.get("originRange")?;
+    let start = origin.get("start")?;
+    let end = origin.get("end")?;
+    Some(Range {
+        start: tower_lsp::lsp_types::Position {
+            line: start.get("line")?.as_u64()? as u32,
+            character: start.get("character")?.as_u64()? as u32,
+        },
+        end: tower_lsp::lsp_types::Position {
+            line: end.get("line")?.as_u64()? as u32,
+            character: end.get("character")?.as_u64()? as u32,
+        },
+    })
+}
+
+fn preferred_port_anchor_range(node: &SemanticNode) -> Option<Range> {
+    if is_synthetic(node) {
+        if let Some(origin) = parse_origin_range(node) {
+            if !is_unknown_range(origin) {
+                return Some(origin);
+            }
+        }
+    }
+    if !is_unknown_range(node.range) {
+        return Some(node.range);
+    }
+    if let Some(origin) = parse_origin_range(node) {
+        if !is_unknown_range(origin) {
+            return Some(origin);
+        }
+    }
+    None
+}
+
+fn port_anchor_key(node: &SemanticNode) -> Option<String> {
+    let r = preferred_port_anchor_range(node)?;
+    Some(format!(
+        "{}:{}:{}:{}:{}",
+        r.start.line, r.start.character, r.end.line, r.end.character, node.name
+    ))
+}
+
+fn diagnostic_range(graph: &SemanticGraph, node: &SemanticNode, peer: Option<&SemanticNode>) -> Range {
+    if node.element_kind == "port" {
+        if let Some(range) = preferred_port_anchor_range(node) {
+            return range;
+        }
+    }
+    if !is_unknown_range(node.range) {
+        return node.range;
+    }
+    if let Some(parent_id) = &node.parent_id {
+        if let Some(parent) = graph.get_node(parent_id) {
+            if !is_unknown_range(parent.range) {
+                return parent.range;
+            }
+        }
+    }
+    if let Some(peer) = peer {
+        if !is_unknown_range(peer.range) {
+            return peer.range;
+        }
+    }
+    node.range
 }
 
 /// Normalize (a,b) and (b,a) to the same key for duplicate detection.
@@ -176,6 +302,7 @@ impl crate::config::SemanticCheckProvider for DefaultSemanticChecks {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::semantic_model::build_graph_from_doc;
     use tower_lsp::lsp_types::Position;
 
     #[test]
@@ -232,5 +359,41 @@ mod tests {
             attributes: attrs,
             parent_id: None,
         }
+    }
+
+    #[test]
+    fn port_type_mismatch_is_anchored_to_connection_statement() {
+        let input = r#"
+            package P {
+                part def Left {
+                    port p : ~PowerPort;
+                }
+                part def Right {
+                    port p : ~PowerPort;
+                }
+                part def Top {
+                    part l : Left;
+                    part r : Right;
+                    connect l.p to r.p;
+                }
+            }
+        "#;
+        let root = sysml_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diags = compute_semantic_diagnostics(&graph, &uri);
+        let mismatch = diags
+            .iter()
+            .find(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "port_type_mismatch".to_string(),
+                    ))
+            })
+            .expect("expected mismatch diagnostic");
+
+        // "connect l.p to r.p;" line (0-based, accounting for leading newline/indentation in input string)
+        assert_eq!(mismatch.range.start.line, 11);
+        assert_eq!(mismatch.range.end.line, 11);
     }
 }

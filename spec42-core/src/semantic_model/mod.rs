@@ -122,6 +122,14 @@ pub struct SemanticGraph {
     pub(crate) graph: StableGraph<SemanticNode, RelationshipKind, Directed>,
     pub(crate) node_index_by_id: HashMap<NodeId, NodeIndex>,
     pub(crate) nodes_by_uri: HashMap<Url, Vec<NodeId>>,
+    pub(crate) connection_occurrences_by_uri: HashMap<Url, Vec<ConnectionOccurrence>>,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct ConnectionOccurrence {
+    pub source: NodeId,
+    pub target: NodeId,
+    pub range: Range,
 }
 
 impl SemanticGraph {
@@ -130,12 +138,14 @@ impl SemanticGraph {
             graph: StableGraph::new(),
             node_index_by_id: HashMap::new(),
             nodes_by_uri: HashMap::new(),
+            connection_occurrences_by_uri: HashMap::new(),
         }
     }
 
     /// Removes all nodes (and their incident edges) for the given URI.
     pub fn remove_nodes_for_uri(&mut self, uri: &Url) {
         let Some(node_ids) = self.nodes_by_uri.remove(uri) else {
+            self.connection_occurrences_by_uri.remove(uri);
             return;
         };
         for id in node_ids {
@@ -143,10 +153,17 @@ impl SemanticGraph {
                 self.graph.remove_node(idx);
             }
         }
+        self.connection_occurrences_by_uri.remove(uri);
     }
 
     /// Merges nodes and edges from another graph (built from a single document).
     pub fn merge(&mut self, other: SemanticGraph) {
+        for (uri, occurrences) in &other.connection_occurrences_by_uri {
+            self.connection_occurrences_by_uri
+                .entry(uri.clone())
+                .or_default()
+                .extend(occurrences.iter().cloned());
+        }
         for (id, node) in other.iter_nodes() {
             let idx = self.graph.add_node(node.clone());
             self.node_index_by_id.insert(id.clone(), idx);
@@ -312,6 +329,35 @@ impl SemanticGraph {
             }
         }
         out
+    }
+
+    /// Returns connection edge occurrences anchored to source ranges from parsed connect statements.
+    /// Multiple entries can exist for the same endpoint pair.
+    pub fn connection_edge_occurrences_for_uri(&self, uri: &Url) -> Vec<(NodeId, NodeId, Range)> {
+        self.connection_occurrences_by_uri
+            .get(uri)
+            .into_iter()
+            .flatten()
+            .cloned()
+            .map(|occ| (occ.source, occ.target, occ.range))
+            .collect()
+    }
+
+    pub(crate) fn record_connection_occurrence(
+        &mut self,
+        uri: &Url,
+        source: NodeId,
+        target: NodeId,
+        range: Range,
+    ) {
+        self.connection_occurrences_by_uri
+            .entry(uri.clone())
+            .or_default()
+            .push(ConnectionOccurrence {
+                source,
+                target,
+                range,
+            });
     }
 
     /// Returns edges incident to nodes in the given URI as (source, target, kind, optional edge name).

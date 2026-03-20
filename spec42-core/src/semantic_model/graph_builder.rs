@@ -7,7 +7,7 @@ use sysml_parser::ast::{
     StateDefBody, StateDefBodyElement, UseCaseDefBody,
 };
 use sysml_parser::RootNamespace;
-use tower_lsp::lsp_types::{Position, Range, Url};
+use tower_lsp::lsp_types::{Range, Url};
 
 use crate::ast_util::{identification_name, span_to_range};
 use crate::semantic_model::relationships::{
@@ -943,13 +943,60 @@ fn add_expression_edge_if_both_exist(
     if left_str.is_empty() || right_str.is_empty() {
         return;
     }
-    let Some(src) = resolve_expression_endpoint(g, uri, container_prefix, &left_str) else {
-        return;
+    let src = if kind == RelationshipKind::Connection {
+        match resolve_expression_endpoint_strict(g, uri, container_prefix, &left_str) {
+            EndpointResolution::Resolved(id) => id,
+            EndpointResolution::Ambiguous => {
+                add_diagnostic_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    "ambiguous_connection_endpoint",
+                    format!(
+                        "Ambiguous connection endpoint '{}'. Use a fully qualified endpoint path.",
+                        left_str
+                    ),
+                    span_to_range(&left.span),
+                );
+                return;
+            }
+            EndpointResolution::Unresolved => return,
+        }
+    } else {
+        let Some(id) = resolve_expression_endpoint_legacy(g, uri, container_prefix, &left_str) else {
+            return;
+        };
+        id
     };
-    let Some(tgt) = resolve_expression_endpoint(g, uri, container_prefix, &right_str) else {
-        return;
+    let tgt = if kind == RelationshipKind::Connection {
+        match resolve_expression_endpoint_strict(g, uri, container_prefix, &right_str) {
+            EndpointResolution::Resolved(id) => id,
+            EndpointResolution::Ambiguous => {
+                add_diagnostic_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    "ambiguous_connection_endpoint",
+                    format!(
+                        "Ambiguous connection endpoint '{}'. Use a fully qualified endpoint path.",
+                        right_str
+                    ),
+                    span_to_range(&right.span),
+                );
+                return;
+            }
+            EndpointResolution::Unresolved => return,
+        }
+    } else {
+        let Some(id) = resolve_expression_endpoint_legacy(g, uri, container_prefix, &right_str) else {
+            return;
+        };
+        id
     };
-    add_edge_if_both_exist(g, uri, &src, &tgt, kind);
+    add_edge_if_both_exist(g, uri, &src, &tgt, kind.clone());
+    if kind == RelationshipKind::Connection {
+        g.record_connection_occurrence(uri, NodeId::new(uri, &src), NodeId::new(uri, &tgt), span_to_range(&left.span));
+    }
 }
 
 fn expr_node_to_qualified_string(n: &sysml_parser::Node<sysml_parser::Expression>) -> String {
@@ -963,7 +1010,54 @@ fn expr_node_to_qualified_string(n: &sysml_parser::Node<sysml_parser::Expression
     }
 }
 
-fn resolve_expression_endpoint(
+enum EndpointResolution {
+    Resolved(String),
+    Ambiguous,
+    Unresolved,
+}
+
+fn resolve_expression_endpoint_strict(
+    g: &SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    expression: &str,
+) -> EndpointResolution {
+    let mut candidates = Vec::new();
+    if let Some(prefix) = container_prefix {
+        candidates.push(format!("{}::{}", prefix, expression));
+    }
+    candidates.push(expression.to_string());
+
+    for candidate in &candidates {
+        let node_id = NodeId::new(uri, candidate);
+        if g.node_index_by_id.contains_key(&node_id) {
+            return EndpointResolution::Resolved(candidate.clone());
+        }
+    }
+
+    let suffix = format!("::{}", expression);
+    let mut matches: Vec<&NodeId> = g
+        .nodes_by_uri
+        .get(uri)
+        .into_iter()
+        .flatten()
+        .filter(|node_id| {
+            node_id.qualified_name == expression || node_id.qualified_name.ends_with(&suffix)
+        })
+        .collect();
+    // Ambiguous suffix resolution frequently causes false connection bindings; require uniqueness.
+    matches.sort_by_key(|node_id| node_id.qualified_name.len());
+    matches.dedup_by(|a, b| a.qualified_name == b.qualified_name);
+    if matches.len() == 1 {
+        EndpointResolution::Resolved(matches[0].qualified_name.clone())
+    } else if matches.len() > 1 {
+        EndpointResolution::Ambiguous
+    } else {
+        EndpointResolution::Unresolved
+    }
+}
+
+fn resolve_expression_endpoint_legacy(
     g: &SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
@@ -992,6 +1086,30 @@ fn resolve_expression_endpoint(
         })
         .min_by_key(|node_id| node_id.qualified_name.len())
         .map(|node_id| node_id.qualified_name.clone())
+}
+
+fn add_diagnostic_node(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    code: &str,
+    message: String,
+    range: Range,
+) {
+    let qualified = qualified_name_for_node(g, uri, container_prefix, code, "diagnostic");
+    let mut attrs = HashMap::new();
+    attrs.insert("code".to_string(), serde_json::json!(code));
+    attrs.insert("message".to_string(), serde_json::json!(message));
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "diagnostic",
+        code.to_string(),
+        range,
+        attrs,
+        None,
+    );
 }
 
 fn build_from_use_case_body(
@@ -1248,6 +1366,7 @@ fn expand_part_def_members(
                         "attribute def",
                         n.name.clone(),
                         parent_id,
+                        span_to_range(&n.span),
                         attrs,
                     );
                     if let Some(ref t) = n.typing {
@@ -1268,6 +1387,7 @@ fn expand_part_def_members(
                         "port",
                         n.name.clone(),
                         parent_id,
+                        span_to_range(&n.span),
                         attrs,
                     );
                     if let Some(ref t) = n.type_name {
@@ -1289,6 +1409,7 @@ fn expand_part_def_members(
                         "part",
                         n.name.clone(),
                         parent_id,
+                        span_to_range(&n.span),
                         attrs,
                     );
                     let node_id = NodeId::new(uri, &qualified);
@@ -1351,17 +1472,31 @@ fn add_node_if_not_exists(
     kind: &str,
     name: String,
     parent_id: &NodeId,
+    source_range: Range,
     attrs: HashMap<String, serde_json::Value>,
 ) {
     let node_id = NodeId::new(uri, qualified);
     if g.node_index_by_id.contains_key(&node_id) {
         return;
     }
+    let mut attrs = attrs;
+    attrs.insert("synthetic".to_string(), serde_json::json!(true));
+    attrs.insert(
+        "originRange".to_string(),
+        serde_json::json!({
+            "start": {"line": source_range.start.line, "character": source_range.start.character},
+            "end": {"line": source_range.end.line, "character": source_range.end.character}
+        }),
+    );
+    let parent_range = g
+        .get_node(parent_id)
+        .map(|node| node.range)
+        .unwrap_or(source_range);
     let node = SemanticNode {
         id: node_id.clone(),
         element_kind: kind.to_string(),
         name,
-        range: Range::new(Position::new(0, 0), Position::new(0, 0)),
+        range: parent_range,
         attributes: attrs,
         parent_id: Some(parent_id.clone()),
     };
