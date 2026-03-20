@@ -182,11 +182,52 @@ pub fn postprocess_cross_hierarchy_edges(
             *first = *original_target;
         }
         if let Some(first_id) = edge.sections.first().copied() {
-            graph.edge_sections[first_id.index()].start = start_center;
+            set_section_start_preserve_orthogonality(
+                &mut graph.edge_sections[first_id.index()],
+                start_center,
+            );
         }
         if let Some(last_id) = edge.sections.last().copied() {
-            graph.edge_sections[last_id.index()].end = end_center;
+            set_section_end_preserve_orthogonality(
+                &mut graph.edge_sections[last_id.index()],
+                end_center,
+            );
         }
+    }
+}
+
+fn set_section_start_preserve_orthogonality(section: &mut elk_graph::EdgeSection, start: elk_core::Point) {
+    section.start = start;
+    if section.bend_points.is_empty() {
+        return;
+    }
+    let first = section.bend_points[0];
+    if (first.x - start.x).abs() > f32::EPSILON && (first.y - start.y).abs() > f32::EPSILON {
+        let dx = (first.x - start.x).abs();
+        let dy = (first.y - start.y).abs();
+        section.bend_points[0] = if dx <= dy {
+            elk_core::Point::new(start.x, first.y)
+        } else {
+            elk_core::Point::new(first.x, start.y)
+        };
+    }
+}
+
+fn set_section_end_preserve_orthogonality(section: &mut elk_graph::EdgeSection, end: elk_core::Point) {
+    section.end = end;
+    if section.bend_points.is_empty() {
+        return;
+    }
+    let last_idx = section.bend_points.len() - 1;
+    let last = section.bend_points[last_idx];
+    if (last.x - end.x).abs() > f32::EPSILON && (last.y - end.y).abs() > f32::EPSILON {
+        let dx = (last.x - end.x).abs();
+        let dy = (last.y - end.y).abs();
+        section.bend_points[last_idx] = if dx <= dy {
+            elk_core::Point::new(end.x, last.y)
+        } else {
+            elk_core::Point::new(last.x, end.y)
+        };
     }
 }
 

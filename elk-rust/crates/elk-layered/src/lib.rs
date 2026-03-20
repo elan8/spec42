@@ -54,7 +54,7 @@ impl LayeredLayoutEngine {
         let top_level = elk_graph_top_level_nodes(graph);
         let bounds = layout_subgraph(graph, &top_level, &effective_options, &mut report)?;
         // Child scopes are laid out recursively before parent placement is final, so port-local
-        // coordinates must be refreshed once at graph scope before final terminal snapping.
+        // coordinates must be refreshed once at graph scope before final export/mapping.
         refresh_all_port_positions(graph, &effective_options);
         snap_all_edge_terminals_to_endpoints(graph);
         // Store graph bounds on the synthetic root node geometry.

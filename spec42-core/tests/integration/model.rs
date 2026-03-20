@@ -174,6 +174,44 @@ fn parse_path_endpoints(d: &str) -> Option<((f32, f32), (f32, f32))> {
     Some((start, end))
 }
 
+fn count_diagonal_segments_in_path(d: &str, tolerance: f32) -> usize {
+    let mut nums: Vec<f32> = Vec::new();
+    let mut current = String::new();
+    for ch in d.chars() {
+        if ch.is_ascii_digit() || ch == '.' || ch == '-' {
+            current.push(ch);
+        } else if !current.is_empty() {
+            if let Ok(v) = current.parse::<f32>() {
+                nums.push(v);
+            }
+            current.clear();
+        }
+    }
+    if !current.is_empty() {
+        if let Ok(v) = current.parse::<f32>() {
+            nums.push(v);
+        }
+    }
+    if nums.len() < 4 {
+        return 0;
+    }
+    let mut diagonals = 0usize;
+    let mut i = 0usize;
+    while i + 3 < nums.len() {
+        let ax = nums[i];
+        let ay = nums[i + 1];
+        let bx = nums[i + 2];
+        let by = nums[i + 3];
+        let dx = (ax - bx).abs();
+        let dy = (ay - by).abs();
+        if dx > tolerance && dy > tolerance {
+            diagonals += 1;
+        }
+        i += 2;
+    }
+    diagonals
+}
+
 fn nearest_port<'a>(ports: &'a [SvgPort], x: f32, y: f32) -> Option<(&'a SvgPort, f32)> {
     ports
         .iter()
@@ -715,7 +753,9 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
     let mut max_start_drift = 0.0f32;
     let mut max_end_drift = 0.0f32;
     let mut parsed_endpoint_paths = 0usize;
+    let mut diagonal_segments = 0usize;
     for (idx, path) in paths.into_iter().enumerate() {
+        diagonal_segments += count_diagonal_segments_in_path(&path, 1e-3);
         if let Some(((sx, sy), (ex, ey))) = parse_path_endpoints(&path) {
             let start_near = nearest_port(&ports, sx, sy);
             let end_near = nearest_port(&ports, ex, ey);
@@ -764,6 +804,10 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
         "expected interconnection view to include multiple routed connections"
     );
     assert!(
+        diagonal_segments <= 4,
+        "expected low diagonal segment count (<=4), got {diagonal_segments}"
+    );
+    assert!(
         orthogonal_violations <= 14,
         "expected near-orthogonal routing after terminal canonicalization (<=14 violations), got {orthogonal_violations} (aspect_ratio={aspect_ratio})"
     );
@@ -804,6 +848,12 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
             .iter()
             .any(|warning| warning.contains("libavoid terminal canonicalization adjusted edge")),
         "expected no mixed-frame terminal canonicalization adjustments, got: {warnings:?}"
+    );
+    assert!(
+        !warnings
+            .iter()
+            .any(|warning| warning.contains("fallback-reason")),
+        "expected strict mode without fallback-reason warnings, got: {warnings:?}"
     );
     assert!(
         parsed_endpoint_paths >= 8,

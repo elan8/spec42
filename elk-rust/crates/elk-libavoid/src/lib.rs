@@ -8,7 +8,7 @@ use elk_graph::{ElkGraph, EdgeId, EdgeEndpoint, NodeId};
 
 mod router;
 
-use router::{Obstacle, route, route_with_debug};
+use router::{Obstacle, RoutingFailure, route, route_with_debug};
 
 const DEFAULT_CLEARANCE: f32 = 4.0;
 const DEFAULT_SEGMENT_PENALTY: f32 = 1.0;
@@ -91,7 +91,10 @@ impl LibavoidLayoutEngine {
                 Point::new(0.0, 0.0),
                 None,
             );
-            let path = route(start, end, &obstacles, segment_penalty, bend_penalty);
+            let path = route(start, end, &obstacles, segment_penalty, bend_penalty)
+                .map_err(|e| routing_failure_to_layout_error(edge_id, e))?;
+            let path = sanitize_orthogonal_path(path, start, end)
+                .map_err(|m| LayoutError::Routing(format!("edge {:?}: {m}", edge_id)))?;
             let bends = if path.len() >= 2 {
                 path[1..path.len() - 1].to_vec()
             } else {
@@ -185,12 +188,16 @@ pub fn route_edges_with_diagnostics_in_scope(
         let obstacles = collect_obstacles(graph, clearance, &excluded, scope_origin_abs, scope_nodes);
         let (path, route_dbg) = if debug_enabled {
             route_with_debug(start, end, &obstacles, segment_penalty, bend_penalty)
+                .map_err(|e| routing_failure_to_layout_error(edge_id, e))?
         } else {
             (
-                route(start, end, &obstacles, segment_penalty, bend_penalty),
+                route(start, end, &obstacles, segment_penalty, bend_penalty)
+                    .map_err(|e| routing_failure_to_layout_error(edge_id, e))?,
                 router::RouteDebug::default(),
             )
         };
+        let path = sanitize_orthogonal_path(path, start, end)
+            .map_err(|m| LayoutError::Routing(format!("edge {:?}: {m}", edge_id)))?;
         let bends = if path.len() >= 2 {
             path[1..path.len() - 1].to_vec()
         } else {
@@ -236,6 +243,61 @@ pub fn route_edges_with_diagnostics_in_scope(
 
 fn nearly_same_point(a: Point, b: Point, eps: f32) -> bool {
     (a.x - b.x).abs() <= eps && (a.y - b.y).abs() <= eps
+}
+
+fn sanitize_orthogonal_path(mut points: Vec<Point>, start: Point, end: Point) -> Result<Vec<Point>, String> {
+    if points.is_empty() {
+        points.push(start);
+        points.push(end);
+    }
+    if points.first().copied() != Some(start) {
+        points.insert(0, start);
+    }
+    if points.last().copied() != Some(end) {
+        points.push(end);
+    }
+    if points.len() < 2 {
+        return Err("route returned fewer than two points".to_string());
+    }
+    let mut out = Vec::with_capacity(points.len() * 2);
+    out.push(points[0]);
+    for pair in points.windows(2) {
+        let a = pair[0];
+        let b = pair[1];
+        if (a.x - b.x).abs() < 1e-5 || (a.y - b.y).abs() < 1e-5 {
+            out.push(b);
+            continue;
+        }
+        let dx = (b.x - a.x).abs();
+        let dy = (b.y - a.y).abs();
+        let via = if dx >= dy {
+            Point::new(b.x, a.y)
+        } else {
+            Point::new(a.x, b.y)
+        };
+        if out.last().copied() != Some(via) {
+            out.push(via);
+        }
+        out.push(b);
+    }
+    let has_diag = out.windows(2).any(|pair| {
+        let a = pair[0];
+        let b = pair[1];
+        (a.x - b.x).abs() > 1e-5 && (a.y - b.y).abs() > 1e-5
+    });
+    if has_diag {
+        return Err("non-orthogonal segment remained after sanitization".to_string());
+    }
+    Ok(out)
+}
+
+fn routing_failure_to_layout_error(edge_id: EdgeId, failure: RoutingFailure) -> LayoutError {
+    let reason = match failure {
+        RoutingFailure::NoCandidatePoints => "no_candidate_points",
+        RoutingFailure::DegenerateEndpoints => "degenerate_endpoints",
+        RoutingFailure::NoRouteFound => "no_route_found",
+    };
+    LayoutError::Routing(format!("edge {:?}: libavoid route failed ({reason})", edge_id))
 }
 
 fn node_rect(graph: &ElkGraph, n: NodeId) -> Rect {
@@ -300,25 +362,16 @@ fn edge_endpoint_nodes(graph: &ElkGraph, edge_id: EdgeId) -> Vec<NodeId> {
     let edge = &graph.edges[edge_id.index()];
     let mut nodes = Vec::new();
     if let Some(source) = edge.sources.first() {
-        push_node_and_ancestors(graph, &mut nodes, source.node);
+        if source.node != graph.root && !nodes.contains(&source.node) {
+            nodes.push(source.node);
+        }
     }
     if let Some(target) = edge.targets.first() {
-        push_node_and_ancestors(graph, &mut nodes, target.node);
+        if target.node != graph.root && !nodes.contains(&target.node) {
+            nodes.push(target.node);
+        }
     }
     nodes
-}
-
-fn push_node_and_ancestors(graph: &ElkGraph, out: &mut Vec<NodeId>, node_id: NodeId) {
-    let mut cursor = Some(node_id);
-    while let Some(current) = cursor {
-        if current == graph.root {
-            break;
-        }
-        if !out.contains(&current) {
-            out.push(current);
-        }
-        cursor = graph.nodes[current.index()].parent;
-    }
 }
 
 fn endpoint_center(graph: &ElkGraph, ep: EdgeEndpoint) -> Point {

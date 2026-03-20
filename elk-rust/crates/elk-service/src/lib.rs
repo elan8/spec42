@@ -446,5 +446,28 @@ mod tests {
         assert_eq!(canonical, Some("org.eclipse.elk.rectpacking"));
         assert!(report.warnings.iter().any(|w| w.contains("Deprecated algorithm id")));
     }
+
+    #[test]
+    fn libavoid_routing_failure_propagates_as_layout_error() {
+        let json = r#"
+        {
+          "id":"root",
+          "layoutOptions":{"elk.algorithm":"org.eclipse.elk.libavoid"},
+          "children":[{"id":"a","x":0,"y":0,"width":80,"height":40}],
+          "edges":[{"id":"e1","sources":["a"],"targets":["a"]}]
+        }
+        "#;
+        let mut g = import_str(json).expect("import").graph;
+        let svc = LayoutService::default_registry();
+        let err = svc
+            .layout(&mut g, &LayoutOptions::default())
+            .expect_err("self-loop should fail strict libavoid routing");
+        match err {
+            ServiceError::Layout(LayoutError::Routing(message)) => {
+                assert!(message.contains("libavoid route failed"));
+            }
+            other => panic!("expected ServiceError::Layout(LayoutError::Routing), got {other:?}"),
+        }
+    }
 }
 

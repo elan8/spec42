@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use elk_core::{EdgeRouting, LayoutOptions, LayoutStats, Point, PortSide, Rect, Size};
+use elk_core::{EdgeRouting, LayoutError, LayoutOptions, LayoutStats, Point, PortSide, Rect, Size};
 use elk_graph::{ElkGraph, EdgeId, NodeId, PortId};
 
 use crate::ir::{IrEdge, LayeredIr};
@@ -18,7 +18,7 @@ pub(crate) fn export_to_graph(
     options: &LayoutOptions,
     warnings: &mut Vec<String>,
     stats: &mut LayoutStats,
-) -> usize {
+) -> Result<usize, LayoutError> {
     let debug_enabled = std::env::var_os("SPEC42_ELK_DEBUG").is_some();
     // Write node positions/sizes.
     for node in &ir.nodes {
@@ -36,7 +36,6 @@ pub(crate) fn export_to_graph(
     // Route edges: libavoid backend (if opted in) or simple 1-bend router.
     let use_libavoid = should_use_libavoid(graph, options);
     let mut routed = 0usize;
-    let mut libavoid_failed = false;
     if !use_libavoid && matches!(options.view_profile, elk_core::ViewProfile::InterconnectionView) {
         warnings.push("elk-layered: libavoid not selected for interconnection; using simplified router fallback".to_string());
     }
@@ -72,13 +71,9 @@ pub(crate) fn export_to_graph(
             ) {
                 Err(e) => {
                     warnings.push(format!("elk-layered: libavoid routing failed: {e}"));
-                    libavoid_failed = true;
-                    if debug_enabled {
-                        warnings.push(format!(
-                            "elk-layered: fallback-reason={}",
-                            FallbackReason::HardError.as_str()
-                        ));
-                    }
+                    return Err(LayoutError::Routing(format!(
+                        "libavoid routing failed for local scope: {e}"
+                    )));
                 }
                 Ok(diag_lines) => {
                     if debug_enabled {
@@ -109,13 +104,6 @@ pub(crate) fn export_to_graph(
                 }
                 }
             }
-        } else if debug_enabled {
-            warnings.push(format!(
-                "elk-layered: fallback-reason={}",
-                FallbackReason::NoLocalEdges.as_str()
-            ));
-        } else {
-            warnings.push("elk-layered: fallback-reason=no_local_edges".to_string());
         }
         if routed > 0 {
             warnings.push("elk-layered: libavoid routing backend active".to_string());
@@ -126,20 +114,7 @@ pub(crate) fn export_to_graph(
     let fanout_lane_bias_by_index = fanout_lane_bias_by_edge_index(ir);
     let keep_unnecessary_bends = keep_unnecessary_bends(graph);
 
-    if !use_libavoid || libavoid_failed {
-        if debug_enabled && !use_libavoid {
-            warnings.push(format!(
-                "elk-layered: fallback-reason={}",
-                FallbackReason::BackendNotSelected.as_str()
-            ));
-        }
-        if use_libavoid && libavoid_failed {
-            warnings.push(
-                "elk-layered: libavoid hard failure; simplified router fallback active"
-                    .to_string(),
-            );
-            warnings.push("elk-layered: fallback-reason=hard_error".to_string());
-        }
+    if !use_libavoid {
         for edge in &ir.edges {
             if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
                 continue;
@@ -184,24 +159,7 @@ pub(crate) fn export_to_graph(
         }
     }
 
-    routed
-}
-
-#[derive(Clone, Copy, Debug)]
-enum FallbackReason {
-    BackendNotSelected,
-    HardError,
-    NoLocalEdges,
-}
-
-impl FallbackReason {
-    const fn as_str(self) -> &'static str {
-        match self {
-            Self::BackendNotSelected => "backend_not_selected",
-            Self::HardError => "hard_error",
-            Self::NoLocalEdges => "no_local_edges",
-        }
-    }
+    Ok(routed)
 }
 
 fn canonicalize_libavoid_terminals(graph: &mut ElkGraph, edge: &IrEdge, warnings: &mut Vec<String>) {

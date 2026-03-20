@@ -22,6 +22,13 @@ pub struct RouteDebug {
     pub path_found: bool,
 }
 
+#[derive(Clone, Debug)]
+pub enum RoutingFailure {
+    NoCandidatePoints,
+    DegenerateEndpoints,
+    NoRouteFound,
+}
+
 fn rect_contains(r: &Rect, p: Point) -> bool {
     p.x >= r.origin.x + EPS
         && p.x <= r.origin.x + r.size.width - EPS
@@ -206,8 +213,8 @@ pub fn route(
     obstacles: &[Obstacle],
     segment_penalty: f32,
     bend_penalty: f32,
-) -> Vec<Point> {
-    route_with_debug(start, end, obstacles, segment_penalty, bend_penalty).0
+) -> Result<Vec<Point>, RoutingFailure> {
+    route_with_debug(start, end, obstacles, segment_penalty, bend_penalty).map(|v| v.0)
 }
 
 #[must_use]
@@ -217,12 +224,12 @@ pub fn route_with_debug(
     obstacles: &[Obstacle],
     segment_penalty: f32,
     bend_penalty: f32,
-) -> (Vec<Point>, RouteDebug) {
+) -> Result<(Vec<Point>, RouteDebug), RoutingFailure> {
     let mut dbg = RouteDebug::default();
     let points = candidate_points(start, end, obstacles);
     dbg.candidate_points = points.len();
     if points.is_empty() {
-        return (vec![start, end], dbg);
+        return Err(RoutingFailure::NoCandidatePoints);
     }
     let start_idx = points
         .iter()
@@ -233,7 +240,7 @@ pub fn route_with_debug(
         .position(|p| (p.x - end.x).abs() < EPS && (p.y - end.y).abs() < EPS)
         .unwrap_or(1);
     if start_idx == end_idx {
-        return (vec![start, end], dbg);
+        return Err(RoutingFailure::DegenerateEndpoints);
     }
 
     let seg_penalty = segment_penalty.max(1e-6);
@@ -262,7 +269,7 @@ pub fn route_with_debug(
             }
             path.reverse();
             dbg.path_found = true;
-            return (path, dbg);
+            return Ok((path, dbg));
         }
         let current = points[u];
         let g_u = g_score.get(&u).copied().unwrap_or(f32::MAX);
@@ -298,7 +305,7 @@ pub fn route_with_debug(
         }
     }
 
-    (vec![start, end], dbg)
+    Err(RoutingFailure::NoRouteFound)
 }
 
 #[cfg(test)]
@@ -318,8 +325,8 @@ mod tests {
         ];
         let start = Point::new(20.0, 50.0);
         let end = Point::new(220.0, 50.0);
-        let a = route(start, end, &obstacles, 1.0, 6.0);
-        let b = route(start, end, &obstacles, 1.0, 6.0);
+        let a = route(start, end, &obstacles, 1.0, 6.0).expect("route should succeed");
+        let b = route(start, end, &obstacles, 1.0, 6.0).expect("route should succeed");
         assert_eq!(a, b);
     }
 
@@ -331,7 +338,7 @@ mod tests {
         ];
         let start = Point::new(20.0, 50.0);
         let end = Point::new(220.0, 50.0);
-        let path = route(start, end, &obstacles, 1.0, 6.0);
+        let path = route(start, end, &obstacles, 1.0, 6.0).expect("route should succeed");
         assert!(path.len() >= 2);
         // At minimum the route should not collapse to an empty result.
         assert!(path.first().is_some() && path.last().is_some());

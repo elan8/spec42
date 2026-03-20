@@ -131,7 +131,7 @@ pub(crate) fn layout_subgraph(
         options,
         &mut report.warnings,
         &mut report.stats,
-    );
+    )?;
     report.stats.phases.push(LayoutPhaseStat {
         name: "edge_routing",
         duration: started.elapsed(),
@@ -465,7 +465,8 @@ mod tests {
                 &options,
                 &mut warnings,
                 &mut stats,
-            );
+            )
+            .expect("export should route");
             assert!(routed >= 1);
             let edge = &graph_copy.edges[0];
             assert!(!edge.sections.is_empty());
@@ -541,7 +542,8 @@ mod tests {
             &options,
             &mut warnings,
             &mut stats,
-        );
+        )
+        .expect("export should route");
         assert!(routed >= 1);
 
         let first_edge = &graph_copy.edges[0];
@@ -611,7 +613,8 @@ mod tests {
             &options,
             &mut warnings,
             &mut stats,
-        );
+        )
+        .expect("export should route");
         assert!(routed_without >= 1);
 
         let mut ir = import_graph(&graph_with, &nodes, &local, &options);
@@ -629,7 +632,8 @@ mod tests {
             &options,
             &mut warnings,
             &mut stats,
-        );
+        )
+        .expect("export should route");
         assert!(routed >= 1);
         let edge_without = &graph_without_copy.edges[0];
         let edge = &graph_copy.edges[0];
@@ -690,7 +694,8 @@ mod tests {
             &options,
             &mut warnings,
             &mut stats,
-        );
+        )
+        .expect("export should route");
 
         let edge = &graph_copy.edges[0];
         let section = &graph_copy.edge_sections[edge.sections[0].index()];
@@ -758,7 +763,8 @@ mod tests {
             &options,
             &mut warnings,
             &mut stats,
-        );
+        )
+        .expect("export should route");
 
         let first_edge = &graph_copy.edges[0];
         let second_edge = &graph_copy.edges[1];

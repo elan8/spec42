@@ -296,6 +296,29 @@ fn count_non_endpoint_node_intrusions(g: &elk_graph::ElkGraph, tolerance: f32) -
     intrusions
 }
 
+fn count_diagonal_segments(g: &elk_graph::ElkGraph, tolerance: f32) -> usize {
+    let mut diagonals = 0usize;
+    for edge in &g.edges {
+        for sid in &edge.sections {
+            let sec = &g.edge_sections[sid.index()];
+            let points: Vec<Point> = std::iter::once(sec.start)
+                .chain(sec.bend_points.iter().copied())
+                .chain(std::iter::once(sec.end))
+                .collect();
+            for seg in points.windows(2) {
+                let a = seg[0];
+                let b = seg[1];
+                let dx = (a.x - b.x).abs();
+                let dy = (a.y - b.y).abs();
+                if dx > tolerance && dy > tolerance {
+                    diagonals += 1;
+                }
+            }
+        }
+    }
+    diagonals
+}
+
 #[test]
 fn view_profile_defaults_are_applied() {
     let general = LayoutOptions::default().with_view_profile(ViewProfile::GeneralView);
@@ -484,6 +507,19 @@ fn interconnection_real_corpus_invariants_hold() {
         assert_children_non_overlapping(&g);
         assert_children_within_parent_bounds(&g);
         assert_edge_endpoints_match_declared_ports(&g, 1.0);
+        let diagonal_segments = count_diagonal_segments(&g, 1e-3);
+        let diagonal_limit = if fixture == "interconnection_real_full_drone_like.json" {
+            12
+        } else {
+            4
+        };
+        assert!(
+            diagonal_segments <= diagonal_limit,
+            "expected low diagonal-segment count for {} (diagonals={}, limit={})",
+            fixture,
+            diagonal_segments,
+            diagonal_limit
+        );
         let max_bends = max_bends_per_edge(&g);
         assert!(max_bends <= 8, "unexpectedly high bend count for {}", fixture);
         if fixture == "interconnection_real_full_drone_like.json" {
