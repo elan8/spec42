@@ -1,55 +1,33 @@
 //! Shared LSP integration test harness: spawn server, send/read JSON-RPC messages.
 
 use std::io::{Read, Write};
-use std::path::PathBuf;
 use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicI64, Ordering};
 
 pub static NEXT_ID: AtomicI64 = AtomicI64::new(1);
 
-pub const INTEGRATION_LAUNCH_MODE: &str = "cargo-run";
+pub const INTEGRATION_LAUNCH_MODE: &str = "spec42-core-test-binary";
 
 pub fn server_binary_path() -> std::path::PathBuf {
-    let current_exe = std::env::current_exe().expect("current_exe");
-    let dir = current_exe
-        .parent()
-        .and_then(|p| p.parent())
-        .expect("test binary has parent dir (target/debug)");
-    let name = std::env::consts::EXE_SUFFIX;
-    let server_name = if name.is_empty() {
-        "spec42".to_string()
-    } else {
-        format!("spec42{}", name)
-    };
-    dir.join(server_name)
+    std::path::PathBuf::from(env!("CARGO_BIN_EXE_spec42_core_lsp_test"))
 }
 
 pub fn spawn_server() -> Child {
-    let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .expect("spec42-core has workspace parent")
-        .to_path_buf();
-    // Always launch through cargo so integration tests run current workspace code.
+    let server_path = server_binary_path();
     eprintln!("spec42 integration harness launch_mode={INTEGRATION_LAUNCH_MODE}");
-    Command::new("cargo")
-        .current_dir(&workspace_root)
-        .arg("run")
-        .arg("-p")
-        .arg("spec42")
-        .arg("--quiet")
-        .arg("--")
+    Command::new(&server_path)
         // Enable extra routing diagnostics in elk-layered for integration tests.
         .env("SPEC42_ELK_DEBUG", "1")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::null())
         .spawn()
-        .expect("spawn server via cargo run -p spec42")
+        .unwrap_or_else(|err| panic!("spawn server binary {}: {err}", server_path.display()))
 }
 
 #[test]
-fn harness_launch_mode_uses_cargo_run() {
-    assert_eq!(INTEGRATION_LAUNCH_MODE, "cargo-run");
+fn harness_launch_mode_uses_direct_binary() {
+    assert_eq!(INTEGRATION_LAUNCH_MODE, "spec42-core-test-binary");
 }
 
 /// LSP message framing: "Content-Length: N\r\n\r\n" + body (UTF-8).

@@ -57,11 +57,16 @@ pub fn port_side_from_text(side: Option<&str>, direction: Option<&str>) -> PortS
 pub fn detail_lines(attributes: &[(String, String)], extra: &[String]) -> Vec<String> {
     let mut lines: Vec<String> = attributes
         .iter()
+        .filter(|(key, _)| !is_internal_attribute(key))
         .take(4)
         .map(|(key, value)| format!("{key}: {value}"))
         .collect();
     lines.extend(extra.iter().take(4).cloned());
     lines
+}
+
+fn is_internal_attribute(key: &str) -> bool {
+    matches!(key, "synthetic" | "originRange")
 }
 
 pub fn default_node(

@@ -1356,6 +1356,7 @@ dependencies = [
  "petgraph",
  "serde",
  "serde_json",
+ "sysml-diagrams",
  "sysml-parser",
  "tempfile",
  "thiserror",

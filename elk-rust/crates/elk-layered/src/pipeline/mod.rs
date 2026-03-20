@@ -29,7 +29,7 @@ use normalization::normalize_edges;
 use placement::assign_lanes;
 use placement::place_nodes;
 use routing::export_to_graph;
-pub(crate) use routing::{refresh_all_port_positions, snap_all_edge_terminals_to_endpoints};
+pub(crate) use routing::refresh_all_port_positions;
 
 pub(crate) fn layout_subgraph(
     graph: &mut ElkGraph,

@@ -3,6 +3,7 @@
 
 pub mod ast_util;
 pub mod config;
+pub mod default_diagram_providers;
 pub mod diagram_types;
 pub mod dto;
 pub mod ibd;
@@ -25,6 +26,7 @@ pub use dto::{
 pub use ibd::{build_ibd_for_uri, is_port_like, IbdDataDto};
 pub use language::SymbolEntry;
 pub use config::{DiagramContext, DiagramProvider, SemanticCheckProvider, Spec42Config};
+pub use default_diagram_providers::default_config as default_server_config;
 pub use semantic_checks::{compute_semantic_diagnostics, DefaultSemanticChecks};
 pub use semantic_model::{build_graph_from_doc, add_cross_document_edges_for_uri, SemanticGraph, SemanticNode, NodeId, RelationshipKind};
 pub use semantic_tokens::{ast_semantic_ranges, legend, semantic_tokens_full, semantic_tokens_range};

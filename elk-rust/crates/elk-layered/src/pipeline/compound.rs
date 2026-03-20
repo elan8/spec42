@@ -193,12 +193,21 @@ pub fn postprocess_cross_hierarchy_edges(
                 end_center,
             );
         }
+        orthogonalize_edge_sections_with_sides(
+            graph,
+            *edge_id,
+            original_source.port.map(|port| graph.ports[port.index()].side),
+            original_target.port.map(|port| graph.ports[port.index()].side),
+        );
     }
 }
 
 fn set_section_start_preserve_orthogonality(section: &mut elk_graph::EdgeSection, start: elk_core::Point) {
     section.start = start;
     if section.bend_points.is_empty() {
+        if (section.end.x - start.x).abs() > f32::EPSILON && (section.end.y - start.y).abs() > f32::EPSILON {
+            section.bend_points.push(elk_core::Point::new(section.end.x, start.y));
+        }
         return;
     }
     let first = section.bend_points[0];
@@ -216,6 +225,9 @@ fn set_section_start_preserve_orthogonality(section: &mut elk_graph::EdgeSection
 fn set_section_end_preserve_orthogonality(section: &mut elk_graph::EdgeSection, end: elk_core::Point) {
     section.end = end;
     if section.bend_points.is_empty() {
+        if (section.start.x - end.x).abs() > f32::EPSILON && (section.start.y - end.y).abs() > f32::EPSILON {
+            section.bend_points.push(elk_core::Point::new(section.start.x, end.y));
+        }
         return;
     }
     let last_idx = section.bend_points.len() - 1;
@@ -229,6 +241,125 @@ fn set_section_end_preserve_orthogonality(section: &mut elk_graph::EdgeSection, 
             elk_core::Point::new(last.x, end.y)
         };
     }
+}
+
+fn orthogonalize_edge_sections_with_sides(
+    graph: &mut ElkGraph,
+    edge_id: EdgeId,
+    start_side: Option<PortSide>,
+    end_side: Option<PortSide>,
+) {
+    let section_ids = graph.edges[edge_id.index()].sections.clone();
+    for section_id in section_ids {
+        let section = &graph.edge_sections[section_id.index()];
+        let points: Vec<elk_core::Point> = std::iter::once(section.start)
+            .chain(section.bend_points.iter().copied())
+            .chain(std::iter::once(section.end))
+            .collect();
+        let orthogonal = orthogonalize_polyline(points, start_side, end_side);
+        if orthogonal.len() < 2 {
+            continue;
+        }
+        let section_mut = &mut graph.edge_sections[section_id.index()];
+        section_mut.start = orthogonal[0];
+        section_mut.end = orthogonal[orthogonal.len() - 1];
+        section_mut.bend_points = orthogonal[1..orthogonal.len() - 1].to_vec();
+    }
+}
+
+fn orthogonalize_polyline(
+    points: Vec<elk_core::Point>,
+    start_side: Option<PortSide>,
+    end_side: Option<PortSide>,
+) -> Vec<elk_core::Point> {
+    const EPS: f32 = 1e-5;
+    if points.len() < 2 {
+        return points;
+    }
+    let mut out = vec![points[0]];
+    for idx in 0..points.len() - 1 {
+        let a = *out.last().unwrap_or(&points[idx]);
+        let b = points[idx + 1];
+        let dx = (a.x - b.x).abs();
+        let dy = (a.y - b.y).abs();
+        if dx <= EPS && dy <= EPS {
+            continue;
+        }
+        if dx > EPS && dy > EPS {
+            let via = choose_orthogonal_elbow(&points, idx, a, b, start_side, end_side);
+            if out.last().copied() != Some(via) {
+                out.push(via);
+            }
+        }
+        if out.last().copied() != Some(b) {
+            out.push(b);
+        }
+    }
+    simplify_polyline(out)
+}
+
+fn choose_orthogonal_elbow(
+    points: &[elk_core::Point],
+    idx: usize,
+    a: elk_core::Point,
+    b: elk_core::Point,
+    start_side: Option<PortSide>,
+    end_side: Option<PortSide>,
+) -> elk_core::Point {
+    if idx == 0 {
+        if let Some(side) = start_side {
+            return match side {
+                PortSide::East | PortSide::West => elk_core::Point::new(b.x, a.y),
+                PortSide::North | PortSide::South => elk_core::Point::new(a.x, b.y),
+            };
+        }
+    }
+    if idx + 1 == points.len() - 1 {
+        if let Some(side) = end_side {
+            return match side {
+                PortSide::East | PortSide::West => elk_core::Point::new(a.x, b.y),
+                PortSide::North | PortSide::South => elk_core::Point::new(b.x, a.y),
+            };
+        }
+    }
+    if idx > 0 {
+        let prev = points[idx - 1];
+        if (prev.x - a.x).abs() <= f32::EPSILON {
+            return elk_core::Point::new(a.x, b.y);
+        }
+        if (prev.y - a.y).abs() <= f32::EPSILON {
+            return elk_core::Point::new(b.x, a.y);
+        }
+    }
+    if (a.x - b.x).abs() >= (a.y - b.y).abs() {
+        elk_core::Point::new(b.x, a.y)
+    } else {
+        elk_core::Point::new(a.x, b.y)
+    }
+}
+
+fn simplify_polyline(points: Vec<elk_core::Point>) -> Vec<elk_core::Point> {
+    let mut out = Vec::with_capacity(points.len());
+    for point in points {
+        if out.last().copied() == Some(point) {
+            continue;
+        }
+        out.push(point);
+        while out.len() >= 3 {
+            let len = out.len();
+            let a = out[len - 3];
+            let b = out[len - 2];
+            let c = out[len - 1];
+            let collinear_x = (a.x - b.x).abs() <= 1e-5 && (b.x - c.x).abs() <= 1e-5;
+            let collinear_y = (a.y - b.y).abs() <= 1e-5 && (b.y - c.y).abs() <= 1e-5;
+            if collinear_x || collinear_y {
+                out.remove(len - 2);
+            } else {
+                break;
+            }
+        }
+    }
+    out
 }
 
 // moved to `elk-alg-common`

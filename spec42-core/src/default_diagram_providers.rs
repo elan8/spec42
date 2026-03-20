@@ -1,11 +1,11 @@
-//! Default diagram providers that use sysml-diagrams for general view and interconnection view.
+//! Default diagram providers backed by `sysml-diagrams`.
 
 use std::sync::Arc;
 
-use spec42_core::config::{DiagramContext, DiagramProvider};
-use spec42_core::dto::{GraphEdgeDto, GraphNodeDto};
-use spec42_core::diagram_types::{Bounds, HitRegion, HitRegionKind, LayoutMetrics, RenderedDiagram, ViewState};
-use spec42_core::ibd::IbdDataDto;
+use crate::config::{DiagramContext, DiagramProvider};
+use crate::diagram_types::{Bounds, HitRegion, HitRegionKind, LayoutMetrics, RenderedDiagram, ViewState};
+use crate::dto::{GraphEdgeDto, GraphNodeDto};
+use crate::ibd::IbdDataDto;
 
 fn sysml_to_core_rendered(d: sysml_diagrams::RenderedDiagram) -> RenderedDiagram {
     RenderedDiagram {
@@ -144,7 +144,6 @@ fn ibd_input(ibd: &IbdDataDto) -> sysml_diagrams::IbdInput {
     }
 }
 
-/// General view diagram provider (graph of nodes and edges).
 #[derive(Debug, Default)]
 pub struct GeneralViewProvider;
 
@@ -155,23 +154,16 @@ impl DiagramProvider for GeneralViewProvider {
 
     fn render(&self, context: &DiagramContext<'_>) -> Option<RenderedDiagram> {
         let graph = context.graph?;
-        let nodes: Vec<sysml_diagrams::GraphNodeInput> = graph
-            .nodes
-            .iter()
-            .map(graph_node_input)
-            .collect();
-        let edges: Vec<sysml_diagrams::GraphEdgeInput> = graph
-            .edges
-            .iter()
-            .map(graph_edge_input)
-            .collect();
+        let nodes: Vec<sysml_diagrams::GraphNodeInput> =
+            graph.nodes.iter().map(graph_node_input).collect();
+        let edges: Vec<sysml_diagrams::GraphEdgeInput> =
+            graph.edges.iter().map(graph_edge_input).collect();
         sysml_diagrams::general_view::render(&nodes, &edges)
             .ok()
             .map(sysml_to_core_rendered)
     }
 }
 
-/// Interconnection view (IBD) diagram provider.
 #[derive(Debug, Default)]
 pub struct InterconnectionViewProvider;
 
@@ -188,10 +180,9 @@ impl DiagramProvider for InterconnectionViewProvider {
     }
 }
 
-/// Builds the default Spec42 config: default semantic checks and default diagram providers.
-pub fn default_config() -> spec42_core::Spec42Config {
-    spec42_core::Spec42Config::new()
-        .with_check_provider(Arc::new(spec42_core::DefaultSemanticChecks))
+pub fn default_config() -> crate::Spec42Config {
+    crate::Spec42Config::new()
+        .with_check_provider(Arc::new(crate::DefaultSemanticChecks))
         .with_diagram_provider(Arc::new(GeneralViewProvider))
         .with_diagram_provider(Arc::new(InterconnectionViewProvider))
 }

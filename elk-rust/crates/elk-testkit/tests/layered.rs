@@ -710,4 +710,3 @@ fn interconnection_full_drone_like_route_signature_is_stable() {
         "drone-like interconnection route signature drifted"
     );
 }
-

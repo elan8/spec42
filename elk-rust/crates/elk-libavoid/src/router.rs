@@ -41,33 +41,36 @@ fn segment_intersects_rect(a: Point, b: Point, r: &Rect) -> bool {
     let max_x = r.origin.x + r.size.width - EPS;
     let min_y = r.origin.y + EPS;
     let max_y = r.origin.y + r.size.height - EPS;
-    // If either endpoint is inside, segment crosses.
-    if (a.x > min_x && a.x < max_x && a.y > min_y && a.y < max_y)
-        || (b.x > min_x && b.x < max_x && b.y > min_y && b.y < max_y)
-    {
+    let inside = |p: Point| p.x > min_x && p.x < max_x && p.y > min_y && p.y < max_y;
+    if inside(a) || inside(b) {
         return true;
     }
-    // Liang–Barsky: segment (a + t*(b-a)) vs rect.
-    let dx = b.x - a.x;
-    let dy = b.y - a.y;
-    let mut t0 = 0.0f32;
-    let mut t1 = 1.0f32;
-    let edges = [(dx, min_x - a.x), (-dx, a.x - max_x), (dy, min_y - a.y), (-dy, a.y - max_y)];
-    for (denom, num) in edges {
-        if denom.abs() < EPS {
-            if num > 0.0 {
-                return false;
-            }
-            continue;
+
+    if (a.x - b.x).abs() < EPS {
+        let x = a.x;
+        if x <= min_x || x >= max_x {
+            return false;
         }
-        let t = num / denom;
-        if denom > 0.0 {
-            t1 = t1.min(t);
-        } else {
-            t0 = t0.max(t);
-        }
+        let seg_min_y = a.y.min(b.y);
+        let seg_max_y = a.y.max(b.y);
+        return seg_max_y > min_y && seg_min_y < max_y;
     }
-    t0 <= t1 + EPS
+
+    if (a.y - b.y).abs() < EPS {
+        let y = a.y;
+        if y <= min_y || y >= max_y {
+            return false;
+        }
+        let seg_min_x = a.x.min(b.x);
+        let seg_max_x = a.x.max(b.x);
+        return seg_max_x > min_x && seg_min_x < max_x;
+    }
+
+    let seg_min_x = a.x.min(b.x);
+    let seg_max_x = a.x.max(b.x);
+    let seg_min_y = a.y.min(b.y);
+    let seg_max_y = a.y.max(b.y);
+    seg_max_x > min_x && seg_min_x < max_x && seg_max_y > min_y && seg_min_y < max_y
 }
 
 fn segment_intersects_obstacle(a: Point, b: Point, obstacles: &[Obstacle]) -> bool {
@@ -248,17 +251,22 @@ pub fn route_with_debug(
     g_score.insert(start_idx, 0.0);
     let mut came_from: BTreeMap<usize, usize> = BTreeMap::new();
     let mut open: BinaryHeap<State> = BinaryHeap::new();
-    let h_start = ((points[end_idx].x - start.x).powi(2) + (points[end_idx].y - start.y).powi(2)).sqrt() * seg_penalty;
+    let h_start = ((points[end_idx].x - start.x).powi(2) + (points[end_idx].y - start.y).powi(2))
+        .sqrt()
+        * seg_penalty;
     open.push(State {
         f: h_start,
         tie: start_idx,
         idx: start_idx,
         axis: None,
     });
-    let mut best_axis: BTreeMap<usize, Option<Axis>> = BTreeMap::new();
-    best_axis.insert(start_idx, None);
 
-    while let Some(State { idx: u, axis: incoming_axis, .. }) = open.pop() {
+    while let Some(State {
+        idx: u,
+        axis: incoming_axis,
+        ..
+    }) = open.pop()
+    {
         dbg.expanded_states += 1;
         if u == end_idx {
             let mut path = vec![points[end_idx]];
@@ -278,9 +286,10 @@ pub fn route_with_debug(
             let edge_cost = w * seg_penalty;
             let bend = incoming_axis.map(|prev_axis| prev_axis != axis).unwrap_or(false);
             let mut tentative = g_u + edge_cost + if bend { bend_penalty.max(1.0) } else { 0.0 };
-            // Prefer monotone progress toward target to avoid route oscillations.
-            let prev_dist = (points[end_idx].x - current.x).abs() + (points[end_idx].y - current.y).abs();
-            let next_dist = (points[end_idx].x - points[v].x).abs() + (points[end_idx].y - points[v].y).abs();
+            let prev_dist =
+                (points[end_idx].x - current.x).abs() + (points[end_idx].y - current.y).abs();
+            let next_dist =
+                (points[end_idx].x - points[v].x).abs() + (points[end_idx].y - points[v].y).abs();
             if next_dist > prev_dist + EPS {
                 tentative += 0.35 * seg_penalty;
             }
@@ -288,10 +297,9 @@ pub fn route_with_debug(
                 dbg.accepted_neighbors += 1;
                 came_from.insert(v, u);
                 g_score.insert(v, tentative);
-                best_axis.insert(v, Some(axis));
                 let h_v = ((points[end_idx].x - points[v].x).powi(2)
                     + (points[end_idx].y - points[v].y).powi(2))
-                    .sqrt()
+                .sqrt()
                     * seg_penalty;
                 open.push(State {
                     f: tentative + h_v,
@@ -320,8 +328,12 @@ mod tests {
     #[test]
     fn route_is_deterministic_for_same_input() {
         let obstacles = vec![
-            Obstacle { rect: rect(80.0, 20.0, 30.0, 60.0) },
-            Obstacle { rect: rect(130.0, 20.0, 30.0, 60.0) },
+            Obstacle {
+                rect: rect(80.0, 20.0, 30.0, 60.0),
+            },
+            Obstacle {
+                rect: rect(130.0, 20.0, 30.0, 60.0),
+            },
         ];
         let start = Point::new(20.0, 50.0);
         let end = Point::new(220.0, 50.0);
@@ -333,14 +345,25 @@ mod tests {
     #[test]
     fn narrow_corridor_routes_without_entering_obstacles() {
         let obstacles = vec![
-            Obstacle { rect: rect(80.0, 0.0, 60.0, 40.0) },
-            Obstacle { rect: rect(80.0, 60.0, 60.0, 40.0) },
+            Obstacle {
+                rect: rect(80.0, 0.0, 60.0, 40.0),
+            },
+            Obstacle {
+                rect: rect(80.0, 60.0, 60.0, 40.0),
+            },
         ];
         let start = Point::new(20.0, 50.0);
         let end = Point::new(220.0, 50.0);
         let path = route(start, end, &obstacles, 1.0, 6.0).expect("route should succeed");
         assert!(path.len() >= 2);
-        // At minimum the route should not collapse to an empty result.
         assert!(path.first().is_some() && path.last().is_some());
+    }
+
+    #[test]
+    fn horizontal_segment_crossing_rect_is_detected() {
+        let obstacle = rect(912.0, 216.0, 404.0, 1084.0);
+        let a = Point::new(752.0, 896.0);
+        let b = Point::new(2244.0, 896.0);
+        assert!(segment_intersects_rect(a, b, &obstacle));
     }
 }

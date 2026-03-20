@@ -1,7 +1,7 @@
 #![forbid(unsafe_code)]
 #![doc = "Obstacle-avoiding edge routing (ELK libavoid baseline, native Rust)."]
 
-use elk_core::{LayoutError, LayoutOptions, LayoutReport, Point, Rect, Size};
+use elk_core::{LayoutError, LayoutOptions, LayoutReport, Point, PortSide, Rect, Size};
 use std::collections::BTreeSet;
 
 use elk_graph::{ElkGraph, EdgeId, EdgeEndpoint, NodeId};
@@ -13,6 +13,17 @@ use router::{Obstacle, RoutingFailure, route, route_with_debug};
 const DEFAULT_CLEARANCE: f32 = 4.0;
 const DEFAULT_SEGMENT_PENALTY: f32 = 1.0;
 const DEFAULT_BEND_PENALTY: f32 = 6.0;
+const TERMINAL_NORMAL_OFFSET: f32 = 12.0;
+
+#[derive(Clone, Copy, Debug)]
+struct RoutePlan {
+    actual_start_abs: Point,
+    actual_end_abs: Point,
+    route_start_local: Point,
+    route_end_local: Point,
+    source_side: Option<PortSide>,
+    target_side: Option<PortSide>,
+}
 
 fn read_penalty_f32(
     by_key: &std::collections::BTreeMap<String, &elk_graph::PropertyValue>,
@@ -82,8 +93,8 @@ impl LibavoidLayoutEngine {
         edge_ids.sort_by_key(|e| e.index());
 
         for edge_id in edge_ids {
-            let (start, end) = endpoints_center(graph, edge_id);
-            let excluded = edge_endpoint_nodes(graph, edge_id);
+            let plan = build_route_plan(graph, edge_id, Point::new(0.0, 0.0), clearance);
+            let excluded = excluded_obstacle_nodes(graph, edge_id, plan.source_side, plan.target_side);
             let obstacles = collect_obstacles(
                 graph,
                 clearance,
@@ -91,17 +102,24 @@ impl LibavoidLayoutEngine {
                 Point::new(0.0, 0.0),
                 None,
             );
-            let path = route(start, end, &obstacles, segment_penalty, bend_penalty)
+            let path = route(plan.route_start_local, plan.route_end_local, &obstacles, segment_penalty, bend_penalty)
                 .map_err(|e| routing_failure_to_layout_error(edge_id, e))?;
-            let path = sanitize_orthogonal_path(path, start, end)
+            let path = finalize_route_path(
+                path,
+                plan.actual_start_abs,
+                plan.actual_end_abs,
+                plan.route_start_local,
+                plan.route_end_local,
+                Point::new(0.0, 0.0),
+            )
                 .map_err(|m| LayoutError::Routing(format!("edge {:?}: {m}", edge_id)))?;
             let bends = if path.len() >= 2 {
                 path[1..path.len() - 1].to_vec()
             } else {
                 Vec::new()
             };
-            let start_pt = path.first().copied().unwrap_or(start);
-            let end_pt = path.last().copied().unwrap_or(end);
+            let start_pt = path.first().copied().unwrap_or(plan.actual_start_abs);
+            let end_pt = path.last().copied().unwrap_or(plan.actual_end_abs);
             graph.edges[edge_id.index()].sections.clear();
             let _ = graph.add_edge_section(edge_id, start_pt, bends, end_pt);
         }
@@ -181,36 +199,53 @@ pub fn route_edges_with_diagnostics_in_scope(
         let clearance = root_clearance;
         let segment_penalty = root_segment_penalty;
         let bend_penalty = root_bend_penalty;
-        let (start_abs, end_abs) = endpoints_center(graph, edge_id);
-        let start = to_local(start_abs, scope_origin_abs);
-        let end = to_local(end_abs, scope_origin_abs);
-        let excluded = edge_endpoint_nodes(graph, edge_id);
+        let plan = build_route_plan(graph, edge_id, scope_origin_abs, clearance);
+        let excluded = excluded_obstacle_nodes(graph, edge_id, plan.source_side, plan.target_side);
         let obstacles = collect_obstacles(graph, clearance, &excluded, scope_origin_abs, scope_nodes);
         let (path, route_dbg) = if debug_enabled {
-            route_with_debug(start, end, &obstacles, segment_penalty, bend_penalty)
+            route_with_debug(
+                plan.route_start_local,
+                plan.route_end_local,
+                &obstacles,
+                segment_penalty,
+                bend_penalty,
+            )
                 .map_err(|e| routing_failure_to_layout_error(edge_id, e))?
         } else {
             (
-                route(start, end, &obstacles, segment_penalty, bend_penalty)
+                route(
+                    plan.route_start_local,
+                    plan.route_end_local,
+                    &obstacles,
+                    segment_penalty,
+                    bend_penalty,
+                )
                     .map_err(|e| routing_failure_to_layout_error(edge_id, e))?,
                 router::RouteDebug::default(),
             )
         };
-        let path = sanitize_orthogonal_path(path, start, end)
+        let path = finalize_route_path(
+            path,
+            plan.actual_start_abs,
+            plan.actual_end_abs,
+            plan.route_start_local,
+            plan.route_end_local,
+            scope_origin_abs,
+        )
             .map_err(|m| LayoutError::Routing(format!("edge {:?}: {m}", edge_id)))?;
         let bends = if path.len() >= 2 {
             path[1..path.len() - 1].to_vec()
         } else {
             Vec::new()
         };
-        let start_pt = path.first().copied().unwrap_or(start);
-        let end_pt = path.last().copied().unwrap_or(end);
-        let bends_abs: Vec<Point> = bends.into_iter().map(|p| to_abs(p, scope_origin_abs)).collect();
-        let start_abs_pt = to_abs(start_pt, scope_origin_abs);
-        let end_abs_pt = to_abs(end_pt, scope_origin_abs);
+        let start_pt = path.first().copied().unwrap_or(plan.actual_start_abs);
+        let end_pt = path.last().copied().unwrap_or(plan.actual_end_abs);
+        let bends_abs = bends;
+        let start_abs_pt = start_pt;
+        let end_abs_pt = end_pt;
         if debug_enabled {
-            let start_contract_ok = nearly_same_point(start_abs_pt, start_abs, 1.0);
-            let end_contract_ok = nearly_same_point(end_abs_pt, end_abs, 1.0);
+            let start_contract_ok = nearly_same_point(start_abs_pt, plan.actual_start_abs, 1.0);
+            let end_contract_ok = nearly_same_point(end_abs_pt, plan.actual_end_abs, 1.0);
             diagnostics.push(format!(
                 "elk-libavoid: edge={:?} obstacles={} excluded_nodes={:?} scope_origin=({:.1},{:.1}) endpoint_contract=start:{} end:{} start_abs=({:.1},{:.1})->({:.1},{:.1}) end_abs=({:.1},{:.1})->({:.1},{:.1}) candidates={} expanded={} accepted={} blocked={} found={}",
                 edge_id,
@@ -220,12 +255,12 @@ pub fn route_edges_with_diagnostics_in_scope(
                 scope_origin_abs.y,
                 start_contract_ok,
                 end_contract_ok,
-                start_abs.x,
-                start_abs.y,
+                plan.actual_start_abs.x,
+                plan.actual_start_abs.y,
                 start_abs_pt.x,
                 start_abs_pt.y,
-                end_abs.x,
-                end_abs.y,
+                plan.actual_end_abs.x,
+                plan.actual_end_abs.y,
                 end_abs_pt.x,
                 end_abs_pt.y,
                 route_dbg.candidate_points,
@@ -245,22 +280,88 @@ fn nearly_same_point(a: Point, b: Point, eps: f32) -> bool {
     (a.x - b.x).abs() <= eps && (a.y - b.y).abs() <= eps
 }
 
-fn sanitize_orthogonal_path(mut points: Vec<Point>, start: Point, end: Point) -> Result<Vec<Point>, String> {
+fn build_route_plan(
+    graph: &ElkGraph,
+    edge_id: EdgeId,
+    scope_origin_abs: Point,
+    clearance: f32,
+) -> RoutePlan {
+    let edge = &graph.edges[edge_id.index()];
+    let source = edge.sources.first().copied();
+    let target = edge.targets.first().copied();
+    let actual_start_abs = source
+        .map(|ep| endpoint_center(graph, ep))
+        .unwrap_or_else(|| Point::new(0.0, 0.0));
+    let actual_end_abs = target
+        .map(|ep| endpoint_center(graph, ep))
+        .unwrap_or_else(|| Point::new(0.0, 0.0));
+    let source_side = source.and_then(|ep| endpoint_port_side(graph, ep));
+    let target_side = target.and_then(|ep| endpoint_port_side(graph, ep));
+    let lead = (clearance + TERMINAL_NORMAL_OFFSET).max(clearance + 1.0);
+    let route_start_abs = source_side
+        .map(|side| point_along_outward_normal(actual_start_abs, side, lead))
+        .unwrap_or(actual_start_abs);
+    let route_end_abs = target_side
+        .map(|side| point_along_outward_normal(actual_end_abs, side, lead))
+        .unwrap_or(actual_end_abs);
+    RoutePlan {
+        actual_start_abs,
+        actual_end_abs,
+        route_start_local: to_local(route_start_abs, scope_origin_abs),
+        route_end_local: to_local(route_end_abs, scope_origin_abs),
+        source_side,
+        target_side,
+    }
+}
+
+fn finalize_route_path(
+    route_path_local: Vec<Point>,
+    actual_start_abs: Point,
+    actual_end_abs: Point,
+    route_start_local: Point,
+    route_end_local: Point,
+    scope_origin_abs: Point,
+) -> Result<Vec<Point>, String> {
+    let route_start_abs = to_abs(route_start_local, scope_origin_abs);
+    let route_end_abs = to_abs(route_end_local, scope_origin_abs);
+    let path_abs: Vec<Point> = route_path_local
+        .into_iter()
+        .map(|point| to_abs(point, scope_origin_abs))
+        .collect();
+    sanitize_orthogonal_path(
+        path_abs,
+        actual_start_abs,
+        actual_end_abs,
+        route_start_abs,
+        route_end_abs,
+    )
+}
+
+fn sanitize_orthogonal_path(
+    mut points: Vec<Point>,
+    actual_start: Point,
+    actual_end: Point,
+    route_start: Point,
+    route_end: Point,
+) -> Result<Vec<Point>, String> {
     if points.is_empty() {
-        points.push(start);
-        points.push(end);
+        points.push(route_start);
+        points.push(route_end);
     }
-    if points.first().copied() != Some(start) {
-        points.insert(0, start);
+    if points.first().copied() != Some(route_start) {
+        points.insert(0, route_start);
     }
-    if points.last().copied() != Some(end) {
-        points.push(end);
+    if points.last().copied() != Some(route_end) {
+        points.push(route_end);
     }
     if points.len() < 2 {
         return Err("route returned fewer than two points".to_string());
     }
-    let mut out = Vec::with_capacity(points.len() * 2);
-    out.push(points[0]);
+    let mut out = Vec::with_capacity(points.len() + 4);
+    out.push(actual_start);
+    if out.last().copied() != Some(route_start) {
+        out.push(route_start);
+    }
     for pair in points.windows(2) {
         let a = pair[0];
         let b = pair[1];
@@ -280,6 +381,15 @@ fn sanitize_orthogonal_path(mut points: Vec<Point>, start: Point, end: Point) ->
         }
         out.push(b);
     }
+    if out.last().copied() != Some(route_end) {
+        out.push(route_end);
+    }
+    if out.last().copied() != Some(actual_end) {
+        out.push(actual_end);
+    }
+    out = simplify_orthogonal_points(out);
+    out = force_orthogonal_points(out);
+    out = simplify_orthogonal_points(out);
     let has_diag = out.windows(2).any(|pair| {
         let a = pair[0];
         let b = pair[1];
@@ -358,16 +468,21 @@ fn collect_obstacles(
     out
 }
 
-fn edge_endpoint_nodes(graph: &ElkGraph, edge_id: EdgeId) -> Vec<NodeId> {
+fn excluded_obstacle_nodes(
+    graph: &ElkGraph,
+    edge_id: EdgeId,
+    source_side: Option<PortSide>,
+    target_side: Option<PortSide>,
+) -> Vec<NodeId> {
     let edge = &graph.edges[edge_id.index()];
     let mut nodes = Vec::new();
     if let Some(source) = edge.sources.first() {
-        if source.node != graph.root && !nodes.contains(&source.node) {
+        if source.node != graph.root && source_side.is_none() && !nodes.contains(&source.node) {
             nodes.push(source.node);
         }
     }
     if let Some(target) = edge.targets.first() {
-        if target.node != graph.root && !nodes.contains(&target.node) {
+        if target.node != graph.root && target_side.is_none() && !nodes.contains(&target.node) {
             nodes.push(target.node);
         }
     }
@@ -392,21 +507,67 @@ fn endpoint_center(graph: &ElkGraph, ep: EdgeEndpoint) -> Point {
     }
 }
 
-fn endpoints_center(graph: &ElkGraph, edge_id: EdgeId) -> (Point, Point) {
-    let e = &graph.edges[edge_id.index()];
-    let start = e
-        .sources
-        .first()
-        .copied()
-        .map(|ep| endpoint_center(graph, ep))
-        .unwrap_or_else(|| Point::new(0.0, 0.0));
-    let end = e
-        .targets
-        .first()
-        .copied()
-        .map(|ep| endpoint_center(graph, ep))
-        .unwrap_or_else(|| Point::new(0.0, 0.0));
-    (start, end)
+fn endpoint_port_side(graph: &ElkGraph, ep: EdgeEndpoint) -> Option<PortSide> {
+    ep.port.map(|port_id| graph.ports[port_id.index()].side)
+}
+
+fn point_along_outward_normal(center: Point, side: PortSide, delta: f32) -> Point {
+    match side {
+        PortSide::North => Point::new(center.x, center.y - delta),
+        PortSide::South => Point::new(center.x, center.y + delta),
+        PortSide::East => Point::new(center.x + delta, center.y),
+        PortSide::West => Point::new(center.x - delta, center.y),
+    }
+}
+
+fn simplify_orthogonal_points(points: Vec<Point>) -> Vec<Point> {
+    let mut out = Vec::with_capacity(points.len());
+    for point in points {
+        if out.last().copied() == Some(point) {
+            continue;
+        }
+        out.push(point);
+        while out.len() >= 3 {
+            let len = out.len();
+            let a = out[len - 3];
+            let b = out[len - 2];
+            let c = out[len - 1];
+            let collinear_x = (a.x - b.x).abs() <= 1e-5 && (b.x - c.x).abs() <= 1e-5;
+            let collinear_y = (a.y - b.y).abs() <= 1e-5 && (b.y - c.y).abs() <= 1e-5;
+            if collinear_x || collinear_y {
+                out.remove(len - 2);
+            } else {
+                break;
+            }
+        }
+    }
+    out
+}
+
+fn force_orthogonal_points(points: Vec<Point>) -> Vec<Point> {
+    if points.len() < 2 {
+        return points;
+    }
+    let mut out = vec![points[0]];
+    for next in points.into_iter().skip(1) {
+        let current = *out.last().unwrap_or(&next);
+        let dx = (current.x - next.x).abs();
+        let dy = (current.y - next.y).abs();
+        if dx > 1e-5 && dy > 1e-5 {
+            let via = if dx >= dy {
+                Point::new(next.x, current.y)
+            } else {
+                Point::new(current.x, next.y)
+            };
+            if out.last().copied() != Some(via) {
+                out.push(via);
+            }
+        }
+        if out.last().copied() != Some(next) {
+            out.push(next);
+        }
+    }
+    out
 }
 
 fn to_local(abs: Point, origin_abs: Point) -> Point {

@@ -1,9 +1,9 @@
 interconnection-view-full-drone debug
 aspect_ratio=0.9176788330078124
-edge_crossings=15
-edge_node_intrusions=93
-bend_count=17
-orthogonal_violations=4
+edge_crossings=10
+edge_node_intrusions=88
+bend_count=27
+orthogonal_violations=0
 warnings_count=41
 router_warning_count=18
 
@@ -30,44 +30,44 @@ warnings:
 19: elk-layered: routing-scope local_nodes=2 local_edges=1 deferred_cross_hierarchy=0
 20: elk-layered: routing-scope local_nodes=4 local_edges=0 deferred_cross_hierarchy=0
 21: elk-layered: routing-scope local_nodes=7 local_edges=16 deferred_cross_hierarchy=0
-22: elk-libavoid: edge=EdgeId(0) obstacles=5 excluded_nodes=[NodeId(3), NodeId(4)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(2156.0,1319.3)->(2156.0,1319.3) end_abs=(2244.0,1555.4)->(2244.0,1555.4) candidates=92 expanded=6 accepted=40 blocked=43 found=true
-23: elk-libavoid: edge=EdgeId(1) obstacles=5 excluded_nodes=[NodeId(5), NodeId(4)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(1316.0,524.7)->(1316.0,524.7) end_abs=(2244.0,1597.7)->(2244.0,1597.7) candidates=97 expanded=35 accepted=89 blocked=455 found=true
-24: elk-libavoid: edge=EdgeId(10) obstacles=5 excluded_nodes=[NodeId(7), NodeId(4)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,1005.0)->(824.0,1005.0) end_abs=(2244.0,1618.8)->(2244.0,1618.8) candidates=104 expanded=23 accepted=81 blocked=254 found=true
-25: elk-libavoid: edge=EdgeId(11) obstacles=5 excluded_nodes=[NodeId(7), NodeId(5)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,1041.0)->(824.0,1041.0) end_abs=(912.0,911.9)->(912.0,911.9) candidates=110 expanded=4 accepted=41 blocked=22 found=true
-26: elk-libavoid: edge=EdgeId(12) obstacles=5 excluded_nodes=[NodeId(7), NodeId(6)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,1077.0)->(824.0,1077.0) end_abs=(1404.0,334.6)->(1404.0,334.6) candidates=109 expanded=11 accepted=67 blocked=113 found=true
-27: elk-libavoid: edge=EdgeId(13) obstacles=5 excluded_nodes=[NodeId(7), NodeId(8)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,1113.0)->(824.0,1113.0) end_abs=(1404.0,2010.7)->(1404.0,2010.7) candidates=126 expanded=20 accepted=97 blocked=257 found=true
-28: elk-libavoid: edge=EdgeId(14) obstacles=5 excluded_nodes=[NodeId(7), NodeId(8)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,1149.0)->(824.0,1149.0) end_abs=(1404.0,2125.8)->(1404.0,2125.8) candidates=126 expanded=20 accepted=97 blocked=257 found=true
-29: elk-libavoid: edge=EdgeId(15) obstacles=5 excluded_nodes=[NodeId(7), NodeId(8)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,1185.0)->(824.0,1185.0) end_abs=(1404.0,2240.9)->(1404.0,2240.9) candidates=126 expanded=19 accepted=94 blocked=244 found=true
-30: elk-libavoid: edge=EdgeId(16) obstacles=5 excluded_nodes=[NodeId(7), NodeId(8)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,1221.0)->(824.0,1221.0) end_abs=(1404.0,2356.1)->(1404.0,2356.1) candidates=126 expanded=19 accepted=94 blocked=244 found=true
-31: elk-libavoid: edge=EdgeId(2) obstacles=5 excluded_nodes=[NodeId(5), NodeId(6)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(1316.0,679.6)->(1316.0,679.6) end_abs=(1404.0,307.4)->(1404.0,307.4) candidates=102 expanded=5 accepted=43 blocked=33 found=true
-32: elk-libavoid: edge=EdgeId(3) obstacles=5 excluded_nodes=[NodeId(5), NodeId(8)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(1316.0,834.4)->(1316.0,834.4) end_abs=(1404.0,1550.3)->(1404.0,1550.3) candidates=112 expanded=15 accepted=75 blocked=189 found=true
-33: elk-libavoid: edge=EdgeId(4) obstacles=5 excluded_nodes=[NodeId(5), NodeId(8)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(1316.0,989.3)->(1316.0,989.3) end_abs=(1404.0,1665.4)->(1404.0,1665.4) candidates=112 expanded=15 accepted=75 blocked=185 found=true
-34: elk-libavoid: edge=EdgeId(5) obstacles=5 excluded_nodes=[NodeId(5), NodeId(8)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(1316.0,1144.1)->(1316.0,1144.1) end_abs=(1404.0,1780.5)->(1404.0,1780.5) candidates=112 expanded=15 accepted=75 blocked=185 found=true
-35: elk-libavoid: edge=EdgeId(6) obstacles=5 excluded_nodes=[NodeId(5), NodeId(8)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(1316.0,1299.0)->(1316.0,1299.0) end_abs=(1404.0,1895.6)->(1404.0,1895.6) candidates=112 expanded=12 accepted=71 blocked=138 found=true
-36: elk-libavoid: edge=EdgeId(7) obstacles=5 excluded_nodes=[NodeId(6), NodeId(3)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(1664.0,293.8)->(1664.0,293.8) end_abs=(1896.0,1285.3)->(1896.0,1285.3) candidates=97 expanded=11 accepted=55 blocked=92 found=true
-37: elk-libavoid: edge=EdgeId(8) obstacles=0 excluded_nodes=[NodeId(13), NodeId(14)] scope_origin=(72.0,72.0) endpoint_contract=start:true end:true start_abs=(332.0,151.2)->(332.0,151.2) end_abs=(420.0,140.0)->(420.0,140.0) candidates=4 expanded=4 accepted=3 blocked=3 found=true
-38: elk-libavoid: edge=EdgeId(9) obstacles=5 excluded_nodes=[NodeId(7), NodeId(3)] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,969.0)->(824.0,969.0) end_abs=(1896.0,1353.3)->(1896.0,1353.3) candidates=103 expanded=7 accepted=52 blocked=47 found=true
+22: elk-libavoid: edge=EdgeId(0) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(2156.0,1319.3)->(2156.0,1319.3) end_abs=(2244.0,1555.4)->(2244.0,1555.4) candidates=170 expanded=11 accepted=59 blocked=120 found=true
+23: elk-libavoid: edge=EdgeId(1) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(1316.0,524.7)->(1316.0,524.7) end_abs=(2244.0,1597.7)->(2244.0,1597.7) candidates=172 expanded=51 accepted=149 blocked=768 found=true
+24: elk-libavoid: edge=EdgeId(10) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,1005.0)->(824.0,1005.0) end_abs=(2244.0,1618.8)->(2244.0,1618.8) candidates=170 expanded=128 accepted=243 blocked=1949 found=true
+25: elk-libavoid: edge=EdgeId(11) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,1041.0)->(824.0,1041.0) end_abs=(912.0,911.9)->(912.0,911.9) candidates=173 expanded=6 accepted=35 blocked=50 found=true
+26: elk-libavoid: edge=EdgeId(12) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,1077.0)->(824.0,1077.0) end_abs=(1404.0,334.6)->(1404.0,334.6) candidates=173 expanded=16 accepted=86 blocked=241 found=true
+27: elk-libavoid: edge=EdgeId(13) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,1113.0)->(824.0,1113.0) end_abs=(1404.0,2010.7)->(1404.0,2010.7) candidates=172 expanded=23 accepted=75 blocked=286 found=true
+28: elk-libavoid: edge=EdgeId(14) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,1149.0)->(824.0,1149.0) end_abs=(1404.0,2125.8)->(1404.0,2125.8) candidates=172 expanded=21 accepted=73 blocked=255 found=true
+29: elk-libavoid: edge=EdgeId(15) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,1185.0)->(824.0,1185.0) end_abs=(1404.0,2240.9)->(1404.0,2240.9) candidates=172 expanded=20 accepted=69 blocked=245 found=true
+30: elk-libavoid: edge=EdgeId(16) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,1221.0)->(824.0,1221.0) end_abs=(1404.0,2356.1)->(1404.0,2356.1) candidates=172 expanded=20 accepted=69 blocked=245 found=true
+31: elk-libavoid: edge=EdgeId(2) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(1316.0,679.6)->(1316.0,679.6) end_abs=(1404.0,307.4)->(1404.0,307.4) candidates=175 expanded=10 accepted=74 blocked=147 found=true
+32: elk-libavoid: edge=EdgeId(3) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(1316.0,834.4)->(1316.0,834.4) end_abs=(1404.0,1550.3)->(1404.0,1550.3) candidates=172 expanded=12 accepted=83 blocked=142 found=true
+33: elk-libavoid: edge=EdgeId(4) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(1316.0,989.3)->(1316.0,989.3) end_abs=(1404.0,1665.4)->(1404.0,1665.4) candidates=172 expanded=12 accepted=81 blocked=142 found=true
+34: elk-libavoid: edge=EdgeId(5) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(1316.0,1144.1)->(1316.0,1144.1) end_abs=(1404.0,1780.5)->(1404.0,1780.5) candidates=172 expanded=13 accepted=80 blocked=157 found=true
+35: elk-libavoid: edge=EdgeId(6) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(1316.0,1299.0)->(1316.0,1299.0) end_abs=(1404.0,1895.6)->(1404.0,1895.6) candidates=172 expanded=11 accepted=68 blocked=121 found=true
+36: elk-libavoid: edge=EdgeId(7) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(1664.0,293.8)->(1664.0,293.8) end_abs=(1896.0,1285.3)->(1896.0,1285.3) candidates=168 expanded=23 accepted=93 blocked=285 found=true
+37: elk-libavoid: edge=EdgeId(8) obstacles=2 excluded_nodes=[] scope_origin=(72.0,72.0) endpoint_contract=start:true end:true start_abs=(332.0,151.2)->(332.0,151.2) end_abs=(420.0,140.0)->(420.0,140.0) candidates=26 expanded=4 accepted=11 blocked=7 found=true
+38: elk-libavoid: edge=EdgeId(9) obstacles=7 excluded_nodes=[] scope_origin=(72.0,225.8) endpoint_contract=start:true end:true start_abs=(824.0,969.0)->(824.0,969.0) end_abs=(1896.0,1353.3)->(1896.0,1353.3) candidates=171 expanded=86 accepted=192 blocked=1268 found=true
 39: elk-rust compound routing is still maturing for cross-hierarchy edges; inspect nested diagrams visually.
 40: elk-rust edge label placement is still partial; SVG labels are rendered by sysml-language-server.
 
 edge_connection_paths:
-0: M 2228.0 1391.3 L 2316.0 1319.3 L 2316.0 1627.4
+0: M 2228.0 1391.3 L 2300.0 1391.3 L 2300.0 1627.4 L 2316.0 1627.4
 1: M 1316.0 628.5 L 2316.0 628.5 L 2316.0 1606.3
 2: M 1056.0 548.3 L 1476.0 548.3 L 1476.0 325.0
-3: M 1316.0 571.2 L 1808.0 571.2 L 1808.0 1641.2
-4: M 1316.0 571.2 L 1808.0 571.2 L 1808.0 1897.2
-5: M 1316.0 571.2 L 1808.0 1144.1 L 1808.0 2153.2
-6: M 1316.0 571.2 L 1808.0 1299.0 L 1808.0 2409.2
-7: M 1736.0 365.8 L 1968.0 365.8 L 1968.0 1357.3
-8: M 476.0 1156.3 L 564.0 151.2 L 564.0 1145.0
-9: M 824.0 1122.4 L 1968.0 1122.4 L 1968.0 1391.3
-10: M 824.0 1122.4 L 2316.0 1122.4 L 2316.0 1648.6
+3: M 1316.0 571.2 L 1316.0 1641.2 L 1808.0 1641.2
+4: M 1316.0 571.2 L 1316.0 1897.2 L 1808.0 1897.2
+5: M 1316.0 571.2 L 1316.0 2153.2 L 1808.0 2153.2
+6: M 1316.0 571.2 L 1316.0 1967.6 L 1808.0 1967.6 L 1808.0 2409.2
+7: M 1736.0 365.8 L 1952.0 365.8 L 1952.0 1357.3 L 1968.0 1357.3
+8: M 476.0 1156.3 L 548.0 1156.3 L 548.0 1145.0 L 564.0 1145.0
+9: M 824.0 1122.4 L 912.0 1122.4 L 912.0 437.9 L 1968.0 437.9 L 1968.0 1391.3
+10: M 824.0 1122.4 L 912.0 1122.4 L 912.0 437.9 L 2316.0 437.9 L 2316.0 1648.6
 11: M 824.0 1122.4 L 1056.0 1122.4 L 1056.0 651.5
-12: M 824.0 1122.4 L 1476.0 1122.4 L 1476.0 352.2
-13: M 824.0 1122.4 L 1548.0 1122.4 L 1548.0 1641.2
-14: M 824.0 1122.4 L 1548.0 1122.4 L 1548.0 1897.2
-15: M 824.0 1122.4 L 1548.0 1122.4 L 1548.0 2153.2
-16: M 824.0 1122.4 L 1548.0 1122.4 L 1548.0 2409.2
+12: M 824.0 1122.4 L 912.0 1122.4 L 912.0 352.2 L 1476.0 352.2
+13: M 824.0 1122.4 L 912.0 1122.4 L 912.0 1641.2 L 1548.0 1641.2
+14: M 824.0 1122.4 L 824.0 1897.2 L 1548.0 1897.2
+15: M 824.0 1122.4 L 824.0 2153.2 L 1548.0 2153.2
+16: M 824.0 1122.4 L 824.0 2409.2 L 1548.0 2409.2
 
 ibd_parts_sample:
 SurveillanceDrone.Airframe | container=<none>

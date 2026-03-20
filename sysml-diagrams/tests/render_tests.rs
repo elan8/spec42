@@ -290,6 +290,42 @@ fn interconnection_view_renders_svg() {
     assert!(rendered.metrics.edge_count >= 1);
 }
 
+#[test]
+fn interconnection_view_omits_internal_attributes_from_properties() {
+    let ibd = IbdInput {
+        parts: vec![
+            IbdPartInput {
+                id: "root".to_string(),
+                name: "root".to_string(),
+                qualified_name: "Root".to_string(),
+                container_id: None,
+                element_type: "part".to_string(),
+                attributes: vec![],
+            },
+            IbdPartInput {
+                id: "child".to_string(),
+                name: "sensor".to_string(),
+                qualified_name: "Root.sensor".to_string(),
+                container_id: Some("Root".to_string()),
+                element_type: "part".to_string(),
+                attributes: vec![
+                    ("synthetic".to_string(), "true".to_string()),
+                    ("originRange".to_string(), "{\"line\":1}".to_string()),
+                    ("voltage".to_string(), "5V".to_string()),
+                ],
+            },
+        ],
+        ports: vec![],
+        connectors: vec![],
+        root_candidates: vec!["Root".to_string()],
+        default_root: Some("Root".to_string()),
+    };
+    let rendered = interconnection_view::render(&ibd).expect("render");
+    assert!(rendered.svg.contains("voltage: 5V"));
+    assert!(!rendered.svg.contains("synthetic"));
+    assert!(!rendered.svg.contains("originRange"));
+}
+
 fn sample_range() -> RangeInput {
     RangeInput {
         start_line: 0,

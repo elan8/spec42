@@ -24,10 +24,15 @@ pub(crate) fn export_to_graph(
     for node in &ir.nodes {
         if let crate::ir::IrNodeKind::Real(node_id) = node.kind {
             let n = &mut graph.nodes[node_id.index()];
+            let dx = node.position.x - n.geometry.x;
+            let dy = node.position.y - n.geometry.y;
             n.geometry.x = node.position.x;
             n.geometry.y = node.position.y;
             n.geometry.width = node.size.width;
             n.geometry.height = node.size.height;
+            if dx.abs() > f32::EPSILON || dy.abs() > f32::EPSILON {
+                translate_descendant_routed_geometry(graph, node_id, dx, dy);
+            }
             layout_ports(graph, node_id, options);
             layout_node_labels(graph, node_id, options);
         }
@@ -94,8 +99,6 @@ pub(crate) fn export_to_graph(
                             endpoint_frame_debug(graph, edge.target)
                         ));
                     }
-                    canonicalize_libavoid_terminals(graph, edge, warnings);
-                    restore_nested_endpoint_terminals(graph, edge);
                     let (start, end) = section_endpoints(graph, edge.original_edge);
                     for &sid in &graph.edges[edge.original_edge.index()].sections {
                         stats.bend_points += graph.edge_sections[sid.index()].bend_points.len();
@@ -160,6 +163,55 @@ pub(crate) fn export_to_graph(
     }
 
     Ok(routed)
+}
+
+fn translate_descendant_routed_geometry(graph: &mut ElkGraph, root: NodeId, dx: f32, dy: f32) {
+    for edge_idx in 0..graph.edges.len() {
+        let translate = {
+            let edge = &graph.edges[edge_idx];
+            edge.sections.iter().any(|_| {
+                edge.sources.first().is_some_and(|source| is_descendant_of(graph, source.node, root))
+                    && edge
+                        .targets
+                        .first()
+                        .is_some_and(|target| is_descendant_of(graph, target.node, root))
+            })
+        };
+        if !translate {
+            continue;
+        }
+
+        let section_ids = graph.edges[edge_idx].sections.clone();
+        for section_id in section_ids {
+            let section = &mut graph.edge_sections[section_id.index()];
+            section.start.x += dx;
+            section.start.y += dy;
+            section.end.x += dx;
+            section.end.y += dy;
+            for bend in &mut section.bend_points {
+                bend.x += dx;
+                bend.y += dy;
+            }
+        }
+
+        let label_ids = graph.edges[edge_idx].labels.clone();
+        for label_id in label_ids {
+            let label = &mut graph.labels[label_id.index()].geometry;
+            label.x += dx;
+            label.y += dy;
+        }
+    }
+}
+
+fn is_descendant_of(graph: &ElkGraph, node_id: NodeId, ancestor: NodeId) -> bool {
+    let mut current = Some(node_id);
+    while let Some(node_id) = current {
+        if node_id == ancestor {
+            return true;
+        }
+        current = graph.nodes[node_id.index()].parent;
+    }
+    false
 }
 
 fn canonicalize_libavoid_terminals(graph: &mut ElkGraph, edge: &IrEdge, warnings: &mut Vec<String>) {
@@ -245,6 +297,9 @@ fn restore_nested_endpoint_terminals(graph: &mut ElkGraph, edge: &IrEdge) {
 fn set_section_start_preserve_orthogonality(section: &mut elk_graph::EdgeSection, start: Point) {
     section.start = start;
     if section.bend_points.is_empty() {
+        if (section.end.x - start.x).abs() > f32::EPSILON && (section.end.y - start.y).abs() > f32::EPSILON {
+            section.bend_points.push(Point::new(section.end.x, start.y));
+        }
         return;
     }
     let first = section.bend_points[0];
@@ -262,6 +317,9 @@ fn set_section_start_preserve_orthogonality(section: &mut elk_graph::EdgeSection
 fn set_section_end_preserve_orthogonality(section: &mut elk_graph::EdgeSection, end: Point) {
     section.end = end;
     if section.bend_points.is_empty() {
+        if (section.start.x - end.x).abs() > f32::EPSILON && (section.start.y - end.y).abs() > f32::EPSILON {
+            section.bend_points.push(Point::new(section.start.x, end.y));
+        }
         return;
     }
     let last_idx = section.bend_points.len() - 1;
@@ -275,6 +333,114 @@ fn set_section_end_preserve_orthogonality(section: &mut elk_graph::EdgeSection, 
             Point::new(last.x, end.y)
         };
     }
+}
+
+fn orthogonalize_edge_sections(graph: &mut ElkGraph, edge: &IrEdge) {
+    orthogonalize_edge_sections_with_sides(
+        graph,
+        edge.original_edge,
+        endpoint_port_side(graph, edge.source),
+        endpoint_port_side(graph, edge.target),
+    );
+}
+
+fn orthogonalize_polyline(
+    points: Vec<Point>,
+    start_side: Option<PortSide>,
+    end_side: Option<PortSide>,
+) -> Vec<Point> {
+    const EPS: f32 = 1e-5;
+    if points.len() < 2 {
+        return points;
+    }
+    let mut out = vec![points[0]];
+    for idx in 0..points.len() - 1 {
+        let a = *out.last().unwrap_or(&points[idx]);
+        let b = points[idx + 1];
+        let dx = (a.x - b.x).abs();
+        let dy = (a.y - b.y).abs();
+        if dx <= EPS && dy <= EPS {
+            continue;
+        }
+        if dx > EPS && dy > EPS {
+            let via = choose_orthogonal_elbow(&points, idx, a, b, start_side, end_side);
+            if out.last().copied() != Some(via) {
+                out.push(via);
+            }
+        }
+        if out.last().copied() != Some(b) {
+            out.push(b);
+        }
+    }
+    simplify_orthogonal_points(out)
+}
+
+fn choose_orthogonal_elbow(
+    points: &[Point],
+    idx: usize,
+    a: Point,
+    b: Point,
+    start_side: Option<PortSide>,
+    end_side: Option<PortSide>,
+) -> Point {
+    if idx == 0 {
+        if let Some(side) = start_side {
+            return match side {
+                PortSide::East | PortSide::West => Point::new(b.x, a.y),
+                PortSide::North | PortSide::South => Point::new(a.x, b.y),
+            };
+        }
+    }
+    if idx + 1 == points.len() - 1 {
+        if let Some(side) = end_side {
+            return match side {
+                PortSide::East | PortSide::West => Point::new(a.x, b.y),
+                PortSide::North | PortSide::South => Point::new(b.x, a.y),
+            };
+        }
+    }
+
+    if idx > 0 {
+        let prev = points[idx - 1];
+        if (prev.x - a.x).abs() <= f32::EPSILON {
+            return Point::new(a.x, b.y);
+        }
+        if (prev.y - a.y).abs() <= f32::EPSILON {
+            return Point::new(b.x, a.y);
+        }
+    }
+
+    let dx = (a.x - b.x).abs();
+    let dy = (a.y - b.y).abs();
+    if dx >= dy {
+        Point::new(b.x, a.y)
+    } else {
+        Point::new(a.x, b.y)
+    }
+}
+
+fn simplify_orthogonal_points(points: Vec<Point>) -> Vec<Point> {
+    let points = dedup_points(points);
+    if points.len() <= 2 {
+        return points;
+    }
+    let mut out = Vec::with_capacity(points.len());
+    for (idx, point) in points.iter().copied().enumerate() {
+        if idx == 0 || idx + 1 == points.len() {
+            out.push(point);
+            continue;
+        }
+        let prev = points[idx - 1];
+        let next = points[idx + 1];
+        let collinear_x = (prev.x - point.x).abs() <= f32::EPSILON
+            && (point.x - next.x).abs() <= f32::EPSILON;
+        let collinear_y = (prev.y - point.y).abs() <= f32::EPSILON
+            && (point.y - next.y).abs() <= f32::EPSILON;
+        if !(collinear_x || collinear_y) {
+            out.push(point);
+        }
+    }
+    dedup_points(out)
 }
 
 
@@ -436,6 +602,45 @@ pub(crate) fn snap_all_edge_terminals_to_endpoints(graph: &mut ElkGraph) {
         let end = endpoint_abs_center(graph, target);
         set_section_start_preserve_orthogonality(&mut graph.edge_sections[first_id.index()], start);
         set_section_end_preserve_orthogonality(&mut graph.edge_sections[last_id.index()], end);
+        orthogonalize_edge_sections_with_sides(
+            graph,
+            edge_id,
+            endpoint_port_side(graph, source),
+            endpoint_port_side(graph, target),
+        );
+    }
+}
+
+fn orthogonalize_edge_sections_with_sides(
+    graph: &mut ElkGraph,
+    edge_id: EdgeId,
+    source_side: Option<PortSide>,
+    target_side: Option<PortSide>,
+) {
+    let section_ids = graph.edges[edge_id.index()].sections.clone();
+    let last_section_idx = section_ids.len().saturating_sub(1);
+    for (section_idx, sid) in section_ids.into_iter().enumerate() {
+        let section = &graph.edge_sections[sid.index()];
+        let points: Vec<Point> = std::iter::once(section.start)
+            .chain(section.bend_points.iter().copied())
+            .chain(std::iter::once(section.end))
+            .collect();
+        let orthogonal = orthogonalize_polyline(
+            points,
+            if section_idx == 0 { source_side } else { None },
+            if section_idx == last_section_idx {
+                target_side
+            } else {
+                None
+            },
+        );
+        if orthogonal.len() < 2 {
+            continue;
+        }
+        let section_mut = &mut graph.edge_sections[sid.index()];
+        section_mut.start = orthogonal[0];
+        section_mut.end = *orthogonal.last().unwrap_or(&orthogonal[0]);
+        section_mut.bend_points = orthogonal[1..orthogonal.len() - 1].to_vec();
     }
 }
 
@@ -885,3 +1090,45 @@ fn use_experimental_orthogonal_core(graph: &ElkGraph) -> bool {
     true
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn orthogonalize_polyline_fixes_diagonal_terminal_segments() {
+        let points = vec![
+            Point::new(2228.0, 1391.3),
+            Point::new(2316.0, 1319.3),
+            Point::new(2316.0, 1627.4),
+        ];
+        let fixed = orthogonalize_polyline(points, Some(PortSide::East), Some(PortSide::West));
+        assert_eq!(
+            fixed,
+            vec![
+                Point::new(2228.0, 1391.3),
+                Point::new(2316.0, 1391.3),
+                Point::new(2316.0, 1627.4),
+            ]
+        );
+    }
+
+    #[test]
+    fn orthogonalize_polyline_removes_internal_diagonals() {
+        let points = vec![
+            Point::new(476.0, 1156.3),
+            Point::new(564.0, 151.2),
+            Point::new(564.0, 1145.0),
+        ];
+        let fixed = orthogonalize_polyline(points, Some(PortSide::East), Some(PortSide::West));
+        for seg in fixed.windows(2) {
+            let a = seg[0];
+            let b = seg[1];
+            assert!(
+                (a.x - b.x).abs() <= 1e-5 || (a.y - b.y).abs() <= 1e-5,
+                "segment should be orthogonal: {:?} -> {:?}",
+                a,
+                b
+            );
+        }
+    }
+}
