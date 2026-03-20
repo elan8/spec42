@@ -100,6 +100,7 @@ pub(crate) fn export_to_graph(
                         ));
                     }
                     canonicalize_libavoid_terminals(graph, edge, warnings);
+                    restore_nested_endpoint_terminals(graph, edge);
                     let (start, end) = section_endpoints(graph, edge.original_edge);
                     for &sid in &graph.edges[edge.original_edge.index()].sections {
                         stats.bend_points += graph.edge_sections[sid.index()].bend_points.len();
@@ -172,6 +173,8 @@ pub(crate) fn export_to_graph(
             let edge_idx = edge.original_edge.index();
             graph.edges[edge_idx].sections.clear();
             let _ = graph.add_edge_section(edge.original_edge, start, bends.clone(), end);
+            restore_nested_endpoint_terminals(graph, edge);
+            let (start, end) = section_endpoints(graph, edge.original_edge);
             stats.bend_points += bends.len();
             routed += 1;
             place_edge_labels(graph, edge, start, end, options, stats);
@@ -259,6 +262,23 @@ fn canonicalize_libavoid_terminals(graph: &mut ElkGraph, edge: &IrEdge, warnings
                 extent.max_y
             ));
         }
+    }
+}
+
+fn restore_nested_endpoint_terminals(graph: &mut ElkGraph, edge: &IrEdge) {
+    let edge_ref = &graph.edges[edge.original_edge.index()];
+    let Some(first_id) = edge_ref.sections.first().copied() else {
+        return;
+    };
+    let Some(last_id) = edge_ref.sections.last().copied() else {
+        return;
+    };
+
+    if edge.source.port.is_none() && edge.source.node != edge.effective_source {
+        graph.edge_sections[first_id.index()].start = endpoint_abs_center(graph, edge.source);
+    }
+    if edge.target.port.is_none() && edge.target.node != edge.effective_target {
+        graph.edge_sections[last_id.index()].end = endpoint_abs_center(graph, edge.target);
     }
 }
 
@@ -770,14 +790,14 @@ fn boundary_anchor_for_inner_point(
     let dx = toward.x - center.x;
     let dy = toward.y - center.y;
     if dx.abs() >= dy.abs() {
-        let y = inner.y.clamp(r.origin.y, r.max_y());
+        let y = inner.y;
         if dx >= 0.0 {
             Point::new(r.max_x(), y)
         } else {
             Point::new(r.origin.x, y)
         }
     } else {
-        let x = inner.x.clamp(r.origin.x, r.max_x());
+        let x = inner.x;
         if dy >= 0.0 {
             Point::new(x, r.max_y())
         } else {
