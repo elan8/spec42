@@ -1134,9 +1134,13 @@ fn preferred_minor_center(
         return node_minor_center(ir, node_id, direction);
     }
 
-    let average = neighbors.iter().sum::<f32>() / neighbors.len() as f32;
-    let _ = options;
-    average
+    neighbors.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+    let mid = neighbors.len() / 2;
+    if neighbors.len() % 2 == 1 {
+        neighbors[mid]
+    } else {
+        (neighbors[mid - 1] + neighbors[mid]) / 2.0
+    }
 }
 
 fn preferred_minor_centers_from_ports(

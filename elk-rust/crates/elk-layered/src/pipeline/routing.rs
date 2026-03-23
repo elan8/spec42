@@ -849,23 +849,26 @@ fn orthogonalize_edge_sections_with_sides(
             .chain(section.bend_points.iter().copied())
             .chain(std::iter::once(section.end))
             .collect();
+        let section_source_side = if section_idx == 0 { source_side } else { None };
+        let section_target_side = if section_idx == last_section_idx {
+            target_side
+        } else {
+            None
+        };
+        if polyline_is_orthogonal(&points)
+            && terminal_chain_matches_sides(&points, section_source_side, section_target_side)
+        {
+            continue;
+        }
         let orthogonal = orthogonalize_polyline(
             points,
-            if section_idx == 0 { source_side } else { None },
-            if section_idx == last_section_idx {
-                target_side
-            } else {
-                None
-            },
+            section_source_side,
+            section_target_side,
         );
         let orthogonal = ensure_terminal_normals(
             orthogonal,
-            if section_idx == 0 { source_side } else { None },
-            if section_idx == last_section_idx {
-                target_side
-            } else {
-                None
-            },
+            section_source_side,
+            section_target_side,
         );
         if orthogonal.len() < 2 {
             continue;
@@ -1303,6 +1306,24 @@ fn build_java_style_layered_route(
     }
 }
 
+fn terminal_chain_matches_sides(
+    points: &[Point],
+    start_side: Option<PortSide>,
+    end_side: Option<PortSide>,
+) -> bool {
+    if points.len() < 2 {
+        return true;
+    }
+
+    let start_ok = start_side
+        .map(|side| terminal_matches_side(points[0], points[1], side))
+        .unwrap_or(true);
+    let end_ok = end_side
+        .map(|side| terminal_matches_side(points[points.len() - 1], points[points.len() - 2], side))
+        .unwrap_or(true);
+    start_ok && end_ok
+}
+
 fn java_style_interlayer_slot_position(
     graph: &ElkGraph,
     edge: &IrEdge,
@@ -1430,6 +1451,18 @@ fn compare_ports_for_layout(
     let right_opts = decode_layout_from_props(&right_port.properties);
 
     if matches!(port_constraint, elk_core::PortConstraint::FixedOrder) {
+        if left_port.node == right_port.node {
+            let ports = &graph.nodes[left_port.node.index()].ports;
+            let left_pos = ports.iter().position(|port_id| *port_id == left);
+            let right_pos = ports.iter().position(|port_id| *port_id == right);
+            if let (Some(left_pos), Some(right_pos)) = (left_pos, right_pos) {
+                let cmp = left_pos.cmp(&right_pos);
+                if cmp != std::cmp::Ordering::Equal {
+                    return cmp;
+                }
+            }
+        }
+
         let left_index = left_opts.model_order;
         let right_index = right_opts.model_order;
         if let (Some(left_index), Some(right_index)) = (left_index, right_index) {
@@ -2681,7 +2714,7 @@ mod tests {
     }
 
     #[test]
-    fn compare_ports_for_layout_prefers_fixed_order_index() {
+    fn compare_ports_for_layout_prefers_declared_fixed_order() {
         let mut graph = ElkGraph::new();
         let node = graph.add_node(
             graph.root,
@@ -2713,7 +2746,7 @@ mod tests {
                 PortSide::East,
                 elk_core::PortConstraint::FixedOrder,
             ),
-            std::cmp::Ordering::Greater
+            std::cmp::Ordering::Less
         );
     }
 

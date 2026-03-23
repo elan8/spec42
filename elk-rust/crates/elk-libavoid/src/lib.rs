@@ -11,12 +11,14 @@ use elk_alg_common::orthogonal::{
 
 mod router;
 
-use router::{Obstacle, RoutingFailure, route, route_with_debug};
+use router::{Obstacle, OccupiedSegment, RoutingFailure, route_with_debug_with_penalties};
 use router::path_is_clear;
 
 const DEFAULT_CLEARANCE: f32 = 4.0;
 const DEFAULT_SEGMENT_PENALTY: f32 = 1.0;
 const DEFAULT_BEND_PENALTY: f32 = 6.0;
+const DEFAULT_FIXED_SHARED_PATH_PENALTY: f32 = 8.0;
+const DEFAULT_NUDGE_SHARED_PATHS_WITH_COMMON_ENDPOINT: bool = true;
 const TERMINAL_NORMAL_OFFSET: f32 = 16.0;
 const TERMINAL_TANGENT_SPACING: f32 = 18.0;
 const SHARED_SOURCE_SPLIT_KEY: &str = "spec42.shared.split.source";
@@ -52,6 +54,31 @@ fn read_penalty_f32(
         }
     }
     default.max(min)
+}
+
+fn read_bool_option(
+    by_key: &std::collections::BTreeMap<String, &elk_graph::PropertyValue>,
+    keys: &[&str],
+    default: bool,
+) -> bool {
+    for key in keys {
+        if let Some(v) = by_key.get(&key.to_ascii_lowercase()) {
+            match v {
+                elk_graph::PropertyValue::Bool(value) => return *value,
+                elk_graph::PropertyValue::Int(value) => return *value != 0,
+                elk_graph::PropertyValue::String(value) => {
+                    if value.eq_ignore_ascii_case("true") {
+                        return true;
+                    }
+                    if value.eq_ignore_ascii_case("false") {
+                        return false;
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+    default
 }
 
 #[derive(Debug, Default, Clone, Copy)]
@@ -101,9 +128,49 @@ impl LibavoidLayoutEngine {
             DEFAULT_BEND_PENALTY,
             0.0,
         );
+        let fixed_shared_path_penalty = read_penalty_f32(
+            &by_key,
+            &[
+                "elk.libavoid.fixedsharedpathpenalty",
+                "org.eclipse.elk.alg.libavoid.fixedSharedPathPenalty",
+                "org.eclipse.elk.alg.libavoid.fixedsharedpathpenalty",
+            ],
+            DEFAULT_FIXED_SHARED_PATH_PENALTY,
+            0.0,
+        );
+        let penalise_shared_paths_at_conn_ends = read_bool_option(
+            &by_key,
+            &[
+                "elk.libavoid.penaliseorthogonalsharedpathsatconnends",
+                "org.eclipse.elk.alg.libavoid.penaliseOrthogonalSharedPathsAtConnEnds",
+                "org.eclipse.elk.alg.libavoid.penaliseorthogonalsharedpathsatconnends",
+            ],
+            false,
+        );
+        let nudge_shared_paths_with_common_endpoint = read_bool_option(
+            &by_key,
+            &[
+                "elk.libavoid.nudgesharedpathswithcommonendpoint",
+                "org.eclipse.elk.alg.libavoid.nudgeSharedPathsWithCommonEndPoint",
+                "org.eclipse.elk.alg.libavoid.nudgesharedpathswithcommonendpoint",
+            ],
+            DEFAULT_NUDGE_SHARED_PATHS_WITH_COMMON_ENDPOINT,
+        );
+        let shared_path_penalty = if penalise_shared_paths_at_conn_ends
+            || nudge_shared_paths_with_common_endpoint
+        {
+            if fixed_shared_path_penalty > 0.0 {
+                fixed_shared_path_penalty
+            } else {
+                clearance.max(4.0)
+            }
+        } else {
+            0.0
+        };
 
         let mut edge_ids: Vec<EdgeId> = graph.edges.iter().map(|e| e.id).collect();
         edge_ids.sort_by_key(|e| e.index());
+        let mut occupied_segments = Vec::new();
 
         for edge_id in edge_ids {
             let plan = build_route_plan(graph, edge_id, Point::new(0.0, 0.0), clearance);
@@ -116,8 +183,19 @@ impl LibavoidLayoutEngine {
                 None,
             );
             let path = build_shared_route_path_local(&plan, Point::new(0.0, 0.0), &obstacles)
-                .unwrap_or(route(plan.route_start_local, plan.route_end_local, &obstacles, segment_penalty, bend_penalty)
-                .map_err(|e| routing_failure_to_layout_error(edge_id, e))?);
+                .unwrap_or(
+                    route_with_debug_with_penalties(
+                        plan.route_start_local,
+                        plan.route_end_local,
+                        &obstacles,
+                        segment_penalty,
+                        bend_penalty,
+                        shared_path_penalty,
+                        &occupied_segments,
+                    )
+                    .map(|value| value.0)
+                    .map_err(|e| routing_failure_to_layout_error(edge_id, e))?
+                );
             let path = finalize_route_path(
                 path,
                 plan.actual_start_abs,
@@ -136,6 +214,7 @@ impl LibavoidLayoutEngine {
             };
             let start_pt = path.first().copied().unwrap_or(plan.actual_start_abs);
             let end_pt = path.last().copied().unwrap_or(plan.actual_end_abs);
+            remember_route_segments(&mut occupied_segments, &path, Point::new(0.0, 0.0));
             graph.edges[edge_id.index()].sections.clear();
             let _ = graph.add_edge_section(edge_id, start_pt, bends, end_pt);
         }
@@ -205,16 +284,57 @@ pub fn route_edges_with_diagnostics_in_scope(
         DEFAULT_BEND_PENALTY,
         0.0,
     );
+    let root_fixed_shared_path_penalty = read_penalty_f32(
+        &by_key,
+        &[
+            "elk.libavoid.fixedsharedpathpenalty",
+            "org.eclipse.elk.alg.libavoid.fixedSharedPathPenalty",
+            "org.eclipse.elk.alg.libavoid.fixedsharedpathpenalty",
+        ],
+        DEFAULT_FIXED_SHARED_PATH_PENALTY,
+        0.0,
+    );
+    let root_penalise_shared_paths_at_conn_ends = read_bool_option(
+        &by_key,
+        &[
+            "elk.libavoid.penaliseorthogonalsharedpathsatconnends",
+            "org.eclipse.elk.alg.libavoid.penaliseOrthogonalSharedPathsAtConnEnds",
+            "org.eclipse.elk.alg.libavoid.penaliseorthogonalsharedpathsatconnends",
+        ],
+        false,
+    );
+    let root_nudge_shared_paths_with_common_endpoint = read_bool_option(
+        &by_key,
+        &[
+            "elk.libavoid.nudgesharedpathswithcommonendpoint",
+            "org.eclipse.elk.alg.libavoid.nudgeSharedPathsWithCommonEndPoint",
+            "org.eclipse.elk.alg.libavoid.nudgesharedpathswithcommonendpoint",
+        ],
+        DEFAULT_NUDGE_SHARED_PATHS_WITH_COMMON_ENDPOINT,
+    );
+    let root_shared_path_penalty = if root_penalise_shared_paths_at_conn_ends
+        || root_nudge_shared_paths_with_common_endpoint
+    {
+        if root_fixed_shared_path_penalty > 0.0 {
+            root_fixed_shared_path_penalty
+        } else {
+            root_clearance.max(4.0)
+        }
+    } else {
+        0.0
+    };
 
     let mut sorted_ids: Vec<EdgeId> = edge_ids.to_vec();
     sorted_ids.sort_by_key(|e| e.index());
     let debug_enabled = std::env::var_os("SPEC42_ELK_DEBUG").is_some();
     let mut diagnostics = Vec::new();
+    let mut occupied_segments = Vec::new();
 
     for edge_id in sorted_ids {
         let clearance = root_clearance;
         let segment_penalty = root_segment_penalty;
         let bend_penalty = root_bend_penalty;
+        let shared_path_penalty = root_shared_path_penalty;
         let plan = build_route_plan(graph, edge_id, scope_origin_abs, clearance);
         let excluded = excluded_obstacle_nodes(graph, edge_id, plan.source_side, plan.target_side);
         let obstacles = collect_obstacles(graph, clearance, &excluded, scope_origin_abs, scope_nodes);
@@ -223,23 +343,28 @@ pub fn route_edges_with_diagnostics_in_scope(
         {
             (path, router::RouteDebug::default())
         } else if debug_enabled {
-            route_with_debug(
+            route_with_debug_with_penalties(
                 plan.route_start_local,
                 plan.route_end_local,
                 &obstacles,
                 segment_penalty,
                 bend_penalty,
+                shared_path_penalty,
+                &occupied_segments,
             )
                 .map_err(|e| routing_failure_to_layout_error(edge_id, e))?
         } else {
             (
-                route(
+                route_with_debug_with_penalties(
                     plan.route_start_local,
                     plan.route_end_local,
                     &obstacles,
                     segment_penalty,
                     bend_penalty,
+                    shared_path_penalty,
+                    &occupied_segments,
                 )
+                    .map(|value| value.0)
                     .map_err(|e| routing_failure_to_layout_error(edge_id, e))?,
                 router::RouteDebug::default(),
             )
@@ -292,6 +417,7 @@ pub fn route_edges_with_diagnostics_in_scope(
                 route_dbg.path_found
             ));
         }
+        remember_route_segments(&mut occupied_segments, &path, scope_origin_abs);
         graph.edges[edge_id.index()].sections.clear();
         let _ = graph.add_edge_section(edge_id, start_abs_pt, bends_abs, end_abs_pt);
     }
@@ -515,6 +641,20 @@ fn collect_obstacles(
             .then_with(|| a.rect.origin.y.partial_cmp(&b.rect.origin.y).unwrap_or(std::cmp::Ordering::Equal))
     });
     out
+}
+
+fn remember_route_segments(
+    occupied_segments: &mut Vec<OccupiedSegment>,
+    path_abs: &[Point],
+    scope_origin_abs: Point,
+) {
+    for pair in path_abs.windows(2) {
+        let start = to_local(pair[0], scope_origin_abs);
+        let end = to_local(pair[1], scope_origin_abs);
+        if (start.x - end.x).abs() < 1e-5 || (start.y - end.y).abs() < 1e-5 {
+            occupied_segments.push(OccupiedSegment { start, end });
+        }
+    }
 }
 
 fn excluded_obstacle_nodes(

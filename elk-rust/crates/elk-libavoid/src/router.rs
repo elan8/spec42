@@ -6,6 +6,12 @@ use elk_core::{Point, Rect};
 
 const EPS: f32 = 1e-5;
 
+#[derive(Clone, Copy, Debug)]
+pub struct OccupiedSegment {
+    pub start: Point,
+    pub end: Point,
+}
+
 /// Expanded rectangle obstacles (e.g. node bounds + clearance).
 #[derive(Clone, Debug)]
 pub struct Obstacle {
@@ -221,7 +227,16 @@ pub fn route(
     segment_penalty: f32,
     bend_penalty: f32,
 ) -> Result<Vec<Point>, RoutingFailure> {
-    route_with_debug(start, end, obstacles, segment_penalty, bend_penalty).map(|v| v.0)
+    route_with_debug_with_penalties(
+        start,
+        end,
+        obstacles,
+        segment_penalty,
+        bend_penalty,
+        0.0,
+        &[],
+    )
+    .map(|v| v.0)
 }
 
 #[must_use]
@@ -231,6 +246,27 @@ pub fn route_with_debug(
     obstacles: &[Obstacle],
     segment_penalty: f32,
     bend_penalty: f32,
+) -> Result<(Vec<Point>, RouteDebug), RoutingFailure> {
+    route_with_debug_with_penalties(
+        start,
+        end,
+        obstacles,
+        segment_penalty,
+        bend_penalty,
+        0.0,
+        &[],
+    )
+}
+
+#[must_use]
+pub fn route_with_debug_with_penalties(
+    start: Point,
+    end: Point,
+    obstacles: &[Obstacle],
+    segment_penalty: f32,
+    bend_penalty: f32,
+    shared_path_penalty: f32,
+    occupied_segments: &[OccupiedSegment],
 ) -> Result<(Vec<Point>, RouteDebug), RoutingFailure> {
     let mut dbg = RouteDebug::default();
     let points = candidate_points(start, end, obstacles);
@@ -290,6 +326,16 @@ pub fn route_with_debug(
             let edge_cost = w * seg_penalty;
             let bend = incoming_axis.map(|prev_axis| prev_axis != axis).unwrap_or(false);
             let mut tentative = g_u + edge_cost + if bend { bend_penalty.max(1.0) } else { 0.0 };
+            if shared_path_penalty > 0.0 {
+                let shared_overlap = shared_path_overlap_length(
+                    current,
+                    points[v],
+                    occupied_segments,
+                );
+                if shared_overlap > 0.0 {
+                    tentative += shared_overlap * shared_path_penalty;
+                }
+            }
             let prev_dist =
                 (points[end_idx].x - current.x).abs() + (points[end_idx].y - current.y).abs();
             let next_dist =
@@ -318,6 +364,43 @@ pub fn route_with_debug(
     }
 
     Err(RoutingFailure::NoRouteFound)
+}
+
+fn shared_path_overlap_length(a: Point, b: Point, occupied_segments: &[OccupiedSegment]) -> f32 {
+    occupied_segments
+        .iter()
+        .map(|occupied| segment_overlap_length(a, b, occupied.start, occupied.end))
+        .fold(0.0, f32::max)
+}
+
+fn segment_overlap_length(a: Point, b: Point, c: Point, d: Point) -> f32 {
+    let a_vertical = (a.x - b.x).abs() < EPS;
+    let c_vertical = (c.x - d.x).abs() < EPS;
+    if a_vertical && c_vertical {
+        if (a.x - c.x).abs() >= EPS {
+            return 0.0;
+        }
+        let a_min = a.y.min(b.y);
+        let a_max = a.y.max(b.y);
+        let c_min = c.y.min(d.y);
+        let c_max = c.y.max(d.y);
+        return (a_max.min(c_max) - a_min.max(c_min)).max(0.0);
+    }
+
+    let a_horizontal = (a.y - b.y).abs() < EPS;
+    let c_horizontal = (c.y - d.y).abs() < EPS;
+    if a_horizontal && c_horizontal {
+        if (a.y - c.y).abs() >= EPS {
+            return 0.0;
+        }
+        let a_min = a.x.min(b.x);
+        let a_max = a.x.max(b.x);
+        let c_min = c.x.min(d.x);
+        let c_max = c.x.max(d.x);
+        return (a_max.min(c_max) - a_min.max(c_min)).max(0.0);
+    }
+
+    0.0
 }
 
 #[cfg(test)]
@@ -369,5 +452,37 @@ mod tests {
         let a = Point::new(752.0, 896.0);
         let b = Point::new(2244.0, 896.0);
         assert!(segment_intersects_rect(a, b, &obstacle));
+    }
+
+    #[test]
+    fn shared_path_penalty_prefers_free_parallel_corridor() {
+        let obstacles = vec![
+            Obstacle {
+                rect: rect(40.0, 20.0, 80.0, 20.0),
+            },
+            Obstacle {
+                rect: rect(40.0, 80.0, 80.0, 20.0),
+            },
+        ];
+        let occupied = vec![OccupiedSegment {
+            start: Point::new(80.0, 40.0),
+            end: Point::new(80.0, 80.0),
+        }];
+        let (path, _) = route_with_debug_with_penalties(
+            Point::new(20.0, 50.0),
+            Point::new(140.0, 50.0),
+            &obstacles,
+            1.0,
+            6.0,
+            20.0,
+            &occupied,
+        )
+        .expect("route should succeed");
+        assert!(
+            !path.windows(2).any(|segment| {
+                segment_overlap_length(segment[0], segment[1], occupied[0].start, occupied[0].end) > 0.0
+            }),
+            "route should avoid reusing the occupied vertical corridor"
+        );
     }
 }
