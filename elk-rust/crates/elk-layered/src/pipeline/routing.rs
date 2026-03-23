@@ -14,7 +14,7 @@ use crate::pipeline::util::{
     node_abs_origin, point_along_outward_normal,
 };
 
-const TERMINAL_NORMAL_OFFSET: f32 = 8.0;
+const TERMINAL_NORMAL_OFFSET: f32 = 16.0;
 const TERMINAL_TANGENT_SPACING: f32 = 18.0;
 
 pub(crate) fn export_to_graph(
@@ -131,6 +131,7 @@ pub(crate) fn export_to_graph(
     let edge_lane_by_index = edge_lane_by_ir_index(ir);
     let fanout_lane_bias_by_index = fanout_lane_bias_by_edge_index(ir);
     let keep_unnecessary_bends = keep_unnecessary_bends(graph);
+    assign_endpoint_slots(graph, ir, local_nodes, options);
 
     if !use_libavoid {
         for edge in &ir.edges {
@@ -154,17 +155,14 @@ pub(crate) fn export_to_graph(
                     .copied()
                     .unwrap_or(0);
 
-            let source_side = endpoint_port_side(graph, source_endpoint);
-            let target_side = endpoint_port_side(graph, target_endpoint);
-
             let path = if routing == EdgeRouting::Orthogonal {
                 build_orthogonal_route_path(
                     graph,
                     edge,
+                    source_endpoint,
+                    target_endpoint,
                     start,
                     end,
-                    source_side,
-                    target_side,
                     lane,
                     options,
                 )?
@@ -848,31 +846,45 @@ fn apply_orthogonal_slot_refinement(
 fn build_orthogonal_route_path(
     graph: &ElkGraph,
     edge: &IrEdge,
+    source_endpoint: elk_graph::EdgeEndpoint,
+    target_endpoint: elk_graph::EdgeEndpoint,
     start: Point,
     end: Point,
-    source_side: Option<PortSide>,
-    target_side: Option<PortSide>,
     lane: i32,
     options: &LayoutOptions,
 ) -> Result<Vec<Point>, LayoutError> {
+    let source_side = endpoint_side_for_routing(graph, source_endpoint, end, options.layered.direction, true);
+    let target_side = endpoint_side_for_routing(graph, target_endpoint, start, options.layered.direction, false);
+    let start = endpoint_anchor_for_routing(
+        graph,
+        source_endpoint,
+        source_side,
+        endpoint_slot(graph, edge.original_edge, true),
+    );
+    let end = endpoint_anchor_for_routing(
+        graph,
+        target_endpoint,
+        target_side,
+        endpoint_slot(graph, edge.original_edge, false),
+    );
     if (start.x - end.x).abs() <= f32::EPSILON || (start.y - end.y).abs() <= f32::EPSILON {
         return Ok(vec![start, end]);
     }
 
     let source_slot = endpoint_slot(graph, edge.original_edge, true);
     let target_slot = endpoint_slot(graph, edge.original_edge, false);
-    let source_lead = source_side
-        .map(|side| point_along_outward_normal(start, side, terminal_lead_for_slot(source_slot)))
-        .unwrap_or(start);
-    let target_lead = target_side
-        .map(|side| point_along_outward_normal(end, side, terminal_lead_for_slot(target_slot)))
-        .unwrap_or(end);
-    let route_start = source_side
-        .map(|side| point_along_tangent(source_lead, side, source_slot as f32 * TERMINAL_TANGENT_SPACING))
-        .unwrap_or(source_lead);
-    let route_end = target_side
-        .map(|side| point_along_tangent(target_lead, side, target_slot as f32 * TERMINAL_TANGENT_SPACING))
-        .unwrap_or(target_lead);
+    let source_lead = point_along_outward_normal(start, source_side, terminal_lead_for_slot(source_slot));
+    let target_lead = point_along_outward_normal(end, target_side, terminal_lead_for_slot(target_slot));
+    let route_start = point_along_tangent(
+        source_lead,
+        source_side,
+        tangent_route_offset(source_endpoint, source_slot),
+    );
+    let route_end = point_along_tangent(
+        target_lead,
+        target_side,
+        tangent_route_offset(target_endpoint, target_slot),
+    );
 
     let trunk = build_layered_orthogonal_trunk(route_start, route_end, lane, options);
     let route_points = std::iter::once(route_start)
@@ -906,7 +918,7 @@ fn endpoint_slot(graph: &ElkGraph, edge_id: EdgeId, is_source: bool) -> i32 {
 }
 
 fn terminal_lead_for_slot(slot: i32) -> f32 {
-    TERMINAL_NORMAL_OFFSET + slot.max(0) as f32 * (TERMINAL_TANGENT_SPACING * 0.75)
+    TERMINAL_NORMAL_OFFSET + slot.abs() as f32 * (TERMINAL_TANGENT_SPACING * 0.75)
 }
 
 fn build_layered_orthogonal_trunk(
@@ -926,6 +938,259 @@ fn build_layered_orthogonal_trunk(
         bends.extend(default_elbow(start, end));
     }
     bends
+}
+
+fn tangent_route_offset(endpoint: elk_graph::EdgeEndpoint, slot: i32) -> f32 {
+    let _ = (endpoint, slot);
+    0.0
+}
+
+fn endpoint_side_for_routing(
+    graph: &ElkGraph,
+    endpoint: elk_graph::EdgeEndpoint,
+    toward: Point,
+    direction: elk_core::LayoutDirection,
+    is_source: bool,
+) -> PortSide {
+    endpoint_port_side(graph, endpoint)
+        .unwrap_or_else(|| infer_node_side_for_target(graph, endpoint.node, toward, direction, is_source))
+}
+
+fn infer_node_side_for_target(
+    _graph: &ElkGraph,
+    _node_id: NodeId,
+    _toward: Point,
+    direction: elk_core::LayoutDirection,
+    is_source: bool,
+) -> PortSide {
+    match direction {
+        elk_core::LayoutDirection::TopToBottom => if is_source { PortSide::South } else { PortSide::North },
+        elk_core::LayoutDirection::BottomToTop => if is_source { PortSide::North } else { PortSide::South },
+        elk_core::LayoutDirection::LeftToRight => if is_source { PortSide::East } else { PortSide::West },
+        elk_core::LayoutDirection::RightToLeft => if is_source { PortSide::West } else { PortSide::East },
+    }
+}
+
+fn endpoint_anchor_for_routing(
+    graph: &ElkGraph,
+    endpoint: elk_graph::EdgeEndpoint,
+    side: PortSide,
+    slot: i32,
+) -> Point {
+    if let Some(port_id) = endpoint.port {
+        let center = endpoint_abs_center(graph, endpoint);
+        let port = &graph.ports[port_id.index()];
+        let origin = node_abs_origin(graph, port.node);
+        let node = &graph.nodes[port.node.index()];
+        let tangent = slot as f32 * TERMINAL_TANGENT_SPACING;
+        let margin = 12.0;
+        let min_x = origin.x + margin;
+        let max_x = (origin.x + node.geometry.width - margin).max(min_x);
+        let min_y = origin.y + margin;
+        let max_y = (origin.y + node.geometry.height - margin).max(min_y);
+
+        return match side {
+            PortSide::North | PortSide::South => {
+                Point::new((center.x + tangent).clamp(min_x, max_x), center.y)
+            }
+            PortSide::East | PortSide::West => {
+                Point::new(center.x, (center.y + tangent).clamp(min_y, max_y))
+            }
+        };
+    }
+
+    let node = &graph.nodes[endpoint.node.index()];
+    let origin = node_abs_origin(graph, endpoint.node);
+    let center = Point::new(
+        origin.x + node.geometry.width / 2.0,
+        origin.y + node.geometry.height / 2.0,
+    );
+    let tangent = slot as f32 * TERMINAL_TANGENT_SPACING;
+    let margin = 12.0;
+    let min_x = origin.x + margin;
+    let max_x = (origin.x + node.geometry.width - margin).max(min_x);
+    let min_y = origin.y + margin;
+    let max_y = (origin.y + node.geometry.height - margin).max(min_y);
+
+    match side {
+        PortSide::North => Point::new((center.x + tangent).clamp(min_x, max_x), origin.y),
+        PortSide::South => Point::new((center.x + tangent).clamp(min_x, max_x), origin.y + node.geometry.height),
+        PortSide::East => Point::new(origin.x + node.geometry.width, (center.y + tangent).clamp(min_y, max_y)),
+        PortSide::West => Point::new(origin.x, (center.y + tangent).clamp(min_y, max_y)),
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+struct EndpointGroup {
+    endpoint_kind: u8,
+    endpoint_index: usize,
+    bundle_key: Option<u32>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+struct GroupSortKey {
+    endpoint_position: i64,
+    opposite_position: i64,
+    bundle_key: Option<u32>,
+    model_order: usize,
+    edge_index: usize,
+}
+
+fn assign_endpoint_slots(
+    graph: &mut ElkGraph,
+    ir: &LayeredIr,
+    local_nodes: &BTreeSet<NodeId>,
+    options: &LayoutOptions,
+) {
+    let mut source_group_by_edge = BTreeMap::new();
+    let mut target_group_by_edge = BTreeMap::new();
+    let mut groups_by_side: BTreeMap<(NodeId, PortSide), BTreeMap<EndpointGroup, GroupSortKey>> =
+        BTreeMap::new();
+
+    for edge in &ir.edges {
+        if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
+            continue;
+        }
+        let edge_ref = &graph.edges[edge.original_edge.index()];
+        let source_endpoint = edge_ref.sources.first().copied().unwrap_or(edge.routed_source);
+        let target_endpoint = edge_ref.targets.first().copied().unwrap_or(edge.routed_target);
+        let source_side = endpoint_side_for_routing(
+            graph,
+            source_endpoint,
+            endpoint_abs_center(graph, target_endpoint),
+            options.layered.direction,
+            true,
+        );
+        let target_side = endpoint_side_for_routing(
+            graph,
+            target_endpoint,
+            endpoint_abs_center(graph, source_endpoint),
+            options.layered.direction,
+            false,
+        );
+
+        let source_group = endpoint_group(source_endpoint, edge.bundle_key);
+        let target_group = endpoint_group(target_endpoint, edge.bundle_key);
+        let source_sort = endpoint_group_sort_key(
+            graph,
+            source_endpoint,
+            target_endpoint,
+            source_side,
+            edge,
+        );
+        let target_sort = endpoint_group_sort_key(
+            graph,
+            target_endpoint,
+            source_endpoint,
+            target_side,
+            edge,
+        );
+
+        groups_by_side
+            .entry((source_endpoint.node, source_side))
+            .or_default()
+            .entry(source_group.clone())
+            .and_modify(|existing| *existing = (*existing).min(source_sort))
+            .or_insert(source_sort);
+        groups_by_side
+            .entry((target_endpoint.node, target_side))
+            .or_default()
+            .entry(target_group.clone())
+            .and_modify(|existing| *existing = (*existing).min(target_sort))
+            .or_insert(target_sort);
+
+        source_group_by_edge.insert(edge.original_edge, source_group);
+        target_group_by_edge.insert(edge.original_edge, target_group);
+    }
+
+    let mut slot_by_group = BTreeMap::new();
+    for groups in groups_by_side.values() {
+        let mut ordered = groups
+            .iter()
+            .map(|(group, sort_key)| (group.clone(), *sort_key))
+            .collect::<Vec<_>>();
+        ordered.sort_by_key(|(group, sort_key)| (*sort_key, group.clone()));
+        let count = ordered.len();
+        for (index, (group, _)) in ordered.into_iter().enumerate() {
+            slot_by_group.insert(group, symmetric_slot(index, count));
+        }
+    }
+
+    for edge in &ir.edges {
+        let edge_props = &mut graph.edges[edge.original_edge.index()].properties;
+        let source_slot = source_group_by_edge
+            .get(&edge.original_edge)
+            .and_then(|group| slot_by_group.get(group))
+            .copied()
+            .unwrap_or(0);
+        let target_slot = target_group_by_edge
+            .get(&edge.original_edge)
+            .and_then(|group| slot_by_group.get(group))
+            .copied()
+            .unwrap_or(0);
+
+        edge_props.insert(
+            "spec42.endpoint.slot.source",
+            elk_graph::PropertyValue::Int(source_slot as i64),
+        );
+        edge_props.insert(
+            "spec42.endpoint.slot.target",
+            elk_graph::PropertyValue::Int(target_slot as i64),
+        );
+    }
+}
+
+fn endpoint_group(endpoint: elk_graph::EdgeEndpoint, bundle_key: Option<u32>) -> EndpointGroup {
+    match endpoint.port {
+        Some(port_id) => EndpointGroup {
+            endpoint_kind: 1,
+            endpoint_index: port_id.index(),
+            bundle_key,
+        },
+        None => EndpointGroup {
+            endpoint_kind: 0,
+            endpoint_index: endpoint.node.index(),
+            bundle_key,
+        },
+    }
+}
+
+fn endpoint_group_sort_key(
+    graph: &ElkGraph,
+    endpoint: elk_graph::EdgeEndpoint,
+    opposite_endpoint: elk_graph::EdgeEndpoint,
+    side: PortSide,
+    edge: &IrEdge,
+) -> GroupSortKey {
+    GroupSortKey {
+        endpoint_position: quantize_tangent_coordinate(endpoint_abs_center(graph, endpoint), side),
+        opposite_position: quantize_tangent_coordinate(endpoint_abs_center(graph, opposite_endpoint), side),
+        bundle_key: edge.bundle_key,
+        model_order: edge.model_order,
+        edge_index: edge.original_edge.index(),
+    }
+}
+
+fn quantize_tangent_coordinate(point: Point, side: PortSide) -> i64 {
+    let coordinate = match side {
+        PortSide::North | PortSide::South => point.x,
+        PortSide::East | PortSide::West => point.y,
+    };
+    (coordinate * 1000.0).round() as i64
+}
+
+fn symmetric_slot(index: usize, count: usize) -> i32 {
+    if count <= 1 {
+        return 0;
+    }
+    let mid = count / 2;
+    if count % 2 == 1 {
+        index as i32 - mid as i32
+    } else if index < mid {
+        index as i32 - mid as i32
+    } else {
+        index as i32 - mid as i32 + 1
+    }
 }
 
 fn default_elbow(start: Point, end: Point) -> Vec<Point> {
@@ -1076,6 +1341,8 @@ fn edge_bundle_lane_offset(graph: &ElkGraph, edge_id: EdgeId) -> i32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::pipeline::import::import_graph;
+    use std::collections::BTreeSet;
 
     #[test]
     fn orthogonalize_polyline_fixes_diagonal_terminal_segments() {
@@ -1130,5 +1397,252 @@ mod tests {
         assert_eq!(fixed[1], Point::new(100.0, 58.0));
         assert!(fixed.contains(&Point::new(60.0, 58.0)));
         assert_eq!(*fixed.last().unwrap_or(&Point::new(0.0, 0.0)), Point::new(60.0, 120.0));
+    }
+
+    #[test]
+    fn assign_endpoint_slots_separates_node_endpoints_by_bundle() {
+        let mut graph = ElkGraph::new();
+        let source_left = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 0.0, y: 0.0, width: 80.0, height: 40.0 },
+        );
+        let source_right = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 160.0, y: 0.0, width: 80.0, height: 40.0 },
+        );
+        let target = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 80.0, y: 120.0, width: 80.0, height: 40.0 },
+        );
+
+        let left_edge = graph.add_edge(
+            graph.root,
+            vec![elk_graph::EdgeEndpoint::node(source_left)],
+            vec![elk_graph::EdgeEndpoint::node(target)],
+        );
+        graph.edges[left_edge.index()]
+            .properties
+            .insert("elk.edge.bundle", elk_graph::PropertyValue::Int(1));
+
+        let right_edge = graph.add_edge(
+            graph.root,
+            vec![elk_graph::EdgeEndpoint::node(source_right)],
+            vec![elk_graph::EdgeEndpoint::node(target)],
+        );
+        graph.edges[right_edge.index()]
+            .properties
+            .insert("elk.edge.bundle", elk_graph::PropertyValue::Int(2));
+
+        let options = LayoutOptions {
+            layered: elk_core::LayeredOptions {
+                direction: elk_core::LayoutDirection::TopToBottom,
+                ..LayoutOptions::default().layered
+            },
+            ..LayoutOptions::default()
+        };
+        let local_nodes = BTreeSet::from([source_left, source_right, target]);
+        let ir = import_graph(&graph, &[source_left, source_right, target], &local_nodes, &options);
+
+        assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
+
+        let left_target_slot = graph.edges[left_edge.index()]
+            .properties
+            .get(&elk_graph::PropertyKey::from("spec42.endpoint.slot.target"))
+            .and_then(|value| value.as_i64())
+            .unwrap_or(0);
+        let right_target_slot = graph.edges[right_edge.index()]
+            .properties
+            .get(&elk_graph::PropertyKey::from("spec42.endpoint.slot.target"))
+            .and_then(|value| value.as_i64())
+            .unwrap_or(0);
+
+        assert_ne!(left_target_slot, 0);
+        assert_ne!(right_target_slot, 0);
+        assert_ne!(left_target_slot, right_target_slot);
+        assert!(left_target_slot < right_target_slot);
+    }
+
+    #[test]
+    fn build_orthogonal_route_path_uses_slotted_node_anchor() {
+        let mut graph = ElkGraph::new();
+        let source_left = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 0.0, y: 0.0, width: 80.0, height: 40.0 },
+        );
+        let source_right = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 160.0, y: 0.0, width: 80.0, height: 40.0 },
+        );
+        let target = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 80.0, y: 120.0, width: 80.0, height: 40.0 },
+        );
+
+        let left_edge = graph.add_edge(
+            graph.root,
+            vec![elk_graph::EdgeEndpoint::node(source_left)],
+            vec![elk_graph::EdgeEndpoint::node(target)],
+        );
+        graph.edges[left_edge.index()]
+            .properties
+            .insert("elk.edge.bundle", elk_graph::PropertyValue::Int(1));
+
+        let right_edge = graph.add_edge(
+            graph.root,
+            vec![elk_graph::EdgeEndpoint::node(source_right)],
+            vec![elk_graph::EdgeEndpoint::node(target)],
+        );
+        graph.edges[right_edge.index()]
+            .properties
+            .insert("elk.edge.bundle", elk_graph::PropertyValue::Int(2));
+
+        let options = LayoutOptions {
+            layered: elk_core::LayeredOptions {
+                direction: elk_core::LayoutDirection::TopToBottom,
+                ..LayoutOptions::default().layered
+            },
+            ..LayoutOptions::default()
+        };
+        let local_nodes = BTreeSet::from([source_left, source_right, target]);
+        let ir = import_graph(&graph, &[source_left, source_right, target], &local_nodes, &options);
+
+        assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
+
+        let left_ir = ir.edges.iter().find(|edge| edge.original_edge == left_edge).unwrap();
+        let right_ir = ir.edges.iter().find(|edge| edge.original_edge == right_edge).unwrap();
+
+        let left_source = graph.edges[left_edge.index()].sources[0];
+        let left_target = graph.edges[left_edge.index()].targets[0];
+        let right_source = graph.edges[right_edge.index()].sources[0];
+        let right_target = graph.edges[right_edge.index()].targets[0];
+
+        let left_path = build_orthogonal_route_path(
+            &graph,
+            left_ir,
+            left_source,
+            left_target,
+            endpoint_abs_center(&graph, left_source),
+            endpoint_abs_center(&graph, left_target),
+            0,
+            &options,
+        )
+        .unwrap();
+        let right_path = build_orthogonal_route_path(
+            &graph,
+            right_ir,
+            right_source,
+            right_target,
+            endpoint_abs_center(&graph, right_source),
+            endpoint_abs_center(&graph, right_target),
+            0,
+            &options,
+        )
+        .unwrap();
+
+        let target_center_x = endpoint_abs_center(&graph, right_target).x;
+        assert_ne!(left_path.last().unwrap().x, target_center_x);
+        assert_ne!(right_path.last().unwrap().x, target_center_x);
+        assert_ne!(left_path.last().unwrap().x, right_path.last().unwrap().x);
+        assert!(left_path.last().unwrap().x < right_path.last().unwrap().x);
+    }
+
+    #[test]
+    fn build_orthogonal_route_path_uses_slotted_port_anchor() {
+        let mut graph = ElkGraph::new();
+        let source_left = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 0.0, y: 0.0, width: 80.0, height: 40.0 },
+        );
+        let source_right = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 160.0, y: 0.0, width: 80.0, height: 40.0 },
+        );
+        let target = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 80.0, y: 120.0, width: 80.0, height: 40.0 },
+        );
+
+        let source_left_port = graph.add_port(
+            source_left,
+            PortSide::South,
+            elk_graph::ShapeGeometry { x: 36.0, y: 36.0, width: 8.0, height: 8.0 },
+        );
+        let source_right_port = graph.add_port(
+            source_right,
+            PortSide::South,
+            elk_graph::ShapeGeometry { x: 36.0, y: 36.0, width: 8.0, height: 8.0 },
+        );
+        let target_port = graph.add_port(
+            target,
+            PortSide::North,
+            elk_graph::ShapeGeometry { x: 36.0, y: -4.0, width: 8.0, height: 8.0 },
+        );
+
+        let left_edge = graph.add_edge(
+            graph.root,
+            vec![elk_graph::EdgeEndpoint::port(source_left, source_left_port)],
+            vec![elk_graph::EdgeEndpoint::port(target, target_port)],
+        );
+        graph.edges[left_edge.index()]
+            .properties
+            .insert("elk.edge.bundle", elk_graph::PropertyValue::Int(1));
+
+        let right_edge = graph.add_edge(
+            graph.root,
+            vec![elk_graph::EdgeEndpoint::port(source_right, source_right_port)],
+            vec![elk_graph::EdgeEndpoint::port(target, target_port)],
+        );
+        graph.edges[right_edge.index()]
+            .properties
+            .insert("elk.edge.bundle", elk_graph::PropertyValue::Int(2));
+
+        let options = LayoutOptions {
+            layered: elk_core::LayeredOptions {
+                direction: elk_core::LayoutDirection::TopToBottom,
+                ..LayoutOptions::default().layered
+            },
+            ..LayoutOptions::default()
+        };
+        let local_nodes = BTreeSet::from([source_left, source_right, target]);
+        let ir = import_graph(&graph, &[source_left, source_right, target], &local_nodes, &options);
+
+        assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
+
+        let left_ir = ir.edges.iter().find(|edge| edge.original_edge == left_edge).unwrap();
+        let right_ir = ir.edges.iter().find(|edge| edge.original_edge == right_edge).unwrap();
+
+        let left_source = graph.edges[left_edge.index()].sources[0];
+        let left_target = graph.edges[left_edge.index()].targets[0];
+        let right_source = graph.edges[right_edge.index()].sources[0];
+        let right_target = graph.edges[right_edge.index()].targets[0];
+
+        let left_path = build_orthogonal_route_path(
+            &graph,
+            left_ir,
+            left_source,
+            left_target,
+            endpoint_abs_center(&graph, left_source),
+            endpoint_abs_center(&graph, left_target),
+            0,
+            &options,
+        )
+        .unwrap();
+        let right_path = build_orthogonal_route_path(
+            &graph,
+            right_ir,
+            right_source,
+            right_target,
+            endpoint_abs_center(&graph, right_source),
+            endpoint_abs_center(&graph, right_target),
+            0,
+            &options,
+        )
+        .unwrap();
+
+        let target_port_center_x = endpoint_abs_center(&graph, right_target).x;
+        assert_ne!(left_path.last().unwrap().x, target_port_center_x);
+        assert_ne!(right_path.last().unwrap().x, target_port_center_x);
+        assert_ne!(left_path.last().unwrap().x, right_path.last().unwrap().x);
+        assert!(left_path.last().unwrap().x < right_path.last().unwrap().x);
     }
 }

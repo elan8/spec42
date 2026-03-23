@@ -64,13 +64,7 @@ pub(crate) fn compute_layout(
         }
     }
 
-    let endpoint_slots = if matches!(config.view_profile, LayoutViewProfile::InterconnectionView) {
-        compute_endpoint_slots(graph)
-    } else {
-        vec![(0, 0); graph.edges.len()]
-    };
-
-    for (edge_index, edge) in graph.edges.iter().enumerate() {
+    for edge in &graph.edges {
         let source = map_endpoint(
             edge.source_node.as_str(),
             edge.source_port.as_deref(),
@@ -84,19 +78,10 @@ pub(crate) fn compute_layout(
             &port_ids,
         )?;
         let edge_id = elk_graph.add_edge(elk_graph.root, vec![source], vec![target]);
-        let (source_slot, target_slot) = endpoint_slots.get(edge_index).copied().unwrap_or((0, 0));
-        if source_slot != 0 {
-            elk_graph.edges[edge_id.index()].properties.insert(
-                "spec42.endpoint.slot.source",
-                PropertyValue::Int(source_slot as i64),
-            );
-        }
-        if target_slot != 0 {
-            elk_graph.edges[edge_id.index()].properties.insert(
-                "spec42.endpoint.slot.target",
-                PropertyValue::Int(target_slot as i64),
-            );
-        }
+        elk_graph.edges[edge_id.index()].properties.insert(
+            "elk.edge.bundle",
+            PropertyValue::Int(edge_bundle_key(&edge.kind) as i64),
+        );
     }
 
     apply_graph_hints(&mut elk_graph, graph, &node_ids, config);
@@ -267,116 +252,6 @@ fn map_port_side(side: &PortSide) -> ElkPortSide {
         PortSide::Right => ElkPortSide::East,
         PortSide::Top => ElkPortSide::North,
         PortSide::Bottom => ElkPortSide::South,
-    }
-}
-
-fn compute_endpoint_slots(graph: &DiagramGraph) -> Vec<(i32, i32)> {
-    use std::collections::{BTreeMap, HashMap};
-
-    #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-    struct EndpointGroup {
-        node_id: String,
-        side_rank: u8,
-        group_key: String,
-    }
-
-    let port_index_by_id: HashMap<&str, usize> = graph
-        .nodes
-        .iter()
-        .flat_map(|node| node.ports.iter().enumerate().map(|(index, port)| (port.id.as_str(), index)))
-        .collect();
-    let port_side_by_id: HashMap<&str, PortSide> = graph
-        .nodes
-        .iter()
-        .flat_map(|node| node.ports.iter().map(|port| (port.id.as_str(), port.side.clone())))
-        .collect();
-
-    let mut endpoint_groups = Vec::with_capacity(graph.edges.len());
-    let mut group_members: BTreeMap<EndpointGroup, Vec<usize>> = BTreeMap::new();
-
-    for (edge_index, edge) in graph.edges.iter().enumerate() {
-        let source_group = edge.source_port.as_deref().and_then(|port_id| {
-            let normalized = normalize_port_id(port_id);
-            let side = port_side_by_id
-                .get(port_id)
-                .or_else(|| port_side_by_id.get(normalized.as_str()))
-                .cloned()?;
-            Some(EndpointGroup {
-                node_id: edge.source_node.clone(),
-                side_rank: side_rank(&side),
-                group_key: format!("{}|{}", edge.kind, normalized),
-            })
-        });
-        let target_group = edge.target_port.as_deref().and_then(|port_id| {
-            let normalized = normalize_port_id(port_id);
-            let side = port_side_by_id
-                .get(port_id)
-                .or_else(|| port_side_by_id.get(normalized.as_str()))
-                .cloned()?;
-            Some(EndpointGroup {
-                node_id: edge.target_node.clone(),
-                side_rank: side_rank(&side),
-                group_key: format!("{}|{}", edge.kind, normalized),
-            })
-        });
-        if let Some(group) = source_group.clone() {
-            group_members.entry(group).or_default().push(edge_index);
-        }
-        if let Some(group) = target_group.clone() {
-            group_members.entry(group).or_default().push(edge_index);
-        }
-        endpoint_groups.push((source_group, target_group));
-    }
-
-    let mut slots = vec![(0i32, 0i32); graph.edges.len()];
-    let mut per_side_groups: BTreeMap<(String, u8), Vec<(EndpointGroup, usize)>> = BTreeMap::new();
-    for (group, members) in &group_members {
-        let Some(first_edge_index) = members.first().copied() else {
-            continue;
-        };
-        let port_id = group
-            .group_key
-            .split_once('|')
-            .map(|(_, port_id)| port_id)
-            .unwrap_or_default();
-        let sort_index = port_index_by_id.get(port_id).copied().unwrap_or(usize::MAX / 2);
-        per_side_groups
-            .entry((group.node_id.clone(), group.side_rank))
-            .or_default()
-            .push((group.clone(), sort_index));
-        let _ = first_edge_index;
-    }
-
-    let mut group_slot_by_key: BTreeMap<EndpointGroup, i32> = BTreeMap::new();
-    for groups in per_side_groups.values_mut() {
-        groups.sort_by(|(left_group, left_index), (right_group, right_index)| {
-            left_index
-                .cmp(right_index)
-                .then_with(|| left_group.group_key.cmp(&right_group.group_key))
-        });
-        for (index, (group, _)) in groups.iter().enumerate() {
-            group_slot_by_key.insert(group.clone(), index as i32);
-        }
-    }
-
-    for (edge_index, (source_group, target_group)) in endpoint_groups.into_iter().enumerate() {
-        if let Some(group) = source_group {
-            slots[edge_index].0 = group_slot_by_key.get(&group).copied().unwrap_or(0);
-        }
-        if let Some(group) = target_group {
-            slots[edge_index].1 = group_slot_by_key.get(&group).copied().unwrap_or(0);
-        }
-    }
-
-    slots
-}
-
-fn side_rank(side: &PortSide) -> u8 {
-    match side {
-        PortSide::Left => 0,
-        PortSide::Right => 1,
-        PortSide::Top => 2,
-        PortSide::Bottom => 3,
     }
 }
 

@@ -14,7 +14,7 @@ use router::{Obstacle, RoutingFailure, route, route_with_debug};
 const DEFAULT_CLEARANCE: f32 = 4.0;
 const DEFAULT_SEGMENT_PENALTY: f32 = 1.0;
 const DEFAULT_BEND_PENALTY: f32 = 6.0;
-const TERMINAL_NORMAL_OFFSET: f32 = 12.0;
+const TERMINAL_NORMAL_OFFSET: f32 = 16.0;
 const TERMINAL_TANGENT_SPACING: f32 = 18.0;
 
 #[derive(Clone, Copy, Debug)]
@@ -297,19 +297,27 @@ fn build_route_plan(
     let edge = &graph.edges[edge_id.index()];
     let source = edge.sources.first().copied();
     let target = edge.targets.first().copied();
-    let actual_start_abs = source
+    let other_end_abs = target
         .map(|ep| endpoint_center(graph, ep))
         .unwrap_or_else(|| Point::new(0.0, 0.0));
-    let actual_end_abs = target
+    let other_start_abs = source
         .map(|ep| endpoint_center(graph, ep))
         .unwrap_or_else(|| Point::new(0.0, 0.0));
-    let source_side = source.and_then(|ep| endpoint_port_side(graph, ep));
-    let target_side = target.and_then(|ep| endpoint_port_side(graph, ep));
+    let source_side = source.map(|ep| endpoint_side_for_routing(graph, ep, other_end_abs));
+    let target_side = target.map(|ep| endpoint_side_for_routing(graph, ep, other_start_abs));
     let source_slot = endpoint_slot(graph, edge_id, true);
     let target_slot = endpoint_slot(graph, edge_id, false);
     let lead = (clearance + TERMINAL_NORMAL_OFFSET).max(clearance + 1.0);
-    let source_lead = lead + source_slot.max(0) as f32 * (TERMINAL_TANGENT_SPACING * 0.75);
-    let target_lead = lead + target_slot.max(0) as f32 * (TERMINAL_TANGENT_SPACING * 0.75);
+    let source_lead = lead + source_slot.abs() as f32 * (TERMINAL_TANGENT_SPACING * 0.75);
+    let target_lead = lead + target_slot.abs() as f32 * (TERMINAL_TANGENT_SPACING * 0.75);
+    let actual_start_abs = source
+        .zip(source_side)
+        .map(|(ep, side)| endpoint_anchor_for_routing(graph, ep, side, source_slot))
+        .unwrap_or_else(|| Point::new(0.0, 0.0));
+    let actual_end_abs = target
+        .zip(target_side)
+        .map(|(ep, side)| endpoint_anchor_for_routing(graph, ep, side, target_slot))
+        .unwrap_or_else(|| Point::new(0.0, 0.0));
     let start_lead_abs = source_side
         .map(|side| point_along_outward_normal(actual_start_abs, side, source_lead))
         .unwrap_or(actual_start_abs);
@@ -317,10 +325,10 @@ fn build_route_plan(
         .map(|side| point_along_outward_normal(actual_end_abs, side, target_lead))
         .unwrap_or(actual_end_abs);
     let route_start_abs = source_side
-        .map(|side| point_along_tangent(start_lead_abs, side, source_slot as f32 * TERMINAL_TANGENT_SPACING))
+        .map(|side| point_along_tangent(start_lead_abs, side, tangent_route_offset(source, source_slot)))
         .unwrap_or(start_lead_abs);
     let route_end_abs = target_side
-        .map(|side| point_along_tangent(end_lead_abs, side, target_slot as f32 * TERMINAL_TANGENT_SPACING))
+        .map(|side| point_along_tangent(end_lead_abs, side, tangent_route_offset(target, target_slot)))
         .unwrap_or(end_lead_abs);
     RoutePlan {
         actual_start_abs,
@@ -482,6 +490,74 @@ fn endpoint_center(graph: &ElkGraph, ep: EdgeEndpoint) -> Point {
 
 fn endpoint_port_side(graph: &ElkGraph, ep: EdgeEndpoint) -> Option<PortSide> {
     ep.port.map(|port_id| graph.ports[port_id.index()].side)
+}
+
+fn endpoint_side_for_routing(graph: &ElkGraph, endpoint: EdgeEndpoint, toward: Point) -> PortSide {
+    endpoint_port_side(graph, endpoint).unwrap_or_else(|| infer_node_side_for_target(graph, endpoint.node, toward))
+}
+
+fn infer_node_side_for_target(graph: &ElkGraph, node_id: NodeId, toward: Point) -> PortSide {
+    let center = endpoint_center(graph, EdgeEndpoint::node(node_id));
+    let dx = toward.x - center.x;
+    let dy = toward.y - center.y;
+    if dx.abs() >= dy.abs() {
+        if dx >= 0.0 {
+            PortSide::East
+        } else {
+            PortSide::West
+        }
+    } else if dy >= 0.0 {
+        PortSide::South
+    } else {
+        PortSide::North
+    }
+}
+
+fn endpoint_anchor_for_routing(
+    graph: &ElkGraph,
+    endpoint: EdgeEndpoint,
+    side: PortSide,
+    slot: i32,
+) -> Point {
+    if let Some(port_id) = endpoint.port {
+        let center = endpoint_center(graph, endpoint);
+        let port = &graph.ports[port_id.index()];
+        let node = &graph.nodes[port.node.index()];
+        let origin = node_abs_origin(graph, port.node);
+        let tangent = slot as f32 * TERMINAL_TANGENT_SPACING;
+        let margin = 12.0;
+        let min_x = origin.x + margin;
+        let max_x = (origin.x + node.geometry.width - margin).max(min_x);
+        let min_y = origin.y + margin;
+        let max_y = (origin.y + node.geometry.height - margin).max(min_y);
+
+        return match side {
+            PortSide::North | PortSide::South => Point::new((center.x + tangent).clamp(min_x, max_x), center.y),
+            PortSide::East | PortSide::West => Point::new(center.x, (center.y + tangent).clamp(min_y, max_y)),
+        };
+    }
+
+    let node = &graph.nodes[endpoint.node.index()];
+    let origin = node_abs_origin(graph, endpoint.node);
+    let center = Point::new(origin.x + node.geometry.width / 2.0, origin.y + node.geometry.height / 2.0);
+    let tangent = slot as f32 * TERMINAL_TANGENT_SPACING;
+    let margin = 12.0;
+    let min_x = origin.x + margin;
+    let max_x = (origin.x + node.geometry.width - margin).max(min_x);
+    let min_y = origin.y + margin;
+    let max_y = (origin.y + node.geometry.height - margin).max(min_y);
+
+    match side {
+        PortSide::North => Point::new((center.x + tangent).clamp(min_x, max_x), origin.y),
+        PortSide::South => Point::new((center.x + tangent).clamp(min_x, max_x), origin.y + node.geometry.height),
+        PortSide::East => Point::new(origin.x + node.geometry.width, (center.y + tangent).clamp(min_y, max_y)),
+        PortSide::West => Point::new(origin.x, (center.y + tangent).clamp(min_y, max_y)),
+    }
+}
+
+fn tangent_route_offset(endpoint: Option<EdgeEndpoint>, slot: i32) -> f32 {
+    let _ = (endpoint, slot);
+    0.0
 }
 
 fn point_along_outward_normal(center: Point, side: PortSide, delta: f32) -> Point {
