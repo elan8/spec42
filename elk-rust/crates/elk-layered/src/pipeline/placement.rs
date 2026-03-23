@@ -672,10 +672,11 @@ pub(crate) fn place_nodes(ir: &mut LayeredIr, options: &LayoutOptions) -> Placem
     initialize_minor_positions(ir, options);
     bk_assign_minor_positions(ir, options);
     if options.layered.minor_axis_bk {
-        for node_id in 0..ir.nodes.len() {
-            let center = node_minor_center(ir, node_id, direction);
-            ir.nodes[node_id].desired_minor = center;
-            ir.nodes[node_id].aligned = true;
+        for layer_index in 0..ir.layers.len() {
+            compact_layer(ir, layer_index, options, true);
+        }
+        for layer_index in (0..ir.layers.len()).rev() {
+            compact_layer(ir, layer_index, options, false);
         }
     } else {
         for _ in 0..4 {
@@ -739,8 +740,11 @@ pub(crate) fn place_nodes(ir: &mut LayeredIr, options: &LayoutOptions) -> Placem
     for (layer_index, layer) in ir.layers.clone().into_iter().enumerate() {
         let layer_extent = layer_extents[layer_index];
         let layer_span = layer_minor_span(ir, &layer, direction, spacing.node_spacing);
-        let align_offset =
-            alignment_offset(options.layered.node_alignment, max_minor_span, layer_span);
+        let align_offset = if options.layered.minor_axis_bk {
+            0.0
+        } else {
+            alignment_offset(options.layered.node_alignment, max_minor_span, layer_span)
+        };
         if layer_span <= max_minor_span * (1.0 - (options.layered.compactness * 0.15)) {
             compacted_layers += 1;
         }

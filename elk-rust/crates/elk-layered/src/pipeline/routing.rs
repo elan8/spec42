@@ -850,6 +850,8 @@ fn build_orthogonal_route_path(
     }
 
     if let Some(points) = build_java_style_layered_route(
+        graph,
+        edge,
         start,
         end,
         source_side,
@@ -915,6 +917,8 @@ fn build_orthogonal_route_path(
 }
 
 fn build_java_style_layered_route(
+    graph: &ElkGraph,
+    edge: &IrEdge,
     start: Point,
     end: Point,
     source_side: PortSide,
@@ -924,11 +928,13 @@ fn build_java_style_layered_route(
 ) -> Option<Vec<Point>> {
     match (source_side, target_side) {
         (PortSide::East, PortSide::West) | (PortSide::West, PortSide::East) => {
-            let trunk_x = ((start.x + end.x) * 0.5)
-                + lane as f32 * options.layered.spacing.edge_spacing.max(1.0);
-            let min_x = start.x.min(end.x);
-            let max_x = start.x.max(end.x);
-            let trunk_x = trunk_x.clamp(min_x, max_x);
+            let trunk_x = java_style_interlayer_slot_position(
+                graph,
+                edge,
+                lane,
+                options,
+                true,
+            )?;
             let bends = normalize_bends(
                 vec![Point::new(trunk_x, start.y), Point::new(trunk_x, end.y)],
                 false,
@@ -941,11 +947,13 @@ fn build_java_style_layered_route(
             )
         }
         (PortSide::South, PortSide::North) | (PortSide::North, PortSide::South) => {
-            let trunk_y = ((start.y + end.y) * 0.5)
-                + lane as f32 * options.layered.spacing.edge_spacing.max(1.0);
-            let min_y = start.y.min(end.y);
-            let max_y = start.y.max(end.y);
-            let trunk_y = trunk_y.clamp(min_y, max_y);
+            let trunk_y = java_style_interlayer_slot_position(
+                graph,
+                edge,
+                lane,
+                options,
+                false,
+            )?;
             let bends = normalize_bends(
                 vec![Point::new(start.x, trunk_y), Point::new(end.x, trunk_y)],
                 false,
@@ -958,6 +966,47 @@ fn build_java_style_layered_route(
             )
         }
         _ => None,
+    }
+}
+
+fn java_style_interlayer_slot_position(
+    graph: &ElkGraph,
+    edge: &IrEdge,
+    lane: i32,
+    options: &LayoutOptions,
+    horizontal_layout: bool,
+) -> Option<f32> {
+    let edge_spacing = options.layered.spacing.edge_spacing.max(1.0);
+    let edge_node_spacing = options.layered.spacing.segment_spacing.max(1.0);
+    let source_bounds = node_rect(graph, edge.effective_source);
+    let target_bounds = node_rect(graph, edge.effective_target);
+
+    if horizontal_layout {
+        let source_right = source_bounds.origin.x + source_bounds.size.width;
+        let source_left = source_bounds.origin.x;
+        let target_left = target_bounds.origin.x;
+        let target_right = target_bounds.origin.x + target_bounds.size.width;
+        let start_pos = if source_right <= target_left {
+            source_right + edge_node_spacing
+        } else if target_right <= source_left {
+            source_left - edge_node_spacing
+        } else {
+            return None;
+        };
+        Some(start_pos + lane as f32 * edge_spacing)
+    } else {
+        let source_bottom = source_bounds.origin.y + source_bounds.size.height;
+        let source_top = source_bounds.origin.y;
+        let target_top = target_bounds.origin.y;
+        let target_bottom = target_bounds.origin.y + target_bounds.size.height;
+        let start_pos = if source_bottom <= target_top {
+            source_bottom + edge_node_spacing
+        } else if target_bottom <= source_top {
+            source_top - edge_node_spacing
+        } else {
+            return None;
+        };
+        Some(start_pos + lane as f32 * edge_spacing)
     }
 }
 
@@ -1418,6 +1467,11 @@ fn assign_group_shared_split(
         if edges.len() <= 1 {
             continue;
         }
+        let exempt_edge = shared_fanout_straight_candidate(
+            &edges,
+            group_key.source_side,
+            group_key.target_side,
+        );
         let split = shared_fanout_split_coordinate(
             &edges,
             options.layered.spacing.segment_spacing.max(8.0),
@@ -1426,6 +1480,9 @@ fn assign_group_shared_split(
             preserve_existing,
         );
         for (edge_id, source_lead, target_lead) in edges {
+            if Some(edge_id) == exempt_edge {
+                continue;
+            }
             if is_valid_shared_split(source_lead, target_lead, split, group_key.source_side, group_key.target_side) {
                 let edge_props = &mut graph.edges[edge_id.index()].properties;
                 if preserve_existing {
@@ -2370,4 +2427,27 @@ mod tests {
             ]
         );
     }
+}
+
+fn shared_fanout_straight_candidate(
+    edges: &[(EdgeId, Point, Point)],
+    source_side: u8,
+    target_side: u8,
+) -> Option<EdgeId> {
+    let axis_delta = |source: Point, target: Point| -> f32 {
+        if matches!((source_side, target_side), (2, 0) | (0, 2)) {
+            (source.x - target.x).abs()
+        } else {
+            (source.y - target.y).abs()
+        }
+    };
+
+    edges
+        .iter()
+        .min_by(|(_, source_a, target_a), (_, source_b, target_b)| {
+            axis_delta(*source_a, *target_a)
+                .partial_cmp(&axis_delta(*source_b, *target_b))
+                .unwrap_or(std::cmp::Ordering::Equal)
+        })
+        .map(|(edge_id, _, _)| *edge_id)
 }
