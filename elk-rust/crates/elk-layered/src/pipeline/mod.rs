@@ -1,7 +1,9 @@
 pub(crate) mod compound;
 mod crossing;
 mod cycle_breaking;
+pub(crate) mod intermediate;
 mod import;
+mod hierarchical_ports;
 mod layering;
 mod normalization;
 mod placement;
@@ -21,7 +23,8 @@ use elk_graph::{ElkGraph, NodeId};
 
 use crossing::{count_crossings, minimize_crossings};
 use cycle_breaking::break_cycles;
-use crate::pipeline::compound::{postprocess_cross_hierarchy_edges, preprocess_cross_hierarchy_edges};
+use crate::pipeline::compound::preprocess_cross_hierarchy_edges;
+use crate::pipeline::intermediate::run_post_routing_processors;
 use import::import_graph;
 use layering::assign_layers;
 use normalization::normalize_edges;
@@ -29,7 +32,6 @@ use normalization::normalize_edges;
 use placement::assign_lanes;
 use placement::place_nodes;
 use routing::export_to_graph;
-pub(crate) use routing::refresh_all_port_positions;
 
 pub(crate) fn layout_subgraph(
     graph: &mut ElkGraph,
@@ -143,7 +145,7 @@ pub(crate) fn layout_subgraph(
         name: "edge_routing",
         duration: started.elapsed(),
     });
-    postprocess_cross_hierarchy_edges(graph, &compound_map, &mut report.warnings);
+    run_post_routing_processors(graph, &compound_map, &mut report.warnings);
 
     Ok(placement.bounds)
 }

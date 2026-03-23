@@ -9,7 +9,7 @@
 use std::collections::BTreeMap;
 
 use elk_core::{LayoutDirection, LayoutOptions, Point, PortSide, Rect, Size};
-use elk_graph::{EdgeEndpoint, EdgeId, ElkGraph, NodeId, PropertyValue, ShapeGeometry};
+use elk_graph::{EdgeEndpoint, EdgeId, ElkGraph, NodeId, ShapeGeometry};
 
 use crate::pipeline::routing::restore_declared_port_terminals;
 use crate::pipeline::util::{
@@ -128,7 +128,7 @@ fn place_hierarchical_port_on_boundary(
     }
 }
 
-fn place_hierarchical_port_on_boundary_at_tangent(
+pub(crate) fn place_hierarchical_port_on_boundary_at_tangent(
     graph: &mut ElkGraph,
     node_id: NodeId,
     port_id: elk_graph::PortId,
@@ -351,8 +351,6 @@ pub fn postprocess_cross_hierarchy_edges(
     warnings: &mut Vec<String>,
 ) {
     let debug_enabled = std::env::var_os("SPEC42_ELK_DEBUG").is_some();
-    refresh_hierarchical_port_coordinates(graph, map);
-    correct_hierarchical_port_route_terminals(graph, map);
     let mut contexts = Vec::new();
     for (edge_id, record) in &map.edges {
         let routed_source_center = endpoint_abs_center(graph, record.routed_source);
@@ -531,92 +529,6 @@ pub fn postprocess_cross_hierarchy_edges(
             );
         }
         restore_declared_port_terminals(graph, edge_id);
-    }
-}
-
-fn refresh_hierarchical_port_coordinates(graph: &mut ElkGraph, map: &CompoundRoutingMap) {
-    let mut tangent_samples: BTreeMap<elk_graph::PortId, (PortSide, NodeId, f32, usize)> =
-        BTreeMap::new();
-
-    for record in map.edges.values() {
-        for (routed_endpoint, original_endpoint) in [
-            (record.routed_source, record.original_source),
-            (record.routed_target, record.original_target),
-        ] {
-            let Some(port_id) = routed_endpoint.port else {
-                continue;
-            };
-            let side = graph.ports[port_id.index()].side;
-            let sample = endpoint_abs_center(graph, original_endpoint);
-            let tangent = match side {
-                PortSide::North | PortSide::South => {
-                    sample.x - graph.nodes[routed_endpoint.node.index()].geometry.x
-                }
-                PortSide::East | PortSide::West => {
-                    sample.y - graph.nodes[routed_endpoint.node.index()].geometry.y
-                }
-            };
-            let entry = tangent_samples
-                .entry(port_id)
-                .or_insert((side, routed_endpoint.node, 0.0, 0));
-            entry.2 += tangent;
-            entry.3 += 1;
-        }
-    }
-
-    for (port_id, (side, node_id, tangent_sum, count)) in tangent_samples {
-        if count == 0 {
-            continue;
-        }
-        let tangent = tangent_sum / count as f32;
-        place_hierarchical_port_on_boundary_at_tangent(graph, node_id, port_id, side, tangent);
-    }
-}
-
-fn correct_hierarchical_port_route_terminals(graph: &mut ElkGraph, map: &CompoundRoutingMap) {
-    for (edge_id, record) in &map.edges {
-        let section_ids = graph.edges[edge_id.index()].sections.clone();
-        if section_ids.is_empty() {
-            continue;
-        }
-
-        if let Some(port_id) = record.routed_source.port {
-            let anchor = endpoint_abs_center(graph, record.routed_source);
-            if let Some(first_section_id) = section_ids.first().copied() {
-                let section = &mut graph.edge_sections[first_section_id.index()];
-                section.start = anchor;
-                if let Some(first_bend) = section.bend_points.first_mut() {
-                    match graph.ports[port_id.index()].side {
-                        PortSide::East | PortSide::West => first_bend.y = anchor.y,
-                        PortSide::North | PortSide::South => first_bend.x = anchor.x,
-                    }
-                }
-            }
-        }
-
-        if let Some(port_id) = record.routed_target.port {
-            let anchor = endpoint_abs_center(graph, record.routed_target);
-            if let Some(last_section_id) = section_ids.last().copied() {
-                let section = &mut graph.edge_sections[last_section_id.index()];
-                section.end = anchor;
-                if let Some(last_bend) = section.bend_points.last_mut() {
-                    match graph.ports[port_id.index()].side {
-                        PortSide::East | PortSide::West => last_bend.y = anchor.y,
-                        PortSide::North | PortSide::South => last_bend.x = anchor.x,
-                    }
-                }
-            }
-        }
-    }
-    hide_temporary_hierarchical_ports(graph, map);
-}
-
-fn hide_temporary_hierarchical_ports(graph: &mut ElkGraph, map: &CompoundRoutingMap) {
-    for (_, port_id) in &map.temporary_ports {
-        if let Some(port) = graph.ports.get_mut(port_id.index()) {
-            port.properties
-                .insert("spec42.temporary_hierarchical_port", PropertyValue::Bool(true));
-        }
     }
 }
 
@@ -1621,6 +1533,10 @@ mod tests {
     use super::*;
     use elk_core::PortSide;
     use elk_graph::ShapeGeometry;
+    use crate::pipeline::hierarchical_ports::{
+        correct_hierarchical_port_route_terminals, hide_temporary_hierarchical_ports,
+        refresh_hierarchical_port_coordinates,
+    };
 
     #[test]
     fn endpoint_branch_avoids_sibling_obstacle_inside_outer_container() {

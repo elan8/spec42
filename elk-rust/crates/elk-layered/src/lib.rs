@@ -7,7 +7,7 @@ mod pipeline;
 use elk_core::{LayoutError, LayoutOptions, LayoutReport};
 use elk_graph::{ElkGraph, NodeId};
 use pipeline::layout_subgraph;
-use pipeline::refresh_all_port_positions;
+use pipeline::intermediate::run_final_geometry_processors;
 use pipeline::decode_layout_from_props;
 
 #[derive(Debug, Default, Clone, Copy)]
@@ -55,7 +55,7 @@ impl LayeredLayoutEngine {
         let bounds = layout_subgraph(graph, &top_level, &effective_options, &mut report)?;
         // Child scopes are laid out recursively before parent placement is final, so port-local
         // coordinates must be refreshed once at graph scope before final export/mapping.
-        refresh_all_port_positions(graph, &effective_options);
+        run_final_geometry_processors(graph, &effective_options);
         // Store graph bounds on the synthetic root node geometry.
         if let Some(root) = graph.nodes.get_mut(graph.root.index()) {
             root.geometry.x = bounds.origin.x;

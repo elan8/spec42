@@ -535,7 +535,7 @@ fn node_rect(graph: &ElkGraph, node: NodeId) -> Rect {
     Rect::new(o, Size::new(n.geometry.width, n.geometry.height))
 }
 
-pub(crate) fn refresh_all_port_positions(graph: &mut ElkGraph, options: &LayoutOptions) {
+pub(crate) fn relayout_all_ports(graph: &mut ElkGraph, options: &LayoutOptions) {
     let node_ids: Vec<NodeId> = graph
         .nodes
         .iter()
@@ -547,6 +547,23 @@ pub(crate) fn refresh_all_port_positions(graph: &mut ElkGraph, options: &LayoutO
     }
 }
 
+pub(crate) fn reconcile_explicit_port_terminals(graph: &mut ElkGraph) {
+    let edge_ids: Vec<EdgeId> = graph.edges.iter().map(|edge| edge.id).collect();
+    for edge_id in edge_ids {
+        if graph.edges[edge_id.index()].sections.is_empty() {
+            continue;
+        }
+        let touches_explicit_port = graph.edges[edge_id.index()]
+            .sources
+            .iter()
+            .chain(graph.edges[edge_id.index()].targets.iter())
+            .any(|endpoint| endpoint.port.is_some());
+        if touches_explicit_port {
+            restore_declared_port_terminals(graph, edge_id);
+        }
+    }
+}
+
 pub(crate) fn restore_declared_port_terminals(graph: &mut ElkGraph, edge_id: EdgeId) {
     let Some(first_section_id) = graph.edges[edge_id.index()].sections.first().copied() else {
         return;
@@ -555,15 +572,19 @@ pub(crate) fn restore_declared_port_terminals(graph: &mut ElkGraph, edge_id: Edg
         return;
     };
 
+    let mut source_terminal: Option<(Point, Option<PortSide>)> = None;
+    let mut target_terminal: Option<(Point, Option<PortSide>)> = None;
+
     if let Some(source_endpoint) = graph.edges[edge_id.index()].sources.first().copied() {
         if source_endpoint.port.is_some() {
             let anchor = endpoint_declared_abs_center(graph, source_endpoint);
-            set_section_start_preserve_orthogonality(
+            let side = source_endpoint.port.map(|port| graph.ports[port.index()].side);
+            source_terminal = Some((anchor, side));
+            rebuild_section_terminal_branch(
                 &mut graph.edge_sections[first_section_id.index()],
                 anchor,
-                source_endpoint
-                    .port
-                    .map(|port| graph.ports[port.index()].side),
+                side,
+                true,
             );
         }
     }
@@ -571,14 +592,152 @@ pub(crate) fn restore_declared_port_terminals(graph: &mut ElkGraph, edge_id: Edg
     if let Some(target_endpoint) = graph.edges[edge_id.index()].targets.first().copied() {
         if target_endpoint.port.is_some() {
             let anchor = endpoint_declared_abs_center(graph, target_endpoint);
-            set_section_end_preserve_orthogonality(
+            let side = target_endpoint.port.map(|port| graph.ports[port.index()].side);
+            target_terminal = Some((anchor, side));
+            rebuild_section_terminal_branch(
                 &mut graph.edge_sections[last_section_id.index()],
                 anchor,
-                target_endpoint
-                    .port
-                    .map(|port| graph.ports[port.index()].side),
+                side,
+                false,
             );
         }
+    }
+
+    if let Some((anchor, side)) = source_terminal {
+        set_section_start_preserve_orthogonality(
+            &mut graph.edge_sections[first_section_id.index()],
+            anchor,
+            side,
+        );
+    }
+    if let Some((anchor, side)) = target_terminal {
+        set_section_end_preserve_orthogonality(
+            &mut graph.edge_sections[last_section_id.index()],
+            anchor,
+            side,
+        );
+    }
+}
+
+fn rebuild_section_terminal_branch(
+    section: &mut elk_graph::EdgeSection,
+    anchor: Point,
+    side: Option<PortSide>,
+    is_start: bool,
+) {
+    let Some(side) = side else {
+        if is_start {
+            set_section_start_preserve_orthogonality(section, anchor, None);
+        } else {
+            set_section_end_preserve_orthogonality(section, anchor, None);
+        }
+        return;
+    };
+
+    let points: Vec<Point> = std::iter::once(section.start)
+        .chain(section.bend_points.iter().copied())
+        .chain(std::iter::once(section.end))
+        .collect();
+    let rebuilt = rebuild_terminal_branch(points, anchor, side, is_start);
+    if rebuilt.len() < 2 {
+        if is_start {
+            set_section_start_preserve_orthogonality(section, anchor, Some(side));
+        } else {
+            set_section_end_preserve_orthogonality(section, anchor, Some(side));
+        }
+        return;
+    }
+    let rebuilt = orthogonalize_polyline(
+        rebuilt,
+        if is_start { Some(side) } else { None },
+        if is_start { None } else { Some(side) },
+    );
+    let rebuilt = ensure_terminal_normals(
+        rebuilt,
+        if is_start { Some(side) } else { None },
+        if is_start { None } else { Some(side) },
+    );
+    section.start = rebuilt[0];
+    section.end = *rebuilt.last().unwrap_or(&rebuilt[0]);
+    section.bend_points = rebuilt[1..rebuilt.len() - 1].to_vec();
+}
+
+fn rebuild_terminal_branch(
+    mut points: Vec<Point>,
+    anchor: Point,
+    side: PortSide,
+    is_start: bool,
+) -> Vec<Point> {
+    if points.len() < 2 {
+        return points;
+    }
+
+    if is_start {
+        points[0] = anchor;
+        let run_coordinate = terminal_run_coordinate(&points, side, true);
+        let Some(run_coordinate) = run_coordinate else {
+            return simplify_orthogonal_points(points);
+        };
+        let mut run_end = 1usize;
+        while run_end + 1 < points.len()
+            && same_terminal_run(points[run_end + 1], run_coordinate, side)
+        {
+            run_end += 1;
+        }
+
+        let mut rebuilt = Vec::with_capacity(points.len());
+        rebuilt.push(anchor);
+        let bridge = terminal_bridge_point(anchor, run_coordinate, side);
+        if rebuilt.last().copied() != Some(bridge) && bridge != anchor {
+            rebuilt.push(bridge);
+        }
+        rebuilt.extend(points.into_iter().skip(run_end + 1));
+        simplify_orthogonal_points(rebuilt)
+    } else {
+        let last = points.len() - 1;
+        points[last] = anchor;
+        let run_coordinate = terminal_run_coordinate(&points, side, false);
+        let Some(run_coordinate) = run_coordinate else {
+            return simplify_orthogonal_points(points);
+        };
+        let mut run_start = last - 1;
+        while run_start > 0 && same_terminal_run(points[run_start - 1], run_coordinate, side) {
+            run_start -= 1;
+        }
+
+        let mut rebuilt = Vec::with_capacity(points.len());
+        rebuilt.extend(points.iter().copied().take(run_start));
+        let bridge = terminal_bridge_point(anchor, run_coordinate, side);
+        if rebuilt.last().copied() != Some(bridge) && bridge != anchor {
+            rebuilt.push(bridge);
+        }
+        rebuilt.push(anchor);
+        simplify_orthogonal_points(rebuilt)
+    }
+}
+
+fn terminal_run_coordinate(points: &[Point], side: PortSide, is_start: bool) -> Option<f32> {
+    if points.len() < 2 {
+        return None;
+    }
+    let run_point = if is_start { points[1] } else { points[points.len() - 2] };
+    Some(match side {
+        PortSide::East | PortSide::West => run_point.x,
+        PortSide::North | PortSide::South => run_point.y,
+    })
+}
+
+fn same_terminal_run(point: Point, coordinate: f32, side: PortSide) -> bool {
+    match side {
+        PortSide::East | PortSide::West => (point.x - coordinate).abs() <= 1e-5,
+        PortSide::North | PortSide::South => (point.y - coordinate).abs() <= 1e-5,
+    }
+}
+
+fn terminal_bridge_point(anchor: Point, run_coordinate: f32, side: PortSide) -> Point {
+    match side {
+        PortSide::East | PortSide::West => Point::new(run_coordinate, anchor.y),
+        PortSide::North | PortSide::South => Point::new(anchor.x, run_coordinate),
     }
 }
 
@@ -2527,6 +2686,52 @@ mod tests {
                 Point::new(166.0, 115.0),
                 Point::new(170.0, 115.0),
                 Point::new(170.0, 72.0),
+            ]
+        );
+    }
+
+    #[test]
+    fn rebuild_terminal_branch_collapses_stale_vertical_end_run() {
+        let points = vec![
+            Point::new(1968.0, 525.1),
+            Point::new(2158.5, 525.1),
+            Point::new(2158.5, 437.6),
+            Point::new(2158.5, 471.6),
+            Point::new(2192.0, 437.6),
+        ];
+
+        let rebuilt =
+            rebuild_terminal_branch(points, Point::new(2192.0, 471.6), PortSide::West, false);
+
+        assert_eq!(
+            rebuilt,
+            vec![
+                Point::new(1968.0, 525.1),
+                Point::new(2158.5, 471.6),
+                Point::new(2192.0, 471.6),
+            ]
+        );
+    }
+
+    #[test]
+    fn rebuild_terminal_branch_collapses_stale_vertical_start_run() {
+        let points = vec![
+            Point::new(1208.0, 529.9),
+            Point::new(1184.0, 529.9),
+            Point::new(1184.0, 633.1),
+            Point::new(1184.0, 471.5),
+            Point::new(1540.0, 471.5),
+        ];
+
+        let rebuilt =
+            rebuild_terminal_branch(points, Point::new(1208.0, 633.1), PortSide::West, true);
+
+        assert_eq!(
+            rebuilt,
+            vec![
+                Point::new(1208.0, 633.1),
+                Point::new(1184.0, 633.1),
+                Point::new(1540.0, 471.5),
             ]
         );
     }
