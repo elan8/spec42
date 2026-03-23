@@ -148,10 +148,24 @@ pub(crate) fn node_abs_center(graph: &ElkGraph, node: NodeId) -> Point {
 pub(crate) fn port_abs_center(graph: &ElkGraph, port: PortId) -> Point {
     let p = &graph.ports[port.index()];
     let n = node_abs_origin(graph, p.node);
-    Point::new(
-        n.x + p.geometry.x + p.geometry.width / 2.0,
-        n.y + p.geometry.y + p.geometry.height / 2.0,
-    )
+    match p.side {
+        PortSide::North => Point::new(
+            n.x + p.geometry.x + p.geometry.width / 2.0,
+            n.y + p.geometry.y + p.geometry.height,
+        ),
+        PortSide::South => Point::new(
+            n.x + p.geometry.x + p.geometry.width / 2.0,
+            n.y + p.geometry.y,
+        ),
+        PortSide::East => Point::new(
+            n.x + p.geometry.x,
+            n.y + p.geometry.y + p.geometry.height / 2.0,
+        ),
+        PortSide::West => Point::new(
+            n.x + p.geometry.x + p.geometry.width,
+            n.y + p.geometry.y + p.geometry.height / 2.0,
+        ),
+    }
 }
 
 pub(crate) fn endpoint_abs_center(graph: &ElkGraph, endpoint: EdgeEndpoint) -> Point {
@@ -225,7 +239,8 @@ pub(crate) fn label_size(graph: &ElkGraph, label: LabelId) -> Size {
 #[cfg(test)]
 mod tests {
     use elk_alg_common::geometry::simplify_orthogonal_points_vec;
-    use elk_core::Point;
+    use elk_core::{Point, PortSide};
+    use elk_graph::{ElkGraph, ShapeGeometry};
 
     #[test]
     fn simplify_orthogonal_points_removes_collinear_vertices() {
@@ -244,5 +259,42 @@ mod tests {
                 Point::new(20.0, 20.0),
             ]
         );
+    }
+
+    #[test]
+    fn port_abs_center_uses_side_specific_anchor() {
+        let mut graph = ElkGraph::new();
+        let node = graph.add_node(
+            graph.root,
+            ShapeGeometry {
+                x: 20.0,
+                y: 30.0,
+                width: 140.0,
+                height: 120.0,
+            },
+        );
+        let east = graph.add_port(
+            node,
+            PortSide::East,
+            ShapeGeometry {
+                x: 140.0,
+                y: 35.0,
+                width: 10.0,
+                height: 10.0,
+            },
+        );
+        let west = graph.add_port(
+            node,
+            PortSide::West,
+            ShapeGeometry {
+                x: -10.0,
+                y: 55.0,
+                width: 10.0,
+                height: 10.0,
+            },
+        );
+
+        assert_eq!(super::port_abs_center(&graph, east), Point::new(160.0, 70.0));
+        assert_eq!(super::port_abs_center(&graph, west), Point::new(20.0, 90.0));
     }
 }

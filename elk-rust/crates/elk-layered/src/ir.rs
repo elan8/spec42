@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use elk_core::{LayerConstraint, Point, PortConstraint, PortSide, Size};
-use elk_graph::{EdgeEndpoint, EdgeId, LabelId, NodeId};
+use elk_graph::{EdgeEndpoint, EdgeId, LabelId, NodeId, PortId};
 
 pub type IrNodeId = usize;
 
@@ -76,6 +76,7 @@ pub enum IrNodeKind {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct IrPortConstraint {
+    pub port_id: PortId,
     pub side: PortSide,
     pub order: usize,
     pub constraint: PortConstraint,

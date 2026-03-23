@@ -19,7 +19,8 @@ $moduleDir = Join-Path (Join-Path $root "java") "elk-json-runner"
 $pom = Join-Path $moduleDir "pom.xml"
 $targetDir = Join-Path $root "target"
 $mavenRepoDir = Join-Path $targetDir "m2"
-$mavenSettings = Join-Path $targetDir "maven-settings.xml"
+$runToken = [guid]::NewGuid().ToString("N")
+$mavenSettings = Join-Path $targetDir ("maven-settings-" + $runToken + ".xml")
 
 New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
 New-Item -ItemType Directory -Force -Path $mavenRepoDir | Out-Null

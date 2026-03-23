@@ -38,8 +38,13 @@ pub(crate) fn layout_subgraph(
     report: &mut LayoutReport,
 ) -> Result<Rect, LayoutError> {
     let padding = options.layered.padding;
+    let scope_container = nodes
+        .first()
+        .and_then(|node_id| graph.nodes[node_id.index()].parent)
+        .unwrap_or(graph.root);
+    rehome_edges_to_nearest_scope_container(graph, scope_container);
     let local_nodes: BTreeSet<NodeId> = nodes.iter().copied().collect();
-    let compound_map = preprocess_cross_hierarchy_edges(graph, &local_nodes, options);
+    let compound_map = preprocess_cross_hierarchy_edges(graph, scope_container, &local_nodes, options);
 
     if options.layered.hierarchy_handling == HierarchyHandling::IncludeChildren {
         for node_id in nodes {
@@ -62,7 +67,7 @@ pub(crate) fn layout_subgraph(
     }
 
     let mut started = Instant::now();
-    let mut ir = import_graph(graph, nodes, &local_nodes, options);
+    let mut ir = import_graph(graph, scope_container, nodes, &local_nodes, options);
     report.stats.phases.push(LayoutPhaseStat {
         name: "import_ir",
         duration: started.elapsed(),
@@ -139,6 +144,24 @@ pub(crate) fn layout_subgraph(
     postprocess_cross_hierarchy_edges(graph, &compound_map, &mut report.warnings);
 
     Ok(placement.bounds)
+}
+
+fn rehome_edges_to_nearest_scope_container(graph: &mut ElkGraph, scope_container: NodeId) {
+    let edge_ids = graph.nodes[scope_container.index()].edges.clone();
+    for edge_id in edge_ids {
+        let Some(source) = graph.edges[edge_id.index()].sources.first().copied() else {
+            continue;
+        };
+        let Some(target) = graph.edges[edge_id.index()].targets.first().copied() else {
+            continue;
+        };
+        let Some(nca) = graph.nearest_common_ancestor(source.node, target.node) else {
+            continue;
+        };
+        if nca != scope_container && graph.is_ancestor(scope_container, nca) {
+            graph.set_edge_container(edge_id, nca);
+        }
+    }
 }
 
 fn count_components(ir: &crate::ir::LayeredIr) -> usize {
@@ -269,7 +292,7 @@ mod tests {
             .map(|n| n.id)
             .collect();
         let local: BTreeSet<_> = nodes.iter().copied().collect();
-        let mut ir = import_graph(graph, &nodes, &local, &options);
+        let mut ir = import_graph(graph, graph.root, &nodes, &local, &options);
         break_cycles(&mut ir);
         assign_layers(&mut ir, &options);
         normalize_edges(&mut ir, &options);
@@ -295,7 +318,7 @@ mod tests {
             .map(|n| n.id)
             .collect();
         let local: BTreeSet<_> = nodes.iter().copied().collect();
-        let mut ir = import_graph(&graph, &nodes, &local, &LayoutOptions::default());
+        let mut ir = import_graph(&graph, graph.root, &nodes, &local, &LayoutOptions::default());
         let reversed = break_cycles(&mut ir);
 
         assert!(reversed >= 1);
@@ -380,7 +403,7 @@ mod tests {
             .map(|n| n.id)
             .collect();
         let local: BTreeSet<_> = nodes.iter().copied().collect();
-        let mut ir = import_graph(&graph, &nodes, &local, &options);
+        let mut ir = import_graph(&graph, graph.root, &nodes, &local, &options);
         break_cycles(&mut ir);
         assign_layers(&mut ir, &options);
         normalize_edges(&mut ir, &options);
@@ -450,7 +473,7 @@ mod tests {
         ] {
             let mut options = LayoutOptions::default();
             options.layered.direction = direction;
-            let mut ir = import_graph(&graph, &nodes, &local, &options);
+            let mut ir = import_graph(&graph, graph.root, &nodes, &local, &options);
             break_cycles(&mut ir);
             assign_layers(&mut ir, &options);
             normalize_edges(&mut ir, &options);
@@ -527,7 +550,7 @@ mod tests {
             .collect();
         let local: BTreeSet<_> = nodes.iter().copied().collect();
         let options = LayoutOptions::default().with_view_profile(ViewProfile::GeneralView);
-        let mut ir = import_graph(&graph, &nodes, &local, &options);
+        let mut ir = import_graph(&graph, graph.root, &nodes, &local, &options);
         break_cycles(&mut ir);
         assign_layers(&mut ir, &options);
         normalize_edges(&mut ir, &options);
@@ -598,7 +621,7 @@ mod tests {
             .collect();
         let local: BTreeSet<_> = nodes.iter().copied().collect();
         let options = LayoutOptions::default().with_view_profile(ViewProfile::GeneralView);
-        let mut ir_without = import_graph(&graph_without, &nodes, &local, &options);
+        let mut ir_without = import_graph(&graph_without, graph_without.root, &nodes, &local, &options);
         break_cycles(&mut ir_without);
         assign_layers(&mut ir_without, &options);
         normalize_edges(&mut ir_without, &options);
@@ -617,7 +640,7 @@ mod tests {
         .expect("export should route");
         assert!(routed_without >= 1);
 
-        let mut ir = import_graph(&graph_with, &nodes, &local, &options);
+        let mut ir = import_graph(&graph_with, graph_with.root, &nodes, &local, &options);
         break_cycles(&mut ir);
         assign_layers(&mut ir, &options);
         normalize_edges(&mut ir, &options);
@@ -679,7 +702,7 @@ mod tests {
             .collect();
         let local: BTreeSet<_> = nodes.iter().copied().collect();
         let options = LayoutOptions::default().with_view_profile(ViewProfile::GeneralView);
-        let mut ir = import_graph(&graph, &nodes, &local, &options);
+        let mut ir = import_graph(&graph, graph.root, &nodes, &local, &options);
         break_cycles(&mut ir);
         assign_layers(&mut ir, &options);
         normalize_edges(&mut ir, &options);
@@ -748,7 +771,7 @@ mod tests {
             .collect();
         let local: BTreeSet<_> = nodes.iter().copied().collect();
         let options = LayoutOptions::default().with_view_profile(ViewProfile::InterconnectionView);
-        let mut ir = import_graph(&graph, &nodes, &local, &options);
+        let mut ir = import_graph(&graph, graph.root, &nodes, &local, &options);
         break_cycles(&mut ir);
         assign_layers(&mut ir, &options);
         normalize_edges(&mut ir, &options);
@@ -816,7 +839,7 @@ mod tests {
             .map(|n| n.id)
             .collect();
         let local: BTreeSet<_> = nodes.iter().copied().collect();
-        let ir = import_graph(&graph, &nodes, &local, &LayoutOptions::default());
+        let ir = import_graph(&graph, graph.root, &nodes, &local, &LayoutOptions::default());
 
         assert!(
             ir.edges.is_empty(),

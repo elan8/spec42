@@ -9,7 +9,7 @@
 use std::collections::BTreeMap;
 
 use elk_core::{LayoutDirection, LayoutOptions, Point, PortSide, Rect, Size};
-use elk_graph::{EdgeEndpoint, EdgeId, ElkGraph, NodeId, ShapeGeometry};
+use elk_graph::{EdgeEndpoint, EdgeId, ElkGraph, NodeId, PropertyValue, ShapeGeometry};
 
 use crate::pipeline::util::{dedup_points, endpoint_abs_center, point_along_outward_normal};
 
@@ -27,6 +27,7 @@ pub struct CompoundRouteRecord {
 #[derive(Clone, Debug, Default)]
 pub struct CompoundRoutingMap {
     pub edges: BTreeMap<EdgeId, CompoundRouteRecord>,
+    pub temporary_ports: Vec<(NodeId, elk_graph::PortId)>,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -124,6 +125,35 @@ fn place_hierarchical_port_on_boundary(
     }
 }
 
+fn place_hierarchical_port_on_boundary_at_tangent(
+    graph: &mut ElkGraph,
+    node_id: NodeId,
+    port_id: elk_graph::PortId,
+    side: PortSide,
+    tangent: f32,
+) {
+    let n = graph.nodes[node_id.index()].geometry;
+    let p = &mut graph.ports[port_id.index()].geometry;
+    match side {
+        PortSide::North => {
+            p.x = (tangent - p.width / 2.0).clamp(0.0, (n.width - p.width).max(0.0));
+            p.y = -p.height / 2.0;
+        }
+        PortSide::South => {
+            p.x = (tangent - p.width / 2.0).clamp(0.0, (n.width - p.width).max(0.0));
+            p.y = n.height - p.height / 2.0;
+        }
+        PortSide::East => {
+            p.x = n.width - p.width / 2.0;
+            p.y = (tangent - p.height / 2.0).clamp(0.0, (n.height - p.height).max(0.0));
+        }
+        PortSide::West => {
+            p.x = -p.width / 2.0;
+            p.y = (tangent - p.height / 2.0).clamp(0.0, (n.height - p.height).max(0.0));
+        }
+    }
+}
+
 fn endpoint_identity(endpoint: EdgeEndpoint) -> EndpointIdentity {
     EndpointIdentity {
         kind: if endpoint.port.is_some() { 1 } else { 0 },
@@ -146,6 +176,7 @@ fn edge_bundle_key(graph: &ElkGraph, edge_id: EdgeId) -> Option<u32> {
 /// Returns a map of original endpoints for postprocessing.
 pub fn preprocess_cross_hierarchy_edges(
     graph: &mut ElkGraph,
+    scope_container: NodeId,
     local_nodes: &std::collections::BTreeSet<NodeId>,
     options: &LayoutOptions,
 ) -> CompoundRoutingMap {
@@ -161,13 +192,17 @@ pub fn preprocess_cross_hierarchy_edges(
     // Collect cross-hierarchy edges to avoid borrow conflicts
     let mut to_process: Vec<(EdgeId, NodeId, NodeId, EdgeEndpoint, EdgeEndpoint, Option<u32>)> =
         Vec::new();
-    for edge in &graph.edges {
+    for edge_id in graph.nodes[scope_container.index()].edges.clone() {
+        let edge = &graph.edges[edge_id.index()];
         let Some(original_source) = edge.sources.first().copied() else {
             continue;
         };
         let Some(original_target) = edge.targets.first().copied() else {
             continue;
         };
+        if graph.nearest_common_ancestor(original_source.node, original_target.node) != Some(scope_container) {
+            continue;
+        }
         let Some(effective_source) =
             elk_alg_common::graph::nearest_ancestor_in_set(graph, original_source.node, local_nodes)
         else {
@@ -192,6 +227,7 @@ pub fn preprocess_cross_hierarchy_edges(
         if is_cross_hierarchy {
             to_process.push((
                 edge.id,
+                
                 effective_source,
                 effective_target,
                 original_source,
@@ -213,6 +249,7 @@ pub fn preprocess_cross_hierarchy_edges(
     }
 
     let mut shared_ports: BTreeMap<SharedHierarchicalPortKey, elk_graph::PortId> = BTreeMap::new();
+    let mut temporary_ports = Vec::new();
 
     for (edge_id, effective_source, effective_target, original_source, original_target, bundle_key) in
         to_process
@@ -250,11 +287,13 @@ pub fn preprocess_cross_hierarchy_edges(
             *shared_ports.entry(key).or_insert_with(|| {
                 let port_id = graph.add_port(effective_source, hp_source_side, port_geom);
                 place_hierarchical_port_on_boundary(graph, effective_source, port_id, hp_source_side);
+                temporary_ports.push((effective_source, port_id));
                 port_id
             })
         } else {
             let port_id = graph.add_port(effective_source, hp_source_side, port_geom);
             place_hierarchical_port_on_boundary(graph, effective_source, port_id, hp_source_side);
+            temporary_ports.push((effective_source, port_id));
             port_id
         };
         let hp_target = if let Some(group_id) = hyperedge_group {
@@ -267,11 +306,13 @@ pub fn preprocess_cross_hierarchy_edges(
             *shared_ports.entry(key).or_insert_with(|| {
                 let port_id = graph.add_port(effective_target, hp_target_side, port_geom);
                 place_hierarchical_port_on_boundary(graph, effective_target, port_id, hp_target_side);
+                temporary_ports.push((effective_target, port_id));
                 port_id
             })
         } else {
             let port_id = graph.add_port(effective_target, hp_target_side, port_geom);
             place_hierarchical_port_on_boundary(graph, effective_target, port_id, hp_target_side);
+            temporary_ports.push((effective_target, port_id));
             port_id
         };
 
@@ -296,6 +337,7 @@ pub fn preprocess_cross_hierarchy_edges(
         );
     }
 
+    map.temporary_ports = temporary_ports;
     map
 }
 
@@ -306,6 +348,8 @@ pub fn postprocess_cross_hierarchy_edges(
     warnings: &mut Vec<String>,
 ) {
     let debug_enabled = std::env::var_os("SPEC42_ELK_DEBUG").is_some();
+    refresh_hierarchical_port_coordinates(graph, map);
+    correct_hierarchical_port_route_terminals(graph, map);
     let mut contexts = Vec::new();
     for (edge_id, record) in &map.edges {
         let routed_source_center = endpoint_abs_center(graph, record.routed_source);
@@ -482,6 +526,92 @@ pub fn postprocess_cross_hierarchy_edges(
                 start_side,
                 end_side,
             );
+        }
+    }
+}
+
+fn refresh_hierarchical_port_coordinates(graph: &mut ElkGraph, map: &CompoundRoutingMap) {
+    let mut tangent_samples: BTreeMap<elk_graph::PortId, (PortSide, NodeId, f32, usize)> =
+        BTreeMap::new();
+
+    for record in map.edges.values() {
+        for (routed_endpoint, original_endpoint) in [
+            (record.routed_source, record.original_source),
+            (record.routed_target, record.original_target),
+        ] {
+            let Some(port_id) = routed_endpoint.port else {
+                continue;
+            };
+            let side = graph.ports[port_id.index()].side;
+            let sample = endpoint_abs_center(graph, original_endpoint);
+            let tangent = match side {
+                PortSide::North | PortSide::South => {
+                    sample.x - graph.nodes[routed_endpoint.node.index()].geometry.x
+                }
+                PortSide::East | PortSide::West => {
+                    sample.y - graph.nodes[routed_endpoint.node.index()].geometry.y
+                }
+            };
+            let entry = tangent_samples
+                .entry(port_id)
+                .or_insert((side, routed_endpoint.node, 0.0, 0));
+            entry.2 += tangent;
+            entry.3 += 1;
+        }
+    }
+
+    for (port_id, (side, node_id, tangent_sum, count)) in tangent_samples {
+        if count == 0 {
+            continue;
+        }
+        let tangent = tangent_sum / count as f32;
+        place_hierarchical_port_on_boundary_at_tangent(graph, node_id, port_id, side, tangent);
+    }
+}
+
+fn correct_hierarchical_port_route_terminals(graph: &mut ElkGraph, map: &CompoundRoutingMap) {
+    for (edge_id, record) in &map.edges {
+        let section_ids = graph.edges[edge_id.index()].sections.clone();
+        if section_ids.is_empty() {
+            continue;
+        }
+
+        if let Some(port_id) = record.routed_source.port {
+            let anchor = endpoint_abs_center(graph, record.routed_source);
+            if let Some(first_section_id) = section_ids.first().copied() {
+                let section = &mut graph.edge_sections[first_section_id.index()];
+                section.start = anchor;
+                if let Some(first_bend) = section.bend_points.first_mut() {
+                    match graph.ports[port_id.index()].side {
+                        PortSide::East | PortSide::West => first_bend.y = anchor.y,
+                        PortSide::North | PortSide::South => first_bend.x = anchor.x,
+                    }
+                }
+            }
+        }
+
+        if let Some(port_id) = record.routed_target.port {
+            let anchor = endpoint_abs_center(graph, record.routed_target);
+            if let Some(last_section_id) = section_ids.last().copied() {
+                let section = &mut graph.edge_sections[last_section_id.index()];
+                section.end = anchor;
+                if let Some(last_bend) = section.bend_points.last_mut() {
+                    match graph.ports[port_id.index()].side {
+                        PortSide::East | PortSide::West => last_bend.y = anchor.y,
+                        PortSide::North | PortSide::South => last_bend.x = anchor.x,
+                    }
+                }
+            }
+        }
+    }
+    hide_temporary_hierarchical_ports(graph, map);
+}
+
+fn hide_temporary_hierarchical_ports(graph: &mut ElkGraph, map: &CompoundRoutingMap) {
+    for (_, port_id) in &map.temporary_ports {
+        if let Some(port) = graph.ports.get_mut(port_id.index()) {
+            port.properties
+                .insert("spec42.temporary_hierarchical_port", PropertyValue::Bool(true));
         }
     }
 }
@@ -1550,6 +1680,209 @@ mod tests {
             branch.iter().any(|point| point.y < sibling_rect.origin.y || point.y > sibling_rect.max_y()),
             "branch should detour outside sibling band, got {}",
             format_polyline(&branch)
+        );
+    }
+
+    #[test]
+    fn refresh_hierarchical_port_coordinates_places_north_port_from_attached_endpoint() {
+        let mut graph = ElkGraph::new();
+        let outer = graph.add_node(
+            graph.root,
+            ShapeGeometry {
+                x: 100.0,
+                y: 200.0,
+                width: 300.0,
+                height: 240.0,
+            },
+        );
+        let inner = graph.add_node(
+            outer,
+            ShapeGeometry {
+                x: 40.0,
+                y: 120.0,
+                width: 100.0,
+                height: 60.0,
+            },
+        );
+        let inner_port = graph.add_port(
+            inner,
+            PortSide::North,
+            ShapeGeometry {
+                x: 40.0,
+                y: -4.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+        let routed_port = graph.add_port(
+            outer,
+            PortSide::North,
+            ShapeGeometry {
+                x: 0.0,
+                y: 0.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+        place_hierarchical_port_on_boundary(&mut graph, outer, routed_port, PortSide::North);
+
+        let edge_id = graph.add_edge(
+            graph.root,
+            vec![EdgeEndpoint::port(inner, inner_port)],
+            vec![EdgeEndpoint::port(outer, routed_port)],
+        );
+        let map = CompoundRoutingMap {
+            edges: BTreeMap::from([(
+                edge_id,
+                CompoundRouteRecord {
+                    original_source: EdgeEndpoint::port(inner, inner_port),
+                    original_target: EdgeEndpoint::port(inner, inner_port),
+                    routed_source: EdgeEndpoint::port(outer, routed_port),
+                    routed_target: EdgeEndpoint::port(outer, routed_port),
+                    effective_source: outer,
+                    effective_target: outer,
+                },
+            )]),
+            temporary_ports: Vec::new(),
+        };
+
+        refresh_hierarchical_port_coordinates(&mut graph, &map);
+
+        let refreshed = graph.ports[routed_port.index()].geometry;
+        let expected_center_x = endpoint_abs_center(&graph, EdgeEndpoint::port(inner, inner_port)).x;
+        let actual_center_x = graph.nodes[outer.index()].geometry.x + refreshed.x + refreshed.width / 2.0;
+        assert!(
+            (actual_center_x - expected_center_x).abs() <= 1e-3,
+            "expected refreshed north port center x {expected_center_x}, got {actual_center_x}"
+        );
+    }
+
+    #[test]
+    fn correct_hierarchical_port_route_terminals_snaps_terminals_to_refreshed_anchor() {
+        let mut graph = ElkGraph::new();
+        let outer = graph.add_node(
+            graph.root,
+            ShapeGeometry {
+                x: 100.0,
+                y: 100.0,
+                width: 220.0,
+                height: 180.0,
+            },
+        );
+        let routed_port = graph.add_port(
+            outer,
+            PortSide::West,
+            ShapeGeometry {
+                x: 0.0,
+                y: 0.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+        place_hierarchical_port_on_boundary_at_tangent(
+            &mut graph,
+            outer,
+            routed_port,
+            PortSide::West,
+            120.0,
+        );
+        let edge_id = graph.add_edge(
+            graph.root,
+            vec![EdgeEndpoint::port(outer, routed_port)],
+            vec![EdgeEndpoint::node(outer)],
+        );
+        let _ = graph.add_edge_section(
+            edge_id,
+            Point::new(0.0, 0.0),
+            vec![Point::new(140.0, 80.0)],
+            Point::new(200.0, 80.0),
+        );
+        let map = CompoundRoutingMap {
+            edges: BTreeMap::from([(
+                edge_id,
+                CompoundRouteRecord {
+                    original_source: EdgeEndpoint::node(outer),
+                    original_target: EdgeEndpoint::node(outer),
+                    routed_source: EdgeEndpoint::port(outer, routed_port),
+                    routed_target: EdgeEndpoint::node(outer),
+                    effective_source: outer,
+                    effective_target: outer,
+                },
+            )]),
+            temporary_ports: Vec::new(),
+        };
+
+        correct_hierarchical_port_route_terminals(&mut graph, &map);
+
+        let section = &graph.edge_sections[graph.edges[edge_id.index()].sections[0].index()];
+        let anchor = endpoint_abs_center(&graph, EdgeEndpoint::port(outer, routed_port));
+        assert_eq!(section.start, anchor);
+        assert!((section.bend_points[0].y - anchor.y).abs() <= 1e-5);
+    }
+
+    #[test]
+    fn hide_temporary_hierarchical_ports_marks_ports_for_export_filtering() {
+        let mut graph = ElkGraph::new();
+        let node = graph.add_node(
+            graph.root,
+            ShapeGeometry {
+                x: 0.0,
+                y: 0.0,
+                width: 120.0,
+                height: 80.0,
+            },
+        );
+        let stable_port = graph.add_port(
+            node,
+            PortSide::East,
+            ShapeGeometry {
+                x: 116.0,
+                y: 16.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+        let temp_a = graph.add_port(
+            node,
+            PortSide::North,
+            ShapeGeometry {
+                x: 20.0,
+                y: -4.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+        let temp_b = graph.add_port(
+            node,
+            PortSide::South,
+            ShapeGeometry {
+                x: 80.0,
+                y: 76.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+        let map = CompoundRoutingMap {
+            edges: BTreeMap::new(),
+            temporary_ports: vec![(node, temp_a), (node, temp_b)],
+        };
+
+        hide_temporary_hierarchical_ports(&mut graph, &map);
+
+        assert_eq!(graph.nodes[node.index()].ports, vec![stable_port, temp_a, temp_b]);
+        assert_eq!(
+            graph.ports[temp_a.index()]
+                .properties
+                .get(&elk_graph::PropertyKey::from("spec42.temporary_hierarchical_port"))
+                .and_then(|value| value.as_bool()),
+            Some(true)
+        );
+        assert_eq!(
+            graph.ports[temp_b.index()]
+                .properties
+                .get(&elk_graph::PropertyKey::from("spec42.temporary_hierarchical_port"))
+                .and_then(|value| value.as_bool()),
+            Some(true)
         );
     }
 }

@@ -316,40 +316,40 @@ fn bend_complexity_error(
     let java_bends = edge_bend_counts(java_out);
     let mut shared = 0usize;
 
-    let direct_limit = match kind {
+    let rust_sig_bends = edge_bend_counts_by_signature(rust_out);
+    let java_sig_bends = edge_bend_counts_by_signature(java_out);
+    let sig_limit = match kind {
         ParityFixtureKind::Layered => 0usize,
-        ParityFixtureKind::Interconnection => 6usize,
+        ParityFixtureKind::Interconnection => 3usize,
         ParityFixtureKind::Libavoid => 3usize,
     };
-    for (id, rb) in &rust_bends {
-        if let Some(jb) = java_bends.get(id) {
+    for (sig, rb) in &rust_sig_bends {
+        if let Some(jb) = java_sig_bends.get(sig) {
             shared += 1;
             let delta = rb.abs_diff(*jb);
-            if delta > direct_limit {
+            if delta > sig_limit {
                 return Some(format!(
-                    "edge bend complexity diverged for {} edge {} (rust={}, java={}, limit={})",
-                    fixture, id, rb, jb, direct_limit
+                    "edge bend complexity diverged for {} signature {} (rust={}, java={}, limit={})",
+                    fixture, sig, rb, jb, sig_limit
                 ));
             }
         }
     }
 
     if shared == 0 {
-        let rust_sig_bends = edge_bend_counts_by_signature(rust_out);
-        let java_sig_bends = edge_bend_counts_by_signature(java_out);
-        let sig_limit = match kind {
+        let direct_limit = match kind {
             ParityFixtureKind::Layered => 0usize,
-            ParityFixtureKind::Interconnection => 3usize,
+            ParityFixtureKind::Interconnection => 6usize,
             ParityFixtureKind::Libavoid => 3usize,
         };
-        for (sig, rb) in &rust_sig_bends {
-            if let Some(jb) = java_sig_bends.get(sig) {
+        for (id, rb) in &rust_bends {
+            if let Some(jb) = java_bends.get(id) {
                 shared += 1;
                 let delta = rb.abs_diff(*jb);
-                if delta > sig_limit {
+                if delta > direct_limit {
                     return Some(format!(
-                        "edge bend complexity diverged for {} signature {} (rust={}, java={}, limit={})",
-                        fixture, sig, rb, jb, sig_limit
+                        "edge bend complexity diverged for {} edge {} (rust={}, java={}, limit={})",
+                        fixture, id, rb, jb, direct_limit
                     ));
                 }
             }

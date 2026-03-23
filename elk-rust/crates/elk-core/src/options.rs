@@ -202,7 +202,7 @@ impl Default for LayeredOptions {
             preferred_connector_lanes: 3,
             endpoint_fanout: false,
             merge_layers: false,
-            minor_axis_bk: false,
+            minor_axis_bk: true,
             anchor_side_by_delta: false,
         }
     }

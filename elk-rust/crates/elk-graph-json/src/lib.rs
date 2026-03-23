@@ -327,10 +327,22 @@ pub fn export_elk_graph_to_value(graph: &ElkGraph) -> Value {
                 Value::Array(n.labels.iter().copied().map(|l| export_label(graph, l)).collect()),
             );
         }
-        if !n.ports.is_empty() {
+        let visible_ports: Vec<_> = n
+            .ports
+            .iter()
+            .copied()
+            .filter(|port_id| {
+                !graph.ports[port_id.index()]
+                    .properties
+                    .get(&elk_graph::PropertyKey::from("spec42.temporary_hierarchical_port"))
+                    .and_then(|value| value.as_bool())
+                    .unwrap_or(false)
+            })
+            .collect();
+        if !visible_ports.is_empty() {
             obj.insert(
                 "ports".to_string(),
-                Value::Array(n.ports.iter().copied().map(|p| export_port(graph, p)).collect()),
+                Value::Array(visible_ports.into_iter().map(|p| export_port(graph, p)).collect()),
             );
         }
         if !n.edges.is_empty() {

@@ -60,10 +60,53 @@ fn reorder_layer(ir: &mut LayeredIr, layer_index: usize, incoming: bool) {
         left_weight
             .partial_cmp(right_weight)
             .unwrap_or(Ordering::Equal)
+            .then_with(|| {
+                port_order_tie_break(ir, *left_node, incoming)
+                    .cmp(&port_order_tie_break(ir, *right_node, incoming))
+            })
             .then_with(|| node_sort_key(ir, *left_node).cmp(&node_sort_key(ir, *right_node)))
     });
     ir.layers[layer_index] = weights.into_iter().map(|(node_id, _)| node_id).collect();
     refresh_orders(ir);
+}
+
+fn port_order_tie_break(ir: &LayeredIr, node_id: IrNodeId, incoming: bool) -> (usize, usize) {
+    let IrNodeKind::Real(real) = ir.nodes[node_id].kind else {
+        return (usize::MAX, usize::MAX);
+    };
+    let mut orders = Vec::new();
+    for edge in &ir.edges {
+        let endpoint = if incoming && edge.effective_target == real {
+            edge.routed_source.port.and_then(|port_id| port_order_for_endpoint(ir, edge.routed_source.node, port_id))
+        } else if !incoming && edge.effective_source == real {
+            edge.routed_target.port.and_then(|port_id| port_order_for_endpoint(ir, edge.routed_target.node, port_id))
+        } else {
+            None
+        };
+        if let Some(order) = endpoint {
+            orders.push(order);
+        }
+    }
+    if orders.is_empty() {
+        (usize::MAX, usize::MAX)
+    } else {
+        let min = *orders.iter().min().unwrap_or(&usize::MAX);
+        let avg = orders.iter().sum::<usize>() / orders.len();
+        (min, avg)
+    }
+}
+
+fn port_order_for_endpoint(
+    ir: &LayeredIr,
+    node: elk_graph::NodeId,
+    port_id: elk_graph::PortId,
+) -> Option<usize> {
+    let node_id = ir.real_to_ir.get(&node).copied()?;
+    ir.nodes[node_id]
+        .ports
+        .iter()
+        .find(|port| port.port_id == port_id)
+        .map(|port| port.order)
 }
 
 fn node_sort_key(ir: &LayeredIr, node_id: IrNodeId) -> (usize, usize, usize) {
@@ -87,6 +130,10 @@ fn node_sort_key(ir: &LayeredIr, node_id: IrNodeId) -> (usize, usize, usize) {
 }
 
 fn barycenter(ir: &LayeredIr, node_id: IrNodeId, incoming: bool) -> f32 {
+    if let Some(port_weight) = port_weighted_barycenter(ir, node_id, incoming) {
+        return port_weight;
+    }
+
     let mut neighbors = Vec::new();
     for edge in &ir.normalized_edges {
         if incoming && edge.to == node_id {
@@ -99,6 +146,43 @@ fn barycenter(ir: &LayeredIr, node_id: IrNodeId, incoming: bool) -> f32 {
         return ir.nodes[node_id].model_order as f32;
     }
     neighbors.iter().sum::<f32>() / neighbors.len() as f32
+}
+
+fn port_weighted_barycenter(ir: &LayeredIr, node_id: IrNodeId, incoming: bool) -> Option<f32> {
+    let IrNodeKind::Real(real) = ir.nodes[node_id].kind else {
+        return None;
+    };
+
+    let mut neighbors = Vec::new();
+    for edge in &ir.edges {
+        if incoming && edge.effective_target == real {
+            let neighbor = ir.real_to_ir.get(&edge.effective_source).copied()?;
+            let base = ir.nodes[neighbor].order as f32;
+            let offset = edge
+                .routed_source
+                .port
+                .and_then(|port_id| port_order_for_endpoint(ir, edge.routed_source.node, port_id))
+                .map(|order| order as f32 / 1000.0)
+                .unwrap_or(0.0);
+            neighbors.push(base + offset);
+        } else if !incoming && edge.effective_source == real {
+            let neighbor = ir.real_to_ir.get(&edge.effective_target).copied()?;
+            let base = ir.nodes[neighbor].order as f32;
+            let offset = edge
+                .routed_target
+                .port
+                .and_then(|port_id| port_order_for_endpoint(ir, edge.routed_target.node, port_id))
+                .map(|order| order as f32 / 1000.0)
+                .unwrap_or(0.0);
+            neighbors.push(base + offset);
+        }
+    }
+
+    if neighbors.is_empty() {
+        None
+    } else {
+        Some(neighbors.iter().sum::<f32>() / neighbors.len() as f32)
+    }
 }
 
 fn refresh_orders(ir: &mut LayeredIr) {

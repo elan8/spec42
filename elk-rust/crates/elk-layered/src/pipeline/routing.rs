@@ -673,6 +673,9 @@ fn layout_ports(graph: &mut ElkGraph, node_id: NodeId, options: &LayoutOptions) 
     let respect_port_order = node_options
         .respect_port_order
         .unwrap_or(options.layered.respect_port_order);
+    let port_constraint = node_options
+        .port_constraint
+        .unwrap_or(elk_core::PortConstraint::Free);
 
     // Group by side.
     let mut grouped: std::collections::BTreeMap<PortSide, Vec<PortId>> = std::collections::BTreeMap::new();
@@ -683,10 +686,8 @@ fn layout_ports(graph: &mut ElkGraph, node_id: NodeId, options: &LayoutOptions) 
 
     for (side, mut ports) in grouped {
         if respect_port_order {
-            ports.sort_by_key(|pid| {
-                decode_layout_from_props(&graph.ports[pid.index()].properties)
-                    .model_order
-                    .unwrap_or(pid.index())
+            ports.sort_by(|left, right| {
+                compare_ports_for_layout(graph, *left, *right, side, port_constraint)
             });
         }
         let count = ports.len().max(1) as f32;
@@ -699,18 +700,18 @@ fn layout_ports(graph: &mut ElkGraph, node_id: NodeId, options: &LayoutOptions) 
             let origin = match side {
                 PortSide::North => Point::new(
                     node_width * fraction - size.width / 2.0,
-                    -size.height / 2.0,
+                    -size.height,
                 ),
                 PortSide::South => Point::new(
                     node_width * fraction - size.width / 2.0,
-                    node_height - size.height / 2.0,
+                    node_height,
                 ),
                 PortSide::East => Point::new(
-                    node_width - size.width / 2.0,
+                    node_width,
                     node_height * fraction - size.height / 2.0,
                 ),
                 PortSide::West => Point::new(
-                    -size.width / 2.0,
+                    -size.width,
                     node_height * fraction - size.height / 2.0,
                 ),
             };
@@ -860,6 +861,24 @@ fn build_orthogonal_route_path(
 ) -> Result<Vec<Point>, LayoutError> {
     let source_side = endpoint_side_for_routing(graph, source_endpoint, end, options.layered.direction, true);
     let target_side = endpoint_side_for_routing(graph, target_endpoint, start, options.layered.direction, false);
+    let unslotted_start = endpoint_anchor_for_routing(
+        graph,
+        source_endpoint,
+        source_side,
+        0,
+    );
+    let unslotted_end = endpoint_anchor_for_routing(
+        graph,
+        target_endpoint,
+        target_side,
+        0,
+    );
+    if (unslotted_start.x - unslotted_end.x).abs() <= f32::EPSILON
+        || (unslotted_start.y - unslotted_end.y).abs() <= f32::EPSILON
+    {
+        return Ok(vec![unslotted_start, unslotted_end]);
+    }
+
     let start = endpoint_anchor_for_routing(
         graph,
         source_endpoint,
@@ -874,6 +893,17 @@ fn build_orthogonal_route_path(
     );
     if (start.x - end.x).abs() <= f32::EPSILON || (start.y - end.y).abs() <= f32::EPSILON {
         return Ok(vec![start, end]);
+    }
+
+    if let Some(points) = build_java_style_layered_route(
+        start,
+        end,
+        source_side,
+        target_side,
+        lane,
+        options,
+    ) {
+        return Ok(points);
     }
 
     let source_slot = endpoint_slot(graph, edge.original_edge, true);
@@ -891,13 +921,27 @@ fn build_orthogonal_route_path(
         tangent_route_offset(target_endpoint, target_slot),
     );
 
-    let shared_fanout_split = graph.edges[edge.original_edge.index()]
-        .properties
+    let edge_props = &graph.edges[edge.original_edge.index()].properties;
+    let shared_fanout_split = edge_props
         .get(&elk_graph::PropertyKey::from(SHARED_FANOUT_SPLIT_KEY))
         .and_then(|value| value.as_f64())
         .map(|value| value as f32);
-    let trunk = shared_fanout_split
-        .and_then(|split| build_shared_fanout_trunk(route_start, route_end, source_side, target_side, split))
+    let source_split = edge_props
+        .get(&elk_graph::PropertyKey::from(SHARED_SOURCE_SPLIT_KEY))
+        .and_then(|value| value.as_f64())
+        .map(|value| value as f32);
+    let target_split = edge_props
+        .get(&elk_graph::PropertyKey::from(SHARED_TARGET_SPLIT_KEY))
+        .and_then(|value| value.as_f64())
+        .map(|value| value as f32);
+    let trunk = build_dual_shared_fanout_trunk(
+        route_start,
+        route_end,
+        source_side,
+        target_side,
+        source_split.or(shared_fanout_split),
+        target_split,
+    )
         .unwrap_or_else(|| build_layered_orthogonal_trunk(route_start, route_end, lane, options));
     let route_points = std::iter::once(route_start)
         .chain(trunk)
@@ -914,6 +958,53 @@ fn build_orthogonal_route_path(
         route_end,
     )
     .map_err(LayoutError::Routing)
+}
+
+fn build_java_style_layered_route(
+    start: Point,
+    end: Point,
+    source_side: PortSide,
+    target_side: PortSide,
+    lane: i32,
+    options: &LayoutOptions,
+) -> Option<Vec<Point>> {
+    match (source_side, target_side) {
+        (PortSide::East, PortSide::West) | (PortSide::West, PortSide::East) => {
+            let trunk_x = ((start.x + end.x) * 0.5)
+                + lane as f32 * options.layered.spacing.edge_spacing.max(1.0);
+            let min_x = start.x.min(end.x);
+            let max_x = start.x.max(end.x);
+            let trunk_x = trunk_x.clamp(min_x, max_x);
+            let bends = normalize_bends(
+                vec![Point::new(trunk_x, start.y), Point::new(trunk_x, end.y)],
+                false,
+            );
+            Some(
+                std::iter::once(start)
+                    .chain(bends)
+                    .chain(std::iter::once(end))
+                    .collect(),
+            )
+        }
+        (PortSide::South, PortSide::North) | (PortSide::North, PortSide::South) => {
+            let trunk_y = ((start.y + end.y) * 0.5)
+                + lane as f32 * options.layered.spacing.edge_spacing.max(1.0);
+            let min_y = start.y.min(end.y);
+            let max_y = start.y.max(end.y);
+            let trunk_y = trunk_y.clamp(min_y, max_y);
+            let bends = normalize_bends(
+                vec![Point::new(start.x, trunk_y), Point::new(end.x, trunk_y)],
+                false,
+            );
+            Some(
+                std::iter::once(start)
+                    .chain(bends)
+                    .chain(std::iter::once(end))
+                    .collect(),
+            )
+        }
+        _ => None,
+    }
 }
 
 fn endpoint_slot(graph: &ElkGraph, edge_id: EdgeId, is_source: bool) -> i32 {
@@ -961,6 +1052,139 @@ fn build_shared_fanout_trunk(
 ) -> Option<Vec<Point>> {
     build_shared_orthogonal_trunk(start, end, source_side, target_side, split)
         .map(|bends| normalize_bends(bends, false))
+}
+
+fn compare_ports_for_layout(
+    graph: &ElkGraph,
+    left: PortId,
+    right: PortId,
+    side: PortSide,
+    port_constraint: elk_core::PortConstraint,
+) -> std::cmp::Ordering {
+    let left_port = &graph.ports[left.index()];
+    let right_port = &graph.ports[right.index()];
+    let left_opts = decode_layout_from_props(&left_port.properties);
+    let right_opts = decode_layout_from_props(&right_port.properties);
+
+    if matches!(port_constraint, elk_core::PortConstraint::FixedOrder) {
+        let left_index = left_opts.model_order;
+        let right_index = right_opts.model_order;
+        if let (Some(left_index), Some(right_index)) = (left_index, right_index) {
+            let cmp = left_index.cmp(&right_index);
+            if cmp != std::cmp::Ordering::Equal {
+                return cmp;
+            }
+        }
+    }
+
+    let cmp = match side {
+        PortSide::North | PortSide::South => left_port
+            .geometry
+            .x
+            .partial_cmp(&right_port.geometry.x)
+            .unwrap_or(std::cmp::Ordering::Equal),
+        PortSide::East | PortSide::West => left_port
+            .geometry
+            .y
+            .partial_cmp(&right_port.geometry.y)
+            .unwrap_or(std::cmp::Ordering::Equal),
+    };
+    let cmp = if matches!(side, PortSide::South | PortSide::West) {
+        cmp.reverse()
+    } else {
+        cmp
+    };
+    if cmp != std::cmp::Ordering::Equal {
+        cmp
+    } else {
+        left.index().cmp(&right.index())
+    }
+}
+
+fn build_dual_shared_fanout_trunk(
+    start: Point,
+    end: Point,
+    source_side: PortSide,
+    target_side: PortSide,
+    source_split: Option<f32>,
+    target_split: Option<f32>,
+) -> Option<Vec<Point>> {
+    match (source_side, target_side) {
+        (PortSide::East, PortSide::West) | (PortSide::West, PortSide::East) => {
+            build_dual_shared_horizontal_trunk(start, end, source_split, target_split)
+        }
+        (PortSide::South, PortSide::North) | (PortSide::North, PortSide::South) => {
+            build_dual_shared_vertical_trunk(start, end, source_split, target_split)
+        }
+        _ => source_split
+            .and_then(|split| build_shared_fanout_trunk(start, end, source_side, target_side, split)),
+    }
+}
+
+fn build_dual_shared_horizontal_trunk(
+    start: Point,
+    end: Point,
+    source_split: Option<f32>,
+    target_split: Option<f32>,
+) -> Option<Vec<Point>> {
+    let min_x = start.x.min(end.x);
+    let max_x = start.x.max(end.x);
+    let valid_split = |split: f32| split > min_x && split < max_x;
+    let source_split = source_split.filter(|split| valid_split(*split));
+    let target_split = target_split.filter(|split| valid_split(*split));
+
+    match (source_split, target_split) {
+        (None, None) => None,
+        (Some(split), None) => Some(normalize_bends(
+            vec![Point::new(split, start.y), Point::new(split, end.y)],
+            false,
+        )),
+        (None, Some(split)) => Some(normalize_bends(
+            vec![Point::new(split, start.y), Point::new(split, end.y)],
+            false,
+        )),
+        (Some(source_split), Some(target_split)) => Some(normalize_bends(
+            vec![
+                Point::new(source_split, start.y),
+                Point::new(target_split, start.y),
+                Point::new(target_split, end.y),
+            ],
+            false,
+        )),
+    }
+}
+
+fn build_dual_shared_vertical_trunk(
+    start: Point,
+    end: Point,
+    source_split: Option<f32>,
+    target_split: Option<f32>,
+) -> Option<Vec<Point>> {
+    let min_y = start.y.min(end.y);
+    let max_y = start.y.max(end.y);
+    let valid_split = |split: f32| split > min_y && split < max_y;
+    let source_split = source_split.filter(|split| valid_split(*split));
+    let target_split = target_split.filter(|split| valid_split(*split));
+
+    match (source_split, target_split) {
+        (None, None) => None,
+        (Some(split), None) => Some(normalize_bends(
+            vec![Point::new(start.x, split), Point::new(end.x, split)],
+            false,
+        )),
+        (None, Some(split)) => Some(normalize_bends(
+            vec![Point::new(start.x, split), Point::new(end.x, split)],
+            false,
+        )),
+        (Some(source_split), Some(target_split)) => Some(normalize_bends(
+            vec![
+                Point::new(start.x, source_split),
+                Point::new(start.x, target_split),
+                Point::new(end.x, target_split),
+            ],
+            false,
+        )),
+    }
 }
 
 fn tangent_route_offset(endpoint: elk_graph::EdgeEndpoint, slot: i32) -> f32 {
@@ -1667,7 +1891,7 @@ mod tests {
             ..LayoutOptions::default()
         };
         let local_nodes = BTreeSet::from([source_left, source_right, target]);
-        let ir = import_graph(&graph, &[source_left, source_right, target], &local_nodes, &options);
+        let ir = import_graph(&graph, graph.root, &[source_left, source_right, target], &local_nodes, &options);
 
         assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
 
@@ -1730,7 +1954,7 @@ mod tests {
             ..LayoutOptions::default()
         };
         let local_nodes = BTreeSet::from([source_left, source_right, target]);
-        let ir = import_graph(&graph, &[source_left, source_right, target], &local_nodes, &options);
+        let ir = import_graph(&graph, graph.root, &[source_left, source_right, target], &local_nodes, &options);
 
         assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
 
@@ -1830,7 +2054,7 @@ mod tests {
             ..LayoutOptions::default()
         };
         let local_nodes = BTreeSet::from([source_left, source_right, target]);
-        let ir = import_graph(&graph, &[source_left, source_right, target], &local_nodes, &options);
+        let ir = import_graph(&graph, graph.root, &[source_left, source_right, target], &local_nodes, &options);
 
         assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
 
@@ -1868,6 +2092,92 @@ mod tests {
         let target_port_center = endpoint_abs_center(&graph, right_target);
         assert_eq!(left_path.last().copied().unwrap(), target_port_center);
         assert_eq!(right_path.last().copied().unwrap(), target_port_center);
+    }
+
+    #[test]
+    fn build_orthogonal_route_path_prefers_unslotted_straight_segment() {
+        let mut graph = ElkGraph::new();
+        let source = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 12.0, y: 33.666666, width: 140.0, height: 120.0 },
+        );
+        let target = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 192.0, y: 12.0, width: 140.0, height: 120.0 },
+        );
+
+        let source_port = graph.add_port(
+            source,
+            PortSide::East,
+            elk_graph::ShapeGeometry { x: 140.0, y: 33.333333, width: 10.0, height: 10.0 },
+        );
+        graph.ports[source_port.index()]
+            .properties
+            .insert("elk.port.index", elk_graph::PropertyValue::Int(2));
+        let target_port = graph.add_port(
+            target,
+            PortSide::West,
+            elk_graph::ShapeGeometry { x: -10.0, y: 55.0, width: 10.0, height: 10.0 },
+        );
+
+        let edge_id = graph.add_edge(
+            graph.root,
+            vec![elk_graph::EdgeEndpoint::port(source, source_port)],
+            vec![elk_graph::EdgeEndpoint::port(target, target_port)],
+        );
+        graph.edges[edge_id.index()].properties.insert(
+            SHARED_TARGET_SPLIT_KEY,
+            elk_graph::PropertyValue::Float(172.0),
+        );
+        graph.edges[edge_id.index()].properties.insert(
+            "spec42.endpoint.slot.source",
+            elk_graph::PropertyValue::Int(-1),
+        );
+        graph.edges[edge_id.index()].properties.insert(
+            "spec42.endpoint.slot.target",
+            elk_graph::PropertyValue::Int(0),
+        );
+
+        let ir_edge = IrEdge {
+            original_edge: edge_id,
+            source: elk_graph::EdgeEndpoint::port(source, source_port),
+            target: elk_graph::EdgeEndpoint::port(target, target_port),
+            routed_source: elk_graph::EdgeEndpoint::port(source, source_port),
+            routed_target: elk_graph::EdgeEndpoint::port(target, target_port),
+            effective_source: source,
+            effective_target: target,
+            reversed: false,
+            label_ids: Vec::new(),
+            label_size: Size::default(),
+            chain: Vec::new(),
+            label_placeholder: None,
+            self_loop: false,
+            model_order: 0,
+            bundle_key: None,
+        };
+
+        let options = LayoutOptions::default();
+        let source_endpoint = graph.edges[edge_id.index()].sources[0];
+        let target_endpoint = graph.edges[edge_id.index()].targets[0];
+        let path = build_orthogonal_route_path(
+            &graph,
+            &ir_edge,
+            source_endpoint,
+            target_endpoint,
+            endpoint_abs_center(&graph, source_endpoint),
+            endpoint_abs_center(&graph, target_endpoint),
+            0,
+            &options,
+        )
+        .unwrap();
+
+        assert_eq!(
+            path,
+            vec![
+                endpoint_anchor_for_routing(&graph, source_endpoint, PortSide::East, 0),
+                endpoint_anchor_for_routing(&graph, target_endpoint, PortSide::West, 0),
+            ]
+        );
     }
 
     #[test]
@@ -1919,7 +2229,7 @@ mod tests {
             ..LayoutOptions::default()
         };
         let local_nodes = BTreeSet::from([source, left, center, right]);
-        let ir = import_graph(&graph, &[source, left, center, right], &local_nodes, &options);
+        let ir = import_graph(&graph, graph.root, &[source, left, center, right], &local_nodes, &options);
 
         assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
         assign_shared_fanout_splits(&mut graph, &ir, &local_nodes, &options);
@@ -1984,7 +2294,7 @@ mod tests {
             ..LayoutOptions::default()
         };
         let local_nodes = BTreeSet::from([left, center, right, target]);
-        let ir = import_graph(&graph, &[left, center, right, target], &local_nodes, &options);
+        let ir = import_graph(&graph, graph.root, &[left, center, right, target], &local_nodes, &options);
 
         assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
         assign_shared_fanout_splits(&mut graph, &ir, &local_nodes, &options);
@@ -1998,5 +2308,109 @@ mod tests {
                     .is_some()
             );
         }
+    }
+
+    #[test]
+    fn compare_ports_for_layout_prefers_fixed_order_index() {
+        let mut graph = ElkGraph::new();
+        let node = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 0.0, y: 0.0, width: 140.0, height: 120.0 },
+        );
+        let later = graph.add_port(
+            node,
+            PortSide::East,
+            elk_graph::ShapeGeometry { x: 140.0, y: 30.0, width: 10.0, height: 10.0 },
+        );
+        graph.ports[later.index()]
+            .properties
+            .insert("elk.port.index", elk_graph::PropertyValue::Int(2));
+
+        let earlier = graph.add_port(
+            node,
+            PortSide::East,
+            elk_graph::ShapeGeometry { x: 140.0, y: 80.0, width: 10.0, height: 10.0 },
+        );
+        graph.ports[earlier.index()]
+            .properties
+            .insert("elk.port.index", elk_graph::PropertyValue::Int(0));
+
+        assert_eq!(
+            compare_ports_for_layout(
+                &graph,
+                later,
+                earlier,
+                PortSide::East,
+                elk_core::PortConstraint::FixedOrder,
+            ),
+            std::cmp::Ordering::Greater
+        );
+    }
+
+    #[test]
+    fn compare_ports_for_layout_reverses_west_and_south_position_order() {
+        let mut graph = ElkGraph::new();
+        let node = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 0.0, y: 0.0, width: 140.0, height: 120.0 },
+        );
+        let upper = graph.add_port(
+            node,
+            PortSide::West,
+            elk_graph::ShapeGeometry { x: -10.0, y: 20.0, width: 10.0, height: 10.0 },
+        );
+        let lower = graph.add_port(
+            node,
+            PortSide::West,
+            elk_graph::ShapeGeometry { x: -10.0, y: 80.0, width: 10.0, height: 10.0 },
+        );
+
+        assert_eq!(
+            compare_ports_for_layout(
+                &graph,
+                upper,
+                lower,
+                PortSide::West,
+                elk_core::PortConstraint::FixedPosition,
+            ),
+            std::cmp::Ordering::Greater
+        );
+    }
+
+    #[test]
+    fn dual_shared_horizontal_trunk_uses_target_split_for_aligned_edge() {
+        let bends = build_dual_shared_fanout_trunk(
+            Point::new(162.0, 72.0),
+            Point::new(172.0, 72.0),
+            PortSide::East,
+            PortSide::West,
+            None,
+            Some(168.0),
+        )
+        .unwrap();
+
+        assert_eq!(bends, vec![Point::new(168.0, 72.0)]);
+    }
+
+    #[test]
+    fn dual_shared_horizontal_trunk_combines_source_and_target_splits() {
+        let bends = build_dual_shared_fanout_trunk(
+            Point::new(162.0, 115.0),
+            Point::new(172.0, 72.0),
+            PortSide::East,
+            PortSide::West,
+            Some(166.0),
+            Some(170.0),
+        )
+        .unwrap();
+
+        assert_eq!(
+            bends,
+            vec![
+                Point::new(166.0, 115.0),
+                Point::new(170.0, 115.0),
+                Point::new(170.0, 72.0),
+            ]
+        );
     }
 }

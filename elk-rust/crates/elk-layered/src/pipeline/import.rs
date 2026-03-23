@@ -9,6 +9,7 @@ use crate::pipeline::util::{label_size, node_abs_origin};
 
 pub(crate) fn import_graph(
     graph: &ElkGraph,
+    scope_container: NodeId,
     nodes: &[NodeId],
     local_nodes: &BTreeSet<NodeId>,
     options: &LayoutOptions,
@@ -39,14 +40,15 @@ pub(crate) fn import_graph(
                 let port_layout = decode_layout_from_props(&port.properties);
                 let port_options = port_layout.inherit_from(&node_options);
                 IrPortConstraint {
+                    port_id: *port_id,
                     side: port.side,
                     order: if port_options
                         .respect_port_order
                         .unwrap_or(options.layered.respect_port_order)
                     {
-                        index
-                    } else {
                         port_options.model_order.unwrap_or(index)
+                    } else {
+                        index
                     },
                     constraint: port_options
                         .port_constraint
@@ -72,13 +74,17 @@ pub(crate) fn import_graph(
         });
     }
 
-    for (edge_order, edge) in graph.edges.iter().enumerate() {
+    for (edge_order, edge_id) in graph.nodes[scope_container.index()].edges.iter().copied().enumerate() {
+        let edge = &graph.edges[edge_id.index()];
         let Some(source) = edge.sources.first().copied() else {
             continue;
         };
         let Some(target) = edge.targets.first().copied() else {
             continue;
         };
+        if graph.nearest_common_ancestor(source.node, target.node) != Some(scope_container) {
+            continue;
+        }
         let Some(effective_source) =
             elk_alg_common::graph::nearest_ancestor_in_set(graph, source.node, local_nodes)
         else {
@@ -103,7 +109,7 @@ pub(crate) fn import_graph(
         let edge_layout = decode_layout_from_props(&edge.properties);
         let edge_options = edge_layout.inherit_from(&graph_defaults);
         ir.edges.push(IrEdge {
-            original_edge: edge.id,
+            original_edge: edge_id,
             source,
             target,
             routed_source,
@@ -165,3 +171,75 @@ fn combined_port_label_size(graph: &ElkGraph, port_ids: &[PortId]) -> Size {
 }
 
 // moved to `elk-alg-common`
+
+#[cfg(test)]
+mod tests {
+    use std::collections::BTreeSet;
+
+    use elk_core::{LayoutDirection, LayoutOptions, PortSide};
+    use elk_graph::{ElkGraph, PropertyValue, ShapeGeometry};
+
+    use super::import_graph;
+
+    #[test]
+    fn import_graph_prefers_explicit_port_index_when_order_is_respected() {
+        let mut graph = ElkGraph::new();
+        let node = graph.add_node(
+            graph.root,
+            ShapeGeometry {
+                x: 0.0,
+                y: 0.0,
+                width: 140.0,
+                height: 120.0,
+            },
+        );
+        let first = graph.add_port(
+            node,
+            PortSide::East,
+            ShapeGeometry {
+                x: 140.0,
+                y: 20.0,
+                width: 10.0,
+                height: 10.0,
+            },
+        );
+        let second = graph.add_port(
+            node,
+            PortSide::East,
+            ShapeGeometry {
+                x: 140.0,
+                y: 80.0,
+                width: 10.0,
+                height: 10.0,
+            },
+        );
+        graph.ports[first.index()]
+            .properties
+            .insert("elk.port.index", PropertyValue::Int(2));
+        graph.ports[second.index()]
+            .properties
+            .insert("elk.port.index", PropertyValue::Int(0));
+
+        let options = LayoutOptions {
+            layered: elk_core::LayeredOptions {
+                direction: LayoutDirection::LeftToRight,
+                respect_port_order: true,
+                ..LayoutOptions::default().layered
+            },
+            ..LayoutOptions::default()
+        };
+        let local_nodes = BTreeSet::from([node]);
+        let ir = import_graph(&graph, graph.root, &[node], &local_nodes, &options);
+        let east_ports = ir.nodes[ir.real_to_ir[&node]]
+            .ports
+            .iter()
+            .filter(|port| port.side == PortSide::East)
+            .collect::<Vec<_>>();
+
+        assert_eq!(east_ports.len(), 2);
+        assert_eq!(east_ports[0].port_id, first);
+        assert_eq!(east_ports[0].order, 2);
+        assert_eq!(east_ports[1].port_id, second);
+        assert_eq!(east_ports[1].order, 0);
+    }
+}
