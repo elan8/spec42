@@ -1196,7 +1196,8 @@ fn assign_shared_fanout_splits(
     local_nodes: &BTreeSet<NodeId>,
     options: &LayoutOptions,
 ) {
-    let mut groups: BTreeMap<FanoutGroupKey, Vec<(EdgeId, Point, Point)>> = BTreeMap::new();
+    let mut source_groups: BTreeMap<FanoutGroupKey, Vec<(EdgeId, Point, Point)>> = BTreeMap::new();
+    let mut target_groups: BTreeMap<FanoutGroupKey, Vec<(EdgeId, Point, Point)>> = BTreeMap::new();
 
     for edge in &ir.edges {
         if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
@@ -1230,7 +1231,7 @@ fn assign_shared_fanout_splits(
         let source_lead = point_along_outward_normal(start, source_side, terminal_lead_for_slot(source_slot));
         let target_lead = point_along_outward_normal(end, target_side, terminal_lead_for_slot(target_slot));
 
-        groups
+        source_groups
             .entry(FanoutGroupKey {
                 endpoint_kind: if source_endpoint.port.is_some() { 1 } else { 0 },
                 endpoint_index: source_endpoint.port.map(|p| p.index()).unwrap_or(source_endpoint.node.index()),
@@ -1242,8 +1243,31 @@ fn assign_shared_fanout_splits(
             })
             .or_default()
             .push((edge.original_edge, source_lead, target_lead));
+
+        target_groups
+            .entry(FanoutGroupKey {
+                endpoint_kind: if target_endpoint.port.is_some() { 1 } else { 0 },
+                endpoint_index: target_endpoint.port.map(|p| p.index()).unwrap_or(target_endpoint.node.index()),
+                source_side: side_ordinal(source_side),
+                target_side: side_ordinal(target_side),
+                bundle_key: edge.bundle_key,
+                source_layer: ir.nodes[ir.real_to_ir[&edge.effective_source]].layer,
+                target_layer: ir.nodes[ir.real_to_ir[&edge.effective_target]].layer,
+            })
+            .or_default()
+            .push((edge.original_edge, source_lead, target_lead));
     }
 
+    assign_group_shared_split(graph, source_groups, options, false);
+    assign_group_shared_split(graph, target_groups, options, true);
+}
+
+fn assign_group_shared_split(
+    graph: &mut ElkGraph,
+    groups: BTreeMap<FanoutGroupKey, Vec<(EdgeId, Point, Point)>>,
+    options: &LayoutOptions,
+    preserve_existing: bool,
+) {
     for (group_key, edges) in groups.into_iter() {
         if edges.len() <= 1 {
             continue;
@@ -1255,6 +1279,15 @@ fn assign_shared_fanout_splits(
             group_key.target_side,
         );
         for (edge_id, source_lead, target_lead) in edges {
+            if preserve_existing
+                && graph.edges[edge_id.index()]
+                    .properties
+                    .get(&elk_graph::PropertyKey::from(SHARED_FANOUT_SPLIT_KEY))
+                    .and_then(|value| value.as_f64())
+                    .is_some()
+            {
+                continue;
+            }
             if is_valid_shared_split(source_lead, target_lead, split, group_key.source_side, group_key.target_side) {
                 graph.edges[edge_id.index()]
                     .properties
@@ -1898,6 +1931,71 @@ mod tests {
         };
         let local_nodes = BTreeSet::from([source, left, center, right]);
         let ir = import_graph(&graph, &[source, left, center, right], &local_nodes, &options);
+
+        assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
+        assign_shared_fanout_splits(&mut graph, &ir, &local_nodes, &options);
+
+        for edge_id in [e1, e2, e3] {
+            assert!(
+                graph.edges[edge_id.index()]
+                    .properties
+                    .get(&elk_graph::PropertyKey::from(SHARED_FANOUT_SPLIT_KEY))
+                    .and_then(|value| value.as_f64())
+                    .is_some()
+            );
+        }
+    }
+
+    #[test]
+    fn assign_shared_fanout_splits_marks_common_target_group() {
+        let mut graph = ElkGraph::new();
+        let left = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 0.0, y: 0.0, width: 80.0, height: 40.0 },
+        );
+        let center = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 100.0, y: 0.0, width: 80.0, height: 40.0 },
+        );
+        let right = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 200.0, y: 0.0, width: 80.0, height: 40.0 },
+        );
+        let target = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 100.0, y: 120.0, width: 80.0, height: 40.0 },
+        );
+
+        let e1 = graph.add_edge(
+            graph.root,
+            vec![elk_graph::EdgeEndpoint::node(left)],
+            vec![elk_graph::EdgeEndpoint::node(target)],
+        );
+        let e2 = graph.add_edge(
+            graph.root,
+            vec![elk_graph::EdgeEndpoint::node(center)],
+            vec![elk_graph::EdgeEndpoint::node(target)],
+        );
+        let e3 = graph.add_edge(
+            graph.root,
+            vec![elk_graph::EdgeEndpoint::node(right)],
+            vec![elk_graph::EdgeEndpoint::node(target)],
+        );
+        for edge_id in [e1, e2, e3] {
+            graph.edges[edge_id.index()]
+                .properties
+                .insert("elk.edge.bundle", elk_graph::PropertyValue::Int(1));
+        }
+
+        let options = LayoutOptions {
+            layered: elk_core::LayeredOptions {
+                direction: elk_core::LayoutDirection::TopToBottom,
+                ..LayoutOptions::default().layered
+            },
+            ..LayoutOptions::default()
+        };
+        let local_nodes = BTreeSet::from([left, center, right, target]);
+        let ir = import_graph(&graph, &[left, center, right, target], &local_nodes, &options);
 
         assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
         assign_shared_fanout_splits(&mut graph, &ir, &local_nodes, &options);
