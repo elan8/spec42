@@ -136,7 +136,7 @@ pub(crate) fn compute_layout(
     })
 }
 
-fn sort_nodes_for_hierarchy<'a>(nodes: &'a [DiagramNode]) -> Result<Vec<&'a DiagramNode>> {
+fn sort_nodes_for_hierarchy(nodes: &[DiagramNode]) -> Result<Vec<&DiagramNode>> {
     let node_by_id: HashMap<&str, &DiagramNode> =
         nodes.iter().map(|node| (node.id.as_str(), node)).collect();
     let mut depths = HashMap::new();
@@ -256,8 +256,10 @@ fn map_port_side(side: &PortSide) -> ElkPortSide {
 }
 
 fn map_layout_options(config: &LayoutConfig) -> LayoutOptions {
-    let mut options = LayoutOptions::default();
-    options.view_profile = map_view_profile(&config.view_profile);
+    let mut options = LayoutOptions {
+        view_profile: map_view_profile(&config.view_profile),
+        ..LayoutOptions::default()
+    };
     options.apply_view_profile_defaults();
     options.layered.direction = map_direction(config);
     options.layered.node_alignment = match config.view_profile {
@@ -331,6 +333,10 @@ fn apply_graph_hints(
         elk_graph.properties.insert(
             "elk.layered.routingBackend",
             PropertyValue::String("libavoid".into()),
+        );
+        elk_graph.properties.insert(
+            "org.eclipse.elk.alg.libavoid.reverseDirectionPenalty",
+            PropertyValue::Float(1.0),
         );
     }
     if !matches!(config.view_profile, LayoutViewProfile::GeneralView) {

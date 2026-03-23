@@ -97,7 +97,7 @@ pub(crate) fn export_to_graph(
                 }
                 Ok(diag_lines) => {
                     if debug_enabled {
-                        warnings.extend(diag_lines.into_iter());
+                        warnings.extend(diag_lines);
                     }
                 routed = local_edge_ids.len();
                 for edge in &ir.edges {
@@ -326,17 +326,11 @@ fn orthogonal_endpoint_elbow(
     endpoint: Point,
     neighbor: Point,
     side: Option<PortSide>,
-    is_start: bool,
+    _is_start: bool,
 ) -> Point {
     match side {
-        Some(PortSide::East | PortSide::West) => Point::new(
-            if is_start { neighbor.x } else { neighbor.x },
-            endpoint.y,
-        ),
-        Some(PortSide::North | PortSide::South) => Point::new(
-            endpoint.x,
-            if is_start { neighbor.y } else { neighbor.y },
-        ),
+        Some(PortSide::East | PortSide::West) => Point::new(neighbor.x, endpoint.y),
+        Some(PortSide::North | PortSide::South) => Point::new(endpoint.x, neighbor.y),
         None => {
             let dx = (neighbor.x - endpoint.x).abs();
             let dy = (neighbor.y - endpoint.y).abs();
@@ -1451,6 +1445,15 @@ fn compare_ports_for_layout(
     let right_opts = decode_layout_from_props(&right_port.properties);
 
     if matches!(port_constraint, elk_core::PortConstraint::FixedOrder) {
+        let left_index = left_opts.model_order;
+        let right_index = right_opts.model_order;
+        if let (Some(left_index), Some(right_index)) = (left_index, right_index) {
+            let cmp = left_index.cmp(&right_index);
+            if cmp != std::cmp::Ordering::Equal {
+                return cmp;
+            }
+        }
+
         if left_port.node == right_port.node {
             let ports = &graph.nodes[left_port.node.index()].ports;
             let left_pos = ports.iter().position(|port_id| *port_id == left);
@@ -1460,15 +1463,6 @@ fn compare_ports_for_layout(
                 if cmp != std::cmp::Ordering::Equal {
                     return cmp;
                 }
-            }
-        }
-
-        let left_index = left_opts.model_order;
-        let right_index = right_opts.model_order;
-        if let (Some(left_index), Some(right_index)) = (left_index, right_index) {
-            let cmp = left_index.cmp(&right_index);
-            if cmp != std::cmp::Ordering::Equal {
-                return cmp;
             }
         }
     }
@@ -2741,7 +2735,7 @@ mod tests {
     }
 
     #[test]
-    fn compare_ports_for_layout_prefers_declared_fixed_order() {
+    fn compare_ports_for_layout_prefers_explicit_port_index_over_creation_order() {
         let mut graph = ElkGraph::new();
         let node = graph.add_node(
             graph.root,
@@ -2773,7 +2767,7 @@ mod tests {
                 PortSide::East,
                 elk_core::PortConstraint::FixedOrder,
             ),
-            std::cmp::Ordering::Less
+            std::cmp::Ordering::Greater
         );
     }
 

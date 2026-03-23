@@ -69,7 +69,7 @@ fn token_ast_type(
             };
             if start_char >= range_start && end_char <= range_end {
                 let span_len = range_end.saturating_sub(range_start);
-                let replace = best.map_or(true, |(_, _, len)| span_len < len);
+                let replace = best.is_none_or(|(_, _, len)| span_len < len);
                 if replace {
                     best = Some((*token_type, i, span_len));
                 }

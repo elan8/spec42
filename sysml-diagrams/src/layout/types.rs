@@ -126,12 +126,14 @@ pub enum LayoutViewProfile {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SvgRenderOptions {
     pub class_name: String,
+    pub visual_edge_bridges: bool,
 }
 
 impl Default for SvgRenderOptions {
     fn default() -> Self {
         Self {
             class_name: "diagram-root".to_string(),
+            visual_edge_bridges: false,
         }
     }
 }
@@ -251,4 +253,3 @@ pub enum DiagramError {
 }
 
 pub type Result<T> = std::result::Result<T, DiagramError>;
-

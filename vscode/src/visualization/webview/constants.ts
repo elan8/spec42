@@ -8,9 +8,9 @@ export const MAX_CANVAS_ZOOM = 20;
 export const MIN_SYSML_ZOOM = 0.04;
 export const MAX_SYSML_ZOOM = 20;
 
-export const STRUCTURAL_VIEWS = new Set(['general-view']);
+export const STRUCTURAL_VIEWS = new Set(['general-view', 'interconnection-view']);
 
-export const DEFAULT_ENABLED_VIEWS = ['general-view'] as const;
+export const DEFAULT_ENABLED_VIEWS = ['general-view', 'interconnection-view'] as const;
 
 export const EXPERIMENTAL_VIEWS = [
     'action-flow-view',

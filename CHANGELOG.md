@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-03-23
+
+### Changed
+
+- **Interconnection visualizer layout and routing** - Improved IBD layout quality and connector routing reliability for denser models, including clearer root selection behavior and more readable exported diagrams.
+- **Diagnostics quality** - Improved diagnostics stability and clarity in the VS Code workflow, with better behavior during active edit/update cycles.
+
 ## [0.5.0] - 2026-03-13
 
 ### Added
@@ -83,6 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.6.0]: https://github.com/elan8/spec42/releases/tag/v0.6.0
 [0.5.0]: https://github.com/elan8/spec42/releases/tag/v0.5.0
 [0.4.0]: https://github.com/elan8/spec42/releases/tag/v0.4.0
 [0.3.0]: https://github.com/elan8/spec42/releases/tag/v0.3.0

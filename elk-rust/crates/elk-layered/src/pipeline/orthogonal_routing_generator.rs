@@ -3,11 +3,9 @@
 #![allow(dead_code)]
 
 use std::collections::VecDeque;
-///
 /// The upstream implementation builds hyperedge segments, creates a dependency graph based on
 /// conflict / crossing penalties, breaks cycles, and assigns routing slots using topological
 /// numbering. We port the core mechanics here and keep bend-point generation in `routing.rs`.
-///
 /// This module is currently used as an InterconnectionView-only stabilizer to assign
 /// deterministic routing slots (lanes) for dense port-to-port connectors.
 
@@ -794,4 +792,3 @@ fn topological_numbering(segments: &mut [HyperEdgeSegment]) {
         }
     }
 }
-

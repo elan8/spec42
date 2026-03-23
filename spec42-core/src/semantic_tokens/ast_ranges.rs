@@ -213,16 +213,13 @@ fn collect_semantic_ranges_port_def_body_element(
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use sysml_parser::ast::PortDefBodyElement as PDBE;
-    match &node.value {
-        PDBE::PortUsage(n) => {
-            if let Some(ref s) = n.value.name_span {
-                out.push((span_to_source_range(s), TYPE_PROPERTY));
-            }
-            if let Some(ref s) = n.value.type_ref_span {
-                out.push((span_to_source_range(s), TYPE_TYPE));
-            }
+    if let PDBE::PortUsage(n) = &node.value {
+        if let Some(ref s) = n.value.name_span {
+            out.push((span_to_source_range(s), TYPE_PROPERTY));
         }
-        _ => {}
+        if let Some(ref s) = n.value.type_ref_span {
+            out.push((span_to_source_range(s), TYPE_TYPE));
+        }
     }
 }
 

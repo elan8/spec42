@@ -1338,7 +1338,7 @@ dependencies = [
 
 [[package]]
 name = "spec42"
-version = "0.5.0"
+version = "0.6.0"
 dependencies = [
  "serde_json",
  "spec42-core",
@@ -1351,7 +1351,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-core"
-version = "0.5.0"
+version = "0.6.0"
 dependencies = [
  "clap",
  "petgraph",
@@ -1403,7 +1403,7 @@ dependencies = [
 
 [[package]]
 name = "sysml-diagrams"
-version = "0.5.0"
+version = "0.6.0"
 dependencies = [
  "elk-core",
  "elk-graph",

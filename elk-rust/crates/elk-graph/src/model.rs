@@ -486,3 +486,9 @@ impl ElkGraph {
     }
 }
 
+impl Default for ElkGraph {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+

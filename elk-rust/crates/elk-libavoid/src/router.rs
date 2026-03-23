@@ -234,6 +234,7 @@ pub fn route(
         segment_penalty,
         bend_penalty,
         0.0,
+        0.0,
         &[],
     )
     .map(|v| v.0)
@@ -254,6 +255,7 @@ pub fn route_with_debug(
         segment_penalty,
         bend_penalty,
         0.0,
+        0.0,
         &[],
     )
 }
@@ -265,6 +267,7 @@ pub fn route_with_debug_with_penalties(
     obstacles: &[Obstacle],
     segment_penalty: f32,
     bend_penalty: f32,
+    reverse_direction_penalty: f32,
     shared_path_penalty: f32,
     occupied_segments: &[OccupiedSegment],
 ) -> Result<(Vec<Point>, RouteDebug), RoutingFailure> {
@@ -326,6 +329,12 @@ pub fn route_with_debug_with_penalties(
             let edge_cost = w * seg_penalty;
             let bend = incoming_axis.map(|prev_axis| prev_axis != axis).unwrap_or(false);
             let mut tentative = g_u + edge_cost + if bend { bend_penalty.max(1.0) } else { 0.0 };
+            if reverse_direction_penalty > 0.0 {
+                let reverse_length = reverse_direction_length(current, points[v], points[end_idx], axis);
+                if reverse_length > 0.0 {
+                    tentative += reverse_length * reverse_direction_penalty;
+                }
+            }
             if shared_path_penalty > 0.0 {
                 let shared_overlap = shared_path_overlap_length(
                     current,
@@ -364,6 +373,29 @@ pub fn route_with_debug_with_penalties(
     }
 
     Err(RoutingFailure::NoRouteFound)
+}
+
+fn reverse_direction_length(from: Point, to: Point, end: Point, axis: Axis) -> f32 {
+    match axis {
+        Axis::Horizontal => {
+            let before = (end.x - from.x).abs();
+            let after = (end.x - to.x).abs();
+            if after > before + EPS {
+                (to.x - from.x).abs()
+            } else {
+                0.0
+            }
+        }
+        Axis::Vertical => {
+            let before = (end.y - from.y).abs();
+            let after = (end.y - to.y).abs();
+            if after > before + EPS {
+                (to.y - from.y).abs()
+            } else {
+                0.0
+            }
+        }
+    }
 }
 
 fn shared_path_overlap_length(a: Point, b: Point, occupied_segments: &[OccupiedSegment]) -> f32 {
@@ -474,6 +506,7 @@ mod tests {
             &obstacles,
             1.0,
             6.0,
+            0.0,
             20.0,
             &occupied,
         )
@@ -484,5 +517,31 @@ mod tests {
             }),
             "route should avoid reusing the occupied vertical corridor"
         );
+    }
+
+    #[test]
+    fn reverse_direction_length_detects_away_from_target_segments() {
+        let reverse_vertical = reverse_direction_length(
+            Point::new(10.0, 40.0),
+            Point::new(10.0, 80.0),
+            Point::new(100.0, 0.0),
+            Axis::Vertical,
+        );
+        let toward_vertical = reverse_direction_length(
+            Point::new(10.0, 40.0),
+            Point::new(10.0, 20.0),
+            Point::new(100.0, 0.0),
+            Axis::Vertical,
+        );
+        let reverse_horizontal = reverse_direction_length(
+            Point::new(40.0, 10.0),
+            Point::new(0.0, 10.0),
+            Point::new(100.0, 10.0),
+            Axis::Horizontal,
+        );
+
+        assert_eq!(reverse_vertical, 40.0);
+        assert_eq!(toward_vertical, 0.0);
+        assert_eq!(reverse_horizontal, 40.0);
     }
 }

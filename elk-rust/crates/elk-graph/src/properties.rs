@@ -90,7 +90,6 @@ impl PropertyBag {
         self.entries.insert(key.into(), value);
     }
 
-    #[must_use]
     pub fn iter(&self) -> impl Iterator<Item = (&PropertyKey, &PropertyValue)> {
         self.entries.iter()
     }

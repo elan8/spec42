@@ -349,11 +349,9 @@ impl LanguageServer for Backend {
                                 ),
                             ));
                         }
-                    } else {
-                        if entry.content != change.text {
-                            entry.content = change.text;
-                            content_changed = true;
-                        }
+                    } else if entry.content != change.text {
+                        entry.content = change.text;
+                        content_changed = true;
                     }
                 }
                 if content_changed {
@@ -677,7 +675,7 @@ impl LanguageServer for Backend {
                     let container = e.container_name.as_deref().unwrap_or("(top level)");
                     md.push_str(&format!("• `{}` in `{}`\n", kind, container));
                 }
-                md.push_str("\n");
+                md.push('\n');
                 md.push_str(&util::symbol_hover_markdown(entry, entry.uri != uri_norm));
                 md
             } else {

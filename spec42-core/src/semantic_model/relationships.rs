@@ -81,7 +81,7 @@ fn add_edge_if_both_exist_opt(
     };
     if let Some(kinds) = target_kinds {
         let ek = tgt_node.element_kind.as_str();
-        if !kinds.iter().any(|k| ek == *k) {
+        if !kinds.contains(&ek) {
             return false;
         }
     }
@@ -215,7 +215,7 @@ pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
     let node_ids: Vec<NodeId> = g
         .nodes_by_uri
         .get(uri)
-        .map(|ids| ids.clone())
+        .cloned()
         .unwrap_or_default();
     let mut work: Vec<(NodeId, String, Option<String>, RelationshipKind)> = Vec::new();
     for node_id in &node_ids {

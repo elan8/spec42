@@ -4,7 +4,7 @@ use elk_graph::{PropertyBag, PropertyValue};
 use elk_meta::OptionRegistry;
 
 #[must_use]
-pub fn casefold_map<'a>(bag: &'a PropertyBag) -> BTreeMap<String, &'a PropertyValue> {
+pub fn casefold_map(bag: &PropertyBag) -> BTreeMap<String, &PropertyValue> {
     let mut out = BTreeMap::new();
     for (k, v) in bag.iter() {
         out.insert(k.0.to_ascii_lowercase(), v);

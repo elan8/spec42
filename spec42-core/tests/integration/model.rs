@@ -175,41 +175,78 @@ fn parse_path_endpoints(d: &str) -> Option<((f32, f32), (f32, f32))> {
 }
 
 fn count_diagonal_segments_in_path(d: &str, tolerance: f32) -> usize {
-    let mut nums: Vec<f32> = Vec::new();
+    let tokens = tokenize_svg_path(d);
+    let mut diagonals = 0usize;
+    let mut current = None::<(f32, f32)>;
+    let mut cursor = 0usize;
+
+    while cursor < tokens.len() {
+        let token = &tokens[cursor];
+        cursor += 1;
+        let Some(command) = token.chars().next() else {
+            continue;
+        };
+        match command {
+            'M' | 'L' => {
+                if cursor + 1 > tokens.len() {
+                    break;
+                }
+                let Some(x) = tokens.get(cursor).and_then(|value| value.parse::<f32>().ok()) else {
+                    break;
+                };
+                let Some(y) = tokens.get(cursor + 1).and_then(|value| value.parse::<f32>().ok()) else {
+                    break;
+                };
+                if let Some((ax, ay)) = current {
+                    let dx = (ax - x).abs();
+                    let dy = (ay - y).abs();
+                    if dx > tolerance && dy > tolerance {
+                        diagonals += 1;
+                    }
+                }
+                current = Some((x, y));
+                cursor += 2;
+            }
+            'Q' => {
+                if cursor + 3 > tokens.len() {
+                    break;
+                }
+                let Some(x) = tokens.get(cursor + 2).and_then(|value| value.parse::<f32>().ok()) else {
+                    break;
+                };
+                let Some(y) = tokens.get(cursor + 3).and_then(|value| value.parse::<f32>().ok()) else {
+                    break;
+                };
+                current = Some((x, y));
+                cursor += 4;
+            }
+            _ => {}
+        }
+    }
+    diagonals
+}
+
+fn tokenize_svg_path(d: &str) -> Vec<String> {
+    let mut tokens = Vec::new();
     let mut current = String::new();
     for ch in d.chars() {
-        if ch.is_ascii_digit() || ch == '.' || ch == '-' {
-            current.push(ch);
-        } else if !current.is_empty() {
-            if let Ok(v) = current.parse::<f32>() {
-                nums.push(v);
+        if ch.is_ascii_alphabetic() {
+            if !current.trim().is_empty() {
+                tokens.push(current.trim().to_string());
+                current.clear();
             }
+            tokens.push(ch.to_string());
+        } else if ch.is_ascii_digit() || ch == '.' || ch == '-' {
+            current.push(ch);
+        } else if !current.trim().is_empty() {
+            tokens.push(current.trim().to_string());
             current.clear();
         }
     }
-    if !current.is_empty() {
-        if let Ok(v) = current.parse::<f32>() {
-            nums.push(v);
-        }
+    if !current.trim().is_empty() {
+        tokens.push(current.trim().to_string());
     }
-    if nums.len() < 4 {
-        return 0;
-    }
-    let mut diagonals = 0usize;
-    let mut i = 0usize;
-    while i + 3 < nums.len() {
-        let ax = nums[i];
-        let ay = nums[i + 1];
-        let bx = nums[i + 2];
-        let by = nums[i + 3];
-        let dx = (ax - bx).abs();
-        let dy = (ay - by).abs();
-        if dx > tolerance && dy > tolerance {
-            diagonals += 1;
-        }
-        i += 2;
-    }
-    diagonals
+    tokens
 }
 
 fn nearest_port<'a>(ports: &'a [SvgPort], x: f32, y: f32) -> Option<(&'a SvgPort, f32)> {

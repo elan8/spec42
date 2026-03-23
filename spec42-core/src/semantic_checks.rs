@@ -280,8 +280,8 @@ fn port_type_mismatch(src: &SemanticNode, tgt: &SemanticNode) -> Option<String> 
 /// Returns (base_type_name, is_conjugated). E.g. "~PowerPort" -> ("PowerPort", true).
 fn parse_port_type(s: &str) -> (String, bool) {
     let t = s.trim();
-    let (conj, base) = if t.starts_with('~') {
-        (true, t[1..].trim())
+    let (conj, base) = if let Some(stripped) = t.strip_prefix('~') {
+        (true, stripped.trim())
     } else {
         (false, t)
     };

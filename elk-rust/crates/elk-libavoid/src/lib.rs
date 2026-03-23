@@ -19,6 +19,7 @@ const DEFAULT_SEGMENT_PENALTY: f32 = 1.0;
 const DEFAULT_BEND_PENALTY: f32 = 6.0;
 const DEFAULT_FIXED_SHARED_PATH_PENALTY: f32 = 8.0;
 const DEFAULT_NUDGE_SHARED_PATHS_WITH_COMMON_ENDPOINT: bool = true;
+const DEFAULT_REVERSE_DIRECTION_PENALTY: f32 = 0.0;
 const TERMINAL_NORMAL_OFFSET: f32 = 16.0;
 const TERMINAL_TANGENT_SPACING: f32 = 18.0;
 const SHARED_SOURCE_SPLIT_KEY: &str = "spec42.shared.split.source";
@@ -138,6 +139,16 @@ impl LibavoidLayoutEngine {
             DEFAULT_FIXED_SHARED_PATH_PENALTY,
             0.0,
         );
+        let reverse_direction_penalty = read_penalty_f32(
+            &by_key,
+            &[
+                "elk.libavoid.reversedirectionpenalty",
+                "org.eclipse.elk.alg.libavoid.reverseDirectionPenalty",
+                "org.eclipse.elk.alg.libavoid.reversedirectionpenalty",
+            ],
+            DEFAULT_REVERSE_DIRECTION_PENALTY,
+            0.0,
+        );
         let penalise_shared_paths_at_conn_ends = read_bool_option(
             &by_key,
             &[
@@ -182,20 +193,31 @@ impl LibavoidLayoutEngine {
                 Point::new(0.0, 0.0),
                 None,
             );
-            let path = build_shared_route_path_local(&plan, Point::new(0.0, 0.0), &obstacles)
-                .unwrap_or(
-                    route_with_debug_with_penalties(
-                        plan.route_start_local,
-                        plan.route_end_local,
-                        &obstacles,
-                        segment_penalty,
-                        bend_penalty,
-                        shared_path_penalty,
-                        &occupied_segments,
-                    )
-                    .map(|value| value.0)
-                    .map_err(|e| routing_failure_to_layout_error(edge_id, e))?
-                );
+            let shared_path =
+                build_shared_route_path_local(&plan, Point::new(0.0, 0.0), &obstacles);
+            let simple_paths =
+                build_simple_route_candidates_local(&plan, Point::new(0.0, 0.0), &obstacles);
+            let routed_path = route_with_debug_with_penalties(
+                plan.route_start_local,
+                plan.route_end_local,
+                &obstacles,
+                segment_penalty,
+                bend_penalty,
+                reverse_direction_penalty,
+                shared_path_penalty,
+                &occupied_segments,
+            )
+            .map(|value| value.0)
+            .map_err(|e| routing_failure_to_layout_error(edge_id, e))?;
+            let path = choose_preferred_route_path(
+                shared_path,
+                simple_paths,
+                routed_path,
+                segment_penalty,
+                bend_penalty,
+                shared_path_penalty,
+                &occupied_segments,
+            );
             let path = finalize_route_path(
                 path,
                 plan.actual_start_abs,
@@ -294,6 +316,16 @@ pub fn route_edges_with_diagnostics_in_scope(
         DEFAULT_FIXED_SHARED_PATH_PENALTY,
         0.0,
     );
+    let root_reverse_direction_penalty = read_penalty_f32(
+        &by_key,
+        &[
+            "elk.libavoid.reversedirectionpenalty",
+            "org.eclipse.elk.alg.libavoid.reverseDirectionPenalty",
+            "org.eclipse.elk.alg.libavoid.reversedirectionpenalty",
+        ],
+        DEFAULT_REVERSE_DIRECTION_PENALTY,
+        0.0,
+    );
     let root_penalise_shared_paths_at_conn_ends = read_bool_option(
         &by_key,
         &[
@@ -334,21 +366,21 @@ pub fn route_edges_with_diagnostics_in_scope(
         let clearance = root_clearance;
         let segment_penalty = root_segment_penalty;
         let bend_penalty = root_bend_penalty;
+        let reverse_direction_penalty = root_reverse_direction_penalty;
         let shared_path_penalty = root_shared_path_penalty;
         let plan = build_route_plan(graph, edge_id, scope_origin_abs, clearance);
         let excluded = excluded_obstacle_nodes(graph, edge_id, plan.source_side, plan.target_side);
         let obstacles = collect_obstacles(graph, clearance, &excluded, scope_origin_abs, scope_nodes);
-        let (path, route_dbg) = if let Some(path) =
-            build_shared_route_path_local(&plan, scope_origin_abs, &obstacles)
-        {
-            (path, router::RouteDebug::default())
-        } else if debug_enabled {
+        let shared_path = build_shared_route_path_local(&plan, scope_origin_abs, &obstacles);
+        let simple_paths = build_simple_route_candidates_local(&plan, scope_origin_abs, &obstacles);
+        let (routed_path, route_dbg) = if debug_enabled {
             route_with_debug_with_penalties(
                 plan.route_start_local,
                 plan.route_end_local,
                 &obstacles,
                 segment_penalty,
                 bend_penalty,
+                reverse_direction_penalty,
                 shared_path_penalty,
                 &occupied_segments,
             )
@@ -361,6 +393,7 @@ pub fn route_edges_with_diagnostics_in_scope(
                     &obstacles,
                     segment_penalty,
                     bend_penalty,
+                    reverse_direction_penalty,
                     shared_path_penalty,
                     &occupied_segments,
                 )
@@ -369,6 +402,15 @@ pub fn route_edges_with_diagnostics_in_scope(
                 router::RouteDebug::default(),
             )
         };
+        let path = choose_preferred_route_path(
+            shared_path,
+            simple_paths,
+            routed_path,
+            segment_penalty,
+            bend_penalty,
+            shared_path_penalty,
+            &occupied_segments,
+        );
         let path = finalize_route_path(
             path,
             plan.actual_start_abs,
@@ -574,6 +616,207 @@ fn build_shared_route_path_local(
         }
     }
     None
+}
+
+fn choose_preferred_route_path(
+    shared_path: Option<Vec<Point>>,
+    simple_paths: Vec<Vec<Point>>,
+    routed_path: Vec<Point>,
+    segment_penalty: f32,
+    bend_penalty: f32,
+    shared_path_penalty: f32,
+    occupied_segments: &[OccupiedSegment],
+) -> Vec<Point> {
+    let mut best_path = routed_path;
+    let mut best_score = route_path_score(
+        &best_path,
+        segment_penalty,
+        bend_penalty,
+        shared_path_penalty,
+        occupied_segments,
+    );
+
+    for candidate in shared_path.into_iter().chain(simple_paths.into_iter()) {
+        let candidate_score = route_path_score(
+            &candidate,
+            segment_penalty,
+            bend_penalty,
+            shared_path_penalty,
+            occupied_segments,
+        );
+        if candidate_score <= best_score + 1e-3 {
+            best_score = candidate_score;
+            best_path = candidate;
+        }
+    }
+
+    best_path
+}
+
+fn route_path_score(
+    path: &[Point],
+    segment_penalty: f32,
+    bend_penalty: f32,
+    shared_path_penalty: f32,
+    occupied_segments: &[OccupiedSegment],
+) -> f32 {
+    let mut cost = 0.0;
+    let mut previous_axis: Option<bool> = None;
+    for pair in path.windows(2) {
+        let a = pair[0];
+        let b = pair[1];
+        let dx = (b.x - a.x).abs();
+        let dy = (b.y - a.y).abs();
+        let length = dx + dy;
+        cost += length * segment_penalty.max(1e-6);
+        let is_vertical = dx <= 1e-5;
+        if let Some(prev_vertical) = previous_axis {
+            if prev_vertical != is_vertical {
+                cost += bend_penalty.max(1.0);
+            }
+        }
+        previous_axis = Some(is_vertical);
+        if shared_path_penalty > 0.0 {
+            let shared_overlap = route_segment_shared_overlap_length(a, b, occupied_segments);
+            if shared_overlap > 0.0 {
+                cost += shared_overlap * shared_path_penalty;
+            }
+        }
+    }
+    cost
+}
+
+fn route_segment_shared_overlap_length(
+    a: Point,
+    b: Point,
+    occupied_segments: &[OccupiedSegment],
+) -> f32 {
+    occupied_segments
+        .iter()
+        .map(|occupied| route_segment_overlap_length(a, b, occupied.start, occupied.end))
+        .fold(0.0, f32::max)
+}
+
+fn route_segment_overlap_length(a: Point, b: Point, c: Point, d: Point) -> f32 {
+    let a_vertical = (a.x - b.x).abs() < 1e-5;
+    let c_vertical = (c.x - d.x).abs() < 1e-5;
+    if a_vertical && c_vertical {
+        if (a.x - c.x).abs() >= 1e-5 {
+            return 0.0;
+        }
+        let a_min = a.y.min(b.y);
+        let a_max = a.y.max(b.y);
+        let c_min = c.y.min(d.y);
+        let c_max = c.y.max(d.y);
+        return (a_max.min(c_max) - a_min.max(c_min)).max(0.0);
+    }
+
+    let a_horizontal = (a.y - b.y).abs() < 1e-5;
+    let c_horizontal = (c.y - d.y).abs() < 1e-5;
+    if a_horizontal && c_horizontal {
+        if (a.y - c.y).abs() >= 1e-5 {
+            return 0.0;
+        }
+        let a_min = a.x.min(b.x);
+        let a_max = a.x.max(b.x);
+        let c_min = c.x.min(d.x);
+        let c_max = c.x.max(d.x);
+        return (a_max.min(c_max) - a_min.max(c_min)).max(0.0);
+    }
+
+    0.0
+}
+
+fn build_simple_route_candidates_local(
+    plan: &RoutePlan,
+    scope_origin_abs: Point,
+    obstacles: &[Obstacle],
+) -> Vec<Vec<Point>> {
+    let start = to_local(plan.route_start_abs, scope_origin_abs);
+    let end = to_local(plan.route_end_abs, scope_origin_abs);
+    let mut candidates = Vec::new();
+    for bends in [
+        vec![Point::new(end.x, start.y)],
+        vec![Point::new(start.x, end.y)],
+    ] {
+        let route = std::iter::once(start)
+            .chain(bends.into_iter())
+            .chain(std::iter::once(end))
+            .collect::<Vec<_>>();
+        let route = elk_alg_common::orthogonal::simplify_orthogonal_points(route);
+        if path_is_clear(&route, obstacles) {
+            candidates.push(route);
+        }
+    }
+    candidates
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{choose_preferred_route_path, OccupiedSegment};
+    use elk_core::Point;
+
+    #[test]
+    fn prefers_shorter_routed_path_over_long_shared_detour() {
+        let shared_path = vec![
+            Point::new(0.0, 0.0),
+            Point::new(40.0, 0.0),
+            Point::new(40.0, 120.0),
+            Point::new(20.0, 120.0),
+            Point::new(20.0, -40.0),
+            Point::new(200.0, -40.0),
+        ];
+        let routed_path = vec![
+            Point::new(0.0, 0.0),
+            Point::new(30.0, 0.0),
+            Point::new(30.0, -40.0),
+            Point::new(200.0, -40.0),
+        ];
+
+        let chosen = choose_preferred_route_path(
+            Some(shared_path.clone()),
+            Vec::new(),
+            routed_path.clone(),
+            1.0,
+            6.0,
+            0.0,
+            &[],
+        );
+
+        assert_eq!(chosen, routed_path);
+        assert_ne!(chosen, shared_path);
+    }
+
+    #[test]
+    fn preserves_shared_candidate_when_it_is_no_worse() {
+        let shared_path = vec![
+            Point::new(0.0, 0.0),
+            Point::new(40.0, 0.0),
+            Point::new(40.0, 50.0),
+            Point::new(100.0, 50.0),
+        ];
+        let routed_path = vec![
+            Point::new(0.0, 0.0),
+            Point::new(40.0, 0.0),
+            Point::new(40.0, 50.0),
+            Point::new(100.0, 50.0),
+        ];
+
+        let chosen = choose_preferred_route_path(
+            Some(shared_path.clone()),
+            Vec::new(),
+            routed_path,
+            1.0,
+            6.0,
+            4.0,
+            &[OccupiedSegment {
+                start: Point::new(40.0, 0.0),
+                end: Point::new(40.0, 50.0),
+            }],
+        );
+
+        assert_eq!(chosen, shared_path);
+    }
 }
 
 fn routing_failure_to_layout_error(edge_id: EdgeId, failure: RoutingFailure) -> LayoutError {

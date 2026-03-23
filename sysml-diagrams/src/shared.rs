@@ -25,6 +25,7 @@ pub fn build_rendered_diagram_with_config(
         &layout,
         &SvgRenderOptions {
             class_name: format!("diagram-root {}", view),
+            visual_edge_bridges: view.contains("interconnection-view"),
         },
     );
     Ok(RenderedDiagram {

@@ -15,13 +15,13 @@ use crate::ast_util::identification_name;
 
 /// Extracts (elements, qualified, name_display, span) from Package or Namespace RootElement.
 /// Returns None if body is not Brace.
-pub(crate) fn root_element_body<'a>(
-    re: &'a RootElement,
+pub(crate) fn root_element_body(
+    re: &RootElement,
 ) -> Option<(
-    &'a [sysml_parser::Node<PackageBodyElement>],
+    &[sysml_parser::Node<PackageBodyElement>],
     String,
     String,
-    &'a sysml_parser::Span,
+    &sysml_parser::Span,
 )> {
     let (ident, body, span) = match re {
         RootElement::Package(p) => (&p.identification, &p.body, &p.span),

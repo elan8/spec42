@@ -22,7 +22,7 @@ use crate::util;
 /// Parse sysml/model params from JSON-RPC value.
 pub fn parse_sysml_model_params(v: &serde_json::Value) -> Result<(Url, Vec<String>)> {
     let (uri_str, scope_value) = if let Some(arr) = v.as_array() {
-        let first = arr.get(0).ok_or_else(|| {
+        let first = arr.first().ok_or_else(|| {
             tower_lsp::jsonrpc::Error::invalid_params(
                 "sysml/model params array must have at least one element",
             )

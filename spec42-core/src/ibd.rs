@@ -416,7 +416,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 || p.container_id
                     .as_ref()
                     .and_then(|container_id| {
-                        graph.get_node(&NodeId::new(uri, &container_id.replace('.', "::")))
+                        graph.get_node(&NodeId::new(uri, container_id.replace('.', "::")))
                     })
                     .map(|n| !is_part_like(&n.element_kind))
                     .unwrap_or(true)

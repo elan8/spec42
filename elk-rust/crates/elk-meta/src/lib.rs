@@ -118,9 +118,7 @@ impl OptionRegistry {
         if let Some(m) = self.by_id.get(&k) {
             return Some(m);
         }
-        let Some(id) = self.alias_to_id.get(&k) else {
-            return None;
-        };
+        let id = self.alias_to_id.get(&k)?;
         self.by_id.get(id)
     }
 
@@ -510,4 +508,3 @@ mod tests {
         }));
     }
 }
-

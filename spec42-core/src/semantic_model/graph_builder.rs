@@ -100,9 +100,9 @@ fn build_from_package_body_element(
                 id: node_id.clone(),
                 element_kind: "package".to_string(),
                 name: name_display.to_string(),
-                range: range.clone(),
+                range,
                 attributes: HashMap::new(),
-                parent_id: parent_id.map(Clone::clone),
+                parent_id: parent_id.cloned(),
             };
             let idx = g.graph.add_node(sem_node);
             g.node_index_by_id.insert(node_id.clone(), idx);
@@ -1211,30 +1211,27 @@ fn build_from_port_def_body_element(
     g: &mut SemanticGraph,
 ) {
     use sysml_parser::ast::PortDefBodyElement as PDBE;
-    match &node.value {
-        PDBE::PortUsage(n) => {
-            let name = &n.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "port");
-            let range = span_to_range(&n.span);
-            let mut attrs = HashMap::new();
-            if let Some(ref t) = n.type_name {
-                attrs.insert("portType".to_string(), serde_json::json!(t));
-            }
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "port",
-                name.clone(),
-                range,
-                attrs,
-                Some(parent_id),
-            );
-            if let Some(ref t) = n.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
+    if let PDBE::PortUsage(n) = &node.value {
+        let name = &n.name;
+        let qualified = qualified_name_for_node(g, uri, container_prefix, name, "port");
+        let range = span_to_range(&n.span);
+        let mut attrs = HashMap::new();
+        if let Some(ref t) = n.type_name {
+            attrs.insert("portType".to_string(), serde_json::json!(t));
         }
-        _ => {}
+        add_node_and_recurse(
+            g,
+            uri,
+            &qualified,
+            "port",
+            name.clone(),
+            range,
+            attrs,
+            Some(parent_id),
+        );
+        if let Some(ref t) = n.type_name {
+            add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+        }
     }
 }
 

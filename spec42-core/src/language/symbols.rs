@@ -184,9 +184,8 @@ fn collect_definition_range_port_def_body(
     out: &mut Vec<(String, Range)>,
 ) {
     use sysml_parser::ast::PortDefBodyElement as PDBE;
-    match &node.value {
-        PDBE::PortUsage(n) => out.push((n.name.clone(), span_to_range(&n.span))),
-        _ => {}
+    if let PDBE::PortUsage(n) = &node.value {
+        out.push((n.name.clone(), span_to_range(&n.span)));
     }
 }
 
@@ -760,8 +759,8 @@ fn document_symbols_from_port_def_body(
     for node in elements {
         use sysml_parser::ast::PortDefBodyElement as PDBE;
         let range = span_to_range(&node.span);
-        match &node.value {
-            PDBE::PortUsage(n) => out.push(DocumentSymbol {
+        if let PDBE::PortUsage(n) = &node.value {
+            out.push(DocumentSymbol {
                 name: n.name.clone(),
                 detail: Some("port".to_string()),
                 kind: SymbolKind::INTERFACE,
@@ -770,8 +769,7 @@ fn document_symbols_from_port_def_body(
                 range,
                 selection_range: range,
                 children: None,
-            }),
-            _ => {}
+            });
         }
     }
     out
