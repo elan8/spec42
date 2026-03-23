@@ -1,40 +1,40 @@
 interconnection-view-full-drone debug
 aspect_ratio=1.3220338821411133
-edge_crossings=12
-edge_node_intrusions=17
-bend_count=25
-orthogonal_violations=4
+edge_crossings=6
+edge_node_intrusions=0
+bend_count=54
+orthogonal_violations=0
 warnings_count=69
 router_warning_count=18
 
 warnings:
-0: elk-layered compound: edge=EdgeId(1) decision=rebuilt-within-bend-budget legacy=(1404.0,538.2) -> (1476.0,538.2) -> (1476.0,225.4) -> (2484.0,225.4) rebuilt=(1404.0,538.2) -> (1476.0,538.2) -> (1476.0,225.4) -> (2484.0,225.4)
+0: elk-layered compound: edge=EdgeId(1) decision=rebuilt-within-bend-budget legacy=(1404.0,538.2) -> (2450.5,538.2) -> (2450.5,225.4) -> (2484.0,225.4) rebuilt=(1404.0,538.2) -> (2450.5,538.2) -> (2450.5,225.4) -> (2484.0,225.4)
 1: elk-layered compound: edge=EdgeId(1) legacy_bends=2 rebuilt_bends=2 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
-2: elk-layered compound: edge=EdgeId(10) decision=rebuilt-within-bend-budget legacy=(756.0,970.0) -> (828.0,970.0) -> (828.0,267.6) -> (2484.0,267.6) rebuilt=(756.0,970.0) -> (828.0,970.0) -> (828.0,267.6) -> (2484.0,267.6)
+2: elk-layered compound: edge=EdgeId(10) decision=rebuilt-within-bend-budget legacy=(756.0,970.0) -> (848.0,970.0) -> (848.0,267.6) -> (2484.0,267.6) rebuilt=(756.0,970.0) -> (848.0,970.0) -> (848.0,267.6) -> (2484.0,267.6)
 3: elk-layered compound: edge=EdgeId(10) legacy_bends=2 rebuilt_bends=2 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
-4: elk-layered compound: edge=EdgeId(11) decision=rebuilt-within-bend-budget legacy=(756.0,970.0) -> (828.0,970.0) -> (828.0,561.1) -> (1136.0,561.1) rebuilt=(756.0,970.0) -> (828.0,970.0) -> (828.0,561.1) -> (1136.0,561.1)
+4: elk-layered compound: edge=EdgeId(11) decision=rebuilt-within-bend-budget legacy=(756.0,970.0) -> (1044.0,970.0) -> (1044.0,561.1) -> (1136.0,561.1) rebuilt=(756.0,970.0) -> (1044.0,970.0) -> (1044.0,561.1) -> (1136.0,561.1)
 5: elk-layered compound: edge=EdgeId(11) legacy_bends=2 rebuilt_bends=2 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
-6: elk-layered compound: edge=EdgeId(12) decision=rebuilt-within-bend-budget legacy=(756.0,970.0) -> (1594.5,970.0) -> (1594.5,493.9) -> (1628.0,493.9) rebuilt=(756.0,970.0) -> (1594.5,970.0) -> (1594.5,493.9) -> (1628.0,493.9)
-7: elk-layered compound: edge=EdgeId(12) legacy_bends=2 rebuilt_bends=2 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
-8: elk-layered compound: edge=EdgeId(13) decision=legacy-lower-bend-budget legacy=(756.0,970.0) -> (1594.5,970.0) -> (1594.5,847.1) -> (1700.0,847.1) rebuilt=(756.0,970.0) -> (1594.5,970.0) -> (1594.5,1231.1) -> (1676.0,1231.1) -> (1676.0,847.1) -> (1700.0,847.1)
-9: elk-layered compound: edge=EdgeId(13) legacy_bends=2 rebuilt_bends=4 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
-10: elk-layered compound: edge=EdgeId(14) decision=legacy-lower-bend-budget legacy=(756.0,970.0) -> (1594.5,970.0) -> (1594.5,1103.1) -> (1700.0,1103.1) rebuilt=(756.0,970.0) -> (1594.5,970.0) -> (1594.5,1231.1) -> (1676.0,1231.1) -> (1676.0,1103.1) -> (1700.0,1103.1)
-11: elk-layered compound: edge=EdgeId(14) legacy_bends=2 rebuilt_bends=4 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
-12: elk-layered compound: edge=EdgeId(15) decision=legacy-lower-bend-budget legacy=(756.0,970.0) -> (1594.5,970.0) -> (1594.5,1359.1) -> (1700.0,1359.1) rebuilt=(756.0,970.0) -> (1594.5,970.0) -> (1594.5,1231.1) -> (1676.0,1231.1) -> (1676.0,1359.1) -> (1700.0,1359.1)
-13: elk-layered compound: edge=EdgeId(15) legacy_bends=2 rebuilt_bends=4 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
-14: elk-layered compound: edge=EdgeId(16) decision=legacy-lower-bend-budget legacy=(756.0,970.0) -> (1594.5,970.0) -> (1594.5,1615.1) -> (1700.0,1615.1) rebuilt=(756.0,970.0) -> (1594.5,970.0) -> (1594.5,1231.1) -> (1676.0,1231.1) -> (1676.0,1615.1) -> (1700.0,1615.1)
-15: elk-layered compound: edge=EdgeId(16) legacy_bends=2 rebuilt_bends=4 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
-16: elk-layered compound: edge=EdgeId(2) decision=rebuilt-fixes-inside-approach legacy=(1136.0,457.9) -> (1476.0,457.9) -> (1476.0,466.7) -> (1628.0,466.7) rebuilt=(1136.0,457.9) -> (1112.0,457.9) -> (1112.0,399.5) -> (1468.0,399.5) -> (1468.0,466.7) -> (1628.0,466.7)
-17: elk-layered compound: edge=EdgeId(2) legacy_bends=2 rebuilt_bends=4 legacy_inside_start=true rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
-18: elk-layered compound: edge=EdgeId(3) decision=rebuilt-fixes-inside-approach legacy=(1404.0,480.8) -> (1476.0,480.8) -> (1476.0,847.1) -> (1968.0,847.1) rebuilt=(1404.0,480.8) -> (1476.0,480.8) -> (1476.0,1231.1) -> (1992.0,1231.1) -> (1992.0,847.1) -> (1968.0,847.1)
+6: elk-layered compound: edge=EdgeId(12) decision=rebuilt-within-bend-budget legacy=(756.0,970.0) -> (848.0,970.0) -> (848.0,347.5) -> (1594.5,347.5) -> (1594.5,493.9) -> (1628.0,493.9) rebuilt=(756.0,970.0) -> (848.0,970.0) -> (848.0,347.5) -> (1594.5,347.5) -> (1594.5,493.9) -> (1628.0,493.9)
+7: elk-layered compound: edge=EdgeId(12) legacy_bends=4 rebuilt_bends=4 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
+8: elk-layered compound: edge=EdgeId(13) decision=legacy-lower-bend-budget legacy=(756.0,970.0) -> (848.0,970.0) -> (848.0,1439.5) -> (1594.5,1439.5) -> (1594.5,847.1) -> (1700.0,847.1) rebuilt=(756.0,970.0) -> (848.0,970.0) -> (848.0,1439.5) -> (1594.5,1439.5) -> (1594.5,1231.1) -> (1676.0,1231.1) -> (1676.0,847.1) -> (1700.0,847.1)
+9: elk-layered compound: edge=EdgeId(13) legacy_bends=4 rebuilt_bends=6 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
+10: elk-layered compound: edge=EdgeId(14) decision=legacy-lower-bend-budget legacy=(756.0,970.0) -> (848.0,970.0) -> (848.0,1439.5) -> (1594.5,1439.5) -> (1594.5,1103.1) -> (1700.0,1103.1) rebuilt=(756.0,970.0) -> (848.0,970.0) -> (848.0,1439.5) -> (1594.5,1439.5) -> (1594.5,1231.1) -> (1676.0,1231.1) -> (1676.0,1103.1) -> (1700.0,1103.1)
+11: elk-layered compound: edge=EdgeId(14) legacy_bends=4 rebuilt_bends=6 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
+12: elk-layered compound: edge=EdgeId(15) decision=legacy-lower-bend-budget legacy=(756.0,970.0) -> (848.0,970.0) -> (848.0,1439.5) -> (1594.5,1439.5) -> (1594.5,1359.1) -> (1700.0,1359.1) rebuilt=(756.0,970.0) -> (848.0,970.0) -> (848.0,1439.5) -> (1594.5,1439.5) -> (1594.5,1231.1) -> (1676.0,1231.1) -> (1676.0,1359.1) -> (1700.0,1359.1)
+13: elk-layered compound: edge=EdgeId(15) legacy_bends=4 rebuilt_bends=6 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
+14: elk-layered compound: edge=EdgeId(16) decision=legacy-lower-bend-budget legacy=(756.0,970.0) -> (848.0,970.0) -> (848.0,1439.5) -> (1594.5,1439.5) -> (1594.5,1615.1) -> (1700.0,1615.1) rebuilt=(756.0,970.0) -> (848.0,970.0) -> (848.0,1439.5) -> (1594.5,1439.5) -> (1594.5,1231.1) -> (1676.0,1231.1) -> (1676.0,1615.1) -> (1700.0,1615.1)
+15: elk-layered compound: edge=EdgeId(16) legacy_bends=4 rebuilt_bends=6 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
+16: elk-layered compound: edge=EdgeId(2) decision=rebuilt-fixes-inside-approach legacy=(1136.0,457.9) -> (1594.5,457.9) -> (1594.5,466.7) -> (1628.0,466.7) rebuilt=(1136.0,457.9) -> (1112.0,457.9) -> (1112.0,399.5) -> (1468.0,399.5) -> (1468.0,457.9) -> (1594.5,457.9) -> (1594.5,466.7) -> (1628.0,466.7)
+17: elk-layered compound: edge=EdgeId(2) legacy_bends=2 rebuilt_bends=6 legacy_inside_start=true rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
+18: elk-layered compound: edge=EdgeId(3) decision=rebuilt-fixes-inside-approach legacy=(1404.0,480.8) -> (1525.5,480.8) -> (1525.5,847.1) -> (1968.0,847.1) rebuilt=(1404.0,480.8) -> (1525.5,480.8) -> (1525.5,1231.1) -> (1992.0,1231.1) -> (1992.0,847.1) -> (1968.0,847.1)
 19: elk-layered compound: edge=EdgeId(3) legacy_bends=2 rebuilt_bends=4 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=true rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
-20: elk-layered compound: edge=EdgeId(4) decision=rebuilt-fixes-inside-approach legacy=(1404.0,480.8) -> (1476.0,480.8) -> (1476.0,1103.1) -> (1968.0,1103.1) rebuilt=(1404.0,480.8) -> (1476.0,480.8) -> (1476.0,1231.1) -> (1992.0,1231.1) -> (1992.0,1103.1) -> (1968.0,1103.1)
+20: elk-layered compound: edge=EdgeId(4) decision=rebuilt-fixes-inside-approach legacy=(1404.0,480.8) -> (1525.5,480.8) -> (1525.5,1103.1) -> (1968.0,1103.1) rebuilt=(1404.0,480.8) -> (1525.5,480.8) -> (1525.5,1231.1) -> (1992.0,1231.1) -> (1992.0,1103.1) -> (1968.0,1103.1)
 21: elk-layered compound: edge=EdgeId(4) legacy_bends=2 rebuilt_bends=4 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=true rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
-22: elk-layered compound: edge=EdgeId(5) decision=rebuilt-fixes-inside-approach legacy=(1404.0,480.8) -> (1476.0,480.8) -> (1476.0,1359.1) -> (1968.0,1359.1) rebuilt=(1404.0,480.8) -> (1476.0,480.8) -> (1476.0,1231.1) -> (1992.0,1231.1) -> (1992.0,1359.1) -> (1968.0,1359.1)
+22: elk-layered compound: edge=EdgeId(5) decision=rebuilt-fixes-inside-approach legacy=(1404.0,480.8) -> (1525.5,480.8) -> (1525.5,1359.1) -> (1968.0,1359.1) rebuilt=(1404.0,480.8) -> (1525.5,480.8) -> (1525.5,1231.1) -> (1992.0,1231.1) -> (1992.0,1359.1) -> (1968.0,1359.1)
 23: elk-layered compound: edge=EdgeId(5) legacy_bends=2 rebuilt_bends=4 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=true rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
-24: elk-layered compound: edge=EdgeId(6) decision=rebuilt-fixes-inside-approach legacy=(1404.0,480.8) -> (1476.0,480.8) -> (1476.0,1615.1) -> (1968.0,1615.1) rebuilt=(1404.0,480.8) -> (1476.0,480.8) -> (1476.0,1231.1) -> (1992.0,1231.1) -> (1992.0,1615.1) -> (1968.0,1615.1)
+24: elk-layered compound: edge=EdgeId(6) decision=rebuilt-fixes-inside-approach legacy=(1404.0,480.8) -> (1525.5,480.8) -> (1525.5,1615.1) -> (1968.0,1615.1) rebuilt=(1404.0,480.8) -> (1525.5,480.8) -> (1525.5,1231.1) -> (1992.0,1231.1) -> (1992.0,1615.1) -> (1968.0,1615.1)
 25: elk-layered compound: edge=EdgeId(6) legacy_bends=2 rebuilt_bends=4 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=true rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
-26: elk-layered compound: edge=EdgeId(9) decision=rebuilt-within-bend-budget legacy=(756.0,970.0) -> (828.0,970.0) -> (828.0,399.6) -> (2120.0,399.6) rebuilt=(756.0,970.0) -> (828.0,970.0) -> (828.0,399.6) -> (2120.0,399.6)
+26: elk-layered compound: edge=EdgeId(9) decision=rebuilt-within-bend-budget legacy=(756.0,970.0) -> (848.0,970.0) -> (848.0,399.6) -> (2120.0,399.6) rebuilt=(756.0,970.0) -> (848.0,970.0) -> (848.0,399.6) -> (2120.0,399.6)
 27: elk-layered compound: edge=EdgeId(9) legacy_bends=2 rebuilt_bends=2 legacy_inside_start=false rebuilt_inside_start=false legacy_inside_end=false rebuilt_inside_end=false legacy_endpoint_intrusions=0 rebuilt_endpoint_intrusions=0 legacy_sibling_intrusions=0 rebuilt_sibling_intrusions=0
 28: elk-layered: edge-scope edge=EdgeId(0) src_scope=NodeId(3) dst_scope=NodeId(4) src_frame=port(node=NodeId(3),port=PortId(0),node_xy=(2124.0,297.6),raw=(264.0,68.0),abs=(2384.0,365.6)) dst_frame=port(node=NodeId(4),port=PortId(5),node_xy=(2488.0,140.8),raw=(-4.0,105.7),abs=(2488.0,246.5))
 29: elk-layered: edge-scope edge=EdgeId(1) src_scope=NodeId(5) dst_scope=NodeId(4) src_frame=port(node=NodeId(5),port=PortId(34),node_xy=(1068.0,351.5),raw=(408.0,271.0),abs=(1472.0,622.5)) dst_frame=port(node=NodeId(4),port=PortId(35),node_xy=(2488.0,140.8),raw=(-4.0,21.1),abs=(2488.0,161.9))
@@ -79,23 +79,23 @@ warnings:
 68: elk-rust edge label placement is still partial; SVG labels are rendered by sysml-language-server.
 
 edge_connection_paths:
-0: M 2460.0 437.6 L 2460.0 276.2 L 2556.0 276.2
-1: M 1476.0 610.2 L 1476.0 318.5 L 2556.0 318.5
-2: M 1208.0 633.1 L 1200.0 633.1 L 1200.0 538.7 L 1700.0 538.7
-3: M 1476.0 552.8 L 1476.0 919.1 L 2048.0 552.8 L 2048.0 919.1 L 2040.0 919.1
-4: M 1476.0 552.8 L 1476.0 1175.1 L 2048.0 552.8 L 2048.0 1175.1 L 2040.0 1175.1
-5: M 1476.0 552.8 L 1476.0 1431.1 L 2048.0 552.8 L 2048.0 1431.1 L 2040.0 1431.1
-6: M 1476.0 552.8 L 1476.0 1687.1 L 2048.0 552.8 L 2048.0 1687.1 L 2040.0 1687.1
-7: M 1968.0 525.1 L 1968.0 471.6 L 2192.0 471.6
+0: M 2460.0 437.6 L 2522.5 437.6 L 2522.5 276.2 L 2556.0 276.2
+1: M 1476.0 610.2 L 2522.5 610.2 L 2522.5 318.5 L 2556.0 318.5
+2: M 1208.0 633.1 L 1184.0 633.1 L 1184.0 471.5 L 1540.0 471.5 L 1540.0 529.9 L 1666.5 529.9 L 1666.5 538.7 L 1700.0 538.7
+3: M 1476.0 552.8 L 1597.5 552.8 L 1597.5 1303.1 L 2064.0 1303.1 L 2064.0 919.1 L 2040.0 919.1
+4: M 1476.0 552.8 L 1597.5 552.8 L 1597.5 1303.1 L 2064.0 1303.1 L 2064.0 1175.1 L 2040.0 1175.1
+5: M 1476.0 552.8 L 1597.5 552.8 L 1597.5 1303.1 L 2064.0 1303.1 L 2064.0 1431.1 L 2040.0 1431.1
+6: M 1476.0 552.8 L 1597.5 552.8 L 1597.5 1303.1 L 2064.0 1303.1 L 2064.0 1687.1 L 2040.0 1687.1
+7: M 1968.0 525.1 L 2158.5 525.1 L 2158.5 471.6 L 2192.0 471.6
 8: M 480.0 1064.7 L 560.0 1064.7
-9: M 828.0 1042.0 L 828.0 403.6 L 2192.0 403.6
-10: M 828.0 1042.0 L 828.0 233.9 L 2556.0 233.9
-11: M 828.0 1042.0 L 828.0 529.9 L 1208.0 529.9
-12: M 828.0 1042.0 L 828.0 484.3 L 1700.0 484.3
-13: M 828.0 1042.0 L 828.0 919.1 L 1772.0 919.1
-14: M 828.0 1042.0 L 828.0 1175.1 L 1772.0 1175.1
-15: M 828.0 1042.0 L 828.0 1431.1 L 1772.0 1431.1
-16: M 828.0 1042.0 L 828.0 1687.1 L 1772.0 1687.1
+9: M 828.0 1042.0 L 920.0 1042.0 L 920.0 403.6 L 2192.0 403.6
+10: M 828.0 1042.0 L 920.0 1042.0 L 920.0 233.9 L 2556.0 233.9
+11: M 828.0 1042.0 L 1116.0 1042.0 L 1116.0 529.9 L 1208.0 529.9
+12: M 828.0 1042.0 L 920.0 1042.0 L 920.0 419.5 L 1666.5 419.5 L 1666.5 484.3 L 1700.0 484.3
+13: M 828.0 1042.0 L 920.0 1042.0 L 920.0 1511.5 L 1666.5 1511.5 L 1666.5 919.1 L 1772.0 919.1
+14: M 828.0 1042.0 L 920.0 1042.0 L 920.0 1511.5 L 1666.5 1511.5 L 1666.5 1175.1 L 1772.0 1175.1
+15: M 828.0 1042.0 L 920.0 1042.0 L 920.0 1511.5 L 1666.5 1511.5 L 1666.5 1431.1 L 1772.0 1431.1
+16: M 828.0 1042.0 L 920.0 1042.0 L 920.0 1511.5 L 1666.5 1511.5 L 1666.5 1687.1 L 1772.0 1687.1
 
 ibd_parts_sample:
 SurveillanceDrone.Airframe | container=<none>

@@ -535,7 +535,11 @@ fn node_rect(graph: &ElkGraph, node: NodeId) -> Rect {
     Rect::new(o, Size::new(n.geometry.width, n.geometry.height))
 }
 
-pub(crate) fn relayout_all_ports(graph: &mut ElkGraph, options: &LayoutOptions) {
+pub(crate) fn relayout_all_ports(
+    graph: &mut ElkGraph,
+    options: &LayoutOptions,
+) -> BTreeSet<PortId> {
+    let mut changed_ports = BTreeSet::new();
     let node_ids: Vec<NodeId> = graph
         .nodes
         .iter()
@@ -543,11 +547,29 @@ pub(crate) fn relayout_all_ports(graph: &mut ElkGraph, options: &LayoutOptions) 
         .filter(|id| *id != graph.root)
         .collect();
     for node_id in node_ids {
+        let before: Vec<(PortId, elk_graph::ShapeGeometry)> = graph.nodes[node_id.index()]
+            .ports
+            .iter()
+            .map(|port_id| (*port_id, graph.ports[port_id.index()].geometry))
+            .collect();
         layout_ports(graph, node_id, options);
+        for (port_id, old_geometry) in before {
+            let new_geometry = graph.ports[port_id.index()].geometry;
+            if old_geometry != new_geometry {
+                changed_ports.insert(port_id);
+            }
+        }
     }
+    changed_ports
 }
 
-pub(crate) fn reconcile_explicit_port_terminals(graph: &mut ElkGraph) {
+pub(crate) fn reconcile_explicit_port_terminals(
+    graph: &mut ElkGraph,
+    changed_ports: &BTreeSet<PortId>,
+) {
+    if changed_ports.is_empty() {
+        return;
+    }
     let edge_ids: Vec<EdgeId> = graph.edges.iter().map(|edge| edge.id).collect();
     for edge_id in edge_ids {
         if graph.edges[edge_id.index()].sections.is_empty() {
@@ -557,7 +579,7 @@ pub(crate) fn reconcile_explicit_port_terminals(graph: &mut ElkGraph) {
             .sources
             .iter()
             .chain(graph.edges[edge_id.index()].targets.iter())
-            .any(|endpoint| endpoint.port.is_some());
+            .any(|endpoint| endpoint.port.is_some_and(|port_id| changed_ports.contains(&port_id)));
         if touches_explicit_port {
             restore_declared_port_terminals(graph, edge_id);
         }
@@ -634,6 +656,10 @@ fn rebuild_section_terminal_branch(
         return;
     };
 
+    if preserve_section_terminal_branch(section, anchor, side, is_start) {
+        return;
+    }
+
     let points: Vec<Point> = std::iter::once(section.start)
         .chain(section.bend_points.iter().copied())
         .chain(std::iter::once(section.end))
@@ -660,6 +686,63 @@ fn rebuild_section_terminal_branch(
     section.start = rebuilt[0];
     section.end = *rebuilt.last().unwrap_or(&rebuilt[0]);
     section.bend_points = rebuilt[1..rebuilt.len() - 1].to_vec();
+}
+
+fn preserve_section_terminal_branch(
+    section: &mut elk_graph::EdgeSection,
+    anchor: Point,
+    side: PortSide,
+    is_start: bool,
+) -> bool {
+    let original_points: Vec<Point> = std::iter::once(section.start)
+        .chain(section.bend_points.iter().copied())
+        .chain(std::iter::once(section.end))
+        .collect();
+    if original_points.len() < 2 {
+        return false;
+    }
+
+    let mut candidate = original_points.clone();
+    if is_start {
+        candidate[0] = anchor;
+        if candidate.len() >= 2 {
+            match side {
+                PortSide::East | PortSide::West => candidate[1].y = anchor.y,
+                PortSide::North | PortSide::South => candidate[1].x = anchor.x,
+            }
+        }
+    } else {
+        let last = candidate.len() - 1;
+        candidate[last] = anchor;
+        if candidate.len() >= 2 {
+            match side {
+                PortSide::East | PortSide::West => candidate[last - 1].y = anchor.y,
+                PortSide::North | PortSide::South => candidate[last - 1].x = anchor.x,
+            }
+        }
+    }
+
+    let candidate = orthogonalize_polyline(
+        simplify_orthogonal_points(candidate),
+        if is_start { Some(side) } else { None },
+        if is_start { None } else { Some(side) },
+    );
+    let candidate = ensure_terminal_normals(
+        candidate,
+        if is_start { Some(side) } else { None },
+        if is_start { None } else { Some(side) },
+    );
+    if candidate.len() < 2
+        || !polyline_is_orthogonal(&candidate)
+        || candidate.len() > original_points.len()
+    {
+        return false;
+    }
+
+    section.start = candidate[0];
+    section.end = *candidate.last().unwrap_or(&candidate[0]);
+    section.bend_points = candidate[1..candidate.len() - 1].to_vec();
+    true
 }
 
 fn rebuild_terminal_branch(
@@ -714,6 +797,17 @@ fn rebuild_terminal_branch(
         rebuilt.push(anchor);
         simplify_orthogonal_points(rebuilt)
     }
+}
+
+fn polyline_is_orthogonal(points: &[Point]) -> bool {
+    const EPS: f32 = 1e-5;
+    points.windows(2).all(|segment| {
+        let a = segment[0];
+        let b = segment[1];
+        let dx = (a.x - b.x).abs();
+        let dy = (a.y - b.y).abs();
+        dx <= EPS || dy <= EPS
+    })
 }
 
 fn terminal_run_coordinate(points: &[Point], side: PortSide, is_start: bool) -> Option<f32> {

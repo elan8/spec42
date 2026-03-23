@@ -41,8 +41,8 @@ pub(crate) fn run_post_routing_processors(
 }
 
 pub(crate) fn run_final_geometry_processors(graph: &mut ElkGraph, options: &LayoutOptions) {
-    relayout_all_ports(graph, options);
-    reconcile_explicit_port_terminals(graph);
+    let changed_ports = relayout_all_ports(graph, options);
+    reconcile_explicit_port_terminals(graph, &changed_ports);
 }
 
 #[cfg(test)]
