@@ -2013,12 +2013,39 @@ fn endpoint_group_sort_key(
     edge: &IrEdge,
 ) -> GroupSortKey {
     GroupSortKey {
-        endpoint_position: quantize_tangent_coordinate(endpoint_abs_center(graph, endpoint), side),
-        opposite_position: quantize_tangent_coordinate(endpoint_abs_center(graph, opposite_endpoint), side),
+        endpoint_position: endpoint_sort_coordinate(graph, endpoint, side),
+        opposite_position: endpoint_sort_coordinate(graph, opposite_endpoint, side),
         bundle_key: edge.bundle_key,
         model_order: edge.model_order,
         edge_index: edge.original_edge.index(),
     }
+}
+
+fn endpoint_sort_coordinate(
+    graph: &ElkGraph,
+    endpoint: elk_graph::EdgeEndpoint,
+    side: PortSide,
+) -> i64 {
+    if let Some(port_id) = endpoint.port {
+        let port = &graph.ports[port_id.index()];
+        let node = &graph.nodes[port.node.index()];
+        let node_opts = decode_layout_from_props(&node.properties);
+        if matches!(node_opts.port_constraint, Some(elk_core::PortConstraint::FixedOrder)) {
+            let ports_on_side = node
+                .ports
+                .iter()
+                .copied()
+                .filter(|candidate| graph.ports[candidate.index()].side == side)
+                .collect::<Vec<_>>();
+            for (rank, candidate) in ports_on_side.iter().enumerate() {
+                if *candidate == port_id {
+                    return rank as i64;
+                }
+            }
+        }
+    }
+
+    quantize_tangent_coordinate(endpoint_abs_center(graph, endpoint), side)
 }
 
 fn quantize_tangent_coordinate(point: Point, side: PortSide) -> i64 {

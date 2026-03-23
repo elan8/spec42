@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use elk_core::{LayoutDirection, LayoutOptions, NodeAlignment, Point, Rect, Size};
 use elk_graph::{EdgeEndpoint, PortId};
@@ -47,22 +47,23 @@ fn bk_assign_minor_positions(ir: &mut LayeredIr, options: &LayoutOptions) {
     let direction = options.layered.direction;
 
     // Precompute immediate-layer neighbors (pred/succ) by layer adjacency.
-    let mut preds: Vec<Vec<IrNodeId>> = vec![Vec::new(); n];
-    let mut succs: Vec<Vec<IrNodeId>> = vec![Vec::new(); n];
-    for e in &ir.normalized_edges {
+    let mut preds: Vec<Vec<(IrNodeId, usize)>> = vec![Vec::new(); n];
+    let mut succs: Vec<Vec<(IrNodeId, usize)>> = vec![Vec::new(); n];
+    for (normalized_edge_index, e) in ir.normalized_edges.iter().enumerate() {
         let from_layer = ir.nodes[e.from].layer;
         let to_layer = ir.nodes[e.to].layer;
         if to_layer == from_layer + 1 {
-            preds[e.to].push(e.from);
-            succs[e.from].push(e.to);
+            preds[e.to].push((e.from, normalized_edge_index));
+            succs[e.from].push((e.to, normalized_edge_index));
         }
     }
     for v in 0..n {
-        preds[v].sort_by_key(|nid| ir.nodes[*nid].order);
+        preds[v].sort_by_key(|(nid, _)| ir.nodes[*nid].order);
         preds[v].dedup();
-        succs[v].sort_by_key(|nid| ir.nodes[*nid].order);
+        succs[v].sort_by_key(|(nid, _)| ir.nodes[*nid].order);
         succs[v].dedup();
     }
+    let marked_edges = mark_type_1_conflicts(ir, &preds);
 
     let mut half_width: Vec<f32> = Vec::with_capacity(n);
     for v in 0..n {
@@ -81,6 +82,7 @@ fn bk_assign_minor_positions(ir: &mut LayeredIr, options: &LayoutOptions) {
         // --- Vertical alignment (build blocks) ---
         let mut root: Vec<IrNodeId> = (0..n).collect();
         let mut align: Vec<IrNodeId> = (0..n).collect();
+        let mut align_edge: Vec<Option<usize>> = vec![None; n];
         let mut pos_in_layer: Vec<usize> = vec![0; n];
         for layer in &ir.layers {
             for (i, &v) in layer.iter().enumerate() {
@@ -123,10 +125,11 @@ fn bk_assign_minor_positions(ir: &mut LayeredIr, options: &LayoutOptions) {
                             if align[v] != v {
                                 break;
                             }
-                            let u = neigh[m];
+                            let (u, edge_idx) = neigh[m];
                             let u_pos = pos_in_layer[u] as i32;
-                            if r > u_pos {
+                            if r > u_pos && !marked_edges.contains(&edge_idx) {
                                 align[u] = v;
+                                align_edge[u] = Some(edge_idx);
                                 root[v] = root[u];
                                 align[v] = root[v];
                                 r = u_pos;
@@ -134,13 +137,14 @@ fn bk_assign_minor_positions(ir: &mut LayeredIr, options: &LayoutOptions) {
                         }
                     }
                     BkVDirection::Down => {
-                        for &u in &neigh[low..=high] {
+                        for &(u, edge_idx) in &neigh[low..=high] {
                             if align[v] != v {
                                 break;
                             }
                             let u_pos = pos_in_layer[u] as i32;
-                            if r < u_pos {
+                            if r < u_pos && !marked_edges.contains(&edge_idx) {
                                 align[u] = v;
+                                align_edge[u] = Some(edge_idx);
                                 root[v] = root[u];
                                 align[v] = root[v];
                                 r = u_pos;
@@ -151,8 +155,15 @@ fn bk_assign_minor_positions(ir: &mut LayeredIr, options: &LayoutOptions) {
             }
         }
 
-        let inner_shift = compute_block_inner_shifts(ir, &align, &root, &half_width, direction);
-        let block_size = compute_block_sizes(ir, &root, &inner_shift, direction);
+        let inner_shift = compute_block_inner_shifts(
+            ir,
+            &align,
+            &align_edge,
+            &root,
+            &half_width,
+            direction,
+        );
+        let _block_size = compute_block_sizes(ir, &root, &inner_shift, direction);
         let starts = bk_horizontal_compaction(
             ir,
             &root,
@@ -163,6 +174,7 @@ fn bk_assign_minor_positions(ir: &mut LayeredIr, options: &LayoutOptions) {
             vdir,
             hdir,
             direction,
+            options.layered.prioritize_straight_edges,
         );
 
         let mut x_center = vec![0.0f32; n];
@@ -303,9 +315,71 @@ fn check_layout_order_constraint(
     true
 }
 
+fn mark_type_1_conflicts(
+    ir: &LayeredIr,
+    left_neighbors: &[Vec<(IrNodeId, usize)>],
+) -> BTreeSet<usize> {
+    let layer_count = ir.layers.len();
+    if layer_count < 3 {
+        return BTreeSet::new();
+    }
+
+    let layer_sizes = ir.layers.iter().map(Vec::len).collect::<Vec<_>>();
+    let mut marked = BTreeSet::new();
+
+    for i in 1..layer_count.saturating_sub(1) {
+        let current_layer = &ir.layers[i];
+        let mut k0: i32 = 0;
+        let mut l: usize = 0;
+
+        for l1 in 0..current_layer.len() {
+            let v_l_i = current_layer[l1];
+            if l1 + 1 == current_layer.len() || incident_to_inner_segment(ir, left_neighbors, v_l_i) {
+                let mut k1 = layer_sizes[i - 1] as i32 - 1;
+                if incident_to_inner_segment(ir, left_neighbors, v_l_i) {
+                    if let Some((neighbor, _)) = left_neighbors[v_l_i].first().copied() {
+                        k1 = ir.nodes[neighbor].order as i32;
+                    }
+                }
+
+                while l <= l1 {
+                    let v_l = current_layer[l];
+                    if !incident_to_inner_segment(ir, left_neighbors, v_l) {
+                        for (upper_neighbor, edge_idx) in &left_neighbors[v_l] {
+                            let k = ir.nodes[*upper_neighbor].order as i32;
+                            if k < k0 || k > k1 {
+                                marked.insert(*edge_idx);
+                            }
+                        }
+                    }
+                    l += 1;
+                }
+
+                k0 = k1;
+            }
+        }
+    }
+
+    marked
+}
+
+fn incident_to_inner_segment(
+    ir: &LayeredIr,
+    left_neighbors: &[Vec<(IrNodeId, usize)>],
+    node_id: IrNodeId,
+) -> bool {
+    if !matches!(ir.nodes[node_id].kind, IrNodeKind::Dummy { .. }) {
+        return false;
+    }
+    left_neighbors[node_id]
+        .iter()
+        .any(|(neighbor, _)| matches!(ir.nodes[*neighbor].kind, IrNodeKind::Dummy { .. }))
+}
+
 fn compute_block_inner_shifts(
     ir: &LayeredIr,
     align: &[IrNodeId],
+    align_edge: &[Option<usize>],
     root: &[IrNodeId],
     half_width: &[f32],
     direction: LayoutDirection,
@@ -337,7 +411,8 @@ fn compute_block_inner_shifts(
             }
 
             let center_delta =
-                aligned_pair_center_delta(ir, current, next, direction).unwrap_or_default();
+                aligned_pair_center_delta(ir, current, next, align_edge[current], direction)
+                    .unwrap_or_default();
             inner_shift[next] = inner_shift[current] + center_delta;
             min_start = min_start.min(inner_shift[next] - half_width[next]);
             current = next;
@@ -392,6 +467,7 @@ fn bk_horizontal_compaction(
     vdir: BkVDirection,
     hdir: BkHDirection,
     direction: LayoutDirection,
+    prioritize_straight_edges: bool,
 ) -> Vec<f32> {
     let n = ir.nodes.len();
     let mut sink: Vec<IrNodeId> = (0..n).collect();
@@ -403,6 +479,7 @@ fn bk_horizontal_compaction(
         n
     ];
     let mut y: Vec<Option<f32>> = vec![None; n];
+    let mut block_straightened = vec![false; n];
     let mut class_outgoing: Vec<Vec<(IrNodeId, f32)>> = vec![Vec::new(); n];
     let mut class_indegree: Vec<usize> = vec![0; n];
 
@@ -426,12 +503,15 @@ fn bk_horizontal_compaction(
                     inner_shift,
                     &mut sink,
                     &mut y,
+                    &mut block_straightened,
                     &mut class_outgoing,
                     &mut class_indegree,
                     pos_in_layer,
                     spacing,
                     vdir,
+                    hdir,
                     direction,
+                    prioritize_straight_edges,
                 );
             }
         }
@@ -488,12 +568,15 @@ fn bk_place_block(
     inner_shift: &[f32],
     sink: &mut [IrNodeId],
     y: &mut [Option<f32>],
+    block_straightened: &mut [bool],
     class_outgoing: &mut [Vec<(IrNodeId, f32)>],
     class_indegree: &mut [usize],
     pos_in_layer: &[usize],
     spacing: f32,
     vdir: BkVDirection,
+    hdir: BkHDirection,
     direction: LayoutDirection,
+    prioritize_straight_edges: bool,
 ) {
     if y[block_root].is_some() {
         return;
@@ -531,13 +614,34 @@ fn bk_place_block(
                 inner_shift,
                 sink,
                 y,
+                block_straightened,
                 class_outgoing,
                 class_indegree,
                 pos_in_layer,
                 spacing,
                 vdir,
+                hdir,
                 direction,
+                prioritize_straight_edges,
             );
+
+            let threshold = if prioritize_straight_edges {
+                bk_threshold_for_straight_edge(
+                    ir,
+                    root,
+                    align,
+                    inner_shift,
+                    y,
+                    block_straightened,
+                    block_root,
+                    current,
+                    vdir,
+                    hdir,
+                    direction,
+                )
+            } else {
+                None
+            };
 
             if sink[block_root] == block_root {
                 sink[block_root] = sink[neighbor_root];
@@ -564,11 +668,15 @@ fn bk_place_block(
                 };
                 y[block_root] = Some(if is_initial_assignment {
                     is_initial_assignment = false;
-                    new_position
+                    apply_bk_threshold(new_position, threshold, vdir)
                 } else {
                     match vdir {
-                        BkVDirection::Up => y[block_root].unwrap_or(0.0).min(new_position),
-                        BkVDirection::Down => y[block_root].unwrap_or(0.0).max(new_position),
+                        BkVDirection::Up => y[block_root]
+                            .unwrap_or(0.0)
+                            .min(apply_bk_threshold(new_position, threshold, vdir)),
+                        BkVDirection::Down => y[block_root]
+                            .unwrap_or(0.0)
+                            .max(apply_bk_threshold(new_position, threshold, vdir)),
                     }
                 });
             } else {
@@ -603,19 +711,114 @@ fn bk_place_block(
             break;
         }
     }
+
+    if prioritize_straight_edges {
+        block_straightened[block_root] = true;
+    }
 }
+
+fn apply_bk_threshold(
+    position: f32,
+    threshold: Option<f32>,
+    vdir: BkVDirection,
+) -> f32 {
+    match (vdir, threshold) {
+        (BkVDirection::Up, Some(threshold)) => position.min(threshold),
+        (BkVDirection::Down, Some(threshold)) => position.max(threshold),
+        (_, None) => position,
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn bk_threshold_for_straight_edge(
+    ir: &LayeredIr,
+    root: &[IrNodeId],
+    align: &[IrNodeId],
+    inner_shift: &[f32],
+    y: &[Option<f32>],
+    block_straightened: &[bool],
+    block_root: IrNodeId,
+    current: IrNodeId,
+    _vdir: BkVDirection,
+    hdir: BkHDirection,
+    direction: LayoutDirection,
+) -> Option<f32> {
+    let is_root = current == block_root;
+    let is_last = align[current] == block_root;
+    if !is_root && !is_last {
+        return None;
+    }
+
+    if block_straightened[block_root] {
+        return None;
+    }
+
+    let candidates = match (hdir, is_root) {
+        (BkHDirection::Right, true) | (BkHDirection::Left, false) => {
+            bk_incident_edges(ir, current, true)
+        }
+        (BkHDirection::Right, false) | (BkHDirection::Left, true) => {
+            bk_incident_edges(ir, current, false)
+        }
+    };
+
+    for (edge_idx, other, current_is_from) in candidates {
+        let other_root = root[other];
+        if other_root == block_root || !y[other_root].is_some() || block_straightened[other_root] {
+            continue;
+        }
+
+        let edge = &ir.normalized_edges[edge_idx];
+        let (from_anchor, to_anchor) =
+            normalized_segment_connection_coordinates(ir, edge_idx, direction);
+        let (current_anchor, other_anchor) = if current_is_from {
+            (from_anchor, to_anchor)
+        } else {
+            (to_anchor, from_anchor)
+        };
+
+        return Some(
+            y[other_root].unwrap_or(0.0) + inner_shift[other] + other_anchor
+                - inner_shift[current]
+                - current_anchor,
+        );
+    }
+
+    None
+}
+
+fn bk_incident_edges(
+    ir: &LayeredIr,
+    node_id: IrNodeId,
+    incoming: bool,
+) -> Vec<(usize, IrNodeId, bool)> {
+    let mut edges = Vec::new();
+    for (edge_idx, edge) in ir.normalized_edges.iter().enumerate() {
+        if incoming && edge.to == node_id {
+            edges.push((edge_idx, edge.from, false));
+        } else if !incoming && edge.from == node_id {
+            edges.push((edge_idx, edge.to, true));
+        }
+    }
+    edges.sort_by_key(|(_, other, _)| (ir.nodes[*other].order, *other));
+    edges
+}
+
 
 fn aligned_pair_center_delta(
     ir: &LayeredIr,
     current: IrNodeId,
     next: IrNodeId,
+    aligned_edge_index: Option<usize>,
     direction: LayoutDirection,
 ) -> Option<f32> {
-    let segment = ir
-        .normalized_edges
-        .iter()
-        .find(|edge| {
-            (edge.from == current && edge.to == next) || (edge.from == next && edge.to == current)
+    let segment = aligned_edge_index
+        .and_then(|index| ir.normalized_edges.get(index))
+        .or_else(|| {
+            ir.normalized_edges.iter().find(|edge| {
+                (edge.from == current && edge.to == next)
+                    || (edge.from == next && edge.to == current)
+            })
         })?;
     Some(
         normalized_segment_endpoint_center_offset(ir, segment, current, direction)
@@ -671,14 +874,7 @@ pub(crate) fn place_nodes(ir: &mut LayeredIr, options: &LayoutOptions) -> Placem
 
     initialize_minor_positions(ir, options);
     bk_assign_minor_positions(ir, options);
-    if options.layered.minor_axis_bk {
-        for layer_index in 0..ir.layers.len() {
-            compact_layer(ir, layer_index, options, true);
-        }
-        for layer_index in (0..ir.layers.len()).rev() {
-            compact_layer(ir, layer_index, options, false);
-        }
-    } else {
+    if !options.layered.minor_axis_bk {
         for _ in 0..4 {
             for layer_index in 0..ir.layers.len() {
                 compact_layer(ir, layer_index, options, true);
