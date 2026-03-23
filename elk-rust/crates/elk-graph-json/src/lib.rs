@@ -8,6 +8,8 @@ use elk_core::{Point, Rect};
 use elk_graph::{EdgeEndpoint, ElkGraph, PropertyBag, PropertyValue, ShapeGeometry};
 use serde_json::Value;
 
+const ORIGINAL_JSON_ID_KEY: &str = "spec42.original_json_id";
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 enum JsonId {
     Str(String),
@@ -141,14 +143,29 @@ pub fn export_elk_graph_to_value(graph: &ElkGraph) -> Value {
         if node == graph.root {
             "root".to_string()
         } else {
-            format!("n{}", node.index())
+            graph.nodes[node.index()]
+                .properties
+                .get(&elk_graph::PropertyKey::from(ORIGINAL_JSON_ID_KEY))
+                .and_then(|value| value.as_str())
+                .map(ToOwned::to_owned)
+                .unwrap_or_else(|| format!("n{}", node.index()))
         }
     }
-    fn port_id_str(port: elk_graph::PortId) -> String {
-        format!("p{}", port.index())
+    fn port_id_str(graph: &ElkGraph, port: elk_graph::PortId) -> String {
+        graph.ports[port.index()]
+            .properties
+            .get(&elk_graph::PropertyKey::from(ORIGINAL_JSON_ID_KEY))
+            .and_then(|value| value.as_str())
+            .map(ToOwned::to_owned)
+            .unwrap_or_else(|| format!("p{}", port.index()))
     }
-    fn edge_id_str(edge: elk_graph::EdgeId) -> String {
-        format!("e{}", edge.index())
+    fn edge_id_str(graph: &ElkGraph, edge: elk_graph::EdgeId) -> String {
+        graph.edges[edge.index()]
+            .properties
+            .get(&elk_graph::PropertyKey::from(ORIGINAL_JSON_ID_KEY))
+            .and_then(|value| value.as_str())
+            .map(ToOwned::to_owned)
+            .unwrap_or_else(|| format!("e{}", edge.index()))
     }
     fn label_id_str(label: elk_graph::LabelId) -> String {
         format!("l{}", label.index())
@@ -197,7 +214,7 @@ pub fn export_elk_graph_to_value(graph: &ElkGraph) -> Value {
     fn export_port(graph: &ElkGraph, port: elk_graph::PortId) -> Value {
         let p = &graph.ports[port.index()];
         let mut obj = serde_json::Map::new();
-        obj.insert("id".to_string(), Value::String(port_id_str(port)));
+        obj.insert("id".to_string(), Value::String(port_id_str(graph, port)));
         obj.insert("x".to_string(), Value::from(p.geometry.x));
         obj.insert("y".to_string(), Value::from(p.geometry.y));
         obj.insert("width".to_string(), Value::from(p.geometry.width));
@@ -258,7 +275,7 @@ pub fn export_elk_graph_to_value(graph: &ElkGraph) -> Value {
     fn export_edge(graph: &ElkGraph, edge: elk_graph::EdgeId) -> Value {
         let e = &graph.edges[edge.index()];
         let mut obj = serde_json::Map::new();
-        obj.insert("id".to_string(), Value::String(edge_id_str(edge)));
+        obj.insert("id".to_string(), Value::String(edge_id_str(graph, edge)));
         obj.insert(
             "sources".to_string(),
             Value::Array(
@@ -266,7 +283,7 @@ pub fn export_elk_graph_to_value(graph: &ElkGraph) -> Value {
                     .iter()
                     .map(|ep| {
                         if let Some(pid) = ep.port {
-                            Value::String(port_id_str(pid))
+                            Value::String(port_id_str(graph, pid))
                         } else {
                             Value::String(node_id_str(graph, ep.node))
                         }
@@ -281,7 +298,7 @@ pub fn export_elk_graph_to_value(graph: &ElkGraph) -> Value {
                     .iter()
                     .map(|ep| {
                         if let Some(pid) = ep.port {
-                            Value::String(port_id_str(pid))
+                            Value::String(port_id_str(graph, pid))
                         } else {
                             Value::String(node_id_str(graph, ep.node))
                         }
@@ -392,6 +409,14 @@ fn import_node_object(
     let id_value = obj.get("id").ok_or(JsonIoError::MissingField("id"))?;
     let json_id = JsonId::from_value(id_value)?;
     ctx.node_ids.insert(json_id, node_id);
+    graph.nodes[node_id.index()].properties.insert(
+        ORIGINAL_JSON_ID_KEY,
+        PropertyValue::String(match id_value {
+            Value::String(s) => s.clone(),
+            Value::Number(n) => n.to_string(),
+            _ => id_value.to_string(),
+        }),
+    );
 
     // Geometry.
     let x = get_f32(obj, "x").unwrap_or(0.0);
@@ -461,6 +486,14 @@ fn import_port_object(
     // Default port side; may be overridden by layout options.
     let port_id = graph.add_port(node_id, elk_core::PortSide::East, geom);
     ctx.port_ids.insert(json_id, port_id);
+    graph.ports[port_id.index()].properties.insert(
+        ORIGINAL_JSON_ID_KEY,
+        PropertyValue::String(match id_value {
+            Value::String(s) => s.clone(),
+            Value::Number(n) => n.to_string(),
+            _ => id_value.to_string(),
+        }),
+    );
 
     apply_layout_options(obj, &mut graph.ports[port_id.index()].properties, &mut ctx.warnings);
     if let Some(side) = parse_port_side_from_props(&graph.ports[port_id.index()].properties) {
@@ -541,6 +574,14 @@ fn import_edge_object(
     };
 
     let edge_id = graph.add_edge(container, sources, targets);
+    graph.edges[edge_id.index()].properties.insert(
+        ORIGINAL_JSON_ID_KEY,
+        PropertyValue::String(match id_value {
+            Value::String(s) => s.clone(),
+            Value::Number(n) => n.to_string(),
+            _ => id_value.to_string(),
+        }),
+    );
     apply_layout_options(obj, &mut graph.edges[edge_id.index()].properties, &mut ctx.warnings);
 
     if let Some(Value::Array(labels)) = obj.get("labels") {

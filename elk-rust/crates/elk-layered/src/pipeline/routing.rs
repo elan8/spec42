@@ -8,7 +8,6 @@ use elk_alg_common::orthogonal::{
 };
 
 use crate::ir::{IrEdge, LayeredIr};
-use crate::pipeline::orthogonal_routing_generator::{assign_routing_slots, HyperEdgeSegment};
 use crate::pipeline::props::decode_layout_from_props;
 use crate::pipeline::util::{
     dedup_points, endpoint_abs_center, endpoint_port_side, label_size, local_scope_frame,
@@ -782,7 +781,7 @@ fn edge_lane_by_ir_index(ir: &LayeredIr) -> BTreeMap<usize, i32> {
             .or_default()
             .push((ne.segment_order, ne.lane));
     }
-    let base_lanes: BTreeMap<usize, i32> = by_edge
+    by_edge
         .into_iter()
         .map(|(edge_idx, mut lanes)| {
             lanes.sort_by_key(|(segment_order, lane)| (*segment_order, *lane));
@@ -801,52 +800,7 @@ fn edge_lane_by_ir_index(ir: &LayeredIr) -> BTreeMap<usize, i32> {
             };
             (edge_idx, lane)
         })
-        .collect();
-    apply_orthogonal_slot_refinement(base_lanes, ir)
-}
-
-fn apply_orthogonal_slot_refinement(
-    base_lanes: BTreeMap<usize, i32>,
-    ir: &LayeredIr,
-) -> BTreeMap<usize, i32> {
-    if base_lanes.len() <= 2 {
-        return base_lanes;
-    }
-    let mut edge_order: Vec<usize> = base_lanes.keys().copied().collect();
-    edge_order.sort_unstable();
-    let mut segments = Vec::with_capacity(edge_order.len());
-    for (seg_id, edge_idx) in edge_order.iter().copied().enumerate() {
-        let lane = base_lanes.get(&edge_idx).copied().unwrap_or_default();
-        let model_order = ir
-            .edges
-            .iter()
-            .find(|e| e.original_edge.index() == edge_idx)
-            .map(|e| e.model_order as f32)
-            .unwrap_or(edge_idx as f32);
-        segments.push(HyperEdgeSegment {
-            id: seg_id,
-            start_coordinate: lane as f32,
-            end_coordinate: lane as f32 + 0.001,
-            incoming_connection_coordinates: vec![model_order],
-            outgoing_connection_coordinates: vec![edge_idx as f32],
-            routing_slot: 0,
-            in_weight: 0,
-            out_weight: 0,
-            incoming: Vec::new(),
-            outgoing: Vec::new(),
-            split_partner: None,
-            split_by: None,
-            mark: -1,
-        });
-    }
-    let slots = assign_routing_slots(segments, 1.0);
-    let mut out = BTreeMap::new();
-    for (seg_id, edge_idx) in edge_order.into_iter().enumerate() {
-        let base = base_lanes.get(&edge_idx).copied().unwrap_or_default();
-        let refined = slots.get(seg_id).copied().unwrap_or(0);
-        out.insert(edge_idx, base + refined);
-    }
-    out
+        .collect()
 }
 
 fn build_orthogonal_route_path(
@@ -1632,6 +1586,9 @@ fn quantize_tangent_coordinate(point: Point, side: PortSide) -> i64 {
 fn symmetric_slot(index: usize, count: usize) -> i32 {
     if count <= 1 {
         return 0;
+    }
+    if count == 2 {
+        return index as i32;
     }
     let mid = count / 2;
     if count % 2 == 1 {

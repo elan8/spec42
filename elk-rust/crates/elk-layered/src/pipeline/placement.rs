@@ -1131,16 +1131,8 @@ fn preferred_minor_center(
     }
 
     let average = neighbors.iter().sum::<f32>() / neighbors.len() as f32;
-    if options.layered.prioritize_straight_edges
-        && matches!(
-            ir.nodes[node_id].kind,
-            IrNodeKind::Dummy { .. } | IrNodeKind::LabelPlaceholder { .. }
-        )
-    {
-        average
-    } else {
-        (average + node_minor_center(ir, node_id, direction)) / 2.0
-    }
+    let _ = options;
+    average
 }
 
 fn preferred_minor_centers_from_ports(
