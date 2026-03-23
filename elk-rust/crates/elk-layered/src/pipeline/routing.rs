@@ -2,6 +2,9 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use elk_core::{EdgeRouting, LayoutError, LayoutOptions, LayoutStats, Point, PortSide, Rect, Size};
 use elk_graph::{ElkGraph, EdgeId, NodeId, PortId};
+use elk_alg_common::orthogonal::{
+    point_along_tangent, sanitize_orthogonal_path, simplify_orthogonal_points,
+};
 
 use crate::ir::{IrEdge, LayeredIr};
 use crate::pipeline::orthogonal_routing_generator::{assign_routing_slots, HyperEdgeSegment};
@@ -10,6 +13,9 @@ use crate::pipeline::util::{
     dedup_points, endpoint_abs_center, endpoint_port_side, label_size, local_scope_frame,
     node_abs_origin, point_along_outward_normal,
 };
+
+const TERMINAL_NORMAL_OFFSET: f32 = 8.0;
+const TERMINAL_TANGENT_SPACING: f32 = 18.0;
 
 pub(crate) fn export_to_graph(
     graph: &mut ElkGraph,
@@ -38,11 +44,11 @@ pub(crate) fn export_to_graph(
         }
     }
 
-    // Route edges: libavoid backend (if opted in) or simple 1-bend router.
+    // Route edges with either the libavoid backend or the layered orthogonal router.
     let use_libavoid = should_use_libavoid(graph, options);
     let mut routed = 0usize;
     if !use_libavoid && matches!(options.view_profile, elk_core::ViewProfile::InterconnectionView) {
-        warnings.push("elk-layered: libavoid not selected for interconnection; using simplified router fallback".to_string());
+        warnings.push("elk-layered: libavoid not selected for interconnection; using layered orthogonal router".to_string());
     }
 
     if use_libavoid {
@@ -89,11 +95,14 @@ pub(crate) fn export_to_graph(
                     if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
                         continue;
                     }
+                    let edge_ref = &graph.edges[edge.original_edge.index()];
+                    let source_endpoint = edge_ref.sources.first().copied().unwrap_or(edge.routed_source);
+                    let target_endpoint = edge_ref.targets.first().copied().unwrap_or(edge.routed_target);
                     orthogonalize_edge_sections_with_sides(
                         graph,
                         edge.original_edge,
-                        endpoint_port_side(graph, edge.source),
-                        endpoint_port_side(graph, edge.target),
+                        endpoint_port_side(graph, source_endpoint),
+                        endpoint_port_side(graph, target_endpoint),
                     );
                     if debug_enabled {
                         warnings.push(format!(
@@ -101,8 +110,8 @@ pub(crate) fn export_to_graph(
                             edge.original_edge,
                             edge.effective_source,
                             edge.effective_target,
-                            endpoint_frame_debug(graph, edge.source),
-                            endpoint_frame_debug(graph, edge.target)
+                            endpoint_frame_debug(graph, source_endpoint),
+                            endpoint_frame_debug(graph, target_endpoint)
                         ));
                     }
                     let (start, end) = section_endpoints(graph, edge.original_edge);
@@ -128,8 +137,11 @@ pub(crate) fn export_to_graph(
             if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
                 continue;
             }
-            let mut start = endpoint_abs_center(graph, edge.source);
-            let mut end = endpoint_abs_center(graph, edge.target);
+            let edge_ref = &graph.edges[edge.original_edge.index()];
+            let source_endpoint = edge_ref.sources.first().copied().unwrap_or(edge.routed_source);
+            let target_endpoint = edge_ref.targets.first().copied().unwrap_or(edge.routed_target);
+            let mut start = endpoint_abs_center(graph, source_endpoint);
+            let mut end = endpoint_abs_center(graph, target_endpoint);
             apply_hierarchy_boundary_anchors(graph, edge, &mut start, &mut end);
             let routing = edge_routing_for_edge(graph, edge, options);
             let lane = edge_lane_by_index
@@ -142,35 +154,43 @@ pub(crate) fn export_to_graph(
                     .copied()
                     .unwrap_or(0);
 
-            let mut bends = if routing == EdgeRouting::Orthogonal {
-                if use_experimental_orthogonal_core(graph) {
-                    build_staged_orthogonal_bends(graph, edge, start, end, lane, options)
-                } else {
-                    build_legacy_orthogonal_bends(graph, edge, start, end, lane, options)
-                }
+            let source_side = endpoint_port_side(graph, source_endpoint);
+            let target_side = endpoint_port_side(graph, target_endpoint);
+
+            let path = if routing == EdgeRouting::Orthogonal {
+                build_orthogonal_route_path(
+                    graph,
+                    edge,
+                    start,
+                    end,
+                    source_side,
+                    target_side,
+                    lane,
+                    options,
+                )?
             } else {
-                Vec::new()
+                vec![start, end]
             };
-            bends = normalize_bends(bends, keep_unnecessary_bends);
-            bends = correct_terminal_slants(start, end, bends);
 
             let edge_idx = edge.original_edge.index();
             graph.edges[edge_idx].sections.clear();
+            let bends = if path.len() >= 2 {
+                path[1..path.len() - 1].to_vec()
+            } else {
+                Vec::new()
+            };
+            let start = path.first().copied().unwrap_or(start);
+            let end = path.last().copied().unwrap_or(end);
+            let bends = normalize_bends(bends, keep_unnecessary_bends);
             let _ = graph.add_edge_section(edge.original_edge, start, bends.clone(), end);
             restore_nested_endpoint_terminals(graph, edge);
-            orthogonalize_edge_sections_with_sides(
-                graph,
-                edge.original_edge,
-                endpoint_port_side(graph, edge.source),
-                endpoint_port_side(graph, edge.target),
-            );
             let (start, end) = section_endpoints(graph, edge.original_edge);
             stats.bend_points += bends.len();
             routed += 1;
             place_edge_labels(graph, edge, start, end, options, stats);
         }
         if routed > 0 {
-            warnings.push("elk-layered: simplified ElkGraph router active".to_string());
+            warnings.push("elk-layered: layered orthogonal routing backend active".to_string());
         }
     }
 
@@ -224,67 +244,6 @@ fn is_descendant_of(graph: &ElkGraph, node_id: NodeId, ancestor: NodeId) -> bool
         current = graph.nodes[node_id.index()].parent;
     }
     false
-}
-
-fn canonicalize_libavoid_terminals(graph: &mut ElkGraph, edge: &IrEdge, warnings: &mut Vec<String>) {
-    let edge_ref = &graph.edges[edge.original_edge.index()];
-    let Some(first_id) = edge_ref.sections.first().copied() else {
-        return;
-    };
-    let Some(last_id) = edge_ref.sections.last().copied() else {
-        return;
-    };
-    let observed_start = graph.edge_sections[first_id.index()].start;
-    let observed_end = graph.edge_sections[last_id.index()].end;
-    let start_endpoint = graph.edges[edge.original_edge.index()]
-        .sources
-        .first()
-        .copied()
-        .unwrap_or(edge.source);
-    let end_endpoint = graph.edges[edge.original_edge.index()]
-        .targets
-        .first()
-        .copied()
-        .unwrap_or(edge.target);
-    let start = endpoint_abs_center(graph, start_endpoint);
-    let end = endpoint_abs_center(graph, end_endpoint);
-    let start_d = ((observed_start.x - start.x).powi(2) + (observed_start.y - start.y).powi(2)).sqrt();
-    let end_d = ((observed_end.x - end.x).powi(2) + (observed_end.y - end.y).powi(2)).sqrt();
-    set_section_start_preserve_orthogonality(&mut graph.edge_sections[first_id.index()], start);
-    set_section_end_preserve_orthogonality(&mut graph.edge_sections[last_id.index()], end);
-
-    if std::env::var_os("SPEC42_ELK_DEBUG").is_some() {
-        if start_d > 64.0 || end_d > 64.0 {
-            warnings.push(format!(
-                "elk-layered: libavoid terminal canonicalization adjusted edge {:?} (start_delta={:.1}, end_delta={:.1})",
-                edge.original_edge, start_d, end_d
-            ));
-        }
-        let extent = graph_layout_extent(graph);
-        let margin = 64.0f32;
-        let out = |p: Point| -> bool {
-            p.x < -margin
-                || p.y < -margin
-                || p.x > extent.max_x + margin
-                || p.y > extent.max_y + margin
-        };
-        if out(observed_start) || out(observed_end) || out(start) || out(end) {
-            warnings.push(format!(
-                "elk-layered: libavoid edge {:?} endpoint out-of-bounds observed=({:.1},{:.1})->({:.1},{:.1}) chosen=({:.1},{:.1})->({:.1},{:.1}) root=({:.1}x{:.1})",
-                edge.original_edge,
-                observed_start.x,
-                observed_start.y,
-                observed_end.x,
-                observed_end.y,
-                start.x,
-                start.y,
-                end.x,
-                end.y,
-                extent.max_x,
-                extent.max_y
-            ));
-        }
-    }
 }
 
 fn restore_nested_endpoint_terminals(graph: &mut ElkGraph, edge: &IrEdge) {
@@ -345,15 +304,6 @@ fn set_section_end_preserve_orthogonality(section: &mut elk_graph::EdgeSection, 
             Point::new(last.x, end.y)
         };
     }
-}
-
-fn orthogonalize_edge_sections(graph: &mut ElkGraph, edge: &IrEdge) {
-    orthogonalize_edge_sections_with_sides(
-        graph,
-        edge.original_edge,
-        endpoint_port_side(graph, edge.source),
-        endpoint_port_side(graph, edge.target),
-    );
 }
 
 fn orthogonalize_polyline(
@@ -431,36 +381,6 @@ fn choose_orthogonal_elbow(
     }
 }
 
-fn simplify_orthogonal_points(points: Vec<Point>) -> Vec<Point> {
-    let points = dedup_points(points);
-    if points.len() <= 2 {
-        return points;
-    }
-    let mut out = Vec::with_capacity(points.len());
-    for (idx, point) in points.iter().copied().enumerate() {
-        if idx == 0 || idx + 1 == points.len() {
-            out.push(point);
-            continue;
-        }
-        let prev = points[idx - 1];
-        let next = points[idx + 1];
-        let collinear_x = (prev.x - point.x).abs() <= f32::EPSILON
-            && (point.x - next.x).abs() <= f32::EPSILON;
-        let collinear_y = (prev.y - point.y).abs() <= f32::EPSILON
-            && (point.y - next.y).abs() <= f32::EPSILON;
-        if !(collinear_x || collinear_y) {
-            out.push(point);
-        }
-    }
-    dedup_points(out)
-}
-
-
-struct LayoutExtent {
-    max_x: f32,
-    max_y: f32,
-}
-
 fn endpoint_frame_debug(graph: &ElkGraph, endpoint: elk_graph::EdgeEndpoint) -> String {
     match endpoint.port {
         Some(port_id) => {
@@ -492,20 +412,6 @@ fn endpoint_frame_debug(graph: &ElkGraph, endpoint: elk_graph::EdgeEndpoint) -> 
             )
         }
     }
-}
-
-fn graph_layout_extent(graph: &ElkGraph) -> LayoutExtent {
-    let mut max_x = 0.0f32;
-    let mut max_y = 0.0f32;
-    for node in &graph.nodes {
-        if node.id == graph.root {
-            continue;
-        }
-        let o = node_abs_origin(graph, node.id);
-        max_x = max_x.max(o.x + node.geometry.width.max(0.0));
-        max_y = max_y.max(o.y + node.geometry.height.max(0.0));
-    }
-    LayoutExtent { max_x, max_y }
 }
 
 fn fanout_lane_bias_by_edge_index(ir: &LayeredIr) -> BTreeMap<usize, i32> {
@@ -595,31 +501,6 @@ pub(crate) fn refresh_all_port_positions(graph: &mut ElkGraph, options: &LayoutO
         .collect();
     for node_id in node_ids {
         layout_ports(graph, node_id, options);
-    }
-}
-
-pub(crate) fn snap_all_edge_terminals_to_endpoints(graph: &mut ElkGraph) {
-    let edge_ids: Vec<EdgeId> = graph.edges.iter().map(|e| e.id).collect();
-    for edge_id in edge_ids {
-        let edge = &graph.edges[edge_id.index()];
-        let (Some(source), Some(target), Some(&first_id), Some(&last_id)) = (
-            edge.sources.first().copied(),
-            edge.targets.first().copied(),
-            edge.sections.first(),
-            edge.sections.last(),
-        ) else {
-            continue;
-        };
-        let start = endpoint_abs_center(graph, source);
-        let end = endpoint_abs_center(graph, target);
-        set_section_start_preserve_orthogonality(&mut graph.edge_sections[first_id.index()], start);
-        set_section_end_preserve_orthogonality(&mut graph.edge_sections[last_id.index()], end);
-        orthogonalize_edge_sections_with_sides(
-            graph,
-            edge_id,
-            endpoint_port_side(graph, source),
-            endpoint_port_side(graph, target),
-        );
     }
 }
 
@@ -964,32 +845,71 @@ fn apply_orthogonal_slot_refinement(
     out
 }
 
-fn build_legacy_orthogonal_bends(
+fn build_orthogonal_route_path(
     graph: &ElkGraph,
     edge: &IrEdge,
     start: Point,
     end: Point,
+    source_side: Option<PortSide>,
+    target_side: Option<PortSide>,
     lane: i32,
     options: &LayoutOptions,
-) -> Vec<Point> {
+) -> Result<Vec<Point>, LayoutError> {
     if (start.x - end.x).abs() <= f32::EPSILON || (start.y - end.y).abs() <= f32::EPSILON {
-        return Vec::new();
+        return Ok(vec![start, end]);
     }
-    let source_side = endpoint_port_side(graph, edge.source);
-    let target_side = endpoint_port_side(graph, edge.target);
-    const PORT_NORMAL_OFFSET: f32 = 8.0;
-    if let (Some(ss), Some(ts)) = (source_side, target_side) {
-        let exit = point_along_outward_normal(start, ss, PORT_NORMAL_OFFSET);
-        let entry = point_along_outward_normal(end, ts, PORT_NORMAL_OFFSET);
-        vec![exit, Point::new(entry.x, exit.y), entry]
-    } else {
-        build_lane_orthogonal_bends(start, end, lane, options)
-    }
+
+    let source_slot = endpoint_slot(graph, edge.original_edge, true);
+    let target_slot = endpoint_slot(graph, edge.original_edge, false);
+    let source_lead = source_side
+        .map(|side| point_along_outward_normal(start, side, terminal_lead_for_slot(source_slot)))
+        .unwrap_or(start);
+    let target_lead = target_side
+        .map(|side| point_along_outward_normal(end, side, terminal_lead_for_slot(target_slot)))
+        .unwrap_or(end);
+    let route_start = source_side
+        .map(|side| point_along_tangent(source_lead, side, source_slot as f32 * TERMINAL_TANGENT_SPACING))
+        .unwrap_or(source_lead);
+    let route_end = target_side
+        .map(|side| point_along_tangent(target_lead, side, target_slot as f32 * TERMINAL_TANGENT_SPACING))
+        .unwrap_or(target_lead);
+
+    let trunk = build_layered_orthogonal_trunk(route_start, route_end, lane, options);
+    let route_points = std::iter::once(route_start)
+        .chain(trunk)
+        .chain(std::iter::once(route_end))
+        .collect::<Vec<_>>();
+
+    sanitize_orthogonal_path(
+        route_points,
+        start,
+        end,
+        source_lead,
+        target_lead,
+        route_start,
+        route_end,
+    )
+    .map_err(LayoutError::Routing)
 }
 
-fn build_staged_orthogonal_bends(
-    graph: &ElkGraph,
-    edge: &IrEdge,
+fn endpoint_slot(graph: &ElkGraph, edge_id: EdgeId, is_source: bool) -> i32 {
+    let key = elk_graph::PropertyKey::from(if is_source {
+        "spec42.endpoint.slot.source"
+    } else {
+        "spec42.endpoint.slot.target"
+    });
+    graph.edges[edge_id.index()]
+        .properties
+        .get(&key)
+        .and_then(|value| value.as_i64())
+        .unwrap_or(0) as i32
+}
+
+fn terminal_lead_for_slot(slot: i32) -> f32 {
+    TERMINAL_NORMAL_OFFSET + slot.max(0) as f32 * (TERMINAL_TANGENT_SPACING * 0.75)
+}
+
+fn build_layered_orthogonal_trunk(
     start: Point,
     end: Point,
     lane: i32,
@@ -999,49 +919,13 @@ fn build_staged_orthogonal_bends(
         return Vec::new();
     }
 
-    // Stage 1: terminal attachment from source/target ports.
-    let (exit, entry, mut bends) = terminal_attachment(graph, edge, start, end);
+    let mut bends = build_lane_orthogonal_bends(start, end, lane, options);
 
-    // Stage 2: trunk path generation with slot/lane guidance.
-    bends.extend(build_lane_orthogonal_bends(exit, entry, lane, options));
-
-    // Stage 3: detour generation for degenerate orthogonal trunks.
+    // Degenerate orthogonal trunks still need one elbow.
     if bends.is_empty() {
-        bends.extend(default_elbow(exit, entry));
-    }
-
-    // Stage 4: enforce final terminal orthogonality and simplification happens later.
-    if let Some(last) = bends.last().copied() {
-        if (last.x - entry.x).abs() > f32::EPSILON && (last.y - entry.y).abs() > f32::EPSILON {
-            bends.push(Point::new(last.x, entry.y));
-        }
+        bends.extend(default_elbow(start, end));
     }
     bends
-}
-
-fn terminal_attachment(
-    graph: &ElkGraph,
-    edge: &IrEdge,
-    start: Point,
-    end: Point,
-) -> (Point, Point, Vec<Point>) {
-    const PORT_NORMAL_OFFSET: f32 = 8.0;
-    let source_side = endpoint_port_side(graph, edge.source);
-    let target_side = endpoint_port_side(graph, edge.target);
-    let mut bends = Vec::new();
-    let exit = if let Some(side) = source_side {
-        let p = point_along_outward_normal(start, side, PORT_NORMAL_OFFSET);
-        bends.push(p);
-        p
-    } else {
-        start
-    };
-    let entry = if let Some(side) = target_side {
-        point_along_outward_normal(end, side, PORT_NORMAL_OFFSET)
-    } else {
-        end
-    };
-    (exit, entry, bends)
 }
 
 fn default_elbow(start: Point, end: Point) -> Vec<Point> {
@@ -1062,10 +946,14 @@ fn build_lane_orthogonal_bends(
     let dx = (end.x - start.x).abs();
     let dy = (end.y - start.y).abs();
     if dx >= dy {
-        let mid_x = (start.x + end.x) * 0.5 + lane_offset;
+        let min_x = start.x.min(end.x);
+        let max_x = start.x.max(end.x);
+        let mid_x = ((start.x + end.x) * 0.5 + lane_offset).clamp(min_x, max_x);
         vec![Point::new(mid_x, start.y), Point::new(mid_x, end.y)]
     } else {
-        let mid_y = (start.y + end.y) * 0.5 + lane_offset;
+        let min_y = start.y.min(end.y);
+        let max_y = start.y.max(end.y);
+        let mid_y = ((start.y + end.y) * 0.5 + lane_offset).clamp(min_y, max_y);
         vec![Point::new(start.x, mid_y), Point::new(end.x, mid_y)]
     }
 }
@@ -1175,22 +1063,6 @@ fn boundary_anchor_for_inner_point(
     }
 }
 
-fn correct_terminal_slants(start: Point, end: Point, bends: Vec<Point>) -> Vec<Point> {
-    if bends.is_empty() {
-        return bends;
-    }
-    let mut out = bends;
-    let first = out[0];
-    if (first.x - start.x).abs() > f32::EPSILON && (first.y - start.y).abs() > f32::EPSILON {
-        out.insert(0, Point::new(first.x, start.y));
-    }
-    let last = *out.last().unwrap_or(&end);
-    if (last.x - end.x).abs() > f32::EPSILON && (last.y - end.y).abs() > f32::EPSILON {
-        out.push(Point::new(last.x, end.y));
-    }
-    dedup_points(out)
-}
-
 fn edge_bundle_lane_offset(graph: &ElkGraph, edge_id: EdgeId) -> i32 {
     let edge = &graph.edges[edge_id.index()];
     let opts = decode_layout_from_props(&edge.properties);
@@ -1199,31 +1071,6 @@ fn edge_bundle_lane_offset(graph: &ElkGraph, edge_id: EdgeId) -> i32 {
         return ((k % 5) as i32) - 2;
     }
     0
-}
-
-fn use_experimental_orthogonal_core(graph: &ElkGraph) -> bool {
-    let by_key = elk_alg_common::options::casefold_map(&graph.properties);
-    for key in [
-        "elk.layered.experimentalorthogonalcore",
-        "org.eclipse.elk.layered.experimentalOrthogonalCore",
-    ] {
-        if let Some(v) = by_key.get(&key.to_ascii_lowercase()) {
-            match v {
-                elk_graph::PropertyValue::Bool(b) => return *b,
-                elk_graph::PropertyValue::String(s) => {
-                    let t = s.trim().to_ascii_lowercase();
-                    if t == "true" {
-                        return true;
-                    }
-                    if t == "false" {
-                        return false;
-                    }
-                }
-                _ => {}
-            }
-        }
-    }
-    true
 }
 
 #[cfg(test)]
