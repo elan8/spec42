@@ -11,6 +11,7 @@ use std::collections::BTreeMap;
 use elk_core::{LayoutDirection, LayoutOptions, Point, PortSide, Rect, Size};
 use elk_graph::{EdgeEndpoint, EdgeId, ElkGraph, NodeId, PropertyValue, ShapeGeometry};
 
+use crate::pipeline::routing::restore_declared_port_terminals;
 use crate::pipeline::util::{
     dedup_points, endpoint_abs_center, endpoint_declared_abs_center, point_along_outward_normal,
 };
@@ -457,7 +458,7 @@ pub fn postprocess_cross_hierarchy_edges(
             graph,
             record.original_target,
             record.effective_target,
-            ctx.routed_target_center,
+            ctx.last_boundary_point,
             ctx.target_side,
             target_shared_splits.get(&edge_id).copied().flatten(),
         );
@@ -529,6 +530,7 @@ pub fn postprocess_cross_hierarchy_edges(
                 end_side,
             );
         }
+        restore_declared_port_terminals(graph, edge_id);
     }
 }
 

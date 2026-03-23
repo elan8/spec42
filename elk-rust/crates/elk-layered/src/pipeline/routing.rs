@@ -113,6 +113,7 @@ pub(crate) fn export_to_graph(
                         endpoint_port_side(graph, source_endpoint),
                         endpoint_port_side(graph, target_endpoint),
                     );
+                    restore_declared_port_terminals(graph, edge.original_edge);
                     if debug_enabled {
                         warnings.push(format!(
                             "elk-layered: edge-scope edge={:?} src_scope={:?} dst_scope={:?} src_frame={} dst_frame={}",
@@ -185,6 +186,7 @@ pub(crate) fn export_to_graph(
             let end = path.last().copied().unwrap_or(end);
             let bends = normalize_bends(bends, keep_unnecessary_bends);
             let _ = graph.add_edge_section(edge.original_edge, start, bends.clone(), end);
+            restore_declared_port_terminals(graph, edge.original_edge);
             restore_nested_endpoint_terminals(graph, edge);
             let (start, end) = section_endpoints(graph, edge.original_edge);
             stats.bend_points += bends.len();
@@ -259,57 +261,90 @@ fn restore_nested_endpoint_terminals(graph: &mut ElkGraph, edge: &IrEdge) {
 
     if edge.source.port.is_none() && edge.source.node != edge.effective_source {
         let start = endpoint_abs_center(graph, edge.source);
-        set_section_start_preserve_orthogonality(&mut graph.edge_sections[first_id.index()], start);
+        set_section_start_preserve_orthogonality(
+            &mut graph.edge_sections[first_id.index()],
+            start,
+            edge.source.port.map(|port| graph.ports[port.index()].side),
+        );
     }
     if edge.target.port.is_none() && edge.target.node != edge.effective_target {
         let end = endpoint_abs_center(graph, edge.target);
-        set_section_end_preserve_orthogonality(&mut graph.edge_sections[last_id.index()], end);
+        set_section_end_preserve_orthogonality(
+            &mut graph.edge_sections[last_id.index()],
+            end,
+            edge.target.port.map(|port| graph.ports[port.index()].side),
+        );
     }
 }
 
-fn set_section_start_preserve_orthogonality(section: &mut elk_graph::EdgeSection, start: Point) {
+fn set_section_start_preserve_orthogonality(
+    section: &mut elk_graph::EdgeSection,
+    start: Point,
+    start_side: Option<PortSide>,
+) {
     section.start = start;
     if section.bend_points.is_empty() {
         if (section.end.x - start.x).abs() > f32::EPSILON && (section.end.y - start.y).abs() > f32::EPSILON {
-            section.bend_points.push(Point::new(section.end.x, start.y));
+            let elbow = orthogonal_endpoint_elbow(start, section.end, start_side, true);
+            section.bend_points.push(elbow);
         }
         return;
     }
     let first = section.bend_points[0];
     if (first.x - start.x).abs() > f32::EPSILON && (first.y - start.y).abs() > f32::EPSILON {
-        let dx = (first.x - start.x).abs();
-        let dy = (first.y - start.y).abs();
-        let elbow = if dx <= dy {
-            Point::new(start.x, first.y)
-        } else {
-            Point::new(first.x, start.y)
-        };
+        let elbow = orthogonal_endpoint_elbow(start, first, start_side, true);
         if elbow != start && elbow != first {
             section.bend_points.insert(0, elbow);
         }
     }
 }
 
-fn set_section_end_preserve_orthogonality(section: &mut elk_graph::EdgeSection, end: Point) {
+fn set_section_end_preserve_orthogonality(
+    section: &mut elk_graph::EdgeSection,
+    end: Point,
+    end_side: Option<PortSide>,
+) {
     section.end = end;
     if section.bend_points.is_empty() {
         if (section.start.x - end.x).abs() > f32::EPSILON && (section.start.y - end.y).abs() > f32::EPSILON {
-            section.bend_points.push(Point::new(section.start.x, end.y));
+            let elbow = orthogonal_endpoint_elbow(end, section.start, end_side, false);
+            section.bend_points.push(elbow);
         }
         return;
     }
     let last_idx = section.bend_points.len() - 1;
     let last = section.bend_points[last_idx];
     if (last.x - end.x).abs() > f32::EPSILON && (last.y - end.y).abs() > f32::EPSILON {
-        let dx = (last.x - end.x).abs();
-        let dy = (last.y - end.y).abs();
-        let elbow = if dx <= dy {
-            Point::new(end.x, last.y)
-        } else {
-            Point::new(last.x, end.y)
-        };
+        let elbow = orthogonal_endpoint_elbow(end, last, end_side, false);
         if elbow != last && elbow != end {
             section.bend_points.push(elbow);
+        }
+    }
+}
+
+fn orthogonal_endpoint_elbow(
+    endpoint: Point,
+    neighbor: Point,
+    side: Option<PortSide>,
+    is_start: bool,
+) -> Point {
+    match side {
+        Some(PortSide::East | PortSide::West) => Point::new(
+            if is_start { neighbor.x } else { neighbor.x },
+            endpoint.y,
+        ),
+        Some(PortSide::North | PortSide::South) => Point::new(
+            endpoint.x,
+            if is_start { neighbor.y } else { neighbor.y },
+        ),
+        None => {
+            let dx = (neighbor.x - endpoint.x).abs();
+            let dy = (neighbor.y - endpoint.y).abs();
+            if dx <= dy {
+                Point::new(endpoint.x, neighbor.y)
+            } else {
+                Point::new(neighbor.x, endpoint.y)
+            }
         }
     }
 }
@@ -510,36 +545,39 @@ pub(crate) fn refresh_all_port_positions(graph: &mut ElkGraph, options: &LayoutO
     for node_id in node_ids {
         layout_ports(graph, node_id, options);
     }
-    snap_edge_terminals_to_declared_ports(graph);
 }
 
-fn snap_edge_terminals_to_declared_ports(graph: &mut ElkGraph) {
-    for edge_idx in 0..graph.edges.len() {
-        let Some(first_section_id) = graph.edges[edge_idx].sections.first().copied() else {
-            continue;
-        };
-        let Some(last_section_id) = graph.edges[edge_idx].sections.last().copied() else {
-            continue;
-        };
+pub(crate) fn restore_declared_port_terminals(graph: &mut ElkGraph, edge_id: EdgeId) {
+    let Some(first_section_id) = graph.edges[edge_id.index()].sections.first().copied() else {
+        return;
+    };
+    let Some(last_section_id) = graph.edges[edge_id.index()].sections.last().copied() else {
+        return;
+    };
 
-        if let Some(source_endpoint) = graph.edges[edge_idx].sources.first().copied() {
-            if source_endpoint.port.is_some() {
-                let anchor = endpoint_declared_abs_center(graph, source_endpoint);
-                set_section_start_preserve_orthogonality(
-                    &mut graph.edge_sections[first_section_id.index()],
-                    anchor,
-                );
-            }
+    if let Some(source_endpoint) = graph.edges[edge_id.index()].sources.first().copied() {
+        if source_endpoint.port.is_some() {
+            let anchor = endpoint_declared_abs_center(graph, source_endpoint);
+            set_section_start_preserve_orthogonality(
+                &mut graph.edge_sections[first_section_id.index()],
+                anchor,
+                source_endpoint
+                    .port
+                    .map(|port| graph.ports[port.index()].side),
+            );
         }
+    }
 
-        if let Some(target_endpoint) = graph.edges[edge_idx].targets.first().copied() {
-            if target_endpoint.port.is_some() {
-                let anchor = endpoint_declared_abs_center(graph, target_endpoint);
-                set_section_end_preserve_orthogonality(
-                    &mut graph.edge_sections[last_section_id.index()],
-                    anchor,
-                );
-            }
+    if let Some(target_endpoint) = graph.edges[edge_id.index()].targets.first().copied() {
+        if target_endpoint.port.is_some() {
+            let anchor = endpoint_declared_abs_center(graph, target_endpoint);
+            set_section_end_preserve_orthogonality(
+                &mut graph.edge_sections[last_section_id.index()],
+                anchor,
+                target_endpoint
+                    .port
+                    .map(|port| graph.ports[port.index()].side),
+            );
         }
     }
 }
@@ -887,17 +925,35 @@ fn build_orthogonal_route_path(
         return Ok(vec![start, end]);
     }
 
-    if let Some(points) = build_java_style_layered_route(
-        graph,
-        edge,
-        start,
-        end,
-        source_side,
-        target_side,
-        lane,
-        options,
-    ) {
-        return Ok(points);
+    let edge_props = &graph.edges[edge.original_edge.index()].properties;
+    let shared_fanout_split = edge_props
+        .get(&elk_graph::PropertyKey::from(SHARED_FANOUT_SPLIT_KEY))
+        .and_then(|value| value.as_f64())
+        .map(|value| value as f32);
+    let source_split = edge_props
+        .get(&elk_graph::PropertyKey::from(SHARED_SOURCE_SPLIT_KEY))
+        .and_then(|value| value.as_f64())
+        .map(|value| value as f32);
+    let target_split = edge_props
+        .get(&elk_graph::PropertyKey::from(SHARED_TARGET_SPLIT_KEY))
+        .and_then(|value| value.as_f64())
+        .map(|value| value as f32);
+    let has_shared_fanout_split =
+        shared_fanout_split.is_some() || source_split.is_some() || target_split.is_some();
+
+    if !has_shared_fanout_split {
+        if let Some(points) = build_java_style_layered_route(
+            graph,
+            edge,
+            start,
+            end,
+            source_side,
+            target_side,
+            lane,
+            options,
+        ) {
+            return Ok(points);
+        }
     }
 
     let source_slot = endpoint_slot(graph, edge.original_edge, true);
@@ -915,19 +971,6 @@ fn build_orthogonal_route_path(
         tangent_route_offset(target_endpoint, target_slot),
     );
 
-    let edge_props = &graph.edges[edge.original_edge.index()].properties;
-    let shared_fanout_split = edge_props
-        .get(&elk_graph::PropertyKey::from(SHARED_FANOUT_SPLIT_KEY))
-        .and_then(|value| value.as_f64())
-        .map(|value| value as f32);
-    let source_split = edge_props
-        .get(&elk_graph::PropertyKey::from(SHARED_SOURCE_SPLIT_KEY))
-        .and_then(|value| value.as_f64())
-        .map(|value| value as f32);
-    let target_split = edge_props
-        .get(&elk_graph::PropertyKey::from(SHARED_TARGET_SPLIT_KEY))
-        .and_then(|value| value.as_f64())
-        .map(|value| value as f32);
     let trunk = build_dual_shared_fanout_trunk(
         route_start,
         route_end,
@@ -1024,27 +1067,53 @@ fn java_style_interlayer_slot_position(
         let source_left = source_bounds.origin.x;
         let target_left = target_bounds.origin.x;
         let target_right = target_bounds.origin.x + target_bounds.size.width;
-        let start_pos = if source_right <= target_left {
-            source_right + edge_node_spacing
+        let (min_pos, max_pos) = if source_right <= target_left {
+            (
+                source_right + edge_node_spacing,
+                target_left - edge_node_spacing,
+            )
         } else if target_right <= source_left {
-            source_left - edge_node_spacing
+            (
+                target_right + edge_node_spacing,
+                source_left - edge_node_spacing,
+            )
         } else {
             return None;
         };
-        Some(start_pos + lane as f32 * edge_spacing)
+        let base_pos = if min_pos <= max_pos {
+            (min_pos + max_pos) * 0.5
+        } else {
+            (source_right + target_left) * 0.5
+        };
+        let corridor_min = min_pos.min(max_pos);
+        let corridor_max = min_pos.max(max_pos);
+        Some((base_pos + lane as f32 * edge_spacing).clamp(corridor_min, corridor_max))
     } else {
         let source_bottom = source_bounds.origin.y + source_bounds.size.height;
         let source_top = source_bounds.origin.y;
         let target_top = target_bounds.origin.y;
         let target_bottom = target_bounds.origin.y + target_bounds.size.height;
-        let start_pos = if source_bottom <= target_top {
-            source_bottom + edge_node_spacing
+        let (min_pos, max_pos) = if source_bottom <= target_top {
+            (
+                source_bottom + edge_node_spacing,
+                target_top - edge_node_spacing,
+            )
         } else if target_bottom <= source_top {
-            source_top - edge_node_spacing
+            (
+                target_bottom + edge_node_spacing,
+                source_top - edge_node_spacing,
+            )
         } else {
             return None;
         };
-        Some(start_pos + lane as f32 * edge_spacing)
+        let base_pos = if min_pos <= max_pos {
+            (min_pos + max_pos) * 0.5
+        } else {
+            (source_bottom + target_top) * 0.5
+        };
+        let corridor_min = min_pos.min(max_pos);
+        let corridor_max = min_pos.max(max_pos);
+        Some((base_pos + lane as f32 * edge_spacing).clamp(corridor_min, corridor_max))
     }
 }
 
@@ -1502,16 +1571,10 @@ fn assign_group_shared_split(
     preserve_existing: bool,
 ) {
     for (group_key, edges) in groups.into_iter() {
-        if edges.len() <= 1 {
+        if edges.len() <= 2 {
             continue;
         }
-        let exempt_edge = (edges.len() == 2).then(|| {
-            shared_fanout_straight_candidate(
-                &edges,
-                group_key.source_side,
-                group_key.target_side,
-            )
-        }).flatten();
+        let exempt_edge = None;
         let split = shared_fanout_split_coordinate(
             &edges,
             options.layered.spacing.segment_spacing.max(8.0),
