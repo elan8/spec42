@@ -551,11 +551,6 @@ fn map_layout_back(
                 .collect::<Result<Vec<_>>>()?,
         });
     }
-    let port_side_by_id: HashMap<&str, PortSide> = nodes
-        .iter()
-        .flat_map(|node| node.ports.iter().map(|port| (port.id.as_str(), port.side.clone())))
-        .collect();
-
     // Debug: detect systematic edge endpoint offsets from ports after layout mapping.
     // This should be empty in normal operation; any entries indicate a routing/compound bug
     // (e.g. hierarchical ports not restored, or missing subtree edge translation).
@@ -575,18 +570,7 @@ fn map_layout_back(
         } else {
             fallback_edge_points(elk_graph, elk_edge, &node_absolute_origins)
         };
-        let mut points = simplify_polyline(raw_points);
-        if !polyline_is_orthogonal(&points) {
-            points = orthogonalize_polyline(
-                points,
-                edge.source_port
-                    .as_deref()
-                    .and_then(|id| port_side_by_id.get(id).cloned()),
-                edge.target_port
-                    .as_deref()
-                    .and_then(|id| port_side_by_id.get(id).cloned()),
-            );
-        }
+        let points = raw_points;
         if debug_enabled && points.len() >= 2 {
             if let Some(src_port) = edge.source_port.as_deref() {
                 let normalized = normalize_port_id(src_port);
@@ -733,11 +717,7 @@ fn edge_section_points(
     let mut points = Vec::new();
     for section_id in &edge.sections {
         let section = &elk_graph.edge_sections[section_id.index()];
-        for point in section_points(section) {
-            if points.last().copied() != Some(point) {
-                points.push(point);
-            }
-        }
+        points.extend(section_points(section));
     }
     points
 }
@@ -791,97 +771,6 @@ fn map_point(point: ElkPoint) -> Point {
         y: point.y,
     }
 }
-
-fn orthogonalize_polyline(
-    points: Vec<Point>,
-    start_side: Option<PortSide>,
-    end_side: Option<PortSide>,
-) -> Vec<Point> {
-    const EPS: f32 = 1e-5;
-    if points.len() < 2 {
-        return points;
-    }
-    let mut out = vec![points[0]];
-    for idx in 0..points.len() - 1 {
-        let a = *out.last().unwrap_or(&points[idx]);
-        let b = points[idx + 1];
-        let dx = (a.x - b.x).abs();
-        let dy = (a.y - b.y).abs();
-        if dx <= EPS && dy <= EPS {
-            continue;
-        }
-        if dx > EPS && dy > EPS {
-            let via = if idx == 0 {
-                match start_side {
-                    Some(PortSide::Left | PortSide::Right) => Point { x: b.x, y: a.y },
-                    Some(PortSide::Top | PortSide::Bottom) => Point { x: a.x, y: b.y },
-                    None => choose_elbow(a, b),
-                }
-            } else if idx + 1 == points.len() - 1 {
-                match end_side {
-                    Some(PortSide::Left | PortSide::Right) => Point { x: a.x, y: b.y },
-                    Some(PortSide::Top | PortSide::Bottom) => Point { x: b.x, y: a.y },
-                    None => choose_elbow(a, b),
-                }
-            } else {
-                choose_elbow(a, b)
-            };
-            if out.last().copied() != Some(via) {
-                out.push(via);
-            }
-        }
-        if out.last().copied() != Some(b) {
-            out.push(b);
-        }
-    }
-    simplify_polyline(out)
-}
-
-fn choose_elbow(a: Point, b: Point) -> Point {
-    let dx = (a.x - b.x).abs();
-    let dy = (a.y - b.y).abs();
-    if dx >= dy {
-        Point { x: b.x, y: a.y }
-    } else {
-        Point { x: a.x, y: b.y }
-    }
-}
-
-fn simplify_polyline(points: Vec<Point>) -> Vec<Point> {
-    let mut out = Vec::with_capacity(points.len());
-    for point in points {
-        if out.last().copied() == Some(point) {
-            continue;
-        }
-        out.push(point);
-        while out.len() >= 3 {
-            let len = out.len();
-            let a = out[len - 3];
-            let b = out[len - 2];
-            let c = out[len - 1];
-            let collinear_x = (a.x - b.x).abs() <= 1e-5 && (b.x - c.x).abs() <= 1e-5;
-            let collinear_y = (a.y - b.y).abs() <= 1e-5 && (b.y - c.y).abs() <= 1e-5;
-            if collinear_x || collinear_y {
-                out.remove(len - 2);
-            } else {
-                break;
-            }
-        }
-    }
-    out
-}
-
-fn polyline_is_orthogonal(points: &[Point]) -> bool {
-    const EPS: f32 = 1e-5;
-    points.windows(2).all(|segment| {
-        let a = segment[0];
-        let b = segment[1];
-        let dx = (a.x - b.x).abs();
-        let dy = (a.y - b.y).abs();
-        dx <= EPS || dy <= EPS
-    })
-}
-
 
 fn canvas_bounds(nodes: &[NodeLayout], edges: &[EdgeLayout], fallback: ElkRect) -> Bounds {
     let mut max_x = fallback.origin.x + fallback.size.width;

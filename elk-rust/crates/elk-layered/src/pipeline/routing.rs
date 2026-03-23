@@ -158,6 +158,12 @@ pub(crate) fn export_to_graph(
             graph.edges[edge_idx].sections.clear();
             let _ = graph.add_edge_section(edge.original_edge, start, bends.clone(), end);
             restore_nested_endpoint_terminals(graph, edge);
+            orthogonalize_edge_sections_with_sides(
+                graph,
+                edge.original_edge,
+                endpoint_port_side(graph, edge.source),
+                endpoint_port_side(graph, edge.target),
+            );
             let (start, end) = section_endpoints(graph, edge.original_edge);
             stats.bend_points += bends.len();
             routed += 1;
@@ -674,6 +680,7 @@ fn ensure_terminal_normals(
 }
 
 fn ensure_start_terminal_normal(points: Vec<Point>, side: PortSide) -> Vec<Point> {
+    const EPS: f32 = 1e-5;
     const PORT_NORMAL_OFFSET: f32 = 8.0;
     if points.len() < 2 {
         return points;
@@ -691,8 +698,22 @@ fn ensure_start_terminal_normal(points: Vec<Point>, side: PortSide) -> Vec<Point
     }
     if route != next {
         let bridge = match side {
-            PortSide::East | PortSide::West => Point::new(route.x, next.y),
-            PortSide::North | PortSide::South => Point::new(next.x, route.y),
+            PortSide::East | PortSide::West => {
+                let bridge_y = if (next.y - route.y).abs() > EPS {
+                    next.y
+                } else {
+                    points.get(2).map(|point| point.y).unwrap_or(route.y)
+                };
+                Point::new(route.x, bridge_y)
+            }
+            PortSide::North | PortSide::South => {
+                let bridge_x = if (next.x - route.x).abs() > EPS {
+                    next.x
+                } else {
+                    points.get(2).map(|point| point.x).unwrap_or(route.x)
+                };
+                Point::new(bridge_x, route.y)
+            }
         };
         if bridge != route && bridge != next {
             rebuilt.push(bridge);
@@ -703,6 +724,7 @@ fn ensure_start_terminal_normal(points: Vec<Point>, side: PortSide) -> Vec<Point
 }
 
 fn ensure_end_terminal_normal(points: Vec<Point>, side: PortSide) -> Vec<Point> {
+    const EPS: f32 = 1e-5;
     const PORT_NORMAL_OFFSET: f32 = 8.0;
     if points.len() < 2 {
         return points;
@@ -717,8 +739,28 @@ fn ensure_end_terminal_normal(points: Vec<Point>, side: PortSide) -> Vec<Point> 
     rebuilt.extend(points.iter().copied().take(points.len() - 1));
     if rebuilt.last().copied() != Some(route) {
         let bridge = match side {
-            PortSide::East | PortSide::West => Point::new(route.x, prev.y),
-            PortSide::North | PortSide::South => Point::new(prev.x, route.y),
+            PortSide::East | PortSide::West => {
+                let bridge_y = if (prev.y - route.y).abs() > EPS {
+                    prev.y
+                } else {
+                    points
+                        .get(points.len().saturating_sub(3))
+                        .map(|point| point.y)
+                        .unwrap_or(route.y)
+                };
+                Point::new(route.x, bridge_y)
+            }
+            PortSide::North | PortSide::South => {
+                let bridge_x = if (prev.x - route.x).abs() > EPS {
+                    prev.x
+                } else {
+                    points
+                        .get(points.len().saturating_sub(3))
+                        .map(|point| point.x)
+                        .unwrap_or(route.x)
+                };
+                Point::new(bridge_x, route.y)
+            }
         };
         if rebuilt.last().copied() != Some(bridge) && bridge != route && bridge != end {
             rebuilt.push(bridge);
@@ -1224,5 +1266,22 @@ mod tests {
                 b
             );
         }
+    }
+
+    #[test]
+    fn ensure_terminal_normals_keeps_outward_stub_for_orthogonal_inward_start() {
+        let points = vec![
+            Point::new(100.0, 50.0),
+            Point::new(100.0, 20.0),
+            Point::new(60.0, 20.0),
+            Point::new(60.0, 120.0),
+        ];
+
+        let fixed = ensure_terminal_normals(points, Some(PortSide::South), Some(PortSide::North));
+
+        assert_eq!(fixed[0], Point::new(100.0, 50.0));
+        assert_eq!(fixed[1], Point::new(100.0, 58.0));
+        assert!(fixed.contains(&Point::new(60.0, 58.0)));
+        assert_eq!(*fixed.last().unwrap_or(&Point::new(0.0, 0.0)), Point::new(60.0, 120.0));
     }
 }
