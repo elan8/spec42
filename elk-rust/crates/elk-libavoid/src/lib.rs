@@ -648,11 +648,39 @@ fn remember_route_segments(
     path_abs: &[Point],
     scope_origin_abs: Point,
 ) {
-    for pair in path_abs.windows(2) {
-        let start = to_local(pair[0], scope_origin_abs);
-        let end = to_local(pair[1], scope_origin_abs);
-        if (start.x - end.x).abs() < 1e-5 || (start.y - end.y).abs() < 1e-5 {
-            occupied_segments.push(OccupiedSegment { start, end });
+    if path_abs.len() < 2 {
+        return;
+    }
+
+    remember_terminal_chain(occupied_segments, path_abs, scope_origin_abs, false);
+}
+
+fn remember_terminal_chain(
+    occupied_segments: &mut Vec<OccupiedSegment>,
+    path_abs: &[Point],
+    scope_origin_abs: Point,
+    from_start: bool,
+) {
+    let pairs = if from_start {
+        path_abs.windows(2).collect::<Vec<_>>()
+    } else {
+        path_abs.windows(2).rev().collect::<Vec<_>>()
+    };
+
+    let mut remembered = 0usize;
+    for pair in pairs {
+        let start_abs = if from_start { pair[0] } else { pair[1] };
+        let end_abs = if from_start { pair[1] } else { pair[0] };
+        let start = to_local(start_abs, scope_origin_abs);
+        let end = to_local(end_abs, scope_origin_abs);
+        let is_orthogonal = (start.x - end.x).abs() < 1e-5 || (start.y - end.y).abs() < 1e-5;
+        if !is_orthogonal {
+            break;
+        }
+        occupied_segments.push(OccupiedSegment { start, end });
+        remembered += 1;
+        if remembered >= 2 {
+            break;
         }
     }
 }
