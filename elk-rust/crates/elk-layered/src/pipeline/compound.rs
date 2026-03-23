@@ -29,6 +29,48 @@ pub struct CompoundRoutingMap {
     pub edges: BTreeMap<EdgeId, CompoundRouteRecord>,
 }
 
+#[derive(Clone, Copy, Debug)]
+struct RebuildContext {
+    edge_id: EdgeId,
+    record: CompoundRouteRecord,
+    source_center: Point,
+    target_center: Point,
+    routed_source_center: Point,
+    routed_target_center: Point,
+    source_side: Option<PortSide>,
+    target_side: Option<PortSide>,
+    first_boundary_point: Point,
+    last_boundary_point: Point,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+struct BranchGroupKey {
+    endpoint_kind: u8,
+    endpoint_index: usize,
+    outer_node: NodeId,
+    boundary_side: u8,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+struct EndpointIdentity {
+    kind: u8,
+    index: usize,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+enum HyperedgeGroupId {
+    Source(EndpointIdentity),
+    Target(EndpointIdentity),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+struct SharedHierarchicalPortKey {
+    node: NodeId,
+    side: u8,
+    bundle_key: Option<u32>,
+    group_id: HyperedgeGroupId,
+}
+
 fn hierarchical_port_side_for_edge(
     _direction: LayoutDirection,
     source_center: elk_core::Point,
@@ -82,6 +124,24 @@ fn place_hierarchical_port_on_boundary(
     }
 }
 
+fn endpoint_identity(endpoint: EdgeEndpoint) -> EndpointIdentity {
+    EndpointIdentity {
+        kind: if endpoint.port.is_some() { 1 } else { 0 },
+        index: endpoint
+            .port
+            .map(|port| port.index())
+            .unwrap_or(endpoint.node.index()),
+    }
+}
+
+fn edge_bundle_key(graph: &ElkGraph, edge_id: EdgeId) -> Option<u32> {
+    graph.edges[edge_id.index()]
+        .properties
+        .get(&elk_graph::PropertyKey::from("elk.edge.bundle"))
+        .and_then(|value| value.as_i64())
+        .and_then(|value| u32::try_from(value).ok())
+}
+
 /// Preprocess cross-hierarchy edges: replace endpoints with hierarchical ports on boundaries.
 /// Returns a map of original endpoints for postprocessing.
 pub fn preprocess_cross_hierarchy_edges(
@@ -99,7 +159,8 @@ pub fn preprocess_cross_hierarchy_edges(
     };
 
     // Collect cross-hierarchy edges to avoid borrow conflicts
-    let mut to_process: Vec<(EdgeId, NodeId, NodeId, EdgeEndpoint, EdgeEndpoint)> = Vec::new();
+    let mut to_process: Vec<(EdgeId, NodeId, NodeId, EdgeEndpoint, EdgeEndpoint, Option<u32>)> =
+        Vec::new();
     for edge in &graph.edges {
         let Some(original_source) = edge.sources.first().copied() else {
             continue;
@@ -135,11 +196,25 @@ pub fn preprocess_cross_hierarchy_edges(
                 effective_target,
                 original_source,
                 original_target,
+                edge_bundle_key(graph, edge.id),
             ));
         }
     }
 
-    for (edge_id, effective_source, effective_target, original_source, original_target) in
+    let mut source_group_counts: BTreeMap<(EndpointIdentity, Option<u32>), usize> = BTreeMap::new();
+    let mut target_group_counts: BTreeMap<(EndpointIdentity, Option<u32>), usize> = BTreeMap::new();
+    for (_, _, _, original_source, original_target, bundle_key) in &to_process {
+        *source_group_counts
+            .entry((endpoint_identity(*original_source), *bundle_key))
+            .or_default() += 1;
+        *target_group_counts
+            .entry((endpoint_identity(*original_target), *bundle_key))
+            .or_default() += 1;
+    }
+
+    let mut shared_ports: BTreeMap<SharedHierarchicalPortKey, elk_graph::PortId> = BTreeMap::new();
+
+    for (edge_id, effective_source, effective_target, original_source, original_target, bundle_key) in
         to_process
     {
         let source_center = endpoint_abs_center(graph, original_source);
@@ -147,10 +222,58 @@ pub fn preprocess_cross_hierarchy_edges(
         let hp_source_side = hierarchical_port_side_for_edge(direction, source_center, target_center, true);
         let hp_target_side = hierarchical_port_side_for_edge(direction, source_center, target_center, false);
 
-        let hp_source = graph.add_port(effective_source, hp_source_side, port_geom);
-        let hp_target = graph.add_port(effective_target, hp_target_side, port_geom);
-        place_hierarchical_port_on_boundary(graph, effective_source, hp_source, hp_source_side);
-        place_hierarchical_port_on_boundary(graph, effective_target, hp_target, hp_target_side);
+        let source_identity = endpoint_identity(original_source);
+        let target_identity = endpoint_identity(original_target);
+        let source_group_size = source_group_counts
+            .get(&(source_identity, bundle_key))
+            .copied()
+            .unwrap_or(0);
+        let target_group_size = target_group_counts
+            .get(&(target_identity, bundle_key))
+            .copied()
+            .unwrap_or(0);
+        let hyperedge_group = if source_group_size > 1 && source_group_size >= target_group_size {
+            Some(HyperedgeGroupId::Source(source_identity))
+        } else if target_group_size > 1 {
+            Some(HyperedgeGroupId::Target(target_identity))
+        } else {
+            None
+        };
+
+        let hp_source = if let Some(group_id) = hyperedge_group {
+            let key = SharedHierarchicalPortKey {
+                node: effective_source,
+                side: side_ordinal(hp_source_side),
+                bundle_key,
+                group_id,
+            };
+            *shared_ports.entry(key).or_insert_with(|| {
+                let port_id = graph.add_port(effective_source, hp_source_side, port_geom);
+                place_hierarchical_port_on_boundary(graph, effective_source, port_id, hp_source_side);
+                port_id
+            })
+        } else {
+            let port_id = graph.add_port(effective_source, hp_source_side, port_geom);
+            place_hierarchical_port_on_boundary(graph, effective_source, port_id, hp_source_side);
+            port_id
+        };
+        let hp_target = if let Some(group_id) = hyperedge_group {
+            let key = SharedHierarchicalPortKey {
+                node: effective_target,
+                side: side_ordinal(hp_target_side),
+                bundle_key,
+                group_id,
+            };
+            *shared_ports.entry(key).or_insert_with(|| {
+                let port_id = graph.add_port(effective_target, hp_target_side, port_geom);
+                place_hierarchical_port_on_boundary(graph, effective_target, port_id, hp_target_side);
+                port_id
+            })
+        } else {
+            let port_id = graph.add_port(effective_target, hp_target_side, port_geom);
+            place_hierarchical_port_on_boundary(graph, effective_target, port_id, hp_target_side);
+            port_id
+        };
 
         let edge = &mut graph.edges[edge_id.index()];
         if let Some(first) = edge.sources.first_mut() {
@@ -183,6 +306,7 @@ pub fn postprocess_cross_hierarchy_edges(
     warnings: &mut Vec<String>,
 ) {
     let debug_enabled = std::env::var_os("SPEC42_ELK_DEBUG").is_some();
+    let mut contexts = Vec::new();
     for (edge_id, record) in &map.edges {
         let routed_source_center = endpoint_abs_center(graph, record.routed_source);
         let routed_target_center = endpoint_abs_center(graph, record.routed_target);
@@ -215,20 +339,81 @@ pub fn postprocess_cross_hierarchy_edges(
             .map(|port| graph.ports[port.index()].side)
             .or_else(|| dominant_side_toward(graph, record.effective_target, routed_source_center));
 
+        let Some(first_boundary_point) = routed_points.first().copied() else {
+            continue;
+        };
+        let Some(last_boundary_point) = routed_points.last().copied() else {
+            continue;
+        };
+
+        contexts.push(RebuildContext {
+            edge_id: *edge_id,
+            record: *record,
+            source_center,
+            target_center,
+            routed_source_center,
+            routed_target_center,
+            source_side,
+            target_side,
+            first_boundary_point,
+            last_boundary_point,
+        });
+    }
+
+    let source_shared_splits = assign_shared_branch_splits(
+        graph,
+        contexts.iter().map(|ctx| {
+            (
+                ctx.edge_id,
+                ctx.record.original_source,
+                ctx.record.effective_source,
+                ctx.source_side,
+                ctx.first_boundary_point,
+            )
+        }),
+    );
+    let target_shared_splits = assign_shared_branch_splits(
+        graph,
+        contexts.iter().map(|ctx| {
+            (
+                ctx.edge_id,
+                ctx.record.original_target,
+                ctx.record.effective_target,
+                ctx.target_side,
+                ctx.last_boundary_point,
+            )
+        }),
+    );
+
+    for ctx in contexts {
+        let edge_id = ctx.edge_id;
+        let record = &ctx.record;
+        let source_center = ctx.source_center;
+        let target_center = ctx.target_center;
+        let mut routed_points = flatten_edge_points(graph, edge_id).unwrap_or_default();
+        if routed_points.is_empty() {
+            continue;
+        }
+        if should_reverse_points(&routed_points, ctx.routed_source_center, ctx.routed_target_center) {
+            routed_points.reverse();
+        }
+
         let mut rebuilt_points = build_endpoint_branch(
             graph,
             record.original_source,
             record.effective_source,
             routed_points[0],
-            source_side,
+            ctx.source_side,
+            source_shared_splits.get(&edge_id).copied().flatten(),
         );
         append_points(&mut rebuilt_points, routed_points.iter().copied().skip(1));
         let target_branch = build_endpoint_branch(
             graph,
             record.original_target,
             record.effective_target,
-            routed_target_center,
-            target_side,
+            ctx.routed_target_center,
+            ctx.target_side,
+            target_shared_splits.get(&edge_id).copied().flatten(),
         );
         let target_branch_reversed = target_branch.into_iter().rev().skip(1).collect::<Vec<_>>();
         append_points(&mut rebuilt_points, target_branch_reversed);
@@ -285,7 +470,7 @@ pub fn postprocess_cross_hierarchy_edges(
         }
         edge.sections.clear();
         let _ = graph.add_edge_section(
-            *edge_id,
+            edge_id,
             points[0],
             points[1..points.len() - 1].to_vec(),
             points[points.len() - 1],
@@ -293,7 +478,7 @@ pub fn postprocess_cross_hierarchy_edges(
         if !polyline_is_orthogonal(&points) {
             orthogonalize_edge_sections_with_sides(
                 graph,
-                *edge_id,
+                edge_id,
                 start_side,
                 end_side,
             );
@@ -500,12 +685,101 @@ fn should_reverse_points(points: &[Point], source_boundary: Point, target_bounda
     backward < forward
 }
 
+fn endpoint_group_key(
+    endpoint: EdgeEndpoint,
+    outer_node: NodeId,
+    boundary_side: Option<PortSide>,
+) -> Option<BranchGroupKey> {
+    let side = boundary_side?;
+    Some(BranchGroupKey {
+        endpoint_kind: if endpoint.port.is_some() { 1 } else { 0 },
+        endpoint_index: endpoint
+            .port
+            .map(|port| port.index())
+            .unwrap_or(endpoint.node.index()),
+        outer_node,
+        boundary_side: side_ordinal(side),
+    })
+}
+
+fn side_ordinal(side: PortSide) -> u8 {
+    match side {
+        PortSide::North => 0,
+        PortSide::East => 1,
+        PortSide::South => 2,
+        PortSide::West => 3,
+    }
+}
+
+fn branch_axis_value(point: Point, side: PortSide) -> f32 {
+    match side {
+        PortSide::East | PortSide::West => point.y,
+        PortSide::North | PortSide::South => point.x,
+    }
+}
+
+fn branch_outward_point(graph: &ElkGraph, endpoint: EdgeEndpoint) -> Option<(PortSide, Point)> {
+    let port_id = endpoint.port?;
+    let port_side = graph.ports[port_id.index()].side;
+    let center = endpoint_abs_center(graph, endpoint);
+    Some((port_side, point_along_outward_normal(center, port_side, 24.0)))
+}
+
+fn assign_shared_branch_splits<I>(
+    graph: &ElkGraph,
+    entries: I,
+) -> BTreeMap<EdgeId, Option<f32>>
+where
+    I: IntoIterator<Item = (EdgeId, EdgeEndpoint, NodeId, Option<PortSide>, Point)>,
+{
+    let mut grouped: BTreeMap<BranchGroupKey, Vec<(EdgeId, EdgeEndpoint, Point)>> = BTreeMap::new();
+    for (edge_id, endpoint, outer_node, boundary_side, boundary_point) in entries {
+        let Some(key) = endpoint_group_key(endpoint, outer_node, boundary_side) else {
+            continue;
+        };
+        grouped.entry(key).or_default().push((edge_id, endpoint, boundary_point));
+    }
+
+    let mut result = BTreeMap::new();
+    for (_key, entries) in grouped {
+        if entries.len() < 2 {
+            continue;
+        }
+        let Some((_, sample_endpoint, _)) = entries.first().copied() else {
+            continue;
+        };
+        let Some((port_side, outward)) = branch_outward_point(graph, sample_endpoint) else {
+            continue;
+        };
+        let origin_axis = branch_axis_value(outward, port_side);
+        let mut values = entries
+            .iter()
+            .map(|(_, _, boundary_point)| branch_axis_value(*boundary_point, port_side))
+            .collect::<Vec<_>>();
+        values.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        let all_non_negative = values.iter().all(|value| *value >= origin_axis + 1e-3);
+        let all_non_positive = values.iter().all(|value| *value <= origin_axis - 1e-3);
+        let split = if all_non_negative {
+            values.first().copied()
+        } else if all_non_positive {
+            values.last().copied()
+        } else {
+            None
+        };
+        for (edge_id, _, _) in entries {
+            result.insert(edge_id, split);
+        }
+    }
+    result
+}
+
 fn build_endpoint_branch(
     graph: &ElkGraph,
     endpoint: EdgeEndpoint,
     outer_node: NodeId,
     boundary_point: Point,
     boundary_side: Option<PortSide>,
+    shared_split: Option<f32>,
 ) -> Vec<Point> {
     const BRANCH_CLEARANCE: f32 = 24.0;
     let mut points = vec![endpoint_abs_center(graph, endpoint)];
@@ -516,10 +790,18 @@ fn build_endpoint_branch(
         let outer_rect = node_abs_rect(graph, outer_node);
         let sibling_obstacles = sibling_obstacle_rects(graph, outer_node, endpoint.node);
         append_orthogonal_connection(&mut points, outward, Some(port_side));
+        if let Some(split) = shared_split {
+            let shared_point = match port_side {
+                PortSide::East | PortSide::West => Point::new(outward.x, split),
+                PortSide::North | PortSide::South => Point::new(split, outward.y),
+            };
+            append_orthogonal_connection(&mut points, shared_point, Some(port_side));
+        }
+        let branch_start = points.last().copied().unwrap_or(outward);
         match port_side {
             PortSide::East | PortSide::West => {
                 let detour_y = choose_clear_horizontal_corridor(
-                    outward,
+                    branch_start,
                     boundary_point,
                     boundary_point.y,
                     outer_rect,
@@ -530,7 +812,7 @@ fn build_endpoint_branch(
                 if let Some(detour_y) = detour_y {
                     append_orthogonal_connection(
                         &mut points,
-                        Point::new(outward.x, detour_y),
+                        Point::new(branch_start.x, detour_y),
                         Some(PortSide::North),
                     );
                     append_orthogonal_connection(
@@ -545,7 +827,7 @@ fn build_endpoint_branch(
             }
             PortSide::North | PortSide::South => {
                 let detour_x = choose_clear_vertical_corridor(
-                    outward,
+                    branch_start,
                     boundary_point,
                     boundary_point.x,
                     outer_rect,
@@ -556,7 +838,7 @@ fn build_endpoint_branch(
                 if let Some(detour_x) = detour_x {
                     append_orthogonal_connection(
                         &mut points,
-                        Point::new(detour_x, outward.y),
+                        Point::new(detour_x, branch_start.y),
                         Some(PortSide::West),
                     );
                     append_orthogonal_connection(
@@ -1253,6 +1535,7 @@ mod tests {
             outer,
             Point::new(100.0, 282.0),
             Some(PortSide::West),
+            None,
         );
 
         let sibling_rect = node_abs_rect(&graph, sibling);

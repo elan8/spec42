@@ -5,17 +5,22 @@ use elk_core::{LayoutError, LayoutOptions, LayoutReport, Point, PortSide, Rect, 
 use std::collections::BTreeSet;
 
 use elk_graph::{ElkGraph, EdgeId, EdgeEndpoint, NodeId};
-use elk_alg_common::orthogonal::{point_along_tangent, sanitize_orthogonal_path};
+use elk_alg_common::orthogonal::{
+    build_shared_orthogonal_trunk, point_along_tangent, sanitize_orthogonal_path,
+};
 
 mod router;
 
 use router::{Obstacle, RoutingFailure, route, route_with_debug};
+use router::path_is_clear;
 
 const DEFAULT_CLEARANCE: f32 = 4.0;
 const DEFAULT_SEGMENT_PENALTY: f32 = 1.0;
 const DEFAULT_BEND_PENALTY: f32 = 6.0;
 const TERMINAL_NORMAL_OFFSET: f32 = 16.0;
 const TERMINAL_TANGENT_SPACING: f32 = 18.0;
+const SHARED_SOURCE_SPLIT_KEY: &str = "spec42.shared.split.source";
+const SHARED_TARGET_SPLIT_KEY: &str = "spec42.shared.split.target";
 
 #[derive(Clone, Copy, Debug)]
 struct RoutePlan {
@@ -23,10 +28,14 @@ struct RoutePlan {
     actual_end_abs: Point,
     start_lead_abs: Point,
     end_lead_abs: Point,
+    route_start_abs: Point,
+    route_end_abs: Point,
     route_start_local: Point,
     route_end_local: Point,
     source_side: Option<PortSide>,
     target_side: Option<PortSide>,
+    shared_source_split: Option<f32>,
+    shared_target_split: Option<f32>,
 }
 
 fn read_penalty_f32(
@@ -106,8 +115,9 @@ impl LibavoidLayoutEngine {
                 Point::new(0.0, 0.0),
                 None,
             );
-            let path = route(plan.route_start_local, plan.route_end_local, &obstacles, segment_penalty, bend_penalty)
-                .map_err(|e| routing_failure_to_layout_error(edge_id, e))?;
+            let path = build_shared_route_path_local(&plan, Point::new(0.0, 0.0), &obstacles)
+                .unwrap_or(route(plan.route_start_local, plan.route_end_local, &obstacles, segment_penalty, bend_penalty)
+                .map_err(|e| routing_failure_to_layout_error(edge_id, e))?);
             let path = finalize_route_path(
                 path,
                 plan.actual_start_abs,
@@ -208,7 +218,11 @@ pub fn route_edges_with_diagnostics_in_scope(
         let plan = build_route_plan(graph, edge_id, scope_origin_abs, clearance);
         let excluded = excluded_obstacle_nodes(graph, edge_id, plan.source_side, plan.target_side);
         let obstacles = collect_obstacles(graph, clearance, &excluded, scope_origin_abs, scope_nodes);
-        let (path, route_dbg) = if debug_enabled {
+        let (path, route_dbg) = if let Some(path) =
+            build_shared_route_path_local(&plan, scope_origin_abs, &obstacles)
+        {
+            (path, router::RouteDebug::default())
+        } else if debug_enabled {
             route_with_debug(
                 plan.route_start_local,
                 plan.route_end_local,
@@ -335,10 +349,14 @@ fn build_route_plan(
         actual_end_abs,
         start_lead_abs,
         end_lead_abs,
+        route_start_abs,
+        route_end_abs,
         route_start_local: to_local(route_start_abs, scope_origin_abs),
         route_end_local: to_local(route_end_abs, scope_origin_abs),
         source_side,
         target_side,
+        shared_source_split: read_shared_split(graph, edge_id, true),
+        shared_target_split: read_shared_split(graph, edge_id, false),
     }
 }
 
@@ -380,6 +398,56 @@ fn endpoint_slot(graph: &ElkGraph, edge_id: EdgeId, is_source: bool) -> i32 {
         .get(&key)
         .and_then(|value| value.as_i64())
         .unwrap_or(0) as i32
+}
+
+fn read_shared_split(
+    graph: &ElkGraph,
+    edge_id: EdgeId,
+    is_source: bool,
+) -> Option<f32> {
+    let key = elk_graph::PropertyKey::from(if is_source {
+        SHARED_SOURCE_SPLIT_KEY
+    } else {
+        SHARED_TARGET_SPLIT_KEY
+    });
+    graph.edges[edge_id.index()]
+        .properties
+        .get(&key)
+        .and_then(|value| value.as_f64())
+        .map(|value| value as f32)
+}
+
+fn build_shared_route_path_local(
+    plan: &RoutePlan,
+    scope_origin_abs: Point,
+    obstacles: &[Obstacle],
+) -> Option<Vec<Point>> {
+    let source_side = plan.source_side?;
+    let target_side = plan.target_side?;
+    for split in [plan.shared_source_split, plan.shared_target_split]
+        .into_iter()
+        .flatten()
+    {
+        let bends = build_shared_orthogonal_trunk(
+            plan.route_start_abs,
+            plan.route_end_abs,
+            source_side,
+            target_side,
+            split,
+        )?;
+        let route_abs = std::iter::once(plan.route_start_abs)
+            .chain(bends.into_iter())
+            .chain(std::iter::once(plan.route_end_abs))
+            .collect::<Vec<_>>();
+        let route_local = route_abs
+            .into_iter()
+            .map(|point| to_local(point, scope_origin_abs))
+            .collect::<Vec<_>>();
+        if path_is_clear(&route_local, obstacles) {
+            return Some(route_local);
+        }
+    }
+    None
 }
 
 fn routing_failure_to_layout_error(edge_id: EdgeId, failure: RoutingFailure) -> LayoutError {
@@ -520,21 +588,8 @@ fn endpoint_anchor_for_routing(
     slot: i32,
 ) -> Point {
     if let Some(port_id) = endpoint.port {
-        let center = endpoint_center(graph, endpoint);
-        let port = &graph.ports[port_id.index()];
-        let node = &graph.nodes[port.node.index()];
-        let origin = node_abs_origin(graph, port.node);
-        let tangent = slot as f32 * TERMINAL_TANGENT_SPACING;
-        let margin = 12.0;
-        let min_x = origin.x + margin;
-        let max_x = (origin.x + node.geometry.width - margin).max(min_x);
-        let min_y = origin.y + margin;
-        let max_y = (origin.y + node.geometry.height - margin).max(min_y);
-
-        return match side {
-            PortSide::North | PortSide::South => Point::new((center.x + tangent).clamp(min_x, max_x), center.y),
-            PortSide::East | PortSide::West => Point::new(center.x, (center.y + tangent).clamp(min_y, max_y)),
-        };
+        let _ = (port_id, side, slot);
+        return endpoint_center(graph, endpoint);
     }
 
     let node = &graph.nodes[endpoint.node.index()];

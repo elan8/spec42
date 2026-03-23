@@ -85,6 +85,10 @@ fn segment_intersects_obstacle(a: Point, b: Point, obstacles: &[Obstacle]) -> bo
     false
 }
 
+pub(crate) fn path_is_clear(points: &[Point], obstacles: &[Obstacle]) -> bool {
+    points.windows(2).all(|pair| !segment_intersects_obstacle(pair[0], pair[1], obstacles))
+}
+
 fn orthogonal_visible_neighbors(
     from: Point,
     points: &[Point],

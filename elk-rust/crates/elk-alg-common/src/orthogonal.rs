@@ -7,6 +7,35 @@ pub fn point_along_tangent(point: Point, side: PortSide, offset: f32) -> Point {
     }
 }
 
+pub fn build_shared_orthogonal_trunk(
+    start: Point,
+    end: Point,
+    source_side: PortSide,
+    target_side: PortSide,
+    split: f32,
+) -> Option<Vec<Point>> {
+    let bends = match (source_side, target_side) {
+        (PortSide::South, PortSide::North) | (PortSide::North, PortSide::South) => {
+            let min_y = start.y.min(end.y);
+            let max_y = start.y.max(end.y);
+            if split <= min_y || split >= max_y {
+                return None;
+            }
+            vec![Point::new(start.x, split), Point::new(end.x, split)]
+        }
+        (PortSide::East, PortSide::West) | (PortSide::West, PortSide::East) => {
+            let min_x = start.x.min(end.x);
+            let max_x = start.x.max(end.x);
+            if split <= min_x || split >= max_x {
+                return None;
+            }
+            vec![Point::new(split, start.y), Point::new(split, end.y)]
+        }
+        _ => return None,
+    };
+    Some(simplify_orthogonal_points(bends))
+}
+
 pub fn simplify_orthogonal_points(points: Vec<Point>) -> Vec<Point> {
     let mut out = Vec::with_capacity(points.len());
     for point in points {

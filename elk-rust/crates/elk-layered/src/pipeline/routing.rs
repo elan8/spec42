@@ -3,7 +3,8 @@ use std::collections::{BTreeMap, BTreeSet};
 use elk_core::{EdgeRouting, LayoutError, LayoutOptions, LayoutStats, Point, PortSide, Rect, Size};
 use elk_graph::{ElkGraph, EdgeId, NodeId, PortId};
 use elk_alg_common::orthogonal::{
-    point_along_tangent, sanitize_orthogonal_path, simplify_orthogonal_points,
+    build_shared_orthogonal_trunk, point_along_tangent, sanitize_orthogonal_path,
+    simplify_orthogonal_points,
 };
 
 use crate::ir::{IrEdge, LayeredIr};
@@ -17,6 +18,8 @@ use crate::pipeline::util::{
 const TERMINAL_NORMAL_OFFSET: f32 = 16.0;
 const TERMINAL_TANGENT_SPACING: f32 = 18.0;
 const SHARED_FANOUT_SPLIT_KEY: &str = "spec42.shared.fanout.split";
+const SHARED_SOURCE_SPLIT_KEY: &str = "spec42.shared.split.source";
+const SHARED_TARGET_SPLIT_KEY: &str = "spec42.shared.split.target";
 
 pub(crate) fn export_to_graph(
     graph: &mut ElkGraph,
@@ -51,6 +54,12 @@ pub(crate) fn export_to_graph(
     if !use_libavoid && matches!(options.view_profile, elk_core::ViewProfile::InterconnectionView) {
         warnings.push("elk-layered: libavoid not selected for interconnection; using layered orthogonal router".to_string());
     }
+
+    let edge_lane_by_index = edge_lane_by_ir_index(ir);
+    let fanout_lane_bias_by_index = fanout_lane_bias_by_edge_index(ir);
+    let keep_unnecessary_bends = keep_unnecessary_bends(graph);
+    assign_endpoint_slots(graph, ir, local_nodes, options);
+    assign_shared_fanout_splits(graph, ir, local_nodes, options);
 
     if use_libavoid {
         let local_edge_ids: Vec<EdgeId> = ir.edges
@@ -128,12 +137,6 @@ pub(crate) fn export_to_graph(
             warnings.push("elk-layered: libavoid routing backend active".to_string());
         }
     }
-
-    let edge_lane_by_index = edge_lane_by_ir_index(ir);
-    let fanout_lane_bias_by_index = fanout_lane_bias_by_edge_index(ir);
-    let keep_unnecessary_bends = keep_unnecessary_bends(graph);
-    assign_endpoint_slots(graph, ir, local_nodes, options);
-    assign_shared_fanout_splits(graph, ir, local_nodes, options);
 
     if !use_libavoid {
         for edge in &ir.edges {
@@ -956,26 +959,8 @@ fn build_shared_fanout_trunk(
     target_side: PortSide,
     split: f32,
 ) -> Option<Vec<Point>> {
-    let bends = match (source_side, target_side) {
-        (PortSide::South, PortSide::North) | (PortSide::North, PortSide::South) => {
-            let min_y = start.y.min(end.y);
-            let max_y = start.y.max(end.y);
-            if split <= min_y || split >= max_y {
-                return None;
-            }
-            vec![Point::new(start.x, split), Point::new(end.x, split)]
-        }
-        (PortSide::East, PortSide::West) | (PortSide::West, PortSide::East) => {
-            let min_x = start.x.min(end.x);
-            let max_x = start.x.max(end.x);
-            if split <= min_x || split >= max_x {
-                return None;
-            }
-            vec![Point::new(split, start.y), Point::new(split, end.y)]
-        }
-        _ => return None,
-    };
-    Some(normalize_bends(bends, false))
+    build_shared_orthogonal_trunk(start, end, source_side, target_side, split)
+        .map(|bends| normalize_bends(bends, false))
 }
 
 fn tangent_route_offset(endpoint: elk_graph::EdgeEndpoint, slot: i32) -> f32 {
@@ -1016,25 +1001,8 @@ fn endpoint_anchor_for_routing(
     slot: i32,
 ) -> Point {
     if let Some(port_id) = endpoint.port {
-        let center = endpoint_abs_center(graph, endpoint);
-        let port = &graph.ports[port_id.index()];
-        let origin = node_abs_origin(graph, port.node);
-        let node = &graph.nodes[port.node.index()];
-        let tangent = slot as f32 * TERMINAL_TANGENT_SPACING;
-        let margin = 12.0;
-        let min_x = origin.x + margin;
-        let max_x = (origin.x + node.geometry.width - margin).max(min_x);
-        let min_y = origin.y + margin;
-        let max_y = (origin.y + node.geometry.height - margin).max(min_y);
-
-        return match side {
-            PortSide::North | PortSide::South => {
-                Point::new((center.x + tangent).clamp(min_x, max_x), center.y)
-            }
-            PortSide::East | PortSide::West => {
-                Point::new(center.x, (center.y + tangent).clamp(min_y, max_y))
-            }
-        };
+        let _ = (port_id, side, slot);
+        return endpoint_abs_center(graph, endpoint);
     }
 
     let node = &graph.nodes[endpoint.node.index()];
@@ -1277,21 +1245,17 @@ fn assign_group_shared_split(
             options.layered.spacing.segment_spacing.max(8.0),
             group_key.source_side,
             group_key.target_side,
+            preserve_existing,
         );
         for (edge_id, source_lead, target_lead) in edges {
-            if preserve_existing
-                && graph.edges[edge_id.index()]
-                    .properties
-                    .get(&elk_graph::PropertyKey::from(SHARED_FANOUT_SPLIT_KEY))
-                    .and_then(|value| value.as_f64())
-                    .is_some()
-            {
-                continue;
-            }
             if is_valid_shared_split(source_lead, target_lead, split, group_key.source_side, group_key.target_side) {
-                graph.edges[edge_id.index()]
-                    .properties
-                    .insert(SHARED_FANOUT_SPLIT_KEY, elk_graph::PropertyValue::Float(split as f64));
+                let edge_props = &mut graph.edges[edge_id.index()].properties;
+                if preserve_existing {
+                    edge_props.insert(SHARED_TARGET_SPLIT_KEY, elk_graph::PropertyValue::Float(split as f64));
+                } else {
+                    edge_props.insert(SHARED_SOURCE_SPLIT_KEY, elk_graph::PropertyValue::Float(split as f64));
+                    edge_props.insert(SHARED_FANOUT_SPLIT_KEY, elk_graph::PropertyValue::Float(split as f64));
+                }
             }
         }
     }
@@ -1312,30 +1276,57 @@ fn shared_fanout_split_coordinate(
     spacing: f32,
     source_side: u8,
     target_side: u8,
+    preserve_existing: bool,
 ) -> f32 {
-    match (source_side, target_side) {
-        (2, 0) => {
-            edges
-                .iter()
-                .map(|(_, _, target)| target.y)
-                .fold(f32::INFINITY, f32::min)
-                - spacing
-        }
-        (0, 2) => {
-            edges
-                .iter()
-                .map(|(_, _, target)| target.y)
-                .fold(f32::NEG_INFINITY, f32::max)
-                + spacing
-        }
-        (1, 3) => edges
+    let source_coord = |point: Point| match source_side {
+        0 | 2 => point.y,
+        1 | 3 => point.x,
+        _ => point.y,
+    };
+    let target_coord = |point: Point| match target_side {
+        0 | 2 => point.y,
+        1 | 3 => point.x,
+        _ => point.y,
+    };
+    match (source_side, target_side, preserve_existing) {
+        (2, 0, false) => edges
             .iter()
-            .map(|(_, _, target)| target.x)
+            .map(|(_, source, _)| source_coord(*source))
+            .fold(f32::NEG_INFINITY, f32::max)
+            + spacing,
+        (0, 2, false) => edges
+            .iter()
+            .map(|(_, source, _)| source_coord(*source))
             .fold(f32::INFINITY, f32::min)
             - spacing,
-        (3, 1) => edges
+        (1, 3, false) => edges
             .iter()
-            .map(|(_, _, target)| target.x)
+            .map(|(_, source, _)| source_coord(*source))
+            .fold(f32::NEG_INFINITY, f32::max)
+            + spacing,
+        (3, 1, false) => edges
+            .iter()
+            .map(|(_, source, _)| source_coord(*source))
+            .fold(f32::INFINITY, f32::min)
+            - spacing,
+        (2, 0, true) => edges
+            .iter()
+            .map(|(_, _, target)| target_coord(*target))
+            .fold(f32::INFINITY, f32::min)
+            - spacing,
+        (0, 2, true) => edges
+            .iter()
+            .map(|(_, _, target)| target_coord(*target))
+            .fold(f32::NEG_INFINITY, f32::max)
+            + spacing,
+        (1, 3, true) => edges
+            .iter()
+            .map(|(_, _, target)| target_coord(*target))
+            .fold(f32::INFINITY, f32::min)
+            - spacing,
+        (3, 1, true) => edges
+            .iter()
+            .map(|(_, _, target)| target_coord(*target))
             .fold(f32::NEG_INFINITY, f32::max)
             + spacing,
         _ => edges[0].2.y,
@@ -1782,7 +1773,7 @@ mod tests {
     }
 
     #[test]
-    fn build_orthogonal_route_path_uses_slotted_port_anchor() {
+    fn build_orthogonal_route_path_keeps_explicit_port_anchor() {
         let mut graph = ElkGraph::new();
         let source_left = graph.add_node(
             graph.root,
@@ -1874,11 +1865,9 @@ mod tests {
         )
         .unwrap();
 
-        let target_port_center_x = endpoint_abs_center(&graph, right_target).x;
-        assert_ne!(left_path.last().unwrap().x, target_port_center_x);
-        assert_ne!(right_path.last().unwrap().x, target_port_center_x);
-        assert_ne!(left_path.last().unwrap().x, right_path.last().unwrap().x);
-        assert!(left_path.last().unwrap().x < right_path.last().unwrap().x);
+        let target_port_center = endpoint_abs_center(&graph, right_target);
+        assert_eq!(left_path.last().copied().unwrap(), target_port_center);
+        assert_eq!(right_path.last().copied().unwrap(), target_port_center);
     }
 
     #[test]
