@@ -11,7 +11,9 @@ use std::collections::BTreeMap;
 use elk_core::{LayoutDirection, LayoutOptions, Point, PortSide, Rect, Size};
 use elk_graph::{EdgeEndpoint, EdgeId, ElkGraph, NodeId, PropertyValue, ShapeGeometry};
 
-use crate::pipeline::util::{dedup_points, endpoint_abs_center, point_along_outward_normal};
+use crate::pipeline::util::{
+    dedup_points, endpoint_abs_center, endpoint_declared_abs_center, point_along_outward_normal,
+};
 
 #[derive(Clone, Copy, Debug)]
 pub struct CompoundRouteRecord {
@@ -354,8 +356,8 @@ pub fn postprocess_cross_hierarchy_edges(
     for (edge_id, record) in &map.edges {
         let routed_source_center = endpoint_abs_center(graph, record.routed_source);
         let routed_target_center = endpoint_abs_center(graph, record.routed_target);
-        let source_center = endpoint_abs_center(graph, record.original_source);
-        let target_center = endpoint_abs_center(graph, record.original_target);
+        let source_center = endpoint_declared_abs_center(graph, record.original_source);
+        let target_center = endpoint_declared_abs_center(graph, record.original_target);
 
         let Some(mut routed_points) = flatten_edge_points(graph, *edge_id) else {
             let edge = &mut graph.edges[edge_id.index()];
@@ -912,7 +914,7 @@ fn build_endpoint_branch(
     shared_split: Option<f32>,
 ) -> Vec<Point> {
     const BRANCH_CLEARANCE: f32 = 24.0;
-    let mut points = vec![endpoint_abs_center(graph, endpoint)];
+    let mut points = vec![endpoint_declared_abs_center(graph, endpoint)];
     if let Some(port_id) = endpoint.port {
         let port_side = graph.ports[port_id.index()].side;
         let outward = point_along_outward_normal(points[0], port_side, BRANCH_CLEARANCE);

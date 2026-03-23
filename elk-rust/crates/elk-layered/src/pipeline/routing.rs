@@ -10,8 +10,8 @@ use elk_alg_common::orthogonal::{
 use crate::ir::{IrEdge, LayeredIr};
 use crate::pipeline::props::decode_layout_from_props;
 use crate::pipeline::util::{
-    dedup_points, endpoint_abs_center, endpoint_port_side, label_size, local_scope_frame,
-    node_abs_origin, point_along_outward_normal,
+    dedup_points, endpoint_abs_center, endpoint_declared_abs_center, endpoint_port_side,
+    label_size, local_scope_frame, node_abs_origin, point_along_outward_normal,
 };
 
 const TERMINAL_NORMAL_OFFSET: f32 = 16.0;
@@ -279,11 +279,14 @@ fn set_section_start_preserve_orthogonality(section: &mut elk_graph::EdgeSection
     if (first.x - start.x).abs() > f32::EPSILON && (first.y - start.y).abs() > f32::EPSILON {
         let dx = (first.x - start.x).abs();
         let dy = (first.y - start.y).abs();
-        section.bend_points[0] = if dx <= dy {
+        let elbow = if dx <= dy {
             Point::new(start.x, first.y)
         } else {
             Point::new(first.x, start.y)
         };
+        if elbow != start && elbow != first {
+            section.bend_points.insert(0, elbow);
+        }
     }
 }
 
@@ -300,11 +303,14 @@ fn set_section_end_preserve_orthogonality(section: &mut elk_graph::EdgeSection, 
     if (last.x - end.x).abs() > f32::EPSILON && (last.y - end.y).abs() > f32::EPSILON {
         let dx = (last.x - end.x).abs();
         let dy = (last.y - end.y).abs();
-        section.bend_points[last_idx] = if dx <= dy {
+        let elbow = if dx <= dy {
             Point::new(end.x, last.y)
         } else {
             Point::new(last.x, end.y)
         };
+        if elbow != last && elbow != end {
+            section.bend_points.push(elbow);
+        }
     }
 }
 
@@ -503,6 +509,38 @@ pub(crate) fn refresh_all_port_positions(graph: &mut ElkGraph, options: &LayoutO
         .collect();
     for node_id in node_ids {
         layout_ports(graph, node_id, options);
+    }
+    snap_edge_terminals_to_declared_ports(graph);
+}
+
+fn snap_edge_terminals_to_declared_ports(graph: &mut ElkGraph) {
+    for edge_idx in 0..graph.edges.len() {
+        let Some(first_section_id) = graph.edges[edge_idx].sections.first().copied() else {
+            continue;
+        };
+        let Some(last_section_id) = graph.edges[edge_idx].sections.last().copied() else {
+            continue;
+        };
+
+        if let Some(source_endpoint) = graph.edges[edge_idx].sources.first().copied() {
+            if source_endpoint.port.is_some() {
+                let anchor = endpoint_declared_abs_center(graph, source_endpoint);
+                set_section_start_preserve_orthogonality(
+                    &mut graph.edge_sections[first_section_id.index()],
+                    anchor,
+                );
+            }
+        }
+
+        if let Some(target_endpoint) = graph.edges[edge_idx].targets.first().copied() {
+            if target_endpoint.port.is_some() {
+                let anchor = endpoint_declared_abs_center(graph, target_endpoint);
+                set_section_end_preserve_orthogonality(
+                    &mut graph.edge_sections[last_section_id.index()],
+                    anchor,
+                );
+            }
+        }
     }
 }
 
@@ -1467,11 +1505,13 @@ fn assign_group_shared_split(
         if edges.len() <= 1 {
             continue;
         }
-        let exempt_edge = shared_fanout_straight_candidate(
-            &edges,
-            group_key.source_side,
-            group_key.target_side,
-        );
+        let exempt_edge = (edges.len() == 2).then(|| {
+            shared_fanout_straight_candidate(
+                &edges,
+                group_key.source_side,
+                group_key.target_side,
+            )
+        }).flatten();
         let split = shared_fanout_split_coordinate(
             &edges,
             options.layered.spacing.segment_spacing.max(8.0),
@@ -1485,11 +1525,11 @@ fn assign_group_shared_split(
             }
             if is_valid_shared_split(source_lead, target_lead, split, group_key.source_side, group_key.target_side) {
                 let edge_props = &mut graph.edges[edge_id.index()].properties;
+                edge_props.insert(SHARED_FANOUT_SPLIT_KEY, elk_graph::PropertyValue::Float(split as f64));
                 if preserve_existing {
                     edge_props.insert(SHARED_TARGET_SPLIT_KEY, elk_graph::PropertyValue::Float(split as f64));
                 } else {
                     edge_props.insert(SHARED_SOURCE_SPLIT_KEY, elk_graph::PropertyValue::Float(split as f64));
-                    edge_props.insert(SHARED_FANOUT_SPLIT_KEY, elk_graph::PropertyValue::Float(split as f64));
                 }
             }
         }
@@ -1645,7 +1685,7 @@ fn symmetric_slot(index: usize, count: usize) -> i32 {
         return 0;
     }
     if count == 2 {
-        return index as i32;
+        return if index == 0 { -1 } else { 1 };
     }
     let mid = count / 2;
     if count % 2 == 1 {

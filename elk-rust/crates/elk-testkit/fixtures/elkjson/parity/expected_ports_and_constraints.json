@@ -2,68 +2,79 @@
   "children": [
     {
       "height": 80.0,
-      "id": "n1",
+      "id": "left",
+      "layoutOptions": {
+        "spec42.original_json_id": "left"
+      },
       "ports": [
         {
           "height": 10.0,
-          "id": "p0",
+          "id": "p_out",
           "layoutOptions": {
             "elk.port.side": "EAST",
-            "port.side": "EAST"
+            "port.side": "EAST",
+            "spec42.original_json_id": "p_out"
           },
           "width": 10.0,
-          "x": 139.0,
-          "y": 59.0
+          "x": 120.0,
+          "y": 35.0
         }
       ],
       "width": 120.0,
       "x": 24.0,
-      "y": 24.0
+      "y": 64.0
     },
     {
       "height": 80.0,
-      "id": "n2",
+      "id": "right",
+      "layoutOptions": {
+        "spec42.original_json_id": "right"
+      },
       "ports": [
         {
           "height": 10.0,
-          "id": "p1",
+          "id": "p_in",
           "layoutOptions": {
             "elk.port.side": "WEST",
-            "port.side": "WEST"
+            "port.side": "WEST",
+            "spec42.original_json_id": "p_in"
           },
           "width": 10.0,
-          "x": 219.0,
-          "y": 59.0
+          "x": -10.0,
+          "y": 35.0
         }
       ],
       "width": 120.0,
       "x": 224.0,
-      "y": 24.0
+      "y": 64.0
     }
   ],
   "edges": [
     {
-      "id": "e0",
+      "id": "e1",
       "layoutOptions": {
-        "elk.edgeRouting": "POLYLINE"
+        "elk.edgeRouting": "POLYLINE",
+        "spec42.endpoint.slot.source": 0,
+        "spec42.endpoint.slot.target": 0,
+        "spec42.original_json_id": "e1"
       },
       "sections": [
         {
           "endPoint": {
-            "x": 224.0,
-            "y": 64.0
+            "x": 219.0,
+            "y": 104.0
           },
           "startPoint": {
-            "x": 144.0,
-            "y": 64.0
+            "x": 149.0,
+            "y": 104.0
           }
         }
       ],
       "sources": [
-        "p0"
+        "p_out"
       ],
       "targets": [
-        "p1"
+        "p_in"
       ]
     }
   ],
@@ -71,7 +82,8 @@
   "id": "root",
   "layoutOptions": {
     "elk.direction": "RIGHT",
-    "elk.portConstraints": "FIXED_ORDER"
+    "elk.portConstraints": "FIXED_ORDER",
+    "spec42.original_json_id": "root"
   },
   "width": 368.0,
   "x": 0.0,

@@ -168,9 +168,26 @@ pub(crate) fn port_abs_center(graph: &ElkGraph, port: PortId) -> Point {
     }
 }
 
+pub(crate) fn port_declared_abs_center(graph: &ElkGraph, port: PortId) -> Point {
+    let p = &graph.ports[port.index()];
+    let n = node_abs_origin(graph, p.node);
+    Point::new(
+        n.x + p.geometry.x + p.geometry.width / 2.0,
+        n.y + p.geometry.y + p.geometry.height / 2.0,
+    )
+}
+
 pub(crate) fn endpoint_abs_center(graph: &ElkGraph, endpoint: EdgeEndpoint) -> Point {
     if let Some(port) = endpoint.port {
         port_abs_center(graph, port)
+    } else {
+        node_abs_center(graph, endpoint.node)
+    }
+}
+
+pub(crate) fn endpoint_declared_abs_center(graph: &ElkGraph, endpoint: EdgeEndpoint) -> Point {
+    if let Some(port) = endpoint.port {
+        port_declared_abs_center(graph, port)
     } else {
         node_abs_center(graph, endpoint.node)
     }
@@ -296,5 +313,42 @@ mod tests {
 
         assert_eq!(super::port_abs_center(&graph, east), Point::new(160.0, 70.0));
         assert_eq!(super::port_abs_center(&graph, west), Point::new(20.0, 90.0));
+    }
+
+    #[test]
+    fn port_declared_abs_center_uses_port_box_center() {
+        let mut graph = ElkGraph::new();
+        let node = graph.add_node(
+            graph.root,
+            ShapeGeometry {
+                x: 20.0,
+                y: 40.0,
+                width: 140.0,
+                height: 80.0,
+            },
+        );
+        let east = graph.add_port(
+            node,
+            PortSide::East,
+            ShapeGeometry {
+                x: 140.0,
+                y: 24.0,
+                width: 10.0,
+                height: 12.0,
+            },
+        );
+        let south = graph.add_port(
+            node,
+            PortSide::South,
+            ShapeGeometry {
+                x: 60.0,
+                y: 80.0,
+                width: 10.0,
+                height: 10.0,
+            },
+        );
+
+        assert_eq!(super::port_declared_abs_center(&graph, east), Point::new(165.0, 70.0));
+        assert_eq!(super::port_declared_abs_center(&graph, south), Point::new(85.0, 125.0));
     }
 }

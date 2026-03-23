@@ -56,9 +56,11 @@ pub(crate) fn layout_subgraph(
             let child_bounds = layout_subgraph(graph, &children, options, report)?;
             // `layout_subgraph` already returns bounds that include `options.layered.padding`.
             // Adding padding again here would inflate containers exponentially with nesting depth.
+            let (child_extent_width, child_extent_height) =
+                compound_child_extent(graph, &children);
             let node = &mut graph.nodes[node_id.index()];
-            node.geometry.width = child_bounds.size.width;
-            node.geometry.height = child_bounds.size.height;
+            node.geometry.width = child_bounds.size.width.max(child_extent_width);
+            node.geometry.height = child_bounds.size.height.max(child_extent_height);
         }
     }
 
@@ -144,6 +146,17 @@ pub(crate) fn layout_subgraph(
     postprocess_cross_hierarchy_edges(graph, &compound_map, &mut report.warnings);
 
     Ok(placement.bounds)
+}
+
+fn compound_child_extent(graph: &ElkGraph, children: &[NodeId]) -> (f32, f32) {
+    let mut max_x = 0.0f32;
+    let mut max_y = 0.0f32;
+    for child_id in children {
+        let child = &graph.nodes[child_id.index()].geometry;
+        max_x = max_x.max(child.x + child.width);
+        max_y = max_y.max(child.y + child.height);
+    }
+    (max_x.max(0.0), max_y.max(0.0))
 }
 
 fn rehome_edges_to_nearest_scope_container(graph: &mut ElkGraph, scope_container: NodeId) {
