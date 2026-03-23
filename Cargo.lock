@@ -423,6 +423,7 @@ dependencies = [
  "elk-layered",
  "elk-service",
  "proptest",
+ "serde",
  "serde_json",
 ]
 

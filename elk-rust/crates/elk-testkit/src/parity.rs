@@ -6,6 +6,8 @@
 
 use std::collections::BTreeSet;
 
+use serde::{Deserialize, Serialize};
+
 /// Compares two ELK graph JSON root objects. Returns `Ok(())` if structure matches
 /// and all numeric layout fields are within `coord_eps`. Order of children and edges
 /// must match (same indices); node/edge ids must match.
@@ -349,6 +351,348 @@ pub fn compare_layout_json_relaxed(
     check_node_geometry(actual, true, "actual")?;
     check_node_geometry(expected, true, "expected")?;
     Ok(())
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ParityFixtureKind {
+    Layered,
+    Interconnection,
+    Libavoid,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ParityRootCause {
+    LayeredSlotAssignment,
+    LayeredBendGeneration,
+    HierarchicalPortRouting,
+    DummyRestoration,
+    LibavoidOptionMapping,
+    LibavoidCompoundClusterModeling,
+    PostRouteNormalizationDrift,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ParityGraphStats {
+    pub nodes: usize,
+    pub edges: usize,
+    pub ports: usize,
+    pub edge_sections: usize,
+    pub routed_edges: usize,
+    pub bend_points: usize,
+    pub orthogonal_violations: usize,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ParityDiffSummary {
+    pub rust: ParityGraphStats,
+    pub java: ParityGraphStats,
+    pub node_delta: isize,
+    pub edge_delta: isize,
+    pub port_delta: isize,
+    pub section_delta: isize,
+    pub routed_edge_delta: isize,
+    pub bend_point_delta: isize,
+    pub orthogonal_violation_delta: isize,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ParityCaseReport {
+    pub fixture: String,
+    pub kind: ParityFixtureKind,
+    pub status: String,
+    pub skip_reason: Option<String>,
+    pub relaxed_error: Option<String>,
+    pub bend_complexity_error: Option<String>,
+    pub root_causes: Vec<ParityRootCause>,
+    pub diff: ParityDiffSummary,
+}
+
+pub fn parity_graph_stats(root: &serde_json::Value) -> Result<ParityGraphStats, String> {
+    fn visit_node(
+        value: &serde_json::Value,
+        nodes: &mut usize,
+        edges: &mut usize,
+        ports: &mut usize,
+        edge_sections: &mut usize,
+        routed_edges: &mut usize,
+        bend_points: &mut usize,
+        orthogonal_violations: &mut usize,
+    ) -> Result<(), String> {
+        let Some(obj) = value.as_object() else {
+            return Ok(());
+        };
+        *nodes += 1;
+
+        if let Some(port_arr) = obj.get("ports").and_then(serde_json::Value::as_array) {
+            *ports += port_arr.len();
+        }
+
+        if let Some(edge_arr) = obj.get("edges").and_then(serde_json::Value::as_array) {
+            *edges += edge_arr.len();
+            for edge in edge_arr {
+                let Some(edge_obj) = edge.as_object() else {
+                    continue;
+                };
+                let sections = edge_obj.get("sections").and_then(serde_json::Value::as_array);
+                if let Some(sections) = sections {
+                    if !sections.is_empty() {
+                        *routed_edges += 1;
+                    }
+                    *edge_sections += sections.len();
+                    for (section_idx, section) in sections.iter().enumerate() {
+                        let Some(sec_obj) = section_object(section) else {
+                            continue;
+                        };
+                        let points = section_points(sec_obj)?;
+                        if points.len() >= 2 {
+                            for pair in points.windows(2) {
+                                let a = pair[0];
+                                let b = pair[1];
+                                let dx = (a.0 - b.0).abs();
+                                let dy = (a.1 - b.1).abs();
+                                if dx > 1e-3 && dy > 1e-3 {
+                                    *orthogonal_violations += 1;
+                                }
+                            }
+                        }
+                        *bend_points += sec_obj
+                            .get("bendPoints")
+                            .and_then(serde_json::Value::as_array)
+                            .map_or(0, |points| points.len());
+                        let _ = section_idx;
+                    }
+                }
+            }
+        }
+
+        if let Some(children) = obj.get("children").and_then(serde_json::Value::as_array) {
+            for child in children {
+                visit_node(
+                    child,
+                    nodes,
+                    edges,
+                    ports,
+                    edge_sections,
+                    routed_edges,
+                    bend_points,
+                    orthogonal_violations,
+                )?;
+            }
+        }
+        Ok(())
+    }
+
+    let mut nodes = 0usize;
+    let mut edges = 0usize;
+    let mut ports = 0usize;
+    let mut edge_sections = 0usize;
+    let mut routed_edges = 0usize;
+    let mut bend_points = 0usize;
+    let mut orthogonal_violations = 0usize;
+    visit_node(
+        root,
+        &mut nodes,
+        &mut edges,
+        &mut ports,
+        &mut edge_sections,
+        &mut routed_edges,
+        &mut bend_points,
+        &mut orthogonal_violations,
+    )?;
+    Ok(ParityGraphStats {
+        nodes,
+        edges,
+        ports,
+        edge_sections,
+        routed_edges,
+        bend_points,
+        orthogonal_violations,
+    })
+}
+
+pub fn build_parity_case_report(
+    fixture: &str,
+    kind: ParityFixtureKind,
+    rust: &serde_json::Value,
+    java: &serde_json::Value,
+    relaxed_error: Option<String>,
+    bend_complexity_error: Option<String>,
+) -> Result<ParityCaseReport, String> {
+    let rust_stats = parity_graph_stats(rust)?;
+    let java_stats = parity_graph_stats(java)?;
+    let root_causes = classify_parity_root_causes(
+        kind,
+        &rust_stats,
+        &java_stats,
+        relaxed_error.as_deref(),
+        bend_complexity_error.as_deref(),
+    );
+    let status = if relaxed_error.is_none() && bend_complexity_error.is_none() {
+        "passed"
+    } else {
+        "failed"
+    };
+    Ok(ParityCaseReport {
+        fixture: fixture.to_string(),
+        kind,
+        status: status.to_string(),
+        skip_reason: None,
+        relaxed_error,
+        bend_complexity_error,
+        root_causes,
+        diff: ParityDiffSummary {
+            node_delta: rust_stats.nodes as isize - java_stats.nodes as isize,
+            edge_delta: rust_stats.edges as isize - java_stats.edges as isize,
+            port_delta: rust_stats.ports as isize - java_stats.ports as isize,
+            section_delta: rust_stats.edge_sections as isize - java_stats.edge_sections as isize,
+            routed_edge_delta: rust_stats.routed_edges as isize - java_stats.routed_edges as isize,
+            bend_point_delta: rust_stats.bend_points as isize - java_stats.bend_points as isize,
+            orthogonal_violation_delta:
+                rust_stats.orthogonal_violations as isize - java_stats.orthogonal_violations as isize,
+            rust: rust_stats,
+            java: java_stats,
+        },
+    })
+}
+
+pub fn build_skipped_parity_case_report(
+    fixture: &str,
+    kind: ParityFixtureKind,
+    skip_reason: impl Into<String>,
+) -> ParityCaseReport {
+    let empty = ParityGraphStats {
+        nodes: 0,
+        edges: 0,
+        ports: 0,
+        edge_sections: 0,
+        routed_edges: 0,
+        bend_points: 0,
+        orthogonal_violations: 0,
+    };
+    ParityCaseReport {
+        fixture: fixture.to_string(),
+        kind,
+        status: "skipped".to_string(),
+        skip_reason: Some(skip_reason.into()),
+        relaxed_error: None,
+        bend_complexity_error: None,
+        root_causes: Vec::new(),
+        diff: ParityDiffSummary {
+            rust: empty.clone(),
+            java: empty,
+            node_delta: 0,
+            edge_delta: 0,
+            port_delta: 0,
+            section_delta: 0,
+            routed_edge_delta: 0,
+            bend_point_delta: 0,
+            orthogonal_violation_delta: 0,
+        },
+    }
+}
+
+fn classify_parity_root_causes(
+    kind: ParityFixtureKind,
+    rust: &ParityGraphStats,
+    java: &ParityGraphStats,
+    relaxed_error: Option<&str>,
+    bend_complexity_error: Option<&str>,
+) -> Vec<ParityRootCause> {
+    let mut causes = BTreeSet::new();
+
+    if rust.nodes != java.nodes || rust.edges != java.edges || rust.ports != java.ports {
+        if rust.ports != java.ports {
+            causes.insert(ParityRootCause::HierarchicalPortRouting);
+            causes.insert(ParityRootCause::DummyRestoration);
+        } else {
+            causes.insert(ParityRootCause::DummyRestoration);
+        }
+    }
+
+    if rust.routed_edges != java.routed_edges || rust.edge_sections != java.edge_sections {
+        match kind {
+            ParityFixtureKind::Libavoid => {
+                causes.insert(ParityRootCause::LibavoidCompoundClusterModeling);
+                causes.insert(ParityRootCause::LibavoidOptionMapping);
+            }
+            ParityFixtureKind::Interconnection => {
+                causes.insert(ParityRootCause::HierarchicalPortRouting);
+                causes.insert(ParityRootCause::DummyRestoration);
+            }
+            ParityFixtureKind::Layered => {
+                causes.insert(ParityRootCause::LayeredBendGeneration);
+            }
+        }
+    }
+
+    if rust.bend_points != java.bend_points || bend_complexity_error.is_some() {
+        match kind {
+            ParityFixtureKind::Libavoid => {
+                causes.insert(ParityRootCause::LibavoidOptionMapping);
+                causes.insert(ParityRootCause::PostRouteNormalizationDrift);
+            }
+            _ => {
+                causes.insert(ParityRootCause::LayeredSlotAssignment);
+                causes.insert(ParityRootCause::LayeredBendGeneration);
+            }
+        }
+    }
+
+    if rust.orthogonal_violations != java.orthogonal_violations {
+        causes.insert(ParityRootCause::PostRouteNormalizationDrift);
+    }
+
+    if let Some(err) = relaxed_error {
+        let err = err.to_ascii_lowercase();
+        if err.contains("graph stats differ") {
+            causes.insert(ParityRootCause::DummyRestoration);
+        }
+        if err.contains("missing") || err.contains("presence mismatch") {
+            causes.insert(ParityRootCause::HierarchicalPortRouting);
+        }
+    }
+
+    if causes.is_empty() {
+        causes.insert(match kind {
+            ParityFixtureKind::Libavoid => ParityRootCause::LibavoidOptionMapping,
+            ParityFixtureKind::Interconnection => ParityRootCause::HierarchicalPortRouting,
+            ParityFixtureKind::Layered => ParityRootCause::LayeredBendGeneration,
+        });
+    }
+
+    causes.into_iter().collect()
+}
+
+fn section_points(
+    section: &serde_json::Map<String, serde_json::Value>,
+) -> Result<Vec<(f32, f32)>, String> {
+    let mut out = Vec::new();
+    if let Some(start) = section.get("startPoint").and_then(serde_json::Value::as_object) {
+        out.push((
+            get_f32(start, "x").ok_or_else(|| "section startPoint missing x".to_string())?,
+            get_f32(start, "y").ok_or_else(|| "section startPoint missing y".to_string())?,
+        ));
+    }
+    if let Some(bends) = section.get("bendPoints").and_then(serde_json::Value::as_array) {
+        for bend in bends {
+            let Some(bend_obj) = bend.as_object() else {
+                continue;
+            };
+            out.push((
+                get_f32(bend_obj, "x").ok_or_else(|| "bend missing x".to_string())?,
+                get_f32(bend_obj, "y").ok_or_else(|| "bend missing y".to_string())?,
+            ));
+        }
+    }
+    if let Some(end) = section.get("endPoint").and_then(serde_json::Value::as_object) {
+        out.push((
+            get_f32(end, "x").ok_or_else(|| "section endPoint missing x".to_string())?,
+            get_f32(end, "y").ok_or_else(|| "section endPoint missing y".to_string())?,
+        ));
+    }
+    Ok(out)
 }
 
 fn graph_stats(v: &serde_json::Value) -> Result<(usize, usize, usize), String> {

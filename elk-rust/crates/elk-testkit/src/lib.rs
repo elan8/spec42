@@ -5,7 +5,11 @@ mod parity;
 mod routing_invariants;
 mod svg;
 
-pub use parity::{compare_layout_json, compare_layout_json_relaxed, node_ids_from_json};
+pub use parity::{
+    build_parity_case_report, build_skipped_parity_case_report, compare_layout_json,
+    compare_layout_json_relaxed, node_ids_from_json, parity_graph_stats, ParityCaseReport,
+    ParityFixtureKind, ParityGraphStats, ParityRootCause,
+};
 pub use routing_invariants::{assert_routed_paths_avoid_obstacles, segment_intersects_rect_interior};
 
 pub use svg::{maybe_write_svg_snapshot, render_graph_svg, snapshot_dir, snapshot_file_name};
