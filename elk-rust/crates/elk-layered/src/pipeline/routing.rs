@@ -55,12 +55,9 @@ pub(crate) fn export_to_graph(
         warnings.push("elk-layered: libavoid not selected for interconnection; using layered orthogonal router".to_string());
     }
 
-    let edge_lane_by_index = edge_lane_by_ir_index(ir);
-    let fanout_lane_bias_by_index = fanout_lane_bias_by_edge_index(ir);
+    let edge_segment_lanes_by_index = edge_segment_lanes_by_ir_index(ir);
     let keep_unnecessary_bends = keep_unnecessary_bends(graph);
     assign_endpoint_slots(graph, ir, local_nodes, options);
-    assign_shared_fanout_splits(graph, ir, local_nodes, options);
-
     if use_libavoid {
         let local_edge_ids: Vec<EdgeId> = ir.edges
             .iter()
@@ -167,25 +164,21 @@ pub(crate) fn export_to_graph(
             let mut end = endpoint_abs_center(graph, target_endpoint);
             apply_hierarchy_boundary_anchors(graph, edge, &mut start, &mut end);
             let routing = edge_routing_for_edge(graph, edge, options);
-            let lane = edge_lane_by_index
+            let segment_lanes = edge_segment_lanes_by_index
                 .get(&edge.original_edge.index())
-                .copied()
-                .unwrap_or(0)
-                + edge_bundle_lane_offset(graph, edge.original_edge)
-                + fanout_lane_bias_by_index
-                    .get(&edge.original_edge.index())
-                    .copied()
-                    .unwrap_or(0);
+                .cloned()
+                .unwrap_or_default();
 
             let path = if routing == EdgeRouting::Orthogonal {
                 build_orthogonal_route_path(
                     graph,
+                    ir,
                     edge,
                     source_endpoint,
                     target_endpoint,
                     start,
                     end,
-                    lane,
+                    &segment_lanes,
                     options,
                 )?
             } else {
@@ -466,52 +459,6 @@ fn endpoint_frame_debug(graph: &ElkGraph, endpoint: elk_graph::EdgeEndpoint) -> 
             )
         }
     }
-}
-
-fn fanout_lane_bias_by_edge_index(ir: &LayeredIr) -> BTreeMap<usize, i32> {
-    let mut groups: BTreeMap<(NodeId, Option<u32>), Vec<(usize, usize, usize)>> = BTreeMap::new();
-    for edge in &ir.edges {
-        groups
-            .entry((edge.effective_source, edge.bundle_key))
-            .or_default()
-            .push((
-                edge.original_edge.index(),
-                edge.model_order,
-                edge.original_edge.index(),
-            ));
-    }
-
-    let mut out = BTreeMap::new();
-    for mut edges in groups.into_values() {
-        if edges.len() <= 1 {
-            continue;
-        }
-        edges.sort_by_key(|(_, model_order, edge_idx)| (*model_order, *edge_idx));
-        let center = (edges.len() as i32 - 1) / 2;
-        for (i, (edge_idx, _, _)) in edges.into_iter().enumerate() {
-            out.insert(edge_idx, i as i32 - center);
-        }
-    }
-    merge_adjacent_fanout_biases(out)
-}
-
-fn merge_adjacent_fanout_biases(mut biases: BTreeMap<usize, i32>) -> BTreeMap<usize, i32> {
-    // Hyperedge-dummy-merger style smoothing: collapse near-identical adjacent fanout offsets
-    // so dense bundles share trunks longer before splitting.
-    let mut entries: Vec<(usize, i32)> = biases.iter().map(|(k, v)| (*k, *v)).collect();
-    entries.sort_by_key(|(edge_idx, _)| *edge_idx);
-    for i in 1..entries.len() {
-        let prev = entries[i - 1].1;
-        let cur = entries[i].1;
-        if (cur - prev).abs() <= 1 {
-            entries[i].1 = prev;
-        }
-    }
-    biases.clear();
-    for (k, v) in entries {
-        biases.insert(k, v);
-    }
-    biases
 }
 
 pub(crate) fn should_use_libavoid(graph: &ElkGraph, options: &LayoutOptions) -> bool {
@@ -1152,44 +1099,29 @@ fn place_edge_labels(
     }
 }
 
-fn edge_lane_by_ir_index(ir: &LayeredIr) -> BTreeMap<usize, i32> {
-    let mut by_edge: BTreeMap<usize, Vec<(usize, i32)>> = BTreeMap::new();
+fn edge_segment_lanes_by_ir_index(ir: &LayeredIr) -> BTreeMap<usize, Vec<(usize, usize, usize, i32)>> {
+    let mut by_edge: BTreeMap<usize, Vec<(usize, usize, usize, i32)>> = BTreeMap::new();
     for ne in &ir.normalized_edges {
         by_edge
             .entry(ne.original_edge.index())
             .or_default()
-            .push((ne.segment_order, ne.lane));
+            .push((ne.segment_order, ne.from, ne.to, ne.lane));
+    }
+    for segments in by_edge.values_mut() {
+        segments.sort_by_key(|(segment_order, from, to, lane)| (*segment_order, *from, *to, *lane));
     }
     by_edge
-        .into_iter()
-        .map(|(edge_idx, mut lanes)| {
-            lanes.sort_by_key(|(segment_order, lane)| (*segment_order, *lane));
-            let primary_lane = lanes.first().map(|(_, lane)| *lane).unwrap_or(0);
-            let mut only_lanes: Vec<i32> = lanes.iter().map(|(_, lane)| *lane).collect();
-            only_lanes.sort_unstable();
-            let median_lane = only_lanes
-                .get(only_lanes.len() / 2)
-                .copied()
-                .unwrap_or(primary_lane);
-            lanes.sort_unstable();
-            let lane = if (primary_lane - median_lane).abs() <= 1 {
-                primary_lane
-            } else {
-                median_lane
-            };
-            (edge_idx, lane)
-        })
-        .collect()
 }
 
 fn build_orthogonal_route_path(
     graph: &ElkGraph,
+    ir: &LayeredIr,
     edge: &IrEdge,
     source_endpoint: elk_graph::EdgeEndpoint,
     target_endpoint: elk_graph::EdgeEndpoint,
     start: Point,
     end: Point,
-    lane: i32,
+    segment_lanes: &[(usize, usize, usize, i32)],
     options: &LayoutOptions,
 ) -> Result<Vec<Point>, LayoutError> {
     let source_side = endpoint_side_for_routing(graph, source_endpoint, end, options.layered.direction, true);
@@ -1228,6 +1160,27 @@ fn build_orthogonal_route_path(
         return Ok(vec![start, end]);
     }
 
+    if !edge.chain.is_empty() && !segment_lanes.is_empty() {
+        let points = build_chained_orthogonal_route_path(
+            graph,
+            ir,
+            edge,
+            source_endpoint,
+            target_endpoint,
+            start,
+            end,
+            source_side,
+            target_side,
+            segment_lanes,
+            options,
+        );
+        if points.len() >= 2 {
+            return Ok(points);
+        }
+    }
+
+    let primary_lane = segment_lanes.first().map(|(_, _, _, lane)| *lane).unwrap_or(0);
+
     let edge_props = &graph.edges[edge.original_edge.index()].properties;
     let shared_fanout_split = edge_props
         .get(&elk_graph::PropertyKey::from(SHARED_FANOUT_SPLIT_KEY))
@@ -1252,7 +1205,7 @@ fn build_orthogonal_route_path(
             end,
             source_side,
             target_side,
-            lane,
+            primary_lane,
             options,
         ) {
             return Ok(points);
@@ -1282,7 +1235,7 @@ fn build_orthogonal_route_path(
         source_split.or(shared_fanout_split),
         target_split,
     )
-        .unwrap_or_else(|| build_layered_orthogonal_trunk(route_start, route_end, lane, options));
+        .unwrap_or_else(|| build_layered_orthogonal_trunk(route_start, route_end, primary_lane, options));
     let route_points = std::iter::once(route_start)
         .chain(trunk)
         .chain(std::iter::once(route_end))
@@ -1298,6 +1251,184 @@ fn build_orthogonal_route_path(
         route_end,
     )
     .map_err(LayoutError::Routing)
+}
+
+fn build_chained_orthogonal_route_path(
+    graph: &ElkGraph,
+    ir: &LayeredIr,
+    edge: &IrEdge,
+    source_endpoint: elk_graph::EdgeEndpoint,
+    target_endpoint: elk_graph::EdgeEndpoint,
+    start: Point,
+    end: Point,
+    source_side: PortSide,
+    target_side: PortSide,
+    segment_lanes: &[(usize, usize, usize, i32)],
+    options: &LayoutOptions,
+) -> Vec<Point> {
+    let mut points = vec![start];
+    let last_segment_order = edge.chain.len();
+
+    for (segment_order, from, to, lane) in segment_lanes.iter().copied() {
+        let segment_start = if segment_order == 0 {
+            start
+        } else {
+            ir_node_center(ir, from)
+        };
+        let segment_end = if segment_order == last_segment_order {
+            end
+        } else {
+            ir_node_center(ir, to)
+        };
+        let source_rect = if segment_order == 0 {
+            node_rect(graph, source_endpoint.node)
+        } else {
+            ir_node_rect(ir, from)
+        };
+        let target_rect = if segment_order == last_segment_order {
+            node_rect(graph, target_endpoint.node)
+        } else {
+            ir_node_rect(ir, to)
+        };
+        let segment_source_side = if segment_order == 0 {
+            source_side
+        } else {
+            segment_direction_side(segment_start, segment_end, true)
+        };
+        let segment_target_side = if segment_order == last_segment_order {
+            target_side
+        } else {
+            segment_direction_side(segment_start, segment_end, false)
+        };
+        let mut segment_points = build_segment_orthogonal_route(
+            segment_start,
+            segment_end,
+            source_rect,
+            target_rect,
+            segment_source_side,
+            segment_target_side,
+            lane,
+            options,
+        );
+        if points.last().copied() == segment_points.first().copied() {
+            segment_points.remove(0);
+        }
+        points.extend(segment_points);
+    }
+
+    simplify_orthogonal_points(points)
+}
+
+fn build_segment_orthogonal_route(
+    start: Point,
+    end: Point,
+    source_rect: Rect,
+    target_rect: Rect,
+    source_side: PortSide,
+    target_side: PortSide,
+    lane: i32,
+    options: &LayoutOptions,
+) -> Vec<Point> {
+    if (start.x - end.x).abs() <= f32::EPSILON || (start.y - end.y).abs() <= f32::EPSILON {
+        return vec![start, end];
+    }
+
+    let corridor = segment_interlayer_slot_position(source_rect, target_rect, lane, options, matches!(
+        (source_side, target_side),
+        (PortSide::East, PortSide::West) | (PortSide::West, PortSide::East)
+    ));
+    let bends = match (source_side, target_side, corridor) {
+        (PortSide::East | PortSide::West, PortSide::East | PortSide::West, Some(slot)) => {
+            normalize_bends(vec![Point::new(slot, start.y), Point::new(slot, end.y)], false)
+        }
+        (PortSide::North | PortSide::South, PortSide::North | PortSide::South, Some(slot)) => {
+            normalize_bends(vec![Point::new(start.x, slot), Point::new(end.x, slot)], false)
+        }
+        _ => build_layered_orthogonal_trunk(start, end, lane, options),
+    };
+
+    std::iter::once(start)
+        .chain(bends)
+        .chain(std::iter::once(end))
+        .collect()
+}
+
+fn segment_interlayer_slot_position(
+    source_rect: Rect,
+    target_rect: Rect,
+    lane: i32,
+    options: &LayoutOptions,
+    horizontal_layout: bool,
+) -> Option<f32> {
+    let edge_spacing = options.layered.spacing.edge_spacing.max(1.0);
+    let edge_node_spacing = options.layered.spacing.segment_spacing.max(1.0);
+
+    if horizontal_layout {
+        let source_right = source_rect.origin.x + source_rect.size.width;
+        let source_left = source_rect.origin.x;
+        let target_left = target_rect.origin.x;
+        let target_right = target_rect.origin.x + target_rect.size.width;
+        let (min_pos, max_pos) = if source_right <= target_left {
+            (source_right + edge_node_spacing, target_left - edge_node_spacing)
+        } else if target_right <= source_left {
+            (target_right + edge_node_spacing, source_left - edge_node_spacing)
+        } else {
+            return None;
+        };
+        let base_pos = (min_pos + max_pos) * 0.5;
+        let corridor_min = min_pos.min(max_pos);
+        let corridor_max = min_pos.max(max_pos);
+        Some((base_pos + lane as f32 * edge_spacing).clamp(corridor_min, corridor_max))
+    } else {
+        let source_bottom = source_rect.origin.y + source_rect.size.height;
+        let source_top = source_rect.origin.y;
+        let target_top = target_rect.origin.y;
+        let target_bottom = target_rect.origin.y + target_rect.size.height;
+        let (min_pos, max_pos) = if source_bottom <= target_top {
+            (source_bottom + edge_node_spacing, target_top - edge_node_spacing)
+        } else if target_bottom <= source_top {
+            (target_bottom + edge_node_spacing, source_top - edge_node_spacing)
+        } else {
+            return None;
+        };
+        let base_pos = (min_pos + max_pos) * 0.5;
+        let corridor_min = min_pos.min(max_pos);
+        let corridor_max = min_pos.max(max_pos);
+        Some((base_pos + lane as f32 * edge_spacing).clamp(corridor_min, corridor_max))
+    }
+}
+
+fn ir_node_rect(ir: &LayeredIr, node_id: usize) -> Rect {
+    let node = &ir.nodes[node_id];
+    Rect::new(node.position, node.size)
+}
+
+fn ir_node_center(ir: &LayeredIr, node_id: usize) -> Point {
+    let rect = ir_node_rect(ir, node_id);
+    Point::new(
+        rect.origin.x + rect.size.width * 0.5,
+        rect.origin.y + rect.size.height * 0.5,
+    )
+}
+
+fn segment_direction_side(start: Point, end: Point, is_source: bool) -> PortSide {
+    let dx = end.x - start.x;
+    let dy = end.y - start.y;
+    if dx.abs() >= dy.abs() {
+        match (is_source, dx >= 0.0) {
+            (true, true) => PortSide::East,
+            (true, false) => PortSide::West,
+            (false, true) => PortSide::West,
+            (false, false) => PortSide::East,
+        }
+    } else {
+        match (is_source, dy >= 0.0) {
+            (true, true) => PortSide::South,
+            (true, false) => PortSide::North,
+            (false, true) => PortSide::North,
+            (false, false) => PortSide::South,
+        }
+    }
 }
 
 fn build_java_style_layered_route(
@@ -1710,54 +1841,6 @@ struct GroupSortKey {
     edge_index: usize,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct FanoutGroupKey {
-    endpoint_kind: u8,
-    endpoint_index: usize,
-    source_side: u8,
-    target_side: u8,
-    bundle_key: Option<u32>,
-    source_layer: usize,
-    target_layer: usize,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct ClusterFanoutGroupKey {
-    cluster_node: usize,
-    opposite_endpoint_kind: u8,
-    opposite_endpoint_index: usize,
-    source_side: u8,
-    target_side: u8,
-    bundle_key: Option<u32>,
-    source_layer: usize,
-    target_layer: usize,
-}
-
-trait SharedFanoutGroupKey {
-    fn source_side(&self) -> u8;
-    fn target_side(&self) -> u8;
-}
-
-impl SharedFanoutGroupKey for FanoutGroupKey {
-    fn source_side(&self) -> u8 {
-        self.source_side
-    }
-
-    fn target_side(&self) -> u8 {
-        self.target_side
-    }
-}
-
-impl SharedFanoutGroupKey for ClusterFanoutGroupKey {
-    fn source_side(&self) -> u8 {
-        self.source_side
-    }
-
-    fn target_side(&self) -> u8 {
-        self.target_side
-    }
-}
-
 fn assign_endpoint_slots(
     graph: &mut ElkGraph,
     ir: &LayeredIr,
@@ -1863,274 +1946,13 @@ fn assign_endpoint_slots(
 }
 
 fn assign_shared_fanout_splits(
-    graph: &mut ElkGraph,
-    ir: &LayeredIr,
-    local_nodes: &BTreeSet<NodeId>,
-    options: &LayoutOptions,
+    _graph: &mut ElkGraph,
+    _ir: &LayeredIr,
+    _local_nodes: &BTreeSet<NodeId>,
+    _options: &LayoutOptions,
 ) {
-    let mut source_groups: BTreeMap<FanoutGroupKey, Vec<(EdgeId, Point, Point)>> = BTreeMap::new();
-    let mut target_groups: BTreeMap<FanoutGroupKey, Vec<(EdgeId, Point, Point)>> = BTreeMap::new();
-    let mut source_cluster_groups: BTreeMap<ClusterFanoutGroupKey, Vec<(EdgeId, Point, Point)>> =
-        BTreeMap::new();
-    let mut target_cluster_groups: BTreeMap<ClusterFanoutGroupKey, Vec<(EdgeId, Point, Point)>> =
-        BTreeMap::new();
-
-    for edge in &ir.edges {
-        if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
-            continue;
-        }
-        let edge_ref = &graph.edges[edge.original_edge.index()];
-        let source_endpoint = edge_ref.sources.first().copied().unwrap_or(edge.routed_source);
-        let target_endpoint = edge_ref.targets.first().copied().unwrap_or(edge.routed_target);
-        let source_side = endpoint_side_for_routing(
-            graph,
-            source_endpoint,
-            endpoint_abs_center(graph, target_endpoint),
-            options.layered.direction,
-            true,
-        );
-        let target_side = endpoint_side_for_routing(
-            graph,
-            target_endpoint,
-            endpoint_abs_center(graph, source_endpoint),
-            options.layered.direction,
-            false,
-        );
-        if !supports_shared_fanout(source_side, target_side) {
-            continue;
-        }
-
-        let source_slot = endpoint_slot(graph, edge.original_edge, true);
-        let target_slot = endpoint_slot(graph, edge.original_edge, false);
-        let start = endpoint_anchor_for_routing(graph, source_endpoint, source_side, source_slot);
-        let end = endpoint_anchor_for_routing(graph, target_endpoint, target_side, target_slot);
-        let source_lead = point_along_outward_normal(start, source_side, terminal_lead_for_slot(source_slot));
-        let target_lead = point_along_outward_normal(end, target_side, terminal_lead_for_slot(target_slot));
-
-        source_groups
-            .entry(FanoutGroupKey {
-                endpoint_kind: if source_endpoint.port.is_some() { 1 } else { 0 },
-                endpoint_index: source_endpoint.port.map(|p| p.index()).unwrap_or(source_endpoint.node.index()),
-                source_side: side_ordinal(source_side),
-                target_side: side_ordinal(target_side),
-                bundle_key: edge.bundle_key,
-                source_layer: ir.nodes[ir.real_to_ir[&edge.effective_source]].layer,
-                target_layer: ir.nodes[ir.real_to_ir[&edge.effective_target]].layer,
-            })
-            .or_default()
-            .push((edge.original_edge, source_lead, target_lead));
-
-        target_groups
-            .entry(FanoutGroupKey {
-                endpoint_kind: if target_endpoint.port.is_some() { 1 } else { 0 },
-                endpoint_index: target_endpoint.port.map(|p| p.index()).unwrap_or(target_endpoint.node.index()),
-                source_side: side_ordinal(source_side),
-                target_side: side_ordinal(target_side),
-                bundle_key: edge.bundle_key,
-                source_layer: ir.nodes[ir.real_to_ir[&edge.effective_source]].layer,
-                target_layer: ir.nodes[ir.real_to_ir[&edge.effective_target]].layer,
-            })
-            .or_default()
-            .push((edge.original_edge, source_lead, target_lead));
-
-        if let Some(cluster_node) = sibling_cluster_node(graph, source_endpoint, local_nodes) {
-            source_cluster_groups
-                .entry(ClusterFanoutGroupKey {
-                    cluster_node: cluster_node.index(),
-                    opposite_endpoint_kind: if target_endpoint.port.is_some() { 1 } else { 0 },
-                    opposite_endpoint_index: target_endpoint
-                        .port
-                        .map(|p| p.index())
-                        .unwrap_or(target_endpoint.node.index()),
-                    source_side: side_ordinal(source_side),
-                    target_side: side_ordinal(target_side),
-                    bundle_key: edge.bundle_key,
-                    source_layer: ir.nodes[ir.real_to_ir[&edge.effective_source]].layer,
-                    target_layer: ir.nodes[ir.real_to_ir[&edge.effective_target]].layer,
-                })
-                .or_default()
-                .push((edge.original_edge, source_lead, target_lead));
-        }
-
-        if let Some(cluster_node) = sibling_cluster_node(graph, target_endpoint, local_nodes) {
-            target_cluster_groups
-                .entry(ClusterFanoutGroupKey {
-                    cluster_node: cluster_node.index(),
-                    opposite_endpoint_kind: if source_endpoint.port.is_some() { 1 } else { 0 },
-                    opposite_endpoint_index: source_endpoint
-                        .port
-                        .map(|p| p.index())
-                        .unwrap_or(source_endpoint.node.index()),
-                    source_side: side_ordinal(source_side),
-                    target_side: side_ordinal(target_side),
-                    bundle_key: edge.bundle_key,
-                    source_layer: ir.nodes[ir.real_to_ir[&edge.effective_source]].layer,
-                    target_layer: ir.nodes[ir.real_to_ir[&edge.effective_target]].layer,
-                })
-                .or_default()
-                .push((edge.original_edge, source_lead, target_lead));
-        }
-    }
-
-    assign_group_shared_split(graph, source_groups, options, false);
-    assign_group_shared_split(graph, target_groups, options, true);
-    assign_group_shared_split(graph, source_cluster_groups, options, false);
-    assign_group_shared_split(graph, target_cluster_groups, options, true);
-}
-
-fn assign_group_shared_split(
-    graph: &mut ElkGraph,
-    groups: impl IntoIterator<Item = (impl SharedFanoutGroupKey, Vec<(EdgeId, Point, Point)>)>,
-    options: &LayoutOptions,
-    preserve_existing: bool,
-) {
-    for (group_key, edges) in groups {
-        if edges.len() <= 2 {
-            continue;
-        }
-        let exempt_edge = None;
-        let split = shared_fanout_split_coordinate(
-            &edges,
-            options.layered.spacing.segment_spacing.max(8.0),
-            group_key.source_side(),
-            group_key.target_side(),
-            preserve_existing,
-        );
-        for (edge_id, source_lead, target_lead) in edges {
-            if Some(edge_id) == exempt_edge {
-                continue;
-            }
-            if is_valid_shared_split(
-                source_lead,
-                target_lead,
-                split,
-                group_key.source_side(),
-                group_key.target_side(),
-            ) {
-                let edge_props = &mut graph.edges[edge_id.index()].properties;
-                edge_props.insert(SHARED_FANOUT_SPLIT_KEY, elk_graph::PropertyValue::Float(split as f64));
-                if preserve_existing {
-                    let key = elk_graph::PropertyKey::from(SHARED_TARGET_SPLIT_KEY);
-                    if edge_props.get(&key).is_none() {
-                        edge_props.insert(key, elk_graph::PropertyValue::Float(split as f64));
-                    }
-                } else {
-                    let key = elk_graph::PropertyKey::from(SHARED_SOURCE_SPLIT_KEY);
-                    if edge_props.get(&key).is_none() {
-                        edge_props.insert(key, elk_graph::PropertyValue::Float(split as f64));
-                    }
-                }
-            }
-        }
-    }
-}
-
-fn sibling_cluster_node(
-    graph: &ElkGraph,
-    endpoint: elk_graph::EdgeEndpoint,
-    local_nodes: &BTreeSet<NodeId>,
-) -> Option<NodeId> {
-    let parent = graph.nodes[endpoint.node.index()].parent?;
-    if !local_nodes.contains(&parent) {
-        return None;
-    }
-    let siblings_with_same_parent = graph.nodes[parent.index()]
-        .children
-        .iter()
-        .filter(|child| local_nodes.contains(child))
-        .take(2)
-        .count();
-    (siblings_with_same_parent >= 2).then_some(parent)
-}
-
-fn supports_shared_fanout(source_side: PortSide, target_side: PortSide) -> bool {
-    matches!(
-        (source_side, target_side),
-        (PortSide::South, PortSide::North)
-            | (PortSide::North, PortSide::South)
-            | (PortSide::East, PortSide::West)
-            | (PortSide::West, PortSide::East)
-    )
-}
-
-fn shared_fanout_split_coordinate(
-    edges: &[(EdgeId, Point, Point)],
-    spacing: f32,
-    source_side: u8,
-    target_side: u8,
-    preserve_existing: bool,
-) -> f32 {
-    let source_coord = |point: Point| match source_side {
-        0 | 2 => point.y,
-        1 | 3 => point.x,
-        _ => point.y,
-    };
-    let target_coord = |point: Point| match target_side {
-        0 | 2 => point.y,
-        1 | 3 => point.x,
-        _ => point.y,
-    };
-    match (source_side, target_side, preserve_existing) {
-        (2, 0, false) => edges
-            .iter()
-            .map(|(_, source, _)| source_coord(*source))
-            .fold(f32::NEG_INFINITY, f32::max)
-            + spacing,
-        (0, 2, false) => edges
-            .iter()
-            .map(|(_, source, _)| source_coord(*source))
-            .fold(f32::INFINITY, f32::min)
-            - spacing,
-        (1, 3, false) => edges
-            .iter()
-            .map(|(_, source, _)| source_coord(*source))
-            .fold(f32::NEG_INFINITY, f32::max)
-            + spacing,
-        (3, 1, false) => edges
-            .iter()
-            .map(|(_, source, _)| source_coord(*source))
-            .fold(f32::INFINITY, f32::min)
-            - spacing,
-        (2, 0, true) => edges
-            .iter()
-            .map(|(_, _, target)| target_coord(*target))
-            .fold(f32::INFINITY, f32::min)
-            - spacing,
-        (0, 2, true) => edges
-            .iter()
-            .map(|(_, _, target)| target_coord(*target))
-            .fold(f32::NEG_INFINITY, f32::max)
-            + spacing,
-        (1, 3, true) => edges
-            .iter()
-            .map(|(_, _, target)| target_coord(*target))
-            .fold(f32::INFINITY, f32::min)
-            - spacing,
-        (3, 1, true) => edges
-            .iter()
-            .map(|(_, _, target)| target_coord(*target))
-            .fold(f32::NEG_INFINITY, f32::max)
-            + spacing,
-        _ => edges[0].2.y,
-    }
-}
-
-fn is_valid_shared_split(
-    source_lead: Point,
-    target_lead: Point,
-    split: f32,
-    source_side: u8,
-    target_side: u8,
-) -> bool {
-    if matches!((source_side, target_side), (2, 0) | (0, 2)) {
-        let min_y = source_lead.y.min(target_lead.y);
-        let max_y = source_lead.y.max(target_lead.y);
-        split > min_y && split < max_y
-    } else {
-        let min_x = source_lead.x.min(target_lead.x);
-        let max_x = source_lead.x.max(target_lead.x);
-        split > min_x && split < max_x
-    }
+    // Intentionally disabled while converging on the cleaner Java-ELK-style slot-routing core.
+    // The previous implementation injected spec42-specific shared-fanout split heuristics here.
 }
 
 fn endpoint_group(
@@ -2366,19 +2188,10 @@ fn boundary_anchor_for_inner_point(
     }
 }
 
-fn edge_bundle_lane_offset(graph: &ElkGraph, edge_id: EdgeId) -> i32 {
-    let edge = &graph.edges[edge_id.index()];
-    let opts = decode_layout_from_props(&edge.properties);
-    if let Some(k) = opts.edge_bundle_key {
-        // Keep offsets small and deterministic; this is only a tie-breaker.
-        return ((k % 5) as i32) - 2;
-    }
-    0
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ir::{IrNode, IrNodeKind, LayeredIr};
     use crate::pipeline::import::import_graph;
     use std::collections::BTreeSet;
 
@@ -2556,23 +2369,25 @@ mod tests {
 
         let left_path = build_orthogonal_route_path(
             &graph,
+            &ir,
             left_ir,
             left_source,
             left_target,
             endpoint_abs_center(&graph, left_source),
             endpoint_abs_center(&graph, left_target),
-            0,
+            &[],
             &options,
         )
         .unwrap();
         let right_path = build_orthogonal_route_path(
             &graph,
+            &ir,
             right_ir,
             right_source,
             right_target,
             endpoint_abs_center(&graph, right_source),
             endpoint_abs_center(&graph, right_target),
-            0,
+            &[],
             &options,
         )
         .unwrap();
@@ -2656,23 +2471,25 @@ mod tests {
 
         let left_path = build_orthogonal_route_path(
             &graph,
+            &ir,
             left_ir,
             left_source,
             left_target,
             endpoint_abs_center(&graph, left_source),
             endpoint_abs_center(&graph, left_target),
-            0,
+            &[],
             &options,
         )
         .unwrap();
         let right_path = build_orthogonal_route_path(
             &graph,
+            &ir,
             right_ir,
             right_source,
             right_target,
             endpoint_abs_center(&graph, right_source),
             endpoint_abs_center(&graph, right_target),
-            0,
+            &[],
             &options,
         )
         .unwrap();
@@ -2747,14 +2564,16 @@ mod tests {
         let options = LayoutOptions::default();
         let source_endpoint = graph.edges[edge_id.index()].sources[0];
         let target_endpoint = graph.edges[edge_id.index()].targets[0];
+        let ir = LayeredIr::new();
         let path = build_orthogonal_route_path(
             &graph,
+            &ir,
             &ir_edge,
             source_endpoint,
             target_endpoint,
             endpoint_abs_center(&graph, source_endpoint),
             endpoint_abs_center(&graph, target_endpoint),
-            0,
+            &[],
             &options,
         )
         .unwrap();
@@ -2769,7 +2588,7 @@ mod tests {
     }
 
     #[test]
-    fn assign_shared_fanout_splits_marks_common_source_group() {
+    fn assign_shared_fanout_splits_is_disabled_for_common_source_group() {
         let mut graph = ElkGraph::new();
         let source = graph.add_node(
             graph.root,
@@ -2827,14 +2646,13 @@ mod tests {
                 graph.edges[edge_id.index()]
                     .properties
                     .get(&elk_graph::PropertyKey::from(SHARED_FANOUT_SPLIT_KEY))
-                    .and_then(|value| value.as_f64())
-                    .is_some()
+                    .is_none()
             );
         }
     }
 
     #[test]
-    fn assign_shared_fanout_splits_marks_common_target_group() {
+    fn assign_shared_fanout_splits_is_disabled_for_common_target_group() {
         let mut graph = ElkGraph::new();
         let left = graph.add_node(
             graph.root,
@@ -2892,14 +2710,13 @@ mod tests {
                 graph.edges[edge_id.index()]
                     .properties
                     .get(&elk_graph::PropertyKey::from(SHARED_FANOUT_SPLIT_KEY))
-                    .and_then(|value| value.as_f64())
-                    .is_some()
+                    .is_none()
             );
         }
     }
 
     #[test]
-    fn assign_shared_fanout_splits_marks_sibling_target_cluster_group() {
+    fn assign_shared_fanout_splits_is_disabled_for_sibling_target_cluster_group() {
         let mut graph = ElkGraph::new();
         let source = graph.add_node(
             graph.root,
@@ -2967,9 +2784,8 @@ mod tests {
                 graph.edges[edge_id.index()]
                     .properties
                     .get(&elk_graph::PropertyKey::from(SHARED_TARGET_SPLIT_KEY))
-                    .and_then(|value| value.as_f64())
-                    .is_some(),
-                "expected sibling-cluster target split for edge {:?}",
+                    .is_none(),
+                "shared split heuristics should stay disabled for edge {:?}",
                 edge_id
             );
         }
@@ -3122,6 +2938,135 @@ mod tests {
                 Point::new(1184.0, 633.1),
                 Point::new(1540.0, 471.5),
             ]
+        );
+    }
+
+    #[test]
+    fn export_long_edge_preserves_per_segment_window_slots() {
+        let mut graph = ElkGraph::new();
+        let source = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 0.0, y: 0.0, width: 40.0, height: 40.0 },
+        );
+        let target = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 0.0, y: 0.0, width: 40.0, height: 40.0 },
+        );
+        let edge_id = graph.add_edge(
+            graph.root,
+            vec![elk_graph::EdgeEndpoint::node(source)],
+            vec![elk_graph::EdgeEndpoint::node(target)],
+        );
+
+        let mut ir = LayeredIr::new();
+        let source_ir = ir.push_node(IrNode {
+            kind: IrNodeKind::Real(source),
+            size: Size::new(40.0, 40.0),
+            position: Point::new(20.0, 40.0),
+            layer: 0,
+            order: 0,
+            label_size: Size::default(),
+            ports: Vec::new(),
+            desired_minor: 0.0,
+            aligned: false,
+            model_order: 0,
+            layer_constraint: elk_core::LayerConstraint::None,
+        });
+        let dummy_ir = ir.push_node(IrNode {
+            kind: IrNodeKind::Dummy {
+                edge_index: 0,
+                segment_index: 0,
+            },
+            size: Size::new(16.0, 16.0),
+            position: Point::new(140.0, 124.0),
+            layer: 1,
+            order: 0,
+            label_size: Size::default(),
+            ports: Vec::new(),
+            desired_minor: 0.0,
+            aligned: false,
+            model_order: 0,
+            layer_constraint: elk_core::LayerConstraint::None,
+        });
+        let target_ir = ir.push_node(IrNode {
+            kind: IrNodeKind::Real(target),
+            size: Size::new(40.0, 40.0),
+            position: Point::new(260.0, 220.0),
+            layer: 2,
+            order: 0,
+            label_size: Size::default(),
+            ports: Vec::new(),
+            desired_minor: 0.0,
+            aligned: false,
+            model_order: 0,
+            layer_constraint: elk_core::LayerConstraint::None,
+        });
+        ir.layers = vec![vec![source_ir], vec![dummy_ir], vec![target_ir]];
+        ir.edges.push(IrEdge {
+            original_edge: edge_id,
+            source: elk_graph::EdgeEndpoint::node(source),
+            target: elk_graph::EdgeEndpoint::node(target),
+            routed_source: elk_graph::EdgeEndpoint::node(source),
+            routed_target: elk_graph::EdgeEndpoint::node(target),
+            effective_source: source,
+            effective_target: target,
+            reversed: false,
+            label_ids: Vec::new(),
+            label_size: Size::default(),
+            chain: vec![dummy_ir],
+            label_placeholder: None,
+            self_loop: false,
+            model_order: 0,
+            bundle_key: None,
+        });
+        ir.normalized_edges.push(crate::ir::NormalizedEdge {
+            original_edge: edge_id,
+            edge_index: 0,
+            from: source_ir,
+            to: dummy_ir,
+            segment_order: 0,
+            lane: -2,
+        });
+        ir.normalized_edges.push(crate::ir::NormalizedEdge {
+            original_edge: edge_id,
+            edge_index: 0,
+            from: dummy_ir,
+            to: target_ir,
+            segment_order: 1,
+            lane: 2,
+        });
+
+        let local_nodes = BTreeSet::from([source, target]);
+        let options = LayoutOptions {
+            layered: elk_core::LayeredOptions {
+                direction: elk_core::LayoutDirection::LeftToRight,
+                ..LayoutOptions::default().layered
+            },
+            ..LayoutOptions::default()
+        };
+        let mut warnings = Vec::new();
+        let mut stats = LayoutStats::default();
+
+        export_to_graph(&mut graph, &ir, &local_nodes, &options, &mut warnings, &mut stats)
+            .expect("route long edge");
+
+        let points = flatten_section_points(&graph, edge_id).expect("section points");
+        let interior_xs = points
+            .iter()
+            .skip(1)
+            .take(points.len().saturating_sub(2))
+            .map(|point| point.x)
+            .collect::<Vec<_>>();
+
+        assert!(
+            interior_xs.iter().any(|x| *x < 110.0),
+            "expected an early-window slot near the source corridor, got {}",
+            format_polyline(&points)
+        );
+        assert!(
+            interior_xs.iter().any(|x| *x > 220.0),
+            "expected a later-window slot near the target corridor, got {}",
+            format_polyline(&points)
         );
     }
 }
