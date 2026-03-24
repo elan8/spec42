@@ -7,6 +7,7 @@ use std::collections::BTreeSet;
 use elk_graph::{ElkGraph, EdgeId, EdgeEndpoint, NodeId};
 use elk_alg_common::orthogonal::{
     build_shared_orthogonal_trunk, point_along_tangent, sanitize_orthogonal_path,
+    simplify_orthogonal_points,
 };
 
 mod router;
@@ -402,9 +403,37 @@ pub fn route_edges_with_diagnostics_in_scope(
                 router::RouteDebug::default(),
             )
         };
+        let shared_path_score = shared_path.as_ref().map(|path| {
+            route_path_score(
+                path,
+                segment_penalty,
+                bend_penalty,
+                0.0,
+                &occupied_segments,
+            )
+        });
+        let simple_path_scores = simple_paths
+            .iter()
+            .map(|path| {
+                route_path_score(
+                    path,
+                    segment_penalty,
+                    bend_penalty,
+                    shared_path_penalty,
+                    &occupied_segments,
+                )
+            })
+            .collect::<Vec<_>>();
+        let routed_path_score = route_path_score(
+            &routed_path,
+            segment_penalty,
+            bend_penalty,
+            shared_path_penalty,
+            &occupied_segments,
+        );
         let path = choose_preferred_route_path(
-            shared_path,
-            simple_paths,
+            shared_path.clone(),
+            simple_paths.clone(),
             routed_path,
             segment_penalty,
             bend_penalty,
@@ -457,6 +486,55 @@ pub fn route_edges_with_diagnostics_in_scope(
                 route_dbg.accepted_neighbors,
                 route_dbg.blocked_neighbors,
                 route_dbg.path_found
+            ));
+            diagnostics.push(format!(
+                "elk-libavoid: edge={:?} obstacle_nodes={:?}",
+                edge_id,
+                obstacles.iter().map(|o| o.node_index).collect::<Vec<_>>()
+            ));
+            if let Some(shared) = &shared_path {
+                diagnostics.push(format!(
+                    "elk-libavoid: edge={:?} shared_points={}",
+                    edge_id,
+                    shared
+                        .iter()
+                        .map(|p| format!("({:.1},{:.1})", p.x + scope_origin_abs.x, p.y + scope_origin_abs.y))
+                        .collect::<Vec<_>>()
+                        .join(" -> ")
+                ));
+            }
+            if let Some(obstacle) = obstacles.iter().find(|o| o.node_index == 5) {
+                diagnostics.push(format!(
+                    "elk-libavoid: edge={:?} obstacle_node_5=({:.1},{:.1})-({:.1},{:.1})",
+                    edge_id,
+                    obstacle.rect.origin.x + scope_origin_abs.x,
+                    obstacle.rect.origin.y + scope_origin_abs.y,
+                    obstacle.rect.origin.x + obstacle.rect.size.width + scope_origin_abs.x,
+                    obstacle.rect.origin.y + obstacle.rect.size.height + scope_origin_abs.y
+                ));
+            }
+            diagnostics.push(format!(
+                "elk-libavoid: edge={:?} shared_source_split={:?} shared_target_split={:?} shared_candidate={} shared_score={:?} simple_candidates={} simple_scores={:?} routed_score={:.1} chosen_points={}",
+                edge_id,
+                plan.shared_source_split,
+                plan.shared_target_split,
+                shared_path.is_some(),
+                shared_path_score.map(|score| (score * 10.0).round() / 10.0),
+                simple_paths.len(),
+                simple_path_scores
+                    .iter()
+                    .map(|score| (score * 10.0).round() / 10.0)
+                    .collect::<Vec<_>>(),
+                (routed_path_score * 10.0).round() / 10.0,
+                path.len()
+            ));
+            diagnostics.push(format!(
+                "elk-libavoid: edge={:?} chosen_path={}",
+                edge_id,
+                path.iter()
+                    .map(|p| format!("({:.1},{:.1})", p.x, p.y))
+                    .collect::<Vec<_>>()
+                    .join(" -> ")
             ));
         }
         remember_route_segments(&mut occupied_segments, &path, scope_origin_abs);
@@ -592,17 +670,25 @@ fn build_shared_route_path_local(
 ) -> Option<Vec<Point>> {
     let source_side = plan.source_side?;
     let target_side = plan.target_side?;
-    for split in [plan.shared_source_split, plan.shared_target_split]
-        .into_iter()
-        .flatten()
-    {
-        let bends = build_shared_orthogonal_trunk(
-            plan.route_start_abs,
-            plan.route_end_abs,
-            source_side,
-            target_side,
-            split,
-        )?;
+    let mut candidates = shared_route_bend_candidates(
+        plan.route_start_abs,
+        plan.route_end_abs,
+        source_side,
+        target_side,
+        plan.shared_source_split,
+        plan.shared_target_split,
+    );
+    candidates.extend(shared_route_detour_bend_candidates(
+        plan.route_start_abs,
+        plan.route_end_abs,
+        source_side,
+        target_side,
+        plan.shared_source_split,
+        plan.shared_target_split,
+        scope_origin_abs,
+        obstacles,
+    ));
+    for bends in candidates {
         let route_abs = std::iter::once(plan.route_start_abs)
             .chain(bends.into_iter())
             .chain(std::iter::once(plan.route_end_abs))
@@ -611,11 +697,292 @@ fn build_shared_route_path_local(
             .into_iter()
             .map(|point| to_local(point, scope_origin_abs))
             .collect::<Vec<_>>();
-        if path_is_clear(&route_local, obstacles) {
+        if path_is_clear(&route_local, obstacles)
+            && shared_path_is_strictly_clear(&route_local, obstacles)
+        {
             return Some(route_local);
         }
     }
     None
+}
+
+fn shared_path_is_strictly_clear(points: &[Point], obstacles: &[Obstacle]) -> bool {
+    if points.len() < 2 {
+        return false;
+    }
+    let start = points[0];
+    let end = *points.last().unwrap_or(&start);
+    points.windows(2).all(|pair| {
+        obstacles.iter().all(|obstacle| {
+            let allows_terminal_touch =
+                rect_contains_local(&obstacle.rect, start) || rect_contains_local(&obstacle.rect, end);
+            if allows_terminal_touch {
+                true
+            } else {
+                !segment_hits_rect(pair[0], pair[1], &obstacle.rect)
+            }
+        })
+    })
+}
+
+fn rect_contains_local(rect: &Rect, point: Point) -> bool {
+    point.x >= rect.origin.x - 1e-4
+        && point.x <= rect.origin.x + rect.size.width + 1e-4
+        && point.y >= rect.origin.y - 1e-4
+        && point.y <= rect.origin.y + rect.size.height + 1e-4
+}
+
+fn segment_hits_rect(a: Point, b: Point, rect: &Rect) -> bool {
+    let min_x = a.x.min(b.x);
+    let max_x = a.x.max(b.x);
+    let min_y = a.y.min(b.y);
+    let max_y = a.y.max(b.y);
+    !(max_x < rect.origin.x
+        || min_x > rect.origin.x + rect.size.width
+        || max_y < rect.origin.y
+        || min_y > rect.origin.y + rect.size.height)
+}
+
+fn shared_route_detour_bend_candidates(
+    start_abs: Point,
+    end_abs: Point,
+    source_side: PortSide,
+    target_side: PortSide,
+    source_split: Option<f32>,
+    target_split: Option<f32>,
+    scope_origin_abs: Point,
+    obstacles: &[Obstacle],
+) -> Vec<Vec<Point>> {
+    match (source_side, target_side) {
+        (PortSide::East, PortSide::West) | (PortSide::West, PortSide::East) => {
+            dual_shared_horizontal_detour_candidates(
+                to_local(start_abs, scope_origin_abs),
+                to_local(end_abs, scope_origin_abs),
+                source_split.map(|v| v - scope_origin_abs.x),
+                target_split.map(|v| v - scope_origin_abs.x),
+                obstacles,
+            )
+        }
+        (PortSide::South, PortSide::North) | (PortSide::North, PortSide::South) => {
+            dual_shared_vertical_detour_candidates(
+                to_local(start_abs, scope_origin_abs),
+                to_local(end_abs, scope_origin_abs),
+                source_split.map(|v| v - scope_origin_abs.y),
+                target_split.map(|v| v - scope_origin_abs.y),
+                obstacles,
+            )
+        }
+        _ => Vec::new(),
+    }
+}
+
+fn shared_route_bend_candidates(
+    start: Point,
+    end: Point,
+    source_side: PortSide,
+    target_side: PortSide,
+    source_split: Option<f32>,
+    target_split: Option<f32>,
+) -> Vec<Vec<Point>> {
+    let mut candidates = Vec::new();
+
+    if let Some(bends) = build_dual_shared_route_bends(
+        start,
+        end,
+        source_side,
+        target_side,
+        source_split,
+        target_split,
+    ) {
+        candidates.push(bends);
+    }
+
+    for split in [source_split, target_split].into_iter().flatten() {
+        if let Some(bends) =
+            build_shared_orthogonal_trunk(start, end, source_side, target_side, split)
+        {
+            candidates.push(bends);
+        }
+    }
+
+    candidates
+}
+
+fn build_dual_shared_route_bends(
+    start: Point,
+    end: Point,
+    source_side: PortSide,
+    target_side: PortSide,
+    source_split: Option<f32>,
+    target_split: Option<f32>,
+) -> Option<Vec<Point>> {
+    match (source_side, target_side) {
+        (PortSide::East, PortSide::West) | (PortSide::West, PortSide::East) => {
+            build_dual_shared_horizontal_bends(start, end, source_split, target_split)
+        }
+        (PortSide::South, PortSide::North) | (PortSide::North, PortSide::South) => {
+            build_dual_shared_vertical_bends(start, end, source_split, target_split)
+        }
+        _ => None,
+    }
+}
+
+fn build_dual_shared_horizontal_bends(
+    start: Point,
+    end: Point,
+    source_split: Option<f32>,
+    target_split: Option<f32>,
+) -> Option<Vec<Point>> {
+    let min_x = start.x.min(end.x);
+    let max_x = start.x.max(end.x);
+    let valid_split = |split: f32| split > min_x && split < max_x;
+    let source_split = source_split.filter(|split| valid_split(*split));
+    let target_split = target_split.filter(|split| valid_split(*split));
+
+    match (source_split, target_split) {
+        (Some(source_split), Some(target_split)) => Some(simplify_orthogonal_points(vec![
+            Point::new(source_split, start.y),
+            Point::new(target_split, start.y),
+            Point::new(target_split, end.y),
+        ])),
+        _ => None,
+    }
+}
+
+fn build_dual_shared_vertical_bends(
+    start: Point,
+    end: Point,
+    source_split: Option<f32>,
+    target_split: Option<f32>,
+) -> Option<Vec<Point>> {
+    let min_y = start.y.min(end.y);
+    let max_y = start.y.max(end.y);
+    let valid_split = |split: f32| split > min_y && split < max_y;
+    let source_split = source_split.filter(|split| valid_split(*split));
+    let target_split = target_split.filter(|split| valid_split(*split));
+
+    match (source_split, target_split) {
+        (Some(source_split), Some(target_split)) => Some(simplify_orthogonal_points(vec![
+            Point::new(start.x, source_split),
+            Point::new(start.x, target_split),
+            Point::new(end.x, target_split),
+        ])),
+        _ => None,
+    }
+}
+
+fn dual_shared_horizontal_detour_candidates(
+    start: Point,
+    end: Point,
+    source_split: Option<f32>,
+    target_split: Option<f32>,
+    obstacles: &[Obstacle],
+) -> Vec<Vec<Point>> {
+    let min_x = start.x.min(end.x);
+    let max_x = start.x.max(end.x);
+    let valid_split = |split: f32| split > min_x && split < max_x;
+    let Some(source_split) = source_split.filter(|split| valid_split(*split)) else {
+        return Vec::new();
+    };
+    let Some(target_split) = target_split.filter(|split| valid_split(*split)) else {
+        return Vec::new();
+    };
+
+    let mut seen = Vec::<f32>::new();
+    let mut candidates = Vec::<(f32, Vec<Point>)>::new();
+    for route_y in transverse_axis_candidates(start.y, end.y, obstacles, true) {
+        if seen.iter().any(|value| (value - route_y).abs() <= 1e-3) {
+            continue;
+        }
+        seen.push(route_y);
+        let bends = simplify_orthogonal_points(vec![
+            Point::new(source_split, start.y),
+            Point::new(source_split, route_y),
+            Point::new(target_split, route_y),
+            Point::new(target_split, end.y),
+        ]);
+        let route = std::iter::once(start)
+            .chain(bends.iter().copied())
+            .chain(std::iter::once(end))
+            .collect::<Vec<_>>();
+        if !path_is_clear(&route, obstacles) {
+            continue;
+        }
+        let cost =
+            (route_y - start.y).abs() + (route_y - end.y).abs() + 0.25 * (target_split - source_split).abs();
+        candidates.push((cost, bends));
+    }
+    candidates.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
+    candidates.into_iter().map(|(_, bends)| bends).collect()
+}
+
+fn dual_shared_vertical_detour_candidates(
+    start: Point,
+    end: Point,
+    source_split: Option<f32>,
+    target_split: Option<f32>,
+    obstacles: &[Obstacle],
+) -> Vec<Vec<Point>> {
+    let min_y = start.y.min(end.y);
+    let max_y = start.y.max(end.y);
+    let valid_split = |split: f32| split > min_y && split < max_y;
+    let Some(source_split) = source_split.filter(|split| valid_split(*split)) else {
+        return Vec::new();
+    };
+    let Some(target_split) = target_split.filter(|split| valid_split(*split)) else {
+        return Vec::new();
+    };
+
+    let mut seen = Vec::<f32>::new();
+    let mut candidates = Vec::<(f32, Vec<Point>)>::new();
+    for route_x in transverse_axis_candidates(start.x, end.x, obstacles, false) {
+        if seen.iter().any(|value| (value - route_x).abs() <= 1e-3) {
+            continue;
+        }
+        seen.push(route_x);
+        let bends = simplify_orthogonal_points(vec![
+            Point::new(start.x, source_split),
+            Point::new(route_x, source_split),
+            Point::new(route_x, target_split),
+            Point::new(end.x, target_split),
+        ]);
+        let route = std::iter::once(start)
+            .chain(bends.iter().copied())
+            .chain(std::iter::once(end))
+            .collect::<Vec<_>>();
+        if !path_is_clear(&route, obstacles) {
+            continue;
+        }
+        let cost =
+            (route_x - start.x).abs() + (route_x - end.x).abs() + 0.25 * (target_split - source_split).abs();
+        candidates.push((cost, bends));
+    }
+    candidates.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
+    candidates.into_iter().map(|(_, bends)| bends).collect()
+}
+
+fn transverse_axis_candidates(
+    start_axis: f32,
+    end_axis: f32,
+    obstacles: &[Obstacle],
+    horizontal_detour: bool,
+) -> Vec<f32> {
+    let mut values = vec![start_axis, end_axis];
+    for obstacle in obstacles {
+        if horizontal_detour {
+            values.push(obstacle.rect.origin.y);
+            values.push(obstacle.rect.origin.y + obstacle.rect.size.height);
+        } else {
+            values.push(obstacle.rect.origin.x);
+            values.push(obstacle.rect.origin.x + obstacle.rect.size.width);
+        }
+    }
+    values.sort_by(|a, b| {
+        let da = (a - start_axis).abs() + (a - end_axis).abs();
+        let db = (b - start_axis).abs() + (b - end_axis).abs();
+        da.partial_cmp(&db).unwrap_or(std::cmp::Ordering::Equal)
+    });
+    values
 }
 
 fn choose_preferred_route_path(
@@ -636,7 +1003,21 @@ fn choose_preferred_route_path(
         occupied_segments,
     );
 
-    for candidate in shared_path.into_iter().chain(simple_paths.into_iter()) {
+    if let Some(candidate) = shared_path {
+        let candidate_score = route_path_score(
+            &candidate,
+            segment_penalty,
+            bend_penalty,
+            0.0,
+            occupied_segments,
+        );
+        if candidate_score <= best_score + 1e-3 {
+            best_score = candidate_score;
+            best_path = candidate;
+        }
+    }
+
+    for candidate in simple_paths {
         let candidate_score = route_path_score(
             &candidate,
             segment_penalty,
@@ -753,8 +1134,8 @@ fn build_simple_route_candidates_local(
 
 #[cfg(test)]
 mod tests {
-    use super::{choose_preferred_route_path, OccupiedSegment};
-    use elk_core::Point;
+    use super::{choose_preferred_route_path, shared_route_bend_candidates, OccupiedSegment};
+    use elk_core::{Point, PortSide};
 
     #[test]
     fn prefers_shorter_routed_path_over_long_shared_detour() {
@@ -812,6 +1193,59 @@ mod tests {
             &[OccupiedSegment {
                 start: Point::new(40.0, 0.0),
                 end: Point::new(40.0, 50.0),
+            }],
+        );
+
+        assert_eq!(chosen, shared_path);
+    }
+
+    #[test]
+    fn dual_split_shared_candidate_is_built_before_single_split_candidates() {
+        let candidates = shared_route_bend_candidates(
+            Point::new(20.0, 40.0),
+            Point::new(220.0, 160.0),
+            PortSide::East,
+            PortSide::West,
+            Some(60.0),
+            Some(180.0),
+        );
+
+        assert!(!candidates.is_empty());
+        assert_eq!(
+            candidates[0],
+            vec![
+                Point::new(60.0, 40.0),
+                Point::new(180.0, 40.0),
+                Point::new(180.0, 160.0),
+            ]
+        );
+    }
+
+    #[test]
+    fn shared_candidate_ignores_overlap_penalty_for_intended_bundle() {
+        let shared_path = vec![
+            Point::new(0.0, 0.0),
+            Point::new(40.0, 0.0),
+            Point::new(40.0, 120.0),
+            Point::new(120.0, 120.0),
+        ];
+        let routed_path = vec![
+            Point::new(0.0, 0.0),
+            Point::new(80.0, 0.0),
+            Point::new(80.0, 120.0),
+            Point::new(120.0, 120.0),
+        ];
+
+        let chosen = choose_preferred_route_path(
+            Some(shared_path.clone()),
+            Vec::new(),
+            routed_path,
+            1.0,
+            6.0,
+            20.0,
+            &[OccupiedSegment {
+                start: Point::new(40.0, 0.0),
+                end: Point::new(40.0, 120.0),
             }],
         );
 
@@ -875,7 +1309,10 @@ fn collect_obstacles(
             Point::new(r.origin.x - clearance, r.origin.y - clearance),
             Size::new(r.size.width + 2.0 * clearance, r.size.height + 2.0 * clearance),
         );
-        out.push(Obstacle { rect: expanded });
+        out.push(Obstacle {
+            node_index: node.id.index(),
+            rect: expanded,
+        });
     }
     out.sort_by(|a, b| {
         a.rect.origin.x

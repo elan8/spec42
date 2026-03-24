@@ -15,6 +15,7 @@ pub struct OccupiedSegment {
 /// Expanded rectangle obstacles (e.g. node bounds + clearance).
 #[derive(Clone, Debug)]
 pub struct Obstacle {
+    pub node_index: usize,
     pub rect: Rect,
 }
 
@@ -448,9 +449,11 @@ mod tests {
     fn route_is_deterministic_for_same_input() {
         let obstacles = vec![
             Obstacle {
+                node_index: 0,
                 rect: rect(80.0, 20.0, 30.0, 60.0),
             },
             Obstacle {
+                node_index: 1,
                 rect: rect(130.0, 20.0, 30.0, 60.0),
             },
         ];
@@ -465,9 +468,11 @@ mod tests {
     fn narrow_corridor_routes_without_entering_obstacles() {
         let obstacles = vec![
             Obstacle {
+                node_index: 0,
                 rect: rect(80.0, 0.0, 60.0, 40.0),
             },
             Obstacle {
+                node_index: 1,
                 rect: rect(80.0, 60.0, 60.0, 40.0),
             },
         ];
@@ -490,9 +495,11 @@ mod tests {
     fn shared_path_penalty_prefers_free_parallel_corridor() {
         let obstacles = vec![
             Obstacle {
+                node_index: 0,
                 rect: rect(40.0, 20.0, 80.0, 20.0),
             },
             Obstacle {
+                node_index: 1,
                 rect: rect(40.0, 80.0, 80.0, 20.0),
             },
         ];

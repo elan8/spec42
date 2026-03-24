@@ -1,13 +1,14 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use elk_core::{EdgeRouting, LayoutError, LayoutOptions, LayoutStats, Point, PortSide, Rect, Size};
-use elk_graph::{ElkGraph, EdgeId, NodeId, PortId};
+use elk_graph::{EdgeEndpoint, ElkGraph, EdgeId, NodeId, PortId};
 use elk_alg_common::orthogonal::{
     build_shared_orthogonal_trunk, point_along_tangent, sanitize_orthogonal_path,
     simplify_orthogonal_points,
 };
 
 use crate::ir::{IrEdge, LayeredIr};
+use crate::pipeline::compound::TEMP_HIERARCHICAL_PORT_KEY;
 use crate::pipeline::props::decode_layout_from_props;
 use crate::pipeline::util::{
     dedup_points, endpoint_abs_center, endpoint_declared_abs_center, endpoint_port_side,
@@ -104,6 +105,7 @@ pub(crate) fn export_to_graph(
                     if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
                         continue;
                     }
+                    let before_fix = flatten_section_points(graph, edge.original_edge);
                     let edge_ref = &graph.edges[edge.original_edge.index()];
                     let source_endpoint = edge_ref.sources.first().copied().unwrap_or(edge.routed_source);
                     let target_endpoint = edge_ref.targets.first().copied().unwrap_or(edge.routed_target);
@@ -114,7 +116,22 @@ pub(crate) fn export_to_graph(
                         endpoint_port_side(graph, target_endpoint),
                     );
                     restore_declared_port_terminals(graph, edge.original_edge);
+                    let after_fix = flatten_section_points(graph, edge.original_edge);
                     if debug_enabled {
+                        if let Some(points) = before_fix {
+                            warnings.push(format!(
+                                "elk-layered: edge-route-before-fix edge={:?} points={}",
+                                edge.original_edge,
+                                format_polyline(&points)
+                            ));
+                        }
+                        if let Some(points) = after_fix {
+                            warnings.push(format!(
+                                "elk-layered: edge-route-after-fix edge={:?} points={}",
+                                edge.original_edge,
+                                format_polyline(&points)
+                            ));
+                        }
                         warnings.push(format!(
                             "elk-layered: edge-scope edge={:?} src_scope={:?} dst_scope={:?} src_frame={} dst_frame={}",
                             edge.original_edge,
@@ -557,6 +574,32 @@ pub(crate) fn relayout_all_ports(
     changed_ports
 }
 
+fn flatten_section_points(graph: &ElkGraph, edge_id: EdgeId) -> Option<Vec<Point>> {
+    let edge = &graph.edges[edge_id.index()];
+    let mut points = Vec::new();
+    for (index, section_id) in edge.sections.iter().copied().enumerate() {
+        let section = &graph.edge_sections[section_id.index()];
+        if index == 0 {
+            points.push(section.start);
+        }
+        points.extend(section.bend_points.iter().copied());
+        points.push(section.end);
+    }
+    if points.is_empty() {
+        None
+    } else {
+        Some(dedup_points(points))
+    }
+}
+
+fn format_polyline(points: &[Point]) -> String {
+    points
+        .iter()
+        .map(|point| format!("({:.1},{:.1})", point.x, point.y))
+        .collect::<Vec<_>>()
+        .join(" -> ")
+}
+
 pub(crate) fn reconcile_explicit_port_terminals(
     graph: &mut ElkGraph,
     changed_ports: &BTreeSet<PortId>,
@@ -592,7 +635,7 @@ pub(crate) fn restore_declared_port_terminals(graph: &mut ElkGraph, edge_id: Edg
     let mut target_terminal: Option<(Point, Option<PortSide>)> = None;
 
     if let Some(source_endpoint) = graph.edges[edge_id.index()].sources.first().copied() {
-        if source_endpoint.port.is_some() {
+        if source_endpoint.port.is_some() && !endpoint_uses_temporary_hierarchical_port(graph, source_endpoint) {
             let anchor = endpoint_declared_abs_center(graph, source_endpoint);
             let side = source_endpoint.port.map(|port| graph.ports[port.index()].side);
             source_terminal = Some((anchor, side));
@@ -606,7 +649,7 @@ pub(crate) fn restore_declared_port_terminals(graph: &mut ElkGraph, edge_id: Edg
     }
 
     if let Some(target_endpoint) = graph.edges[edge_id.index()].targets.first().copied() {
-        if target_endpoint.port.is_some() {
+        if target_endpoint.port.is_some() && !endpoint_uses_temporary_hierarchical_port(graph, target_endpoint) {
             let anchor = endpoint_declared_abs_center(graph, target_endpoint);
             let side = target_endpoint.port.map(|port| graph.ports[port.index()].side);
             target_terminal = Some((anchor, side));
@@ -633,6 +676,16 @@ pub(crate) fn restore_declared_port_terminals(graph: &mut ElkGraph, edge_id: Edg
             side,
         );
     }
+}
+
+fn endpoint_uses_temporary_hierarchical_port(graph: &ElkGraph, endpoint: EdgeEndpoint) -> bool {
+    endpoint.port.is_some_and(|port_id| {
+        graph.ports[port_id.index()]
+            .properties
+            .get(&elk_graph::PropertyKey::from(TEMP_HIERARCHICAL_PORT_KEY))
+            .and_then(|value| value.as_bool())
+            .unwrap_or(false)
+    })
 }
 
 fn rebuild_section_terminal_branch(
@@ -1668,6 +1721,43 @@ struct FanoutGroupKey {
     target_layer: usize,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+struct ClusterFanoutGroupKey {
+    cluster_node: usize,
+    opposite_endpoint_kind: u8,
+    opposite_endpoint_index: usize,
+    source_side: u8,
+    target_side: u8,
+    bundle_key: Option<u32>,
+    source_layer: usize,
+    target_layer: usize,
+}
+
+trait SharedFanoutGroupKey {
+    fn source_side(&self) -> u8;
+    fn target_side(&self) -> u8;
+}
+
+impl SharedFanoutGroupKey for FanoutGroupKey {
+    fn source_side(&self) -> u8 {
+        self.source_side
+    }
+
+    fn target_side(&self) -> u8 {
+        self.target_side
+    }
+}
+
+impl SharedFanoutGroupKey for ClusterFanoutGroupKey {
+    fn source_side(&self) -> u8 {
+        self.source_side
+    }
+
+    fn target_side(&self) -> u8 {
+        self.target_side
+    }
+}
+
 fn assign_endpoint_slots(
     graph: &mut ElkGraph,
     ir: &LayeredIr,
@@ -1780,6 +1870,10 @@ fn assign_shared_fanout_splits(
 ) {
     let mut source_groups: BTreeMap<FanoutGroupKey, Vec<(EdgeId, Point, Point)>> = BTreeMap::new();
     let mut target_groups: BTreeMap<FanoutGroupKey, Vec<(EdgeId, Point, Point)>> = BTreeMap::new();
+    let mut source_cluster_groups: BTreeMap<ClusterFanoutGroupKey, Vec<(EdgeId, Point, Point)>> =
+        BTreeMap::new();
+    let mut target_cluster_groups: BTreeMap<ClusterFanoutGroupKey, Vec<(EdgeId, Point, Point)>> =
+        BTreeMap::new();
 
     for edge in &ir.edges {
         if !local_nodes.contains(&edge.effective_source) || !local_nodes.contains(&edge.effective_target) {
@@ -1838,19 +1932,59 @@ fn assign_shared_fanout_splits(
             })
             .or_default()
             .push((edge.original_edge, source_lead, target_lead));
+
+        if let Some(cluster_node) = sibling_cluster_node(graph, source_endpoint, local_nodes) {
+            source_cluster_groups
+                .entry(ClusterFanoutGroupKey {
+                    cluster_node: cluster_node.index(),
+                    opposite_endpoint_kind: if target_endpoint.port.is_some() { 1 } else { 0 },
+                    opposite_endpoint_index: target_endpoint
+                        .port
+                        .map(|p| p.index())
+                        .unwrap_or(target_endpoint.node.index()),
+                    source_side: side_ordinal(source_side),
+                    target_side: side_ordinal(target_side),
+                    bundle_key: edge.bundle_key,
+                    source_layer: ir.nodes[ir.real_to_ir[&edge.effective_source]].layer,
+                    target_layer: ir.nodes[ir.real_to_ir[&edge.effective_target]].layer,
+                })
+                .or_default()
+                .push((edge.original_edge, source_lead, target_lead));
+        }
+
+        if let Some(cluster_node) = sibling_cluster_node(graph, target_endpoint, local_nodes) {
+            target_cluster_groups
+                .entry(ClusterFanoutGroupKey {
+                    cluster_node: cluster_node.index(),
+                    opposite_endpoint_kind: if source_endpoint.port.is_some() { 1 } else { 0 },
+                    opposite_endpoint_index: source_endpoint
+                        .port
+                        .map(|p| p.index())
+                        .unwrap_or(source_endpoint.node.index()),
+                    source_side: side_ordinal(source_side),
+                    target_side: side_ordinal(target_side),
+                    bundle_key: edge.bundle_key,
+                    source_layer: ir.nodes[ir.real_to_ir[&edge.effective_source]].layer,
+                    target_layer: ir.nodes[ir.real_to_ir[&edge.effective_target]].layer,
+                })
+                .or_default()
+                .push((edge.original_edge, source_lead, target_lead));
+        }
     }
 
     assign_group_shared_split(graph, source_groups, options, false);
     assign_group_shared_split(graph, target_groups, options, true);
+    assign_group_shared_split(graph, source_cluster_groups, options, false);
+    assign_group_shared_split(graph, target_cluster_groups, options, true);
 }
 
 fn assign_group_shared_split(
     graph: &mut ElkGraph,
-    groups: BTreeMap<FanoutGroupKey, Vec<(EdgeId, Point, Point)>>,
+    groups: impl IntoIterator<Item = (impl SharedFanoutGroupKey, Vec<(EdgeId, Point, Point)>)>,
     options: &LayoutOptions,
     preserve_existing: bool,
 ) {
-    for (group_key, edges) in groups.into_iter() {
+    for (group_key, edges) in groups {
         if edges.len() <= 2 {
             continue;
         }
@@ -1858,25 +1992,55 @@ fn assign_group_shared_split(
         let split = shared_fanout_split_coordinate(
             &edges,
             options.layered.spacing.segment_spacing.max(8.0),
-            group_key.source_side,
-            group_key.target_side,
+            group_key.source_side(),
+            group_key.target_side(),
             preserve_existing,
         );
         for (edge_id, source_lead, target_lead) in edges {
             if Some(edge_id) == exempt_edge {
                 continue;
             }
-            if is_valid_shared_split(source_lead, target_lead, split, group_key.source_side, group_key.target_side) {
+            if is_valid_shared_split(
+                source_lead,
+                target_lead,
+                split,
+                group_key.source_side(),
+                group_key.target_side(),
+            ) {
                 let edge_props = &mut graph.edges[edge_id.index()].properties;
                 edge_props.insert(SHARED_FANOUT_SPLIT_KEY, elk_graph::PropertyValue::Float(split as f64));
                 if preserve_existing {
-                    edge_props.insert(SHARED_TARGET_SPLIT_KEY, elk_graph::PropertyValue::Float(split as f64));
+                    let key = elk_graph::PropertyKey::from(SHARED_TARGET_SPLIT_KEY);
+                    if edge_props.get(&key).is_none() {
+                        edge_props.insert(key, elk_graph::PropertyValue::Float(split as f64));
+                    }
                 } else {
-                    edge_props.insert(SHARED_SOURCE_SPLIT_KEY, elk_graph::PropertyValue::Float(split as f64));
+                    let key = elk_graph::PropertyKey::from(SHARED_SOURCE_SPLIT_KEY);
+                    if edge_props.get(&key).is_none() {
+                        edge_props.insert(key, elk_graph::PropertyValue::Float(split as f64));
+                    }
                 }
             }
         }
     }
+}
+
+fn sibling_cluster_node(
+    graph: &ElkGraph,
+    endpoint: elk_graph::EdgeEndpoint,
+    local_nodes: &BTreeSet<NodeId>,
+) -> Option<NodeId> {
+    let parent = graph.nodes[endpoint.node.index()].parent?;
+    if !local_nodes.contains(&parent) {
+        return None;
+    }
+    let siblings_with_same_parent = graph.nodes[parent.index()]
+        .children
+        .iter()
+        .filter(|child| local_nodes.contains(child))
+        .take(2)
+        .count();
+    (siblings_with_same_parent >= 2).then_some(parent)
 }
 
 fn supports_shared_fanout(source_side: PortSide, target_side: PortSide) -> bool {
@@ -2730,6 +2894,83 @@ mod tests {
                     .get(&elk_graph::PropertyKey::from(SHARED_FANOUT_SPLIT_KEY))
                     .and_then(|value| value.as_f64())
                     .is_some()
+            );
+        }
+    }
+
+    #[test]
+    fn assign_shared_fanout_splits_marks_sibling_target_cluster_group() {
+        let mut graph = ElkGraph::new();
+        let source = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 0.0, y: 80.0, width: 80.0, height: 40.0 },
+        );
+        let cluster = graph.add_node(
+            graph.root,
+            elk_graph::ShapeGeometry { x: 220.0, y: 0.0, width: 180.0, height: 220.0 },
+        );
+        let top = graph.add_node(
+            cluster,
+            elk_graph::ShapeGeometry { x: 40.0, y: 20.0, width: 80.0, height: 40.0 },
+        );
+        let middle = graph.add_node(
+            cluster,
+            elk_graph::ShapeGeometry { x: 40.0, y: 90.0, width: 80.0, height: 40.0 },
+        );
+        let bottom = graph.add_node(
+            cluster,
+            elk_graph::ShapeGeometry { x: 40.0, y: 160.0, width: 80.0, height: 40.0 },
+        );
+
+        let e1 = graph.add_edge(
+            graph.root,
+            vec![elk_graph::EdgeEndpoint::node(source)],
+            vec![elk_graph::EdgeEndpoint::node(top)],
+        );
+        let e2 = graph.add_edge(
+            graph.root,
+            vec![elk_graph::EdgeEndpoint::node(source)],
+            vec![elk_graph::EdgeEndpoint::node(middle)],
+        );
+        let e3 = graph.add_edge(
+            graph.root,
+            vec![elk_graph::EdgeEndpoint::node(source)],
+            vec![elk_graph::EdgeEndpoint::node(bottom)],
+        );
+        for edge_id in [e1, e2, e3] {
+            graph.edges[edge_id.index()]
+                .properties
+                .insert("elk.edge.bundle", elk_graph::PropertyValue::Int(1));
+        }
+
+        let options = LayoutOptions {
+            layered: elk_core::LayeredOptions {
+                direction: elk_core::LayoutDirection::LeftToRight,
+                ..LayoutOptions::default().layered
+            },
+            ..LayoutOptions::default()
+        };
+        let local_nodes = BTreeSet::from([source, cluster, top, middle, bottom]);
+        let ir = import_graph(
+            &graph,
+            graph.root,
+            &[source, cluster, top, middle, bottom],
+            &local_nodes,
+            &options,
+        );
+
+        assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
+        assign_shared_fanout_splits(&mut graph, &ir, &local_nodes, &options);
+
+        for edge_id in [e1, e2, e3] {
+            assert!(
+                graph.edges[edge_id.index()]
+                    .properties
+                    .get(&elk_graph::PropertyKey::from(SHARED_TARGET_SPLIT_KEY))
+                    .and_then(|value| value.as_f64())
+                    .is_some(),
+                "expected sibling-cluster target split for edge {:?}",
+                edge_id
             );
         }
     }

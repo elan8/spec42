@@ -6,7 +6,7 @@
 //! concatenating the routed boundary trunk with explicit source/target boundary branches
 //! instead of simply snapping one section back to the deep endpoints.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use elk_core::{LayoutDirection, LayoutOptions, Point, PortSide, Rect, Size};
 use elk_graph::{EdgeEndpoint, EdgeId, ElkGraph, NodeId, ShapeGeometry};
@@ -15,6 +15,8 @@ use crate::pipeline::routing::restore_declared_port_terminals;
 use crate::pipeline::util::{
     dedup_points, endpoint_abs_center, endpoint_declared_abs_center, point_along_outward_normal,
 };
+
+pub(crate) const TEMP_HIERARCHICAL_PORT_KEY: &str = "spec42.compound.tempHierarchicalPort";
 
 #[derive(Clone, Copy, Debug)]
 pub struct CompoundRouteRecord {
@@ -43,14 +45,21 @@ struct RebuildContext {
     routed_target_center: Point,
     source_side: Option<PortSide>,
     target_side: Option<PortSide>,
-    first_boundary_point: Point,
-    last_boundary_point: Point,
+    source_boundary_anchor: Point,
+    target_boundary_anchor: Point,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 struct BranchGroupKey {
     endpoint_kind: u8,
     endpoint_index: usize,
+    outer_node: NodeId,
+    boundary_side: u8,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+struct ClusterBranchGroupKey {
+    cluster_node: NodeId,
     outer_node: NodeId,
     boundary_side: u8,
 }
@@ -126,6 +135,13 @@ fn place_hierarchical_port_on_boundary(
             p.y = (n.height - p.height).max(0.0) / 2.0;
         }
     }
+}
+
+fn mark_temporary_hierarchical_port(graph: &mut ElkGraph, port_id: elk_graph::PortId) {
+    graph.ports[port_id.index()].properties.insert(
+        elk_graph::PropertyKey::from(TEMP_HIERARCHICAL_PORT_KEY),
+        elk_graph::PropertyValue::Bool(true),
+    );
 }
 
 pub(crate) fn place_hierarchical_port_on_boundary_at_tangent(
@@ -289,12 +305,14 @@ pub fn preprocess_cross_hierarchy_edges(
             };
             *shared_ports.entry(key).or_insert_with(|| {
                 let port_id = graph.add_port(effective_source, hp_source_side, port_geom);
+                mark_temporary_hierarchical_port(graph, port_id);
                 place_hierarchical_port_on_boundary(graph, effective_source, port_id, hp_source_side);
                 temporary_ports.push((effective_source, port_id));
                 port_id
             })
         } else {
             let port_id = graph.add_port(effective_source, hp_source_side, port_geom);
+            mark_temporary_hierarchical_port(graph, port_id);
             place_hierarchical_port_on_boundary(graph, effective_source, port_id, hp_source_side);
             temporary_ports.push((effective_source, port_id));
             port_id
@@ -308,12 +326,14 @@ pub fn preprocess_cross_hierarchy_edges(
             };
             *shared_ports.entry(key).or_insert_with(|| {
                 let port_id = graph.add_port(effective_target, hp_target_side, port_geom);
+                mark_temporary_hierarchical_port(graph, port_id);
                 place_hierarchical_port_on_boundary(graph, effective_target, port_id, hp_target_side);
                 temporary_ports.push((effective_target, port_id));
                 port_id
             })
         } else {
             let port_id = graph.add_port(effective_target, hp_target_side, port_geom);
+            mark_temporary_hierarchical_port(graph, port_id);
             place_hierarchical_port_on_boundary(graph, effective_target, port_id, hp_target_side);
             temporary_ports.push((effective_target, port_id));
             port_id
@@ -384,13 +404,6 @@ pub fn postprocess_cross_hierarchy_edges(
             .map(|port| graph.ports[port.index()].side)
             .or_else(|| dominant_side_toward(graph, record.effective_target, routed_source_center));
 
-        let Some(first_boundary_point) = routed_points.first().copied() else {
-            continue;
-        };
-        let Some(last_boundary_point) = routed_points.last().copied() else {
-            continue;
-        };
-
         contexts.push(RebuildContext {
             edge_id: *edge_id,
             record: *record,
@@ -400,8 +413,8 @@ pub fn postprocess_cross_hierarchy_edges(
             routed_target_center,
             source_side,
             target_side,
-            first_boundary_point,
-            last_boundary_point,
+            source_boundary_anchor: routed_source_center,
+            target_boundary_anchor: routed_target_center,
         });
     }
 
@@ -413,7 +426,7 @@ pub fn postprocess_cross_hierarchy_edges(
                 ctx.record.original_source,
                 ctx.record.effective_source,
                 ctx.source_side,
-                ctx.first_boundary_point,
+                ctx.source_boundary_anchor,
             )
         }),
     );
@@ -425,7 +438,7 @@ pub fn postprocess_cross_hierarchy_edges(
                 ctx.record.original_target,
                 ctx.record.effective_target,
                 ctx.target_side,
-                ctx.last_boundary_point,
+                ctx.target_boundary_anchor,
             )
         }),
     );
@@ -442,12 +455,18 @@ pub fn postprocess_cross_hierarchy_edges(
         if should_reverse_points(&routed_points, ctx.routed_source_center, ctx.routed_target_center) {
             routed_points.reverse();
         }
+        if let Some(first) = routed_points.first_mut() {
+            *first = ctx.source_boundary_anchor;
+        }
+        if let Some(last) = routed_points.last_mut() {
+            *last = ctx.target_boundary_anchor;
+        }
 
         let mut rebuilt_points = build_endpoint_branch(
             graph,
             record.original_source,
             record.effective_source,
-            routed_points[0],
+            ctx.source_boundary_anchor,
             ctx.source_side,
             source_shared_splits.get(&edge_id).copied().flatten(),
         );
@@ -456,7 +475,7 @@ pub fn postprocess_cross_hierarchy_edges(
             graph,
             record.original_target,
             record.effective_target,
-            ctx.last_boundary_point,
+            ctx.target_boundary_anchor,
             ctx.target_side,
             target_shared_splits.get(&edge_id).copied().flatten(),
         );
@@ -473,16 +492,43 @@ pub fn postprocess_cross_hierarchy_edges(
 
         let start_side = record.original_source.port.map(|port| graph.ports[port.index()].side);
         let end_side = record.original_target.port.map(|port| graph.ports[port.index()].side);
+        let rebuilt_points_raw = rebuilt_points.clone();
+        let legacy_points_raw = legacy_points.clone();
         let rebuilt_points = normalize_candidate_polyline(rebuilt_points, start_side, end_side);
         let legacy_points = normalize_candidate_polyline(legacy_points, start_side, end_side);
-        let (points, decision) =
-            choose_best_candidate(graph, record, legacy_points, rebuilt_points);
+        let rebuilt_points_for_debug = rebuilt_points.clone();
+        let legacy_points_for_debug = legacy_points.clone();
+        let prefers_shared_rebuilt = source_shared_splits
+            .get(&edge_id)
+            .copied()
+            .flatten()
+            .is_some()
+            || target_shared_splits
+                .get(&edge_id)
+                .copied()
+                .flatten()
+                .is_some();
+        let (points, decision) = choose_best_candidate(
+            graph,
+            record,
+            legacy_points,
+            rebuilt_points,
+            prefers_shared_rebuilt,
+        );
 
         if points.len() < 2 {
             continue;
         }
 
         if debug_enabled {
+            warnings.push(format!(
+                "elk-layered compound: edge={:?} raw_legacy={} raw_rebuilt={} norm_legacy={} norm_rebuilt={}",
+                edge_id,
+                format_polyline(&legacy_points_raw),
+                format_polyline(&rebuilt_points_raw),
+                format_polyline(&legacy_points_for_debug),
+                format_polyline(&rebuilt_points_for_debug)
+            ));
             warnings.push(format!(
                 "elk-layered compound: edge={:?} decision={} legacy={} rebuilt={}",
                 edge_id,
@@ -491,7 +537,7 @@ pub fn postprocess_cross_hierarchy_edges(
                 format_polyline(&decision.rebuilt_points)
             ));
             warnings.push(format!(
-                "elk-layered compound: edge={:?} legacy_bends={} rebuilt_bends={} legacy_inside_start={} rebuilt_inside_start={} legacy_inside_end={} rebuilt_inside_end={} legacy_endpoint_intrusions={} rebuilt_endpoint_intrusions={} legacy_sibling_intrusions={} rebuilt_sibling_intrusions={}",
+                "elk-layered compound: edge={:?} legacy_bends={} rebuilt_bends={} legacy_inside_start={} rebuilt_inside_start={} legacy_inside_end={} rebuilt_inside_end={} legacy_endpoint_intrusions={} rebuilt_endpoint_intrusions={} legacy_sibling_intrusions={} rebuilt_sibling_intrusions={} legacy_global_intrusions={} rebuilt_global_intrusions={}",
                 edge_id,
                 decision.legacy_bends,
                 decision.rebuilt_bends,
@@ -503,6 +549,8 @@ pub fn postprocess_cross_hierarchy_edges(
                 decision.rebuilt_endpoint_intrusions,
                 decision.legacy_sibling_intrusions,
                 decision.rebuilt_sibling_intrusions,
+                decision.legacy_global_intrusions,
+                decision.rebuilt_global_intrusions,
             ));
         }
 
@@ -541,6 +589,12 @@ fn normalize_candidate_polyline(
     if points.len() < 2 {
         return points;
     }
+    if let Some(side) = start_side {
+        points = rebuild_candidate_terminal_branch(points, side, true);
+    }
+    if let Some(side) = end_side {
+        points = rebuild_candidate_terminal_branch(points, side, false);
+    }
     if !polyline_is_orthogonal(&points) {
         points = orthogonalize_polyline(points, start_side, end_side);
     }
@@ -561,6 +615,8 @@ struct CandidateDecision {
     rebuilt_endpoint_intrusions: usize,
     legacy_sibling_intrusions: usize,
     rebuilt_sibling_intrusions: usize,
+    legacy_global_intrusions: usize,
+    rebuilt_global_intrusions: usize,
 }
 
 fn choose_best_candidate(
@@ -568,6 +624,7 @@ fn choose_best_candidate(
     record: &CompoundRouteRecord,
     legacy_points: Vec<Point>,
     rebuilt_points: Vec<Point>,
+    prefers_shared_rebuilt: bool,
 ) -> (Vec<Point>, CandidateDecision) {
     const REBUILT_BEND_HARD_CAP: usize = 8;
     let legacy_bends = legacy_points.len().saturating_sub(2);
@@ -584,6 +641,8 @@ fn choose_best_candidate(
     let rebuilt_endpoint_intrusions = count_endpoint_node_intrusions(graph, &rebuilt_points, record);
     let legacy_sibling_intrusions = count_crossed_sibling_obstacles(graph, &legacy_points, record);
     let rebuilt_sibling_intrusions = count_crossed_sibling_obstacles(graph, &rebuilt_points, record);
+    let legacy_global_intrusions = count_global_node_intrusions(graph, &legacy_points, record);
+    let rebuilt_global_intrusions = count_global_node_intrusions(graph, &rebuilt_points, record);
     let decision = |reason: &'static str,
                     chosen: Vec<Point>,
                     legacy_points: Vec<Point>,
@@ -604,6 +663,8 @@ fn choose_best_candidate(
                 rebuilt_endpoint_intrusions,
                 legacy_sibling_intrusions,
                 rebuilt_sibling_intrusions,
+                legacy_global_intrusions,
+                rebuilt_global_intrusions,
             },
         )
     };
@@ -660,6 +721,33 @@ fn choose_best_candidate(
         return decision(
             "legacy-preserves-bend-cap",
             legacy_points.clone(),
+            legacy_points,
+            rebuilt_points,
+        );
+    }
+    if rebuilt_global_intrusions != legacy_global_intrusions {
+        if rebuilt_global_intrusions < legacy_global_intrusions && rebuilt_within_hard_cap {
+            return decision(
+                "rebuilt-reduces-global-node-intrusions",
+                rebuilt_points.clone(),
+                legacy_points,
+                rebuilt_points,
+            );
+        }
+        return decision(
+            "legacy-avoids-global-node-intrusions",
+            legacy_points.clone(),
+            legacy_points,
+            rebuilt_points,
+        );
+    }
+    if prefers_shared_rebuilt
+        && rebuilt_within_hard_cap
+        && rebuilt_bends <= legacy_bends + 2
+    {
+        return decision(
+            "rebuilt-preserves-shared-branch",
+            rebuilt_points.clone(),
             legacy_points,
             rebuilt_points,
         );
@@ -771,6 +859,14 @@ fn branch_outward_point(graph: &ElkGraph, endpoint: EdgeEndpoint) -> Option<(Por
     Some((port_side, point_along_outward_normal(center, port_side, 24.0)))
 }
 
+#[derive(Clone, Copy)]
+struct BranchSplitEntry {
+    edge_id: EdgeId,
+    endpoint: EdgeEndpoint,
+    outer_node: NodeId,
+    boundary_point: Point,
+}
+
 fn assign_shared_branch_splits<I>(
     graph: &ElkGraph,
     entries: I,
@@ -778,12 +874,24 @@ fn assign_shared_branch_splits<I>(
 where
     I: IntoIterator<Item = (EdgeId, EdgeEndpoint, NodeId, Option<PortSide>, Point)>,
 {
-    let mut grouped: BTreeMap<BranchGroupKey, Vec<(EdgeId, EdgeEndpoint, Point)>> = BTreeMap::new();
+    let mut grouped: BTreeMap<BranchGroupKey, Vec<BranchSplitEntry>> = BTreeMap::new();
+    let mut cluster_grouped: BTreeMap<ClusterBranchGroupKey, Vec<BranchSplitEntry>> =
+        BTreeMap::new();
     for (edge_id, endpoint, outer_node, boundary_side, boundary_point) in entries {
         let Some(key) = endpoint_group_key(endpoint, outer_node, boundary_side) else {
             continue;
         };
-        grouped.entry(key).or_default().push((edge_id, endpoint, boundary_point));
+        let entry = BranchSplitEntry {
+            edge_id,
+            endpoint,
+            outer_node,
+            boundary_point,
+        };
+        grouped.entry(key).or_default().push(entry);
+        if let Some(cluster_key) = endpoint_cluster_group_key(graph, endpoint, outer_node, boundary_side)
+        {
+            cluster_grouped.entry(cluster_key).or_default().push(entry);
+        }
     }
 
     let mut result = BTreeMap::new();
@@ -791,32 +899,211 @@ where
         if entries.len() < 2 {
             continue;
         }
-        let Some((_, sample_endpoint, _)) = entries.first().copied() else {
+        let split = choose_shared_branch_split(graph, &entries);
+        for entry in entries {
+            result.insert(entry.edge_id, split);
+        }
+    }
+    for (_key, entries) in cluster_grouped {
+        if entries.len() < 2 {
             continue;
-        };
-        let Some((port_side, outward)) = branch_outward_point(graph, sample_endpoint) else {
-            continue;
-        };
-        let origin_axis = branch_axis_value(outward, port_side);
-        let mut values = entries
-            .iter()
-            .map(|(_, _, boundary_point)| branch_axis_value(*boundary_point, port_side))
-            .collect::<Vec<_>>();
-        values.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
-        let all_non_negative = values.iter().all(|value| *value >= origin_axis + 1e-3);
-        let all_non_positive = values.iter().all(|value| *value <= origin_axis - 1e-3);
-        let split = if all_non_negative {
-            values.first().copied()
-        } else if all_non_positive {
-            values.last().copied()
-        } else {
-            None
-        };
-        for (edge_id, _, _) in entries {
-            result.insert(edge_id, split);
+        }
+        let split = choose_shared_branch_split(graph, &entries);
+        for entry in entries {
+            result.insert(entry.edge_id, split);
         }
     }
     result
+}
+
+fn choose_shared_branch_split(
+    graph: &ElkGraph,
+    entries: &[impl Copy + BranchSplitEntryLike],
+) -> Option<f32> {
+    const BRANCH_CLEARANCE: f32 = 24.0;
+
+    let sample = *entries.first()?;
+    let (port_side, sample_outward) = branch_outward_point(graph, sample.endpoint())?;
+    let outer_rect = node_abs_rect(graph, sample.outer_node());
+    let min_value = match port_side {
+        PortSide::East | PortSide::West => outer_rect.origin.y + 1.0,
+        PortSide::North | PortSide::South => outer_rect.origin.x + 1.0,
+    };
+    let max_value = match port_side {
+        PortSide::East | PortSide::West => outer_rect.max_y() - 1.0,
+        PortSide::North | PortSide::South => outer_rect.max_x() - 1.0,
+    };
+
+    let mut candidates = Vec::new();
+    let mut saw_non_negative = false;
+    let mut saw_non_positive = false;
+
+    for entry in entries {
+        let (entry_side, outward) = branch_outward_point(graph, entry.endpoint())?;
+        if entry_side != port_side {
+            return None;
+        }
+        let boundary_axis = branch_axis_value(entry.boundary_point(), port_side);
+        let origin_axis = branch_axis_value(outward, port_side);
+        if boundary_axis >= origin_axis + 1e-3 {
+            saw_non_negative = true;
+        }
+        if boundary_axis <= origin_axis - 1e-3 {
+            saw_non_positive = true;
+        }
+        candidates.push(boundary_axis);
+
+        let endpoint_rect = node_abs_rect(graph, entry.endpoint().node);
+        match port_side {
+            PortSide::East | PortSide::West => {
+                candidates.push(endpoint_rect.origin.y - BRANCH_CLEARANCE);
+                candidates.push(endpoint_rect.max_y() + BRANCH_CLEARANCE);
+                for rect in sibling_obstacle_rects(graph, entry.outer_node(), entry.endpoint().node) {
+                    candidates.push(rect.origin.y - BRANCH_CLEARANCE);
+                    candidates.push(rect.max_y() + BRANCH_CLEARANCE);
+                }
+            }
+            PortSide::North | PortSide::South => {
+                candidates.push(endpoint_rect.origin.x - BRANCH_CLEARANCE);
+                candidates.push(endpoint_rect.max_x() + BRANCH_CLEARANCE);
+                for rect in sibling_obstacle_rects(graph, entry.outer_node(), entry.endpoint().node) {
+                    candidates.push(rect.origin.x - BRANCH_CLEARANCE);
+                    candidates.push(rect.max_x() + BRANCH_CLEARANCE);
+                }
+            }
+        }
+    }
+
+    if saw_non_negative && saw_non_positive {
+        return None;
+    }
+
+    let direction_sign = if saw_non_positive { -1.0 } else { 1.0 };
+    let reference_axis = branch_axis_value(sample_outward, port_side);
+
+    choose_best_axis_candidate(
+        candidates,
+        min_value,
+        max_value,
+        |candidate| {
+            entries.iter().all(|entry| {
+                let Some((_, outward)) = branch_outward_point(graph, entry.endpoint()) else {
+                    return false;
+                };
+                let candidate_axis = candidate - branch_axis_value(outward, port_side);
+                if candidate_axis * direction_sign < -1e-3 {
+                    return false;
+                }
+                shared_branch_intrusions(graph, *entry, port_side, outward, candidate) == 0
+            })
+        },
+        |candidate| {
+            entries
+                .iter()
+                .map(|entry| {
+                    let Some((_, outward)) = branch_outward_point(graph, entry.endpoint()) else {
+                        return usize::MAX / 4;
+                    };
+                    let candidate_axis = candidate - branch_axis_value(outward, port_side);
+                    let direction_penalty = if candidate_axis * direction_sign < -1e-3 { 1000 } else { 0 };
+                    direction_penalty
+                        + shared_branch_intrusions(graph, *entry, port_side, outward, candidate)
+                })
+                .sum()
+        },
+        |candidate| {
+            let branch_cost: f32 = entries
+                .iter()
+                .filter_map(|entry| {
+                    let (_, outward) = branch_outward_point(graph, entry.endpoint())?;
+                    Some(
+                        (candidate - branch_axis_value(entry.boundary_point(), port_side)).abs()
+                            + 0.25 * (candidate - branch_axis_value(outward, port_side)).abs(),
+                    )
+                })
+                .sum();
+            branch_cost + 0.05 * (candidate - reference_axis).abs()
+        },
+    )
+}
+
+trait BranchSplitEntryLike {
+    fn endpoint(self) -> EdgeEndpoint;
+    fn outer_node(self) -> NodeId;
+    fn boundary_point(self) -> Point;
+}
+
+impl BranchSplitEntryLike for (EdgeId, EdgeEndpoint, NodeId, Point) {
+    fn endpoint(self) -> EdgeEndpoint {
+        self.1
+    }
+
+    fn outer_node(self) -> NodeId {
+        self.2
+    }
+
+    fn boundary_point(self) -> Point {
+        self.3
+    }
+}
+
+impl BranchSplitEntryLike for BranchSplitEntry {
+    fn endpoint(self) -> EdgeEndpoint {
+        self.endpoint
+    }
+
+    fn outer_node(self) -> NodeId {
+        self.outer_node
+    }
+
+    fn boundary_point(self) -> Point {
+        self.boundary_point
+    }
+}
+
+fn shared_branch_intrusions(
+    graph: &ElkGraph,
+    entry: impl Copy + BranchSplitEntryLike,
+    port_side: PortSide,
+    outward: Point,
+    candidate: f32,
+) -> usize {
+    let endpoint_rect = node_abs_rect(graph, entry.endpoint().node);
+    let obstacles = sibling_obstacle_rects(graph, entry.outer_node(), entry.endpoint().node);
+    match port_side {
+        PortSide::East | PortSide::West => horizontal_branch_intrusions(
+            outward,
+            entry.boundary_point(),
+            candidate,
+            endpoint_rect,
+            &obstacles,
+        ),
+        PortSide::North | PortSide::South => vertical_branch_intrusions(
+            outward,
+            entry.boundary_point(),
+            candidate,
+            endpoint_rect,
+            &obstacles,
+        ),
+    }
+}
+
+fn endpoint_cluster_group_key(
+    graph: &ElkGraph,
+    endpoint: EdgeEndpoint,
+    outer_node: NodeId,
+    boundary_side: Option<PortSide>,
+) -> Option<ClusterBranchGroupKey> {
+    let side = boundary_side?;
+    let cluster_node = graph.nodes[endpoint.node.index()].parent?;
+    if cluster_node != outer_node {
+        return None;
+    }
+    Some(ClusterBranchGroupKey {
+        cluster_node,
+        outer_node,
+        boundary_side: side_ordinal(side),
+    })
 }
 
 fn build_endpoint_branch(
@@ -846,55 +1133,79 @@ fn build_endpoint_branch(
         let branch_start = points.last().copied().unwrap_or(outward);
         match port_side {
             PortSide::East | PortSide::West => {
-                let detour_y = choose_clear_horizontal_corridor(
-                    branch_start,
-                    boundary_point,
-                    boundary_point.y,
-                    outer_rect,
-                    node_rect,
-                    &sibling_obstacles,
-                    BRANCH_CLEARANCE,
-                );
-                if let Some(detour_y) = detour_y {
-                    append_orthogonal_connection(
-                        &mut points,
-                        Point::new(branch_start.x, detour_y),
-                        Some(PortSide::North),
-                    );
-                    append_orthogonal_connection(
-                        &mut points,
-                        Point::new(boundary_point.x, detour_y),
-                        Some(PortSide::West),
-                    );
-                    append_orthogonal_connection(&mut points, boundary_point, Some(PortSide::North));
+                if shared_split.is_some()
+                    && horizontal_connection_intrusions(
+                        branch_start,
+                        boundary_point,
+                        branch_start.y,
+                        node_rect,
+                        &sibling_obstacles,
+                    ) == 0
+                {
+                    append_orthogonal_connection(&mut points, boundary_point, Some(PortSide::West));
                 } else {
-                    append_orthogonal_connection(&mut points, boundary_point, Some(PortSide::North));
+                    let detour_y = choose_clear_horizontal_corridor(
+                        branch_start,
+                        boundary_point,
+                        boundary_point.y,
+                        outer_rect,
+                        node_rect,
+                        &sibling_obstacles,
+                        BRANCH_CLEARANCE,
+                    );
+                    if let Some(detour_y) = detour_y {
+                        append_orthogonal_connection(
+                            &mut points,
+                            Point::new(branch_start.x, detour_y),
+                            Some(PortSide::North),
+                        );
+                        append_orthogonal_connection(
+                            &mut points,
+                            Point::new(boundary_point.x, detour_y),
+                            Some(PortSide::West),
+                        );
+                        append_orthogonal_connection(&mut points, boundary_point, Some(PortSide::North));
+                    } else {
+                        append_orthogonal_connection(&mut points, boundary_point, Some(PortSide::North));
+                    }
                 }
             }
             PortSide::North | PortSide::South => {
-                let detour_x = choose_clear_vertical_corridor(
-                    branch_start,
-                    boundary_point,
-                    boundary_point.x,
-                    outer_rect,
-                    node_rect,
-                    &sibling_obstacles,
-                    BRANCH_CLEARANCE,
-                );
-                if let Some(detour_x) = detour_x {
-                    append_orthogonal_connection(
-                        &mut points,
-                        Point::new(detour_x, branch_start.y),
-                        Some(PortSide::West),
-                    );
-                    append_orthogonal_connection(
-                        &mut points,
-                        Point::new(detour_x, boundary_point.y),
-                        Some(PortSide::North),
-                    );
-                    append_orthogonal_connection(&mut points, boundary_point, Some(PortSide::West));
+                if shared_split.is_some()
+                    && vertical_connection_intrusions(
+                        branch_start,
+                        boundary_point,
+                        branch_start.x,
+                        node_rect,
+                        &sibling_obstacles,
+                    ) == 0
+                {
+                    append_orthogonal_connection(&mut points, boundary_point, Some(PortSide::North));
                 } else {
-                    append_orthogonal_connection(&mut points, boundary_point, Some(PortSide::West));
+                    let detour_x = choose_clear_vertical_corridor(
+                        branch_start,
+                        boundary_point,
+                        boundary_point.x,
+                        outer_rect,
+                        node_rect,
+                        &sibling_obstacles,
+                        BRANCH_CLEARANCE,
+                    );
+                    if let Some(detour_x) = detour_x {
+                        append_orthogonal_connection(
+                            &mut points,
+                            Point::new(detour_x, branch_start.y),
+                            Some(PortSide::West),
+                        );
+                        append_orthogonal_connection(
+                            &mut points,
+                            Point::new(detour_x, boundary_point.y),
+                            Some(PortSide::North),
+                        );
+                        append_orthogonal_connection(&mut points, boundary_point, Some(PortSide::West));
+                    } else {
+                        append_orthogonal_connection(&mut points, boundary_point, Some(PortSide::West));
+                    }
                 }
             }
         }
@@ -1065,6 +1376,57 @@ fn count_endpoint_sibling_intrusions(
                 .count()
         })
         .sum()
+}
+
+fn count_global_node_intrusions(
+    graph: &ElkGraph,
+    points: &[Point],
+    record: &CompoundRouteRecord,
+) -> usize {
+    let source_node = record.original_source.node;
+    let target_node = record.original_target.node;
+    let source_ancestors = ancestor_node_chain(graph, source_node);
+    let target_ancestors = ancestor_node_chain(graph, target_node);
+    points
+        .windows(2)
+        .map(|segment| {
+            all_node_ids(graph)
+                .into_iter()
+                .filter(|node_id| {
+                    *node_id != source_node
+                        && *node_id != target_node
+                        && !source_ancestors.contains(node_id)
+                        && !target_ancestors.contains(node_id)
+                        && segment_hits_rect(segment[0], segment[1], node_abs_rect(graph, *node_id))
+                })
+                .count()
+        })
+        .sum()
+}
+
+fn ancestor_node_chain(graph: &ElkGraph, node_id: NodeId) -> BTreeSet<NodeId> {
+    let mut ancestors = BTreeSet::new();
+    let mut current = graph.nodes[node_id.index()].parent;
+    while let Some(parent) = current {
+        if !ancestors.insert(parent) {
+            break;
+        }
+        current = graph.nodes[parent.index()].parent;
+    }
+    ancestors
+}
+
+fn all_node_ids(graph: &ElkGraph) -> Vec<NodeId> {
+    fn visit(graph: &ElkGraph, node_id: NodeId, out: &mut Vec<NodeId>) {
+        out.push(node_id);
+        for &child in graph.children_of(node_id) {
+            visit(graph, child, out);
+        }
+    }
+
+    let mut ids = Vec::new();
+    visit(graph, graph.root, &mut ids);
+    ids
 }
 
 fn sibling_obstacle_rects(graph: &ElkGraph, outer_node: NodeId, endpoint_node: NodeId) -> Vec<Rect> {
@@ -1247,6 +1609,21 @@ fn horizontal_branch_intrusions(
         + count_endpoint_rect_intrusions(&segments, endpoint_rect)
 }
 
+fn horizontal_connection_intrusions(
+    start: Point,
+    boundary_point: Point,
+    corridor_y: f32,
+    endpoint_rect: Rect,
+    obstacles: &[Rect],
+) -> usize {
+    let segments = [
+        (start, Point::new(boundary_point.x, corridor_y)),
+        (Point::new(boundary_point.x, corridor_y), boundary_point),
+    ];
+    count_branch_intrusions(&segments, obstacles)
+        + count_endpoint_rect_intrusions(&segments, endpoint_rect)
+}
+
 fn vertical_branch_intrusions(
     outward: Point,
     boundary_point: Point,
@@ -1260,6 +1637,21 @@ fn vertical_branch_intrusions(
             Point::new(corridor_x, outward.y),
             Point::new(corridor_x, boundary_point.y),
         ),
+        (Point::new(corridor_x, boundary_point.y), boundary_point),
+    ];
+    count_branch_intrusions(&segments, obstacles)
+        + count_endpoint_rect_intrusions(&segments, endpoint_rect)
+}
+
+fn vertical_connection_intrusions(
+    start: Point,
+    boundary_point: Point,
+    corridor_x: f32,
+    endpoint_rect: Rect,
+    obstacles: &[Rect],
+) -> usize {
+    let segments = [
+        (start, Point::new(corridor_x, boundary_point.y)),
         (Point::new(corridor_x, boundary_point.y), boundary_point),
     ];
     count_branch_intrusions(&segments, obstacles)
@@ -1288,6 +1680,17 @@ fn count_endpoint_rect_intrusions(segments: &[(Point, Point)], endpoint_rect: Re
             *index > 0 && orthogonal_segment_intersects_rect_interior(*a, *b, endpoint_rect)
         })
         .count()
+}
+
+fn segment_hits_rect(a: Point, b: Point, rect: Rect) -> bool {
+    let min_x = a.x.min(b.x);
+    let max_x = a.x.max(b.x);
+    let min_y = a.y.min(b.y);
+    let max_y = a.y.max(b.y);
+    !(max_x < rect.origin.x
+        || min_x > rect.max_x()
+        || max_y < rect.origin.y
+        || min_y > rect.max_y())
 }
 
 fn orthogonal_segment_intersects_rect_interior(a: Point, b: Point, rect: Rect) -> bool {
@@ -1338,6 +1741,90 @@ fn orthogonalize_edge_sections_with_sides(
         section_mut.start = orthogonal[0];
         section_mut.end = orthogonal[orthogonal.len() - 1];
         section_mut.bend_points = orthogonal[1..orthogonal.len() - 1].to_vec();
+    }
+}
+
+fn rebuild_candidate_terminal_branch(
+    mut points: Vec<Point>,
+    side: PortSide,
+    is_start: bool,
+) -> Vec<Point> {
+    if points.len() < 2 {
+        return points;
+    }
+    let anchor = if is_start {
+        points[0]
+    } else {
+        *points.last().unwrap_or(&points[0])
+    };
+    if is_start {
+        let run_coordinate = terminal_run_coordinate(&points, side, true);
+        let Some(run_coordinate) = run_coordinate else {
+            return simplify_polyline(points);
+        };
+        let mut run_end = 1usize;
+        while run_end + 1 < points.len()
+            && same_terminal_run(points[run_end + 1], run_coordinate, side)
+        {
+            run_end += 1;
+        }
+
+        let mut rebuilt = Vec::with_capacity(points.len());
+        rebuilt.push(anchor);
+        let bridge = terminal_bridge_point(anchor, run_coordinate, side);
+        if rebuilt.last().copied() != Some(bridge) && bridge != anchor {
+            rebuilt.push(bridge);
+        }
+        rebuilt.extend(points.into_iter().skip(run_end + 1));
+        simplify_polyline(rebuilt)
+    } else {
+        let last = points.len() - 1;
+        let run_coordinate = terminal_run_coordinate(&points, side, false);
+        let Some(run_coordinate) = run_coordinate else {
+            return simplify_polyline(points);
+        };
+        let mut run_start = last.saturating_sub(1);
+        while run_start > 0 && same_terminal_run(points[run_start - 1], run_coordinate, side) {
+            run_start -= 1;
+        }
+
+        let mut rebuilt = Vec::with_capacity(points.len());
+        rebuilt.extend(points.iter().copied().take(run_start));
+        let bridge = terminal_bridge_point(anchor, run_coordinate, side);
+        if rebuilt.last().copied() != Some(bridge) && bridge != anchor {
+            rebuilt.push(bridge);
+        }
+        rebuilt.push(anchor);
+        simplify_polyline(rebuilt)
+    }
+}
+
+fn terminal_run_coordinate(points: &[Point], side: PortSide, is_start: bool) -> Option<f32> {
+    if points.len() < 2 {
+        return None;
+    }
+    let run_point = if is_start {
+        points[1]
+    } else {
+        points[points.len() - 2]
+    };
+    Some(match side {
+        PortSide::East | PortSide::West => run_point.x,
+        PortSide::North | PortSide::South => run_point.y,
+    })
+}
+
+fn same_terminal_run(point: Point, coordinate: f32, side: PortSide) -> bool {
+    match side {
+        PortSide::East | PortSide::West => (point.x - coordinate).abs() <= 1e-5,
+        PortSide::North | PortSide::South => (point.y - coordinate).abs() <= 1e-5,
+    }
+}
+
+fn terminal_bridge_point(anchor: Point, run_coordinate: f32, side: PortSide) -> Point {
+    match side {
+        PortSide::East | PortSide::West => Point::new(run_coordinate, anchor.y),
+        PortSide::North | PortSide::South => Point::new(anchor.x, run_coordinate),
     }
 }
 
@@ -1600,6 +2087,151 @@ mod tests {
             branch.iter().any(|point| point.y < sibling_rect.origin.y || point.y > sibling_rect.max_y()),
             "branch should detour outside sibling band, got {}",
             format_polyline(&branch)
+        );
+    }
+
+    #[test]
+    fn shared_branch_split_picks_clear_group_corridor() {
+        let mut graph = ElkGraph::new();
+        let outer = graph.add_node(
+            graph.root,
+            ShapeGeometry {
+                x: 0.0,
+                y: 0.0,
+                width: 420.0,
+                height: 420.0,
+            },
+        );
+        let blocker = graph.add_node(
+            outer,
+            ShapeGeometry {
+                x: 148.0,
+                y: 96.0,
+                width: 124.0,
+                height: 84.0,
+            },
+        );
+        let endpoint_a = graph.add_node(
+            outer,
+            ShapeGeometry {
+                x: 24.0,
+                y: 208.0,
+                width: 100.0,
+                height: 48.0,
+            },
+        );
+        let endpoint_b = graph.add_node(
+            outer,
+            ShapeGeometry {
+                x: 24.0,
+                y: 288.0,
+                width: 100.0,
+                height: 48.0,
+            },
+        );
+        let target = graph.add_node(
+            graph.root,
+            ShapeGeometry {
+                x: 520.0,
+                y: 120.0,
+                width: 100.0,
+                height: 48.0,
+            },
+        );
+        let port_a = graph.add_port(
+            endpoint_a,
+            PortSide::East,
+            ShapeGeometry {
+                x: 96.0,
+                y: 20.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+        let port_b = graph.add_port(
+            endpoint_b,
+            PortSide::East,
+            ShapeGeometry {
+                x: 96.0,
+                y: 20.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+        let target_port = graph.add_port(
+            target,
+            PortSide::West,
+            ShapeGeometry {
+                x: -4.0,
+                y: 20.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+        let edge_a = graph.add_edge(
+            graph.root,
+            vec![EdgeEndpoint::port(endpoint_a, port_a)],
+            vec![EdgeEndpoint::port(target, target_port)],
+        );
+        let edge_b = graph.add_edge(
+            graph.root,
+            vec![EdgeEndpoint::port(endpoint_b, port_b)],
+            vec![EdgeEndpoint::port(target, target_port)],
+        );
+
+        let split = choose_shared_branch_split(
+            &graph,
+            &[
+                BranchSplitEntry {
+                    edge_id: edge_a,
+                    endpoint: EdgeEndpoint::port(endpoint_a, port_a),
+                    outer_node: outer,
+                    boundary_point: Point::new(320.0, 120.0),
+                },
+                BranchSplitEntry {
+                    edge_id: edge_b,
+                    endpoint: EdgeEndpoint::port(endpoint_b, port_b),
+                    outer_node: outer,
+                    boundary_point: Point::new(320.0, 140.0),
+                },
+            ],
+        )
+        .expect("shared split");
+
+        let blocker_rect = node_abs_rect(&graph, blocker);
+        assert!(
+            split > blocker_rect.max_y() + 1e-3,
+            "expected split to move out of the blocked band, got {split}"
+        );
+        assert!(
+            [edge_a, edge_b]
+                .into_iter()
+                .zip([
+                    EdgeEndpoint::port(endpoint_a, port_a),
+                    EdgeEndpoint::port(endpoint_b, port_b),
+                ])
+                .all(|(edge_id, endpoint)| {
+                    let outward = branch_outward_point(&graph, endpoint)
+                        .expect("outward")
+                        .1;
+                    shared_branch_intrusions(
+                        &graph,
+                        BranchSplitEntry {
+                            edge_id,
+                            endpoint,
+                            outer_node: outer,
+                            boundary_point: if edge_id == edge_a {
+                                Point::new(320.0, 120.0)
+                            } else {
+                                Point::new(320.0, 140.0)
+                            },
+                        },
+                        PortSide::East,
+                        outward,
+                        split,
+                    ) == 0
+                }),
+            "expected chosen split to be clear for all grouped branches, got {split}"
         );
     }
 
