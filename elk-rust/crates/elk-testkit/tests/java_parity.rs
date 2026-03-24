@@ -5,7 +5,7 @@
 
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Command, Output};
 
 use elk_core::LayoutOptions;
 use elk_graph_json::{export_elk_graph_to_value, import_str};
@@ -114,21 +114,57 @@ fn strict_parity_enabled() -> bool {
         .is_some_and(|value| value == "1" || value.eq_ignore_ascii_case("true"))
 }
 
+fn run_java_runner_command(root: &Path, input_json_path: &Path) -> Result<Output, String> {
+    #[cfg(windows)]
+    {
+        let script = root.join("scripts").join("run-elk-java-json.ps1");
+        for shell in ["pwsh", "powershell"] {
+            match Command::new(shell)
+                .args([
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-File",
+                    script.to_string_lossy().as_ref(),
+                    "-InputJson",
+                    input_json_path.to_string_lossy().as_ref(),
+                ])
+                .output()
+            {
+                Ok(output) => return Ok(output),
+                Err(err) if err.kind() == std::io::ErrorKind::NotFound => continue,
+                Err(err) => {
+                    return Err(format!(
+                        "failed to launch Java runner shell {}: {}",
+                        shell, err
+                    ));
+                }
+            }
+        }
+
+        Err("Java runner is unavailable in the current environment".to_string())
+    }
+
+    #[cfg(not(windows))]
+    {
+        let script = root.join("scripts").join("run-elk-java-json.sh");
+        Command::new("sh")
+            .arg(script)
+            .arg(input_json_path)
+            .output()
+            .map_err(|err| {
+                if err.kind() == std::io::ErrorKind::NotFound {
+                    "Java runner is unavailable in the current environment".to_string()
+                } else {
+                    format!("failed to launch Java runner shell: {}", err)
+                }
+            })
+    }
+}
+
 fn run_java_runner_optional(input_json_path: &Path) -> Result<Value, String> {
     let root = repo_root();
-    let script = root.join("scripts").join("run-elk-java-json.ps1");
-    let out = Command::new("powershell")
-        .args([
-            "-NoProfile",
-            "-ExecutionPolicy",
-            "Bypass",
-            "-File",
-            script.to_string_lossy().as_ref(),
-            "-InputJson",
-            input_json_path.to_string_lossy().as_ref(),
-        ])
-        .output()
-        .expect("run java runner script");
+    let out = run_java_runner_command(&root, input_json_path)?;
     let stdout = String::from_utf8_lossy(&out.stdout);
     let stderr = String::from_utf8_lossy(&out.stderr);
     let combined = format!("{stdout}\n{stderr}");
@@ -143,6 +179,8 @@ fn run_java_runner_optional(input_json_path: &Path) -> Result<Value, String> {
     }
     if combined.contains("ClassNotFoundException: spec42.elk.ElkJsonRunner")
         || combined.contains("[ERROR] Failed to execute goal")
+        || combined.contains("Maven not found")
+        || combined.contains("Java not found")
     {
         return Err("Java runner is unavailable in the current environment".to_string());
     }
