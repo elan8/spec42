@@ -329,16 +329,6 @@ fn apply_graph_hints(
     node_ids: &HashMap<String, NodeId>,
     config: &LayoutConfig,
 ) {
-    if matches!(config.view_profile, LayoutViewProfile::InterconnectionView) {
-        elk_graph.properties.insert(
-            "elk.layered.routingBackend",
-            PropertyValue::String("libavoid".into()),
-        );
-        elk_graph.properties.insert(
-            "org.eclipse.elk.alg.libavoid.reverseDirectionPenalty",
-            PropertyValue::Float(1.0),
-        );
-    }
     if !matches!(config.view_profile, LayoutViewProfile::GeneralView) {
         return;
     }

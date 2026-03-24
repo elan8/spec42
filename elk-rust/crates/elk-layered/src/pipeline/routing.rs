@@ -56,8 +56,8 @@ pub(crate) fn export_to_graph(
     }
 
     let edge_segment_lanes_by_index = edge_segment_lanes_by_ir_index(ir);
+    let endpoint_slots_by_edge = endpoint_slots_by_edge(graph, ir, local_nodes, options);
     let keep_unnecessary_bends = keep_unnecessary_bends(graph);
-    assign_endpoint_slots(graph, ir, local_nodes, options);
     if use_libavoid {
         let local_edge_ids: Vec<EdgeId> = ir.edges
             .iter()
@@ -170,6 +170,8 @@ pub(crate) fn export_to_graph(
                 .unwrap_or_default();
 
             let path = if routing == EdgeRouting::Orthogonal {
+                let source_slot = endpoint_slot(&endpoint_slots_by_edge, edge.original_edge, true);
+                let target_slot = endpoint_slot(&endpoint_slots_by_edge, edge.original_edge, false);
                 build_orthogonal_route_path(
                     graph,
                     ir,
@@ -178,6 +180,8 @@ pub(crate) fn export_to_graph(
                     target_endpoint,
                     start,
                     end,
+                    source_slot,
+                    target_slot,
                     &segment_lanes,
                     options,
                 )?
@@ -292,21 +296,40 @@ fn set_section_start_preserve_orthogonality(
     start: Point,
     start_side: Option<PortSide>,
 ) {
-    section.start = start;
-    if section.bend_points.is_empty() {
-        if (section.end.x - start.x).abs() > f32::EPSILON && (section.end.y - start.y).abs() > f32::EPSILON {
-            let elbow = orthogonal_endpoint_elbow(start, section.end, start_side, true);
-            section.bend_points.push(elbow);
-        }
+    let mut points: Vec<Point> = std::iter::once(start)
+        .chain(section.bend_points.iter().copied())
+        .chain(std::iter::once(section.end))
+        .collect();
+    if points.len() < 2 {
+        section.start = start;
         return;
     }
-    let first = section.bend_points[0];
-    if (first.x - start.x).abs() > f32::EPSILON && (first.y - start.y).abs() > f32::EPSILON {
-        let elbow = orthogonal_endpoint_elbow(start, first, start_side, true);
-        if elbow != start && elbow != first {
-            section.bend_points.insert(0, elbow);
+    points[0] = start;
+    if let Some(side) = start_side {
+        let stub = point_along_outward_normal(start, side, TERMINAL_NORMAL_OFFSET);
+        if stub != start {
+            let neighbor = points[1];
+            let mut rebuilt = Vec::with_capacity(points.len() + 2);
+            rebuilt.push(start);
+            rebuilt.push(stub);
+            if (neighbor.x - stub.x).abs() > f32::EPSILON && (neighbor.y - stub.y).abs() > f32::EPSILON {
+                let elbow = match side {
+                    PortSide::East | PortSide::West => Point::new(stub.x, neighbor.y),
+                    PortSide::North | PortSide::South => Point::new(neighbor.x, stub.y),
+                };
+                if elbow != stub && elbow != neighbor {
+                    rebuilt.push(elbow);
+                }
+            }
+            rebuilt.extend(points.into_iter().skip(1));
+            points = simplify_orthogonal_points(rebuilt);
         }
+    } else {
+        points = simplify_orthogonal_points(points);
     }
+    section.start = points[0];
+    section.end = *points.last().unwrap_or(&points[0]);
+    section.bend_points = points[1..points.len().saturating_sub(1)].to_vec();
 }
 
 fn set_section_end_preserve_orthogonality(
@@ -314,22 +337,43 @@ fn set_section_end_preserve_orthogonality(
     end: Point,
     end_side: Option<PortSide>,
 ) {
-    section.end = end;
-    if section.bend_points.is_empty() {
-        if (section.start.x - end.x).abs() > f32::EPSILON && (section.start.y - end.y).abs() > f32::EPSILON {
-            let elbow = orthogonal_endpoint_elbow(end, section.start, end_side, false);
-            section.bend_points.push(elbow);
-        }
+    let mut points: Vec<Point> = std::iter::once(section.start)
+        .chain(section.bend_points.iter().copied())
+        .chain(std::iter::once(end))
+        .collect();
+    if points.len() < 2 {
+        section.end = end;
         return;
     }
-    let last_idx = section.bend_points.len() - 1;
-    let last = section.bend_points[last_idx];
-    if (last.x - end.x).abs() > f32::EPSILON && (last.y - end.y).abs() > f32::EPSILON {
-        let elbow = orthogonal_endpoint_elbow(end, last, end_side, false);
-        if elbow != last && elbow != end {
-            section.bend_points.push(elbow);
+    let last = points.len() - 1;
+    points[last] = end;
+    if let Some(side) = end_side {
+        let stub = point_along_outward_normal(end, side, TERMINAL_NORMAL_OFFSET);
+        if stub != end {
+            let neighbor = points[last - 1];
+            let mut rebuilt = Vec::with_capacity(points.len() + 2);
+            rebuilt.extend(points.iter().copied().take(last));
+            if (neighbor.x - stub.x).abs() > f32::EPSILON && (neighbor.y - stub.y).abs() > f32::EPSILON {
+                let elbow = match side {
+                    PortSide::East | PortSide::West => Point::new(stub.x, neighbor.y),
+                    PortSide::North | PortSide::South => Point::new(neighbor.x, stub.y),
+                };
+                if rebuilt.last().copied() != Some(elbow) && elbow != neighbor && elbow != stub {
+                    rebuilt.push(elbow);
+                }
+            }
+            if rebuilt.last().copied() != Some(stub) {
+                rebuilt.push(stub);
+            }
+            rebuilt.push(end);
+            points = simplify_orthogonal_points(rebuilt);
         }
+    } else {
+        points = simplify_orthogonal_points(points);
     }
+    section.start = points[0];
+    section.end = *points.last().unwrap_or(&points[0]);
+    section.bend_points = points[1..points.len().saturating_sub(1)].to_vec();
 }
 
 fn orthogonal_endpoint_elbow(
@@ -472,7 +516,7 @@ pub(crate) fn should_use_libavoid(graph: &ElkGraph, options: &LayoutOptions) -> 
         Some("libavoid") => true,
         Some("default") | Some("simple") | Some("elkgraph") => false,
         Some(_) => false,
-        None => matches!(options.view_profile, elk_core::ViewProfile::InterconnectionView),
+        None => false,
     }
 }
 
@@ -484,6 +528,72 @@ fn section_endpoints(graph: &ElkGraph, edge_id: EdgeId) -> (Point, Point) {
         (first.start, last.end)
     } else {
         (Point::new(0.0, 0.0), Point::new(0.0, 0.0))
+    }
+}
+
+fn edge_polyline_points(graph: &ElkGraph, edge_id: EdgeId) -> Option<Vec<Point>> {
+    let edge = &graph.edges[edge_id.index()];
+    let mut points = Vec::new();
+    for (index, section_id) in edge.sections.iter().copied().enumerate() {
+        let section = &graph.edge_sections[section_id.index()];
+        if index == 0 {
+            points.push(section.start);
+        }
+        points.extend(section.bend_points.iter().copied());
+        points.push(section.end);
+    }
+    if points.len() < 2 {
+        None
+    } else {
+        Some(points)
+    }
+}
+
+fn edge_non_endpoint_node_intrusions(graph: &ElkGraph, edge_id: EdgeId) -> usize {
+    let Some(points) = edge_polyline_points(graph, edge_id) else {
+        return 0;
+    };
+    let edge = &graph.edges[edge_id.index()];
+    let source_node = edge.sources.first().map(|endpoint| endpoint.node);
+    let target_node = edge.targets.first().map(|endpoint| endpoint.node);
+    points
+        .windows(2)
+        .map(|segment| {
+            graph.nodes
+                .iter()
+                .filter(|node| Some(node.id) != source_node && Some(node.id) != target_node)
+                .filter(|node| {
+                    orthogonal_segment_intersects_rect_interior(
+                        segment[0],
+                        segment[1],
+                        node_rect(graph, node.id),
+                    )
+                })
+                .count()
+        })
+        .sum()
+}
+
+fn orthogonal_segment_intersects_rect_interior(a: Point, b: Point, rect: Rect) -> bool {
+    const EPS: f32 = 1e-4;
+    if (a.x - b.x).abs() <= EPS {
+        let x = a.x;
+        if x <= rect.origin.x + EPS || x >= rect.max_x() - EPS {
+            return false;
+        }
+        let seg_min = a.y.min(b.y);
+        let seg_max = a.y.max(b.y);
+        seg_max > rect.origin.y + EPS && seg_min < rect.max_y() - EPS
+    } else if (a.y - b.y).abs() <= EPS {
+        let y = a.y;
+        if y <= rect.origin.y + EPS || y >= rect.max_y() - EPS {
+            return false;
+        }
+        let seg_min = a.x.min(b.x);
+        let seg_max = a.x.max(b.x);
+        seg_max > rect.origin.x + EPS && seg_min < rect.max_x() - EPS
+    } else {
+        false
     }
 }
 
@@ -586,12 +696,6 @@ pub(crate) fn restore_declared_port_terminals(graph: &mut ElkGraph, edge_id: Edg
             let anchor = endpoint_declared_abs_center(graph, source_endpoint);
             let side = source_endpoint.port.map(|port| graph.ports[port.index()].side);
             source_terminal = Some((anchor, side));
-            rebuild_section_terminal_branch(
-                &mut graph.edge_sections[first_section_id.index()],
-                anchor,
-                side,
-                true,
-            );
         }
     }
 
@@ -600,12 +704,6 @@ pub(crate) fn restore_declared_port_terminals(graph: &mut ElkGraph, edge_id: Edg
             let anchor = endpoint_declared_abs_center(graph, target_endpoint);
             let side = target_endpoint.port.map(|port| graph.ports[port.index()].side);
             target_terminal = Some((anchor, side));
-            rebuild_section_terminal_branch(
-                &mut graph.edge_sections[last_section_id.index()],
-                anchor,
-                side,
-                false,
-            );
         }
     }
 
@@ -1121,6 +1219,8 @@ fn build_orthogonal_route_path(
     target_endpoint: elk_graph::EdgeEndpoint,
     start: Point,
     end: Point,
+    source_slot: i32,
+    target_slot: i32,
     segment_lanes: &[(usize, usize, usize, i32)],
     options: &LayoutOptions,
 ) -> Result<Vec<Point>, LayoutError> {
@@ -1148,13 +1248,13 @@ fn build_orthogonal_route_path(
         graph,
         source_endpoint,
         source_side,
-        endpoint_slot(graph, edge.original_edge, true),
+        source_slot,
     );
     let end = endpoint_anchor_for_routing(
         graph,
         target_endpoint,
         target_side,
-        endpoint_slot(graph, edge.original_edge, false),
+        target_slot,
     );
     if (start.x - end.x).abs() <= f32::EPSILON || (start.y - end.y).abs() <= f32::EPSILON {
         return Ok(vec![start, end]);
@@ -1212,8 +1312,6 @@ fn build_orthogonal_route_path(
         }
     }
 
-    let source_slot = endpoint_slot(graph, edge.original_edge, true);
-    let target_slot = endpoint_slot(graph, edge.original_edge, false);
     let source_lead = point_along_outward_normal(start, source_side, terminal_lead_for_slot(source_slot));
     let target_lead = point_along_outward_normal(end, target_side, terminal_lead_for_slot(target_slot));
     let route_start = point_along_tangent(
@@ -1569,17 +1667,9 @@ fn java_style_interlayer_slot_position(
     }
 }
 
-fn endpoint_slot(graph: &ElkGraph, edge_id: EdgeId, is_source: bool) -> i32 {
-    let key = elk_graph::PropertyKey::from(if is_source {
-        "spec42.endpoint.slot.source"
-    } else {
-        "spec42.endpoint.slot.target"
-    });
-    graph.edges[edge_id.index()]
-        .properties
-        .get(&key)
-        .and_then(|value| value.as_i64())
-        .unwrap_or(0) as i32
+fn endpoint_slot(slots_by_edge: &BTreeMap<EdgeId, (i32, i32)>, edge_id: EdgeId, is_source: bool) -> i32 {
+    let (source_slot, target_slot) = slots_by_edge.get(&edge_id).copied().unwrap_or((0, 0));
+    if is_source { source_slot } else { target_slot }
 }
 
 fn terminal_lead_for_slot(slot: i32) -> f32 {
@@ -1841,12 +1931,12 @@ struct GroupSortKey {
     edge_index: usize,
 }
 
-fn assign_endpoint_slots(
-    graph: &mut ElkGraph,
+fn endpoint_slots_by_edge(
+    graph: &ElkGraph,
     ir: &LayeredIr,
     local_nodes: &BTreeSet<NodeId>,
     options: &LayoutOptions,
-) {
+) -> BTreeMap<EdgeId, (i32, i32)> {
     let mut source_group_by_edge = BTreeMap::new();
     let mut target_group_by_edge = BTreeMap::new();
     let mut groups_by_side: BTreeMap<(NodeId, PortSide), BTreeMap<EndpointGroup, GroupSortKey>> =
@@ -1921,8 +2011,8 @@ fn assign_endpoint_slots(
         }
     }
 
+    let mut slots_by_edge = BTreeMap::new();
     for edge in &ir.edges {
-        let edge_props = &mut graph.edges[edge.original_edge.index()].properties;
         let source_slot = source_group_by_edge
             .get(&edge.original_edge)
             .and_then(|group| slot_by_group.get(group))
@@ -1933,16 +2023,9 @@ fn assign_endpoint_slots(
             .and_then(|group| slot_by_group.get(group))
             .copied()
             .unwrap_or(0);
-
-        edge_props.insert(
-            "spec42.endpoint.slot.source",
-            elk_graph::PropertyValue::Int(source_slot as i64),
-        );
-        edge_props.insert(
-            "spec42.endpoint.slot.target",
-            elk_graph::PropertyValue::Int(target_slot as i64),
-        );
+        slots_by_edge.insert(edge.original_edge, (source_slot, target_slot));
     }
+    slots_by_edge
 }
 
 fn assign_shared_fanout_splits(
@@ -2294,18 +2377,9 @@ mod tests {
         let local_nodes = BTreeSet::from([source_left, source_right, target]);
         let ir = import_graph(&graph, graph.root, &[source_left, source_right, target], &local_nodes, &options);
 
-        assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
-
-        let left_target_slot = graph.edges[left_edge.index()]
-            .properties
-            .get(&elk_graph::PropertyKey::from("spec42.endpoint.slot.target"))
-            .and_then(|value| value.as_i64())
-            .unwrap_or(0);
-        let right_target_slot = graph.edges[right_edge.index()]
-            .properties
-            .get(&elk_graph::PropertyKey::from("spec42.endpoint.slot.target"))
-            .and_then(|value| value.as_i64())
-            .unwrap_or(0);
+        let slots_by_edge = endpoint_slots_by_edge(&graph, &ir, &local_nodes, &options);
+        let left_target_slot = endpoint_slot(&slots_by_edge, left_edge, false);
+        let right_target_slot = endpoint_slot(&slots_by_edge, right_edge, false);
 
         assert_ne!(left_target_slot, 0);
         assert_ne!(right_target_slot, 0);
@@ -2357,7 +2431,7 @@ mod tests {
         let local_nodes = BTreeSet::from([source_left, source_right, target]);
         let ir = import_graph(&graph, graph.root, &[source_left, source_right, target], &local_nodes, &options);
 
-        assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
+        let slots_by_edge = endpoint_slots_by_edge(&graph, &ir, &local_nodes, &options);
 
         let left_ir = ir.edges.iter().find(|edge| edge.original_edge == left_edge).unwrap();
         let right_ir = ir.edges.iter().find(|edge| edge.original_edge == right_edge).unwrap();
@@ -2375,6 +2449,8 @@ mod tests {
             left_target,
             endpoint_abs_center(&graph, left_source),
             endpoint_abs_center(&graph, left_target),
+            endpoint_slot(&slots_by_edge, left_edge, true),
+            endpoint_slot(&slots_by_edge, left_edge, false),
             &[],
             &options,
         )
@@ -2387,6 +2463,8 @@ mod tests {
             right_target,
             endpoint_abs_center(&graph, right_source),
             endpoint_abs_center(&graph, right_target),
+            endpoint_slot(&slots_by_edge, right_edge, true),
+            endpoint_slot(&slots_by_edge, right_edge, false),
             &[],
             &options,
         )
@@ -2459,7 +2537,7 @@ mod tests {
         let local_nodes = BTreeSet::from([source_left, source_right, target]);
         let ir = import_graph(&graph, graph.root, &[source_left, source_right, target], &local_nodes, &options);
 
-        assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
+        let slots_by_edge = endpoint_slots_by_edge(&graph, &ir, &local_nodes, &options);
 
         let left_ir = ir.edges.iter().find(|edge| edge.original_edge == left_edge).unwrap();
         let right_ir = ir.edges.iter().find(|edge| edge.original_edge == right_edge).unwrap();
@@ -2477,6 +2555,8 @@ mod tests {
             left_target,
             endpoint_abs_center(&graph, left_source),
             endpoint_abs_center(&graph, left_target),
+            endpoint_slot(&slots_by_edge, left_edge, true),
+            endpoint_slot(&slots_by_edge, left_edge, false),
             &[],
             &options,
         )
@@ -2489,6 +2569,8 @@ mod tests {
             right_target,
             endpoint_abs_center(&graph, right_source),
             endpoint_abs_center(&graph, right_target),
+            endpoint_slot(&slots_by_edge, right_edge, true),
+            endpoint_slot(&slots_by_edge, right_edge, false),
             &[],
             &options,
         )
@@ -2534,15 +2616,6 @@ mod tests {
             SHARED_TARGET_SPLIT_KEY,
             elk_graph::PropertyValue::Float(172.0),
         );
-        graph.edges[edge_id.index()].properties.insert(
-            "spec42.endpoint.slot.source",
-            elk_graph::PropertyValue::Int(-1),
-        );
-        graph.edges[edge_id.index()].properties.insert(
-            "spec42.endpoint.slot.target",
-            elk_graph::PropertyValue::Int(0),
-        );
-
         let ir_edge = IrEdge {
             original_edge: edge_id,
             source: elk_graph::EdgeEndpoint::port(source, source_port),
@@ -2573,6 +2646,8 @@ mod tests {
             target_endpoint,
             endpoint_abs_center(&graph, source_endpoint),
             endpoint_abs_center(&graph, target_endpoint),
+            -1,
+            0,
             &[],
             &options,
         )
@@ -2638,7 +2713,6 @@ mod tests {
         let local_nodes = BTreeSet::from([source, left, center, right]);
         let ir = import_graph(&graph, graph.root, &[source, left, center, right], &local_nodes, &options);
 
-        assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
         assign_shared_fanout_splits(&mut graph, &ir, &local_nodes, &options);
 
         for edge_id in [e1, e2, e3] {
@@ -2702,7 +2776,6 @@ mod tests {
         let local_nodes = BTreeSet::from([left, center, right, target]);
         let ir = import_graph(&graph, graph.root, &[left, center, right, target], &local_nodes, &options);
 
-        assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
         assign_shared_fanout_splits(&mut graph, &ir, &local_nodes, &options);
 
         for edge_id in [e1, e2, e3] {
@@ -2776,7 +2849,6 @@ mod tests {
             &options,
         );
 
-        assign_endpoint_slots(&mut graph, &ir, &local_nodes, &options);
         assign_shared_fanout_splits(&mut graph, &ir, &local_nodes, &options);
 
         for edge_id in [e1, e2, e3] {

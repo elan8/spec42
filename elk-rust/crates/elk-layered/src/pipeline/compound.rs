@@ -17,22 +17,85 @@ use crate::pipeline::util::{
 };
 
 pub(crate) const TEMP_HIERARCHICAL_PORT_KEY: &str = "spec42.compound.tempHierarchicalPort";
+pub(crate) const TEMP_HIERARCHICAL_DUMMY_NODE_KEY: &str = "spec42.compound.tempHierarchicalDummyNode";
+pub(crate) const TEMP_HIERARCHICAL_DUMMY_PORT_KEY: &str = "spec42.compound.tempHierarchicalDummyPort";
+pub(crate) const TEMP_HIERARCHICAL_DUMMY_PARENT_PORT_KEY: &str =
+    "spec42.compound.tempHierarchicalDummyParentPort";
 
 #[derive(Clone, Copy, Debug)]
 pub struct CompoundRouteRecord {
     pub original_source: EdgeEndpoint,
     pub original_target: EdgeEndpoint,
-    pub routed_source: EdgeEndpoint,
-    pub routed_target: EdgeEndpoint,
     pub effective_source: NodeId,
     pub effective_target: NodeId,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum CrossHierarchySegmentKind {
+    Output,
+    Input,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct CrossHierarchySegmentRecord {
+    pub original_edge: EdgeId,
+    pub segment_edge: EdgeId,
+    pub container: NodeId,
+    pub routed_source: EdgeEndpoint,
+    pub routed_target: EdgeEndpoint,
+    pub kind: CrossHierarchySegmentKind,
 }
 
 /// Map from edge id to cross-hierarchy routing metadata.
 #[derive(Clone, Debug, Default)]
 pub struct CompoundRoutingMap {
-    pub edges: BTreeMap<EdgeId, CompoundRouteRecord>,
+    pub original_edges: BTreeMap<EdgeId, CompoundRouteRecord>,
+    pub segments_by_original: BTreeMap<EdgeId, Vec<CrossHierarchySegmentRecord>>,
+    pub segment_plan_by_original: BTreeMap<EdgeId, Vec<(NodeId, CrossHierarchySegmentKind)>>,
     pub temporary_ports: Vec<(NodeId, elk_graph::PortId)>,
+    pub temporary_dummy_nodes: Vec<NodeId>,
+    pub temporary_dummy_ports: Vec<elk_graph::PortId>,
+}
+
+impl CompoundRoutingMap {
+    pub fn is_empty(&self) -> bool {
+        self.original_edges.is_empty()
+    }
+
+    pub fn original_edge_ids(&self) -> impl Iterator<Item = EdgeId> + '_ {
+        self.original_edges.keys().copied()
+    }
+
+    pub fn original_record(&self, edge_id: EdgeId) -> Option<&CompoundRouteRecord> {
+        self.original_edges.get(&edge_id)
+    }
+
+    pub fn routed_segments(&self, edge_id: EdgeId) -> &[CrossHierarchySegmentRecord] {
+        self.segments_by_original
+            .get(&edge_id)
+            .map(Vec::as_slice)
+            .unwrap_or(&[])
+    }
+
+    pub fn planned_segments(&self, edge_id: EdgeId) -> &[(NodeId, CrossHierarchySegmentKind)] {
+        self.segment_plan_by_original
+            .get(&edge_id)
+            .map(Vec::as_slice)
+            .unwrap_or(&[])
+    }
+
+    pub fn sorted_routed_segments(
+        &self,
+        graph: &ElkGraph,
+        top_container: NodeId,
+        edge_id: EdgeId,
+    ) -> Vec<CrossHierarchySegmentRecord> {
+        let mut segments = self.routed_segments(edge_id).to_vec();
+        segments.sort_by(|left, right| {
+            compare_cross_hierarchy_segments(graph, top_container, left, right)
+        });
+        segments
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -47,6 +110,23 @@ struct RebuildContext {
     target_side: Option<PortSide>,
     source_boundary_anchor: Point,
     target_boundary_anchor: Point,
+}
+
+#[derive(Clone, Debug)]
+struct CompoundEdgeRoute {
+    trunk_points: Vec<Point>,
+    source_branch: Vec<Point>,
+    target_branch: Vec<Point>,
+}
+
+impl CompoundEdgeRoute {
+    fn into_polyline(self) -> Vec<Point> {
+        let mut points = self.source_branch;
+        append_points(&mut points, self.trunk_points.into_iter().skip(1));
+        let target_branch_reversed = self.target_branch.into_iter().rev().skip(1).collect::<Vec<_>>();
+        append_points(&mut points, target_branch_reversed);
+        points
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -269,6 +349,8 @@ pub fn preprocess_cross_hierarchy_edges(
 
     let mut shared_ports: BTreeMap<SharedHierarchicalPortKey, elk_graph::PortId> = BTreeMap::new();
     let mut temporary_ports = Vec::new();
+    let mut temporary_dummy_nodes = Vec::new();
+    let mut temporary_dummy_ports = Vec::new();
 
     for (edge_id, effective_source, effective_target, original_source, original_target, bundle_key) in
         to_process
@@ -347,21 +429,210 @@ pub fn preprocess_cross_hierarchy_edges(
             *first = EdgeEndpoint::port(effective_target, hp_target);
         }
 
-        map.edges.insert(
+        let mut materialized_segments = Vec::new();
+        if original_source.node != effective_source {
+            let (source_dummy_node, source_dummy_port) =
+                create_hierarchical_port_dummy(graph, effective_source, hp_source, hp_source_side);
+            temporary_dummy_nodes.push(source_dummy_node);
+            temporary_dummy_ports.push(source_dummy_port);
+            let source_segment_edge = create_segment_edge(
+                graph,
+                effective_source,
+                edge_id,
+                original_source,
+                EdgeEndpoint::port(source_dummy_node, source_dummy_port),
+            );
+            materialized_segments.push(CrossHierarchySegmentRecord {
+                original_edge: edge_id,
+                segment_edge: source_segment_edge,
+                container: effective_source,
+                routed_source: original_source,
+                routed_target: EdgeEndpoint::port(source_dummy_node, source_dummy_port),
+                kind: CrossHierarchySegmentKind::Output,
+            });
+        }
+
+        map.original_edges.insert(
             edge_id,
             CompoundRouteRecord {
                 original_source,
                 original_target,
-                routed_source: EdgeEndpoint::port(effective_source, hp_source),
-                routed_target: EdgeEndpoint::port(effective_target, hp_target),
                 effective_source,
                 effective_target,
             },
         );
+        map.segment_plan_by_original.insert(
+            edge_id,
+            planned_cross_hierarchy_segments(graph, scope_container, original_source.node, original_target.node)
+                .into_iter()
+                .map(|segment| (segment.container, segment.kind))
+                .collect(),
+        );
+        map.segments_by_original
+            .entry(edge_id)
+            .or_default()
+            .extend(materialized_segments);
+        map.segments_by_original
+            .entry(edge_id)
+            .or_default()
+            .push(CrossHierarchySegmentRecord {
+                original_edge: edge_id,
+                segment_edge: edge_id,
+                container: scope_container,
+                routed_source: EdgeEndpoint::port(effective_source, hp_source),
+                routed_target: EdgeEndpoint::port(effective_target, hp_target),
+                kind: CrossHierarchySegmentKind::Output,
+            });
+        if original_target.node != effective_target {
+            let (target_dummy_node, target_dummy_port) =
+                create_hierarchical_port_dummy(graph, effective_target, hp_target, hp_target_side);
+            temporary_dummy_nodes.push(target_dummy_node);
+            temporary_dummy_ports.push(target_dummy_port);
+            let target_segment_edge = create_segment_edge(
+                graph,
+                effective_target,
+                edge_id,
+                EdgeEndpoint::port(target_dummy_node, target_dummy_port),
+                original_target,
+            );
+            map.segments_by_original
+                .entry(edge_id)
+                .or_default()
+                .push(CrossHierarchySegmentRecord {
+                    original_edge: edge_id,
+                    segment_edge: target_segment_edge,
+                    container: effective_target,
+                    routed_source: EdgeEndpoint::port(target_dummy_node, target_dummy_port),
+                    routed_target: original_target,
+                    kind: CrossHierarchySegmentKind::Input,
+                });
+        }
     }
 
     map.temporary_ports = temporary_ports;
+    map.temporary_dummy_nodes = temporary_dummy_nodes;
+    map.temporary_dummy_ports = temporary_dummy_ports;
     map
+}
+
+fn mark_temporary_hierarchical_dummy_node(graph: &mut ElkGraph, node_id: NodeId) {
+    graph.nodes[node_id.index()].properties.insert(
+        elk_graph::PropertyKey::from(TEMP_HIERARCHICAL_DUMMY_NODE_KEY),
+        elk_graph::PropertyValue::Bool(true),
+    );
+}
+
+fn mark_temporary_hierarchical_dummy_port(
+    graph: &mut ElkGraph,
+    port_id: elk_graph::PortId,
+    parent_port_id: elk_graph::PortId,
+) {
+    let properties = &mut graph.ports[port_id.index()].properties;
+    properties.insert(
+        elk_graph::PropertyKey::from(TEMP_HIERARCHICAL_DUMMY_PORT_KEY),
+        elk_graph::PropertyValue::Bool(true),
+    );
+    properties.insert(
+        elk_graph::PropertyKey::from(TEMP_HIERARCHICAL_DUMMY_PARENT_PORT_KEY),
+        elk_graph::PropertyValue::Int(parent_port_id.index() as i64),
+    );
+}
+
+fn create_hierarchical_port_dummy(
+    graph: &mut ElkGraph,
+    container: NodeId,
+    parent_port_id: elk_graph::PortId,
+    side: PortSide,
+) -> (NodeId, elk_graph::PortId) {
+    let dummy_node = graph.add_node(
+        container,
+        ShapeGeometry {
+            x: 0.0,
+            y: 0.0,
+            width: 8.0,
+            height: 8.0,
+        },
+    );
+    mark_temporary_hierarchical_dummy_node(graph, dummy_node);
+    let dummy_port = graph.add_port(
+        dummy_node,
+        side,
+        ShapeGeometry {
+            x: 0.0,
+            y: 0.0,
+            width: 8.0,
+            height: 8.0,
+        },
+    );
+    mark_temporary_hierarchical_dummy_port(graph, dummy_port, parent_port_id);
+    set_dummy_node_boundary_geometry_from_parent_port(graph, dummy_node, dummy_port, parent_port_id);
+    let side_constraint = match side {
+        PortSide::East | PortSide::West => {
+            if side == PortSide::West { "FIRST" } else { "LAST" }
+        }
+        PortSide::North | PortSide::South => {
+            if side == PortSide::North { "FIRST" } else { "LAST" }
+        }
+    };
+    graph.nodes[dummy_node.index()]
+        .properties
+        .insert("elk.layerconstraint", elk_graph::PropertyValue::String(side_constraint.to_string()));
+    graph.nodes[dummy_node.index()]
+        .properties
+        .insert("elk.portconstraints", elk_graph::PropertyValue::String("FIXED_POS".to_string()));
+    (dummy_node, dummy_port)
+}
+
+pub(crate) fn set_dummy_node_boundary_geometry_from_parent_port(
+    graph: &mut ElkGraph,
+    dummy_node: NodeId,
+    dummy_port: elk_graph::PortId,
+    parent_port_id: elk_graph::PortId,
+) {
+    let parent_port = &graph.ports[parent_port_id.index()];
+    let side = parent_port.side;
+    let parent_node = parent_port.node;
+    let parent_abs = endpoint_abs_center(graph, EdgeEndpoint::port(parent_node, parent_port_id));
+    let container_origin = graph.nodes[dummy_node.index()]
+        .parent
+        .map(|parent| abs_node_origin(graph, parent))
+        .unwrap_or_default();
+    let local_center = Point::new(parent_abs.x - container_origin.x, parent_abs.y - container_origin.y);
+    let node = &mut graph.nodes[dummy_node.index()].geometry;
+    node.x = local_center.x - node.width / 2.0;
+    node.y = local_center.y - node.height / 2.0;
+    let port = &mut graph.ports[dummy_port.index()].geometry;
+    match side {
+        PortSide::North => {
+            port.x = (node.width - port.width).max(0.0) / 2.0;
+            port.y = -port.height / 2.0;
+        }
+        PortSide::South => {
+            port.x = (node.width - port.width).max(0.0) / 2.0;
+            port.y = node.height - port.height / 2.0;
+        }
+        PortSide::East => {
+            port.x = node.width - port.width / 2.0;
+            port.y = (node.height - port.height).max(0.0) / 2.0;
+        }
+        PortSide::West => {
+            port.x = -port.width / 2.0;
+            port.y = (node.height - port.height).max(0.0) / 2.0;
+        }
+    }
+}
+
+fn create_segment_edge(
+    graph: &mut ElkGraph,
+    container: NodeId,
+    original_edge: EdgeId,
+    source: EdgeEndpoint,
+    target: EdgeEndpoint,
+) -> EdgeId {
+    let edge_id = graph.add_edge(container, vec![source], vec![target]);
+    graph.edges[edge_id.index()].properties = graph.edges[original_edge.index()].properties.clone();
+    graph.edges[edge_id.index()].labels.clear();
+    edge_id
 }
 
 /// Postprocess: rebuild cross-hierarchy geometry from preserved boundary anchors.
@@ -371,14 +642,19 @@ pub fn postprocess_cross_hierarchy_edges(
     warnings: &mut Vec<String>,
 ) {
     let debug_enabled = std::env::var_os("SPEC42_ELK_DEBUG").is_some();
-    let mut contexts = Vec::new();
-    for (edge_id, record) in &map.edges {
-        let routed_source_center = endpoint_abs_center(graph, record.routed_source);
-        let routed_target_center = endpoint_abs_center(graph, record.routed_target);
-        let source_center = endpoint_declared_abs_center(graph, record.original_source);
-        let target_center = endpoint_declared_abs_center(graph, record.original_target);
-
-        let Some(mut routed_points) = flatten_edge_points(graph, *edge_id) else {
+    let mut temporary_segment_edges = BTreeSet::new();
+    for edge_id in map.original_edge_ids() {
+        let Some(record) = map.original_record(edge_id).copied() else {
+            continue;
+        };
+        let sorted_segments = map.sorted_routed_segments(graph, graph.root, edge_id);
+        for segment in &sorted_segments {
+            if segment.segment_edge != edge_id {
+                temporary_segment_edges.insert(segment.segment_edge);
+            }
+        }
+        let Some(points) = concat_cross_hierarchy_segments_java_style(graph, map, graph.root, edge_id, &record)
+        else {
             let edge = &mut graph.edges[edge_id.index()];
             if let Some(first) = edge.sources.first_mut() {
                 *first = record.original_source;
@@ -389,168 +665,25 @@ pub fn postprocess_cross_hierarchy_edges(
             continue;
         };
 
-        if should_reverse_points(&routed_points, routed_source_center, routed_target_center) {
-            routed_points.reverse();
-        }
-
-        let source_side = record
-            .routed_source
-            .port
-            .map(|port| graph.ports[port.index()].side)
-            .or_else(|| dominant_side_toward(graph, record.effective_source, routed_target_center));
-        let target_side = record
-            .routed_target
-            .port
-            .map(|port| graph.ports[port.index()].side)
-            .or_else(|| dominant_side_toward(graph, record.effective_target, routed_source_center));
-
-        contexts.push(RebuildContext {
-            edge_id: *edge_id,
-            record: *record,
-            source_center,
-            target_center,
-            routed_source_center,
-            routed_target_center,
-            source_side,
-            target_side,
-            source_boundary_anchor: routed_source_center,
-            target_boundary_anchor: routed_target_center,
-        });
-    }
-
-    let source_shared_splits = assign_shared_branch_splits(
-        graph,
-        contexts.iter().map(|ctx| {
-            (
-                ctx.edge_id,
-                ctx.record.original_source,
-                ctx.record.effective_source,
-                ctx.source_side,
-                ctx.source_boundary_anchor,
-            )
-        }),
-    );
-    let target_shared_splits = assign_shared_branch_splits(
-        graph,
-        contexts.iter().map(|ctx| {
-            (
-                ctx.edge_id,
-                ctx.record.original_target,
-                ctx.record.effective_target,
-                ctx.target_side,
-                ctx.target_boundary_anchor,
-            )
-        }),
-    );
-
-    for ctx in contexts {
-        let edge_id = ctx.edge_id;
-        let record = &ctx.record;
-        let source_center = ctx.source_center;
-        let target_center = ctx.target_center;
-        let mut routed_points = flatten_edge_points(graph, edge_id).unwrap_or_default();
-        if routed_points.is_empty() {
-            continue;
-        }
-        if should_reverse_points(&routed_points, ctx.routed_source_center, ctx.routed_target_center) {
-            routed_points.reverse();
-        }
-        if let Some(first) = routed_points.first_mut() {
-            *first = ctx.source_boundary_anchor;
-        }
-        if let Some(last) = routed_points.last_mut() {
-            *last = ctx.target_boundary_anchor;
-        }
-
-        let mut rebuilt_points = build_endpoint_branch(
-            graph,
-            record.original_source,
-            record.effective_source,
-            ctx.source_boundary_anchor,
-            ctx.source_side,
-            source_shared_splits.get(&edge_id).copied().flatten(),
-        );
-        append_points(&mut rebuilt_points, routed_points.iter().copied().skip(1));
-        let target_branch = build_endpoint_branch(
-            graph,
-            record.original_target,
-            record.effective_target,
-            ctx.target_boundary_anchor,
-            ctx.target_side,
-            target_shared_splits.get(&edge_id).copied().flatten(),
-        );
-        let target_branch_reversed = target_branch.into_iter().rev().skip(1).collect::<Vec<_>>();
-        append_points(&mut rebuilt_points, target_branch_reversed);
-
-        let mut legacy_points = routed_points;
-        if let Some(first) = legacy_points.first_mut() {
-            *first = source_center;
-        }
-        if let Some(last) = legacy_points.last_mut() {
-            *last = target_center;
-        }
-
-        let start_side = record.original_source.port.map(|port| graph.ports[port.index()].side);
-        let end_side = record.original_target.port.map(|port| graph.ports[port.index()].side);
-        let rebuilt_points_raw = rebuilt_points.clone();
-        let legacy_points_raw = legacy_points.clone();
-        let rebuilt_points = normalize_candidate_polyline(rebuilt_points, start_side, end_side);
-        let legacy_points = normalize_candidate_polyline(legacy_points, start_side, end_side);
-        let rebuilt_points_for_debug = rebuilt_points.clone();
-        let legacy_points_for_debug = legacy_points.clone();
-        let prefers_shared_rebuilt = source_shared_splits
-            .get(&edge_id)
-            .copied()
-            .flatten()
-            .is_some()
-            || target_shared_splits
-                .get(&edge_id)
-                .copied()
-                .flatten()
-                .is_some();
-        let (points, decision) = choose_best_candidate(
-            graph,
-            record,
-            legacy_points,
-            rebuilt_points,
-            prefers_shared_rebuilt,
-        );
-
         if points.len() < 2 {
             continue;
         }
 
         if debug_enabled {
             warnings.push(format!(
-                "elk-layered compound: edge={:?} raw_legacy={} raw_rebuilt={} norm_legacy={} norm_rebuilt={}",
+                "elk-layered compound: edge={:?} java_segment_route={}",
                 edge_id,
-                format_polyline(&legacy_points_raw),
-                format_polyline(&rebuilt_points_raw),
-                format_polyline(&legacy_points_for_debug),
-                format_polyline(&rebuilt_points_for_debug)
+                format_polyline(&points),
             ));
             warnings.push(format!(
-                "elk-layered compound: edge={:?} decision={} legacy={} rebuilt={}",
+                "elk-layered compound: edge={:?} route_bends={} route_inside_start={} route_inside_end={} route_endpoint_intrusions={} route_sibling_intrusions={} route_global_intrusions={}",
                 edge_id,
-                decision.reason,
-                format_polyline(&decision.legacy_points),
-                format_polyline(&decision.rebuilt_points)
-            ));
-            warnings.push(format!(
-                "elk-layered compound: edge={:?} legacy_bends={} rebuilt_bends={} legacy_inside_start={} rebuilt_inside_start={} legacy_inside_end={} rebuilt_inside_end={} legacy_endpoint_intrusions={} rebuilt_endpoint_intrusions={} legacy_sibling_intrusions={} rebuilt_sibling_intrusions={} legacy_global_intrusions={} rebuilt_global_intrusions={}",
-                edge_id,
-                decision.legacy_bends,
-                decision.rebuilt_bends,
-                decision.legacy_inside_start,
-                decision.rebuilt_inside_start,
-                decision.legacy_inside_end,
-                decision.rebuilt_inside_end,
-                decision.legacy_endpoint_intrusions,
-                decision.rebuilt_endpoint_intrusions,
-                decision.legacy_sibling_intrusions,
-                decision.rebuilt_sibling_intrusions,
-                decision.legacy_global_intrusions,
-                decision.rebuilt_global_intrusions,
+                points.len().saturating_sub(2),
+                terminal_approaches_from_inside(graph, &points, record.original_source, true),
+                terminal_approaches_from_inside(graph, &points, record.original_target, false),
+                count_endpoint_node_intrusions(graph, &points, &record),
+                count_crossed_sibling_obstacles(graph, &points, &record),
+                count_global_node_intrusions(graph, &points, &record),
             ));
         }
 
@@ -568,27 +701,126 @@ pub fn postprocess_cross_hierarchy_edges(
             points[1..points.len() - 1].to_vec(),
             points[points.len() - 1],
         );
-        if !polyline_is_orthogonal(&points) {
-            orthogonalize_edge_sections_with_sides(
-                graph,
-                edge_id,
-                start_side,
-                end_side,
-            );
-        }
         restore_declared_port_terminals(graph, edge_id);
+    }
+
+    for edge_id in temporary_segment_edges {
+        let edge = &mut graph.edges[edge_id.index()];
+        edge.sources.clear();
+        edge.targets.clear();
+        edge.sections.clear();
+        edge.labels.clear();
+    }
+}
+
+fn concat_cross_hierarchy_segments_java_style(
+    graph: &ElkGraph,
+    map: &CompoundRoutingMap,
+    top_container: NodeId,
+    edge_id: EdgeId,
+    record: &CompoundRouteRecord,
+) -> Option<Vec<Point>> {
+    let mut points = flatten_cross_hierarchy_segment_points(graph, map, top_container, edge_id)?;
+    let source_anchor = endpoint_declared_abs_center(graph, record.original_source);
+    let target_anchor = endpoint_declared_abs_center(graph, record.original_target);
+    if should_reverse_points(&points, source_anchor, target_anchor) {
+        points.reverse();
+    }
+    if let Some(first) = points.first_mut() {
+        *first = source_anchor;
+    }
+    if let Some(last) = points.last_mut() {
+        *last = target_anchor;
+    }
+    Some(dedup_points(points))
+}
+
+fn orthogonalize_compound_route(
+    graph: &ElkGraph,
+    record: &CompoundRouteRecord,
+    mut route: CompoundEdgeRoute,
+    source_side: Option<PortSide>,
+    target_side: Option<PortSide>,
+) -> CompoundEdgeRoute {
+    route.trunk_points = orthogonalize_compound_trunk(
+        graph,
+        record,
+        &route.trunk_points,
+        source_side,
+        target_side,
+    );
+    route
+}
+
+fn orthogonalize_compound_trunk(
+    graph: &ElkGraph,
+    record: &CompoundRouteRecord,
+    points: &[Point],
+    source_side: Option<PortSide>,
+    target_side: Option<PortSide>,
+) -> Vec<Point> {
+    const CLEARANCE: f32 = 24.0;
+
+    let simplified = simplify_polyline(points.to_vec());
+    if simplified.len() < 2 {
+        return simplified;
+    }
+
+    let start = simplified[0];
+    let end = *simplified.last().unwrap_or(&start);
+    match (source_side, target_side) {
+        (Some(PortSide::East), Some(PortSide::West))
+        | (Some(PortSide::West), Some(PortSide::East)) => {
+            let preferred_x = preferred_vertical_trunk_axis(&simplified).unwrap_or((start.x + end.x) * 0.5);
+            if let Some(corridor_x) =
+                choose_clear_common_ancestor_vertical_corridor(graph, record, start, end, preferred_x, CLEARANCE)
+            {
+                return simplify_polyline(vec![
+                    start,
+                    Point::new(corridor_x, start.y),
+                    Point::new(corridor_x, end.y),
+                    end,
+                ]);
+            }
+        }
+        (Some(PortSide::North), Some(PortSide::South))
+        | (Some(PortSide::South), Some(PortSide::North)) => {
+            let preferred_y =
+                preferred_horizontal_trunk_axis(&simplified).unwrap_or((start.y + end.y) * 0.5);
+            if let Some(corridor_y) =
+                choose_clear_common_ancestor_horizontal_corridor(graph, record, start, end, preferred_y, CLEARANCE)
+            {
+                return simplify_polyline(vec![
+                    start,
+                    Point::new(start.x, corridor_y),
+                    Point::new(end.x, corridor_y),
+                    end,
+                ]);
+            }
+        }
+        _ => {}
+    }
+
+    if polyline_is_orthogonal(&simplified) {
+        simplified
+    } else {
+        orthogonalize_polyline(simplified, source_side, target_side)
     }
 }
 
 fn normalize_candidate_polyline(
+    graph: &ElkGraph,
+    record: &CompoundRouteRecord,
     points: Vec<Point>,
     start_side: Option<PortSide>,
     end_side: Option<PortSide>,
 ) -> Vec<Point> {
-    let mut points = simplify_polyline(points);
-    if points.len() < 2 {
-        return points;
+    let baseline_points = points;
+    if baseline_points.len() < 2 {
+        return baseline_points;
     }
+
+    let mut points = simplify_polyline(baseline_points.clone());
     if let Some(side) = start_side {
         points = rebuild_candidate_terminal_branch(points, side, true);
     }
@@ -598,7 +830,57 @@ fn normalize_candidate_polyline(
     if !polyline_is_orthogonal(&points) {
         points = orthogonalize_polyline(points, start_side, end_side);
     }
-    ensure_terminal_normals(points, start_side, end_side)
+    let normalized = ensure_terminal_normals(points, start_side, end_side);
+    if normalized_candidate_is_worse(
+        graph,
+        record,
+        &baseline_points,
+        &normalized,
+    ) {
+        baseline_points
+    } else {
+        normalized
+    }
+}
+
+fn normalized_candidate_is_worse(
+    graph: &ElkGraph,
+    record: &CompoundRouteRecord,
+    baseline: &[Point],
+    normalized: &[Point],
+) -> bool {
+    if normalized.len() < 2 {
+        return true;
+    }
+
+    let baseline_inside_start =
+        terminal_approaches_from_inside(graph, baseline, record.original_source, true);
+    let normalized_inside_start =
+        terminal_approaches_from_inside(graph, normalized, record.original_source, true);
+    if !baseline_inside_start && normalized_inside_start {
+        return true;
+    }
+
+    let baseline_inside_end =
+        terminal_approaches_from_inside(graph, baseline, record.original_target, false);
+    let normalized_inside_end =
+        terminal_approaches_from_inside(graph, normalized, record.original_target, false);
+    if !baseline_inside_end && normalized_inside_end {
+        return true;
+    }
+
+    if count_endpoint_node_intrusions(graph, normalized, record)
+        > count_endpoint_node_intrusions(graph, baseline, record)
+    {
+        return true;
+    }
+    if count_crossed_sibling_obstacles(graph, normalized, record)
+        > count_crossed_sibling_obstacles(graph, baseline, record)
+    {
+        return true;
+    }
+    count_global_node_intrusions(graph, normalized, record)
+        > count_global_node_intrusions(graph, baseline, record)
 }
 
 struct CandidateDecision {
@@ -624,9 +906,8 @@ fn choose_best_candidate(
     record: &CompoundRouteRecord,
     legacy_points: Vec<Point>,
     rebuilt_points: Vec<Point>,
-    prefers_shared_rebuilt: bool,
+    _prefers_shared_rebuilt: bool,
 ) -> (Vec<Point>, CandidateDecision) {
-    const REBUILT_BEND_HARD_CAP: usize = 8;
     let legacy_bends = legacy_points.len().saturating_sub(2);
     let rebuilt_bends = rebuilt_points.len().saturating_sub(2);
     let legacy_inside_start =
@@ -674,34 +955,15 @@ fn choose_best_candidate(
     if legacy_points.len() < 2 {
         return decision("legacy-invalid", rebuilt_points.clone(), legacy_points, rebuilt_points);
     }
-    let rebuilt_within_hard_cap = rebuilt_bends <= REBUILT_BEND_HARD_CAP;
     if (legacy_inside_start && !rebuilt_inside_start) || (legacy_inside_end && !rebuilt_inside_end) {
-        if (rebuilt_within_hard_cap || legacy_sibling_intrusions > rebuilt_sibling_intrusions)
-            && rebuilt_endpoint_intrusions <= legacy_endpoint_intrusions
-        {
-            return decision(
-                "rebuilt-fixes-inside-approach",
-                rebuilt_points.clone(),
-                legacy_points,
-                rebuilt_points,
-            );
-        }
         return decision(
-            "legacy-preserves-bend-cap",
-            legacy_points.clone(),
+            "rebuilt-fixes-inside-approach",
+            rebuilt_points.clone(),
             legacy_points,
             rebuilt_points,
         );
     }
-    if rebuilt_endpoint_intrusions != legacy_endpoint_intrusions {
-        if rebuilt_endpoint_intrusions < legacy_endpoint_intrusions && rebuilt_within_hard_cap {
-            return decision(
-                "rebuilt-reduces-endpoint-node-intrusions",
-                rebuilt_points.clone(),
-                legacy_points,
-                rebuilt_points,
-            );
-        }
+    if rebuilt_endpoint_intrusions > legacy_endpoint_intrusions {
         return decision(
             "legacy-avoids-endpoint-node-intrusions",
             legacy_points.clone(),
@@ -709,31 +971,15 @@ fn choose_best_candidate(
             rebuilt_points,
         );
     }
-    if rebuilt_sibling_intrusions != legacy_sibling_intrusions {
-        if rebuilt_sibling_intrusions < legacy_sibling_intrusions && rebuilt_within_hard_cap {
-            return decision(
-                "rebuilt-avoids-sibling-obstacles",
-                rebuilt_points.clone(),
-                legacy_points,
-                rebuilt_points,
-            );
-        }
+    if rebuilt_sibling_intrusions > legacy_sibling_intrusions {
         return decision(
-            "legacy-preserves-bend-cap",
+            "legacy-avoids-sibling-obstacles",
             legacy_points.clone(),
             legacy_points,
             rebuilt_points,
         );
     }
-    if rebuilt_global_intrusions != legacy_global_intrusions {
-        if rebuilt_global_intrusions < legacy_global_intrusions && rebuilt_within_hard_cap {
-            return decision(
-                "rebuilt-reduces-global-node-intrusions",
-                rebuilt_points.clone(),
-                legacy_points,
-                rebuilt_points,
-            );
-        }
+    if rebuilt_global_intrusions > legacy_global_intrusions {
         return decision(
             "legacy-avoids-global-node-intrusions",
             legacy_points.clone(),
@@ -741,22 +987,12 @@ fn choose_best_candidate(
             rebuilt_points,
         );
     }
-    if prefers_shared_rebuilt
-        && rebuilt_within_hard_cap
-        && rebuilt_bends <= legacy_bends + 2
-    {
-        return decision(
-            "rebuilt-preserves-shared-branch",
-            rebuilt_points.clone(),
-            legacy_points,
-            rebuilt_points,
-        );
-    }
-    if rebuilt_bends <= legacy_bends + 1 {
-        decision("rebuilt-within-bend-budget", rebuilt_points.clone(), legacy_points, rebuilt_points)
-    } else {
-        decision("legacy-lower-bend-budget", legacy_points.clone(), legacy_points, rebuilt_points)
-    }
+    decision(
+        "rebuilt-preferred",
+        rebuilt_points.clone(),
+        legacy_points,
+        rebuilt_points,
+    )
 }
 
 fn terminal_approaches_from_inside(
@@ -857,6 +1093,165 @@ fn branch_outward_point(graph: &ElkGraph, endpoint: EdgeEndpoint) -> Option<(Por
     let port_side = graph.ports[port_id.index()].side;
     let center = endpoint_abs_center(graph, endpoint);
     Some((port_side, point_along_outward_normal(center, port_side, 24.0)))
+}
+
+fn flatten_cross_hierarchy_segment_points(
+    graph: &ElkGraph,
+    map: &CompoundRoutingMap,
+    top_container: NodeId,
+    original_edge_id: EdgeId,
+) -> Option<Vec<Point>> {
+    let segments = map.sorted_routed_segments(graph, top_container, original_edge_id);
+    if segments.is_empty() {
+        return flatten_edge_points(graph, original_edge_id);
+    }
+
+    let mut points = Vec::new();
+    for (index, segment) in segments.iter().enumerate() {
+        let mut segment_points = flatten_segment_points_with_routed_terminals(graph, segment)?;
+        if index > 0 {
+            if points.last().copied() == segment_points.first().copied() {
+                segment_points.remove(0);
+            } else if let (Some(current), Some(target)) =
+                (points.last().copied(), segment_points.first().copied())
+            {
+                if (current.x - target.x).abs() > f32::EPSILON
+                    && (current.y - target.y).abs() > f32::EPSILON
+                {
+                    append_points(&mut points, [Point::new(current.x, target.y)]);
+                }
+            }
+        }
+        append_points(&mut points, segment_points);
+    }
+
+    if points.is_empty() {
+        None
+    } else {
+        Some(dedup_points(points))
+    }
+}
+
+fn flatten_segment_points_with_routed_terminals(
+    graph: &ElkGraph,
+    segment: &CrossHierarchySegmentRecord,
+) -> Option<Vec<Point>> {
+    let mut points = flatten_edge_points(graph, segment.segment_edge)?;
+    if should_reverse_points(
+        &points,
+        endpoint_abs_center(graph, segment.routed_source),
+        endpoint_abs_center(graph, segment.routed_target),
+    ) {
+        points.reverse();
+    }
+    if let Some(first) = points.first_mut() {
+        *first = endpoint_abs_center(graph, segment.routed_source);
+    }
+    if let Some(last) = points.last_mut() {
+        *last = endpoint_abs_center(graph, segment.routed_target);
+    }
+    Some(dedup_points(points))
+}
+
+fn compare_cross_hierarchy_segments(
+    graph: &ElkGraph,
+    top_container: NodeId,
+    left: &CrossHierarchySegmentRecord,
+    right: &CrossHierarchySegmentRecord,
+) -> std::cmp::Ordering {
+    use std::cmp::Ordering;
+
+    match (left.kind, right.kind) {
+        (CrossHierarchySegmentKind::Output, CrossHierarchySegmentKind::Input) => Ordering::Less,
+        (CrossHierarchySegmentKind::Input, CrossHierarchySegmentKind::Output) => Ordering::Greater,
+        _ => {
+            let left_level = hierarchy_level(graph, left.container, top_container);
+            let right_level = hierarchy_level(graph, right.container, top_container);
+            match left.kind {
+                CrossHierarchySegmentKind::Output => right_level.cmp(&left_level),
+                CrossHierarchySegmentKind::Input => left_level.cmp(&right_level),
+            }
+            .then_with(|| left.segment_edge.index().cmp(&right.segment_edge.index()))
+        }
+    }
+}
+
+fn hierarchy_level(graph: &ElkGraph, node_id: NodeId, top_container: NodeId) -> usize {
+    let mut current = Some(node_id);
+    let mut level = 0usize;
+    while let Some(node_id) = current {
+        if node_id == top_container {
+            return level;
+        }
+        current = graph.nodes[node_id.index()].parent;
+        level += 1;
+    }
+    level
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+struct PlannedCrossHierarchySegment {
+    container: NodeId,
+    kind: CrossHierarchySegmentKind,
+}
+
+fn planned_cross_hierarchy_segments(
+    graph: &ElkGraph,
+    top_container: NodeId,
+    source_node: NodeId,
+    target_node: NodeId,
+) -> Vec<PlannedCrossHierarchySegment> {
+    let Some(common_ancestor) = graph.nearest_common_ancestor(source_node, target_node) else {
+        return Vec::new();
+    };
+    if !graph.is_ancestor(top_container, common_ancestor) {
+        return Vec::new();
+    }
+
+    let mut segments = Vec::new();
+
+    let mut current = source_node;
+    while current != common_ancestor {
+        let Some(parent) = graph.nodes[current.index()].parent else {
+            break;
+        };
+        if parent == common_ancestor {
+            segments.push(PlannedCrossHierarchySegment {
+                container: common_ancestor,
+                kind: CrossHierarchySegmentKind::Output,
+            });
+            break;
+        }
+        segments.push(PlannedCrossHierarchySegment {
+            container: parent,
+            kind: CrossHierarchySegmentKind::Output,
+        });
+        current = parent;
+    }
+
+    let mut inward = Vec::new();
+    let mut current = target_node;
+    while current != common_ancestor {
+        let Some(parent) = graph.nodes[current.index()].parent else {
+            break;
+        };
+        if parent == common_ancestor {
+            inward.push(PlannedCrossHierarchySegment {
+                container: common_ancestor,
+                kind: CrossHierarchySegmentKind::Input,
+            });
+            break;
+        }
+        inward.push(PlannedCrossHierarchySegment {
+            container: parent,
+            kind: CrossHierarchySegmentKind::Input,
+        });
+        current = parent;
+    }
+
+    inward.reverse();
+    segments.extend(inward);
+    segments
 }
 
 #[derive(Clone, Copy)]
@@ -1609,6 +2004,123 @@ fn horizontal_branch_intrusions(
         + count_endpoint_rect_intrusions(&segments, endpoint_rect)
 }
 
+fn choose_clear_common_ancestor_vertical_corridor(
+    graph: &ElkGraph,
+    record: &CompoundRouteRecord,
+    start: Point,
+    end: Point,
+    preferred_x: f32,
+    clearance: f32,
+) -> Option<f32> {
+    let obstacles = common_ancestor_obstacle_rects(graph, record)?;
+    let mut candidates = vec![preferred_x, start.x, end.x];
+    for rect in &obstacles {
+        candidates.push(rect.origin.x - clearance);
+        candidates.push(rect.max_x() + clearance);
+    }
+    let min_value = start.x.min(end.x) + 1.0;
+    let max_value = start.x.max(end.x) - 1.0;
+    choose_best_axis_candidate(
+        candidates,
+        min_value.min(max_value),
+        min_value.max(max_value),
+        |candidate| common_ancestor_vertical_intrusions(start, end, candidate, &obstacles) == 0,
+        |candidate| common_ancestor_vertical_intrusions(start, end, candidate, &obstacles),
+        |candidate| {
+            (candidate - preferred_x).abs()
+                + 0.1 * (candidate - start.x).abs()
+                + 0.1 * (candidate - end.x).abs()
+        },
+    )
+}
+
+fn choose_clear_common_ancestor_horizontal_corridor(
+    graph: &ElkGraph,
+    record: &CompoundRouteRecord,
+    start: Point,
+    end: Point,
+    preferred_y: f32,
+    clearance: f32,
+) -> Option<f32> {
+    let obstacles = common_ancestor_obstacle_rects(graph, record)?;
+    let mut candidates = vec![preferred_y, start.y, end.y];
+    for rect in &obstacles {
+        candidates.push(rect.origin.y - clearance);
+        candidates.push(rect.max_y() + clearance);
+    }
+    let min_value = start.y.min(end.y) + 1.0;
+    let max_value = start.y.max(end.y) - 1.0;
+    choose_best_axis_candidate(
+        candidates,
+        min_value.min(max_value),
+        min_value.max(max_value),
+        |candidate| common_ancestor_horizontal_intrusions(start, end, candidate, &obstacles) == 0,
+        |candidate| common_ancestor_horizontal_intrusions(start, end, candidate, &obstacles),
+        |candidate| {
+            (candidate - preferred_y).abs()
+                + 0.1 * (candidate - start.y).abs()
+                + 0.1 * (candidate - end.y).abs()
+        },
+    )
+}
+
+fn common_ancestor_obstacle_rects(graph: &ElkGraph, record: &CompoundRouteRecord) -> Option<Vec<Rect>> {
+    let ancestor = graph.nearest_common_ancestor(record.original_source.node, record.original_target.node)?;
+    let source_child = direct_child_on_path(graph, ancestor, record.original_source.node)?;
+    let target_child = direct_child_on_path(graph, ancestor, record.original_target.node)?;
+    Some(
+        graph.nodes[ancestor.index()]
+            .children
+            .iter()
+            .copied()
+            .filter(|child| *child != source_child && *child != target_child)
+            .map(|child| node_abs_rect(graph, child))
+            .collect(),
+    )
+}
+
+fn common_ancestor_vertical_intrusions(
+    start: Point,
+    end: Point,
+    corridor_x: f32,
+    obstacles: &[Rect],
+) -> usize {
+    let segments = [
+        (start, Point::new(corridor_x, start.y)),
+        (Point::new(corridor_x, start.y), Point::new(corridor_x, end.y)),
+        (Point::new(corridor_x, end.y), end),
+    ];
+    count_branch_intrusions(&segments, obstacles)
+}
+
+fn common_ancestor_horizontal_intrusions(
+    start: Point,
+    end: Point,
+    corridor_y: f32,
+    obstacles: &[Rect],
+) -> usize {
+    let segments = [
+        (start, Point::new(start.x, corridor_y)),
+        (Point::new(start.x, corridor_y), Point::new(end.x, corridor_y)),
+        (Point::new(end.x, corridor_y), end),
+    ];
+    count_branch_intrusions(&segments, obstacles)
+}
+
+fn preferred_vertical_trunk_axis(points: &[Point]) -> Option<f32> {
+    points
+        .windows(2)
+        .find(|segment| (segment[0].x - segment[1].x).abs() <= f32::EPSILON)
+        .map(|segment| segment[0].x)
+}
+
+fn preferred_horizontal_trunk_axis(points: &[Point]) -> Option<f32> {
+    points
+        .windows(2)
+        .find(|segment| (segment[0].y - segment[1].y).abs() <= f32::EPSILON)
+        .map(|segment| segment[0].y)
+}
+
 fn horizontal_connection_intrusions(
     start: Point,
     boundary_point: Point,
@@ -2284,18 +2796,30 @@ mod tests {
             vec![EdgeEndpoint::port(outer, routed_port)],
         );
         let map = CompoundRoutingMap {
-            edges: BTreeMap::from([(
+            original_edges: BTreeMap::from([(
                 edge_id,
                 CompoundRouteRecord {
                     original_source: EdgeEndpoint::port(inner, inner_port),
                     original_target: EdgeEndpoint::port(inner, inner_port),
-                    routed_source: EdgeEndpoint::port(outer, routed_port),
-                    routed_target: EdgeEndpoint::port(outer, routed_port),
                     effective_source: outer,
                     effective_target: outer,
                 },
             )]),
+            segments_by_original: BTreeMap::from([(
+                edge_id,
+                vec![CrossHierarchySegmentRecord {
+                    original_edge: edge_id,
+                    segment_edge: edge_id,
+                    container: graph.root,
+                    routed_source: EdgeEndpoint::port(outer, routed_port),
+                    routed_target: EdgeEndpoint::port(outer, routed_port),
+                    kind: CrossHierarchySegmentKind::Output,
+                }],
+            )]),
+            segment_plan_by_original: BTreeMap::new(),
             temporary_ports: Vec::new(),
+            temporary_dummy_nodes: Vec::new(),
+            temporary_dummy_ports: Vec::new(),
         };
 
         refresh_hierarchical_port_coordinates(&mut graph, &map);
@@ -2307,6 +2831,294 @@ mod tests {
             (actual_center_x - expected_center_x).abs() <= 1e-3,
             "expected refreshed north port center x {expected_center_x}, got {actual_center_x}"
         );
+    }
+
+    #[test]
+    fn planned_cross_hierarchy_segments_walks_out_then_in() {
+        let mut graph = ElkGraph::new();
+        let source_cluster = graph.add_node(graph.root, ShapeGeometry::default());
+        let source_inner = graph.add_node(source_cluster, ShapeGeometry::default());
+        let target_cluster = graph.add_node(graph.root, ShapeGeometry::default());
+        let target_inner = graph.add_node(target_cluster, ShapeGeometry::default());
+
+        let planned = planned_cross_hierarchy_segments(&graph, graph.root, source_inner, target_inner);
+        assert_eq!(
+            planned,
+            vec![
+                PlannedCrossHierarchySegment {
+                    container: source_cluster,
+                    kind: CrossHierarchySegmentKind::Output,
+                },
+                PlannedCrossHierarchySegment {
+                    container: graph.root,
+                    kind: CrossHierarchySegmentKind::Output,
+                },
+                PlannedCrossHierarchySegment {
+                    container: graph.root,
+                    kind: CrossHierarchySegmentKind::Input,
+                },
+                PlannedCrossHierarchySegment {
+                    container: target_cluster,
+                    kind: CrossHierarchySegmentKind::Input,
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn planned_cross_hierarchy_segments_for_siblings_stays_at_common_ancestor() {
+        let mut graph = ElkGraph::new();
+        let cluster = graph.add_node(graph.root, ShapeGeometry::default());
+        let left = graph.add_node(cluster, ShapeGeometry::default());
+        let right = graph.add_node(cluster, ShapeGeometry::default());
+
+        let planned = planned_cross_hierarchy_segments(&graph, graph.root, left, right);
+        assert_eq!(
+            planned,
+            vec![
+                PlannedCrossHierarchySegment {
+                    container: cluster,
+                    kind: CrossHierarchySegmentKind::Output,
+                },
+                PlannedCrossHierarchySegment {
+                    container: cluster,
+                    kind: CrossHierarchySegmentKind::Input,
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn preprocess_records_java_style_segment_plan() {
+        let mut graph = ElkGraph::new();
+        let left_cluster = graph.add_node(graph.root, ShapeGeometry::default());
+        let left_inner = graph.add_node(left_cluster, ShapeGeometry::default());
+        let left_port = graph.add_port(
+            left_inner,
+            PortSide::East,
+            ShapeGeometry {
+                x: 16.0,
+                y: 4.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+        let right_cluster = graph.add_node(graph.root, ShapeGeometry::default());
+        let right_inner = graph.add_node(right_cluster, ShapeGeometry::default());
+        let right_port = graph.add_port(
+            right_inner,
+            PortSide::West,
+            ShapeGeometry {
+                x: -4.0,
+                y: 4.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+        let edge_id = graph.add_edge(
+            graph.root,
+            vec![EdgeEndpoint::port(left_inner, left_port)],
+            vec![EdgeEndpoint::port(right_inner, right_port)],
+        );
+        let local_nodes = BTreeSet::from([left_cluster, right_cluster]);
+        let options = LayoutOptions::default();
+        let root = graph.root;
+
+        let map = preprocess_cross_hierarchy_edges(&mut graph, root, &local_nodes, &options);
+
+        assert_eq!(
+            map.planned_segments(edge_id),
+            &[
+                (left_cluster, CrossHierarchySegmentKind::Output),
+                (root, CrossHierarchySegmentKind::Output),
+                (root, CrossHierarchySegmentKind::Input),
+                (right_cluster, CrossHierarchySegmentKind::Input),
+            ]
+        );
+    }
+
+    #[test]
+    fn preprocess_materializes_child_scope_segment_edges_for_nested_endpoints() {
+        let mut graph = ElkGraph::new();
+        let left_cluster = graph.add_node(graph.root, ShapeGeometry::default());
+        let left_inner = graph.add_node(left_cluster, ShapeGeometry::default());
+        let left_port = graph.add_port(left_inner, PortSide::East, ShapeGeometry::default());
+        let right_cluster = graph.add_node(graph.root, ShapeGeometry::default());
+        let right_inner = graph.add_node(right_cluster, ShapeGeometry::default());
+        let right_port = graph.add_port(right_inner, PortSide::West, ShapeGeometry::default());
+        let edge_id = graph.add_edge(
+            graph.root,
+            vec![EdgeEndpoint::port(left_inner, left_port)],
+            vec![EdgeEndpoint::port(right_inner, right_port)],
+        );
+        let local_nodes = BTreeSet::from([left_cluster, right_cluster]);
+        let options = LayoutOptions::default();
+        let root = graph.root;
+
+        let map = preprocess_cross_hierarchy_edges(&mut graph, root, &local_nodes, &options);
+
+        let segments = map.sorted_routed_segments(&graph, root, edge_id);
+        assert_eq!(segments.len(), 3);
+        assert_eq!(segments[0].container, left_cluster);
+        assert_eq!(segments[0].kind, CrossHierarchySegmentKind::Output);
+        assert_eq!(segments[1].segment_edge, edge_id);
+        assert_eq!(segments[1].container, root);
+        assert_eq!(segments[2].container, right_cluster);
+        assert_eq!(segments[2].kind, CrossHierarchySegmentKind::Input);
+        assert!(graph.nodes[left_cluster.index()].edges.contains(&segments[0].segment_edge));
+        assert!(graph.nodes[right_cluster.index()].edges.contains(&segments[2].segment_edge));
+    }
+
+    #[test]
+    fn concat_cross_hierarchy_segments_java_style_inserts_boundary_bend_between_segments() {
+        let mut graph = ElkGraph::new();
+        let source_node = graph.add_node(
+            graph.root,
+            ShapeGeometry {
+                x: 0.0,
+                y: 0.0,
+                width: 40.0,
+                height: 40.0,
+            },
+        );
+        let target_node = graph.add_node(
+            graph.root,
+            ShapeGeometry {
+                x: 240.0,
+                y: 120.0,
+                width: 40.0,
+                height: 40.0,
+            },
+        );
+        let source_port = graph.add_port(
+            source_node,
+            PortSide::East,
+            ShapeGeometry {
+                x: 36.0,
+                y: 16.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+        let target_port = graph.add_port(
+            target_node,
+            PortSide::West,
+            ShapeGeometry {
+                x: -4.0,
+                y: 16.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+        let boundary_a = graph.add_port(
+            graph.root,
+            PortSide::East,
+            ShapeGeometry {
+                x: 100.0,
+                y: 96.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+        let boundary_b = graph.add_port(
+            graph.root,
+            PortSide::West,
+            ShapeGeometry {
+                x: 156.0,
+                y: 136.0,
+                width: 8.0,
+                height: 8.0,
+            },
+        );
+
+        let original_edge = graph.add_edge(
+            graph.root,
+            vec![EdgeEndpoint::port(source_node, source_port)],
+            vec![EdgeEndpoint::port(target_node, target_port)],
+        );
+        let source_segment = graph.add_edge(
+            graph.root,
+            vec![EdgeEndpoint::port(source_node, source_port)],
+            vec![EdgeEndpoint::port(graph.root, boundary_a)],
+        );
+        let target_segment = graph.add_edge(
+            graph.root,
+            vec![EdgeEndpoint::port(graph.root, boundary_b)],
+            vec![EdgeEndpoint::port(target_node, target_port)],
+        );
+
+        let _ = graph.add_edge_section(
+            source_segment,
+            Point::new(40.0, 20.0),
+            vec![Point::new(100.0, 20.0)],
+            Point::new(100.0, 100.0),
+        );
+        let _ = graph.add_edge_section(
+            target_segment,
+            Point::new(100.0, 140.0),
+            vec![Point::new(180.0, 140.0)],
+            Point::new(240.0, 160.0),
+        );
+
+        let map = CompoundRoutingMap {
+            original_edges: BTreeMap::from([(
+                original_edge,
+                CompoundRouteRecord {
+                    original_source: EdgeEndpoint::port(source_node, source_port),
+                    original_target: EdgeEndpoint::port(target_node, target_port),
+                    effective_source: graph.root,
+                    effective_target: graph.root,
+                },
+            )]),
+            segments_by_original: BTreeMap::from([(
+                original_edge,
+                vec![
+                    CrossHierarchySegmentRecord {
+                        original_edge,
+                        segment_edge: source_segment,
+                        container: graph.root,
+                        routed_source: EdgeEndpoint::port(source_node, source_port),
+                        routed_target: EdgeEndpoint::port(graph.root, boundary_a),
+                        kind: CrossHierarchySegmentKind::Output,
+                    },
+                    CrossHierarchySegmentRecord {
+                        original_edge,
+                        segment_edge: target_segment,
+                        container: graph.root,
+                        routed_source: EdgeEndpoint::port(graph.root, boundary_b),
+                        routed_target: EdgeEndpoint::port(target_node, target_port),
+                        kind: CrossHierarchySegmentKind::Input,
+                    },
+                ],
+            )]),
+            segment_plan_by_original: BTreeMap::new(),
+            temporary_ports: Vec::new(),
+            temporary_dummy_nodes: Vec::new(),
+            temporary_dummy_ports: Vec::new(),
+        };
+
+        let points = concat_cross_hierarchy_segments_java_style(
+            &graph,
+            &map,
+            graph.root,
+            original_edge,
+            map.original_record(original_edge).expect("record"),
+        )
+        .expect("points");
+
+        assert_eq!(
+            points,
+            vec![
+                endpoint_declared_abs_center(&graph, EdgeEndpoint::port(source_node, source_port)),
+                Point::new(100.0, 20.0),
+                Point::new(100.0, 100.0),
+                Point::new(100.0, 140.0),
+                Point::new(164.0, 140.0),
+                Point::new(180.0, 140.0),
+                endpoint_declared_abs_center(&graph, EdgeEndpoint::port(target_node, target_port)),
+            ]
+        );
+        assert!(polyline_is_orthogonal(&points));
     }
 
     #[test]
@@ -2350,18 +3162,30 @@ mod tests {
             Point::new(200.0, 80.0),
         );
         let map = CompoundRoutingMap {
-            edges: BTreeMap::from([(
+            original_edges: BTreeMap::from([(
                 edge_id,
                 CompoundRouteRecord {
                     original_source: EdgeEndpoint::node(outer),
                     original_target: EdgeEndpoint::node(outer),
-                    routed_source: EdgeEndpoint::port(outer, routed_port),
-                    routed_target: EdgeEndpoint::node(outer),
                     effective_source: outer,
                     effective_target: outer,
                 },
             )]),
+            segments_by_original: BTreeMap::from([(
+                edge_id,
+                vec![CrossHierarchySegmentRecord {
+                    original_edge: edge_id,
+                    segment_edge: edge_id,
+                    container: graph.root,
+                    routed_source: EdgeEndpoint::port(outer, routed_port),
+                    routed_target: EdgeEndpoint::node(outer),
+                    kind: CrossHierarchySegmentKind::Output,
+                }],
+            )]),
+            segment_plan_by_original: BTreeMap::new(),
             temporary_ports: Vec::new(),
+            temporary_dummy_nodes: Vec::new(),
+            temporary_dummy_ports: Vec::new(),
         };
 
         correct_hierarchical_port_route_terminals(&mut graph, &map);
@@ -2415,8 +3239,12 @@ mod tests {
             },
         );
         let map = CompoundRoutingMap {
-            edges: BTreeMap::new(),
+            original_edges: BTreeMap::new(),
+            segments_by_original: BTreeMap::new(),
+            segment_plan_by_original: BTreeMap::new(),
             temporary_ports: vec![(node, temp_a), (node, temp_b)],
+            temporary_dummy_nodes: Vec::new(),
+            temporary_dummy_ports: Vec::new(),
         };
 
         hide_temporary_hierarchical_ports(&mut graph, &map);

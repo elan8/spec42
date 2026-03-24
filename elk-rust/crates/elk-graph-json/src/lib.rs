@@ -369,16 +369,28 @@ pub fn export_elk_graph_to_value(graph: &ElkGraph) -> Value {
             );
         }
         if !n.children.is_empty() {
+            let visible_children: Vec<_> = n
+                .children
+                .iter()
+                .copied()
+                .filter(|child_id| {
+                    !graph.nodes[child_id.index()]
+                        .properties
+                        .get(&elk_graph::PropertyKey::from(
+                            "spec42.compound.tempHierarchicalDummyNode",
+                        ))
+                        .and_then(|value| value.as_bool())
+                        .unwrap_or(false)
+                })
+                .collect();
+            if !visible_children.is_empty() {
             obj.insert(
                 "children".to_string(),
                 Value::Array(
-                    n.children
-                        .iter()
-                        .copied()
-                        .map(|c| export_node(graph, c))
-                        .collect(),
+                    visible_children.into_iter().map(|c| export_node(graph, c)).collect(),
                 ),
             );
+            }
         }
         Value::Object(obj)
     }

@@ -4,6 +4,7 @@ use elk_core::{LayoutOptions, PortConstraint, Size};
 use elk_graph::{EdgeEndpoint, ElkGraph, NodeId, PortId};
 
 use crate::ir::{IrEdge, IrNode, IrNodeKind, IrPortConstraint, LayeredIr};
+use crate::pipeline::compound::TEMP_HIERARCHICAL_DUMMY_NODE_KEY;
 use crate::pipeline::props::decode_layout_from_props;
 use crate::pipeline::util::{label_size, node_abs_origin};
 
@@ -59,6 +60,8 @@ pub(crate) fn import_graph(
 
         // ElkGraph uses relative node geometry; compute absolute origin by walking parents.
         let abs = node_abs_origin(graph, node_id);
+        let preferred_minor = imported_node_preferred_minor(graph, node_id, abs, &size, options, order);
+        let model_order = imported_node_model_order(graph, node_id, preferred_minor, node_options.model_order, order);
         ir.push_node(IrNode {
             kind: IrNodeKind::Real(node_id),
             size,
@@ -67,9 +70,9 @@ pub(crate) fn import_graph(
             order,
             label_size,
             ports,
-            desired_minor: order as f32 * options.layered.spacing.node_spacing,
+            desired_minor: preferred_minor,
             aligned: false,
-            model_order: node_options.model_order.unwrap_or(order),
+            model_order,
             layer_constraint: node_options.layer_constraint.unwrap_or_default(),
         });
     }
@@ -145,6 +148,48 @@ fn remap_endpoint(endpoint: EdgeEndpoint, mapped_node: NodeId) -> EdgeEndpoint {
     } else {
         EdgeEndpoint::node(mapped_node)
     }
+}
+
+fn imported_node_preferred_minor(
+    graph: &ElkGraph,
+    node_id: NodeId,
+    abs: elk_core::Point,
+    size: &Size,
+    options: &LayoutOptions,
+    order: usize,
+) -> f32 {
+    if is_temporary_hierarchical_dummy_node(graph, node_id) {
+        return match options.layered.direction {
+            elk_core::LayoutDirection::LeftToRight | elk_core::LayoutDirection::RightToLeft => {
+                abs.y + size.height / 2.0
+            }
+            elk_core::LayoutDirection::TopToBottom | elk_core::LayoutDirection::BottomToTop => {
+                abs.x + size.width / 2.0
+            }
+        };
+    }
+    order as f32 * options.layered.spacing.node_spacing
+}
+
+fn imported_node_model_order(
+    graph: &ElkGraph,
+    node_id: NodeId,
+    preferred_minor: f32,
+    explicit_model_order: Option<usize>,
+    order: usize,
+) -> usize {
+    if is_temporary_hierarchical_dummy_node(graph, node_id) {
+        return preferred_minor.max(0.0).round() as usize;
+    }
+    explicit_model_order.unwrap_or(order)
+}
+
+fn is_temporary_hierarchical_dummy_node(graph: &ElkGraph, node_id: NodeId) -> bool {
+    graph.nodes[node_id.index()]
+        .properties
+        .get(&elk_graph::PropertyKey::from(TEMP_HIERARCHICAL_DUMMY_NODE_KEY))
+        .and_then(|value| value.as_bool())
+        .unwrap_or(false)
 }
 
 pub(crate) fn combined_label_size(graph: &ElkGraph, label_ids: &[elk_graph::LabelId]) -> Size {

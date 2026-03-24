@@ -1,10 +1,12 @@
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 
 use elk_core::PortSide;
 use elk_graph::{EdgeId, ElkGraph, PortId, PropertyValue};
 
 use crate::pipeline::compound::{
-    place_hierarchical_port_on_boundary_at_tangent, CompoundRoutingMap,
+    place_hierarchical_port_on_boundary_at_tangent, set_dummy_node_boundary_geometry_from_parent_port,
+    CompoundRoutingMap, TEMP_HIERARCHICAL_DUMMY_PARENT_PORT_KEY,
 };
 use crate::pipeline::util::endpoint_abs_center;
 
@@ -19,6 +21,7 @@ pub(crate) fn run_hierarchical_port_postprocessing(
     map: &CompoundRoutingMap,
 ) {
     refresh_hierarchical_port_coordinates(graph, map);
+    refresh_hierarchical_dummy_coordinates(graph, map);
     correct_hierarchical_port_route_terminals(graph, map);
     correct_slanted_edge_segments(graph, map);
     hide_temporary_hierarchical_ports(graph, map);
@@ -28,11 +31,15 @@ pub(crate) fn refresh_hierarchical_port_coordinates(graph: &mut ElkGraph, map: &
     let mut tangent_samples: BTreeMap<elk_graph::PortId, (PortSide, elk_graph::NodeId, f32, usize)> =
         BTreeMap::new();
 
-    for record in map.edges.values() {
-        for (routed_endpoint, original_endpoint) in [
-            (record.routed_source, record.original_source),
-            (record.routed_target, record.original_target),
-        ] {
+    for edge_id in map.original_edge_ids() {
+        let Some(record) = map.original_record(edge_id) else {
+            continue;
+        };
+        for segment in map.routed_segments(edge_id) {
+            for (routed_endpoint, original_endpoint) in [
+                (segment.routed_source, record.original_source),
+                (segment.routed_target, record.original_target),
+            ] {
             let Some(port_id) = routed_endpoint.port else {
                 continue;
             };
@@ -51,6 +58,7 @@ pub(crate) fn refresh_hierarchical_port_coordinates(graph: &mut ElkGraph, map: &
                 .or_insert((side, routed_endpoint.node, 0.0, 0));
             entry.2 += tangent;
             entry.3 += 1;
+            }
         }
     }
 
@@ -63,15 +71,33 @@ pub(crate) fn refresh_hierarchical_port_coordinates(graph: &mut ElkGraph, map: &
     }
 }
 
+fn refresh_hierarchical_dummy_coordinates(graph: &mut ElkGraph, map: &CompoundRoutingMap) {
+    for &dummy_port_id in &map.temporary_dummy_ports {
+        let Some(parent_port_index) = graph.ports[dummy_port_id.index()]
+            .properties
+            .get(&elk_graph::PropertyKey::from(TEMP_HIERARCHICAL_DUMMY_PARENT_PORT_KEY))
+            .and_then(|value| value.as_i64())
+            .and_then(|value| usize::try_from(value).ok())
+        else {
+            continue;
+        };
+        let Some(parent_port_id) = graph.ports.get(parent_port_index).map(|port| port.id) else {
+            continue;
+        };
+        let dummy_node = graph.ports[dummy_port_id.index()].node;
+        set_dummy_node_boundary_geometry_from_parent_port(graph, dummy_node, dummy_port_id, parent_port_id);
+    }
+}
+
 pub(crate) fn correct_hierarchical_port_route_terminals(graph: &mut ElkGraph, map: &CompoundRoutingMap) {
-    for (edge_id, record) in &map.edges {
-        let section_ids = graph.edges[edge_id.index()].sections.clone();
+    for segment in routed_segments(map, graph) {
+        let section_ids = graph.edges[segment.segment_edge.index()].sections.clone();
         if section_ids.is_empty() {
             continue;
         }
 
-        if let Some(port_id) = record.routed_source.port {
-            let anchor = endpoint_abs_center(graph, record.routed_source);
+        if let Some(port_id) = segment.routed_source.port {
+            let anchor = endpoint_abs_center(graph, segment.routed_source);
             if let Some(first_section_id) = section_ids.first().copied() {
                 let section = &mut graph.edge_sections[first_section_id.index()];
                 section.start = anchor;
@@ -84,8 +110,8 @@ pub(crate) fn correct_hierarchical_port_route_terminals(graph: &mut ElkGraph, ma
             }
         }
 
-        if let Some(port_id) = record.routed_target.port {
-            let anchor = endpoint_abs_center(graph, record.routed_target);
+        if let Some(port_id) = segment.routed_target.port {
+            let anchor = endpoint_abs_center(graph, segment.routed_target);
             if let Some(last_section_id) = section_ids.last().copied() {
                 let section = &mut graph.edge_sections[last_section_id.index()];
                 section.end = anchor;
@@ -110,10 +136,23 @@ pub(crate) fn hide_temporary_hierarchical_ports(graph: &mut ElkGraph, map: &Comp
 }
 
 fn correct_slanted_edge_segments(graph: &mut ElkGraph, map: &CompoundRoutingMap) {
-    for (edge_id, record) in &map.edges {
-        correct_slanted_segment_at_endpoint(graph, *edge_id, record.routed_source.port, true);
-        correct_slanted_segment_at_endpoint(graph, *edge_id, record.routed_target.port, false);
+    for segment in routed_segments(map, graph) {
+        correct_slanted_segment_at_endpoint(graph, segment.segment_edge, segment.routed_source.port, true);
+        correct_slanted_segment_at_endpoint(graph, segment.segment_edge, segment.routed_target.port, false);
     }
+}
+
+fn routed_segments(map: &CompoundRoutingMap, graph: &ElkGraph) -> Vec<crate::pipeline::compound::CrossHierarchySegmentRecord> {
+    let mut seen = BTreeSet::new();
+    let mut segments = Vec::new();
+    for edge_id in map.original_edge_ids() {
+        for segment in map.sorted_routed_segments(graph, graph.root, edge_id) {
+            if seen.insert(segment.segment_edge) {
+                segments.push(segment);
+            }
+        }
+    }
+    segments
 }
 
 fn correct_slanted_segment_at_endpoint(

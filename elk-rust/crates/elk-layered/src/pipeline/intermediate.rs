@@ -11,7 +11,7 @@ enum AfterPhaseFiveProcessor {
 }
 
 fn collect_after_phase_five_processors(map: &CompoundRoutingMap) -> Vec<AfterPhaseFiveProcessor> {
-    if map.edges.is_empty() {
+    if map.is_empty() {
         Vec::new()
     } else {
         vec![AfterPhaseFiveProcessor::HierarchicalPortOrthogonalEdgeRouter]
@@ -69,19 +69,32 @@ mod tests {
             vec![EdgeEndpoint::node(target)],
         );
         let mut map = CompoundRoutingMap {
-            edges: BTreeMap::new(),
+            original_edges: BTreeMap::new(),
+            segments_by_original: BTreeMap::new(),
+            segment_plan_by_original: BTreeMap::new(),
             temporary_ports: Vec::new(),
+            temporary_dummy_nodes: Vec::new(),
+            temporary_dummy_ports: Vec::new(),
         };
-        map.edges.insert(
+        map.original_edges.insert(
             edge,
             CompoundRouteRecord {
                 original_source: EdgeEndpoint::node(source),
                 original_target: EdgeEndpoint::node(target),
-                routed_source: EdgeEndpoint::node(source),
-                routed_target: EdgeEndpoint::node(target),
                 effective_source: source,
                 effective_target: target,
             },
+        );
+        map.segments_by_original.insert(
+            edge,
+            vec![crate::pipeline::compound::CrossHierarchySegmentRecord {
+                original_edge: edge,
+                segment_edge: edge,
+                container: graph.root,
+                routed_source: EdgeEndpoint::node(source),
+                routed_target: EdgeEndpoint::node(target),
+                kind: crate::pipeline::compound::CrossHierarchySegmentKind::Output,
+            }],
         );
 
         assert_eq!(
