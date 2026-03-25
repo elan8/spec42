@@ -25,13 +25,9 @@ cd vscode && npm install && npm run compile   # VS Code extension
 
 For development and testing details, see [DEVELOPMENT.md](DEVELOPMENT.md).
 
-## Current Support Level
+## Roadmap
 
-For the current support boundaries and `1.0` focus, see:
-
-- [Supported Workflows](docs/SUPPORTED-WORKFLOWS.md)
-- [Troubleshooting](docs/TROUBLESHOOTING.md)
-- [Packaging Expectations](docs/PACKAGING.md)
+- [Roadmap](docs/ROADMAP.md)
 
 ## License
 
