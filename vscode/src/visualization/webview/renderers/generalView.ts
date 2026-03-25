@@ -133,7 +133,7 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
 
     if (cyNodes.length === 0) {
         renderPlaceholder(width, height, 'General View',
-            'No matching elements to display.\\n\\nTry another General View preset above.',
+            'No matching elements to display.',
             data);
         return;
     }

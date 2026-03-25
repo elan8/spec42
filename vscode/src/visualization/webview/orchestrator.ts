@@ -650,53 +650,28 @@ import { buildGeneralViewGraph } from './graphBuilders';
         d3.selectAll('.hierarchy-cell').style('opacity', null);
     }
 
-    const GENERAL_VIEW_PRESETS = [
-        { id: 'overview', label: 'Overview', categories: ['partDefs', 'parts', 'reqDefs', 'requirements', 'stateDefs', 'states', 'usecaseDefs', 'usecases', 'interfaceDefs', 'interfaces', 'items', 'concerns'] },
-        { id: 'structure', label: 'Structure', categories: ['partDefs', 'parts', 'portDefs', 'interfaceDefs', 'interfaces', 'items', 'occurrences', 'constraintDefs', 'constraints', 'allocations', 'allocationDefs'] },
-        { id: 'definitions', label: 'Definitions', categories: ['partDefs', 'portDefs', 'attributeDefs', 'actionDefs', 'stateDefs', 'interfaceDefs', 'reqDefs', 'usecaseDefs', 'allocationDefs', 'constraintDefs', 'enumerations'] },
-        { id: 'behavior', label: 'Behavior', categories: ['actionDefs', 'actions', 'stateDefs', 'states', 'usecaseDefs', 'usecases'] },
-        { id: 'requirements', label: 'Requirements', categories: ['reqDefs', 'requirements', 'usecaseDefs', 'usecases', 'concerns', 'constraints', 'constraintDefs'] },
-    ];
+    const expandedGeneralCategories = new Set([
+        'partDefs',
+        'parts',
+        'reqDefs',
+        'requirements',
+        'stateDefs',
+        'states',
+        'usecaseDefs',
+        'usecases',
+        'interfaceDefs',
+        'interfaces',
+        'items',
+        'concerns',
+    ]);
 
-    let activeGeneralPresetId = 'overview';
-    const expandedGeneralCategories = new Set(
-        GENERAL_VIEW_PRESETS.find((preset) => preset.id === activeGeneralPresetId)?.categories ?? ['packages', 'partDefs', 'parts']
-    );
-
-    function syncGeneralPresetSelection() {
-        const matchingPreset = GENERAL_VIEW_PRESETS.find((preset) => {
-            if (preset.categories.length !== expandedGeneralCategories.size) {
-                return false;
-            }
-            return preset.categories.every((category) => expandedGeneralCategories.has(category));
-        });
-        activeGeneralPresetId = matchingPreset?.id || 'custom';
-    }
-
-    function renderGeneralChips(typeStats) {
+    function renderGeneralChips(_typeStats) {
         const container = document.getElementById('general-chips');
         if (!container) return;
         container.innerHTML = '';
 
-        syncGeneralPresetSelection();
-
-        const presetRow = document.createElement('div');
-        presetRow.className = 'general-presets';
-
-        GENERAL_VIEW_PRESETS.forEach((preset) => {
-            const presetButton = document.createElement('button');
-            presetButton.className = 'general-preset-btn' + (activeGeneralPresetId === preset.id ? ' active' : '');
-            presetButton.textContent = preset.label;
-            presetButton.addEventListener('click', () => {
-                expandedGeneralCategories.clear();
-                preset.categories.forEach((category) => expandedGeneralCategories.add(category));
-                activeGeneralPresetId = preset.id;
-                renderGeneralChips(typeStats);
-                renderVisualization('general-view');
-            });
-            presetRow.appendChild(presetButton);
-        });
-        container.appendChild(presetRow);
+        // General View preset toolbar removed by request.
+        // Keep method as a no-op for renderer call-site compatibility.
     }
 
     function getCategoryForType(typeLower) {
@@ -1017,7 +992,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
         // Show/hide appropriate chip containers based on active view
         const generalChips = document.getElementById('general-chips');
         if (generalChips) {
-            generalChips.style.display = activeView === 'general-view' ? 'flex' : 'none';
+            generalChips.style.display = 'none';
         }
 
         // Show/hide layout direction button for specific views
@@ -1255,6 +1230,8 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 selectedDiagramIndex = idx;
                 selectedDiagramName = d.name;
                 if (activeView === 'interconnection-view') selectedIbdRoot = d.name;
+                // Selecting a different diagram should open it fit-to-window.
+                window.userHasManuallyZoomed = false;
                 // Update active state
                 pkgMenu.querySelectorAll('.view-dropdown-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
@@ -1632,6 +1609,11 @@ import { buildGeneralViewGraph } from './graphBuilders';
             };
             await renderGeneralViewD3(ctx as any, dataToRender);
             setTimeout(() => {
+                if (shouldPreserveZoom) {
+                    restoreZoom();
+                } else {
+                    zoomToFit('auto');
+                }
                 updateDimensionsDisplay();
                 isRendering = false;
                 hideLoading();
@@ -1643,6 +1625,11 @@ import { buildGeneralViewGraph } from './graphBuilders';
             };
             await renderIbdView(ctx as any, dataToRender);
             setTimeout(() => {
+                if (shouldPreserveZoom) {
+                    restoreZoom();
+                } else {
+                    zoomToFit('auto');
+                }
                 updateDimensionsDisplay();
                 isRendering = false;
                 hideLoading();
@@ -2242,8 +2229,8 @@ import { buildGeneralViewGraph } from './graphBuilders';
     }
 
     function resetZoom() {
-        window.userHasManuallyZoomed = true; // Mark as manual interaction
-        if (svg) svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+        // Home action: return to initial fit-and-center framing.
+        zoomToFit('user');
     }
 
     function zoomToFit(trigger = 'user') {
