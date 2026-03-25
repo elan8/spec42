@@ -491,7 +491,7 @@ fn document_symbol_from_element(
             Some(DocumentSymbol {
                 name: p.name.clone(),
                 detail: Some("part".to_string()),
-                kind: SymbolKind::VARIABLE,
+                kind: SymbolKind::OBJECT,
                 tags: None,
                 deprecated: None,
                 range,
@@ -572,7 +572,7 @@ fn document_symbol_from_element(
         PBE::ActionUsage(p) => Some(DocumentSymbol {
             name: p.name.clone(),
             detail: Some("action".to_string()),
-            kind: SymbolKind::FUNCTION,
+            kind: SymbolKind::EVENT,
             tags: None,
             deprecated: None,
             range,
@@ -724,7 +724,7 @@ fn document_symbols_from_part_usage_body(
                 out.push(DocumentSymbol {
                     name: n.name.clone(),
                     detail: Some("part".to_string()),
-                    kind: SymbolKind::VARIABLE,
+                    kind: SymbolKind::OBJECT,
                     tags: None,
                     deprecated: None,
                     range,

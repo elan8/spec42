@@ -54,6 +54,17 @@
     "body": ["action def ${1:ActionName} {", "\t$0", "}"],
     "description": "Define an action"
   },
+  "SysML: action def (detailed)": {
+    "prefix": "actiond",
+    "body": [
+      "action def ${1:ActionName} {",
+      "\tin ${2:input} : ${3:ItemType};",
+      "\tout ${4:output} : ${5:ItemType};",
+      "\t$0",
+      "}"
+    ],
+    "description": "Define an action with input/output parameters"
+  },
   "SysML: state def": {
     "prefix": "statedef",
     "body": ["state def ${1:StateName} {", "\t$0", "}"],
@@ -63,6 +74,50 @@
     "prefix": "reqdef",
     "body": ["requirement def ${1:ReqName} {", "\t$0", "}"],
     "description": "Define a requirement"
+  },
+  "SysML: requirement def (text+verify)": {
+    "prefix": "reqd",
+    "body": [
+      "requirement def ${1:ReqName} {",
+      "\tdoc ${2:\"Requirement text\"};",
+      "\tverify ${3:VerificationMethod};",
+      "\t$0",
+      "}"
+    ],
+    "description": "Define a requirement with text and verification placeholder"
+  },
+  "SysML: BDD skeleton": {
+    "prefix": "bdd",
+    "body": [
+      "package ${1:SystemModel} {",
+      "\tpart def ${2:System} {",
+      "\t\tpart ${3:subsystemA} : ${4:SubsystemA};",
+      "\t\tpart ${5:subsystemB} : ${6:SubsystemB};",
+      "\t}",
+      "",
+      "\tpart def ${4:SubsystemA} {",
+      "\t\t$0",
+      "\t}",
+      "",
+      "\tpart def ${6:SubsystemB} {",
+      "\t}",
+      "}"
+    ],
+    "description": "Create a block definition style package skeleton"
+  },
+  "SysML: IBD skeleton": {
+    "prefix": "ibd",
+    "body": [
+      "part ${1:system} : ${2:SystemType} {",
+      "\tpart ${3:a} : ${4:ComponentA};",
+      "\tpart ${5:b} : ${6:ComponentB};",
+      "\tport ${7:aOut} : ${8:SignalPort};",
+      "\tport ${9:bIn} : ${8:SignalPort};",
+      "\tconnect ${3:a}.${7:aOut} to ${5:b}.${9:bIn};",
+      "\t$0",
+      "}"
+    ],
+    "description": "Create an internal block style part structure"
   },
   "SysML: enum def": {
     "prefix": "enumdef",

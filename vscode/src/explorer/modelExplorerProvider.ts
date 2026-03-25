@@ -78,6 +78,7 @@ export class ModelTreeItem extends vscode.TreeItem {
     this.resourceUri = uri;
     this.contextValue =
       element.type === "package" ? "sysmlPackage" : "sysmlElement";
+    this.iconPath = iconForElementType(element.type);
 
     // Build label: name : Type [mult] when attributes available
     const partType = element.attributes?.partType as string | undefined;
@@ -102,6 +103,35 @@ export class ModelTreeItem extends vscode.TreeItem {
       title: "Open Location",
       arguments: [this],
     };
+  }
+}
+
+function iconForElementType(elementType: string): vscode.ThemeIcon {
+  switch (elementType) {
+    case "package":
+    case "namespace":
+      return new vscode.ThemeIcon("package");
+    case "part def":
+      return new vscode.ThemeIcon("symbol-class");
+    case "part":
+      return new vscode.ThemeIcon("symbol-object");
+    case "port def":
+    case "interface":
+      return new vscode.ThemeIcon("symbol-interface");
+    case "port":
+      return new vscode.ThemeIcon("plug");
+    case "attribute def":
+    case "attribute":
+      return new vscode.ThemeIcon("symbol-property");
+    case "action def":
+      return new vscode.ThemeIcon("symbol-method");
+    case "action":
+      return new vscode.ThemeIcon("run");
+    case "requirement":
+    case "requirement def":
+      return new vscode.ThemeIcon("checklist");
+    default:
+      return new vscode.ThemeIcon("symbol-misc");
   }
 }
 

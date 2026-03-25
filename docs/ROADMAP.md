@@ -66,10 +66,10 @@ A roadmap for evolving the sysml-language-server into a full-fledged professiona
 
 | ID | Item | Priority | Status |
 |----|------|----------|--------|
-| ux-1 | **Snippets** — Common SysML patterns (BDD, IBD, requirements, actions) | High | Planned |
-| ux-2 | **Breadcrumb navigation** — Package hierarchy path in editor | Medium | Planned |
-| ux-3 | **Outline icons** — Icons by element kind (part, port, action, etc.) | Low | Planned |
-| ux-4 | **Bracket pairs / indent guides** — Visual structure for braces | Low | Planned |
+| ux-1 | **Snippets** — Common SysML patterns (BDD, IBD, requirements, actions) | High | Done |
+| ux-2 | **Breadcrumb navigation** — Package hierarchy path in editor | Medium | Done |
+| ux-3 | **Outline icons** — Icons by element kind (part, port, action, etc.) | Low | Done |
+| ux-4 | **Bracket pairs / indent guides** — Visual structure for braces | Low | Done |
 
 ---
 

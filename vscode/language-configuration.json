@@ -14,5 +14,24 @@
     { "open": "(", "close": ")" },
     { "open": "\"", "close": "\"" },
     { "open": "'", "close": "'" }
+  ],
+  "indentationRules": {
+    "increaseIndentPattern": "^\\s*.*\\{\\s*$",
+    "decreaseIndentPattern": "^\\s*\\}"
+  },
+  "onEnterRules": [
+    {
+      "beforeText": "^\\s*.*\\{\\s*$",
+      "afterText": "^\\s*\\}\\s*$",
+      "action": {
+        "indentAction": "IndentOutdent"
+      }
+    },
+    {
+      "beforeText": "^\\s*.*\\{\\s*$",
+      "action": {
+        "indentAction": "Indent"
+      }
+    }
   ]
 }

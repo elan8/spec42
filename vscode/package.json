@@ -350,10 +350,22 @@
     },
     "configurationDefaults": {
       "[sysml]": {
-        "editor.semanticHighlighting.enabled": true
+        "editor.semanticHighlighting.enabled": true,
+        "editor.guides.indentation": true,
+        "editor.guides.bracketPairs": true,
+        "editor.bracketPairColorization.enabled": true,
+        "breadcrumbs.enabled": true,
+        "breadcrumbs.showModules": true,
+        "breadcrumbs.showNamespaces": true
       },
       "[kerml]": {
-        "editor.semanticHighlighting.enabled": true
+        "editor.semanticHighlighting.enabled": true,
+        "editor.guides.indentation": true,
+        "editor.guides.bracketPairs": true,
+        "editor.bracketPairColorization.enabled": true,
+        "breadcrumbs.enabled": true,
+        "breadcrumbs.showModules": true,
+        "breadcrumbs.showNamespaces": true
       }
     }
   },
