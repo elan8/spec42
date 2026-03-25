@@ -65,7 +65,11 @@ pub(crate) fn compute_layout(
         let elk_node_id = *node_ids
             .get(node.id.as_str())
             .ok_or_else(|| crate::layout::DiagramError::MissingNode(node.id.clone()))?;
-        for (index, port) in node.ports.iter().enumerate() {
+        // Deterministic port order is critical for stable ELK JSON ids (`p0`, `p1`, ...),
+        // which in turn makes Java-vs-Rust comparisons meaningful.
+        let mut ports = node.ports.iter().collect::<Vec<_>>();
+        ports.sort_by(|a, b| a.id.cmp(&b.id));
+        for (index, port) in ports.into_iter().enumerate() {
             let elk_port_id = elk_graph.add_port(
                 elk_node_id,
                 map_port_side(&port.side),
@@ -103,7 +107,10 @@ pub(crate) fn compute_layout(
         }
     }
 
-    for edge in &graph.edges {
+    // Deterministic edge order improves stable-id keyed debug output and repeatability.
+    let mut edges = graph.edges.iter().collect::<Vec<_>>();
+    edges.sort_by(|a, b| a.id.cmp(&b.id));
+    for edge in edges {
         let source = map_endpoint(
             edge.source_node.as_str(),
             edge.source_port.as_deref(),
@@ -185,9 +192,25 @@ pub(crate) fn compute_layout(
         warnings.extend(imported.warnings.warnings);
         (report, layout, warnings)
     } else {
+        if let Ok(path) = std::env::var("SPEC42_ELK_RUST_OPTIONS_OUT") {
+            if let Some(parent) = Path::new(&path).parent() {
+                let _ = fs::create_dir_all(parent);
+            }
+            let _ = fs::write(&path, format!("{options:#?}\n"));
+        }
         let report = LayeredLayoutEngine::new()
             .layout(&mut elk_graph, &options)
             .map_err(|error| crate::layout::DiagramError::LayoutFailure(error.to_string()))?;
+        // Optional snapshot: export the post-layout ELK JSON for elk-rust runs.
+        if let Ok(path) = std::env::var("SPEC42_ELK_RUST_JSON_OUT") {
+            if let Some(parent) = Path::new(&path).parent() {
+                let _ = fs::create_dir_all(parent);
+            }
+            let out_json = elk_graph_json::export_elk_graph_to_value(&elk_graph);
+            let pretty =
+                serde_json::to_string_pretty(&out_json).unwrap_or_else(|_| "{}".to_string());
+            let _ = fs::write(&path, pretty);
+        }
         let layout = map_layout_back(graph, &elk_graph, &node_ids, &port_ids, None)?;
         let warnings = collect_warnings(graph, &report);
         (report, layout, warnings)
@@ -571,23 +594,15 @@ fn apply_graph_hints(
 }
 
 fn map_direction(config: &LayoutConfig) -> ElkLayoutDirection {
-    let use_java = std::env::var("SPEC42_ELK_USE_JAVA")
-        .ok()
-        .as_deref()
-        .is_some_and(|value| value == "1" || value.eq_ignore_ascii_case("true"));
     match config.view_profile {
         LayoutViewProfile::GeneralView => ElkLayoutDirection::TopToBottom,
         // Interconnection views tend to get excessively wide with LTR layering due to dense
         // port-to-port connectors. Prefer TTB as a more stable default; auto-direction selection
         // can further refine this in the future.
         LayoutViewProfile::InterconnectionView => {
-            // Java baseline preference: left-to-right reduces top/bottom port usage and is often
-            // more readable for IBD interconnections.
-            if use_java {
-                ElkLayoutDirection::LeftToRight
-            } else {
-                ElkLayoutDirection::TopToBottom
-            }
+            // InterconnectionView primarily connects ports on left/right sides.
+            // Use Left-to-Right flow so routing matches authored port sides (Java baseline).
+            ElkLayoutDirection::LeftToRight
         }
         LayoutViewProfile::Default => match (&config.root_layer_direction, &config.layer_direction) {
             (LayerDirection::HorizontalRows, _) => ElkLayoutDirection::TopToBottom,

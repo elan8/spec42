@@ -1,0 +1,2026 @@
+{
+  "children": [
+    {
+      "children": [
+        {
+          "height": 100.0,
+          "id": "n2",
+          "layoutOptions": {
+            "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.airframe"
+          },
+          "width": 260.0,
+          "x": 140.0,
+          "y": 2507.047607421875
+        },
+        {
+          "height": 136.0,
+          "id": "n3",
+          "layoutOptions": {
+            "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload"
+          },
+          "ports": [
+            {
+              "height": 8.0,
+              "id": "p0",
+              "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
+                "elk.port.index": 0,
+                "org.eclipse.elk.port.borderOffset": -4.0,
+                "port.side": "WEST",
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.control"
+              },
+              "width": 8.0,
+              "x": -4.0,
+              "y": 98.0
+            },
+            {
+              "height": 8.0,
+              "id": "p1",
+              "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
+                "elk.port.index": 1,
+                "org.eclipse.elk.port.borderOffset": -4.0,
+                "port.side": "WEST",
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.pwr"
+              },
+              "width": 8.0,
+              "x": -4.0,
+              "y": 30.0
+            },
+            {
+              "height": 8.0,
+              "id": "p2",
+              "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
+                "elk.port.index": 2,
+                "org.eclipse.elk.port.borderOffset": -4.0,
+                "port.side": "EAST",
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.videoOut"
+              },
+              "width": 8.0,
+              "x": 256.0,
+              "y": 64.0
+            }
+          ],
+          "width": 260.0,
+          "x": 3620.0,
+          "y": 353.71429443359375
+        },
+        {
+          "height": 148.0,
+          "id": "n4",
+          "layoutOptions": {
+            "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.communication"
+          },
+          "ports": [
+            {
+              "height": 8.0,
+              "id": "p3",
+              "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
+                "elk.port.index": 0,
+                "org.eclipse.elk.port.borderOffset": -4.0,
+                "port.side": "WEST",
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.communication.c2In"
+              },
+              "width": 8.0,
+              "x": -4.0,
+              "y": 122.85714721679688
+            },
+            {
+              "height": 8.0,
+              "id": "p4",
+              "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
+                "elk.port.index": 1,
+                "org.eclipse.elk.port.borderOffset": -4.0,
+                "port.side": "WEST",
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.communication.pwr"
+              },
+              "width": 8.0,
+              "x": -4.0,
+              "y": 101.71428680419922
+            },
+            {
+              "height": 8.0,
+              "id": "p5",
+              "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
+                "elk.port.index": 2,
+                "org.eclipse.elk.port.borderOffset": -4.0,
+                "port.side": "WEST",
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.communication.telemetryIn"
+              },
+              "width": 8.0,
+              "x": -4.0,
+              "y": 59.42857360839844
+            },
+            {
+              "height": 8.0,
+              "id": "p6",
+              "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
+                "elk.port.index": 3,
+                "org.eclipse.elk.port.borderOffset": -4.0,
+                "port.side": "WEST",
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.communication.videoIn"
+              },
+              "width": 8.0,
+              "x": -4.0,
+              "y": 17.142858505249023
+            }
+          ],
+          "width": 260.0,
+          "x": 3984.0,
+          "y": 140.0
+        },
+        {
+          "children": [
+            {
+              "height": 124.0,
+              "id": "n9",
+              "layoutOptions": {
+                "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.barometer"
+              },
+              "ports": [
+                {
+                  "height": 8.0,
+                  "id": "p10",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "EAST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.barometer.altitudeOut"
+                  },
+                  "width": 8.0,
+                  "x": 256.0,
+                  "y": 58.0
+                },
+                {
+                  "height": 8.0,
+                  "id": "p11",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "WEST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.barometer.pwr"
+                  },
+                  "width": 8.0,
+                  "x": -4.0,
+                  "y": 58.0
+                }
+              ],
+              "width": 260.0,
+              "x": 140.0,
+              "y": 540.0
+            },
+            {
+              "height": 172.0,
+              "id": "n10",
+              "layoutOptions": {
+                "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController"
+              },
+              "ports": [
+                {
+                  "height": 8.0,
+                  "id": "p12",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "WEST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.gimbalCmd"
+                  },
+                  "width": 8.0,
+                  "x": -4.0,
+                  "y": 30.400001525878906
+                },
+                {
+                  "height": 8.0,
+                  "id": "p13",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "EAST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd"
+                  },
+                  "width": 8.0,
+                  "x": 256.0,
+                  "y": 53.333335876464844
+                },
+                {
+                  "height": 8.0,
+                  "id": "p14",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 2,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "WEST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.pwr"
+                  },
+                  "width": 8.0,
+                  "x": -4.0,
+                  "y": 64.80000305175781
+                },
+                {
+                  "height": 8.0,
+                  "id": "p15",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 3,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "WEST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.rcIn"
+                  },
+                  "width": 8.0,
+                  "x": -4.0,
+                  "y": 133.60000610351562
+                },
+                {
+                  "height": 8.0,
+                  "id": "p16",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 4,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "WEST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.sensorIn"
+                  },
+                  "width": 8.0,
+                  "x": -4.0,
+                  "y": 99.20000457763672
+                },
+                {
+                  "height": 8.0,
+                  "id": "p17",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 5,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "EAST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.telemetryOut"
+                  },
+                  "width": 8.0,
+                  "x": 256.0,
+                  "y": 110.66667175292969
+                }
+              ],
+              "width": 260.0,
+              "x": 488.0,
+              "y": 191.60000610351562
+            },
+            {
+              "height": 124.0,
+              "id": "n11",
+              "layoutOptions": {
+                "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.gnss"
+              },
+              "ports": [
+                {
+                  "height": 8.0,
+                  "id": "p18",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "EAST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.gnss.positionOut"
+                  },
+                  "width": 8.0,
+                  "x": 256.0,
+                  "y": 58.0
+                },
+                {
+                  "height": 8.0,
+                  "id": "p19",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "WEST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.gnss.pwr"
+                  },
+                  "width": 8.0,
+                  "x": -4.0,
+                  "y": 58.0
+                }
+              ],
+              "width": 260.0,
+              "x": 140.0,
+              "y": 796.0
+            },
+            {
+              "height": 124.0,
+              "id": "n12",
+              "layoutOptions": {
+                "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.imu"
+              },
+              "ports": [
+                {
+                  "height": 8.0,
+                  "id": "p20",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "EAST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.imu.dataOut"
+                  },
+                  "width": 8.0,
+                  "x": 256.0,
+                  "y": 58.0
+                },
+                {
+                  "height": 8.0,
+                  "id": "p21",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "WEST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.imu.pwr"
+                  },
+                  "width": 8.0,
+                  "x": -4.0,
+                  "y": 58.0
+                }
+              ],
+              "width": 260.0,
+              "x": 140.0,
+              "y": 1052.0
+            }
+          ],
+          "height": 1316.0,
+          "id": "n5",
+          "layoutOptions": {
+            "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl"
+          },
+          "width": 1056.0,
+          "x": 1524.0,
+          "y": 769.0476684570312
+        },
+        {
+          "height": 136.0,
+          "id": "n6",
+          "layoutOptions": {
+            "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal"
+          },
+          "ports": [
+            {
+              "height": 8.0,
+              "id": "p7",
+              "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
+                "elk.port.index": 0,
+                "org.eclipse.elk.port.borderOffset": -4.0,
+                "port.side": "EAST",
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cameraCtrl"
+              },
+              "width": 8.0,
+              "x": 256.0,
+              "y": 64.0
+            },
+            {
+              "height": 8.0,
+              "id": "p8",
+              "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
+                "elk.port.index": 1,
+                "org.eclipse.elk.port.borderOffset": -4.0,
+                "port.side": "WEST",
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cmd"
+              },
+              "width": 8.0,
+              "x": -4.0,
+              "y": 77.60000610351562
+            },
+            {
+              "height": 8.0,
+              "id": "p9",
+              "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
+                "elk.port.index": 2,
+                "org.eclipse.elk.port.borderOffset": -4.0,
+                "port.side": "WEST",
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.pwr"
+              },
+              "width": 8.0,
+              "x": -4.0,
+              "y": 23.200000762939453
+            }
+          ],
+          "width": 260.0,
+          "x": 2880.0,
+          "y": 319.71429443359375
+        },
+        {
+          "children": [
+            {
+              "height": 112.0,
+              "id": "n13",
+              "layoutOptions": {
+                "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.power.battery"
+              },
+              "ports": [
+                {
+                  "height": 8.0,
+                  "id": "p22",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "EAST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.power.battery.pwrOut"
+                  },
+                  "width": 8.0,
+                  "x": 256.0,
+                  "y": 52.0
+                }
+              ],
+              "width": 260.0,
+              "x": 140.0,
+              "y": 277.33331298828125
+            },
+            {
+              "height": 136.0,
+              "id": "n14",
+              "layoutOptions": {
+                "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution"
+              },
+              "ports": [
+                {
+                  "height": 8.0,
+                  "id": "p23",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "WEST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.mainPower"
+                  },
+                  "width": 8.0,
+                  "x": -4.0,
+                  "y": 64.0
+                },
+                {
+                  "height": 8.0,
+                  "id": "p24",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "EAST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated12V"
+                  },
+                  "width": 8.0,
+                  "x": 256.0,
+                  "y": 41.333335876464844
+                },
+                {
+                  "height": 8.0,
+                  "id": "p25",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 2,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "EAST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V"
+                  },
+                  "width": 8.0,
+                  "x": 256.0,
+                  "y": 86.66667175292969
+                }
+              ],
+              "width": 260.0,
+              "x": 488.0,
+              "y": 277.33331298828125
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1",
+              "layoutOptions": {
+                "elk.edge.bundle": 1021299741,
+                "spec42.edge_id": "ibd-edge-11"
+              },
+              "sections": [
+                {
+                  "bendPoints": [
+                    {
+                      "x": 724.0,
+                      "y": 1242.3809814453125
+                    },
+                    {
+                      "x": 724.0,
+                      "y": 1254.3809814453125
+                    }
+                  ],
+                  "endPoint": {
+                    "x": 768.0,
+                    "y": 1254.3809814453125
+                  },
+                  "startPoint": {
+                    "x": 680.0,
+                    "y": 1242.3809814453125
+                  }
+                }
+              ],
+              "sources": [
+                "p22"
+              ],
+              "targets": [
+                "p23"
+              ]
+            }
+          ],
+          "height": 696.0,
+          "id": "n7",
+          "layoutOptions": {
+            "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.power"
+          },
+          "width": 1140.0,
+          "x": 140.0,
+          "y": 769.0476684570312
+        },
+        {
+          "children": [
+            {
+              "height": 124.0,
+              "id": "n15",
+              "layoutOptions": {
+                "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit1"
+              },
+              "ports": [
+                {
+                  "height": 8.0,
+                  "id": "p26",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "EAST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit1.cmd"
+                  },
+                  "width": 8.0,
+                  "x": 256.0,
+                  "y": 58.0
+                },
+                {
+                  "height": 8.0,
+                  "id": "p27",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "WEST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit1.pwr"
+                  },
+                  "width": 8.0,
+                  "x": -4.0,
+                  "y": 58.0
+                }
+              ],
+              "width": 260.0,
+              "x": 236.0,
+              "y": 140.0
+            },
+            {
+              "height": 124.0,
+              "id": "n16",
+              "layoutOptions": {
+                "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit2"
+              },
+              "ports": [
+                {
+                  "height": 8.0,
+                  "id": "p28",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "EAST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit2.cmd"
+                  },
+                  "width": 8.0,
+                  "x": 256.0,
+                  "y": 58.0
+                },
+                {
+                  "height": 8.0,
+                  "id": "p29",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "WEST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit2.pwr"
+                  },
+                  "width": 8.0,
+                  "x": -4.0,
+                  "y": 58.0
+                }
+              ],
+              "width": 260.0,
+              "x": 236.0,
+              "y": 396.0
+            },
+            {
+              "height": 124.0,
+              "id": "n17",
+              "layoutOptions": {
+                "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit3"
+              },
+              "ports": [
+                {
+                  "height": 8.0,
+                  "id": "p30",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "EAST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit3.cmd"
+                  },
+                  "width": 8.0,
+                  "x": 256.0,
+                  "y": 58.0
+                },
+                {
+                  "height": 8.0,
+                  "id": "p31",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "WEST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit3.pwr"
+                  },
+                  "width": 8.0,
+                  "x": -4.0,
+                  "y": 58.0
+                }
+              ],
+              "width": 260.0,
+              "x": 236.0,
+              "y": 652.0
+            },
+            {
+              "height": 124.0,
+              "id": "n18",
+              "layoutOptions": {
+                "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit4"
+              },
+              "ports": [
+                {
+                  "height": 8.0,
+                  "id": "p32",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "EAST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit4.cmd"
+                  },
+                  "width": 8.0,
+                  "x": 256.0,
+                  "y": 58.0
+                },
+                {
+                  "height": 8.0,
+                  "id": "p33",
+                  "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
+                    "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
+                    "port.side": "WEST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit4.pwr"
+                  },
+                  "width": 8.0,
+                  "x": -4.0,
+                  "y": 58.0
+                }
+              ],
+              "width": 260.0,
+              "x": 236.0,
+              "y": 908.0
+            }
+          ],
+          "height": 1172.0,
+          "id": "n8",
+          "layoutOptions": {
+            "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion"
+          },
+          "width": 636.0,
+          "x": 2880.0,
+          "y": 573.7142944335938
+        }
+      ],
+      "edges": [
+        {
+          "id": "e0",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-10"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 2428.0,
+                  "y": 1215.3143310546875
+                },
+                {
+                  "x": 2428.0,
+                  "y": 1268.647705078125
+                },
+                {
+                  "x": 2512.75,
+                  "y": 1268.647705078125
+                },
+                {
+                  "x": 2512.75,
+                  "y": 1215.3143310546875
+                },
+                {
+                  "x": 2716.0,
+                  "y": 1211.3143310546875
+                },
+                {
+                  "x": 2716.0,
+                  "y": 1215.3143310546875
+                },
+                {
+                  "x": 2712.0,
+                  "y": 1215.3143310546875
+                },
+                {
+                  "x": 3032.0,
+                  "y": 780.8809814453125
+                },
+                {
+                  "x": 3032.0,
+                  "y": 323.71429443359375
+                },
+                {
+                  "x": 4010.0,
+                  "y": 323.71429443359375
+                },
+                {
+                  "x": 4010.0,
+                  "y": 385.71429443359375
+                },
+                {
+                  "x": 4108.0,
+                  "y": 385.71429443359375
+                },
+                {
+                  "x": 4108.0,
+                  "y": 343.4285888671875
+                }
+              ],
+              "endPoint": {
+                "x": 4124.0,
+                "y": 343.4285888671875
+              },
+              "startPoint": {
+                "x": 2412.0,
+                "y": 1215.3143310546875
+              }
+            }
+          ],
+          "sources": [
+            "p17"
+          ],
+          "targets": [
+            "p5"
+          ]
+        },
+        {
+          "id": "e2",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-12"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 1044.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1044.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1164.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1164.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1273.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1640.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1640.0,
+                  "y": 1169.44775390625
+                },
+                {
+                  "x": 1668.0,
+                  "y": 1169.44775390625
+                },
+                {
+                  "x": 1668.0,
+                  "y": 1165.44775390625
+                },
+                {
+                  "x": 1660.0,
+                  "y": 1165.44775390625
+                },
+                {
+                  "x": 1961.25,
+                  "y": 1169.44775390625
+                },
+                {
+                  "x": 1961.25,
+                  "y": 1268.647705078125
+                },
+                {
+                  "x": 2136.0,
+                  "y": 1268.647705078125
+                },
+                {
+                  "x": 2136.0,
+                  "y": 1169.44775390625
+                }
+              ],
+              "endPoint": {
+                "x": 2152.0,
+                "y": 1169.44775390625
+              },
+              "startPoint": {
+                "x": 1028.0,
+                "y": 1277.047607421875
+              }
+            }
+          ],
+          "sources": [
+            "p25"
+          ],
+          "targets": [
+            "p14"
+          ]
+        },
+        {
+          "id": "e3",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-13"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 1044.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1044.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1212.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1212.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1273.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1412.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1676.0,
+                  "y": 967.1809692382812
+                },
+                {
+                  "x": 1676.0,
+                  "y": 485.3143005371094
+                },
+                {
+                  "x": 2382.0,
+                  "y": 485.3143005371094
+                },
+                {
+                  "x": 2382.0,
+                  "y": 568.5142822265625
+                },
+                {
+                  "x": 3004.0,
+                  "y": 568.5142822265625
+                },
+                {
+                  "x": 3004.0,
+                  "y": 486.914306640625
+                }
+              ],
+              "endPoint": {
+                "x": 3020.0,
+                "y": 486.914306640625
+              },
+              "startPoint": {
+                "x": 1028.0,
+                "y": 1277.047607421875
+              }
+            }
+          ],
+          "sources": [
+            "p25"
+          ],
+          "targets": [
+            "p9"
+          ]
+        },
+        {
+          "id": "e4",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-14"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 1044.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1044.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1260.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1260.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1273.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1412.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1676.0,
+                  "y": 1098.3809814453125
+                },
+                {
+                  "x": 1676.0,
+                  "y": 651.7142944335938
+                },
+                {
+                  "x": 3402.0,
+                  "y": 651.7142944335938
+                },
+                {
+                  "x": 3402.0,
+                  "y": 595.7142944335938
+                },
+                {
+                  "x": 3744.0,
+                  "y": 595.7142944335938
+                },
+                {
+                  "x": 3744.0,
+                  "y": 527.7142944335938
+                }
+              ],
+              "endPoint": {
+                "x": 3760.0,
+                "y": 527.7142944335938
+              },
+              "startPoint": {
+                "x": 1028.0,
+                "y": 1277.047607421875
+              }
+            }
+          ],
+          "sources": [
+            "p25"
+          ],
+          "targets": [
+            "p1"
+          ]
+        },
+        {
+          "id": "e5",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-15"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 1044.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1044.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1288.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1288.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1273.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1412.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1676.0,
+                  "y": 827.3809814453125
+                },
+                {
+                  "x": 1676.0,
+                  "y": 397.71429443359375
+                },
+                {
+                  "x": 3954.0,
+                  "y": 397.71429443359375
+                },
+                {
+                  "x": 3954.0,
+                  "y": 364.5714416503906
+                },
+                {
+                  "x": 4108.0,
+                  "y": 364.5714416503906
+                },
+                {
+                  "x": 4108.0,
+                  "y": 385.71429443359375
+                }
+              ],
+              "endPoint": {
+                "x": 4124.0,
+                "y": 385.71429443359375
+              },
+              "startPoint": {
+                "x": 1028.0,
+                "y": 1277.047607421875
+              }
+            }
+          ],
+          "sources": [
+            "p25"
+          ],
+          "targets": [
+            "p4"
+          ]
+        },
+        {
+          "id": "e6",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-16"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 1044.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1044.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1288.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1288.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1273.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1412.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1676.0,
+                  "y": 1889.047607421875
+                },
+                {
+                  "x": 1676.0,
+                  "y": 2281.047607421875
+                },
+                {
+                  "x": 2410.0,
+                  "y": 2281.047607421875
+                },
+                {
+                  "x": 2410.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3016.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3198.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3198.0,
+                  "y": 973.7142944335938
+                },
+                {
+                  "x": 3240.0,
+                  "y": 973.7142944335938
+                },
+                {
+                  "x": 3240.0,
+                  "y": 915.7142944335938
+                }
+              ],
+              "endPoint": {
+                "x": 3256.0,
+                "y": 915.7142944335938
+              },
+              "startPoint": {
+                "x": 1028.0,
+                "y": 1277.047607421875
+              }
+            }
+          ],
+          "sources": [
+            "p25"
+          ],
+          "targets": [
+            "p27"
+          ]
+        },
+        {
+          "id": "e7",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-17"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 1044.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1044.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1284.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1284.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1273.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1412.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1676.0,
+                  "y": 1878.047607421875
+                },
+                {
+                  "x": 1676.0,
+                  "y": 2355.047607421875
+                },
+                {
+                  "x": 2438.0,
+                  "y": 2355.047607421875
+                },
+                {
+                  "x": 2438.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3016.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3198.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3198.0,
+                  "y": 1229.71435546875
+                },
+                {
+                  "x": 3240.0,
+                  "y": 1229.71435546875
+                },
+                {
+                  "x": 3240.0,
+                  "y": 1171.71435546875
+                }
+              ],
+              "endPoint": {
+                "x": 3256.0,
+                "y": 1171.71435546875
+              },
+              "startPoint": {
+                "x": 1028.0,
+                "y": 1277.047607421875
+              }
+            }
+          ],
+          "sources": [
+            "p25"
+          ],
+          "targets": [
+            "p29"
+          ]
+        },
+        {
+          "id": "e8",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-18"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 1044.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1044.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1236.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1236.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1273.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1412.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1676.0,
+                  "y": 1891.047607421875
+                },
+                {
+                  "x": 1676.0,
+                  "y": 2429.047607421875
+                },
+                {
+                  "x": 2466.0,
+                  "y": 2429.047607421875
+                },
+                {
+                  "x": 2466.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3016.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3198.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3198.0,
+                  "y": 1485.71435546875
+                },
+                {
+                  "x": 3240.0,
+                  "y": 1485.71435546875
+                },
+                {
+                  "x": 3240.0,
+                  "y": 1427.71435546875
+                }
+              ],
+              "endPoint": {
+                "x": 3256.0,
+                "y": 1427.71435546875
+              },
+              "startPoint": {
+                "x": 1028.0,
+                "y": 1277.047607421875
+              }
+            }
+          ],
+          "sources": [
+            "p25"
+          ],
+          "targets": [
+            "p31"
+          ]
+        },
+        {
+          "id": "e9",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-19"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 1044.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1044.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1188.0,
+                  "y": 1318.3809814453125
+                },
+                {
+                  "x": 1188.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1273.047607421875
+                },
+                {
+                  "x": 1416.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1412.0,
+                  "y": 1277.047607421875
+                },
+                {
+                  "x": 1676.0,
+                  "y": 1904.047607421875
+                },
+                {
+                  "x": 1676.0,
+                  "y": 2019.71435546875
+                },
+                {
+                  "x": 3028.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3016.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3198.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3198.0,
+                  "y": 1741.71435546875
+                },
+                {
+                  "x": 3240.0,
+                  "y": 1741.71435546875
+                },
+                {
+                  "x": 3240.0,
+                  "y": 1683.71435546875
+                }
+              ],
+              "endPoint": {
+                "x": 3256.0,
+                "y": 1683.71435546875
+              },
+              "startPoint": {
+                "x": 1028.0,
+                "y": 1277.047607421875
+              }
+            }
+          ],
+          "sources": [
+            "p25"
+          ],
+          "targets": [
+            "p33"
+          ]
+        },
+        {
+          "id": "e10",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-3"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 2428.0,
+                  "y": 1157.9810791015625
+                },
+                {
+                  "x": 2428.0,
+                  "y": 1268.647705078125
+                },
+                {
+                  "x": 2584.75,
+                  "y": 1268.647705078125
+                },
+                {
+                  "x": 2584.75,
+                  "y": 1157.98095703125
+                },
+                {
+                  "x": 2716.0,
+                  "y": 1153.98095703125
+                },
+                {
+                  "x": 2716.0,
+                  "y": 1157.98095703125
+                },
+                {
+                  "x": 2996.0,
+                  "y": 1157.98095703125
+                },
+                {
+                  "x": 2996.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3016.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3232.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3232.0,
+                  "y": 973.7142944335938
+                },
+                {
+                  "x": 3532.0,
+                  "y": 973.7142944335938
+                },
+                {
+                  "x": 3532.0,
+                  "y": 915.7142944335938
+                }
+              ],
+              "endPoint": {
+                "x": 3516.0,
+                "y": 915.7142944335938
+              },
+              "startPoint": {
+                "x": 2412.0,
+                "y": 1157.9810791015625
+              }
+            }
+          ],
+          "sources": [
+            "p13"
+          ],
+          "targets": [
+            "p26"
+          ]
+        },
+        {
+          "id": "e11",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-4"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 2428.0,
+                  "y": 1157.9810791015625
+                },
+                {
+                  "x": 2428.0,
+                  "y": 1268.647705078125
+                },
+                {
+                  "x": 2588.0,
+                  "y": 1268.647705078125
+                },
+                {
+                  "x": 2588.0,
+                  "y": 1157.98095703125
+                },
+                {
+                  "x": 2716.0,
+                  "y": 1153.98095703125
+                },
+                {
+                  "x": 2716.0,
+                  "y": 1157.98095703125
+                },
+                {
+                  "x": 2996.0,
+                  "y": 1157.98095703125
+                },
+                {
+                  "x": 2996.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3016.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3232.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3232.0,
+                  "y": 1229.71435546875
+                },
+                {
+                  "x": 3532.0,
+                  "y": 1229.71435546875
+                },
+                {
+                  "x": 3532.0,
+                  "y": 1171.71435546875
+                }
+              ],
+              "endPoint": {
+                "x": 3516.0,
+                "y": 1171.71435546875
+              },
+              "startPoint": {
+                "x": 2412.0,
+                "y": 1157.9810791015625
+              }
+            }
+          ],
+          "sources": [
+            "p13"
+          ],
+          "targets": [
+            "p28"
+          ]
+        },
+        {
+          "id": "e12",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-5"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 2428.0,
+                  "y": 1157.9810791015625
+                },
+                {
+                  "x": 2428.0,
+                  "y": 1268.647705078125
+                },
+                {
+                  "x": 2560.75,
+                  "y": 1268.647705078125
+                },
+                {
+                  "x": 2560.75,
+                  "y": 1157.98095703125
+                },
+                {
+                  "x": 2716.0,
+                  "y": 1153.98095703125
+                },
+                {
+                  "x": 2716.0,
+                  "y": 1157.98095703125
+                },
+                {
+                  "x": 2996.0,
+                  "y": 1157.98095703125
+                },
+                {
+                  "x": 2996.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3016.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3232.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3232.0,
+                  "y": 1485.71435546875
+                },
+                {
+                  "x": 3532.0,
+                  "y": 1485.71435546875
+                },
+                {
+                  "x": 3532.0,
+                  "y": 1427.71435546875
+                }
+              ],
+              "endPoint": {
+                "x": 3516.0,
+                "y": 1427.71435546875
+              },
+              "startPoint": {
+                "x": 2412.0,
+                "y": 1157.9810791015625
+              }
+            }
+          ],
+          "sources": [
+            "p13"
+          ],
+          "targets": [
+            "p30"
+          ]
+        },
+        {
+          "id": "e13",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-6"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 2428.0,
+                  "y": 1157.9810791015625
+                },
+                {
+                  "x": 2428.0,
+                  "y": 1268.647705078125
+                },
+                {
+                  "x": 2536.75,
+                  "y": 1268.647705078125
+                },
+                {
+                  "x": 2536.75,
+                  "y": 1157.98095703125
+                },
+                {
+                  "x": 2716.0,
+                  "y": 1153.98095703125
+                },
+                {
+                  "x": 2716.0,
+                  "y": 1157.98095703125
+                },
+                {
+                  "x": 2996.0,
+                  "y": 1157.98095703125
+                },
+                {
+                  "x": 2996.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3024.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3016.0,
+                  "y": 1295.71435546875
+                },
+                {
+                  "x": 3232.0,
+                  "y": 1299.71435546875
+                },
+                {
+                  "x": 3232.0,
+                  "y": 1741.71435546875
+                },
+                {
+                  "x": 3532.0,
+                  "y": 1741.71435546875
+                },
+                {
+                  "x": 3532.0,
+                  "y": 1683.71435546875
+                }
+              ],
+              "endPoint": {
+                "x": 3516.0,
+                "y": 1683.71435546875
+              },
+              "startPoint": {
+                "x": 2412.0,
+                "y": 1157.9810791015625
+              }
+            }
+          ],
+          "sources": [
+            "p13"
+          ],
+          "targets": [
+            "p32"
+          ]
+        },
+        {
+          "id": "e14",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-7"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 2136.0,
+                  "y": 1135.0477294921875
+                },
+                {
+                  "x": 2136.0,
+                  "y": 1268.647705078125
+                },
+                {
+                  "x": 2492.0,
+                  "y": 1268.647705078125
+                },
+                {
+                  "x": 2492.0,
+                  "y": 1135.0477294921875
+                },
+                {
+                  "x": 2716.0,
+                  "y": 1131.0477294921875
+                },
+                {
+                  "x": 2716.0,
+                  "y": 1135.0477294921875
+                },
+                {
+                  "x": 2898.0,
+                  "y": 1135.0477294921875
+                },
+                {
+                  "x": 2898.0,
+                  "y": 541.3143310546875
+                }
+              ],
+              "endPoint": {
+                "x": 3020.0,
+                "y": 541.3143310546875
+              },
+              "startPoint": {
+                "x": 2152.0,
+                "y": 1135.0477294921875
+              }
+            }
+          ],
+          "sources": [
+            "p12"
+          ],
+          "targets": [
+            "p8"
+          ]
+        },
+        {
+          "id": "e15",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-8"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 3576.0,
+                  "y": 527.7142944335938
+                },
+                {
+                  "x": 3576.0,
+                  "y": 561.7142944335938
+                },
+                {
+                  "x": 3744.0,
+                  "y": 561.7142944335938
+                },
+                {
+                  "x": 3744.0,
+                  "y": 595.7142944335938
+                }
+              ],
+              "endPoint": {
+                "x": 3760.0,
+                "y": 595.7142944335938
+              },
+              "startPoint": {
+                "x": 3280.0,
+                "y": 527.7142944335938
+              }
+            }
+          ],
+          "sources": [
+            "p7"
+          ],
+          "targets": [
+            "p0"
+          ]
+        },
+        {
+          "id": "e16",
+          "layoutOptions": {
+            "elk.edge.bundle": 1021299741,
+            "spec42.edge_id": "ibd-edge-9"
+          },
+          "sections": [
+            {
+              "bendPoints": [
+                {
+                  "x": 4100.0,
+                  "y": 561.7142944335938
+                },
+                {
+                  "x": 4100.0,
+                  "y": 406.8571472167969
+                },
+                {
+                  "x": 4108.0,
+                  "y": 406.8571472167969
+                },
+                {
+                  "x": 4108.0,
+                  "y": 301.1428527832031
+                }
+              ],
+              "endPoint": {
+                "x": 4124.0,
+                "y": 301.1428527832031
+              },
+              "startPoint": {
+                "x": 4020.0,
+                "y": 561.7142944335938
+              }
+            }
+          ],
+          "sources": [
+            "p2"
+          ],
+          "targets": [
+            "p6"
+          ]
+        }
+      ],
+      "height": 2747.047607421875,
+      "id": "n1",
+      "layoutOptions": {
+        "spec42.node_id": "SurveillanceDrone.SurveillanceQuadrotorDrone"
+      },
+      "width": 4384.0,
+      "x": 140.0,
+      "y": 140.0
+    }
+  ],
+  "height": 3071.047607421875,
+  "id": "root",
+  "width": 4664.0,
+  "x": 0.0,
+  "y": 0.0
+}

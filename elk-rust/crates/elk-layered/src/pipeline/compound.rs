@@ -643,6 +643,7 @@ pub fn postprocess_cross_hierarchy_edges(
 ) {
     let debug_enabled = std::env::var_os("SPEC42_ELK_DEBUG").is_some();
     let mut temporary_segment_edges = BTreeSet::new();
+    let mut temporary_segment_containers = BTreeSet::new();
     for edge_id in map.original_edge_ids() {
         let Some(record) = map.original_record(edge_id).copied() else {
             continue;
@@ -651,6 +652,7 @@ pub fn postprocess_cross_hierarchy_edges(
         for segment in &sorted_segments {
             if segment.segment_edge != edge_id {
                 temporary_segment_edges.insert(segment.segment_edge);
+                temporary_segment_containers.insert(segment.container);
             }
         }
         let Some(points) = concat_cross_hierarchy_segments_java_style(graph, map, graph.root, edge_id, &record)
@@ -710,6 +712,18 @@ pub fn postprocess_cross_hierarchy_edges(
         edge.targets.clear();
         edge.sections.clear();
         edge.labels.clear();
+    }
+
+    // Java's `CompoundGraphPostprocessor` removes dummy edges from the graph (it nulls source/target;
+    // in ELK JSON they effectively disappear because they are not considered part of the containing node's edge list).
+    // To keep the exported ELK JSON comparable (and avoid huge edge-count inflation), we remove them
+    // from their containing nodes' `edges` lists as well.
+    for container in temporary_segment_containers {
+        let node = &mut graph.nodes[container.index()];
+        node.edges.retain(|edge_id| {
+            let e = &graph.edges[edge_id.index()];
+            !(e.sources.is_empty() || e.targets.is_empty())
+        });
     }
 }
 

@@ -57,26 +57,20 @@ pub fn render(ibd: &IbdInput) -> Result<RenderedDiagram> {
         .filter_map(|(index, connector)| connector_edge(index, connector, &valid_ids))
         .collect();
 
-    let use_java = std::env::var("SPEC42_ELK_USE_JAVA")
-        .ok()
-        .as_deref()
-        .is_some_and(|value| value == "1" || value.eq_ignore_ascii_case("true"));
-
     let mut layout_config = LayoutConfig {
         view_profile: LayoutViewProfile::InterconnectionView,
         ..LayoutConfig::default()
     };
-    if use_java {
-        // Java baseline readability tuning: prefer extra whitespace over collisions.
-        layout_config.node_gap_x = 96.0;
-        layout_config.node_gap_y = 96.0;
-        layout_config.container_padding = 40.0;
-        layout_config.container_header_height = 44.0;
-        layout_config.top_padding = 64.0;
-        layout_config.root_gap_x = 140.0;
-        layout_config.root_gap_y = 140.0;
-        layout_config.max_children_per_row = 2;
-    }
+    // Baseline readability tuning: prefer extra whitespace over collisions.
+    // Keep this consistent across Java and elk-rust backends so SVG snapshots are comparable.
+    layout_config.node_gap_x = 96.0;
+    layout_config.node_gap_y = 96.0;
+    layout_config.container_padding = 40.0;
+    layout_config.container_header_height = 44.0;
+    layout_config.top_padding = 64.0;
+    layout_config.root_gap_x = 140.0;
+    layout_config.root_gap_y = 140.0;
+    layout_config.max_children_per_row = 2;
 
     build_rendered_diagram_with_config(
         DiagramGraph {

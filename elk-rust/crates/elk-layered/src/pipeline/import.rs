@@ -24,14 +24,11 @@ pub(crate) fn import_graph(
         let node_layout = decode_layout_from_props(&node.properties);
         let node_options = node_layout.inherit_from(&graph_defaults);
         let label_size = combined_label_size(graph, &node.labels);
-        let port_label_size = combined_port_label_size(graph, &node.ports);
-        let size = Size::new(
-            node.geometry
-                .width
-                .max(label_size.width)
-                .max(port_label_size.width),
-            node.geometry.height + label_size.height + port_label_size.height,
-        );
+        let _port_label_size = combined_port_label_size(graph, &node.ports);
+        // Java layered only grows nodes when nodeSize constraints request it; for the SysML
+        // InterconnectionView baseline we keep node geometry as-is and place labels/port-labels
+        // outside the node during rendering/post-processing.
+        let size = Size::new(node.geometry.width, node.geometry.height);
         let ports = node
             .ports
             .iter()

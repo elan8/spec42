@@ -1127,21 +1127,36 @@ fn layout_ports(graph: &mut ElkGraph, node_id: NodeId, options: &LayoutOptions) 
                 graph.ports[port_id.index()].geometry.width,
                 graph.ports[port_id.index()].geometry.height,
             );
+            let border_offset = {
+                let props = &graph.ports[port_id.index()].properties;
+                let k_org: elk_graph::PropertyKey = "org.eclipse.elk.port.borderOffset".into();
+                let k_elk: elk_graph::PropertyKey = "elk.port.borderOffset".into();
+                props
+                    .get(&k_org)
+                    .or_else(|| props.get(&k_elk))
+                    .and_then(|v| match v {
+                        elk_graph::PropertyValue::Float(f) => Some(*f as f32),
+                        elk_graph::PropertyValue::Int(i) => Some(*i as f32),
+                        elk_graph::PropertyValue::String(s) => s.parse::<f32>().ok(),
+                        _ => None,
+                    })
+                    .unwrap_or(0.0f32)
+            };
             let origin = match side {
                 PortSide::North => Point::new(
                     node_width * fraction - size.width / 2.0,
-                    -size.height,
+                    border_offset,
                 ),
                 PortSide::South => Point::new(
                     node_width * fraction - size.width / 2.0,
-                    node_height,
+                    node_height - size.height - border_offset,
                 ),
                 PortSide::East => Point::new(
-                    node_width,
+                    node_width - size.width - border_offset,
                     node_height * fraction - size.height / 2.0,
                 ),
                 PortSide::West => Point::new(
-                    -size.width,
+                    border_offset,
                     node_height * fraction - size.height / 2.0,
                 ),
             };
@@ -1282,7 +1297,8 @@ fn build_orthogonal_route_path(
             options,
         );
         if points.len() >= 2 {
-            return Ok(points);
+            let points = force_orthogonal_polyline(points, options.layered.direction);
+            return Ok(simplify_orthogonal_points(points));
         }
     }
 
@@ -1346,7 +1362,7 @@ fn build_orthogonal_route_path(
         .chain(std::iter::once(route_end))
         .collect::<Vec<_>>();
 
-    sanitize_orthogonal_path(
+    let points = sanitize_orthogonal_path(
         route_points,
         start,
         end,
@@ -1356,6 +1372,43 @@ fn build_orthogonal_route_path(
         route_end,
     )
     .map_err(LayoutError::Routing)
+    ?;
+    let points = force_orthogonal_polyline(points, options.layered.direction);
+    Ok(simplify_orthogonal_points(points))
+}
+
+fn force_orthogonal_polyline(mut points: Vec<Point>, direction: elk_core::LayoutDirection) -> Vec<Point> {
+    const EPS: f32 = 1e-4;
+    if points.len() < 2 {
+        return points;
+    }
+    let mut out = Vec::with_capacity(points.len() + 8);
+    out.push(points[0]);
+    for next in points.into_iter().skip(1) {
+        let prev = *out.last().unwrap_or(&next);
+        let dx = (next.x - prev.x).abs();
+        let dy = (next.y - prev.y).abs();
+        if dx <= EPS || dy <= EPS {
+            if (prev.x - next.x).abs() > EPS || (prev.y - next.y).abs() > EPS {
+                out.push(next);
+            }
+            continue;
+        }
+        // Diagonal hop: insert an elbow. Prefer the primary flow axis first.
+        let elbow = match direction {
+            elk_core::LayoutDirection::LeftToRight | elk_core::LayoutDirection::RightToLeft => {
+                Point::new(next.x, prev.y)
+            }
+            elk_core::LayoutDirection::TopToBottom | elk_core::LayoutDirection::BottomToTop => {
+                Point::new(prev.x, next.y)
+            }
+        };
+        if (elbow.x - prev.x).abs() > EPS || (elbow.y - prev.y).abs() > EPS {
+            out.push(elbow);
+        }
+        out.push(next);
+    }
+    out
 }
 
 fn build_chained_orthogonal_route_path(

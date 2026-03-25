@@ -4,6 +4,7 @@
 mod parity;
 mod java_runner;
 mod java_debug;
+mod json_diff;
 mod routing_invariants;
 mod svg;
 
@@ -14,6 +15,7 @@ pub use parity::{
 };
 pub use java_runner::run_java_elk_json;
 pub use java_debug::build_java_layout_debug;
+pub use json_diff::build_layout_json_diff_report;
 pub use routing_invariants::{assert_routed_paths_avoid_obstacles, segment_intersects_rect_interior};
 
 pub use svg::{maybe_write_svg_snapshot, render_graph_svg, snapshot_dir, snapshot_file_name};

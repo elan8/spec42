@@ -26,8 +26,8 @@
                 "elk.port.borderOffset": -4.0,
                 "elk.port.index": 0,
                 "org.eclipse.elk.port.borderOffset": -4.0,
-                "port.side": "EAST",
-                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.videoOut"
+                "port.side": "WEST",
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.control"
               },
               "width": 8.0,
               "x": 0.0,
@@ -41,7 +41,7 @@
                 "elk.port.index": 1,
                 "org.eclipse.elk.port.borderOffset": -4.0,
                 "port.side": "WEST",
-                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.control"
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.pwr"
               },
               "width": 8.0,
               "x": 0.0,
@@ -54,8 +54,8 @@
                 "elk.port.borderOffset": -4.0,
                 "elk.port.index": 2,
                 "org.eclipse.elk.port.borderOffset": -4.0,
-                "port.side": "WEST",
-                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.pwr"
+                "port.side": "EAST",
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.videoOut"
               },
               "width": 8.0,
               "x": 0.0,
@@ -95,7 +95,7 @@
                 "elk.port.index": 1,
                 "org.eclipse.elk.port.borderOffset": -4.0,
                 "port.side": "WEST",
-                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.communication.telemetryIn"
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.communication.pwr"
               },
               "width": 8.0,
               "x": 0.0,
@@ -109,7 +109,7 @@
                 "elk.port.index": 2,
                 "org.eclipse.elk.port.borderOffset": -4.0,
                 "port.side": "WEST",
-                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.communication.videoIn"
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.communication.telemetryIn"
               },
               "width": 8.0,
               "x": 0.0,
@@ -123,7 +123,7 @@
                 "elk.port.index": 3,
                 "org.eclipse.elk.port.borderOffset": -4.0,
                 "port.side": "WEST",
-                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.communication.pwr"
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.communication.videoIn"
               },
               "width": 8.0,
               "x": 0.0,
@@ -190,8 +190,8 @@
                     "elk.port.borderOffset": -4.0,
                     "elk.port.index": 0,
                     "org.eclipse.elk.port.borderOffset": -4.0,
-                    "port.side": "EAST",
-                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd"
+                    "port.side": "WEST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.gimbalCmd"
                   },
                   "width": 8.0,
                   "x": 0.0,
@@ -204,8 +204,8 @@
                     "elk.port.borderOffset": -4.0,
                     "elk.port.index": 1,
                     "org.eclipse.elk.port.borderOffset": -4.0,
-                    "port.side": "WEST",
-                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.gimbalCmd"
+                    "port.side": "EAST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd"
                   },
                   "width": 8.0,
                   "x": 0.0,
@@ -218,8 +218,8 @@
                     "elk.port.borderOffset": -4.0,
                     "elk.port.index": 2,
                     "org.eclipse.elk.port.borderOffset": -4.0,
-                    "port.side": "EAST",
-                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.telemetryOut"
+                    "port.side": "WEST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.pwr"
                   },
                   "width": 8.0,
                   "x": 0.0,
@@ -260,8 +260,8 @@
                     "elk.port.borderOffset": -4.0,
                     "elk.port.index": 5,
                     "org.eclipse.elk.port.borderOffset": -4.0,
-                    "port.side": "WEST",
-                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.pwr"
+                    "port.side": "EAST",
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.telemetryOut"
                   },
                   "width": 8.0,
                   "x": 0.0,
@@ -380,8 +380,8 @@
                 "elk.port.borderOffset": -4.0,
                 "elk.port.index": 0,
                 "org.eclipse.elk.port.borderOffset": -4.0,
-                "port.side": "WEST",
-                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cmd"
+                "port.side": "EAST",
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cameraCtrl"
               },
               "width": 8.0,
               "x": 0.0,
@@ -394,8 +394,8 @@
                 "elk.port.borderOffset": -4.0,
                 "elk.port.index": 1,
                 "org.eclipse.elk.port.borderOffset": -4.0,
-                "port.side": "EAST",
-                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cameraCtrl"
+                "port.side": "WEST",
+                "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cmd"
               },
               "width": 8.0,
               "x": 0.0,
@@ -477,7 +477,7 @@
                     "elk.port.index": 1,
                     "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "EAST",
-                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V"
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated12V"
                   },
                   "width": 8.0,
                   "x": 0.0,
@@ -491,7 +491,7 @@
                     "elk.port.index": 2,
                     "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "EAST",
-                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated12V"
+                    "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V"
                   },
                   "width": 8.0,
                   "x": 0.0,
@@ -712,10 +712,10 @@
       "id": "e0",
       "layoutOptions": {
         "elk.edge.bundle": 1021299741,
-        "spec42.edge_id": "ibd-edge-9"
+        "spec42.edge_id": "ibd-edge-10"
       },
       "sources": [
-        "p0"
+        "p17"
       ],
       "targets": [
         "p5"
@@ -723,97 +723,6 @@
     },
     {
       "id": "e1",
-      "layoutOptions": {
-        "elk.edge.bundle": 1021299741,
-        "spec42.edge_id": "ibd-edge-10"
-      },
-      "sources": [
-        "p14"
-      ],
-      "targets": [
-        "p4"
-      ]
-    },
-    {
-      "id": "e2",
-      "layoutOptions": {
-        "elk.edge.bundle": 1021299741,
-        "spec42.edge_id": "ibd-edge-7"
-      },
-      "sources": [
-        "p13"
-      ],
-      "targets": [
-        "p7"
-      ]
-    },
-    {
-      "id": "e3",
-      "layoutOptions": {
-        "elk.edge.bundle": 1021299741,
-        "spec42.edge_id": "ibd-edge-3"
-      },
-      "sources": [
-        "p12"
-      ],
-      "targets": [
-        "p26"
-      ]
-    },
-    {
-      "id": "e4",
-      "layoutOptions": {
-        "elk.edge.bundle": 1021299741,
-        "spec42.edge_id": "ibd-edge-4"
-      },
-      "sources": [
-        "p12"
-      ],
-      "targets": [
-        "p28"
-      ]
-    },
-    {
-      "id": "e5",
-      "layoutOptions": {
-        "elk.edge.bundle": 1021299741,
-        "spec42.edge_id": "ibd-edge-5"
-      },
-      "sources": [
-        "p12"
-      ],
-      "targets": [
-        "p30"
-      ]
-    },
-    {
-      "id": "e6",
-      "layoutOptions": {
-        "elk.edge.bundle": 1021299741,
-        "spec42.edge_id": "ibd-edge-6"
-      },
-      "sources": [
-        "p12"
-      ],
-      "targets": [
-        "p32"
-      ]
-    },
-    {
-      "id": "e7",
-      "layoutOptions": {
-        "elk.edge.bundle": 1021299741,
-        "spec42.edge_id": "ibd-edge-8"
-      },
-      "sources": [
-        "p8"
-      ],
-      "targets": [
-        "p1"
-      ]
-    },
-    {
-      "id": "e8",
       "layoutOptions": {
         "elk.edge.bundle": 1021299741,
         "spec42.edge_id": "ibd-edge-11"
@@ -826,107 +735,198 @@
       ]
     },
     {
-      "id": "e9",
-      "layoutOptions": {
-        "elk.edge.bundle": 1021299741,
-        "spec42.edge_id": "ibd-edge-14"
-      },
-      "sources": [
-        "p24"
-      ],
-      "targets": [
-        "p2"
-      ]
-    },
-    {
-      "id": "e10",
-      "layoutOptions": {
-        "elk.edge.bundle": 1021299741,
-        "spec42.edge_id": "ibd-edge-15"
-      },
-      "sources": [
-        "p24"
-      ],
-      "targets": [
-        "p6"
-      ]
-    },
-    {
-      "id": "e11",
+      "id": "e2",
       "layoutOptions": {
         "elk.edge.bundle": 1021299741,
         "spec42.edge_id": "ibd-edge-12"
       },
       "sources": [
-        "p24"
+        "p25"
       ],
       "targets": [
-        "p17"
+        "p14"
       ]
     },
     {
-      "id": "e12",
+      "id": "e3",
       "layoutOptions": {
         "elk.edge.bundle": 1021299741,
         "spec42.edge_id": "ibd-edge-13"
       },
       "sources": [
-        "p24"
+        "p25"
       ],
       "targets": [
         "p9"
       ]
     },
     {
-      "id": "e13",
+      "id": "e4",
+      "layoutOptions": {
+        "elk.edge.bundle": 1021299741,
+        "spec42.edge_id": "ibd-edge-14"
+      },
+      "sources": [
+        "p25"
+      ],
+      "targets": [
+        "p1"
+      ]
+    },
+    {
+      "id": "e5",
+      "layoutOptions": {
+        "elk.edge.bundle": 1021299741,
+        "spec42.edge_id": "ibd-edge-15"
+      },
+      "sources": [
+        "p25"
+      ],
+      "targets": [
+        "p4"
+      ]
+    },
+    {
+      "id": "e6",
       "layoutOptions": {
         "elk.edge.bundle": 1021299741,
         "spec42.edge_id": "ibd-edge-16"
       },
       "sources": [
-        "p24"
+        "p25"
       ],
       "targets": [
         "p27"
       ]
     },
     {
-      "id": "e14",
+      "id": "e7",
       "layoutOptions": {
         "elk.edge.bundle": 1021299741,
         "spec42.edge_id": "ibd-edge-17"
       },
       "sources": [
-        "p24"
+        "p25"
       ],
       "targets": [
         "p29"
       ]
     },
     {
-      "id": "e15",
+      "id": "e8",
       "layoutOptions": {
         "elk.edge.bundle": 1021299741,
         "spec42.edge_id": "ibd-edge-18"
       },
       "sources": [
-        "p24"
+        "p25"
       ],
       "targets": [
         "p31"
       ]
     },
     {
-      "id": "e16",
+      "id": "e9",
       "layoutOptions": {
         "elk.edge.bundle": 1021299741,
         "spec42.edge_id": "ibd-edge-19"
       },
       "sources": [
-        "p24"
+        "p25"
       ],
       "targets": [
         "p33"
+      ]
+    },
+    {
+      "id": "e10",
+      "layoutOptions": {
+        "elk.edge.bundle": 1021299741,
+        "spec42.edge_id": "ibd-edge-3"
+      },
+      "sources": [
+        "p13"
+      ],
+      "targets": [
+        "p26"
+      ]
+    },
+    {
+      "id": "e11",
+      "layoutOptions": {
+        "elk.edge.bundle": 1021299741,
+        "spec42.edge_id": "ibd-edge-4"
+      },
+      "sources": [
+        "p13"
+      ],
+      "targets": [
+        "p28"
+      ]
+    },
+    {
+      "id": "e12",
+      "layoutOptions": {
+        "elk.edge.bundle": 1021299741,
+        "spec42.edge_id": "ibd-edge-5"
+      },
+      "sources": [
+        "p13"
+      ],
+      "targets": [
+        "p30"
+      ]
+    },
+    {
+      "id": "e13",
+      "layoutOptions": {
+        "elk.edge.bundle": 1021299741,
+        "spec42.edge_id": "ibd-edge-6"
+      },
+      "sources": [
+        "p13"
+      ],
+      "targets": [
+        "p32"
+      ]
+    },
+    {
+      "id": "e14",
+      "layoutOptions": {
+        "elk.edge.bundle": 1021299741,
+        "spec42.edge_id": "ibd-edge-7"
+      },
+      "sources": [
+        "p12"
+      ],
+      "targets": [
+        "p8"
+      ]
+    },
+    {
+      "id": "e15",
+      "layoutOptions": {
+        "elk.edge.bundle": 1021299741,
+        "spec42.edge_id": "ibd-edge-8"
+      },
+      "sources": [
+        "p7"
+      ],
+      "targets": [
+        "p0"
+      ]
+    },
+    {
+      "id": "e16",
+      "layoutOptions": {
+        "elk.edge.bundle": 1021299741,
+        "spec42.edge_id": "ibd-edge-9"
+      },
+      "sources": [
+        "p2"
+      ],
+      "targets": [
+        "p6"
       ]
     }
   ],

@@ -1,8 +1,11 @@
 //! sysml/model integration tests.
 
-use super::harness::{next_id, read_message, read_response, send_message, spawn_server};
+use super::harness::{
+    next_id, read_message, read_response, send_message, spawn_server, spawn_server_with_env,
+};
 use std::fs;
 use std::path::PathBuf;
+use tempfile::NamedTempFile;
 
 const FULL_DRONE_FIXTURE: &str = "surveillance_drone_full.sysml";
 
@@ -1113,6 +1116,357 @@ fn write_interconnection_view_full_drone_java_svg_snapshot() {
         serde_json::from_str(&java_json_str).expect("parse java elk layout json snapshot");
     let debug = elk_testkit::build_java_layout_debug(&java_json, 40);
     write_rendered_debug("interconnection-view-full-drone.java.debug.txt", &debug);
+
+    let _ = child.kill();
+}
+
+#[test]
+#[ignore]
+fn write_interconnection_view_full_drone_rust_svg_snapshot() {
+    // Render via sysml-diagrams using the elk-rust backend (not Java ELK),
+    // but keep the same diagram config so the SVGs are comparable.
+    let mut child = spawn_server_with_env(&[("SPEC42_ELK_DEBUG", "1")]);
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///surveillance_drone_full_render_rust_test.sysml";
+    let content = fixture_text(FULL_DRONE_FIXTURE);
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+
+    let did_open = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+        }
+    });
+    send_message(&mut stdin, &did_open.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(160));
+
+    let model_id = next_id();
+    let model_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": model_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": uri },
+            "scope": ["graph"]
+        }
+    });
+    send_message(&mut stdin, &model_req.to_string());
+    let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+    let result = &model_json["result"];
+    let ibd_json = &result["ibd"];
+
+    let parts = ibd_json["parts"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default()
+        .into_iter()
+        .map(|part| {
+            let id = part["id"].as_str().unwrap_or_default().to_string();
+            let name = part["name"].as_str().unwrap_or_default().to_string();
+            let qualified_name = part["qualifiedName"].as_str().unwrap_or_default().to_string();
+            let container_id = part["containerId"].as_str().map(|s| s.to_string());
+            let element_type = part["type"].as_str().unwrap_or_default().to_string();
+            let attributes = part["attributes"]
+                .as_object()
+                .map(|obj| {
+                    obj.iter()
+                        .map(|(k, v)| (k.clone(), serde_json::to_string(v).unwrap_or_default()))
+                        .collect::<Vec<_>>()
+                })
+                .unwrap_or_default();
+            sysml_diagrams::IbdPartInput {
+                id,
+                name,
+                qualified_name,
+                container_id,
+                element_type,
+                attributes,
+            }
+        })
+        .collect::<Vec<_>>();
+
+    let ports = ibd_json["ports"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default()
+        .into_iter()
+        .map(|port| sysml_diagrams::IbdPortInput {
+            id: port["id"].as_str().unwrap_or_default().to_string(),
+            name: port["name"].as_str().unwrap_or_default().to_string(),
+            parent_id: port["parentId"].as_str().unwrap_or_default().to_string(),
+            direction: port["direction"].as_str().map(|s| s.to_string()),
+            port_type: port["portType"].as_str().map(|s| s.to_string()),
+            port_side: port["portSide"].as_str().map(|s| s.to_string()),
+        })
+        .collect::<Vec<_>>();
+
+    let connectors = ibd_json["connectors"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default()
+        .into_iter()
+        .map(|c| sysml_diagrams::IbdConnectorInput {
+            source: c["source"].as_str().unwrap_or_default().to_string(),
+            target: c["target"].as_str().unwrap_or_default().to_string(),
+            source_id: c["sourceId"].as_str().unwrap_or_default().to_string(),
+            target_id: c["targetId"].as_str().unwrap_or_default().to_string(),
+            rel_type: c["type"].as_str().unwrap_or_default().to_string(),
+        })
+        .collect::<Vec<_>>();
+
+    let root_candidates = ibd_json["rootCandidates"]
+        .as_array()
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                .collect::<Vec<_>>()
+        })
+        .unwrap_or_default();
+    let default_root = ibd_json["defaultRoot"].as_str().map(|s| s.to_string());
+
+    let ibd = sysml_diagrams::IbdInput {
+        parts,
+        ports,
+        connectors,
+        root_candidates,
+        default_root,
+    };
+
+    // Ensure Java-specific env does not affect this snapshot.
+    std::env::remove_var("SPEC42_ELK_USE_JAVA");
+    std::env::remove_var("SPEC42_ELK_JAVA_JSON_OUT");
+    std::env::remove_var("SPEC42_ELK_JAVA_OPTIONS_OUT");
+
+    // Rust layout snapshots.
+    let output_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("tests")
+        .join("output");
+    fs::create_dir_all(&output_dir).expect("create tests/output");
+    let rust_json_path = output_dir.join("interconnection-view-full-drone.rust.layout.json");
+    std::env::set_var("SPEC42_ELK_RUST_JSON_OUT", rust_json_path.to_string_lossy().as_ref());
+    let rust_options_path = output_dir.join("interconnection-view-full-drone.rust.options.txt");
+    std::env::set_var(
+        "SPEC42_ELK_RUST_OPTIONS_OUT",
+        rust_options_path.to_string_lossy().as_ref(),
+    );
+    std::env::set_var("SPEC42_SVG_EDGE_BRIDGES", "0");
+
+    let rendered = sysml_diagrams::interconnection_view::render(&ibd)
+        .unwrap_or_else(|e| panic!("rust interconnection render failed: {e:?}"));
+    write_rendered_svg("interconnection-view-full-drone.rust.svg", &rendered.svg);
+
+    // Optional: if the Java baseline layout JSON exists, write a keyed diff report.
+    let java_layout_path = output_dir.join("interconnection-view-full-drone.java.layout.json");
+    if let (Ok(java_json_str), Ok(rust_json_str)) = (
+        fs::read_to_string(&java_layout_path),
+        fs::read_to_string(&rust_json_path),
+    ) {
+        if let (Ok(java_json), Ok(rust_json)) = (
+            serde_json::from_str::<serde_json::Value>(&java_json_str),
+            serde_json::from_str::<serde_json::Value>(&rust_json_str),
+        ) {
+            if let Ok(report) = elk_testkit::build_layout_json_diff_report(&java_json, &rust_json, 50)
+            {
+                write_rendered_debug("interconnection-view-full-drone.java-vs-rust.diff.txt", &report);
+            }
+        }
+    }
+
+    let _ = child.kill();
+}
+
+#[test]
+fn interconnection_full_drone_rust_layout_preserves_java_ids() {
+    // Regression gate (structural): ensure Rust produces the same node/port ids and
+    // at least the same edge endpoint signatures as the checked-in Java snapshot.
+    //
+    // Geometry parity is tracked separately while the layered port continues.
+    let output_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("tests")
+        .join("output");
+    let java_layout_path = output_dir.join("interconnection-view-full-drone.java.layout.json");
+    let java_json_str = fs::read_to_string(&java_layout_path)
+        .unwrap_or_else(|_| panic!("read {}", java_layout_path.display()));
+    let java_json: serde_json::Value =
+        serde_json::from_str(&java_json_str).expect("parse java layout json");
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///surveillance_drone_full_render_rust_gate.sysml";
+    let content = fixture_text(FULL_DRONE_FIXTURE);
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+
+    let did_open = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+        }
+    });
+    send_message(&mut stdin, &did_open.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(160));
+
+    let model_id = next_id();
+    let model_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": model_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": uri },
+            "scope": ["graph"]
+        }
+    });
+    send_message(&mut stdin, &model_req.to_string());
+    let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+    let ibd_json = &model_json["result"]["ibd"];
+
+    let parts = ibd_json["parts"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default()
+        .into_iter()
+        .map(|part| {
+            let id = part["id"].as_str().unwrap_or_default().to_string();
+            let name = part["name"].as_str().unwrap_or_default().to_string();
+            let qualified_name = part["qualifiedName"].as_str().unwrap_or_default().to_string();
+            let container_id = part["containerId"].as_str().map(|s| s.to_string());
+            let element_type = part["type"].as_str().unwrap_or_default().to_string();
+            let attributes = part["attributes"]
+                .as_object()
+                .map(|obj| {
+                    obj.iter()
+                        .map(|(k, v)| (k.clone(), serde_json::to_string(v).unwrap_or_default()))
+                        .collect::<Vec<_>>()
+                })
+                .unwrap_or_default();
+            sysml_diagrams::IbdPartInput {
+                id,
+                name,
+                qualified_name,
+                container_id,
+                element_type,
+                attributes,
+            }
+        })
+        .collect::<Vec<_>>();
+
+    let ports = ibd_json["ports"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default()
+        .into_iter()
+        .map(|port| sysml_diagrams::IbdPortInput {
+            id: port["id"].as_str().unwrap_or_default().to_string(),
+            name: port["name"].as_str().unwrap_or_default().to_string(),
+            parent_id: port["parentId"].as_str().unwrap_or_default().to_string(),
+            direction: port["direction"].as_str().map(|s| s.to_string()),
+            port_type: port["portType"].as_str().map(|s| s.to_string()),
+            port_side: port["portSide"].as_str().map(|s| s.to_string()),
+        })
+        .collect::<Vec<_>>();
+
+    let connectors = ibd_json["connectors"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default()
+        .into_iter()
+        .map(|c| sysml_diagrams::IbdConnectorInput {
+            source: c["source"].as_str().unwrap_or_default().to_string(),
+            target: c["target"].as_str().unwrap_or_default().to_string(),
+            source_id: c["sourceId"].as_str().unwrap_or_default().to_string(),
+            target_id: c["targetId"].as_str().unwrap_or_default().to_string(),
+            rel_type: c["type"].as_str().unwrap_or_default().to_string(),
+        })
+        .collect::<Vec<_>>();
+
+    let root_candidates = ibd_json["rootCandidates"]
+        .as_array()
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                .collect::<Vec<_>>()
+        })
+        .unwrap_or_default();
+    let default_root = ibd_json["defaultRoot"].as_str().map(|s| s.to_string());
+
+    let ibd = sysml_diagrams::IbdInput {
+        parts,
+        ports,
+        connectors,
+        root_candidates,
+        default_root,
+    };
+
+    std::env::remove_var("SPEC42_ELK_USE_JAVA");
+    std::env::remove_var("SPEC42_ELK_JAVA_JSON_OUT");
+    std::env::remove_var("SPEC42_ELK_JAVA_OPTIONS_OUT");
+
+    let tmp = NamedTempFile::new().expect("create temp file");
+    std::env::set_var(
+        "SPEC42_ELK_RUST_JSON_OUT",
+        tmp.path().to_string_lossy().as_ref(),
+    );
+
+    let _rendered =
+        sysml_diagrams::interconnection_view::render(&ibd).expect("rust render succeeds");
+    let rust_json_str = fs::read_to_string(tmp.path()).expect("read rust layout json");
+    let rust_json: serde_json::Value =
+        serde_json::from_str(&rust_json_str).expect("parse rust layout json");
+
+    let report = elk_testkit::build_layout_json_diff_report(&java_json, &rust_json, 10)
+        .expect("diff report");
+    assert!(
+        report.contains("missing_in_rust=0 extra_in_rust=0"),
+        "expected node/port id sets to match java snapshot, got:\n{report}"
+    );
+    assert!(
+        report.contains("missing_sigs_in_rust=0"),
+        "expected no missing edge signatures, got:\n{report}"
+    );
 
     let _ = child.kill();
 }
