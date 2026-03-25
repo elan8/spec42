@@ -17,6 +17,7 @@ const NEUTRAL_PORT_BLUE = DIAGRAM_STYLE.edgePrimary;
 const NEUTRAL_NODE_BORDER = DIAGRAM_STYLE.nodeBorder;
 const NEUTRAL_NODE_FILL = DIAGRAM_STYLE.nodeFill;
 const NEUTRAL_TEXT = DIAGRAM_STYLE.textPrimary;
+const PORT_OUTLINE_GREEN = 'var(--vscode-button-background)';
 
 export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string }, data: any): Promise<void> {
     const { width, height, svg, g, layoutDirection, postMessage, onStartInlineEdit, renderPlaceholder, clearVisualHighlights } = ctx;
@@ -1724,61 +1725,6 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             }
         });
 
-        const crossingGroup = g.append('g').attr('class', 'ibd-crossing-gaps');
-        const seenCrossings = new Set<string>();
-        const crossingRadius = 4.5;
-        const segmentIntersection = (
-            a1: { x: number; y: number },
-            a2: { x: number; y: number },
-            b1: { x: number; y: number },
-            b2: { x: number; y: number }
-        ): { x: number; y: number } | null => {
-            const aHoriz = Math.abs(a1.y - a2.y) < 1e-6;
-            const aVert = Math.abs(a1.x - a2.x) < 1e-6;
-            const bHoriz = Math.abs(b1.y - b2.y) < 1e-6;
-            const bVert = Math.abs(b1.x - b2.x) < 1e-6;
-            if ((aHoriz && bVert) || (aVert && bHoriz)) {
-                const horiz = aHoriz ? [a1, a2] : [b1, b2];
-                const vert = aVert ? [a1, a2] : [b1, b2];
-                const x = vert[0].x;
-                const y = horiz[0].y;
-                const withinHoriz = x > Math.min(horiz[0].x, horiz[1].x) + 1e-6 && x < Math.max(horiz[0].x, horiz[1].x) - 1e-6;
-                const withinVert = y > Math.min(vert[0].y, vert[1].y) + 1e-6 && y < Math.max(vert[0].y, vert[1].y) - 1e-6;
-                return withinHoriz && withinVert ? { x, y } : null;
-            }
-            return null;
-        };
-
-        for (let routeIndex = 0; routeIndex < connectorRoutes.length; routeIndex++) {
-            const route = connectorRoutes[routeIndex];
-            for (let otherIndex = routeIndex + 1; otherIndex < connectorRoutes.length; otherIndex++) {
-                const otherRoute = connectorRoutes[otherIndex];
-                if (routeSharesEndpoint(route, otherRoute)) continue;
-                for (let i = 0; i < route.points.length - 1; i++) {
-                    for (let j = 0; j < otherRoute.points.length - 1; j++) {
-                        const crossing = segmentIntersection(
-                            route.points[i],
-                            route.points[i + 1],
-                            otherRoute.points[j],
-                            otherRoute.points[j + 1]
-                        );
-                        if (!crossing) continue;
-                        const key = `${Math.round(crossing.x)}:${Math.round(crossing.y)}`;
-                        if (seenCrossings.has(key)) continue;
-                        seenCrossings.add(key);
-                        crossingGroup.append('circle')
-                            .attr('class', 'ibd-crossing-gap')
-                            .attr('cx', crossing.x)
-                            .attr('cy', crossing.y)
-                            .attr('r', crossingRadius)
-                            .style('fill', DIAGRAM_STYLE.nodeFill)
-                            .style('stroke', DIAGRAM_STYLE.nodeFill)
-                            .style('stroke-width', '3px');
-                    }
-                }
-            }
-        }
-
         const leafBounds = Array.from(partPositions.values()).filter((pos) => !pos.isContainer);
         for (const route of connectorRoutes) {
             if (route.points.length < 2) continue;
@@ -2085,22 +2031,17 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             if (!anchor) return;
             const portY = anchor.y;
             const portX = anchor.x;
-            const portColor = getPortVisualColor(getPortDirection(p));
+            const portColor = PORT_OUTLINE_GREEN;
             partG.append('rect')
                 .attr('class', 'port-icon')
                 .attr('x', portX - portSize/2)
                 .attr('y', portY - portSize/2)
                 .attr('width', portSize)
                 .attr('height', portSize)
-                .style('fill', portColor)
-                .style('stroke', '#ffffff')
-                .style('stroke-width', '2px');
-            partG.append('path')
-                .attr('d', 'M' + (portX - portSize/2 + 2) + ',' + portY + ' L' + (portX + portSize/2 - 2) + ',' + portY + ' M' + (portX + portSize/2 - 4) + ',' + (portY - 2) + ' L' + (portX + portSize/2 - 2) + ',' + portY + ' L' + (portX + portSize/2 - 4) + ',' + (portY + 2))
-                .style('stroke', '#ffffff')
-                .style('stroke-width', '1.5px')
-                .style('fill', 'none');
-            drawPortLabel(portX - portSize/2 - 6, portY, p.name, 'end', portColor);
+                .style('fill', 'none')
+                .style('stroke', portColor)
+                .style('stroke-width', '1.8px');
+            drawPortLabel(Math.min(w - 10, portX + 16), portY, p.name, 'start', portColor);
         });
 
         rightPorts.forEach((p: any) => {
@@ -2108,22 +2049,17 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             if (!anchor) return;
             const portY = anchor.y;
             const portX = anchor.x;
-            const portColor = getPortVisualColor(getPortDirection(p));
+            const portColor = PORT_OUTLINE_GREEN;
             partG.append('rect')
                 .attr('class', 'port-icon')
                 .attr('x', portX - portSize/2)
                 .attr('y', portY - portSize/2)
                 .attr('width', portSize)
                 .attr('height', portSize)
-                .style('fill', portColor)
-                .style('stroke', '#ffffff')
-                .style('stroke-width', '2px');
-            partG.append('path')
-                .attr('d', 'M' + (portX - portSize/2 + 2) + ',' + portY + ' L' + (portX + portSize/2 - 2) + ',' + portY + ' M' + (portX + portSize/2 - 4) + ',' + (portY - 2) + ' L' + (portX + portSize/2 - 2) + ',' + portY + ' L' + (portX + portSize/2 - 4) + ',' + (portY + 2))
-                .style('stroke', '#ffffff')
-                .style('stroke-width', '1.5px')
-                .style('fill', 'none');
-            drawPortLabel(portX + portSize/2 + 6, portY, p.name, 'start', portColor);
+                .style('fill', 'none')
+                .style('stroke', portColor)
+                .style('stroke-width', '1.8px');
+            drawPortLabel(Math.max(10, portX - 16), portY, p.name, 'end', portColor);
         });
 
             partG.on('click', function(event: any) {

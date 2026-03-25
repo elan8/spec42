@@ -102,8 +102,9 @@ function getPortLabelSide(nodeBlock: string, label: string): "left" | "right" | 
         return null;
     }
     const anchor = match[2];
-    if (anchor === "end") return "left";
-    if (anchor === "start") return "right";
+    // Left-side labels are left-aligned (start), right-side labels are right-aligned (end).
+    if (anchor === "start") return "left";
+    if (anchor === "end") return "right";
     return null;
 }
 
