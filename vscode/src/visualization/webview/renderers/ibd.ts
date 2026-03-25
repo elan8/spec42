@@ -8,12 +8,20 @@ import type { RenderContext } from '../types';
 import { GENERAL_VIEW_PALETTE } from '../constants';
 import { postJumpToElement } from '../jumpToElement';
 import { getTypeColor, isLibraryValidated } from '../shared';
+import { DIAGRAM_STYLE } from '../styleTokens';
 
 declare const d3: any;
 declare const ELK: any;
+const NEUTRAL_EDGE_BLUE = DIAGRAM_STYLE.edgePrimary;
+const NEUTRAL_PORT_BLUE = DIAGRAM_STYLE.edgePrimary;
+const NEUTRAL_NODE_BORDER = DIAGRAM_STYLE.nodeBorder;
+const NEUTRAL_NODE_FILL = DIAGRAM_STYLE.nodeFill;
+const NEUTRAL_TEXT = DIAGRAM_STYLE.textPrimary;
 
 export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string }, data: any): Promise<void> {
     const { width, height, svg, g, layoutDirection, postMessage, onStartInlineEdit, renderPlaceholder, clearVisualHighlights } = ctx;
+    const LOG_ENDPOINT_DRIFT = true;
+    const ENDPOINT_DRIFT_WARN_PX = 1.25;
 
     if (!data || !data.parts || data.parts.length === 0) {
         renderPlaceholder(width, height, 'Interconnection View',
@@ -91,9 +99,9 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
     const truncateLabel = (value: string, maxLength: number): string =>
         value.length > maxLength ? value.substring(0, maxLength - 2) + '..' : value;
     const getPortVisualColor = (direction: 'in' | 'out' | 'inout'): string => {
-        if (direction === 'in') return '#0E7C7B';
-        if (direction === 'out') return '#2D8A6E';
-        return '#4A9B7F';
+        if (direction === 'in') return NEUTRAL_PORT_BLUE;
+        if (direction === 'out') return NEUTRAL_PORT_BLUE;
+        return NEUTRAL_PORT_BLUE;
     };
     const getConnectorVisualStyle = (connector: any) => {
         const connTypeLower = String(connector?.type || '').toLowerCase();
@@ -127,7 +135,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         }
         if (isBinding) {
             return {
-                strokeColor: 'var(--vscode-charts-blue)',
+                strokeColor: NEUTRAL_EDGE_BLUE,
                 strokeStyle: '6,4',
                 strokeWidth: '1.5px',
                 markerStart: 'url(#ibd-connection-dot)',
@@ -137,7 +145,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             };
         }
         return {
-            strokeColor: 'var(--vscode-charts-blue)',
+            strokeColor: NEUTRAL_EDGE_BLUE,
             strokeStyle: isConnection ? 'none' : '2,2',
             strokeWidth: isConnection ? '2px' : '1.5px',
             markerStart: 'url(#ibd-connection-dot)',
@@ -361,6 +369,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
     };
 
     const rootHeaderHeight = 28;
+    const containerTopInset = rootHeaderHeight + 20;
     const elkUnavailableReason = typeof ELK === 'undefined'
         ? 'ELK layout library not loaded.'
         : !partTree
@@ -418,12 +427,16 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 return sum + (partWidths.get(child.part.name) || partWidth);
             }, 0);
             const minW = Math.max(w, Math.min(1040, childWidthSum + node.children.length * 72));
-            const minH = rootHeaderHeight + 140;
+            const minH = rootHeaderHeight + 160;
             return {
                 id,
                 width: minW,
                 height: minH,
-                children: childNodes
+                children: childNodes,
+                layoutOptions: {
+                    // Reserve room for the rendered container header strip.
+                    'elk.padding': `[top=${containerTopInset},left=24,bottom=24,right=24]`,
+                }
             };
         };
 
@@ -466,6 +479,14 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         };
 
         elkLaidOut = await elk.layout(elkGraph);
+        postMessage({
+            command: 'webviewLog',
+            level: 'warn',
+            args: ['[IBD elk frame]', {
+                root: { x: elkLaidOut?.x ?? 0, y: elkLaidOut?.y ?? 0 },
+                firstChild: { x: elkLaidOut?.children?.[0]?.x ?? 0, y: elkLaidOut?.children?.[0]?.y ?? 0 },
+            }],
+        });
     } catch (e) {
         console.error('[IBD] ELK layout failed:', e);
         renderPlaceholder(
@@ -521,9 +542,12 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             const side = portNode?.layoutOptions?.["org.eclipse.elk.port.side"];
             const portWidth = portNode.width ?? 10;
             const portHeight = portNode.height ?? 10;
-            const anchorX = side === 'EAST'
-                ? absX + (portNode.x ?? 0) + portWidth + padding
-                : absX + (portNode.x ?? 0) + padding;
+            // ELK routes to the port border on the declared side.
+            const anchorX = side === 'WEST'
+                ? absX + (portNode.x ?? 0) + padding
+                : side === 'EAST'
+                    ? absX + (portNode.x ?? 0) + portWidth + padding
+                    : absX + (portNode.x ?? 0) + portWidth / 2 + padding;
             const anchorY = absY + (portNode.y ?? 0) + portHeight / 2 + padding;
             elkPortPositions.set(portNode.id, {
                 x: anchorX,
@@ -747,7 +771,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         return !(yMax < r.y || yMin > r.y + r.height);
     };
 
-    const OBSTACLE_MARGIN = 10;
+    const OBSTACLE_MARGIN = 16;
     const MAX_DETOUR_DEPTH = 4;
 
     /** Insert detours so no segment crosses a leaf-node obstacle. Containers are not treated as obstacles. */
@@ -958,28 +982,57 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             : null;
     };
 
-    /** Build route points from ELK edge sections and snap endpoints onto the rendered port anchors. */
+    /** Build route points from ELK edge sections, handling either ROOT or parent-relative coordinates. */
     const pointsFromElkSectionsWithPorts = (
         sections: Array<{ startPoint?: { x: number; y: number }; endPoint?: { x: number; y: number }; bendPoints?: Array<{ x: number; y: number }> }> | undefined,
+        edgeContainerOffset: { x: number; y: number },
         srcX: number, srcY: number, tgtX: number, tgtY: number
-    ): { x: number; y: number }[] | null => {
+    ): { points: { x: number; y: number }[]; frame: 'root' | 'parent' } | null => {
         if (!sections || sections.length === 0) return null;
-        const toAbsolute = (point: { x: number; y: number }) => ({
-            x: point.x + padding,
-            y: point.y + padding,
-        });
-        const routePoints: { x: number; y: number }[] = [];
-        for (const sec of sections) {
-            if (sec?.startPoint) routePoints.push(toAbsolute(sec.startPoint));
-            for (const bend of sec?.bendPoints || []) {
-                routePoints.push(toAbsolute(bend));
+        const buildRoute = (useParentOffset: boolean) => {
+            const routePoints: { x: number; y: number }[] = [];
+            for (const sec of sections) {
+                if (sec?.startPoint) {
+                    routePoints.push({
+                        x: sec.startPoint.x + (useParentOffset ? edgeContainerOffset.x : 0) + padding,
+                        y: sec.startPoint.y + (useParentOffset ? edgeContainerOffset.y : 0) + padding,
+                    });
+                }
+                for (const bend of sec?.bendPoints || []) {
+                    routePoints.push({
+                        x: bend.x + (useParentOffset ? edgeContainerOffset.x : 0) + padding,
+                        y: bend.y + (useParentOffset ? edgeContainerOffset.y : 0) + padding,
+                    });
+                }
+                if (sec?.endPoint) {
+                    routePoints.push({
+                        x: sec.endPoint.x + (useParentOffset ? edgeContainerOffset.x : 0) + padding,
+                        y: sec.endPoint.y + (useParentOffset ? edgeContainerOffset.y : 0) + padding,
+                    });
+                }
             }
-            if (sec?.endPoint) routePoints.push(toAbsolute(sec.endPoint));
+            return pruneRoutePoints(routePoints);
+        };
+
+        const rootFrame = buildRoute(false);
+        const parentFrame = buildRoute(true);
+        if (rootFrame.length === 0 && parentFrame.length === 0) return null;
+
+        const endpointError = (pts: { x: number; y: number }[]) => {
+            if (pts.length < 2) return Number.POSITIVE_INFINITY;
+            const start = pts[0];
+            const end = pts[pts.length - 1];
+            const srcDist = Math.hypot(start.x - srcX, start.y - srcY);
+            const tgtDist = Math.hypot(end.x - tgtX, end.y - tgtY);
+            return srcDist + tgtDist;
+        };
+
+        const rootErr = endpointError(rootFrame);
+        const parentErr = endpointError(parentFrame);
+        if (parentErr + 1e-6 < rootErr) {
+            return { points: parentFrame, frame: 'parent' };
         }
-        if (routePoints.length === 0) return null;
-        routePoints[0] = { x: srcX, y: srcY };
-        routePoints[routePoints.length - 1] = { x: tgtX, y: tgtY };
-        return pruneRoutePoints(routePoints);
+        return { points: rootFrame, frame: 'root' };
     };
 
     const preserveElkRoute = (
@@ -1104,7 +1157,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         .attr('orient', 'auto')
         .append('path')
         .attr('d', 'M0,-4L10,0L0,4Z')
-        .style('fill', 'var(--vscode-charts-blue)');
+        .style('fill', NEUTRAL_EDGE_BLUE);
 
     defs.append('marker')
         .attr('id', 'ibd-interface-arrow')
@@ -1117,7 +1170,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         .append('path')
         .attr('d', 'M0,-4L10,0L0,4Z')
         .style('fill', 'none')
-        .style('stroke', 'var(--vscode-charts-blue)')
+        .style('stroke', NEUTRAL_EDGE_BLUE)
         .style('stroke-width', '1.5px');
 
     defs.append('marker')
@@ -1131,7 +1184,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         .attr('cx', 5)
         .attr('cy', 5)
         .attr('r', 4)
-        .style('fill', 'var(--vscode-charts-blue)');
+        .style('fill', NEUTRAL_EDGE_BLUE);
 
     defs.append('marker')
         .attr('id', 'ibd-port-connector')
@@ -1212,26 +1265,59 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             portConnections.get(portKey)!.push({ connector, idx });
         });
 
-        const collectElkEdges = (node: any, acc: any[]): void => {
-            if (node?.edges) acc.push(...node.edges);
-            (node?.children ?? []).forEach((c: any) => collectElkEdges(c, acc));
+        const collectElkEdges = (
+            node: any,
+            containerOffset: { x: number; y: number },
+            acc: Map<string, { edge: any; offset: { x: number; y: number } }>
+        ): void => {
+            if (node?.edges) {
+                for (const edge of node.edges) {
+                    const edgeId = String(edge?.id ?? '');
+                    if (!edgeId) continue;
+                    acc.set(edgeId, { edge, offset: { x: containerOffset.x, y: containerOffset.y } });
+                }
+            }
+            (node?.children ?? []).forEach((c: any) =>
+                collectElkEdges(
+                    c,
+                    {
+                        x: containerOffset.x + (c?.x ?? 0),
+                        y: containerOffset.y + (c?.y ?? 0),
+                    },
+                    acc,
+                )
+            );
         };
-        const allElkEdges: any[] = [];
-        if (elkLaidOut) collectElkEdges(elkLaidOut, allElkEdges);
+        const allElkEdges = new Map<string, { edge: any; offset: { x: number; y: number } }>();
+        if (elkLaidOut) collectElkEdges(elkLaidOut, { x: 0, y: 0 }, allElkEdges);
+        const rootChildOffset = {
+            x: elkLaidOut?.children?.[0]?.x ?? 0,
+            y: elkLaidOut?.children?.[0]?.y ?? 0,
+        };
 
-        /** Leaf-node rectangles as obstacles (exclude containers). Built once per connector. */
-        const getLeafObstaclesExcluding = (srcPartName: string, tgtPartName: string): Rect[] => {
+        /** Obstacles used for route refinement; include leaf nodes and container headers. */
+        const getRoutingObstaclesExcluding = (srcPartName: string, tgtPartName: string): Rect[] => {
             const rects: Rect[] = [];
             partPositions.forEach((pos, key) => {
                 if (key !== pos.part.name) return;
-                if (pos.isContainer) return;
                 if (pos.part.name === srcPartName || pos.part.name === tgtPartName) return;
-                rects.push({
-                    x: pos.x,
-                    y: pos.y,
-                    width: pos.width ?? partWidth,
-                    height: pos.height
-                });
+                const width = pos.width ?? partWidth;
+                const height = pos.height;
+                if (pos.isContainer) {
+                    rects.push({
+                        x: pos.x,
+                        y: pos.y,
+                        width,
+                        height: rootHeaderHeight + 8,
+                    });
+                } else {
+                    rects.push({
+                        x: pos.x,
+                        y: pos.y,
+                        width,
+                        height,
+                    });
+                }
             });
             return rects;
         };
@@ -1394,10 +1480,22 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             let pathPoints: { x: number; y: number }[] | null = null;
             let pathD: string;
             let labelX: number, labelY: number;
-            const elkEdge = allElkEdges.find((e: any) => e.id === 'edge-' + connIdx);
-            const authoritativeRoute = elkEdge?.sections && srcPortPos && tgtPortPos
-                ? pointsFromElkSectionsWithPorts(elkEdge.sections, srcX, srcY, tgtX, tgtY)
+            const elkEdgeRecord = allElkEdges.get('edge-' + connIdx);
+            const elkEdge = elkEdgeRecord?.edge;
+            const effectiveEdgeOffset = (elkEdgeRecord?.offset?.x ?? 0) === 0 && (elkEdgeRecord?.offset?.y ?? 0) === 0
+                ? rootChildOffset
+                : (elkEdgeRecord?.offset ?? { x: 0, y: 0 });
+            const authoritativeRouteResult = elkEdge?.sections && srcPortPos && tgtPortPos
+                ? pointsFromElkSectionsWithPorts(
+                    elkEdge.sections,
+                    effectiveEdgeOffset,
+                    srcX,
+                    srcY,
+                    tgtX,
+                    tgtY
+                )
                 : null;
+            const authoritativeRoute = authoritativeRouteResult?.points ?? null;
 
             if (!authoritativeRoute || authoritativeRoute.length < 2) {
                 degradedReasons.add(`ELK did not return a usable route for connector ${connIdx}.`);
@@ -1410,49 +1508,56 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 sourcePart: srcPos.part.name,
                 targetPart: tgtPos.part.name,
             };
-            const leafObstacles = getLeafObstaclesExcluding(srcPos.part.name, tgtPos.part.name);
-            const endpointObstacles: Rect[] = [
-                {
-                    x: srcPos.x,
-                    y: srcPos.y,
-                    width: srcPos.width ?? partWidth,
-                    height: srcPos.height ?? 80,
-                },
-                {
-                    x: tgtPos.x,
-                    y: tgtPos.y,
-                    width: tgtPos.width ?? partWidth,
-                    height: tgtPos.height ?? 80,
-                },
-            ];
-
-            pathPoints = preserveElkRoute(
-                authoritativeRoute,
-                srcPortPos ?? { x: srcX, y: srcY },
-                tgtPortPos ?? { x: tgtX, y: tgtY },
-                srcPos,
-                tgtPos,
-                srcPortPos?.isLeft,
-                tgtPortPos?.isLeft,
-            );
-            if (
-                pathIntersectsObstacles(pathPoints, leafObstacles, OBSTACLE_MARGIN)
-                || pathIntersectsObstaclesIgnoringEndpointStubs(pathPoints, [...leafObstacles, ...endpointObstacles], OBSTACLE_MARGIN)
-                || routeOverlapPenalty(pathPoints, connectorRoutes, routeMeta) > 0
-            ) {
-                const refinedRoute = pickBestOrthogonalRoute(
-                    srcPortPos ?? { x: srcX, y: srcY, isLeft: srcX <= (srcPos.x + ((srcPos.width ?? partWidth) / 2)) },
-                    tgtPortPos ?? { x: tgtX, y: tgtY, isLeft: tgtX <= (tgtPos.x + ((tgtPos.width ?? partWidth) / 2)) },
-                    srcPos,
-                    tgtPos,
-                    leafObstacles,
-                    baseOffset,
-                    routeSpread,
-                    connectorRoutes,
-                    routeMeta,
-                );
-                if (refinedRoute) {
-                    pathPoints = refinedRoute;
+            // Use ELK route as authoritative: no custom rerouting/detour post-processing.
+            pathPoints = authoritativeRoute;
+            if (pathPoints.length >= 2 && srcPortPos && tgtPortPos) {
+                const start = pathPoints[0];
+                const end = pathPoints[pathPoints.length - 1];
+                const srcDx = start.x - srcPortPos.x;
+                const srcDy = start.y - srcPortPos.y;
+                const tgtDx = end.x - tgtPortPos.x;
+                const tgtDy = end.y - tgtPortPos.y;
+                const deltaAligned = Math.abs(srcDx - tgtDx) < 2 && Math.abs(srcDy - tgtDy) < 2;
+                const driftLarge = Math.hypot(srcDx, srcDy) > 20 || Math.hypot(tgtDx, tgtDy) > 20;
+                if (deltaAligned && driftLarge) {
+                    const shiftX = ((srcPortPos.x - start.x) + (tgtPortPos.x - end.x)) / 2;
+                    const shiftY = ((srcPortPos.y - start.y) + (tgtPortPos.y - end.y)) / 2;
+                    pathPoints = pathPoints.map((point) => ({
+                        x: point.x + shiftX,
+                        y: point.y + shiftY,
+                    }));
+                }
+            }
+            if (LOG_ENDPOINT_DRIFT && pathPoints.length >= 2 && srcPortPos && tgtPortPos) {
+                const start = pathPoints[0];
+                const end = pathPoints[pathPoints.length - 1];
+                const srcDx = start.x - srcPortPos.x;
+                const srcDy = start.y - srcPortPos.y;
+                const tgtDx = end.x - tgtPortPos.x;
+                const tgtDy = end.y - tgtPortPos.y;
+                const srcDist = Math.hypot(srcDx, srcDy);
+                const tgtDist = Math.hypot(tgtDx, tgtDy);
+                if (srcDist > ENDPOINT_DRIFT_WARN_PX || tgtDist > ENDPOINT_DRIFT_WARN_PX) {
+                    postMessage({
+                        command: 'webviewLog',
+                        level: 'warn',
+                        args: [
+                            '[IBD endpoint drift]',
+                            {
+                                connectorId: 'connector-' + connIdx,
+                                source: srcEndpointId,
+                                target: tgtEndpointId,
+                                selectedFrame: authoritativeRouteResult?.frame ?? 'unknown',
+                                edgeContainerOffset: effectiveEdgeOffset,
+                                sourceAnchor: { x: srcPortPos.x, y: srcPortPos.y },
+                                targetAnchor: { x: tgtPortPos.x, y: tgtPortPos.y },
+                                routeStart: { x: start.x, y: start.y },
+                                routeEnd: { x: end.x, y: end.y },
+                                sourceDelta: { dx: srcDx, dy: srcDy, dist: srcDist },
+                                targetDelta: { dx: tgtDx, dy: tgtDy, dist: tgtDist },
+                            },
+                        ],
+                    });
                 }
             }
             pathD = pointsToPathD(pathPoints);
@@ -1666,8 +1771,8 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                             .attr('cx', crossing.x)
                             .attr('cy', crossing.y)
                             .attr('r', crossingRadius)
-                            .style('fill', 'var(--vscode-editor-background)')
-                            .style('stroke', 'var(--vscode-editor-background)')
+                            .style('fill', DIAGRAM_STYLE.nodeFill)
+                            .style('stroke', DIAGRAM_STYLE.nodeFill)
                             .style('stroke-width', '3px');
                     }
                 }
@@ -1843,23 +1948,20 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
 
         if (pos.isContainer) {
             const depth = (pos as { depth?: number }).depth ?? 0;
-            // Intermediate containers (depth 1): distinct fill + thicker stroke so nesting is visible
             const isIntermediate = depth === 1;
-            const containerFill = isIntermediate
-                ? 'rgba(255,255,255,0.06)'  // lighter tint so intermediate containers stand out
-                : 'var(--vscode-editor-background)';
-            const containerStrokeWidth = isIntermediate ? '3px' : '2px';
+            const containerFill = 'var(--vscode-editor-background)';
+            const containerStrokeWidth = isIntermediate ? '2.4px' : '2px';
             partG.append('rect')
                 .attr('width', w)
                 .attr('height', h)
                 .attr('rx', 8)
                 .attr('class', 'graph-node-background')
-                .attr('data-original-stroke', typeColor)
+                .attr('data-original-stroke', NEUTRAL_NODE_BORDER)
                 .attr('data-original-width', containerStrokeWidth)
                 .style('fill', containerFill)
-                .style('stroke', typeColor)
+                .style('stroke', NEUTRAL_NODE_BORDER)
                 .style('stroke-width', containerStrokeWidth)
-                .style('stroke-dasharray', '4,4');
+                .style('stroke-dasharray', isIntermediate ? '4,4' : 'none');
             partG.append('rect')
                 .attr('width', w)
                 .attr('height', rootHeaderHeight)
@@ -1873,7 +1975,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 .text(part.name)
                 .style('font-size', '11px')
                 .style('font-weight', 'bold')
-                .style('fill', 'var(--vscode-editor-foreground)');
+                .style('fill', NEUTRAL_TEXT);
             partG.on('click', function (event: any) {
                 event.stopPropagation();
                 clearVisualHighlights();
@@ -1891,7 +1993,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             return;
         }
 
-        const _ibdStroke = isLibValidated ? GENERAL_VIEW_PALETTE.structural.part : typeColor;
+            const _ibdStroke = isLibValidated ? NEUTRAL_NODE_BORDER : NEUTRAL_NODE_BORDER;
         const _ibdStrokeW = isUsage ? '3px' : '2px';
         partG.append('rect')
             .attr('width', w)
@@ -1899,21 +2001,15 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             .attr('rx', isUsage ? 8 : 4)
             .attr('data-original-stroke', _ibdStroke)
             .attr('data-original-width', _ibdStrokeW)
-            .style('fill', 'var(--vscode-editor-background)')
+            .style('fill', NEUTRAL_NODE_FILL)
             .style('stroke', _ibdStroke)
             .style('stroke-width', _ibdStrokeW)
             .style('stroke-dasharray', isDefinition ? '6,3' : 'none');
 
         partG.append('rect')
+            .attr('y', 0)
             .attr('width', w)
-            .attr('height', 5)
-            .attr('rx', 2)
-            .style('fill', typeColor);
-
-        partG.append('rect')
-            .attr('y', 5)
-            .attr('width', w)
-            .attr('height', typedByName ? 36 : 28)
+            .attr('height', typedByName ? 41 : 33)
             .style('fill', 'var(--vscode-button-secondaryBackground)');
 
         let stereoDisplay = part.type || 'part';
@@ -1929,7 +2025,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             .attr('text-anchor', 'middle')
             .text('«' + stereoDisplay + '»')
             .style('font-size', '9px')
-            .style('fill', typeColor);
+            .style('fill', NEUTRAL_TEXT);
 
         const displayName = part.name.length > 18 ? part.name.substring(0, 16) + '..' : part.name;
         partG.append('text')
@@ -1940,7 +2036,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             .text(displayName)
             .style('font-size', '11px')
             .style('font-weight', 'bold')
-            .style('fill', 'var(--vscode-editor-foreground)');
+            .style('fill', NEUTRAL_TEXT);
 
         if (typedByName) {
             partG.append('text')
@@ -1950,7 +2046,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 .text(': ' + (typedByName.length > 18 ? typedByName.substring(0, 16) + '..' : typedByName))
                 .style('font-size', '10px')
                 .style('font-style', 'italic')
-                .style('fill', '#569CD6');
+                .style('fill', NEUTRAL_TEXT);
         }
 
         const contentStartY = typedByName ? 50 : 38;
@@ -1988,44 +2084,46 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             const anchor = getRenderedPortAnchor(pos, p);
             if (!anchor) return;
             const portY = anchor.y;
+            const portX = anchor.x;
             const portColor = getPortVisualColor(getPortDirection(p));
             partG.append('rect')
                 .attr('class', 'port-icon')
-                .attr('x', -portSize/2)
+                .attr('x', portX - portSize/2)
                 .attr('y', portY - portSize/2)
                 .attr('width', portSize)
                 .attr('height', portSize)
                 .style('fill', portColor)
-                .style('stroke', 'var(--vscode-editor-background)')
+                .style('stroke', '#ffffff')
                 .style('stroke-width', '2px');
             partG.append('path')
-                .attr('d', 'M' + (-portSize/2 + 2) + ',' + portY + ' L' + (portSize/2 - 2) + ',' + portY + ' M' + (portSize/2 - 4) + ',' + (portY - 2) + ' L' + (portSize/2 - 2) + ',' + portY + ' L' + (portSize/2 - 4) + ',' + (portY + 2))
-                .style('stroke', 'var(--vscode-editor-background)')
+                .attr('d', 'M' + (portX - portSize/2 + 2) + ',' + portY + ' L' + (portX + portSize/2 - 2) + ',' + portY + ' M' + (portX + portSize/2 - 4) + ',' + (portY - 2) + ' L' + (portX + portSize/2 - 2) + ',' + portY + ' L' + (portX + portSize/2 - 4) + ',' + (portY + 2))
+                .style('stroke', '#ffffff')
                 .style('stroke-width', '1.5px')
                 .style('fill', 'none');
-            drawPortLabel(-portSize/2 - 6, portY, p.name, 'end', portColor);
+            drawPortLabel(portX - portSize/2 - 6, portY, p.name, 'end', portColor);
         });
 
         rightPorts.forEach((p: any) => {
             const anchor = getRenderedPortAnchor(pos, p);
             if (!anchor) return;
             const portY = anchor.y;
+            const portX = anchor.x;
             const portColor = getPortVisualColor(getPortDirection(p));
             partG.append('rect')
                 .attr('class', 'port-icon')
-                .attr('x', w - portSize/2)
+                .attr('x', portX - portSize/2)
                 .attr('y', portY - portSize/2)
                 .attr('width', portSize)
                 .attr('height', portSize)
                 .style('fill', portColor)
-                .style('stroke', 'var(--vscode-editor-background)')
+                .style('stroke', '#ffffff')
                 .style('stroke-width', '2px');
             partG.append('path')
-                .attr('d', 'M' + (w - portSize/2 + 2) + ',' + portY + ' L' + (w + portSize/2 - 2) + ',' + portY + ' M' + (w + portSize/2 - 4) + ',' + (portY - 2) + ' L' + (w + portSize/2 - 2) + ',' + portY + ' L' + (w + portSize/2 - 4) + ',' + (portY + 2))
-                .style('stroke', 'var(--vscode-editor-background)')
+                .attr('d', 'M' + (portX - portSize/2 + 2) + ',' + portY + ' L' + (portX + portSize/2 - 2) + ',' + portY + ' M' + (portX + portSize/2 - 4) + ',' + (portY - 2) + ' L' + (portX + portSize/2 - 2) + ',' + portY + ' L' + (portX + portSize/2 - 4) + ',' + (portY + 2))
+                .style('stroke', '#ffffff')
                 .style('stroke-width', '1.5px')
                 .style('fill', 'none');
-            drawPortLabel(w + portSize/2 + 6, portY, p.name, 'start', portColor);
+            drawPortLabel(portX + portSize/2 + 6, portY, p.name, 'start', portColor);
         });
 
             partG.on('click', function(event: any) {
@@ -2034,7 +2132,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 const clickedPart = d3.select(this);
                 clickedPart.classed('highlighted-element', true);
                 clickedPart.select('rect')
-                    .style('stroke', '#FFD700')
+                .style('stroke', DIAGRAM_STYLE.highlight)
                     .style('stroke-width', '3px');
                 postJumpToElement(postMessage, { name: part.name, id: part.qualifiedName || part.id }, { skipCentering: true });
             })

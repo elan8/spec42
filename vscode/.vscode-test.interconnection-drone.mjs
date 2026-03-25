@@ -7,6 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   files: [
     "out/test/suite/interconnection.drone.visualization.test.js",
+    "out/test/suite/svgArtifacts.interconnectionDrone.test.js",
   ],
   extensionDevelopmentPath: __dirname,
   workspaceFolder: path.resolve(__dirname, "testFixture", "workspaces", "interconnection-drone"),

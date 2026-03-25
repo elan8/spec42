@@ -1097,6 +1097,16 @@ export function activate(context: vscode.ExtensionContext): void {
       workspaceIndexSummary: lastWorkspaceIndexSummary,
     })),
 
+    vscode.commands.registerCommand(
+      "sysml.debug.getModelForTests",
+      async (
+        uri: string,
+        scope?: Array<"graph" | "ibd" | "sequenceDiagrams" | "activityDiagrams" | "stats" | "renderedDiagrams">
+      ) => {
+        return await lspModelProvider.getModel(uri, scope);
+      }
+    ),
+
     vscode.commands.registerCommand("sysml.debugSemanticTokenAtCursor", async () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor || !isSysmlDoc(editor.document)) {

@@ -18,7 +18,7 @@ export function prepareSvgForExport(svgElement: SVGSVGElement | null): SVGSVGEle
     // Clone the SVG to avoid modifying the original
     const clonedSvg = svgElement.cloneNode(true) as SVGSVGElement;
 
-    // Get computed background color from the page
+    // Keep export background aligned with active theme/panel background.
     const bgColor = getComputedStyle(document.body).backgroundColor || '#1e1e1e';
 
     // Find the main content group to get full content bounds

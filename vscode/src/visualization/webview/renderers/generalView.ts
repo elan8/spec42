@@ -9,6 +9,7 @@ import { GENERAL_VIEW_PALETTE } from '../constants';
 import { postJumpToElement } from '../jumpToElement';
 import { formatSysMLStereotype } from '../shared';
 import { getTypeColor } from '../shared';
+import { DIAGRAM_STYLE } from '../styleTokens';
 import {
     collectCompartmentsFromElement,
     computeNodeHeightFromCompartments,
@@ -22,6 +23,8 @@ declare const ELK: any;
 
 const NODE_WIDTH = 200;
 const NODE_HEIGHT_BASE = 70;
+const GENERAL_NEUTRAL_EDGE = 'var(--vscode-editor-foreground)';
+const GENERAL_NEUTRAL_BORDER = DIAGRAM_STYLE.nodeBorder;
 
 /** General view uses full SysML v2 compartments: Header, Attributes, Parts, Ports, Other */
 const GENERAL_VIEW_NODE_CONFIG: SysMLNodeConfig = {
@@ -289,6 +292,8 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
 
     const defs = svg.select('defs').empty() ? svg.append('defs') : svg.select('defs');
     defs.selectAll('#general-d3-arrow').remove();
+    defs.selectAll('#general-d3-arrow-open').remove();
+    defs.selectAll('#general-d3-diamond').remove();
     defs.append('marker')
         .attr('id', 'general-d3-arrow')
         .attr('viewBox', '0 -5 10 10')
@@ -299,7 +304,21 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
         .attr('orient', 'auto')
         .append('path')
         .attr('d', 'M0,-4L10,0L0,4')
-        .style('fill', 'var(--vscode-charts-blue)');
+        .style('fill', GENERAL_NEUTRAL_EDGE);
+
+    defs.append('marker')
+        .attr('id', 'general-d3-arrow-open')
+        .attr('viewBox', '0 -5 10 10')
+        .attr('refX', 9)
+        .attr('refY', 0)
+        .attr('markerWidth', 8)
+        .attr('markerHeight', 8)
+        .attr('orient', 'auto')
+        .append('path')
+        .attr('d', 'M0,-4L10,0L0,4')
+        .style('fill', 'none')
+        .style('stroke', GENERAL_NEUTRAL_EDGE)
+        .style('stroke-width', '1.3');
 
     defs.selectAll('#general-d3-specializes').remove();
     defs.append('marker')
@@ -312,7 +331,21 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
         .attr('orient', 'auto')
         .append('path')
         .attr('d', 'M0,0L10,-4L10,4Z')
-        .style('fill', GENERAL_VIEW_PALETTE.structural.port);
+        .style('fill', 'var(--vscode-editor-background)')
+        .style('stroke', GENERAL_NEUTRAL_EDGE)
+        .style('stroke-width', '1.2');
+
+    defs.append('marker')
+        .attr('id', 'general-d3-diamond')
+        .attr('viewBox', '0 -6 12 12')
+        .attr('refX', 2)
+        .attr('refY', 0)
+        .attr('markerWidth', 7)
+        .attr('markerHeight', 7)
+        .attr('orient', 'auto')
+        .append('path')
+        .attr('d', 'M0,0L5,-4L10,0L5,4Z')
+        .style('fill', GENERAL_NEUTRAL_EDGE);
 
     const edgeGroup = g.append('g').attr('class', 'general-edges');
     const nodeGroup = g.append('g').attr('class', 'general-nodes');
@@ -339,8 +372,8 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
                 .attr('width', maxX - minX)
                 .attr('height', maxY - minY)
                 .attr('rx', 18)
-                .style('fill', 'color-mix(in srgb, var(--vscode-editor-inactiveSelectionBackground) ' + Math.round(tone * 100) + '%, transparent)')
-                .style('stroke', 'var(--vscode-panel-border)')
+                .style('fill', 'transparent')
+                .style('stroke', GENERAL_NEUTRAL_BORDER)
                 .style('stroke-width', group.depth === 1 ? '1.5px' : '1px')
                 .style('stroke-dasharray', group.depth === 1 ? 'none' : '6,4')
                 .style('opacity', 0.9);
@@ -350,7 +383,7 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
                 .text(group.label)
                 .style('font-size', '11px')
                 .style('font-weight', '700')
-                .style('fill', 'var(--vscode-descriptionForeground)');
+                .style('fill', GENERAL_NEUTRAL_BORDER);
         });
 
     const laidOutEdges = laidOut?.edges ?? [];
@@ -396,27 +429,32 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
             pathD = fallbackPath;
         }
 
-        let strokeColor = GENERAL_VIEW_PALETTE.other.default;
+        let strokeColor = GENERAL_NEUTRAL_EDGE;
         let strokeDash = 'none';
+        let markerStart = 'none';
         let markerEnd = 'url(#general-d3-arrow)';
         let strokeWidth = '2px';
 
         if (relType === 'specializes') {
-            strokeColor = GENERAL_VIEW_PALETTE.structural.port;
+            strokeColor = GENERAL_NEUTRAL_EDGE;
             markerEnd = 'url(#general-d3-specializes)';
+            strokeWidth = '1.7px';
         } else if (relType === 'typing') {
-            strokeColor = GENERAL_VIEW_PALETTE.requirements.requirement;
+            strokeColor = GENERAL_NEUTRAL_EDGE;
             strokeDash = '5,3';
+            markerEnd = 'url(#general-d3-arrow-open)';
         } else if (relType === 'hierarchy' || relType === 'contains') {
-            strokeColor = GENERAL_VIEW_PALETTE.structural.part;
+            strokeColor = GENERAL_NEUTRAL_EDGE;
+            markerStart = 'url(#general-d3-diamond)';
+            markerEnd = 'none';
         } else if (relType === 'connection' || relType === 'connect') {
-            strokeColor = GENERAL_VIEW_PALETTE.structural.interface;
+            strokeColor = GENERAL_NEUTRAL_EDGE;
         } else if (relType === 'bind' || relType === 'binding') {
-            strokeColor = '#808080';
+            strokeColor = GENERAL_NEUTRAL_EDGE;
             strokeDash = '2,2';
             markerEnd = 'none';
         } else if (relType === 'allocate' || relType === 'allocation') {
-            strokeColor = GENERAL_VIEW_PALETTE.other.allocation;
+            strokeColor = GENERAL_NEUTRAL_EDGE;
             strokeDash = '8,4';
         }
 
@@ -431,6 +469,7 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
             .style('stroke-width', strokeWidth)
             .style('stroke-dasharray', strokeDash)
             .style('opacity', 0.85)
+            .style('marker-start', markerStart)
             .style('marker-end', markerEnd)
             .style('cursor', 'pointer');
     });
@@ -471,6 +510,11 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
             nodeClass: 'general-node elk-node',
             dataElementName: d.elementName || d.label
         });
+        nodeG.select('.graph-node-background')
+            .style('fill', 'var(--vscode-editor-background)')
+            .style('stroke', GENERAL_NEUTRAL_BORDER);
+        nodeG.selectAll('.sysml-header-compartment')
+            .style('fill', 'var(--vscode-button-secondaryBackground)');
 
         nodeG.on('click', function (event: any) {
             event.stopPropagation();
@@ -481,7 +525,7 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
                     .style('stroke-width', r.attr('data-original-width'));
             });
             nodeG.select('.graph-node-background')
-                .style('stroke', '#FFD700')
+                .style('stroke', DIAGRAM_STYLE.highlight)
                 .style('stroke-width', '4px');
 
             const statusEl = document.getElementById('status-text');

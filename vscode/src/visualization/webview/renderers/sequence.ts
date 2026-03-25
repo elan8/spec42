@@ -6,6 +6,7 @@
 import type { RenderContext } from '../types';
 import { isLibraryValidated, isActorElement, renderActorGlyph } from '../shared';
 import { postJumpToElement } from '../jumpToElement';
+import { DIAGRAM_STYLE } from '../styleTokens';
 
 declare const d3: any;
 
@@ -67,7 +68,7 @@ export function renderSequenceView(ctx: RenderContext, data: any): void {
         participants.forEach((participant: any, i: number) => {
             const participantX = 50 + (i * participantSpacing);
             const isLibValidated = participant.element ? isLibraryValidated(participant.element) : false;
-            const borderColor = isLibValidated ? 'var(--vscode-charts-green)' : 'var(--vscode-panel-border)';
+            const borderColor = DIAGRAM_STYLE.nodeBorder;
             const borderWidth = isLibValidated ? '3px' : '2px';
 
             const participantGroup = diagramGroup.append('g')
@@ -177,7 +178,7 @@ export function renderSequenceView(ctx: RenderContext, data: any): void {
 
             messageGroup.append('path')
                 .attr('d', arrowPath)
-                .style('stroke', 'var(--vscode-charts-blue)')
+                .style('stroke', DIAGRAM_STYLE.edgePrimary)
                 .style('stroke-width', '2px')
                 .style('fill', 'none');
 
@@ -192,7 +193,7 @@ export function renderSequenceView(ctx: RenderContext, data: any): void {
                 .attr('height', 20)
                 .attr('rx', 4)
                 .style('fill', 'var(--vscode-editor-background)')
-                .style('stroke', 'var(--vscode-charts-blue)')
+                .style('stroke', DIAGRAM_STYLE.edgePrimary)
                 .style('stroke-width', '1px');
 
             messageGroup.append('text')

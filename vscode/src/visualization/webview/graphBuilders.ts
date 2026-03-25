@@ -120,9 +120,14 @@ export function buildSyntheticTreeEdgesForGeneralView(nodes: any[], edges: any[]
             }
         });
     }
-    candidateRoots.forEach((pid) => visitPartDef(pid));
-    if (candidateRoots.length === 0 && partDefIds.size) {
-        [...partDefIds].forEach((pid) => visitPartDef(pid));
+    // Follow one structural decomposition tree to avoid duplicating equivalent
+    // subgraphs (e.g. instance branch + definition branch rendered together).
+    if (rootId) {
+        visitPartDef(rootId);
+    } else if (candidateRoots.length > 0) {
+        visitPartDef(candidateRoots[0]);
+    } else if (partDefIds.size) {
+        visitPartDef([...partDefIds][0]);
     }
     typingList.forEach((e: any) => {
         const src = nodeById.get(e.source);
@@ -182,7 +187,7 @@ export function graphToGeneralViewElements(
         });
     }
     indexByKey(elementTree);
-    const { edges: syntheticEdges } = buildSyntheticTreeEdgesForGeneralView(nodes, edges);
+    const { edges: syntheticEdges, rootId: syntheticRootId } = buildSyntheticTreeEdgesForGeneralView(nodes, edges);
     const nodeType = (n: any) => ((n?.type || n?.element_type || '') as string).toLowerCase();
     const isPartDef = (n: any) => n && nodeType(n).includes('part def');
     const isPartUsage = (n: any) => n && (nodeType(n) === 'part' || nodeType(n).includes('part usage'));
@@ -230,7 +235,38 @@ export function graphToGeneralViewElements(
         if (category === 'packages') return false;
         return ctx.expandedGeneralCategories.has(category) || (category === 'other' && ctx.expandedGeneralCategories.has('other'));
     });
-    const visibleNodeIds = new Set(filteredNodes.map((node: any) => node.id));
+    const dedupedNodesById = new Map<string, any>();
+    filteredNodes.forEach((node: any) => {
+        const stableId =
+            (typeof node?.id === 'string' && node.id.trim().length > 0 ? node.id : null) ||
+            (typeof node?.qualifiedName === 'string' && node.qualifiedName.trim().length > 0 ? node.qualifiedName : null) ||
+            (String(node?.type || node?.element_type || 'element') + '::' + String(node?.name || 'unnamed'));
+        const existing = dedupedNodesById.get(stableId);
+        if (!existing) {
+            dedupedNodesById.set(stableId, node);
+            return;
+        }
+        const existingAttrs = existing?.attributes ? Object.keys(existing.attributes).length : 0;
+        const candidateAttrs = node?.attributes ? Object.keys(node.attributes).length : 0;
+        const existingChildren = Array.isArray(existing?.children) ? existing.children.length : 0;
+        const candidateChildren = Array.isArray(node?.children) ? node.children.length : 0;
+        if (candidateAttrs + candidateChildren > existingAttrs + existingChildren) {
+            dedupedNodesById.set(stableId, node);
+        }
+    });
+    let filteredUniqueNodes = Array.from(dedupedNodesById.values());
+    if (useSyntheticTree) {
+        const decompositionNodeIds = new Set<string>();
+        syntheticEdges.forEach((edge: any) => {
+            decompositionNodeIds.add(edge.source);
+            decompositionNodeIds.add(edge.target);
+        });
+        if (syntheticRootId) decompositionNodeIds.add(syntheticRootId);
+        if (decompositionNodeIds.size > 0) {
+            filteredUniqueNodes = filteredUniqueNodes.filter((node: any) => decompositionNodeIds.has(node.id));
+        }
+    }
+    const visibleNodeIds = new Set(filteredUniqueNodes.map((node: any) => node.id));
     const rawVisibleEdges = edges
         .map((edge: any) => ({
             source: edge.source,
@@ -244,7 +280,7 @@ export function graphToGeneralViewElements(
         );
 
     const categoryOrder = new Map(GENERAL_VIEW_CATEGORIES.map((c, i) => [c.id, i]));
-    filteredNodes.sort((a: any, b: any) => {
+    filteredUniqueNodes.sort((a: any, b: any) => {
         const catA = getCategoryForType((a.type || '').toLowerCase());
         const catB = getCategoryForType((b.type || '').toLowerCase());
         const orderA = categoryOrder.get(catA) ?? 999;
@@ -252,8 +288,8 @@ export function graphToGeneralViewElements(
         if (orderA !== orderB) return orderA - orderB;
         return String(a.name || '').localeCompare(String(b.name || ''));
     });
-    filteredNodes.forEach((node: any, index: number) => {
-        const cyId = 'gv-' + slugify(node.id) + '-' + index;
+    filteredUniqueNodes.forEach((node: any) => {
+        const cyId = 'gv-' + slugify(node.id);
         idToCyId.set(node.id, cyId);
         const category = getCategoryForType(((node.type || node.element_type || '') as string).toLowerCase());
         const elementWithChildren = idToElement.get(node.id);
@@ -321,7 +357,7 @@ export function graphToGeneralViewElements(
     const transitionEdgeIds = new Set<string>();
     const resolveCyId = (backendId: string) => idToCyId.get(backendId) || null;
     let edgesResolved = 0;
-    const structuralOnlySelection = filteredNodes.every((node: any) => {
+    const structuralOnlySelection = filteredUniqueNodes.every((node: any) => {
         const category = getCategoryForType(((node.type || node.element_type || '') as string).toLowerCase().trim());
         return category === 'packages' || category === 'partDefs' || category === 'parts';
     });
@@ -463,6 +499,8 @@ export function graphToGeneralViewElements(
         syntheticEdges.length,
         'filteredNodes',
         filteredNodes.length,
+        'filteredUniqueNodes',
+        filteredUniqueNodes.length,
         'edgesToUse',
         allEdgesToUse.length,
         'edgesResolved',
@@ -483,7 +521,7 @@ export function buildGeneralViewGraph(
     _relationships: any[],
     ctx: GeneralViewGraphContext
 ): { elements: any[]; typeStats: Record<string, number>; packageGroups: GeneralViewPackageGroup[] } {
-    const graph = dataOrElements?.graph;
+    const graph = dataOrElements?.generalViewGraph || dataOrElements?.graph;
     if (!graph || (!graph.nodes?.length && !graph.edges?.length)) {
         if (!graph && ctx.webviewLog) {
             ctx.webviewLog('info', '[GV] No graph in data; General View requires graph from LSP');

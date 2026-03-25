@@ -157,6 +157,8 @@ pub struct SysmlModelResultDto {
     pub version: u32,
     pub graph: Option<SysmlGraphDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub general_view_graph: Option<SysmlGraphDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub activity_diagrams: Option<Vec<model::ActivityDiagramDto>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sequence_diagrams: Option<Vec<model::SequenceDiagramDto>>,

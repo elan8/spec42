@@ -50,6 +50,8 @@ import {
 import { renderSequenceView as renderSequenceViewModule } from './renderers/sequence';
 import { renderActivityView as renderActivityViewModule } from './renderers/activity';
 import { renderStateView as renderStateViewModule } from './renderers/state';
+import { renderGeneralViewD3 } from './renderers/generalView';
+import { renderIbdView } from './renderers/ibd';
 import { createExportHandler } from './export';
 import { postJumpToElement } from './jumpToElement';
 import { buildGeneralViewGraph } from './graphBuilders';
@@ -261,7 +263,8 @@ import { buildGeneralViewGraph } from './graphBuilders';
             case 'update':
                 // Quick hash check - skip render if data unchanged
                 const newHash = quickHash({
-                    graph: message.graph
+                    graph: message.graph,
+                    generalViewGraph: message.generalViewGraph
                 });
 
                 if (newHash === lastDataHash && currentData) {
@@ -332,12 +335,35 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 break;
             case 'exportDiagramForTest':
                 // Export current diagram SVG for testing/review (writes to test-output/diagrams/)
-                const svgString = exportHandler.getSvgStringForExport();
-                vscode.postMessage({
-                    command: 'testDiagramExported',
-                    viewId: currentView,
-                    svgString: svgString ?? ''
-                });
+                // Wait for async renderers (elkjs) to finish so exports are not empty.
+                {
+                    const maxAttempts = 60;
+                    let attempts = 0;
+                    const tryExportWhenReady = () => {
+                        const hasContent = (() => {
+                            const svgElement = document.querySelector('#visualization svg');
+                            const groupElement = svgElement?.querySelector('g');
+                            return !!(svgElement && groupElement && groupElement.childElementCount > 0);
+                        })();
+                        if (!isRendering && !hasContent && currentData) {
+                            // Root cause: export can race before the requested view finished drawing.
+                            // Trigger an explicit re-render once before giving up.
+                            renderVisualization(currentView);
+                        }
+                        if ((isRendering || !hasContent) && attempts < maxAttempts) {
+                            attempts += 1;
+                            setTimeout(tryExportWhenReady, 150);
+                            return;
+                        }
+                        const svgString = exportHandler.getSvgStringForExport();
+                        vscode.postMessage({
+                            command: 'testDiagramExported',
+                            viewId: currentView,
+                            svgString: svgString ?? ''
+                        });
+                    };
+                    tryExportWhenReady();
+                }
                 break;
         }
     });
@@ -794,13 +820,12 @@ import { buildGeneralViewGraph } from './graphBuilders';
     function canUseBackendRenderedDiagram(view, renderedDiagram, dataToRender) {
         if (!renderedDiagram) return false;
         if (view === 'interconnection-view') {
-            const backendSelection = renderedDiagram?.viewState?.selection || null;
-            const selectedRoot = dataToRender?.selectedIbdRoot || selectedIbdRoot || null;
-            return !selectedRoot || !backendSelection || selectedRoot === backendSelection;
+            // Prefer client-side elkjs rendering (backend SVG is expensive and optional).
+            return false;
         }
         if (view === 'general-view') {
-            // General View is rendered exclusively by the backend SVG.
-            return true;
+            // Prefer client-side elkjs rendering (backend SVG is expensive and optional).
+            return false;
         }
         return false;
     }
@@ -1342,7 +1367,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
     // Make functions globally accessible for HTML onclick handlers
     window.changeView = changeView;
 
-    function renderVisualization(view, preserveZoomOverride = null, allowDuringResize = false) {
+    async function renderVisualization(view, preserveZoomOverride = null, allowDuringResize = false) {
         if (!currentData) {
             return;
         }
@@ -1598,38 +1623,30 @@ import { buildGeneralViewGraph } from './graphBuilders';
             }
         });
 
-        if (view === 'general-view' || view === 'interconnection-view') {
-            const canRenderBackend = canUseBackendRenderedDiagram(view, backendRenderedDiagram, dataToRender);
-            if (!canRenderBackend) {
-                const label = VIEW_OPTIONS[view]?.label || view;
-                renderPlaceholderView(
-                    width,
-                    height,
-                    label,
-                    'This view is rendered by the backend, but no rendered SVG is available for the current selection. Try refreshing the visualizer or switching back to the default selection.',
-                    dataToRender
-                );
+        if (view === 'general-view') {
+            const ctx = {
+                ...buildRenderContext(width, height),
+                buildGeneralViewGraph: (data: any) => buildGeneralViewGraphForView(data),
+                renderGeneralChips,
+                elkWorkerUrl,
+            };
+            await renderGeneralViewD3(ctx as any, dataToRender);
+            setTimeout(() => {
+                updateDimensionsDisplay();
                 isRendering = false;
                 hideLoading();
-                lastView = view;
-                return;
-            }
-            const rendered = renderBackendSvgDiagram(
-                backendRenderedDiagram,
-                shouldPreserveZoom,
-                currentTransform,
-                restoreZoom
-            );
-            if (rendered) {
-                setTimeout(() => {
-                    updateDimensionsDisplay();
-                    isRendering = false;
-                    hideLoading();
-                }, 100);
-            } else {
+            }, 100);
+        } else if (view === 'interconnection-view') {
+            const ctx = {
+                ...buildRenderContext(width, height),
+                elkWorkerUrl,
+            };
+            await renderIbdView(ctx as any, dataToRender);
+            setTimeout(() => {
+                updateDimensionsDisplay();
                 isRendering = false;
                 hideLoading();
-            }
+            }, 100);
         } else if (view === 'sequence-view') {
                 renderSequenceViewModule(buildRenderContext(width, height), dataToRender);
             } else if (view === 'action-flow-view') {

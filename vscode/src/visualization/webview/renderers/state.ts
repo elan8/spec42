@@ -5,6 +5,7 @@
 
 import type { RenderContext } from '../types';
 import { postJumpToElement } from '../jumpToElement';
+import { DIAGRAM_STYLE } from '../styleTokens';
 
 declare const d3: any;
 
@@ -350,7 +351,7 @@ export function renderStateView(ctx: RenderContext, data: any): void {
         .attr('orient', 'auto')
         .append('path')
         .attr('d', 'M0,-4L10,0L0,4')
-        .style('fill', 'var(--vscode-charts-purple)');
+        .style('fill', DIAGRAM_STYLE.edgePrimary);
 
     const transitionGroup = g.append('g').attr('class', 'state-transitions');
     const stateGroup = g.append('g').attr('class', 'state-nodes');
@@ -467,7 +468,7 @@ export function renderStateView(ctx: RenderContext, data: any): void {
                     .attr('d', edgeData.path)
                     .attr('class', 'transition-path')
                     .style('fill', 'none')
-                    .style('stroke', 'var(--vscode-charts-purple)')
+                    .style('stroke', DIAGRAM_STYLE.edgePrimary)
                     .style('stroke-width', '2px')
                     .style('marker-end', 'url(#state-arrowhead)');
 
@@ -492,7 +493,7 @@ export function renderStateView(ctx: RenderContext, data: any): void {
                         .attr('dominant-baseline', 'middle')
                         .text(labelText)
                         .style('font-size', '10px')
-                        .style('fill', 'var(--vscode-charts-purple)')
+                        .style('fill', DIAGRAM_STYLE.edgePrimary)
                         .style('font-weight', '500');
                 }
             });
@@ -538,7 +539,7 @@ export function renderStateView(ctx: RenderContext, data: any): void {
                 .attr('cy', stateHeight / 2)
                 .attr('r', 15)
                 .style('fill', 'var(--vscode-charts-green)')
-                .style('stroke', 'var(--vscode-panel-border)')
+                .style('stroke', DIAGRAM_STYLE.nodeBorder)
                 .style('stroke-width', '2px');
 
             stateElement.append('text')
@@ -555,13 +556,13 @@ export function renderStateView(ctx: RenderContext, data: any): void {
                 .attr('cy', stateHeight / 2)
                 .attr('r', 18)
                 .style('fill', 'none')
-                .style('stroke', 'var(--vscode-charts-red)')
+                .style('stroke', DIAGRAM_STYLE.nodeBorder)
                 .style('stroke-width', '2px');
             stateElement.append('circle')
                 .attr('cx', stateWidth / 2)
                 .attr('cy', stateHeight / 2)
                 .attr('r', 12)
-                .style('fill', 'var(--vscode-charts-red)');
+                .style('fill', DIAGRAM_STYLE.edgePrimary);
 
             stateElement.append('text')
                 .attr('x', stateWidth / 2)
@@ -589,7 +590,7 @@ export function renderStateView(ctx: RenderContext, data: any): void {
                 .attr('rx', 8)
                 .attr('ry', 8)
                 .style('fill', 'url(#state-gradient-' + stateKey.replace(/[^a-zA-Z0-9]/g, '_') + ')')
-                .style('stroke', 'var(--vscode-charts-blue)')
+                .style('stroke', DIAGRAM_STYLE.nodeBorder)
                 .style('stroke-width', '2px')
                 .style('filter', 'drop-shadow(2px 2px 3px rgba(0,0,0,0.2))');
 

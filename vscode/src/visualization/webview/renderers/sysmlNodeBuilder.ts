@@ -5,6 +5,8 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { DIAGRAM_STYLE } from '../styleTokens';
+
 declare const d3: any;
 
 function classifyNodeCategory(stereotype: string): 'structure' | 'behavior' | 'requirements' | 'other' {
@@ -286,7 +288,7 @@ export function renderSysMLNode(
         .attr('data-element-name', options.dataElementName || compartments.header.name)
         .style('cursor', 'pointer');
 
-    const strokeColor = options.typeColor || 'var(--vscode-charts-blue)';
+    const strokeColor = options.typeColor || DIAGRAM_STYLE.edgePrimary;
     const strokeW = options.isDefinition ? '3px' : '2px';
     const nodeCategory = classifyNodeCategory(compartments.header.stereotype);
     const cornerRadius = nodeCategory === 'requirements'
@@ -296,10 +298,10 @@ export function renderSysMLNode(
             : options.isDefinition
                 ? 4
                 : 8;
-    const bodyFill = 'color-mix(in srgb, ' + strokeColor + ' 7%, var(--vscode-editor-background))';
-    const headerFill = 'color-mix(in srgb, ' + strokeColor + ' 14%, var(--vscode-button-secondaryBackground))';
-    const dividerColor = 'color-mix(in srgb, ' + strokeColor + ' 24%, var(--vscode-panel-border))';
-    const compartmentTitleColor = 'color-mix(in srgb, ' + strokeColor + ' 72%, var(--vscode-descriptionForeground))';
+    const bodyFill = DIAGRAM_STYLE.nodeFill;
+    const headerFill = DIAGRAM_STYLE.panelBackground;
+    const dividerColor = DIAGRAM_STYLE.nodeBorder;
+    const compartmentTitleColor = DIAGRAM_STYLE.textSecondary;
     const accentPrefix = nodeCategory === 'behavior'
         ? '[B] '
         : nodeCategory === 'requirements'
@@ -326,14 +328,7 @@ export function renderSysMLNode(
         nodeG.append('rect')
             .attr('y', 0)
             .attr('width', options.width)
-            .attr('height', 5)
-            .attr('rx', Math.max(2, cornerRadius - 2))
-            .style('fill', strokeColor);
-
-        nodeG.append('rect')
-            .attr('y', 5)
-            .attr('width', options.width)
-            .attr('height', headerH - 5)
+            .attr('height', headerH)
             .attr('class', 'sysml-header-compartment')
             .attr('rx', Math.max(2, cornerRadius - 2))
             .style('fill', headerFill);
@@ -357,7 +352,7 @@ export function renderSysMLNode(
             .text(truncatedName)
             .style('font-size', '11px')
             .style('font-weight', 'bold')
-            .style('fill', 'var(--vscode-editor-foreground)');
+            .style('fill', DIAGRAM_STYLE.textPrimary);
 
         if (compartments.typedByName) {
             const tbText = compartments.typedByName.length > 22 ? compartments.typedByName.substring(0, 20) + '..' : compartments.typedByName;
@@ -368,7 +363,7 @@ export function renderSysMLNode(
                 .text(': ' + tbText)
                 .style('font-size', '10px')
                 .style('font-style', 'italic')
-                .style('fill', '#569CD6');
+                .style('fill', DIAGRAM_STYLE.edgePrimary);
         }
 
         contentY += headerH;
@@ -408,7 +403,7 @@ export function renderSysMLNode(
                 .attr('y', contentY + 9)
                 .text(truncated)
                 .style('font-size', '9px')
-                .style('fill', 'var(--vscode-descriptionForeground)');
+                .style('fill', DIAGRAM_STYLE.textSecondary);
             contentY += LINE_HEIGHT;
         });
         contentY += COMPARTMENT_PADDING;

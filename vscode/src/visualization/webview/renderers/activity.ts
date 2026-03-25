@@ -5,6 +5,7 @@
 
 import type { RenderContext } from '../types';
 import { postJumpToElement } from '../jumpToElement';
+import { DIAGRAM_STYLE } from '../styleTokens';
 
 declare const d3: any;
 
@@ -218,7 +219,7 @@ export function renderActivityView(ctx: RenderContext, data: any): void {
                 .attr('height', laneHeight)
                 .attr('rx', 4)
                 .style('fill', 'none')
-                .style('stroke', 'var(--vscode-panel-border)')
+                .style('stroke', DIAGRAM_STYLE.nodeBorder)
                 .style('stroke-width', '2px')
                 .style('stroke-dasharray', '5,5')
                 .style('opacity', 0.5);
@@ -325,7 +326,7 @@ export function renderActivityView(ctx: RenderContext, data: any): void {
         flowGroup.append('path')
             .attr('d', pathData)
             .style('fill', 'none')
-            .style('stroke', 'var(--vscode-charts-blue)')
+            .style('stroke', DIAGRAM_STYLE.edgePrimary)
             .style('stroke-width', '2px')
             .style('marker-end', 'url(#activity-arrowhead)');
 
@@ -352,7 +353,7 @@ export function renderActivityView(ctx: RenderContext, data: any): void {
                 .attr('height', 14)
                 .attr('rx', 3)
                 .style('fill', 'var(--vscode-editor-background)')
-                .style('stroke', 'var(--vscode-charts-orange)')
+                .style('stroke', DIAGRAM_STYLE.edgePrimary)
                 .style('stroke-width', '1px')
                 .style('opacity', 0.9);
 
@@ -362,7 +363,7 @@ export function renderActivityView(ctx: RenderContext, data: any): void {
                 .attr('text-anchor', 'middle')
                 .text(labelText)
                 .style('font-size', '10px')
-                .style('fill', 'var(--vscode-charts-orange)')
+                .style('fill', DIAGRAM_STYLE.edgePrimary)
                 .style('font-weight', 'bold');
         }
     });
@@ -379,7 +380,7 @@ export function renderActivityView(ctx: RenderContext, data: any): void {
         .attr('orient', 'auto')
         .append('path')
         .attr('d', 'M0,-5L10,0L0,5')
-        .style('fill', 'var(--vscode-charts-blue)');
+        .style('fill', DIAGRAM_STYLE.edgePrimary);
 
     const actionGroup = g.append('g').attr('class', 'activity-actions');
 
@@ -420,7 +421,7 @@ export function renderActivityView(ctx: RenderContext, data: any): void {
                 .attr('cy', actionHeight / 2)
                 .attr('r', 20)
                 .style('fill', isStart ? 'var(--vscode-charts-green)' : 'var(--vscode-charts-red)')
-                .style('stroke', 'var(--vscode-panel-border)')
+                .style('stroke', DIAGRAM_STYLE.nodeBorder)
                 .style('stroke-width', '3px');
 
             if (isEnd) {
@@ -428,7 +429,7 @@ export function renderActivityView(ctx: RenderContext, data: any): void {
                     .attr('cx', actionWidth / 2)
                     .attr('cy', actionHeight / 2)
                     .attr('r', 12)
-                    .style('fill', 'var(--vscode-charts-red)')
+                    .style('fill', DIAGRAM_STYLE.edgePrimary)
                     .style('stroke', 'none');
             }
         } else if (isDecision) {
@@ -440,7 +441,7 @@ export function renderActivityView(ctx: RenderContext, data: any): void {
             actionElement.append('path')
                 .attr('d', diamond)
                 .style('fill', 'var(--vscode-editor-background)')
-                .style('stroke', 'var(--vscode-charts-orange)')
+                .style('stroke', DIAGRAM_STYLE.edgePrimary)
                 .style('stroke-width', '2px');
 
             let decisionLabel = '?';
@@ -498,7 +499,7 @@ export function renderActivityView(ctx: RenderContext, data: any): void {
                 .attr('height', containerHeight)
                 .attr('rx', 8)
                 .style('fill', 'var(--vscode-editor-background)')
-                .style('stroke', isContainer ? 'var(--vscode-charts-purple)' : 'var(--vscode-charts-blue)')
+                .style('stroke', DIAGRAM_STYLE.nodeBorder)
                 .style('stroke-width', isContainer ? '3px' : '2px');
 
             const maxChars = isContainer ? 28 : 24;
@@ -531,7 +532,7 @@ export function renderActivityView(ctx: RenderContext, data: any): void {
                         .attr('height', childActionHeight)
                         .attr('rx', 4)
                         .style('fill', 'var(--vscode-editor-inactiveSelectionBackground)')
-                        .style('stroke', 'var(--vscode-charts-blue)')
+                        .style('stroke', DIAGRAM_STYLE.nodeBorder)
                         .style('stroke-width', '1px')
                         .style('cursor', 'pointer')
                         .on('click', function(event: any) {

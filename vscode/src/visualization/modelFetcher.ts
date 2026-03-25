@@ -20,6 +20,7 @@ export interface FetchModelParams {
 export interface UpdateMessage {
     command: 'update';
     graph?: SysMLGraphDTO;
+    generalViewGraph?: SysMLGraphDTO;
     ibd?: IbdDataDTO;
     renderedDiagrams?: RenderedDiagramsDTO;
     sequenceDiagrams: unknown[];
@@ -92,8 +93,8 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         ? fileUris.map(u => u.toString())
         : [documentUri];
 
-    const scopes: ('graph' | 'sequenceDiagrams' | 'activityDiagrams')[] =
-        ['graph', 'sequenceDiagrams', 'activityDiagrams'];
+    const scopes: ('graph' | 'ibd' | 'sequenceDiagrams' | 'activityDiagrams' | 'stats')[] =
+        ['graph', 'ibd', 'sequenceDiagrams', 'activityDiagrams', 'stats'];
 
     const settledResults = await Promise.allSettled(
         urisToQuery.map(uri => lspModelProvider.getModel(uri, scopes)),
@@ -137,12 +138,15 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     const mergedGraph = mergeGraphs(allGraphs);
 
     const primaryResult = results.find(r => r.graph?.nodes?.length || r.graph?.edges?.length) ?? results[0];
+    const primaryGeneralViewGraph = primaryResult?.generalViewGraph;
     const ibd = primaryResult?.ibd;
+    // renderedDiagrams are intentionally not requested by default (backend SVG/layout is expensive).
     const renderedDiagrams = urisToQuery.length === 1 ? primaryResult?.renderedDiagrams : undefined;
 
     const msg: UpdateMessage = {
         command: 'update',
         graph: mergedGraph,
+        generalViewGraph: primaryGeneralViewGraph,
         ibd,
         renderedDiagrams,
         sequenceDiagrams: allSequenceDiagrams,
