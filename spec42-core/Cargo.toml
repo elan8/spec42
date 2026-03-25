@@ -25,3 +25,4 @@ sysml-diagrams = { path = "../sysml-diagrams" }
 [dev-dependencies]
 # Used by LSP integration tests when constructing `file://` URIs.
 url = "2"
+elk-testkit = { workspace = true }

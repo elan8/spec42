@@ -21,11 +21,16 @@ pub fn build_rendered_diagram_with_config(
     config: LayoutConfig,
 ) -> Result<RenderedDiagram> {
     let (layout, report) = layout_with_report(&graph, &config)?;
+    let visual_edge_bridges = std::env::var("SPEC42_SVG_EDGE_BRIDGES")
+        .ok()
+        .as_deref()
+        .is_some_and(|value| value == "1" || value.eq_ignore_ascii_case("true"))
+        && view.contains("interconnection-view");
     let rendered = render_svg(
         &layout,
         &SvgRenderOptions {
             class_name: format!("diagram-root {}", view),
-            visual_edge_bridges: view.contains("interconnection-view"),
+            visual_edge_bridges,
         },
     );
     Ok(RenderedDiagram {

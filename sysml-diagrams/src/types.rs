@@ -29,16 +29,19 @@ pub struct GraphEdgeInput {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IbdPartInput {
     pub id: String,
     pub name: String,
     pub qualified_name: String,
     pub container_id: Option<String>,
+    #[serde(rename = "type")]
     pub element_type: String,
     pub attributes: Vec<(String, String)>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IbdPortInput {
     pub id: String,
     pub name: String,
@@ -49,15 +52,18 @@ pub struct IbdPortInput {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IbdConnectorInput {
     pub source: String,
     pub target: String,
     pub source_id: String,
     pub target_id: String,
+    #[serde(rename = "type")]
     pub rel_type: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IbdInput {
     pub parts: Vec<IbdPartInput>,
     pub ports: Vec<IbdPortInput>,

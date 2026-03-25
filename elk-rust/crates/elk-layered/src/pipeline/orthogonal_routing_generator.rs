@@ -51,6 +51,12 @@ impl HyperEdgeSegment {
     fn is_straight(&self) -> bool {
         (self.start_coordinate - self.end_coordinate).abs() < TOLERANCE
     }
+
+    fn represents_hyperedge(&self) -> bool {
+        // Heuristic proxy for the upstream concept: segments that aggregate multiple
+        // incoming/outgoing connections are more likely to represent a hyperedge.
+        self.incoming_connection_coordinates.len() + self.outgoing_connection_coordinates.len() > 2
+    }
 }
 
 pub(crate) fn assign_routing_slots(
@@ -102,13 +108,43 @@ pub(crate) fn assign_routing_slots(
     slots
 }
 
+#[derive(Clone, Copy, Debug)]
+struct SimpleRng {
+    state: u64,
+}
+
+impl SimpleRng {
+    fn new(seed: u64) -> Self {
+        Self { state: seed.max(1) }
+    }
+
+    fn next_u32(&mut self) -> u32 {
+        // xorshift64*
+        let mut x = self.state;
+        x ^= x >> 12;
+        x ^= x << 25;
+        x ^= x >> 27;
+        self.state = x;
+        (x.wrapping_mul(0x2545F4914F6CDD1D) >> 32) as u32
+    }
+
+    fn gen_range(&mut self, upper_exclusive: usize) -> usize {
+        if upper_exclusive <= 1 {
+            return 0;
+        }
+        (self.next_u32() as usize) % upper_exclusive
+    }
+}
+
 fn break_critical_cycles_by_splitting(
     segments: &mut Vec<HyperEdgeSegment>,
     conflict_threshold: f32,
     critical_conflict_threshold: f32,
 ) {
-    // Detect critical cycles. We don't have a seeded RNG here; use deterministic selection.
-    let deps_to_resolve = detect_cycles(segments, true);
+    // Detect critical cycles using the upstream mark-based heuristic.
+    // Java uses a Random from the graph; we use a deterministic seed to keep output stable.
+    let mut rng = SimpleRng::new(1);
+    let deps_to_resolve = detect_cycles_mark_heuristic(segments, true, &mut rng);
     if deps_to_resolve.is_empty() {
         return;
     }
@@ -117,15 +153,21 @@ fn break_critical_cycles_by_splitting(
     let mut free_areas = find_free_areas(segments, critical_conflict_threshold);
 
     // Decide which segments to split: choose one endpoint of each dependency, preferring the
-    // one with smaller extent.
+    // non-hyperedge segment (Java prefers splitting regular edges) and then smaller extent.
     let mut to_split: Vec<usize> = Vec::new();
     for dep in deps_to_resolve {
         if segments[dep.source].split_partner.is_some() || segments[dep.target].split_partner.is_some() {
             continue;
         }
+        let s_hyper = segments[dep.source].represents_hyperedge();
+        let t_hyper = segments[dep.target].represents_hyperedge();
         let len_s = (segments[dep.source].end_coordinate - segments[dep.source].start_coordinate).abs();
         let len_t = (segments[dep.target].end_coordinate - segments[dep.target].start_coordinate).abs();
-        let (seg_to_split, seg_causing) = if len_s <= len_t {
+        let (seg_to_split, seg_causing) = if s_hyper && !t_hyper {
+            (dep.target, dep.source)
+        } else if t_hyper && !s_hyper {
+            (dep.source, dep.target)
+        } else if len_s <= len_t {
             (dep.source, dep.target)
         } else {
             (dep.target, dep.source)
@@ -306,143 +348,201 @@ fn split_at(seg_id: usize, split_pos: f32, segments: &mut Vec<HyperEdgeSegment>)
     new_id
 }
 
-fn detect_cycles(segments: &[HyperEdgeSegment], critical_only: bool) -> Vec<Dependency> {
-    // Determine a linear ordering mark for each node using a simplified version of the ELK heuristic:
-    // iteratively remove sinks, then sources; otherwise pick max outflow.
+fn detect_cycles_mark_heuristic(
+    segments: &[HyperEdgeSegment],
+    critical_only: bool,
+    rng: &mut SimpleRng,
+) -> Vec<Dependency> {
+    // Port of ELK's HyperEdgeCycleDetector mark heuristic.
     let n = segments.len();
-    let mut in_w = vec![0i32; n];
-    let mut out_w = vec![0i32; n];
-    for (i, seg) in segments.iter().enumerate() {
-        let incoming = seg
-            .incoming
-            .iter()
-            .filter(|d| !critical_only || d.kind == DependencyKind::Critical)
-            .map(|d| d.weight)
-            .sum();
-        let outgoing = seg
-            .outgoing
-            .iter()
-            .filter(|d| !critical_only || d.kind == DependencyKind::Critical)
-            .map(|d| d.weight)
-            .sum();
-        in_w[i] = incoming;
-        out_w[i] = outgoing;
+    if n == 0 {
+        return Vec::new();
     }
 
-    let mut unprocessed: Vec<bool> = vec![true; n];
-    let mut mark = vec![0i32; n];
+    let mut mark: Vec<i32> = (0..n).map(|i| -(i as i32) - 1).collect();
+    let mut in_w = vec![0i32; n];
+    let mut out_w = vec![0i32; n];
+    let mut critical_in_w = vec![0i32; n];
+    let mut critical_out_w = vec![0i32; n];
+
+    let consider = |d: &Dependency, critical_only: bool| -> bool {
+        !critical_only || d.kind == DependencyKind::Critical
+    };
+
+    for i in 0..n {
+        critical_in_w[i] = segments[i]
+            .incoming
+            .iter()
+            .filter(|d| d.kind == DependencyKind::Critical)
+            .map(|d| d.weight)
+            .sum();
+        critical_out_w[i] = segments[i]
+            .outgoing
+            .iter()
+            .filter(|d| d.kind == DependencyKind::Critical)
+            .map(|d| d.weight)
+            .sum();
+        if critical_only {
+            in_w[i] = critical_in_w[i];
+            out_w[i] = critical_out_w[i];
+        } else {
+            in_w[i] = segments[i].incoming.iter().map(|d| d.weight).sum();
+            out_w[i] = segments[i].outgoing.iter().map(|d| d.weight).sum();
+        }
+    }
+
+    let mut sources: VecDeque<usize> = VecDeque::new();
+    let mut sinks: VecDeque<usize> = VecDeque::new();
+    for i in 0..n {
+        if out_w[i] == 0 {
+            sinks.push_back(i);
+        } else if in_w[i] == 0 {
+            sources.push_back(i);
+        }
+    }
+
+    let mut unprocessed = vec![true; n];
     let mark_base = n as i32;
     let mut next_sink_mark = mark_base - 1;
     let mut next_source_mark = mark_base + 1;
 
-    loop {
-        let mut remaining = 0usize;
-        for u in 0..n {
-            if unprocessed[u] {
-                remaining += 1;
+    fn update_neighbors(
+        u: usize,
+        segments: &[HyperEdgeSegment],
+        critical_only: bool,
+        unprocessed: &[bool],
+        in_w: &mut [i32],
+        out_w: &mut [i32],
+        critical_in_w: &mut [i32],
+        critical_out_w: &mut [i32],
+        sources: &mut VecDeque<usize>,
+        sinks: &mut VecDeque<usize>,
+    ) {
+        let consider = |d: &Dependency, critical_only: bool| -> bool {
+            !critical_only || d.kind == DependencyKind::Critical
+        };
+
+        for dep in &segments[u].outgoing {
+            if !consider(dep, critical_only) {
+                continue;
+            }
+            let t = dep.target;
+            if unprocessed[t] && dep.weight > 0 {
+                in_w[t] -= dep.weight;
+                if dep.kind == DependencyKind::Critical {
+                    critical_in_w[t] -= dep.weight;
+                }
+                if in_w[t] <= 0 && out_w[t] > 0 {
+                    sources.push_back(t);
+                }
             }
         }
-        if remaining == 0 {
-            break;
-        }
 
-        // Remove sinks.
-        let mut progressed = false;
-        for u in 0..n {
-            if unprocessed[u] && out_w[u] == 0 {
-                unprocessed[u] = false;
-                mark[u] = next_sink_mark;
-                next_sink_mark -= 1;
-                // update neighbors
-                for dep in segments[u].incoming.iter() {
-                    if critical_only && dep.kind != DependencyKind::Critical {
-                        continue;
-                    }
-                    if unprocessed[dep.source] && dep.weight > 0 {
-                        out_w[dep.source] -= dep.weight;
-                    }
+        for dep in &segments[u].incoming {
+            if !consider(dep, critical_only) {
+                continue;
+            }
+            let s = dep.source;
+            if unprocessed[s] && dep.weight > 0 {
+                out_w[s] -= dep.weight;
+                if dep.kind == DependencyKind::Critical {
+                    critical_out_w[s] -= dep.weight;
                 }
-                for dep in segments[u].outgoing.iter() {
-                    if critical_only && dep.kind != DependencyKind::Critical {
-                        continue;
-                    }
-                    if unprocessed[dep.target] && dep.weight > 0 {
-                        in_w[dep.target] -= dep.weight;
-                    }
+                if out_w[s] <= 0 && in_w[s] > 0 {
+                    sinks.push_back(s);
                 }
-                progressed = true;
             }
         }
-        if progressed {
-            continue;
-        }
+    }
 
-        // Remove sources.
-        for u in 0..n {
-            if unprocessed[u] && in_w[u] == 0 && out_w[u] > 0 {
-                unprocessed[u] = false;
-                mark[u] = next_source_mark;
-                next_source_mark += 1;
-                for dep in segments[u].outgoing.iter() {
-                    if critical_only && dep.kind != DependencyKind::Critical {
-                        continue;
-                    }
-                    if unprocessed[dep.target] && dep.weight > 0 {
-                        in_w[dep.target] -= dep.weight;
-                    }
-                }
-                for dep in segments[u].incoming.iter() {
-                    if critical_only && dep.kind != DependencyKind::Critical {
-                        continue;
-                    }
-                    if unprocessed[dep.source] && dep.weight > 0 {
-                        out_w[dep.source] -= dep.weight;
-                    }
-                }
-                progressed = true;
+    while unprocessed.iter().any(|v| *v) {
+        while let Some(u) = sinks.pop_front() {
+            if !unprocessed[u] {
+                continue;
             }
-        }
-        if progressed {
-            continue;
+            unprocessed[u] = false;
+            mark[u] = next_sink_mark;
+            next_sink_mark -= 1;
+            update_neighbors(
+                u,
+                segments,
+                critical_only,
+                &unprocessed,
+                &mut in_w,
+                &mut out_w,
+                &mut critical_in_w,
+                &mut critical_out_w,
+                &mut sources,
+                &mut sinks,
+            );
         }
 
-        // Pick max outflow.
-        let mut best: Option<(usize, i32)> = None;
+        while let Some(u) = sources.pop_front() {
+            if !unprocessed[u] {
+                continue;
+            }
+            unprocessed[u] = false;
+            mark[u] = next_source_mark;
+            next_source_mark += 1;
+            update_neighbors(
+                u,
+                segments,
+                critical_only,
+                &unprocessed,
+                &mut in_w,
+                &mut out_w,
+                &mut critical_in_w,
+                &mut critical_out_w,
+                &mut sources,
+                &mut sinks,
+            );
+        }
+
+        // Select among unprocessed nodes with maximal outflow, with the same critical guard
+        // as upstream (ensure critical deps always point right when critical_only=false).
+        let mut max_outflow = i32::MIN;
+        let mut max_segments: Vec<usize> = Vec::new();
         for u in 0..n {
             if !unprocessed[u] {
                 continue;
             }
+            if !critical_only && critical_out_w[u] > 0 && critical_in_w[u] <= 0 {
+                max_segments.clear();
+                max_segments.push(u);
+                break;
+            }
             let outflow = out_w[u] - in_w[u];
-            if best.as_ref().is_none_or(|(_, b)| outflow > *b) {
-                best = Some((u, outflow));
+            if outflow >= max_outflow {
+                if outflow > max_outflow {
+                    max_outflow = outflow;
+                    max_segments.clear();
+                }
+                max_segments.push(u);
             }
         }
-        if let Some((u, _)) = best {
-            unprocessed[u] = false;
-            mark[u] = next_source_mark;
-            next_source_mark += 1;
-            for dep in segments[u].outgoing.iter() {
-                if critical_only && dep.kind != DependencyKind::Critical {
-                    continue;
-                }
-                if unprocessed[dep.target] && dep.weight > 0 {
-                    in_w[dep.target] -= dep.weight;
-                }
+
+        if !max_segments.is_empty() {
+            let pick = max_segments[rng.gen_range(max_segments.len())];
+            if unprocessed[pick] {
+                unprocessed[pick] = false;
+                mark[pick] = next_source_mark;
+                next_source_mark += 1;
+                update_neighbors(
+                    pick,
+                    segments,
+                    critical_only,
+                    &unprocessed,
+                    &mut in_w,
+                    &mut out_w,
+                    &mut critical_in_w,
+                    &mut critical_out_w,
+                    &mut sources,
+                    &mut sinks,
+                );
             }
-            for dep in segments[u].incoming.iter() {
-                if critical_only && dep.kind != DependencyKind::Critical {
-                    continue;
-                }
-                if unprocessed[dep.source] && dep.weight > 0 {
-                    out_w[dep.source] -= dep.weight;
-                }
-            }
-        } else {
-            break;
         }
     }
 
-    // shift sink marks
     let shift_base = n as i32 + 1;
     for m in &mut mark {
         if *m < mark_base {
@@ -450,11 +550,10 @@ fn detect_cycles(segments: &[HyperEdgeSegment], critical_only: bool) -> Vec<Depe
         }
     }
 
-    // Collect dependencies that point left.
     let mut out = Vec::new();
     for seg in segments {
         for dep in &seg.outgoing {
-            if critical_only && dep.kind != DependencyKind::Critical {
+            if !consider(dep, critical_only) {
                 continue;
             }
             if mark[dep.source] > mark[dep.target] {
@@ -661,56 +760,19 @@ fn add_dependency(segments: &mut [HyperEdgeSegment], dep: Dependency) {
 }
 
 fn break_non_critical_cycles(segments: &mut [HyperEdgeSegment]) {
-    // Simple cycle breaking: repeatedly find a back-edge in a DFS on regular deps and either
-    // remove (weight==0) or reverse.
-    loop {
-        let Some(edge) = find_cycle_edge(segments) else {
-            break;
-        };
-        if edge.weight == 0 {
-            remove_dependency(segments, edge);
+    // Port of ELK's HyperEdgeCycleDetector for non-critical cycle breaking.
+    let mut rng = SimpleRng::new(1);
+    let deps_to_resolve = detect_cycles_mark_heuristic(segments, false, &mut rng);
+    for dep in deps_to_resolve {
+        if dep.kind == DependencyKind::Critical {
+            continue;
+        }
+        if dep.weight == 0 {
+            remove_dependency(segments, dep);
         } else {
-            reverse_dependency(segments, edge);
+            reverse_dependency(segments, dep);
         }
     }
-}
-
-fn find_cycle_edge(segments: &[HyperEdgeSegment]) -> Option<Dependency> {
-    let n = segments.len();
-    let mut state = vec![0u8; n]; // 0=unseen,1=visiting,2=done
-    for start in 0..n {
-        if state[start] != 0 {
-            continue;
-        }
-        if let Some(edge) = dfs_find_back_edge(segments, start, &mut state) {
-            return Some(edge);
-        }
-    }
-    None
-}
-
-fn dfs_find_back_edge(
-    segments: &[HyperEdgeSegment],
-    u: usize,
-    state: &mut [u8],
-) -> Option<Dependency> {
-    state[u] = 1;
-    for dep in &segments[u].outgoing {
-        if dep.kind != DependencyKind::Regular {
-            continue;
-        }
-        let v = dep.target;
-        if state[v] == 1 {
-            return Some(*dep);
-        }
-        if state[v] == 0 {
-            if let Some(edge) = dfs_find_back_edge(segments, v, state) {
-                return Some(edge);
-            }
-        }
-    }
-    state[u] = 2;
-    None
 }
 
 fn remove_dependency(segments: &mut [HyperEdgeSegment], dep: Dependency) {

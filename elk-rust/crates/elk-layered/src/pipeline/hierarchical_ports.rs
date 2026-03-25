@@ -25,6 +25,7 @@ pub(crate) fn run_hierarchical_port_postprocessing(
     correct_hierarchical_port_route_terminals(graph, map);
     correct_slanted_edge_segments(graph, map);
     hide_temporary_hierarchical_ports(graph, map);
+    shrink_temporary_hierarchical_dummy_nodes(graph, map);
 }
 
 pub(crate) fn refresh_hierarchical_port_coordinates(graph: &mut ElkGraph, map: &CompoundRoutingMap) {
@@ -131,6 +132,26 @@ pub(crate) fn hide_temporary_hierarchical_ports(graph: &mut ElkGraph, map: &Comp
         if let Some(port) = graph.ports.get_mut(port_id.index()) {
             port.properties
                 .insert("spec42.temporary_hierarchical_port", PropertyValue::Bool(true));
+        }
+    }
+}
+
+fn shrink_temporary_hierarchical_dummy_nodes(graph: &mut ElkGraph, map: &CompoundRoutingMap) {
+    // Java postcondition: external port dummy nodes should have size (0,0) after routing.
+    // Keeping a non-zero size causes artificial overlaps inside the container, which breaks
+    // interconnection invariants and differs from upstream behavior.
+    for &node_id in &map.temporary_dummy_nodes {
+        if let Some(node) = graph.nodes.get_mut(node_id.index()) {
+            node.geometry.width = 0.0;
+            node.geometry.height = 0.0;
+        }
+    }
+
+    // Keep the routing-only dummy ports non-invasive as well.
+    for &port_id in &map.temporary_dummy_ports {
+        if let Some(port) = graph.ports.get_mut(port_id.index()) {
+            port.geometry.width = 0.0;
+            port.geometry.height = 0.0;
         }
     }
 }

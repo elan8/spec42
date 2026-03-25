@@ -1,64 +1,64 @@
 interconnection-view-full-drone debug
-aspect_ratio=1.5491703748703003
-edge_crossings=3
-edge_node_intrusions=24
-bend_count=164
-orthogonal_violations=8
+aspect_ratio=1.5378389358520508
+edge_crossings=33
+edge_node_intrusions=23
+bend_count=219
+orthogonal_violations=31
 warnings_count=32
 router_warning_count=1
 
 warnings:
-0: elk-layered compound: edge=EdgeId(1) java_segment_route=(2000.0,743.2) -> (2120.8,743.2) -> (2120.8,689.8) -> (2264.0,689.8) -> (2268.0,689.8) -> (2412.0,442.6) -> (2412.0,115.7) -> (3238.0,115.7) -> (3238.0,156.6) -> (3348.0,156.6)
-1: elk-layered compound: edge=EdgeId(1) route_bends=8 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=2 route_global_intrusions=10
-2: elk-layered compound: edge=EdgeId(10) java_segment_route=(752.0,746.5) -> (1020.0,746.5) -> (1020.0,659.8) -> (1072.0,659.8) -> (1076.0,659.8) -> (1332.0,520.1) -> (1332.0,189.7) -> (3210.0,189.7) -> (3210.0,198.9) -> (3348.0,198.9)
-3: elk-layered compound: edge=EdgeId(10) route_bends=8 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=16 route_global_intrusions=26
-4: elk-layered compound: edge=EdgeId(11) java_segment_route=(752.0,746.5) -> (1020.0,746.5) -> (1020.0,659.8) -> (1072.0,659.8) -> (1226.0,659.8) -> (1226.0,712.8) -> (1324.0,712.8) -> (1543.2,712.8) -> (1543.2,743.2) -> (1740.0,743.2)
-5: elk-layered compound: edge=EdgeId(11) route_bends=8 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=18 route_global_intrusions=18
-6: elk-layered compound: edge=EdgeId(12) java_segment_route=(752.0,746.5) -> (1014.0,746.5) -> (1014.0,659.8) -> (1072.0,659.8) -> (1076.0,659.8) -> (1332.0,655.5) -> (1332.0,412.5) -> (1928.0,412.5) -> (1928.0,468.5) -> (2396.0,468.5)
-7: elk-layered compound: edge=EdgeId(12) route_bends=8 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=16 route_global_intrusions=26
-8: elk-layered compound: edge=EdgeId(13) java_segment_route=(752.0,746.5) -> (990.0,746.5) -> (990.0,659.8) -> (1072.0,659.8) -> (1076.0,659.8) -> (1332.0,1400.5) -> (1332.0,1710.5) -> (1872.0,1710.5) -> (1872.0,1460.2) -> (2404.0,1460.2) -> (2504.0,1460.2) -> (2504.0,1134.2) -> (2568.0,1134.2)
-9: elk-layered compound: edge=EdgeId(13) route_bends=11 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=32 route_global_intrusions=45
-10: elk-layered compound: edge=EdgeId(14) java_segment_route=(752.0,746.5) -> (966.0,746.5) -> (966.0,659.8) -> (1072.0,659.8) -> (1076.0,659.8) -> (1332.0,1413.5) -> (1332.0,1784.5) -> (1900.0,1784.5) -> (1900.0,1460.2) -> (2404.0,1460.2) -> (2504.0,1460.2) -> (2504.0,1390.2) -> (2568.0,1390.2)
-11: elk-layered compound: edge=EdgeId(14) route_bends=11 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=32 route_global_intrusions=45
-12: elk-layered compound: edge=EdgeId(15) java_segment_route=(752.0,746.5) -> (942.0,746.5) -> (942.0,659.8) -> (1072.0,659.8) -> (1076.0,659.8) -> (1332.0,1426.5) -> (1332.0,1858.5) -> (1928.0,1858.5) -> (1928.0,1460.2) -> (2404.0,1460.2) -> (2504.0,1460.2) -> (2504.0,1646.2) -> (2568.0,1646.2)
-13: elk-layered compound: edge=EdgeId(15) route_bends=11 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=32 route_global_intrusions=45
-14: elk-layered compound: edge=EdgeId(16) java_segment_route=(752.0,746.5) -> (768.0,746.5) -> (768.0,833.8) -> (1020.0,833.8) -> (1020.0,659.8) -> (1072.0,659.8) -> (1076.0,659.8) -> (1332.0,1439.5) -> (1332.0,1932.5) -> (1956.0,1932.5) -> (1956.0,1460.2) -> (2404.0,1460.2) -> (2504.0,1460.2) -> (2504.0,1902.2) -> (2568.0,1902.2)
-15: elk-layered compound: edge=EdgeId(16) route_bends=13 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=32 route_global_intrusions=45
-16: elk-layered compound: edge=EdgeId(2) java_segment_route=(1740.0,743.2) -> (2122.0,743.2) -> (2122.0,609.6) -> (2264.0,609.6) -> (2362.0,609.6) -> (2362.0,441.3) -> (2396.0,441.3)
-17: elk-layered compound: edge=EdgeId(2) route_bends=5 route_inside_start=true route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=2 route_global_intrusions=2
-18: elk-layered compound: edge=EdgeId(3) java_segment_route=(2000.0,743.2) -> (2168.8,743.2) -> (2168.8,632.5) -> (2264.0,632.5) -> (2334.0,632.5) -> (2334.0,1460.2) -> (2404.0,1460.2) -> (2544.0,1460.2) -> (2544.0,1134.2) -> (2828.0,1134.2)
-19: elk-layered compound: edge=EdgeId(3) route_bends=8 route_inside_start=false route_inside_end=true route_endpoint_intrusions=0 route_sibling_intrusions=24 route_global_intrusions=24
-20: elk-layered compound: edge=EdgeId(4) java_segment_route=(2000.0,743.2) -> (2192.8,743.2) -> (2192.8,632.5) -> (2264.0,632.5) -> (2362.0,632.5) -> (2362.0,1460.2) -> (2404.0,1460.2) -> (2544.0,1460.2) -> (2544.0,1390.2) -> (2828.0,1390.2)
-21: elk-layered compound: edge=EdgeId(4) route_bends=8 route_inside_start=false route_inside_end=true route_endpoint_intrusions=0 route_sibling_intrusions=24 route_global_intrusions=24
-22: elk-layered compound: edge=EdgeId(5) java_segment_route=(2000.0,743.2) -> (2212.0,743.2) -> (2212.0,632.5) -> (2264.0,632.5) -> (2376.0,632.5) -> (2376.0,1460.2) -> (2404.0,1460.2) -> (2544.0,1460.2) -> (2544.0,1646.2) -> (2828.0,1646.2)
-23: elk-layered compound: edge=EdgeId(5) route_bends=8 route_inside_start=false route_inside_end=true route_endpoint_intrusions=0 route_sibling_intrusions=24 route_global_intrusions=24
-24: elk-layered compound: edge=EdgeId(6) java_segment_route=(2000.0,743.2) -> (2212.0,743.2) -> (2212.0,632.5) -> (2264.0,632.5) -> (2376.0,632.5) -> (2376.0,1460.2) -> (2404.0,1460.2) -> (2544.0,1460.2) -> (2544.0,1902.2) -> (2828.0,1902.2)
-25: elk-layered compound: edge=EdgeId(6) route_bends=8 route_inside_start=false route_inside_end=true route_endpoint_intrusions=0 route_sibling_intrusions=24 route_global_intrusions=24
-26: elk-layered compound: edge=EdgeId(9) java_segment_route=(752.0,746.5) -> (894.0,746.5) -> (894.0,659.8) -> (1072.0,659.8) -> (1076.0,659.8) -> (1332.0,526.1) -> (1332.0,297.7) -> (2706.0,297.7) -> (2706.0,353.7) -> (2984.0,353.7)
-27: elk-layered compound: edge=EdgeId(9) route_bends=8 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=16 route_global_intrusions=26
+0: elk-layered compound: edge=EdgeId(1) java_segment_route=(2000.0,743.2) -> (2106.8,743.2) -> (2106.8,689.8) -> (2236.0,685.8) -> (2236.0,689.8) -> (2240.0,689.8) -> (2384.0,442.6) -> (2384.0,115.7) -> (3182.0,115.7) -> (3182.0,156.6) -> (3320.0,156.6)
+1: elk-layered compound: edge=EdgeId(1) route_bends=9 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=0 route_global_intrusions=3
+2: elk-layered compound: edge=EdgeId(10) java_segment_route=(752.0,746.5) -> (1020.0,746.5) -> (1020.0,659.8) -> (1072.0,655.8) -> (1072.0,659.8) -> (1076.0,659.8) -> (1332.0,472.1) -> (1332.0,189.7) -> (3154.0,189.7) -> (3154.0,198.9) -> (3320.0,198.9)
+3: elk-layered compound: edge=EdgeId(10) route_bends=9 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=0 route_global_intrusions=9
+4: elk-layered compound: edge=EdgeId(11) java_segment_route=(752.0,746.5) -> (1020.0,746.5) -> (1020.0,659.8) -> (1072.0,655.8) -> (1072.0,659.8) -> (1296.0,659.8) -> (1296.0,712.8) -> (1324.0,712.8) -> (1324.0,708.8) -> (1316.0,708.8) -> (1543.2,712.8) -> (1543.2,743.2) -> (1740.0,743.2)
+5: elk-layered compound: edge=EdgeId(11) route_bends=11 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=0 route_global_intrusions=10
+6: elk-layered compound: edge=EdgeId(12) java_segment_route=(752.0,746.5) -> (1014.0,746.5) -> (1014.0,659.8) -> (1072.0,655.8) -> (1072.0,659.8) -> (1076.0,659.8) -> (1332.0,727.5) -> (1332.0,412.5) -> (1886.0,412.5) -> (1886.0,468.5) -> (2368.0,468.5)
+7: elk-layered compound: edge=EdgeId(12) route_bends=9 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=0 route_global_intrusions=11
+8: elk-layered compound: edge=EdgeId(13) java_segment_route=(752.0,746.5) -> (990.0,746.5) -> (990.0,659.8) -> (1072.0,655.8) -> (1072.0,659.8) -> (1076.0,659.8) -> (1332.0,1352.5) -> (1332.0,1710.5) -> (1858.0,1710.5) -> (1858.0,1460.2) -> (2376.0,1460.2) -> (2376.0,1456.2) -> (2368.0,1456.2) -> (2476.0,1460.2) -> (2476.0,1134.2) -> (2540.0,1134.2)
+9: elk-layered compound: edge=EdgeId(13) route_bends=14 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=0 route_global_intrusions=29
+10: elk-layered compound: edge=EdgeId(14) java_segment_route=(752.0,746.5) -> (966.0,746.5) -> (966.0,659.8) -> (1072.0,655.8) -> (1072.0,659.8) -> (1076.0,659.8) -> (1332.0,1341.5) -> (1332.0,1784.5) -> (1886.0,1784.5) -> (1886.0,1460.2) -> (2376.0,1460.2) -> (2376.0,1456.2) -> (2368.0,1456.2) -> (2476.0,1460.2) -> (2476.0,1390.2) -> (2540.0,1390.2)
+11: elk-layered compound: edge=EdgeId(14) route_bends=14 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=0 route_global_intrusions=29
+12: elk-layered compound: edge=EdgeId(15) java_segment_route=(752.0,746.5) -> (942.0,746.5) -> (942.0,659.8) -> (1072.0,655.8) -> (1072.0,659.8) -> (1076.0,659.8) -> (1332.0,1354.5) -> (1332.0,1858.5) -> (1914.0,1858.5) -> (1914.0,1460.2) -> (2376.0,1460.2) -> (2376.0,1456.2) -> (2368.0,1456.2) -> (2476.0,1460.2) -> (2476.0,1646.2) -> (2540.0,1646.2)
+13: elk-layered compound: edge=EdgeId(15) route_bends=14 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=0 route_global_intrusions=29
+14: elk-layered compound: edge=EdgeId(16) java_segment_route=(752.0,746.5) -> (768.0,746.5) -> (768.0,833.8) -> (1020.0,833.8) -> (1020.0,659.8) -> (1072.0,655.8) -> (1072.0,659.8) -> (1076.0,659.8) -> (1332.0,1367.5) -> (1332.0,1932.5) -> (1942.0,1932.5) -> (1942.0,1460.2) -> (2376.0,1460.2) -> (2376.0,1456.2) -> (2368.0,1456.2) -> (2476.0,1460.2) -> (2476.0,1902.2) -> (2540.0,1902.2)
+15: elk-layered compound: edge=EdgeId(16) route_bends=16 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=0 route_global_intrusions=29
+16: elk-layered compound: edge=EdgeId(2) java_segment_route=(1740.0,743.2) -> (2136.0,743.2) -> (2136.0,609.6) -> (2236.0,605.6) -> (2236.0,609.6) -> (2348.0,609.6) -> (2348.0,441.3) -> (2368.0,441.3)
+17: elk-layered compound: edge=EdgeId(2) route_bends=6 route_inside_start=true route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=0 route_global_intrusions=1
+18: elk-layered compound: edge=EdgeId(3) java_segment_route=(2000.0,743.2) -> (2106.8,743.2) -> (2106.8,632.5) -> (2236.0,628.5) -> (2236.0,632.5) -> (2348.0,632.5) -> (2348.0,1460.2) -> (2376.0,1460.2) -> (2376.0,1456.2) -> (2368.0,1456.2) -> (2516.0,1460.2) -> (2516.0,1134.2) -> (2800.0,1134.2)
+19: elk-layered compound: edge=EdgeId(3) route_bends=11 route_inside_start=false route_inside_end=true route_endpoint_intrusions=0 route_sibling_intrusions=0 route_global_intrusions=20
+20: elk-layered compound: edge=EdgeId(4) java_segment_route=(2000.0,743.2) -> (2184.0,743.2) -> (2184.0,632.5) -> (2236.0,628.5) -> (2236.0,632.5) -> (2348.0,632.5) -> (2348.0,1460.2) -> (2376.0,1460.2) -> (2376.0,1456.2) -> (2368.0,1456.2) -> (2516.0,1460.2) -> (2516.0,1390.2) -> (2800.0,1390.2)
+21: elk-layered compound: edge=EdgeId(4) route_bends=11 route_inside_start=false route_inside_end=true route_endpoint_intrusions=0 route_sibling_intrusions=0 route_global_intrusions=20
+22: elk-layered compound: edge=EdgeId(5) java_segment_route=(2000.0,743.2) -> (2178.8,743.2) -> (2178.8,632.5) -> (2236.0,628.5) -> (2236.0,632.5) -> (2334.0,632.5) -> (2334.0,1460.2) -> (2376.0,1460.2) -> (2376.0,1456.2) -> (2368.0,1456.2) -> (2516.0,1460.2) -> (2516.0,1646.2) -> (2800.0,1646.2)
+23: elk-layered compound: edge=EdgeId(5) route_bends=11 route_inside_start=false route_inside_end=true route_endpoint_intrusions=0 route_sibling_intrusions=0 route_global_intrusions=20
+24: elk-layered compound: edge=EdgeId(6) java_segment_route=(2000.0,743.2) -> (2130.8,743.2) -> (2130.8,632.5) -> (2236.0,628.5) -> (2236.0,632.5) -> (2306.0,632.5) -> (2306.0,1460.2) -> (2376.0,1460.2) -> (2376.0,1456.2) -> (2368.0,1456.2) -> (2516.0,1460.2) -> (2516.0,1902.2) -> (2800.0,1902.2)
+25: elk-layered compound: edge=EdgeId(6) route_bends=11 route_inside_start=false route_inside_end=true route_endpoint_intrusions=0 route_sibling_intrusions=0 route_global_intrusions=20
+26: elk-layered compound: edge=EdgeId(9) java_segment_route=(752.0,746.5) -> (894.0,746.5) -> (894.0,659.8) -> (1072.0,655.8) -> (1072.0,659.8) -> (1076.0,659.8) -> (1332.0,622.1) -> (1332.0,297.7) -> (2678.0,297.7) -> (2678.0,353.7) -> (2956.0,353.7)
+27: elk-layered compound: edge=EdgeId(9) route_bends=9 route_inside_start=false route_inside_end=false route_endpoint_intrusions=0 route_sibling_intrusions=0 route_global_intrusions=10
 28: elk-layered: layered orthogonal routing backend active
 29: elk-layered: libavoid not selected for interconnection; using layered orthogonal router
 30: elk-rust compound routing is still maturing for cross-hierarchy edges; inspect nested diagrams visually.
 31: elk-rust edge label placement is still partial; SVG labels are rendered by sysml-language-server.
 
 edge_connection_paths:
-0: M 3324.0 391.7 L 3372.0 391.7 L 3372.0 249.7 L 3404.0 249.7 L 3404.0 207.4 L 3420.0 207.4
-1: M 2076.0 761.8 L 2092.0 761.8 L 2092.0 815.2 L 2192.8 815.2 L 2192.8 761.8 L 2233.8 761.8 Q 2237.2 761.8, 2240.8 754.8 Q 2244.2 761.8, 2247.8 761.8 L 2257.8 761.8 Q 2261.2 761.8, 2264.8 754.8 Q 2268.2 761.8, 2271.8 761.8 L 2277.0 761.8 Q 2280.5 761.8, 2284.0 754.8 Q 2287.5 761.8, 2291.0 761.8 L 2340.0 761.8 L 2484.0 514.6 L 2484.0 187.7 L 3310.0 187.7 L 3310.0 228.6 L 3404.0 228.6 L 3404.0 249.7 L 3420.0 249.7
-2: M 1808.0 681.6 L 1792.0 681.6 L 1792.0 815.2 L 2194.0 815.2 L 2194.0 681.6 L 2434.0 681.6 L 2434.0 513.3 L 2445.0 513.3 Q 2448.5 513.3, 2452.0 506.3 Q 2455.5 513.3, 2459.0 513.3 L 2468.0 513.3
-3: M 2076.0 704.5 L 2092.0 704.5 L 2092.0 815.2 L 2240.8 815.2 L 2240.8 704.5 L 2406.0 704.5 L 2406.0 1532.2 L 2616.0 1532.2 L 2616.0 1206.2 L 2920.0 1206.2 L 2920.0 1148.2 L 2904.0 1148.2
-4: M 2076.0 704.5 L 2092.0 704.5 L 2092.0 815.2 L 2264.8 815.2 L 2264.8 704.5 L 2434.0 704.5 L 2434.0 1532.2 L 2616.0 1532.2 L 2616.0 1462.2 L 2920.0 1462.2 L 2920.0 1404.2 L 2904.0 1404.2
-5: M 2076.0 704.5 L 2092.0 704.5 L 2092.0 815.2 L 2284.0 815.2 L 2284.0 704.5 L 2448.0 704.5 L 2448.0 1532.2 L 2616.0 1532.2 L 2616.0 1718.2 L 2920.0 1718.2 L 2920.0 1660.2 L 2904.0 1660.2
-6: M 2076.0 704.5 L 2092.0 704.5 L 2092.0 815.2 L 2284.0 815.2 L 2284.0 704.5 L 2448.0 704.5 L 2448.0 1532.2 L 2616.0 1532.2 L 2616.0 1974.2 L 2920.0 1974.2 L 2920.0 1916.2 L 2904.0 1916.2
-7: M 2736.0 499.7 L 2924.0 499.7 L 2924.0 391.7 L 3040.0 391.7 L 3040.0 425.7 L 3056.0 425.7
+0: M 3296.0 391.7 L 3372.0 391.7 L 3372.0 249.7 L 3376.0 249.7 L 3376.0 207.4 L 3392.0 207.4
+1: M 2076.0 761.8 L 2092.0 761.8 L 2092.0 815.2 L 2178.8 815.2 L 2178.8 761.8 L 2308.0 757.8 L 2308.0 761.8 L 2312.0 761.8 L 2456.0 514.6 L 2456.0 187.7 L 3254.0 187.7 L 3254.0 228.6 L 3376.0 228.6 L 3376.0 249.7 L 3392.0 249.7
+2: M 1808.0 681.6 L 1792.0 681.6 L 1792.0 815.2 L 2208.0 815.2 L 2208.0 681.6 L 2308.0 677.6 L 2308.0 681.6 L 2420.0 681.6 L 2420.0 513.3 L 2440.0 513.3
+3: M 2076.0 704.5 L 2092.0 704.5 L 2092.0 815.2 L 2178.8 815.2 L 2178.8 704.5 L 2308.0 700.5 L 2308.0 704.5 L 2420.0 704.5 L 2420.0 1532.2 L 2448.0 1532.2 L 2448.0 1528.2 L 2440.0 1528.2 L 2588.0 1532.2 L 2588.0 1206.2 L 2892.0 1206.2 L 2892.0 1148.2 L 2876.0 1148.2
+4: M 2076.0 704.5 L 2092.0 704.5 L 2092.0 815.2 L 2256.0 815.2 L 2256.0 704.5 L 2308.0 700.5 L 2308.0 704.5 L 2420.0 704.5 L 2420.0 1532.2 L 2448.0 1532.2 L 2448.0 1528.2 L 2440.0 1528.2 L 2588.0 1532.2 L 2588.0 1462.2 L 2892.0 1462.2 L 2892.0 1404.2 L 2876.0 1404.2
+5: M 2076.0 704.5 L 2092.0 704.5 L 2092.0 815.2 L 2250.8 815.2 L 2250.8 704.5 L 2308.0 700.5 L 2308.0 704.5 L 2406.0 704.5 L 2406.0 1532.2 L 2448.0 1532.2 L 2448.0 1528.2 L 2440.0 1528.2 L 2588.0 1532.2 L 2588.0 1718.2 L 2892.0 1718.2 L 2892.0 1660.2 L 2876.0 1660.2
+6: M 2076.0 704.5 L 2092.0 704.5 L 2092.0 815.2 L 2202.8 815.2 L 2202.8 704.5 L 2308.0 700.5 L 2308.0 704.5 L 2378.0 704.5 L 2378.0 1532.2 L 2448.0 1532.2 L 2448.0 1528.2 L 2440.0 1528.2 L 2588.0 1532.2 L 2588.0 1974.2 L 2892.0 1974.2 L 2892.0 1916.2 L 2876.0 1916.2
+7: M 2708.0 499.7 L 2896.0 499.7 L 2896.0 391.7 L 3012.0 391.7 L 3012.0 425.7 L 3028.0 425.7
 8: M 480.0 742.5 L 520.0 742.5 L 520.0 754.5 L 560.0 754.5
-9: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 966.0 818.5 L 966.0 731.8 L 1148.0 731.8 L 1404.0 598.1 L 1404.0 369.7 L 2477.0 369.7 Q 2480.5 369.7, 2484.0 362.7 Q 2487.5 369.7, 2491.0 369.7 L 2778.0 369.7 L 2778.0 425.7 L 2917.0 425.7 Q 2920.5 425.7, 2924.0 418.7 Q 2927.5 425.7, 2931.0 425.7 L 3040.0 425.7 L 3040.0 357.7 L 3056.0 357.7
-10: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 1092.0 818.5 L 1092.0 731.8 L 1148.0 731.8 L 1404.0 592.1 L 1404.0 261.7 L 2477.0 261.7 Q 2480.5 261.7, 2484.0 254.7 Q 2487.5 261.7, 2491.0 261.7 L 3282.0 261.7 L 3282.0 270.9 L 3365.0 270.9 Q 3368.5 270.9, 3372.0 263.9 Q 3375.5 270.9, 3379.0 270.9 L 3404.0 270.9 L 3404.0 165.1 L 3420.0 165.1
-11: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 1092.0 818.5 L 1092.0 731.8 L 1298.0 731.8 L 1298.0 784.8 L 1615.2 784.8 L 1615.2 815.2 L 1792.0 815.2 L 1792.0 716.0 L 1808.0 716.0
-12: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 1086.0 818.5 L 1086.0 731.8 L 1148.0 731.8 L 1404.0 727.5 L 1404.0 484.5 L 2000.0 484.5 L 2000.0 540.5 L 2427.0 540.5 Q 2430.5 540.5, 2434.0 533.5 Q 2437.5 540.5, 2441.0 540.5 L 2452.0 540.5 L 2452.0 458.9 L 2468.0 458.9
-13: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 1062.0 818.5 L 1062.0 731.8 L 1148.0 731.8 L 1404.0 1472.5 L 1404.0 1782.5 L 1944.0 1782.5 L 1944.0 1532.2 L 2576.0 1532.2 L 2576.0 1206.2 L 2620.0 1206.2 L 2620.0 1148.2 L 2636.0 1148.2
-14: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 1038.0 818.5 L 1038.0 731.8 L 1148.0 731.8 L 1404.0 1485.5 L 1404.0 1856.5 L 1972.0 1856.5 L 1972.0 1532.2 L 2576.0 1532.2 L 2576.0 1462.2 L 2609.0 1462.2 Q 2612.5 1462.2, 2616.0 1455.2 Q 2619.5 1462.2, 2620.0 1462.2 L 2620.0 1404.2 L 2636.0 1404.2
-15: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 1014.0 818.5 L 1014.0 731.8 L 1148.0 731.8 L 1404.0 1498.5 L 1404.0 1930.5 L 2000.0 1930.5 L 2000.0 1532.2 L 2576.0 1532.2 L 2576.0 1718.2 L 2609.0 1718.2 Q 2612.5 1718.2, 2616.0 1711.2 Q 2619.5 1718.2, 2620.0 1718.2 L 2620.0 1660.2 L 2636.0 1660.2
-16: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 840.0 818.5 L 840.0 905.8 L 1092.0 905.8 L 1092.0 731.8 L 1148.0 731.8 L 1404.0 1511.5 L 1404.0 2004.5 L 2028.0 2004.5 L 2028.0 1532.2 L 2576.0 1532.2 L 2576.0 1974.2 L 2620.0 1974.2 L 2620.0 1916.2 L 2636.0 1916.2
+9: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 966.0 818.5 L 966.0 731.8 L 1144.0 727.8 L 1144.0 731.8 L 1148.0 731.8 L 1404.0 694.1 L 1404.0 369.7 L 2750.0 369.7 L 2750.0 425.7 L 3012.0 425.7 L 3012.0 357.7 L 3028.0 357.7
+10: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 1092.0 818.5 L 1092.0 731.8 L 1144.0 727.8 L 1144.0 731.8 L 1148.0 731.8 L 1404.0 544.1 L 1404.0 261.7 L 3226.0 261.7 L 3226.0 270.9 L 3376.0 270.9 L 3376.0 165.1 L 3392.0 165.1
+11: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 1092.0 818.5 L 1092.0 731.8 L 1144.0 727.8 L 1144.0 731.8 L 1368.0 731.8 L 1368.0 784.8 L 1396.0 784.8 L 1396.0 780.8 L 1388.0 780.8 L 1615.2 784.8 L 1615.2 815.2 L 1792.0 815.2 L 1792.0 716.0 L 1808.0 716.0
+12: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 1086.0 818.5 L 1086.0 731.8 L 1144.0 727.8 L 1144.0 731.8 L 1148.0 731.8 L 1404.0 799.5 L 1404.0 484.5 L 1958.0 484.5 L 1958.0 540.5 L 2424.0 540.5 L 2424.0 458.9 L 2440.0 458.9
+13: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 1062.0 818.5 L 1062.0 731.8 L 1144.0 727.8 L 1144.0 731.8 L 1148.0 731.8 L 1404.0 1424.5 L 1404.0 1782.5 L 1930.0 1782.5 L 1930.0 1532.2 L 2448.0 1532.2 L 2448.0 1528.2 L 2440.0 1528.2 L 2548.0 1532.2 L 2548.0 1206.2 L 2592.0 1206.2 L 2592.0 1148.2 L 2608.0 1148.2
+14: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 1038.0 818.5 L 1038.0 731.8 L 1144.0 727.8 L 1144.0 731.8 L 1148.0 731.8 L 1404.0 1413.5 L 1404.0 1856.5 L 1958.0 1856.5 L 1958.0 1532.2 L 2448.0 1532.2 L 2448.0 1528.2 L 2440.0 1528.2 L 2548.0 1532.2 L 2548.0 1462.2 L 2592.0 1462.2 L 2592.0 1404.2 L 2608.0 1404.2
+15: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 1014.0 818.5 L 1014.0 731.8 L 1144.0 727.8 L 1144.0 731.8 L 1148.0 731.8 L 1404.0 1426.5 L 1404.0 1930.5 L 1986.0 1930.5 L 1986.0 1532.2 L 2448.0 1532.2 L 2448.0 1528.2 L 2440.0 1528.2 L 2548.0 1532.2 L 2548.0 1718.2 L 2592.0 1718.2 L 2592.0 1660.2 L 2608.0 1660.2
+16: M 828.0 777.2 L 844.0 777.2 L 844.0 818.5 L 840.0 818.5 L 840.0 905.8 L 1092.0 905.8 L 1092.0 731.8 L 1144.0 727.8 L 1144.0 731.8 L 1148.0 731.8 L 1404.0 1439.5 L 1404.0 2004.5 L 2014.0 2004.5 L 2014.0 1532.2 L 2448.0 1532.2 L 2448.0 1528.2 L 2440.0 1528.2 L 2548.0 1532.2 L 2548.0 1974.2 L 2592.0 1974.2 L 2592.0 1916.2 L 2608.0 1916.2
 
 ibd_parts_sample:
 SurveillanceDrone.Airframe | container=<none>
@@ -103,20 +103,20 @@ SurveillanceDrone.SurveillanceQuadrotorDrone.communication | container=Surveilla
 SurveillanceDrone.SurveillanceQuadrotorDrone.power | container=SurveillanceDrone.SurveillanceQuadrotorDrone
 
 edge_endpoint_nearest_ports:
-0: start=(3324.0,391.7) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.videoOut dist=0.00 end=(3420.0,207.4) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.communication.videoIn dist=0.00
-1: start=(2076.0,761.8) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.telemetryOut dist=0.00 end=(3420.0,249.7) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.communication.telemetryIn dist=0.00
-2: start=(1808.0,681.6) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.gimbalCmd dist=0.00 end=(2468.0,513.3) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cmd dist=0.00
-3: start=(2076.0,704.5) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(2904.0,1148.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit1.cmd dist=0.00
-4: start=(2076.0,704.5) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(2904.0,1404.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit2.cmd dist=0.00
-5: start=(2076.0,704.5) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(2904.0,1660.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit3.cmd dist=0.00
-6: start=(2076.0,704.5) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(2904.0,1916.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit4.cmd dist=0.00
-7: start=(2736.0,499.7) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cameraCtrl dist=0.00 end=(3056.0,425.7) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.control dist=0.00
+0: start=(3296.0,391.7) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.videoOut dist=0.00 end=(3392.0,207.4) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.communication.videoIn dist=0.00
+1: start=(2076.0,761.8) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.telemetryOut dist=0.00 end=(3392.0,249.7) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.communication.telemetryIn dist=0.00
+2: start=(1808.0,681.6) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.gimbalCmd dist=0.00 end=(2440.0,513.3) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cmd dist=0.00
+3: start=(2076.0,704.5) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(2876.0,1148.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit1.cmd dist=0.00
+4: start=(2076.0,704.5) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(2876.0,1404.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit2.cmd dist=0.00
+5: start=(2076.0,704.5) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(2876.0,1660.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit3.cmd dist=0.00
+6: start=(2076.0,704.5) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd dist=0.00 end=(2876.0,1916.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit4.cmd dist=0.00
+7: start=(2708.0,499.7) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cameraCtrl dist=0.00 end=(3028.0,425.7) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.control dist=0.00
 8: start=(480.0,742.5) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.battery.pwrOut dist=0.00 end=(560.0,754.5) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.mainPower dist=0.00
-9: start=(828.0,777.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(3056.0,357.7) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.pwr dist=0.00
-10: start=(828.0,777.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(3420.0,165.1) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.communication.pwr dist=0.00
+9: start=(828.0,777.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(3028.0,357.7) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.pwr dist=0.00
+10: start=(828.0,777.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(3392.0,165.1) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.communication.pwr dist=0.00
 11: start=(828.0,777.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(1808.0,716.0) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.pwr dist=0.00
-12: start=(828.0,777.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(2468.0,458.9) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.pwr dist=0.00
-13: start=(828.0,777.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(2636.0,1148.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit1.pwr dist=0.00
-14: start=(828.0,777.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(2636.0,1404.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit2.pwr dist=0.00
-15: start=(828.0,777.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(2636.0,1660.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit3.pwr dist=0.00
-16: start=(828.0,777.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(2636.0,1916.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit4.pwr dist=0.00
+12: start=(828.0,777.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(2440.0,458.9) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.pwr dist=0.00
+13: start=(828.0,777.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(2608.0,1148.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit1.pwr dist=0.00
+14: start=(828.0,777.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(2608.0,1404.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit2.pwr dist=0.00
+15: start=(828.0,777.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(2608.0,1660.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit3.pwr dist=0.00
+16: start=(828.0,777.2) nearest_start_port=SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V dist=0.00 end=(2608.0,1916.2) nearest_end_port=SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit4.pwr dist=0.00

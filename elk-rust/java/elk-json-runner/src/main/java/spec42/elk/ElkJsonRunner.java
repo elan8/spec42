@@ -46,6 +46,9 @@ public final class ElkJsonRunner {
 
     // Export ELK graph -> JSON
     String out = ElkGraphJson.forGraph(root)
+        .omitLayout(false)
+        .omitZeroDimension(false)
+        .omitZeroPositions(false)
         .prettyPrint(true)
         .shortLayoutOptionKeys(false)
         .toJson();

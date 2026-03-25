@@ -8,7 +8,7 @@ use elk_alg_common::orthogonal::{
 };
 
 use crate::ir::{IrEdge, LayeredIr};
-use crate::pipeline::compound::TEMP_HIERARCHICAL_PORT_KEY;
+use crate::pipeline::compound::{TEMP_HIERARCHICAL_DUMMY_NODE_KEY, TEMP_HIERARCHICAL_PORT_KEY};
 use crate::pipeline::props::decode_layout_from_props;
 use crate::pipeline::util::{
     dedup_points, endpoint_abs_center, endpoint_declared_abs_center, endpoint_port_side,
@@ -613,6 +613,13 @@ pub(crate) fn relayout_all_ports(
         .iter()
         .map(|n| n.id)
         .filter(|id| *id != graph.root)
+        .filter(|id| {
+            let node = &graph.nodes[id.index()];
+            !node
+                .properties
+                .get_str(&elk_graph::PropertyKey::from(TEMP_HIERARCHICAL_DUMMY_NODE_KEY))
+                .is_some()
+        })
         .collect();
     for node_id in node_ids {
         let before: Vec<(PortId, elk_graph::ShapeGeometry)> = graph.nodes[node_id.index()]

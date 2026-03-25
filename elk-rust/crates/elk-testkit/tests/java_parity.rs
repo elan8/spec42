@@ -11,8 +11,8 @@ use elk_core::LayoutOptions;
 use elk_graph_json::{export_elk_graph_to_value, import_str};
 use elk_service::LayoutService;
 use elk_testkit::{
-    build_parity_case_report, build_skipped_parity_case_report, compare_layout_json_relaxed,
-    ParityCaseReport, ParityFixtureKind,
+    build_parity_case_report, build_skipped_parity_case_report, compare_edge_polylines_by_signature,
+    compare_layout_json_relaxed, ParityCaseReport, ParityFixtureKind,
 };
 use serde_json::Value;
 use std::collections::BTreeMap;
@@ -34,6 +34,7 @@ const INTERCONNECTION_FIXTURES: &[&str] = &[
     "interconnection_real_medium",
     "interconnection_real_dense",
     "interconnection_real_full_drone_like",
+    "interconnection_full_drone_sysml",
 ];
 const LIBAVOID_FIXTURES: &[&str] = &[
     "libavoid_obstacles",
@@ -469,6 +470,12 @@ fn evaluate_case(
     mismatch_dir: &Path,
 ) -> Result<(), String> {
     let relaxed_error = compare_layout_json_relaxed(rust_out, java_out).err();
+    let pixel_error = if kind == ParityFixtureKind::Interconnection {
+        // Tight epsilon: we want near pixel-identical routing/anchors for interconnection.
+        compare_edge_polylines_by_signature(rust_out, java_out, 1e-2).err()
+    } else {
+        None
+    };
     let bend_error = bend_complexity_error(kind, fixture, rust_out, java_out);
     let report = build_parity_case_report(
         fixture,
@@ -476,12 +483,16 @@ fn evaluate_case(
         rust_out,
         java_out,
         relaxed_error.clone(),
+        pixel_error.clone(),
         bend_error.clone(),
     )
     .map_err(|e| format!("failed to build parity report for {}: {}", fixture, e))?;
     write_case_report(&mismatch_dir.join(fixture), &report, rust_out, java_out);
     append_suite_summary(&report);
     if let Some(error) = relaxed_error {
+        return Err(error);
+    }
+    if let Some(error) = pixel_error {
         return Err(error);
     }
     if let Some(error) = bend_error {

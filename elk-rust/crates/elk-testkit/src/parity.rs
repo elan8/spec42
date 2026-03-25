@@ -313,6 +313,126 @@ fn get_f32(m: &serde_json::Map<String, serde_json::Value>, key: &str) -> Option<
     }
 }
 
+fn edge_endpoint_signature(edge: &serde_json::Value) -> Option<String> {
+    let sources = edge.get("sources")?.as_array()?;
+    let targets = edge.get("targets")?.as_array()?;
+    let endpoint_id = |v: &serde_json::Value| -> Option<String> {
+        if let Some(s) = v.as_str() {
+            return Some(s.to_string());
+        }
+        let obj = v.as_object()?;
+        if let Some(port) = obj.get("port").and_then(serde_json::Value::as_str) {
+            return Some(format!("port:{port}"));
+        }
+        if let Some(node) = obj.get("node").and_then(serde_json::Value::as_str) {
+            return Some(format!("node:{node}"));
+        }
+        if let Some(id) = obj.get("id").and_then(serde_json::Value::as_str) {
+            return Some(id.to_string());
+        }
+        None
+    };
+    let src = sources
+        .iter()
+        .filter_map(endpoint_id)
+        .collect::<Vec<_>>()
+        .join(",");
+    let dst = targets
+        .iter()
+        .filter_map(endpoint_id)
+        .collect::<Vec<_>>()
+        .join(",");
+    if src.is_empty() || dst.is_empty() {
+        return None;
+    }
+    Some(format!("{src}->{dst}"))
+}
+
+fn edge_polyline_points(edge: &serde_json::Value) -> Result<Vec<(f32, f32)>, String> {
+    let Some(obj) = edge.as_object() else {
+        return Err("edge is not an object".to_string());
+    };
+    let Some(sections) = obj.get("sections").and_then(serde_json::Value::as_array) else {
+        return Ok(Vec::new());
+    };
+    let mut out = Vec::new();
+    for (section_idx, section) in sections.iter().enumerate() {
+        let Some(sec_obj) = section_object(section) else {
+            return Err(format!("section[{}] not object/array", section_idx));
+        };
+        let pts = section_points(sec_obj)?;
+        if pts.is_empty() {
+            continue;
+        }
+        if out.is_empty() {
+            out.extend(pts);
+        } else if out.last().copied() == pts.first().copied() {
+            out.extend(pts.into_iter().skip(1));
+        } else {
+            out.extend(pts);
+        }
+    }
+    Ok(out)
+}
+
+/// Pixel-level parity check for edge routes: compares flattened section polylines keyed by
+/// stable endpoint signatures (sources/targets). Designed for dense interconnection fixtures.
+pub fn compare_edge_polylines_by_signature(
+    actual_root: &serde_json::Value,
+    expected_root: &serde_json::Value,
+    coord_eps: f32,
+) -> Result<(), String> {
+    let a_edges = actual_root
+        .get("edges")
+        .and_then(serde_json::Value::as_array)
+        .ok_or_else(|| "actual root missing edges array".to_string())?;
+    let e_edges = expected_root
+        .get("edges")
+        .and_then(serde_json::Value::as_array)
+        .ok_or_else(|| "expected root missing edges array".to_string())?;
+
+    use std::collections::BTreeMap;
+    let mut a_map: BTreeMap<String, Vec<(f32, f32)>> = BTreeMap::new();
+    let mut e_map: BTreeMap<String, Vec<(f32, f32)>> = BTreeMap::new();
+
+    for e in a_edges {
+        if let Some(sig) = edge_endpoint_signature(e) {
+            a_map.insert(sig, edge_polyline_points(e)?);
+        }
+    }
+    for e in e_edges {
+        if let Some(sig) = edge_endpoint_signature(e) {
+            e_map.insert(sig, edge_polyline_points(e)?);
+        }
+    }
+
+    for (sig, a_pts) in &a_map {
+        let Some(e_pts) = e_map.get(sig) else {
+            return Err(format!("pixel parity: missing expected edge signature {}", sig));
+        };
+        if a_pts.len() != e_pts.len() {
+            return Err(format!(
+                "pixel parity: point count mismatch for {} (actual={}, expected={})",
+                sig,
+                a_pts.len(),
+                e_pts.len()
+            ));
+        }
+        for (i, (a, e)) in a_pts.iter().zip(e_pts.iter()).enumerate() {
+            let dx = (a.0 - e.0).abs();
+            let dy = (a.1 - e.1).abs();
+            if dx > coord_eps || dy > coord_eps {
+                return Err(format!(
+                    "pixel parity: first differing point for {} at idx {}: actual=({:.3},{:.3}) expected=({:.3},{:.3}) dx={:.3} dy={:.3} eps={}",
+                    sig, i, a.0, a.1, e.0, e.1, dx, dy, coord_eps
+                ));
+            }
+        }
+    }
+
+    Ok(())
+}
+
 /// Collects all node ids (as strings) from a root JSON object for structure checks.
 pub fn node_ids_from_json(root: &serde_json::Value) -> BTreeSet<String> {
     let mut set = BTreeSet::new();
@@ -404,6 +524,7 @@ pub struct ParityCaseReport {
     pub status: String,
     pub skip_reason: Option<String>,
     pub relaxed_error: Option<String>,
+    pub pixel_error: Option<String>,
     pub bend_complexity_error: Option<String>,
     pub root_causes: Vec<ParityRootCause>,
     pub diff: ParityDiffSummary,
@@ -518,6 +639,7 @@ pub fn build_parity_case_report(
     rust: &serde_json::Value,
     java: &serde_json::Value,
     relaxed_error: Option<String>,
+    pixel_error: Option<String>,
     bend_complexity_error: Option<String>,
 ) -> Result<ParityCaseReport, String> {
     let rust_stats = parity_graph_stats(rust)?;
@@ -529,7 +651,7 @@ pub fn build_parity_case_report(
         relaxed_error.as_deref(),
         bend_complexity_error.as_deref(),
     );
-    let status = if relaxed_error.is_none() && bend_complexity_error.is_none() {
+    let status = if relaxed_error.is_none() && pixel_error.is_none() && bend_complexity_error.is_none() {
         "passed"
     } else {
         "failed"
@@ -540,6 +662,7 @@ pub fn build_parity_case_report(
         status: status.to_string(),
         skip_reason: None,
         relaxed_error,
+        pixel_error,
         bend_complexity_error,
         root_causes,
         diff: ParityDiffSummary {
@@ -577,6 +700,7 @@ pub fn build_skipped_parity_case_report(
         status: "skipped".to_string(),
         skip_reason: Some(skip_reason.into()),
         relaxed_error: None,
+        pixel_error: None,
         bend_complexity_error: None,
         root_causes: Vec::new(),
         diff: ParityDiffSummary {

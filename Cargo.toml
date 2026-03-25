@@ -24,4 +24,6 @@ clap = { version = "4", features = ["derive"] }
 petgraph = "0.8"
 elk-core = { path = "elk-rust/crates/elk-core" }
 elk-graph = { path = "elk-rust/crates/elk-graph" }
+elk-graph-json = { path = "elk-rust/crates/elk-graph-json" }
 elk-layered = { path = "elk-rust/crates/elk-layered" }
+elk-testkit = { path = "elk-rust/crates/elk-testkit" }
