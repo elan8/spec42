@@ -94,102 +94,54 @@ export function prepareDataForView(data: any, view: string): any {
 
     const allElements = collectAllElements(elements);
 
-    const normalizeQualifiedPath = (value: string | null | undefined): string =>
-        (value || '').replace(/::/g, '.').trim();
-
     switch (view) {
         case 'general-view':
             return data;
         case 'interconnection-view': {
             if (data.ibd && Array.isArray(data.ibd.parts)) {
-                const ibd = data.ibd as { parts: any[]; ports?: any[]; connectors?: any[]; rootCandidates?: string[]; defaultRoot?: string };
+                const ibd = data.ibd as {
+                    parts: any[];
+                    ports?: any[];
+                    connectors?: any[];
+                    rootCandidates?: string[];
+                    defaultRoot?: string;
+                    rootViews?: Record<string, { parts?: any[]; ports?: any[]; connectors?: any[] }>;
+                };
                 const ibdParts = Array.isArray(ibd.parts) ? ibd.parts : [];
                 const ibdPorts = Array.isArray(ibd.ports) ? ibd.ports : [];
                 const ibdConnectors = Array.isArray(ibd.connectors) ? ibd.connectors : [];
                 const ibdRootCandidates = Array.isArray(ibd.rootCandidates) ? ibd.rootCandidates : [];
-                const endpointBelongsToFocusedParts = (focusedParts: any[], endpointId: string | null | undefined): boolean => {
-                    const normalized = normalizeQualifiedPath(endpointId);
-                    if (!normalized) return false;
-                    return focusedParts.some((p: any) => {
-                        const q = normalizeQualifiedPath(p.qualifiedName || p.name);
-                        const simpleName = normalizeQualifiedPath(p.name);
-                        return normalized === q
-                            || normalized.startsWith(q + '.')
-                            || normalized === simpleName
-                            || normalized.startsWith(simpleName + '.');
-                    });
-                };
-                const resolveRootPart = (requestedRoot: string | null | undefined) => {
-                    const requestedRootNormalized = normalizeQualifiedPath(requestedRoot);
-                    if (!requestedRootNormalized) return null;
-                    return ibdParts.find((p: any) => {
-                        const candidates = [
-                            p.name,
-                            p.id,
-                            p.qualifiedName,
-                            normalizeQualifiedPath(p.qualifiedName),
-                        ].filter(Boolean);
-                        return candidates.some((candidate: any) => normalizeQualifiedPath(String(candidate)) === requestedRootNormalized);
-                    }) ?? null;
-                };
-                const summarizeRoot = (rootName: string) => {
-                    const rootPart = resolveRootPart(rootName);
-                    const selectedRoot = rootPart?.name ?? rootName;
-                    const rootPrefix = normalizeQualifiedPath(rootPart ? (rootPart.qualifiedName || rootPart.name) : selectedRoot);
-                    const focusedParts = rootPrefix ? ibdParts.filter((p: any) => {
-                        const q = normalizeQualifiedPath(p.qualifiedName || p.name);
-                        return q === rootPrefix || q.startsWith(rootPrefix + '.');
-                    }) : [];
-                    const partIds = new Set(focusedParts.map((p: any) => normalizeQualifiedPath(p.qualifiedName || p.name)));
-                    const partNames = new Set(focusedParts.map((p: any) => normalizeQualifiedPath(p.name)));
-                    const focusedPorts = ibdPorts.filter((p: any) =>
-                        partIds.has(normalizeQualifiedPath(p.parentId)) || partNames.has(normalizeQualifiedPath(p.parentId))
-                    );
-                    const focusedConnectors = ibdConnectors.filter((c: any) => {
-                        return endpointBelongsToFocusedParts(focusedParts, c.sourceId || c.source)
-                            && endpointBelongsToFocusedParts(focusedParts, c.targetId || c.target);
-                    });
-                    return {
-                        rootName: selectedRoot,
-                        rootPart,
-                        rootPrefix,
-                        focusedParts,
-                        focusedPorts,
-                        focusedConnectors,
-                        score: focusedConnectors.length * 100 + focusedPorts.length * 10 + focusedParts.length,
-                    };
-                };
-                const rootSummaries = ibdRootCandidates.map((candidate) => summarizeRoot(candidate));
-                const explicitlyRequestedRoot = (data.selectedIbdRoot && typeof data.selectedIbdRoot === 'string')
+                const rootViews = (ibd.rootViews && typeof ibd.rootViews === 'object') ? ibd.rootViews : {};
+                const availableRoots = ibdRootCandidates.filter((name) => rootViews[name]);
+                const explicitSelection = (typeof data.selectedIbdRoot === 'string' && data.selectedIbdRoot.trim().length > 0)
                     ? data.selectedIbdRoot
                     : null;
-                const preferredByName = explicitlyRequestedRoot
-                    ? rootSummaries.find((summary) => summary.rootName === explicitlyRequestedRoot) ?? null
-                    : null;
-                const defaultByName = ibd.defaultRoot
-                    ? rootSummaries.find((summary) => summary.rootName === ibd.defaultRoot) ?? null
-                    : null;
-                const richestRoot = [...rootSummaries].sort((a, b) =>
-                    b.score - a.score || a.rootName.localeCompare(b.rootName)
-                )[0] ?? null;
-                const chosenSummary = preferredByName ?? defaultByName ?? richestRoot ?? null;
-                const focusedParts = chosenSummary?.focusedParts ?? [];
-                const focusedPorts = chosenSummary?.focusedPorts ?? [];
-                const focusedConnectors = chosenSummary?.focusedConnectors ?? [];
-                const selectedRoot = chosenSummary?.rootName ?? null;
+                const selectedRoot = explicitSelection && rootViews[explicitSelection]
+                    ? explicitSelection
+                    : (ibd.defaultRoot && rootViews[ibd.defaultRoot]
+                        ? ibd.defaultRoot
+                        : (availableRoots[0] || null));
+                const selectedRootView = selectedRoot ? rootViews[selectedRoot] : null;
+                const selectedParts = Array.isArray(selectedRootView?.parts) ? selectedRootView.parts : ibdParts;
+                const selectedPorts = Array.isArray(selectedRootView?.ports) ? selectedRootView.ports : ibdPorts;
+                const selectedConnectors = Array.isArray(selectedRootView?.connectors) ? selectedRootView.connectors : ibdConnectors;
+                const ibdRootSummaries = availableRoots.map((name) => {
+                    const rootView = rootViews[name] || {};
+                    return {
+                        name,
+                        partCount: Array.isArray(rootView.parts) ? rootView.parts.length : 0,
+                        portCount: Array.isArray(rootView.ports) ? rootView.ports.length : 0,
+                        connectorCount: Array.isArray(rootView.connectors) ? rootView.connectors.length : 0,
+                    };
+                });
                 return {
                     ...data,
-                    elements: focusedParts,
-                    parts: focusedParts,
-                    ports: focusedPorts,
-                    connectors: focusedConnectors,
+                    elements: selectedParts,
+                    parts: selectedParts,
+                    ports: selectedPorts,
+                    connectors: selectedConnectors,
                     ibdRootCandidates,
-                    ibdRootSummaries: rootSummaries.map((summary) => ({
-                        name: summary.rootName,
-                        partCount: summary.focusedParts.length,
-                        portCount: summary.focusedPorts.length,
-                        connectorCount: summary.focusedConnectors.length,
-                    })),
+                    ibdRootSummaries,
                     selectedIbdRoot: selectedRoot,
                 };
             }

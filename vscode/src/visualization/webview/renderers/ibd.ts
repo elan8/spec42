@@ -333,12 +333,8 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         part,
         children: sortPartsForLayout(getPartChildren(part)).map((c: any) => buildTree(c))
     });
-    const roots = parts.filter((p: any) => p.containerId == null || p.containerId === undefined || p.containerId === '');
-    const rootPart = roots.length > 0
-        ? roots.reduce((a, b) => (getPartChildren(a).length >= getPartChildren(b).length ? a : b))
-        : parts[0];
-    const partTree = rootPart ? buildTree(rootPart) : null;
-    const rootName = rootPart ? rootPart.name : '';
+    const roots = sortPartsForLayout(parts.filter((p: any) => p.containerId == null || p.containerId === undefined || p.containerId === ''));
+    const partForest = roots.map((root: any) => buildTree(root));
 
     const leafParts = parts.filter((p: any) => getPartChildren(p).length === 0);
     const leafPartIds = new Set<string>(leafParts.map((p: any) => partToElkId(p)));
@@ -373,8 +369,8 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
     const containerTopInset = rootHeaderHeight + 20;
     const elkUnavailableReason = typeof ELK === 'undefined'
         ? 'ELK layout library not loaded.'
-        : !partTree
-            ? 'No valid interconnection root was found for ELK layout.'
+        : partForest.length === 0
+            ? 'No valid interconnection roots were found for ELK layout.'
             : null;
     if (elkUnavailableReason) {
         renderPlaceholder(
@@ -475,7 +471,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 'org.eclipse.elk.portAlignment.default': 'CENTER',
                 'org.eclipse.elk.json.edgeCoords': 'ROOT'
             },
-            children: [treeToElkNode(partTree)],
+            children: partForest.map((rootNode) => treeToElkNode(rootNode)),
             edges: elkEdges
         };
 
@@ -503,11 +499,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
     const partPositions = new Map<string, { x: number; y: number; part: any; height: number; width?: number; isContainer?: boolean }>();
     const innerMargin = 24;
 
-    const relativePath = (qualifiedName: string) => {
-        if (!rootName || !qualifiedName) return qualifiedName;
-        const prefix = rootName + '.';
-        return qualifiedName.startsWith(prefix) ? qualifiedName.slice(prefix.length) : qualifiedName;
-    };
+    const relativePath = (qualifiedName: string) => qualifiedName;
 
     const setPos = (part: any, posData: { x: number; y: number; part: any; height: number; width?: number; isContainer?: boolean; depth?: number }) => {
         partPositions.set(part.name, posData);
@@ -572,8 +564,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         );
         return;
     }
-    const rootElk = elkLaidOut.children[0];
-    extractElkPositions(rootElk, 0, 0, 0);
+    elkLaidOut.children.forEach((rootElk: any) => extractElkPositions(rootElk, 0, 0, 0));
 
     type Rect = { x: number; y: number; width: number; height: number };
 

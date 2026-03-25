@@ -1149,7 +1149,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
             const rootSummaries = preparedData?.ibdRootSummaries || [];
             if (candidates.length > 0) {
                 diagrams = candidates.map(name => {
-                    const summary = rootSummaries.find(s => s.name === name);
+                    const summary = rootSummaries.find((s: any) => s.name === name);
                     const metrics = summary
                         ? ` (${summary.partCount} parts, ${summary.connectorCount} connectors)`
                         : '';
@@ -1162,16 +1162,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 selectedDiagramIndex = preferredRoot ? candidates.indexOf(preferredRoot) : 0;
                 selectedDiagramName = preferredRoot;
                 selectedIbdRoot = selectedDiagramName;
-                try {
-                    webviewLog('info', '[IBD] selector', {
-                        candidates,
-                        preferredRoot,
-                        selectedIbdRoot_state: selectedIbdRoot,
-                        selectedDiagramIndex,
-                    });
-                } catch {
-                    // ignore
-                }
             } else {
                 diagrams = [{ name: 'Default', element: null }];
                 labelText = 'Block';

@@ -192,32 +192,42 @@ describe("prepareDataForView", () => {
             connectors: [] as { sourceId: string; targetId: string }[],
             rootCandidates: ["SurveillanceQuadrotorDrone", "Propulsion"],
             defaultRoot: "SurveillanceQuadrotorDrone",
+            rootViews: {
+                SurveillanceQuadrotorDrone: {
+                    parts: [
+                        { id: "SurveillanceDrone::SurveillanceQuadrotorDrone", name: "SurveillanceQuadrotorDrone", qualifiedName: "SurveillanceDrone.SurveillanceQuadrotorDrone", containerId: null, type: "part def", attributes: {} },
+                        { id: "SurveillanceDrone::SurveillanceQuadrotorDrone::propulsion", name: "propulsion", qualifiedName: "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion", containerId: "SurveillanceDrone.SurveillanceQuadrotorDrone", type: "part", attributes: {} },
+                        { id: "SurveillanceDrone::SurveillanceQuadrotorDrone::flightControl", name: "flightControl", qualifiedName: "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl", containerId: "SurveillanceDrone.SurveillanceQuadrotorDrone", type: "part", attributes: {} },
+                    ],
+                    ports: [],
+                    connectors: [],
+                },
+                Propulsion: {
+                    parts: [
+                        { id: "SurveillanceDrone::Propulsion", name: "Propulsion", qualifiedName: "SurveillanceDrone.Propulsion", containerId: null, type: "part def", attributes: {} },
+                        { id: "SurveillanceDrone::Propulsion::propulsionUnit1", name: "propulsionUnit1", qualifiedName: "SurveillanceDrone.Propulsion.propulsionUnit1", containerId: "SurveillanceDrone.Propulsion", type: "part", attributes: {} },
+                    ],
+                    ports: [],
+                    connectors: [],
+                },
+            },
         };
 
-        it("uses defaultRoot when no selectedIbdRoot (SurveillanceQuadrotorDrone)", () => {
+        it("uses backend defaultRoot to choose root-specific view payload", () => {
             const data = { graph: { nodes: [], edges: [] }, ibd: mockIbdFromBackend };
             const result = prepareDataForView(data, "interconnection-view");
             assert.strictEqual(result.selectedIbdRoot, "SurveillanceQuadrotorDrone", "selectedIbdRoot must be backend defaultRoot");
-            assert.ok(Array.isArray(result.parts) && result.parts.length >= 2, "parts must include root and children");
-            const rootPart = result.parts.find((p: { name: string }) => p.name === "SurveillanceQuadrotorDrone");
-            assert.ok(rootPart, "root part must be SurveillanceQuadrotorDrone");
-            const prefix = "SurveillanceDrone.SurveillanceQuadrotorDrone";
-            const allUnderSqd = result.parts.every((p: { qualifiedName?: string }) => {
-                const q = p.qualifiedName || "";
-                return q === prefix || q.startsWith(prefix + ".");
-            });
-            assert.ok(allUnderSqd, "focused parts must be under SurveillanceQuadrotorDrone");
+            assert.strictEqual(result.parts.length, 3, "parts should come from selected backend root view");
         });
 
-        it("uses user selectedIbdRoot (Propulsion) when provided", () => {
+        it("uses frontend selectedIbdRoot to choose among backend root views", () => {
             const data = { graph: { nodes: [], edges: [] }, ibd: mockIbdFromBackend, selectedIbdRoot: "Propulsion" };
             const result = prepareDataForView(data, "interconnection-view");
             assert.strictEqual(result.selectedIbdRoot, "Propulsion");
-            const rootPart = result.parts.find((p: { name: string }) => p.name === "Propulsion");
-            assert.ok(rootPart, "root part must be Propulsion when selected");
+            assert.strictEqual(result.parts.length, 2);
         });
 
-        it("keeps only connectors whose endpoint paths stay inside the selected root", () => {
+        it("uses backend rootViews payload for selected root", () => {
             const data = {
                 graph: { nodes: [], edges: [] },
                 ibd: {
@@ -240,12 +250,28 @@ describe("prepareDataForView", () => {
                             name: "crossRootLink",
                         },
                     ],
+                    rootViews: {
+                        ...mockIbdFromBackend.rootViews,
+                        Propulsion: {
+                            parts: mockIbdFromBackend.rootViews.Propulsion.parts,
+                            ports: [
+                                { id: "p1", name: "motorOut", parentId: "SurveillanceDrone.Propulsion.propulsionUnit1" },
+                            ],
+                            connectors: [
+                                {
+                                    sourceId: "SurveillanceDrone.Propulsion.propulsionUnit1.motorOut",
+                                    targetId: "SurveillanceDrone.Propulsion.propulsionUnit1.motorOut",
+                                    type: "connection",
+                                    name: "internalLoop",
+                                },
+                            ],
+                        },
+                    },
                 },
                 selectedIbdRoot: "Propulsion",
             };
             const result = prepareDataForView(data, "interconnection-view");
-            assert.strictEqual(result.selectedIbdRoot, "Propulsion");
-            assert.strictEqual(result.connectors.length, 1, "only connectors fully inside the focused root should remain");
+            assert.strictEqual(result.connectors.length, 1, "selected root should use backend-filtered connectors");
             assert.strictEqual(result.connectors[0].name, "internalLoop");
         });
 
@@ -258,7 +284,7 @@ describe("prepareDataForView", () => {
             assert.strictEqual(result.selectedIbdRoot, null);
         });
 
-        it("prefers the richest root when no explicit root or default root is provided", () => {
+        it("falls back to first available root view when defaultRoot is missing", () => {
             const data = {
                 graph: { nodes: [], edges: [] },
                 ibd: {
@@ -283,15 +309,38 @@ describe("prepareDataForView", () => {
                         },
                     ],
                     rootCandidates: ["Power", "Drone"],
+                    rootViews: {
+                        Power: {
+                            parts: [{ id: "Power", name: "Power", qualifiedName: "Demo.Power", containerId: null, type: "part def", attributes: {} }],
+                            ports: [],
+                            connectors: [],
+                        },
+                        Drone: {
+                            parts: [
+                                { id: "Drone", name: "Drone", qualifiedName: "Demo.Drone", containerId: null, type: "part def", attributes: {} },
+                                { id: "Drone::left", name: "left", qualifiedName: "Demo.Drone.left", containerId: "Demo.Drone", type: "part", attributes: {} },
+                                { id: "Drone::right", name: "right", qualifiedName: "Demo.Drone.right", containerId: "Demo.Drone", type: "part", attributes: {} },
+                            ],
+                            ports: [
+                                { id: "p1", name: "leftOut", parentId: "Demo.Drone.left" },
+                                { id: "p2", name: "rightIn", parentId: "Demo.Drone.right" },
+                            ],
+                            connectors: [
+                                {
+                                    sourceId: "Demo.Drone.left.leftOut",
+                                    targetId: "Demo.Drone.right.rightIn",
+                                    type: "connection",
+                                    name: "internalLink",
+                                },
+                            ],
+                        },
+                    },
                 },
             };
             const result = prepareDataForView(data, "interconnection-view");
-            assert.strictEqual(result.selectedIbdRoot, "Drone", "root with richer internal structure should be preferred");
-            assert.ok(Array.isArray(result.ibdRootSummaries), "root summaries should be returned");
-            const droneSummary = result.ibdRootSummaries.find((summary: { name: string }) => summary.name === "Drone");
-            assert.ok(droneSummary, "Drone summary should exist");
-            assert.strictEqual(droneSummary.connectorCount, 1);
-            assert.strictEqual(droneSummary.partCount, 3);
+            assert.strictEqual(result.selectedIbdRoot, "Power");
+            assert.strictEqual(result.parts.length, 1);
+            assert.strictEqual(result.connectors.length, 0);
         });
     });
 });

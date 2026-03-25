@@ -85,6 +85,15 @@ pub struct IbdDataDto {
     pub connectors: Vec<IbdConnectorDto>,
     pub root_candidates: Vec<String>,
     pub default_root: Option<String>,
+    pub root_views: std::collections::HashMap<String, IbdRootViewDto>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IbdRootViewDto {
+    pub parts: Vec<IbdPartDto>,
+    pub ports: Vec<IbdPortDto>,
+    pub connectors: Vec<IbdConnectorDto>,
 }
 
 /// Qualified name with "::" converted to "." for client path matching (e.g. "pkg::A::b" -> "A.b" when root is "A").
@@ -159,6 +168,31 @@ fn endpoint_matches_root(endpoint: &str, root_prefix: &str, root_name: &str) -> 
         || endpoint.starts_with(&format!("{root_prefix}."))
         || endpoint == root_name
         || endpoint.starts_with(&format!("{root_name}."))
+}
+
+fn endpoint_under_definition_prefix(endpoint: &str, def_prefix: &str) -> bool {
+    endpoint == def_prefix || endpoint.starts_with(&format!("{def_prefix}::"))
+}
+
+fn map_definition_endpoint_to_usage(
+    endpoint: &str,
+    def_prefix: &str,
+    usage_prefix_dot: &str,
+) -> Option<String> {
+    if endpoint == def_prefix {
+        return Some(usage_prefix_dot.to_string());
+    }
+    let prefixed = format!("{def_prefix}::");
+    if let Some(remainder) = endpoint.strip_prefix(&prefixed) {
+        if remainder.is_empty() {
+            return Some(usage_prefix_dot.to_string());
+        }
+        return Some(format!(
+            "{usage_prefix_dot}.{}",
+            remainder.replace("::", ".")
+        ));
+    }
+    None
 }
 
 /// Builds IBD data for the given URI from the semantic graph.
@@ -409,6 +443,64 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         }
     }
 
+    // Mirror internal definition-level connections onto each typed part usage instance.
+    // This keeps Interconnection View faithful for nested usages like
+    // `...flightControl.<internal parts/ports>`.
+    let mut connector_keys: std::collections::HashSet<(String, String, String)> = connectors
+        .iter()
+        .map(|c| (c.source_id.clone(), c.target_id.clone(), c.rel_type.clone()))
+        .collect();
+    for p in &parts_snapshot {
+        // Base parts use semantic ids with "::"; synthetic expanded parts are dot-only ids.
+        if !p.id.contains("::") {
+            continue;
+        }
+        let node_id = NodeId::new(uri, &p.id);
+        let Some(node) = graph.get_node(&node_id) else {
+            continue;
+        };
+        let Some(def_node) = first_typed_part_shape(graph, node) else {
+            continue;
+        };
+        let def_prefix = def_node.id.qualified_name.as_str();
+        let usage_prefix_dot = p.qualified_name.as_str();
+
+        for (src, tgt, kind, _name) in &edges {
+            if *kind != RelationshipKind::Connection {
+                continue;
+            }
+            if !endpoint_under_definition_prefix(src, def_prefix)
+                || !endpoint_under_definition_prefix(tgt, def_prefix)
+            {
+                continue;
+            }
+            let Some(source_id) = map_definition_endpoint_to_usage(src, def_prefix, usage_prefix_dot)
+            else {
+                continue;
+            };
+            let Some(target_id) = map_definition_endpoint_to_usage(tgt, def_prefix, usage_prefix_dot)
+            else {
+                continue;
+            };
+
+            let key = (
+                source_id.clone(),
+                target_id.clone(),
+                "connection".to_string(),
+            );
+            if !connector_keys.insert(key) {
+                continue;
+            }
+            connectors.push(IbdConnectorDto {
+                source: source_id.clone(),
+                target: target_id.clone(),
+                source_id,
+                target_id,
+                rel_type: "connection".to_string(),
+            });
+        }
+    }
+
     let top_level_parts: Vec<_> = parts
         .iter()
         .filter(|p| {
@@ -468,6 +560,37 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         .map(|(p, _, _, _)| p.name.clone())
         .collect();
     let default_root = root_candidates.first().cloned();
+    let mut root_views: std::collections::HashMap<String, IbdRootViewDto> =
+        std::collections::HashMap::new();
+    for (p, _, _, _) in &roots_with_metrics {
+        let root_prefix = p.qualified_name.as_str();
+        let focused_parts: Vec<IbdPartDto> = parts
+            .iter()
+            .filter(|part| endpoint_matches_root(&part.qualified_name, root_prefix, &p.name))
+            .cloned()
+            .collect();
+        let focused_ports: Vec<IbdPortDto> = ports
+            .iter()
+            .filter(|port| endpoint_matches_root(&port.parent_id, root_prefix, &p.name))
+            .cloned()
+            .collect();
+        let focused_connectors: Vec<IbdConnectorDto> = connectors
+            .iter()
+            .filter(|connector| {
+                endpoint_matches_root(&connector.source_id, root_prefix, &p.name)
+                    && endpoint_matches_root(&connector.target_id, root_prefix, &p.name)
+            })
+            .cloned()
+            .collect();
+        root_views.insert(
+            p.name.clone(),
+            IbdRootViewDto {
+                parts: focused_parts,
+                ports: focused_ports,
+                connectors: focused_connectors,
+            },
+        );
+    }
 
     IbdDataDto {
         parts,
@@ -475,5 +598,6 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         connectors,
         root_candidates,
         default_root,
+        root_views,
     }
 }
