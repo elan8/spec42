@@ -16,7 +16,6 @@ path = "src/main.rs"
 spec42-core = { path = "../spec42-core" }
 tokio = { version = "1", features = ["full"] }
 serde_json = { workspace = true }
-sysml-diagrams = { path = "../sysml-diagrams" }
 
 [dev-dependencies]
 sysml-parser = { git = "https://github.com/elan8/sysml-parser" }

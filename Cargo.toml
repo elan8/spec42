@@ -2,12 +2,7 @@
 resolver = "2"
 members = [
   "spec42-core",
-  "sysml-diagrams",
   "server",
-  "elk-rust/crates/elk-core",
-  "elk-rust/crates/elk-graph",
-  "elk-rust/crates/elk-layered",
-  "elk-rust/crates/elk-testkit",
 ]
 
 [workspace.package]
@@ -22,8 +17,3 @@ serde_json = "1"
 thiserror = "2"
 clap = { version = "4", features = ["derive"] }
 petgraph = "0.8"
-elk-core = { path = "elk-rust/crates/elk-core" }
-elk-graph = { path = "elk-rust/crates/elk-graph" }
-elk-graph-json = { path = "elk-rust/crates/elk-graph-json" }
-elk-layered = { path = "elk-rust/crates/elk-layered" }
-elk-testkit = { path = "elk-rust/crates/elk-testkit" }

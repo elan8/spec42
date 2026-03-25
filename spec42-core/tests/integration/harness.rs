@@ -16,25 +16,9 @@ pub fn spawn_server() -> Child {
     let server_path = server_binary_path();
     eprintln!("spec42 integration harness launch_mode={INTEGRATION_LAUNCH_MODE}");
     Command::new(&server_path)
-        // Enable extra routing diagnostics in elk-layered for integration tests.
+        // Keep debug diagnostics enabled during integration tests.
         .env("SPEC42_ELK_DEBUG", "1")
         .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::null())
-        .spawn()
-        .unwrap_or_else(|err| panic!("spawn server binary {}: {err}", server_path.display()))
-}
-
-pub fn spawn_server_with_env(env: &[(&str, &str)]) -> Child {
-    let server_path = server_binary_path();
-    eprintln!("spec42 integration harness launch_mode={INTEGRATION_LAUNCH_MODE}");
-    let mut cmd = Command::new(&server_path);
-    // Enable extra routing diagnostics in elk-layered for integration tests.
-    cmd.env("SPEC42_ELK_DEBUG", "1");
-    for (k, v) in env {
-        cmd.env(k, v);
-    }
-    cmd.stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::null())
         .spawn()

@@ -1,5 +1,5 @@
-//! Diagram output types used by DiagramProvider. Core owns these so it does not depend on sysml-diagrams.
-//! Binaries that use sysml-diagrams convert from sysml_diagrams::RenderedDiagram to these types.
+//! Diagram output types used by `DiagramProvider`.
+//! Core owns these to keep diagram rendering backends optional/pluggable.
 
 use serde::{Deserialize, Serialize};
 
