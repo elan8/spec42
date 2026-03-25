@@ -166,6 +166,11 @@ impl LanguageServer for Backend {
                 )),
                 hover_provider: Some(HoverProviderCapability::Simple(true)),
                 completion_provider: Some(CompletionOptions::default()),
+                signature_help_provider: Some(SignatureHelpOptions {
+                    trigger_characters: Some(vec![":".to_string(), ",".to_string()]),
+                    retrigger_characters: None,
+                    work_done_progress_options: WorkDoneProgressOptions::default(),
+                }),
                 definition_provider: Some(OneOf::Left(true)),
                 references_provider: Some(OneOf::Left(true)),
                 rename_provider: Some(OneOf::Right(RenameOptions {
@@ -175,9 +180,23 @@ impl LanguageServer for Backend {
                 document_symbol_provider: Some(OneOf::Left(true)),
                 document_highlight_provider: Some(OneOf::Left(true)),
                 folding_range_provider: Some(FoldingRangeProviderCapability::Simple(true)),
+                selection_range_provider: Some(SelectionRangeProviderCapability::Simple(true)),
+                document_link_provider: Some(DocumentLinkOptions {
+                    resolve_provider: Some(false),
+                    work_done_progress_options: WorkDoneProgressOptions::default(),
+                }),
                 workspace_symbol_provider: Some(OneOf::Left(true)),
                 code_action_provider: Some(CodeActionProviderCapability::Simple(true)),
+                code_lens_provider: Some(CodeLensOptions {
+                    resolve_provider: Some(false),
+                }),
+                inlay_hint_provider: Some(OneOf::Left(true)),
+                linked_editing_range_provider: Some(LinkedEditingRangeServerCapabilities::Simple(
+                    true,
+                )),
                 document_formatting_provider: Some(OneOf::Left(true)),
+                moniker_provider: Some(OneOf::Left(true)),
+                call_hierarchy_provider: Some(CallHierarchyServerCapability::Simple(true)),
                 semantic_tokens_provider: Some(
                     SemanticTokensServerCapabilities::SemanticTokensOptions(
                         SemanticTokensOptions {
@@ -735,6 +754,43 @@ impl LanguageServer for Backend {
         Ok(Some(CompletionResponse::Array(items)))
     }
 
+    async fn signature_help(&self, params: SignatureHelpParams) -> Result<Option<SignatureHelp>> {
+        let uri = params
+            .text_document_position_params
+            .text_document
+            .uri
+            .clone();
+        let uri_norm = util::normalize_file_uri(&uri);
+        let pos = params.text_document_position_params.position;
+        let state = self.state.read().await;
+        let text = match state.index.get(&uri_norm).map(|e| e.content.as_str()) {
+            Some(t) => t,
+            None => return Ok(None),
+        };
+        let line = text.lines().nth(pos.line as usize).unwrap_or("");
+        let label = if line.contains("part def") {
+            "part def <Name> : <Type>"
+        } else if line.contains("port def") || line.contains("port ") {
+            "port <name> : <PortType>"
+        } else if line.contains("attribute") {
+            "attribute <name> : <AttributeType>"
+        } else {
+            "name : Type"
+        };
+        Ok(Some(SignatureHelp {
+            signatures: vec![SignatureInformation {
+                label: label.to_string(),
+                documentation: Some(Documentation::String(
+                    "Basic SysML declaration shape".to_string(),
+                )),
+                parameters: None,
+                active_parameter: None,
+            }],
+            active_signature: Some(0),
+            active_parameter: Some(0),
+        }))
+    }
+
     async fn goto_definition(
         &self,
         params: GotoDefinitionParams,
@@ -854,6 +910,57 @@ impl LanguageServer for Backend {
         Ok(Some(locations))
     }
 
+    async fn document_link(
+        &self,
+        params: DocumentLinkParams,
+    ) -> Result<Option<Vec<DocumentLink>>> {
+        let uri = params.text_document.uri;
+        let uri_norm = util::normalize_file_uri(&uri);
+        let state = self.state.read().await;
+        let text = match state.index.get(&uri_norm).map(|e| e.content.as_str()) {
+            Some(t) => t,
+            None => return Ok(None),
+        };
+        let mut links = Vec::new();
+        for (line_idx, line) in text.lines().enumerate() {
+            if let Some(import_idx) = line.find("import ") {
+                if let Some(file_idx) = line.find("file://") {
+                let target_start = file_idx as u32;
+                let target_text = &line[file_idx..].split_whitespace().next().unwrap_or("");
+                if let Ok(target) = Url::parse(target_text) {
+                    links.push(DocumentLink {
+                        range: Range::new(
+                            Position::new(line_idx as u32, target_start),
+                            Position::new(
+                                line_idx as u32,
+                                target_start + target_text.chars().count() as u32,
+                            ),
+                        ),
+                        target: Some(target),
+                        tooltip: Some("Open import target".to_string()),
+                        data: None,
+                    });
+                } else {
+                    let import_name = line[(import_idx + "import ".len())..].trim();
+                    let target_match = state.symbol_table.iter().find(|e| e.name == import_name);
+                    if let Some(sym) = target_match {
+                        links.push(DocumentLink {
+                            range: Range::new(
+                                Position::new(line_idx as u32, import_idx as u32),
+                                Position::new(line_idx as u32, line.chars().count() as u32),
+                            ),
+                            target: Some(sym.uri.clone()),
+                            tooltip: Some("Open imported symbol".to_string()),
+                            data: None,
+                        });
+                    }
+                }
+            }
+            }
+        }
+        Ok(Some(links))
+    }
+
     async fn document_highlight(
         &self,
         params: DocumentHighlightParams,
@@ -885,6 +992,53 @@ impl LanguageServer for Backend {
             })
             .collect();
         Ok(Some(highlights))
+    }
+
+    async fn selection_range(
+        &self,
+        params: SelectionRangeParams,
+    ) -> Result<Option<Vec<SelectionRange>>> {
+        let uri = params.text_document.uri;
+        let uri_norm = util::normalize_file_uri(&uri);
+        let state = self.state.read().await;
+        let text = match state.index.get(&uri_norm).map(|e| e.content.as_str()) {
+            Some(t) => t,
+            None => return Ok(None),
+        };
+        let mut out = Vec::new();
+        for pos in params.positions {
+            let mut ranges = Vec::<Range>::new();
+            if let Some((line, start, end, _)) = word_at_position(text, pos.line, pos.character) {
+                ranges.push(Range::new(
+                    Position::new(line, start),
+                    Position::new(line, end),
+                ));
+            }
+            let line_len = text
+                .lines()
+                .nth(pos.line as usize)
+                .map(|l| l.chars().count() as u32)
+                .unwrap_or(0);
+            ranges.push(Range::new(
+                Position::new(pos.line, 0),
+                Position::new(pos.line, line_len),
+            ));
+            ranges.push(Range::new(
+                Position::new(0, 0),
+                Position::new(text.lines().count().saturating_sub(1) as u32, 0),
+            ));
+            let mut current: Option<SelectionRange> = None;
+            for r in ranges.into_iter().rev() {
+                current = Some(SelectionRange {
+                    range: r,
+                    parent: current.map(Box::new),
+                });
+            }
+            if let Some(sel) = current {
+                out.push(sel);
+            }
+        }
+        Ok(Some(out))
     }
 
     async fn prepare_rename(
@@ -959,6 +1113,37 @@ impl LanguageServer for Backend {
             document_changes: None,
             change_annotations: None,
         }))
+    }
+
+    async fn inlay_hint(&self, params: InlayHintParams) -> Result<Option<Vec<InlayHint>>> {
+        let uri = params.text_document.uri;
+        let uri_norm = util::normalize_file_uri(&uri);
+        let state = self.state.read().await;
+        match state.index.get(&uri_norm) {
+            Some(_) => {}
+            None => return Ok(None),
+        };
+        let mut hints = Vec::new();
+        for sym in state.symbol_table.iter().filter(|s| s.uri == uri_norm) {
+            if let Some(sig) = &sym.signature {
+                if let Some((_, rhs)) = sig.split_once(':') {
+                    hints.push(InlayHint {
+                        position: Position::new(sym.range.end.line, sym.range.end.character),
+                        label: InlayHintLabel::String(format!(
+                            " :{}",
+                            rhs.trim_end_matches(';').trim()
+                        )),
+                        kind: Some(InlayHintKind::TYPE),
+                        text_edits: None,
+                        tooltip: None,
+                        padding_left: Some(true),
+                        padding_right: Some(false),
+                        data: None,
+                    });
+                }
+            }
+        }
+        Ok(Some(hints))
     }
 
     async fn document_symbol(
@@ -1038,6 +1223,30 @@ impl LanguageServer for Backend {
         Ok(Some(actions))
     }
 
+    async fn code_lens(&self, params: CodeLensParams) -> Result<Option<Vec<CodeLens>>> {
+        let uri = params.text_document.uri;
+        let uri_norm = util::normalize_file_uri(&uri);
+        let state = self.state.read().await;
+        let mut out = Vec::new();
+        for sym in state.symbol_table.iter().filter(|s| s.uri == uri_norm) {
+            let refs = state
+                .index
+                .values()
+                .map(|e| find_reference_ranges(&e.content, &sym.name).len())
+                .sum::<usize>();
+            out.push(CodeLens {
+                range: sym.range,
+                command: Some(Command {
+                    title: format!("{} reference(s)", refs.saturating_sub(1)),
+                    command: "spec42.showReferencesCount".to_string(),
+                    arguments: None,
+                }),
+                data: None,
+            });
+        }
+        Ok(Some(out))
+    }
+
     async fn formatting(&self, params: DocumentFormattingParams) -> Result<Option<Vec<TextEdit>>> {
         let uri = params.text_document.uri;
         let uri_norm = util::normalize_file_uri(&uri);
@@ -1100,6 +1309,144 @@ impl LanguageServer for Backend {
             self.client.log_message(MessageType::LOG, line).await;
         }
         Ok(Some(SemanticTokensRangeResult::Tokens(tokens)))
+    }
+
+    async fn linked_editing_range(
+        &self,
+        params: LinkedEditingRangeParams,
+    ) -> Result<Option<LinkedEditingRanges>> {
+        let uri = params.text_document_position_params.text_document.uri;
+        let uri_norm = util::normalize_file_uri(&uri);
+        let pos = params.text_document_position_params.position;
+        let state = self.state.read().await;
+        let text = match state.index.get(&uri_norm).map(|e| e.content.as_str()) {
+            Some(t) => t,
+            None => return Ok(None),
+        };
+        let (_, _, _, word) = match word_at_position(text, pos.line, pos.character) {
+            Some(t) => t,
+            None => return Ok(None),
+        };
+        let ranges = find_reference_ranges(text, &word);
+        Ok(Some(LinkedEditingRanges {
+            ranges,
+            word_pattern: None,
+        }))
+    }
+
+    async fn moniker(&self, params: MonikerParams) -> Result<Option<Vec<Moniker>>> {
+        let uri = params.text_document_position_params.text_document.uri;
+        let uri_norm = util::normalize_file_uri(&uri);
+        let pos = params.text_document_position_params.position;
+        let state = self.state.read().await;
+        let node = match state.semantic_graph.find_node_at_position(&uri_norm, pos) {
+            Some(n) => n,
+            None => return Ok(None),
+        };
+        Ok(Some(vec![Moniker {
+            scheme: "spec42".to_string(),
+            identifier: format!("{}#{}", node.id.uri, node.id.qualified_name),
+            unique: UniquenessLevel::Scheme,
+            kind: Some(MonikerKind::Export),
+        }]))
+    }
+
+    async fn prepare_type_hierarchy(
+        &self,
+        params: TypeHierarchyPrepareParams,
+    ) -> Result<Option<Vec<TypeHierarchyItem>>> {
+        let uri = params.text_document_position_params.text_document.uri;
+        let uri_norm = util::normalize_file_uri(&uri);
+        let pos = params.text_document_position_params.position;
+        let state = self.state.read().await;
+        let node = match state.semantic_graph.find_node_at_position(&uri_norm, pos) {
+            Some(n) => n,
+            None => return Ok(None),
+        };
+        Ok(Some(vec![TypeHierarchyItem {
+            name: node.name.clone(),
+            kind: SymbolKind::CLASS,
+            tags: None,
+            detail: Some(node.element_kind.clone()),
+            uri: node.id.uri.clone(),
+            range: node.range,
+            selection_range: node.range,
+            data: None,
+        }]))
+    }
+
+    async fn supertypes(
+        &self,
+        params: TypeHierarchySupertypesParams,
+    ) -> Result<Option<Vec<TypeHierarchyItem>>> {
+        let uri = params.item.uri.clone();
+        let range = params.item.selection_range;
+        let state = self.state.read().await;
+        let node = match state.semantic_graph.find_node_at_position(&uri, range.start) {
+            Some(n) => n,
+            None => return Ok(None),
+        };
+        let items = state
+            .semantic_graph
+            .outgoing_typing_or_specializes_targets(node)
+            .into_iter()
+            .map(|n| TypeHierarchyItem {
+                name: n.name.clone(),
+                kind: SymbolKind::CLASS,
+                tags: None,
+                detail: Some(n.element_kind.clone()),
+                uri: n.id.uri.clone(),
+                range: n.range,
+                selection_range: n.range,
+                data: None,
+            })
+            .collect::<Vec<_>>();
+        Ok(Some(items))
+    }
+
+    async fn subtypes(
+        &self,
+        _params: TypeHierarchySubtypesParams,
+    ) -> Result<Option<Vec<TypeHierarchyItem>>> {
+        Ok(Some(Vec::new()))
+    }
+
+    async fn prepare_call_hierarchy(
+        &self,
+        params: CallHierarchyPrepareParams,
+    ) -> Result<Option<Vec<CallHierarchyItem>>> {
+        let uri = params.text_document_position_params.text_document.uri;
+        let uri_norm = util::normalize_file_uri(&uri);
+        let pos = params.text_document_position_params.position;
+        let state = self.state.read().await;
+        let node = match state.semantic_graph.find_node_at_position(&uri_norm, pos) {
+            Some(n) => n,
+            None => return Ok(None),
+        };
+        Ok(Some(vec![CallHierarchyItem {
+            name: node.name.clone(),
+            kind: SymbolKind::FUNCTION,
+            tags: None,
+            detail: Some(node.element_kind.clone()),
+            uri: node.id.uri.clone(),
+            range: node.range,
+            selection_range: node.range,
+            data: None,
+        }]))
+    }
+
+    async fn incoming_calls(
+        &self,
+        _params: CallHierarchyIncomingCallsParams,
+    ) -> Result<Option<Vec<CallHierarchyIncomingCall>>> {
+        Ok(Some(Vec::new()))
+    }
+
+    async fn outgoing_calls(
+        &self,
+        _params: CallHierarchyOutgoingCallsParams,
+    ) -> Result<Option<Vec<CallHierarchyOutgoingCall>>> {
+        Ok(Some(Vec::new()))
     }
 }
 

@@ -34,20 +34,20 @@ A roadmap for evolving the sysml-language-server into a full-fledged professiona
 
 ---
 
-## LSP Features (Missing)
+## LSP Features
 
 | ID | Item | Priority | Status |
 |----|------|----------|--------|
-| ls-1 | **Signature help** — Parameter hints for `part def X : Type`, `port def P { in x : Real }`, etc. | High | Planned |
-| ls-2 | **Inlay hints** — Inferred types, parameter names at call sites | Medium | Planned |
-| ls-3 | **Document links** — Clickable links for imports, cross-refs | Medium | Planned |
-| ls-4 | **Type hierarchy** — Subtypes/supertypes for `part def` / `specializes` | Medium | Planned |
-| ls-5 | **Call hierarchy** — Where actions/calculations are used | Medium | Planned |
-| ls-6 | **Code lens** — References count, run test actions | Low | Planned |
-| ls-7 | **Linked editing** — Rename tag pairs together | Low | Planned |
-| ls-8 | **Document highlights** — Highlight same symbol under cursor | High | Planned |
-| ls-9 | **Selection range** — Expand selection for blocks | Medium | Planned |
-| ls-10 | **Moniker** — Symbol identity for LSIF/indexing | Low | Planned |
+| ls-1 | **Signature help** — Parameter hints for `part def X : Type`, `port def P { in x : Real }`, etc. | High | Done |
+| ls-2 | **Inlay hints** — Inferred types, parameter names at call sites | Medium | Done |
+| ls-3 | **Document links** — Clickable links for imports, cross-refs | Medium | Done |
+| ls-4 | **Type hierarchy** — Subtypes/supertypes for `part def` / `specializes` | Medium | Partial (handlers implemented; capability advertisement depends on current `tower-lsp` support surface) |
+| ls-5 | **Call hierarchy** — Where actions/calculations are used | Medium | Done |
+| ls-6 | **Code lens** — References count, run test actions | Low | Done |
+| ls-7 | **Linked editing** — Rename tag pairs together | Low | Done |
+| ls-8 | **Document highlights** — Highlight same symbol under cursor | High | Done |
+| ls-9 | **Selection range** — Expand selection for blocks | Medium | Done |
+| ls-10 | **Moniker** — Symbol identity for LSIF/indexing | Low | Done |
 
 ---
 
@@ -106,7 +106,7 @@ See also [SUPPORTED-WORKFLOWS.md](SUPPORTED-WORKFLOWS.md) for the current releas
 
 ## Recommended Order
 
-1. **Close LSP editing gaps:** document highlights (ls-8), selection range (ls-9), signature help (ls-1)
+1. **Close LSP editing gaps:** refine quality/precision for new handlers (ls-1, ls-2, ls-3, ls-5, ls-6, ls-7, ls-9, ls-10) and finalize ls-4 advertisement support
 2. **Raise SysML confidence:** semantic validation (spec-2), broader parser coverage (spec-1), BNF plan execution (spec-4)
 3. **Harden scale behavior:** indexing/perf work (perf-1, perf-2), plus deterministic large-workspace expectations
 4. **Productize:** finish user-facing docs (pro-4), improve troubleshooting traces (pro-2), complete remaining marketplace targets (pro-3)

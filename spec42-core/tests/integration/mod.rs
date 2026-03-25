@@ -12,6 +12,7 @@ mod diagnostics;
 mod harness;
 mod hover;
 mod lifecycle;
+mod remaining_lsp_features;
 mod model;
 mod references;
 mod rename;
