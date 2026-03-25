@@ -2,6 +2,11 @@
 
 Language server for [SysML v2](https://www.omg.org/sysml/sysmlv2/) (and KerML). Provides LSP over stdio and a VS Code extension.
 
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/Elan8.spec42?label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42)
+[![VS Code Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/Elan8.spec42?label=Installs)](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42)
+[![GitHub Release](https://img.shields.io/github/v/release/elan8/spec42?label=GitHub%20Release)](https://github.com/elan8/spec42/releases)
+[![License](https://img.shields.io/github/license/elan8/spec42)](LICENSE)
+
 ## Features
 
 - **LSP**: text sync, diagnostics, hover, completion, go to definition, find references, rename, document symbols, workspace symbol search, code actions, formatting.
@@ -10,6 +15,10 @@ Language server for [SysML v2](https://www.omg.org/sysml/sysmlv2/) (and KerML). 
 - **VS Code extension**: syntax highlighting for `.sysml` / `.kerml`.
 
 ## Installing
+
+Install from the VS Code Marketplace:
+
+- [SysML v2 Editor (Elan8.spec42)](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42)
 
 Download from [Releases](https://github.com/elan8/spec42/releases):
 
