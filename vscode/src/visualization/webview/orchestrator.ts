@@ -193,6 +193,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
     // Track last rendered data to avoid unnecessary re-renders
     let lastDataHash = '';
+    let pendingRenderRequest: { view: string; preserveZoomOverride: any; allowDuringResize: boolean } | null = null;
 
     function populateViewDropdown() {
         const viewDropdownMenu = document.getElementById('view-dropdown-menu');
@@ -1340,7 +1341,9 @@ import { buildGeneralViewGraph } from './graphBuilders';
         }
 
         if (isRendering) {
-            // Already rendering, skip
+            // A render is in-flight; queue the latest request so we don't lose updates
+            // when switching folders/projects quickly.
+            pendingRenderRequest = { view, preserveZoomOverride, allowDuringResize };
             return;
         }
 
@@ -1427,11 +1430,25 @@ import { buildGeneralViewGraph } from './graphBuilders';
         // Show loading indicator
         showLoading('Rendering ' + (VIEW_OPTIONS[view]?.label || view) + '...');
 
+        let didFinishRender = false;
+        const finishRender = () => {
+            if (didFinishRender) return;
+            didFinishRender = true;
+            clearTimeout(renderSafetyTimeout);
+            isRendering = false;
+            hideLoading();
+            if (pendingRenderRequest) {
+                const next = pendingRenderRequest;
+                pendingRenderRequest = null;
+                setTimeout(() => {
+                    renderVisualization(next.view, next.preserveZoomOverride, next.allowDuringResize);
+                }, 0);
+            }
+        };
+
         // Safety timeout: auto-reset isRendering after 10 seconds to prevent permanent lockup
         const renderSafetyTimeout = setTimeout(() => {
-            if (isRendering) {
-                isRendering = false;
-            }
+            finishRender();
         }, 10000);
 
         // Test basic setup
@@ -1605,8 +1622,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
                     zoomToFit('auto');
                 }
                 updateDimensionsDisplay();
-                isRendering = false;
-                hideLoading();
+                finishRender();
             }, 100);
         } else if (view === 'interconnection-view') {
             const ctx = {
@@ -1621,8 +1637,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
                     zoomToFit('auto');
                 }
                 updateDimensionsDisplay();
-                isRendering = false;
-                hideLoading();
+                finishRender();
             }, 100);
         } else if (view === 'sequence-view') {
                 renderSequenceViewModule(buildRenderContext(width, height), dataToRender);
@@ -1647,8 +1662,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 // Show initial dimensions briefly
                 setTimeout(() => {
                     updateDimensionsDisplay();
-                    isRendering = false; // Reset rendering flag
-                    hideLoading(); // Hide loading indicator
+                    finishRender();
                 }, 200);
             }
 
@@ -1656,8 +1670,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
         lastView = view;
         } catch (error) {
             console.error('Error during rendering:', error);
-            isRendering = false; // Reset flag on error
-            hideLoading(); // Hide loading indicator on error
+            finishRender();
 
             // Show error message to user
             const statusText = document.getElementById('status-text');

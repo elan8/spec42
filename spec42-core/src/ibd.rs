@@ -163,11 +163,8 @@ fn infer_port_side(name: &str, direction: Option<&str>, port_type: Option<&str>)
     None
 }
 
-fn endpoint_matches_root(endpoint: &str, root_prefix: &str, root_name: &str) -> bool {
-    endpoint == root_prefix
-        || endpoint.starts_with(&format!("{root_prefix}."))
-        || endpoint == root_name
-        || endpoint.starts_with(&format!("{root_name}."))
+fn endpoint_matches_root(endpoint: &str, root_prefix: &str) -> bool {
+    endpoint == root_prefix || endpoint.starts_with(&format!("{root_prefix}."))
 }
 
 fn endpoint_under_definition_prefix(endpoint: &str, def_prefix: &str) -> bool {
@@ -527,13 +524,13 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                     let root_prefix = p.qualified_name.as_str();
                     let port_count = ports
                         .iter()
-                        .filter(|port| endpoint_matches_root(&port.parent_id, root_prefix, &p.name))
+                        .filter(|port| endpoint_matches_root(&port.parent_id, root_prefix))
                         .count();
                     let connector_count = connectors
                         .iter()
                         .filter(|connector| {
-                            endpoint_matches_root(&connector.source_id, root_prefix, &p.name)
-                                && endpoint_matches_root(&connector.target_id, root_prefix, &p.name)
+                            endpoint_matches_root(&connector.source_id, root_prefix)
+                                && endpoint_matches_root(&connector.target_id, root_prefix)
                         })
                         .count();
                     Some((
@@ -566,19 +563,19 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         let root_prefix = p.qualified_name.as_str();
         let focused_parts: Vec<IbdPartDto> = parts
             .iter()
-            .filter(|part| endpoint_matches_root(&part.qualified_name, root_prefix, &p.name))
+            .filter(|part| endpoint_matches_root(&part.qualified_name, root_prefix))
             .cloned()
             .collect();
         let focused_ports: Vec<IbdPortDto> = ports
             .iter()
-            .filter(|port| endpoint_matches_root(&port.parent_id, root_prefix, &p.name))
+            .filter(|port| endpoint_matches_root(&port.parent_id, root_prefix))
             .cloned()
             .collect();
         let focused_connectors: Vec<IbdConnectorDto> = connectors
             .iter()
             .filter(|connector| {
-                endpoint_matches_root(&connector.source_id, root_prefix, &p.name)
-                    && endpoint_matches_root(&connector.target_id, root_prefix, &p.name)
+                endpoint_matches_root(&connector.source_id, root_prefix)
+                    && endpoint_matches_root(&connector.target_id, root_prefix)
             })
             .cloned()
             .collect();
