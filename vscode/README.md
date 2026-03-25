@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo/elan8.png" width="140" alt="SysML v2 Language Support" />
+  <img src="https://raw.githubusercontent.com/elan8/spec42/HEAD/vscode/media/screenshot.png" alt="Spec42 SysML v2 Editor Screenshot" />
 </p>
 
 ## Spec42: SysML v2 Language Support
