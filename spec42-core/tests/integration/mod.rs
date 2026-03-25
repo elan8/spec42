@@ -9,11 +9,13 @@
 mod completion;
 mod definition;
 mod diagnostics;
+mod experimental_capabilities;
+mod experimental_requests;
 mod harness;
 mod hover;
 mod lifecycle;
-mod remaining_lsp_features;
 mod model;
+mod model_graph;
 mod references;
 mod rename;
 mod semantic_tokens;

@@ -15,6 +15,7 @@ pub mod semantic_tokens;
 pub mod sysml_model;
 pub mod util;
 pub mod lsp_server;
+pub(crate) mod lsp;
 
 pub use ast_util::{identification_name, span_to_range, span_to_source_range, SourceRange};
 pub use diagram_types::{Bounds, HitRegion, HitRegionKind, LayoutMetrics, RenderedDiagram, ViewState};

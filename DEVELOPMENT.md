@@ -2,6 +2,21 @@
 
 Guidance for building, testing, and contributing to Spec42.
 
+## LSP Server Structure
+
+The LSP implementation is progressively being split by concern to reduce `lsp_server.rs` churn and make feature work easier to isolate.
+
+- `spec42-core/src/lsp/types.rs`: shared server/index state types
+- `spec42-core/src/lsp/indexing.rs`: workspace/library scan and index update helpers
+- `spec42-core/src/lsp/capabilities.rs`: capability payload construction
+- `spec42-core/src/lsp/lifecycle.rs`: initialize/scan root helpers
+- `spec42-core/src/lsp/navigation.rs`: document-link and selection-range helpers
+- `spec42-core/src/lsp/symbols.rs`: inlay/code-lens helpers
+- `spec42-core/src/lsp/hierarchy.rs`: moniker/type/call hierarchy item builders
+- `spec42-core/src/lsp/custom.rs`: `sysml/*` custom method logic
+
+`spec42-core/src/lsp_server.rs` remains the trait entrypoint and delegates to the modules above.
+
 ## Building
 
 ### Rust server
@@ -46,6 +61,16 @@ cargo test
 ```
 
 This runs workspace tests including sysml-parser unit/validation tests and Spec42 LSP integration tests.
+
+### LSP integration test organization
+
+Integration tests live under `spec42-core/tests/integration/` and are now split by domain:
+
+- Core feature files (`hover`, `completion`, `definition`, `references`, `rename`, etc.)
+- Experimental feature surface checks (`experimental_capabilities.rs`, `experimental_requests.rs`)
+- SysML model graph-focused tests (`model_graph.rs`) plus broader model coverage in `model.rs`
+
+Use `harness::TestSession` for new integration tests to reduce duplicated initialize/open/request boilerplate.
 
 To run only LSP integration tests:
 

@@ -86,3 +86,81 @@ pub fn read_response(stdout: &mut std::process::ChildStdout, expect_id: i64) -> 
 pub fn next_id() -> i64 {
     NEXT_ID.fetch_add(1, Ordering::SeqCst)
 }
+
+pub struct TestSession {
+    child: Child,
+    stdin: std::process::ChildStdin,
+    stdout: std::process::ChildStdout,
+}
+
+impl TestSession {
+    pub fn new() -> Self {
+        let mut child = spawn_server();
+        let stdin = child.stdin.take().expect("stdin");
+        let stdout = child.stdout.take().expect("stdout");
+        Self {
+            child,
+            stdin,
+            stdout,
+        }
+    }
+
+    pub fn initialize_default(&mut self, client_name: &str) {
+        let init_id = next_id();
+        let init_req = serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": null,
+                "capabilities": {},
+                "clientInfo": { "name": client_name, "version": "0.1.0" }
+            }
+        });
+        send_message(&mut self.stdin, &init_req.to_string());
+        let _ = read_response(&mut self.stdout, init_id).expect("initialize response");
+        send_message(
+            &mut self.stdin,
+            &serde_json::json!({
+                "jsonrpc":"2.0",
+                "method":"initialized",
+                "params":{}
+            })
+            .to_string(),
+        );
+    }
+
+    pub fn did_open(&mut self, uri: &str, text: &str, version: i32) {
+        send_message(
+            &mut self.stdin,
+            &serde_json::json!({
+                "jsonrpc": "2.0",
+                "method": "textDocument/didOpen",
+                "params": {
+                    "textDocument": { "uri": uri, "languageId": "sysml", "version": version, "text": text }
+                }
+            })
+            .to_string(),
+        );
+    }
+
+    pub fn request(&mut self, method: &str, params: serde_json::Value) -> serde_json::Value {
+        let id = next_id();
+        let req = serde_json::json!({
+            "jsonrpc":"2.0",
+            "id": id,
+            "method": method,
+            "params": params
+        });
+        send_message(&mut self.stdin, &req.to_string());
+        let raw = read_response(&mut self.stdout, id).expect("request response");
+        serde_json::from_str(&raw).expect("json response")
+    }
+}
+
+impl Drop for TestSession {
+    fn drop(&mut self) {
+        let _ = self.child.kill();
+    }
+}
