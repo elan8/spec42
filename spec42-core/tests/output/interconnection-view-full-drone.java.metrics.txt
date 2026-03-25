@@ -7,7 +7,7 @@ bend_count=34
 orthogonal_violation_count=0
 overlap_count=10
 minimum_node_clearance=0.0
-width=2136.0
+width=2100.0
 height=1113.0
 endpoint_offset_summary source_mismatches=0 source_max_dx=0.0 source_max_dy=0.0 target_mismatches=0 target_max_dx=0.0 target_max_dy=0.0
 warnings:

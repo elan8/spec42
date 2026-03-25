@@ -23,7 +23,9 @@
               "height": 8.0,
               "id": "p0",
               "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
                 "elk.port.index": 0,
+                "org.eclipse.elk.port.borderOffset": -4.0,
                 "port.side": "EAST",
                 "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.videoOut"
               },
@@ -35,7 +37,9 @@
               "height": 8.0,
               "id": "p1",
               "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
                 "elk.port.index": 1,
+                "org.eclipse.elk.port.borderOffset": -4.0,
                 "port.side": "WEST",
                 "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.control"
               },
@@ -47,7 +51,9 @@
               "height": 8.0,
               "id": "p2",
               "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
                 "elk.port.index": 2,
+                "org.eclipse.elk.port.borderOffset": -4.0,
                 "port.side": "WEST",
                 "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.pwr"
               },
@@ -71,7 +77,9 @@
               "height": 8.0,
               "id": "p3",
               "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
                 "elk.port.index": 0,
+                "org.eclipse.elk.port.borderOffset": -4.0,
                 "port.side": "WEST",
                 "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.communication.c2In"
               },
@@ -83,7 +91,9 @@
               "height": 8.0,
               "id": "p4",
               "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
                 "elk.port.index": 1,
+                "org.eclipse.elk.port.borderOffset": -4.0,
                 "port.side": "WEST",
                 "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.communication.telemetryIn"
               },
@@ -95,7 +105,9 @@
               "height": 8.0,
               "id": "p5",
               "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
                 "elk.port.index": 2,
+                "org.eclipse.elk.port.borderOffset": -4.0,
                 "port.side": "WEST",
                 "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.communication.videoIn"
               },
@@ -107,7 +119,9 @@
               "height": 8.0,
               "id": "p6",
               "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
                 "elk.port.index": 3,
+                "org.eclipse.elk.port.borderOffset": -4.0,
                 "port.side": "WEST",
                 "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.communication.pwr"
               },
@@ -133,7 +147,9 @@
                   "height": 8.0,
                   "id": "p10",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "EAST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.barometer.altitudeOut"
                   },
@@ -145,7 +161,9 @@
                   "height": 8.0,
                   "id": "p11",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "WEST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.barometer.pwr"
                   },
@@ -169,7 +187,9 @@
                   "height": 8.0,
                   "id": "p12",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "EAST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd"
                   },
@@ -181,7 +201,9 @@
                   "height": 8.0,
                   "id": "p13",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "WEST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.gimbalCmd"
                   },
@@ -193,7 +215,9 @@
                   "height": 8.0,
                   "id": "p14",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 2,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "EAST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.telemetryOut"
                   },
@@ -205,7 +229,9 @@
                   "height": 8.0,
                   "id": "p15",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 3,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "WEST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.rcIn"
                   },
@@ -217,7 +243,9 @@
                   "height": 8.0,
                   "id": "p16",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 4,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "WEST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.sensorIn"
                   },
@@ -229,7 +257,9 @@
                   "height": 8.0,
                   "id": "p17",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 5,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "WEST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.pwr"
                   },
@@ -253,7 +283,9 @@
                   "height": 8.0,
                   "id": "p18",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "EAST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.gnss.positionOut"
                   },
@@ -265,7 +297,9 @@
                   "height": 8.0,
                   "id": "p19",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "WEST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.gnss.pwr"
                   },
@@ -289,7 +323,9 @@
                   "height": 8.0,
                   "id": "p20",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "EAST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.imu.dataOut"
                   },
@@ -301,7 +337,9 @@
                   "height": 8.0,
                   "id": "p21",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "WEST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.imu.pwr"
                   },
@@ -339,7 +377,9 @@
               "height": 8.0,
               "id": "p7",
               "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
                 "elk.port.index": 0,
+                "org.eclipse.elk.port.borderOffset": -4.0,
                 "port.side": "WEST",
                 "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cmd"
               },
@@ -351,7 +391,9 @@
               "height": 8.0,
               "id": "p8",
               "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
                 "elk.port.index": 1,
+                "org.eclipse.elk.port.borderOffset": -4.0,
                 "port.side": "EAST",
                 "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.cameraCtrl"
               },
@@ -363,7 +405,9 @@
               "height": 8.0,
               "id": "p9",
               "layoutOptions": {
+                "elk.port.borderOffset": -4.0,
                 "elk.port.index": 2,
+                "org.eclipse.elk.port.borderOffset": -4.0,
                 "port.side": "WEST",
                 "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.gimbal.pwr"
               },
@@ -389,7 +433,9 @@
                   "height": 8.0,
                   "id": "p22",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "EAST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.power.battery.pwrOut"
                   },
@@ -413,7 +459,9 @@
                   "height": 8.0,
                   "id": "p23",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "WEST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.mainPower"
                   },
@@ -425,7 +473,9 @@
                   "height": 8.0,
                   "id": "p24",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "EAST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V"
                   },
@@ -437,7 +487,9 @@
                   "height": 8.0,
                   "id": "p25",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 2,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "EAST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated12V"
                   },
@@ -477,7 +529,9 @@
                   "height": 8.0,
                   "id": "p26",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "EAST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit1.cmd"
                   },
@@ -489,7 +543,9 @@
                   "height": 8.0,
                   "id": "p27",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "WEST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit1.pwr"
                   },
@@ -513,7 +569,9 @@
                   "height": 8.0,
                   "id": "p28",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "EAST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit2.cmd"
                   },
@@ -525,7 +583,9 @@
                   "height": 8.0,
                   "id": "p29",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "WEST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit2.pwr"
                   },
@@ -549,7 +609,9 @@
                   "height": 8.0,
                   "id": "p30",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "EAST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit3.cmd"
                   },
@@ -561,7 +623,9 @@
                   "height": 8.0,
                   "id": "p31",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "WEST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit3.pwr"
                   },
@@ -585,7 +649,9 @@
                   "height": 8.0,
                   "id": "p32",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 0,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "EAST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit4.cmd"
                   },
@@ -597,7 +663,9 @@
                   "height": 8.0,
                   "id": "p33",
                   "layoutOptions": {
+                    "elk.port.borderOffset": -4.0,
                     "elk.port.index": 1,
+                    "org.eclipse.elk.port.borderOffset": -4.0,
                     "port.side": "WEST",
                     "spec42.port_id": "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit4.pwr"
                   },
@@ -880,7 +948,8 @@
     "elk.spacing.nodeNodeBetweenLayers": 96.0,
     "org.eclipse.elk.hierarchyHandling": "INCLUDE_CHILDREN",
     "org.eclipse.elk.json.edgeCoords": "ROOT",
-    "org.eclipse.elk.json.shapeCoords": "ROOT"
+    "org.eclipse.elk.json.shapeCoords": "ROOT",
+    "org.eclipse.elk.port.borderOffset": -4.0
   },
   "width": 0.0,
   "x": 0.0,

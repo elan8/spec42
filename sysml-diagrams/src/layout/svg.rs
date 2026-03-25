@@ -240,9 +240,9 @@ pub(crate) fn render_svg(layout: &DiagramLayout, options: &SvgRenderOptions) -> 
         if !is_general_view {
             for port in &node.ports {
                 node_groups.push_str(&format!(
-                    "<circle class=\"diagram-port\" cx=\"{:.1}\" cy=\"{:.1}\" r=\"4\" data-port-id=\"{}\"/>",
-                    port.position.x,
-                    port.position.y,
+                    "<rect class=\"diagram-port\" x=\"{:.1}\" y=\"{:.1}\" width=\"8\" height=\"8\" data-port-id=\"{}\"/>",
+                    port.position.x - 4.0,
+                    port.position.y - 4.0,
                     escape_text(&port.id)
                 ));
                 let (label_x, anchor) = match port.side {

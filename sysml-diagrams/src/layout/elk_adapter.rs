@@ -76,6 +76,17 @@ pub(crate) fn compute_layout(
                     height: 8.0,
                 },
             );
+            // ELK port placement: border offset from the node boundary.
+            // Set on the port itself (in addition to the root), since some implementations read
+            // port-specific values during port position calculation.
+            elk_graph.ports[elk_port_id.index()].properties.insert(
+                "org.eclipse.elk.port.borderOffset",
+                PropertyValue::Float(-4.0),
+            );
+            elk_graph.ports[elk_port_id.index()].properties.insert(
+                "elk.port.borderOffset",
+                PropertyValue::Float(-4.0),
+            );
             elk_graph.ports[elk_port_id.index()].properties.insert(
                 "elk.port.index",
                 PropertyValue::Int(index as i64),
@@ -240,6 +251,11 @@ fn apply_java_layout_options_to_root_node(elk_graph: &mut ElkGraph, options: &La
         };
         props.insert("elk.portConstraints", PropertyValue::String(v.to_string()));
     }
+    // Port placement: distance from the node border. Positive moves ports outward.
+    props.insert(
+        "org.eclipse.elk.port.borderOffset",
+        PropertyValue::Float(-4.0),
+    );
     props.insert(
         "elk.spacing.nodeNode",
         PropertyValue::Float(options.layered.spacing.node_spacing as f64),
