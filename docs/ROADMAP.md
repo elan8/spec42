@@ -10,57 +10,75 @@ A roadmap for evolving the sysml-language-server into a full-fledged professiona
 
 **Custom methods:** `sysml/model`, `sysml/serverStats`, `sysml/clearCache`.
 
-**Known limitations (from CHANGELOG):**
-- Parser aligned with SysML v2 Release; does not claim full OMG spec compliance.
-- Some constructs may have incomplete semantic token or outline coverage.
+**Stable workflows (release-gating for `1.0`):**
+- Core editing loop in VS Code for `.sysml` / `.kerml` without server crashes in normal use
+- Diagnostics while typing invalid intermediate text
+- Hover, go-to-definition, references, rename, document symbols, workspace symbol search
+- Formatting, semantic tokens, and folding ranges
+
+**Usable with caveats:**
+- Workspace indexing in larger repositories may require tuning `spec42.workspace.maxFilesPerPattern`
+- Library path indexing is useful but depends on parser coverage
+- Model Explorer and visualization quality depend on parser/model completeness and partial indexing
+- `general-view` and `interconnection-view` are release-enabled; dense routing/layout can still be rough
+
+**Current support boundaries:**
+- Parser coverage is aligned with the current SysML v2 Release-focused subset
+- The project does not claim full OMG SysML v2 specification coverage yet
+- Full semantic validation for all constructs is not complete
+- Non-core visualization views remain experimental
+
+**Validation/testing status:**
+- Full SysML v2 validation suite exists, but is `#[ignore]`d in standard `cargo test` due to runtime cost
+- CI deterministically covers release-critical editor workflows
 
 ---
 
 ## LSP Features (Missing)
 
-| ID | Item | Priority |
-|----|------|----------|
-| ls-1 | **Signature help** — Parameter hints for `part def X : Type`, `port def P { in x : Real }`, etc. | High |
-| ls-2 | **Inlay hints** — Inferred types, parameter names at call sites | Medium |
-| ls-3 | **Document links** — Clickable links for imports, cross-refs | Medium |
-| ls-4 | **Type hierarchy** — Subtypes/supertypes for `part def` / `specializes` | Medium |
-| ls-5 | **Call hierarchy** — Where actions/calculations are used | Medium |
-| ls-6 | **Code lens** — References count, run test actions | Low |
-| ls-7 | **Linked editing** — Rename tag pairs together | Low |
-| ls-8 | **Document highlights** — Highlight same symbol under cursor | High |
-| ls-9 | **Selection range** — Expand selection for blocks | Medium |
-| ls-10 | **Moniker** — Symbol identity for LSIF/indexing | Low |
+| ID | Item | Priority | Status |
+|----|------|----------|--------|
+| ls-1 | **Signature help** — Parameter hints for `part def X : Type`, `port def P { in x : Real }`, etc. | High | Planned |
+| ls-2 | **Inlay hints** — Inferred types, parameter names at call sites | Medium | Planned |
+| ls-3 | **Document links** — Clickable links for imports, cross-refs | Medium | Planned |
+| ls-4 | **Type hierarchy** — Subtypes/supertypes for `part def` / `specializes` | Medium | Planned |
+| ls-5 | **Call hierarchy** — Where actions/calculations are used | Medium | Planned |
+| ls-6 | **Code lens** — References count, run test actions | Low | Planned |
+| ls-7 | **Linked editing** — Rename tag pairs together | Low | Planned |
+| ls-8 | **Document highlights** — Highlight same symbol under cursor | High | Planned |
+| ls-9 | **Selection range** — Expand selection for blocks | Medium | Planned |
+| ls-10 | **Moniker** — Symbol identity for LSIF/indexing | Low | Planned |
 
 ---
 
 ## SysML Spec Compliance
 
-| ID | Item | Priority |
-|----|------|----------|
-| spec-1 | **Broader parser coverage** — Requirements, states, use cases, allocations, flows, views/viewpoints | High |
-| spec-2 | **Semantic validation** — Multiplicity, typing, redefines, connection semantics | High |
-| spec-3 | **Full validation suite CI** — Run SysML-v2-Release validation suite in CI | Medium |
-| spec-4 | **Full BNF coverage** — Phased plan in [BNF_COVERAGE_PLAN.md](BNF_COVERAGE_PLAN.md) | Medium |
+| ID | Item | Priority | Status |
+|----|------|----------|--------|
+| spec-1 | **Broader parser coverage** — Requirements, states, use cases, allocations, flows, views/viewpoints | High | In progress |
+| spec-2 | **Semantic validation** — Multiplicity, typing, redefines, connection semantics | High | In progress |
+| spec-3 | **Full validation suite CI** — Run SysML-v2-Release validation suite in CI by default | Medium | Partial (`#[ignore]` locally by default) |
+| spec-4 | **Full BNF coverage** — Phased plan in [BNF_COVERAGE_PLAN.md](BNF_COVERAGE_PLAN.md) | Medium | In progress |
 
 ---
 
 ## UX Improvements
 
-| ID | Item | Priority |
-|----|------|----------|
-| ux-1 | **Snippets** — Common SysML patterns (BDD, IBD, requirements, actions) | High |
-| ux-2 | **Breadcrumb navigation** — Package hierarchy path in editor | Medium |
-| ux-3 | **Outline icons** — Icons by element kind (part, port, action, etc.) | Low |
-| ux-4 | **Bracket pairs / indent guides** — Visual structure for braces | Low |
+| ID | Item | Priority | Status |
+|----|------|----------|--------|
+| ux-1 | **Snippets** — Common SysML patterns (BDD, IBD, requirements, actions) | High | Planned |
+| ux-2 | **Breadcrumb navigation** — Package hierarchy path in editor | Medium | Planned |
+| ux-3 | **Outline icons** — Icons by element kind (part, port, action, etc.) | Low | Planned |
+| ux-4 | **Bracket pairs / indent guides** — Visual structure for braces | Low | Planned |
 
 ---
 
 ## Performance & Reliability
 
-| ID | Item | Priority |
-|----|------|----------|
-| perf-1 | **Incremental parsing** — Avoid full re-parse on large workspace edits | Medium |
-| perf-2 | **Progress reporting** — Workspace scan progress notifications | Medium |
+| ID | Item | Priority | Status |
+|----|------|----------|--------|
+| perf-1 | **Incremental parsing** — Avoid full re-parse on large workspace edits | Medium | Planned |
+| perf-2 | **Progress reporting** — Workspace scan progress notifications | Medium | Planned |
 
 ## Experimental Areas
 
@@ -77,21 +95,21 @@ See also [SUPPORTED-WORKFLOWS.md](SUPPORTED-WORKFLOWS.md) for the current releas
 
 ## Professional Polish
 
-| ID | Item | Priority |
-|----|------|----------|
-| pro-1 | **Telemetry** — Opt-in crash/usage reporting | Low |
-| pro-2 | **Trace / debug logging** — LSP trace for troubleshooting | Medium |
-| pro-3 | **Marketplace publishing** — Open VSX, VS Code marketplace | High |
-| pro-4 | **User documentation** — Quick start, troubleshooting, feature guide | High |
+| ID | Item | Priority | Status |
+|----|------|----------|--------|
+| pro-1 | **Telemetry** — Opt-in crash/usage reporting | Low | Planned |
+| pro-2 | **Trace / debug logging** — LSP trace for troubleshooting | Medium | In progress |
+| pro-3 | **Marketplace publishing** — VS Code marketplace released; Open VSX remaining | High | Partial |
+| pro-4 | **User documentation** — Quick start, troubleshooting, feature guide | High | In progress |
 
 ---
 
 ## Recommended Order
 
-1. **Quick wins:** Document highlights (ls-8), selection range (ls-9)
-2. **High impact:** Signature help (ls-1), snippets (ux-1), semantic validation (spec-2)
-3. **Spec alignment:** Broader parser coverage (spec-1), validation suite CI (spec-3)
-4. **Polish:** Documentation (pro-4), marketplace (pro-3), trace logging (pro-2)
+1. **Close LSP editing gaps:** document highlights (ls-8), selection range (ls-9), signature help (ls-1)
+2. **Raise SysML confidence:** semantic validation (spec-2), broader parser coverage (spec-1), BNF plan execution (spec-4)
+3. **Harden scale behavior:** indexing/perf work (perf-1, perf-2), plus deterministic large-workspace expectations
+4. **Productize:** finish user-facing docs (pro-4), improve troubleshooting traces (pro-2), complete remaining marketplace targets (pro-3)
 
 ---
 
