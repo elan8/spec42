@@ -1,18 +1,18 @@
 == Node bounds (key: node.id) ==
 java_nodes=19 rust_nodes=19 missing_in_rust=0 extra_in_rust=0
-id=root Δx=0.000 Δy=0.000 Δw=2564.000 Δh=1958.848 (java x/y/w/h=0.0/0.0/2100.0/1112.2 rust=0.0/0.0/4664.0/3071.0)
-id=n1 Δx=128.000 Δy=128.000 Δw=2308.000 Δh=1658.848 (java x/y/w/h=12.0/12.0/2076.0/1088.2 rust=140.0/140.0/4384.0/2747.0)
-id=n4 Δx=2208.000 Δy=76.000 Δw=0.000 Δh=0.000 (java x/y/w/h=1776.0/64.0/260.0/148.0 rust=3984.0/140.0/260.0/148.0)
-id=n3 Δx=2142.000 Δy=251.514 Δw=0.000 Δh=0.000 (java x/y/w/h=1478.0/102.2/260.0/136.0 rust=3620.0/353.7/260.0/136.0)
+id=root Δx=0.000 Δy=0.000 Δw=1936.000 Δh=1958.848 (java x/y/w/h=0.0/0.0/2100.0/1112.2 rust=0.0/0.0/4036.0/3071.0)
 id=n2 Δx=-88.500 Δy=1830.848 Δw=0.000 Δh=0.000 (java x/y/w/h=228.5/676.2/260.0/100.0 rust=140.0/2507.0/260.0/100.0)
-id=n8 Δx=1770.000 Δy=260.514 Δw=292.000 Δh=512.000 (java x/y/w/h=1110.0/313.2/344.0/660.0 rust=2880.0/573.7/636.0/1172.0)
-id=n6 Δx=1743.667 Δy=162.514 Δw=0.000 Δh=0.000 (java x/y/w/h=1136.3/157.2/260.0/136.0 rust=2880.0/319.7/260.0/136.0)
-id=n5 Δx=822.000 Δy=546.848 Δw=708.000 Δh=608.000 (java x/y/w/h=702.0/222.2/348.0/708.0 rust=1524.0/769.0/1056.0/1316.0)
+id=n1 Δx=128.000 Δy=128.000 Δw=1680.000 Δh=1658.848 (java x/y/w/h=12.0/12.0/2076.0/1088.2 rust=140.0/140.0/3756.0/2747.0)
+id=n4 Δx=1580.000 Δy=76.000 Δw=0.000 Δh=0.000 (java x/y/w/h=1776.0/64.0/260.0/148.0 rust=3356.0/140.0/260.0/148.0)
+id=n3 Δx=1530.000 Δy=251.514 Δw=0.000 Δh=0.000 (java x/y/w/h=1478.0/102.2/260.0/136.0 rust=3008.0/353.7/260.0/136.0)
+id=n8 Δx=1174.000 Δy=260.514 Δw=292.000 Δh=512.000 (java x/y/w/h=1110.0/313.2/344.0/660.0 rust=2284.0/573.7/636.0/1172.0)
+id=n6 Δx=1147.667 Δy=162.514 Δw=0.000 Δh=0.000 (java x/y/w/h=1136.3/157.2/260.0/136.0 rust=2284.0/319.7/260.0/136.0)
 id=n11 Δx=96.000 Δy=732.000 Δw=0.000 Δh=0.000 (java x/y/w/h=44.0/64.0/260.0/124.0 rust=140.0/796.0/260.0/124.0)
 id=n12 Δx=96.000 Δy=700.000 Δw=0.000 Δh=0.000 (java x/y/w/h=44.0/352.0/260.0/124.0 rust=140.0/1052.0/260.0/124.0)
+id=n5 Δx=510.000 Δy=546.848 Δw=636.000 Δh=608.000 (java x/y/w/h=702.0/222.2/348.0/708.0 rust=1212.0/769.0/984.0/1316.0)
 id=n18 Δx=192.000 Δy=556.000 Δw=0.000 Δh=0.000 (java x/y/w/h=44.0/352.0/260.0/124.0 rust=236.0/908.0/260.0/124.0)
-id=n7 Δx=100.000 Δy=-27.152 Δw=508.000 Δh=444.000 (java x/y/w/h=40.0/796.2/632.0/252.0 rust=140.0/769.0/1140.0/696.0)
 id=n10 Δx=444.000 Δy=-304.400 Δw=0.000 Δh=0.000 (java x/y/w/h=44.0/496.0/260.0/172.0 rust=488.0/191.6/260.0/172.0)
+id=n7 Δx=100.000 Δy=-27.152 Δw=352.000 Δh=444.000 (java x/y/w/h=40.0/796.2/632.0/252.0 rust=140.0/769.0/984.0/696.0)
 id=n16 Δx=192.000 Δy=332.000 Δw=0.000 Δh=0.000 (java x/y/w/h=44.0/64.0/260.0/124.0 rust=236.0/396.0/260.0/124.0)
 id=n9 Δx=96.000 Δy=332.000 Δw=0.000 Δh=0.000 (java x/y/w/h=44.0/208.0/260.0/124.0 rust=140.0/540.0/260.0/124.0)
 id=n13 Δx=100.000 Δy=213.333 Δw=0.000 Δh=0.000 (java x/y/w/h=40.0/64.0/260.0/112.0 rust=140.0/277.3/260.0/112.0)
@@ -59,19 +59,19 @@ id=p7 parent(java=n6) parent(rust=n6) Δx=0.000 Δy=0.000 Δw=0.000 Δh=0.000
 
 == Edge polylines (key: sources/targets signature) ==
 java_edges=17 rust_edges=17 missing_sigs_in_rust=0 extra_sigs_in_rust=0
-sig=p25 -> p27 variant=0 java_points=4 rust_points=20 max_point_drift=1016.000 max_idx=None
-sig=p25 -> p29 variant=0 java_points=4 rust_points=20 max_point_drift=1016.000 max_idx=None
-sig=p25 -> p31 variant=0 java_points=4 rust_points=20 max_point_drift=1016.000 max_idx=None
+sig=p25 -> p33 variant=0 java_points=4 rust_points=21 max_point_drift=1017.000 max_idx=None
 sig=p13 -> p30 variant=0 java_points=2 rust_points=17 max_point_drift=1015.000 max_idx=None
-sig=p25 -> p33 variant=0 java_points=4 rust_points=19 max_point_drift=1015.000 max_idx=None
+sig=p13 -> p32 variant=0 java_points=4 rust_points=19 max_point_drift=1015.000 max_idx=None
+sig=p25 -> p14 variant=0 java_points=4 rust_points=19 max_point_drift=1015.000 max_idx=None
+sig=p25 -> p27 variant=0 java_points=4 rust_points=19 max_point_drift=1015.000 max_idx=None
+sig=p25 -> p29 variant=0 java_points=4 rust_points=19 max_point_drift=1015.000 max_idx=None
+sig=p25 -> p31 variant=0 java_points=4 rust_points=19 max_point_drift=1015.000 max_idx=None
 sig=p13 -> p26 variant=0 java_points=4 rust_points=17 max_point_drift=1013.000 max_idx=None
 sig=p13 -> p28 variant=0 java_points=4 rust_points=17 max_point_drift=1013.000 max_idx=None
-sig=p13 -> p32 variant=0 java_points=4 rust_points=17 max_point_drift=1013.000 max_idx=None
-sig=p25 -> p14 variant=0 java_points=4 rust_points=17 max_point_drift=1013.000 max_idx=None
-sig=p17 -> p5 variant=0 java_points=4 rust_points=15 max_point_drift=1011.000 max_idx=None
-sig=p25 -> p1 variant=0 java_points=4 rust_points=15 max_point_drift=1011.000 max_idx=None
+sig=p17 -> p5 variant=0 java_points=4 rust_points=17 max_point_drift=1013.000 max_idx=None
+sig=p25 -> p1 variant=0 java_points=4 rust_points=17 max_point_drift=1013.000 max_idx=None
+sig=p25 -> p9 variant=0 java_points=6 rust_points=17 max_point_drift=1011.000 max_idx=None
 sig=p25 -> p4 variant=0 java_points=6 rust_points=15 max_point_drift=1009.000 max_idx=None
-sig=p25 -> p9 variant=0 java_points=6 rust_points=15 max_point_drift=1009.000 max_idx=None
 sig=p12 -> p8 variant=0 java_points=4 rust_points=10 max_point_drift=1006.000 max_idx=None
 sig=p2 -> p6 variant=0 java_points=4 rust_points=6 max_point_drift=1002.000 max_idx=None
 sig=p22 -> p23 variant=0 java_points=2 rust_points=4 max_point_drift=1002.000 max_idx=None

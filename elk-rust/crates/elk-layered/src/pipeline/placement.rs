@@ -1119,7 +1119,7 @@ pub(crate) fn assign_lanes(ir: &mut LayeredIr, options: &LayoutOptions) {
 
     // Java-like refinement for orthogonal routing: use slot assignment with
     // conflict/crossing heuristics and deterministic cycle handling.
-    refine_lanes_with_orthogonal_slots(ir, options);
+    // refine_lanes_with_orthogonal_slots(ir, options);
 }
 
 fn refine_lanes_with_orthogonal_slots(ir: &mut LayeredIr, options: &LayoutOptions) {
