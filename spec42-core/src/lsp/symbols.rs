@@ -5,12 +5,18 @@ use tower_lsp::lsp_types::{
 
 pub(crate) fn build_inlay_hints(state: &ServerState, uri_norm: &Url) -> Vec<InlayHint> {
     let mut hints = Vec::new();
+    let mut seen = std::collections::HashSet::<(u32, u32, String)>::new();
     for sym in state.symbol_table.iter().filter(|s| s.uri == *uri_norm) {
         if let Some(sig) = &sym.signature {
             if let Some((_, rhs)) = sig.split_once(':') {
+                let label = format!(" :{}", rhs.trim_end_matches(';').trim());
+                let key = (sym.range.end.line, sym.range.end.character, label.clone());
+                if !seen.insert(key) {
+                    continue;
+                }
                 hints.push(InlayHint {
                     position: Position::new(sym.range.end.line, sym.range.end.character),
-                    label: InlayHintLabel::String(format!(" :{}", rhs.trim_end_matches(';').trim())),
+                    label: InlayHintLabel::String(label),
                     kind: Some(InlayHintKind::TYPE),
                     text_edits: None,
                     tooltip: None,
@@ -26,7 +32,16 @@ pub(crate) fn build_inlay_hints(state: &ServerState, uri_norm: &Url) -> Vec<Inla
 
 pub(crate) fn build_code_lens(state: &ServerState, uri_norm: &Url) -> Vec<CodeLens> {
     let mut out = Vec::new();
-    for sym in state.symbol_table.iter().filter(|s| s.uri == *uri_norm) {
+    let mut sorted_symbols: Vec<_> = state
+        .symbol_table
+        .iter()
+        .filter(|s| s.uri == *uri_norm)
+        .collect();
+    sorted_symbols.sort_by_key(|s| (s.range.start.line, s.range.start.character, s.name.clone()));
+    for sym in sorted_symbols {
+        if sym.name.trim().is_empty() {
+            continue;
+        }
         let refs = state
             .index
             .values()

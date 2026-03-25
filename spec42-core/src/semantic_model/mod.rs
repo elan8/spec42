@@ -293,6 +293,84 @@ impl SemanticGraph {
         targets
     }
 
+    /// Returns source nodes that have typing/specializes edges to the given node.
+    pub fn incoming_typing_or_specializes_sources(
+        &self,
+        node: &SemanticNode,
+    ) -> Vec<&SemanticNode> {
+        let tgt_idx = match self.node_index_by_id.get(&node.id) {
+            Some(&idx) => idx,
+            None => return Vec::new(),
+        };
+        let id_by_idx: HashMap<NodeIndex, NodeId> = self
+            .node_index_by_id
+            .iter()
+            .map(|(k, v)| (*v, k.clone()))
+            .collect();
+        let mut sources = Vec::new();
+        for edge in self.graph.edges_directed(tgt_idx, Direction::Incoming) {
+            if matches!(
+                edge.weight(),
+                RelationshipKind::Typing | RelationshipKind::Specializes
+            ) {
+                if let Some(src_id) = id_by_idx.get(&edge.source()) {
+                    if let Some(src) = self.get_node(src_id) {
+                        sources.push(src);
+                    }
+                }
+            }
+        }
+        sources
+    }
+
+    /// Returns target nodes of perform edges from the given node.
+    pub fn outgoing_perform_targets(&self, node: &SemanticNode) -> Vec<&SemanticNode> {
+        let src_idx = match self.node_index_by_id.get(&node.id) {
+            Some(&idx) => idx,
+            None => return Vec::new(),
+        };
+        let id_by_idx: HashMap<NodeIndex, NodeId> = self
+            .node_index_by_id
+            .iter()
+            .map(|(k, v)| (*v, k.clone()))
+            .collect();
+        let mut targets = Vec::new();
+        for edge in self.graph.edges_directed(src_idx, Direction::Outgoing) {
+            if matches!(edge.weight(), RelationshipKind::Perform) {
+                if let Some(tgt_id) = id_by_idx.get(&edge.target()) {
+                    if let Some(tgt) = self.get_node(tgt_id) {
+                        targets.push(tgt);
+                    }
+                }
+            }
+        }
+        targets
+    }
+
+    /// Returns source nodes of perform edges into the given node.
+    pub fn incoming_perform_sources(&self, node: &SemanticNode) -> Vec<&SemanticNode> {
+        let tgt_idx = match self.node_index_by_id.get(&node.id) {
+            Some(&idx) => idx,
+            None => return Vec::new(),
+        };
+        let id_by_idx: HashMap<NodeIndex, NodeId> = self
+            .node_index_by_id
+            .iter()
+            .map(|(k, v)| (*v, k.clone()))
+            .collect();
+        let mut sources = Vec::new();
+        for edge in self.graph.edges_directed(tgt_idx, Direction::Incoming) {
+            if matches!(edge.weight(), RelationshipKind::Perform) {
+                if let Some(src_id) = id_by_idx.get(&edge.source()) {
+                    if let Some(src) = self.get_node(src_id) {
+                        sources.push(src);
+                    }
+                }
+            }
+        }
+        sources
+    }
+
     /// Returns connection edges that touch the given URI, as (source NodeId, target NodeId).
     /// Used for semantic checks (port type compatibility, endpoint kind).
     pub fn connection_edge_node_pairs_for_uri(&self, uri: &Url) -> Vec<(NodeId, NodeId)> {

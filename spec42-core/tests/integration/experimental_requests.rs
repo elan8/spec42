@@ -59,4 +59,49 @@ fn lsp_remaining_feature_requests_round_trip() {
             json
         );
     }
+
+    let prepare_vehicle = session.request(
+        "textDocument/prepareTypeHierarchy",
+        serde_json::json!({"textDocument":{"uri":uri},"position":{"line":2,"character":7}}),
+    );
+    let vehicle_item = prepare_vehicle["result"]
+        .as_array()
+        .and_then(|a| a.first())
+        .cloned()
+        .expect("prepareTypeHierarchy should return item for vehicle");
+    let supertypes = session.request(
+        "typeHierarchy/supertypes",
+        serde_json::json!({"item": vehicle_item}),
+    );
+    let super_items = supertypes["result"]
+        .as_array()
+        .expect("supertypes should return array");
+    assert!(
+        super_items
+            .iter()
+            .any(|it| it["name"].as_str() == Some("Engine")),
+        "vehicle supertypes should include Engine: {}",
+        supertypes
+    );
+
+    let prepare_engine = session.request(
+        "textDocument/prepareTypeHierarchy",
+        serde_json::json!({"textDocument":{"uri":uri},"position":{"line":1,"character":11}}),
+    );
+    let engine_item = prepare_engine["result"]
+        .as_array()
+        .and_then(|a| a.first())
+        .cloned()
+        .expect("prepareTypeHierarchy should return item for Engine");
+    let subtypes = session.request("typeHierarchy/subtypes", serde_json::json!({"item": engine_item}));
+    let sub_items = subtypes["result"]
+        .as_array()
+        .expect("subtypes should return array");
+    assert!(
+        sub_items
+            .iter()
+            .any(|it| it["name"].as_str() == Some("vehicle")),
+        "Engine subtypes should include vehicle: {}",
+        subtypes
+    );
 }

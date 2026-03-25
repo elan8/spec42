@@ -145,6 +145,22 @@ impl TestSession {
         );
     }
 
+    #[allow(dead_code)]
+    pub fn did_change_full(&mut self, uri: &str, text: &str, version: i32) {
+        send_message(
+            &mut self.stdin,
+            &serde_json::json!({
+                "jsonrpc": "2.0",
+                "method": "textDocument/didChange",
+                "params": {
+                    "textDocument": { "uri": uri, "version": version },
+                    "contentChanges": [{ "text": text }]
+                }
+            })
+            .to_string(),
+        );
+    }
+
     pub fn request(&mut self, method: &str, params: serde_json::Value) -> serde_json::Value {
         let id = next_id();
         let req = serde_json::json!({

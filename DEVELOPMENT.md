@@ -17,6 +17,10 @@ The LSP implementation is progressively being split by concern to reduce `lsp_se
 
 `spec42-core/src/lsp_server.rs` remains the trait entrypoint and delegates to the modules above.
 
+Note on capability compatibility:
+- Type hierarchy handlers are implemented and exercised by integration tests.
+- With the current `tower-lsp` surface, type hierarchy capability is advertised via `ServerCapabilities.experimental.typeHierarchyProvider`.
+
 ## Building
 
 ### Rust server
@@ -68,6 +72,7 @@ Integration tests live under `spec42-core/tests/integration/` and are now split 
 
 - Core feature files (`hover`, `completion`, `definition`, `references`, `rename`, etc.)
 - Experimental feature surface checks (`experimental_capabilities.rs`, `experimental_requests.rs`)
+- Reliability gates for newer handlers (`quality_gates.rs`)
 - SysML model graph-focused tests (`model_graph.rs`) plus broader model coverage in `model.rs`
 
 Use `harness::TestSession` for new integration tests to reduce duplicated initialize/open/request boilerplate.

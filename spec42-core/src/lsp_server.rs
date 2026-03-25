@@ -625,6 +625,11 @@ impl LanguageServer for Backend {
             None => return Ok(None),
         };
         let line = text.lines().nth(pos.line as usize).unwrap_or("");
+        let cursor_prefix = line
+            .chars()
+            .take(pos.character as usize)
+            .collect::<String>();
+        let active_param = cursor_prefix.matches(',').count() as u32;
         let label = if line.contains("part def") {
             "part def <Name> : <Type>"
         } else if line.contains("port def") || line.contains("port ") {
@@ -641,10 +646,10 @@ impl LanguageServer for Backend {
                     "Basic SysML declaration shape".to_string(),
                 )),
                 parameters: None,
-                active_parameter: None,
+                active_parameter: Some(active_param),
             }],
             active_signature: Some(0),
-            active_parameter: Some(0),
+            active_parameter: Some(active_param),
         }))
     }
 
@@ -1083,11 +1088,30 @@ impl LanguageServer for Backend {
             Some(t) => t,
             None => return Ok(None),
         };
-        let (_, _, _, word) = match word_at_position(text, pos.line, pos.character) {
+        let (line, _, _, word) = match word_at_position(text, pos.line, pos.character) {
             Some(t) => t,
             None => return Ok(None),
         };
-        let ranges = find_reference_ranges(text, &word);
+        if is_reserved_keyword(&word) {
+            return Ok(None);
+        }
+        // Keep linked editing constrained to same-line declaration context to avoid broad global edits.
+        let line_text = text.lines().nth(line as usize).unwrap_or("");
+        let declaration_like = line_text.contains(" def ")
+            || line_text.trim_start().starts_with("part ")
+            || line_text.trim_start().starts_with("port ")
+            || line_text.trim_start().starts_with("attribute ")
+            || line_text.trim_start().starts_with("action ");
+        if !declaration_like {
+            return Ok(None);
+        }
+        let ranges: Vec<_> = find_reference_ranges(text, &word)
+            .into_iter()
+            .filter(|r| r.start.line == line)
+            .collect();
+        if ranges.is_empty() {
+            return Ok(None);
+        }
         Ok(Some(LinkedEditingRanges {
             ranges,
             word_pattern: None,
@@ -1143,9 +1167,22 @@ impl LanguageServer for Backend {
 
     async fn subtypes(
         &self,
-        _params: TypeHierarchySubtypesParams,
+        params: TypeHierarchySubtypesParams,
     ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-        Ok(Some(Vec::new()))
+        let uri = params.item.uri.clone();
+        let range = params.item.selection_range;
+        let state = self.state.read().await;
+        let node = match state.semantic_graph.find_node_at_position(&uri, range.start) {
+            Some(n) => n,
+            None => return Ok(None),
+        };
+        let items = state
+            .semantic_graph
+            .incoming_typing_or_specializes_sources(node)
+            .into_iter()
+            .map(type_hierarchy_item_for_node)
+            .collect::<Vec<_>>();
+        Ok(Some(items))
     }
 
     async fn prepare_call_hierarchy(
@@ -1165,16 +1202,50 @@ impl LanguageServer for Backend {
 
     async fn incoming_calls(
         &self,
-        _params: CallHierarchyIncomingCallsParams,
+        params: CallHierarchyIncomingCallsParams,
     ) -> Result<Option<Vec<CallHierarchyIncomingCall>>> {
-        Ok(Some(Vec::new()))
+        let uri = params.item.uri.clone();
+        let range = params.item.selection_range;
+        let state = self.state.read().await;
+        let node = match state.semantic_graph.find_node_at_position(&uri, range.start) {
+            Some(n) => n,
+            None => return Ok(None),
+        };
+        let from_ranges = vec![range];
+        let calls = state
+            .semantic_graph
+            .incoming_perform_sources(node)
+            .into_iter()
+            .map(|src| CallHierarchyIncomingCall {
+                from: call_hierarchy_item_for_node(src),
+                from_ranges: from_ranges.clone(),
+            })
+            .collect();
+        Ok(Some(calls))
     }
 
     async fn outgoing_calls(
         &self,
-        _params: CallHierarchyOutgoingCallsParams,
+        params: CallHierarchyOutgoingCallsParams,
     ) -> Result<Option<Vec<CallHierarchyOutgoingCall>>> {
-        Ok(Some(Vec::new()))
+        let uri = params.item.uri.clone();
+        let range = params.item.selection_range;
+        let state = self.state.read().await;
+        let node = match state.semantic_graph.find_node_at_position(&uri, range.start) {
+            Some(n) => n,
+            None => return Ok(None),
+        };
+        let from_ranges = vec![range];
+        let calls = state
+            .semantic_graph
+            .outgoing_perform_targets(node)
+            .into_iter()
+            .map(|target| CallHierarchyOutgoingCall {
+                to: call_hierarchy_item_for_node(target),
+                from_ranges: from_ranges.clone(),
+            })
+            .collect();
+        Ok(Some(calls))
     }
 }
 

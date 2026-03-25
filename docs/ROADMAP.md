@@ -6,7 +6,7 @@ A roadmap for evolving the sysml-language-server into a full-fledged professiona
 
 ## Current State
 
-**Implemented LSP features:** text sync, diagnostics, hover, completion, go-to-definition, find references, rename, document symbols, workspace symbol search, code actions, formatting, semantic tokens, folding ranges.
+**Implemented LSP features:** text sync, diagnostics, hover, completion, signature help, go-to-definition, find references, rename, document symbols, workspace symbol search, code actions, code lens, formatting, semantic tokens, folding ranges, document highlights, selection range, document links, inlay hints, linked editing, moniker, type hierarchy, call hierarchy.
 
 **Custom methods:** `sysml/model`, `sysml/serverStats`, `sysml/clearCache`.
 
@@ -41,7 +41,7 @@ A roadmap for evolving the sysml-language-server into a full-fledged professiona
 | ls-1 | **Signature help** — Parameter hints for `part def X : Type`, `port def P { in x : Real }`, etc. | High | Done |
 | ls-2 | **Inlay hints** — Inferred types, parameter names at call sites | Medium | Done |
 | ls-3 | **Document links** — Clickable links for imports, cross-refs | Medium | Done |
-| ls-4 | **Type hierarchy** — Subtypes/supertypes for `part def` / `specializes` | Medium | Partial (handlers implemented; capability advertisement depends on current `tower-lsp` support surface) |
+| ls-4 | **Type hierarchy** — Subtypes/supertypes for `part def` / `specializes` | Medium | Done (advertised through compatibility `experimental.typeHierarchyProvider` due current `tower-lsp` capability surface) |
 | ls-5 | **Call hierarchy** — Where actions/calculations are used | Medium | Done |
 | ls-6 | **Code lens** — References count, run test actions | Low | Done |
 | ls-7 | **Linked editing** — Rename tag pairs together | Low | Done |
@@ -106,7 +106,7 @@ See also [SUPPORTED-WORKFLOWS.md](SUPPORTED-WORKFLOWS.md) for the current releas
 
 ## Recommended Order
 
-1. **Close LSP editing gaps:** refine quality/precision for new handlers (ls-1, ls-2, ls-3, ls-5, ls-6, ls-7, ls-9, ls-10) and finalize ls-4 advertisement support
+1. **Close LSP editing gaps:** continue precision hardening and edge-case tests for newly completed handlers (ls-1..ls-10)
 2. **Raise SysML confidence:** semantic validation (spec-2), broader parser coverage (spec-1), BNF plan execution (spec-4)
 3. **Harden scale behavior:** indexing/perf work (perf-1, perf-2), plus deterministic large-workspace expectations
 4. **Productize:** finish user-facing docs (pro-4), improve troubleshooting traces (pro-2), complete remaining marketplace targets (pro-3)

@@ -9,7 +9,12 @@ pub(crate) fn collect_document_links(
         if let Some(import_idx) = line.find("import ") {
             if let Some(file_idx) = line.find("file://") {
                 let target_start = file_idx as u32;
-                let target_text = &line[file_idx..].split_whitespace().next().unwrap_or("");
+                let target_text = line[file_idx..]
+                    .split_whitespace()
+                    .next()
+                    .unwrap_or("")
+                    .trim_matches('"')
+                    .trim_matches('\'');
                 if let Ok(target) = Url::parse(target_text) {
                     links.push(DocumentLink {
                         range: Range::new(
@@ -25,7 +30,10 @@ pub(crate) fn collect_document_links(
                     });
                 }
             } else {
-                let import_name = line[(import_idx + "import ".len())..].trim();
+                let import_name = line[(import_idx + "import ".len())..]
+                    .trim()
+                    .trim_matches('"')
+                    .trim_matches('\'');
                 if let Some(uri) = symbol_uri_for_import_name(import_name) {
                     links.push(DocumentLink {
                         range: Range::new(

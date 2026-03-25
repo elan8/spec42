@@ -16,6 +16,7 @@ mod hover;
 mod lifecycle;
 mod model;
 mod model_graph;
+mod quality_gates;
 mod references;
 mod rename;
 mod semantic_tokens;

@@ -20,4 +20,9 @@ fn lsp_initialize_advertises_remaining_feature_capabilities() {
         .unwrap_or(false));
     assert!(caps["monikerProvider"].as_bool().unwrap_or(false));
     assert!(caps["callHierarchyProvider"].as_bool().unwrap_or(false));
+    assert_eq!(
+        caps["experimental"]["typeHierarchyProvider"].as_bool(),
+        Some(true),
+        "type hierarchy capability is advertised through experimental surface for current tower-lsp compatibility"
+    );
 }
