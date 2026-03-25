@@ -854,6 +854,98 @@ fn lsp_sysml_model_ibd_includes_connectors_for_part_def_connect_statements() {
 }
 
 #[test]
+fn lsp_sysml_model_ibd_kitchen_timer_interface_connects_produce_connectors() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///kitchen_timer_interface_connect_test.sysml";
+    let content = std::fs::read_to_string(
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("..")
+            .join("vscode")
+            .join("testFixture")
+            .join("workspaces")
+            .join("timer")
+            .join("KitchenTimer.sysml"),
+    )
+    .expect("read KitchenTimer fixture");
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+
+    let did_open = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+        }
+    });
+    send_message(&mut stdin, &did_open.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(200));
+
+    let model_id = next_id();
+    let model_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": model_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": uri },
+            "scope": ["graph"]
+        }
+    });
+    send_message(&mut stdin, &model_req.to_string());
+    let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+    let ibd = &model_json["result"]["ibd"];
+    let connectors = ibd["connectors"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
+    assert!(
+        !connectors.is_empty(),
+        "expected KitchenTimer interface connect syntax to produce ibd connectors, got none: {}",
+        model_json["result"]
+    );
+
+    let has_button_to_mcu = connectors.iter().any(|c| {
+        c["sourceId"]
+            .as_str()
+            .is_some_and(|src| src.ends_with(".pcb.buttons.output"))
+            && c["targetId"]
+                .as_str()
+                .is_some_and(|tgt| tgt.ends_with(".pcb.mcu.buttonIn"))
+    });
+    assert!(
+        has_button_to_mcu,
+        "expected connector from pcb.buttons.output to pcb.mcu.buttonIn, got: {:?}",
+        connectors
+            .iter()
+            .map(|c| (c["sourceId"].as_str(), c["targetId"].as_str()))
+            .collect::<Vec<_>>()
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
 fn lsp_sysml_model_ibd_surveillance_drone_is_complete_enough_for_interconnection_view() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");

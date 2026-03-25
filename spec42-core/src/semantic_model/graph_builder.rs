@@ -695,6 +695,22 @@ fn build_from_part_def_body_element(
                 RelationshipKind::Connection,
             );
         }
+        PDBE::InterfaceUsage(interface_usage) => {
+            use sysml_parser::ast::InterfaceUsage;
+            match &interface_usage.value {
+                InterfaceUsage::TypedConnect { from, to, .. }
+                | InterfaceUsage::Connection { from, to, .. } => {
+                    add_expression_edge_if_both_exist(
+                        g,
+                        uri,
+                        container_prefix,
+                        from,
+                        to,
+                        RelationshipKind::Connection,
+                    );
+                }
+            }
+        }
         PDBE::Perform(perform_node) => {
             let perform_qualified = add_perform_usage_node(
                 g,
@@ -1022,11 +1038,20 @@ fn resolve_expression_endpoint_strict(
     container_prefix: Option<&str>,
     expression: &str,
 ) -> EndpointResolution {
+    let expr_normalized = expression.replace('.', "::");
+    let mut expression_forms = Vec::new();
+    expression_forms.push(expression.to_string());
+    if expr_normalized != expression {
+        expression_forms.push(expr_normalized.clone());
+    }
+
     let mut candidates = Vec::new();
     if let Some(prefix) = container_prefix {
-        candidates.push(format!("{}::{}", prefix, expression));
+        for form in &expression_forms {
+            candidates.push(format!("{}::{}", prefix, form));
+        }
     }
-    candidates.push(expression.to_string());
+    candidates.extend(expression_forms.clone());
 
     for candidate in &candidates {
         let node_id = NodeId::new(uri, candidate);
@@ -1035,14 +1060,22 @@ fn resolve_expression_endpoint_strict(
         }
     }
 
-    let suffix = format!("::{}", expression);
+    let suffixes: Vec<String> = expression_forms
+        .iter()
+        .map(|form| format!("::{}", form))
+        .collect();
     let mut matches: Vec<&NodeId> = g
         .nodes_by_uri
         .get(uri)
         .into_iter()
         .flatten()
         .filter(|node_id| {
-            node_id.qualified_name == expression || node_id.qualified_name.ends_with(&suffix)
+            expression_forms
+                .iter()
+                .any(|form| node_id.qualified_name == *form)
+                || suffixes
+                    .iter()
+                    .any(|suffix| node_id.qualified_name.ends_with(suffix))
         })
         .collect();
     // Ambiguous suffix resolution frequently causes false connection bindings; require uniqueness.
