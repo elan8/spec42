@@ -9,6 +9,7 @@ pub mod dto;
 pub mod ibd;
 pub mod language;
 pub mod model;
+pub mod logging;
 pub mod semantic_checks;
 pub mod semantic_model;
 pub mod semantic_tokens;

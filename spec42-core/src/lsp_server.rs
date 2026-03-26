@@ -30,6 +30,7 @@ use crate::semantic_tokens::{
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::RwLock;
+use tracing::{debug, info, warn};
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
@@ -60,14 +61,11 @@ impl LanguageServer for Backend {
         let roots: Vec<Url> = workspace_roots_from_initialize(&params);
         let library_paths: Vec<Url> =
             util::parse_library_paths_from_value(params.initialization_options.as_ref());
-        eprintln!(
-            "[sysml-ls] initialize: workspace_roots={} library_paths={} -> {:?}",
-            roots.len(),
-            library_paths.len(),
-            library_paths
-                .iter()
-                .map(|u| u.as_str())
-                .collect::<Vec<_>>()
+        info!(
+            workspace_roots = roots.len(),
+            library_paths = library_paths.len(),
+            paths = ?library_paths.iter().map(|u| u.as_str()).collect::<Vec<_>>(),
+            "initialize"
         );
         {
             let mut state = self.state.write().await;
@@ -110,16 +108,14 @@ impl LanguageServer for Backend {
                 let parsed = sysml_parser::parse(&content).ok();
                 if parsed.is_none() {
                     let errs = util::parse_failure_diagnostics(&content, 5);
-                    eprintln!(
-                        "[sysml-ls] workspace scan: parse failed for {} ({} diagnostics): {:?}",
-                        uri_norm.as_str(),
-                        errs.len(),
-                        errs,
+                    warn!(
+                        uri = %uri_norm,
+                        diagnostics = errs.len(),
+                        errors = ?errs,
+                        "workspace scan parse failed"
                     );
                     if errs.is_empty() {
-                        eprintln!(
-                            "[sysml-ls] parse() returned None but parse_with_diagnostics had 0 errors (parser may fail without filling diagnostics)",
-                        );
+                        warn!("parse() returned None but parse_with_diagnostics had 0 errors");
                     }
                 }
                 update_semantic_graph_for_uri(&mut st, &uri_norm, parsed.as_ref());
@@ -137,16 +133,16 @@ impl LanguageServer for Backend {
                         .and_then(|entry| entry.parsed.as_ref())
                         .map(|root| root.elements.len())
                         .unwrap_or(0);
-                    eprintln!(
-                        "[sysml-ls] library file indexed: uri={} parsed_ok={} root_elements={} graph_nodes={} symbol_entries={}",
-                        uri_norm,
-                        st.index
+                    debug!(
+                        uri = %uri_norm,
+                        parsed_ok = st.index
                             .get(&uri_norm)
                             .and_then(|entry| entry.parsed.as_ref())
                             .is_some(),
-                        parsed_root_elements,
-                        graph_nodes_for_uri,
-                        new_entries.len()
+                        root_elements = parsed_root_elements,
+                        graph_nodes = graph_nodes_for_uri,
+                        symbol_entries = new_entries.len(),
+                        "library file indexed"
                     );
                     if st
                         .index
@@ -166,27 +162,29 @@ impl LanguageServer for Backend {
             for u in &uris_loaded {
                 semantic_model::add_cross_document_edges_for_uri(&mut st.semantic_graph, u);
             }
-            eprintln!(
-                "[sysml-ls] workspace scan complete: loaded={} candidate_files={} roots={} skipped_non_file_roots={} read_failures={} uri_failures={}. Sample: {:?}",
-                uris_loaded.len(),
-                summary.candidate_files,
-                summary.roots_scanned,
-                summary.roots_skipped_non_file,
-                summary.read_failures,
-                summary.uri_failures,
-                uris_loaded.iter().take(5).map(|u| u.as_str()).collect::<Vec<_>>(),
+            info!(
+                loaded = uris_loaded.len(),
+                candidate_files = summary.candidate_files,
+                roots = summary.roots_scanned,
+                skipped_non_file_roots = summary.roots_skipped_non_file,
+                read_failures = summary.read_failures,
+                uri_failures = summary.uri_failures,
+                sample = ?uris_loaded.iter().take(5).map(|u| u.as_str()).collect::<Vec<_>>(),
+                "workspace scan complete"
             );
             if !low_coverage_library_files.is_empty() {
-                eprintln!(
-                    "[sysml-ls] workspace scan low-coverage library files: {} (showing up to 10)",
-                    low_coverage_library_files.len()
+                warn!(
+                    files = low_coverage_library_files.len(),
+                    "workspace scan low-coverage library files (showing up to 10)"
                 );
                 for (uri, graph_nodes, symbol_entries) in
                     low_coverage_library_files.iter().take(10)
                 {
-                    eprintln!(
-                        "  - {} graph_nodes={} symbol_entries={}",
-                        uri, graph_nodes, symbol_entries
+                    debug!(
+                        uri = %uri,
+                        graph_nodes = *graph_nodes,
+                        symbol_entries = *symbol_entries,
+                        "low-coverage library file"
                     );
                 }
             }
@@ -432,13 +430,10 @@ impl LanguageServer for Backend {
             .get("spec42")
             .map(|v| util::parse_library_paths_from_value(Some(v)))
             .unwrap_or_else(|| util::parse_library_paths_from_value(Some(&params.settings)));
-        eprintln!(
-            "[sysml-ls] didChangeConfiguration: new library_paths={} -> {:?}",
-            new_library_paths.len(),
-            new_library_paths
-                .iter()
-                .map(|u| u.as_str())
-                .collect::<Vec<_>>()
+        info!(
+            library_paths = new_library_paths.len(),
+            paths = ?new_library_paths.iter().map(|u| u.as_str()).collect::<Vec<_>>(),
+            "didChangeConfiguration: new library paths"
         );
         let mut state = self.state.write().await;
         let old_library_paths = std::mem::take(&mut state.library_paths);
@@ -504,16 +499,16 @@ impl LanguageServer for Backend {
                         .and_then(|entry| entry.parsed.as_ref())
                         .map(|root| root.elements.len())
                         .unwrap_or(0);
-                    eprintln!(
-                        "[sysml-ls] library file reindexed: uri={} parsed_ok={} root_elements={} graph_nodes={} symbol_entries={}",
-                        uri_norm,
-                        st.index
+                    debug!(
+                        uri = %uri_norm,
+                        parsed_ok = st.index
                             .get(&uri_norm)
                             .and_then(|entry| entry.parsed.as_ref())
                             .is_some(),
-                        parsed_root_elements,
-                        graph_nodes_for_uri,
-                        new_entries.len()
+                        root_elements = parsed_root_elements,
+                        graph_nodes = graph_nodes_for_uri,
+                        symbol_entries = new_entries.len(),
+                        "library file reindexed"
                     );
                     if st
                         .index
@@ -538,22 +533,24 @@ impl LanguageServer for Backend {
                 .iter()
                 .filter(|entry| util::uri_under_any_library(&entry.uri, &st.library_paths))
                 .count();
-            eprintln!(
-                "[sysml-ls] didChangeConfiguration: library reindex loaded_files={} library_symbols={}",
-                uris_loaded.len(),
-                library_symbol_count
+            info!(
+                loaded_files = uris_loaded.len(),
+                library_symbols = library_symbol_count,
+                "didChangeConfiguration: library reindex complete"
             );
             if !low_coverage_library_files.is_empty() {
-                eprintln!(
-                    "[sysml-ls] didChangeConfiguration: low-coverage library files {} (showing up to 10)",
-                    low_coverage_library_files.len()
+                warn!(
+                    files = low_coverage_library_files.len(),
+                    "didChangeConfiguration: low-coverage library files (showing up to 10)"
                 );
                 for (uri, graph_nodes, symbol_entries) in
                     low_coverage_library_files.iter().take(10)
                 {
-                    eprintln!(
-                        "  - {} graph_nodes={} symbol_entries={}",
-                        uri, graph_nodes, symbol_entries
+                    debug!(
+                        uri = %uri,
+                        graph_nodes = *graph_nodes,
+                        symbol_entries = *symbol_entries,
+                        "low-coverage library file after reindex"
                     );
                 }
             }
@@ -1425,12 +1422,12 @@ impl Backend {
             .iter()
             .filter(|entry| util::uri_under_any_library(&entry.uri, &state.library_paths))
             .count();
-        eprintln!(
-            "[sysml-ls] librarySearch: query='{}' limit={} library_paths={} library_symbols={}",
-            query,
-            limit,
-            state.library_paths.len(),
-            library_symbol_count
+        debug!(
+            query = %query,
+            limit = limit,
+            library_paths = state.library_paths.len(),
+            library_symbols = library_symbol_count,
+            "librarySearch"
         );
 
         let mut ranked: Vec<(i64, &crate::language::SymbolEntry)> = state
@@ -1545,6 +1542,7 @@ fn sanitize_document_symbols(
 
 /// Run the Spec42 LSP server using the provided configuration.
 pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
+    crate::logging::init_tracing();
     let (stdin, stdout) = (tokio::io::stdin(), tokio::io::stdout());
     let state = Arc::new(RwLock::new(ServerState::default()));
     let start_time = Instant::now();
