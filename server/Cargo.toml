@@ -4,10 +4,6 @@ version = "0.7.0"
 edition = "2021"
 description = "Language server for SysML v2 (LSP over stdio)"
 
-[lib]
-name = "spec42"
-path = "src/lib.rs"
-
 [[bin]]
 name = "spec42"
 path = "src/main.rs"

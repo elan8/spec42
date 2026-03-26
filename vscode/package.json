@@ -112,7 +112,32 @@
       {
         "command": "sysml.refreshModelTree",
         "title": "Refresh SysML Model Explorer",
+        "icon": "$(refresh)",
         "category": "SysML"
+      },
+      {
+        "command": "sysml.library.refresh",
+        "title": "Refresh Library View",
+        "icon": "$(refresh)",
+        "category": "Spec42"
+      },
+      {
+        "command": "sysml.library.installStdLib",
+        "title": "Library: Install or Update Standard Library",
+        "icon": "$(cloud-download)",
+        "category": "Spec42"
+      },
+      {
+        "command": "sysml.library.managePaths",
+        "title": "Library: Manage Library Paths",
+        "icon": "$(folder-library)",
+        "category": "Spec42"
+      },
+      {
+        "command": "sysml.library.search",
+        "title": "Library: Search Libraries",
+        "icon": "$(search)",
+        "category": "Spec42"
       },
       {
         "command": "sysml.showVisualizer",
@@ -133,11 +158,13 @@
       {
         "command": "sysml.switchToByFile",
         "title": "Switch to By File",
+        "icon": "$(file)",
         "category": "SysML"
       },
       {
         "command": "sysml.switchToSemanticModel",
         "title": "Switch to Semantic Model",
+        "icon": "$(symbol-class)",
         "category": "SysML"
       },
       {
@@ -201,6 +228,21 @@
         {
           "command": "sysml.refreshModelTree",
           "when": "view == sysmlModelExplorer",
+          "group": "navigation"
+        },
+        {
+          "command": "sysml.library.refresh",
+          "when": "view == spec42Library",
+          "group": "navigation"
+        },
+        {
+          "command": "sysml.library.managePaths",
+          "when": "view == spec42Library",
+          "group": "navigation"
+        },
+        {
+          "command": "sysml.library.installStdLib",
+          "when": "view == spec42Library",
           "group": "navigation"
         }
       ],
@@ -269,19 +311,59 @@
         },
         {
           "command": "sysml.refreshVisualization"
+        },
+        {
+          "command": "sysml.library.refresh"
+        },
+        {
+          "command": "sysml.library.installStdLib"
+        },
+        {
+          "command": "sysml.library.managePaths"
+        },
+        {
+          "command": "sysml.library.search"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "spec42",
+          "title": "Spec42",
+          "icon": "design/logo.svg"
         }
       ]
     },
     "views": {
-      "explorer": [
+      "spec42": [
         {
           "id": "sysmlModelExplorer",
-          "name": "SysML Model Explorer",
+          "name": "Model Explorer",
           "when": "sysml.modelLoaded"
+        },
+        {
+          "id": "spec42Library",
+          "name": "Library",
+          "contextualTitle": "Spec42 Library"
+        },
+        {
+          "id": "spec42Help",
+          "name": "Help",
+          "contextualTitle": "Spec42 Help"
+        },
+        {
+          "id": "spec42Artifacts",
+          "name": "Artifacts",
+          "contextualTitle": "Spec42 Artifacts"
         }
       ]
     },
     "viewsWelcome": [
+      {
+        "view": "spec42Library",
+        "contents": "Spec42 Library (v1 scaffold).\\n\\n- Run [Install or Update Standard Library](command:sysml.library.installStdLib)\\n- Run [Manage Library Paths](command:sysml.library.managePaths)\\n- Run [Search Libraries](command:sysml.library.search)"
+      },
       {
         "view": "sysmlModelExplorer",
         "contents": "No SysML model loaded.\\n\\n- Open a `.sysml` or `.kerml` file\\n- Or run **SysML: Show SysML Model Explorer**"

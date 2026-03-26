@@ -17,6 +17,7 @@ import {
   ModelExplorerProvider,
   ModelTreeItem,
 } from "./explorer/modelExplorerProvider";
+import { LibraryViewProvider } from "./library/libraryViewProvider";
 import type { GraphNodeDTO } from "./providers/sysmlModelTypes";
 import { getOutputChannel, log, logError, showChannel } from "./logger";
 import {
@@ -52,6 +53,7 @@ type ServerHealthState =
 let client: LanguageClient | undefined;
 let statusItem: vscode.StatusBarItem | undefined;
 let modelExplorerProvider: ModelExplorerProvider | undefined;
+let libraryViewProvider: LibraryViewProvider | undefined;
 let lspModelProviderForStatus: LspModelProvider | undefined;
 let serverHealthState: ServerHealthState = "starting";
 let serverHealthDetail = "";
@@ -502,6 +504,7 @@ export function activate(context: vscode.ExtensionContext): void {
   const lspModelProvider = new LspModelProvider(client, clientReadyPromise);
   lspModelProviderForStatus = lspModelProvider;
   modelExplorerProvider = new ModelExplorerProvider(lspModelProvider);
+  libraryViewProvider = new LibraryViewProvider();
 
   context.subscriptions.push(
     vscode.window.registerWebviewPanelSerializer("sysmlVisualizer", {
@@ -547,6 +550,48 @@ export function activate(context: vscode.ExtensionContext): void {
   });
   modelExplorerProvider.setTreeView(treeView);
   context.subscriptions.push(treeView);
+
+  const libraryTreeView = vscode.window.createTreeView("spec42Library", {
+    treeDataProvider: libraryViewProvider,
+  });
+  context.subscriptions.push(libraryTreeView);
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sysml.library.refresh", () => {
+      libraryViewProvider?.refresh();
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sysml.library.installStdLib", async () => {
+      vscode.window.showInformationMessage(
+        "Spec42 Library: Standard Library install/update will be added in a future release."
+      );
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sysml.library.managePaths", async () => {
+      await vscode.commands.executeCommand(
+        "workbench.action.openSettings",
+        "spec42.libraryPaths"
+      );
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sysml.library.search", async () => {
+      const query = await vscode.window.showInputBox({
+        prompt: "Search libraries (placeholder)",
+        placeHolder: "e.g. Systems Library",
+      });
+      if (query && query.trim().length > 0) {
+        vscode.window.showInformationMessage(
+          `Spec42 Library search is not implemented yet. Query: ${query}`
+        );
+      }
+    })
+  );
 
   context.subscriptions.push(
     vscode.window.onDidChangeTextEditorSelection((event) => {
@@ -879,7 +924,7 @@ export function activate(context: vscode.ExtensionContext): void {
   // Placeholder commands for later phases (so palette entries don't fail).
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.showModelExplorer", async () => {
-      await vscode.commands.executeCommand("workbench.view.explorer");
+      await vscode.commands.executeCommand("workbench.view.extension.spec42");
       await vscode.commands.executeCommand(
         "setContext",
         "sysml.modelLoaded",

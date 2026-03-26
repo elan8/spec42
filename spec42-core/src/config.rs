@@ -3,9 +3,9 @@
 use std::sync::Arc;
 use tower_lsp::lsp_types::{Diagnostic, Url};
 
+use crate::diagram_types::RenderedDiagram;
 use crate::dto::SysmlGraphDto;
 use crate::ibd::IbdDataDto;
-use crate::diagram_types::RenderedDiagram;
 use crate::semantic_model::SemanticGraph;
 
 /// Provider of semantic/quality diagnostics. Implement this to add custom checks (e.g. naming rules, complexity).
@@ -36,7 +36,7 @@ pub trait DiagramProvider: Send + Sync {
     fn render(&self, context: &DiagramContext<'_>) -> Option<RenderedDiagram>;
 }
 
-/// Server configuration: list of check and diagram providers. Built by the binary (spec42 or spec42-pro) and passed to the core server.
+/// Server configuration: list of check and diagram providers. Built by the binary and passed to the core server.
 #[derive(Default, Clone)]
 pub struct Spec42Config {
     /// Semantic/quality check providers run when publishing diagnostics after a successful parse.

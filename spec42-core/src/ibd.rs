@@ -101,63 +101,35 @@ pub fn qualified_name_to_dot(qn: &str) -> String {
     qn.replace("::", ".")
 }
 
-fn infer_port_side(name: &str, direction: Option<&str>, port_type: Option<&str>) -> Option<String> {
+fn infer_port_side(name: &str, direction: Option<&str>, _port_type: Option<&str>) -> Option<String> {
     let normalized_name = name.trim().to_lowercase();
     let normalized_direction = direction.unwrap_or("").trim().to_lowercase();
-    let normalized_type = port_type.unwrap_or("").trim().to_lowercase();
 
     match normalized_direction.as_str() {
-        "in" => return Some("left".to_string()),
-        "out" => return Some("right".to_string()),
+        "in" | "input" => return Some("left".to_string()),
+        "out" | "output" => return Some("right".to_string()),
         _ => {}
     }
 
-    if normalized_name.ends_with("in") || normalized_name.contains("input") {
+    let tokens: Vec<&str> = normalized_name
+        .split(|c: char| !c.is_ascii_alphanumeric())
+        .filter(|t| !t.is_empty())
+        .collect();
+    let trailing = tokens.last().copied().unwrap_or("");
+
+    if trailing == "in"
+        || trailing == "input"
+        || normalized_name.ends_with("input")
+        || normalized_name.ends_with("in")
+    {
         return Some("left".to_string());
     }
-    if normalized_name.ends_with("out") || normalized_name.contains("output") {
-        return Some("right".to_string());
-    }
-
-    let conjugated = normalized_type.starts_with('~');
-    let stripped_type = normalized_type.trim_start_matches('~');
-    if conjugated {
-        if stripped_type.contains("powerport")
-            || stripped_type.contains("telemetryport")
-            || stripped_type.contains("sensordataport")
-            || stripped_type.contains("cameracontrolport")
-            || stripped_type.contains("gimbalcommandport")
-            || stripped_type.contains("rccommandport")
-        {
-            return Some("left".to_string());
-        }
-    } else if stripped_type.contains("powerport")
-        || stripped_type.contains("telemetryport")
-        || stripped_type.contains("sensordataport")
-        || stripped_type.contains("videostreamport")
+    if trailing == "out"
+        || trailing == "output"
+        || normalized_name.ends_with("output")
+        || normalized_name.ends_with("out")
     {
         return Some("right".to_string());
-    }
-
-    if normalized_name.contains("sensor")
-        || normalized_name.contains("telemetry")
-        || normalized_name.contains("video")
-        || normalized_name.contains("command")
-        || normalized_name.contains("power")
-        || normalized_name.contains("payload")
-        || normalized_name.contains("c2")
-        || normalized_name.contains("rc")
-    {
-        return if normalized_name.contains("in") {
-            Some("left".to_string())
-        } else if normalized_name.contains("out")
-            || normalized_name.contains("regulated")
-            || normalized_name.contains("supply")
-        {
-            Some("right".to_string())
-        } else {
-            None
-        };
     }
 
     None
@@ -596,5 +568,45 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         root_candidates,
         default_root,
         root_views,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::infer_port_side;
+
+    #[test]
+    fn infer_port_side_prefers_direction() {
+        assert_eq!(
+            infer_port_side("power_out", Some("in"), Some("PowerPort")),
+            Some("left".to_string())
+        );
+        assert_eq!(
+            infer_port_side("sensor_in", Some("out"), Some("SensorPort")),
+            Some("right".to_string())
+        );
+    }
+
+    #[test]
+    fn infer_port_side_uses_generic_name_hints() {
+        assert_eq!(infer_port_side("camera_input", None, None), Some("left".to_string()));
+        assert_eq!(
+            infer_port_side("telemetryOutput", None, None),
+            Some("right".to_string())
+        );
+        assert_eq!(infer_port_side("fuel_in", None, None), Some("left".to_string()));
+        assert_eq!(infer_port_side("payload_out", None, None), Some("right".to_string()));
+    }
+
+    #[test]
+    fn infer_port_side_does_not_use_model_specific_type_names() {
+        assert_eq!(
+            infer_port_side("status", None, Some("PowerPort")),
+            None
+        );
+        assert_eq!(
+            infer_port_side("status", None, Some("~TelemetryPort")),
+            None
+        );
     }
 }
