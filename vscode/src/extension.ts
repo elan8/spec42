@@ -204,6 +204,15 @@ function getWorkspaceFileQueryLimit(): number {
   return getConfigNumber("workspace.maxFilesPerPattern", 500);
 }
 
+function shouldShowModelExplorerContext(
+  provider: ModelExplorerProvider | undefined
+): boolean {
+  const hasWorkspace = (vscode.workspace.workspaceFolders?.length ?? 0) > 0;
+  const activeIsSysml = isSysmlDoc(vscode.window.activeTextEditor?.document);
+  const hasModelData = (provider?.getAllElements().length ?? 0) > 0;
+  return hasWorkspace || activeIsSysml || hasModelData;
+}
+
 function getEnabledVisualizationViewIds(): Set<string> {
   const enabled = new Set<string>(DEFAULT_ENABLED_VIEWS);
   const includeExperimental = getConfigBoolean(
@@ -601,6 +610,16 @@ export function activate(context: vscode.ExtensionContext): void {
             "spec42.standardLibrary.enabled"
           );
         }
+        return;
+      }
+
+      const confirm = await vscode.window.showWarningMessage(
+        `Install/Update the managed standard library to version ${cfg.version}?`,
+        { modal: true },
+        "Install/Update",
+        "Cancel"
+      );
+      if (confirm !== "Install/Update") {
         return;
       }
 
@@ -1002,7 +1021,7 @@ export function activate(context: vscode.ExtensionContext): void {
       await vscode.commands.executeCommand(
         "setContext",
         "sysml.modelLoaded",
-        isSysmlDoc(vscode.window.activeTextEditor?.document)
+        shouldShowModelExplorerContext(modelExplorerProvider)
       );
       await vscode.commands.executeCommand("sysmlModelExplorer.focus");
       modelExplorerProvider?.refresh();
@@ -1512,11 +1531,11 @@ export function activate(context: vscode.ExtensionContext): void {
   // Status bar + context for contributed view
   const refreshContext = () => {
     const active = vscode.window.activeTextEditor?.document;
-    const loaded = isSysmlDoc(active);
+    const loaded = shouldShowModelExplorerContext(modelExplorerProvider);
     vscode.commands.executeCommand("setContext", "sysml.modelLoaded", loaded);
     updateStatusBar(context);
     // Refresh Model Explorer when switching to a SysML doc so the tree shows the correct model
-    if (loaded) {
+    if (active && isSysmlDoc(active)) {
       modelExplorerProvider?.refresh();
     }
   };

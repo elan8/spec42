@@ -32,6 +32,7 @@ pub(crate) fn build_inlay_hints(state: &ServerState, uri_norm: &Url) -> Vec<Inla
 
 pub(crate) fn build_code_lens(state: &ServerState, uri_norm: &Url) -> Vec<CodeLens> {
     let mut out = Vec::new();
+    let mut seen_ranges = std::collections::HashSet::<(u32, u32, u32, u32)>::new();
     let mut sorted_symbols: Vec<_> = state
         .symbol_table
         .iter()
@@ -40,6 +41,24 @@ pub(crate) fn build_code_lens(state: &ServerState, uri_norm: &Url) -> Vec<CodeLe
     sorted_symbols.sort_by_key(|s| (s.range.start.line, s.range.start.character, s.name.clone()));
     for sym in sorted_symbols {
         if sym.name.trim().is_empty() {
+            continue;
+        }
+        if sym
+            .description
+            .as_deref()
+            .map(|d| d.starts_with("short name"))
+            .unwrap_or(false)
+            || sym.detail.as_deref() == Some("short name")
+        {
+            continue;
+        }
+        let key = (
+            sym.range.start.line,
+            sym.range.start.character,
+            sym.range.end.line,
+            sym.range.end.character,
+        );
+        if !seen_ranges.insert(key) {
             continue;
         }
         let refs = state

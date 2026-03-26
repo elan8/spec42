@@ -75,21 +75,17 @@ export class ModelTreeItem extends vscode.TreeItem {
     );
 
     this.elementUri = uri;
-    this.resourceUri = uri;
     this.contextValue =
       element.type === "package" ? "sysmlPackage" : "sysmlElement";
-    this.iconPath = iconForElementType(element.type);
+    this.iconPath = new vscode.ThemeIcon("symbol-misc");
 
-    // Build label: name : Type [mult] when attributes available
+    // Keep the tree visually simple: primary label only.
     const partType = element.attributes?.partType as string | undefined;
     const portType = element.attributes?.portType as string | undefined;
     const typeName = partType ?? portType;
     const multiplicity = element.attributes?.multiplicity as string | undefined;
-    let labelText = element.name || "(anonymous)";
-    if (typeName) labelText += ` : ${typeName}`;
-    if (multiplicity) labelText += ` [${multiplicity}]`;
-    this.label = labelText;
-    this.description = element.type;
+    this.label = element.name || "(anonymous)";
+    this.description = undefined;
 
     const tooltipParts: string[] = [`${element.type}: ${element.name || "(anonymous)"}`];
     if (typeName) tooltipParts.push(`Type: ${typeName}`);
@@ -175,6 +171,7 @@ export class ModelExplorerProvider
     cancelled: false,
     failures: 0,
   };
+  private documentLoadState: "idle" | "loading" | "ready" | "error" = "idle";
 
   constructor(private readonly modelProvider: LspModelProvider) {}
 
@@ -252,6 +249,7 @@ export class ModelExplorerProvider
       cancelled: false,
       failures: 0,
     };
+    this.documentLoadState = "idle";
     this._onDidChangeTreeData.fire();
   }
 
@@ -329,6 +327,8 @@ export class ModelExplorerProvider
     this.workspaceFileData.clear();
     this.workspaceFileUris = [];
     this.lastUri = document.uri;
+    this.documentLoadState = "loading";
+    this._onDidChangeTreeData.fire();
 
     try {
       const result = await this.modelProvider.getModel(
@@ -339,6 +339,7 @@ export class ModelExplorerProvider
       this.lastElements = result.graph
         ? (graphToElementTree(result.graph) as SysMLElementDTO[])
         : [];
+      this.documentLoadState = "ready";
       log("loadDocument: done,", this.lastElements.length, "elements");
     } catch (error) {
       if (error instanceof vscode.CancellationError || token?.isCancellationRequested) {
@@ -347,6 +348,7 @@ export class ModelExplorerProvider
         logError(`loadDocument failed for ${document.uri.toString()}`, error);
       }
       this.lastElements = [];
+      this.documentLoadState = "error";
     } finally {
       this._onDidChangeTreeData.fire();
     }
@@ -422,6 +424,7 @@ export class ModelExplorerProvider
           active &&
           (active.languageId === "sysml" || active.languageId === "kerml")
         ) {
+          this.documentLoadState = "loading";
           try {
             const result = await this.modelProvider.getModel(
               active.uri.toString(),
@@ -431,10 +434,12 @@ export class ModelExplorerProvider
             this.lastElements = result.graph
               ? (graphToElementTree(result.graph) as SysMLElementDTO[])
               : [];
+            this.documentLoadState = "ready";
           } catch (error) {
             logError(`getChildren: failed to load active document model for ${active.uri.toString()}`, error);
             this.lastUri = active.uri;
             this.lastElements = [];
+            this.documentLoadState = "error";
             return [
               new ExplorerInfoItem(
                 "Model data unavailable",
@@ -449,6 +454,17 @@ export class ModelExplorerProvider
         }
       }
 
+      if (this.documentLoadState === "loading") {
+        return [
+          new ExplorerInfoItem(
+            "Loading model...",
+            "Parsing and indexing",
+            "The language server is building the semantic model.",
+            "sync"
+          ),
+        ];
+      }
+
       if (this.lastUri && this.lastElements) {
         const merged = this.mergeElements(this.lastElements);
         const items = merged.map(
@@ -456,6 +472,16 @@ export class ModelExplorerProvider
         );
         this.uriToRootItems.clear();
         this.uriToRootItems.set(this.lastUri.toString(), items);
+        if (items.length === 0 && this.documentLoadState === "ready") {
+          return [
+            new ExplorerInfoItem(
+              "No model elements found",
+              "0 loaded",
+              "The active file has no extracted model elements yet.",
+              "info"
+            ),
+          ];
+        }
         return items;
       }
       return [];

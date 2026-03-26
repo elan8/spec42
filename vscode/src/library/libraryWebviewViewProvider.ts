@@ -144,8 +144,6 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
     body { font-family: var(--vscode-font-family); color: var(--vscode-foreground); padding: 8px; }
     .row { display: flex; gap: 6px; margin-bottom: 8px; }
     input { width: 100%; padding: 6px; border: 1px solid var(--vscode-input-border); background: var(--vscode-input-background); color: var(--vscode-input-foreground); }
-    button { border: 1px solid var(--vscode-button-border); background: var(--vscode-button-background); color: var(--vscode-button-foreground); padding: 4px 8px; cursor: pointer; }
-    button.secondary { background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); }
     .status { font-size: 12px; opacity: 0.9; margin-bottom: 8px; }
     .result { border-top: 1px solid var(--vscode-panel-border); padding: 8px 2px; cursor: pointer; }
     .title { font-weight: 600; }
@@ -156,11 +154,6 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
 <body>
   <div class="row">
     <input id="query" type="text" placeholder="Search standard + custom libraries..." />
-  </div>
-  <div class="row">
-    <button id="install">Install/Update Standard</button>
-    <button id="custom" class="secondary">Custom Libraries</button>
-    <button id="status" class="secondary">Status</button>
   </div>
   <div id="stdlibStatus" class="status">Standard library status: loading...</div>
   <div id="state" class="muted">Loading libraries...</div>
@@ -243,10 +236,6 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
         vscode.postMessage({ type: 'search', query: value });
       }, 250);
     });
-
-    document.getElementById('install').addEventListener('click', () => vscode.postMessage({ type: 'installStdLib' }));
-    document.getElementById('custom').addEventListener('click', () => vscode.postMessage({ type: 'manageCustomLibraries' }));
-    document.getElementById('status').addEventListener('click', () => vscode.postMessage({ type: 'showStdLibStatus' }));
 
     window.addEventListener('message', (event) => {
       const message = event.data;

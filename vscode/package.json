@@ -348,24 +348,13 @@
       "spec42": [
         {
           "id": "sysmlModelExplorer",
-          "name": "Model Explorer",
-          "when": "sysml.modelLoaded"
+          "name": "Model Explorer"
         },
         {
           "id": "spec42Library",
           "name": "Library",
           "type": "webview",
           "contextualTitle": "Spec42 Library"
-        },
-        {
-          "id": "spec42Help",
-          "name": "Help",
-          "contextualTitle": "Spec42 Help"
-        },
-        {
-          "id": "spec42Artifacts",
-          "name": "Artifacts",
-          "contextualTitle": "Spec42 Artifacts"
         }
       ]
     },
@@ -470,18 +459,18 @@
     "configurationDefaults": {
       "[sysml]": {
         "editor.semanticHighlighting.enabled": true,
-        "editor.guides.indentation": true,
-        "editor.guides.bracketPairs": true,
-        "editor.bracketPairColorization.enabled": true,
+        "editor.guides.indentation": false,
+        "editor.guides.bracketPairs": false,
+        "editor.bracketPairColorization.enabled": false,
         "breadcrumbs.enabled": true,
         "breadcrumbs.showModules": true,
         "breadcrumbs.showNamespaces": true
       },
       "[kerml]": {
         "editor.semanticHighlighting.enabled": true,
-        "editor.guides.indentation": true,
-        "editor.guides.bracketPairs": true,
-        "editor.bracketPairColorization.enabled": true,
+        "editor.guides.indentation": false,
+        "editor.guides.bracketPairs": false,
+        "editor.bracketPairColorization.enabled": false,
         "breadcrumbs.enabled": true,
         "breadcrumbs.showModules": true,
         "breadcrumbs.showNamespaces": true
