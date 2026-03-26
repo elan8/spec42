@@ -60,6 +60,15 @@ impl LanguageServer for Backend {
         let roots: Vec<Url> = workspace_roots_from_initialize(&params);
         let library_paths: Vec<Url> =
             util::parse_library_paths_from_value(params.initialization_options.as_ref());
+        eprintln!(
+            "[sysml-ls] initialize: workspace_roots={} library_paths={} -> {:?}",
+            roots.len(),
+            library_paths.len(),
+            library_paths
+                .iter()
+                .map(|u| u.as_str())
+                .collect::<Vec<_>>()
+        );
         {
             let mut state = self.state.write().await;
             state.workspace_roots = roots;
@@ -95,6 +104,7 @@ impl LanguageServer for Backend {
                     .unwrap_or_default();
             let mut st = state.write().await;
             let mut uris_loaded = Vec::new();
+            let mut low_coverage_library_files: Vec<(String, usize, usize)> = Vec::new();
             for (uri, content) in entries {
                 let uri_norm = util::normalize_file_uri(&uri);
                 let parsed = sysml_parser::parse(&content).ok();
@@ -119,6 +129,39 @@ impl LanguageServer for Backend {
                 let new_entries =
                     semantic_model::symbol_entries_for_uri(&st.semantic_graph, &uri_norm);
                 update_symbol_table_for_uri(&mut st, &uri_norm, Some(&new_entries));
+                if util::uri_under_any_library(&uri_norm, &st.library_paths) {
+                    let graph_nodes_for_uri = st.semantic_graph.nodes_for_uri(&uri_norm).len();
+                    let parsed_root_elements = st
+                        .index
+                        .get(&uri_norm)
+                        .and_then(|entry| entry.parsed.as_ref())
+                        .map(|root| root.elements.len())
+                        .unwrap_or(0);
+                    eprintln!(
+                        "[sysml-ls] library file indexed: uri={} parsed_ok={} root_elements={} graph_nodes={} symbol_entries={}",
+                        uri_norm,
+                        st.index
+                            .get(&uri_norm)
+                            .and_then(|entry| entry.parsed.as_ref())
+                            .is_some(),
+                        parsed_root_elements,
+                        graph_nodes_for_uri,
+                        new_entries.len()
+                    );
+                    if st
+                        .index
+                        .get(&uri_norm)
+                        .and_then(|entry| entry.parsed.as_ref())
+                        .is_some()
+                        && new_entries.len() <= 2
+                    {
+                        low_coverage_library_files.push((
+                            uri_norm.to_string(),
+                            graph_nodes_for_uri,
+                            new_entries.len(),
+                        ));
+                    }
+                }
             }
             for u in &uris_loaded {
                 semantic_model::add_cross_document_edges_for_uri(&mut st.semantic_graph, u);
@@ -133,6 +176,20 @@ impl LanguageServer for Backend {
                 summary.uri_failures,
                 uris_loaded.iter().take(5).map(|u| u.as_str()).collect::<Vec<_>>(),
             );
+            if !low_coverage_library_files.is_empty() {
+                eprintln!(
+                    "[sysml-ls] workspace scan low-coverage library files: {} (showing up to 10)",
+                    low_coverage_library_files.len()
+                );
+                for (uri, graph_nodes, symbol_entries) in
+                    low_coverage_library_files.iter().take(10)
+                {
+                    eprintln!(
+                        "  - {} graph_nodes={} symbol_entries={}",
+                        uri, graph_nodes, symbol_entries
+                    );
+                }
+            }
             if summary.roots_skipped_non_file > 0
                 || summary.read_failures > 0
                 || summary.uri_failures > 0
@@ -375,6 +432,14 @@ impl LanguageServer for Backend {
             .get("spec42")
             .map(|v| util::parse_library_paths_from_value(Some(v)))
             .unwrap_or_else(|| util::parse_library_paths_from_value(Some(&params.settings)));
+        eprintln!(
+            "[sysml-ls] didChangeConfiguration: new library_paths={} -> {:?}",
+            new_library_paths.len(),
+            new_library_paths
+                .iter()
+                .map(|u| u.as_str())
+                .collect::<Vec<_>>()
+        );
         let mut state = self.state.write().await;
         let old_library_paths = std::mem::take(&mut state.library_paths);
         if new_library_paths == old_library_paths {
@@ -404,6 +469,7 @@ impl LanguageServer for Backend {
             let mut st = state.write().await;
             let mut uris_loaded = Vec::new();
             let mut runtime_warnings: Vec<String> = Vec::new();
+            let mut low_coverage_library_files: Vec<(String, usize, usize)> = Vec::new();
             for (uri, content) in entries {
                 let uri_norm = util::normalize_file_uri(&uri);
                 let parsed = sysml_parser::parse(&content).ok();
@@ -430,9 +496,66 @@ impl LanguageServer for Backend {
                 let new_entries =
                     semantic_model::symbol_entries_for_uri(&st.semantic_graph, &uri_norm);
                 update_symbol_table_for_uri(&mut st, &uri_norm, Some(&new_entries));
+                if util::uri_under_any_library(&uri_norm, &st.library_paths) {
+                    let graph_nodes_for_uri = st.semantic_graph.nodes_for_uri(&uri_norm).len();
+                    let parsed_root_elements = st
+                        .index
+                        .get(&uri_norm)
+                        .and_then(|entry| entry.parsed.as_ref())
+                        .map(|root| root.elements.len())
+                        .unwrap_or(0);
+                    eprintln!(
+                        "[sysml-ls] library file reindexed: uri={} parsed_ok={} root_elements={} graph_nodes={} symbol_entries={}",
+                        uri_norm,
+                        st.index
+                            .get(&uri_norm)
+                            .and_then(|entry| entry.parsed.as_ref())
+                            .is_some(),
+                        parsed_root_elements,
+                        graph_nodes_for_uri,
+                        new_entries.len()
+                    );
+                    if st
+                        .index
+                        .get(&uri_norm)
+                        .and_then(|entry| entry.parsed.as_ref())
+                        .is_some()
+                        && new_entries.len() <= 2
+                    {
+                        low_coverage_library_files.push((
+                            uri_norm.to_string(),
+                            graph_nodes_for_uri,
+                            new_entries.len(),
+                        ));
+                    }
+                }
             }
             for u in &uris_loaded {
                 semantic_model::add_cross_document_edges_for_uri(&mut st.semantic_graph, u);
+            }
+            let library_symbol_count = st
+                .symbol_table
+                .iter()
+                .filter(|entry| util::uri_under_any_library(&entry.uri, &st.library_paths))
+                .count();
+            eprintln!(
+                "[sysml-ls] didChangeConfiguration: library reindex loaded_files={} library_symbols={}",
+                uris_loaded.len(),
+                library_symbol_count
+            );
+            if !low_coverage_library_files.is_empty() {
+                eprintln!(
+                    "[sysml-ls] didChangeConfiguration: low-coverage library files {} (showing up to 10)",
+                    low_coverage_library_files.len()
+                );
+                for (uri, graph_nodes, symbol_entries) in
+                    low_coverage_library_files.iter().take(10)
+                {
+                    eprintln!(
+                        "  - {} graph_nodes={} symbol_entries={}",
+                        uri, graph_nodes, symbol_entries
+                    );
+                }
             }
             drop(st);
             if summary.roots_skipped_non_file > 0
@@ -1265,6 +1388,68 @@ impl Backend {
         Ok(sysml_clear_cache_result(&mut state))
     }
 
+    async fn sysml_library_search(
+        &self,
+        params: serde_json::Value,
+    ) -> Result<dto::SysmlLibrarySearchResultDto> {
+        let params: dto::SysmlLibrarySearchParamsDto = serde_json::from_value(params).map_err(
+            |error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()),
+        )?;
+        let query = params.query.trim().to_lowercase();
+        let limit = params.limit.unwrap_or(100).clamp(1, 500);
+        let state = self.state.read().await;
+        let library_symbol_count = state
+            .symbol_table
+            .iter()
+            .filter(|entry| util::uri_under_any_library(&entry.uri, &state.library_paths))
+            .count();
+        eprintln!(
+            "[sysml-ls] librarySearch: query='{}' limit={} library_paths={} library_symbols={}",
+            query,
+            limit,
+            state.library_paths.len(),
+            library_symbol_count
+        );
+
+        let mut ranked: Vec<(i64, &crate::language::SymbolEntry)> = state
+            .symbol_table
+            .iter()
+            .filter(|entry| util::uri_under_any_library(&entry.uri, &state.library_paths))
+            .filter_map(|entry| {
+                let score = if query.is_empty() {
+                    1_000
+                } else {
+                    library_search_score(&entry.name, &query)?
+                };
+                Some((score, entry))
+            })
+            .collect();
+
+        ranked.sort_by(|(score_a, entry_a), (score_b, entry_b)| {
+            score_b
+                .cmp(score_a)
+                .then(entry_a.name.len().cmp(&entry_b.name.len()))
+                .then(entry_a.name.cmp(&entry_b.name))
+        });
+
+        let total = ranked.len();
+        let items = ranked
+            .into_iter()
+            .take(limit)
+            .map(|(score, entry)| dto::SysmlLibrarySearchItemDto {
+                name: entry.name.clone(),
+                kind: symbol_kind_label(entry.kind).to_string(),
+                container: entry.container_name.clone(),
+                uri: entry.uri.to_string(),
+                range: dto::range_to_dto(entry.range),
+                score,
+                source: library_source_label(&entry.uri).to_string(),
+                path: entry.uri.path().to_string(),
+            })
+            .collect();
+        Ok(dto::SysmlLibrarySearchResultDto { items, total })
+    }
+
     async fn publish_diagnostics_for_document(&self, uri: tower_lsp::lsp_types::Url, text: &str) {
         let mut diagnostics = Vec::new();
         let result = sysml_parser::parse_with_diagnostics(text);
@@ -1330,7 +1515,85 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     .custom_method("sysml/model", Backend::sysml_model)
     .custom_method("sysml/serverStats", Backend::sysml_server_stats)
     .custom_method("sysml/clearCache", Backend::sysml_clear_cache)
+    .custom_method("sysml/librarySearch", Backend::sysml_library_search)
     .finish();
 
     Server::new(stdin, stdout, socket).serve(service).await;
+}
+
+fn symbol_kind_label(kind: SymbolKind) -> &'static str {
+    match kind {
+        SymbolKind::FILE => "file",
+        SymbolKind::MODULE => "module",
+        SymbolKind::NAMESPACE => "namespace",
+        SymbolKind::PACKAGE => "package",
+        SymbolKind::CLASS => "class",
+        SymbolKind::METHOD => "method",
+        SymbolKind::PROPERTY => "property",
+        SymbolKind::FIELD => "field",
+        SymbolKind::CONSTRUCTOR => "constructor",
+        SymbolKind::ENUM => "enum",
+        SymbolKind::INTERFACE => "interface",
+        SymbolKind::FUNCTION => "function",
+        SymbolKind::VARIABLE => "variable",
+        SymbolKind::CONSTANT => "constant",
+        SymbolKind::STRING => "string",
+        SymbolKind::NUMBER => "number",
+        SymbolKind::BOOLEAN => "boolean",
+        SymbolKind::ARRAY => "array",
+        SymbolKind::OBJECT => "object",
+        SymbolKind::KEY => "key",
+        SymbolKind::NULL => "null",
+        SymbolKind::ENUM_MEMBER => "enumMember",
+        SymbolKind::STRUCT => "struct",
+        SymbolKind::EVENT => "event",
+        SymbolKind::OPERATOR => "operator",
+        SymbolKind::TYPE_PARAMETER => "typeParameter",
+        _ => "symbol",
+    }
+}
+
+fn library_source_label(uri: &Url) -> &'static str {
+    let path = uri.path().to_ascii_lowercase();
+    if path.contains("/standard-library/") {
+        "standard"
+    } else {
+        "custom"
+    }
+}
+
+fn library_search_score(name: &str, query_lc: &str) -> Option<i64> {
+    let name_lc = name.to_ascii_lowercase();
+    if name_lc == query_lc {
+        return Some(10_000);
+    }
+    if name_lc.starts_with(query_lc) {
+        return Some(8_000 - (name_lc.len() as i64));
+    }
+    if let Some(pos) = name_lc.find(query_lc) {
+        return Some(6_000 - (pos as i64) * 10 - (name_lc.len() as i64));
+    }
+    fuzzy_subsequence_score(&name_lc, query_lc).map(|s| 4_000 + s)
+}
+
+fn fuzzy_subsequence_score(text: &str, query: &str) -> Option<i64> {
+    if query.is_empty() {
+        return Some(0);
+    }
+    let mut score: i64 = 0;
+    let mut text_index = 0usize;
+    let text_chars: Vec<char> = text.chars().collect();
+    for ch in query.chars() {
+        let mut found = None;
+        for (idx, c) in text_chars.iter().enumerate().skip(text_index) {
+            if *c == ch {
+                found = Some(idx);
+                break;
+            }
+        }
+        let idx = found?;
+        score += 100 - ((idx - text_index) as i64 * 3);
+        text_index = idx + 1;
+    }
+    Some(score.max(0))
 }

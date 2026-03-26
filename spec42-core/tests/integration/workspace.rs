@@ -167,3 +167,75 @@ fn lsp_workspace_scan_sysml_release() {
 
     let _ = child.kill();
 }
+
+#[test]
+fn lsp_library_search_custom_method_returns_library_results() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root: PathBuf = temp.path().canonicalize().expect("canonical root");
+    let lib_dir = root.join("lib");
+    std::fs::create_dir_all(&lib_dir).expect("create lib dir");
+    std::fs::write(
+        lib_dir.join("standard.sysml"),
+        "package Lib { part def Engine; part def EngineController; }",
+    )
+    .expect("write library file");
+    std::fs::write(root.join("main.sysml"), "package Main { part x : Engine; }")
+        .expect("write main file");
+
+    let root_uri = url::Url::from_file_path(&root).expect("root uri");
+    let lib_path = lib_dir.canonicalize().expect("canonical lib path");
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": root_uri.as_str(),
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" },
+            "initializationOptions": {
+                "libraryPaths": [lib_path.to_string_lossy().to_string()]
+            }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(700));
+
+    let req_id = next_id();
+    let req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": req_id,
+        "method": "sysml/librarySearch",
+        "params": {
+            "query": "engine",
+            "limit": 20
+        }
+    });
+    send_message(&mut stdin, &req.to_string());
+    let resp = read_response(&mut stdout, req_id).expect("library search response");
+    let json: serde_json::Value = serde_json::from_str(&resp).expect("parse response");
+    let items = json["result"]["items"]
+        .as_array()
+        .expect("items array");
+    assert!(!items.is_empty(), "library search should return results");
+    let has_engine = items.iter().any(|item| {
+        item["name"]
+            .as_str()
+            .map(|name| name.eq_ignore_ascii_case("Engine"))
+            .unwrap_or(false)
+    });
+    assert!(has_engine, "Engine should be in library search results");
+
+    let _ = child.kill();
+}

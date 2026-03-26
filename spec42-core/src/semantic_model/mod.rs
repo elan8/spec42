@@ -493,12 +493,33 @@ fn element_kind_to_symbol_kind(kind: &str) -> SymbolKind {
         "port def" => SymbolKind::INTERFACE,
         "port" => SymbolKind::INTERFACE,
         "interface" => SymbolKind::INTERFACE,
+        "alias" => SymbolKind::KEY,
         "connection" => SymbolKind::VARIABLE,
+        "connection def" => SymbolKind::INTERFACE,
         "item def" => SymbolKind::CONSTANT,
         "item" => SymbolKind::CONSTANT,
+        "individual def" => SymbolKind::OBJECT,
         "requirement def" => SymbolKind::STRING,
         "requirement" => SymbolKind::STRING,
         "action def" => SymbolKind::FUNCTION,
+        "metadata def" => SymbolKind::STRUCT,
+        "enum def" => SymbolKind::ENUM,
+        "occurrence def" => SymbolKind::CLASS,
+        "occurrence" => SymbolKind::VARIABLE,
+        "flow def" => SymbolKind::INTERFACE,
+        "flow" => SymbolKind::VARIABLE,
+        "allocation def" => SymbolKind::INTERFACE,
+        "allocation" => SymbolKind::VARIABLE,
+        "dependency" => SymbolKind::OPERATOR,
+        "constraint def" => SymbolKind::FUNCTION,
+        "calc def" => SymbolKind::FUNCTION,
+        "case def" => SymbolKind::EVENT,
+        "case" => SymbolKind::EVENT,
+        "analysis def" => SymbolKind::EVENT,
+        "analysis" => SymbolKind::EVENT,
+        "verification def" => SymbolKind::EVENT,
+        "verification" => SymbolKind::EVENT,
+        "generic decl" => SymbolKind::NAMESPACE,
         "state def" => SymbolKind::ENUM_MEMBER,
         "state" => SymbolKind::ENUM_MEMBER,
         "use case def" => SymbolKind::EVENT,
@@ -681,6 +702,44 @@ mod tests {
         assert!(
             names.contains(&"PropulsionUnit"),
             "expected PropulsionUnit in children: {:?}",
+            names
+        );
+    }
+
+    #[test]
+    fn symbol_entries_include_aliases_and_definitions() {
+        let input = r#"
+            package SI {
+                attribute def tonne;
+                alias 'metric ton' for tonne;
+                alias arcmin for tonne;
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///si.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let symbols = symbol_entries_for_uri(&graph, &uri);
+        let names: std::collections::HashSet<String> =
+            symbols.iter().map(|s| s.name.clone()).collect();
+        assert!(
+            names.contains("tonne"),
+            "expected 'tonne' symbol in {:?}",
+            names
+        );
+        assert!(
+            names.contains("metric ton"),
+            "expected alias 'metric ton' symbol in {:?}",
+            names
+        );
+        assert!(
+            names.contains("arcmin"),
+            "expected alias 'arcmin' symbol in {:?}",
+            names
+        );
+        assert!(
+            symbols.len() >= 4,
+            "expected at least package + defs + aliases, got {} symbols: {:?}",
+            symbols.len(),
             names
         );
     }

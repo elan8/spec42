@@ -128,6 +128,49 @@ fn build_from_package_body_element(
                 }
             }
         }
+        PBE::LibraryPackage(pkg_node) => {
+            let name = identification_name(&pkg_node.identification);
+            let name_display = if name.is_empty() {
+                "(top level)"
+            } else {
+                name.as_str()
+            };
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, name_display, "package");
+            let node_id = NodeId::new(uri, &qualified);
+            let mut attrs = HashMap::new();
+            attrs.insert(
+                "isStandardLibrary".to_string(),
+                serde_json::json!(pkg_node.is_standard),
+            );
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "package",
+                name_display.to_string(),
+                span_to_range(&pkg_node.span),
+                attrs,
+                parent_id,
+            );
+            let prefix = if name.is_empty() {
+                container_prefix.map(str::to_string)
+            } else {
+                Some(qualified.clone())
+            };
+            if let PackageBody::Brace { elements } = &pkg_node.body {
+                for child in elements {
+                    build_from_package_body_element(
+                        child,
+                        uri,
+                        prefix.as_deref(),
+                        Some(&node_id),
+                        root,
+                        g,
+                    );
+                }
+            }
+        }
         PBE::PartDef(pd_node) => {
             let name = identification_name(&pd_node.identification);
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "part def");
@@ -311,6 +354,26 @@ fn build_from_package_body_element(
             );
             add_typing_edge_if_exists(g, uri, &qualified, &au_node.type_name, container_prefix);
         }
+        PBE::AliasDef(alias_node) => {
+            let mut name = identification_name(&alias_node.identification);
+            if name.is_empty() {
+                name = alias_node.target.clone();
+            }
+            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "alias");
+            let range = span_to_range(&alias_node.span);
+            let mut attrs = HashMap::new();
+            attrs.insert("target".to_string(), serde_json::json!(alias_node.target.clone()));
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "alias",
+                name,
+                range,
+                attrs,
+                parent_id,
+            );
+        }
         PBE::RequirementDef(rd_node) => {
             let name = identification_name(&rd_node.identification);
             let qualified =
@@ -429,6 +492,362 @@ fn build_from_package_body_element(
             if let UseCaseDefBody::Brace { elements } = &ucu_node.body {
                 build_from_use_case_body(elements, uri, Some(&qualified), &node_id, g);
             }
+        }
+        PBE::ItemDef(item_node) => {
+            let name = identification_name(&item_node.identification);
+            if !name.is_empty() {
+                let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "item def");
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "item def",
+                    name,
+                    span_to_range(&item_node.span),
+                    HashMap::new(),
+                    parent_id,
+                );
+            }
+        }
+        PBE::IndividualDef(ind_node) => {
+            let name = identification_name(&ind_node.identification);
+            if !name.is_empty() {
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "individual def");
+                let mut attrs = HashMap::new();
+                if let Some(ref s) = ind_node.specializes {
+                    attrs.insert("specializes".to_string(), serde_json::json!(s.clone()));
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "individual def",
+                    name.clone(),
+                    span_to_range(&ind_node.span),
+                    attrs,
+                    parent_id,
+                );
+                if let Some(ref s) = ind_node.specializes {
+                    add_specializes_edge_if_exists(g, uri, &qualified, s, container_prefix);
+                }
+            }
+        }
+        PBE::MetadataDef(md_node) => {
+            let name = identification_name(&md_node.identification);
+            if !name.is_empty() {
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "metadata def");
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "metadata def",
+                    name,
+                    span_to_range(&md_node.span),
+                    HashMap::new(),
+                    parent_id,
+                );
+            }
+        }
+        PBE::EnumDef(enum_node) => {
+            let name = identification_name(&enum_node.identification);
+            if !name.is_empty() {
+                let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "enum def");
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "enum def",
+                    name,
+                    span_to_range(&enum_node.span),
+                    HashMap::new(),
+                    parent_id,
+                );
+            }
+        }
+        PBE::OccurrenceDef(occ_node) => {
+            let name = identification_name(&occ_node.identification);
+            if !name.is_empty() {
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "occurrence def");
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "occurrence def",
+                    name,
+                    span_to_range(&occ_node.span),
+                    HashMap::new(),
+                    parent_id,
+                );
+            }
+        }
+        PBE::OccurrenceUsage(occ_node) => {
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &occ_node.name, "occurrence");
+            let mut attrs = HashMap::new();
+            if let Some(ref t) = occ_node.type_name {
+                attrs.insert("occurrenceType".to_string(), serde_json::json!(t.clone()));
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "occurrence",
+                occ_node.name.clone(),
+                span_to_range(&occ_node.span),
+                attrs,
+                parent_id,
+            );
+            if let Some(ref t) = occ_node.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
+        }
+        PBE::ConnectionDef(conn_node) => {
+            let name = identification_name(&conn_node.identification);
+            if !name.is_empty() {
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "connection def");
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "connection def",
+                    name,
+                    span_to_range(&conn_node.span),
+                    HashMap::new(),
+                    parent_id,
+                );
+            }
+        }
+        PBE::FlowDef(flow_node) => {
+            let name = identification_name(&flow_node.identification);
+            if !name.is_empty() {
+                let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "flow def");
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "flow def",
+                    name,
+                    span_to_range(&flow_node.span),
+                    HashMap::new(),
+                    parent_id,
+                );
+            }
+        }
+        PBE::FlowUsage(flow_node) => {
+            let qualified = qualified_name_for_node(g, uri, container_prefix, &flow_node.name, "flow");
+            let mut attrs = HashMap::new();
+            if let Some(ref t) = flow_node.type_name {
+                attrs.insert("flowType".to_string(), serde_json::json!(t.clone()));
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "flow",
+                flow_node.name.clone(),
+                span_to_range(&flow_node.span),
+                attrs,
+                parent_id,
+            );
+            if let Some(ref t) = flow_node.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
+        }
+        PBE::AllocationDef(alloc_node) => {
+            let name = identification_name(&alloc_node.identification);
+            if !name.is_empty() {
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "allocation def");
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "allocation def",
+                    name,
+                    span_to_range(&alloc_node.span),
+                    HashMap::new(),
+                    parent_id,
+                );
+            }
+        }
+        PBE::AllocationUsage(alloc_node) => {
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &alloc_node.name, "allocation");
+            let mut attrs = HashMap::new();
+            if let Some(ref t) = alloc_node.type_name {
+                attrs.insert("allocationType".to_string(), serde_json::json!(t.clone()));
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "allocation",
+                alloc_node.name.clone(),
+                span_to_range(&alloc_node.span),
+                attrs,
+                parent_id,
+            );
+            if let Some(ref t) = alloc_node.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
+        }
+        PBE::Dependency(dep_node) => {
+            let name = dep_node
+                .identification
+                .as_ref()
+                .map(identification_name)
+                .filter(|n| !n.is_empty())
+                .unwrap_or_else(|| "dependency".to_string());
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &name, "dependency");
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "dependency",
+                name,
+                span_to_range(&dep_node.span),
+                HashMap::new(),
+                parent_id,
+            );
+        }
+        PBE::ConstraintDef(c_node) => {
+            let name = identification_name(&c_node.identification);
+            if !name.is_empty() {
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "constraint def");
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "constraint def",
+                    name,
+                    span_to_range(&c_node.span),
+                    HashMap::new(),
+                    parent_id,
+                );
+            }
+        }
+        PBE::CalcDef(c_node) => {
+            let name = identification_name(&c_node.identification);
+            if !name.is_empty() {
+                let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "calc def");
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "calc def",
+                    name,
+                    span_to_range(&c_node.span),
+                    HashMap::new(),
+                    parent_id,
+                );
+            }
+        }
+        PBE::CaseDef(c_node) => {
+            let name = identification_name(&c_node.identification);
+            if !name.is_empty() {
+                let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "case def");
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "case def",
+                    name,
+                    span_to_range(&c_node.span),
+                    HashMap::new(),
+                    parent_id,
+                );
+            }
+        }
+        PBE::CaseUsage(c_node) => {
+            let qualified = qualified_name_for_node(g, uri, container_prefix, &c_node.name, "case");
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "case",
+                c_node.name.clone(),
+                span_to_range(&c_node.span),
+                HashMap::new(),
+                parent_id,
+            );
+        }
+        PBE::AnalysisCaseDef(c_node) => {
+            let name = identification_name(&c_node.identification);
+            if !name.is_empty() {
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "analysis def");
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "analysis def",
+                    name,
+                    span_to_range(&c_node.span),
+                    HashMap::new(),
+                    parent_id,
+                );
+            }
+        }
+        PBE::AnalysisCaseUsage(c_node) => {
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &c_node.name, "analysis");
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "analysis",
+                c_node.name.clone(),
+                span_to_range(&c_node.span),
+                HashMap::new(),
+                parent_id,
+            );
+        }
+        PBE::VerificationCaseDef(c_node) => {
+            let name = identification_name(&c_node.identification);
+            if !name.is_empty() {
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    &name,
+                    "verification def",
+                );
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "verification def",
+                    name,
+                    span_to_range(&c_node.span),
+                    HashMap::new(),
+                    parent_id,
+                );
+            }
+        }
+        PBE::VerificationCaseUsage(c_node) => {
+            let qualified = qualified_name_for_node(
+                g,
+                uri,
+                container_prefix,
+                &c_node.name,
+                "verification",
+            );
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "verification",
+                c_node.name.clone(),
+                span_to_range(&c_node.span),
+                HashMap::new(),
+                parent_id,
+            );
         }
         PBE::Actor(actor_node) => {
             let name = identification_name(&actor_node.identification);
@@ -582,7 +1001,31 @@ fn build_from_package_body_element(
                 parent_id,
             );
         }
-        PBE::Import(_) | PBE::AliasDef(_) => {}
+        PBE::GenericDecl(generic_node) => {
+            let text = generic_node.text.trim();
+            if !text.is_empty() {
+                let name = text
+                    .split_whitespace()
+                    .take(3)
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "generic decl");
+                let mut attrs = HashMap::new();
+                attrs.insert("text".to_string(), serde_json::json!(text));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "generic decl",
+                    name,
+                    span_to_range(&generic_node.span),
+                    attrs,
+                    parent_id,
+                );
+            }
+        }
+        PBE::Import(_) => {}
         _ => {}
     }
 }

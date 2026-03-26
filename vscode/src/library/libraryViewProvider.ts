@@ -1,5 +1,12 @@
 import * as vscode from "vscode";
 
+type StandardLibraryViewStatus = {
+  enabled: boolean;
+  pinnedVersion: string;
+  installedVersion?: string;
+  isInstalled: boolean;
+};
+
 export class LibraryTreeItem extends vscode.TreeItem {
   constructor(
     label: string,
@@ -22,6 +29,10 @@ export class LibraryTreeItem extends vscode.TreeItem {
 export class LibraryViewProvider
   implements vscode.TreeDataProvider<LibraryTreeItem>
 {
+  constructor(
+    private readonly getStandardLibraryStatus?: () => StandardLibraryViewStatus
+  ) {}
+
   private readonly _onDidChangeTreeData = new vscode.EventEmitter<
     LibraryTreeItem | undefined | null | void
   >();
@@ -36,14 +47,25 @@ export class LibraryViewProvider
   }
 
   getChildren(): LibraryTreeItem[] {
+    const status = this.getStandardLibraryStatus?.();
+    const stdLibDescription = !status
+      ? "Install or update standard library"
+      : !status.enabled
+      ? "Disabled in settings"
+      : status.isInstalled
+      ? `Installed (${status.installedVersion ?? status.pinnedVersion})`
+      : status.installedVersion
+      ? `Pinned ${status.pinnedVersion}; installed ${status.installedVersion}`
+      : `Not installed (pinned ${status.pinnedVersion})`;
+
     return [
       new LibraryTreeItem(
         "Standard Library",
-        "Install or update standard library",
+        stdLibDescription,
         "sysml.library.installStdLib"
       ),
       new LibraryTreeItem(
-        "Configured Library Paths",
+        "Custom Libraries",
         "Manage spec42.libraryPaths setting",
         "sysml.library.managePaths"
       ),

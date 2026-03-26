@@ -82,7 +82,7 @@ pub fn parse_library_paths_from_value(value: Option<&serde_json::Value>) -> Vec<
                 .filter_map(|s| s.as_str())
                 .filter_map(|path_str| {
                     let path = std::path::PathBuf::from(path_str);
-                    Url::from_file_path(path).ok()
+                    Url::from_file_path(path).ok().map(|u| normalize_file_uri(&u))
                 })
                 .collect()
         })

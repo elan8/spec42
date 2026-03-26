@@ -1,0 +1,325 @@
+[sysml-ls] initialize: workspace_roots=1 library_paths=1 -> ["file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library"]
+[Info  - 1:11:03 PM] spec42 initialized
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/AnalysisTooling.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/SampledFunctions.sysml parsed_ok=true root_elements=1 graph_nodes=3 symbol_entries=3
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/StateSpaceRepresentation.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/TradeStudies.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Cause%20and%20Effect/CausationConnections.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Cause%20and%20Effect/CauseAndEffect.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Geometry/ShapeItems.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Geometry/SpatialItems.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Metadata/ImageMetadata.sysml parsed_ok=true root_elements=1 graph_nodes=2 symbol_entries=2
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Metadata/ModelingMetadata.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Metadata/ParametersOfInterestMetadata.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Metadata/RiskMetadata.sysml parsed_ok=true root_elements=1 graph_nodes=3 symbol_entries=3
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQ.sysml parsed_ok=true root_elements=1 graph_nodes=3 symbol_entries=3
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQAcoustics.sysml parsed_ok=true root_elements=1 graph_nodes=24 symbol_entries=24
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQAtomicNuclear.sysml parsed_ok=true root_elements=1 graph_nodes=132 symbol_entries=132
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQBase.sysml parsed_ok=true root_elements=1 graph_nodes=15 symbol_entries=15
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQCharacteristicNumbers.sysml parsed_ok=true root_elements=1 graph_nodes=115 symbol_entries=115
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQChemistryMolecular.sysml parsed_ok=true root_elements=1 graph_nodes=81 symbol_entries=81
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQCondensedMatter.sysml parsed_ok=true root_elements=1 graph_nodes=47 symbol_entries=47
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQElectromagnetism.sysml parsed_ok=true root_elements=1 graph_nodes=144 symbol_entries=144
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQInformation.sysml parsed_ok=true root_elements=1 graph_nodes=64 symbol_entries=64
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQLight.sysml parsed_ok=true root_elements=1 graph_nodes=102 symbol_entries=102
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQMechanics.sysml parsed_ok=true root_elements=1 graph_nodes=102 symbol_entries=102
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQSpaceTime.sysml parsed_ok=true root_elements=1 graph_nodes=62 symbol_entries=62
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQThermodynamics.sysml parsed_ok=true root_elements=1 graph_nodes=76 symbol_entries=76
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/MeasurementRefCalculations.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/MeasurementReferences.sysml parsed_ok=true root_elements=1 graph_nodes=22 symbol_entries=22
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/Quantities.sysml parsed_ok=true root_elements=1 graph_nodes=4 symbol_entries=4
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/QuantityCalculations.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/SI.sysml parsed_ok=true root_elements=1 graph_nodes=2 symbol_entries=2
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/SIPrefixes.sysml parsed_ok=true root_elements=1 graph_nodes=29 symbol_entries=29
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/TensorCalculations.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/Time.sysml parsed_ok=true root_elements=1 graph_nodes=8 symbol_entries=8
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/USCustomaryUnits.sysml parsed_ok=true root_elements=1 graph_nodes=44 symbol_entries=44
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/VectorCalculations.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Requirement%20Derivation/DerivationConnections.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Requirement%20Derivation/RequirementDerivation.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Data%20Type%20Library/Collections.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Data%20Type%20Library/ScalarValues.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Data%20Type%20Library/VectorValues.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/BaseFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/BooleanFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/CollectionFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/ComplexFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/ControlFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/DataFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/IntegerFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/NaturalFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/NumericalFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/OccurrenceFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/RationalFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/RealFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/ScalarFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/SequenceFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/StringFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/TrigFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/VectorFunctions.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] workspace scan: parse failed for file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Base.kerml (0 diagnostics): []
+[sysml-ls] parse() returned None but parse_with_diagnostics had 0 errors (parser may fail without filling diagnostics)
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Base.kerml parsed_ok=false root_elements=0 graph_nodes=0 symbol_entries=0
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Clocks.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/ControlPerformances.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/FeatureReferencingPerformances.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/KerML.kerml parsed_ok=true root_elements=1 graph_nodes=4 symbol_entries=4
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Links.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Metaobjects.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Objects.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Observation.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] workspace scan: parse failed for file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Occurrences.kerml (0 diagnostics): []
+[sysml-ls] parse() returned None but parse_with_diagnostics had 0 errors (parser may fail without filling diagnostics)
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Occurrences.kerml parsed_ok=false root_elements=0 graph_nodes=0 symbol_entries=0
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Performances.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/SpatialFrames.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/StatePerformances.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] workspace scan: parse failed for file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Transfers.kerml (0 diagnostics): []
+[sysml-ls] parse() returned None but parse_with_diagnostics had 0 errors (parser may fail without filling diagnostics)
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Transfers.kerml parsed_ok=false root_elements=0 graph_nodes=0 symbol_entries=0
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/TransitionPerformances.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Triggers.kerml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Actions.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Allocations.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/AnalysisCases.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Attributes.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Calculations.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Cases.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Connections.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Constraints.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Flows.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Interfaces.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Items.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Metadata.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Parts.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Ports.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Requirements.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/StandardViewDefinitions.sysml parsed_ok=true root_elements=1 graph_nodes=7 symbol_entries=7
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/States.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/SysML.sysml parsed_ok=true root_elements=1 graph_nodes=2 symbol_entries=2
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/UseCases.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/VerificationCases.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] library file indexed: uri=file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Views.sysml parsed_ok=true root_elements=1 graph_nodes=1 symbol_entries=1
+[sysml-ls] workspace scan complete: loaded=95 candidate_files=95 roots=2 skipped_non_file_roots=0 read_failures=0 uri_failures=0. Sample: ["file:///c:/Git/sysml-examples/timer/sysml/KitchenTimer.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/AnalysisTooling.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/SampledFunctions.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/StateSpaceRepresentation.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/TradeStudies.sysml"]
+[sysml-ls] librarySearch: query='' limit=500 library_paths=1 library_symbols=1163
+[Info  - 1:11:04 PM] sysml/model: req_uri=file:///c%3A/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/SI.sysml index_ok=true parsed_ok=true semantic_nodes=2 graph_uris_count=5 graph_uris_sample=["file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQElectromagnetism.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/Time.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/KerML.kerml"]
+[Info  - 1:11:04 PM] sysml/model: req_uri=file:///c%3A/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/SI.sysml index_ok=true parsed_ok=true semantic_nodes=2 graph_uris_count=5 graph_uris_sample=["file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQElectromagnetism.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/Time.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/KerML.kerml"]
+[Info  - 1:11:04 PM] sysml/model: uri=file:///c%3A/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/SI.sysml scope=[] -> graph nodes=2 edges=1 generalViewGraph nodes=0 edges=0
+[Info  - 1:11:04 PM] sysml/model: uri=file:///c%3A/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/SI.sysml scope=[] -> graph nodes=2 edges=1 generalViewGraph nodes=0 edges=0
+[SYSML semantic tokens] AST ranges (8 total, first 20):
+  #0 9:4..44 NAMESPACE "private import MeasurementReferences::*;"
+  #1 10:4..25 NAMESPACE "public import ISQ::*;"
+  #2 11:4..32 NAMESPACE "public import SIPrefixes::*;"
+  #3 98:4..136 PROPERTY "attribute tonne : MassUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = kg; :>> conversionFactor = 1.0e-3; } }"
+  #4 99:4..33 NAMESPACE "alias 'metric ton' for tonne;"
+[SYSML semantic tokens] AST ranges (8 total, first 20):
+  #0 9:4..44 NAMESPACE "private import MeasurementReferences::*;"
+  #5 105:4..27 NAMESPACE "alias arcmin for '′';"
+[SYSML semantic tokens] AST ranges (8 total, first 20):
+  #0 9:4..44 NAMESPACE "private import MeasurementReferences::*;"
+  #1 10:4..25 NAMESPACE "public import ISQ::*;"
+  #6 107:4..27 NAMESPACE "alias arcsec for '″';"
+  #1 10:4..25 NAMESPACE "public import ISQ::*;"
+  #2 11:4..32 NAMESPACE "public import SIPrefixes::*;"
+  #2 11:4..32 NAMESPACE "public import SIPrefixes::*;"
+  #7 306:4..35 NAMESPACE "alias 'm/s²' for 'm⋅s⁻²';"
+  #3 98:4..136 PROPERTY "attribute tonne : MassUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = kg; :>> conversionFactor = 1.0e-3; } }"
+  #4 99:4..33 NAMESPACE "alias 'metric ton' for tonne;"
+[SYSML semantic tokens] AST ranges (107 total, first 20):
+  #0 10:1..23 PROPERTY "attribute def Integer;"
+  #1 11:1..20 PROPERTY "attribute def Real;"
+  #2 12:1..25 PROPERTY "attribute def TimeValue;"
+  #3 13:1..22 PROPERTY "attribute def String;"
+  #4 14:1..23 PROPERTY "attribute def Boolean;"
+  #5 17:1..22 NAMESPACE "private import SI::V;"
+  #6 18:1..22 NAMESPACE "private import SI::A;"
+  #7 19:1..51 NAMESPACE "private import ISQElectromagnetism::electricPower;"
+  #8 21:1..182 TYPE "port def BatteryOutlet {"
+[SYSML semantic tokens] AST ranges (107 total, first 20):
+  #9 28:1..184 TYPE "port def DevicePower {"
+  #10 36:1..182 TYPE "port def ButtonInputPort {"
+  #0 10:1..23 PROPERTY "attribute def Integer;"
+  #11 44:1..62 TYPE "port def DisplayCommandPort {"
+  #12 48:1..153 TYPE "port def LcdSegmentDrivePort {"
+  #1 11:1..20 PROPERTY "attribute def Real;"
+  #13 53:1..58 TYPE "port def BuzzerCommandPort {"
+  #14 57:1..137 TYPE "port def BuzzerControlPort {"
+  #2 12:1..25 PROPERTY "attribute def TimeValue;"
+  #15 62:1..171 INTERFACE "interface def BuzzerControlConnection {"
+  #16 64:11..17 PROPERTY "source"
+  #3 13:1..22 PROPERTY "attribute def String;"
+[SYSML semantic tokens] AST ranges (107 total, first 20):
+  #0 10:1..23 PROPERTY "attribute def Integer;"
+  #17 64:20..37 TYPE "BuzzerCommandPort"
+  #4 14:1..23 PROPERTY "attribute def Boolean;"
+  #1 11:1..20 PROPERTY "attribute def Real;"
+  #2 12:1..25 PROPERTY "attribute def TimeValue;"
+  #18 65:11..17 PROPERTY "driver"
+  #5 17:1..22 NAMESPACE "private import SI::V;"
+  #3 13:1..22 PROPERTY "attribute def String;"
+  #4 14:1..23 PROPERTY "attribute def Boolean;"
+  #19 65:20..37 TYPE "BuzzerControlPort"
+  #6 18:1..22 NAMESPACE "private import SI::A;"
+  #5 17:1..22 NAMESPACE "private import SI::V;"
+  #6 18:1..22 NAMESPACE "private import SI::A;"
+  ... and 87 more
+  #7 19:1..51 NAMESPACE "private import ISQElectromagnetism::electricPower;"
+  #7 19:1..51 NAMESPACE "private import ISQElectromagnetism::electricPower;"
+  #8 21:1..182 TYPE "port def BatteryOutlet {"
+[SYSML semantic tokens] OVERRIDE token "source" at 64:11 len 6: VARIABLE -> PROPERTY (matched AST range #16: 64:11..17 PROPERTY)
+  #8 21:1..182 TYPE "port def BatteryOutlet {"
+  #9 28:1..184 TYPE "port def DevicePower {"
+  #10 36:1..182 TYPE "port def ButtonInputPort {"
+[SYSML semantic tokens] OVERRIDE token "BuzzerCommandPort" at 64:20 len 17: TYPE -> TYPE (matched AST range #17: 64:20..37 TYPE)
+  #9 28:1..184 TYPE "port def DevicePower {"
+  #11 44:1..62 TYPE "port def DisplayCommandPort {"
+  #12 48:1..153 TYPE "port def LcdSegmentDrivePort {"
+[SYSML semantic tokens] OVERRIDE token "driver" at 65:11 len 6: VARIABLE -> PROPERTY (matched AST range #18: 65:11..17 PROPERTY)
+  #10 36:1..182 TYPE "port def ButtonInputPort {"
+  #13 53:1..58 TYPE "port def BuzzerCommandPort {"
+  #14 57:1..137 TYPE "port def BuzzerControlPort {"
+[SYSML semantic tokens] OVERRIDE token "BuzzerControlPort" at 65:20 len 17: TYPE -> TYPE (matched AST range #19: 65:20..37 TYPE)
+  #11 44:1..62 TYPE "port def DisplayCommandPort {"
+  #15 62:1..171 INTERFACE "interface def BuzzerControlConnection {"
+  #16 64:11..17 PROPERTY "source"
+[SYSML semantic tokens] OVERRIDE token "source" at 70:11 len 6: VARIABLE -> PROPERTY (matched AST range #21: 70:11..17 PROPERTY)
+  #12 48:1..153 TYPE "port def LcdSegmentDrivePort {"
+  #17 64:20..37 TYPE "BuzzerCommandPort"
+  #18 65:11..17 PROPERTY "driver"
+[SYSML semantic tokens] OVERRIDE token "BatteryOutlet" at 70:20 len 13: TYPE -> TYPE (matched AST range #22: 70:20..33 TYPE)
+  #13 53:1..58 TYPE "port def BuzzerCommandPort {"
+  #19 65:20..37 TYPE "BuzzerControlPort"
+  ... and 87 more
+[SYSML semantic tokens] OVERRIDE token "load" at 71:11 len 4: VARIABLE -> PROPERTY (matched AST range #23: 71:11..15 PROPERTY)
+  #14 57:1..137 TYPE "port def BuzzerControlPort {"
+[SYSML semantic tokens] OVERRIDE token "buttons" at 76:11 len 7: VARIABLE -> PROPERTY (matched AST range #26: 76:11..18 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "ButtonInputPort" at 76:21 len 15: TYPE -> TYPE (matched AST range #27: 76:21..36 TYPE)
+[SYSML semantic tokens] OVERRIDE token "DevicePower" at 71:18 len 11: TYPE -> TYPE (matched AST range #24: 71:18..29 TYPE)
+  #15 62:1..171 INTERFACE "interface def BuzzerControlConnection {"
+[SYSML semantic tokens] OVERRIDE token "controllerIn" at 77:11 len 12: VARIABLE -> PROPERTY (matched AST range #28: 77:11..23 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "ButtonInputPort" at 77:27 len 15: TYPE -> TYPE (matched AST range #29: 77:27..42 TYPE)
+[SYSML semantic tokens] OVERRIDE token "buttons" at 76:11 len 7: VARIABLE -> PROPERTY (matched AST range #26: 76:11..18 PROPERTY)
+  #16 64:11..17 PROPERTY "source"
+[SYSML semantic tokens] OVERRIDE token "source" at 82:11 len 6: VARIABLE -> PROPERTY (matched AST range #31: 82:11..17 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "DisplayCommandPort" at 82:20 len 18: TYPE -> TYPE (matched AST range #32: 82:20..38 TYPE)
+[SYSML semantic tokens] OVERRIDE token "ButtonInputPort" at 76:21 len 15: TYPE -> TYPE (matched AST range #27: 76:21..36 TYPE)
+  #17 64:20..37 TYPE "BuzzerCommandPort"
+[SYSML semantic tokens] OVERRIDE token "display" at 83:11 len 7: VARIABLE -> PROPERTY (matched AST range #33: 83:11..18 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "DisplayCommandPort" at 83:22 len 18: TYPE -> TYPE (matched AST range #34: 83:22..40 TYPE)
+[SYSML semantic tokens] OVERRIDE token "controllerIn" at 77:11 len 12: VARIABLE -> PROPERTY (matched AST range #28: 77:11..23 PROPERTY)
+  #18 65:11..17 PROPERTY "driver"
+[SYSML semantic tokens] OVERRIDE token "source" at 88:11 len 6: VARIABLE -> PROPERTY (matched AST range #36: 88:11..17 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "LcdSegmentDrivePort" at 88:20 len 19: TYPE -> TYPE (matched AST range #37: 88:20..39 TYPE)
+[SYSML semantic tokens] OVERRIDE token "ButtonInputPort" at 77:27 len 15: TYPE -> TYPE (matched AST range #29: 77:27..42 TYPE)
+  #19 65:20..37 TYPE "BuzzerControlPort"
+[SYSML semantic tokens] OVERRIDE token "glass" at 89:11 len 5: VARIABLE -> PROPERTY (matched AST range #38: 89:11..16 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "LcdSegmentDrivePort" at 89:20 len 19: TYPE -> TYPE (matched AST range #39: 89:20..39 TYPE)
+[SYSML semantic tokens] OVERRIDE token "source" at 82:11 len 6: VARIABLE -> PROPERTY (matched AST range #31: 82:11..17 PROPERTY)
+  ... and 87 more
+[SYSML semantic tokens] OVERRIDE token "source" at 94:11 len 6: VARIABLE -> PROPERTY (matched AST range #41: 94:11..17 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "BatteryOutlet" at 94:20 len 13: TYPE -> TYPE (matched AST range #42: 94:20..33 TYPE)
+[SYSML semantic tokens] OVERRIDE token "DisplayCommandPort" at 82:20 len 18: TYPE -> TYPE (matched AST range #32: 82:20..38 TYPE)
+[SYSML semantic tokens] OVERRIDE token "buttons" at 76:11 len 7: VARIABLE -> PROPERTY (matched AST range #26: 76:11..18 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "load" at 95:11 len 4: VARIABLE -> PROPERTY (matched AST range #43: 95:11..15 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "DevicePower" at 95:18 len 11: TYPE -> TYPE (matched AST range #44: 95:18..29 TYPE)
+[SYSML semantic tokens] OVERRIDE token "display" at 83:11 len 7: VARIABLE -> PROPERTY (matched AST range #33: 83:11..18 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "ButtonInputPort" at 76:21 len 15: TYPE -> TYPE (matched AST range #27: 76:21..36 TYPE)
+[SYSML semantic tokens] OVERRIDE token "buttonIn" at 105:7 len 8: VARIABLE -> PROPERTY (matched AST range #49: 105:7..15 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "ButtonInputPort" at 105:19 len 15: TYPE -> TYPE (matched AST range #50: 105:19..34 TYPE)
+[SYSML semantic tokens] OVERRIDE token "DisplayCommandPort" at 83:22 len 18: TYPE -> TYPE (matched AST range #34: 83:22..40 TYPE)
+[SYSML semantic tokens] OVERRIDE token "controllerIn" at 77:11 len 12: VARIABLE -> PROPERTY (matched AST range #28: 77:11..23 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "displayOut" at 106:7 len 10: VARIABLE -> PROPERTY (matched AST range #51: 106:7..17 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "DisplayCommandPort" at 106:20 len 18: TYPE -> TYPE (matched AST range #52: 106:20..38 TYPE)
+[SYSML semantic tokens] OVERRIDE token "source" at 88:11 len 6: VARIABLE -> PROPERTY (matched AST range #36: 88:11..17 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "ButtonInputPort" at 77:27 len 15: TYPE -> TYPE (matched AST range #29: 77:27..42 TYPE)
+[SYSML semantic tokens] OVERRIDE token "buzzerOut" at 107:7 len 9: VARIABLE -> PROPERTY (matched AST range #53: 107:7..16 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "BuzzerCommandPort" at 107:19 len 17: TYPE -> TYPE (matched AST range #54: 107:19..36 TYPE)
+[SYSML semantic tokens] OVERRIDE token "LcdSegmentDrivePort" at 88:20 len 19: TYPE -> TYPE (matched AST range #37: 88:20..39 TYPE)
+[SYSML semantic tokens] OVERRIDE token "source" at 82:11 len 6: VARIABLE -> PROPERTY (matched AST range #31: 82:11..17 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "buttonIn" at 116:7 len 8: VARIABLE -> PROPERTY (matched AST range #59: 116:7..15 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "ButtonInputPort" at 116:19 len 15: TYPE -> TYPE (matched AST range #60: 116:19..34 TYPE)
+[SYSML semantic tokens] OVERRIDE token "glass" at 89:11 len 5: VARIABLE -> PROPERTY (matched AST range #38: 89:11..16 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "DisplayCommandPort" at 82:20 len 18: TYPE -> TYPE (matched AST range #32: 82:20..38 TYPE)
+[SYSML semantic tokens] OVERRIDE token "displayOut" at 117:7 len 10: VARIABLE -> PROPERTY (matched AST range #61: 117:7..17 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "DisplayCommandPort" at 117:20 len 18: TYPE -> TYPE (matched AST range #62: 117:20..38 TYPE)
+[SYSML semantic tokens] OVERRIDE token "LcdSegmentDrivePort" at 89:20 len 19: TYPE -> TYPE (matched AST range #39: 89:20..39 TYPE)
+[SYSML semantic tokens] OVERRIDE token "display" at 83:11 len 7: VARIABLE -> PROPERTY (matched AST range #33: 83:11..18 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "lcdDrive" at 118:7 len 8: VARIABLE -> PROPERTY (matched AST range #63: 118:7..15 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "LcdSegmentDrivePort" at 118:18 len 19: TYPE -> TYPE (matched AST range #64: 118:18..37 TYPE)
+[SYSML semantic tokens] OVERRIDE token "source" at 94:11 len 6: VARIABLE -> PROPERTY (matched AST range #41: 94:11..17 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "DisplayCommandPort" at 83:22 len 18: TYPE -> TYPE (matched AST range #34: 83:22..40 TYPE)
+[SYSML semantic tokens] OVERRIDE token "buzzerOut" at 119:7 len 9: VARIABLE -> PROPERTY (matched AST range #65: 119:7..16 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "BuzzerCommandPort" at 119:19 len 17: TYPE -> TYPE (matched AST range #66: 119:19..36 TYPE)
+[SYSML semantic tokens] OVERRIDE token "BatteryOutlet" at 94:20 len 13: TYPE -> TYPE (matched AST range #42: 94:20..33 TYPE)
+[SYSML semantic tokens] OVERRIDE token "source" at 88:11 len 6: VARIABLE -> PROPERTY (matched AST range #36: 88:11..17 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "pwr" at 120:7 len 3: VARIABLE -> PROPERTY (matched AST range #67: 120:7..10 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "DevicePower" at 120:13 len 11: TYPE -> TYPE (matched AST range #68: 120:13..24 TYPE)
+[SYSML semantic tokens] OVERRIDE token "load" at 95:11 len 4: VARIABLE -> PROPERTY (matched AST range #43: 95:11..15 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "LcdSegmentDrivePort" at 88:20 len 19: TYPE -> TYPE (matched AST range #37: 88:20..39 TYPE)
+[SYSML semantic tokens] OVERRIDE token "DevicePower" at 95:18 len 11: TYPE -> TYPE (matched AST range #44: 95:18..29 TYPE)
+[SYSML semantic tokens] OVERRIDE token "buttonIn" at 105:7 len 8: VARIABLE -> PROPERTY (matched AST range #49: 105:7..15 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "glass" at 89:11 len 5: VARIABLE -> PROPERTY (matched AST range #38: 89:11..16 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "ButtonInputPort" at 105:19 len 15: TYPE -> TYPE (matched AST range #50: 105:19..34 TYPE)
+[SYSML semantic tokens] OVERRIDE token "displayOut" at 106:7 len 10: VARIABLE -> PROPERTY (matched AST range #51: 106:7..17 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "LcdSegmentDrivePort" at 89:20 len 19: TYPE -> TYPE (matched AST range #39: 89:20..39 TYPE)
+[SYSML semantic tokens] OVERRIDE token "DisplayCommandPort" at 106:20 len 18: TYPE -> TYPE (matched AST range #52: 106:20..38 TYPE)
+[SYSML semantic tokens] OVERRIDE token "buzzerOut" at 107:7 len 9: VARIABLE -> PROPERTY (matched AST range #53: 107:7..16 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "source" at 94:11 len 6: VARIABLE -> PROPERTY (matched AST range #41: 94:11..17 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "BuzzerCommandPort" at 107:19 len 17: TYPE -> TYPE (matched AST range #54: 107:19..36 TYPE)
+[SYSML semantic tokens] OVERRIDE token "buttonIn" at 116:7 len 8: VARIABLE -> PROPERTY (matched AST range #59: 116:7..15 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "BatteryOutlet" at 94:20 len 13: TYPE -> TYPE (matched AST range #42: 94:20..33 TYPE)
+[SYSML semantic tokens] OVERRIDE token "ButtonInputPort" at 116:19 len 15: TYPE -> TYPE (matched AST range #60: 116:19..34 TYPE)
+[SYSML semantic tokens] OVERRIDE token "displayOut" at 117:7 len 10: VARIABLE -> PROPERTY (matched AST range #61: 117:7..17 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "load" at 95:11 len 4: VARIABLE -> PROPERTY (matched AST range #43: 95:11..15 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "DisplayCommandPort" at 117:20 len 18: TYPE -> TYPE (matched AST range #62: 117:20..38 TYPE)
+[SYSML semantic tokens] OVERRIDE token "lcdDrive" at 118:7 len 8: VARIABLE -> PROPERTY (matched AST range #63: 118:7..15 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "DevicePower" at 95:18 len 11: TYPE -> TYPE (matched AST range #44: 95:18..29 TYPE)
+[SYSML semantic tokens] OVERRIDE token "LcdSegmentDrivePort" at 118:18 len 19: TYPE -> TYPE (matched AST range #64: 118:18..37 TYPE)
+[SYSML semantic tokens] OVERRIDE token "buzzerOut" at 119:7 len 9: VARIABLE -> PROPERTY (matched AST range #65: 119:7..16 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "buttonIn" at 105:7 len 8: VARIABLE -> PROPERTY (matched AST range #49: 105:7..15 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "BuzzerCommandPort" at 119:19 len 17: TYPE -> TYPE (matched AST range #66: 119:19..36 TYPE)
+[SYSML semantic tokens] OVERRIDE token "pwr" at 120:7 len 3: VARIABLE -> PROPERTY (matched AST range #67: 120:7..10 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "ButtonInputPort" at 105:19 len 15: TYPE -> TYPE (matched AST range #50: 105:19..34 TYPE)
+[SYSML semantic tokens] OVERRIDE token "DevicePower" at 120:13 len 11: TYPE -> TYPE (matched AST range #68: 120:13..24 TYPE)
+[SYSML semantic tokens] OVERRIDE token "ctrlIn" at 126:7 len 6: VARIABLE -> PROPERTY (matched AST range #70: 126:7..13 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "displayOut" at 106:7 len 10: VARIABLE -> PROPERTY (matched AST range #51: 106:7..17 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "BuzzerControlPort" at 126:16 len 17: TYPE -> TYPE (matched AST range #71: 126:16..33 TYPE)
+[SYSML semantic tokens] OVERRIDE token "pwrIn" at 127:7 len 5: VARIABLE -> PROPERTY (matched AST range #72: 127:7..12 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "DisplayCommandPort" at 106:20 len 18: TYPE -> TYPE (matched AST range #52: 106:20..38 TYPE)
+[SYSML semantic tokens] OVERRIDE token "DevicePower" at 127:15 len 11: TYPE -> TYPE (matched AST range #73: 127:15..26 TYPE)
+[SYSML semantic tokens] OVERRIDE token "buzzerPwrOut" at 128:7 len 12: VARIABLE -> PROPERTY (matched AST range #74: 128:7..19 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "buzzerOut" at 107:7 len 9: VARIABLE -> PROPERTY (matched AST range #53: 107:7..16 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "BatteryOutlet" at 128:22 len 13: TYPE -> TYPE (matched AST range #75: 128:22..35 TYPE)
+[SYSML semantic tokens] OVERRIDE token "cmd" at 134:7 len 3: VARIABLE -> PROPERTY (matched AST range #78: 134:7..10 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "BuzzerCommandPort" at 107:19 len 17: TYPE -> TYPE (matched AST range #54: 107:19..36 TYPE)
+[SYSML semantic tokens] OVERRIDE token "DisplayCommandPort" at 134:14 len 18: TYPE -> TYPE (matched AST range #79: 134:14..32 TYPE)
+[SYSML semantic tokens] OVERRIDE token "lcdIn" at 135:7 len 5: VARIABLE -> PROPERTY (matched AST range #80: 135:7..12 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "buttonIn" at 116:7 len 8: VARIABLE -> PROPERTY (matched AST range #59: 116:7..15 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "LcdSegmentDrivePort" at 135:16 len 19: TYPE -> TYPE (matched AST range #81: 135:16..35 TYPE)
+[SYSML semantic tokens] OVERRIDE token "pwr" at 136:7 len 3: VARIABLE -> PROPERTY (matched AST range #82: 136:7..10 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "ButtonInputPort" at 116:19 len 15: TYPE -> TYPE (matched AST range #60: 116:19..34 TYPE)
+[SYSML semantic tokens] OVERRIDE token "DevicePower" at 136:13 len 11: TYPE -> TYPE (matched AST range #83: 136:13..24 TYPE)
+[SYSML semantic tokens] OVERRIDE token "output" at 141:7 len 6: VARIABLE -> PROPERTY (matched AST range #85: 141:7..13 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "displayOut" at 117:7 len 10: VARIABLE -> PROPERTY (matched AST range #61: 117:7..17 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "ButtonInputPort" at 141:16 len 15: TYPE -> TYPE (matched AST range #86: 141:16..31 TYPE)
+[SYSML semantic tokens] OVERRIDE token "pwr" at 142:7 len 3: VARIABLE -> PROPERTY (matched AST range #87: 142:7..10 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "DisplayCommandPort" at 117:20 len 18: TYPE -> TYPE (matched AST range #62: 117:20..38 TYPE)
+[SYSML semantic tokens] OVERRIDE token "DevicePower" at 142:13 len 11: TYPE -> TYPE (matched AST range #88: 142:13..24 TYPE)
+[SYSML semantic tokens] OVERRIDE token "pwr" at 148:7 len 3: VARIABLE -> PROPERTY (matched AST range #91: 148:7..10 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "lcdDrive" at 118:7 len 8: VARIABLE -> PROPERTY (matched AST range #63: 118:7..15 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "DevicePower" at 148:13 len 11: TYPE -> TYPE (matched AST range #92: 148:13..24 TYPE)
+[SYSML semantic tokens] OVERRIDE token "powerOut" at 164:7 len 8: VARIABLE -> PROPERTY (matched AST range #98: 164:7..15 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "LcdSegmentDrivePort" at 118:18 len 19: TYPE -> TYPE (matched AST range #64: 118:18..37 TYPE)
+[SYSML semantic tokens] OVERRIDE token "BatteryOutlet" at 164:18 len 13: TYPE -> TYPE (matched AST range #99: 164:18..31 TYPE)
+[SYSML semantic tokens] OVERRIDE token "timerInstance" at 286:6 len 13: VARIABLE -> PROPERTY (matched AST range #101: 286:6..19 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "buzzerOut" at 119:7 len 9: VARIABLE -> PROPERTY (matched AST range #65: 119:7..16 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "KitchenTimer" at 286:22 len 12: TYPE -> TYPE (matched AST range #102: 286:22..34 TYPE)
+[SYSML semantic tokens] OVERRIDE token "BuzzerCommandPort" at 119:19 len 17: TYPE -> TYPE (matched AST range #66: 119:19..36 TYPE)
+[SYSML semantic tokens] OVERRIDE token "pwr" at 120:7 len 3: VARIABLE -> PROPERTY (matched AST range #67: 120:7..10 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "DevicePower" at 120:13 len 11: TYPE -> TYPE (matched AST range #68: 120:13..24 TYPE)
+[Info  - 1:11:05 PM] sysml/model: req_uri=file:///c%3A/Git/sysml-examples/timer/sysml/KitchenTimer.sysml index_ok=true parsed_ok=true semantic_nodes=169 graph_uris_count=5 graph_uris_sample=["file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQElectromagnetism.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/Time.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/KerML.kerml"]
+[Info  - 1:11:05 PM] sysml/model: uri=file:///c%3A/Git/sysml-examples/timer/sysml/KitchenTimer.sysml scope=["graph", "stats"] -> graph nodes=169 edges=388 generalViewGraph nodes=26 edges=25
+[Info  - 1:11:43 PM] sysml/model: req_uri=file:///c%3A/Git/sysml-examples/timer/sysml/KitchenTimer.sysml index_ok=true parsed_ok=true semantic_nodes=169 graph_uris_count=5 graph_uris_sample=["file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQElectromagnetism.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/Time.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/KerML.kerml"]
+[Info  - 1:11:43 PM] sysml/model: uri=file:///c%3A/Git/sysml-examples/timer/sysml/KitchenTimer.sysml scope=[] -> graph nodes=169 edges=388 generalViewGraph nodes=26 edges=25
+[Info  - 1:11:51 PM] sysml/model: req_uri=file:///c%3A/Git/sysml-examples/timer/sysml/KitchenTimer.sysml index_ok=true parsed_ok=true semantic_nodes=169 graph_uris_count=5 graph_uris_sample=["file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/ISQElectromagnetism.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/Time.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/KerML.kerml"]
+[Info  - 1:11:51 PM] sysml/model: uri=file:///c%3A/Git/sysml-examples/timer/sysml/KitchenTimer.sysml scope=[] -> graph nodes=169 edges=388 generalViewGraph nodes=26 edges=25

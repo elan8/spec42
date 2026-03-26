@@ -17,7 +17,7 @@ import {
   ModelExplorerProvider,
   ModelTreeItem,
 } from "./explorer/modelExplorerProvider";
-import { LibraryViewProvider } from "./library/libraryViewProvider";
+import { LibraryWebviewViewProvider } from "./library/libraryWebviewViewProvider";
 import type { GraphNodeDTO } from "./providers/sysmlModelTypes";
 import { getOutputChannel, log, logError, showChannel } from "./logger";
 import {
@@ -37,6 +37,10 @@ import {
   EXPERIMENTAL_VIEWS,
 } from "./visualization/webview/constants";
 import { getWebviewHtml } from "./visualization/htmlBuilder";
+import {
+  StandardLibraryConfig,
+  StandardLibraryManager,
+} from "./library/standardLibraryManager";
 
 const CONFIG_SECTION = "spec42";
 const LEGACY_CONFIG_SECTION = "sysml-language-server";
@@ -53,7 +57,7 @@ type ServerHealthState =
 let client: LanguageClient | undefined;
 let statusItem: vscode.StatusBarItem | undefined;
 let modelExplorerProvider: ModelExplorerProvider | undefined;
-let libraryViewProvider: LibraryViewProvider | undefined;
+let libraryWebviewProvider: LibraryWebviewViewProvider | undefined;
 let lspModelProviderForStatus: LspModelProvider | undefined;
 let serverHealthState: ServerHealthState = "starting";
 let serverHealthDetail = "";
@@ -85,6 +89,15 @@ function getConfigBoolean(key: string, defaultValue: boolean): boolean {
 function getConfigNumber(key: string, defaultValue: number): number {
   const { primary, legacy } = getConfig();
   return primary.get<number>(key) ?? legacy.get<number>(key) ?? defaultValue;
+}
+
+function getStandardLibraryConfig(): StandardLibraryConfig {
+  return {
+    enabled: getConfigBoolean("standardLibrary.enabled", true),
+    version: getConfigString("standardLibrary.version") ?? "2026-02",
+    repo: getConfigString("standardLibrary.repo") ?? "Systems-Modeling/SysML-v2-Release",
+    contentPath: getConfigString("standardLibrary.contentPath") ?? "sysml.library",
+  };
 }
 
 function isDefaultServerPath(value: string): boolean {
@@ -305,11 +318,20 @@ export function activate(context: vscode.ExtensionContext): void {
   // avoid workspace/OS-specific settings issues.
   const envServerPath = (process.env.SPEC42_SERVER_PATH || "").trim();
   const serverPath = envServerPath || getConfigString("serverPath");
+  const standardLibraryManager = new StandardLibraryManager(context);
+  const standardLibraryConfig = getStandardLibraryConfig();
+  const installedStandardLibraryPath = standardLibraryManager.getInstalledPath(
+    standardLibraryConfig
+  );
   const libraryPathsRaw = getConfigStringArray("libraryPaths") ?? [];
   const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "";
-  const libraryPaths = libraryPathsRaw.map((p) =>
+  const customLibraryPaths = libraryPathsRaw.map((p) =>
     path.isAbsolute(p) ? p : path.resolve(workspaceRoot, p)
   );
+  const libraryPaths = [
+    ...(installedStandardLibraryPath ? [installedStandardLibraryPath] : []),
+    ...customLibraryPaths,
+  ].filter((value, index, all) => all.indexOf(value) === index);
 
   let serverCommand: string;
   if (!serverPath || isDefaultServerPath(serverPath)) {
@@ -504,7 +526,11 @@ export function activate(context: vscode.ExtensionContext): void {
   const lspModelProvider = new LspModelProvider(client, clientReadyPromise);
   lspModelProviderForStatus = lspModelProvider;
   modelExplorerProvider = new ModelExplorerProvider(lspModelProvider);
-  libraryViewProvider = new LibraryViewProvider();
+  libraryWebviewProvider = new LibraryWebviewViewProvider(
+    context.extensionUri,
+    lspModelProvider,
+    () => standardLibraryManager.getStatus(getStandardLibraryConfig())
+  );
 
   context.subscriptions.push(
     vscode.window.registerWebviewPanelSerializer("sysmlVisualizer", {
@@ -551,22 +577,62 @@ export function activate(context: vscode.ExtensionContext): void {
   modelExplorerProvider.setTreeView(treeView);
   context.subscriptions.push(treeView);
 
-  const libraryTreeView = vscode.window.createTreeView("spec42Library", {
-    treeDataProvider: libraryViewProvider,
-  });
-  context.subscriptions.push(libraryTreeView);
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider("spec42Library", libraryWebviewProvider)
+  );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.library.refresh", () => {
-      libraryViewProvider?.refresh();
+      libraryWebviewProvider?.refresh();
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.library.installStdLib", async () => {
-      vscode.window.showInformationMessage(
-        "Spec42 Library: Standard Library install/update will be added in a future release."
-      );
+      const cfg = getStandardLibraryConfig();
+      if (!cfg.enabled) {
+        const selected = await vscode.window.showWarningMessage(
+          "Managed standard library is disabled in settings.",
+          "Open Settings"
+        );
+        if (selected === "Open Settings") {
+          await vscode.commands.executeCommand(
+            "workbench.action.openSettings",
+            "spec42.standardLibrary.enabled"
+          );
+        }
+        return;
+      }
+
+      try {
+        const result = await vscode.window.withProgress(
+          {
+            location: vscode.ProgressLocation.Notification,
+            title: `Spec42: Installing standard library ${cfg.version}`,
+            cancellable: false,
+          },
+          async (progress) => {
+            return await standardLibraryManager.installPinnedStandardLibrary(
+              cfg,
+              progress
+            );
+          }
+        );
+        libraryWebviewProvider?.refresh();
+        const message = `Spec42 standard library ${result.installedVersion} installed at ${result.installPath}.`;
+        const action = await vscode.window.showInformationMessage(
+          message,
+          "Restart Server"
+        );
+        if (action === "Restart Server") {
+          await vscode.commands.executeCommand("sysml.restartServer");
+        }
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : String(error);
+        vscode.window.showErrorMessage(
+          `Failed to install Spec42 standard library: ${detail}`
+        );
+      }
     })
   );
 
@@ -581,15 +647,23 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.library.search", async () => {
-      const query = await vscode.window.showInputBox({
-        prompt: "Search libraries (placeholder)",
-        placeHolder: "e.g. Systems Library",
-      });
-      if (query && query.trim().length > 0) {
-        vscode.window.showInformationMessage(
-          `Spec42 Library search is not implemented yet. Query: ${query}`
-        );
-      }
+      await vscode.commands.executeCommand("workbench.view.extension.spec42");
+      await vscode.commands.executeCommand("spec42Library.focus");
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sysml.library.showStdLibStatus", async () => {
+      const cfg = getStandardLibraryConfig();
+      const status = standardLibraryManager.getStatus(cfg);
+      const installedLine = status.installedVersion
+        ? `Installed version: ${status.installedVersion}`
+        : "Installed version: none";
+      const pinnedLine = `Pinned version: ${status.pinnedVersion}`;
+      const pathLine = status.installPath ? `Install path: ${status.installPath}` : "Install path: none";
+      vscode.window.showInformationMessage(
+        `Managed standard library ${status.isInstalled ? "is ready" : "is not installed"}.\n${pinnedLine}\n${installedLine}\n${pathLine}`
+      );
     })
   );
 

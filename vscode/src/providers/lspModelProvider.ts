@@ -66,6 +66,22 @@ export interface SysMLClearCacheResult {
   semanticTokens: number;
 }
 
+export interface LibrarySearchItem {
+  name: string;
+  kind: string;
+  container?: string;
+  uri: string;
+  range: { start: PositionDTO; end: PositionDTO };
+  score: number;
+  source: "standard" | "custom";
+  path?: string;
+}
+
+export interface SysMLLibrarySearchResult {
+  items: LibrarySearchItem[];
+  total: number;
+}
+
 export class LspModelProvider {
   constructor(
     private readonly client: LanguageClient,
@@ -150,6 +166,16 @@ export class LspModelProvider {
       log("clearCache failed", e);
       return undefined;
     }
+  }
+
+  async searchLibraries(
+    query: string,
+    limit = 100
+  ): Promise<SysMLLibrarySearchResult> {
+    return await this.client.sendRequest<SysMLLibrarySearchResult>(
+      "sysml/librarySearch",
+      { query, limit }
+    );
   }
 
   /**

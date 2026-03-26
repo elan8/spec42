@@ -1,6 +1,6 @@
 //! DTOs and conversion helpers for sysml/model and related responses.
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::Range;
 
 use crate::diagram_types::{Bounds, HitRegionKind, RenderedDiagram};
@@ -197,6 +197,34 @@ pub struct SysmlClearCacheResultDto {
     pub symbol_tables: usize,
     #[serde(rename = "semanticTokens")]
     pub semantic_tokens: usize,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlLibrarySearchParamsDto {
+    pub query: String,
+    pub limit: Option<usize>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlLibrarySearchItemDto {
+    pub name: String,
+    pub kind: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub container: Option<String>,
+    pub uri: String,
+    pub range: RangeDto,
+    pub score: i64,
+    pub source: String,
+    pub path: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlLibrarySearchResultDto {
+    pub items: Vec<SysmlLibrarySearchItemDto>,
+    pub total: usize,
 }
 
 pub fn range_to_dto(r: Range) -> RangeDto {

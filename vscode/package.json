@@ -129,7 +129,7 @@
       },
       {
         "command": "sysml.library.managePaths",
-        "title": "Library: Manage Library Paths",
+        "title": "Library: Manage Custom Libraries",
         "icon": "$(folder-library)",
         "category": "Spec42"
       },
@@ -137,6 +137,12 @@
         "command": "sysml.library.search",
         "title": "Library: Search Libraries",
         "icon": "$(search)",
+        "category": "Spec42"
+      },
+      {
+        "command": "sysml.library.showStdLibStatus",
+        "title": "Library: Show Standard Library Status",
+        "icon": "$(info)",
         "category": "Spec42"
       },
       {
@@ -323,6 +329,9 @@
         },
         {
           "command": "sysml.library.search"
+        },
+        {
+          "command": "sysml.library.showStdLibStatus"
         }
       ]
     },
@@ -345,6 +354,7 @@
         {
           "id": "spec42Library",
           "name": "Library",
+          "type": "webview",
           "contextualTitle": "Spec42 Library"
         },
         {
@@ -362,7 +372,7 @@
     "viewsWelcome": [
       {
         "view": "spec42Library",
-        "contents": "Spec42 Library (v1 scaffold).\\n\\n- Run [Install or Update Standard Library](command:sysml.library.installStdLib)\\n- Run [Manage Library Paths](command:sysml.library.managePaths)\\n- Run [Search Libraries](command:sysml.library.search)"
+        "contents": "Spec42 manages a pinned standard library after installation.\\n\\n- Run [Install or Update Standard Library](command:sysml.library.installStdLib)\\n- Run [Manage Custom Libraries](command:sysml.library.managePaths)\\n- Run [Show Standard Library Status](command:sysml.library.showStdLibStatus)"
       },
       {
         "view": "sysmlModelExplorer",
@@ -379,9 +389,31 @@
         },
         "spec42.libraryPaths": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "default": [],
-          "description": "Paths to SysML library roots (e.g. SysML-v2-Release clone or custom libraries). Files under these paths are indexed for hover, go-to-definition, and completion."
+          "description": "Custom paths to additional SysML library roots. Files under these paths are indexed for hover, go-to-definition, and completion."
+        },
+        "spec42.standardLibrary.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable managed standard library support from the configured SysML v2 release source."
+        },
+        "spec42.standardLibrary.version": {
+          "type": "string",
+          "default": "2026-02",
+          "description": "Pinned SysML v2 release tag to install for the managed standard library."
+        },
+        "spec42.standardLibrary.repo": {
+          "type": "string",
+          "default": "Systems-Modeling/SysML-v2-Release",
+          "description": "GitHub repository (owner/name) used for managed standard library downloads."
+        },
+        "spec42.standardLibrary.contentPath": {
+          "type": "string",
+          "default": "sysml.library",
+          "description": "Repository subfolder to install as the managed standard library."
         },
         "spec42.statusBar.enabled": {
           "type": "boolean",
@@ -406,7 +438,9 @@
         },
         "spec42.visualization.defaultView": {
           "type": "string",
-          "enum": ["general-view"],
+          "enum": [
+            "general-view"
+          ],
           "default": "general-view",
           "description": "Default view when opening the SysML Model Visualizer (SysML v2 frameless-view types)."
         },
@@ -424,7 +458,10 @@
         },
         "spec42.visualization.generalViewPalette": {
           "type": "string",
-          "enum": ["distinct", "classic"],
+          "enum": [
+            "distinct",
+            "classic"
+          ],
           "default": "distinct",
           "description": "Color palette for General View: 'distinct' (semantic SysML pillar colors) or 'classic' (VS Code default syntax colors)."
         }
@@ -467,17 +504,19 @@
     "package": "vsce package --no-dependencies"
   },
   "devDependencies": {
-    "@vscode/codicons": "0.0.44",
-    "esbuild": "^0.24.0",
+    "@types/adm-zip": "^0.5.8",
     "@types/mocha": "^10.0.0",
     "@types/node": "^22.0.0",
     "@types/vscode": "^1.85.0",
+    "@vscode/codicons": "0.0.44",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.4.1",
     "@vscode/vsce": "^3.2.2",
+    "esbuild": "^0.24.0",
     "typescript": "~5.6.0"
   },
   "dependencies": {
+    "adm-zip": "^0.5.16",
     "d3": "^7.9.0",
     "elkjs": "^0.8.2",
     "vscode-languageclient": "^9.0.0",
