@@ -192,30 +192,76 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       const bySource = new Map();
       for (const item of items) {
         const source = item.source || 'custom';
-        if (!bySource.has(source)) bySource.set(source, new Map());
-        const byContainer = bySource.get(source);
-        const container = item.container || '(top level)';
-        if (!byContainer.has(container)) byContainer.set(container, []);
-        byContainer.get(container).push(item);
+        if (!bySource.has(source)) bySource.set(source, []);
+        bySource.get(source).push(item);
+      }
+
+      function fileStemFromPath(path) {
+        const raw = String(path || '');
+        const file = raw.split('/').pop() || '';
+        return file.toLowerCase().endsWith('.sysml') ? file.slice(0, -6) : file;
       }
 
       let idx = 0;
       renderedItems = [];
       const blocks = [];
-      for (const [source, containers] of bySource.entries()) {
+      for (const [source, sourceItems] of bySource.entries()) {
         const sourceLabel = source === 'standard' ? 'Standard Library' : 'Custom Libraries';
         let sourceHtml = '<details><summary class="title">' + escapeHtml(sourceLabel) + '</summary>';
-        for (const [container, entries] of containers.entries()) {
-          sourceHtml += '<details style="margin-left:8px"><summary class="muted">' + escapeHtml(container) + ' (' + entries.length + ')</summary>';
-          for (const item of entries) {
-            renderedItems.push(item);
-            sourceHtml += '<div class="result" data-index="' + idx + '">' +
-              '<div class="title">' + escapeHtml(item.name) + '</div>' +
-              '<div class="meta"><span>' + escapeHtml(item.kind) + '</span></div>' +
-            '</div>';
-            idx += 1;
+
+        if (source === 'standard') {
+          // Root level should contain only package nodes.
+          const packageByPath = new Map();
+          for (const item of sourceItems) {
+            if (item.kind === 'module') {
+              const pathKey = String(item.path || '');
+              if (!packageByPath.has(pathKey)) {
+                packageByPath.set(pathKey, item.name);
+              }
+            }
           }
-          sourceHtml += '</details>';
+
+          const grouped = new Map();
+          for (const item of sourceItems) {
+            const pathKey = String(item.path || '');
+            const packageName = packageByPath.get(pathKey) || fileStemFromPath(pathKey) || '(unknown package)';
+            if (!grouped.has(packageName)) grouped.set(packageName, []);
+            grouped.get(packageName).push(item);
+          }
+
+          const sortedPackages = Array.from(grouped.keys()).sort((a, b) => a.localeCompare(b));
+          for (const packageName of sortedPackages) {
+            const entries = grouped.get(packageName) || [];
+            sourceHtml += '<details style="margin-left:8px"><summary class="muted">' + escapeHtml(packageName) + ' (' + entries.length + ')</summary>';
+            for (const item of entries) {
+              renderedItems.push(item);
+              sourceHtml += '<div class="result" data-index="' + idx + '">' +
+                '<div class="title">' + escapeHtml(item.name) + '</div>' +
+                '<div class="meta"><span>' + escapeHtml(item.kind) + '</span></div>' +
+              '</div>';
+              idx += 1;
+            }
+            sourceHtml += '</details>';
+          }
+        } else {
+          const byContainer = new Map();
+          for (const item of sourceItems) {
+            const container = item.container || '(top level)';
+            if (!byContainer.has(container)) byContainer.set(container, []);
+            byContainer.get(container).push(item);
+          }
+          for (const [container, entries] of byContainer.entries()) {
+            sourceHtml += '<details style="margin-left:8px"><summary class="muted">' + escapeHtml(container) + ' (' + entries.length + ')</summary>';
+            for (const item of entries) {
+              renderedItems.push(item);
+              sourceHtml += '<div class="result" data-index="' + idx + '">' +
+                '<div class="title">' + escapeHtml(item.name) + '</div>' +
+                '<div class="meta"><span>' + escapeHtml(item.kind) + '</span></div>' +
+              '</div>';
+              idx += 1;
+            }
+            sourceHtml += '</details>';
+          }
         }
         sourceHtml += '</details>';
         blocks.push(sourceHtml);

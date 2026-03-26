@@ -1065,7 +1065,29 @@ impl LanguageServer for Backend {
             Some(d) => d,
             None => return Ok(None),
         };
-        let symbols = collect_document_symbols(doc);
+        let raw_symbols = collect_document_symbols(doc);
+        let empty_name_examples: Vec<String> = raw_symbols
+            .iter()
+            .filter(|s| s.name.trim().is_empty())
+            .take(5)
+            .map(|s| s.detail.clone().unwrap_or_else(|| "(no detail)".to_string()))
+            .collect();
+        let raw_count = raw_symbols.len();
+        let symbols = sanitize_document_symbols(raw_symbols);
+        let sanitized_count = symbols.len();
+        if sanitized_count < raw_count {
+            self.client
+                .log_message(
+                    MessageType::WARNING,
+                    format!(
+                        "documentSymbol: filtered {} empty-name symbol(s) for {}. examples={:?}",
+                        raw_count - sanitized_count,
+                        uri_norm.as_str(),
+                        empty_name_examples
+                    ),
+                )
+                .await;
+        }
         Ok(Some(DocumentSymbolResponse::Nested(symbols)))
     }
 
@@ -1496,6 +1518,29 @@ impl Backend {
             .publish_diagnostics(uri, diagnostics, None)
             .await;
     }
+}
+
+fn sanitize_document_symbols(
+    symbols: Vec<tower_lsp::lsp_types::DocumentSymbol>,
+) -> Vec<tower_lsp::lsp_types::DocumentSymbol> {
+    fn sanitize_one(
+        mut symbol: tower_lsp::lsp_types::DocumentSymbol,
+    ) -> Option<tower_lsp::lsp_types::DocumentSymbol> {
+        if symbol.name.trim().is_empty() {
+            return None;
+        }
+        if let Some(children) = symbol.children.take() {
+            let cleaned: Vec<_> = children.into_iter().filter_map(sanitize_one).collect();
+            symbol.children = if cleaned.is_empty() {
+                None
+            } else {
+                Some(cleaned)
+            };
+        }
+        Some(symbol)
+    }
+
+    symbols.into_iter().filter_map(sanitize_one).collect()
 }
 
 /// Run the Spec42 LSP server using the provided configuration.

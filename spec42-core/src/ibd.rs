@@ -19,6 +19,16 @@ pub fn is_port_like(kind: &str) -> bool {
 
 /// Count of part nodes in the subtree (direct + recursive). Uses typing to follow part def structure.
 fn part_tree_size(graph: &SemanticGraph, node: &SemanticNode, _uri: &Url) -> usize {
+    let mut visiting_defs: std::collections::HashSet<String> = std::collections::HashSet::new();
+    part_tree_size_inner(graph, node, _uri, &mut visiting_defs)
+}
+
+fn part_tree_size_inner(
+    graph: &SemanticGraph,
+    node: &SemanticNode,
+    _uri: &Url,
+    visiting_defs: &mut std::collections::HashSet<String>,
+) -> usize {
     let children = graph.children_of(node);
     let part_children: Vec<_> = children
         .iter()
@@ -31,10 +41,17 @@ fn part_tree_size(graph: &SemanticGraph, node: &SemanticNode, _uri: &Url) -> usi
             let def = typed.into_iter().next();
             if let Some(def_node) = def {
                 if is_part_like(&def_node.element_kind) {
-                    return 1 + part_tree_size(graph, def_node, _uri);
+                    let def_key = def_node.id.qualified_name.clone();
+                    if !visiting_defs.insert(def_key.clone()) {
+                        // Break recursive type cycles (A -> B -> A).
+                        return 1;
+                    }
+                    let size = 1 + part_tree_size_inner(graph, def_node, _uri, visiting_defs);
+                    visiting_defs.remove(&def_key);
+                    return size;
                 }
             }
-            1 + part_tree_size(graph, c, _uri)
+            1 + part_tree_size_inner(graph, c, _uri, visiting_defs)
         })
         .sum()
 }
@@ -297,7 +314,14 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         ports_out: &mut Vec<IbdPortDto>,
         existing_part_qn_dot: &mut std::collections::HashSet<String>,
         existing_ports: &mut std::collections::HashSet<(String, String)>,
+        visiting_defs: &mut std::collections::HashSet<String>,
     ) {
+        let def_key = def_node.id.qualified_name.clone();
+        if !visiting_defs.insert(def_key.clone()) {
+            // Break recursive type cycles while expanding typed parts.
+            return;
+        }
+
         // First, inherit ports from the definition onto the parent usage node.
         // (The closure below is duplicated as a small helper for borrow reasons.)
         for port_child in graph.children_of(def_node) {
@@ -359,9 +383,11 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                     ports_out,
                     existing_part_qn_dot,
                     existing_ports,
+                    visiting_defs,
                 );
             }
         }
+        visiting_defs.remove(&def_key);
     }
 
     // Iterate over a snapshot of current parts to avoid infinite growth during iteration.
@@ -384,6 +410,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         let parent_dot = p.qualified_name.as_str();
         // inherit ports (in case the def has ports) onto the usage itself
         add_ports_from_def(def_node, parent_dot, &mut ports, &mut existing_ports);
+        let mut visiting_defs: std::collections::HashSet<String> = std::collections::HashSet::new();
         expand_def_subtree(
             graph,
             def_node,
@@ -392,6 +419,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             &mut ports,
             &mut existing_part_qn_dot,
             &mut existing_ports,
+            &mut visiting_defs,
         );
     }
 
