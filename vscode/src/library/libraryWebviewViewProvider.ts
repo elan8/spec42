@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import type {
-  LibrarySearchItem,
   LspModelProvider,
   SysMLLibrarySearchResult,
 } from "../providers/lspModelProvider";
@@ -174,11 +173,16 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
     const results = document.getElementById('results');
     const stdlibStatus = document.getElementById('stdlibStatus');
     let timer = null;
-    let allItems = [];
+    let latestTree = { sources: [], symbolTotal: 0, total: 0 };
     let renderedItems = [];
 
-    function groupAndRender(items, total, queryText) {
-      if (!items || items.length === 0) {
+    function renderTree(tree, queryText) {
+      const sources = Array.isArray(tree?.sources) ? tree.sources : [];
+      const visibleCount = sources
+        .reduce((acc, src) => acc + (Array.isArray(src.packages)
+          ? src.packages.reduce((a, p) => a + (Array.isArray(p.symbols) ? p.symbols.length : 0), 0)
+          : 0), 0);
+      if (visibleCount === 0) {
         state.textContent = queryText
           ? 'No results for "' + queryText + '".'
           : 'No library symbols indexed yet. Install/Update Standard Library and restart the SysML server.';
@@ -186,82 +190,29 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
         return;
       }
       state.textContent = queryText
-        ? ('Filtered to ' + items.length + ' of ' + total + ' symbol(s).')
-        : ('Showing ' + items.length + ' library symbol(s).');
-
-      const bySource = new Map();
-      for (const item of items) {
-        const source = item.source || 'custom';
-        if (!bySource.has(source)) bySource.set(source, []);
-        bySource.get(source).push(item);
-      }
-
-      function fileStemFromPath(path) {
-        const raw = String(path || '');
-        const file = raw.split('/').pop() || '';
-        return file.toLowerCase().endsWith('.sysml') ? file.slice(0, -6) : file;
-      }
+        ? ('Filtered to ' + visibleCount + ' of ' + (tree.total || visibleCount) + ' symbol(s).')
+        : ('Showing ' + visibleCount + ' library symbol(s).');
 
       let idx = 0;
       renderedItems = [];
       const blocks = [];
-      for (const [source, sourceItems] of bySource.entries()) {
+      for (const sourceNode of sources) {
+        const source = sourceNode.source || 'custom';
         const sourceLabel = source === 'standard' ? 'Standard Library' : 'Custom Libraries';
         let sourceHtml = '<details><summary class="title">' + escapeHtml(sourceLabel) + '</summary>';
-
-        if (source === 'standard') {
-          // Root level should contain only package nodes.
-          const packageByPath = new Map();
-          for (const item of sourceItems) {
-            if (item.kind === 'module') {
-              const pathKey = String(item.path || '');
-              if (!packageByPath.has(pathKey)) {
-                packageByPath.set(pathKey, item.name);
-              }
-            }
+        const packages = Array.isArray(sourceNode.packages) ? sourceNode.packages : [];
+        for (const pkg of packages) {
+          const symbols = Array.isArray(pkg.symbols) ? pkg.symbols : [];
+          sourceHtml += '<details style="margin-left:8px"><summary class="muted">' + escapeHtml(pkg.name || '(unknown package)') + ' (' + symbols.length + ')</summary>';
+          for (const item of symbols) {
+            renderedItems.push(item);
+            sourceHtml += '<div class="result" data-index="' + idx + '">' +
+              '<div class="title">' + escapeHtml(item.name) + '</div>' +
+              '<div class="meta"><span>' + escapeHtml(item.kind) + '</span></div>' +
+            '</div>';
+            idx += 1;
           }
-
-          const grouped = new Map();
-          for (const item of sourceItems) {
-            const pathKey = String(item.path || '');
-            const packageName = packageByPath.get(pathKey) || fileStemFromPath(pathKey) || '(unknown package)';
-            if (!grouped.has(packageName)) grouped.set(packageName, []);
-            grouped.get(packageName).push(item);
-          }
-
-          const sortedPackages = Array.from(grouped.keys()).sort((a, b) => a.localeCompare(b));
-          for (const packageName of sortedPackages) {
-            const entries = grouped.get(packageName) || [];
-            sourceHtml += '<details style="margin-left:8px"><summary class="muted">' + escapeHtml(packageName) + ' (' + entries.length + ')</summary>';
-            for (const item of entries) {
-              renderedItems.push(item);
-              sourceHtml += '<div class="result" data-index="' + idx + '">' +
-                '<div class="title">' + escapeHtml(item.name) + '</div>' +
-                '<div class="meta"><span>' + escapeHtml(item.kind) + '</span></div>' +
-              '</div>';
-              idx += 1;
-            }
-            sourceHtml += '</details>';
-          }
-        } else {
-          const byContainer = new Map();
-          for (const item of sourceItems) {
-            const container = item.container || '(top level)';
-            if (!byContainer.has(container)) byContainer.set(container, []);
-            byContainer.get(container).push(item);
-          }
-          for (const [container, entries] of byContainer.entries()) {
-            sourceHtml += '<details style="margin-left:8px"><summary class="muted">' + escapeHtml(container) + ' (' + entries.length + ')</summary>';
-            for (const item of entries) {
-              renderedItems.push(item);
-              sourceHtml += '<div class="result" data-index="' + idx + '">' +
-                '<div class="title">' + escapeHtml(item.name) + '</div>' +
-                '<div class="meta"><span>' + escapeHtml(item.kind) + '</span></div>' +
-              '</div>';
-              idx += 1;
-            }
-            sourceHtml += '</details>';
-          }
+          sourceHtml += '</details>';
         }
         sourceHtml += '</details>';
         blocks.push(sourceHtml);
@@ -289,15 +240,7 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       const value = query.value.trim();
       clearTimeout(timer);
       timer = setTimeout(() => {
-        if (!value) {
-          groupAndRender(allItems, allItems.length, '');
-        } else {
-          const filtered = allItems.filter((item) => {
-            const hay = (item.name + ' ' + (item.container || '') + ' ' + (item.path || '')).toLowerCase();
-            return hay.includes(value.toLowerCase());
-          });
-          groupAndRender(filtered, allItems.length, value);
-        }
+        vscode.postMessage({ type: 'search', query: value });
       }, 250);
     });
 
@@ -312,13 +255,13 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
         return;
       }
       if (message.type === 'results') {
-        allItems = message.payload.items || [];
-        groupAndRender(allItems, message.payload.total || allItems.length, query.value.trim());
+        latestTree = message.payload || { sources: [], symbolTotal: 0, total: 0 };
+        renderTree(latestTree, query.value.trim());
         return;
       }
       if (message.type === 'allItems') {
-        allItems = message.payload.items || [];
-        groupAndRender(allItems, message.payload.total || allItems.length, query.value.trim());
+        latestTree = message.payload || { sources: [], symbolTotal: 0, total: 0 };
+        renderTree(latestTree, query.value.trim());
         return;
       }
       if (message.type === 'error') {
@@ -353,6 +296,7 @@ function getNonce(): string {
 }
 
 export type LibrarySearchResultMessage = {
-  items: LibrarySearchItem[];
+  sources: SysMLLibrarySearchResult["sources"];
+  symbolTotal: number;
   total: number;
 };

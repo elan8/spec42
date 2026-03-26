@@ -87,6 +87,94 @@ fn lsp_workspace_scan_goto_definition() {
     let _ = child.kill();
 }
 
+#[test]
+fn lsp_goto_definition_resolves_qualified_name_reference() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root: PathBuf = temp.path().canonicalize().expect("canonical root");
+    let lib_dir = root.join("lib");
+    std::fs::create_dir_all(&lib_dir).expect("create lib dir");
+
+    std::fs::write(
+        lib_dir.join("si.sysml"),
+        "standard library package SI { attribute def V; }",
+    )
+    .expect("write SI library");
+    std::fs::write(root.join("use.sysml"), "package P { attribute x : SI::V; }")
+        .expect("write use");
+
+    let root_uri = url::Url::from_file_path(&root).expect("root uri");
+    let use_uri = url::Url::from_file_path(root.join("use.sysml")).expect("use uri");
+    let lib_path = lib_dir.canonicalize().expect("canonical lib path");
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": root_uri.as_str(),
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" },
+            "initializationOptions": {
+                "libraryPaths": [lib_path.to_string_lossy().to_string()]
+            }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(700));
+
+    let did_open_use = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": {
+                "uri": use_uri.as_str(),
+                "languageId": "sysml",
+                "version": 1,
+                "text": "package P { attribute x : SI::V; }"
+            }
+        }
+    });
+    send_message(&mut stdin, &did_open_use.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(100));
+
+    let def_id = next_id();
+    let def_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": def_id,
+        "method": "textDocument/definition",
+        "params": {
+            "textDocument": { "uri": use_uri.as_str() },
+            "position": { "line": 0, "character": 29 }
+        }
+    });
+    send_message(&mut stdin, &def_req.to_string());
+    let def_resp = read_response(&mut stdout, def_id).expect("definition response");
+    let def_json: serde_json::Value =
+        serde_json::from_str(&def_resp).expect("parse definition response");
+    let result = &def_json["result"];
+    let uri = result["uri"]
+        .as_str()
+        .expect("definition should return scalar location");
+    assert!(
+        uri.contains("si.sysml"),
+        "qualified SI::V should resolve into SI library file, got uri: {}",
+        uri
+    );
+
+    let _ = child.kill();
+}
+
 /// When SYSML_V2_RELEASE_DIR is set, index that folder and assert workspace/symbol finds symbols.
 /// Validates workspace awareness against the official OMG SysML v2 repo.
 const SYSML_V2_RELEASE_DIR_ENV: &str = "SYSML_V2_RELEASE_DIR";
@@ -97,6 +185,22 @@ const DEFAULT_STD_LIB_DIR: &str =
 fn is_si_sysml_path(path: &str) -> bool {
     path.ends_with("/Domain%20Libraries/Quantities%20and%20Units/SI.sysml")
         || path.ends_with("/Domain Libraries/Quantities and Units/SI.sysml")
+}
+
+fn flatten_library_tree_symbols<'a>(result: &'a serde_json::Value) -> Vec<&'a serde_json::Value> {
+    let mut out = Vec::new();
+    if let Some(sources) = result["sources"].as_array() {
+        for source in sources {
+            if let Some(packages) = source["packages"].as_array() {
+                for package in packages {
+                    if let Some(symbols) = package["symbols"].as_array() {
+                        out.extend(symbols.iter());
+                    }
+                }
+            }
+        }
+    }
+    out
 }
 
 fn resolve_sysml_library_root_for_tests() -> Option<PathBuf> {
@@ -258,12 +362,10 @@ fn lsp_library_search_si_file_has_rich_symbol_coverage() {
     send_message(&mut stdin, &req.to_string());
     let resp = read_response(&mut stdout, req_id).expect("librarySearch response");
     let json: serde_json::Value = serde_json::from_str(&resp).expect("parse librarySearch");
-    let items = json["result"]["items"]
-        .as_array()
-        .expect("librarySearch items array");
+    let items = flatten_library_tree_symbols(&json["result"]);
 
     let si_items: Vec<&serde_json::Value> = items
-        .iter()
+        .into_iter()
         .filter(|item| {
             item["path"]
                 .as_str()
@@ -277,7 +379,7 @@ fn lsp_library_search_si_file_has_rich_symbol_coverage() {
         std::collections::BTreeMap::new();
     let mut si_names: std::collections::BTreeSet<String> = std::collections::BTreeSet::new();
     for item in &si_items {
-        if let Some(detail) = item["detail"].as_str() {
+        if let Some(detail) = item["kind"].as_str() {
             *si_by_detail.entry(detail.to_string()).or_insert(0) += 1;
         }
         if let Some(name) = item["name"].as_str() {
@@ -373,9 +475,7 @@ fn lsp_library_search_custom_method_returns_library_results() {
     send_message(&mut stdin, &req.to_string());
     let resp = read_response(&mut stdout, req_id).expect("library search response");
     let json: serde_json::Value = serde_json::from_str(&resp).expect("parse response");
-    let items = json["result"]["items"]
-        .as_array()
-        .expect("items array");
+    let items = flatten_library_tree_symbols(&json["result"]);
     assert!(!items.is_empty(), "library search should return results");
     let has_engine = items.iter().any(|item| {
         item["name"]
@@ -384,6 +484,111 @@ fn lsp_library_search_custom_method_returns_library_results() {
             .unwrap_or(false)
     });
     assert!(has_engine, "Engine should be in library search results");
+
+    // Tree contract: package nodes should not include duplicate module child equal to package name.
+    let sources = json["result"]["sources"]
+        .as_array()
+        .expect("sources array");
+    let has_duplicate_module = sources.iter().any(|source| {
+        source["packages"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .any(|pkg| {
+                let pkg_name = pkg["name"].as_str().unwrap_or_default();
+                pkg["symbols"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .any(|sym| {
+                        sym["kind"].as_str() == Some("module")
+                            && sym["name"]
+                                .as_str()
+                                .map(|n| n.eq_ignore_ascii_case(pkg_name))
+                                .unwrap_or(false)
+                    })
+            })
+    });
+    assert!(
+        !has_duplicate_module,
+        "package should not repeat its module symbol as a child"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
+fn lsp_library_search_uses_declared_name_for_allocation_def() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root: PathBuf = temp.path().canonicalize().expect("canonical root");
+    let lib_dir = root.join("lib");
+    std::fs::create_dir_all(&lib_dir).expect("create lib dir");
+    std::fs::write(
+        lib_dir.join("allocations.sysml"),
+        "standard library package Allocations { allocation def Allocation :> BinaryConnection; }",
+    )
+    .expect("write allocation library file");
+
+    let root_uri = url::Url::from_file_path(&root).expect("root uri");
+    let lib_path = lib_dir.canonicalize().expect("canonical lib path");
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": root_uri.as_str(),
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" },
+            "initializationOptions": {
+                "libraryPaths": [lib_path.to_string_lossy().to_string()]
+            }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(700));
+
+    let req_id = next_id();
+    let req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": req_id,
+        "method": "sysml/librarySearch",
+        "params": {
+            "query": "allocation",
+            "limit": 20
+        }
+    });
+    send_message(&mut stdin, &req.to_string());
+    let resp = read_response(&mut stdout, req_id).expect("library search response");
+    let json: serde_json::Value = serde_json::from_str(&resp).expect("parse response");
+    let items = flatten_library_tree_symbols(&json["result"]);
+    let has_named_allocation = items.iter().any(|item| {
+        item["name"].as_str() == Some("Allocation") && item["name"].as_str() != Some("def")
+    });
+    assert!(
+        has_named_allocation,
+        "expected allocation symbol to appear as 'Allocation' (not generic 'def'), got {:?}",
+        items
+            .iter()
+            .map(|item| {
+                (
+                    item["name"].as_str().unwrap_or_default().to_string(),
+                    item["kind"].as_str().unwrap_or_default().to_string(),
+                )
+            })
+            .collect::<Vec<_>>()
+    );
 
     let _ = child.kill();
 }

@@ -77,8 +77,21 @@ export interface LibrarySearchItem {
   path?: string;
 }
 
+export interface LibrarySearchPackage {
+  name: string;
+  path: string;
+  source: "standard" | "custom";
+  symbols: LibrarySearchItem[];
+}
+
+export interface LibrarySearchSource {
+  source: "standard" | "custom";
+  packages: LibrarySearchPackage[];
+}
+
 export interface SysMLLibrarySearchResult {
-  items: LibrarySearchItem[];
+  sources: LibrarySearchSource[];
+  symbolTotal: number;
   total: number;
 }
 

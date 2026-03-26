@@ -222,8 +222,25 @@ pub struct SysmlLibrarySearchItemDto {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct SysmlLibrarySearchPackageDto {
+    pub name: String,
+    pub path: String,
+    pub source: String,
+    pub symbols: Vec<SysmlLibrarySearchItemDto>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlLibrarySearchSourceDto {
+    pub source: String,
+    pub packages: Vec<SysmlLibrarySearchPackageDto>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SysmlLibrarySearchResultDto {
-    pub items: Vec<SysmlLibrarySearchItemDto>,
+    pub sources: Vec<SysmlLibrarySearchSourceDto>,
+    pub symbol_total: usize,
     pub total: usize,
 }
 

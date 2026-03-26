@@ -27,6 +27,7 @@ use crate::util;
 use crate::semantic_tokens::{
     ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range,
 };
+use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::RwLock;
@@ -122,8 +123,11 @@ impl LanguageServer for Backend {
                 uris_loaded.push(uri_norm.clone());
                 st.index
                     .insert(uri_norm.clone(), IndexEntry { content, parsed });
-                let new_entries =
+                let mut new_entries =
                     semantic_model::symbol_entries_for_uri(&st.semantic_graph, &uri_norm);
+                if let Some(index_entry) = st.index.get(&uri_norm) {
+                    add_short_name_symbol_entries(&mut new_entries, &index_entry.content, &uri_norm);
+                }
                 update_symbol_table_for_uri(&mut st, &uri_norm, Some(&new_entries));
                 if util::uri_under_any_library(&uri_norm, &st.library_paths) {
                     let graph_nodes_for_uri = st.semantic_graph.nodes_for_uri(&uri_norm).len();
@@ -246,8 +250,11 @@ impl LanguageServer for Backend {
                     parsed,
                 },
             );
-            let new_entries =
+            let mut new_entries =
                 semantic_model::symbol_entries_for_uri(&state.semantic_graph, &uri_norm);
+            if let Some(index_entry) = state.index.get(&uri_norm) {
+                add_short_name_symbol_entries(&mut new_entries, &index_entry.content, &uri_norm);
+            }
             update_symbol_table_for_uri(&mut state, &uri_norm, Some(&new_entries));
         }
         self.publish_diagnostics_for_document(uri, &text).await;
@@ -338,8 +345,15 @@ impl LanguageServer for Backend {
                 } else {
                     state.semantic_graph.remove_nodes_for_uri(&uri_norm);
                 }
-                let new_entries =
+                let mut new_entries =
                     semantic_model::symbol_entries_for_uri(&state.semantic_graph, &uri_norm);
+                if let Some(index_entry) = state.index.get(&uri_norm) {
+                    add_short_name_symbol_entries(
+                        &mut new_entries,
+                        &index_entry.content,
+                        &uri_norm,
+                    );
+                }
                 update_symbol_table_for_uri(&mut state, &uri_norm, Some(&new_entries));
             }
         }
@@ -393,10 +407,17 @@ impl LanguageServer for Backend {
                             state
                                 .index
                                 .insert(uri_norm.clone(), IndexEntry { content, parsed });
-                            let new_entries = semantic_model::symbol_entries_for_uri(
+                            let mut new_entries = semantic_model::symbol_entries_for_uri(
                                 &state.semantic_graph,
                                 &uri_norm,
                             );
+                            if let Some(index_entry) = state.index.get(&uri_norm) {
+                                add_short_name_symbol_entries(
+                                    &mut new_entries,
+                                    &index_entry.content,
+                                    &uri_norm,
+                                );
+                            }
                             update_symbol_table_for_uri(&mut state, &uri_norm, Some(&new_entries));
                         }
                         Err(error) => runtime_warnings.push(format!(
@@ -488,8 +509,11 @@ impl LanguageServer for Backend {
                 uris_loaded.push(uri_norm.clone());
                 st.index
                     .insert(uri_norm.clone(), IndexEntry { content, parsed });
-                let new_entries =
+                let mut new_entries =
                     semantic_model::symbol_entries_for_uri(&st.semantic_graph, &uri_norm);
+                if let Some(index_entry) = st.index.get(&uri_norm) {
+                    add_short_name_symbol_entries(&mut new_entries, &index_entry.content, &uri_norm);
+                }
                 update_symbol_table_for_uri(&mut st, &uri_norm, Some(&new_entries));
                 if util::uri_under_any_library(&uri_norm, &st.library_paths) {
                     let graph_nodes_for_uri = st.semantic_graph.nodes_for_uri(&uri_norm).len();
@@ -593,6 +617,12 @@ impl LanguageServer for Backend {
                 Some(t) => t,
                 None => return Ok(None),
             };
+        let lookup_name = word
+            .rsplit("::")
+            .next()
+            .map(str::to_string)
+            .unwrap_or_else(|| word.clone());
+        let qualifier = word.rsplit_once("::").map(|(q, _)| q.to_string());
 
         let range = Range::new(
             Position::new(line, char_start),
@@ -600,7 +630,7 @@ impl LanguageServer for Backend {
         );
 
         // Prefer keyword hover (case-insensitive) so "attribute" shows keyword help, not a symbol named "attribute"
-        if let Some(md) = keyword_hover_markdown(&word.to_lowercase()) {
+        if let Some(md) = keyword_hover_markdown(&lookup_name.to_lowercase()) {
             return Ok(Some(Hover {
                 contents: HoverContents::Markup(MarkupContent {
                     kind: MarkupKind::Markdown,
@@ -616,8 +646,11 @@ impl LanguageServer for Backend {
                 .outgoing_typing_or_specializes_targets(node)
                 .into_iter()
                 .find(|target| {
-                    target.name == word
-                        || target.id.qualified_name.ends_with(&format!("::{}", word))
+                    target.name == lookup_name
+                        || target
+                            .id
+                            .qualified_name
+                            .ends_with(&format!("::{}", lookup_name))
                 });
 
             let markdown = if let Some(target) = target_match {
@@ -643,17 +676,13 @@ impl LanguageServer for Backend {
             }));
         }
 
-        // Look up in symbol table: collect all matches (same file first) to handle name collisions.
-        let same_file: Vec<_> = state
-            .symbol_table
-            .iter()
-            .filter(|e| e.name == word && e.uri == uri_norm)
-            .collect();
-        let other_files: Vec<_> = state
-            .symbol_table
-            .iter()
-            .filter(|e| e.name == word && e.uri != uri_norm)
-            .collect();
+        // Look up in symbol table: collect all matches (same file first) to handle collisions.
+        let (same_file, other_files) = collect_symbol_matches_for_lookup(
+            &state,
+            &uri_norm,
+            &lookup_name,
+            qualifier.as_deref(),
+        );
         let all_matches = if same_file.is_empty() {
             &other_files
         } else {
@@ -663,7 +692,7 @@ impl LanguageServer for Backend {
             let value = if all_matches.len() > 1 {
                 let mut md = format!(
                     "**{}** — {} definitions (use Go to Definition to choose):\n\n",
-                    word,
+                    lookup_name,
                     all_matches.len()
                 );
                 for e in all_matches.iter() {
@@ -793,8 +822,23 @@ impl LanguageServer for Backend {
             Some(t) => t,
             None => return Ok(None),
         };
+        let lookup_name = word
+            .rsplit("::")
+            .next()
+            .map(str::to_string)
+            .unwrap_or_else(|| word.clone());
+        let qualifier = word.rsplit_once("::").map(|(q, _)| q.to_string());
+        debug!(
+            uri = %uri_norm,
+            line = pos.line,
+            character = pos.character,
+            word = %word,
+            lookup_name = %lookup_name,
+            qualifier = ?qualifier,
+            "goto_definition tokenized input"
+        );
 
-        if is_reserved_keyword(&word) {
+        if is_reserved_keyword(&word) || is_reserved_keyword(&lookup_name) {
             return Ok(None);
         }
 
@@ -804,7 +848,11 @@ impl LanguageServer for Backend {
                 .semantic_graph
                 .outgoing_typing_or_specializes_targets(node)
             {
-                if target.name == word || target.id.qualified_name.ends_with(&format!("::{}", word))
+                if target.name == lookup_name
+                    || target
+                        .id
+                        .qualified_name
+                        .ends_with(&format!("::{}", lookup_name))
                 {
                     return Ok(Some(GotoDefinitionResponse::Scalar(Location {
                         uri: target.id.uri.clone(),
@@ -814,25 +862,58 @@ impl LanguageServer for Backend {
             }
         }
 
-        // Fall back to symbol table: collect all matches to handle name collisions (e.g. package and part def same name).
-        let same_file: Vec<_> = state
-            .symbol_table
-            .iter()
-            .filter(|e| e.name == word && e.uri == uri_norm)
+        // Fall back to symbol table: collect all matches to handle name collisions.
+        let (same_file_matches, other_file_matches) = collect_symbol_matches_for_lookup(
+            &state,
+            &uri_norm,
+            &lookup_name,
+            qualifier.as_deref(),
+        );
+        let same_file: Vec<Location> = same_file_matches
+            .into_iter()
             .map(|e| Location {
                 uri: e.uri.clone(),
                 range: e.range,
             })
             .collect();
-        let other_files: Vec<_> = state
-            .symbol_table
-            .iter()
-            .filter(|e| e.name == word && e.uri != uri_norm)
+        let other_files: Vec<Location> = other_file_matches
+            .into_iter()
             .map(|e| Location {
                 uri: e.uri.clone(),
                 range: e.range,
             })
             .collect();
+        if same_file.is_empty() && other_files.is_empty() {
+            let similar: Vec<String> = state
+                .symbol_table
+                .iter()
+                .filter(|e| e.name.eq_ignore_ascii_case(&lookup_name))
+                .take(5)
+                .map(|e| {
+                    format!(
+                        "{} @ {} (container={})",
+                        e.name,
+                        e.uri.path(),
+                        e.container_name.as_deref().unwrap_or("(none)")
+                    )
+                })
+                .collect();
+            debug!(
+                lookup_name = %lookup_name,
+                qualifier = ?qualifier,
+                symbol_table_size = state.symbol_table.len(),
+                similar = ?similar,
+                "goto_definition no symbol-table matches"
+            );
+        } else {
+            debug!(
+                lookup_name = %lookup_name,
+                qualifier = ?qualifier,
+                same_file_matches = same_file.len(),
+                other_file_matches = other_files.len(),
+                "goto_definition symbol-table matches"
+            );
+        }
         let locations = if same_file.is_empty() {
             other_files
         } else {
@@ -843,6 +924,9 @@ impl LanguageServer for Backend {
         }
         if !locations.is_empty() {
             return Ok(Some(GotoDefinitionResponse::Array(locations)));
+        }
+        if let Some(q) = qualifier.as_deref() {
+            debug_qualified_lookup_context(&state, &lookup_name, q, &uri_norm);
         }
         Ok(None)
     }
@@ -1435,10 +1519,11 @@ impl Backend {
             .iter()
             .filter(|entry| util::uri_under_any_library(&entry.uri, &state.library_paths))
             .filter_map(|entry| {
+                let normalized_name = normalized_library_symbol_name(entry, state.index.get(&entry.uri));
                 let score = if query.is_empty() {
                     1_000
                 } else {
-                    library_search_score(&entry.name, &query)?
+                    library_search_score(&normalized_name, &query)?
                 };
                 Some((score, entry))
             })
@@ -1452,11 +1537,11 @@ impl Backend {
         });
 
         let total = ranked.len();
-        let items = ranked
+        let items: Vec<dto::SysmlLibrarySearchItemDto> = ranked
             .into_iter()
             .take(limit)
             .map(|(score, entry)| dto::SysmlLibrarySearchItemDto {
-                name: entry.name.clone(),
+                name: normalized_library_symbol_name(entry, state.index.get(&entry.uri)),
                 kind: symbol_kind_label(entry.kind).to_string(),
                 container: entry.container_name.clone(),
                 uri: entry.uri.to_string(),
@@ -1466,7 +1551,17 @@ impl Backend {
                 path: entry.uri.path().to_string(),
             })
             .collect();
-        Ok(dto::SysmlLibrarySearchResultDto { items, total })
+
+        let sources = build_library_tree(items);
+        let symbol_total = sources
+            .iter()
+            .map(|src| src.packages.iter().map(|pkg| pkg.symbols.len()).sum::<usize>())
+            .sum();
+        Ok(dto::SysmlLibrarySearchResultDto {
+            sources,
+            symbol_total,
+            total,
+        })
     }
 
     async fn publish_diagnostics_for_document(&self, uri: tower_lsp::lsp_types::Url, text: &str) {
@@ -1596,6 +1691,137 @@ fn symbol_kind_label(kind: SymbolKind) -> &'static str {
     }
 }
 
+fn normalized_library_symbol_name(
+    entry: &crate::language::SymbolEntry,
+    index_entry: Option<&crate::lsp::types::IndexEntry>,
+) -> String {
+    if !is_generic_symbol_name(&entry.name) {
+        return entry.name.clone();
+    }
+    if let Some(content) = index_entry.map(|idx| idx.content.as_str()) {
+        if let Some(name) = extract_declared_name_from_line(content, entry.range.start.line as usize) {
+            return name;
+        }
+    }
+    entry.name.clone()
+}
+
+fn is_generic_symbol_name(name: &str) -> bool {
+    matches!(name.trim().to_ascii_lowercase().as_str(), "" | "def" | "usage")
+}
+
+fn extract_declared_name_from_line(content: &str, line_idx: usize) -> Option<String> {
+    let line = content.lines().nth(line_idx)?.trim();
+    if line.is_empty() {
+        return None;
+    }
+    // Normalize punctuation so "allocation def Allocation :>" tokenizes predictably.
+    let normalized = line
+        .chars()
+        .map(|c| {
+            if c.is_ascii_alphanumeric() || c == '_' || c == '\'' || c == '-' {
+                c
+            } else {
+                ' '
+            }
+        })
+        .collect::<String>();
+    let tokens: Vec<&str> = normalized.split_whitespace().collect();
+    if tokens.len() < 2 {
+        return None;
+    }
+    for i in 0..(tokens.len() - 1) {
+        let tok = tokens[i].to_ascii_lowercase();
+        if (tok == "def" || tok == "usage") && is_valid_decl_name(tokens[i + 1]) {
+            return Some(tokens[i + 1].to_string());
+        }
+    }
+    None
+}
+
+fn is_valid_decl_name(token: &str) -> bool {
+    let mut chars = token.chars();
+    match chars.next() {
+        Some(c) if c.is_ascii_alphabetic() || c == '_' => {}
+        _ => return false,
+    }
+    chars.all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '\'' || c == '-')
+}
+
+fn build_library_tree(
+    items: Vec<dto::SysmlLibrarySearchItemDto>,
+) -> Vec<dto::SysmlLibrarySearchSourceDto> {
+    let mut by_source: BTreeMap<String, BTreeMap<String, Vec<dto::SysmlLibrarySearchItemDto>>> =
+        BTreeMap::new();
+    let mut package_name_by_source_path: BTreeMap<(String, String), String> = BTreeMap::new();
+
+    for item in &items {
+        if item.kind == "module" && !item.name.trim().is_empty() {
+            package_name_by_source_path
+                .entry((item.source.clone(), item.path.clone()))
+                .or_insert_with(|| item.name.clone());
+        }
+    }
+
+    for item in items {
+        let source = item.source.clone();
+        let package_name = package_name_by_source_path
+            .get(&(source.clone(), item.path.clone()))
+            .cloned()
+            .unwrap_or_else(|| package_name_from_path(&item.path));
+        by_source
+            .entry(source)
+            .or_default()
+            .entry(package_name)
+            .or_default()
+            .push(item);
+    }
+
+    let mut out = Vec::new();
+    for (source, mut by_package) in by_source {
+        let mut packages = Vec::new();
+        for (package_name, symbols) in by_package.iter_mut() {
+            symbols.sort_by(|a, b| b.score.cmp(&a.score).then(a.name.cmp(&b.name)));
+            symbols.retain(|s| {
+                // Do not duplicate the package module symbol as child entry.
+                !(s.kind == "module" && s.name.eq_ignore_ascii_case(package_name))
+            });
+        }
+
+        for (package_name, symbols) in by_package {
+            if symbols.is_empty() {
+                continue;
+            }
+            let path = symbols
+                .first()
+                .map(|s| s.path.clone())
+                .unwrap_or_else(|| package_name.clone());
+            packages.push(dto::SysmlLibrarySearchPackageDto {
+                name: package_name,
+                path,
+                source: source.clone(),
+                symbols,
+            });
+        }
+
+        packages.sort_by(|a, b| a.name.cmp(&b.name));
+        out.push(dto::SysmlLibrarySearchSourceDto { source, packages });
+    }
+
+    out
+}
+
+fn package_name_from_path(path: &str) -> String {
+    let file = path.rsplit('/').next().unwrap_or(path);
+    if let Some(stem) = file.strip_suffix(".sysml") {
+        return stem.to_string();
+    }
+    if let Some(stem) = file.strip_suffix(".kerml") {
+        return stem.to_string();
+    }
+    file.to_string()
+}
+
 fn library_source_label(uri: &Url) -> &'static str {
     let path = uri.path().to_ascii_lowercase();
     if path.contains("/standard-library/") {
@@ -1617,6 +1843,185 @@ fn library_search_score(name: &str, query_lc: &str) -> Option<i64> {
         return Some(6_000 - (pos as i64) * 10 - (name_lc.len() as i64));
     }
     fuzzy_subsequence_score(&name_lc, query_lc).map(|s| 4_000 + s)
+}
+
+fn add_short_name_symbol_entries(
+    entries: &mut Vec<crate::language::SymbolEntry>,
+    content: &str,
+    uri: &Url,
+) {
+    let mut existing_names: std::collections::HashSet<String> =
+        entries.iter().map(|e| e.name.clone()).collect();
+    for (line_idx, line) in content.lines().enumerate() {
+        let mut cursor = 0usize;
+        while let Some(open_rel) = line[cursor..].find('<') {
+            let open = cursor + open_rel;
+            let after_open = open + 1;
+            let Some(close_rel) = line[after_open..].find('>') else {
+                break;
+            };
+            let close = after_open + close_rel;
+            let token = &line[after_open..close];
+            cursor = close + 1;
+            if !is_valid_decl_name(token) || existing_names.contains(token) {
+                continue;
+            }
+
+            let start_char = line[..after_open].chars().count() as u32;
+            let end_char = start_char + token.chars().count() as u32;
+            let anchor = entries
+                .iter()
+                .find(|e| e.range.start.line == line_idx as u32 && !e.name.trim().is_empty());
+            let (kind, container_name, detail, description) = match anchor {
+                Some(a) => (
+                    a.kind,
+                    a.container_name.clone(),
+                    a.detail.clone(),
+                    Some(format!("short name for {}", a.name)),
+                ),
+                None => (
+                    SymbolKind::VARIABLE,
+                    None,
+                    Some("short name".to_string()),
+                    Some("short name from declaration".to_string()),
+                ),
+            };
+            entries.push(crate::language::SymbolEntry {
+                name: token.to_string(),
+                uri: uri.clone(),
+                range: Range::new(
+                    Position::new(line_idx as u32, start_char),
+                    Position::new(line_idx as u32, end_char),
+                ),
+                kind,
+                container_name,
+                detail,
+                description,
+                signature: None,
+            });
+            existing_names.insert(token.to_string());
+        }
+    }
+}
+
+fn collect_symbol_matches_for_lookup<'a>(
+    state: &'a crate::lsp::types::ServerState,
+    uri_norm: &Url,
+    lookup_name: &str,
+    qualifier: Option<&str>,
+) -> (
+    Vec<&'a crate::language::SymbolEntry>,
+    Vec<&'a crate::language::SymbolEntry>,
+) {
+    let mut same_file = Vec::new();
+    let mut other_files = Vec::new();
+    for entry in state.symbol_table.iter() {
+        if !symbol_matches_definition_lookup(
+            &entry.name,
+            entry.container_name.as_deref(),
+            entry.uri.path(),
+            lookup_name,
+            qualifier,
+        ) {
+            continue;
+        }
+        if entry.uri == *uri_norm {
+            same_file.push(entry);
+        } else {
+            other_files.push(entry);
+        }
+    }
+    (same_file, other_files)
+}
+
+fn symbol_matches_definition_lookup(
+    candidate_name: &str,
+    container_name: Option<&str>,
+    candidate_path: &str,
+    lookup_name: &str,
+    qualifier: Option<&str>,
+) -> bool {
+    if candidate_name != lookup_name {
+        return false;
+    }
+    match qualifier {
+        None => true,
+        Some(q) => {
+            let q_lc = q.to_ascii_lowercase();
+            if container_name
+                .map(|c| {
+                    let c_lc = c.to_ascii_lowercase();
+                    c_lc == q_lc || c_lc.ends_with(&format!("::{}", q_lc))
+                })
+                .unwrap_or(false)
+            {
+                return true;
+            }
+            let path_lc = candidate_path.to_ascii_lowercase();
+            path_lc.ends_with(&format!("/{}.sysml", q_lc))
+                || path_lc.ends_with(&format!("/{}.kerml", q_lc))
+        }
+    }
+}
+
+fn debug_qualified_lookup_context(
+    state: &crate::lsp::types::ServerState,
+    lookup_name: &str,
+    qualifier: &str,
+    request_uri: &Url,
+) {
+    if lookup_name.is_empty() || qualifier.is_empty() {
+        return;
+    }
+    let qualifier_lc = qualifier.to_ascii_lowercase();
+    let needle = format!("<{}>", lookup_name);
+    let mut inspected: Vec<String> = Vec::new();
+    let mut qualifier_symbol_hits = 0usize;
+    for (candidate_uri, entry) in state.index.iter() {
+        let candidate_uri = util::normalize_file_uri(candidate_uri);
+        if candidate_uri == *request_uri {
+            continue;
+        }
+        if !util::uri_under_any_library(&candidate_uri, &state.library_paths) {
+            continue;
+        }
+        let path_lc = candidate_uri.path().to_ascii_lowercase();
+        let path_matches = path_lc.ends_with(&format!("/{}.sysml", qualifier_lc))
+            || path_lc.ends_with(&format!("/{}.kerml", qualifier_lc));
+        if !path_matches {
+            continue;
+        }
+        let symbols_for_uri: Vec<&crate::language::SymbolEntry> = state
+            .symbol_table
+            .iter()
+            .filter(|s| util::normalize_file_uri(&s.uri) == candidate_uri)
+            .collect();
+        qualifier_symbol_hits += symbols_for_uri
+            .iter()
+            .filter(|s| s.name.eq_ignore_ascii_case(lookup_name))
+            .count();
+        let has_angle_short = entry.content.contains(&needle);
+        inspected.push(format!(
+            "{} symbols={} matching_name={} has_angle_short={}",
+            candidate_uri.path(),
+            symbols_for_uri.len(),
+            symbols_for_uri
+                .iter()
+                .filter(|s| s.name.eq_ignore_ascii_case(lookup_name))
+                .count(),
+            has_angle_short
+        ));
+        if inspected.len() >= 5 {
+            break;
+        }
+    }
+    warn!(
+        lookup_name = %lookup_name,
+        qualifier = %qualifier,
+        qualifier_symbol_hits = qualifier_symbol_hits,
+        inspected = ?inspected,
+        "goto_definition qualified lookup diagnostics"
+    );
 }
 
 fn fuzzy_subsequence_score(text: &str, query: &str) -> Option<i64> {
