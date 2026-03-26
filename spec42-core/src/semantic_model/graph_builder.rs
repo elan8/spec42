@@ -1001,30 +1001,6 @@ fn build_from_package_body_element(
                 parent_id,
             );
         }
-        PBE::GenericDecl(generic_node) => {
-            let text = generic_node.text.trim();
-            if !text.is_empty() {
-                let name = text
-                    .split_whitespace()
-                    .take(3)
-                    .collect::<Vec<_>>()
-                    .join(" ");
-                let qualified =
-                    qualified_name_for_node(g, uri, container_prefix, &name, "generic decl");
-                let mut attrs = HashMap::new();
-                attrs.insert("text".to_string(), serde_json::json!(text));
-                add_node_and_recurse(
-                    g,
-                    uri,
-                    &qualified,
-                    "generic decl",
-                    name,
-                    span_to_range(&generic_node.span),
-                    attrs,
-                    parent_id,
-                );
-            }
-        }
         PBE::Import(_) => {}
         _ => {}
     }

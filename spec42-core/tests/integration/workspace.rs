@@ -90,6 +90,37 @@ fn lsp_workspace_scan_goto_definition() {
 /// When SYSML_V2_RELEASE_DIR is set, index that folder and assert workspace/symbol finds symbols.
 /// Validates workspace awareness against the official OMG SysML v2 repo.
 const SYSML_V2_RELEASE_DIR_ENV: &str = "SYSML_V2_RELEASE_DIR";
+const SYSML_STD_LIB_DIR_ENV: &str = "SYSML_STD_LIB_DIR";
+const DEFAULT_STD_LIB_DIR: &str =
+    "C:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library";
+
+fn is_si_sysml_path(path: &str) -> bool {
+    path.ends_with("/Domain%20Libraries/Quantities%20and%20Units/SI.sysml")
+        || path.ends_with("/Domain Libraries/Quantities and Units/SI.sysml")
+}
+
+fn resolve_sysml_library_root_for_tests() -> Option<PathBuf> {
+    if let Some(v) = std::env::var_os(SYSML_STD_LIB_DIR_ENV) {
+        let p = PathBuf::from(v);
+        if p.is_dir() {
+            return Some(p);
+        }
+    }
+
+    if let Some(v) = std::env::var_os(SYSML_V2_RELEASE_DIR_ENV) {
+        let release_root = PathBuf::from(v);
+        let candidate = release_root.join("sysml.library");
+        if candidate.is_dir() {
+            return Some(candidate);
+        }
+    }
+
+    let default_path = PathBuf::from(DEFAULT_STD_LIB_DIR);
+    if default_path.is_dir() {
+        return Some(default_path);
+    }
+    None
+}
 
 #[test]
 fn lsp_workspace_scan_sysml_release() {
@@ -163,6 +194,123 @@ fn lsp_workspace_scan_sysml_release() {
     assert!(
         !results.is_empty(),
         "workspace/symbol over SysML-v2-Release should return at least one symbol for query 'Part'"
+    );
+
+    let _ = child.kill();
+}
+
+/// Validates that SI.sysml contributes more than a trivial number of symbols to librarySearch.
+/// This catches regressions where parser succeeds but graph/symbol coverage is too low.
+#[test]
+fn lsp_library_search_si_file_has_rich_symbol_coverage() {
+    let library_root = match resolve_sysml_library_root_for_tests() {
+        Some(v) => v,
+        None => {
+            eprintln!(
+                "Skipping lsp_library_search_si_file_has_rich_symbol_coverage: set {} (sysml.library root) or {} (SysML-v2-Release root); fallback path not found: {}",
+                SYSML_STD_LIB_DIR_ENV,
+                SYSML_V2_RELEASE_DIR_ENV,
+                DEFAULT_STD_LIB_DIR
+            );
+            return;
+        }
+    };
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" },
+            "initializationOptions": {
+                "libraryPaths": [library_root.to_string_lossy().to_string()]
+            }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+
+    // allow library indexing to complete for large release trees
+    std::thread::sleep(std::time::Duration::from_secs(3));
+
+    let req_id = next_id();
+    let req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": req_id,
+        "method": "sysml/librarySearch",
+        "params": {
+            "query": "",
+            "limit": 5000
+        }
+    });
+    send_message(&mut stdin, &req.to_string());
+    let resp = read_response(&mut stdout, req_id).expect("librarySearch response");
+    let json: serde_json::Value = serde_json::from_str(&resp).expect("parse librarySearch");
+    let items = json["result"]["items"]
+        .as_array()
+        .expect("librarySearch items array");
+
+    let si_items: Vec<&serde_json::Value> = items
+        .iter()
+        .filter(|item| {
+            item["path"]
+                .as_str()
+                .map(is_si_sysml_path)
+                .unwrap_or(false)
+        })
+        .collect();
+    let si_count = si_items.len();
+
+    let mut si_by_detail: std::collections::BTreeMap<String, usize> =
+        std::collections::BTreeMap::new();
+    let mut si_names: std::collections::BTreeSet<String> = std::collections::BTreeSet::new();
+    for item in &si_items {
+        if let Some(detail) = item["detail"].as_str() {
+            *si_by_detail.entry(detail.to_string()).or_insert(0) += 1;
+        }
+        if let Some(name) = item["name"].as_str() {
+            si_names.insert(name.to_string());
+        }
+    }
+
+    let expected_names = ["metre", "kilogram", "second", "tonne", "arcmin", "arcsec"];
+    let missing_names: Vec<&str> = expected_names
+        .iter()
+        .copied()
+        .filter(|name| !si_names.contains(*name))
+        .collect();
+
+    assert!(
+        si_count > 20,
+        "Expected SI.sysml to contribute >20 symbols, got {}. detailCounts={:?}, sampleNames={:?}, samplePaths={:?}",
+        si_count,
+        si_by_detail,
+        si_names.iter().take(20).cloned().collect::<Vec<_>>(),
+        si_items
+            .iter()
+            .take(20)
+            .filter_map(|item| item["path"].as_str().map(str::to_string))
+            .collect::<Vec<_>>()
+    );
+    assert!(
+        missing_names.is_empty(),
+        "Expected SI.sysml to include symbols {:?}, missing {:?}. detailCounts={:?}, sampleNames={:?}",
+        expected_names,
+        missing_names,
+        si_by_detail,
+        si_names.iter().take(60).cloned().collect::<Vec<_>>()
     );
 
     let _ = child.kill();

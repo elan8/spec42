@@ -709,10 +709,13 @@ mod tests {
     #[test]
     fn symbol_entries_include_aliases_and_definitions() {
         let input = r#"
-            package SI {
-                attribute def tonne;
+            standard library package SI {
+                attribute <m> metre : LengthUnit;
+                attribute <kg> kilogram : MassUnit;
+                attribute tonne : MassUnit;
                 alias 'metric ton' for tonne;
-                alias arcmin for tonne;
+                alias arcmin for metre;
+                alias arcsec for kilogram;
             }
         "#;
         let root = parse(input).expect("parse");
@@ -721,9 +724,26 @@ mod tests {
         let symbols = symbol_entries_for_uri(&graph, &uri);
         let names: std::collections::HashSet<String> =
             symbols.iter().map(|s| s.name.clone()).collect();
+        let has_name = |needle: &str| {
+            names.iter().any(|n| {
+                n == needle
+                    || n.ends_with(&format!(" {}", needle))
+                    || n.ends_with(&format!("'{}'", needle))
+            })
+        };
         assert!(
             names.contains("tonne"),
             "expected 'tonne' symbol in {:?}",
+            names
+        );
+        assert!(
+            has_name("metre"),
+            "expected 'metre' symbol in {:?}",
+            names
+        );
+        assert!(
+            has_name("kilogram"),
+            "expected 'kilogram' symbol in {:?}",
             names
         );
         assert!(
@@ -737,8 +757,13 @@ mod tests {
             names
         );
         assert!(
-            symbols.len() >= 4,
-            "expected at least package + defs + aliases, got {} symbols: {:?}",
+            names.contains("arcsec"),
+            "expected alias 'arcsec' symbol in {:?}",
+            names
+        );
+        assert!(
+            symbols.len() >= 7,
+            "expected at least package + attributes + aliases, got {} symbols: {:?}",
             symbols.len(),
             names
         );

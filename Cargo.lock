@@ -883,7 +883,7 @@ dependencies = [
 [[package]]
 name = "sysml-parser"
 version = "0.1.0"
-source = "git+https://github.com/elan8/sysml-parser#1f51590c4df0d53393475b902467bf9f62aeb69f"
+source = "git+https://github.com/elan8/sysml-parser#2ca542f7be9fe899d1588e723afcd38d9e7150e1"
 dependencies = [
  "log",
  "nom",
