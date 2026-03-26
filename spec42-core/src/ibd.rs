@@ -149,6 +149,21 @@ fn infer_port_side(name: &str, direction: Option<&str>, _port_type: Option<&str>
         return Some("right".to_string());
     }
 
+    // Generic semantic hints for producer/provider style names.
+    if normalized_name.contains("provide")
+        || normalized_name.contains("supply")
+        || normalized_name.contains("source")
+        || normalized_name.starts_with("regulated")
+    {
+        return Some("right".to_string());
+    }
+    if normalized_name.contains("consume")
+        || normalized_name.contains("demand")
+        || normalized_name.contains("sink")
+    {
+        return Some("left".to_string());
+    }
+
     None
 }
 
