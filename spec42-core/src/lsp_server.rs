@@ -1610,6 +1610,23 @@ impl Backend {
                 data: None,
             });
         }
+        if result.errors.is_empty() {
+            for range in util::missing_semicolon_ranges(text) {
+                diagnostics.push(Diagnostic {
+                    range,
+                    severity: Some(DiagnosticSeverity::ERROR),
+                    code: Some(tower_lsp::lsp_types::NumberOrString::String(
+                        "missing_semicolon".to_string(),
+                    )),
+                    code_description: None,
+                    source: Some("sysml".to_string()),
+                    message: "Missing ';' at end of statement.".to_string(),
+                    related_information: None,
+                    tags: None,
+                    data: None,
+                });
+            }
+        }
         // When parse succeeded, add semantic diagnostics from all check providers.
         if result.errors.is_empty() {
             let uri_norm = util::normalize_file_uri(&uri);

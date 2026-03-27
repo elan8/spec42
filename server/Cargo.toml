@@ -14,7 +14,7 @@ tokio = { version = "1", features = ["full"] }
 serde_json = { workspace = true }
 
 [dev-dependencies]
-sysml-parser = { git = "https://github.com/elan8/sysml-parser" }
+sysml-parser = { git = "https://github.com/elan8/sysml-parser", rev = "f28e7907ccbdb9ee2326f656f8d1ee2524715f59" }
 serde_json = { workspace = true }
 tempfile = "3"
 url = "2"

@@ -75,6 +75,65 @@ pub fn parse_failure_diagnostics(content: &str, max_errors: usize) -> Vec<String
         .collect()
 }
 
+/// Lightweight fallback syntax checks for cases where parser diagnostics are empty.
+/// Currently flags likely statement lines missing a trailing semicolon.
+pub fn missing_semicolon_ranges(content: &str) -> Vec<Range> {
+    const KEYWORDS_REQUIRING_SEMICOLON: &[&str] = &[
+        "part",
+        "port",
+        "attribute",
+        "item",
+        "import",
+        "alias",
+        "connection",
+        "bind",
+        "allocate",
+        "ref",
+    ];
+
+    fn utf16_len(s: &str) -> u32 {
+        s.encode_utf16().count() as u32
+    }
+
+    let mut ranges = Vec::new();
+    for (line_idx, raw_line) in content.lines().enumerate() {
+        let code_only = raw_line.split("//").next().unwrap_or("");
+        let trimmed = code_only.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+        if trimmed.ends_with(';') || trimmed.ends_with('{') || trimmed.ends_with('}') {
+            continue;
+        }
+        let first = match trimmed.split_whitespace().next() {
+            Some(token) => token,
+            None => continue,
+        };
+        if !KEYWORDS_REQUIRING_SEMICOLON.contains(&first) {
+            continue;
+        }
+        if trimmed.starts_with("part def")
+            || trimmed.starts_with("port def")
+            || trimmed.starts_with("attribute def")
+            || trimmed.starts_with("item def")
+            || trimmed.starts_with("connection def")
+            || trimmed.starts_with("allocation def")
+        {
+            continue;
+        }
+
+        let start_char = utf16_len(raw_line) - utf16_len(raw_line.trim_start());
+        let end_char = utf16_len(raw_line);
+        ranges.push(Range {
+            start: tower_lsp::lsp_types::Position::new(line_idx as u32, start_char),
+            end: tower_lsp::lsp_types::Position::new(line_idx as u32, end_char),
+        });
+    }
+
+    ranges
+}
+
+
 /// Returns true if `uri` is under any of the library path roots (path prefix check).
 pub fn uri_under_any_library(uri: &Url, library_paths: &[Url]) -> bool {
     let uri_path = match uri.to_file_path() {
@@ -134,7 +193,7 @@ pub fn symbol_hover_markdown(entry: &SymbolEntry, show_location: bool) -> String
 
 #[cfg(test)]
 mod tests {
-    use super::apply_incremental_change;
+    use super::{apply_incremental_change, missing_semicolon_ranges};
     use tower_lsp::lsp_types::{Position, Range};
 
     #[test]
@@ -144,4 +203,20 @@ mod tests {
         let updated = apply_incremental_change(text, &range, "").expect("edit applies");
         assert_eq!(updated, "package Demo {\n  part def Engine\n}\n");
     }
+
+    #[test]
+    fn missing_semicolon_ranges_detects_unterminated_part_usage() {
+        let text = "package test {\n  part def Laptop {\n    part motherboard\n  }\n}\n";
+        let ranges = missing_semicolon_ranges(text);
+        assert_eq!(ranges.len(), 1);
+        assert_eq!(ranges[0].start.line, 2);
+    }
+
+    #[test]
+    fn missing_semicolon_ranges_ignores_terminated_lines() {
+        let text = "package test {\n  part def Laptop {\n    part motherboard;\n  }\n}\n";
+        let ranges = missing_semicolon_ranges(text);
+        assert!(ranges.is_empty());
+    }
+
 }

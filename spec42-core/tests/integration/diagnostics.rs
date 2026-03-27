@@ -69,6 +69,83 @@ fn lsp_diagnostics_on_invalid_sysml() {
 }
 
 #[test]
+fn missing_semicolon_emits_syntax_diagnostic() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///missing_semicolon.sysml";
+    let content = r#"
+package test{
+    part def Laptop  {
+        part motherboard
+        part display
+    }
+}
+"#;
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+            }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(350));
+
+    let mut found_missing_semicolon = false;
+    for _ in 0..25 {
+        let Some(msg) = read_message(&mut stdout) else {
+            break;
+        };
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() != Some("textDocument/publishDiagnostics") {
+            continue;
+        }
+        let diagnostics = json["params"]["diagnostics"]
+            .as_array()
+            .cloned()
+            .unwrap_or_default();
+        found_missing_semicolon = diagnostics.iter().any(|d| {
+            d["source"].as_str() == Some("sysml")
+                && d["code"].as_str() == Some("missing_semicolon")
+        });
+        if found_missing_semicolon {
+            break;
+        }
+    }
+
+    assert!(
+        found_missing_semicolon,
+        "expected missing_semicolon diagnostic for unterminated part statements"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
 fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");
@@ -440,6 +517,103 @@ fn unresolved_satisfy_reference_emits_semantic_diagnostic() {
     assert!(
         found_unresolved_satisfy,
         "expected unresolved_satisfy_* semantic diagnostic for missing satisfy reference"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
+fn top_level_part_def_emits_illegal_top_level_definition_diagnostic() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///top_level_part_def.sysml";
+    let content = r#"
+part def Laptop {
+    part motherboard;
+}
+"#;
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": null,
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+            }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(250));
+
+    // Force a deterministic server response so we can drain notifications without hanging.
+    let hover_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": hover_id,
+            "method": "textDocument/hover",
+            "params": {
+                "textDocument": { "uri": uri },
+                "position": { "line": 0, "character": 0 }
+            }
+        })
+        .to_string(),
+    );
+
+    let mut found = false;
+    let mut seen_codes: Vec<String> = Vec::new();
+    loop {
+        let msg = read_message(&mut stdout).expect("expected message while waiting for hover response");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics") {
+            let diagnostics = json["params"]["diagnostics"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+            for d in &diagnostics {
+                if let Some(code) = d["code"].as_str() {
+                    seen_codes.push(code.to_string());
+                }
+            }
+            found = diagnostics.iter().any(|d| {
+                d["source"].as_str() == Some("sysml")
+                    && d["code"].as_str() == Some("illegal_top_level_definition")
+            });
+        }
+        if json["id"].as_i64() == Some(hover_id) {
+            break;
+        }
+    }
+
+    assert!(
+        found,
+        "expected illegal_top_level_definition parser diagnostic for top-level part def; seen codes: {:?}",
+        seen_codes
     );
 
     let _ = child.kill();
