@@ -1,6 +1,6 @@
 [package]
 name = "spec42"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
 description = "Language server for SysML v2 (LSP over stdio)"
 

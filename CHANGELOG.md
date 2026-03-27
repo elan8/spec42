@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-03-27
+
+### Added
+
+- **Library experience and discoverability** - Added richer library search DTOs and surfaced stronger library status/search flows in the VS Code extension, with improved support for workspace + managed library usage.
+- **LSP feature coverage** - Added type hierarchy support and completed additional remaining LSP capabilities, with integration-test coverage updates to keep behavior stable.
+
+### Changed
+
+- **Server architecture and diagnostics** - Refactored key parts of the LSP server and model-explorer context handling, improved code lens generation, and integrated tracing-based logging to make troubleshooting and diagnostics clearer.
+- **Parser and dependency updates** - Updated parser/dependency stack and related tests to improve reliability and maintainability.
+- **Documentation and marketplace metadata** - Refreshed README badges/screenshots/instructions and corrected the VS Code Marketplace badge link.
+
 ## [0.7.0] - 2026-03-25
 
 ### Changed
@@ -96,6 +109,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.8.0]: https://github.com/elan8/spec42/releases/tag/v0.8.0
+[0.7.0]: https://github.com/elan8/spec42/releases/tag/v0.7.0
 [0.6.0]: https://github.com/elan8/spec42/releases/tag/v0.6.0
 [0.5.0]: https://github.com/elan8/spec42/releases/tag/v0.5.0
 [0.4.0]: https://github.com/elan8/spec42/releases/tag/v0.4.0
