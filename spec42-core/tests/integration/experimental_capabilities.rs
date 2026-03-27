@@ -25,4 +25,11 @@ fn lsp_initialize_advertises_remaining_feature_capabilities() {
         Some(true),
         "type hierarchy capability is advertised through experimental surface for current tower-lsp compatibility"
     );
+    assert_eq!(
+        caps["experimental"]["host"]["extraCustomMethods"]
+            .as_array()
+            .map(|a| a.len()),
+        Some(0),
+        "default OSS config should not advertise extra host custom methods"
+    );
 }

@@ -1,7 +1,8 @@
+use crate::config::Spec42Config;
 use tower_lsp::lsp_types::*;
 
-pub(crate) fn server_capabilities() -> ServerCapabilities {
-    ServerCapabilities {
+pub(crate) fn server_capabilities(config: &Spec42Config) -> ServerCapabilities {
+    let mut capabilities = ServerCapabilities {
         text_document_sync: Some(TextDocumentSyncCapability::Kind(
             TextDocumentSyncKind::INCREMENTAL,
         )),
@@ -48,5 +49,21 @@ pub(crate) fn server_capabilities() -> ServerCapabilities {
             },
         )),
         ..ServerCapabilities::default()
+    };
+
+    if let Some(existing) = capabilities.experimental.take() {
+        let extra_methods = config.extra_custom_method_names();
+        capabilities.experimental = Some(serde_json::json!({
+            "typeHierarchyProvider": existing.get("typeHierarchyProvider").and_then(|v| v.as_bool()).unwrap_or(false),
+            "host": {
+                "extraCustomMethods": extra_methods
+            }
+        }));
     }
+
+    for augmenter in &config.capability_augmenters {
+        augmenter.augment_capabilities(&mut capabilities);
+    }
+
+    capabilities
 }

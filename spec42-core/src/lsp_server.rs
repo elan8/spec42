@@ -78,7 +78,7 @@ impl LanguageServer for Backend {
                 name: self.server_name.clone(),
                 version: Some(env!("CARGO_PKG_VERSION").to_string()),
             }),
-            capabilities: server_capabilities(),
+            capabilities: server_capabilities(&self.config),
         })
     }
 

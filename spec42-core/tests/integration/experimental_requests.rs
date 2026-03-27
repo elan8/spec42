@@ -60,6 +60,20 @@ fn lsp_remaining_feature_requests_round_trip() {
         );
     }
 
+    let custom_method = session.request(
+        "sysml/model",
+        serde_json::json!({
+            "uri": uri,
+            "includeGraph": true,
+            "includeIbd": false
+        }),
+    );
+    assert!(
+        custom_method.get("error").is_none(),
+        "core sysml/model custom method should remain available: {}",
+        custom_method
+    );
+
     let prepare_vehicle = session.request(
         "textDocument/prepareTypeHierarchy",
         serde_json::json!({"textDocument":{"uri":uri},"position":{"line":2,"character":7}}),
