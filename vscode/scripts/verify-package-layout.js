@@ -33,6 +33,7 @@ function verifyStagedLayout() {
   const bundledRoots = [
     ["Linux", path.join(rootDir, "server", "linux-x64"), path.join(rootDir, "server", "linux-x64", "spec42")],
     ["macOS", path.join(rootDir, "server", "darwin-x64"), path.join(rootDir, "server", "darwin-x64", "spec42")],
+    ["macOS (Apple Silicon)", path.join(rootDir, "server", "darwin-arm64"), path.join(rootDir, "server", "darwin-arm64", "spec42")],
     ["Windows", path.join(rootDir, "server", "win32-x64"), path.join(rootDir, "server", "win32-x64", "spec42.exe")],
   ];
   for (const [osLabel, dirPath, binPath] of bundledRoots) {
@@ -70,6 +71,7 @@ function verifyVsixContents(vsixPath) {
     "extension/media/vendor/elk.bundled.js",
     "extension/server/linux-x64/spec42",
     "extension/server/darwin-x64/spec42",
+    "extension/server/darwin-arm64/spec42",
     "extension/server/win32-x64/spec42.exe",
   ];
 

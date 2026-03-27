@@ -45,14 +45,26 @@ jobs:
         include:
           - runner: ubuntu-latest
             os_name: linux
+            target: x86_64-unknown-linux-gnu
+            package_dir: linux-x64
             archive_ext: tar.gz
             binary_ext: ""
           - runner: macos-latest
             os_name: darwin
+            target: x86_64-apple-darwin
+            package_dir: darwin-x64
+            archive_ext: tar.gz
+            binary_ext: ""
+          - runner: macos-latest
+            os_name: darwin
+            target: aarch64-apple-darwin
+            package_dir: darwin-arm64
             archive_ext: tar.gz
             binary_ext: ""
           - runner: windows-latest
             os_name: win32
+            target: x86_64-pc-windows-msvc
+            package_dir: win32-x64
             archive_ext: zip
             binary_ext: ".exe"
 
@@ -71,21 +83,23 @@ jobs:
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
 
       - name: Build release binary
-        run: cargo build --release -p spec42
+        run: cargo build --release -p spec42 --target ${{ matrix.target }}
 
       - name: Prepare archive (Unix)
         if: matrix.binary_ext == ''
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           BIN="${{ env.BINARY_NAME }}${{ matrix.binary_ext }}"
-          ARCHIVE="${{ env.BINARY_NAME }}-${VERSION}-${{ matrix.os_name }}-x64.${{ matrix.archive_ext }}"
+          ARCHIVE="${{ env.BINARY_NAME }}-${VERSION}-${{ matrix.package_dir }}.${{ matrix.archive_ext }}"
           mkdir -p staging
-          cp "target/release/${{ env.BINARY_NAME }}" "staging/$BIN"
+          cp "target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}" "staging/$BIN"
           tar czf "$ARCHIVE" -C staging "$BIN"
           echo "ARCHIVE_NAME=$ARCHIVE" >> $GITHUB_ENV
 
@@ -93,16 +107,16 @@ jobs:
         if: matrix.binary_ext == '.exe'
         run: |
           $version = "${{ steps.version.outputs.version }}"
-          $archive = "${{ env.BINARY_NAME }}-$version-${{ matrix.os_name }}-x64.zip"
-          Compress-Archive -Path "target/release/${{ env.BINARY_NAME }}.exe" -DestinationPath $archive
+          $archive = "${{ env.BINARY_NAME }}-$version-${{ matrix.package_dir }}.zip"
+          Compress-Archive -Path "target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}.exe" -DestinationPath $archive
           echo "ARCHIVE_NAME=$archive" >> $env:GITHUB_ENV
         shell: pwsh
 
       - name: Upload server artifact
         uses: actions/upload-artifact@v4
         with:
-          name: server-${{ matrix.os_name }}
-          path: ${{ env.BINARY_NAME }}-${{ steps.version.outputs.version }}-${{ matrix.os_name }}-x64.${{ matrix.archive_ext }}
+          name: server-${{ matrix.package_dir }}
+          path: ${{ env.BINARY_NAME }}-${{ steps.version.outputs.version }}-${{ matrix.package_dir }}.${{ matrix.archive_ext }}
 
   package-extension-with-server:
     name: Package extension with server (all platforms)
@@ -131,10 +145,11 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           BIN="${{ env.BINARY_NAME }}"
-          mkdir -p vscode/server/linux-x64 vscode/server/darwin-x64 vscode/server/win32-x64
-          tar -xzf "artifacts/server/server-linux/${BIN}-${VERSION}-linux-x64.tar.gz" -C vscode/server/linux-x64
-          tar -xzf "artifacts/server/server-darwin/${BIN}-${VERSION}-darwin-x64.tar.gz" -C vscode/server/darwin-x64
-          unzip -o -j "artifacts/server/server-win32/${BIN}-${VERSION}-win32-x64.zip" -d vscode/server/win32-x64
+          mkdir -p vscode/server/linux-x64 vscode/server/darwin-x64 vscode/server/darwin-arm64 vscode/server/win32-x64
+          tar -xzf "artifacts/server/server-linux-x64/${BIN}-${VERSION}-linux-x64.tar.gz" -C vscode/server/linux-x64
+          tar -xzf "artifacts/server/server-darwin-x64/${BIN}-${VERSION}-darwin-x64.tar.gz" -C vscode/server/darwin-x64
+          tar -xzf "artifacts/server/server-darwin-arm64/${BIN}-${VERSION}-darwin-arm64.tar.gz" -C vscode/server/darwin-arm64
+          unzip -o -j "artifacts/server/server-win32-x64/${BIN}-${VERSION}-win32-x64.zip" -d vscode/server/win32-x64
 
       - name: Setup Node.js
         uses: actions/setup-node@v6

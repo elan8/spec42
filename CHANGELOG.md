@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-03-27
+
+### Changed
+
+- **macOS Apple Silicon startup compatibility** - Added `darwin-arm64` server artifact build and VSIX packaging so the language server starts natively on Apple Silicon without architecture mismatch spawn failures.
+- **Release packaging validation** - Updated package layout verification to require bundled `darwin-arm64` server binaries in both staged layout checks and VSIX content checks.
+
 ## [0.9.1] - 2026-03-27
 
 ### Added
@@ -144,6 +151,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.10.0]: https://github.com/elan8/spec42/releases/tag/v0.10.0
 [0.9.1]: https://github.com/elan8/spec42/releases/tag/v0.9.1
 [0.9.0]: https://github.com/elan8/spec42/releases/tag/v0.9.0
 [0.8.0]: https://github.com/elan8/spec42/releases/tag/v0.8.0

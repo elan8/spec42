@@ -4,7 +4,7 @@
   "publisher": "Elan8",
   "icon": "logo/logo.png",
   "description": "Language support for SysML v2 including syntax validation, navigation and diagnostics.",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "license": "MIT",
   "keywords": [
     "sysml",
@@ -29,28 +29,9 @@
     "Linters"
   ],
   "activationEvents": [
-    "onLanguage:sysml",
-    "onLanguage:kerml",
     "workspaceContains:**/*.sysml",
     "workspaceContains:**/*.kerml",
-    "onWebviewPanel:sysmlVisualizer",
-    "onCommand:sysml.showModelExplorer",
-    "onCommand:sysml.showVisualizer",
-    "onCommand:sysml.formatDocument",
-    "onCommand:sysml.validateModel",
-    "onCommand:sysml.restartServer",
-    "onCommand:sysml.clearCache",
-    "onCommand:sysml.visualizePackage",
-    "onCommand:sysml.switchToByFile",
-    "onCommand:sysml.switchToSemanticModel",
-    "onCommand:sysml.toggleWorkspaceViewMode",
-    "onCommand:sysml.visualizeFolder",
-    "onCommand:sysml.showOutput",
-    "onCommand:sysml.changeVisualizerView",
-    "onCommand:sysml.exportVisualization",
-    "onCommand:sysml.refreshVisualization",
-    "onCommand:sysml.visualizeFolderWithView",
-    "onCommand:sysml.debugSemanticTokenAtCursor"
+    "onWebviewPanel:sysmlVisualizer"
   ],
   "main": "./out/extension.js",
   "contributes": {
