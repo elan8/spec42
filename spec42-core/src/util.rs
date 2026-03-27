@@ -1,6 +1,6 @@
 //! URI, config, and document helpers.
 
-use tower_lsp::lsp_types::{Range, Url};
+use tower_lsp::lsp_types::{Position, Range, Url};
 
 use crate::language::{position_to_byte_offset, SymbolEntry};
 
@@ -75,6 +75,52 @@ pub fn parse_failure_diagnostics(content: &str, max_errors: usize) -> Vec<String
         .collect()
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct UntypedPartUsage {
+    pub name: String,
+    pub range: Range,
+}
+
+fn utf16_len(s: &str) -> u32 {
+    s.encode_utf16().count() as u32
+}
+
+fn parse_untyped_part_usage_line(raw_line: &str) -> Option<String> {
+    let code_only = raw_line.split("//").next().unwrap_or("");
+    let trimmed = code_only.trim();
+    if !trimmed.starts_with("part ") || trimmed.starts_with("part def") {
+        return None;
+    }
+    if !trimmed.ends_with(';') || trimmed.contains(':') {
+        return None;
+    }
+    let after_part = trimmed.strip_prefix("part ")?;
+    let name = after_part.strip_suffix(';')?.trim();
+    if name.is_empty() || name.contains(char::is_whitespace) {
+        return None;
+    }
+    Some(name.to_string())
+}
+
+pub fn untyped_part_usage_diagnostics(content: &str) -> Vec<UntypedPartUsage> {
+    let mut out = Vec::new();
+    for (line_idx, raw_line) in content.lines().enumerate() {
+        let Some(name) = parse_untyped_part_usage_line(raw_line) else {
+            continue;
+        };
+        let start_char = utf16_len(raw_line) - utf16_len(raw_line.trim_start());
+        let end_char = utf16_len(raw_line);
+        out.push(UntypedPartUsage {
+            name,
+            range: Range {
+                start: Position::new(line_idx as u32, start_char),
+                end: Position::new(line_idx as u32, end_char),
+            },
+        });
+    }
+    out
+}
+
 /// Lightweight fallback syntax checks for cases where parser diagnostics are empty.
 /// Currently flags likely statement lines missing a trailing semicolon.
 pub fn missing_semicolon_ranges(content: &str) -> Vec<Range> {
@@ -90,10 +136,6 @@ pub fn missing_semicolon_ranges(content: &str) -> Vec<Range> {
         "allocate",
         "ref",
     ];
-
-    fn utf16_len(s: &str) -> u32 {
-        s.encode_utf16().count() as u32
-    }
 
     let mut ranges = Vec::new();
     for (line_idx, raw_line) in content.lines().enumerate() {
@@ -193,7 +235,7 @@ pub fn symbol_hover_markdown(entry: &SymbolEntry, show_location: bool) -> String
 
 #[cfg(test)]
 mod tests {
-    use super::{apply_incremental_change, missing_semicolon_ranges};
+    use super::{apply_incremental_change, missing_semicolon_ranges, untyped_part_usage_diagnostics};
     use tower_lsp::lsp_types::{Position, Range};
 
     #[test]
@@ -217,6 +259,22 @@ mod tests {
         let text = "package test {\n  part def Laptop {\n    part motherboard;\n  }\n}\n";
         let ranges = missing_semicolon_ranges(text);
         assert!(ranges.is_empty());
+    }
+
+    #[test]
+    fn untyped_part_usage_diagnostics_detects_part_usage_without_type() {
+        let text = "package P {\n  part def Laptop {\n    part display;\n  }\n}\n";
+        let diagnostics = untyped_part_usage_diagnostics(text);
+        assert_eq!(diagnostics.len(), 1);
+        assert_eq!(diagnostics[0].name, "display");
+        assert_eq!(diagnostics[0].range.start.line, 2);
+    }
+
+    #[test]
+    fn untyped_part_usage_diagnostics_ignores_typed_usage() {
+        let text = "package P {\n  part def Laptop {\n    part display : Display;\n  }\n}\n";
+        let diagnostics = untyped_part_usage_diagnostics(text);
+        assert!(diagnostics.is_empty());
     }
 
 }

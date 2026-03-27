@@ -618,3 +618,123 @@ part def Laptop {
 
     let _ = child.kill();
 }
+
+#[test]
+fn untyped_part_usage_offers_code_action_to_create_part_def_and_type_usage() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///quickfix_untyped_part.sysml";
+    let content = "package P {\n  part def Laptop {\n    part display;\n  }\n}\n";
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": null,
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+            }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(250));
+
+    let code_action_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": code_action_id,
+            "method": "textDocument/codeAction",
+            "params": {
+                "textDocument": { "uri": uri },
+                "range": {
+                    "start": { "line": 2, "character": 4 },
+                    "end": { "line": 2, "character": 17 }
+                },
+                "context": {
+                    "diagnostics": [
+                        {
+                            "range": {
+                                "start": { "line": 2, "character": 4 },
+                                "end": { "line": 2, "character": 17 }
+                            },
+                            "severity": 2,
+                            "code": "untyped_part_usage",
+                            "source": "sysml",
+                            "message": "Part has no declared type."
+                        }
+                    ],
+                    "only": ["quickfix"]
+                }
+            }
+        })
+        .to_string(),
+    );
+
+    let mut found = false;
+    loop {
+        let msg = read_message(&mut stdout).expect("expected codeAction response");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["id"].as_i64() != Some(code_action_id) {
+            continue;
+        }
+        let actions = json["result"].as_array().cloned().unwrap_or_default();
+        for action in actions {
+            let title = action["title"].as_str().unwrap_or_default();
+            if !title.contains("Create matching `part def Display`") {
+                continue;
+            }
+            let edits = action["edit"]["documentChanges"][0]["edits"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+            let inserts_def = edits.iter().any(|edit| {
+                edit["newText"]
+                    .as_str()
+                    .map(|t| t.contains("part def Display { }"))
+                    .unwrap_or(false)
+            });
+            let rewrites_usage = edits.iter().any(|edit| {
+                edit["newText"]
+                    .as_str()
+                    .map(|t| t.contains("part display : Display;"))
+                    .unwrap_or(false)
+            });
+            if inserts_def && rewrites_usage {
+                found = true;
+            }
+        }
+        break;
+    }
+
+    assert!(
+        found,
+        "expected quickfix that inserts matching part def and rewrites usage"
+    );
+
+    let _ = child.kill();
+}

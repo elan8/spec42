@@ -39,8 +39,8 @@ use tower_lsp::{Client, LanguageServer, LspService, Server};
 use crate::language::{
     collect_definition_ranges, collect_document_symbols, collect_folding_ranges, completion_prefix,
     find_reference_ranges, format_document, is_reserved_keyword, keyword_doc,
-    keyword_hover_markdown, line_prefix_at_position, suggest_wrap_in_package, sysml_keywords,
-    word_at_position,
+    keyword_hover_markdown, line_prefix_at_position, suggest_create_matching_part_def_quick_fix,
+    suggest_wrap_in_package, sysml_keywords, word_at_position,
 };
 
 // -------------------------
@@ -1239,6 +1239,24 @@ impl LanguageServer for Backend {
         if let Some(action) = suggest_wrap_in_package(&text, &uri) {
             actions.push(CodeActionOrCommand::CodeAction(action));
         }
+        for diagnostic in &params.context.diagnostics {
+            let code = diagnostic
+                .code
+                .as_ref()
+                .and_then(|c| match c {
+                    NumberOrString::String(s) => Some(s.as_str()),
+                    _ => None,
+                })
+                .unwrap_or_default();
+            if code != "untyped_part_usage" {
+                continue;
+            }
+            if let Some(action) =
+                suggest_create_matching_part_def_quick_fix(&text, &uri, diagnostic)
+            {
+                actions.push(CodeActionOrCommand::CodeAction(action));
+            }
+        }
         Ok(Some(actions))
     }
 
@@ -1605,6 +1623,24 @@ impl Backend {
                 code_description: None,
                 source: Some("sysml".to_string()),
                 message: e.message.clone(),
+                related_information: None,
+                tags: None,
+                data: None,
+            });
+        }
+        for usage in util::untyped_part_usage_diagnostics(text) {
+            diagnostics.push(Diagnostic {
+                range: usage.range,
+                severity: Some(DiagnosticSeverity::WARNING),
+                code: Some(tower_lsp::lsp_types::NumberOrString::String(
+                    "untyped_part_usage".to_string(),
+                )),
+                code_description: None,
+                source: Some("sysml".to_string()),
+                message: format!(
+                    "Part '{}' has no declared type. Apply Quick Fix to create a matching part def.",
+                    usage.name
+                ),
                 related_information: None,
                 tags: None,
                 data: None,

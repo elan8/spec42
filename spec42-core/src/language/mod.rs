@@ -12,8 +12,9 @@ pub use symbols::*;
 use crate::ast_util::identification_name;
 use sysml_parser::ast::{PackageBody, RootElement};
 use tower_lsp::lsp_types::{
-    CodeAction, FormattingOptions, OneOf, OptionalVersionedTextDocumentIdentifier, Position, Range,
-    TextDocumentEdit, TextEdit, Url, WorkspaceEdit,
+    CodeAction, CodeActionKind, Diagnostic, FormattingOptions, OneOf,
+    OptionalVersionedTextDocumentIdentifier, Position, Range, TextDocumentEdit, TextEdit, Url,
+    WorkspaceEdit,
 };
 
 /// Formats the whole document: trim trailing whitespace per line, single trailing newline, indent by brace depth.
@@ -121,10 +122,179 @@ pub fn suggest_wrap_in_package(source: &str, uri: &Url) -> Option<CodeAction> {
     })
 }
 
+fn utf16_len(s: &str) -> u32 {
+    s.encode_utf16().count() as u32
+}
+
+fn parse_untyped_part_usage_name(raw_line: &str) -> Option<String> {
+    let code_only = raw_line.split("//").next().unwrap_or("");
+    let trimmed = code_only.trim();
+    if !trimmed.starts_with("part ") || trimmed.starts_with("part def") {
+        return None;
+    }
+    if !trimmed.ends_with(';') || trimmed.contains(':') {
+        return None;
+    }
+    let after_part = trimmed.strip_prefix("part ")?;
+    let name = after_part.strip_suffix(';')?.trim();
+    if name.is_empty() || name.contains(char::is_whitespace) {
+        return None;
+    }
+    Some(name.to_string())
+}
+
+fn to_pascal_case(name: &str) -> String {
+    let mut out = String::new();
+    let mut capitalize = true;
+    for ch in name.chars() {
+        if ch.is_alphanumeric() {
+            if capitalize {
+                for upper in ch.to_uppercase() {
+                    out.push(upper);
+                }
+                capitalize = false;
+            } else {
+                out.push(ch);
+            }
+        } else {
+            capitalize = true;
+        }
+    }
+    if out.is_empty() {
+        "GeneratedPart".to_string()
+    } else {
+        out
+    }
+}
+
+fn find_block_end(lines: &[&str], start_line: usize) -> Option<usize> {
+    let mut depth = 0i32;
+    let mut seen_open = false;
+    for (idx, line) in lines.iter().enumerate().skip(start_line) {
+        for ch in line.chars() {
+            match ch {
+                '{' => {
+                    depth += 1;
+                    seen_open = true;
+                }
+                '}' => {
+                    if seen_open {
+                        depth -= 1;
+                        if depth == 0 {
+                            return Some(idx);
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+    None
+}
+
+fn find_insertion_context(lines: &[&str], target_line: usize) -> Option<(usize, usize)> {
+    for start in (0..=target_line).rev() {
+        let trimmed = lines[start].trim();
+        let is_container = (trimmed.starts_with("package ") || trimmed.starts_with("part def "))
+            && trimmed.contains('{');
+        if !is_container {
+            continue;
+        }
+        let end = find_block_end(lines, start)?;
+        if start <= target_line && target_line <= end {
+            return Some((start, end));
+        }
+    }
+    None
+}
+
+fn has_matching_part_def(lines: &[&str], start: usize, end: usize, type_name: &str) -> bool {
+    let needle = format!("part def {}", type_name);
+    lines
+        .iter()
+        .take(end + 1)
+        .skip(start)
+        .any(|line| line.trim().starts_with(&needle))
+}
+
+fn rewrite_untyped_part_usage_line(raw_line: &str, usage_name: &str, type_name: &str) -> String {
+    let code_only = raw_line.split("//").next().unwrap_or("");
+    let comment_part = &raw_line[code_only.len()..];
+    let leading_ws_len = code_only.len() - code_only.trim_start().len();
+    let leading = &code_only[..leading_ws_len];
+    format!(
+        "{leading}part {usage_name} : {type_name};{comment_part}",
+        leading = leading,
+        usage_name = usage_name,
+        type_name = type_name,
+        comment_part = comment_part
+    )
+}
+
+pub fn suggest_create_matching_part_def_quick_fix(
+    source: &str,
+    uri: &Url,
+    diagnostic: &Diagnostic,
+) -> Option<CodeAction> {
+    let target_line = diagnostic.range.start.line as usize;
+    let lines: Vec<&str> = source.lines().collect();
+    let raw_line = *lines.get(target_line)?;
+    let usage_name = parse_untyped_part_usage_name(raw_line)?;
+    let type_name = to_pascal_case(&usage_name);
+    let (_, container_end) = find_insertion_context(&lines, target_line)?;
+    let closing_line = lines.get(container_end)?;
+    let closing_indent_len = closing_line.len() - closing_line.trim_start().len();
+    let closing_indent = &closing_line[..closing_indent_len];
+
+    let mut edits: Vec<OneOf<TextEdit, tower_lsp::lsp_types::AnnotatedTextEdit>> = Vec::new();
+    if !has_matching_part_def(&lines, 0, container_end, &type_name) {
+        edits.push(OneOf::Left(TextEdit {
+            range: Range::new(
+                Position::new(container_end as u32, 0),
+                Position::new(container_end as u32, 0),
+            ),
+            new_text: format!("{indent}part def {type_name} {{ }}\n", indent = closing_indent),
+        }));
+    }
+
+    edits.push(OneOf::Left(TextEdit {
+        range: Range::new(
+            Position::new(target_line as u32, 0),
+            Position::new(target_line as u32, utf16_len(raw_line)),
+        ),
+        new_text: rewrite_untyped_part_usage_line(raw_line, &usage_name, &type_name),
+    }));
+
+    let edit = WorkspaceEdit {
+        changes: None,
+        document_changes: Some(tower_lsp::lsp_types::DocumentChanges::Edits(vec![
+            TextDocumentEdit {
+                text_document: OptionalVersionedTextDocumentIdentifier {
+                    uri: uri.clone(),
+                    version: None,
+                },
+                edits,
+            },
+        ])),
+        change_annotations: None,
+    };
+
+    Some(CodeAction {
+        title: format!("Create matching `part def {}` and type usage", type_name),
+        kind: Some(CodeActionKind::QUICKFIX),
+        diagnostics: Some(vec![diagnostic.clone()]),
+        edit: Some(edit),
+        command: None,
+        is_preferred: Some(true),
+        disabled: None,
+        data: None,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tower_lsp::lsp_types::Url;
+    use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Url};
 
     #[test]
     fn test_position_to_byte_offset() {
@@ -433,6 +603,62 @@ mod tests {
             assert!(text_edit.new_text.contains("package Generated"));
             assert!(text_edit.new_text.contains("part def X"));
         }
+    }
+
+    #[test]
+    fn test_suggest_create_matching_part_def_quick_fix_creates_def_and_types_usage() {
+        let uri = Url::parse("file:///test.sysml").unwrap();
+        let source = "package P {\n  part def Laptop {\n    part display;\n  }\n}\n";
+        let diagnostic = Diagnostic {
+            range: Range::new(Position::new(2, 4), Position::new(2, 17)),
+            severity: Some(DiagnosticSeverity::WARNING),
+            code: Some(NumberOrString::String("untyped_part_usage".to_string())),
+            code_description: None,
+            source: Some("sysml".to_string()),
+            message: "untyped".to_string(),
+            related_information: None,
+            tags: None,
+            data: None,
+        };
+        let action =
+            suggest_create_matching_part_def_quick_fix(source, &uri, &diagnostic).expect("action");
+        let edit = action.edit.expect("has edit");
+        let doc_edits = edit.document_changes.expect("document changes");
+        let edits = match doc_edits {
+            tower_lsp::lsp_types::DocumentChanges::Edits(v) => v,
+            _ => panic!("expected edits"),
+        };
+        assert_eq!(edits.len(), 1);
+        assert_eq!(edits[0].edits.len(), 2);
+        let inserted = match &edits[0].edits[0] {
+            OneOf::Left(te) => te.new_text.clone(),
+            _ => panic!("expected text edit"),
+        };
+        let rewritten = match &edits[0].edits[1] {
+            OneOf::Left(te) => te.new_text.clone(),
+            _ => panic!("expected text edit"),
+        };
+        assert!(inserted.contains("part def Display { }"));
+        assert_eq!(rewritten.trim(), "part display : Display;");
+    }
+
+    #[test]
+    fn test_suggest_create_matching_part_def_quick_fix_noop_for_typed_usage() {
+        let uri = Url::parse("file:///test.sysml").unwrap();
+        let source = "package P {\n  part def Laptop {\n    part display : Display;\n  }\n}\n";
+        let diagnostic = Diagnostic {
+            range: Range::new(Position::new(2, 4), Position::new(2, 27)),
+            severity: Some(DiagnosticSeverity::WARNING),
+            code: Some(NumberOrString::String("untyped_part_usage".to_string())),
+            code_description: None,
+            source: Some("sysml".to_string()),
+            message: "untyped".to_string(),
+            related_information: None,
+            tags: None,
+            data: None,
+        };
+        let action = suggest_create_matching_part_def_quick_fix(source, &uri, &diagnostic);
+        assert!(action.is_none());
     }
 
     #[test]
