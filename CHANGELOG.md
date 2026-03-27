@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-03-27
+
+### Added
+
+- **Untyped part quick fix** - Added a Quick Fix for untyped part usage (for example `part display;`) that can create a matching `part def Display { }` and rewrite usage to `part display : Display;`.
+- **Quick-fix diagnostics coverage** - Added unit and integration tests for the new untyped-part diagnostics and code-action flow.
+
+### Changed
+
+- **Parser update** - Updated `sysml-parser` to the latest pinned git revision and aligned parser references across `spec42-core` and `server`.
+- **Model Explorer auto-refresh** - Added debounced Model Explorer refresh/reload on SysML/KerML save and file-system changes, including workspace-aware re-scan on create/delete.
+- **Diagnostic clarity** - Suppressed cryptic empty-type unresolved warnings by ignoring empty declared type references in semantic typing checks.
+
 ## [0.9.0] - 2026-03-27
 
 ### Added
@@ -131,6 +144,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.9.1]: https://github.com/elan8/spec42/releases/tag/v0.9.1
 [0.9.0]: https://github.com/elan8/spec42/releases/tag/v0.9.0
 [0.8.0]: https://github.com/elan8/spec42/releases/tag/v0.8.0
 [0.7.0]: https://github.com/elan8/spec42/releases/tag/v0.7.0
