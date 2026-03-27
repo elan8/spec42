@@ -365,7 +365,13 @@ fn declared_type_ref(node: &SemanticNode) -> Option<&str> {
         "concernType",
     ]
     .iter()
-    .find_map(|k| node.attributes.get(*k).and_then(|v| v.as_str()))
+    .find_map(|k| {
+        node.attributes
+            .get(*k)
+            .and_then(|v| v.as_str())
+            .map(str::trim)
+            .filter(|s| !s.is_empty())
+    })
 }
 
 fn multiplicity_issue_message(multiplicity: &str) -> Option<String> {
@@ -487,6 +493,25 @@ mod tests {
             attributes: attrs,
             parent_id: None,
         }
+    }
+
+    #[test]
+    fn declared_type_ref_ignores_empty_values() {
+        use std::collections::HashMap;
+        let mut attrs = HashMap::new();
+        attrs.insert("partType".to_string(), serde_json::json!(""));
+        let node = SemanticNode {
+            id: NodeId {
+                uri: Url::parse("file:///test.sysml").unwrap(),
+                qualified_name: "Test::display".to_string(),
+            },
+            element_kind: "part".to_string(),
+            name: "display".to_string(),
+            range: Range::new(Position::new(0, 0), Position::new(0, 0)),
+            attributes: attrs,
+            parent_id: None,
+        };
+        assert!(declared_type_ref(&node).is_none());
     }
 
     #[test]
