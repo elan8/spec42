@@ -180,6 +180,18 @@ fn canonical_general_view_graph(graph: &SysmlGraphDto) -> SysmlGraphDto {
     if candidate_roots.is_empty() {
         candidate_roots = part_defs_with_parts;
     }
+    if candidate_roots.is_empty() {
+        // `part_defs_with_parts` only lists part definitions that already contain a part usage.
+        // An empty `part def` (no body / no nested parts) is still a valid General View subject.
+        candidate_roots = node_by_id
+            .keys()
+            .filter(|id| {
+                is_part_def(id) && (contained_by_non_part_def.contains(*id) || has_no_parent(id))
+            })
+            .cloned()
+            .collect();
+        candidate_roots.sort();
+    }
     let root_id = if let Some(by_name) = candidate_roots.iter().find(|id| {
         node_by_id
             .get(*id)
@@ -600,6 +612,28 @@ mod tests {
             let key = (e.source.clone(), e.target.clone(), e.rel_type.clone());
             assert!(seen.insert(key), "duplicate edge found in projected graph");
         }
+    }
+
+    #[test]
+    fn canonical_general_view_graph_includes_part_def_with_no_part_usages() {
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                node("Pkg", "package", "MyPkg", None),
+                node("Widget", "part def", "Widget", Some("Pkg")),
+            ],
+            edges: vec![edge("Pkg", "Widget", "contains")],
+        };
+
+        let projected = canonical_general_view_graph(&graph);
+        let ids: std::collections::HashSet<String> =
+            projected.nodes.iter().map(|n| n.id.clone()).collect();
+        assert!(
+            ids.contains("Widget"),
+            "empty part def under package should still appear in general view graph: {:?}",
+            ids
+        );
+        assert!(!ids.contains("Pkg"));
+        assert!(projected.edges.is_empty());
     }
 
     #[test]

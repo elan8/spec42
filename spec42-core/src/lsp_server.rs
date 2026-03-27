@@ -39,8 +39,8 @@ use tower_lsp::{Client, LanguageServer, LspService, Server};
 use crate::language::{
     collect_definition_ranges, collect_document_symbols, collect_folding_ranges, completion_prefix,
     find_reference_ranges, format_document, is_reserved_keyword, keyword_doc,
-    keyword_hover_markdown, line_prefix_at_position, suggest_create_matching_part_def_quick_fix,
-    suggest_wrap_in_package, sysml_keywords, word_at_position,
+    keyword_hover_markdown, line_prefix_at_position, suggest_wrap_in_package, sysml_keywords,
+    word_at_position,
 };
 
 // -------------------------
@@ -87,6 +87,7 @@ impl LanguageServer for Backend {
             .log_message(MessageType::INFO, format!("{} initialized", self.server_name))
             .await;
         let state = Arc::clone(&self.state);
+        let config = Arc::clone(&self.config);
         let (workspace_roots, library_paths) = {
             let st = state.read().await;
             (st.workspace_roots.clone(), st.library_paths.clone())
@@ -215,6 +216,10 @@ impl LanguageServer for Backend {
                     )
                     .await;
             }
+            // Must release the write guard before publishing: `publish_workspace_diagnostics`
+            // takes read locks on `state` and would deadlock if `st` were still held.
+            drop(st);
+            publish_workspace_diagnostics(&client, &state, &config, None).await;
         });
     }
 
@@ -388,6 +393,8 @@ impl LanguageServer for Backend {
         use tower_lsp::lsp_types::FileChangeType;
         let mut state = self.state.write().await;
         let mut runtime_warnings: Vec<String> = Vec::new();
+        let mut changed_or_created_uris: Vec<Url> = Vec::new();
+        let mut deleted_uris: Vec<Url> = Vec::new();
         for event in params.changes {
             let uri_norm = util::normalize_file_uri(&event.uri);
             if event.typ == FileChangeType::CREATED || event.typ == FileChangeType::CHANGED {
@@ -427,6 +434,7 @@ impl LanguageServer for Backend {
                                 );
                             }
                             update_symbol_table_for_uri(&mut state, &uri_norm, Some(&new_entries));
+                            changed_or_created_uris.push(uri_norm.clone());
                         }
                         Err(error) => runtime_warnings.push(format!(
                             "didChangeWatchedFiles: failed to read changed file {}: {}",
@@ -442,11 +450,24 @@ impl LanguageServer for Backend {
                 state.index.remove(&uri_norm);
                 remove_symbol_table_entries_for_uri(&mut state, &uri_norm);
                 state.semantic_graph.remove_nodes_for_uri(&uri_norm);
+                deleted_uris.push(uri_norm);
             }
         }
         drop(state);
         for msg in runtime_warnings {
             self.client.log_message(MessageType::WARNING, msg).await;
+        }
+        if !changed_or_created_uris.is_empty() {
+            publish_workspace_diagnostics(
+                &self.client,
+                &self.state,
+                &self.config,
+                Some(&changed_or_created_uris),
+            )
+            .await;
+        }
+        for uri in deleted_uris {
+            self.client.publish_diagnostics(uri, vec![], None).await;
         }
     }
 
@@ -1239,24 +1260,6 @@ impl LanguageServer for Backend {
         if let Some(action) = suggest_wrap_in_package(&text, &uri) {
             actions.push(CodeActionOrCommand::CodeAction(action));
         }
-        for diagnostic in &params.context.diagnostics {
-            let code = diagnostic
-                .code
-                .as_ref()
-                .and_then(|c| match c {
-                    NumberOrString::String(s) => Some(s.as_str()),
-                    _ => None,
-                })
-                .unwrap_or_default();
-            if code != "untyped_part_usage" {
-                continue;
-            }
-            if let Some(action) =
-                suggest_create_matching_part_def_quick_fix(&text, &uri, diagnostic)
-            {
-                actions.push(CodeActionOrCommand::CodeAction(action));
-            }
-        }
         Ok(Some(actions))
     }
 
@@ -1596,85 +1599,142 @@ impl Backend {
     }
 
     async fn publish_diagnostics_for_document(&self, uri: tower_lsp::lsp_types::Url, text: &str) {
-        let mut diagnostics = Vec::new();
-        let result = sysml_parser::parse_with_diagnostics(text);
-        for e in &result.errors {
-            let range = e
-                .to_lsp_range()
-                .map(|(sl, sc, el, ec)| Range {
-                    start: Position::new(sl, sc),
-                    end: Position::new(el, ec),
-                })
-                .unwrap_or_else(|| Range {
-                    start: Position::new(0, 0),
-                    end: Position::new(0, 0),
-                });
-            let severity = e
-                .severity
-                .map(|s| match s {
-                    sysml_parser::DiagnosticSeverity::Error => DiagnosticSeverity::ERROR,
-                    sysml_parser::DiagnosticSeverity::Warning => DiagnosticSeverity::WARNING,
-                })
-                .unwrap_or(DiagnosticSeverity::ERROR);
-            diagnostics.push(Diagnostic {
-                range,
-                severity: Some(severity),
-                code: e.code.clone().map(tower_lsp::lsp_types::NumberOrString::String),
-                code_description: None,
-                source: Some("sysml".to_string()),
-                message: e.message.clone(),
-                related_information: None,
-                tags: None,
-                data: None,
-            });
-        }
-        for usage in util::untyped_part_usage_diagnostics(text) {
-            diagnostics.push(Diagnostic {
-                range: usage.range,
-                severity: Some(DiagnosticSeverity::WARNING),
-                code: Some(tower_lsp::lsp_types::NumberOrString::String(
-                    "untyped_part_usage".to_string(),
-                )),
-                code_description: None,
-                source: Some("sysml".to_string()),
-                message: format!(
-                    "Part '{}' has no declared type. Apply Quick Fix to create a matching part def.",
-                    usage.name
-                ),
-                related_information: None,
-                tags: None,
-                data: None,
-            });
-        }
-        if result.errors.is_empty() {
-            for range in util::missing_semicolon_ranges(text) {
-                diagnostics.push(Diagnostic {
-                    range,
-                    severity: Some(DiagnosticSeverity::ERROR),
-                    code: Some(tower_lsp::lsp_types::NumberOrString::String(
-                        "missing_semicolon".to_string(),
-                    )),
-                    code_description: None,
-                    source: Some("sysml".to_string()),
-                    message: "Missing ';' at end of statement.".to_string(),
-                    related_information: None,
-                    tags: None,
-                    data: None,
-                });
-            }
-        }
-        // When parse succeeded, add semantic diagnostics from all check providers.
-        if result.errors.is_empty() {
-            let uri_norm = util::normalize_file_uri(&uri);
-            let state = self.state.read().await;
-            for provider in &self.config.check_providers {
-                diagnostics.extend(provider.compute_diagnostics(&state.semantic_graph, &uri_norm));
-            }
-            drop(state);
-        }
+        let diagnostics =
+            collect_diagnostics_for_document(&self.state, &self.config, &uri, text).await;
         self.client
             .publish_diagnostics(uri, diagnostics, None)
             .await;
+    }
+}
+
+async fn collect_diagnostics_for_document(
+    state: &Arc<RwLock<ServerState>>,
+    config: &Arc<Spec42Config>,
+    uri: &Url,
+    text: &str,
+) -> Vec<Diagnostic> {
+    let mut diagnostics = Vec::new();
+    let result = sysml_parser::parse_with_diagnostics(text);
+    for e in &result.errors {
+        let range = e
+            .to_lsp_range()
+            .map(|(sl, sc, el, ec)| Range {
+                start: Position::new(sl, sc),
+                end: Position::new(el, ec),
+            })
+            .unwrap_or_else(|| Range {
+                start: Position::new(0, 0),
+                end: Position::new(0, 0),
+            });
+        let severity = e
+            .severity
+            .map(|s| match s {
+                sysml_parser::DiagnosticSeverity::Error => DiagnosticSeverity::ERROR,
+                sysml_parser::DiagnosticSeverity::Warning => DiagnosticSeverity::WARNING,
+            })
+            .unwrap_or(DiagnosticSeverity::ERROR);
+        diagnostics.push(Diagnostic {
+            range,
+            severity: Some(severity),
+            code: e.code.clone().map(tower_lsp::lsp_types::NumberOrString::String),
+            code_description: None,
+            source: Some("sysml".to_string()),
+            message: e.message.clone(),
+            related_information: None,
+            tags: None,
+            data: None,
+        });
+    }
+    for usage in util::untyped_part_usage_diagnostics(text) {
+        diagnostics.push(Diagnostic {
+            range: usage.range,
+            severity: Some(DiagnosticSeverity::WARNING),
+            code: Some(tower_lsp::lsp_types::NumberOrString::String(
+                "untyped_part_usage".to_string(),
+            )),
+            code_description: None,
+            source: Some("sysml".to_string()),
+            message: format!(
+                "Part '{}' has no declared type. Apply Quick Fix to create a matching part def.",
+                usage.name
+            ),
+            related_information: None,
+            tags: None,
+            data: None,
+        });
+    }
+    if result.errors.is_empty() {
+        for range in util::missing_semicolon_ranges(text) {
+            diagnostics.push(Diagnostic {
+                range,
+                severity: Some(DiagnosticSeverity::ERROR),
+                code: Some(tower_lsp::lsp_types::NumberOrString::String(
+                    "missing_semicolon".to_string(),
+                )),
+                code_description: None,
+                source: Some("sysml".to_string()),
+                message: "Missing ';' at end of statement.".to_string(),
+                related_information: None,
+                tags: None,
+                data: None,
+            });
+        }
+    }
+    if result.errors.is_empty() {
+        let uri_norm = util::normalize_file_uri(uri);
+        let locked = state.read().await;
+        for provider in &config.check_providers {
+            diagnostics.extend(provider.compute_diagnostics(&locked.semantic_graph, &uri_norm));
+        }
+    }
+    diagnostics
+}
+
+fn uri_under_any_root(uri: &Url, roots: &[Url]) -> bool {
+    let uri_path = match uri.to_file_path() {
+        Ok(path) => path,
+        Err(_) => return false,
+    };
+    roots.iter().any(|root| {
+        root.to_file_path()
+            .map(|root_path| uri_path.starts_with(root_path))
+            .unwrap_or(false)
+    })
+}
+
+async fn publish_workspace_diagnostics(
+    client: &Client,
+    state: &Arc<RwLock<ServerState>>,
+    config: &Arc<Spec42Config>,
+    target_uris: Option<&[Url]>,
+) {
+    let docs: Vec<(Url, String)> = {
+        let st = state.read().await;
+        if let Some(targets) = target_uris {
+            targets
+                .iter()
+                .filter_map(|uri| {
+                    st.index
+                        .get(uri)
+                        .map(|entry| (uri.clone(), entry.content.clone()))
+                })
+                .collect()
+        } else {
+            st.index
+                .iter()
+                .filter(|(uri, _)| {
+                    !util::uri_under_any_library(uri, &st.library_paths)
+                        && (st.workspace_roots.is_empty()
+                            || uri_under_any_root(uri, &st.workspace_roots))
+                })
+                .map(|(uri, entry)| (uri.clone(), entry.content.clone()))
+                .collect()
+        }
+    };
+
+    for (uri, text) in docs {
+        let diagnostics = collect_diagnostics_for_document(state, config, &uri, &text).await;
+        client.publish_diagnostics(uri, diagnostics, None).await;
     }
 }
 

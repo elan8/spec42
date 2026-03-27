@@ -738,3 +738,172 @@ fn untyped_part_usage_offers_code_action_to_create_part_def_and_type_usage() {
 
     let _ = child.kill();
 }
+
+#[test]
+fn workspace_scan_publishes_diagnostics_for_unopened_file() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root = temp.path().canonicalize().expect("canonical root");
+    let bad_path = root.join("bad.sysml");
+    fs::write(&bad_path, "package P { } }").expect("write invalid fixture");
+
+    let root_uri = url::Url::from_file_path(&root).expect("root uri");
+    let bad_uri = url::Url::from_file_path(&bad_path)
+        .expect("bad uri")
+        .to_string();
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": root_uri.as_str(),
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(600));
+
+    // Barrier request lets us drain diagnostics deterministically.
+    let barrier_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": barrier_id,
+            "method": "workspace/symbol",
+            "params": { "query": "" }
+        })
+        .to_string(),
+    );
+
+    let mut found_workspace_diag = false;
+    loop {
+        let msg = read_message(&mut stdout).expect("expected message while waiting for barrier");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"].as_str() == Some(bad_uri.as_str())
+        {
+            found_workspace_diag = json["params"]["diagnostics"]
+                .as_array()
+                .map(|d| !d.is_empty())
+                .unwrap_or(false);
+        }
+        if json["id"].as_i64() == Some(barrier_id) {
+            break;
+        }
+    }
+
+    assert!(
+        found_workspace_diag,
+        "expected diagnostics for unopened workspace file {}",
+        bad_uri
+    );
+    let _ = child.kill();
+}
+
+#[test]
+fn did_change_watched_files_delete_clears_diagnostics() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+    let uri = "file:///watched_deleted.sysml";
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": null,
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+
+    // Seed non-empty diagnostics for this URI.
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": "package P { } }" }
+            }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(250));
+
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "workspace/didChangeWatchedFiles",
+            "params": {
+                "changes": [{ "uri": uri, "type": 3 }]
+            }
+        })
+        .to_string(),
+    );
+
+    let barrier_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": barrier_id,
+            "method": "workspace/symbol",
+            "params": { "query": "" }
+        })
+        .to_string(),
+    );
+
+    let mut saw_clear = false;
+    loop {
+        let msg = read_message(&mut stdout).expect("expected message while waiting for barrier");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"].as_str() == Some(uri)
+        {
+            saw_clear = json["params"]["diagnostics"]
+                .as_array()
+                .map(|d| d.is_empty())
+                .unwrap_or(false);
+        }
+        if json["id"].as_i64() == Some(barrier_id) {
+            break;
+        }
+    }
+
+    assert!(
+        saw_clear,
+        "expected empty publishDiagnostics for deleted URI {}",
+        uri
+    );
+    let _ = child.kill();
+}
