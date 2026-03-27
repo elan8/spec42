@@ -161,3 +161,193 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
 
     let _ = child.kill();
 }
+
+#[test]
+fn lsp_diagnostics_clear_after_invalid_intermediate_edit_becomes_valid() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///edit_cycle.sysml";
+    let invalid = "package P { part def A {";
+    let valid = "package P { part def A { } }";
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": invalid }
+            }
+        })
+        .to_string(),
+    );
+    // Give the server a chance to process the invalid text update before requesting data.
+    std::thread::sleep(std::time::Duration::from_millis(200));
+
+    // Request on invalid intermediate text: server should remain responsive.
+    let hover_invalid_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": hover_invalid_id,
+            "method": "textDocument/hover",
+            "params": {
+                "textDocument": { "uri": uri },
+                "position": { "line": 0, "character": 0 }
+            }
+        })
+        .to_string(),
+    );
+    loop {
+        let msg = read_message(&mut stdout).expect("expected response while document is invalid");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["id"].as_i64() == Some(hover_invalid_id) {
+            assert!(
+                json.get("result").is_some(),
+                "hover on invalid intermediate text should return a JSON-RPC result"
+            );
+            break;
+        }
+    }
+
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didChange",
+            "params": {
+                "textDocument": { "uri": uri, "version": 2 },
+                "contentChanges": [{ "text": valid }]
+            }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(350));
+
+    // Request on final valid text: server should still be responsive after recovery.
+    let hover_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": hover_id,
+            "method": "textDocument/hover",
+            "params": {
+                "textDocument": { "uri": uri },
+                "position": { "line": 0, "character": 0 }
+            }
+        })
+        .to_string(),
+    );
+
+    loop {
+        let msg = read_message(&mut stdout).expect("expected response while waiting for hover");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["id"].as_i64() == Some(hover_id) {
+            assert!(
+                json.get("result").is_some(),
+                "hover on recovered valid text should return a JSON-RPC result"
+            );
+            break;
+        }
+    }
+
+    let _ = child.kill();
+}
+
+#[test]
+fn unresolved_type_reference_emits_semantic_diagnostic() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///missing_type.sysml";
+    let content = r#"
+        package P {
+            part def Vehicle {
+                part engine : MissingEngineType;
+            }
+        }
+    "#;
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+            }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(400));
+
+    let mut found_unresolved = false;
+    for _ in 0..25 {
+        let Some(msg) = read_message(&mut stdout) else {
+            break;
+        };
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() != Some("textDocument/publishDiagnostics") {
+            continue;
+        }
+        let diagnostics = json["params"]["diagnostics"]
+            .as_array()
+            .cloned()
+            .unwrap_or_default();
+        found_unresolved = diagnostics.iter().any(|d| {
+            d["source"].as_str() == Some("semantic")
+                && d["code"].as_str() == Some("unresolved_type_reference")
+        });
+        if found_unresolved {
+            break;
+        }
+    }
+    assert!(
+        found_unresolved,
+        "expected unresolved_type_reference semantic diagnostic"
+    );
+
+    let _ = child.kill();
+}

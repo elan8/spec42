@@ -8,8 +8,8 @@ on:
     branches: [main, master]
 
 jobs:
-  test:
-    name: Test
+  rust-fast:
+    name: Rust fast checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -22,11 +22,11 @@ jobs:
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
 
-      - name: cargo test
-        run: cargo test
+      - name: cargo test (required fast path)
+        run: cargo test --workspace
 
-      - name: cargo clippy
-        run: cargo clippy -- -W clippy::all
+      - name: cargo clippy (required fast path)
+        run: cargo clippy --workspace --all-targets -- -W clippy::all
 
   extension-tests:
     name: VS Code extension tests

@@ -30,6 +30,7 @@ A roadmap for evolving the sysml-language-server into a full-fledged professiona
 
 **Validation/testing status:**
 - Full SysML v2 validation suite exists, but is `#[ignore]`d in standard `cargo test` due to runtime cost
+- CI uses a tiered approach: required fast checks plus informational full-validation runs on PR/schedule/manual dispatch
 - CI deterministically covers release-critical editor workflows
 
 ---
@@ -56,8 +57,8 @@ A roadmap for evolving the sysml-language-server into a full-fledged professiona
 | ID | Item | Priority | Status |
 |----|------|----------|--------|
 | spec-1 | **Broader parser coverage** — Requirements, states, use cases, allocations, flows, views/viewpoints | High | In progress |
-| spec-2 | **Semantic validation** — Multiplicity, typing, redefines, connection semantics | High | In progress |
-| spec-3 | **Full validation suite CI** — Run SysML-v2-Release validation suite in CI by default | Medium | Partial (`#[ignore]` locally by default) |
+| spec-2 | **Semantic validation** — Multiplicity, typing, redefines, connection semantics | High | In progress (connection + typing checks expanded; multiplicity and unresolved-type diagnostics added; redefines checks active when graph metadata is present) |
+| spec-3 | **Full validation suite CI** — Run SysML-v2-Release validation suite in CI by default | Medium | Partial (tiered CI now includes informational full-validation workflow; fast path remains required) |
 | spec-4 | **Full BNF coverage** — Phased plan in [BNF_COVERAGE_PLAN.md](BNF_COVERAGE_PLAN.md) | Medium | In progress |
 
 ---

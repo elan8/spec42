@@ -126,6 +126,66 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
         }
     }
 
+    // 4) Multiplicity validation (syntax and interval sanity)
+    for node in graph.nodes_for_uri(uri) {
+        if let Some(multiplicity) = node.attributes.get("multiplicity").and_then(|v| v.as_str()) {
+            if let Some(message) = multiplicity_issue_message(multiplicity) {
+                diagnostics.push(diag(
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::WARNING,
+                    "semantic",
+                    "invalid_multiplicity",
+                    format!("Invalid multiplicity on '{}': {message}", node.name),
+                ));
+            }
+        }
+    }
+
+    // 5) Stronger typing checks: declarations that name a type should resolve via typing/specializes.
+    for node in graph.nodes_for_uri(uri) {
+        if let Some(type_ref) = declared_type_ref(node) {
+            let has_resolved_type = !graph.outgoing_typing_or_specializes_targets(node).is_empty();
+            if !has_resolved_type {
+                diagnostics.push(diag(
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::WARNING,
+                    "semantic",
+                    "unresolved_type_reference",
+                    format!(
+                        "Type reference '{}' for '{}' could not be resolved in the semantic graph.",
+                        type_ref, node.name
+                    ),
+                ));
+            }
+        }
+    }
+
+    // 6) Redefines consistency, when the parser/graph captures a `redefines` attribute.
+    for node in graph.nodes_for_uri(uri) {
+        let Some(redefines_raw) = node.attributes.get("redefines").and_then(|v| v.as_str()) else {
+            continue;
+        };
+        if redefines_raw.trim().is_empty() {
+            diagnostics.push(diag(
+                diagnostic_range(graph, node, None),
+                DiagnosticSeverity::WARNING,
+                "semantic",
+                "invalid_redefines_reference",
+                format!("Element '{}' has an empty redefines target.", node.name),
+            ));
+            continue;
+        }
+        if redefines_raw.trim() == node.name || redefines_raw.trim() == node.id.qualified_name {
+            diagnostics.push(diag(
+                diagnostic_range(graph, node, None),
+                DiagnosticSeverity::WARNING,
+                "semantic",
+                "invalid_redefines_reference",
+                format!("Element '{}' cannot redefine itself.", node.name),
+            ));
+        }
+    }
+
     diagnostics
 }
 
@@ -288,6 +348,74 @@ fn parse_port_type(s: &str) -> (String, bool) {
     (base.to_string(), conj)
 }
 
+fn declared_type_ref(node: &SemanticNode) -> Option<&str> {
+    [
+        "partType",
+        "attributeType",
+        "portType",
+        "actionType",
+        "actorType",
+        "itemType",
+        "occurrenceType",
+        "flowType",
+        "allocationType",
+        "stateType",
+        "requirementType",
+        "useCaseType",
+        "concernType",
+    ]
+    .iter()
+    .find_map(|k| node.attributes.get(*k).and_then(|v| v.as_str()))
+}
+
+fn multiplicity_issue_message(multiplicity: &str) -> Option<String> {
+    let normalized = multiplicity
+        .trim()
+        .trim_start_matches('[')
+        .trim_end_matches(']');
+    if normalized.is_empty() {
+        return Some("empty multiplicity".to_string());
+    }
+    let Some((lower_raw, upper_raw)) = normalized.split_once("..") else {
+        return validate_single_multiplicity_value(normalized);
+    };
+    let lower = match parse_non_negative_bound(lower_raw.trim()) {
+        Ok(value) => value,
+        Err(error) => return Some(error),
+    };
+    let upper = if upper_raw.trim() == "*" {
+        None
+    } else {
+        match parse_non_negative_bound(upper_raw.trim()) {
+            Ok(value) => Some(value),
+            Err(error) => return Some(error),
+        }
+    };
+    if let Some(upper) = upper {
+        if lower > upper {
+            return Some(format!(
+                "lower bound {lower} is greater than upper bound {upper}"
+            ));
+        }
+    }
+    None
+}
+
+fn validate_single_multiplicity_value(raw: &str) -> Option<String> {
+    if raw == "*" {
+        return None;
+    }
+    parse_non_negative_bound(raw).err()
+}
+
+fn parse_non_negative_bound(raw: &str) -> Result<i64, String> {
+    match raw.parse::<i64>() {
+        Ok(value) if value >= 0 => Ok(value),
+        Ok(value) => Err(format!("bound {value} must be non-negative")),
+        Err(_) => Err(format!("bound '{raw}' is not an integer or '*'")),
+    }
+}
+
 /// Default semantic checks (port connectivity, type compatibility, unconnected ports, duplicate connections).
 /// Implements [crate::config::SemanticCheckProvider] for use in [crate::config::Spec42Config].
 #[derive(Debug, Default)]
@@ -395,5 +523,23 @@ mod tests {
         // "connect l.p to r.p;" line (0-based, accounting for leading newline/indentation in input string)
         assert_eq!(mismatch.range.start.line, 11);
         assert_eq!(mismatch.range.end.line, 11);
+    }
+
+    #[test]
+    fn multiplicity_validator_rejects_negative_and_reversed_ranges() {
+        let negative = multiplicity_issue_message("[-1]");
+        assert!(negative.is_some());
+        assert!(negative.expect("negative issue").contains("non-negative"));
+
+        let reversed = multiplicity_issue_message("[5..2]");
+        assert!(reversed.is_some());
+        assert!(reversed.expect("reversed issue").contains("greater than"));
+    }
+
+    #[test]
+    fn multiplicity_validator_accepts_common_valid_forms() {
+        assert!(multiplicity_issue_message("[0..1]").is_none());
+        assert!(multiplicity_issue_message("[1..*]").is_none());
+        assert!(multiplicity_issue_message("[3]").is_none());
     }
 }

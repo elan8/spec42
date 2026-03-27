@@ -46,7 +46,8 @@ npm run compile
 The parser runs a full validation suite over all `.sysml` files in the official [SysML v2 Release](https://github.com/Systems-Modeling/SysML-v2-Release) `sysml/src/validation` directory. The test expects zero parser errors.
 
 - **Standard `cargo test`**: The full validation suite is `#[ignore]`d (slow). It does not run by default.
-- **CI**: When sysml-parser is used as a standalone repo, its own CI (sysml-parser/.github/workflows/ci.yml) clones the release and runs `cargo test -- --include-ignored`. When sysml-parser is part of this workspace, run the validation locally (see below).
+- **CI fast path (required)**: `.github/workflows/ci.yml` runs `cargo test --workspace` and `cargo clippy --workspace --all-targets -- -W clippy::all`.
+- **CI full validation (informational)**: `.github/workflows/full-validation.yml` runs on PR, schedule, and manual dispatch with `continue-on-error: true`, cloning SysML-v2-Release and executing `lsp_workspace_scan_sysml_release`.
 - **Locally**: The sysml-parser crate has a sysml-v2-release submodule. Initialize it and run the ignored tests:
 
   ```bash
@@ -65,6 +66,25 @@ cargo test
 ```
 
 This runs workspace tests including sysml-parser unit/validation tests and Spec42 LSP integration tests.
+
+## Semantic diagnostics pipeline
+
+`spec42-core/src/lsp_server.rs` publishes diagnostics in two stages:
+
+1. Parser diagnostics from `sysml_parser::parse_with_diagnostics` (source `sysml`)
+2. Semantic diagnostics from configured providers (source `semantic`) only when parse diagnostics are empty
+
+Default semantic checks are implemented in `spec42-core/src/semantic_checks.rs`.
+
+Current built-in semantic diagnostic codes include:
+
+- `connection_endpoint_not_port`
+- `port_type_mismatch`
+- `unconnected_port`
+- `duplicate_connection`
+- `invalid_multiplicity`
+- `unresolved_type_reference`
+- `invalid_redefines_reference` (emitted when `redefines` metadata is available in the semantic graph)
 
 ### LSP integration test organization
 
