@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-03-27
+
 ### Added
 
 - **Semantic diagnostics hardening** - Added new semantic diagnostics for invalid multiplicity intervals (`invalid_multiplicity`) and unresolved declared type references (`unresolved_type_reference`), plus guardrails for invalid/self-referential `redefines` metadata (`invalid_redefines_reference`) when available in the semantic graph.
@@ -23,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Technical debt hardening** - Added release preflight checks and SHA256 release asset checksums in `.github/workflows/release.yml`, and expanded required extension CI to include the interconnection test suite.
 - **Docs and metadata alignment** - Updated `DEVELOPMENT.md` local validation steps to match current repo workflows and aligned extension experimental-view wording in `vscode/package.json`.
 - **Parser reproducibility** - Pinned `sysml-parser` to an explicit git revision in `spec42-core/Cargo.toml` and documented parser update policy in `DEVELOPMENT.md`.
+- **VS Code extension packaging** - Updated extension packaging to include runtime dependencies required at activation time and tightened packaging excludes to avoid shipping unnecessary development/test artifacts in the VSIX.
 
 ## [0.8.0] - 2026-03-27
 
@@ -128,6 +131,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.9.0]: https://github.com/elan8/spec42/releases/tag/v0.9.0
 [0.8.0]: https://github.com/elan8/spec42/releases/tag/v0.8.0
 [0.7.0]: https://github.com/elan8/spec42/releases/tag/v0.7.0
 [0.6.0]: https://github.com/elan8/spec42/releases/tag/v0.6.0
