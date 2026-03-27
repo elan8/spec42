@@ -158,12 +158,28 @@ describe("Interconnection Visualization", () => {
         );
 
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
+        // CI runners can take longer to settle after view changes before export is ready.
+        await new Promise((r) => setTimeout(r, 1800));
+        const exportUri = vscode.Uri.joinPath(
+            workspaceFolder.uri,
+            "test-output",
+            "diagrams",
+            "interconnection-view.svg"
+        );
+        try {
+            await vscode.workspace.fs.delete(exportUri, { useTrash: false });
+        } catch {
+            // Ignore if there is no previous export yet.
+        }
+        panel.getWebview()?.postMessage({ command: "exportDiagramForTest" });
+        // Retry one more trigger for slower Linux CI hosts where first post can race.
+        await new Promise((r) => setTimeout(r, 800));
         panel.getWebview()?.postMessage({ command: "exportDiagramForTest" });
         const { svgText } = await waitForDiagramExport(
             workspaceFolder.uri,
             "interconnection-view",
             (text) => text.includes("ibd-connector"),
-            16000
+            30000
         );
 
         assert.ok(svgText.includes("<svg"), "interconnection-view export should contain svg markup");

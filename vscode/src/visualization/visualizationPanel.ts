@@ -93,6 +93,7 @@ export class VisualizationPanel {
     private _currentView: string = 'general-view'; // Store current view state - SysML v2 general-view
     private _isNavigating: boolean = false; // Flag to prevent view reset during navigation
     private _fileChangeDebounceTimer: ReturnType<typeof setTimeout> | undefined; // Debounce file change notifications
+    private _requestCurrentViewTimer: ReturnType<typeof setTimeout> | undefined;
     private _lastContentHash: string = ''; // Cache content hash to skip unchanged updates
     private _needsUpdateWhenVisible: boolean = false; // Deferred update when panel is hidden
     private _lastViewColumn: vscode.ViewColumn | undefined; // Track view column to detect panel moves
@@ -153,8 +154,13 @@ export class VisualizationPanel {
             clearPendingPackageName: () => { this._pendingPackageName = undefined; },
         });
 
-        setTimeout(() => {
-            this._panel.webview.postMessage({ command: 'requestCurrentView' });
+        this._requestCurrentViewTimer = setTimeout(() => {
+            this._requestCurrentViewTimer = undefined;
+            try {
+                this._panel.webview.postMessage({ command: 'requestCurrentView' });
+            } catch {
+                // Panel may be disposed during teardown in tests.
+            }
         }, 100);
 
         const dispatch = createMessageDispatcher({
@@ -396,6 +402,14 @@ export class VisualizationPanel {
     public dispose() {
         VisualizationPanel.currentPanel = undefined;
         this._context?.workspaceState.update(RESTORE_STATE_KEY, undefined);
+        if (this._requestCurrentViewTimer) {
+            clearTimeout(this._requestCurrentViewTimer);
+            this._requestCurrentViewTimer = undefined;
+        }
+        if (this._fileChangeDebounceTimer) {
+            clearTimeout(this._fileChangeDebounceTimer);
+            this._fileChangeDebounceTimer = undefined;
+        }
         this._panel.dispose();
         while (this._disposables.length) {
             const disposable = this._disposables.pop();
