@@ -20,7 +20,7 @@ use crate::lsp::library_search;
 use crate::lsp::lifecycle::{scan_roots, workspace_roots_from_initialize};
 use crate::lsp::navigation::{collect_document_links, selection_ranges_for_positions};
 use crate::lsp::request_helpers::indexed_text;
-use crate::lsp::symbols::{build_code_lens, build_inlay_hints};
+use crate::lsp::symbols::build_code_lens;
 use crate::lsp::types::{IndexEntry, ServerState};
 use crate::semantic_model;
 use crate::util;
@@ -1150,18 +1150,6 @@ impl LanguageServer for Backend {
             document_changes: None,
             change_annotations: None,
         }))
-    }
-
-    async fn inlay_hint(&self, params: InlayHintParams) -> Result<Option<Vec<InlayHint>>> {
-        let uri = params.text_document.uri;
-        let uri_norm = util::normalize_file_uri(&uri);
-        let state = self.state.read().await;
-        match state.index.get(&uri_norm) {
-            Some(_) => {}
-            None => return Ok(None),
-        };
-        let hints = build_inlay_hints(&state, &uri_norm);
-        Ok(Some(hints))
     }
 
     async fn document_symbol(

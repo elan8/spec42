@@ -32,7 +32,7 @@ pub(crate) fn server_capabilities(config: &Spec42Config) -> ServerCapabilities {
         code_lens_provider: Some(CodeLensOptions {
             resolve_provider: Some(false),
         }),
-        inlay_hint_provider: Some(OneOf::Left(true)),
+        inlay_hint_provider: None,
         linked_editing_range_provider: Some(LinkedEditingRangeServerCapabilities::Simple(true)),
         document_formatting_provider: Some(OneOf::Left(true)),
         moniker_provider: Some(OneOf::Left(true)),

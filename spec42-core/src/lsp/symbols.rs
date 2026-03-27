@@ -1,34 +1,7 @@
 use crate::lsp::types::ServerState;
 use tower_lsp::lsp_types::{
-    CodeLens, Command, InlayHint, InlayHintKind, InlayHintLabel, Position, Url,
+    CodeLens, Command, Url,
 };
-
-pub(crate) fn build_inlay_hints(state: &ServerState, uri_norm: &Url) -> Vec<InlayHint> {
-    let mut hints = Vec::new();
-    let mut seen = std::collections::HashSet::<(u32, u32, String)>::new();
-    for sym in state.symbol_table.iter().filter(|s| s.uri == *uri_norm) {
-        if let Some(sig) = &sym.signature {
-            if let Some((_, rhs)) = sig.split_once(':') {
-                let label = format!(" :{}", rhs.trim_end_matches(';').trim());
-                let key = (sym.range.end.line, sym.range.end.character, label.clone());
-                if !seen.insert(key) {
-                    continue;
-                }
-                hints.push(InlayHint {
-                    position: Position::new(sym.range.end.line, sym.range.end.character),
-                    label: InlayHintLabel::String(label),
-                    kind: Some(InlayHintKind::TYPE),
-                    text_edits: None,
-                    tooltip: None,
-                    padding_left: Some(true),
-                    padding_right: Some(false),
-                    data: None,
-                });
-            }
-        }
-    }
-    hints
-}
 
 pub(crate) fn build_code_lens(state: &ServerState, uri_norm: &Url) -> Vec<CodeLens> {
     let mut out = Vec::new();
