@@ -56,8 +56,8 @@ A roadmap for evolving the sysml-language-server into a full-fledged professiona
 
 | ID | Item | Priority | Status |
 |----|------|----------|--------|
-| spec-1 | **Broader parser coverage** — Requirements, states, use cases, allocations, flows, views/viewpoints | High | In progress |
-| spec-2 | **Semantic validation** — Multiplicity, typing, redefines, connection semantics | High | In progress (connection + typing checks expanded; multiplicity and unresolved-type diagnostics added; redefines checks active when graph metadata is present) |
+| spec-1 | **Broader parser coverage** — Requirements, states, use cases, allocations, flows, views/viewpoints | High | In progress (requirements slice now has stronger graph/typing coverage including cross-file requirement usage typing) |
+| spec-2 | **Semantic validation** — Multiplicity, typing, redefines, connection semantics | High | In progress (connection + typing checks expanded; multiplicity and unresolved-type diagnostics added; redefines checks active when graph metadata is present; unresolved satisfy diagnostics added) |
 | spec-3 | **Full validation suite CI** — Run SysML-v2-Release validation suite in CI by default | Medium | Partial (tiered CI now includes informational full-validation workflow; fast path remains required) |
 | spec-4 | **Full BNF coverage** — Phased plan in [BNF_COVERAGE_PLAN.md](BNF_COVERAGE_PLAN.md) | Medium | In progress |
 

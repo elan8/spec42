@@ -1399,6 +1399,19 @@ fn add_expression_edge_if_both_exist(
         }
     } else {
         let Some(id) = resolve_expression_endpoint_legacy(g, uri, container_prefix, &left_str) else {
+            if kind == RelationshipKind::Satisfy {
+                add_diagnostic_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    "unresolved_satisfy_source",
+                    format!(
+                        "Could not resolve satisfy source '{}'. Use a valid in-scope element name.",
+                        left_str
+                    ),
+                    span_to_range(&left.span),
+                );
+            }
             return;
         };
         id
@@ -1424,6 +1437,19 @@ fn add_expression_edge_if_both_exist(
         }
     } else {
         let Some(id) = resolve_expression_endpoint_legacy(g, uri, container_prefix, &right_str) else {
+            if kind == RelationshipKind::Satisfy {
+                add_diagnostic_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    "unresolved_satisfy_target",
+                    format!(
+                        "Could not resolve satisfy target '{}'. Use a valid in-scope element name.",
+                        right_str
+                    ),
+                    span_to_range(&right.span),
+                );
+            }
             return;
         };
         id

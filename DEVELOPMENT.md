@@ -85,6 +85,22 @@ Current built-in semantic diagnostic codes include:
 - `invalid_multiplicity`
 - `unresolved_type_reference`
 - `invalid_redefines_reference` (emitted when `redefines` metadata is available in the semantic graph)
+- `unresolved_satisfy_source`
+- `unresolved_satisfy_target`
+
+## Requirements slice checks
+
+Requirements slice regression checks are covered by focused integration tests in `spec42-core/tests/integration/lsp_integration.rs`:
+
+- `integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file`
+- `integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_cross_file`
+- `integration::diagnostics::unresolved_satisfy_reference_emits_semantic_diagnostic`
+
+Fixtures used by these checks:
+
+- `spec42-core/tests/fixtures/requirements_typing_defs.sysml`
+- `spec42-core/tests/fixtures/requirements_typing_usage.sysml`
+- `spec42-core/tests/fixtures/requirements_unresolved_satisfy.sysml`
 
 ### LSP integration test organization
 

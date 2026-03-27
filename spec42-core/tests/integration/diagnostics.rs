@@ -351,3 +351,96 @@ fn unresolved_type_reference_emits_semantic_diagnostic() {
 
     let _ = child.kill();
 }
+
+#[test]
+fn unresolved_satisfy_reference_emits_semantic_diagnostic() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///unresolved_satisfy.sysml";
+    let fixture_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests")
+        .join("fixtures")
+        .join("requirements_unresolved_satisfy.sysml");
+    let content = fs::read_to_string(&fixture_path).expect("read unresolved satisfy fixture");
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": null,
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+            }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(250));
+
+    // Drive a guaranteed response so we can deterministically drain diagnostics messages.
+    let hover_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": hover_id,
+            "method": "textDocument/hover",
+            "params": {
+                "textDocument": { "uri": uri },
+                "position": { "line": 0, "character": 0 }
+            }
+        })
+        .to_string(),
+    );
+
+    let mut found_unresolved_satisfy = false;
+    loop {
+        let msg = read_message(&mut stdout).expect("expected message while waiting for hover response");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"].as_str() == Some(uri)
+        {
+            let diagnostics = json["params"]["diagnostics"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+            found_unresolved_satisfy = diagnostics.iter().any(|d| {
+                d["source"].as_str() == Some("semantic")
+                    && (d["code"].as_str() == Some("unresolved_satisfy_source")
+                        || d["code"].as_str() == Some("unresolved_satisfy_target"))
+            });
+        }
+        if json["id"].as_i64() == Some(hover_id) {
+            break;
+        }
+    }
+
+    assert!(
+        found_unresolved_satisfy,
+        "expected unresolved_satisfy_* semantic diagnostic for missing satisfy reference"
+    );
+
+    let _ = child.kill();
+}

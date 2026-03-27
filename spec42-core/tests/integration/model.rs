@@ -286,6 +286,168 @@ fn lsp_sysml_model_graph_includes_requirement_usecase_and_state_nodes() {
 }
 
 #[test]
+fn lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///requirements_same_file.sysml";
+    let content = r#"
+        package R {
+            requirement def EnduranceReq;
+            requirement enduranceCheck : EnduranceReq;
+        }
+    "#;
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": { "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content } }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(120));
+
+    let model_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": model_id,
+            "method": "sysml/model",
+            "params": { "textDocument": { "uri": uri }, "scope": ["graph"] }
+        })
+        .to_string(),
+    );
+    let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+    let edges = model_json["result"]["graph"]["edges"]
+        .as_array()
+        .expect("graph edges array");
+
+    assert!(
+        edges.iter().any(|edge| {
+            edge["type"].as_str() == Some("typing")
+                && edge["source"]
+                    .as_str()
+                    .is_some_and(|source| source.ends_with("enduranceCheck"))
+                && edge["target"]
+                    .as_str()
+                    .is_some_and(|target| target.ends_with("EnduranceReq"))
+        }),
+        "expected requirement usage typing edge enduranceCheck -> EnduranceReq, got: {edges:#?}"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
+fn lsp_sysml_model_graph_resolves_requirement_usage_typing_cross_file() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let defs_uri = "file:///requirements_defs.sysml";
+    let defs_content = fixture_text("requirements_typing_defs.sysml");
+    let usage_uri = "file:///requirements_usage.sysml";
+    let usage_content = fixture_text("requirements_typing_usage.sysml");
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": null,
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+
+    for (uri, text, version) in [
+        (defs_uri, defs_content.as_str(), 1),
+        (usage_uri, usage_content.as_str(), 2),
+    ] {
+        send_message(
+            &mut stdin,
+            &serde_json::json!({
+                "jsonrpc": "2.0",
+                "method": "textDocument/didOpen",
+                "params": {
+                    "textDocument": { "uri": uri, "languageId": "sysml", "version": version, "text": text }
+                }
+            })
+            .to_string(),
+        );
+    }
+    std::thread::sleep(std::time::Duration::from_millis(180));
+
+    let model_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": model_id,
+            "method": "sysml/model",
+            "params": { "textDocument": { "uri": usage_uri }, "scope": ["graph"] }
+        })
+        .to_string(),
+    );
+    let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+    let edges = model_json["result"]["graph"]["edges"]
+        .as_array()
+        .expect("graph edges array");
+
+    assert!(
+        edges.iter().any(|edge| {
+            edge["type"].as_str() == Some("typing")
+                && edge["source"]
+                    .as_str()
+                    .is_some_and(|source| source.ends_with("enduranceCheck"))
+                && edge["target"]
+                    .as_str()
+                    .is_some_and(|target| target.ends_with("EnduranceReq"))
+        }),
+        "expected cross-file requirement usage typing edge enduranceCheck -> EnduranceReq, got: {edges:#?}"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
 fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");

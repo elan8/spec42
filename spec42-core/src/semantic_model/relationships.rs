@@ -94,7 +94,7 @@ fn add_edge_if_both_exist_opt(
 
 /// Adds a typing edge if source exists and target can be resolved. Tries type_ref as-is,
 /// then qualified with package prefixes, then #kind-suffixed variants for disambiguated nodes.
-/// Only matches targets that are actual types (part def, port def, interface) to avoid
+/// Only matches targets that are actual types (part def, port def, interface, requirement def) to avoid
 /// matching a package that shares the same name.
 pub(crate) fn add_typing_edge_if_exists(
     g: &mut SemanticGraph,
@@ -109,6 +109,7 @@ pub(crate) fn add_typing_edge_if_exists(
         "interface",
         "item def",
         "attribute def",
+        "requirement def",
     ];
     for kind in ["part_def", "port_def"] {
         for tgt in type_ref_candidates_with_kind(container_prefix, type_ref, kind) {
@@ -235,6 +236,7 @@ pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
             .or_else(|| node.attributes.get("portType"))
             .or_else(|| node.attributes.get("actorType"))
             .or_else(|| node.attributes.get("itemType"))
+            .or_else(|| node.attributes.get("requirementType"))
         {
             if let Some(type_ref) = v.as_str() {
                 work.push((
@@ -262,7 +264,7 @@ pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
 }
 
 /// Adds a typing or specializes edge when target may be in a different URI.
-/// Only matches targets that are actual types (part def, port def, interface for typing;
+/// Only matches targets that are actual types (part def, port def, interface, requirement def for typing;
 /// part def only for specializes).
 fn add_typing_edge_cross_document(
     g: &mut SemanticGraph,
@@ -278,6 +280,7 @@ fn add_typing_edge_cross_document(
             "interface",
             "item def",
             "attribute def",
+            "requirement def",
         ],
         RelationshipKind::Specializes => &["part def"],
         _ => &[],
