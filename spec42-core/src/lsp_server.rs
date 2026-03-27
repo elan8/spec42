@@ -16,6 +16,7 @@ use crate::lsp::indexing::{
     remove_symbol_table_entries_for_uri, scan_sysml_files, update_semantic_graph_for_uri,
     update_symbol_table_for_uri,
 };
+use crate::lsp::library_search;
 use crate::lsp::lifecycle::{scan_roots, workspace_roots_from_initialize};
 use crate::lsp::navigation::{collect_document_links, selection_ranges_for_positions};
 use crate::lsp::request_helpers::indexed_text;
@@ -27,7 +28,6 @@ use crate::util;
 use crate::semantic_tokens::{
     ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range,
 };
-use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::RwLock;
@@ -126,7 +126,11 @@ impl LanguageServer for Backend {
                 let mut new_entries =
                     semantic_model::symbol_entries_for_uri(&st.semantic_graph, &uri_norm);
                 if let Some(index_entry) = st.index.get(&uri_norm) {
-                    add_short_name_symbol_entries(&mut new_entries, &index_entry.content, &uri_norm);
+                    library_search::add_short_name_symbol_entries(
+                        &mut new_entries,
+                        &index_entry.content,
+                        &uri_norm,
+                    );
                 }
                 update_symbol_table_for_uri(&mut st, &uri_norm, Some(&new_entries));
                 if util::uri_under_any_library(&uri_norm, &st.library_paths) {
@@ -253,7 +257,11 @@ impl LanguageServer for Backend {
             let mut new_entries =
                 semantic_model::symbol_entries_for_uri(&state.semantic_graph, &uri_norm);
             if let Some(index_entry) = state.index.get(&uri_norm) {
-                add_short_name_symbol_entries(&mut new_entries, &index_entry.content, &uri_norm);
+                library_search::add_short_name_symbol_entries(
+                    &mut new_entries,
+                    &index_entry.content,
+                    &uri_norm,
+                );
             }
             update_symbol_table_for_uri(&mut state, &uri_norm, Some(&new_entries));
         }
@@ -348,7 +356,7 @@ impl LanguageServer for Backend {
                 let mut new_entries =
                     semantic_model::symbol_entries_for_uri(&state.semantic_graph, &uri_norm);
                 if let Some(index_entry) = state.index.get(&uri_norm) {
-                    add_short_name_symbol_entries(
+                    library_search::add_short_name_symbol_entries(
                         &mut new_entries,
                         &index_entry.content,
                         &uri_norm,
@@ -412,7 +420,7 @@ impl LanguageServer for Backend {
                                 &uri_norm,
                             );
                             if let Some(index_entry) = state.index.get(&uri_norm) {
-                                add_short_name_symbol_entries(
+                                library_search::add_short_name_symbol_entries(
                                     &mut new_entries,
                                     &index_entry.content,
                                     &uri_norm,
@@ -512,7 +520,11 @@ impl LanguageServer for Backend {
                 let mut new_entries =
                     semantic_model::symbol_entries_for_uri(&st.semantic_graph, &uri_norm);
                 if let Some(index_entry) = st.index.get(&uri_norm) {
-                    add_short_name_symbol_entries(&mut new_entries, &index_entry.content, &uri_norm);
+                    library_search::add_short_name_symbol_entries(
+                        &mut new_entries,
+                        &index_entry.content,
+                        &uri_norm,
+                    );
                 }
                 update_symbol_table_for_uri(&mut st, &uri_norm, Some(&new_entries));
                 if util::uri_under_any_library(&uri_norm, &st.library_paths) {
@@ -1519,11 +1531,12 @@ impl Backend {
             .iter()
             .filter(|entry| util::uri_under_any_library(&entry.uri, &state.library_paths))
             .filter_map(|entry| {
-                let normalized_name = normalized_library_symbol_name(entry, state.index.get(&entry.uri));
+                let normalized_name =
+                    library_search::normalized_library_symbol_name(entry, state.index.get(&entry.uri));
                 let score = if query.is_empty() {
                     1_000
                 } else {
-                    library_search_score(&normalized_name, &query)?
+                    library_search::library_search_score(&normalized_name, &query)?
                 };
                 Some((score, entry))
             })
@@ -1541,18 +1554,18 @@ impl Backend {
             .into_iter()
             .take(limit)
             .map(|(score, entry)| dto::SysmlLibrarySearchItemDto {
-                name: normalized_library_symbol_name(entry, state.index.get(&entry.uri)),
-                kind: symbol_kind_label(entry.kind).to_string(),
+                name: library_search::normalized_library_symbol_name(entry, state.index.get(&entry.uri)),
+                kind: library_search::symbol_kind_label(entry.kind).to_string(),
                 container: entry.container_name.clone(),
                 uri: entry.uri.to_string(),
                 range: dto::range_to_dto(entry.range),
                 score,
-                source: library_source_label(&entry.uri).to_string(),
+                source: library_search::library_source_label(&entry.uri).to_string(),
                 path: entry.uri.path().to_string(),
             })
             .collect();
 
-        let sources = build_library_tree(items);
+        let sources = library_search::build_library_tree(items);
         let symbol_total = sources
             .iter()
             .map(|src| src.packages.iter().map(|pkg| pkg.symbols.len()).sum::<usize>())
@@ -1659,250 +1672,6 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     Server::new(stdin, stdout, socket).serve(service).await;
 }
 
-fn symbol_kind_label(kind: SymbolKind) -> &'static str {
-    match kind {
-        SymbolKind::FILE => "file",
-        SymbolKind::MODULE => "module",
-        SymbolKind::NAMESPACE => "namespace",
-        SymbolKind::PACKAGE => "package",
-        SymbolKind::CLASS => "class",
-        SymbolKind::METHOD => "method",
-        SymbolKind::PROPERTY => "property",
-        SymbolKind::FIELD => "field",
-        SymbolKind::CONSTRUCTOR => "constructor",
-        SymbolKind::ENUM => "enum",
-        SymbolKind::INTERFACE => "interface",
-        SymbolKind::FUNCTION => "function",
-        SymbolKind::VARIABLE => "variable",
-        SymbolKind::CONSTANT => "constant",
-        SymbolKind::STRING => "string",
-        SymbolKind::NUMBER => "number",
-        SymbolKind::BOOLEAN => "boolean",
-        SymbolKind::ARRAY => "array",
-        SymbolKind::OBJECT => "object",
-        SymbolKind::KEY => "key",
-        SymbolKind::NULL => "null",
-        SymbolKind::ENUM_MEMBER => "enumMember",
-        SymbolKind::STRUCT => "struct",
-        SymbolKind::EVENT => "event",
-        SymbolKind::OPERATOR => "operator",
-        SymbolKind::TYPE_PARAMETER => "typeParameter",
-        _ => "symbol",
-    }
-}
-
-fn normalized_library_symbol_name(
-    entry: &crate::language::SymbolEntry,
-    index_entry: Option<&crate::lsp::types::IndexEntry>,
-) -> String {
-    if !is_generic_symbol_name(&entry.name) {
-        return entry.name.clone();
-    }
-    if let Some(content) = index_entry.map(|idx| idx.content.as_str()) {
-        if let Some(name) = extract_declared_name_from_line(content, entry.range.start.line as usize) {
-            return name;
-        }
-    }
-    entry.name.clone()
-}
-
-fn is_generic_symbol_name(name: &str) -> bool {
-    matches!(name.trim().to_ascii_lowercase().as_str(), "" | "def" | "usage")
-}
-
-fn extract_declared_name_from_line(content: &str, line_idx: usize) -> Option<String> {
-    let line = content.lines().nth(line_idx)?.trim();
-    if line.is_empty() {
-        return None;
-    }
-    // Normalize punctuation so "allocation def Allocation :>" tokenizes predictably.
-    let normalized = line
-        .chars()
-        .map(|c| {
-            if c.is_ascii_alphanumeric() || c == '_' || c == '\'' || c == '-' {
-                c
-            } else {
-                ' '
-            }
-        })
-        .collect::<String>();
-    let tokens: Vec<&str> = normalized.split_whitespace().collect();
-    if tokens.len() < 2 {
-        return None;
-    }
-    for i in 0..(tokens.len() - 1) {
-        let tok = tokens[i].to_ascii_lowercase();
-        if (tok == "def" || tok == "usage") && is_valid_decl_name(tokens[i + 1]) {
-            return Some(tokens[i + 1].to_string());
-        }
-    }
-    None
-}
-
-fn is_valid_decl_name(token: &str) -> bool {
-    let mut chars = token.chars();
-    match chars.next() {
-        Some(c) if c.is_ascii_alphabetic() || c == '_' => {}
-        _ => return false,
-    }
-    chars.all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '\'' || c == '-')
-}
-
-fn build_library_tree(
-    items: Vec<dto::SysmlLibrarySearchItemDto>,
-) -> Vec<dto::SysmlLibrarySearchSourceDto> {
-    let mut by_source: BTreeMap<String, BTreeMap<String, Vec<dto::SysmlLibrarySearchItemDto>>> =
-        BTreeMap::new();
-    let mut package_name_by_source_path: BTreeMap<(String, String), String> = BTreeMap::new();
-
-    for item in &items {
-        if item.kind == "module" && !item.name.trim().is_empty() {
-            package_name_by_source_path
-                .entry((item.source.clone(), item.path.clone()))
-                .or_insert_with(|| item.name.clone());
-        }
-    }
-
-    for item in items {
-        let source = item.source.clone();
-        let package_name = package_name_by_source_path
-            .get(&(source.clone(), item.path.clone()))
-            .cloned()
-            .unwrap_or_else(|| package_name_from_path(&item.path));
-        by_source
-            .entry(source)
-            .or_default()
-            .entry(package_name)
-            .or_default()
-            .push(item);
-    }
-
-    let mut out = Vec::new();
-    for (source, mut by_package) in by_source {
-        let mut packages = Vec::new();
-        for (package_name, symbols) in by_package.iter_mut() {
-            symbols.sort_by(|a, b| b.score.cmp(&a.score).then(a.name.cmp(&b.name)));
-            symbols.retain(|s| {
-                // Do not duplicate the package module symbol as child entry.
-                !(s.kind == "module" && s.name.eq_ignore_ascii_case(package_name))
-            });
-        }
-
-        for (package_name, symbols) in by_package {
-            if symbols.is_empty() {
-                continue;
-            }
-            let path = symbols
-                .first()
-                .map(|s| s.path.clone())
-                .unwrap_or_else(|| package_name.clone());
-            packages.push(dto::SysmlLibrarySearchPackageDto {
-                name: package_name,
-                path,
-                source: source.clone(),
-                symbols,
-            });
-        }
-
-        packages.sort_by(|a, b| a.name.cmp(&b.name));
-        out.push(dto::SysmlLibrarySearchSourceDto { source, packages });
-    }
-
-    out
-}
-
-fn package_name_from_path(path: &str) -> String {
-    let file = path.rsplit('/').next().unwrap_or(path);
-    if let Some(stem) = file.strip_suffix(".sysml") {
-        return stem.to_string();
-    }
-    if let Some(stem) = file.strip_suffix(".kerml") {
-        return stem.to_string();
-    }
-    file.to_string()
-}
-
-fn library_source_label(uri: &Url) -> &'static str {
-    let path = uri.path().to_ascii_lowercase();
-    if path.contains("/standard-library/") {
-        "standard"
-    } else {
-        "custom"
-    }
-}
-
-fn library_search_score(name: &str, query_lc: &str) -> Option<i64> {
-    let name_lc = name.to_ascii_lowercase();
-    if name_lc == query_lc {
-        return Some(10_000);
-    }
-    if name_lc.starts_with(query_lc) {
-        return Some(8_000 - (name_lc.len() as i64));
-    }
-    if let Some(pos) = name_lc.find(query_lc) {
-        return Some(6_000 - (pos as i64) * 10 - (name_lc.len() as i64));
-    }
-    fuzzy_subsequence_score(&name_lc, query_lc).map(|s| 4_000 + s)
-}
-
-fn add_short_name_symbol_entries(
-    entries: &mut Vec<crate::language::SymbolEntry>,
-    content: &str,
-    uri: &Url,
-) {
-    let mut existing_names: std::collections::HashSet<String> =
-        entries.iter().map(|e| e.name.clone()).collect();
-    for (line_idx, line) in content.lines().enumerate() {
-        let mut cursor = 0usize;
-        while let Some(open_rel) = line[cursor..].find('<') {
-            let open = cursor + open_rel;
-            let after_open = open + 1;
-            let Some(close_rel) = line[after_open..].find('>') else {
-                break;
-            };
-            let close = after_open + close_rel;
-            let token = &line[after_open..close];
-            cursor = close + 1;
-            if !is_valid_decl_name(token) || existing_names.contains(token) {
-                continue;
-            }
-
-            let start_char = line[..after_open].chars().count() as u32;
-            let end_char = start_char + token.chars().count() as u32;
-            let anchor = entries
-                .iter()
-                .find(|e| e.range.start.line == line_idx as u32 && !e.name.trim().is_empty());
-            let (kind, container_name, detail, description) = match anchor {
-                Some(a) => (
-                    a.kind,
-                    a.container_name.clone(),
-                    a.detail.clone(),
-                    Some(format!("short name for {}", a.name)),
-                ),
-                None => (
-                    SymbolKind::VARIABLE,
-                    None,
-                    Some("short name".to_string()),
-                    Some("short name from declaration".to_string()),
-                ),
-            };
-            entries.push(crate::language::SymbolEntry {
-                name: token.to_string(),
-                uri: uri.clone(),
-                range: Range::new(
-                    Position::new(line_idx as u32, start_char),
-                    Position::new(line_idx as u32, end_char),
-                ),
-                kind,
-                container_name,
-                detail,
-                description,
-                signature: None,
-            });
-            existing_names.insert(token.to_string());
-        }
-    }
-}
 
 fn collect_symbol_matches_for_lookup<'a>(
     state: &'a crate::lsp::types::ServerState,
@@ -2024,24 +1793,3 @@ fn debug_qualified_lookup_context(
     );
 }
 
-fn fuzzy_subsequence_score(text: &str, query: &str) -> Option<i64> {
-    if query.is_empty() {
-        return Some(0);
-    }
-    let mut score: i64 = 0;
-    let mut text_index = 0usize;
-    let text_chars: Vec<char> = text.chars().collect();
-    for ch in query.chars() {
-        let mut found = None;
-        for (idx, c) in text_chars.iter().enumerate().skip(text_index) {
-            if *c == ch {
-                found = Some(idx);
-                break;
-            }
-        }
-        let idx = found?;
-        score += 100 - ((idx - text_index) as i64 * 3);
-        text_index = idx + 1;
-    }
-    Some(score.max(0))
-}

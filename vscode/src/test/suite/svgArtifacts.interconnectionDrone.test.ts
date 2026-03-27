@@ -7,6 +7,7 @@ import {
   configureServerForTests,
   getFixturePath,
   getTestWorkspaceFolder,
+  waitForDiagramExport,
   waitFor,
   waitForLanguageServerReady,
 } from "./testUtils";
@@ -19,11 +20,6 @@ function getExtensionRoot(): string {
 
 function ensureDir(p: string): void {
   fs.mkdirSync(p, { recursive: true });
-}
-
-async function readWorkspaceFile(uri: vscode.Uri): Promise<string> {
-  const bytes = await vscode.workspace.fs.readFile(uri);
-  return Buffer.from(bytes).toString("utf8");
 }
 
 describe("SVG artifacts (SurveillanceDrone, elkjs)", () => {
@@ -78,14 +74,10 @@ describe("SVG artifacts (SurveillanceDrone, elkjs)", () => {
       activityDiagrams: model?.activityDiagrams ?? [],
       currentView: "general-view",
     });
-    await new Promise((r) => setTimeout(r, 1200));
-
     const outputDir = vscode.Uri.joinPath(workspaceFolder.uri, "test-output", "diagrams");
 
     async function exportView(viewId: string): Promise<{ svgText: string; fileName: string }> {
       await vscode.commands.executeCommand("sysml.changeVisualizerView", viewId);
-      await new Promise((r) => setTimeout(r, 2600));
-
       const uri = vscode.Uri.joinPath(outputDir, `${viewId}.svg`);
       try {
         await vscode.workspace.fs.delete(uri, { useTrash: false });
@@ -93,23 +85,19 @@ describe("SVG artifacts (SurveillanceDrone, elkjs)", () => {
         // ignore
       }
       panel.getWebview()?.postMessage({ command: "exportDiagramForTest" });
-      const svgText = await waitFor(
-        `${viewId} svg export`,
-        async () => {
-          try {
-            return await readWorkspaceFile(uri);
-          } catch {
-            return "";
+      const { svgText } = await waitForDiagramExport(
+        workspaceFolder.uri,
+        viewId,
+        (text) => {
+          if (viewId === "general-view") {
+            return !text.includes("<g/></svg>");
           }
-        },
-        (value) => {
-          const text = value ?? "";
-          if (!text.includes("<svg")) return false;
-          if (viewId === "general-view" && text.includes("<g/></svg>")) return false;
+          if (viewId === "interconnection-view") {
+            return text.includes("ibd-connector");
+          }
           return true;
         },
-        12000,
-        200
+        14000
       );
       assert.ok(svgText.includes("<svg"), `${viewId}.svg should contain svg markup`);
       return { svgText, fileName: `${viewId}.elkjs.svg` };

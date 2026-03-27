@@ -109,3 +109,6 @@ jobs:
 
       - name: npm test (workspace smoke)
         run: cd vscode && xvfb-run -a npm run test:workspace-smoke
+
+      - name: npm test (interconnection)
+        run: cd vscode && xvfb-run -a npm run test:interconnection

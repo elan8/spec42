@@ -5,6 +5,7 @@ import {
     configureServerForTests,
     getFixturePath,
     getTestWorkspaceFolder,
+    waitForDiagramExport,
     waitFor,
     waitForLanguageServerReady,
 } from "./testUtils";
@@ -157,14 +158,13 @@ describe("Interconnection Visualization", () => {
         );
 
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
-        await new Promise((r) => setTimeout(r, 2000));
-
         panel.getWebview()?.postMessage({ command: "exportDiagramForTest" });
-        await new Promise((r) => setTimeout(r, 1200));
-
-        const uri = vscode.Uri.joinPath(workspaceFolder.uri, "test-output", "diagrams", "interconnection-view.svg");
-        const bytes = await vscode.workspace.fs.readFile(uri);
-        const svgText = Buffer.from(bytes).toString("utf8");
+        const { svgText } = await waitForDiagramExport(
+            workspaceFolder.uri,
+            "interconnection-view",
+            (text) => text.includes("ibd-connector"),
+            16000
+        );
 
         assert.ok(svgText.includes("<svg"), "interconnection-view export should contain svg markup");
         assert.ok(svgText.includes("ibd-part"), "interconnection-view export should include IBD part nodes");

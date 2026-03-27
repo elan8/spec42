@@ -15,9 +15,30 @@ env:
   BINARY_NAME: spec42
 
 jobs:
+  preflight:
+    name: Release preflight checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Rust tests
+        run: cargo test --workspace
+
+      - name: Rust clippy
+        run: cargo clippy --workspace --all-targets -- -W clippy::all
+
   build-server:
     name: Build server (${{ matrix.runner }})
     runs-on: ${{ matrix.runner }}
+    needs: [preflight]
     strategy:
       fail-fast: false
       matrix:
@@ -86,7 +107,7 @@ jobs:
   package-extension-with-server:
     name: Package extension with server (all platforms)
     runs-on: ubuntu-latest
-    needs: [build-server]
+    needs: [preflight, build-server]
     steps:
       - name: Resolve tag and version
         id: version
@@ -142,7 +163,7 @@ jobs:
   create-release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    needs: [build-server, package-extension-with-server]
+    needs: [preflight, build-server, package-extension-with-server]
     permissions:
       contents: write
     steps:
@@ -178,6 +199,11 @@ jobs:
           echo "Extension:"
           find artifacts/extension -type f
 
+      - name: Generate SHA256 checksums
+        run: |
+          find artifacts -type f -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -189,5 +215,6 @@ jobs:
           files: |
             artifacts/server/*/*
             artifacts/extension/*.vsix
+            SHA256SUMS.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

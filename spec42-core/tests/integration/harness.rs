@@ -173,6 +173,14 @@ impl TestSession {
         let raw = read_response(&mut self.stdout, id).expect("request response");
         serde_json::from_str(&raw).expect("json response")
     }
+
+    /// Synchronization barrier for integration tests.
+    ///
+    /// Sends a cheap request and waits for its response so prior notifications
+    /// (e.g. didOpen/didChange) are processed in-order before assertions.
+    pub fn barrier(&mut self) {
+        let _ = self.request("workspace/symbol", serde_json::json!({ "query": "" }));
+    }
 }
 
 impl Drop for TestSession {

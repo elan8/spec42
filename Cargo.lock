@@ -882,7 +882,7 @@ version = "0.8.0"
 dependencies = [
  "serde_json",
  "spec42-core",
- "sysml-parser",
+ "sysml-parser 0.1.0 (git+https://github.com/elan8/sysml-parser)",
  "tempfile",
  "tokio",
  "url",
@@ -896,7 +896,7 @@ dependencies = [
  "petgraph",
  "serde",
  "serde_json",
- "sysml-parser",
+ "sysml-parser 0.1.0 (git+https://github.com/elan8/sysml-parser?rev=710402fce00e548d87098f09143fdd5bea406785)",
  "tempfile",
  "thiserror",
  "tokio",
@@ -939,6 +939,16 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "sysml-parser"
+version = "0.1.0"
+source = "git+https://github.com/elan8/sysml-parser?rev=710402fce00e548d87098f09143fdd5bea406785#710402fce00e548d87098f09143fdd5bea406785"
+dependencies = [
+ "log",
+ "nom",
+ "nom_locate",
 ]
 
 [[package]]

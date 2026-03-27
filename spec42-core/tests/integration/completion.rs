@@ -11,7 +11,7 @@ fn lsp_completion() {
 
     session.initialize_default("test");
     session.did_open(uri, content, 1);
-    std::thread::sleep(std::time::Duration::from_millis(50));
+    session.barrier();
     let compl_json = session.request(
         "textDocument/completion",
         serde_json::json!({

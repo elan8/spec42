@@ -27,6 +27,15 @@ export function getExternalFixturePath(absolutePath: string): string {
   return absolutePath;
 }
 
+export async function tryReadWorkspaceText(uri: vscode.Uri): Promise<string | undefined> {
+  try {
+    const bytes = await vscode.workspace.fs.readFile(uri);
+    return Buffer.from(bytes).toString("utf8");
+  } catch {
+    return undefined;
+  }
+}
+
 function tryResolveServerBinary(extensionPath: string): string {
   const platform = process.platform;
   const arch = process.arch;
@@ -148,4 +157,24 @@ export async function waitForLanguageServerReady(
     timeoutMs,
     300
   );
+}
+
+export async function waitForDiagramExport(
+  workspaceUri: vscode.Uri,
+  viewId: string,
+  isReady: (svgText: string) => boolean,
+  timeoutMs = 12000
+): Promise<{ uri: vscode.Uri; svgText: string }> {
+  const uri = vscode.Uri.joinPath(workspaceUri, "test-output", "diagrams", `${viewId}.svg`);
+  const svgText = await waitFor(
+    `${viewId} svg export`,
+    async () => (await tryReadWorkspaceText(uri)) ?? "",
+    (value) => {
+      const text = value ?? "";
+      return text.includes("<svg") && isReady(text);
+    },
+    timeoutMs,
+    200
+  );
+  return { uri, svgText };
 }

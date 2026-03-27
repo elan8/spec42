@@ -426,7 +426,7 @@ fn lsp_library_search_custom_method_returns_library_results() {
     std::fs::create_dir_all(&lib_dir).expect("create lib dir");
     std::fs::write(
         lib_dir.join("standard.sysml"),
-        "package Lib { part def Engine; part def EngineController; }",
+        "standard library package Lib { part def Engine; part def EngineController; }",
     )
     .expect("write library file");
     std::fs::write(root.join("main.sysml"), "package Main { part x : Engine; }")

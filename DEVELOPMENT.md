@@ -48,14 +48,25 @@ The parser runs a full validation suite over all `.sysml` files in the official 
 - **Standard `cargo test`**: The full validation suite is `#[ignore]`d (slow). It does not run by default.
 - **CI fast path (required)**: `.github/workflows/ci.yml` runs `cargo test --workspace` and `cargo clippy --workspace --all-targets -- -W clippy::all`.
 - **CI full validation (informational)**: `.github/workflows/full-validation.yml` runs on PR, schedule, and manual dispatch with `continue-on-error: true`, cloning SysML-v2-Release and executing `lsp_workspace_scan_sysml_release`.
-- **Locally**: The sysml-parser crate has a sysml-v2-release submodule. Initialize it and run the ignored tests:
+- **Locally**: Clone SysML-v2-Release and point Spec42 validation at it:
 
   ```bash
-  cd sysml-parser && git submodule update --init sysml-v2-release
-  cargo test -p sysml-parser -- test_full_validation_suite -- --ignored
+  git clone --depth 1 https://github.com/Systems-Modeling/SysML-v2-Release.git sysml-v2-release
+  SYSML_V2_RELEASE_DIR=$PWD/sysml-v2-release cargo test -p spec42-core lsp_workspace_scan_sysml_release -- --nocapture
   ```
 
-  Or set `SYSML_V2_RELEASE_DIR` to a SysML-v2-Release clone root. If the validation directory is not present, the test returns early without failing.
+  If `SYSML_V2_RELEASE_DIR` is not set (or points to a missing validation directory), the validation test returns early without failing.
+
+## Parser dependency policy
+
+`spec42-core` consumes `sysml-parser` from git and pins an explicit commit in `spec42-core/Cargo.toml` (`rev = ...`) for reproducible CI and release behavior.
+
+When updating parser behavior:
+
+1. Update the pinned `rev` in `spec42-core/Cargo.toml`.
+2. Run `cargo test --workspace`.
+3. Run targeted indexing/search checks in `spec42-core/tests/integration/workspace.rs`.
+4. Update `docs/SYSML-PARSER-UPDATE.md` if parser compatibility expectations changed.
 
 ## Running tests
 
@@ -65,7 +76,7 @@ The parser runs a full validation suite over all `.sysml` files in the official 
 cargo test
 ```
 
-This runs workspace tests including sysml-parser unit/validation tests and Spec42 LSP integration tests.
+This runs workspace tests for Spec42 crates, including LSP integration tests.
 
 ## Semantic diagnostics pipeline
 

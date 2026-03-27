@@ -9,7 +9,7 @@ fn lsp_new_handlers_survive_invalid_intermediate_text() {
     session.initialize_default("quality_gates_test");
     session.did_open(uri, "package P { part def Engine; part v : Engine; }\n", 1);
     session.did_change_full(uri, "package P { part def Engine part v : ; }\n", 2);
-    std::thread::sleep(std::time::Duration::from_millis(60));
+    session.barrier();
 
     let probes = vec![
         (
@@ -52,7 +52,7 @@ fn lsp_code_lens_is_deterministic_for_same_document_state() {
     let content = "package P {\n  part def Engine;\n  part vehicle : Engine;\n}\n";
     session.initialize_default("quality_gates_test");
     session.did_open(uri, content, 1);
-    std::thread::sleep(std::time::Duration::from_millis(60));
+    session.barrier();
 
     let first = session.request(
         "textDocument/codeLens",

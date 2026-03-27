@@ -4,6 +4,7 @@ pub(crate) mod editing;
 pub(crate) mod hierarchy;
 pub(crate) mod indexing;
 pub(crate) mod lifecycle;
+pub(crate) mod library_search;
 pub(crate) mod navigation;
 pub(crate) mod request_helpers;
 pub(crate) mod symbols;
