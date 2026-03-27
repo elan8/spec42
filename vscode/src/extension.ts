@@ -1556,16 +1556,56 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.languages.onDidChangeDiagnostics(() => updateStatusBar(context))
   );
 
+  // Keep Model Explorer aligned with source changes similar to visualizer auto-refresh.
+  let modelExplorerRefreshTimer: ReturnType<typeof setTimeout> | undefined;
+  const scheduleModelExplorerRefresh = (
+    changeKind: "save" | "create" | "delete",
+    uri?: vscode.Uri
+  ) => {
+    if (!modelExplorerProvider) {
+      return;
+    }
+    const docIsSysml =
+      !!uri &&
+      (uri.fsPath.toLowerCase().endsWith(".sysml") ||
+        uri.fsPath.toLowerCase().endsWith(".kerml"));
+    if (uri && !docIsSysml) {
+      return;
+    }
+    if (modelExplorerRefreshTimer) {
+      clearTimeout(modelExplorerRefreshTimer);
+    }
+    modelExplorerRefreshTimer = setTimeout(() => {
+      modelExplorerRefreshTimer = undefined;
+      const provider = modelExplorerProvider;
+      if (!provider) {
+        return;
+      }
+      // In workspace mode, file additions/removals require rediscovery.
+      if (
+        provider.isWorkspaceMode() &&
+        (changeKind === "create" || changeKind === "delete")
+      ) {
+        void loadWorkspaceSysMLFiles(provider);
+        return;
+      }
+      provider.refresh();
+    }, 250);
+  };
+
   // Notify visualizer when SysML files change so it can refresh
   const sysmlFileWatcher = vscode.workspace.createFileSystemWatcher("**/*.{sysml,kerml}");
   sysmlFileWatcher.onDidChange((uri) => {
     VisualizationPanel.currentPanel?.notifyFileChanged(uri);
+    scheduleModelExplorerRefresh("save", uri);
   });
   sysmlFileWatcher.onDidCreate((uri) => {
     VisualizationPanel.currentPanel?.notifyFileChanged(uri);
+    scheduleModelExplorerRefresh("create", uri);
   });
   sysmlFileWatcher.onDidDelete((uri) => {
     VisualizationPanel.currentPanel?.notifyFileChanged(uri);
+    scheduleModelExplorerRefresh("delete", uri);
   });
   context.subscriptions.push(sysmlFileWatcher);
 
@@ -1573,6 +1613,7 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.workspace.onDidSaveTextDocument((doc) => {
       if (doc.languageId === "sysml" || doc.languageId === "kerml") {
         VisualizationPanel.currentPanel?.notifyFileChanged(doc.uri);
+        scheduleModelExplorerRefresh("save", doc.uri);
       }
     })
   );
