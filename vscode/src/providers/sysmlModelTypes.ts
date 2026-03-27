@@ -59,7 +59,7 @@ export interface SysMLModelStatsDTO {
 
 export interface SysMLModelParams {
   textDocument: { uri: string };
-  scope?: Array<"graph" | "ibd" | "stats" | "sequenceDiagrams" | "activityDiagrams" | "renderedDiagrams">;
+  scope?: Array<"graph" | "ibd" | "stats" | "sequenceDiagrams" | "activityDiagrams" | "renderedDiagrams" | "workspaceVisualization">;
 }
 
 export interface IbdPartDTO {

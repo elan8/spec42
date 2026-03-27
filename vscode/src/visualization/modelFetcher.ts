@@ -89,15 +89,18 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         pendingPackageName,
     } = params;
 
-    const urisToQuery = fileUris.length > 0
-        ? fileUris.map(u => u.toString())
-        : [documentUri];
-
     const scopes: ('graph' | 'ibd' | 'sequenceDiagrams' | 'activityDiagrams' | 'stats')[] =
         ['graph', 'ibd', 'sequenceDiagrams', 'activityDiagrams', 'stats'];
+    const isWorkspaceVisualization = fileUris.length > 1;
+    const requestScopes = isWorkspaceVisualization
+        ? [...scopes, 'workspaceVisualization' as const]
+        : scopes;
+    const requestUris = isWorkspaceVisualization
+        ? [documentUri]
+        : (fileUris.length > 0 ? fileUris.map(u => u.toString()) : [documentUri]);
 
     const settledResults = await Promise.allSettled(
-        urisToQuery.map(uri => lspModelProvider.getModel(uri, scopes)),
+        requestUris.map(uri => lspModelProvider.getModel(uri, requestScopes)),
     );
 
     const results = settledResults
@@ -141,7 +144,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     const primaryGeneralViewGraph = primaryResult?.generalViewGraph;
     const ibd = primaryResult?.ibd;
     // renderedDiagrams are intentionally not requested by default (backend SVG/layout is expensive).
-    const renderedDiagrams = urisToQuery.length === 1 ? primaryResult?.renderedDiagrams : undefined;
+    const renderedDiagrams = requestUris.length === 1 ? primaryResult?.renderedDiagrams : undefined;
 
     const msg: UpdateMessage = {
         command: 'update',

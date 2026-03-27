@@ -42,6 +42,7 @@ pub(crate) async fn sysml_model_result(
         entry.parsed.as_ref(),
         &state.semantic_graph,
         &uri,
+        &state.library_paths,
         &scope,
         build_start,
         client,

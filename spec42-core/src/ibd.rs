@@ -614,6 +614,82 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
     }
 }
 
+/// Merge multiple per-URI IBD payloads into one workspace-scoped payload.
+pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
+    let mut parts_by_id: std::collections::HashMap<String, IbdPartDto> =
+        std::collections::HashMap::new();
+    let mut ports_by_key: std::collections::HashMap<(String, String), IbdPortDto> =
+        std::collections::HashMap::new();
+    let mut connectors_by_key: std::collections::HashMap<(String, String, String), IbdConnectorDto> =
+        std::collections::HashMap::new();
+    let mut root_candidates: std::collections::BTreeSet<String> = std::collections::BTreeSet::new();
+    let mut root_views: std::collections::HashMap<String, IbdRootViewDto> = std::collections::HashMap::new();
+
+    for ibd in ibds {
+        for p in ibd.parts {
+            parts_by_id.entry(p.id.clone()).or_insert(p);
+        }
+        for p in ibd.ports {
+            ports_by_key
+                .entry((p.parent_id.clone(), p.name.clone()))
+                .or_insert(p);
+        }
+        for c in ibd.connectors {
+            connectors_by_key
+                .entry((c.source_id.clone(), c.target_id.clone(), c.rel_type.clone()))
+                .or_insert(c);
+        }
+        for root in ibd.root_candidates {
+            root_candidates.insert(root);
+        }
+        for (name, view) in ibd.root_views {
+            let merged = root_views.entry(name).or_insert_with(|| IbdRootViewDto {
+                parts: Vec::new(),
+                ports: Vec::new(),
+                connectors: Vec::new(),
+            });
+            let mut part_ids: std::collections::HashSet<String> =
+                merged.parts.iter().map(|p| p.id.clone()).collect();
+            for p in view.parts {
+                if part_ids.insert(p.id.clone()) {
+                    merged.parts.push(p);
+                }
+            }
+            let mut port_keys: std::collections::HashSet<(String, String)> = merged
+                .ports
+                .iter()
+                .map(|p| (p.parent_id.clone(), p.name.clone()))
+                .collect();
+            for p in view.ports {
+                let key = (p.parent_id.clone(), p.name.clone());
+                if port_keys.insert(key) {
+                    merged.ports.push(p);
+                }
+            }
+            let mut connector_keys: std::collections::HashSet<(String, String, String)> = merged
+                .connectors
+                .iter()
+                .map(|c| (c.source_id.clone(), c.target_id.clone(), c.rel_type.clone()))
+                .collect();
+            for c in view.connectors {
+                let key = (c.source_id.clone(), c.target_id.clone(), c.rel_type.clone());
+                if connector_keys.insert(key) {
+                    merged.connectors.push(c);
+                }
+            }
+        }
+    }
+
+    IbdDataDto {
+        parts: parts_by_id.into_values().collect(),
+        ports: ports_by_key.into_values().collect(),
+        connectors: connectors_by_key.into_values().collect(),
+        root_candidates: root_candidates.into_iter().collect(),
+        default_root: None,
+        root_views,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::infer_port_side;

@@ -106,7 +106,7 @@ pub fn empty_model_response(build_start: Instant) -> SysmlModelResultDto {
     }
 }
 
-fn canonical_general_view_graph(graph: &SysmlGraphDto) -> SysmlGraphDto {
+fn canonical_general_view_graph(graph: &SysmlGraphDto, include_all_roots: bool) -> SysmlGraphDto {
     let node_by_id: HashMap<String, GraphNodeDto> = graph
         .nodes
         .iter()
@@ -192,20 +192,7 @@ fn canonical_general_view_graph(graph: &SysmlGraphDto) -> SysmlGraphDto {
             .collect();
         candidate_roots.sort();
     }
-    let root_id = if let Some(by_name) = candidate_roots.iter().find(|id| {
-        node_by_id
-            .get(*id)
-            .map(|n| n.name.contains("SurveillanceQuadrotorDrone") || n.name.contains("Drone"))
-            .unwrap_or(false)
-    }) {
-        by_name.clone()
-    } else {
-        candidate_roots
-            .iter()
-            .max_by_key(|id| contains_children.get(*id).map(|v| v.len()).unwrap_or(0))
-            .cloned()
-            .unwrap_or_default()
-    };
+    candidate_roots.sort();
 
     let mut out_node_ids: HashSet<String> = HashSet::new();
     let mut out_edges: Vec<GraphEdgeDto> = Vec::new();
@@ -290,7 +277,35 @@ fn canonical_general_view_graph(graph: &SysmlGraphDto) -> SysmlGraphDto {
             }
         }
     }
-    if !root_id.is_empty() {
+    if include_all_roots {
+        for root_id in &candidate_roots {
+            visit_part_def(
+                root_id,
+                &contains_children,
+                &typing_target,
+                &is_part_usage,
+                &mut visited_defs,
+                &mut out_node_ids,
+                &mut out_edges,
+                &mut out_edge_keys,
+            );
+        }
+    } else if let Some(root_id) = candidate_roots
+        .iter()
+        .find(|id| {
+            node_by_id
+                .get(*id)
+                .map(|n| n.name.contains("SurveillanceQuadrotorDrone") || n.name.contains("Drone"))
+                .unwrap_or(false)
+        })
+        .cloned()
+        .or_else(|| {
+            candidate_roots
+                .iter()
+                .max_by_key(|id| contains_children.get(*id).map(|v| v.len()).unwrap_or(0))
+                .cloned()
+        })
+    {
         visit_part_def(
             &root_id,
             &contains_children,
@@ -329,12 +344,62 @@ fn canonical_general_view_graph(graph: &SysmlGraphDto) -> SysmlGraphDto {
     }
 }
 
+fn build_workspace_graph_dto(
+    semantic_graph: &semantic_model::SemanticGraph,
+    library_paths: &[Url],
+) -> SysmlGraphDto {
+    let sg_nodes = semantic_graph.workspace_nodes_excluding_libraries(library_paths);
+    let nodes: Vec<GraphNodeDto> = sg_nodes
+        .iter()
+        .map(|n| GraphNodeDto {
+            id: n.id.qualified_name.clone(),
+            element_type: n.element_kind.clone(),
+            name: n.name.clone(),
+            parent_id: n.parent_id.as_ref().map(|p| p.qualified_name.clone()),
+            range: range_to_dto(n.range),
+            attributes: n.attributes.clone(),
+        })
+        .collect();
+
+    let mut edges: Vec<GraphEdgeDto> = semantic_graph
+        .edges_for_workspace_as_strings(library_paths)
+        .into_iter()
+        .map(|(src, tgt, kind, name)| GraphEdgeDto {
+            source: src,
+            target: tgt,
+            rel_type: kind.as_str().to_string(),
+            name,
+        })
+        .collect();
+
+    let node_ids: HashSet<String> = nodes.iter().map(|n| n.id.clone()).collect();
+    for n in &nodes {
+        if let Some(ref pid) = n.parent_id {
+            if node_ids.contains(pid) {
+                edges.push(GraphEdgeDto {
+                    source: pid.clone(),
+                    target: n.id.clone(),
+                    rel_type: "contains".to_string(),
+                    name: None,
+                });
+            }
+        }
+    }
+
+    SysmlGraphDto { nodes, edges }
+}
+
+fn workspace_visualization_enabled(scope: &[String]) -> bool {
+    scope.iter().any(|s| s == "workspaceVisualization")
+}
+
 /// Build sysml/model response. Uses `diagram_providers` to fill `rendered_diagrams` (generalView, interconnectionView by diagram_id).
 pub async fn build_sysml_model_response(
     content: &str,
     parsed: Option<&RootNamespace>,
     semantic_graph: &semantic_model::SemanticGraph,
     uri: &Url,
+    library_paths: &[Url],
     scope: &[String],
     build_start: Instant,
     client: &Client,
@@ -352,7 +417,23 @@ pub async fn build_sysml_model_response(
     let want_rendered_diagrams =
         scope.is_empty() || scope.iter().any(|s| s == "renderedDiagrams");
 
-    let graph = if want_graph {
+    let workspace_viz = workspace_visualization_enabled(scope);
+    let graph = if want_graph && workspace_viz {
+        let graph = build_workspace_graph_dto(semantic_graph, library_paths);
+        client
+            .log_message(
+                MessageType::INFO,
+                format!(
+                    "sysml/model: workspaceVisualization=true uri={} scope={:?} -> graph nodes={} edges={}",
+                    uri.as_str(),
+                    scope,
+                    graph.nodes.len(),
+                    graph.edges.len(),
+                ),
+            )
+            .await;
+        Some(graph)
+    } else if want_graph {
         let sg_nodes = semantic_graph.nodes_for_uri(uri);
         let node_count = sg_nodes.len();
         let graph_uris = semantic_graph.uris_with_nodes();
@@ -422,7 +503,8 @@ pub async fn build_sysml_model_response(
         None
     };
     let general_view_graph = if want_general_view_graph {
-        graph.as_ref().map(canonical_general_view_graph)
+        graph.as_ref()
+            .map(|g| canonical_general_view_graph(g, workspace_viz))
     } else {
         None
     };
@@ -480,7 +562,14 @@ pub async fn build_sysml_model_response(
         )
         .await;
 
-    let ibd = if want_graph && graph.is_some() {
+    let ibd = if want_graph && graph.is_some() && workspace_viz {
+        let workspace_uris = semantic_graph.workspace_uris_excluding_libraries(library_paths);
+        let ibds = workspace_uris
+            .iter()
+            .map(|workspace_uri| ibd::build_ibd_for_uri(semantic_graph, workspace_uri))
+            .collect();
+        Some(ibd::merge_ibd_payloads(ibds))
+    } else if want_graph && graph.is_some() {
         Some(ibd::build_ibd_for_uri(semantic_graph, uri))
     } else {
         None
@@ -576,7 +665,7 @@ mod tests {
             ],
         };
 
-        let projected = canonical_general_view_graph(&graph);
+        let projected = canonical_general_view_graph(&graph, false);
         let ids: std::collections::HashSet<String> =
             projected.nodes.iter().map(|n| n.id.clone()).collect();
         assert!(ids.contains("Drone"));
@@ -602,7 +691,7 @@ mod tests {
             ],
         };
 
-        let projected = canonical_general_view_graph(&graph);
+        let projected = canonical_general_view_graph(&graph, false);
         let ids: std::collections::HashSet<String> =
             projected.nodes.iter().map(|n| n.id.clone()).collect();
         let mut seen = std::collections::HashSet::new();
@@ -624,7 +713,7 @@ mod tests {
             edges: vec![edge("Pkg", "Widget", "contains")],
         };
 
-        let projected = canonical_general_view_graph(&graph);
+        let projected = canonical_general_view_graph(&graph, false);
         let ids: std::collections::HashSet<String> =
             projected.nodes.iter().map(|n| n.id.clone()).collect();
         assert!(
@@ -672,7 +761,7 @@ mod tests {
             ],
         };
 
-        let projected = canonical_general_view_graph(&graph);
+        let projected = canonical_general_view_graph(&graph, false);
         let gnss_nodes: Vec<_> = projected
             .nodes
             .iter()

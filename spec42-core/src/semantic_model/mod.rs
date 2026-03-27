@@ -480,6 +480,66 @@ impl SemanticGraph {
         }
         out
     }
+
+    /// Returns workspace URIs represented in the graph, excluding configured library roots.
+    pub fn workspace_uris_excluding_libraries(&self, library_paths: &[Url]) -> Vec<Url> {
+        self.nodes_by_uri
+            .keys()
+            .filter(|uri| !crate::util::uri_under_any_library(uri, library_paths))
+            .cloned()
+            .collect()
+    }
+
+    /// Returns semantic nodes for workspace files (excluding configured library roots).
+    pub fn workspace_nodes_excluding_libraries(&self, library_paths: &[Url]) -> Vec<&SemanticNode> {
+        self.nodes_by_uri
+            .iter()
+            .filter(|(uri, _)| !crate::util::uri_under_any_library(uri, library_paths))
+            .flat_map(|(_, ids)| ids.iter())
+            .filter_map(|id| self.get_node(id))
+            .collect()
+    }
+
+    /// Returns edges where both endpoints are workspace nodes (excluding libraries).
+    pub fn edges_for_workspace_as_strings(
+        &self,
+        library_paths: &[Url],
+    ) -> Vec<(String, String, RelationshipKind, Option<String>)> {
+        let workspace_ids: std::collections::HashSet<_> = self
+            .nodes_by_uri
+            .iter()
+            .filter(|(uri, _)| !crate::util::uri_under_any_library(uri, library_paths))
+            .flat_map(|(_, ids)| ids.iter().cloned())
+            .collect();
+        if workspace_ids.is_empty() {
+            return Vec::new();
+        }
+        let id_by_idx: HashMap<NodeIndex, NodeId> = self
+            .node_index_by_id
+            .iter()
+            .map(|(k, v)| (*v, k.clone()))
+            .collect();
+        let mut out = Vec::new();
+        for e in self.graph.edge_references() {
+            let src_id = match id_by_idx.get(&e.source()) {
+                Some(id) => id.clone(),
+                None => continue,
+            };
+            let tgt_id = match id_by_idx.get(&e.target()) {
+                Some(id) => id.clone(),
+                None => continue,
+            };
+            if workspace_ids.contains(&src_id) && workspace_ids.contains(&tgt_id) {
+                out.push((
+                    src_id.qualified_name,
+                    tgt_id.qualified_name,
+                    e.weight().clone(),
+                    None::<String>,
+                ));
+            }
+        }
+        out
+    }
 }
 
 /// Maps element_kind from the semantic model to LSP SymbolKind.
