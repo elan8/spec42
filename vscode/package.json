@@ -490,7 +490,7 @@
     "test:interconnection-drone": "vscode-test --config .vscode-test.interconnection-drone.mjs",
     "test:multi-file": "vscode-test --config .vscode-test.multi-file.mjs",
     "test:workspace-smoke": "vscode-test --config .vscode-test.workspace-smoke.mjs",
-    "package": "vsce package --no-dependencies"
+    "package": "vsce package"
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.8",
