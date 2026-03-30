@@ -99,6 +99,10 @@ export function prepareDataForView(data: any, view: string): any {
             return data;
         case 'interconnection-view': {
             if (data.ibd && Array.isArray(data.ibd.parts)) {
+                const isLikelyInstanceRoot = (name: string): boolean => {
+                    const n = String(name || '');
+                    return /instance$/i.test(n) || /inst$/i.test(n);
+                };
                 const ibd = data.ibd as {
                     parts: any[];
                     ports?: any[];
@@ -112,13 +116,20 @@ export function prepareDataForView(data: any, view: string): any {
                 const ibdConnectors = Array.isArray(ibd.connectors) ? ibd.connectors : [];
                 const ibdRootCandidates = Array.isArray(ibd.rootCandidates) ? ibd.rootCandidates : [];
                 const rootViews = (ibd.rootViews && typeof ibd.rootViews === 'object') ? ibd.rootViews : {};
-                const availableRoots = ibdRootCandidates.filter((name) => rootViews[name]);
+                const availableRootsRaw = ibdRootCandidates.filter((name) => rootViews[name]);
+                const hasAnyLikelyInstance = availableRootsRaw.some((name) => isLikelyInstanceRoot(name));
+                const availableRoots = hasAnyLikelyInstance
+                    ? availableRootsRaw
+                        .filter((name) => isLikelyInstanceRoot(name))
+                        .slice()
+                        .sort((a, b) => a.localeCompare(b))
+                    : availableRootsRaw;
                 const explicitSelection = (typeof data.selectedIbdRoot === 'string' && data.selectedIbdRoot.trim().length > 0)
                     ? data.selectedIbdRoot
                     : null;
                 const selectedRoot = explicitSelection && rootViews[explicitSelection]
                     ? explicitSelection
-                    : (ibd.defaultRoot && rootViews[ibd.defaultRoot]
+                    : (ibd.defaultRoot && availableRoots.includes(ibd.defaultRoot) && rootViews[ibd.defaultRoot]
                         ? ibd.defaultRoot
                         : (availableRoots[0] || null));
                 const selectedRootView = selectedRoot ? rootViews[selectedRoot] : null;
@@ -140,7 +151,7 @@ export function prepareDataForView(data: any, view: string): any {
                     parts: selectedParts,
                     ports: selectedPorts,
                     connectors: selectedConnectors,
-                    ibdRootCandidates,
+                    ibdRootCandidates: availableRoots,
                     ibdRootSummaries,
                     selectedIbdRoot: selectedRoot,
                 };

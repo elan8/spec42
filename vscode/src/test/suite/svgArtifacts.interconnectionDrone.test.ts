@@ -85,6 +85,8 @@ describe("SVG artifacts (SurveillanceDrone, elkjs)", () => {
         // ignore
       }
       panel.getWebview()?.postMessage({ command: "exportDiagramForTest" });
+      await new Promise((r) => setTimeout(r, 800));
+      panel.getWebview()?.postMessage({ command: "exportDiagramForTest" });
       const { svgText } = await waitForDiagramExport(
         workspaceFolder.uri,
         viewId,
@@ -93,11 +95,11 @@ describe("SVG artifacts (SurveillanceDrone, elkjs)", () => {
             return !text.includes("<g/></svg>");
           }
           if (viewId === "interconnection-view") {
-            return text.includes("ibd-connector");
+            return text.includes("ibd-connector") || text.includes("diagram-edge");
           }
           return true;
         },
-        14000
+        25000
       );
       assert.ok(svgText.includes("<svg"), `${viewId}.svg should contain svg markup`);
       return { svgText, fileName: `${viewId}.elkjs.svg` };

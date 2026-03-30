@@ -19,9 +19,59 @@ const NEUTRAL_NODE_FILL = DIAGRAM_STYLE.nodeFill;
 const NEUTRAL_TEXT = DIAGRAM_STYLE.textPrimary;
 const PORT_OUTLINE_GREEN = 'var(--vscode-button-background)';
 
+type NodeRect = { x: number; y: number; width: number; height: number };
+type ElkSection = { startPoint?: { x: number; y: number }; endPoint?: { x: number; y: number }; bendPoints?: Array<{ x: number; y: number }> };
+type EdgeSectionsMap = Map<string, ElkSection[]>;
+type IbdLayoutResult = {
+    partPositions: Map<string, { x: number; y: number; part: any; height: number; width?: number; isContainer?: boolean; depth?: number }>;
+    portPositions: Map<string, { x: number; y: number; side?: string; partId: string }>;
+    connectorSectionsById: EdgeSectionsMap;
+    bounds: NodeRect;
+};
+
+function selectIbdViewData(data: any): { parts: any[]; ports: any[]; connectors: any[] } {
+    return {
+        parts: data?.parts || [],
+        ports: data?.ports || [],
+        connectors: data?.connectors || [],
+    };
+}
+
+function getConnectorId(connector: any, idx: number): string {
+    const explicit = String(connector?.id || '').trim();
+    if (explicit.length > 0) {
+        return explicit.replace(/[^A-Za-z0-9_.-]/g, '_');
+    }
+    return `edge-${idx}`;
+}
+
+function collectElkEdgesWithOffsets(
+    node: any,
+    containerOffset: { x: number; y: number },
+    acc: Map<string, { edge: any; offset: { x: number; y: number } }>
+): void {
+    if (node?.edges) {
+        for (const edge of node.edges) {
+            const edgeId = String(edge?.id ?? '');
+            if (!edgeId) continue;
+            acc.set(edgeId, { edge, offset: { x: containerOffset.x, y: containerOffset.y } });
+        }
+    }
+    (node?.children ?? []).forEach((c: any) =>
+        collectElkEdgesWithOffsets(
+            c,
+            {
+                x: containerOffset.x + (c?.x ?? 0),
+                y: containerOffset.y + (c?.y ?? 0),
+            },
+            acc,
+        )
+    );
+}
+
 export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string }, data: any): Promise<void> {
     const { width, height, svg, g, layoutDirection, postMessage, onStartInlineEdit, renderPlaceholder, clearVisualHighlights } = ctx;
-    const LOG_ENDPOINT_DRIFT = true;
+    const LOG_ENDPOINT_DRIFT = false;
     const ENDPOINT_DRIFT_WARN_PX = 1.25;
 
     if (!data || !data.parts || data.parts.length === 0) {
@@ -31,9 +81,10 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         return;
     }
 
-    const parts = data.parts || [];
-    const ports = data.ports || [];
-    const connectors = data.connectors || [];
+    const selected = selectIbdViewData(data);
+    const parts = selected.parts;
+    const ports = selected.ports;
+    const connectors = selected.connectors;
     const normalizedConnectorUsage = new Map<string, { sourceCount: number; targetCount: number }>();
     const toDot = (qn: string) => (qn || '').replace(/::/g, '.');
     const normalizeEndpointId = (value: string | null | undefined) => toDot(value || '').trim();
@@ -446,7 +497,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             const tgtPort = resolvePortForEndpointInData(tgtPart, conn.targetId || conn.target);
             if (!srcPort || !tgtPort) return;
             elkEdges.push({
-                id: 'edge-' + idx,
+                id: getConnectorId(conn, idx),
                 sources: [elkPortIdFor(srcPart, srcPort)],
                 targets: [elkPortIdFor(tgtPart, tgtPort)]
             });
@@ -476,14 +527,6 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         };
 
         elkLaidOut = await elk.layout(elkGraph);
-        postMessage({
-            command: 'webviewLog',
-            level: 'warn',
-            args: ['[IBD elk frame]', {
-                root: { x: elkLaidOut?.x ?? 0, y: elkLaidOut?.y ?? 0 },
-                firstChild: { x: elkLaidOut?.children?.[0]?.x ?? 0, y: elkLaidOut?.children?.[0]?.y ?? 0 },
-            }],
-        });
     } catch (e) {
         console.error('[IBD] ELK layout failed:', e);
         renderPlaceholder(
@@ -565,6 +608,41 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         return;
     }
     elkLaidOut.children.forEach((rootElk: any) => extractElkPositions(rootElk, 0, 0, 0));
+    const connectorSectionsById: EdgeSectionsMap = new Map<string, ElkSection[]>();
+    const collectSections = (
+        node: any,
+        acc: EdgeSectionsMap
+    ): void => {
+        (node?.edges || []).forEach((edge: any) => {
+            const edgeId = String(edge?.id || '');
+            if (edgeId && Array.isArray(edge?.sections) && edge.sections.length > 0) {
+                acc.set(edgeId, edge.sections as ElkSection[]);
+            }
+        });
+        (node?.children || []).forEach((c: any) => collectSections(c, acc));
+    };
+    collectSections(elkLaidOut, connectorSectionsById);
+    const ibdLayoutResult: IbdLayoutResult = {
+        partPositions,
+        portPositions: elkPortPositions,
+        connectorSectionsById,
+        bounds: {
+            x: 0,
+            y: 0,
+            width: elkLaidOut?.width ?? 0,
+            height: elkLaidOut?.height ?? 0,
+        },
+    };
+    if (ibdLayoutResult.partPositions.size === 0) {
+        renderPlaceholder(
+            width,
+            height,
+            'Interconnection View',
+            'ELK layout returned no part positions for this diagram.',
+            data
+        );
+        return;
+    }
 
     type Rect = { x: number; y: number; width: number; height: number };
 
@@ -587,6 +665,15 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         let s = 'M' + pts[0].x + ',' + pts[0].y;
         for (let i = 1; i < pts.length; i++) s += ' L' + pts[i].x + ',' + pts[i].y;
         return s;
+    };
+    const minimalFallbackRoute = (srcX: number, srcY: number, tgtX: number, tgtY: number): { x: number; y: number }[] => {
+        const midX = (srcX + tgtX) / 2;
+        return pruneRoutePoints([
+            { x: srcX, y: srcY },
+            { x: midX, y: srcY },
+            { x: midX, y: tgtY },
+            { x: tgtX, y: tgtY },
+        ]);
     };
 
     const pruneRoutePoints = (points: { x: number; y: number }[]): { x: number; y: number }[] => {
@@ -1257,31 +1344,8 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             portConnections.get(portKey)!.push({ connector, idx });
         });
 
-        const collectElkEdges = (
-            node: any,
-            containerOffset: { x: number; y: number },
-            acc: Map<string, { edge: any; offset: { x: number; y: number } }>
-        ): void => {
-            if (node?.edges) {
-                for (const edge of node.edges) {
-                    const edgeId = String(edge?.id ?? '');
-                    if (!edgeId) continue;
-                    acc.set(edgeId, { edge, offset: { x: containerOffset.x, y: containerOffset.y } });
-                }
-            }
-            (node?.children ?? []).forEach((c: any) =>
-                collectElkEdges(
-                    c,
-                    {
-                        x: containerOffset.x + (c?.x ?? 0),
-                        y: containerOffset.y + (c?.y ?? 0),
-                    },
-                    acc,
-                )
-            );
-        };
         const allElkEdges = new Map<string, { edge: any; offset: { x: number; y: number } }>();
-        if (elkLaidOut) collectElkEdges(elkLaidOut, { x: 0, y: 0 }, allElkEdges);
+        if (elkLaidOut) collectElkEdgesWithOffsets(elkLaidOut, { x: 0, y: 0 }, allElkEdges);
         const rootChildOffset = {
             x: elkLaidOut?.children?.[0]?.x ?? 0,
             y: elkLaidOut?.children?.[0]?.y ?? 0,
@@ -1472,14 +1536,16 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             let pathPoints: { x: number; y: number }[] | null = null;
             let pathD: string;
             let labelX: number, labelY: number;
-            const elkEdgeRecord = allElkEdges.get('edge-' + connIdx);
+            const connectorId = getConnectorId(connector, connIdx);
+            const elkEdgeRecord = allElkEdges.get(connectorId);
             const elkEdge = elkEdgeRecord?.edge;
             const effectiveEdgeOffset = (elkEdgeRecord?.offset?.x ?? 0) === 0 && (elkEdgeRecord?.offset?.y ?? 0) === 0
                 ? rootChildOffset
                 : (elkEdgeRecord?.offset ?? { x: 0, y: 0 });
-            const authoritativeRouteResult = elkEdge?.sections && srcPortPos && tgtPortPos
+            const elkSections = ibdLayoutResult.connectorSectionsById.get(connectorId) || elkEdge?.sections;
+            const authoritativeRouteResult = elkSections && srcPortPos && tgtPortPos
                 ? pointsFromElkSectionsWithPorts(
-                    elkEdge.sections,
+                    elkSections,
                     effectiveEdgeOffset,
                     srcX,
                     srcY,
@@ -1490,8 +1556,10 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             const authoritativeRoute = authoritativeRouteResult?.points ?? null;
 
             if (!authoritativeRoute || authoritativeRoute.length < 2) {
-                degradedReasons.add(`ELK did not return a usable route for connector ${connIdx}.`);
-                return;
+                degradedReasons.add(`ELK did not return a usable route for connector ${connectorId}.`);
+                pathPoints = minimalFallbackRoute(srcX, srcY, tgtX, tgtY);
+            } else {
+                pathPoints = authoritativeRoute;
             }
 
             const routeMeta = {
@@ -1500,8 +1568,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 sourcePart: srcPos.part.name,
                 targetPart: tgtPos.part.name,
             };
-            // Use ELK route as authoritative: no custom rerouting/detour post-processing.
-            pathPoints = authoritativeRoute;
+            // Use ELK route as authoritative, with minimal fallback only when missing.
             if (pathPoints.length >= 2 && srcPortPos && tgtPortPos) {
                 const start = pathPoints[0];
                 const end = pathPoints[pathPoints.length - 1];
@@ -1536,7 +1603,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                         args: [
                             '[IBD endpoint drift]',
                             {
-                                connectorId: 'connector-' + connIdx,
+                                connectorId,
                                 source: srcEndpointId,
                                 target: tgtEndpointId,
                                 selectedFrame: authoritativeRouteResult?.frame ?? 'unknown',
@@ -1566,7 +1633,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             const connectorPath = connectorGroup.append('path')
                 .attr('d', pathD)
                 .attr('class', 'ibd-connector')
-                .attr('data-connector-id', 'connector-' + connIdx)
+                .attr('data-connector-id', connectorId)
                 .attr('data-source', connector.sourceId || '')
                 .attr('data-target', connector.targetId || '')
                 .attr('data-route-points', (pathPoints ?? parsePathToPoints(pathD)).map((point) => `${point.x},${point.y}`).join(' '))

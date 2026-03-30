@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
 import { VisualizationPanel } from "../../visualization/visualizationPanel";
+import { prepareDataForView } from "../../visualization/prepareData";
 import {
     configureServerForTests,
     getFixturePath,
@@ -125,6 +126,37 @@ function routesShareEndpoint(a: ParsedRoute, b: ParsedRoute): boolean {
 }
 
 describe("Interconnection Visualization", () => {
+    it("orders and filters interconnection roots with instance-first semantics", () => {
+        const prepared = prepareDataForView(
+            {
+                ibd: {
+                    parts: [],
+                    ports: [],
+                    connectors: [],
+                    rootCandidates: ["Laptop", "droneInstance", "CameraRig", "timerInstance"],
+                    defaultRoot: "Laptop",
+                    rootViews: {
+                        Laptop: { parts: [], ports: [], connectors: [] },
+                        droneInstance: { parts: [], ports: [], connectors: [] },
+                        CameraRig: { parts: [], ports: [], connectors: [] },
+                        timerInstance: { parts: [], ports: [], connectors: [] },
+                    },
+                },
+            },
+            "interconnection-view"
+        );
+        assert.deepStrictEqual(
+            prepared.ibdRootCandidates,
+            ["droneInstance", "timerInstance"],
+            "when instance-like roots exist, non-instance roots should be filtered out"
+        );
+        assert.strictEqual(
+            prepared.selectedIbdRoot,
+            "droneInstance",
+            "selected root should resolve to deterministic first instance root"
+        );
+    });
+
     before(async function () {
         this.timeout(30000);
         await configureServerForTests();
@@ -185,6 +217,10 @@ describe("Interconnection Visualization", () => {
         assert.ok(svgText.includes("<svg"), "interconnection-view export should contain svg markup");
         assert.ok(svgText.includes("ibd-part"), "interconnection-view export should include IBD part nodes");
         assert.ok(svgText.includes("ibd-connector"), "interconnection-view export should include connector paths");
+        assert.ok(
+            svgText.includes('data-connector-id="conn:') || svgText.includes('data-connector-id="'),
+            "interconnection-view export should include deterministic connector ids"
+        );
         assert.ok(
             svgText.includes("telemetryOut") &&
             svgText.includes("telemetryIn") &&

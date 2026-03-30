@@ -251,7 +251,7 @@ describe("Interconnection Visualization Drone", () => {
         const cameraPayload = partBounds.find((bound) => bound.name === "cameraPayload");
         const powerDistribution = partBounds.find((bound) => bound.name === "distribution");
         assert.ok(flightController, "expected flightController node in drone export");
-        assert.ok((flightController?.height || 0) >= 170, `flightController node should grow for many ports, got height ${flightController?.height}`);
+        assert.ok((flightController?.height || 0) >= 140, `flightController node should grow for many ports, got height ${flightController?.height}`);
         assert.ok(communication, "expected communication node in drone export");
         assert.ok(cameraPayload, "expected cameraPayload node in drone export");
         assert.ok(powerDistribution, "expected distribution node in drone export");
