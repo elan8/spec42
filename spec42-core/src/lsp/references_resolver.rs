@@ -3,7 +3,6 @@ use crate::lsp::types::ServerState;
 use crate::semantic_model::NodeId;
 use crate::semantic_model::ResolveResult;
 use tower_lsp::lsp_types::{Location, Position, Url};
-use tracing::debug;
 
 type LocationKey = (String, u32, u32, u32, u32);
 
@@ -53,29 +52,6 @@ pub(crate) fn resolved_references_at_position(
 
     let selected_defs =
         select_defs_for_position(state, uri_norm, &lookup_name, qualifier.as_deref(), pos);
-    let selected_def_keys: Vec<String> = selected_defs
-        .iter()
-        .map(|entry| {
-            format!(
-                "{}:{}:{}:{}",
-                entry.uri,
-                entry.range.start.line,
-                entry.range.start.character,
-                entry.name
-            )
-        })
-        .collect();
-    debug!(
-        uri = %uri_norm,
-        line = pos.line,
-        character = pos.character,
-        lookup_name = %lookup_name,
-        qualifier = ?qualifier,
-        selected_defs = selected_def_keys.len(),
-        selected_def_keys = ?selected_def_keys,
-        include_declaration,
-        "references resolver selected definitions"
-    );
 
     Some(collect_references_for_lookup(
         state,
@@ -97,11 +73,6 @@ fn collect_references_for_lookup(
         .collect();
     // Strict mode: if target cannot resolve to FQN, we return no references.
     if target_ids.is_empty() {
-        debug!(
-            lookup_name = %lookup_name,
-            selected_defs = selected_defs.len(),
-            "references resolver target has no semantic identity; returning empty"
-        );
         return Vec::new();
     }
     let def_locations: std::collections::HashSet<LocationKey> = selected_defs
@@ -110,12 +81,8 @@ fn collect_references_for_lookup(
         .collect();
 
     let mut locations: Vec<Location> = Vec::new();
-    let mut scanned_hits: usize = 0;
-    let mut unresolved_hits: usize = 0;
-    let mut mismatched_hits: usize = 0;
     for (uri, entry) in state.index.iter() {
         for range in find_reference_ranges(&entry.content, lookup_name) {
-            scanned_hits += 1;
             let location = Location {
                 uri: uri.clone(),
                 range,
@@ -146,17 +113,6 @@ fn collect_references_for_lookup(
                 if other_ids.len() == 1 {
                     other_ids
                 } else {
-                    if !other_ids.is_empty() {
-                        debug!(
-                            lookup_name = %lookup_name,
-                            uri = %uri,
-                            hit_line = location.range.start.line,
-                            hit_char = location.range.start.character,
-                            other_file_candidates = candidate_other.len(),
-                            other_unique_targets = other_ids.len(),
-                            "references resolver dropped ambiguous cross-file fallback hit"
-                        );
-                    }
                     std::collections::HashSet::new()
                 }
             };
@@ -166,26 +122,11 @@ fn collect_references_for_lookup(
                 .collect();
             let resolved_matches_target =
                 !candidate_ids.is_empty() && candidate_ids.iter().any(|id| target_ids.contains(id));
-            if candidate_ids.is_empty() {
-                unresolved_hits += 1;
-            } else if !resolved_matches_target {
-                mismatched_hits += 1;
-            }
             if resolved_matches_target {
                 locations.push(location);
             }
         }
     }
-    debug!(
-        lookup_name = %lookup_name,
-        target_node_ids = ?target_ids,
-        scanned_hits,
-        matched_hits = locations.len(),
-        unresolved_hits,
-        mismatched_hits,
-        include_declaration,
-        "references resolver semantic matching summary"
-    );
 
     if include_declaration {
         locations
@@ -325,59 +266,15 @@ fn resolve_owner_member_defs<'a>(
     );
     let resolved_id = match resolved {
         ResolveResult::Resolved(id) => id,
-        ResolveResult::Ambiguous => {
-            debug!(
-                uri = %uri,
-                line = pos.line,
-                character = pos.character,
-                owner_ident = %owner_ident,
-                lookup_name = %lookup_name,
-                "references resolver owner.member resolution ambiguous"
-            );
-            return None;
-        }
-        ResolveResult::Unresolved => {
-            debug!(
-                uri = %uri,
-                line = pos.line,
-                character = pos.character,
-                owner_ident = %owner_ident,
-                lookup_name = %lookup_name,
-                "references resolver owner.member resolution unresolved"
-            );
-            return None;
-        }
+        ResolveResult::Ambiguous => return None,
+        ResolveResult::Unresolved => return None,
     };
     let filtered: Vec<&SymbolEntry> = candidates
         .iter()
         .copied()
         .filter(|entry| symbol_entry_node_id(state, entry).as_ref() == Some(&resolved_id))
         .collect();
-    if filtered.is_empty() {
-        debug!(
-            uri = %uri,
-            line = pos.line,
-            character = pos.character,
-            owner_ident = %owner_ident,
-            lookup_name = %lookup_name,
-            resolved_qn = %resolved_id.qualified_name,
-            candidate_count = candidates.len(),
-            "references resolver owner.member resolved but no matching symbol entries"
-        );
-        None
-    } else {
-        debug!(
-            uri = %uri,
-            line = pos.line,
-            character = pos.character,
-            owner_ident = %owner_ident,
-            lookup_name = %lookup_name,
-            resolved_qn = %resolved_id.qualified_name,
-            matched_candidates = filtered.len(),
-            "references resolver owner.member disambiguation applied"
-        );
-        Some(filtered)
-    }
+    if filtered.is_empty() { None } else { Some(filtered) }
 }
 
 

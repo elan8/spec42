@@ -459,13 +459,6 @@ export function activate(context: vscode.ExtensionContext): void {
   let restartCount = 0;
   let manualStopInProgress = false;
   let crashDialogShown = false;
-  const serverEnv: NodeJS.ProcessEnv = { ...process.env };
-  if (
-    context.extensionMode === vscode.ExtensionMode.Development &&
-    !serverEnv.RUST_LOG
-  ) {
-    serverEnv.RUST_LOG = "spec42_core=debug";
-  }
 
   const errorHandler: ErrorHandler = {
     error: async (error, _message, count) => {
@@ -520,9 +513,6 @@ export function activate(context: vscode.ExtensionContext): void {
     command: serverCommand,
     args: [],
     transport: TransportKind.stdio,
-    options: {
-      env: serverEnv,
-    },
   };
 
   const clientOptions: LanguageClientOptions = {
