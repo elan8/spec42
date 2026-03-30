@@ -36,21 +36,6 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
                 handlers.logWebviewMessage(message.level, message.args ?? []);
                 break;
             case 'jumpToElement':
-                getOutputChannel().show(true);
-                getOutputChannel().appendLine(
-                    `[jumpToElement] elementName="${message.elementName}" elementQualifiedName="${message.elementQualifiedName ?? "(none)"}"`
-                );
-                try {
-                    // eslint-disable-next-line no-console
-                    console.log('[SysML Visualizer][jumpToElement:dispatcher]', {
-                        elementName: message.elementName,
-                        elementQualifiedName: message.elementQualifiedName ?? null,
-                        skipCentering: message.skipCentering ?? false,
-                        parentContext: message.parentContext ?? null,
-                    });
-                } catch {
-                    // ignore
-                }
                 handlers.jumpToElement(message.elementName, message.skipCentering, message.parentContext, message.elementQualifiedName);
                 break;
             case 'renameElement':
@@ -149,9 +134,6 @@ export function createMessageHandlers(context: MessageHandlerContext) {
         setNavigating(true);
         const candidateUris = (fileUris.length > 0 ? fileUris.map((u) => u.toString()) : [document.uri.toString()])
             .filter((u, idx, arr) => arr.indexOf(u) === idx);
-        getOutputChannel().appendLine(
-            `[jumpToElement:begin] name="${elementName}" qn="${elementQualifiedName ?? '(none)'}" parent="${parentContext ?? '(none)'}" docUri="${document.uri.toString()}" fileUris=${fileUris.length} candidateUris=${candidateUris.length}`
-        );
 
         let element: SysMLElement | undefined;
         let resolvedUri = document.uri.toString();
@@ -169,9 +151,6 @@ export function createMessageHandlers(context: MessageHandlerContext) {
                 break;
             }
         }
-        getOutputChannel().appendLine(
-            `[jumpToElement:findElement] found=${dto ? 'yes' : 'no'} resolvedUri="${resolvedUri}" range=${dto ? `${dto.range.start.line}:${dto.range.start.character}-${dto.range.end.line}:${dto.range.end.character}` : '(none)'}`
-        );
         if (dto) {
             element = {
                 type: dto.type,
@@ -195,9 +174,6 @@ export function createMessageHandlers(context: MessageHandlerContext) {
                 preserveFocus: true,
                 preview: false,
             }).then(editor => {
-                getOutputChannel().appendLine(
-                    `[jumpToElement:showTextDocument] opened="${editor.document.uri.toString()}" targetColumn=${targetColumn} selectionStart=${element!.range.start.line}:${element!.range.start.character}`
-                );
                 editor.selection = new vscode.Selection(element!.range.start, element!.range.end);
                 editor.revealRange(element!.range, vscode.TextEditorRevealType.InCenter);
 
@@ -226,9 +202,6 @@ export function createMessageHandlers(context: MessageHandlerContext) {
                 setTimeout(() => setNavigating(false), 500);
             });
         } else {
-            getOutputChannel().appendLine(
-                `[jumpToElement:notFound] name="${elementName}" qn="${elementQualifiedName ?? '(none)'}" docUri="${document.uri.toString()}"`
-            );
             vscode.window.showInformationMessage(`Element "${elementName}" not found in the current document.`);
             setNavigating(false);
         }

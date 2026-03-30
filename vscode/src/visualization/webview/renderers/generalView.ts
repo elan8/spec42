@@ -494,16 +494,6 @@ function renderGeneralNodes(
             const elementName = d.elementName;
             const elementQualifiedName = d.elementQualifiedName || elementName;
             if (elementName) {
-                postMessage({
-                    command: 'webviewLog',
-                    level: 'info',
-                    args: ['[GENERAL][click]', {
-                        elementName,
-                        elementQualifiedName: elementQualifiedName || null,
-                        nodeId: d.id || null,
-                        sysmlType: d.sysmlType || null,
-                    }],
-                });
                 postJumpToElement(postMessage, { name: elementName, id: elementQualifiedName || undefined });
             }
         });
