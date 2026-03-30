@@ -592,3 +592,210 @@ fn lsp_library_search_uses_declared_name_for_allocation_def() {
 
     let _ = child.kill();
 }
+
+#[test]
+fn lsp_workspace_visualization_model_includes_all_workspace_systems() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root: PathBuf = temp.path().canonicalize().expect("canonical root");
+
+    let drone_dir = root.join("drone").join("sysml");
+    let timer_dir = root.join("timer").join("sysml");
+    let intersection_dir = root.join("intersection").join("sysml");
+    let computer_dir = root.join("computer");
+    std::fs::create_dir_all(&drone_dir).expect("create drone dir");
+    std::fs::create_dir_all(&timer_dir).expect("create timer dir");
+    std::fs::create_dir_all(&intersection_dir).expect("create intersection dir");
+    std::fs::create_dir_all(&computer_dir).expect("create computer dir");
+
+    let drone_path = drone_dir.join("SurveillanceDrone.sysml");
+    let timer_path = timer_dir.join("KitchenTimer.sysml");
+    let intersection_path = intersection_dir.join("TrafficLightIntersection.sysml");
+    let computer_path = computer_dir.join("laptop.sysml");
+
+    std::fs::write(
+        &drone_path,
+        "package SurveillanceDrone { part def SurveillanceQuadrotorDrone; part droneInstance : SurveillanceQuadrotorDrone; }",
+    )
+    .expect("write drone");
+    std::fs::write(
+        &timer_path,
+        "package KitchenTimer { part def KitchenTimer; part timerInstance : KitchenTimer; }",
+    )
+    .expect("write timer");
+    std::fs::write(
+        &intersection_path,
+        "package TrafficLightIntersection { part def TrafficLightIntersection; part intersectionInstance : TrafficLightIntersection; }",
+    )
+    .expect("write intersection");
+    std::fs::write(
+        &computer_path,
+        "package IT { part def Laptop; part myComputer : Laptop; }",
+    )
+    .expect("write computer");
+
+    let root_uri = url::Url::from_file_path(&root).expect("root uri");
+    let drone_uri = url::Url::from_file_path(&drone_path).expect("drone uri");
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": root_uri.as_str(),
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+
+    // Allow workspace scan to index all files before requesting workspace visualization model.
+    std::thread::sleep(std::time::Duration::from_millis(800));
+
+    let model_id = next_id();
+    let model_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": model_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": drone_uri.as_str() },
+            "scope": ["graph", "workspaceVisualization"]
+        }
+    });
+    send_message(&mut stdin, &model_req.to_string());
+    let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+    let graph_nodes = model_json["result"]["graph"]["nodes"]
+        .as_array()
+        .expect("graph nodes array");
+    let node_names: std::collections::HashSet<&str> = graph_nodes
+        .iter()
+        .filter_map(|node| node["name"].as_str())
+        .collect();
+
+    assert!(
+        node_names.contains("SurveillanceDrone"),
+        "workspace graph should include SurveillanceDrone package: {:?}",
+        node_names
+    );
+    assert!(
+        node_names.contains("KitchenTimer"),
+        "workspace graph should include KitchenTimer package: {:?}",
+        node_names
+    );
+    assert!(
+        node_names.contains("TrafficLightIntersection"),
+        "workspace graph should include TrafficLightIntersection package: {:?}",
+        node_names
+    );
+    assert!(
+        node_names.contains("IT"),
+        "workspace graph should include IT package: {:?}",
+        node_names
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
+fn lsp_workspace_visualization_model_includes_all_sysml_examples_packages_when_configured() {
+    let examples_root = std::env::var_os("SYSML_EXAMPLES_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from("C:/Git/sysml-examples"));
+    if !examples_root.is_dir() {
+        eprintln!(
+            "Skipping lsp_workspace_visualization_model_includes_all_sysml_examples_packages_when_configured: {} is not a directory (set SYSML_EXAMPLES_DIR if needed)",
+            examples_root.display()
+        );
+        return;
+    }
+
+    let expected_packages = [
+        "SurveillanceDrone",
+        "KitchenTimer",
+        "TrafficLightIntersection",
+        "IT",
+    ];
+    let drone_path = examples_root.join("drone").join("sysml").join("SurveillanceDrone.sysml");
+    if !drone_path.is_file() {
+        eprintln!(
+            "Skipping lsp_workspace_visualization_model_includes_all_sysml_examples_packages_when_configured: expected fixture file missing {}",
+            drone_path.display()
+        );
+        return;
+    }
+
+    let root_uri = url::Url::from_file_path(&examples_root).expect("examples root uri");
+    let drone_uri = url::Url::from_file_path(&drone_path).expect("drone uri");
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": root_uri.as_str(),
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(1300));
+
+    let model_id = next_id();
+    let model_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": model_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": drone_uri.as_str() },
+            "scope": ["graph", "workspaceVisualization"]
+        }
+    });
+    send_message(&mut stdin, &model_req.to_string());
+    let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+    let graph_nodes = model_json["result"]["graph"]["nodes"]
+        .as_array()
+        .expect("graph nodes array");
+    let node_names: std::collections::HashSet<&str> = graph_nodes
+        .iter()
+        .filter_map(|node| node["name"].as_str())
+        .collect();
+
+    let missing: Vec<&str> = expected_packages
+        .iter()
+        .copied()
+        .filter(|pkg| !node_names.contains(pkg))
+        .collect();
+    assert!(
+        missing.is_empty(),
+        "workspace graph missing expected packages {:?}; available names sample: {:?}",
+        missing,
+        node_names.iter().take(40).copied().collect::<Vec<_>>()
+    );
+
+    let _ = child.kill();
+}

@@ -458,6 +458,17 @@ export function graphToGeneralViewElements(
         'edgesResolved',
         edgesResolved
     );
+    if (ctx.webviewLog) {
+        const packageGroups = [...packageGroupsMap.values()].filter((group) => group.nodeIds.length > 0);
+        ctx.webviewLog('info', '[GENERAL][graph-build]', {
+            filteredNodes: filteredNodes.length,
+            filteredUniqueNodes: filteredUniqueNodes.length,
+            edgesVisible: allEdgesToUse.length,
+            edgesResolved,
+            packageGroupCount: packageGroups.length,
+            packageGroupLabels: packageGroups.slice(0, 12).map((g) => g.label),
+        });
+    }
     return {
         elements: cyElements,
         typeStats,
@@ -486,5 +497,12 @@ export function buildGeneralViewGraph(
         (e: any) => (e.type || e.rel_type || '').toLowerCase() === 'contains'
     ).length;
     console.log('[GV] graph', graph.nodes?.length, 'nodes', graph.edges?.length, 'edges', containsCount, 'contains');
+    if (ctx.webviewLog) {
+        ctx.webviewLog('info', '[GENERAL][buildGeneralViewGraph-input]', {
+            graphNodes: graph.nodes?.length || 0,
+            graphEdges: graph.edges?.length || 0,
+            containsEdges: containsCount,
+        });
+    }
     return graphToGeneralViewElements(graph, ctx);
 }

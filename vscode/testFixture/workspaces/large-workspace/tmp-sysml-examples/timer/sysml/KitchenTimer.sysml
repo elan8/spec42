@@ -1,0 +1,1 @@
+package KitchenTimer { part def KitchenTimer; part timerInstance : KitchenTimer; }

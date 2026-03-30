@@ -1152,6 +1152,13 @@ export function activate(context: vscode.ExtensionContext): void {
             return;
           }
 
+          // Ensure the server parses all selected files before the first visualizer fetch.
+          // Without this preload, workspaceVisualization can initially contain only the
+          // anchor document and render a single package.
+          if (modelExplorerProvider) {
+            await modelExplorerProvider.loadWorkspaceModel(uniqueFiles);
+          }
+
           const openDocs: vscode.TextDocument[] = [];
           let combinedContent = "";
           const fileNames: string[] = [];
@@ -1212,10 +1219,7 @@ export function activate(context: vscode.ExtensionContext): void {
             lspModelProvider,
             uniqueFiles
           );
-
-          if (modelExplorerProvider) {
-            await modelExplorerProvider.loadWorkspaceModel(uniqueFiles);
-          }
+          VisualizationPanel.currentPanel?.refresh();
         } catch (error) {
           logError("sysml.visualizeFolder failed", error);
           vscode.window.showErrorMessage(`Failed to visualize SysML: ${error}`);

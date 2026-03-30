@@ -471,6 +471,7 @@
     "test:interconnection-drone": "vscode-test --config .vscode-test.interconnection-drone.mjs",
     "test:multi-file": "vscode-test --config .vscode-test.multi-file.mjs",
     "test:workspace-smoke": "vscode-test --config .vscode-test.workspace-smoke.mjs",
+    "test:sysml-examples": "vscode-test --config .vscode-test.sysml-examples.mjs",
     "package": "vsce package"
   },
   "devDependencies": {

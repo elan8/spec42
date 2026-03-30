@@ -130,6 +130,17 @@ import { buildGeneralViewGraph } from './graphBuilders';
         }
     }
 
+    function logSelectionTransition(step: string, before: { name: any; index: number }, extra?: Record<string, any>) {
+        webviewLog('info', '[GENERAL][selection-transition]', {
+            step,
+            beforeName: before.name,
+            beforeIndex: before.index,
+            afterName: selectedDiagramName,
+            afterIndex: selectedDiagramIndex,
+            ...(extra || {}),
+        });
+    }
+
     // Activity Debug Labels toggle
     function setupActivityDebugToggle() {
         const debugBtn = document.getElementById('activity-debug-btn');
@@ -284,13 +295,25 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
                 currentData = message;
                 filteredData = null; // Reset filter when new data arrives
+                webviewLog('info', '[GENERAL][update-message]', {
+                    incomingView: message.currentView || null,
+                    pendingPackageName: message.pendingPackageName || null,
+                    graphNodes: message.graph?.nodes?.length || 0,
+                    graphEdges: message.graph?.edges?.length || 0,
+                    generalViewGraphNodes: message.generalViewGraph?.nodes?.length || 0,
+                    generalViewGraphEdges: message.generalViewGraph?.edges?.length || 0,
+                });
 
                 // If the extension requested a specific package, apply it
                 // before anything else so updateDiagramSelector picks it up.
                 if (message.pendingPackageName) {
+                    const before = { name: selectedDiagramName, index: selectedDiagramIndex };
                     selectedDiagramName = message.pendingPackageName;
                     selectedDiagramIndex = 0; // Will be corrected by updateDiagramSelector
                     currentView = 'general-view';
+                    logSelectionTransition('message.update.pendingPackageName', before, {
+                        pendingPackageName: message.pendingPackageName,
+                    });
                 } else if (message.currentView) {
                     // Use the view state from the message if provided, otherwise keep current
                     currentView = message.currentView;
@@ -312,8 +335,12 @@ import { buildGeneralViewGraph } from './graphBuilders';
             case 'selectPackage':
                 // Switch to General View and select a specific package in the dropdown
                 if (message.packageName) {
+                    const before = { name: selectedDiagramName, index: selectedDiagramIndex };
                     selectedDiagramName = message.packageName;
                     selectedDiagramIndex = 0; // Will be corrected by updateDiagramSelector
+                    logSelectionTransition('message.selectPackage', before, {
+                        packageName: message.packageName,
+                    });
                     changeView('general-view');
                 }
                 break;
@@ -929,7 +956,9 @@ import { buildGeneralViewGraph } from './graphBuilders';
             currentView = view;
 
             // Reset diagram selection when switching views
+            const before = { name: selectedDiagramName, index: selectedDiagramIndex };
             selectedDiagramIndex = 0;
+            logSelectionTransition('changeView.resetIndex', before, { view });
 
             // Notify the panel that the view has changed
             vscode.postMessage({
@@ -1089,6 +1118,12 @@ import { buildGeneralViewGraph } from './graphBuilders';
             packagesArray.forEach(pkg => {
                 diagrams.push(pkg);
             });
+            webviewLog('info', '[GENERAL][selector]', {
+                selectedDiagramName,
+                selectedDiagramIndex,
+                packageCount: packagesArray.length,
+                packageNames: packagesArray.map((p: any) => p?.name).filter(Boolean),
+            });
 
             labelText = 'Package';
         } else if (activeView === 'action-flow-view') {
@@ -1160,9 +1195,14 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 const preferredRoot = preparedData?.selectedIbdRoot && candidates.indexOf(preparedData.selectedIbdRoot) >= 0
                     ? preparedData.selectedIbdRoot
                     : (selectedIbdRoot && candidates.indexOf(selectedIbdRoot) >= 0 ? selectedIbdRoot : candidates[0] || null);
+                const before = { name: selectedDiagramName, index: selectedDiagramIndex };
                 selectedDiagramIndex = preferredRoot ? candidates.indexOf(preferredRoot) : 0;
                 selectedDiagramName = preferredRoot;
                 selectedIbdRoot = selectedDiagramName;
+                logSelectionTransition('selector.interconnection.preferredRoot', before, {
+                    preferredRoot,
+                    candidateCount: candidates.length,
+                });
             } else {
                 diagrams = [{ name: 'Default', element: null }];
                 labelText = 'Block';
@@ -1172,8 +1212,13 @@ import { buildGeneralViewGraph } from './graphBuilders';
         // Show/hide selector based on number of diagrams
         if (diagrams.length <= 1) {
             pkgDropdown.style.display = 'none';
+            const before = { name: selectedDiagramName, index: selectedDiagramIndex };
             selectedDiagramIndex = 0;
             selectedDiagramName = diagrams.length === 1 ? diagrams[0].name : null;
+            logSelectionTransition('selector.single-option-reset', before, {
+                activeView,
+                diagramsLength: diagrams.length,
+            });
             setSelectorSummary('');
             return;
         }
@@ -1185,16 +1230,26 @@ import { buildGeneralViewGraph } from './graphBuilders';
         if (selectedDiagramName) {
             const matchingIndex = diagrams.findIndex(d => d.name === selectedDiagramName);
             if (matchingIndex >= 0) {
+                const before = { name: selectedDiagramName, index: selectedDiagramIndex };
                 selectedDiagramIndex = matchingIndex;
                 if (pkgLabel) pkgLabel.textContent = diagrams[matchingIndex]?.label || selectedDiagramName;
+                logSelectionTransition('selector.restore-hit', before, { matchingIndex, selectedDiagramName });
+                webviewLog('info', '[GENERAL][selector-restore-hit]', { selectedDiagramName, matchingIndex });
             } else {
                 // Diagram no longer exists, reset to first
+                const previousSelection = selectedDiagramName;
+                const before = { name: selectedDiagramName, index: selectedDiagramIndex };
                 selectedDiagramIndex = 0;
                 selectedDiagramName = diagrams[0]?.name || null;
+                logSelectionTransition('selector.restore-miss-fallback', before, { previousSelection });
+                webviewLog('warn', '[GENERAL][selector-restore-miss]', { previousSelection, fallbackSelection: selectedDiagramName });
             }
         } else {
             // No previous selection, initialize with first diagram
+            const before = { name: selectedDiagramName, index: selectedDiagramIndex };
             selectedDiagramName = diagrams[0]?.name || null;
+            logSelectionTransition('selector.init-first', before);
+            webviewLog('info', '[GENERAL][selector-init]', { selectedDiagramName });
         }
 
         if (activeView === 'interconnection-view') {
@@ -1218,9 +1273,11 @@ import { buildGeneralViewGraph } from './graphBuilders';
             item.textContent = d.label || d.name || 'Diagram ' + (idx + 1);
             if (idx === selectedDiagramIndex) item.classList.add('active');
             item.addEventListener('click', function() {
+                const before = { name: selectedDiagramName, index: selectedDiagramIndex };
                 selectedDiagramIndex = idx;
                 selectedDiagramName = d.name;
                 if (activeView === 'interconnection-view') selectedIbdRoot = d.name;
+                logSelectionTransition('selector.user-click', before, { selectedName: d.name, selectedIdx: idx });
                 // Selecting a different diagram should open it fit-to-window.
                 window.userHasManuallyZoomed = false;
                 // Update active state
@@ -1246,8 +1303,10 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
         // Ensure selected index is valid
         if (selectedDiagramIndex >= diagrams.length) {
+            const before = { name: selectedDiagramName, index: selectedDiagramIndex };
             selectedDiagramIndex = 0;
             selectedDiagramName = diagrams[0]?.name || null;
+            logSelectionTransition('selector.index-out-of-range-fallback', before, { diagramsLength: diagrams.length });
         }
     }
 
@@ -1357,9 +1416,21 @@ import { buildGeneralViewGraph } from './graphBuilders';
         // Use filtered data if available, otherwise use original data
         let baseData = filteredData || currentData;
 
-        // Apply package filter for views that support it (excluding elk which handles it internally)
-        // Index 0 = "All Packages", Index 1+ = specific packages
-        if (selectedDiagramIndex > 0 &&
+        // Apply package filter for views that support it (excluding elk which handles it internally).
+        // Use selected diagram NAME (not index) so filtering remains stable even if package order
+        // differs between selector construction and render-time element traversal.
+        const hasSpecificPackageSelection =
+            !!selectedDiagramName && selectedDiagramName !== 'All Packages';
+        if (view === 'general-view') {
+            webviewLog('info', '[GENERAL][render-start]', {
+                selectedDiagramName,
+                selectedDiagramIndex,
+                hasSpecificPackageSelection,
+                graphNodes: baseData?.graph?.nodes?.length || 0,
+                graphEdges: baseData?.graph?.edges?.length || 0,
+            });
+        }
+        if (hasSpecificPackageSelection &&
             (view === 'interconnection-view' || view === 'general-view')) {
 
             const elements = baseData?.elements ?? (baseData?.graph ? graphToElementTree(baseData.graph) : []);
@@ -1383,10 +1454,17 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
             findPackagesForRender(elements);
 
-            // Get the selected package (index 0 is "All Packages", so subtract 1)
-            const selectedPackageIdx = selectedDiagramIndex - 1;
-            if (selectedPackageIdx >= 0 && selectedPackageIdx < packagesArray.length) {
-                const selectedPackage = packagesArray[selectedPackageIdx];
+            const selectedPackage = packagesArray.find((p: any) => p.name === selectedDiagramName)
+                || (selectedDiagramIndex > 0 ? packagesArray[selectedDiagramIndex - 1] : null);
+            if (selectedPackage) {
+                if (view === 'general-view') {
+                    webviewLog('info', '[GENERAL][filter-target]', {
+                        selectedDiagramName,
+                        selectedDiagramIndex,
+                        selectedPackageName: selectedPackage?.name,
+                        packageCount: packagesArray.length,
+                    });
+                }
 
                 // Create filtered baseData with only this package's contents
                 if (selectedPackage.element) {
@@ -1420,6 +1498,16 @@ import { buildGeneralViewGraph } from './graphBuilders';
                                 selectedElementIds.has(e.source) && selectedElementIds.has(e.target)
                             );
                             const filteredGraph = { nodes: filteredNodes, edges: filteredEdges };
+                            if (view === 'general-view') {
+                                webviewLog('info', '[GENERAL][filter-applied]', {
+                                    selectedPackageName: selectedPackage?.name,
+                                    selectedElementIds: selectedElementIds.size,
+                                    beforeNodes: sourceGraph?.nodes?.length || 0,
+                                    beforeEdges: sourceGraph?.edges?.length || 0,
+                                    afterNodes: filteredNodes.length,
+                                    afterEdges: filteredEdges.length,
+                                });
+                            }
 
                             nextBaseData = {
                                 ...nextBaseData,
@@ -1431,6 +1519,12 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
                     baseData = nextBaseData;
                 }
+            } else if (view === 'general-view') {
+                webviewLog('warn', '[GENERAL][filter-miss]', {
+                    selectedDiagramName,
+                    selectedDiagramIndex,
+                    packageNames: packagesArray.map((p: any) => p?.name).filter(Boolean),
+                });
             }
         }
 

@@ -1,0 +1,1 @@
+package SurveillanceDrone { part def SurveillanceQuadrotorDrone; part droneInstance : SurveillanceQuadrotorDrone; }

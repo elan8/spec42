@@ -36,6 +36,27 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
 
     async function doUpdateVisualization(): Promise<void> {
         try {
+            log(
+                'updateFlow:fetch:start',
+                `doc=${document.uri.toString()}`,
+                `fileUris=${fileUris.length}`,
+                `currentView=${getCurrentView()}`,
+                `pendingPackage=${getPendingPackageName() ?? '(none)'}`,
+            );
+            try {
+                // eslint-disable-next-line no-console
+                console.log(
+                    '[viz][updateFlow:fetch:start]',
+                    JSON.stringify({
+                        doc: document.uri.toString(),
+                        fileUris: fileUris.length,
+                        currentView: getCurrentView(),
+                        pendingPackage: getPendingPackageName() ?? null,
+                    })
+                );
+            } catch {
+                // ignore
+            }
             const msg = await fetchModelData({
                 documentUri: document.uri.toString(),
                 fileUris,
@@ -45,6 +66,31 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
             });
             clearPendingPackageName();
             if (msg) {
+                log(
+                    'updateFlow:post:update',
+                    `graphNodes=${msg.graph?.nodes?.length || 0}`,
+                    `graphEdges=${msg.graph?.edges?.length || 0}`,
+                    `generalNodes=${msg.generalViewGraph?.nodes?.length || 0}`,
+                    `generalEdges=${msg.generalViewGraph?.edges?.length || 0}`,
+                    `currentView=${msg.currentView}`,
+                    `pendingPackage=${msg.pendingPackageName ?? '(none)'}`,
+                );
+                try {
+                    // eslint-disable-next-line no-console
+                    console.log(
+                        '[viz][updateFlow:post:update]',
+                        JSON.stringify({
+                            graphNodes: msg.graph?.nodes?.length || 0,
+                            graphEdges: msg.graph?.edges?.length || 0,
+                            generalNodes: msg.generalViewGraph?.nodes?.length || 0,
+                            generalEdges: msg.generalViewGraph?.edges?.length || 0,
+                            currentView: msg.currentView,
+                            pendingPackage: msg.pendingPackageName ?? null,
+                        })
+                    );
+                } catch {
+                    // ignore
+                }
                 panel.webview.postMessage(msg);
             } else {
                 log('updateVisualization: no model data available, hiding loading state');

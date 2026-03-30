@@ -1,0 +1,1 @@
+package TrafficLightIntersection { part def TrafficLightIntersection; part intersectionInstance : TrafficLightIntersection; }

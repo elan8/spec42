@@ -175,117 +175,172 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
         nodeDataMap.set(d.id, { compartments, height: Math.max(NODE_HEIGHT_BASE, nodeHeight) });
     });
 
-    // Build per-node port indices: each edge gets its own connection point to avoid overlap.
-    const outgoingByNode = new Map<string, { edge: any; idx: number }[]>();
-    const incomingByNode = new Map<string, { edge: any; idx: number }[]>();
-    cyEdges.forEach((edge: any, idx: number) => {
-        const src = edge.data.source;
-        const tgt = edge.data.target;
-        if (!outgoingByNode.has(src)) outgoingByNode.set(src, []);
-        outgoingByNode.get(src)!.push({ edge, idx });
-        if (!incomingByNode.has(tgt)) incomingByNode.set(tgt, []);
-        incomingByNode.get(tgt)!.push({ edge, idx });
+    const topPackageOf = (node: any): string =>
+        (Array.isArray(node?.data?.packagePath) && node.data.packagePath.length > 0
+            ? String(node.data.packagePath[0])
+            : 'Unscoped');
+
+    const packageNodeMap = new Map<string, any[]>();
+    cyNodes.forEach((node: any) => {
+        const pkg = topPackageOf(node);
+        if (!packageNodeMap.has(pkg)) packageNodeMap.set(pkg, []);
+        packageNodeMap.get(pkg)!.push(node);
     });
-    const getOutgoingPortIndex = (nodeId: string, edge: any) => {
-        const list = outgoingByNode.get(nodeId) || [];
-        const i = list.findIndex((x) => x.edge === edge);
-        return i >= 0 ? i : 0;
-    };
-    const getIncomingPortIndex = (nodeId: string, edge: any) => {
-        const list = incomingByNode.get(nodeId) || [];
-        const i = list.findIndex((x) => x.edge === edge);
-        return i >= 0 ? i : 0;
-    };
-
-    // Layout uses ALL edges (hierarchy + typing) so ELK positions the full tree correctly.
-    // Multiple ports per side (north_0..north_k, south_0..south_m) distribute edges and reduce overlap.
-    const elkGraph = {
-        id: 'root',
-        layoutOptions: {
-            'elk.algorithm': 'layered',
-            'elk.direction': 'DOWN',
-            'elk.spacing.nodeNode': '220',
-            'elk.layered.spacing.nodeNodeBetweenLayers': '280',
-            'elk.spacing.edgeNode': '120',
-            'elk.spacing.edgeEdge': '120',
-            'elk.edgeRouting': 'ORTHOGONAL',
-            'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
-            'elk.separateConnectedComponents': 'true',
-            'elk.aspectRatio': '1.4',
-            'elk.padding': '[top=100,left=100,bottom=100,right=100]',
-            'org.eclipse.elk.portConstraints': 'FIXED_SIDE',
-            'org.eclipse.elk.spacing.portPort': '15',
-            'org.eclipse.elk.json.edgeCoords': 'ROOT'
-        },
-        children: cyNodes.map((el: any) => {
-            const nodeId = el.data.id;
-            const nd = nodeDataMap.get(nodeId);
-            const nodeHeight = nd?.height ?? NODE_HEIGHT_BASE;
-            const outCount = outgoingByNode.get(nodeId)?.length ?? 0;
-            const inCount = incomingByNode.get(nodeId)?.length ?? 0;
-            const ports: { id: string; layoutOptions: Record<string, string> }[] = [];
-            for (let i = 0; i < Math.max(outCount, 1); i++) {
-                ports.push({
-                    id: nodeId + '_south_' + i,
-                    layoutOptions: { 'org.eclipse.elk.port.side': 'SOUTH' }
-                });
-            }
-            for (let i = 0; i < Math.max(inCount, 1); i++) {
-                ports.push({
-                    id: nodeId + '_north_' + i,
-                    layoutOptions: { 'org.eclipse.elk.port.side': 'NORTH' }
-                });
-            }
-            return {
-                id: nodeId,
-                width: nodeWidth,
-                height: nodeHeight,
-                ports
-            };
-        }),
-        edges: cyEdges.map((el: any, idx: number) => {
-            const src = el.data.source;
-            const tgt = el.data.target;
-            const srcPort = src + '_south_' + getOutgoingPortIndex(src, el);
-            const tgtPort = tgt + '_north_' + getIncomingPortIndex(tgt, el);
-            return {
-                id: el.data.id || ('edge-' + idx),
-                sources: [srcPort],
-                targets: [tgtPort]
-            };
-        })
-    };
-
-    let laidOut: any;
-    try {
-        laidOut = elk ? await elk.layout(elkGraph) : null;
-    } catch (e) {
-        console.error('[General View] ELK layout failed:', e);
-    }
+    const packageOrder = [...packageNodeMap.keys()].sort((a, b) => a.localeCompare(b));
 
     const nodePositions = new Map<string, { x: number; y: number; width: number; height: number }>();
-    if (laidOut && laidOut.children) {
-        laidOut.children.forEach((child: any) => {
-            const nd = nodeDataMap.get(child.id);
-            nodePositions.set(child.id, {
-                x: child.x ?? 0,
-                y: child.y ?? 0,
-                width: child.width ?? nodeWidth,
-                height: child.height ?? nd?.height ?? NODE_HEIGHT_BASE
+    const topPackageBounds = new Map<string, { x: number; y: number; width: number; height: number }>();
+    const internalEdgesToRender: any[] = [];
+
+    async function layoutPackage(nodesInPkg: any[], edgesInPkg: any[]) {
+        const outgoingByNode = new Map<string, { edge: any; idx: number }[]>();
+        const incomingByNode = new Map<string, { edge: any; idx: number }[]>();
+        edgesInPkg.forEach((edge: any, idx: number) => {
+            const src = edge.data.source;
+            const tgt = edge.data.target;
+            if (!outgoingByNode.has(src)) outgoingByNode.set(src, []);
+            outgoingByNode.get(src)!.push({ edge, idx });
+            if (!incomingByNode.has(tgt)) incomingByNode.set(tgt, []);
+            incomingByNode.get(tgt)!.push({ edge, idx });
+        });
+        const getOutgoingPortIndex = (nodeId: string, edge: any) => {
+            const list = outgoingByNode.get(nodeId) || [];
+            const i = list.findIndex((x) => x.edge === edge);
+            return i >= 0 ? i : 0;
+        };
+        const getIncomingPortIndex = (nodeId: string, edge: any) => {
+            const list = incomingByNode.get(nodeId) || [];
+            const i = list.findIndex((x) => x.edge === edge);
+            return i >= 0 ? i : 0;
+        };
+
+        const elkGraph = {
+            id: 'root',
+            layoutOptions: {
+                'elk.algorithm': 'layered',
+                'elk.direction': 'DOWN',
+                'elk.spacing.nodeNode': '220',
+                'elk.layered.spacing.nodeNodeBetweenLayers': '280',
+                'elk.spacing.edgeNode': '120',
+                'elk.spacing.edgeEdge': '120',
+                'elk.edgeRouting': 'ORTHOGONAL',
+                'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
+                'elk.separateConnectedComponents': 'true',
+                'elk.aspectRatio': '1.4',
+                'elk.padding': '[top=100,left=100,bottom=100,right=100]',
+                'org.eclipse.elk.portConstraints': 'FIXED_SIDE',
+                'org.eclipse.elk.spacing.portPort': '15',
+                'org.eclipse.elk.json.edgeCoords': 'ROOT'
+            },
+            children: nodesInPkg.map((el: any) => {
+                const nodeId = el.data.id;
+                const nd = nodeDataMap.get(nodeId);
+                const nodeHeight = nd?.height ?? NODE_HEIGHT_BASE;
+                const outCount = outgoingByNode.get(nodeId)?.length ?? 0;
+                const inCount = incomingByNode.get(nodeId)?.length ?? 0;
+                const ports: { id: string; layoutOptions: Record<string, string> }[] = [];
+                for (let i = 0; i < Math.max(outCount, 1); i++) {
+                    ports.push({
+                        id: nodeId + '_south_' + i,
+                        layoutOptions: { 'org.eclipse.elk.port.side': 'SOUTH' }
+                    });
+                }
+                for (let i = 0; i < Math.max(inCount, 1); i++) {
+                    ports.push({
+                        id: nodeId + '_north_' + i,
+                        layoutOptions: { 'org.eclipse.elk.port.side': 'NORTH' }
+                    });
+                }
+                return { id: nodeId, width: nodeWidth, height: nodeHeight, ports };
+            }),
+            edges: edgesInPkg.map((el: any, idx: number) => {
+                const src = el.data.source;
+                const tgt = el.data.target;
+                const srcPort = src + '_south_' + getOutgoingPortIndex(src, el);
+                const tgtPort = tgt + '_north_' + getIncomingPortIndex(tgt, el);
+                return {
+                    id: el.data.id || ('edge-' + idx),
+                    sources: [srcPort],
+                    targets: [tgtPort]
+                };
+            })
+        };
+
+        try {
+            return elk ? await elk.layout(elkGraph) : null;
+        } catch (e) {
+            console.error('[General View] ELK package layout failed:', e);
+            return null;
+        }
+    }
+
+    // Place each top-level package as an independent container, with its own layout.
+    const packageGapY = 220;
+    let cursorX = 80;
+    let cursorY = 80;
+    const fixedPackageLaneX = 80;
+    for (const pkg of packageOrder) {
+        const nodesInPkg = packageNodeMap.get(pkg) || [];
+        const nodeIdSet = new Set(nodesInPkg.map((n: any) => n.data.id));
+        const edgesInPkg = cyEdges.filter((e: any) =>
+            nodeIdSet.has(e.data.source) && nodeIdSet.has(e.data.target)
+        );
+        internalEdgesToRender.push(...edgesInPkg);
+
+        const laidOut = await layoutPackage(nodesInPkg, edgesInPkg);
+        const localPositions = new Map<string, { x: number; y: number; width: number; height: number }>();
+        if (laidOut && laidOut.children) {
+            laidOut.children.forEach((child: any) => {
+                const nd = nodeDataMap.get(child.id);
+                localPositions.set(child.id, {
+                    x: child.x ?? 0,
+                    y: child.y ?? 0,
+                    width: child.width ?? nodeWidth,
+                    height: child.height ?? nd?.height ?? NODE_HEIGHT_BASE
+                });
+            });
+        } else {
+            let lx = 40;
+            let ly = 40;
+            nodesInPkg.forEach((el: any) => {
+                const nd = nodeDataMap.get(el.data.id);
+                const h = nd?.height ?? NODE_HEIGHT_BASE;
+                localPositions.set(el.data.id, { x: lx, y: ly, width: nodeWidth, height: h });
+                lx += nodeWidth + 60;
+                if (lx > 1000) {
+                    lx = 40;
+                    ly += h + 80;
+                }
+            });
+        }
+
+        const allLocal = [...localPositions.values()];
+        const minX = Math.min(...allLocal.map((p) => p.x));
+        const minY = Math.min(...allLocal.map((p) => p.y));
+        const maxX = Math.max(...allLocal.map((p) => p.x + p.width));
+        const maxY = Math.max(...allLocal.map((p) => p.y + p.height));
+        const contentWidth = Math.max(maxX - minX, laidOut?.width ?? 0);
+        const contentHeight = Math.max(maxY - minY, laidOut?.height ?? 0);
+        const pkgWidth = Math.max(900, contentWidth + 220);
+        const pkgHeight = Math.max(360, contentHeight + 240);
+        const offsetX = cursorX - minX + 40;
+        const offsetY = cursorY - minY + 48;
+        localPositions.forEach((pos, nodeId) => {
+            nodePositions.set(nodeId, {
+                x: pos.x + offsetX,
+                y: pos.y + offsetY,
+                width: pos.width,
+                height: pos.height
             });
         });
-    } else {
-        let x = 80, y = 80;
-        cyNodes.forEach((el: any, i: number) => {
-            const nd = nodeDataMap.get(el.data.id);
-            const h = nd?.height ?? NODE_HEIGHT_BASE;
-            nodePositions.set(el.data.id, { x, y, width: nodeWidth, height: h });
-            x += nodeWidth + 60;
-            if (x > width - nodeWidth - 80) {
-                x = 80;
-                y += h + 80;
-            }
+        topPackageBounds.set(pkg, {
+            x: cursorX,
+            y: cursorY,
+            width: pkgWidth,
+            height: pkgHeight
         });
+        cursorX = fixedPackageLaneX;
+        cursorY += pkgHeight + packageGapY;
     }
 
     g.selectAll('*').remove();
@@ -351,42 +406,28 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
     const nodeGroup = g.append('g').attr('class', 'general-nodes');
     const packageGroup = g.append('g').attr('class', 'general-packages');
 
-    packageGroups
-        .sort((a, b) => a.depth - b.depth)
-        .forEach((group) => {
-            const memberPositions = group.nodeIds
-                .map((nodeId) => nodePositions.get(nodeId))
-                .filter(Boolean) as Array<{ x: number; y: number; width: number; height: number }>;
-            if (memberPositions.length === 0) return;
-            const paddingX = 28;
-            const paddingTop = 36;
-            const paddingBottom = 22;
-            const minX = Math.min(...memberPositions.map((pos) => pos.x)) - paddingX;
-            const minY = Math.min(...memberPositions.map((pos) => pos.y)) - paddingTop;
-            const maxX = Math.max(...memberPositions.map((pos) => pos.x + pos.width)) + paddingX;
-            const maxY = Math.max(...memberPositions.map((pos) => pos.y + pos.height)) + paddingBottom;
-            const tone = group.depth === 1 ? 0.08 : 0.05;
-            packageGroup.append('rect')
-                .attr('x', minX)
-                .attr('y', minY)
-                .attr('width', maxX - minX)
-                .attr('height', maxY - minY)
-                .attr('rx', 18)
-                .style('fill', 'transparent')
-                .style('stroke', GENERAL_NEUTRAL_BORDER)
-                .style('stroke-width', group.depth === 1 ? '1.5px' : '1px')
-                .style('stroke-dasharray', group.depth === 1 ? 'none' : '6,4')
-                .style('opacity', 0.9);
-            packageGroup.append('text')
-                .attr('x', minX + 14)
-                .attr('y', minY + 21)
-                .text(group.label)
-                .style('font-size', '11px')
-                .style('font-weight', '700')
-                .style('fill', GENERAL_NEUTRAL_BORDER);
-        });
+    topPackageBounds.forEach((bounds, pkgName) => {
+        packageGroup.append('rect')
+            .attr('x', bounds.x)
+            .attr('y', bounds.y)
+            .attr('width', bounds.width)
+            .attr('height', bounds.height)
+            .attr('rx', 18)
+            .style('fill', 'transparent')
+            .style('stroke', GENERAL_NEUTRAL_BORDER)
+            .style('stroke-width', '1.5px')
+            .style('stroke-dasharray', 'none')
+            .style('opacity', 0.9);
+        packageGroup.append('text')
+            .attr('x', bounds.x + 14)
+            .attr('y', bounds.y + 21)
+            .text(pkgName)
+            .style('font-size', '11px')
+            .style('font-weight', '700')
+            .style('fill', GENERAL_NEUTRAL_BORDER);
+    });
 
-    const laidOutEdges = laidOut?.edges ?? [];
+    const laidOutEdges: any[] = [];
     // For typing edges to same target, assign offsets to reduce overlap
     const typingByTarget = new Map<string, Array<{ el: any; idx: number }>>();
     cyEdges.forEach((el: any, idx: number) => {
@@ -397,7 +438,7 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
             typingByTarget.get(tgt)!.push({ el, idx });
         }
     });
-    cyEdges.forEach((el: any, edgeIdx: number) => {
+    internalEdgesToRender.forEach((el: any, edgeIdx: number) => {
         const srcPos = nodePositions.get(el.data.source);
         const tgtPos = nodePositions.get(el.data.target);
         if (!srcPos || !tgtPos) return;

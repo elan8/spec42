@@ -95,9 +95,32 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     const requestScopes = isWorkspaceVisualization
         ? [...scopes, 'workspaceVisualization' as const]
         : scopes;
-    const requestUris = isWorkspaceVisualization
-        ? [documentUri]
-        : (fileUris.length > 0 ? fileUris.map(u => u.toString()) : [documentUri]);
+    const requestUris = fileUris.length > 0
+        ? fileUris.map(u => u.toString())
+        : [documentUri];
+    log(
+        'fetchModelData:start',
+        `workspace=${isWorkspaceVisualization}`,
+        `uris=${requestUris.length}`,
+        `scopes=${requestScopes.join(',')}`,
+        `currentView=${currentView}`,
+        `pendingPackage=${pendingPackageName ?? '(none)'}`,
+    );
+    try {
+        // eslint-disable-next-line no-console
+        console.log(
+            '[viz][fetchModelData:start]',
+            JSON.stringify({
+                workspace: isWorkspaceVisualization,
+                uris: requestUris.length,
+                scopes: requestScopes,
+                currentView,
+                pendingPackage: pendingPackageName ?? null,
+            })
+        );
+    } catch {
+        // ignore
+    }
 
     const settledResults = await Promise.allSettled(
         requestUris.map(uri => lspModelProvider.getModel(uri, requestScopes)),
@@ -139,6 +162,11 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     }
 
     const mergedGraph = mergeGraphs(allGraphs);
+    const mergedPackageNames = (mergedGraph.nodes || [])
+        .filter((n) => ((n.type || '') as string).toLowerCase().includes('package'))
+        .map((n) => n.name)
+        .filter((name): name is string => typeof name === 'string' && name.length > 0);
+    const uniqueMergedPackageNames = [...new Set(mergedPackageNames)];
 
     const primaryResult = results.find(r => r.graph?.nodes?.length || r.graph?.edges?.length) ?? results[0];
     const primaryGeneralViewGraph = primaryResult?.generalViewGraph;
@@ -158,6 +186,33 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     };
     if (pendingPackageName) {
         msg.pendingPackageName = pendingPackageName;
+    }
+    log(
+        'fetchModelData:done',
+        `results=${results.length}`,
+        `graphs=${allGraphs.length}`,
+        `mergedNodes=${mergedGraph.nodes?.length || 0}`,
+        `mergedEdges=${mergedGraph.edges?.length || 0}`,
+        `mergedPackages=${uniqueMergedPackageNames.join('|') || '(none)'}`,
+        `primaryGeneralNodes=${primaryGeneralViewGraph?.nodes?.length || 0}`,
+        `primaryGeneralEdges=${primaryGeneralViewGraph?.edges?.length || 0}`,
+    );
+    try {
+        // eslint-disable-next-line no-console
+        console.log(
+            '[viz][fetchModelData:done]',
+            JSON.stringify({
+                results: results.length,
+                graphs: allGraphs.length,
+                mergedNodes: mergedGraph.nodes?.length || 0,
+                mergedEdges: mergedGraph.edges?.length || 0,
+                mergedPackages: uniqueMergedPackageNames,
+                primaryGeneralNodes: primaryGeneralViewGraph?.nodes?.length || 0,
+                primaryGeneralEdges: primaryGeneralViewGraph?.edges?.length || 0,
+            })
+        );
+    } catch {
+        // ignore
     }
     return msg;
 }

@@ -1,0 +1,1 @@
+package IT { part def Laptop; part myComputer : Laptop; }
