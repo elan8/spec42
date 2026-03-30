@@ -17,6 +17,13 @@ function isDebugEnabled(): boolean {
   );
 }
 
+export function isVerboseLoggingEnabled(): boolean {
+  return (
+    isDebugEnabled() ||
+    vscode.workspace.getConfiguration("spec42").get<boolean>("logging.verbose") === true
+  );
+}
+
 function timestamp(): string {
   return new Date().toISOString();
 }

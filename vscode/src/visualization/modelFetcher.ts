@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import type { LspModelProvider } from '../providers/lspModelProvider';
-import { log, logError } from '../logger';
+import { isVerboseLoggingEnabled, log, logError } from '../logger';
 import type {
     SysMLGraphDTO,
     GraphNodeDTO,
@@ -106,20 +106,22 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         `currentView=${currentView}`,
         `pendingPackage=${pendingPackageName ?? '(none)'}`,
     );
-    try {
-        // eslint-disable-next-line no-console
-        console.log(
-            '[viz][fetchModelData:start]',
-            JSON.stringify({
-                workspace: isWorkspaceVisualization,
-                uris: requestUris.length,
-                scopes: requestScopes,
-                currentView,
-                pendingPackage: pendingPackageName ?? null,
-            })
-        );
-    } catch {
-        // ignore
+    if (isVerboseLoggingEnabled()) {
+        try {
+            // eslint-disable-next-line no-console
+            console.log(
+                '[viz][fetchModelData:start]',
+                JSON.stringify({
+                    workspace: isWorkspaceVisualization,
+                    uris: requestUris.length,
+                    scopes: requestScopes,
+                    currentView,
+                    pendingPackage: pendingPackageName ?? null,
+                })
+            );
+        } catch {
+            // ignore
+        }
     }
 
     const settledResults = await Promise.allSettled(
@@ -197,22 +199,24 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         `primaryGeneralNodes=${primaryGeneralViewGraph?.nodes?.length || 0}`,
         `primaryGeneralEdges=${primaryGeneralViewGraph?.edges?.length || 0}`,
     );
-    try {
-        // eslint-disable-next-line no-console
-        console.log(
-            '[viz][fetchModelData:done]',
-            JSON.stringify({
-                results: results.length,
-                graphs: allGraphs.length,
-                mergedNodes: mergedGraph.nodes?.length || 0,
-                mergedEdges: mergedGraph.edges?.length || 0,
-                mergedPackages: uniqueMergedPackageNames,
-                primaryGeneralNodes: primaryGeneralViewGraph?.nodes?.length || 0,
-                primaryGeneralEdges: primaryGeneralViewGraph?.edges?.length || 0,
-            })
-        );
-    } catch {
-        // ignore
+    if (isVerboseLoggingEnabled()) {
+        try {
+            // eslint-disable-next-line no-console
+            console.log(
+                '[viz][fetchModelData:done]',
+                JSON.stringify({
+                    results: results.length,
+                    graphs: allGraphs.length,
+                    mergedNodes: mergedGraph.nodes?.length || 0,
+                    mergedEdges: mergedGraph.edges?.length || 0,
+                    mergedPackages: uniqueMergedPackageNames,
+                    primaryGeneralNodes: primaryGeneralViewGraph?.nodes?.length || 0,
+                    primaryGeneralEdges: primaryGeneralViewGraph?.edges?.length || 0,
+                })
+            );
+        } catch {
+            // ignore
+        }
     }
     return msg;
 }

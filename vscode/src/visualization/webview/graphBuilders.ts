@@ -13,6 +13,7 @@ export interface GeneralViewGraphContext {
     expandedGeneralCategories: Set<string>;
     webviewLog?: (level: 'info' | 'warn' | 'error', ...args: any[]) => void;
 }
+const verboseWebviewLogging = Boolean((typeof window !== 'undefined' && (window as any).__VIZ_INIT?.verboseLogging));
 
 export interface GeneralViewPackageGroup {
     id: string;
@@ -499,19 +500,21 @@ export function graphToGeneralViewElements(
             }
         }
     });
-    console.log(
-        '[GV] graphToGeneralViewElements',
-        'syntheticEdges',
-        0,
-        'filteredNodes',
-        filteredNodes.length,
-        'filteredUniqueNodes',
-        filteredUniqueNodes.length,
-        'edgesToUse',
-        allEdgesToUse.length,
-        'edgesResolved',
-        edgesResolved
-    );
+    if (verboseWebviewLogging) {
+        console.log(
+            '[GV] graphToGeneralViewElements',
+            'syntheticEdges',
+            0,
+            'filteredNodes',
+            filteredNodes.length,
+            'filteredUniqueNodes',
+            filteredUniqueNodes.length,
+            'edgesToUse',
+            allEdgesToUse.length,
+            'edgesResolved',
+            edgesResolved
+        );
+    }
     if (ctx.webviewLog) {
         const packageGroups = [...packageGroupsMap.values()].filter((group) => group.nodeIds.length > 0);
         ctx.webviewLog('info', '[GENERAL][graph-build]', {
@@ -550,7 +553,9 @@ export function buildGeneralViewGraph(
     const containsCount = (graph.edges || []).filter(
         (e: any) => (e.type || e.rel_type || '').toLowerCase() === 'contains'
     ).length;
-    console.log('[GV] graph', graph.nodes?.length, 'nodes', graph.edges?.length, 'edges', containsCount, 'contains');
+    if (verboseWebviewLogging) {
+        console.log('[GV] graph', graph.nodes?.length, 'nodes', graph.edges?.length, 'edges', containsCount, 'contains');
+    }
     if (ctx.webviewLog) {
         ctx.webviewLog('info', '[GENERAL][buildGeneralViewGraph-input]', {
             graphNodes: graph.nodes?.length || 0,

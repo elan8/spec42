@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import { isVerboseLoggingEnabled } from '../logger';
 import { getVisualizerStyles } from './styles';
 import { DEFAULT_ENABLED_VIEWS, EXPERIMENTAL_VIEWS } from './webview/constants';
 
@@ -39,6 +40,7 @@ export function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri
         EXTENSION_VERSION: extensionVersion ?? '0.0.0',
         ENABLED_VIEW_IDS_JSON: JSON.stringify(enabledViews),
         EXPERIMENTAL_VIEW_IDS_JSON: JSON.stringify(EXPERIMENTAL_VIEWS),
+        VERBOSE_LOGGING_JSON: JSON.stringify(isVerboseLoggingEnabled()),
     };
 
     for (const [key, value] of Object.entries(vars)) {

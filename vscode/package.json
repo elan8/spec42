@@ -391,6 +391,11 @@
           "default": false,
           "description": "Enable debug logging to the SysML output channel (View → Output → SysML)."
         },
+        "spec42.logging.verbose": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable verbose runtime logging for troubleshooting in production installs (visualizer/webview/message flow)."
+        },
         "spec42.debug.dumpSemanticTokens": {
           "type": "boolean",
           "default": false,

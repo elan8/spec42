@@ -73,6 +73,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
             ? (window).__VIZ_INIT.experimentalViews
             : []
     );
+    const verboseWebviewLogging = Boolean((typeof window !== 'undefined' && (window).__VIZ_INIT?.verboseLogging));
 
     let currentData = null;
     let currentView = 'general-view';  // SysML v2 general-view as default
@@ -122,6 +123,9 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
     // Send logs to the extension Output channel (works in tests too)
     function webviewLog(level: 'info' | 'warn' | 'error', ...args: any[]) {
+        if (level === 'info' && !verboseWebviewLogging) {
+            return;
+        }
         try {
             if (vscode && typeof vscode.postMessage === 'function') {
                 vscode.postMessage({ command: 'webviewLog', level, args });
