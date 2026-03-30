@@ -9,7 +9,7 @@ use tower_lsp::lsp_types::Url;
 
 use crate::ast_util::{identification_name, span_to_range};
 use crate::graph::SemanticGraph;
-use crate::graph_builder_requirement_subjects::add_requirement_subject_edges;
+use super::requirement_subjects::add_requirement_subject_edges;
 use crate::model::{NodeId, RelationshipKind, SemanticNode};
 use crate::relationships::{add_specializes_edge_if_exists, add_typing_edge_if_exists};
 

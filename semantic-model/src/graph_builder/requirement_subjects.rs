@@ -1,3 +1,5 @@
+//! Requirement `subject` declarations → Subject edges on the semantic graph.
+
 use tower_lsp::lsp_types::Url;
 
 use sysml_parser::ast::{RequirementDefBody, RequirementDefBodyElement};
@@ -6,7 +8,7 @@ use crate::graph::SemanticGraph;
 use crate::model::{NodeId, RelationshipKind};
 use crate::relationships::{add_edge_if_both_exist, type_ref_candidates};
 
-pub(crate) fn add_requirement_subject_edges(
+pub(super) fn add_requirement_subject_edges(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,

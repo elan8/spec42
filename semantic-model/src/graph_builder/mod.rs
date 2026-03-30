@@ -11,6 +11,7 @@ use crate::model::{NodeId, SemanticNode};
 
 mod expressions;
 mod package_body;
+mod requirement_subjects;
 mod part_def;
 mod part_usage;
 mod port_def;

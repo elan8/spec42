@@ -7,7 +7,6 @@
 mod ast_util;
 mod graph;
 mod graph_builder;
-mod graph_builder_requirement_subjects;
 mod model;
 mod reference_resolution;
 mod relationships;
