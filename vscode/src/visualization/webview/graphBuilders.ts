@@ -45,7 +45,10 @@ function normalizeEdgeType(edge: any): string {
 /**
  * Build synthetic tree edges for General View: root PartDef → parts → typing → PartDef → nested parts.
  */
-export function buildSyntheticTreeEdgesForGeneralView(nodes: any[], edges: any[]): { edges: any[]; rootId: string | null } {
+export function buildSyntheticTreeEdgesForGeneralView(
+    nodes: any[],
+    edges: any[]
+): { edges: any[]; rootId: string | null; rootIds: string[] } {
     const getType = (e: any) => (e.type || e.rel_type || '').toLowerCase();
     const containsList = edges.filter((e: any) => getType(e) === 'contains');
     const typingList = edges.filter((e: any) => getType(e) === 'typing');
@@ -90,19 +93,19 @@ export function buildSyntheticTreeEdgesForGeneralView(nodes: any[], edges: any[]
     if (candidateRoots.length === 0 && partDefIds.size) {
         candidateRoots = [...partDefIds];
     }
-    const pickRoot = () => {
-        const byName = candidateRoots.find(
-            (id) =>
-                (nodeById.get(id)?.name || '').includes('SurveillanceQuadrotorDrone') ||
-                (nodeById.get(id)?.name || '').includes('Drone')
-        );
-        if (byName) return byName;
-        const byPartCount = [...candidateRoots].sort(
-            (a, b) => (containsChildren.get(b)?.length || 0) - (containsChildren.get(a)?.length || 0)
-        );
-        return byPartCount[0];
-    };
-    const rootId = candidateRoots.length ? pickRoot() : partDefIds.size ? [...partDefIds][0] : null;
+    const orderedRoots = [...candidateRoots].sort((a, b) => {
+        const countDiff = (containsChildren.get(b)?.length || 0) - (containsChildren.get(a)?.length || 0);
+        if (countDiff !== 0) return countDiff;
+        const aName = String(nodeById.get(a)?.name || a);
+        const bName = String(nodeById.get(b)?.name || b);
+        return aName.localeCompare(bName);
+    });
+    const fallbackPartDefIds = [...partDefIds].sort((a, b) => {
+        const aName = String(nodeById.get(a)?.name || a);
+        const bName = String(nodeById.get(b)?.name || b);
+        return aName.localeCompare(bName);
+    });
+    const rootId = orderedRoots.length > 0 ? orderedRoots[0] : (fallbackPartDefIds[0] || null);
     const out: any[] = [];
     const seen = new Set<string>();
     function visitPartDef(partDefId: string) {
@@ -120,14 +123,12 @@ export function buildSyntheticTreeEdgesForGeneralView(nodes: any[], edges: any[]
             }
         });
     }
-    // Follow one structural decomposition tree to avoid duplicating equivalent
-    // subgraphs (e.g. instance branch + definition branch rendered together).
-    if (rootId) {
-        visitPartDef(rootId);
-    } else if (candidateRoots.length > 0) {
-        visitPartDef(candidateRoots[0]);
-    } else if (partDefIds.size) {
-        visitPartDef([...partDefIds][0]);
+    // Follow all candidate roots to support multi-system workspaces.
+    // A shared `seen` set prevents duplicate expansion when roots overlap.
+    if (orderedRoots.length > 0) {
+        orderedRoots.forEach((id) => visitPartDef(id));
+    } else if (fallbackPartDefIds.length > 0) {
+        visitPartDef(fallbackPartDefIds[0]);
     }
     typingList.forEach((e: any) => {
         const src = nodeById.get(e.source);
@@ -151,7 +152,7 @@ export function buildSyntheticTreeEdgesForGeneralView(nodes: any[], edges: any[]
         'syntheticEdges',
         out.length
     );
-    return { edges: out, rootId };
+    return { edges: out, rootId, rootIds: orderedRoots };
 }
 
 /**
@@ -172,10 +173,14 @@ export function graphToGeneralViewElements(
     const elementTree = graphToElementTree(graph);
     const idToElement = new Map<string, any>();
     const idToPackagePath = new Map<string, string[]>();
+    const topLevelPackageNames = new Set<string>();
     function indexByKey(els: any[], packagePath: string[] = []) {
         if (!els || !Array.isArray(els)) return;
         els.forEach((el: any) => {
             const typeLower = ((el?.type || '') as string).toLowerCase();
+            if (typeLower.includes('package') && packagePath.length === 0 && el?.name) {
+                topLevelPackageNames.add(String(el.name));
+            }
             const nextPackagePath = typeLower.includes('package')
                 ? [...packagePath, el.name || 'Package']
                 : packagePath;
@@ -187,7 +192,11 @@ export function graphToGeneralViewElements(
         });
     }
     indexByKey(elementTree);
-    const { edges: syntheticEdges, rootId: syntheticRootId } = buildSyntheticTreeEdgesForGeneralView(nodes, edges);
+    const {
+        edges: syntheticEdges,
+        rootId: syntheticRootId,
+        rootIds: syntheticRootIds,
+    } = buildSyntheticTreeEdgesForGeneralView(nodes, edges);
     const nodeType = (n: any) => ((n?.type || n?.element_type || '') as string).toLowerCase();
     const isPartDef = (n: any) => n && nodeType(n).includes('part def');
     const isPartUsage = (n: any) => n && (nodeType(n) === 'part' || nodeType(n).includes('part usage'));
@@ -221,7 +230,8 @@ export function graphToGeneralViewElements(
             return { source: e.source, target: e.target, type };
         });
     const syntheticNodeCount = new Set(syntheticEdges.flatMap((e: any) => [e.source, e.target])).size;
-    const useSyntheticTree = syntheticEdges.length > 0 && syntheticNodeCount >= 5;
+    const hasMultipleTopLevelPackages = topLevelPackageNames.size > 1;
+    const useSyntheticTree = !hasMultipleTopLevelPackages && syntheticEdges.length > 0 && syntheticNodeCount >= 5;
     const specializesEdges = rawPartEdges.filter((e: any) => e.type === 'specializes');
     const edgesToUse = useSyntheticTree ? [...syntheticEdges, ...specializesEdges] : rawPartEdges;
     const edgeEndpointIds = new Set<string>();
@@ -255,7 +265,7 @@ export function graphToGeneralViewElements(
         }
     });
     let filteredUniqueNodes = Array.from(dedupedNodesById.values());
-    if (useSyntheticTree) {
+    if (useSyntheticTree && syntheticRootIds.length <= 1) {
         const decompositionNodeIds = new Set<string>();
         syntheticEdges.forEach((edge: any) => {
             decompositionNodeIds.add(edge.source);
@@ -521,7 +531,9 @@ export function buildGeneralViewGraph(
     _relationships: any[],
     ctx: GeneralViewGraphContext
 ): { elements: any[]; typeStats: Record<string, number>; packageGroups: GeneralViewPackageGroup[] } {
-    const graph = dataOrElements?.generalViewGraph || dataOrElements?.graph;
+    // Prefer merged workspace graph so "All Packages" is not limited to the
+    // first document's generalViewGraph in multi-file workspaces.
+    const graph = dataOrElements?.graph || dataOrElements?.generalViewGraph;
     if (!graph || (!graph.nodes?.length && !graph.edges?.length)) {
         if (!graph && ctx.webviewLog) {
             ctx.webviewLog('info', '[GV] No graph in data; General View requires graph from LSP');

@@ -1390,10 +1390,46 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
                 // Create filtered baseData with only this package's contents
                 if (selectedPackage.element) {
-                    baseData = {
+                    let nextBaseData = {
                         ...baseData,
                         elements: [selectedPackage.element]
                     };
+
+                    // General View renders from graph/generalViewGraph, not elements.
+                    // Build a package-scoped subgraph so dropdown selection actually
+                    // affects what gets rendered.
+                    if (view === 'general-view' && baseData?.graph?.nodes) {
+                        const selectedElementIds = new Set<string>();
+                        const collectElementIds = (el: any) => {
+                            if (!el) return;
+                            if (typeof el.id === 'string' && el.id.length > 0) {
+                                selectedElementIds.add(el.id);
+                            }
+                            if (Array.isArray(el.children)) {
+                                el.children.forEach((child: any) => collectElementIds(child));
+                            }
+                        };
+                        collectElementIds(selectedPackage.element);
+
+                        if (selectedElementIds.size > 0) {
+                            const sourceGraph = (baseData.graph?.nodes?.length || baseData.graph?.edges?.length)
+                                ? baseData.graph
+                                : baseData.generalViewGraph;
+                            const filteredNodes = (sourceGraph?.nodes || []).filter((n: any) => selectedElementIds.has(n.id));
+                            const filteredEdges = (sourceGraph?.edges || []).filter((e: any) =>
+                                selectedElementIds.has(e.source) && selectedElementIds.has(e.target)
+                            );
+                            const filteredGraph = { nodes: filteredNodes, edges: filteredEdges };
+
+                            nextBaseData = {
+                                ...nextBaseData,
+                                graph: filteredGraph,
+                                generalViewGraph: filteredGraph
+                            };
+                        }
+                    }
+
+                    baseData = nextBaseData;
                 }
             }
         }

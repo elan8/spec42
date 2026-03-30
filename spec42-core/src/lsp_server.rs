@@ -1643,7 +1643,7 @@ async fn collect_diagnostics_for_document(
             code_description: None,
             source: Some("sysml".to_string()),
             message: format!(
-                "Part '{}' has no declared type. Apply Quick Fix to create a matching part def.",
+                    "Part '{}' has no declared type.",
                 usage.name
             ),
             related_information: None,
