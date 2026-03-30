@@ -83,7 +83,7 @@ function collectElkEdgesWithOffsets(
 export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string }, data: any): Promise<void> {
     const { width, height, svg, g, layoutDirection, postMessage, onStartInlineEdit, renderPlaceholder, clearVisualHighlights } = ctx;
     const LOG_ENDPOINT_DRIFT = false;
-    const LOG_ROUTE_FRAME_SELECTION = true;
+    const LOG_ROUTE_FRAME_SELECTION = false;
     const ENDPOINT_DRIFT_WARN_PX = 1.25;
 
     if (!data || !data.parts || data.parts.length === 0) {
