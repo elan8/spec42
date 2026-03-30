@@ -11,6 +11,11 @@ fn is_part_like(kind: &str) -> bool {
     k.contains("part def") || k == "part" || (k.contains("part") && !k.contains("def"))
 }
 
+fn is_part_instance_kind(kind: &str) -> bool {
+    let k = kind.to_lowercase();
+    k == "part" || k.contains("part usage")
+}
+
 /// True if the element kind represents a port (port def or port usage). Public for semantic_checks.
 pub fn is_port_like(kind: &str) -> bool {
     let k = kind.to_lowercase();
@@ -202,8 +207,6 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
 
     let mut parts = Vec::new();
     let mut ports = Vec::new();
-    let mut part_qualified_by_id: std::collections::HashMap<String, String> =
-        std::collections::HashMap::new();
 
     for node in &nodes {
         let qn = node.id.qualified_name.clone();
@@ -219,7 +222,6 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                     }
                 })
             });
-            part_qualified_by_id.insert(qn.clone(), qn.clone());
             parts.push(IbdPartDto {
                 id: qn.clone(),
                 name: node.name.clone(),
@@ -255,9 +257,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         }
     }
 
-    // Expand typed part defs into the part-usage hierarchy so the client can render the full nested tree.
-    // Example: if `root.propulsion` is typed by `Propulsion`, then `Propulsion`'s internal parts become
-    // `root.propulsion.<child>` (with containerId = `root.propulsion`).
+    // Interconnection view requires instance-centric expansion of typed part trees.
     let mut existing_part_qn_dot: std::collections::HashSet<String> =
         parts.iter().map(|p| p.qualified_name.clone()).collect();
     let mut existing_ports: std::collections::HashSet<(String, String)> = ports
@@ -313,7 +313,6 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 if !is_part_like(&t.element_kind) {
                     return false;
                 }
-                // Prefer targets that actually contribute structure (ports/parts).
                 let children = graph.children_of(t);
                 children
                     .iter()
@@ -333,12 +332,8 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
     ) {
         let def_key = def_node.id.qualified_name.clone();
         if !visiting_defs.insert(def_key.clone()) {
-            // Break recursive type cycles while expanding typed parts.
             return;
         }
-
-        // First, inherit ports from the definition onto the parent usage node.
-        // (The closure below is duplicated as a small helper for borrow reasons.)
         for port_child in graph.children_of(def_node) {
             if !is_port_like(&port_child.element_kind) {
                 continue;
@@ -369,7 +364,6 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 port_side,
             });
         }
-
         for part_child in graph.children_of(def_node) {
             if !is_part_like(&part_child.element_kind) {
                 continue;
@@ -387,8 +381,6 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 element_type: part_child.element_kind.clone(),
                 attributes: part_child.attributes.clone(),
             });
-
-            // Recursively expand if this part usage is typed by a part definition.
             if let Some(grand_def) = first_typed_part_shape(graph, part_child) {
                 expand_def_subtree(
                     graph,
@@ -405,11 +397,8 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         visiting_defs.remove(&def_key);
     }
 
-    // Iterate over a snapshot of current parts to avoid infinite growth during iteration.
     let parts_snapshot = parts.clone();
     for p in &parts_snapshot {
-        // Only expand for parts that correspond to real semantic nodes (base nodes), not synthetic expanded ones.
-        // Base parts use ids with "::" qualified names.
         if !p.id.contains("::") {
             continue;
         }
@@ -420,10 +409,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         let Some(def_node) = first_typed_part_shape(graph, node) else {
             continue;
         };
-
-        // Expand the definition subtree under this usage part's dot-qualified name.
         let parent_dot = p.qualified_name.as_str();
-        // inherit ports (in case the def has ports) onto the usage itself
         add_ports_from_def(def_node, parent_dot, &mut ports, &mut existing_ports);
         let mut visiting_defs: std::collections::HashSet<String> = std::collections::HashSet::new();
         expand_def_subtree(
@@ -455,15 +441,13 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         }
     }
 
-    // Mirror internal definition-level connections onto each typed part usage instance.
-    // This keeps Interconnection View faithful for nested usages like
-    // `...flightControl.<internal parts/ports>`.
+    // Mirror definition-level connectors into usage-instance paths so interconnection
+    // rendering stays instance-centric for selected roots.
     let mut connector_keys: std::collections::HashSet<(String, String, String)> = connectors
         .iter()
         .map(|c| (c.source_id.clone(), c.target_id.clone(), c.rel_type.clone()))
         .collect();
     for p in &parts_snapshot {
-        // Base parts use semantic ids with "::"; synthetic expanded parts are dot-only ids.
         if !p.id.contains("::") {
             continue;
         }
@@ -476,7 +460,6 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         };
         let def_prefix = def_node.id.qualified_name.as_str();
         let usage_prefix_dot = p.qualified_name.as_str();
-
         for (src, tgt, kind, _name) in &edges {
             if *kind != RelationshipKind::Connection {
                 continue;
@@ -486,20 +469,13 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             {
                 continue;
             }
-            let Some(source_id) = map_definition_endpoint_to_usage(src, def_prefix, usage_prefix_dot)
-            else {
+            let Some(source_id) = map_definition_endpoint_to_usage(src, def_prefix, usage_prefix_dot) else {
                 continue;
             };
-            let Some(target_id) = map_definition_endpoint_to_usage(tgt, def_prefix, usage_prefix_dot)
-            else {
+            let Some(target_id) = map_definition_endpoint_to_usage(tgt, def_prefix, usage_prefix_dot) else {
                 continue;
             };
-
-            let key = (
-                source_id.clone(),
-                target_id.clone(),
-                "connection".to_string(),
-            );
+            let key = (source_id.clone(), target_id.clone(), "connection".to_string());
             if !connector_keys.insert(key) {
                 continue;
             }
@@ -528,6 +504,43 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         .collect();
 
     let mut roots_with_metrics: Vec<(&IbdPartDto, usize, usize, usize)> = top_level_parts
+        .iter()
+        .filter(|p| is_part_instance_kind(&p.element_type))
+        .filter_map(|p| {
+            graph.get_node(&NodeId::new(uri, &p.id)).and_then(|node| {
+                if graph
+                    .children_of(node)
+                    .iter()
+                    .any(|c| is_part_like(&c.element_kind))
+                {
+                    let root_prefix = p.qualified_name.as_str();
+                    let port_count = ports
+                        .iter()
+                        .filter(|port| endpoint_matches_root(&port.parent_id, root_prefix))
+                        .count();
+                    let connector_count = connectors
+                        .iter()
+                        .filter(|connector| {
+                            endpoint_matches_root(&connector.source_id, root_prefix)
+                                && endpoint_matches_root(&connector.target_id, root_prefix)
+                        })
+                        .count();
+                    Some((
+                        *p,
+                        part_tree_size(graph, node, uri),
+                        port_count,
+                        connector_count,
+                    ))
+                } else {
+                    None
+                }
+            })
+        })
+        .collect();
+
+    // Fallback: if no explicit instances are available, keep previous behavior.
+    if roots_with_metrics.is_empty() {
+        roots_with_metrics = top_level_parts
         .iter()
         .filter_map(|p| {
             graph.get_node(&NodeId::new(uri, &p.id)).and_then(|node| {
@@ -560,6 +573,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             })
         })
         .collect();
+    }
 
     roots_with_metrics.sort_by(|a, b| {
         let a_score = a.3 * 100 + a.2 * 10 + a.1;

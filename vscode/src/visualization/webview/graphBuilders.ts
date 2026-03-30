@@ -173,14 +173,10 @@ export function graphToGeneralViewElements(
     const elementTree = graphToElementTree(graph);
     const idToElement = new Map<string, any>();
     const idToPackagePath = new Map<string, string[]>();
-    const topLevelPackageNames = new Set<string>();
     function indexByKey(els: any[], packagePath: string[] = []) {
         if (!els || !Array.isArray(els)) return;
         els.forEach((el: any) => {
             const typeLower = ((el?.type || '') as string).toLowerCase();
-            if (typeLower.includes('package') && packagePath.length === 0 && el?.name) {
-                topLevelPackageNames.add(String(el.name));
-            }
             const nextPackagePath = typeLower.includes('package')
                 ? [...packagePath, el.name || 'Package']
                 : packagePath;
@@ -192,19 +188,6 @@ export function graphToGeneralViewElements(
         });
     }
     indexByKey(elementTree);
-    const {
-        edges: syntheticEdges,
-        rootId: syntheticRootId,
-        rootIds: syntheticRootIds,
-    } = buildSyntheticTreeEdgesForGeneralView(nodes, edges);
-    const nodeType = (n: any) => ((n?.type || n?.element_type || '') as string).toLowerCase();
-    const isPartDef = (n: any) => n && nodeType(n).includes('part def');
-    const isPartUsage = (n: any) => n && (nodeType(n) === 'part' || nodeType(n).includes('part usage'));
-    const isPartOrPartDef = (n: any) => isPartDef(n) || isPartUsage(n);
-    const nodeById = new Map<string, any>();
-    nodes.forEach((n: any) => {
-        if (n && n.id) nodeById.set(n.id, n);
-    });
     const allCandidateNodes = nodes.filter((node: any) => {
         if (!node) return false;
         const typeLower = ((node.type || node.element_type || '') as string).toLowerCase().trim();
@@ -215,30 +198,6 @@ export function graphToGeneralViewElements(
         typeStats[category] = (typeStats[category] || 0) + 1;
     });
 
-    const rawContainsTypingSpecializes = edges.filter((e: any) => {
-        const t = normalizeEdgeType(e);
-        return t === 'hierarchy' || t === 'typing' || t === 'specializes';
-    });
-    const rawPartEdges = rawContainsTypingSpecializes
-        .filter((e: any) => {
-            const src = nodeById.get(e.source);
-            const tgt = nodeById.get(e.target);
-            return src && tgt && isPartOrPartDef(src) && isPartOrPartDef(tgt);
-        })
-        .map((e: any) => {
-            const type = normalizeEdgeType(e);
-            return { source: e.source, target: e.target, type };
-        });
-    const syntheticNodeCount = new Set(syntheticEdges.flatMap((e: any) => [e.source, e.target])).size;
-    const hasMultipleTopLevelPackages = topLevelPackageNames.size > 1;
-    const useSyntheticTree = !hasMultipleTopLevelPackages && syntheticEdges.length > 0 && syntheticNodeCount >= 5;
-    const specializesEdges = rawPartEdges.filter((e: any) => e.type === 'specializes');
-    const edgesToUse = useSyntheticTree ? [...syntheticEdges, ...specializesEdges] : rawPartEdges;
-    const edgeEndpointIds = new Set<string>();
-    edgesToUse.forEach((e: any) => {
-        edgeEndpointIds.add(e.source);
-        edgeEndpointIds.add(e.target);
-    });
     const filteredNodes = allCandidateNodes.filter((node: any) => {
         const typeLower = ((node.type || node.element_type || '') as string).toLowerCase().trim();
         const category = getCategoryForType(typeLower);
@@ -264,18 +223,7 @@ export function graphToGeneralViewElements(
             dedupedNodesById.set(stableId, node);
         }
     });
-    let filteredUniqueNodes = Array.from(dedupedNodesById.values());
-    if (useSyntheticTree && syntheticRootIds.length <= 1) {
-        const decompositionNodeIds = new Set<string>();
-        syntheticEdges.forEach((edge: any) => {
-            decompositionNodeIds.add(edge.source);
-            decompositionNodeIds.add(edge.target);
-        });
-        if (syntheticRootId) decompositionNodeIds.add(syntheticRootId);
-        if (decompositionNodeIds.size > 0) {
-            filteredUniqueNodes = filteredUniqueNodes.filter((node: any) => decompositionNodeIds.has(node.id));
-        }
-    }
+    const filteredUniqueNodes = Array.from(dedupedNodesById.values());
     const visibleNodeIds = new Set(filteredUniqueNodes.map((node: any) => node.id));
     const rawVisibleEdges = edges
         .map((edge: any) => ({
@@ -367,13 +315,7 @@ export function graphToGeneralViewElements(
     const transitionEdgeIds = new Set<string>();
     const resolveCyId = (backendId: string) => idToCyId.get(backendId) || null;
     let edgesResolved = 0;
-    const structuralOnlySelection = filteredUniqueNodes.every((node: any) => {
-        const category = getCategoryForType(((node.type || node.element_type || '') as string).toLowerCase().trim());
-        return category === 'packages' || category === 'partDefs' || category === 'parts';
-    });
-    const allEdgesToUse = structuralOnlySelection && useSyntheticTree
-        ? [...edgesToUse, ...rawVisibleEdges.filter((edge: any) => edge.type !== 'hierarchy' && edge.type !== 'typing' && edge.type !== 'specializes')]
-        : rawVisibleEdges;
+    const allEdgesToUse = rawVisibleEdges;
 
     allEdgesToUse.forEach((edge: any) => {
         const sourceCyId = resolveCyId(edge.source);
@@ -506,7 +448,7 @@ export function graphToGeneralViewElements(
     console.log(
         '[GV] graphToGeneralViewElements',
         'syntheticEdges',
-        syntheticEdges.length,
+        0,
         'filteredNodes',
         filteredNodes.length,
         'filteredUniqueNodes',

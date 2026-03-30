@@ -389,6 +389,38 @@ fn build_workspace_graph_dto(
     SysmlGraphDto { nodes, edges }
 }
 
+fn strip_synthetic_nodes(graph: &SysmlGraphDto) -> SysmlGraphDto {
+    let synthetic_ids: HashSet<String> = graph
+        .nodes
+        .iter()
+        .filter(|node| {
+            node.attributes
+                .get("synthetic")
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false)
+        })
+        .map(|n| n.id.clone())
+        .collect();
+    let concrete_nodes: Vec<GraphNodeDto> = graph
+        .nodes
+        .iter()
+        .filter(|node| !synthetic_ids.contains(&node.id))
+        .cloned()
+        .collect();
+    let concrete_edges: Vec<GraphEdgeDto> = graph
+        .edges
+        .iter()
+        .filter(|edge| {
+            !synthetic_ids.contains(&edge.source) && !synthetic_ids.contains(&edge.target)
+        })
+        .cloned()
+        .collect();
+    SysmlGraphDto {
+        nodes: concrete_nodes,
+        edges: concrete_edges,
+    }
+}
+
 fn workspace_visualization_enabled(scope: &[String]) -> bool {
     scope.iter().any(|s| s == "workspaceVisualization")
 }
@@ -418,7 +450,7 @@ pub async fn build_sysml_model_response(
         scope.is_empty() || scope.iter().any(|s| s == "renderedDiagrams");
 
     let workspace_viz = workspace_visualization_enabled(scope);
-    let graph = if want_graph && workspace_viz {
+    let raw_graph = if want_graph && workspace_viz {
         let graph = build_workspace_graph_dto(semantic_graph, library_paths);
         client
             .log_message(
@@ -502,6 +534,7 @@ pub async fn build_sysml_model_response(
     } else {
         None
     };
+    let graph = raw_graph.as_ref().map(strip_synthetic_nodes);
     let general_view_graph = if want_general_view_graph {
         graph.as_ref()
             .map(|g| canonical_general_view_graph(g, workspace_viz))
