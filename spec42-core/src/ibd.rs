@@ -320,6 +320,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             })
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn expand_def_subtree(
         graph: &SemanticGraph,
         def_node: &SemanticNode,

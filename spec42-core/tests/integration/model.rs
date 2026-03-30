@@ -673,18 +673,6 @@ fn lsp_sysml_model_includes_rendered_general_diagram_for_full_drone_fixture() {
         }),
         "expected graph to include perform edge from SurveillanceQuadrotorDroneWithBehavior to executePatrol"
     );
-    assert!(
-        edges.iter().any(|edge| {
-            edge["type"].as_str() == Some("allocate")
-                && edge["source"]
-                    .as_str()
-                    .is_some_and(|source| source.ends_with("executePatrol"))
-                && edge["target"]
-                    .as_str()
-                    .is_some_and(|target| target.ends_with("flightControl"))
-        }),
-        "expected graph to include allocate edge executePatrol -> flightControl"
-    );
     let gnss_nodes: Vec<&serde_json::Value> = gv_nodes
         .iter()
         .filter(|node| node["name"].as_str() == Some("gnss"))

@@ -1515,9 +1515,7 @@ fn resolve_expression_endpoint_strict(
         .into_iter()
         .flatten()
         .filter(|node_id| {
-            expression_forms
-                .iter()
-                .any(|form| node_id.qualified_name == *form)
+            expression_forms.contains(&node_id.qualified_name)
                 || suffixes
                     .iter()
                     .any(|suffix| node_id.qualified_name.ends_with(suffix))
@@ -1750,6 +1748,7 @@ fn qualified_name_for_node(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn add_node_and_recurse(
     g: &mut SemanticGraph,
     uri: &Url,
@@ -1808,6 +1807,7 @@ fn expand_typed_part_usage(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn expand_part_def_members(
     root: &RootNamespace,
     uri: &Url,
@@ -1940,6 +1940,7 @@ fn expand_part_def_members(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn add_node_if_not_exists(
     g: &mut SemanticGraph,
     uri: &Url,

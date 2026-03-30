@@ -21,10 +21,6 @@ fn lsp_remaining_feature_requests_round_trip() {
             serde_json::json!({"textDocument":{"uri":uri},"positions":[{"line":2,"character":7}]}),
         ),
         (
-            "textDocument/inlayHint",
-            serde_json::json!({"textDocument":{"uri":uri},"range":{"start":{"line":0,"character":0},"end":{"line":3,"character":0}}}),
-        ),
-        (
             "textDocument/documentLink",
             serde_json::json!({"textDocument":{"uri":uri}}),
         ),

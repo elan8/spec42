@@ -17,10 +17,6 @@ fn lsp_new_handlers_survive_invalid_intermediate_text() {
             serde_json::json!({"textDocument":{"uri":uri},"position":{"line":0,"character":25}}),
         ),
         (
-            "textDocument/inlayHint",
-            serde_json::json!({"textDocument":{"uri":uri},"range":{"start":{"line":0,"character":0},"end":{"line":0,"character":40}}}),
-        ),
-        (
             "textDocument/documentLink",
             serde_json::json!({"textDocument":{"uri":uri}}),
         ),

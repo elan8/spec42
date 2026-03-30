@@ -198,6 +198,7 @@ fn canonical_general_view_graph(graph: &SysmlGraphDto, include_all_roots: bool) 
     let mut out_edges: Vec<GraphEdgeDto> = Vec::new();
     let mut out_edge_keys: HashSet<(String, String, String)> = HashSet::new();
     let mut visited_defs: HashSet<String> = HashSet::new();
+    #[allow(clippy::too_many_arguments)]
     fn visit_part_def(
         part_def_id: &str,
         contains_children: &HashMap<String, Vec<String>>,
@@ -426,6 +427,7 @@ fn workspace_visualization_enabled(scope: &[String]) -> bool {
 }
 
 /// Build sysml/model response. Uses `diagram_providers` to fill `rendered_diagrams` (generalView, interconnectionView by diagram_id).
+#[allow(clippy::too_many_arguments)]
 pub async fn build_sysml_model_response(
     content: &str,
     parsed: Option<&RootNamespace>,
