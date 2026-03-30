@@ -85,7 +85,15 @@ export class ModelTreeItem extends vscode.TreeItem {
     const typeName = partType ?? portType;
     const multiplicity = element.attributes?.multiplicity as string | undefined;
     this.label = element.name || "(anonymous)";
-    this.description = undefined;
+    if (element.type === "package") {
+      const stats = this.computePackageStats(element);
+      this.description =
+        `${stats.parts} part${stats.parts === 1 ? "" : "s"}, ` +
+        `${stats.partDefs} part def${stats.partDefs === 1 ? "" : "s"}, ` +
+        `${stats.ports} port${stats.ports === 1 ? "" : "s"}`;
+    } else {
+      this.description = undefined;
+    }
 
     const tooltipParts: string[] = [`${element.type}: ${element.name || "(anonymous)"}`];
     if (typeName) tooltipParts.push(`Type: ${typeName}`);
@@ -99,6 +107,21 @@ export class ModelTreeItem extends vscode.TreeItem {
       title: "Open Location",
       arguments: [this],
     };
+  }
+
+  private computePackageStats(root: SysMLElementDTO): { parts: number; partDefs: number; ports: number } {
+    const stats = { parts: 0, partDefs: 0, ports: 0 };
+    const walk = (node: SysMLElementDTO): void => {
+      const type = String(node.type || "").toLowerCase();
+      if (type === "part") stats.parts += 1;
+      if (type === "part def") stats.partDefs += 1;
+      if (type.includes("port")) stats.ports += 1;
+      for (const child of node.children ?? []) {
+        walk(child);
+      }
+    };
+    walk(root);
+    return stats;
   }
 }
 

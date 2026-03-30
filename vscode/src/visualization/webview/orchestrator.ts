@@ -240,13 +240,12 @@ import { buildGeneralViewGraph } from './graphBuilders';
         if (activeView === 'interconnection-view' && currentData) {
             const preparedData = prepareDataForView({ ...currentData, selectedIbdRoot }, 'interconnection-view');
             const partCount = Array.isArray(preparedData?.parts) ? preparedData.parts.length : 0;
-            const portCount = Array.isArray(preparedData?.ports) ? preparedData.ports.length : 0;
             const connectorCount = Array.isArray(preparedData?.connectors) ? preparedData.connectors.length : 0;
             const selectedRoot = preparedData?.selectedIbdRoot || selectedIbdRoot || 'the selected block';
 
             if (partCount > 0 && connectorCount === 0) {
                 banner.className = 'experimental';
-                banner.textContent = `Interconnection View is showing ${partCount} part(s) and ${portCount} port(s) for ${selectedRoot}, but no internal connectors were found for this root. Try another block if you expected connections here.`;
+                banner.textContent = `Interconnection View found no internal connectors for ${selectedRoot}. Try another block if you expected connections here.`;
                 banner.style.display = 'block';
                 return;
             }
@@ -1185,11 +1184,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
             const rootSummaries = preparedData?.ibdRootSummaries || [];
             if (candidates.length > 0) {
                 diagrams = candidates.map(name => {
-                    const summary = rootSummaries.find((s: any) => s.name === name);
-                    const metrics = summary
-                        ? ` (${summary.partCount} parts, ${summary.connectorCount} connectors)`
-                        : '';
-                    return { name, label: name + metrics };
+                    return { name, label: name };
                 });
                 labelText = 'Block';
                 const preferredRoot = preparedData?.selectedIbdRoot && candidates.indexOf(preparedData.selectedIbdRoot) >= 0
@@ -1253,14 +1248,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
         }
 
         if (activeView === 'interconnection-view') {
-            const preparedData = prepareDataForView({ ...currentData, selectedIbdRoot }, 'interconnection-view');
-            const rootSummaries = preparedData?.ibdRootSummaries || [];
-            const currentSummary = rootSummaries.find(s => s.name === selectedDiagramName);
-            if (currentSummary) {
-                setSelectorSummary(`${currentSummary.partCount} parts, ${currentSummary.portCount} ports, ${currentSummary.connectorCount} connectors`);
-            } else {
-                setSelectorSummary('');
-            }
+            setSelectorSummary('');
         } else {
             setSelectorSummary('');
         }
@@ -1286,12 +1274,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 // Update label
                 if (pkgLabel) pkgLabel.textContent = d.label || d.name;
                 if (activeView === 'interconnection-view') {
-                    const preparedData = prepareDataForView({ ...currentData, selectedIbdRoot }, 'interconnection-view');
-                    const rootSummaries = preparedData?.ibdRootSummaries || [];
-                    const currentSummary = rootSummaries.find(s => s.name === d.name);
-                    setSelectorSummary(currentSummary
-                        ? `${currentSummary.partCount} parts, ${currentSummary.portCount} ports, ${currentSummary.connectorCount} connectors`
-                        : '');
+                    setSelectorSummary('');
                 }
                 // Close menu
                 pkgMenu.classList.remove('show');
