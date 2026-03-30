@@ -16,7 +16,8 @@ use crate::semantic_model::relationships::{
     find_part_def_in_root, type_ref_candidates,
 };
 use crate::semantic_model::{
-    root_element_body, NodeId, RelationshipKind, SemanticGraph, SemanticNode,
+    resolve_expression_endpoint_strict, ResolveResult, root_element_body, NodeId, RelationshipKind,
+    SemanticGraph, SemanticNode,
 };
 
 /// Builds a semantic graph from a parsed RootNamespace (sysml-parser AST).
@@ -1380,8 +1381,8 @@ fn add_expression_edge_if_both_exist(
     }
     let src = if kind == RelationshipKind::Connection {
         match resolve_expression_endpoint_strict(g, uri, container_prefix, &left_str) {
-            EndpointResolution::Resolved(id) => id,
-            EndpointResolution::Ambiguous => {
+            ResolveResult::Resolved(id) => id.qualified_name,
+            ResolveResult::Ambiguous => {
                 add_diagnostic_node(
                     g,
                     uri,
@@ -1395,7 +1396,7 @@ fn add_expression_edge_if_both_exist(
                 );
                 return;
             }
-            EndpointResolution::Unresolved => return,
+            ResolveResult::Unresolved => return,
         }
     } else {
         let Some(id) = resolve_expression_endpoint_legacy(g, uri, container_prefix, &left_str) else {
@@ -1418,8 +1419,8 @@ fn add_expression_edge_if_both_exist(
     };
     let tgt = if kind == RelationshipKind::Connection {
         match resolve_expression_endpoint_strict(g, uri, container_prefix, &right_str) {
-            EndpointResolution::Resolved(id) => id,
-            EndpointResolution::Ambiguous => {
+            ResolveResult::Resolved(id) => id.qualified_name,
+            ResolveResult::Ambiguous => {
                 add_diagnostic_node(
                     g,
                     uri,
@@ -1433,7 +1434,7 @@ fn add_expression_edge_if_both_exist(
                 );
                 return;
             }
-            EndpointResolution::Unresolved => return,
+            ResolveResult::Unresolved => return,
         }
     } else {
         let Some(id) = resolve_expression_endpoint_legacy(g, uri, container_prefix, &right_str) else {
@@ -1468,68 +1469,6 @@ fn expr_node_to_qualified_string(n: &sysml_parser::Node<sysml_parser::Expression
             format!("{}::{}", expr_node_to_qualified_string(box_base), member)
         }
         _ => "".to_string(),
-    }
-}
-
-enum EndpointResolution {
-    Resolved(String),
-    Ambiguous,
-    Unresolved,
-}
-
-fn resolve_expression_endpoint_strict(
-    g: &SemanticGraph,
-    uri: &Url,
-    container_prefix: Option<&str>,
-    expression: &str,
-) -> EndpointResolution {
-    let expr_normalized = expression.replace('.', "::");
-    let mut expression_forms = Vec::new();
-    expression_forms.push(expression.to_string());
-    if expr_normalized != expression {
-        expression_forms.push(expr_normalized.clone());
-    }
-
-    let mut candidates = Vec::new();
-    if let Some(prefix) = container_prefix {
-        for form in &expression_forms {
-            candidates.push(format!("{}::{}", prefix, form));
-        }
-    }
-    candidates.extend(expression_forms.clone());
-
-    for candidate in &candidates {
-        let node_id = NodeId::new(uri, candidate);
-        if g.node_index_by_id.contains_key(&node_id) {
-            return EndpointResolution::Resolved(candidate.clone());
-        }
-    }
-
-    let suffixes: Vec<String> = expression_forms
-        .iter()
-        .map(|form| format!("::{}", form))
-        .collect();
-    let mut matches: Vec<&NodeId> = g
-        .nodes_by_uri
-        .get(uri)
-        .into_iter()
-        .flatten()
-        .filter(|node_id| {
-            expression_forms.contains(&node_id.qualified_name)
-                || suffixes
-                    .iter()
-                    .any(|suffix| node_id.qualified_name.ends_with(suffix))
-        })
-        .collect();
-    // Ambiguous suffix resolution frequently causes false connection bindings; require uniqueness.
-    matches.sort_by_key(|node_id| node_id.qualified_name.len());
-    matches.dedup_by(|a, b| a.qualified_name == b.qualified_name);
-    if matches.len() == 1 {
-        EndpointResolution::Resolved(matches[0].qualified_name.clone())
-    } else if matches.len() > 1 {
-        EndpointResolution::Ambiguous
-    } else {
-        EndpointResolution::Unresolved
     }
 }
 

@@ -7,12 +7,16 @@
 mod graph_builder;
 mod graph_builder_requirement_subjects;
 mod hover;
+mod reference_resolution;
 mod relationships;
 mod symbol_entries;
 
 pub use graph_builder::build_graph_from_doc;
 pub use hover::hover_markdown_for_node;
 pub(crate) use hover::signature_from_node;
+pub use reference_resolution::{
+    resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult,
+};
 pub use symbol_entries::symbol_entries_for_uri;
 
 use sysml_parser::ast::{PackageBody, PackageBodyElement, RootElement};
@@ -265,6 +269,53 @@ impl SemanticGraph {
                 && (pos.line < r.end.line
                     || (pos.line == r.end.line && pos.character <= r.end.character))
         })
+    }
+
+    /// Returns the smallest-range node whose range contains the given position.
+    pub fn find_deepest_node_at_position(&self, uri: &Url, pos: Position) -> Option<&SemanticNode> {
+        self.nodes_for_uri(uri)
+            .into_iter()
+            .filter(|n| {
+                let r = &n.range;
+                (pos.line > r.start.line
+                    || (pos.line == r.start.line && pos.character >= r.start.character))
+                    && (pos.line < r.end.line
+                        || (pos.line == r.end.line && pos.character <= r.end.character))
+            })
+            .min_by_key(|n| {
+                let line_span = n.range.end.line.saturating_sub(n.range.start.line);
+                let char_span = n.range.end.character.saturating_sub(n.range.start.character);
+                line_span.saturating_mul(10000).saturating_add(char_span)
+            })
+    }
+
+    /// Returns the direct parent node if present.
+    pub fn parent_of(&self, node: &SemanticNode) -> Option<&SemanticNode> {
+        node.parent_id
+            .as_ref()
+            .and_then(|parent_id| self.get_node(parent_id))
+    }
+
+    /// Returns all ancestors from nearest parent to root.
+    pub fn ancestors_of(&self, node: &SemanticNode) -> Vec<&SemanticNode> {
+        let mut out = Vec::new();
+        let mut current = self.parent_of(node);
+        while let Some(parent) = current {
+            out.push(parent);
+            current = self.parent_of(parent);
+        }
+        out
+    }
+
+    /// Returns direct children by exact name under the given parent.
+    pub fn child_named(&self, parent_id: &NodeId, name: &str) -> Vec<&SemanticNode> {
+        let Some(parent) = self.get_node(parent_id) else {
+            return Vec::new();
+        };
+        self.children_of(parent)
+            .into_iter()
+            .filter(|child| child.name == name)
+            .collect()
     }
 
     /// Returns target nodes of typing or specializes edges from the given node.

@@ -164,6 +164,48 @@ function getBundledServerCommand(extensionPath: string): string {
   return "spec42";
 }
 
+function getDevelopmentServerSource(extensionPath: string, workspaceRoot: string): string | undefined {
+  const candidates = [
+    // Dev checkout layout: <repo>/vscode as extensionPath.
+    path.resolve(
+      extensionPath,
+      "..",
+      "target",
+      "debug",
+      process.platform === "win32" ? "spec42.exe" : "spec42"
+    ),
+    // Fallback: workspace-relative for fixture workspaces inside repo.
+    path.resolve(
+      workspaceRoot || ".",
+    "target",
+    "debug",
+    process.platform === "win32" ? "spec42.exe" : "spec42"
+    ),
+  ];
+  return candidates.find((candidate) => fs.existsSync(candidate));
+}
+
+function prepareDevelopmentServerCommand(
+  extensionPath: string,
+  workspaceRoot: string,
+  storagePath: string
+): string | undefined {
+  const source = getDevelopmentServerSource(extensionPath, workspaceRoot);
+  if (!source) {
+    return undefined;
+  }
+  try {
+    fs.mkdirSync(storagePath, { recursive: true });
+    const ext = process.platform === "win32" ? ".exe" : "";
+    const staged = path.join(storagePath, `spec42-dev${ext}`);
+    fs.copyFileSync(source, staged);
+    return staged;
+  } catch (err) {
+    logError("Failed to stage development server binary", err);
+    return source;
+  }
+}
+
 function isSysmlDoc(doc: vscode.TextDocument | undefined): boolean {
   if (!doc) return false;
   return doc.languageId === "sysml" || doc.languageId === "kerml";
@@ -361,7 +403,17 @@ export function activate(context: vscode.ExtensionContext): void {
   ].filter((value, index, all) => all.indexOf(value) === index);
 
   let serverCommand: string;
-  if (!serverPath || isDefaultServerPath(serverPath)) {
+  const devServerCommand = 
+    context.extensionMode === vscode.ExtensionMode.Development
+      ? prepareDevelopmentServerCommand(
+          context.extensionPath,
+          workspaceRoot,
+          path.join(context.globalStorageUri.fsPath, "dev-server")
+        )
+      : undefined;
+  if (devServerCommand && (!serverPath || isDefaultServerPath(serverPath))) {
+    serverCommand = devServerCommand;
+  } else if (!serverPath || isDefaultServerPath(serverPath)) {
     serverCommand = getBundledServerCommand(context.extensionPath);
   } else if (path.isAbsolute(serverPath) || path.win32.isAbsolute(serverPath)) {
     serverCommand = serverPath;
@@ -407,6 +459,13 @@ export function activate(context: vscode.ExtensionContext): void {
   let restartCount = 0;
   let manualStopInProgress = false;
   let crashDialogShown = false;
+  const serverEnv: NodeJS.ProcessEnv = { ...process.env };
+  if (
+    context.extensionMode === vscode.ExtensionMode.Development &&
+    !serverEnv.RUST_LOG
+  ) {
+    serverEnv.RUST_LOG = "spec42_core=debug";
+  }
 
   const errorHandler: ErrorHandler = {
     error: async (error, _message, count) => {
@@ -461,6 +520,9 @@ export function activate(context: vscode.ExtensionContext): void {
     command: serverCommand,
     args: [],
     transport: TransportKind.stdio,
+    options: {
+      env: serverEnv,
+    },
   };
 
   const clientOptions: LanguageClientOptions = {
@@ -1610,6 +1672,72 @@ export function activate(context: vscode.ExtensionContext): void {
       VisualizationPanel.currentPanel.dispose();
       VisualizationPanel.createOrShow(context, doc, undefined, lspModelProvider, workspaceUris);
     })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "spec42.showReferencesCount",
+      async (uriArg: unknown, positionArg: unknown) => {
+        try {
+          const uri = (() => {
+            if (uriArg instanceof vscode.Uri) {
+              return uriArg;
+            }
+            if (typeof uriArg === "string") {
+              return vscode.Uri.parse(uriArg);
+            }
+            if (
+              uriArg &&
+              typeof uriArg === "object" &&
+              "scheme" in uriArg &&
+              "path" in uriArg
+            ) {
+              return vscode.Uri.from(uriArg as { scheme: string; authority?: string; path: string; query?: string; fragment?: string });
+            }
+            return vscode.window.activeTextEditor?.document.uri;
+          })();
+          const position = (() => {
+            if (positionArg instanceof vscode.Position) {
+              return positionArg;
+            }
+            if (
+              positionArg &&
+              typeof positionArg === "object" &&
+              "line" in positionArg &&
+              "character" in positionArg
+            ) {
+              return new vscode.Position(
+                Number((positionArg as { line: number }).line),
+                Number((positionArg as { character: number }).character)
+              );
+            }
+            return vscode.window.activeTextEditor?.selection.active;
+          })();
+          if (!uri || !position) {
+            log("showReferencesCount: missing uri/position", { uriArg, positionArg });
+            return;
+          }
+          const locations = (await vscode.commands.executeCommand(
+            "vscode.executeReferenceProvider",
+            uri,
+            position
+          )) as vscode.Location[] | undefined;
+          const refs = Array.isArray(locations) ? locations : [];
+          if (refs.length === 0) {
+            vscode.window.showInformationMessage("No references found.");
+            return;
+          }
+          await vscode.commands.executeCommand(
+            "editor.action.showReferences",
+            uri,
+            position,
+            refs
+          );
+        } catch (err) {
+          logError("showReferencesCount command failed", err);
+        }
+      }
+    )
   );
 
   // Status bar + context for contributed view

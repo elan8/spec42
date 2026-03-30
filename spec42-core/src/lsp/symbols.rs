@@ -1,7 +1,5 @@
 use crate::lsp::types::ServerState;
-use tower_lsp::lsp_types::{
-    CodeLens, Command, Url,
-};
+use tower_lsp::lsp_types::{CodeLens, Command, Url};
 
 pub(crate) fn build_code_lens(state: &ServerState, uri_norm: &Url) -> Vec<CodeLens> {
     let mut out = Vec::new();
@@ -34,17 +32,19 @@ pub(crate) fn build_code_lens(state: &ServerState, uri_norm: &Url) -> Vec<CodeLe
         if !seen_ranges.insert(key) {
             continue;
         }
-        let refs = state
-            .index
-            .values()
-            .map(|e| crate::language::find_reference_ranges(&e.content, &sym.name).len())
-            .sum::<usize>();
+        let refs =
+            crate::lsp::references_resolver::resolved_references_for_symbol(state, sym, false).len();
+        let reference_position =
+            crate::lsp::references_resolver::symbol_name_position(state, sym).unwrap_or(sym.range.start);
         out.push(CodeLens {
             range: sym.range,
             command: Some(Command {
-                title: format!("{} reference(s)", refs.saturating_sub(1)),
+                title: format!("{refs} reference(s)"),
                 command: "spec42.showReferencesCount".to_string(),
-                arguments: None,
+                arguments: Some(vec![
+                    serde_json::to_value(uri_norm).unwrap_or(serde_json::Value::Null),
+                    serde_json::to_value(reference_position).unwrap_or(serde_json::Value::Null),
+                ]),
             }),
             data: None,
         });

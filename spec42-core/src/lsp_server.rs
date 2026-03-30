@@ -39,8 +39,8 @@ use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 
 use crate::language::{
-    collect_definition_ranges, collect_document_symbols, collect_folding_ranges, completion_prefix,
-    find_reference_ranges, format_document, is_reserved_keyword, keyword_doc,
+    collect_document_symbols, collect_folding_ranges, completion_prefix, find_reference_ranges,
+    format_document, is_reserved_keyword, keyword_doc,
     keyword_hover_markdown, line_prefix_at_position, suggest_create_matching_part_def_quick_fix,
     suggest_wrap_in_package, sysml_keywords, word_at_position,
 };
@@ -1066,43 +1066,12 @@ impl LanguageServer for Backend {
         let pos = params.text_document_position.position;
         let include_declaration = params.context.include_declaration;
         let state = self.state.read().await;
-        let text = match state.index.get(&uri_norm).map(|e| e.content.as_str()) {
-            Some(t) => t.to_string(),
-            None => return Ok(None),
-        };
-        let (_, _, _, word) = match word_at_position(&text, pos.line, pos.character) {
-            Some(t) => t,
-            None => return Ok(None),
-        };
-
-        let mut def_locations: Vec<(Url, Range)> = Vec::new();
-        for (u, entry) in state.index.iter() {
-            if let Some(ref doc) = entry.parsed {
-                for (name, range) in collect_definition_ranges(doc) {
-                    if name == word {
-                        def_locations.push((u.clone(), range));
-                    }
-                }
-            }
-        }
-
-        let mut locations: Vec<Location> = Vec::new();
-        for (u, entry) in state.index.iter() {
-            for range in find_reference_ranges(&entry.content, &word) {
-                locations.push(Location {
-                    uri: u.clone(),
-                    range,
-                });
-            }
-        }
-
-        if !include_declaration {
-            for (def_uri, def_range) in &def_locations {
-                locations.retain(|loc| !(loc.uri == *def_uri && loc.range == *def_range));
-            }
-        }
-
-        Ok(Some(locations))
+        Ok(crate::lsp::references_resolver::resolved_references_at_position(
+            &state,
+            &uri_norm,
+            pos,
+            include_declaration,
+        ))
     }
 
     async fn document_link(
