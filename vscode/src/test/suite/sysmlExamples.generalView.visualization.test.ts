@@ -13,6 +13,66 @@ import {
 } from "./testUtils";
 
 type Rect = { x: number; y: number; width: number; height: number };
+type Point = { x: number; y: number };
+
+function parsePathPoints(pathD: string): Point[] {
+  const out: Point[] = [];
+  const regex = /[ML]([0-9.\-]+),([0-9.\-]+)/g;
+  let m: RegExpExecArray | null;
+  while ((m = regex.exec(pathD)) !== null) {
+    out.push({ x: Number(m[1]), y: Number(m[2]) });
+  }
+  return out;
+}
+
+function parseGeneralNodeRects(svgText: string): Map<string, Rect> {
+  const out = new Map<string, Rect>();
+  const nodeRegex =
+    /<g class="general-node[^"]*" transform="translate\(([0-9.\-]+),([0-9.\-]+)\)" data-element-name="([^"]+)"[\s\S]*?<rect width="([0-9.\-]+)" height="([0-9.\-]+)"/g;
+  let m: RegExpExecArray | null;
+  while ((m = nodeRegex.exec(svgText)) !== null) {
+    out.set(m[3], {
+      x: Number(m[1]),
+      y: Number(m[2]),
+      width: Number(m[4]),
+      height: Number(m[5]),
+    });
+  }
+  return out;
+}
+
+function parseGeneralEdges(svgText: string): Array<{ source: string; target: string; pathD: string }> {
+  const out: Array<{ source: string; target: string; pathD: string }> = [];
+  const edgeRegex =
+    /<path d="([^"]+)" class="general-connector" data-source="([^"]+)" data-target="([^"]+)"/g;
+  let m: RegExpExecArray | null;
+  while ((m = edgeRegex.exec(svgText)) !== null) {
+    out.push({ pathD: m[1], source: m[2], target: m[3] });
+  }
+  return out;
+}
+
+function segmentIntersectsRect(a: Point, b: Point, rect: Rect): boolean {
+  const rx1 = rect.x;
+  const ry1 = rect.y;
+  const rx2 = rect.x + rect.width;
+  const ry2 = rect.y + rect.height;
+  if (Math.abs(a.x - b.x) < 0.0001) {
+    const x = a.x;
+    if (x <= rx1 || x >= rx2) return false;
+    const sy1 = Math.min(a.y, b.y);
+    const sy2 = Math.max(a.y, b.y);
+    return sy2 > ry1 && sy1 < ry2;
+  }
+  if (Math.abs(a.y - b.y) < 0.0001) {
+    const y = a.y;
+    if (y <= ry1 || y >= ry2) return false;
+    const sx1 = Math.min(a.x, b.x);
+    const sx2 = Math.max(a.x, b.x);
+    return sx2 > rx1 && sx1 < rx2;
+  }
+  return false;
+}
 
 function parseGeneralPackageRects(svgText: string): Array<{ name: string; rect: Rect }> {
   const groupMatch = svgText.match(/<g class="general-packages">([\s\S]*?)<\/g>/);
@@ -143,6 +203,51 @@ describe("SysML Examples General View", () => {
       0,
       `General View package containers overlap: ${collisions.join(", ")}`
     );
+
+    const nodeRectsByName = parseGeneralNodeRects(svgText);
+    const edgeItems = parseGeneralEdges(svgText);
+    const nonOrthogonalEdges: string[] = [];
+    for (const edge of edgeItems) {
+      const pts = parsePathPoints(edge.pathD);
+      if (pts.length < 2) continue;
+      let orthogonal = true;
+      for (let i = 0; i < pts.length - 1; i++) {
+        const a = pts[i];
+        const b = pts[i + 1];
+        if (Math.abs(a.x - b.x) > 0.0001 && Math.abs(a.y - b.y) > 0.0001) {
+          orthogonal = false;
+          break;
+        }
+      }
+      if (!orthogonal) {
+        nonOrthogonalEdges.push(`${edge.source}->${edge.target}`);
+      }
+    }
+    assert.strictEqual(
+      nonOrthogonalEdges.length,
+      0,
+      `General View has non-orthogonal routed edges: ${nonOrthogonalEdges.join(", ")}`
+    );
+
+    const laptopToKeyboard = edgeItems.find(
+      (e) => e.source === "gv-it-laptop" && e.target === "gv-it-laptop-keyboard"
+    );
+    const displayRect = nodeRectsByName.get("display");
+    if (laptopToKeyboard && displayRect) {
+      const pts = parsePathPoints(laptopToKeyboard.pathD);
+      let intersectsDisplay = false;
+      for (let i = 0; i < pts.length - 1; i++) {
+        if (segmentIntersectsRect(pts[i], pts[i + 1], displayRect)) {
+          intersectsDisplay = true;
+          break;
+        }
+      }
+      assert.strictEqual(
+        intersectsDisplay,
+        false,
+        "Laptop->keyboard edge intersects display node rectangle"
+      );
+    }
   });
 });
 

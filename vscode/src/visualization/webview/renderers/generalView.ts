@@ -100,6 +100,15 @@ function computeOrthogonalPath(
 }
 
 type Side = 'NORTH' | 'SOUTH' | 'EAST' | 'WEST';
+type NodeRect = { x: number; y: number; width: number; height: number };
+type ElkSection = { startPoint?: { x: number; y: number }; endPoint?: { x: number; y: number }; bendPoints?: Array<{ x: number; y: number }> };
+type EdgeSectionsMap = Map<string, ElkSection[]>;
+type PackageLayoutResult = {
+    localPositions: Map<string, NodeRect>;
+    edgeSectionsById: EdgeSectionsMap;
+    width: number;
+    height: number;
+};
 
 function segmentIntersectsRect(
     a: { x: number; y: number },
@@ -231,6 +240,336 @@ function pathFromElkSections(sections: Array<{ startPoint?: { x: number; y: numb
     return parts.join(' ');
 }
 
+function buildNodeDataMap(cyNodes: any[]): Map<string, { compartments: SysMLNodeCompartments; height: number }> {
+    const nodeDataMap = new Map<string, { compartments: SysMLNodeCompartments; height: number }>();
+    cyNodes.forEach((el: any) => {
+        const d = el.data;
+        const element = d.element;
+        const compartments = element
+            ? collectCompartmentsFromElement(element)
+            : {
+                header: {
+                    stereotype: (d.sysmlType || 'element').toLowerCase(),
+                    name: (d.elementName || d.label || d.baseLabel || 'Unnamed').toString()
+                },
+                typedByName: null,
+                attributes: [],
+                parts: [],
+                ports: [],
+                other: []
+            };
+        const nodeHeight = computeNodeHeightFromCompartments(compartments, GENERAL_VIEW_NODE_CONFIG, NODE_WIDTH);
+        nodeDataMap.set(d.id, { compartments, height: Math.max(NODE_HEIGHT_BASE, nodeHeight) });
+    });
+    return nodeDataMap;
+}
+
+async function layoutPackageWithElk(
+    elk: any,
+    nodesInPkg: any[],
+    edgesInPkg: any[],
+    nodeDataMap: Map<string, { compartments: SysMLNodeCompartments; height: number }>
+): Promise<PackageLayoutResult> {
+    const outgoingByNode = new Map<string, { edge: any; idx: number }[]>();
+    const incomingByNode = new Map<string, { edge: any; idx: number }[]>();
+    edgesInPkg.forEach((edge: any, idx: number) => {
+        const src = edge.data.source;
+        const tgt = edge.data.target;
+        if (!outgoingByNode.has(src)) outgoingByNode.set(src, []);
+        outgoingByNode.get(src)!.push({ edge, idx });
+        if (!incomingByNode.has(tgt)) incomingByNode.set(tgt, []);
+        incomingByNode.get(tgt)!.push({ edge, idx });
+    });
+    const getOutgoingPortIndex = (nodeId: string, edge: any) => {
+        const list = outgoingByNode.get(nodeId) || [];
+        const i = list.findIndex((x) => x.edge === edge);
+        return i >= 0 ? i : 0;
+    };
+    const getIncomingPortIndex = (nodeId: string, edge: any) => {
+        const list = incomingByNode.get(nodeId) || [];
+        const i = list.findIndex((x) => x.edge === edge);
+        return i >= 0 ? i : 0;
+    };
+
+    const edgeIdFor = (el: any, idx: number): string => String(el?.data?.id || ('edge-' + idx));
+    const elkGraph = {
+        id: 'root',
+        layoutOptions: {
+            'elk.algorithm': 'layered',
+            'elk.direction': 'DOWN',
+            'elk.spacing.nodeNode': '220',
+            'elk.layered.spacing.nodeNodeBetweenLayers': '280',
+            'elk.spacing.edgeNode': '120',
+            'elk.spacing.edgeEdge': '120',
+            'elk.edgeRouting': 'ORTHOGONAL',
+            'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
+            'elk.separateConnectedComponents': 'true',
+            'elk.aspectRatio': '1.4',
+            'elk.padding': '[top=100,left=100,bottom=100,right=100]',
+            'org.eclipse.elk.portConstraints': 'FIXED_SIDE',
+            'org.eclipse.elk.spacing.portPort': '15',
+            'org.eclipse.elk.json.edgeCoords': 'ROOT'
+        },
+        children: nodesInPkg.map((el: any) => {
+            const nodeId = el.data.id;
+            const nd = nodeDataMap.get(nodeId);
+            const nodeHeight = nd?.height ?? NODE_HEIGHT_BASE;
+            const outCount = outgoingByNode.get(nodeId)?.length ?? 0;
+            const inCount = incomingByNode.get(nodeId)?.length ?? 0;
+            const ports: { id: string; layoutOptions: Record<string, string> }[] = [];
+            for (let i = 0; i < Math.max(outCount, 1); i++) {
+                ports.push({ id: nodeId + '_south_' + i, layoutOptions: { 'org.eclipse.elk.port.side': 'SOUTH' } });
+            }
+            for (let i = 0; i < Math.max(inCount, 1); i++) {
+                ports.push({ id: nodeId + '_north_' + i, layoutOptions: { 'org.eclipse.elk.port.side': 'NORTH' } });
+            }
+            return { id: nodeId, width: NODE_WIDTH, height: nodeHeight, ports };
+        }),
+        edges: edgesInPkg.map((el: any, idx: number) => {
+            const src = el.data.source;
+            const tgt = el.data.target;
+            const srcPort = src + '_south_' + getOutgoingPortIndex(src, el);
+            const tgtPort = tgt + '_north_' + getIncomingPortIndex(tgt, el);
+            return { id: edgeIdFor(el, idx), sources: [srcPort], targets: [tgtPort] };
+        })
+    };
+
+    if (!elk) {
+        const localPositions = new Map<string, NodeRect>();
+        let lx = 40;
+        let ly = 40;
+        nodesInPkg.forEach((el: any) => {
+            const nd = nodeDataMap.get(el.data.id);
+            const h = nd?.height ?? NODE_HEIGHT_BASE;
+            localPositions.set(el.data.id, { x: lx, y: ly, width: NODE_WIDTH, height: h });
+            lx += NODE_WIDTH + 60;
+            if (lx > 1000) {
+                lx = 40;
+                ly += h + 80;
+            }
+        });
+        const allLocal = [...localPositions.values()];
+        const minX = Math.min(...allLocal.map((p) => p.x));
+        const minY = Math.min(...allLocal.map((p) => p.y));
+        const maxX = Math.max(...allLocal.map((p) => p.x + p.width));
+        const maxY = Math.max(...allLocal.map((p) => p.y + p.height));
+        return {
+            localPositions,
+            edgeSectionsById: new Map<string, ElkSection[]>(),
+            width: Math.max(maxX - minX, 0),
+            height: Math.max(maxY - minY, 0)
+        };
+    }
+
+    try {
+        const laidOut = await elk.layout(elkGraph);
+        const localPositions = new Map<string, NodeRect>();
+        (laidOut?.children || []).forEach((child: any) => {
+            const nd = nodeDataMap.get(child.id);
+            localPositions.set(child.id, {
+                x: child.x ?? 0,
+                y: child.y ?? 0,
+                width: child.width ?? NODE_WIDTH,
+                height: child.height ?? nd?.height ?? NODE_HEIGHT_BASE
+            });
+        });
+        const edgeSectionsById = new Map<string, ElkSection[]>();
+        (laidOut?.edges || []).forEach((edge: any) => {
+            if (edge?.id && Array.isArray(edge.sections) && edge.sections.length > 0) {
+                edgeSectionsById.set(String(edge.id), edge.sections as ElkSection[]);
+            }
+        });
+        return {
+            localPositions,
+            edgeSectionsById,
+            width: laidOut?.width ?? 0,
+            height: laidOut?.height ?? 0
+        };
+    } catch (e) {
+        console.error('[General View] ELK package layout failed:', e);
+        return { localPositions: new Map<string, NodeRect>(), edgeSectionsById: new Map<string, ElkSection[]>(), width: 0, height: 0 };
+    }
+}
+
+function offsetSections(sections: ElkSection[], dx: number, dy: number): ElkSection[] {
+    return sections.map((sec) => ({
+        startPoint: sec.startPoint ? { x: sec.startPoint.x + dx, y: sec.startPoint.y + dy } : undefined,
+        endPoint: sec.endPoint ? { x: sec.endPoint.x + dx, y: sec.endPoint.y + dy } : undefined,
+        bendPoints: Array.isArray(sec.bendPoints)
+            ? sec.bendPoints.map((p) => ({ x: p.x + dx, y: p.y + dy }))
+            : undefined
+    }));
+}
+
+function renderPackageContainers(
+    packageGroup: any,
+    topPackageBounds: Map<string, NodeRect>
+): void {
+    topPackageBounds.forEach((bounds, pkgName) => {
+        packageGroup.append('rect')
+            .attr('x', bounds.x)
+            .attr('y', bounds.y)
+            .attr('width', bounds.width)
+            .attr('height', bounds.height)
+            .attr('rx', 18)
+            .style('fill', 'transparent')
+            .style('stroke', GENERAL_NEUTRAL_BORDER)
+            .style('stroke-width', '1.5px')
+            .style('stroke-dasharray', 'none')
+            .style('opacity', 0.9);
+        packageGroup.append('text')
+            .attr('x', bounds.x + 14)
+            .attr('y', bounds.y + 21)
+            .text(pkgName)
+            .style('font-size', '11px')
+            .style('font-weight', '700')
+            .style('fill', GENERAL_NEUTRAL_BORDER);
+    });
+}
+
+function renderGeneralEdges(
+    edgeGroup: any,
+    internalEdgesToRender: any[],
+    nodePositions: Map<string, NodeRect>,
+    edgeSectionsById: EdgeSectionsMap
+): void {
+    internalEdgesToRender.forEach((el: any, edgeIdx: number) => {
+        const srcPos = nodePositions.get(el.data.source);
+        const tgtPos = nodePositions.get(el.data.target);
+        if (!srcPos || !tgtPos) return;
+        const obstacles = [...nodePositions.entries()]
+            .filter(([nodeId]) => nodeId !== el.data.source && nodeId !== el.data.target)
+            .map(([, pos]) => ({ x: pos.x - 8, y: pos.y - 8, width: pos.width + 16, height: pos.height + 16 }));
+
+        const relType = (el.data.relType || el.data.type || 'relationship').toLowerCase();
+        const elkEdgeSections = edgeSectionsById.get(String(el?.data?.id || ('edge-' + edgeIdx)));
+
+        let pathD: string;
+        if (elkEdgeSections && elkEdgeSections.length > 0) {
+            const elkPath = pathFromElkSections(elkEdgeSections);
+            pathD = elkPath ?? routeOrthogonalAvoiding(srcPos, tgtPos, obstacles);
+        } else {
+            pathD = routeOrthogonalAvoiding(srcPos, tgtPos, obstacles);
+        }
+
+        let strokeColor = GENERAL_NEUTRAL_EDGE;
+        let strokeDash = 'none';
+        let markerStart = 'none';
+        let markerEnd = 'url(#general-d3-arrow)';
+        let strokeWidth = '2px';
+
+        if (relType === 'specializes') {
+            strokeColor = GENERAL_NEUTRAL_EDGE;
+            markerEnd = 'url(#general-d3-specializes)';
+            strokeWidth = '1.7px';
+        } else if (relType === 'typing') {
+            strokeColor = GENERAL_NEUTRAL_EDGE;
+            strokeDash = '5,3';
+            markerEnd = 'url(#general-d3-arrow-open)';
+        } else if (relType === 'hierarchy' || relType === 'contains') {
+            strokeColor = GENERAL_NEUTRAL_EDGE;
+            markerStart = 'url(#general-d3-diamond)';
+            markerEnd = 'none';
+        } else if (relType === 'bind' || relType === 'binding') {
+            strokeColor = GENERAL_NEUTRAL_EDGE;
+            strokeDash = '2,2';
+            markerEnd = 'none';
+        } else if (relType === 'allocate' || relType === 'allocation') {
+            strokeColor = GENERAL_NEUTRAL_EDGE;
+            strokeDash = '8,4';
+        }
+
+        edgeGroup.append('path')
+            .attr('d', pathD)
+            .attr('class', 'general-connector')
+            .attr('data-source', el.data.source)
+            .attr('data-target', el.data.target)
+            .attr('data-type', relType)
+            .style('fill', 'none')
+            .style('stroke', strokeColor)
+            .style('stroke-width', strokeWidth)
+            .style('stroke-dasharray', strokeDash)
+            .style('opacity', 0.85)
+            .style('marker-start', markerStart)
+            .style('marker-end', markerEnd)
+            .style('cursor', 'pointer');
+    });
+}
+
+function renderGeneralNodes(
+    nodeGroup: any,
+    g: any,
+    cyNodes: any[],
+    nodePositions: Map<string, NodeRect>,
+    nodeDataMap: Map<string, { compartments: SysMLNodeCompartments; height: number }>,
+    clearVisualHighlights: () => void,
+    postMessage: (msg: unknown) => void
+): void {
+    let lastTappedId: string | null = null;
+    let tapTimeout: ReturnType<typeof setTimeout> | null = null;
+    cyNodes.forEach((el: any) => {
+        const pos = nodePositions.get(el.data.id);
+        if (!pos) return;
+        const d = el.data;
+        const nd = nodeDataMap.get(d.id);
+        const compartments = nd?.compartments ?? {
+            header: { stereotype: (d.sysmlType || 'element').toLowerCase(), name: (d.elementName || d.label || 'Unnamed').toString() },
+            typedByName: null,
+            attributes: [],
+            parts: [],
+            ports: [],
+            other: []
+        };
+        const isDefinition = d.isDefinition === true;
+        const typeColor = d.color || getTypeColor(d.sysmlType);
+        const nodeG = renderSysMLNode(nodeGroup, compartments, {
+            x: pos.x,
+            y: pos.y,
+            width: pos.width,
+            height: pos.height,
+            config: GENERAL_VIEW_NODE_CONFIG,
+            isDefinition,
+            typeColor,
+            formatStereotype: (t) => formatSysMLStereotype(t) || ('«' + t + '»'),
+            nodeClass: 'general-node elk-node',
+            dataElementName: d.elementName || d.label
+        });
+        nodeG.select('.graph-node-background')
+            .style('fill', 'var(--vscode-editor-background)')
+            .style('stroke', GENERAL_NEUTRAL_BORDER);
+        nodeG.selectAll('.sysml-header-compartment')
+            .style('fill', 'var(--vscode-button-secondaryBackground)');
+        nodeG.on('click', function (event: any) {
+            event.stopPropagation();
+            clearVisualHighlights();
+            g.selectAll('.general-node').select('.graph-node-background').each(function (this: any) {
+                const r = d3.select(this);
+                r.style('stroke', r.attr('data-original-stroke')).style('stroke-width', r.attr('data-original-width'));
+            });
+            nodeG.select('.graph-node-background').style('stroke', DIAGRAM_STYLE.highlight).style('stroke-width', '4px');
+            const statusEl = document.getElementById('status-text');
+            if (statusEl) statusEl.textContent = (d.label || d.elementName) + ' [' + (d.sysmlType || 'element') + ']';
+            const elementName = d.elementName;
+            const elementQualifiedName = d.elementQualifiedName || elementName;
+            const nodeId = d.id;
+            if (elementName) {
+                if (lastTappedId === nodeId && tapTimeout) {
+                    clearTimeout(tapTimeout);
+                    tapTimeout = null;
+                    lastTappedId = null;
+                    postJumpToElement(postMessage, { name: elementName, id: elementQualifiedName || undefined });
+                } else {
+                    lastTappedId = nodeId;
+                    tapTimeout = setTimeout(() => {
+                        tapTimeout = null;
+                        lastTappedId = null;
+                    }, 250);
+                }
+            }
+        });
+    });
+}
+
 export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): Promise<void> {
     const { width, height, svg, g, postMessage, renderPlaceholder, clearVisualHighlights } = ctx;
 
@@ -263,28 +602,7 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
         console.warn('[General View] ELK worker init failed, layout may be unavailable:', e);
     }
 
-    const nodeWidth = NODE_WIDTH;
-
-    const nodeDataMap = new Map<string, { compartments: SysMLNodeCompartments; height: number }>();
-    cyNodes.forEach((el: any) => {
-        const d = el.data;
-        const element = d.element;
-        const compartments = element
-            ? collectCompartmentsFromElement(element)
-            : {
-                header: {
-                    stereotype: (d.sysmlType || 'element').toLowerCase(),
-                    name: (d.elementName || d.label || d.baseLabel || 'Unnamed').toString()
-                },
-                typedByName: null,
-                attributes: [],
-                parts: [],
-                ports: [],
-                other: []
-            };
-        const nodeHeight = computeNodeHeightFromCompartments(compartments, GENERAL_VIEW_NODE_CONFIG, NODE_WIDTH);
-        nodeDataMap.set(d.id, { compartments, height: Math.max(NODE_HEIGHT_BASE, nodeHeight) });
-    });
+    const nodeDataMap = buildNodeDataMap(cyNodes);
 
     const topPackageOf = (node: any): string =>
         (Array.isArray(node?.data?.packagePath) && node.data.packagePath.length > 0
@@ -302,88 +620,7 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
     const nodePositions = new Map<string, { x: number; y: number; width: number; height: number }>();
     const topPackageBounds = new Map<string, { x: number; y: number; width: number; height: number }>();
     const internalEdgesToRender: any[] = [];
-
-    async function layoutPackage(nodesInPkg: any[], edgesInPkg: any[]) {
-        const outgoingByNode = new Map<string, { edge: any; idx: number }[]>();
-        const incomingByNode = new Map<string, { edge: any; idx: number }[]>();
-        edgesInPkg.forEach((edge: any, idx: number) => {
-            const src = edge.data.source;
-            const tgt = edge.data.target;
-            if (!outgoingByNode.has(src)) outgoingByNode.set(src, []);
-            outgoingByNode.get(src)!.push({ edge, idx });
-            if (!incomingByNode.has(tgt)) incomingByNode.set(tgt, []);
-            incomingByNode.get(tgt)!.push({ edge, idx });
-        });
-        const getOutgoingPortIndex = (nodeId: string, edge: any) => {
-            const list = outgoingByNode.get(nodeId) || [];
-            const i = list.findIndex((x) => x.edge === edge);
-            return i >= 0 ? i : 0;
-        };
-        const getIncomingPortIndex = (nodeId: string, edge: any) => {
-            const list = incomingByNode.get(nodeId) || [];
-            const i = list.findIndex((x) => x.edge === edge);
-            return i >= 0 ? i : 0;
-        };
-
-        const elkGraph = {
-            id: 'root',
-            layoutOptions: {
-                'elk.algorithm': 'layered',
-                'elk.direction': 'DOWN',
-                'elk.spacing.nodeNode': '220',
-                'elk.layered.spacing.nodeNodeBetweenLayers': '280',
-                'elk.spacing.edgeNode': '120',
-                'elk.spacing.edgeEdge': '120',
-                'elk.edgeRouting': 'ORTHOGONAL',
-                'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
-                'elk.separateConnectedComponents': 'true',
-                'elk.aspectRatio': '1.4',
-                'elk.padding': '[top=100,left=100,bottom=100,right=100]',
-                'org.eclipse.elk.portConstraints': 'FIXED_SIDE',
-                'org.eclipse.elk.spacing.portPort': '15',
-                'org.eclipse.elk.json.edgeCoords': 'ROOT'
-            },
-            children: nodesInPkg.map((el: any) => {
-                const nodeId = el.data.id;
-                const nd = nodeDataMap.get(nodeId);
-                const nodeHeight = nd?.height ?? NODE_HEIGHT_BASE;
-                const outCount = outgoingByNode.get(nodeId)?.length ?? 0;
-                const inCount = incomingByNode.get(nodeId)?.length ?? 0;
-                const ports: { id: string; layoutOptions: Record<string, string> }[] = [];
-                for (let i = 0; i < Math.max(outCount, 1); i++) {
-                    ports.push({
-                        id: nodeId + '_south_' + i,
-                        layoutOptions: { 'org.eclipse.elk.port.side': 'SOUTH' }
-                    });
-                }
-                for (let i = 0; i < Math.max(inCount, 1); i++) {
-                    ports.push({
-                        id: nodeId + '_north_' + i,
-                        layoutOptions: { 'org.eclipse.elk.port.side': 'NORTH' }
-                    });
-                }
-                return { id: nodeId, width: nodeWidth, height: nodeHeight, ports };
-            }),
-            edges: edgesInPkg.map((el: any, idx: number) => {
-                const src = el.data.source;
-                const tgt = el.data.target;
-                const srcPort = src + '_south_' + getOutgoingPortIndex(src, el);
-                const tgtPort = tgt + '_north_' + getIncomingPortIndex(tgt, el);
-                return {
-                    id: el.data.id || ('edge-' + idx),
-                    sources: [srcPort],
-                    targets: [tgtPort]
-                };
-            })
-        };
-
-        try {
-            return elk ? await elk.layout(elkGraph) : null;
-        } catch (e) {
-            console.error('[General View] ELK package layout failed:', e);
-            return null;
-        }
-    }
+    const edgeSectionsById = new Map<string, ElkSection[]>();
 
     // Place each top-level package as an independent container, with its own layout.
     const packageGapY = 220;
@@ -398,40 +635,17 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
         );
         internalEdgesToRender.push(...edgesInPkg);
 
-        const laidOut = await layoutPackage(nodesInPkg, edgesInPkg);
-        const localPositions = new Map<string, { x: number; y: number; width: number; height: number }>();
-        if (laidOut && laidOut.children) {
-            laidOut.children.forEach((child: any) => {
-                const nd = nodeDataMap.get(child.id);
-                localPositions.set(child.id, {
-                    x: child.x ?? 0,
-                    y: child.y ?? 0,
-                    width: child.width ?? nodeWidth,
-                    height: child.height ?? nd?.height ?? NODE_HEIGHT_BASE
-                });
-            });
-        } else {
-            let lx = 40;
-            let ly = 40;
-            nodesInPkg.forEach((el: any) => {
-                const nd = nodeDataMap.get(el.data.id);
-                const h = nd?.height ?? NODE_HEIGHT_BASE;
-                localPositions.set(el.data.id, { x: lx, y: ly, width: nodeWidth, height: h });
-                lx += nodeWidth + 60;
-                if (lx > 1000) {
-                    lx = 40;
-                    ly += h + 80;
-                }
-            });
-        }
+        const laidOut = await layoutPackageWithElk(elk, nodesInPkg, edgesInPkg, nodeDataMap);
+        const localPositions = laidOut.localPositions;
 
         const allLocal = [...localPositions.values()];
+        if (allLocal.length === 0) continue;
         const minX = Math.min(...allLocal.map((p) => p.x));
         const minY = Math.min(...allLocal.map((p) => p.y));
         const maxX = Math.max(...allLocal.map((p) => p.x + p.width));
         const maxY = Math.max(...allLocal.map((p) => p.y + p.height));
-        const contentWidth = Math.max(maxX - minX, laidOut?.width ?? 0);
-        const contentHeight = Math.max(maxY - minY, laidOut?.height ?? 0);
+        const contentWidth = Math.max(maxX - minX, laidOut.width ?? 0);
+        const contentHeight = Math.max(maxY - minY, laidOut.height ?? 0);
         const pkgWidth = Math.max(900, contentWidth + 220);
         const pkgHeight = Math.max(360, contentHeight + 240);
         const offsetX = cursorX - minX + 40;
@@ -443,6 +657,9 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
                 width: pos.width,
                 height: pos.height
             });
+        });
+        laidOut.edgeSectionsById.forEach((sections, edgeId) => {
+            edgeSectionsById.set(edgeId, offsetSections(sections, offsetX, offsetY));
         });
         topPackageBounds.set(pkg, {
             x: cursorX,
@@ -516,193 +733,11 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
     const edgeGroup = g.append('g').attr('class', 'general-edges');
     const nodeGroup = g.append('g').attr('class', 'general-nodes');
     const packageGroup = g.append('g').attr('class', 'general-packages');
-
-    topPackageBounds.forEach((bounds, pkgName) => {
-        packageGroup.append('rect')
-            .attr('x', bounds.x)
-            .attr('y', bounds.y)
-            .attr('width', bounds.width)
-            .attr('height', bounds.height)
-            .attr('rx', 18)
-            .style('fill', 'transparent')
-            .style('stroke', GENERAL_NEUTRAL_BORDER)
-            .style('stroke-width', '1.5px')
-            .style('stroke-dasharray', 'none')
-            .style('opacity', 0.9);
-        packageGroup.append('text')
-            .attr('x', bounds.x + 14)
-            .attr('y', bounds.y + 21)
-            .text(pkgName)
-            .style('font-size', '11px')
-            .style('font-weight', '700')
-            .style('fill', GENERAL_NEUTRAL_BORDER);
-    });
-
-    const laidOutEdges: any[] = [];
-    // For typing edges to same target, assign offsets to reduce overlap
-    const typingByTarget = new Map<string, Array<{ el: any; idx: number }>>();
-    cyEdges.forEach((el: any, idx: number) => {
-        const t = (el.data.type || el.data.relType || '').toLowerCase();
-        if (t === 'typing') {
-            const tgt = el.data.target;
-            if (!typingByTarget.has(tgt)) typingByTarget.set(tgt, []);
-            typingByTarget.get(tgt)!.push({ el, idx });
-        }
-    });
-    internalEdgesToRender.forEach((el: any, edgeIdx: number) => {
-        const srcPos = nodePositions.get(el.data.source);
-        const tgtPos = nodePositions.get(el.data.target);
-        if (!srcPos || !tgtPos) return;
-        const obstacles = [...nodePositions.entries()]
-            .filter(([nodeId]) => nodeId !== el.data.source && nodeId !== el.data.target)
-            .map(([, pos]) => ({ x: pos.x - 8, y: pos.y - 8, width: pos.width + 16, height: pos.height + 16 }));
-
-        const relType = (el.data.relType || el.data.type || 'relationship').toLowerCase();
-        const elkEdge = laidOutEdges[edgeIdx];
-
-        let pathD: string;
-        if (elkEdge?.sections) {
-            const elkPath = pathFromElkSections(elkEdge.sections);
-            pathD = elkPath ?? routeOrthogonalAvoiding(
-                { x: srcPos.x, y: srcPos.y, width: srcPos.width, height: srcPos.height },
-                { x: tgtPos.x, y: tgtPos.y, width: tgtPos.width, height: tgtPos.height },
-                obstacles
-            );
-        } else {
-            let offset = 0;
-            if (relType === 'typing') {
-                const group = typingByTarget.get(el.data.target) || [];
-                const rank = group.findIndex((x) => x.el === el);
-                if (rank >= 0 && group.length > 1) {
-                    offset = (rank - (group.length - 1) / 2) * 18;
-                }
-            }
-            pathD = routeOrthogonalAvoiding(
-                { x: srcPos.x, y: srcPos.y, width: srcPos.width, height: srcPos.height },
-                { x: tgtPos.x, y: tgtPos.y, width: tgtPos.width, height: tgtPos.height },
-                obstacles
-            );
-        }
-
-        let strokeColor = GENERAL_NEUTRAL_EDGE;
-        let strokeDash = 'none';
-        let markerStart = 'none';
-        let markerEnd = 'url(#general-d3-arrow)';
-        let strokeWidth = '2px';
-
-        if (relType === 'specializes') {
-            strokeColor = GENERAL_NEUTRAL_EDGE;
-            markerEnd = 'url(#general-d3-specializes)';
-            strokeWidth = '1.7px';
-        } else if (relType === 'typing') {
-            strokeColor = GENERAL_NEUTRAL_EDGE;
-            strokeDash = '5,3';
-            markerEnd = 'url(#general-d3-arrow-open)';
-        } else if (relType === 'hierarchy' || relType === 'contains') {
-            strokeColor = GENERAL_NEUTRAL_EDGE;
-            markerStart = 'url(#general-d3-diamond)';
-            markerEnd = 'none';
-        } else if (relType === 'connection' || relType === 'connect') {
-            strokeColor = GENERAL_NEUTRAL_EDGE;
-        } else if (relType === 'bind' || relType === 'binding') {
-            strokeColor = GENERAL_NEUTRAL_EDGE;
-            strokeDash = '2,2';
-            markerEnd = 'none';
-        } else if (relType === 'allocate' || relType === 'allocation') {
-            strokeColor = GENERAL_NEUTRAL_EDGE;
-            strokeDash = '8,4';
-        }
-
-        edgeGroup.append('path')
-            .attr('d', pathD)
-            .attr('class', 'general-connector')
-            .attr('data-source', el.data.source)
-            .attr('data-target', el.data.target)
-            .attr('data-type', relType)
-            .style('fill', 'none')
-            .style('stroke', strokeColor)
-            .style('stroke-width', strokeWidth)
-            .style('stroke-dasharray', strokeDash)
-            .style('opacity', 0.85)
-            .style('marker-start', markerStart)
-            .style('marker-end', markerEnd)
-            .style('cursor', 'pointer');
-    });
+    renderPackageContainers(packageGroup, topPackageBounds);
+    renderGeneralEdges(edgeGroup, internalEdgesToRender, nodePositions, edgeSectionsById);
 
     const statusEl = document.getElementById('status-text');
     if (statusEl) statusEl.textContent = 'General View • Tap element to highlight, double-tap to jump';
 
-    let lastTappedId: string | null = null;
-    let tapTimeout: ReturnType<typeof setTimeout> | null = null;
-
-    cyNodes.forEach((el: any) => {
-        const pos = nodePositions.get(el.data.id);
-        if (!pos) return;
-
-        const d = el.data;
-        const nd = nodeDataMap.get(d.id);
-        const compartments = nd?.compartments ?? {
-            header: { stereotype: (d.sysmlType || 'element').toLowerCase(), name: (d.elementName || d.label || 'Unnamed').toString() },
-            typedByName: null,
-            attributes: [],
-            parts: [],
-            ports: [],
-            other: []
-        };
-
-        const isDefinition = d.isDefinition === true;
-        const typeColor = d.color || getTypeColor(d.sysmlType);
-
-        const nodeG = renderSysMLNode(nodeGroup, compartments, {
-            x: pos.x,
-            y: pos.y,
-            width: pos.width,
-            height: pos.height,
-            config: GENERAL_VIEW_NODE_CONFIG,
-            isDefinition,
-            typeColor,
-            formatStereotype: (t) => formatSysMLStereotype(t) || ('«' + t + '»'),
-            nodeClass: 'general-node elk-node',
-            dataElementName: d.elementName || d.label
-        });
-        nodeG.select('.graph-node-background')
-            .style('fill', 'var(--vscode-editor-background)')
-            .style('stroke', GENERAL_NEUTRAL_BORDER);
-        nodeG.selectAll('.sysml-header-compartment')
-            .style('fill', 'var(--vscode-button-secondaryBackground)');
-
-        nodeG.on('click', function (event: any) {
-            event.stopPropagation();
-            clearVisualHighlights();
-            g.selectAll('.general-node').select('.graph-node-background').each(function (this: any) {
-                const r = d3.select(this);
-                r.style('stroke', r.attr('data-original-stroke'))
-                    .style('stroke-width', r.attr('data-original-width'));
-            });
-            nodeG.select('.graph-node-background')
-                .style('stroke', DIAGRAM_STYLE.highlight)
-                .style('stroke-width', '4px');
-
-            const statusEl = document.getElementById('status-text');
-            if (statusEl) statusEl.textContent = (d.label || d.elementName) + ' [' + (d.sysmlType || 'element') + ']';
-
-            const elementName = d.elementName;
-            const elementQualifiedName = d.elementQualifiedName || elementName;
-            const nodeId = d.id;
-            if (elementName) {
-                if (lastTappedId === nodeId && tapTimeout) {
-                    clearTimeout(tapTimeout);
-                    tapTimeout = null;
-                    lastTappedId = null;
-                    postJumpToElement(postMessage, { name: elementName, id: elementQualifiedName || undefined });
-                } else {
-                    lastTappedId = nodeId;
-                    tapTimeout = setTimeout(() => {
-                        tapTimeout = null;
-                        lastTappedId = null;
-                    }, 250);
-                }
-            }
-        });
-    });
+    renderGeneralNodes(nodeGroup, g, cyNodes, nodePositions, nodeDataMap, clearVisualHighlights, postMessage);
 }
