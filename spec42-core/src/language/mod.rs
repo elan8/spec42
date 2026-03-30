@@ -38,15 +38,28 @@ pub fn format_document(source: &str, options: &FormattingOptions) -> Vec<TextEdi
         let trimmed = line.trim();
         let mut open_braces = 0i32;
         let mut close_braces = 0i32;
+        let mut leading_close_braces = 0i32;
+        let mut only_leading_closes = true;
         for ch in trimmed.chars() {
             match ch {
-                '{' => open_braces += 1,
-                '}' => close_braces += 1,
-                _ => {}
+                '{' => {
+                    open_braces += 1;
+                    only_leading_closes = false;
+                }
+                '}' => {
+                    close_braces += 1;
+                    if only_leading_closes {
+                        leading_close_braces += 1;
+                    }
+                }
+                c if c.is_whitespace() => {}
+                _ => {
+                    only_leading_closes = false;
+                }
             }
         }
-        // Closing braces indent at the depth they close (before subtracting)
-        let indent_depth = (depth - close_braces).max(0);
+        // Only leading `}` should outdent the current line.
+        let indent_depth = (depth - leading_close_braces).max(0);
         depth += open_braces - close_braces;
         let indent = indent_unit.repeat(indent_depth as usize);
         let content = if trimmed.is_empty() {
@@ -208,6 +221,20 @@ fn find_insertion_context(lines: &[&str], target_line: usize) -> Option<(usize, 
     None
 }
 
+fn find_package_context(lines: &[&str], target_line: usize) -> Option<(usize, usize)> {
+    for start in (0..=target_line).rev() {
+        let trimmed = lines[start].trim();
+        if !(trimmed.starts_with("package ") && trimmed.contains('{')) {
+            continue;
+        }
+        let end = find_block_end(lines, start)?;
+        if start <= target_line && target_line <= end {
+            return Some((start, end));
+        }
+    }
+    None
+}
+
 fn has_matching_part_def(lines: &[&str], start: usize, end: usize, type_name: &str) -> bool {
     let needle = format!("part def {}", type_name);
     lines
@@ -241,19 +268,46 @@ pub fn suggest_create_matching_part_def_quick_fix(
     let raw_line = *lines.get(target_line)?;
     let usage_name = parse_untyped_part_usage_name(raw_line)?;
     let type_name = to_pascal_case(&usage_name);
-    let (_, container_end) = find_insertion_context(&lines, target_line)?;
-    let closing_line = lines.get(container_end)?;
-    let closing_indent_len = closing_line.len() - closing_line.trim_start().len();
-    let closing_indent = &closing_line[..closing_indent_len];
+    let (container_start, container_end) = find_insertion_context(&lines, target_line)?;
+    let (search_start, search_end, insert_line, insert_indent) =
+        if let Some((pkg_start, pkg_end)) = find_package_context(&lines, target_line) {
+            let pkg_line = lines.get(pkg_start)?;
+            let pkg_indent_len = pkg_line.len() - pkg_line.trim_start().len();
+            let pkg_indent = &pkg_line[..pkg_indent_len];
+            let member_indent = format!("{pkg_indent}  ");
+            // Prefer inserting before the containing part def so the new type is at package level
+            // and appears above the usage container.
+            let target_insert_line = if container_start > pkg_start && container_start < pkg_end {
+                container_start
+            } else {
+                pkg_end
+            };
+            (
+                pkg_start,
+                pkg_end,
+                target_insert_line,
+                member_indent,
+            )
+        } else {
+            let closing_line = lines.get(container_end)?;
+            let closing_indent_len = closing_line.len() - closing_line.trim_start().len();
+            let closing_indent = &closing_line[..closing_indent_len];
+            (
+                0,
+                container_end,
+                container_end,
+                closing_indent.to_string(),
+            )
+        };
 
     let mut edits: Vec<OneOf<TextEdit, tower_lsp::lsp_types::AnnotatedTextEdit>> = Vec::new();
-    if !has_matching_part_def(&lines, 0, container_end, &type_name) {
+    if !has_matching_part_def(&lines, search_start, search_end, &type_name) {
         edits.push(OneOf::Left(TextEdit {
             range: Range::new(
-                Position::new(container_end as u32, 0),
-                Position::new(container_end as u32, 0),
+                Position::new(insert_line as u32, 0),
+                Position::new(insert_line as u32, 0),
             ),
-            new_text: format!("{indent}part def {type_name} {{ }}\n", indent = closing_indent),
+            new_text: format!("{indent}part def {type_name} {{ }}\n", indent = insert_indent),
         }));
     }
 
@@ -631,7 +685,11 @@ mod tests {
         assert_eq!(edits.len(), 1);
         assert_eq!(edits[0].edits.len(), 2);
         let inserted = match &edits[0].edits[0] {
-            OneOf::Left(te) => te.new_text.clone(),
+            OneOf::Left(te) => {
+                assert_eq!(te.range.start.line, 1);
+                assert_eq!(te.range.start.character, 0);
+                te.new_text.clone()
+            }
             _ => panic!("expected text edit"),
         };
         let rewritten = match &edits[0].edits[1] {
@@ -700,6 +758,21 @@ mod tests {
         assert_eq!(edits.len(), 1);
         let expected = "package P {\n  part def X {\n  }\n}\n";
         assert_eq!(edits[0].new_text, expected);
+    }
+
+    #[test]
+    fn test_format_document_indents_members_with_inline_braces() {
+        let options = tower_lsp::lsp_types::FormattingOptions {
+            tab_size: 2,
+            insert_spaces: true,
+            ..Default::default()
+        };
+        let source = "package IT{\npart def Motherboard { }\npart def Display { }\n}\n";
+        let edits = format_document(source, &options);
+        let text = &edits[0].new_text;
+        assert!(text.contains("package IT{"));
+        assert!(text.contains("  part def Motherboard { }"));
+        assert!(text.contains("  part def Display { }"));
     }
 
     /// Validation test: parse VehicleDefinitions.sysml and write semantic tokens and symbol table
