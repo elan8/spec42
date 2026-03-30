@@ -2,8 +2,9 @@ use tower_lsp::lsp_types::Url;
 
 use sysml_parser::ast::{RequirementDefBody, RequirementDefBodyElement};
 
+use crate::graph::SemanticGraph;
+use crate::model::{NodeId, RelationshipKind};
 use crate::relationships::{add_edge_if_both_exist, type_ref_candidates};
-use crate::{NodeId, RelationshipKind, SemanticGraph};
 
 pub(crate) fn add_requirement_subject_edges(
     g: &mut SemanticGraph,

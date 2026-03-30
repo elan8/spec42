@@ -6,8 +6,9 @@ use sysml_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
 
 use crate::ast_util::identification_name;
+use crate::graph::SemanticGraph;
+use crate::model::{NodeId, RelationshipKind};
 use crate::root_element_body;
-use crate::{NodeId, RelationshipKind, SemanticGraph};
 
 /// Normalizes "a.b.c" to "a::b::c" for node lookup (SysML uses dot for feature access).
 pub(crate) fn normalize_for_lookup(s: &str) -> String {

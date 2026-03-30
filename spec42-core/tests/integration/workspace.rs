@@ -618,7 +618,7 @@ fn lsp_workspace_visualization_model_includes_all_workspace_systems() {
     .expect("write intersection");
     std::fs::write(
         &computer_path,
-        "package IT { part def Laptop; part myComputer : Laptop; }",
+        "package ComputerDemo { part def Laptop; part myComputer : Laptop; }",
     )
     .expect("write computer");
 
@@ -689,8 +689,8 @@ fn lsp_workspace_visualization_model_includes_all_workspace_systems() {
         node_names
     );
     assert!(
-        node_names.contains("IT"),
-        "workspace graph should include IT package: {:?}",
+        node_names.contains("ComputerDemo"),
+        "workspace graph should include ComputerDemo package: {:?}",
         node_names
     );
 
@@ -714,7 +714,6 @@ fn lsp_workspace_visualization_model_includes_all_sysml_examples_packages_when_c
         "SurveillanceDrone",
         "KitchenTimer",
         "TrafficLightIntersection",
-        "IT",
     ];
     let drone_path = examples_root
         .join("drone")
