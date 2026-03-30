@@ -13,8 +13,8 @@ use crate::lsp::hierarchy::{
     call_hierarchy_item_for_node, moniker_for_node, type_hierarchy_item_for_node,
 };
 use crate::lsp::indexing::{
-    remove_symbol_table_entries_for_uri, scan_sysml_files, update_semantic_graph_for_uri,
-    update_symbol_table_for_uri,
+    parse_scanned_entries, remove_symbol_table_entries_for_uri, scan_sysml_files,
+    update_semantic_graph_for_uri, update_symbol_table_for_uri,
 };
 use crate::lsp::library_search;
 use crate::lsp::lifecycle::{scan_roots, workspace_roots_from_initialize};
@@ -131,29 +131,44 @@ impl LanguageServer for Backend {
                     .await
                     .unwrap_or_default();
             let discover_read_ms = discover_read_start.elapsed().as_millis() as u64;
-            let indexing_start = Instant::now();
+            let parallel_parse_enabled = util::env_flag_enabled("SPEC42_PARALLEL_STARTUP_PARSE", true);
+            let parallel_parse_min_files =
+                util::env_usize("SPEC42_PARALLEL_STARTUP_PARSE_MIN_FILES", 10);
+            let should_parallel_parse =
+                parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
+            let parse_worker_start = Instant::now();
+            let parsed_entries = tokio::task::spawn_blocking(move || {
+                parse_scanned_entries(entries, should_parallel_parse)
+            })
+            .await
+            .unwrap_or_default();
+            let parse_worker_ms = parse_worker_start.elapsed().as_millis() as u64;
+            let merge_index_start = Instant::now();
             let mut st = state.write().await;
             let mut uris_loaded = Vec::new();
             let mut low_coverage_library_files: Vec<(String, usize, usize)> = Vec::new();
-            for (uri, content) in entries {
-                let uri_norm = util::normalize_file_uri(&uri);
-                let parsed = sysml_parser::parse(&content).ok();
-                if parsed.is_none() {
-                    let errs = util::parse_failure_diagnostics(&content, 5);
+            for parsed_entry in parsed_entries {
+                let uri_norm = util::normalize_file_uri(&parsed_entry.uri);
+                if parsed_entry.parsed.is_none() {
                     warn!(
                         uri = %uri_norm,
-                        diagnostics = errs.len(),
-                        errors = ?errs,
+                        diagnostics = parsed_entry.parse_errors.len(),
+                        errors = ?parsed_entry.parse_errors,
                         "workspace scan parse failed"
                     );
-                    if errs.is_empty() {
+                    if parsed_entry.parse_errors.is_empty() {
                         warn!("parse() returned None but parse_with_diagnostics had 0 errors");
                     }
                 }
-                update_semantic_graph_for_uri(&mut st, &uri_norm, parsed.as_ref());
+                update_semantic_graph_for_uri(&mut st, &uri_norm, parsed_entry.parsed.as_ref());
                 uris_loaded.push(uri_norm.clone());
-                st.index
-                    .insert(uri_norm.clone(), IndexEntry { content, parsed });
+                st.index.insert(
+                    uri_norm.clone(),
+                    IndexEntry {
+                        content: parsed_entry.content,
+                        parsed: parsed_entry.parsed,
+                    },
+                );
                 let mut new_entries =
                     semantic_model::symbol_entries_for_uri(&st.semantic_graph, &uri_norm);
                 if let Some(index_entry) = st.index.get(&uri_norm) {
@@ -201,11 +216,16 @@ impl LanguageServer for Backend {
             for u in &uris_loaded {
                 semantic_model::add_cross_document_edges_for_uri(&mut st.semantic_graph, u);
             }
-            let index_ms = indexing_start.elapsed().as_millis() as u64;
+            let merge_index_ms = merge_index_start.elapsed().as_millis() as u64;
             info!(
                 trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
                 phase_discover_read_ms = discover_read_ms,
-                phase_index_parse_ms = index_ms,
+                phase_parse_workers_ms = parse_worker_ms,
+                phase_merge_index_ms = merge_index_ms,
+                phase_index_parse_ms = parse_worker_ms + merge_index_ms,
+                parallel_parse_enabled = parallel_parse_enabled,
+                parallel_parse_min_files = parallel_parse_min_files,
+                parallel_parse_active = should_parallel_parse,
                 elapsed_ms = scan_total_start.elapsed().as_millis() as u64,
                 loaded = uris_loaded.len(),
                 candidate_files = summary.candidate_files,
@@ -220,12 +240,17 @@ impl LanguageServer for Backend {
                 .log_message(
                     MessageType::INFO,
                     format!(
-                        "[startup][backend] trace_id={} phase=initialized:scan:end discover_read_ms={} index_parse_ms={} total_ms={} loaded={}",
+                        "[startup][backend] trace_id={} phase=initialized:scan:end discover_read_ms={} parse_workers_ms={} merge_index_ms={} index_parse_ms={} total_ms={} loaded={} parallel_parse_enabled={} parallel_parse_min_files={} parallel_parse_active={}",
                         startup_trace_id.as_deref().unwrap_or("-"),
                         discover_read_ms,
-                        index_ms,
+                        parse_worker_ms,
+                        merge_index_ms,
+                        parse_worker_ms + merge_index_ms,
                         scan_total_start.elapsed().as_millis() as u64,
-                        uris_loaded.len()
+                        uris_loaded.len(),
+                        parallel_parse_enabled,
+                        parallel_parse_min_files,
+                        should_parallel_parse
                     ),
                 )
                 .await;

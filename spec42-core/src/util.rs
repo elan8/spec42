@@ -218,6 +218,33 @@ pub fn parse_startup_trace_id_from_value(value: Option<&serde_json::Value>) -> O
         .map(ToOwned::to_owned)
 }
 
+pub fn env_flag_enabled(name: &str, default_enabled: bool) -> bool {
+    let Ok(raw_value) = std::env::var(name) else {
+        return default_enabled;
+    };
+    let normalized = raw_value.trim().to_ascii_lowercase();
+    if normalized.is_empty() {
+        return default_enabled;
+    }
+    match normalized.as_str() {
+        "1" | "true" | "yes" | "on" => true,
+        "0" | "false" | "no" | "off" => false,
+        _ => default_enabled,
+    }
+}
+
+pub fn env_usize(name: &str, default_value: usize) -> usize {
+    let Ok(raw_value) = std::env::var(name) else {
+        return default_value;
+    };
+    raw_value
+        .trim()
+        .parse::<usize>()
+        .ok()
+        .filter(|value| *value > 0)
+        .unwrap_or(default_value)
+}
+
 /// Builds Markdown for symbol hover: title (kind + name), code block with signature or description, container, optional location.
 pub fn symbol_hover_markdown(entry: &SymbolEntry, show_location: bool) -> String {
     let kind = entry.detail.as_deref().unwrap_or("symbol");

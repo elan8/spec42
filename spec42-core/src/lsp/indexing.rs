@@ -1,5 +1,6 @@
 use crate::lsp::types::{ScanSummary, ServerState};
 use crate::semantic_model;
+use crate::util;
 use sysml_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
 use walkdir::WalkDir;
@@ -42,6 +43,88 @@ pub(crate) fn scan_sysml_files(roots: Vec<Url>) -> (Vec<(Url, String)>, ScanSumm
         }
     }
     (out, summary)
+}
+
+#[derive(Debug)]
+pub(crate) struct ParsedScanEntry {
+    pub(crate) ordinal: usize,
+    pub(crate) uri: Url,
+    pub(crate) content: String,
+    pub(crate) parsed: Option<RootNamespace>,
+    pub(crate) parse_errors: Vec<String>,
+}
+
+fn parse_scanned_entry(ordinal: usize, uri: Url, content: String) -> ParsedScanEntry {
+    let parsed_result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        sysml_parser::parse(&content)
+    }));
+    let parser_panicked = parsed_result.is_err();
+    let parsed = match parsed_result {
+        Ok(result) => result.ok(),
+        Err(_) => None,
+    };
+    let mut parse_errors = if parsed.is_none() {
+        util::parse_failure_diagnostics(&content, 5)
+    } else {
+        Vec::new()
+    };
+    if parser_panicked {
+        parse_errors.push("parser panicked while parsing scanned workspace file".to_string());
+    }
+    ParsedScanEntry {
+        ordinal,
+        uri,
+        content,
+        parsed,
+        parse_errors,
+    }
+}
+
+pub(crate) fn parse_scanned_entries(
+    entries: Vec<(Url, String)>,
+    parallel_enabled: bool,
+) -> Vec<ParsedScanEntry> {
+    if entries.is_empty() {
+        return Vec::new();
+    }
+
+    if !parallel_enabled || entries.len() < 2 {
+        return entries
+            .into_iter()
+            .enumerate()
+            .map(|(ordinal, (uri, content))| parse_scanned_entry(ordinal, uri, content))
+            .collect();
+    }
+
+    let worker_count = std::thread::available_parallelism()
+        .map(|n| n.get())
+        .unwrap_or(1)
+        .min(entries.len())
+        .max(1);
+
+    let mut buckets: Vec<Vec<(usize, Url, String)>> =
+        (0..worker_count).map(|_| Vec::new()).collect();
+    for (ordinal, (uri, content)) in entries.into_iter().enumerate() {
+        buckets[ordinal % worker_count].push((ordinal, uri, content));
+    }
+
+    let mut handles = Vec::with_capacity(worker_count);
+    for bucket in buckets {
+        handles.push(std::thread::spawn(move || {
+            bucket
+                .into_iter()
+                .map(|(ordinal, uri, content)| parse_scanned_entry(ordinal, uri, content))
+                .collect::<Vec<ParsedScanEntry>>()
+        }));
+    }
+
+    let mut parsed_entries: Vec<ParsedScanEntry> = Vec::new();
+    for handle in handles {
+        let mut batch = handle.join().unwrap_or_default();
+        parsed_entries.append(&mut batch);
+    }
+    parsed_entries.sort_by_key(|entry| entry.ordinal);
+    parsed_entries
 }
 
 /// Removes all symbol table entries for `uri`, then appends `new_entries` if provided.
