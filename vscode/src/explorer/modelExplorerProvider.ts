@@ -77,7 +77,7 @@ export class ModelTreeItem extends vscode.TreeItem {
     this.elementUri = uri;
     this.contextValue =
       element.type === "package" ? "sysmlPackage" : "sysmlElement";
-    this.iconPath = new vscode.ThemeIcon("symbol-misc");
+    this.iconPath = iconForElementType(String(element.type || "").toLowerCase());
 
     // Keep the tree visually simple: primary label only.
     const partType = element.attributes?.partType as string | undefined;
@@ -86,16 +86,18 @@ export class ModelTreeItem extends vscode.TreeItem {
     const multiplicity = element.attributes?.multiplicity as string | undefined;
     this.label = element.name || "(anonymous)";
     if (element.type === "package") {
-      const stats = this.computePackageStats(element);
-      this.description =
-        `${stats.parts} part${stats.parts === 1 ? "" : "s"}, ` +
-        `${stats.partDefs} part def${stats.partDefs === 1 ? "" : "s"}, ` +
-        `${stats.ports} port${stats.ports === 1 ? "" : "s"}`;
+      this.description = undefined;
     } else {
       this.description = undefined;
     }
 
     const tooltipParts: string[] = [`${element.type}: ${element.name || "(anonymous)"}`];
+    if (element.type === "package") {
+      const stats = computePackageStats(element);
+      tooltipParts.push(`Parts: ${stats.parts}`);
+      tooltipParts.push(`Part defs: ${stats.partDefs}`);
+      tooltipParts.push(`Ports: ${stats.ports}`);
+    }
     if (typeName) tooltipParts.push(`Type: ${typeName}`);
     if (multiplicity) tooltipParts.push(`Multiplicity: [${multiplicity}]`);
     if (element.children?.length) tooltipParts.push(`Children: ${element.children.length}`);
@@ -152,6 +154,25 @@ function iconForElementType(elementType: string): vscode.ThemeIcon {
     default:
       return new vscode.ThemeIcon("symbol-misc");
   }
+}
+
+function computePackageStats(root: SysMLElementDTO): {
+  parts: number;
+  partDefs: number;
+  ports: number;
+} {
+  const stats = { parts: 0, partDefs: 0, ports: 0 };
+  const walk = (node: SysMLElementDTO): void => {
+    const type = String(node.type || "").toLowerCase();
+    if (type === "part") stats.parts += 1;
+    if (type === "part def") stats.partDefs += 1;
+    if (type.includes("port")) stats.ports += 1;
+    for (const child of node.children ?? []) {
+      walk(child);
+    }
+  };
+  walk(root);
+  return stats;
 }
 
 type ExplorerTreeItem = ExplorerInfoItem | FileTreeItem | ModelTreeItem;
