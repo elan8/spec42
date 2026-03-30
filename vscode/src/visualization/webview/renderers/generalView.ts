@@ -348,6 +348,7 @@ function renderPackageContainers(
     packageGroup: any,
     topPackageBounds: Map<string, NodeRect>
 ): void {
+    packageGroup.style('pointer-events', 'none');
     topPackageBounds.forEach((bounds, pkgName) => {
         packageGroup.append('rect')
             .attr('x', bounds.x)
@@ -448,8 +449,6 @@ function renderGeneralNodes(
     clearVisualHighlights: () => void,
     postMessage: (msg: unknown) => void
 ): void {
-    let lastTappedId: string | null = null;
-    let tapTimeout: ReturnType<typeof setTimeout> | null = null;
     cyNodes.forEach((el: any) => {
         const pos = nodePositions.get(el.data.id);
         if (!pos) return;
@@ -494,20 +493,18 @@ function renderGeneralNodes(
             if (statusEl) statusEl.textContent = (d.label || d.elementName) + ' [' + (d.sysmlType || 'element') + ']';
             const elementName = d.elementName;
             const elementQualifiedName = d.elementQualifiedName || elementName;
-            const nodeId = d.id;
             if (elementName) {
-                if (lastTappedId === nodeId && tapTimeout) {
-                    clearTimeout(tapTimeout);
-                    tapTimeout = null;
-                    lastTappedId = null;
-                    postJumpToElement(postMessage, { name: elementName, id: elementQualifiedName || undefined });
-                } else {
-                    lastTappedId = nodeId;
-                    tapTimeout = setTimeout(() => {
-                        tapTimeout = null;
-                        lastTappedId = null;
-                    }, 250);
-                }
+                postMessage({
+                    command: 'webviewLog',
+                    level: 'info',
+                    args: ['[GENERAL][click]', {
+                        elementName,
+                        elementQualifiedName: elementQualifiedName || null,
+                        nodeId: d.id || null,
+                        sysmlType: d.sysmlType || null,
+                    }],
+                });
+                postJumpToElement(postMessage, { name: elementName, id: elementQualifiedName || undefined });
             }
         });
     });
@@ -673,9 +670,9 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
         .attr('d', 'M0,0L5,-4L10,0L5,4Z')
         .style('fill', GENERAL_NEUTRAL_EDGE);
 
+    const packageGroup = g.append('g').attr('class', 'general-packages');
     const edgeGroup = g.append('g').attr('class', 'general-edges');
     const nodeGroup = g.append('g').attr('class', 'general-nodes');
-    const packageGroup = g.append('g').attr('class', 'general-packages');
     renderPackageContainers(packageGroup, topPackageBounds);
     renderGeneralEdges(edgeGroup, internalEdgesToRender, nodePositions, edgeSectionsById);
 
