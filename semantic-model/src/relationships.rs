@@ -3,11 +3,11 @@
 use sysml_parser::ast::{PackageBody, PackageBodyElement};
 use sysml_parser::RootNamespace;
 
-use super::root_element_body;
 use tower_lsp::lsp_types::Url;
 
 use crate::ast_util::identification_name;
-use crate::semantic_model::{NodeId, RelationshipKind, SemanticGraph};
+use crate::root_element_body;
+use crate::{NodeId, RelationshipKind, SemanticGraph};
 
 /// Normalizes "a.b.c" to "a::b::c" for node lookup (SysML uses dot for feature access).
 pub(crate) fn normalize_for_lookup(s: &str) -> String {
@@ -234,11 +234,7 @@ pub(crate) fn find_part_def_in_elements<'a>(
 /// Adds typing/specializes edges from nodes in the given URI to targets that may be in other files.
 /// Called after merge so the full graph contains nodes from all documents.
 pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
-    let node_ids: Vec<NodeId> = g
-        .nodes_by_uri
-        .get(uri)
-        .cloned()
-        .unwrap_or_default();
+    let node_ids: Vec<NodeId> = g.nodes_by_uri.get(uri).cloned().unwrap_or_default();
     let mut work: Vec<(NodeId, String, Option<String>, RelationshipKind)> = Vec::new();
     for node_id in &node_ids {
         let Some(node) = g.get_node(node_id) else {

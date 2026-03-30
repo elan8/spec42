@@ -123,7 +123,11 @@ pub fn qualified_name_to_dot(qn: &str) -> String {
     qn.replace("::", ".")
 }
 
-fn infer_port_side(name: &str, direction: Option<&str>, _port_type: Option<&str>) -> Option<String> {
+fn infer_port_side(
+    name: &str,
+    direction: Option<&str>,
+    _port_type: Option<&str>,
+) -> Option<String> {
     let normalized_name = name.trim().to_lowercase();
     let normalized_direction = direction.unwrap_or("").trim().to_lowercase();
 
@@ -480,13 +484,21 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             {
                 continue;
             }
-            let Some(source_id) = map_definition_endpoint_to_usage(src, def_prefix, usage_prefix_dot) else {
+            let Some(source_id) =
+                map_definition_endpoint_to_usage(src, def_prefix, usage_prefix_dot)
+            else {
                 continue;
             };
-            let Some(target_id) = map_definition_endpoint_to_usage(tgt, def_prefix, usage_prefix_dot) else {
+            let Some(target_id) =
+                map_definition_endpoint_to_usage(tgt, def_prefix, usage_prefix_dot)
+            else {
                 continue;
             };
-            let key = (source_id.clone(), target_id.clone(), "connection".to_string());
+            let key = (
+                source_id.clone(),
+                target_id.clone(),
+                "connection".to_string(),
+            );
             if !connector_keys.insert(key) {
                 continue;
             }
@@ -552,38 +564,38 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
     // Fallback: if no explicit instances are available, keep previous behavior.
     if roots_with_metrics.is_empty() {
         roots_with_metrics = top_level_parts
-        .iter()
-        .filter_map(|p| {
-            graph.get_node(&NodeId::new(uri, &p.id)).and_then(|node| {
-                if graph
-                    .children_of(node)
-                    .iter()
-                    .any(|c| is_part_like(&c.element_kind))
-                {
-                    let root_prefix = p.qualified_name.as_str();
-                    let port_count = ports
+            .iter()
+            .filter_map(|p| {
+                graph.get_node(&NodeId::new(uri, &p.id)).and_then(|node| {
+                    if graph
+                        .children_of(node)
                         .iter()
-                        .filter(|port| endpoint_matches_root(&port.parent_id, root_prefix))
-                        .count();
-                    let connector_count = connectors
-                        .iter()
-                        .filter(|connector| {
-                            endpoint_matches_root(&connector.source_id, root_prefix)
-                                && endpoint_matches_root(&connector.target_id, root_prefix)
-                        })
-                        .count();
-                    Some((
-                        *p,
-                        part_tree_size(graph, node, uri),
-                        port_count,
-                        connector_count,
-                    ))
-                } else {
-                    None
-                }
+                        .any(|c| is_part_like(&c.element_kind))
+                    {
+                        let root_prefix = p.qualified_name.as_str();
+                        let port_count = ports
+                            .iter()
+                            .filter(|port| endpoint_matches_root(&port.parent_id, root_prefix))
+                            .count();
+                        let connector_count = connectors
+                            .iter()
+                            .filter(|connector| {
+                                endpoint_matches_root(&connector.source_id, root_prefix)
+                                    && endpoint_matches_root(&connector.target_id, root_prefix)
+                            })
+                            .count();
+                        Some((
+                            *p,
+                            part_tree_size(graph, node, uri),
+                            port_count,
+                            connector_count,
+                        ))
+                    } else {
+                        None
+                    }
+                })
             })
-        })
-        .collect();
+            .collect();
     }
 
     roots_with_metrics.sort_by(|a, b| {
@@ -680,10 +692,13 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
         std::collections::HashMap::new();
     let mut ports_by_key: std::collections::HashMap<(String, String), IbdPortDto> =
         std::collections::HashMap::new();
-    let mut connectors_by_key: std::collections::HashMap<(String, String, String), IbdConnectorDto> =
-        std::collections::HashMap::new();
+    let mut connectors_by_key: std::collections::HashMap<
+        (String, String, String),
+        IbdConnectorDto,
+    > = std::collections::HashMap::new();
     let mut root_candidates: std::collections::BTreeSet<String> = std::collections::BTreeSet::new();
-    let mut root_views: std::collections::HashMap<String, IbdRootViewDto> = std::collections::HashMap::new();
+    let mut root_views: std::collections::HashMap<String, IbdRootViewDto> =
+        std::collections::HashMap::new();
 
     for ibd in ibds {
         for p in ibd.parts {
@@ -768,21 +783,27 @@ mod tests {
 
     #[test]
     fn infer_port_side_uses_generic_name_hints() {
-        assert_eq!(infer_port_side("camera_input", None, None), Some("left".to_string()));
+        assert_eq!(
+            infer_port_side("camera_input", None, None),
+            Some("left".to_string())
+        );
         assert_eq!(
             infer_port_side("telemetryOutput", None, None),
             Some("right".to_string())
         );
-        assert_eq!(infer_port_side("fuel_in", None, None), Some("left".to_string()));
-        assert_eq!(infer_port_side("payload_out", None, None), Some("right".to_string()));
+        assert_eq!(
+            infer_port_side("fuel_in", None, None),
+            Some("left".to_string())
+        );
+        assert_eq!(
+            infer_port_side("payload_out", None, None),
+            Some("right".to_string())
+        );
     }
 
     #[test]
     fn infer_port_side_does_not_use_model_specific_type_names() {
-        assert_eq!(
-            infer_port_side("status", None, Some("PowerPort")),
-            None
-        );
+        assert_eq!(infer_port_side("status", None, Some("PowerPort")), None);
         assert_eq!(
             infer_port_side("status", None, Some("~TelemetryPort")),
             None

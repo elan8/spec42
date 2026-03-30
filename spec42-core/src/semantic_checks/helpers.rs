@@ -1,6 +1,4 @@
-use tower_lsp::lsp_types::{
-    Diagnostic, DiagnosticSeverity, NumberOrString, Position, Range,
-};
+use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Position, Range};
 
 use crate::ibd;
 use crate::semantic_model::{NodeId, SemanticGraph, SemanticNode};

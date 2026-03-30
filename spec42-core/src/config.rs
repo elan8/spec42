@@ -73,7 +73,10 @@ impl std::fmt::Debug for Spec42Config {
             .field("check_providers", &self.check_providers.len())
             .field("diagram_providers", &self.diagram_providers.len())
             .field("capability_augmenters", &self.capability_augmenters.len())
-            .field("custom_method_providers", &self.custom_method_providers.len())
+            .field(
+                "custom_method_providers",
+                &self.custom_method_providers.len(),
+            )
             .finish()
     }
 }

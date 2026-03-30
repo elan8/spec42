@@ -41,5 +41,4 @@ fn lsp_completion() {
         "completion should include keywords: {:?}",
         labels
     );
-
 }

@@ -10,13 +10,13 @@ use sysml_parser::RootNamespace;
 use tower_lsp::lsp_types::{Range, Url};
 
 use crate::ast_util::{identification_name, span_to_range};
-use crate::semantic_model::graph_builder_requirement_subjects::add_requirement_subject_edges;
-use crate::semantic_model::relationships::{
+use crate::graph_builder_requirement_subjects::add_requirement_subject_edges;
+use crate::relationships::{
     add_edge_if_both_exist, add_specializes_edge_if_exists, add_typing_edge_if_exists,
     find_part_def_in_root, type_ref_candidates,
 };
-use crate::semantic_model::{
-    resolve_expression_endpoint_strict, ResolveResult, root_element_body, NodeId, RelationshipKind,
+use crate::{
+    resolve_expression_endpoint_strict, root_element_body, NodeId, RelationshipKind, ResolveResult,
     SemanticGraph, SemanticNode,
 };
 
@@ -364,17 +364,11 @@ fn build_from_package_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "alias");
             let range = span_to_range(&alias_node.span);
             let mut attrs = HashMap::new();
-            attrs.insert("target".to_string(), serde_json::json!(alias_node.target.clone()));
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "alias",
-                name,
-                range,
-                attrs,
-                parent_id,
+            attrs.insert(
+                "target".to_string(),
+                serde_json::json!(alias_node.target.clone()),
             );
+            add_node_and_recurse(g, uri, &qualified, "alias", name, range, attrs, parent_id);
         }
         PBE::RequirementDef(rd_node) => {
             let name = identification_name(&rd_node.identification);
@@ -497,7 +491,8 @@ fn build_from_package_body_element(
         PBE::ItemDef(item_node) => {
             let name = identification_name(&item_node.identification);
             if !name.is_empty() {
-                let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "item def");
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "item def");
                 add_node_and_recurse(
                     g,
                     uri,
@@ -554,7 +549,8 @@ fn build_from_package_body_element(
         PBE::EnumDef(enum_node) => {
             let name = identification_name(&enum_node.identification);
             if !name.is_empty() {
-                let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "enum def");
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "enum def");
                 add_node_and_recurse(
                     g,
                     uri,
@@ -625,7 +621,8 @@ fn build_from_package_body_element(
         PBE::FlowDef(flow_node) => {
             let name = identification_name(&flow_node.identification);
             if !name.is_empty() {
-                let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "flow def");
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "flow def");
                 add_node_and_recurse(
                     g,
                     uri,
@@ -639,7 +636,8 @@ fn build_from_package_body_element(
             }
         }
         PBE::FlowUsage(flow_node) => {
-            let qualified = qualified_name_for_node(g, uri, container_prefix, &flow_node.name, "flow");
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &flow_node.name, "flow");
             let mut attrs = HashMap::new();
             if let Some(ref t) = flow_node.type_name {
                 attrs.insert("flowType".to_string(), serde_json::json!(t.clone()));
@@ -703,8 +701,7 @@ fn build_from_package_body_element(
                 .map(identification_name)
                 .filter(|n| !n.is_empty())
                 .unwrap_or_else(|| "dependency".to_string());
-            let qualified =
-                qualified_name_for_node(g, uri, container_prefix, &name, "dependency");
+            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "dependency");
             add_node_and_recurse(
                 g,
                 uri,
@@ -736,7 +733,8 @@ fn build_from_package_body_element(
         PBE::CalcDef(c_node) => {
             let name = identification_name(&c_node.identification);
             if !name.is_empty() {
-                let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "calc def");
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "calc def");
                 add_node_and_recurse(
                     g,
                     uri,
@@ -752,7 +750,8 @@ fn build_from_package_body_element(
         PBE::CaseDef(c_node) => {
             let name = identification_name(&c_node.identification);
             if !name.is_empty() {
-                let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "case def");
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "case def");
                 add_node_and_recurse(
                     g,
                     uri,
@@ -812,13 +811,8 @@ fn build_from_package_body_element(
         PBE::VerificationCaseDef(c_node) => {
             let name = identification_name(&c_node.identification);
             if !name.is_empty() {
-                let qualified = qualified_name_for_node(
-                    g,
-                    uri,
-                    container_prefix,
-                    &name,
-                    "verification def",
-                );
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "verification def");
                 add_node_and_recurse(
                     g,
                     uri,
@@ -832,13 +826,8 @@ fn build_from_package_body_element(
             }
         }
         PBE::VerificationCaseUsage(c_node) => {
-            let qualified = qualified_name_for_node(
-                g,
-                uri,
-                container_prefix,
-                &c_node.name,
-                "verification",
-            );
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &c_node.name, "verification");
             add_node_and_recurse(
                 g,
                 uri,
@@ -1399,7 +1388,8 @@ fn add_expression_edge_if_both_exist(
             ResolveResult::Unresolved => return,
         }
     } else {
-        let Some(id) = resolve_expression_endpoint_legacy(g, uri, container_prefix, &left_str) else {
+        let Some(id) = resolve_expression_endpoint_legacy(g, uri, container_prefix, &left_str)
+        else {
             if kind == RelationshipKind::Satisfy {
                 add_diagnostic_node(
                     g,
@@ -1437,7 +1427,8 @@ fn add_expression_edge_if_both_exist(
             ResolveResult::Unresolved => return,
         }
     } else {
-        let Some(id) = resolve_expression_endpoint_legacy(g, uri, container_prefix, &right_str) else {
+        let Some(id) = resolve_expression_endpoint_legacy(g, uri, container_prefix, &right_str)
+        else {
             if kind == RelationshipKind::Satisfy {
                 add_diagnostic_node(
                     g,
@@ -1457,7 +1448,12 @@ fn add_expression_edge_if_both_exist(
     };
     add_edge_if_both_exist(g, uri, &src, &tgt, kind.clone());
     if kind == RelationshipKind::Connection {
-        g.record_connection_occurrence(uri, NodeId::new(uri, &src), NodeId::new(uri, &tgt), span_to_range(&left.span));
+        g.record_connection_occurrence(
+            uri,
+            NodeId::new(uri, &src),
+            NodeId::new(uri, &tgt),
+            span_to_range(&left.span),
+        );
     }
 }
 

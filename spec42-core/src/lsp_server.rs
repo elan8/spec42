@@ -7,9 +7,7 @@ mod lookup_helpers;
 use crate::config::Spec42Config;
 use crate::dto;
 use crate::lsp::capabilities::server_capabilities;
-use crate::lsp::custom::{
-    sysml_clear_cache_result, sysml_model_result, sysml_server_stats_result,
-};
+use crate::lsp::custom::{sysml_clear_cache_result, sysml_model_result, sysml_server_stats_result};
 use crate::lsp::editing::indexed_text_for_uri;
 use crate::lsp::hierarchy::{
     call_hierarchy_item_for_node, moniker_for_node, type_hierarchy_item_for_node,
@@ -27,26 +25,22 @@ use crate::lsp::types::{IndexEntry, ServerState};
 use crate::semantic_model;
 use crate::util;
 
-use crate::semantic_tokens::{
-    ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range,
-};
+use crate::semantic_tokens::{ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range};
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::RwLock;
-use tracing::{debug, info, warn};
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
+use tracing::{debug, info, warn};
 
 use crate::language::{
     collect_document_symbols, collect_folding_ranges, completion_prefix, find_reference_ranges,
-    format_document, is_reserved_keyword, keyword_doc,
-    keyword_hover_markdown, line_prefix_at_position, suggest_create_matching_part_def_quick_fix,
-    suggest_wrap_in_package, sysml_keywords, word_at_position,
+    format_document, is_reserved_keyword, keyword_doc, keyword_hover_markdown,
+    line_prefix_at_position, suggest_create_matching_part_def_quick_fix, suggest_wrap_in_package,
+    sysml_keywords, word_at_position,
 };
-use lookup_helpers::{
-    collect_symbol_matches_for_lookup, debug_qualified_lookup_context,
-};
+use lookup_helpers::{collect_symbol_matches_for_lookup, debug_qualified_lookup_context};
 
 // -------------------------
 // Custom requests (extension)
@@ -96,7 +90,10 @@ impl LanguageServer for Backend {
 
     async fn initialized(&self, _: InitializedParams) {
         self.client
-            .log_message(MessageType::INFO, format!("{} initialized", self.server_name))
+            .log_message(
+                MessageType::INFO,
+                format!("{} initialized", self.server_name),
+            )
             .await;
         let state = Arc::clone(&self.state);
         let config = Arc::clone(&self.config);
@@ -136,7 +133,8 @@ impl LanguageServer for Backend {
                     .await
                     .unwrap_or_default();
             let discover_read_ms = discover_read_start.elapsed().as_millis() as u64;
-            let parallel_parse_enabled = util::env_flag_enabled("SPEC42_PARALLEL_STARTUP_PARSE", true);
+            let parallel_parse_enabled =
+                util::env_flag_enabled("SPEC42_PARALLEL_STARTUP_PARSE", true);
             let parallel_parse_min_files =
                 util::env_usize("SPEC42_PARALLEL_STARTUP_PARSE_MIN_FILES", 10);
             let should_parallel_parse =
@@ -264,8 +262,7 @@ impl LanguageServer for Backend {
                     files = low_coverage_library_files.len(),
                     "workspace scan low-coverage library files (showing up to 10)"
                 );
-                for (uri, graph_nodes, symbol_entries) in
-                    low_coverage_library_files.iter().take(10)
+                for (uri, graph_nodes, symbol_entries) in low_coverage_library_files.iter().take(10)
                 {
                     debug!(
                         uri = %uri,
@@ -696,8 +693,7 @@ impl LanguageServer for Backend {
                     files = low_coverage_library_files.len(),
                     "didChangeConfiguration: low-coverage library files (showing up to 10)"
                 );
-                for (uri, graph_nodes, symbol_entries) in
-                    low_coverage_library_files.iter().take(10)
+                for (uri, graph_nodes, symbol_entries) in low_coverage_library_files.iter().take(10)
                 {
                     debug!(
                         uri = %uri,
@@ -1066,18 +1062,17 @@ impl LanguageServer for Backend {
         let pos = params.text_document_position.position;
         let include_declaration = params.context.include_declaration;
         let state = self.state.read().await;
-        Ok(crate::lsp::references_resolver::resolved_references_at_position(
-            &state,
-            &uri_norm,
-            pos,
-            include_declaration,
-        ))
+        Ok(
+            crate::lsp::references_resolver::resolved_references_at_position(
+                &state,
+                &uri_norm,
+                pos,
+                include_declaration,
+            ),
+        )
     }
 
-    async fn document_link(
-        &self,
-        params: DocumentLinkParams,
-    ) -> Result<Option<Vec<DocumentLink>>> {
+    async fn document_link(&self, params: DocumentLinkParams) -> Result<Option<Vec<DocumentLink>>> {
         let uri = params.text_document.uri;
         let uri_norm = util::normalize_file_uri(&uri);
         let state = self.state.read().await;
@@ -1237,7 +1232,11 @@ impl LanguageServer for Backend {
             .iter()
             .filter(|s| s.name.trim().is_empty())
             .take(5)
-            .map(|s| s.detail.clone().unwrap_or_else(|| "(no detail)".to_string()))
+            .map(|s| {
+                s.detail
+                    .clone()
+                    .unwrap_or_else(|| "(no detail)".to_string())
+            })
             .collect();
         let raw_count = raw_symbols.len();
         let symbols = sanitize_document_symbols(raw_symbols);
@@ -1477,7 +1476,10 @@ impl LanguageServer for Backend {
         let uri = params.item.uri.clone();
         let range = params.item.selection_range;
         let state = self.state.read().await;
-        let node = match state.semantic_graph.find_node_at_position(&uri, range.start) {
+        let node = match state
+            .semantic_graph
+            .find_node_at_position(&uri, range.start)
+        {
             Some(n) => n,
             None => return Ok(None),
         };
@@ -1497,7 +1499,10 @@ impl LanguageServer for Backend {
         let uri = params.item.uri.clone();
         let range = params.item.selection_range;
         let state = self.state.read().await;
-        let node = match state.semantic_graph.find_node_at_position(&uri, range.start) {
+        let node = match state
+            .semantic_graph
+            .find_node_at_position(&uri, range.start)
+        {
             Some(n) => n,
             None => return Ok(None),
         };
@@ -1532,7 +1537,10 @@ impl LanguageServer for Backend {
         let uri = params.item.uri.clone();
         let range = params.item.selection_range;
         let state = self.state.read().await;
-        let node = match state.semantic_graph.find_node_at_position(&uri, range.start) {
+        let node = match state
+            .semantic_graph
+            .find_node_at_position(&uri, range.start)
+        {
             Some(n) => n,
             None => return Ok(None),
         };
@@ -1556,7 +1564,10 @@ impl LanguageServer for Backend {
         let uri = params.item.uri.clone();
         let range = params.item.selection_range;
         let state = self.state.read().await;
-        let node = match state.semantic_graph.find_node_at_position(&uri, range.start) {
+        let node = match state
+            .semantic_graph
+            .find_node_at_position(&uri, range.start)
+        {
             Some(n) => n,
             None => return Ok(None),
         };
@@ -1594,9 +1605,8 @@ impl Backend {
         &self,
         params: serde_json::Value,
     ) -> Result<dto::SysmlLibrarySearchResultDto> {
-        let params: dto::SysmlLibrarySearchParamsDto = serde_json::from_value(params).map_err(
-            |error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()),
-        )?;
+        let params: dto::SysmlLibrarySearchParamsDto = serde_json::from_value(params)
+            .map_err(|error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()))?;
         let query = params.query.trim().to_lowercase();
         let limit = params.limit.unwrap_or(100).clamp(1, 500);
         let state = self.state.read().await;
@@ -1618,8 +1628,10 @@ impl Backend {
             .iter()
             .filter(|entry| util::uri_under_any_library(&entry.uri, &state.library_paths))
             .filter_map(|entry| {
-                let normalized_name =
-                    library_search::normalized_library_symbol_name(entry, state.index.get(&entry.uri));
+                let normalized_name = library_search::normalized_library_symbol_name(
+                    entry,
+                    state.index.get(&entry.uri),
+                );
                 let score = if query.is_empty() {
                     1_000
                 } else {
@@ -1641,7 +1653,10 @@ impl Backend {
             .into_iter()
             .take(limit)
             .map(|(score, entry)| dto::SysmlLibrarySearchItemDto {
-                name: library_search::normalized_library_symbol_name(entry, state.index.get(&entry.uri)),
+                name: library_search::normalized_library_symbol_name(
+                    entry,
+                    state.index.get(&entry.uri),
+                ),
                 kind: library_search::symbol_kind_label(entry.kind).to_string(),
                 container: entry.container_name.clone(),
                 uri: entry.uri.to_string(),
@@ -1655,7 +1670,12 @@ impl Backend {
         let sources = library_search::build_library_tree(items);
         let symbol_total = sources
             .iter()
-            .map(|src| src.packages.iter().map(|pkg| pkg.symbols.len()).sum::<usize>())
+            .map(|src| {
+                src.packages
+                    .iter()
+                    .map(|pkg| pkg.symbols.len())
+                    .sum::<usize>()
+            })
             .sum();
         Ok(dto::SysmlLibrarySearchResultDto {
             sources,
@@ -1702,7 +1722,10 @@ async fn collect_diagnostics_for_document(
         diagnostics.push(Diagnostic {
             range,
             severity: Some(severity),
-            code: e.code.clone().map(tower_lsp::lsp_types::NumberOrString::String),
+            code: e
+                .code
+                .clone()
+                .map(tower_lsp::lsp_types::NumberOrString::String),
             code_description: None,
             source: Some("sysml".to_string()),
             message: e.message.clone(),
@@ -1720,10 +1743,7 @@ async fn collect_diagnostics_for_document(
             )),
             code_description: None,
             source: Some("sysml".to_string()),
-            message: format!(
-                    "Part '{}' has no declared type.",
-                usage.name
-            ),
+            message: format!("Part '{}' has no declared type.", usage.name),
             related_information: None,
             tags: None,
             data: None,
@@ -1850,6 +1870,3 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
 
     Server::new(stdin, stdout, socket).serve(service).await;
 }
-
-
-

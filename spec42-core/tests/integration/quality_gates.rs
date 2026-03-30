@@ -58,5 +58,8 @@ fn lsp_code_lens_is_deterministic_for_same_document_state() {
         "textDocument/codeLens",
         serde_json::json!({"textDocument":{"uri":uri}}),
     );
-    assert_eq!(first["result"], second["result"], "code lens should be stable across repeated requests for unchanged document");
+    assert_eq!(
+        first["result"], second["result"],
+        "code lens should be stable across repeated requests for unchanged document"
+    );
 }

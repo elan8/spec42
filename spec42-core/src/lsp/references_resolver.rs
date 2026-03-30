@@ -92,13 +92,7 @@ fn collect_references_for_lookup(
             let candidate_defs = if candidate_same.len() <= 1 {
                 candidate_same
             } else {
-                select_defs_for_position(
-                    state,
-                    uri,
-                    lookup_name,
-                    None,
-                    location.range.start,
-                )
+                select_defs_for_position(state, uri, lookup_name, None, location.range.start)
             };
             let candidate_ids: std::collections::HashSet<NodeId> = if !candidate_defs.is_empty() {
                 candidate_defs
@@ -116,10 +110,8 @@ fn collect_references_for_lookup(
                     std::collections::HashSet::new()
                 }
             };
-            let candidate_ids: std::collections::HashSet<NodeId> = candidate_ids
-                .iter()
-                .cloned()
-                .collect();
+            let candidate_ids: std::collections::HashSet<NodeId> =
+                candidate_ids.iter().cloned().collect();
             let resolved_matches_target =
                 !candidate_ids.is_empty() && candidate_ids.iter().any(|id| target_ids.contains(id));
             if resolved_matches_target {
@@ -152,8 +144,10 @@ fn select_defs_for_position<'a>(
         .copied()
         .filter(|entry| {
             let r = entry.range;
-            (pos.line > r.start.line || (pos.line == r.start.line && pos.character >= r.start.character))
-                && (pos.line < r.end.line || (pos.line == r.end.line && pos.character <= r.end.character))
+            (pos.line > r.start.line
+                || (pos.line == r.start.line && pos.character >= r.start.character))
+                && (pos.line < r.end.line
+                    || (pos.line == r.end.line && pos.character <= r.end.character))
         })
         .collect();
     if positional_same_file_defs.is_empty() {
@@ -274,9 +268,12 @@ fn resolve_owner_member_defs<'a>(
         .copied()
         .filter(|entry| symbol_entry_node_id(state, entry).as_ref() == Some(&resolved_id))
         .collect();
-    if filtered.is_empty() { None } else { Some(filtered) }
+    if filtered.is_empty() {
+        None
+    } else {
+        Some(filtered)
+    }
 }
-
 
 fn location_key_for_symbol(entry: &SymbolEntry) -> LocationKey {
     (

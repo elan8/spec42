@@ -2,8 +2,8 @@ use tower_lsp::lsp_types::Url;
 
 use sysml_parser::ast::{RequirementDefBody, RequirementDefBodyElement};
 
-use crate::semantic_model::relationships::{add_edge_if_both_exist, type_ref_candidates};
-use crate::semantic_model::{NodeId, RelationshipKind, SemanticGraph};
+use crate::relationships::{add_edge_if_both_exist, type_ref_candidates};
+use crate::{NodeId, RelationshipKind, SemanticGraph};
 
 pub(crate) fn add_requirement_subject_edges(
     g: &mut SemanticGraph,
@@ -81,7 +81,11 @@ fn resolve_subject_type_target_qualified(
     let candidates = type_ref_candidates(container_prefix, normalized);
     for base in &candidates {
         let mut expanded = vec![base.clone()];
-        expanded.extend(kind_suffixes.iter().map(|suffix| format!("{base}#{suffix}")));
+        expanded.extend(
+            kind_suffixes
+                .iter()
+                .map(|suffix| format!("{base}#{suffix}")),
+        );
         for candidate in expanded {
             let node_id = NodeId::new(uri, &candidate);
             let Some(node) = g.get_node(&node_id) else {

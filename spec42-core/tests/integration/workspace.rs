@@ -366,12 +366,7 @@ fn lsp_library_search_si_file_has_rich_symbol_coverage() {
 
     let si_items: Vec<&serde_json::Value> = items
         .into_iter()
-        .filter(|item| {
-            item["path"]
-                .as_str()
-                .map(is_si_sysml_path)
-                .unwrap_or(false)
-        })
+        .filter(|item| item["path"].as_str().map(is_si_sysml_path).unwrap_or(false))
         .collect();
     let si_count = si_items.len();
 
@@ -486,9 +481,7 @@ fn lsp_library_search_custom_method_returns_library_results() {
     assert!(has_engine, "Engine should be in library search results");
 
     // Tree contract: package nodes should not include duplicate module child equal to package name.
-    let sources = json["result"]["sources"]
-        .as_array()
-        .expect("sources array");
+    let sources = json["result"]["sources"].as_array().expect("sources array");
     let has_duplicate_module = sources.iter().any(|source| {
         source["packages"]
             .as_array()
@@ -496,17 +489,13 @@ fn lsp_library_search_custom_method_returns_library_results() {
             .flatten()
             .any(|pkg| {
                 let pkg_name = pkg["name"].as_str().unwrap_or_default();
-                pkg["symbols"]
-                    .as_array()
-                    .into_iter()
-                    .flatten()
-                    .any(|sym| {
-                        sym["kind"].as_str() == Some("module")
-                            && sym["name"]
-                                .as_str()
-                                .map(|n| n.eq_ignore_ascii_case(pkg_name))
-                                .unwrap_or(false)
-                    })
+                pkg["symbols"].as_array().into_iter().flatten().any(|sym| {
+                    sym["kind"].as_str() == Some("module")
+                        && sym["name"]
+                            .as_str()
+                            .map(|n| n.eq_ignore_ascii_case(pkg_name))
+                            .unwrap_or(false)
+                })
             })
     });
     assert!(
@@ -727,7 +716,10 @@ fn lsp_workspace_visualization_model_includes_all_sysml_examples_packages_when_c
         "TrafficLightIntersection",
         "IT",
     ];
-    let drone_path = examples_root.join("drone").join("sysml").join("SurveillanceDrone.sysml");
+    let drone_path = examples_root
+        .join("drone")
+        .join("sysml")
+        .join("SurveillanceDrone.sysml");
     if !drone_path.is_file() {
         eprintln!(
             "Skipping lsp_workspace_visualization_model_includes_all_sysml_examples_packages_when_configured: expected fixture file missing {}",

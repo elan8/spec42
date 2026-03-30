@@ -156,13 +156,16 @@ fn lsp_same_file_homonym_references_are_disambiguated_by_position() {
 
     // Must include Laptop declaration line.
     assert!(
-        locs.iter().any(|l| l["range"]["start"]["line"].as_u64() == Some(2)),
+        locs.iter()
+            .any(|l| l["range"]["start"]["line"].as_u64() == Some(2)),
         "references should include Laptop::hdmi declaration: {:?}",
         locs
     );
     // Must not include Monitor declaration line.
     assert!(
-        !locs.iter().any(|l| l["range"]["start"]["line"].as_u64() == Some(5)),
+        !locs
+            .iter()
+            .any(|l| l["range"]["start"]["line"].as_u64() == Some(5)),
         "references should not include Monitor::hdmi declaration: {:?}",
         locs
     );
@@ -347,4 +350,3 @@ fn lsp_same_short_name_in_library_is_not_counted_without_semantic_match() {
 
     let _ = child.kill();
 }
-

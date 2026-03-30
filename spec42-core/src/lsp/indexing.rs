@@ -157,4 +157,3 @@ pub(crate) fn update_semantic_graph_for_uri(
         semantic_model::add_cross_document_edges_for_uri(&mut state.semantic_graph, uri);
     }
 }
-

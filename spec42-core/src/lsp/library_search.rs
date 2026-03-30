@@ -44,7 +44,9 @@ pub(crate) fn normalized_library_symbol_name(
         return entry.name.clone();
     }
     if let Some(content) = index_entry.map(|idx| idx.content.as_str()) {
-        if let Some(name) = extract_declared_name_from_line(content, entry.range.start.line as usize) {
+        if let Some(name) =
+            extract_declared_name_from_line(content, entry.range.start.line as usize)
+        {
             return name;
         }
     }
@@ -52,7 +54,10 @@ pub(crate) fn normalized_library_symbol_name(
 }
 
 fn is_generic_symbol_name(name: &str) -> bool {
-    matches!(name.trim().to_ascii_lowercase().as_str(), "" | "def" | "usage")
+    matches!(
+        name.trim().to_ascii_lowercase().as_str(),
+        "" | "def" | "usage"
+    )
 }
 
 pub(crate) fn extract_declared_name_from_line(content: &str, line_idx: usize) -> Option<String> {
@@ -289,4 +294,3 @@ mod tests {
         assert!(exact > fuzzy, "exact matches should score higher");
     }
 }
-

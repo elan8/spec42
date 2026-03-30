@@ -5,7 +5,10 @@ use tower_lsp::lsp_types::Url;
 use crate::dto::{range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlGraphDto};
 use crate::semantic_model;
 
-pub fn canonical_general_view_graph(graph: &SysmlGraphDto, include_all_roots: bool) -> SysmlGraphDto {
+pub fn canonical_general_view_graph(
+    graph: &SysmlGraphDto,
+    include_all_roots: bool,
+) -> SysmlGraphDto {
     let node_by_id: HashMap<String, GraphNodeDto> = graph
         .nodes
         .iter()
@@ -211,7 +214,11 @@ pub fn canonical_general_view_graph(graph: &SysmlGraphDto, include_all_roots: bo
     }
     for edge in specializes_edges {
         if out_node_ids.contains(&edge.source) && out_node_ids.contains(&edge.target) {
-            let key = (edge.source.clone(), edge.target.clone(), "specializes".to_string());
+            let key = (
+                edge.source.clone(),
+                edge.target.clone(),
+                "specializes".to_string(),
+            );
             if out_edge_keys.insert(key) {
                 out_edges.push(edge);
             }
@@ -302,7 +309,9 @@ pub fn strip_synthetic_nodes(graph: &SysmlGraphDto) -> SysmlGraphDto {
     let concrete_edges: Vec<GraphEdgeDto> = graph
         .edges
         .iter()
-        .filter(|edge| !synthetic_ids.contains(&edge.source) && !synthetic_ids.contains(&edge.target))
+        .filter(|edge| {
+            !synthetic_ids.contains(&edge.source) && !synthetic_ids.contains(&edge.target)
+        })
         .cloned()
         .collect();
     SysmlGraphDto {

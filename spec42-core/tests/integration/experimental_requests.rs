@@ -103,7 +103,10 @@ fn lsp_remaining_feature_requests_round_trip() {
         .and_then(|a| a.first())
         .cloned()
         .expect("prepareTypeHierarchy should return item for Engine");
-    let subtypes = session.request("typeHierarchy/subtypes", serde_json::json!({"item": engine_item}));
+    let subtypes = session.request(
+        "typeHierarchy/subtypes",
+        serde_json::json!({"item": engine_item}),
+    );
     let sub_items = subtypes["result"]
         .as_array()
         .expect("subtypes should return array");

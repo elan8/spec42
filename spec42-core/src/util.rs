@@ -32,8 +32,7 @@ pub fn normalize_file_uri(uri: &Url) -> Url {
             let p = normalized.path();
             if p.len() >= 3 {
                 let mut chars: Vec<char> = p.chars().collect();
-                if chars[0] == '/' && chars[1].is_ascii_alphabetic() && chars.get(2) == Some(&':')
-                {
+                if chars[0] == '/' && chars[1].is_ascii_alphabetic() && chars.get(2) == Some(&':') {
                     chars[1] = chars[1].to_ascii_lowercase();
                     let new_path: String = chars.into_iter().collect();
                     if let Ok(u) = Url::parse(&format!("file://{}", new_path)) {
@@ -175,21 +174,9 @@ pub fn missing_semicolon_ranges(content: &str) -> Vec<Range> {
     ranges
 }
 
-
 /// Returns true if `uri` is under any of the library path roots (path prefix check).
 pub fn uri_under_any_library(uri: &Url, library_paths: &[Url]) -> bool {
-    let uri_path = match uri.to_file_path() {
-        Ok(p) => p,
-        Err(_) => return false,
-    };
-    for lib in library_paths {
-        if let Ok(lib_path) = lib.to_file_path() {
-            if uri_path.starts_with(&lib_path) {
-                return true;
-            }
-        }
-    }
-    false
+    semantic_model_crate::uri_under_any_library(uri, library_paths)
 }
 
 /// Parse library paths from LSP config (initialization_options or didChangeConfiguration settings).
@@ -202,7 +189,9 @@ pub fn parse_library_paths_from_value(value: Option<&serde_json::Value>) -> Vec<
                 .filter_map(|s| s.as_str())
                 .filter_map(|path_str| {
                     let path = std::path::PathBuf::from(path_str);
-                    Url::from_file_path(path).ok().map(|u| normalize_file_uri(&u))
+                    Url::from_file_path(path)
+                        .ok()
+                        .map(|u| normalize_file_uri(&u))
                 })
                 .collect()
         })
@@ -271,7 +260,9 @@ pub fn symbol_hover_markdown(entry: &SymbolEntry, show_location: bool) -> String
 
 #[cfg(test)]
 mod tests {
-    use super::{apply_incremental_change, missing_semicolon_ranges, untyped_part_usage_diagnostics};
+    use super::{
+        apply_incremental_change, missing_semicolon_ranges, untyped_part_usage_diagnostics,
+    };
     use tower_lsp::lsp_types::{Position, Range};
 
     #[test]
@@ -312,5 +303,4 @@ mod tests {
         let diagnostics = untyped_part_usage_diagnostics(text);
         assert!(diagnostics.is_empty());
     }
-
 }

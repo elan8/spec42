@@ -11,10 +11,10 @@ name = "spec42_core"
 
 [dependencies]
 sysml-parser = { git = "https://github.com/elan8/sysml-parser" }
+semantic-model-crate = { package = "semantic-model", path = "../semantic-model" }
 tower-lsp = "0.20"
 tokio = { version = "1", features = ["full"] }
 walkdir = "2"
-petgraph = "0.8"
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

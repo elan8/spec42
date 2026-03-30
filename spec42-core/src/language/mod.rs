@@ -282,22 +282,12 @@ pub fn suggest_create_matching_part_def_quick_fix(
             } else {
                 pkg_end
             };
-            (
-                pkg_start,
-                pkg_end,
-                target_insert_line,
-                member_indent,
-            )
+            (pkg_start, pkg_end, target_insert_line, member_indent)
         } else {
             let closing_line = lines.get(container_end)?;
             let closing_indent_len = closing_line.len() - closing_line.trim_start().len();
             let closing_indent = &closing_line[..closing_indent_len];
-            (
-                0,
-                container_end,
-                container_end,
-                closing_indent.to_string(),
-            )
+            (0, container_end, container_end, closing_indent.to_string())
         };
 
     let mut edits: Vec<OneOf<TextEdit, tower_lsp::lsp_types::AnnotatedTextEdit>> = Vec::new();
@@ -307,7 +297,10 @@ pub fn suggest_create_matching_part_def_quick_fix(
                 Position::new(insert_line as u32, 0),
                 Position::new(insert_line as u32, 0),
             ),
-            new_text: format!("{indent}part def {type_name} {{ }}\n", indent = insert_indent),
+            new_text: format!(
+                "{indent}part def {type_name} {{ }}\n",
+                indent = insert_indent
+            ),
         }));
     }
 

@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use tower_lsp::lsp_types::Url;
 
-use super::{NodeId, SemanticGraph, SemanticNode};
+use crate::{NodeId, SemanticGraph, SemanticNode};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ResolveResult<T> {

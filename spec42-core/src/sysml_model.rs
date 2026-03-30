@@ -72,8 +72,7 @@ pub async fn build_sysml_model_response(
     let want_stats = scope.is_empty() || scope.iter().any(|s| s == "stats");
     let want_activity_diagrams = scope.is_empty() || scope.iter().any(|s| s == "activityDiagrams");
     let want_sequence_diagrams = scope.is_empty() || scope.iter().any(|s| s == "sequenceDiagrams");
-    let want_rendered_diagrams =
-        scope.is_empty() || scope.iter().any(|s| s == "renderedDiagrams");
+    let want_rendered_diagrams = scope.is_empty() || scope.iter().any(|s| s == "renderedDiagrams");
 
     let workspace_viz = workspace_visualization_enabled(scope);
     let raw_graph = if want_graph && workspace_viz {
@@ -162,7 +161,8 @@ pub async fn build_sysml_model_response(
     };
     let graph = raw_graph.as_ref().map(strip_synthetic_nodes);
     let general_view_graph = if want_general_view_graph {
-        graph.as_ref()
+        graph
+            .as_ref()
             .map(|g| canonical_general_view_graph(g, workspace_viz))
     } else {
         None
@@ -204,8 +204,14 @@ pub async fn build_sysml_model_response(
 
     let node_count = graph.as_ref().map(|g| g.nodes.len()).unwrap_or(0);
     let edge_count = graph.as_ref().map(|g| g.edges.len()).unwrap_or(0);
-    let gv_node_count = general_view_graph.as_ref().map(|g| g.nodes.len()).unwrap_or(0);
-    let gv_edge_count = general_view_graph.as_ref().map(|g| g.edges.len()).unwrap_or(0);
+    let gv_node_count = general_view_graph
+        .as_ref()
+        .map(|g| g.nodes.len())
+        .unwrap_or(0);
+    let gv_edge_count = general_view_graph
+        .as_ref()
+        .map(|g| g.edges.len())
+        .unwrap_or(0);
     client
         .log_message(
             MessageType::INFO,
@@ -308,9 +314,19 @@ mod tests {
         let graph = SysmlGraphDto {
             nodes: vec![
                 node("Pkg", "package", "SurveillanceDrone", None),
-                node("Drone", "part def", "SurveillanceQuadrotorDrone", Some("Pkg")),
+                node(
+                    "Drone",
+                    "part def",
+                    "SurveillanceQuadrotorDrone",
+                    Some("Pkg"),
+                ),
                 node("Alt", "part def", "FlightControlAndSensing", Some("Pkg")),
-                node("Drone::fc", "part", "flightControlAndSensing", Some("Drone")),
+                node(
+                    "Drone::fc",
+                    "part",
+                    "flightControlAndSensing",
+                    Some("Drone"),
+                ),
                 node("Alt::gnss", "part", "gnss", Some("Alt")),
                 node("GNSSReceiver", "part def", "GNSSReceiver", Some("Pkg")),
             ],
@@ -332,7 +348,10 @@ mod tests {
         assert!(ids.contains("Alt"));
         assert!(ids.contains("Alt::gnss"));
         assert!(ids.contains("GNSSReceiver"));
-        assert!(!ids.contains("Pkg"), "package node should not be part of canonical projection");
+        assert!(
+            !ids.contains("Pkg"),
+            "package node should not be part of canonical projection"
+        );
     }
 
     #[test]
@@ -355,8 +374,16 @@ mod tests {
             projected.nodes.iter().map(|n| n.id.clone()).collect();
         let mut seen = std::collections::HashSet::new();
         for e in &projected.edges {
-            assert!(ids.contains(&e.source), "missing edge source node {}", e.source);
-            assert!(ids.contains(&e.target), "missing edge target node {}", e.target);
+            assert!(
+                ids.contains(&e.source),
+                "missing edge source node {}",
+                e.source
+            );
+            assert!(
+                ids.contains(&e.target),
+                "missing edge target node {}",
+                e.target
+            );
             let key = (e.source.clone(), e.target.clone(), e.rel_type.clone());
             assert!(seen.insert(key), "duplicate edge found in projected graph");
         }
@@ -389,7 +416,12 @@ mod tests {
         let graph = SysmlGraphDto {
             nodes: vec![
                 node("Drone", "part def", "Drone", None),
-                node("Drone::flightControl", "part", "flightControl", Some("Drone")),
+                node(
+                    "Drone::flightControl",
+                    "part",
+                    "flightControl",
+                    Some("Drone"),
+                ),
                 node(
                     "Drone::flightControl::gnss",
                     "part",
@@ -415,7 +447,11 @@ mod tests {
                 edge("Drone", "Drone::flightControl::gnss", "contains"),
                 edge("Drone::flightControl", "FlightControlAndSensing", "typing"),
                 edge("Drone::flightControl::gnss", "GNSSReceiver", "typing"),
-                edge("FlightControlAndSensing", "FlightControlAndSensing::gnss", "contains"),
+                edge(
+                    "FlightControlAndSensing",
+                    "FlightControlAndSensing::gnss",
+                    "contains",
+                ),
                 edge("FlightControlAndSensing::gnss", "GNSSReceiver", "typing"),
             ],
         };

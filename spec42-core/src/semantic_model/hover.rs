@@ -1,4 +1,4 @@
-use super::{SemanticGraph, SemanticNode};
+use semantic_model_crate::{SemanticGraph, SemanticNode};
 
 /// Builds a signature string from node attributes (partType, specializes, etc.).
 pub(crate) fn signature_from_node(node: &SemanticNode) -> Option<String> {
@@ -30,10 +30,14 @@ pub(crate) fn signature_from_node(node: &SemanticNode) -> Option<String> {
     Some(format!("{} {}{}{};", kind, node.name, type_part, mult))
 }
 
-pub fn hover_markdown_for_node(graph: &SemanticGraph, node: &SemanticNode, show_location: bool) -> String {
+pub fn hover_markdown_for_node(
+    graph: &SemanticGraph,
+    node: &SemanticNode,
+    show_location: bool,
+) -> String {
     let mut md = format!("**{}** `{}`\n\n", node.element_kind, node.name);
-    let code_block =
-        signature_from_node(node).unwrap_or_else(|| format!("{} {};", node.element_kind, node.name));
+    let code_block = signature_from_node(node)
+        .unwrap_or_else(|| format!("{} {};", node.element_kind, node.name));
     md.push_str("```sysml\n");
     md.push_str(&code_block);
     md.push_str("\n```\n\n");

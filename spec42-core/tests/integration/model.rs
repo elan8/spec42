@@ -1,8 +1,6 @@
 //! sysml/model integration tests.
 
-use super::harness::{
-    next_id, read_message, read_response, send_message, spawn_server,
-};
+use super::harness::{next_id, read_message, read_response, send_message, spawn_server};
 use std::fs;
 
 const FULL_DRONE_FIXTURE: &str = "surveillance_drone_full.sysml";
@@ -959,10 +957,7 @@ fn lsp_sysml_model_ibd_kitchen_timer_interface_connects_produce_connectors() {
     let model_json: serde_json::Value =
         serde_json::from_str(&model_resp).expect("parse sysml/model response");
     let ibd = &model_json["result"]["ibd"];
-    let connectors = ibd["connectors"]
-        .as_array()
-        .cloned()
-        .unwrap_or_default();
+    let connectors = ibd["connectors"].as_array().cloned().unwrap_or_default();
     assert!(
         !connectors.is_empty(),
         "expected KitchenTimer interface connect syntax to produce ibd connectors, got none: {}",

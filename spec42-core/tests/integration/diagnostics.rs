@@ -129,8 +129,7 @@ package test{
             .cloned()
             .unwrap_or_default();
         found_missing_semicolon = diagnostics.iter().any(|d| {
-            d["source"].as_str() == Some("sysml")
-                && d["code"].as_str() == Some("missing_semicolon")
+            d["source"].as_str() == Some("sysml") && d["code"].as_str() == Some("missing_semicolon")
         });
         if found_missing_semicolon {
             break;
@@ -201,7 +200,8 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
             .cloned()
             .unwrap_or_default();
         semantic_diags.extend(
-            diags.into_iter()
+            diags
+                .into_iter()
                 .filter(|d| d["source"].as_str() == Some("semantic")),
         );
         // Stop after the first diagnostics publication to avoid blocking on
@@ -284,8 +284,10 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
         "expected action usages to resolve to local action defs; got: {unresolved:#?}"
     );
 
-    let mut unresolved_ranges_to_type_refs: std::collections::HashMap<String, std::collections::HashSet<String>> =
-        std::collections::HashMap::new();
+    let mut unresolved_ranges_to_type_refs: std::collections::HashMap<
+        String,
+        std::collections::HashSet<String>,
+    > = std::collections::HashMap::new();
     for diag in &unresolved {
         let Some(msg) = diag["message"].as_str() else {
             continue;
@@ -578,7 +580,8 @@ fn unresolved_satisfy_reference_emits_semantic_diagnostic() {
 
     let mut found_unresolved_satisfy = false;
     loop {
-        let msg = read_message(&mut stdout).expect("expected message while waiting for hover response");
+        let msg =
+            read_message(&mut stdout).expect("expected message while waiting for hover response");
         let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
         if json["method"].as_str() == Some("textDocument/publishDiagnostics")
             && json["params"]["uri"]
@@ -675,7 +678,8 @@ part def Laptop {
     let mut found = false;
     let mut seen_codes: Vec<String> = Vec::new();
     loop {
-        let msg = read_message(&mut stdout).expect("expected message while waiting for hover response");
+        let msg =
+            read_message(&mut stdout).expect("expected message while waiting for hover response");
         let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
         if json["method"].as_str() == Some("textDocument/publishDiagnostics") {
             let diagnostics = json["params"]["diagnostics"]

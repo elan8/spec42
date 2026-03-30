@@ -156,7 +156,9 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
         if is_builtin_type_ref(&normalized_type_ref) {
             continue;
         }
-        let has_resolved_type = !graph.outgoing_typing_or_specializes_targets(node).is_empty();
+        let has_resolved_type = !graph
+            .outgoing_typing_or_specializes_targets(node)
+            .is_empty();
         if has_resolved_type {
             continue;
         }

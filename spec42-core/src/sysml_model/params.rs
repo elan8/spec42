@@ -51,7 +51,9 @@ pub fn parse_sysml_model_params(v: &serde_json::Value) -> Result<(Url, Vec<Strin
     };
 
     let uri = uri_str.as_ref().ok_or_else(|| {
-        tower_lsp::jsonrpc::Error::invalid_params("sysml/model requires 'uri' or 'textDocument.uri'")
+        tower_lsp::jsonrpc::Error::invalid_params(
+            "sysml/model requires 'uri' or 'textDocument.uri'",
+        )
     })?;
     let uri = Url::parse(uri)
         .map_err(|_| tower_lsp::jsonrpc::Error::invalid_params("sysml/model: invalid URI"))?;

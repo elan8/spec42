@@ -2,7 +2,9 @@ use tower_lsp::lsp_types::{SymbolKind, Url};
 
 use crate::language::SymbolEntry;
 
-use super::{signature_from_node, SemanticGraph};
+use semantic_model_crate::SemanticGraph;
+
+use super::signature_from_node;
 
 /// Maps element_kind from the semantic model to LSP SymbolKind.
 fn element_kind_to_symbol_kind(kind: &str) -> SymbolKind {
@@ -73,4 +75,74 @@ pub fn symbol_entries_for_uri(graph: &SemanticGraph, uri: &Url) -> Vec<SymbolEnt
         });
     }
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use tower_lsp::lsp_types::Url;
+
+    use sysml_parser::parse;
+
+    use crate::semantic_model::build_graph_from_doc;
+
+    use super::symbol_entries_for_uri;
+
+    #[test]
+    fn symbol_entries_include_aliases_and_definitions() {
+        let input = r#"
+            standard library package SI {
+                attribute <m> metre : LengthUnit;
+                attribute <kg> kilogram : MassUnit;
+                attribute tonne : MassUnit;
+                alias 'metric ton' for tonne;
+                alias arcmin for metre;
+                alias arcsec for kilogram;
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///si.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let symbols = symbol_entries_for_uri(&graph, &uri);
+        let names: std::collections::HashSet<String> =
+            symbols.iter().map(|s| s.name.clone()).collect();
+        let has_name = |needle: &str| {
+            names.iter().any(|n| {
+                n == needle
+                    || n.ends_with(&format!(" {}", needle))
+                    || n.ends_with(&format!("'{}'", needle))
+            })
+        };
+        assert!(
+            names.contains("tonne"),
+            "expected 'tonne' symbol in {:?}",
+            names
+        );
+        assert!(has_name("metre"), "expected 'metre' symbol in {:?}", names);
+        assert!(
+            has_name("kilogram"),
+            "expected 'kilogram' symbol in {:?}",
+            names
+        );
+        assert!(
+            names.contains("metric ton"),
+            "expected alias 'metric ton' symbol in {:?}",
+            names
+        );
+        assert!(
+            names.contains("arcmin"),
+            "expected alias 'arcmin' symbol in {:?}",
+            names
+        );
+        assert!(
+            names.contains("arcsec"),
+            "expected alias 'arcsec' symbol in {:?}",
+            names
+        );
+        assert!(
+            symbols.len() >= 7,
+            "expected at least package + attributes + aliases, got {} symbols: {:?}",
+            symbols.len(),
+            names
+        );
+    }
 }
