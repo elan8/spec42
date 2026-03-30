@@ -236,6 +236,90 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
         "expected reduced unconnected_port noise, got {unconnected_count}"
     );
 
+    let unresolved: Vec<&serde_json::Value> = semantic_diags
+        .iter()
+        .filter(|d| d["code"].as_str() == Some("unresolved_type_reference"))
+        .collect();
+
+    let unresolved_string = unresolved
+        .iter()
+        .filter(|d| {
+            d["message"]
+                .as_str()
+                .unwrap_or_default()
+                .contains("Type reference 'String'")
+        })
+        .count();
+    assert_eq!(
+        unresolved_string, 0,
+        "expected String to be treated as built-in; got unresolved String diagnostics: {unresolved:#?}"
+    );
+
+    let unresolved_conjugated = unresolved
+        .iter()
+        .filter(|d| {
+            d["message"]
+                .as_str()
+                .unwrap_or_default()
+                .contains("Type reference '~")
+        })
+        .count();
+    assert_eq!(
+        unresolved_conjugated, 0,
+        "expected no unresolved diagnostics for conjugated type refs; got: {unresolved:#?}"
+    );
+
+    let unresolved_behavior_actions = unresolved
+        .iter()
+        .filter(|d| {
+            let msg = d["message"].as_str().unwrap_or_default();
+            msg.contains("Type reference 'ExecutePatrol'")
+                || msg.contains("Type reference 'ExecuteOrbit'")
+                || msg.contains("Type reference 'ControlGimbal'")
+                || msg.contains("Type reference 'CaptureVideo'")
+        })
+        .count();
+    assert_eq!(
+        unresolved_behavior_actions, 0,
+        "expected action usages to resolve to local action defs; got: {unresolved:#?}"
+    );
+
+    let mut unresolved_ranges_to_type_refs: std::collections::HashMap<String, std::collections::HashSet<String>> =
+        std::collections::HashMap::new();
+    for diag in &unresolved {
+        let Some(msg) = diag["message"].as_str() else {
+            continue;
+        };
+        let type_ref = msg
+            .split("Type reference '")
+            .nth(1)
+            .and_then(|rest| rest.split('\'').next())
+            .unwrap_or_default()
+            .to_string();
+        let start = &diag["range"]["start"];
+        let end = &diag["range"]["end"];
+        let range_key = format!(
+            "{}:{}:{}:{}",
+            start["line"].as_u64().unwrap_or_default(),
+            start["character"].as_u64().unwrap_or_default(),
+            end["line"].as_u64().unwrap_or_default(),
+            end["character"].as_u64().unwrap_or_default()
+        );
+        unresolved_ranges_to_type_refs
+            .entry(range_key)
+            .or_default()
+            .insert(type_ref);
+    }
+    let conflicting_anchor_count = unresolved_ranges_to_type_refs
+        .values()
+        .filter(|type_refs| type_refs.len() > 1)
+        .count();
+    assert_eq!(
+        conflicting_anchor_count, 0,
+        "expected unresolved diagnostics to have stable anchors (no unrelated type refs sharing one range): {:?}",
+        unresolved_ranges_to_type_refs
+    );
+
     let _ = child.kill();
 }
 

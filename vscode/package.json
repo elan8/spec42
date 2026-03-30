@@ -129,7 +129,7 @@
       {
         "command": "sysml.showVisualizer",
         "title": "Show SysML Visualizer",
-        "icon": "$(eye)",
+        "icon": "$(open-preview)",
         "category": "SysML"
       },
       {

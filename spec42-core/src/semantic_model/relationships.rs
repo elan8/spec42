@@ -14,6 +14,15 @@ pub(crate) fn normalize_for_lookup(s: &str) -> String {
     s.replace('.', "::")
 }
 
+fn normalize_declared_type_ref(type_ref: &str) -> String {
+    type_ref
+        .trim()
+        .strip_prefix('~')
+        .map(str::trim)
+        .unwrap_or(type_ref.trim())
+        .to_string()
+}
+
 /// Returns candidate qualified names for resolving an unqualified type reference.
 /// If type_ref already contains "::", returns it as-is. Otherwise tries package prefixes
 /// from container_prefix (e.g. "SurveillanceDrone::Propulsion" -> "SurveillanceDrone::PropulsionUnit").
@@ -103,16 +112,28 @@ pub(crate) fn add_typing_edge_if_exists(
     type_ref: &str,
     container_prefix: Option<&str>,
 ) {
+    let normalized_type_ref = normalize_declared_type_ref(type_ref);
+    if normalized_type_ref.is_empty() {
+        return;
+    }
     const TYPING_TARGET_KINDS: &[&str] = &[
         "part def",
         "port def",
         "interface",
         "item def",
         "attribute def",
+        "action def",
+        "actor def",
+        "occurrence def",
+        "flow def",
+        "allocation def",
+        "state def",
         "requirement def",
+        "use case def",
+        "concern def",
     ];
     for kind in ["part_def", "port_def"] {
-        for tgt in type_ref_candidates_with_kind(container_prefix, type_ref, kind) {
+        for tgt in type_ref_candidates_with_kind(container_prefix, &normalized_type_ref, kind) {
             if add_edge_if_both_exist_opt(
                 g,
                 uri,
@@ -273,6 +294,10 @@ fn add_typing_edge_cross_document(
     container_prefix: Option<&str>,
     kind: RelationshipKind,
 ) {
+    let normalized_type_ref = normalize_declared_type_ref(type_ref);
+    if normalized_type_ref.is_empty() {
+        return;
+    }
     let target_element_kinds: &[&str] = match kind {
         RelationshipKind::Typing => &[
             "part def",
@@ -280,7 +305,15 @@ fn add_typing_edge_cross_document(
             "interface",
             "item def",
             "attribute def",
+            "action def",
+            "actor def",
+            "occurrence def",
+            "flow def",
+            "allocation def",
+            "state def",
             "requirement def",
+            "use case def",
+            "concern def",
         ],
         RelationshipKind::Specializes => &["part def"],
         _ => &[],
@@ -292,7 +325,7 @@ fn add_typing_edge_cross_document(
     let suffix_kinds = ["part_def", "port_def"];
     let candidates: Vec<String> = suffix_kinds
         .iter()
-        .flat_map(|k| type_ref_candidates_with_kind(container_prefix, type_ref, k))
+        .flat_map(|k| type_ref_candidates_with_kind(container_prefix, &normalized_type_ref, k))
         .collect();
     for tgt_qualified in candidates {
         let tgt_qualified = normalize_for_lookup(&tgt_qualified);

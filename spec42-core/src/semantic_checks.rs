@@ -142,22 +142,48 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
     }
 
     // 5) Stronger typing checks: declarations that name a type should resolve via typing/specializes.
+    let mut unresolved_seen: HashSet<String> = HashSet::new();
     for node in graph.nodes_for_uri(uri) {
-        if let Some(type_ref) = declared_type_ref(node) {
-            let has_resolved_type = !graph.outgoing_typing_or_specializes_targets(node).is_empty();
-            if !has_resolved_type {
-                diagnostics.push(diag(
-                    diagnostic_range(graph, node, None),
-                    DiagnosticSeverity::WARNING,
-                    "semantic",
-                    "unresolved_type_reference",
-                    format!(
-                        "Type reference '{}' for '{}' could not be resolved in the semantic graph.",
-                        type_ref, node.name
-                    ),
-                ));
-            }
+        if is_synthetic(node) {
+            continue;
         }
+        let Some(type_ref) = declared_type_ref(node) else {
+            continue;
+        };
+        let normalized_type_ref = normalize_declared_type_ref(type_ref);
+        if is_builtin_type_ref(&normalized_type_ref) {
+            continue;
+        }
+        let has_resolved_type = !graph.outgoing_typing_or_specializes_targets(node).is_empty();
+        if has_resolved_type {
+            continue;
+        }
+        let Some(range) = unresolved_type_diagnostic_range(node) else {
+            continue;
+        };
+        let key = format!(
+            "{}|{}|{}:{}:{}:{}:{}",
+            node.id.qualified_name,
+            normalized_type_ref,
+            range.start.line,
+            range.start.character,
+            range.end.line,
+            range.end.character,
+            node.name
+        );
+        if !unresolved_seen.insert(key) {
+            continue;
+        }
+        diagnostics.push(diag(
+            range,
+            DiagnosticSeverity::WARNING,
+            "semantic",
+            "unresolved_type_reference",
+            format!(
+                "Type reference '{}' for '{}' could not be resolved in the semantic graph.",
+                type_ref, node.name
+            ),
+        ));
     }
 
     // 6) Redefines consistency, when the parser/graph captures a `redefines` attribute.
@@ -346,6 +372,26 @@ fn parse_port_type(s: &str) -> (String, bool) {
         (false, t)
     };
     (base.to_string(), conj)
+}
+
+fn normalize_declared_type_ref(type_ref: &str) -> String {
+    type_ref
+        .trim()
+        .strip_prefix('~')
+        .map(str::trim)
+        .unwrap_or(type_ref.trim())
+        .to_string()
+}
+
+fn is_builtin_type_ref(type_ref: &str) -> bool {
+    matches!(type_ref, "String")
+}
+
+fn unresolved_type_diagnostic_range(node: &SemanticNode) -> Option<Range> {
+    if !is_unknown_range(node.range) {
+        return Some(node.range);
+    }
+    None
 }
 
 fn declared_type_ref(node: &SemanticNode) -> Option<&str> {
