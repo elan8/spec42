@@ -28,6 +28,17 @@ type IbdLayoutResult = {
     connectorSectionsById: EdgeSectionsMap;
     bounds: NodeRect;
 };
+type RouteFrameDiagnostics = {
+    rootErr: number;
+    parentErr: number;
+    rootFinalScore: number;
+    parentFinalScore: number;
+    rootPoints: { x: number; y: number }[];
+    parentPoints: { x: number; y: number }[];
+    translatedRootPoints?: { x: number; y: number }[];
+    translatedRootErr?: number;
+    translatedRootFinalScore?: number;
+};
 
 function selectIbdViewData(data: any): { parts: any[]; ports: any[]; connectors: any[] } {
     return {
@@ -72,6 +83,7 @@ function collectElkEdgesWithOffsets(
 export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string }, data: any): Promise<void> {
     const { width, height, svg, g, layoutDirection, postMessage, onStartInlineEdit, renderPlaceholder, clearVisualHighlights } = ctx;
     const LOG_ENDPOINT_DRIFT = false;
+    const LOG_ROUTE_FRAME_SELECTION = true;
     const ENDPOINT_DRIFT_WARN_PX = 1.25;
 
     if (!data || !data.parts || data.parts.length === 0) {
@@ -445,17 +457,17 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             const id = partToElkId(part);
             const h = partHeights.get(part.name) || 80;
             const w = partWidths.get(part.name) || partWidth;
+            const { leftPorts, rightPorts } = getPortLayoutForPart(part);
+            const buildElkPort = (port: any, side: 'WEST' | 'EAST', order: number) => ({
+                id: elkPortIdFor(part, port),
+                width: 10,
+                height: 10,
+                layoutOptions: {
+                    'org.eclipse.elk.port.side': side,
+                    'org.eclipse.elk.port.index': String(order),
+                }
+            });
             if (node.children.length === 0) {
-                const { leftPorts, rightPorts } = getPortLayoutForPart(part);
-                const buildElkPort = (port: any, side: 'WEST' | 'EAST', order: number) => ({
-                    id: elkPortIdFor(part, port),
-                    width: 10,
-                    height: 10,
-                    layoutOptions: {
-                        'org.eclipse.elk.port.side': side,
-                        'org.eclipse.elk.port.index': String(order),
-                    }
-                });
                 return {
                     id,
                     width: w,
@@ -480,10 +492,16 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 id,
                 width: minW,
                 height: minH,
+                ports: [
+                    ...leftPorts.map((port: any, index: number) => buildElkPort(port, 'WEST', index)),
+                    ...rightPorts.map((port: any, index: number) => buildElkPort(port, 'EAST', index)),
+                ],
                 children: childNodes,
                 layoutOptions: {
                     // Reserve room for the rendered container header strip.
                     'elk.padding': `[top=${containerTopInset},left=24,bottom=24,right=24]`,
+                    'org.eclipse.elk.portConstraints': 'FIXED_ORDER',
+                    'org.eclipse.elk.portAlignment.default': 'CENTER',
                 }
             };
         };
@@ -492,7 +510,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         connectors.forEach((conn: any, idx: number) => {
             const srcPart = findPartForEndpoint(conn.sourceId || conn.source);
             const tgtPart = findPartForEndpoint(conn.targetId || conn.target);
-            if (!srcPart || !tgtPart || !leafPartIds.has(partToElkId(srcPart)) || !leafPartIds.has(partToElkId(tgtPart))) return;
+            if (!srcPart || !tgtPart) return;
             const srcPort = resolvePortForEndpointInData(srcPart, conn.sourceId || conn.source);
             const tgtPort = resolvePortForEndpointInData(tgtPart, conn.targetId || conn.target);
             if (!srcPort || !tgtPort) return;
@@ -1064,38 +1082,39 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
     /** Build route points from ELK edge sections, handling either ROOT or parent-relative coordinates. */
     const pointsFromElkSectionsWithPorts = (
         sections: Array<{ startPoint?: { x: number; y: number }; endPoint?: { x: number; y: number }; bendPoints?: Array<{ x: number; y: number }> }> | undefined,
-        edgeContainerOffset: { x: number; y: number },
-        srcX: number, srcY: number, tgtX: number, tgtY: number
-    ): { points: { x: number; y: number }[]; frame: 'root' | 'parent' } | null => {
+        edgeParentOffset: { x: number; y: number },
+        srcX: number, srcY: number, tgtX: number, tgtY: number,
+        sourceIsLeft: boolean,
+        targetIsLeft: boolean,
+        routingObstacles: Rect[],
+        endpointObstacles: Rect[],
+    ): { points: { x: number; y: number }[]; frame: 'parent'; diagnostics: RouteFrameDiagnostics } | null => {
         if (!sections || sections.length === 0) return null;
-        const buildRoute = (useParentOffset: boolean) => {
+        const parentFrame = (() => {
             const routePoints: { x: number; y: number }[] = [];
             for (const sec of sections) {
                 if (sec?.startPoint) {
                     routePoints.push({
-                        x: sec.startPoint.x + (useParentOffset ? edgeContainerOffset.x : 0) + padding,
-                        y: sec.startPoint.y + (useParentOffset ? edgeContainerOffset.y : 0) + padding,
+                        x: sec.startPoint.x + edgeParentOffset.x + padding,
+                        y: sec.startPoint.y + edgeParentOffset.y + padding,
                     });
                 }
                 for (const bend of sec?.bendPoints || []) {
                     routePoints.push({
-                        x: bend.x + (useParentOffset ? edgeContainerOffset.x : 0) + padding,
-                        y: bend.y + (useParentOffset ? edgeContainerOffset.y : 0) + padding,
+                        x: bend.x + edgeParentOffset.x + padding,
+                        y: bend.y + edgeParentOffset.y + padding,
                     });
                 }
                 if (sec?.endPoint) {
                     routePoints.push({
-                        x: sec.endPoint.x + (useParentOffset ? edgeContainerOffset.x : 0) + padding,
-                        y: sec.endPoint.y + (useParentOffset ? edgeContainerOffset.y : 0) + padding,
+                        x: sec.endPoint.x + edgeParentOffset.x + padding,
+                        y: sec.endPoint.y + edgeParentOffset.y + padding,
                     });
                 }
             }
             return pruneRoutePoints(routePoints);
-        };
-
-        const rootFrame = buildRoute(false);
-        const parentFrame = buildRoute(true);
-        if (rootFrame.length === 0 && parentFrame.length === 0) return null;
+        })();
+        if (parentFrame.length === 0) return null;
 
         const endpointError = (pts: { x: number; y: number }[]) => {
             if (pts.length < 2) return Number.POSITIVE_INFINITY;
@@ -1105,13 +1124,43 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             const tgtDist = Math.hypot(end.x - tgtX, end.y - tgtY);
             return srcDist + tgtDist;
         };
-
-        const rootErr = endpointError(rootFrame);
         const parentErr = endpointError(parentFrame);
-        if (parentErr + 1e-6 < rootErr) {
-            return { points: parentFrame, frame: 'parent' };
-        }
-        return { points: rootFrame, frame: 'root' };
+
+        const outwardPenalty = (pts: { x: number; y: number }[]) => {
+            if (pts.length < 2) return Number.POSITIVE_INFINITY;
+            const first = pts[0];
+            const second = pts[1];
+            const penultimate = pts[pts.length - 2];
+            const last = pts[pts.length - 1];
+            const sourceOutward = sourceIsLeft ? (second.x <= first.x) : (second.x >= first.x);
+            const targetOutward = targetIsLeft ? (penultimate.x <= last.x) : (penultimate.x >= last.x);
+            let penalty = 0;
+            if (!sourceOutward) penalty += 5_000;
+            if (!targetOutward) penalty += 5_000;
+            return penalty;
+        };
+
+        const parentScore = parentErr + outwardPenalty(parentFrame);
+        const scoreWithObstacles = (baseScore: number, pts: { x: number; y: number }[]) => {
+            const allObstacles = [...routingObstacles, ...endpointObstacles];
+            const crossesNonEndpoints = pathIntersectsObstacles(pts, routingObstacles, OBSTACLE_MARGIN);
+            const crossesBodies = pathIntersectsObstaclesIgnoringEndpointStubs(pts, allObstacles, OBSTACLE_MARGIN);
+            const obstaclePenalty = crossesNonEndpoints || crossesBodies ? 1_000_000 : 0;
+            return baseScore + obstaclePenalty;
+        };
+        const parentFinalScore = scoreWithObstacles(parentScore, parentFrame);
+        const diagnostics: RouteFrameDiagnostics = {
+            rootErr: parentErr,
+            parentErr,
+            rootFinalScore: parentFinalScore,
+            parentFinalScore,
+            rootPoints: parentFrame,
+            parentPoints: parentFrame,
+            translatedRootPoints: parentFrame,
+            translatedRootErr: parentErr,
+            translatedRootFinalScore: parentFinalScore,
+        };
+        return { points: parentFrame, frame: 'parent', diagnostics };
     };
 
     const preserveElkRoute = (
@@ -1346,11 +1395,6 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
 
         const allElkEdges = new Map<string, { edge: any; offset: { x: number; y: number } }>();
         if (elkLaidOut) collectElkEdgesWithOffsets(elkLaidOut, { x: 0, y: 0 }, allElkEdges);
-        const rootChildOffset = {
-            x: elkLaidOut?.children?.[0]?.x ?? 0,
-            y: elkLaidOut?.children?.[0]?.y ?? 0,
-        };
-
         /** Obstacles used for route refinement; include leaf nodes and container headers. */
         const getRoutingObstaclesExcluding = (srcPartName: string, tgtPartName: string): Rect[] => {
             const rects: Rect[] = [];
@@ -1376,6 +1420,49 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 }
             });
             return rects;
+        };
+        const parentKeyForPart = (part: any): string => normalizeEndpointId(part?.containerId || '');
+        const partKeysForLookup = (part: any): string[] => {
+            const keys = new Set<string>();
+            const push = (v: string | null | undefined) => {
+                const n = normalizeEndpointId(v || '');
+                if (n) keys.add(n);
+            };
+            push(part?.qualifiedName);
+            push(part?.name);
+            push(part?.id);
+            return Array.from(keys);
+        };
+        const partByKey = new Map<string, any>();
+        parts.forEach((part: any) => {
+            partKeysForLookup(part).forEach((k) => partByKey.set(k, part));
+        });
+        const getPartParent = (part: any): any | null => {
+            const parentKey = parentKeyForPart(part);
+            if (!parentKey) return null;
+            return partByKey.get(parentKey) ?? null;
+        };
+        const getAncestorChain = (part: any): any[] => {
+            const chain: any[] = [];
+            let current: any | null = part;
+            let guard = 0;
+            while (current && guard < 128) {
+                chain.push(current);
+                current = getPartParent(current);
+                guard += 1;
+            }
+            return chain;
+        };
+        const getLcaPart = (a: any, b: any): any | null => {
+            const aChain = getAncestorChain(a);
+            const bSet = new Set<string>(
+                getAncestorChain(b).map((part) => normalizeEndpointId(part?.qualifiedName || part?.name || part?.id || ''))
+            );
+            for (const candidate of aChain) {
+                const key = normalizeEndpointId(candidate?.qualifiedName || candidate?.name || candidate?.id || '');
+                if (key && bSet.has(key)) return candidate;
+            }
+            return null;
         };
 
         const connectorOffsets = new Map<number, { offset: number; groupIndex: number; groupCount: number }>();
@@ -1537,12 +1624,34 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             let pathD: string;
             let labelX: number, labelY: number;
             const connectorId = getConnectorId(connector, connIdx);
+            const routeObstacles = getRoutingObstaclesExcluding(srcPos.part.name, tgtPos.part.name);
+            const endpointObstacles: Rect[] = [
+                {
+                    x: srcPos.x,
+                    y: srcPos.y,
+                    width: srcPos.width ?? partWidth,
+                    height: srcPos.height || 80,
+                },
+                {
+                    x: tgtPos.x,
+                    y: tgtPos.y,
+                    width: tgtPos.width ?? partWidth,
+                    height: tgtPos.height || 80,
+                },
+            ];
             const elkEdgeRecord = allElkEdges.get(connectorId);
             const elkEdge = elkEdgeRecord?.edge;
-            const effectiveEdgeOffset = (elkEdgeRecord?.offset?.x ?? 0) === 0 && (elkEdgeRecord?.offset?.y ?? 0) === 0
-                ? rootChildOffset
-                : (elkEdgeRecord?.offset ?? { x: 0, y: 0 });
-            const elkSections = ibdLayoutResult.connectorSectionsById.get(connectorId) || elkEdge?.sections;
+            const edgeOwnerOffset = elkEdgeRecord?.offset ?? { x: 0, y: 0 };
+            const lcaPart = getLcaPart(srcPos.part, tgtPos.part);
+            const lcaPos = lcaPart ? partPositions.get(partToElkId(lcaPart)) : null;
+            const lcaOffset = lcaPos
+                ? { x: (lcaPos.x - padding), y: (lcaPos.y - padding) }
+                : { x: 0, y: 0 };
+            const effectiveEdgeOffset =
+                (Math.abs(edgeOwnerOffset.x) > 1e-6 || Math.abs(edgeOwnerOffset.y) > 1e-6)
+                    ? edgeOwnerOffset
+                    : lcaOffset;
+            const elkSections = elkEdge?.sections || ibdLayoutResult.connectorSectionsById.get(connectorId);
             const authoritativeRouteResult = elkSections && srcPortPos && tgtPortPos
                 ? pointsFromElkSectionsWithPorts(
                     elkSections,
@@ -1550,12 +1659,58 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                     srcX,
                     srcY,
                     tgtX,
-                    tgtY
+                    tgtY,
+                    !!srcPortPos.isLeft,
+                    !!tgtPortPos.isLeft,
+                    routeObstacles,
+                    endpointObstacles,
                 )
                 : null;
             const authoritativeRoute = authoritativeRouteResult?.points ?? null;
+            if (LOG_ROUTE_FRAME_SELECTION && authoritativeRouteResult && srcPortPos && tgtPortPos) {
+                postMessage({
+                    command: 'webviewLog',
+                    level: 'info',
+                    args: [
+                        '[IBD route frame selection]',
+                        {
+                            connectorId,
+                            source: srcEndpointId,
+                            target: tgtEndpointId,
+                            selectedFrame: authoritativeRouteResult.frame,
+                            edgeContainerOffset: effectiveEdgeOffset,
+                            edgeOwnerOffset,
+                            lcaOffset,
+                            sourceAnchor: { x: srcPortPos.x, y: srcPortPos.y, isLeft: srcPortPos.isLeft },
+                            targetAnchor: { x: tgtPortPos.x, y: tgtPortPos.y, isLeft: tgtPortPos.isLeft },
+                            scores: {
+                                rootErr: authoritativeRouteResult.diagnostics.rootErr,
+                                parentErr: authoritativeRouteResult.diagnostics.parentErr,
+                                rootFinalScore: authoritativeRouteResult.diagnostics.rootFinalScore,
+                                parentFinalScore: authoritativeRouteResult.diagnostics.parentFinalScore,
+                                translatedRootErr: authoritativeRouteResult.diagnostics.translatedRootErr,
+                                translatedRootFinalScore: authoritativeRouteResult.diagnostics.translatedRootFinalScore,
+                            },
+                            selectedPoints: authoritativeRouteResult.points.slice(0, 6),
+                            rootPoints: authoritativeRouteResult.diagnostics.rootPoints.slice(0, 6),
+                            parentPoints: authoritativeRouteResult.diagnostics.parentPoints.slice(0, 6),
+                            translatedRootPoints: authoritativeRouteResult.diagnostics.translatedRootPoints?.slice(0, 6),
+                        },
+                    ],
+                });
+            }
 
-            if (!authoritativeRoute || authoritativeRoute.length < 2) {
+            const routeEndpointDrift = (points: { x: number; y: number }[] | null) => {
+                if (!points || points.length < 2) {
+                    return Number.POSITIVE_INFINITY;
+                }
+                const start = points[0];
+                const end = points[points.length - 1];
+                return Math.hypot(start.x - srcX, start.y - srcY) + Math.hypot(end.x - tgtX, end.y - tgtY);
+            };
+            const authoritativeDrift = routeEndpointDrift(authoritativeRoute);
+            const AUTHORITATIVE_ROUTE_DRIFT_MAX = 64;
+            if (!authoritativeRoute || authoritativeRoute.length < 2 || authoritativeDrift > AUTHORITATIVE_ROUTE_DRIFT_MAX) {
                 degradedReasons.add(`ELK did not return a usable route for connector ${connectorId}.`);
                 pathPoints = minimalFallbackRoute(srcX, srcY, tgtX, tgtY);
             } else {
@@ -1568,25 +1723,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 sourcePart: srcPos.part.name,
                 targetPart: tgtPos.part.name,
             };
-            // Use ELK route as authoritative, with minimal fallback only when missing.
-            if (pathPoints.length >= 2 && srcPortPos && tgtPortPos) {
-                const start = pathPoints[0];
-                const end = pathPoints[pathPoints.length - 1];
-                const srcDx = start.x - srcPortPos.x;
-                const srcDy = start.y - srcPortPos.y;
-                const tgtDx = end.x - tgtPortPos.x;
-                const tgtDy = end.y - tgtPortPos.y;
-                const deltaAligned = Math.abs(srcDx - tgtDx) < 2 && Math.abs(srcDy - tgtDy) < 2;
-                const driftLarge = Math.hypot(srcDx, srcDy) > 20 || Math.hypot(tgtDx, tgtDy) > 20;
-                if (deltaAligned && driftLarge) {
-                    const shiftX = ((srcPortPos.x - start.x) + (tgtPortPos.x - end.x)) / 2;
-                    const shiftY = ((srcPortPos.y - start.y) + (tgtPortPos.y - end.y)) / 2;
-                    pathPoints = pathPoints.map((point) => ({
-                        x: point.x + shiftX,
-                        y: point.y + shiftY,
-                    }));
-                }
-            }
+            // Keep ELK route authoritative; no post-normalization.
             if (LOG_ENDPOINT_DRIFT && pathPoints.length >= 2 && srcPortPos && tgtPortPos) {
                 const start = pathPoints[0];
                 const end = pathPoints[pathPoints.length - 1];
@@ -1993,6 +2130,23 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 partG.select('rect.graph-node-background').style('stroke', '#FFD700').style('stroke-width', '4px');
                 const statusEl = document.getElementById('status-text');
                 if (statusEl) statusEl.textContent = part.name + ' [' + (part.type || 'part') + ']';
+            });
+
+            const partPorts = getPortsForPartRef(part);
+            const portSize = 10;
+            partPorts.forEach((p: any) => {
+                const anchor = getRenderedPortAnchor(pos, p);
+                if (!anchor) return;
+                const portColor = PORT_OUTLINE_GREEN;
+                partG.append('rect')
+                    .attr('class', 'port-icon')
+                    .attr('x', anchor.x - portSize / 2)
+                    .attr('y', anchor.y - portSize / 2)
+                    .attr('width', portSize)
+                    .attr('height', portSize)
+                    .style('fill', 'none')
+                    .style('stroke', portColor)
+                    .style('stroke-width', '1.8px');
             });
             return;
         }

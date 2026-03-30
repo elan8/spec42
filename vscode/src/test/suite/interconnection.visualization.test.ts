@@ -12,6 +12,7 @@ import {
 } from "./testUtils";
 
 const INTERCONNECTION_FIXTURE = "ConnectedBlocks.sysml";
+const CONTAINER_PORTS_FIXTURE = "ContainerPorts.sysml";
 
 type ParsedRoute = {
     points: Array<{ x: number; y: number }>;
@@ -294,5 +295,70 @@ describe("Interconnection Visualization", () => {
 
         const multiBendRoutes = routes.filter((route) => route.points.length >= 4);
         assert.ok(multiBendRoutes.length >= 4, `expected several non-trivial routed connectors, got ${multiBendRoutes.length}`);
+    });
+
+    it("routes container-port connector outside nested child nodes", async function () {
+        this.timeout(60000);
+
+        const workspaceFolder = getTestWorkspaceFolder();
+        const doc = await vscode.workspace.openTextDocument(getFixturePath(CONTAINER_PORTS_FIXTURE));
+        await vscode.window.showTextDocument(doc);
+        await waitForLanguageServerReady(doc);
+
+        await vscode.commands.executeCommand("sysml.showVisualizer");
+        const panel = await waitFor(
+            "visualization panel",
+            async () => VisualizationPanel.currentPanel,
+            (value) => Boolean(value),
+            20000,
+            300
+        );
+
+        await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
+        await new Promise((r) => setTimeout(r, 1800));
+        const exportUri = vscode.Uri.joinPath(
+            workspaceFolder.uri,
+            "test-output",
+            "diagrams",
+            "interconnection-view.svg"
+        );
+        try {
+            await vscode.workspace.fs.delete(exportUri, { useTrash: false });
+        } catch {
+            // Ignore if no previous export exists.
+        }
+        panel.getWebview()?.postMessage({ command: "exportDiagramForTest" });
+        const { svgText } = await waitForDiagramExport(
+            workspaceFolder.uri,
+            "interconnection-view",
+            (text) => text.includes("ibd-connector") && text.includes("motherboard"),
+            30000
+        );
+
+        assert.ok(svgText.includes("hdmi"), "expected hdmi port label in exported IBD");
+        assert.ok(svgText.includes("power"), "expected power port label in exported IBD");
+
+        const routes = parseConnectorRoutes(svgText);
+        const hdmiRoute = routes.find((route) =>
+            route.source.endsWith(".laptop.hdmi") && route.target.endsWith(".monitor.hdmi")
+        ) || routes.find((route) =>
+            route.source.endsWith(".monitor.hdmi") && route.target.endsWith(".laptop.hdmi")
+        );
+        assert.ok(hdmiRoute, "expected laptop.hdmi <-> monitor.hdmi connector route");
+
+        const bounds = parsePartBounds(svgText);
+        const motherboard = bounds.find((bound) => bound.name.toLowerCase() === "motherboard");
+        assert.ok(motherboard, "expected motherboard node bounds in exported IBD");
+
+        if (hdmiRoute && motherboard) {
+            for (let i = 1; i < hdmiRoute.points.length - 2; i++) {
+                const current = hdmiRoute.points[i];
+                const next = hdmiRoute.points[i + 1];
+                assert.ok(
+                    !segmentIntersectsRect(current, next, motherboard),
+                    "hdmi connector route should not pass through motherboard"
+                );
+            }
+        }
     });
 });

@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { getOutputChannel, isVerboseLoggingEnabled } from '../logger';
+import { getOutputChannel } from '../logger';
 import { LspModelProvider, toVscodeRange } from '../providers/lspModelProvider';
 import type { SysMLElement } from '../types/sysmlTypes';
 
@@ -25,17 +25,15 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
     return (message: WebviewMessage) => {
         switch (message.command) {
             case 'webviewLog':
-                if (message.level === 'error' || message.level === 'warn' || isVerboseLoggingEnabled()) {
-                    // Also mirror to console so extension tests capture it.
-                    // The Output channel is not always visible in test logs.
-                    try {
-                        // eslint-disable-next-line no-console
-                        console.log('[SysML Visualizer][WebviewLog]', message.level, ...(message.args ?? []));
-                    } catch {
-                        // ignore
-                    }
-                    handlers.logWebviewMessage(message.level, message.args ?? []);
+                // During active visualizer debugging we always surface webview logs,
+                // including info-level messages, to avoid missing key routing diagnostics.
+                try {
+                    // eslint-disable-next-line no-console
+                    console.log('[SysML Visualizer][WebviewLog]', message.level, ...(message.args ?? []));
+                } catch {
+                    // ignore
                 }
+                handlers.logWebviewMessage(message.level, message.args ?? []);
                 break;
             case 'jumpToElement':
                 handlers.jumpToElement(message.elementName, message.skipCentering, message.parentContext, message.elementQualifiedName);

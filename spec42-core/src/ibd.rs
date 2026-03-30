@@ -176,6 +176,16 @@ fn endpoint_matches_root(endpoint: &str, root_prefix: &str) -> bool {
     endpoint == root_prefix || endpoint.starts_with(&format!("{root_prefix}."))
 }
 
+fn endpoint_matches_any_prefix(endpoint: &str, prefixes: &[String]) -> bool {
+    prefixes
+        .iter()
+        .any(|prefix| endpoint_matches_root(endpoint, prefix))
+}
+
+fn endpoint_matches_part(endpoint: &str, part_qn_dot: &str) -> bool {
+    endpoint == part_qn_dot || endpoint.starts_with(&format!("{part_qn_dot}."))
+}
+
 fn endpoint_under_definition_prefix(endpoint: &str, def_prefix: &str) -> bool {
     endpoint == def_prefix || endpoint.starts_with(&format!("{def_prefix}::"))
 }
@@ -587,26 +597,61 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         .map(|(p, _, _, _)| p.name.clone())
         .collect();
     let default_root = root_candidates.first().cloned();
+    let package_instance_prefixes: Vec<String> = top_level_parts
+        .iter()
+        .filter(|p| is_part_instance_kind(&p.element_type))
+        .map(|p| p.qualified_name.clone())
+        .collect();
     let mut root_views: std::collections::HashMap<String, IbdRootViewDto> =
         std::collections::HashMap::new();
     for (p, _, _, _) in &roots_with_metrics {
         let root_prefix = p.qualified_name.as_str();
+        let focused_connectors: Vec<IbdConnectorDto> = connectors
+            .iter()
+            .filter(|connector| {
+                if !package_instance_prefixes.is_empty() {
+                    endpoint_matches_any_prefix(&connector.source_id, &package_instance_prefixes)
+                        && endpoint_matches_any_prefix(
+                            &connector.target_id,
+                            &package_instance_prefixes,
+                        )
+                } else {
+                    endpoint_matches_root(&connector.source_id, root_prefix)
+                        || endpoint_matches_root(&connector.target_id, root_prefix)
+                }
+            })
+            .cloned()
+            .collect();
+        let mut focused_part_ids: std::collections::HashSet<String> = parts
+            .iter()
+            .filter(|part| {
+                if !package_instance_prefixes.is_empty() {
+                    endpoint_matches_any_prefix(&part.qualified_name, &package_instance_prefixes)
+                } else {
+                    endpoint_matches_root(&part.qualified_name, root_prefix)
+                }
+            })
+            .map(|part| part.qualified_name.clone())
+            .collect();
+        for connector in &focused_connectors {
+            for endpoint in [&connector.source_id, &connector.target_id] {
+                if let Some(part) = parts
+                    .iter()
+                    .filter(|part| endpoint_matches_part(endpoint, &part.qualified_name))
+                    .max_by_key(|part| part.qualified_name.len())
+                {
+                    focused_part_ids.insert(part.qualified_name.clone());
+                }
+            }
+        }
         let focused_parts: Vec<IbdPartDto> = parts
             .iter()
-            .filter(|part| endpoint_matches_root(&part.qualified_name, root_prefix))
+            .filter(|part| focused_part_ids.contains(&part.qualified_name))
             .cloned()
             .collect();
         let focused_ports: Vec<IbdPortDto> = ports
             .iter()
-            .filter(|port| endpoint_matches_root(&port.parent_id, root_prefix))
-            .cloned()
-            .collect();
-        let focused_connectors: Vec<IbdConnectorDto> = connectors
-            .iter()
-            .filter(|connector| {
-                endpoint_matches_root(&connector.source_id, root_prefix)
-                    && endpoint_matches_root(&connector.target_id, root_prefix)
-            })
+            .filter(|port| focused_part_ids.contains(&port.parent_id))
             .cloned()
             .collect();
         root_views.insert(
