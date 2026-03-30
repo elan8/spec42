@@ -99,6 +99,117 @@ function computeOrthogonalPath(
     return { pathD, labelX, labelY };
 }
 
+type Side = 'NORTH' | 'SOUTH' | 'EAST' | 'WEST';
+
+function segmentIntersectsRect(
+    a: { x: number; y: number },
+    b: { x: number; y: number },
+    rect: { x: number; y: number; width: number; height: number }
+): boolean {
+    const rx1 = rect.x;
+    const ry1 = rect.y;
+    const rx2 = rect.x + rect.width;
+    const ry2 = rect.y + rect.height;
+    if (a.x === b.x) {
+        const x = a.x;
+        if (x <= rx1 || x >= rx2) return false;
+        const sy1 = Math.min(a.y, b.y);
+        const sy2 = Math.max(a.y, b.y);
+        return sy2 > ry1 && sy1 < ry2;
+    }
+    if (a.y === b.y) {
+        const y = a.y;
+        if (y <= ry1 || y >= ry2) return false;
+        const sx1 = Math.min(a.x, b.x);
+        const sx2 = Math.max(a.x, b.x);
+        return sx2 > rx1 && sx1 < rx2;
+    }
+    return false;
+}
+
+function scorePathAgainstObstacles(
+    points: Array<{ x: number; y: number }>,
+    obstacles: Array<{ x: number; y: number; width: number; height: number }>
+): number {
+    let score = 0;
+    for (let i = 0; i < points.length - 1; i++) {
+        for (const rect of obstacles) {
+            if (segmentIntersectsRect(points[i], points[i + 1], rect)) score += 1;
+        }
+    }
+    return score;
+}
+
+function pointsToPath(points: Array<{ x: number; y: number }>): string {
+    if (points.length === 0) return '';
+    const parts = ['M' + points[0].x + ',' + points[0].y];
+    for (let i = 1; i < points.length; i++) {
+        parts.push('L' + points[i].x + ',' + points[i].y);
+    }
+    return parts.join(' ');
+}
+
+function buildPortPoint(
+    rect: { x: number; y: number; width: number; height: number },
+    side: Side
+): { x: number; y: number } {
+    if (side === 'NORTH') return { x: rect.x + rect.width / 2, y: rect.y };
+    if (side === 'SOUTH') return { x: rect.x + rect.width / 2, y: rect.y + rect.height };
+    if (side === 'EAST') return { x: rect.x + rect.width, y: rect.y + rect.height / 2 };
+    return { x: rect.x, y: rect.y + rect.height / 2 };
+}
+
+function extendFromPort(p: { x: number; y: number }, side: Side, amount: number): { x: number; y: number } {
+    if (side === 'NORTH') return { x: p.x, y: p.y - amount };
+    if (side === 'SOUTH') return { x: p.x, y: p.y + amount };
+    if (side === 'EAST') return { x: p.x + amount, y: p.y };
+    return { x: p.x - amount, y: p.y };
+}
+
+function chooseSide(from: { x: number; y: number }, to: { x: number; y: number }): Side {
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    if (Math.abs(dx) >= Math.abs(dy)) {
+        return dx >= 0 ? 'EAST' : 'WEST';
+    }
+    return dy >= 0 ? 'SOUTH' : 'NORTH';
+}
+
+function routeOrthogonalAvoiding(
+    srcRect: { x: number; y: number; width: number; height: number },
+    tgtRect: { x: number; y: number; width: number; height: number },
+    obstacles: Array<{ x: number; y: number; width: number; height: number }>
+): string {
+    const srcCenter = { x: srcRect.x + srcRect.width / 2, y: srcRect.y + srcRect.height / 2 };
+    const tgtCenter = { x: tgtRect.x + tgtRect.width / 2, y: tgtRect.y + tgtRect.height / 2 };
+    const srcSide = chooseSide(srcCenter, tgtCenter);
+    const tgtSide = chooseSide(tgtCenter, srcCenter);
+    const stub = 24;
+    const srcPort = buildPortPoint(srcRect, srcSide);
+    const tgtPort = buildPortPoint(tgtRect, tgtSide);
+    const srcOut = extendFromPort(srcPort, srcSide, stub);
+    const tgtOut = extendFromPort(tgtPort, tgtSide, stub);
+
+    const candidates: Array<Array<{ x: number; y: number }>> = [];
+    const midpoint = { x: (srcOut.x + tgtOut.x) / 2, y: (srcOut.y + tgtOut.y) / 2 };
+    candidates.push([srcPort, srcOut, { x: tgtOut.x, y: srcOut.y }, tgtOut, tgtPort]);
+    candidates.push([srcPort, srcOut, { x: srcOut.x, y: tgtOut.y }, tgtOut, tgtPort]);
+    candidates.push([srcPort, srcOut, { x: midpoint.x, y: srcOut.y }, { x: midpoint.x, y: tgtOut.y }, tgtOut, tgtPort]);
+    candidates.push([srcPort, srcOut, { x: srcOut.x, y: midpoint.y }, { x: tgtOut.x, y: midpoint.y }, tgtOut, tgtPort]);
+
+    let best = candidates[0];
+    let bestScore = Number.MAX_SAFE_INTEGER;
+    for (const c of candidates) {
+        const score = scorePathAgainstObstacles(c, obstacles);
+        if (score < bestScore) {
+            best = c;
+            bestScore = score;
+            if (score === 0) break;
+        }
+    }
+    return pointsToPath(best);
+}
+
 /**
  * Build SVG path from ELK edge sections (startPoint, endPoint, bendPoints).
  * Returns null if sections are missing or invalid.
@@ -442,6 +553,9 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
         const srcPos = nodePositions.get(el.data.source);
         const tgtPos = nodePositions.get(el.data.target);
         if (!srcPos || !tgtPos) return;
+        const obstacles = [...nodePositions.entries()]
+            .filter(([nodeId]) => nodeId !== el.data.source && nodeId !== el.data.target)
+            .map(([, pos]) => ({ x: pos.x - 8, y: pos.y - 8, width: pos.width + 16, height: pos.height + 16 }));
 
         const relType = (el.data.relType || el.data.type || 'relationship').toLowerCase();
         const elkEdge = laidOutEdges[edgeIdx];
@@ -449,10 +563,11 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
         let pathD: string;
         if (elkEdge?.sections) {
             const elkPath = pathFromElkSections(elkEdge.sections);
-            pathD = elkPath ?? computeOrthogonalPath(0, 0, 0, 0, {
-                srcRect: { x: srcPos.x, y: srcPos.y, width: srcPos.width, height: srcPos.height },
-                tgtRect: { x: tgtPos.x, y: tgtPos.y, width: tgtPos.width, height: tgtPos.height }
-            }).pathD;
+            pathD = elkPath ?? routeOrthogonalAvoiding(
+                { x: srcPos.x, y: srcPos.y, width: srcPos.width, height: srcPos.height },
+                { x: tgtPos.x, y: tgtPos.y, width: tgtPos.width, height: tgtPos.height },
+                obstacles
+            );
         } else {
             let offset = 0;
             if (relType === 'typing') {
@@ -462,12 +577,11 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
                     offset = (rank - (group.length - 1) / 2) * 18;
                 }
             }
-            const { pathD: fallbackPath } = computeOrthogonalPath(0, 0, 0, 0, {
-                srcRect: { x: srcPos.x, y: srcPos.y, width: srcPos.width, height: srcPos.height },
-                tgtRect: { x: tgtPos.x, y: tgtPos.y, width: tgtPos.width, height: tgtPos.height },
-                offset
-            });
-            pathD = fallbackPath;
+            pathD = routeOrthogonalAvoiding(
+                { x: srcPos.x, y: srcPos.y, width: srcPos.width, height: srcPos.height },
+                { x: tgtPos.x, y: tgtPos.y, width: tgtPos.width, height: tgtPos.height },
+                obstacles
+            );
         }
 
         let strokeColor = GENERAL_NEUTRAL_EDGE;
