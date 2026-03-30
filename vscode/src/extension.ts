@@ -320,6 +320,24 @@ function updateStatusBar(context: vscode.ExtensionContext): void {
 }
 
 export function activate(context: vscode.ExtensionContext): void {
+  const startupTraceId = `startup-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const startupT0 = Date.now();
+  const logStartupPhase = (phase: string, extra?: Record<string, unknown>) => {
+    const payload = {
+      traceId: startupTraceId,
+      phase,
+      elapsedMs: Date.now() - startupT0,
+      ...(extra ?? {}),
+    };
+    log("startup phase", payload);
+    try {
+      // eslint-disable-next-line no-console
+      console.log("[SysML][startup]", JSON.stringify(payload));
+    } catch {
+      // ignore
+    }
+  };
+  logStartupPhase("activate:start");
   log("Extension activating");
   setServerHealth(context, "starting", "Preparing SysML language server.");
 
@@ -455,6 +473,7 @@ export function activate(context: vscode.ExtensionContext): void {
     },
     initializationOptions: {
       libraryPaths,
+      startupTraceId,
     },
     initializationFailedHandler: (error) => {
       const detail = error instanceof Error ? error.message : String(error ?? "unknown initialization error");
@@ -518,6 +537,7 @@ export function activate(context: vscode.ExtensionContext): void {
       crashDialogShown = false;
       setServerHealth(context, "ready", "SysML language server is ready.");
       log("Language client ready, refreshing Model Explorer");
+      logStartupPhase("languageClient:ready");
       modelExplorerProvider?.refresh();
     })
     .catch((error) => {
@@ -530,6 +550,7 @@ export function activate(context: vscode.ExtensionContext): void {
       );
     });
   log("Language client started");
+  logStartupPhase("languageClient:start");
 
   // Model Explorer (phase 3). getModel awaits whenReady so the server has received didOpen.
   const lspModelProvider = new LspModelProvider(client, clientReadyPromise);
@@ -722,6 +743,8 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   async function loadWorkspaceSysMLFiles(provider: ModelExplorerProvider): Promise<void> {
+    const workspaceIndexingStartedAt = Date.now();
+    logStartupPhase("workspaceIndexing:start");
     const folders = vscode.workspace.workspaceFolders ?? [];
     if (folders.length === 0) {
       log("loadWorkspaceSysMLFiles: no workspace folders");
@@ -859,6 +882,12 @@ export function activate(context: vscode.ExtensionContext): void {
             cancelled: false,
           });
           log("loadWorkspaceSysMLFiles: loaded model for", uniqueFiles.length, "files");
+          logStartupPhase("workspaceIndexing:end", {
+            scannedFiles: uniqueFiles.length,
+            loadedFiles,
+            truncated: limitHit,
+            durationMs: Date.now() - workspaceIndexingStartedAt,
+          });
           vscode.commands.executeCommand("setContext", "sysml.hasWorkspace", true);
           vscode.commands.executeCommand(
             "setContext",
@@ -904,6 +933,12 @@ export function activate(context: vscode.ExtensionContext): void {
             "ready",
             "No SysML/KerML files were found in the current workspace."
           );
+          logStartupPhase("workspaceIndexing:end", {
+            scannedFiles: 0,
+            loadedFiles: 0,
+            truncated: false,
+            durationMs: Date.now() - workspaceIndexingStartedAt,
+          });
         }
       }
     );

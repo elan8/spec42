@@ -16,6 +16,8 @@ pub(crate) struct ServerState {
     pub(crate) workspace_roots: Vec<Url>,
     /// Library path roots from config (e.g. SysML-v2-Release). Indexed like workspace_roots.
     pub(crate) library_paths: Vec<Url>,
+    /// Optional startup trace id passed by the extension for cross-process timing correlation.
+    pub(crate) startup_trace_id: Option<String>,
     /// One source of truth: URI -> (content, parsed). Open docs and workspace-scanned files.
     pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
     /// Workspace-wide symbol table: flat list of definable symbols, updated when index changes.

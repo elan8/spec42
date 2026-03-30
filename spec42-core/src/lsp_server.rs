@@ -59,19 +59,26 @@ struct Backend {
 #[tower_lsp::async_trait]
 impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
+        let initialize_start = Instant::now();
+        info!("startup:initialize:start");
         let roots: Vec<Url> = workspace_roots_from_initialize(&params);
         let library_paths: Vec<Url> =
             util::parse_library_paths_from_value(params.initialization_options.as_ref());
+        let startup_trace_id =
+            util::parse_startup_trace_id_from_value(params.initialization_options.as_ref());
         info!(
+            trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
+            elapsed_ms = initialize_start.elapsed().as_millis() as u64,
             workspace_roots = roots.len(),
             library_paths = library_paths.len(),
             paths = ?library_paths.iter().map(|u| u.as_str()).collect::<Vec<_>>(),
-            "initialize"
+            "startup:initialize:end"
         );
         {
             let mut state = self.state.write().await;
             state.workspace_roots = roots;
             state.library_paths = library_paths;
+            state.startup_trace_id = startup_trace_id;
         }
         Ok(InitializeResult {
             server_info: Some(ServerInfo {
@@ -88,20 +95,43 @@ impl LanguageServer for Backend {
             .await;
         let state = Arc::clone(&self.state);
         let config = Arc::clone(&self.config);
-        let (workspace_roots, library_paths) = {
+        let (workspace_roots, library_paths, startup_trace_id) = {
             let st = state.read().await;
-            (st.workspace_roots.clone(), st.library_paths.clone())
+            (
+                st.workspace_roots.clone(),
+                st.library_paths.clone(),
+                st.startup_trace_id.clone(),
+            )
         };
         let scan_roots: Vec<Url> = scan_roots(&workspace_roots, &library_paths);
         if scan_roots.is_empty() {
             return;
         }
+        info!(
+            trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
+            scan_roots = scan_roots.len(),
+            "startup:initialized:scan:start"
+        );
+        self.client
+            .log_message(
+                MessageType::INFO,
+                format!(
+                    "[startup][backend] trace_id={} phase=initialized:scan:start roots={}",
+                    startup_trace_id.as_deref().unwrap_or("-"),
+                    scan_roots.len()
+                ),
+            )
+            .await;
         let client = self.client.clone();
         tokio::spawn(async move {
+            let scan_total_start = Instant::now();
+            let discover_read_start = Instant::now();
             let (entries, summary) =
                 tokio::task::spawn_blocking(move || scan_sysml_files(scan_roots))
                     .await
                     .unwrap_or_default();
+            let discover_read_ms = discover_read_start.elapsed().as_millis() as u64;
+            let indexing_start = Instant::now();
             let mut st = state.write().await;
             let mut uris_loaded = Vec::new();
             let mut low_coverage_library_files: Vec<(String, usize, usize)> = Vec::new();
@@ -171,7 +201,12 @@ impl LanguageServer for Backend {
             for u in &uris_loaded {
                 semantic_model::add_cross_document_edges_for_uri(&mut st.semantic_graph, u);
             }
+            let index_ms = indexing_start.elapsed().as_millis() as u64;
             info!(
+                trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
+                phase_discover_read_ms = discover_read_ms,
+                phase_index_parse_ms = index_ms,
+                elapsed_ms = scan_total_start.elapsed().as_millis() as u64,
                 loaded = uris_loaded.len(),
                 candidate_files = summary.candidate_files,
                 roots = summary.roots_scanned,
@@ -179,8 +214,21 @@ impl LanguageServer for Backend {
                 read_failures = summary.read_failures,
                 uri_failures = summary.uri_failures,
                 sample = ?uris_loaded.iter().take(5).map(|u| u.as_str()).collect::<Vec<_>>(),
-                "workspace scan complete"
+                "startup:initialized:scan:end"
             );
+            client
+                .log_message(
+                    MessageType::INFO,
+                    format!(
+                        "[startup][backend] trace_id={} phase=initialized:scan:end discover_read_ms={} index_parse_ms={} total_ms={} loaded={}",
+                        startup_trace_id.as_deref().unwrap_or("-"),
+                        discover_read_ms,
+                        index_ms,
+                        scan_total_start.elapsed().as_millis() as u64,
+                        uris_loaded.len()
+                    ),
+                )
+                .await;
             if !low_coverage_library_files.is_empty() {
                 warn!(
                     files = low_coverage_library_files.len(),
@@ -219,7 +267,25 @@ impl LanguageServer for Backend {
             // Must release the write guard before publishing: `publish_workspace_diagnostics`
             // takes read locks on `state` and would deadlock if `st` were still held.
             drop(st);
+            let diagnostics_start = Instant::now();
             publish_workspace_diagnostics(&client, &state, &config, None).await;
+            info!(
+                trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
+                diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64,
+                total_scan_plus_diag_ms = scan_total_start.elapsed().as_millis() as u64,
+                "startup:initialized:diagnostics:end"
+            );
+            client
+                .log_message(
+                    MessageType::INFO,
+                    format!(
+                        "[startup][backend] trace_id={} phase=initialized:diagnostics:end diagnostics_ms={} total_scan_plus_diag_ms={}",
+                        startup_trace_id.as_deref().unwrap_or("-"),
+                        diagnostics_start.elapsed().as_millis() as u64,
+                        scan_total_start.elapsed().as_millis() as u64
+                    ),
+                )
+                .await;
         });
     }
 

@@ -175,6 +175,16 @@ function computePackageStats(root: SysMLElementDTO): {
   return stats;
 }
 
+function percentileMs(values: number[], percentile: number): number {
+  if (values.length === 0) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const index = Math.min(
+    sorted.length - 1,
+    Math.max(0, Math.ceil((percentile / 100) * sorted.length) - 1)
+  );
+  return Math.round(sorted[index]);
+}
+
 type ExplorerTreeItem = ExplorerInfoItem | FileTreeItem | ModelTreeItem;
 
 type WorkspaceLoadStatus = {
@@ -317,38 +327,69 @@ export class ModelExplorerProvider
     this.workspaceFileData.clear();
     this.uriToRootItems.clear();
     let failures = 0;
+    const perFileDurationsMs: number[] = [];
+    const loadStartedAt = Date.now();
+    const configuredConcurrency = Number.parseInt(
+      process.env.SPEC42_EXPLORER_LOAD_CONCURRENCY ?? "",
+      10
+    );
+    const maxConcurrency =
+      Number.isFinite(configuredConcurrency) && configuredConcurrency > 0
+        ? configuredConcurrency
+        : 6;
+    let cursor = 0;
 
     try {
-      for (const uri of fileUris) {
-        if (token?.isCancellationRequested) break;
-        const uriStr = uri.toString();
-        try {
-          log("loadWorkspaceModel: requesting getModel for", uriStr);
-          const result = await this.modelProvider.getModel(
-            uriStr,
-            ["graph", "stats"],
-            token
-          );
-          const elements = result.graph ? (graphToElementTree(result.graph) as SysMLElementDTO[]) : [];
-          if (elements.length) {
-            log("loadWorkspaceModel: loaded", uriStr, "->", elements.length, "elements");
-            this.workspaceFileData.set(uriStr, {
-              uri,
-              elements,
-            });
-          } else {
-            log("loadWorkspaceModel: 0 elements for", uriStr, "(graph nodes:", result.graph?.nodes?.length ?? 0, ")");
-          }
-        } catch (e) {
-          failures += 1;
-          if (e instanceof vscode.CancellationError || token?.isCancellationRequested) {
-            log("loadWorkspaceModel: cancelled while loading", uriStr);
-            break;
-          }
-          logError(`loadWorkspaceModel: skip file (failed): ${uriStr}`, e);
-        }
-      }
+      const workers = Array.from(
+        { length: Math.min(maxConcurrency, Math.max(fileUris.length, 1)) },
+        () =>
+          (async () => {
+            while (!token?.isCancellationRequested) {
+              const index = cursor++;
+              if (index >= fileUris.length) {
+                break;
+              }
+              const uri = fileUris[index];
+              const uriStr = uri.toString();
+              const fileStartMs = Date.now();
+              try {
+                log("loadWorkspaceModel: requesting getModel for", uriStr);
+                const result = await this.modelProvider.getModel(
+                  uriStr,
+                  ["graph", "stats"],
+                  token
+                );
+                const elements = result.graph ? (graphToElementTree(result.graph) as SysMLElementDTO[]) : [];
+                if (elements.length) {
+                  log("loadWorkspaceModel: loaded", uriStr, "->", elements.length, "elements");
+                  this.workspaceFileData.set(uriStr, {
+                    uri,
+                    elements,
+                  });
+                } else {
+                  log("loadWorkspaceModel: 0 elements for", uriStr, "(graph nodes:", result.graph?.nodes?.length ?? 0, ")");
+                }
+              } catch (e) {
+                failures += 1;
+                if (e instanceof vscode.CancellationError || token?.isCancellationRequested) {
+                  log("loadWorkspaceModel: cancelled while loading", uriStr);
+                  break;
+                }
+                logError(`loadWorkspaceModel: skip file (failed): ${uriStr}`, e);
+              } finally {
+                perFileDurationsMs.push(Date.now() - fileStartMs);
+              }
+            }
+          })()
+      );
+      await Promise.all(workers);
     } finally {
+      const totalMs = Date.now() - loadStartedAt;
+      const avgMs =
+        perFileDurationsMs.length > 0
+          ? Math.round(perFileDurationsMs.reduce((acc, value) => acc + value, 0) / perFileDurationsMs.length)
+          : 0;
+      const p95Ms = percentileMs(perFileDurationsMs, 95);
       this.workspaceLoadStatus = {
         ...this.workspaceLoadStatus,
         state: token?.isCancellationRequested
@@ -358,6 +399,23 @@ export class ModelExplorerProvider
         failures,
       };
       log("loadWorkspaceModel: done,", this.workspaceFileData.size, "files loaded");
+      try {
+        // eslint-disable-next-line no-console
+        console.log(
+          `[SysML][startup] ${JSON.stringify({
+            phase: "explorer:loadWorkspaceModel",
+            fileCount: fileUris.length,
+            loadedFiles: this.workspaceFileData.size,
+            failures,
+            totalMs,
+            perFileAvgMs: avgMs,
+            perFileP95Ms: p95Ms,
+            concurrency: Math.min(maxConcurrency, Math.max(fileUris.length, 1)),
+          })}`
+        );
+      } catch {
+        // ignore
+      }
       this._onDidChangeTreeData.fire();
     }
   }

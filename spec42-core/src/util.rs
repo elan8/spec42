@@ -209,6 +209,15 @@ pub fn parse_library_paths_from_value(value: Option<&serde_json::Value>) -> Vec<
         .unwrap_or_default()
 }
 
+pub fn parse_startup_trace_id_from_value(value: Option<&serde_json::Value>) -> Option<String> {
+    value
+        .and_then(|opts| opts.get("startupTraceId"))
+        .and_then(|v| v.as_str())
+        .map(str::trim)
+        .filter(|v| !v.is_empty())
+        .map(ToOwned::to_owned)
+}
+
 /// Builds Markdown for symbol hover: title (kind + name), code block with signature or description, container, optional location.
 pub fn symbol_hover_markdown(entry: &SymbolEntry, show_location: bool) -> String {
     let kind = entry.detail.as_deref().unwrap_or("symbol");
