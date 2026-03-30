@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-03-30
+
+### Added
+
+- **Requirements relationship visibility controls** - Added `subject` relationship support in the semantic graph and General View, plus a General View toggle to show/hide requirement-related nodes and edges (`subject`, `satisfy`, `verify`) with default ON behavior.
+- **Workspace visualization coverage** - Added/expanded integration coverage for multi-file workspace visualization flows and all-package graph expectations.
+- **Production troubleshooting switch** - Added `spec42.logging.verbose` so production installs stay quieter by default while enabling deeper runtime logs on demand.
+
+### Changed
+
+- **spec42-core modularization (technical debt reduction)** - Split large hotspot modules into smaller focused units without changing external behavior:
+  - `semantic_model/mod.rs` extracted hover/signature and symbol-entry logic.
+  - `sysml_model.rs` extracted request-param parsing and graph projection helpers.
+  - `semantic_checks.rs` extracted rule helper functions.
+  - `lsp_server.rs` began service/helper extraction for qualified symbol lookup flows.
+  - `semantic_model/graph_builder.rs` extracted requirement-subject edge helper logic.
+- **General + Interconnection visualization data shaping** - Improved workspace/model graph handling (including synthetic-node stripping and root/selection behavior) to better align rendered views with real package/model structure.
+- **Startup and indexing performance** - Improved startup traceability and introduced parallel parsing for scanned entries to reduce indexing bottlenecks in larger workspaces.
+- **Library UX updates** - Refined standard/custom library management UX and model-explorer package statistics behavior.
+
+### Fixed
+
+- **Click-to-source regression in General View** - Restored reliable node click behavior and source navigation in workspace visualization scenarios.
+- **Diagnostic quality improvements** - Reduced invalid semantic diagnostics around declared type references and built-in type handling (for example `String`), with better diagnostic anchoring.
+- **Visualizer command icon consistency** - Updated the visualizer entry icon to `open-preview` for clearer VS Code affordance.
+
 ## [0.10.0] - 2026-03-27
 
 ### Changed
@@ -151,6 +177,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.11.0]: https://github.com/elan8/spec42/releases/tag/v0.11.0
 [0.10.0]: https://github.com/elan8/spec42/releases/tag/v0.10.0
 [0.9.1]: https://github.com/elan8/spec42/releases/tag/v0.9.1
 [0.9.0]: https://github.com/elan8/spec42/releases/tag/v0.9.0

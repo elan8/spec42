@@ -878,7 +878,7 @@ dependencies = [
 
 [[package]]
 name = "spec42"
-version = "0.10.0"
+version = "0.11.0"
 dependencies = [
  "serde_json",
  "spec42-core",
@@ -890,7 +890,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-core"
-version = "0.10.0"
+version = "0.11.0"
 dependencies = [
  "clap",
  "petgraph",
