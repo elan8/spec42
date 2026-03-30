@@ -86,6 +86,7 @@ pub enum RelationshipKind {
     Perform,
     Allocate,
     Satisfy,
+    Subject,
     Transition,
 }
 
@@ -99,6 +100,7 @@ impl RelationshipKind {
             RelationshipKind::Perform => "perform",
             RelationshipKind::Allocate => "allocate",
             RelationshipKind::Satisfy => "satisfy",
+            RelationshipKind::Subject => "subject",
             RelationshipKind::Transition => "transition",
         }
     }
@@ -923,5 +925,28 @@ mod tests {
             "expected connection edges; edges: {:?}",
             edges
         );
+    }
+
+    #[test]
+    fn requirement_subject_edges_are_emitted() {
+        let input = r#"
+            package P {
+                part def Vehicle { }
+                requirement def EnduranceReq {
+                    subject vehicle : Vehicle;
+                    require constraint { }
+                }
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let g = build_graph_from_doc(&root, &uri);
+        let edges = g.edges_for_uri_as_strings(&uri);
+        let has_subject = edges.iter().any(|(src, tgt, kind, _)| {
+            *kind == RelationshipKind::Subject
+                && src.ends_with("EnduranceReq")
+                && tgt.ends_with("Vehicle")
+        });
+        assert!(has_subject, "expected subject edge in semantic graph; edges: {:?}", edges);
     }
 }

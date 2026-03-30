@@ -38,6 +38,9 @@ function normalizeEdgeType(edge: any): string {
     if (type === 'connection' || type === 'connect') return 'connection';
     if (type === 'bind' || type === 'binding') return 'bind';
     if (type === 'allocate' || type === 'allocation') return 'allocate';
+    if (type === 'satisfy') return 'satisfy';
+    if (type === 'verify') return 'verify';
+    if (type === 'subject') return 'subject';
     if (type === 'transition') return 'transition';
     return type || 'relationship';
 }
@@ -312,6 +315,9 @@ export function graphToGeneralViewElements(
     const connectionEdgeIds = new Set<string>();
     const bindEdgeIds = new Set<string>();
     const allocateEdgeIds = new Set<string>();
+    const satisfyEdgeIds = new Set<string>();
+    const verifyEdgeIds = new Set<string>();
+    const subjectEdgeIds = new Set<string>();
     const transitionEdgeIds = new Set<string>();
     const resolveCyId = (backendId: string) => idToCyId.get(backendId) || null;
     let edgesResolved = 0;
@@ -440,6 +446,54 @@ export function graphToGeneralViewElements(
                         type: 'relationship',
                         relType: 'transition',
                         label: 'transition'
+                    }
+                });
+            }
+        } else if (edgeType === 'satisfy') {
+            const edgeId = 'rel-satisfy-' + sourceCyId + '-' + targetCyId;
+            if (!satisfyEdgeIds.has(edgeId)) {
+                satisfyEdgeIds.add(edgeId);
+                cyElements.push({
+                    group: 'edges',
+                    data: {
+                        id: edgeId,
+                        source: sourceCyId,
+                        target: targetCyId,
+                        type: 'relationship',
+                        relType: 'satisfy',
+                        label: 'satisfy'
+                    }
+                });
+            }
+        } else if (edgeType === 'verify') {
+            const edgeId = 'rel-verify-' + sourceCyId + '-' + targetCyId;
+            if (!verifyEdgeIds.has(edgeId)) {
+                verifyEdgeIds.add(edgeId);
+                cyElements.push({
+                    group: 'edges',
+                    data: {
+                        id: edgeId,
+                        source: sourceCyId,
+                        target: targetCyId,
+                        type: 'relationship',
+                        relType: 'verify',
+                        label: 'verify'
+                    }
+                });
+            }
+        } else if (edgeType === 'subject') {
+            const edgeId = 'rel-subject-' + sourceCyId + '-' + targetCyId;
+            if (!subjectEdgeIds.has(edgeId)) {
+                subjectEdgeIds.add(edgeId);
+                cyElements.push({
+                    group: 'edges',
+                    data: {
+                        id: edgeId,
+                        source: sourceCyId,
+                        target: targetCyId,
+                        type: 'relationship',
+                        relType: 'subject',
+                        label: 'subject'
                     }
                 });
             }

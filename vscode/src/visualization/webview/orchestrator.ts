@@ -88,6 +88,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
     let activityLayoutDirection = 'vertical'; // Action-flow diagrams default to top-down
     let stateLayoutOrientation = 'horizontal'; // State-transition layout: 'horizontal', 'vertical', or 'force'
     let filteredData = null; // Active filter state shared across views
+    let requirementsVisible = true; // General View toggle for requirement nodes/links
     let isRendering = false;
     let showMetadata = false;
     let showCategoryHeaders = true; // Show category headers in General View
@@ -341,6 +342,15 @@ import { buildGeneralViewGraph } from './graphBuilders';
                         packageName: message.packageName,
                     });
                     changeView('general-view');
+                }
+                break;
+            case 'setRequirementsVisibleForTest':
+                if (typeof message.enabled === 'boolean') {
+                    requirementsVisible = message.enabled;
+                    updateActiveViewButton(currentView);
+                    if (currentView === 'general-view') {
+                        renderVisualization('general-view', false);
+                    }
                 }
                 break;
             case 'export':
@@ -1031,6 +1041,20 @@ import { buildGeneralViewGraph } from './graphBuilders';
             layoutDirBtn.style.display = showLayoutBtn ? 'inline-flex' : 'none';
         }
 
+        const requirementsToggleBtn = document.getElementById('requirements-toggle-btn');
+        if (requirementsToggleBtn) {
+            const showRequirementsToggle = activeView === 'general-view';
+            requirementsToggleBtn.style.display = showRequirementsToggle ? 'inline-flex' : 'none';
+            requirementsToggleBtn.innerHTML = '<span class="codicon ' + (requirementsVisible ? 'codicon-check' : 'codicon-x') + '"></span> Requirements: ' + (requirementsVisible ? 'ON' : 'OFF');
+            requirementsToggleBtn.setAttribute(
+                'title',
+                requirementsVisible
+                    ? 'Hide requirement nodes and requirement edges'
+                    : 'Show requirement nodes and requirement edges'
+            );
+            requirementsToggleBtn.classList.toggle('view-btn-active', requirementsVisible);
+        }
+
         const dropdownButton = document.getElementById('view-dropdown-btn');
         const dropdownConfig = VIEW_OPTIONS[activeView];
         if (dropdownButton) {
@@ -1509,6 +1533,39 @@ import { buildGeneralViewGraph } from './graphBuilders';
                     packageNames: packagesArray.map((p: any) => p?.name).filter(Boolean),
                 });
             }
+        }
+
+        if (view === 'general-view' && !requirementsVisible) {
+            const filterGraphRequirements = (graph: any) => {
+                if (!graph || !Array.isArray(graph.nodes) || !Array.isArray(graph.edges)) {
+                    return graph;
+                }
+                const isRequirementNode = (node: any) => {
+                    const t = String(node?.type || node?.element_type || '').toLowerCase();
+                    return t.includes('requirement');
+                };
+                const requirementEdgeTypes = new Set(['subject', 'satisfy', 'verify']);
+                const keptNodes = graph.nodes.filter((node: any) => !isRequirementNode(node));
+                const keptNodeIds = new Set(keptNodes.map((n: any) => n.id));
+                const keptEdges = graph.edges.filter((edge: any) => {
+                    const edgeType = String(edge?.type || edge?.rel_type || '').toLowerCase();
+                    if (requirementEdgeTypes.has(edgeType)) {
+                        return false;
+                    }
+                    return keptNodeIds.has(edge.source) && keptNodeIds.has(edge.target);
+                });
+                return { nodes: keptNodes, edges: keptEdges };
+            };
+
+            const sourceGraph = (baseData?.graph?.nodes || baseData?.graph?.edges)
+                ? baseData.graph
+                : baseData?.generalViewGraph;
+            const filteredGraph = filterGraphRequirements(sourceGraph);
+            baseData = {
+                ...baseData,
+                graph: filteredGraph,
+                generalViewGraph: filteredGraph,
+            };
         }
 
         const dataForPrepare = view === 'interconnection-view' ? { ...baseData, selectedIbdRoot } : baseData;
@@ -2524,6 +2581,16 @@ import { buildGeneralViewGraph } from './graphBuilders';
     // Add event listeners for action buttons
     document.getElementById('reset-btn').addEventListener('click', resetZoom);
     document.getElementById('layout-direction-btn').addEventListener('click', toggleLayoutDirection);
+    const requirementsToggleBtn = document.getElementById('requirements-toggle-btn');
+    if (requirementsToggleBtn) {
+        requirementsToggleBtn.addEventListener('click', async () => {
+            requirementsVisible = !requirementsVisible;
+            updateActiveViewButton(currentView);
+            if (currentView === 'general-view') {
+                await renderVisualization('general-view', false);
+            }
+        });
+    }
 
     // Legend popup toggle
     (function setupLegend() {

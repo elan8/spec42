@@ -40,13 +40,13 @@ function parseGeneralNodeRects(svgText: string): Map<string, Rect> {
   return out;
 }
 
-function parseGeneralEdges(svgText: string): Array<{ source: string; target: string; pathD: string }> {
-  const out: Array<{ source: string; target: string; pathD: string }> = [];
+function parseGeneralEdges(svgText: string): Array<{ source: string; target: string; pathD: string; edgeType: string }> {
+  const out: Array<{ source: string; target: string; pathD: string; edgeType: string }> = [];
   const edgeRegex =
-    /<path d="([^"]+)" class="general-connector" data-source="([^"]+)" data-target="([^"]+)"/g;
+    /<path d="([^"]+)" class="general-connector" data-source="([^"]+)" data-target="([^"]+)" data-type="([^"]+)"/g;
   let m: RegExpExecArray | null;
   while ((m = edgeRegex.exec(svgText)) !== null) {
-    out.push({ pathD: m[1], source: m[2], target: m[3] });
+    out.push({ pathD: m[1], source: m[2], target: m[3], edgeType: m[4] });
   }
   return out;
 }
@@ -204,6 +204,14 @@ describe("SysML Examples General View", () => {
 
     const nodeRectsByName = parseGeneralNodeRects(svgText);
     const edgeItems = parseGeneralEdges(svgText);
+    assert.ok(
+      edgeItems.some((e) => e.edgeType === "subject"),
+      "Expected General View to include subject requirement edges when Requirements is ON"
+    );
+    assert.ok(
+      edgeItems.some((e) => e.edgeType === "satisfy"),
+      "Expected General View to include satisfy requirement edges when Requirements is ON"
+    );
     const nonOrthogonalEdges: string[] = [];
     for (const edge of edgeItems) {
       const pts = parsePathPoints(edge.pathD);
@@ -246,6 +254,40 @@ describe("SysML Examples General View", () => {
         "Laptop->keyboard edge intersects display node rectangle"
       );
     }
+
+    panel.getWebview()?.postMessage({ command: "setRequirementsVisibleForTest", enabled: false });
+    try {
+      await vscode.workspace.fs.delete(exportUri, { useTrash: false });
+    } catch {
+      // ignore when no previous export exists
+    }
+    panel.getWebview()?.postMessage({ command: "exportDiagramForTest" });
+    const { svgText: svgRequirementsOff } = await waitForDiagramExport(
+      getTestWorkspaceFolder().uri,
+      "general-view",
+      (svg) => Boolean(svg) && svg.includes("general-connector"),
+      45000
+    );
+    const offEdges = parseGeneralEdges(svgRequirementsOff);
+    const forbiddenRequirementEdgeTypes = offEdges.filter((e) =>
+      ["subject", "satisfy", "verify"].includes(e.edgeType)
+    );
+    assert.strictEqual(
+      forbiddenRequirementEdgeTypes.length,
+      0,
+      `Expected no subject/satisfy/verify edges when Requirements is OFF, found: ${forbiddenRequirementEdgeTypes
+        .map((e) => `${e.edgeType}:${e.source}->${e.target}`)
+        .join(", ")}`
+    );
+    const offNodes = parseGeneralNodeRects(svgRequirementsOff);
+    const requirementLikeNodeNames = [...offNodes.keys()].filter((name) => /req$/i.test(name));
+    assert.strictEqual(
+      requirementLikeNodeNames.length,
+      0,
+      `Expected requirement nodes to be hidden when Requirements is OFF, found: ${requirementLikeNodeNames.join(", ")}`
+    );
+
+    panel.getWebview()?.postMessage({ command: "setRequirementsVisibleForTest", enabled: true });
   });
 });
 

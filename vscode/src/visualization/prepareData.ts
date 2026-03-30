@@ -35,7 +35,7 @@ export function graphToElementTree(graph: any): any[] {
                 parent.children.push(child);
             }
         }
-        const relTypes = ['typing', 'specializes', 'connection', 'bind', 'allocate', 'transition', 'satisfy', 'verify'];
+        const relTypes = ['typing', 'specializes', 'connection', 'bind', 'allocate', 'transition', 'satisfy', 'verify', 'subject'];
         if (relTypes.includes(getEdgeType(e))) {
             const src = nodeMap.get(e.source);
             if (src) {
