@@ -42,63 +42,6 @@ export interface GeneralViewContext extends RenderContext {
     elkWorkerUrl: string;
 }
 
-function computeOrthogonalPath(
-    x1: number, y1: number, x2: number, y2: number,
-    options: { offset?: number; srcRect?: any; tgtRect?: any } = {}
-): { pathD: string; labelX: number; labelY: number } {
-    const offset = options.offset ?? 0;
-    const srcRect = options.srcRect;
-    const tgtRect = options.tgtRect;
-
-    const srcCx = srcRect ? srcRect.x + srcRect.width / 2 : x1;
-    const srcCy = srcRect ? srcRect.y + srcRect.height / 2 : y1;
-    const tgtCx = tgtRect ? tgtRect.x + tgtRect.width / 2 : x2;
-    const tgtCy = tgtRect ? tgtRect.y + tgtRect.height / 2 : y2;
-
-    const dx = tgtCx - srcCx;
-    const dy = tgtCy - srcCy;
-
-    let ox1 = x1, oy1 = y1, ox2 = x2, oy2 = y2;
-    if (srcRect) {
-        if (Math.abs(dx) > Math.abs(dy)) {
-            ox1 = dx > 0 ? srcRect.x + srcRect.width : srcRect.x;
-            oy1 = srcCy + offset;
-        } else {
-            ox1 = srcCx + offset;
-            oy1 = dy > 0 ? srcRect.y + srcRect.height : srcRect.y;
-        }
-    }
-    if (tgtRect) {
-        if (Math.abs(dx) > Math.abs(dy)) {
-            ox2 = dx > 0 ? tgtRect.x : tgtRect.x + tgtRect.width;
-            oy2 = tgtCy + offset;
-        } else {
-            ox2 = tgtCx + offset;
-            oy2 = dy > 0 ? tgtRect.y : tgtRect.y + tgtRect.height;
-        }
-    }
-
-    const distX = Math.abs(ox2 - ox1);
-    const distY = Math.abs(oy2 - oy1);
-    const wpSpread = offset * 0.4;
-
-    let pathD: string;
-    let labelX: number, labelY: number;
-
-    if (distX > distY) {
-        const midX = (ox1 + ox2) / 2 + wpSpread;
-        pathD = 'M' + ox1 + ',' + oy1 + ' L' + midX + ',' + oy1 + ' L' + midX + ',' + oy2 + ' L' + ox2 + ',' + oy2;
-        labelX = midX;
-        labelY = (oy1 + oy2) / 2 - 8 + offset * 0.5;
-    } else {
-        const midY = (oy1 + oy2) / 2 + wpSpread;
-        pathD = 'M' + ox1 + ',' + oy1 + ' L' + ox1 + ',' + midY + ' L' + ox2 + ',' + midY + ' L' + ox2 + ',' + oy2;
-        labelX = (ox1 + ox2) / 2 + offset * 0.5;
-        labelY = midY - 8;
-    }
-    return { pathD, labelX, labelY };
-}
-
 type Side = 'NORTH' | 'SOUTH' | 'EAST' | 'WEST';
 type NodeRect = { x: number; y: number; width: number; height: number };
 type ElkSection = { startPoint?: { x: number; y: number }; endPoint?: { x: number; y: number }; bendPoints?: Array<{ x: number; y: number }> };

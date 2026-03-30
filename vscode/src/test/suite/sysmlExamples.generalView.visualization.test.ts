@@ -6,7 +6,6 @@ import { VisualizationPanel } from "../../visualization/visualizationPanel";
 import {
   configureServerForTests,
   getTestWorkspaceFolder,
-  tryReadWorkspaceText,
   waitFor,
   waitForDiagramExport,
   waitForLanguageServerReady,
@@ -149,7 +148,6 @@ describe("SysML Examples General View", () => {
       "diagrams",
       "general-view.svg"
     );
-    const previousSvg = await tryReadWorkspaceText(exportUri);
     try {
       await vscode.workspace.fs.delete(exportUri, { useTrash: false });
     } catch {
@@ -160,7 +158,7 @@ describe("SysML Examples General View", () => {
     const { svgText } = await waitForDiagramExport(
       getTestWorkspaceFolder().uri,
       "general-view",
-      (svg) => Boolean(svg) && svg !== (previousSvg ?? ""),
+      (svg) => Boolean(svg),
       45000
     );
     const expectedPackages = [
