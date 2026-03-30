@@ -121,6 +121,25 @@ export class StandardLibraryManager {
     return metadata;
   }
 
+  async removeInstalledStandardLibrary(): Promise<{
+    removedVersion?: string;
+    removedPath?: string;
+    removed: boolean;
+  }> {
+    const metadata = this.getMetadata();
+    if (!metadata) {
+      return { removed: false };
+    }
+    const versionRoot = path.dirname(metadata.installPath);
+    await fs.promises.rm(versionRoot, { recursive: true, force: true });
+    await this.context.globalState.update(GLOBAL_STATE_KEY, undefined);
+    return {
+      removed: true,
+      removedVersion: metadata.installedVersion,
+      removedPath: metadata.installPath,
+    };
+  }
+
   private getMetadata(): StandardLibraryMetadata | undefined {
     return this.context.globalState.get<StandardLibraryMetadata>(GLOBAL_STATE_KEY);
   }

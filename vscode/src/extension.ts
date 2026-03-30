@@ -677,6 +677,51 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   context.subscriptions.push(
+    vscode.commands.registerCommand("sysml.library.removeStdLib", async () => {
+      const status = standardLibraryManager.getStatus(getStandardLibraryConfig());
+      if (!status.installedVersion || !status.installPath) {
+        vscode.window.showInformationMessage(
+          "No managed standard library installation was found."
+        );
+        return;
+      }
+
+      const confirm = await vscode.window.showWarningMessage(
+        `Remove managed standard library ${status.installedVersion}?`,
+        { modal: true },
+        "Remove",
+        "Cancel"
+      );
+      if (confirm !== "Remove") {
+        return;
+      }
+
+      try {
+        const result = await standardLibraryManager.removeInstalledStandardLibrary();
+        libraryWebviewProvider?.refresh();
+        if (!result.removed) {
+          vscode.window.showInformationMessage(
+            "No managed standard library installation was found."
+          );
+          return;
+        }
+        const action = await vscode.window.showInformationMessage(
+          `Removed managed standard library ${result.removedVersion ?? ""}.`,
+          "Restart Server"
+        );
+        if (action === "Restart Server") {
+          await vscode.commands.executeCommand("sysml.restartServer");
+        }
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : String(error);
+        vscode.window.showErrorMessage(
+          `Failed to remove Spec42 standard library: ${detail}`
+        );
+      }
+    })
+  );
+
+  context.subscriptions.push(
     vscode.commands.registerCommand("sysml.library.managePaths", async () => {
       await vscode.commands.executeCommand(
         "workbench.action.openSettings",

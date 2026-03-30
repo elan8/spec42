@@ -221,16 +221,6 @@
           "command": "sysml.library.refresh",
           "when": "view == spec42Library",
           "group": "navigation"
-        },
-        {
-          "command": "sysml.library.managePaths",
-          "when": "view == spec42Library",
-          "group": "navigation"
-        },
-        {
-          "command": "sysml.library.installStdLib",
-          "when": "view == spec42Library",
-          "group": "navigation"
         }
       ],
       "editor/title": [
