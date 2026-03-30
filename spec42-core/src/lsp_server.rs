@@ -2,6 +2,8 @@
 //! This module hosts the LSP server implementation and is meant to be reused by
 //! multiple binaries (e.g. `spec42` and `spec42-pro`) via an injected [`Spec42Config`].
 
+mod lookup_helpers;
+
 use crate::config::Spec42Config;
 use crate::dto;
 use crate::lsp::capabilities::server_capabilities;
@@ -41,6 +43,9 @@ use crate::language::{
     find_reference_ranges, format_document, is_reserved_keyword, keyword_doc,
     keyword_hover_markdown, line_prefix_at_position, suggest_create_matching_part_def_quick_fix,
     suggest_wrap_in_package, sysml_keywords, word_at_position,
+};
+use lookup_helpers::{
+    collect_symbol_matches_for_lookup, debug_qualified_lookup_context,
 };
 
 // -------------------------
@@ -1878,123 +1883,4 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
 }
 
 
-fn collect_symbol_matches_for_lookup<'a>(
-    state: &'a crate::lsp::types::ServerState,
-    uri_norm: &Url,
-    lookup_name: &str,
-    qualifier: Option<&str>,
-) -> (
-    Vec<&'a crate::language::SymbolEntry>,
-    Vec<&'a crate::language::SymbolEntry>,
-) {
-    let mut same_file = Vec::new();
-    let mut other_files = Vec::new();
-    for entry in state.symbol_table.iter() {
-        if !symbol_matches_definition_lookup(
-            &entry.name,
-            entry.container_name.as_deref(),
-            entry.uri.path(),
-            lookup_name,
-            qualifier,
-        ) {
-            continue;
-        }
-        if entry.uri == *uri_norm {
-            same_file.push(entry);
-        } else {
-            other_files.push(entry);
-        }
-    }
-    (same_file, other_files)
-}
-
-fn symbol_matches_definition_lookup(
-    candidate_name: &str,
-    container_name: Option<&str>,
-    candidate_path: &str,
-    lookup_name: &str,
-    qualifier: Option<&str>,
-) -> bool {
-    if candidate_name != lookup_name {
-        return false;
-    }
-    match qualifier {
-        None => true,
-        Some(q) => {
-            let q_lc = q.to_ascii_lowercase();
-            if container_name
-                .map(|c| {
-                    let c_lc = c.to_ascii_lowercase();
-                    c_lc == q_lc || c_lc.ends_with(&format!("::{}", q_lc))
-                })
-                .unwrap_or(false)
-            {
-                return true;
-            }
-            let path_lc = candidate_path.to_ascii_lowercase();
-            path_lc.ends_with(&format!("/{}.sysml", q_lc))
-                || path_lc.ends_with(&format!("/{}.kerml", q_lc))
-        }
-    }
-}
-
-fn debug_qualified_lookup_context(
-    state: &crate::lsp::types::ServerState,
-    lookup_name: &str,
-    qualifier: &str,
-    request_uri: &Url,
-) {
-    if lookup_name.is_empty() || qualifier.is_empty() {
-        return;
-    }
-    let qualifier_lc = qualifier.to_ascii_lowercase();
-    let needle = format!("<{}>", lookup_name);
-    let mut inspected: Vec<String> = Vec::new();
-    let mut qualifier_symbol_hits = 0usize;
-    for (candidate_uri, entry) in state.index.iter() {
-        let candidate_uri = util::normalize_file_uri(candidate_uri);
-        if candidate_uri == *request_uri {
-            continue;
-        }
-        if !util::uri_under_any_library(&candidate_uri, &state.library_paths) {
-            continue;
-        }
-        let path_lc = candidate_uri.path().to_ascii_lowercase();
-        let path_matches = path_lc.ends_with(&format!("/{}.sysml", qualifier_lc))
-            || path_lc.ends_with(&format!("/{}.kerml", qualifier_lc));
-        if !path_matches {
-            continue;
-        }
-        let symbols_for_uri: Vec<&crate::language::SymbolEntry> = state
-            .symbol_table
-            .iter()
-            .filter(|s| util::normalize_file_uri(&s.uri) == candidate_uri)
-            .collect();
-        qualifier_symbol_hits += symbols_for_uri
-            .iter()
-            .filter(|s| s.name.eq_ignore_ascii_case(lookup_name))
-            .count();
-        let has_angle_short = entry.content.contains(&needle);
-        inspected.push(format!(
-            "{} symbols={} matching_name={} has_angle_short={}",
-            candidate_uri.path(),
-            symbols_for_uri.len(),
-            symbols_for_uri
-                .iter()
-                .filter(|s| s.name.eq_ignore_ascii_case(lookup_name))
-                .count(),
-            has_angle_short
-        ));
-        if inspected.len() >= 5 {
-            break;
-        }
-    }
-    warn!(
-        lookup_name = %lookup_name,
-        qualifier = %qualifier,
-        qualifier_symbol_hits = qualifier_symbol_hits,
-        inspected = ?inspected,
-        "goto_definition qualified lookup diagnostics"
-    );
-}
 

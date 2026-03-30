@@ -5,9 +5,15 @@
 //! (typing, specializes, connection, bind, allocate, transition).
 
 mod graph_builder;
+mod graph_builder_requirement_subjects;
+mod hover;
 mod relationships;
+mod symbol_entries;
 
 pub use graph_builder::build_graph_from_doc;
+pub use hover::hover_markdown_for_node;
+pub(crate) use hover::signature_from_node;
+pub use symbol_entries::symbol_entries_for_uri;
 
 use sysml_parser::ast::{PackageBody, PackageBodyElement, RootElement};
 
@@ -53,10 +59,6 @@ use petgraph::Directed;
 use petgraph::Direction;
 use std::collections::HashMap;
 use tower_lsp::lsp_types::{Position, Range, Url};
-
-use tower_lsp::lsp_types::SymbolKind;
-
-use crate::language::SymbolEntry;
 
 /// Unique identifier for a node in the semantic graph.
 /// Combines document URI and qualified name for workspace-wide uniqueness.
@@ -542,160 +544,6 @@ impl SemanticGraph {
         }
         out
     }
-}
-
-/// Maps element_kind from the semantic model to LSP SymbolKind.
-fn element_kind_to_symbol_kind(kind: &str) -> SymbolKind {
-    match kind {
-        "package" => SymbolKind::MODULE,
-        "part def" => SymbolKind::CLASS,
-        "part" => SymbolKind::VARIABLE,
-        "attribute def" => SymbolKind::PROPERTY,
-        "attribute" => SymbolKind::PROPERTY,
-        "port def" => SymbolKind::INTERFACE,
-        "port" => SymbolKind::INTERFACE,
-        "interface" => SymbolKind::INTERFACE,
-        "alias" => SymbolKind::KEY,
-        "connection" => SymbolKind::VARIABLE,
-        "connection def" => SymbolKind::INTERFACE,
-        "item def" => SymbolKind::CONSTANT,
-        "item" => SymbolKind::CONSTANT,
-        "individual def" => SymbolKind::OBJECT,
-        "requirement def" => SymbolKind::STRING,
-        "requirement" => SymbolKind::STRING,
-        "action def" => SymbolKind::FUNCTION,
-        "metadata def" => SymbolKind::STRUCT,
-        "enum def" => SymbolKind::ENUM,
-        "occurrence def" => SymbolKind::CLASS,
-        "occurrence" => SymbolKind::VARIABLE,
-        "flow def" => SymbolKind::INTERFACE,
-        "flow" => SymbolKind::VARIABLE,
-        "allocation def" => SymbolKind::INTERFACE,
-        "allocation" => SymbolKind::VARIABLE,
-        "dependency" => SymbolKind::OPERATOR,
-        "constraint def" => SymbolKind::FUNCTION,
-        "calc def" => SymbolKind::FUNCTION,
-        "case def" => SymbolKind::EVENT,
-        "case" => SymbolKind::EVENT,
-        "analysis def" => SymbolKind::EVENT,
-        "analysis" => SymbolKind::EVENT,
-        "verification def" => SymbolKind::EVENT,
-        "verification" => SymbolKind::EVENT,
-        "generic decl" => SymbolKind::NAMESPACE,
-        "state def" => SymbolKind::ENUM_MEMBER,
-        "state" => SymbolKind::ENUM_MEMBER,
-        "use case def" => SymbolKind::EVENT,
-        "actor def" => SymbolKind::CONSTRUCTOR,
-        _ => SymbolKind::NULL,
-    }
-}
-
-/// Builds a signature string from node attributes (partType, specializes, etc.).
-pub(crate) fn signature_from_node(node: &SemanticNode) -> Option<String> {
-    let kind = node.element_kind.as_str();
-    let mult = node
-        .attributes
-        .get("multiplicity")
-        .and_then(|v| v.as_str())
-        .map(|m| format!(" {}", m))
-        .unwrap_or_default();
-    let (type_attr, type_suffix) = match kind {
-        "part def" | "part" => (
-            node.attributes
-                .get("partType")
-                .or_else(|| node.attributes.get("specializes")),
-            " : ",
-        ),
-        "attribute def" | "attribute" => (node.attributes.get("attributeType"), " : "),
-        "port def" | "port" => (node.attributes.get("portType"), " : "),
-        "actor def" => (node.attributes.get("actorType"), " : "),
-        "item def" => (node.attributes.get("specializes"), " :> "),
-        "item" => (node.attributes.get("itemType"), " : "),
-        _ => (None, ""),
-    };
-    let type_part = type_attr
-        .and_then(|v| v.as_str())
-        .map(|t| format!("{}{}", type_suffix, t))
-        .unwrap_or_default();
-    Some(format!("{} {}{}{};", kind, node.name, type_part, mult))
-}
-
-pub fn hover_markdown_for_node(
-    graph: &SemanticGraph,
-    node: &SemanticNode,
-    show_location: bool,
-) -> String {
-    let mut md = format!("**{}** `{}`\n\n", node.element_kind, node.name);
-    let code_block = signature_from_node(node)
-        .unwrap_or_else(|| format!("{} {};", node.element_kind, node.name));
-    md.push_str("```sysml\n");
-    md.push_str(&code_block);
-    md.push_str("\n```\n\n");
-
-    if let Some(parent_id) = &node.parent_id {
-        if let Some(parent) = graph.get_node(parent_id) {
-            md.push_str(&format!("*Container:* `{}`\n\n", parent.name));
-        }
-    }
-
-    if let Some(type_name) = node
-        .attributes
-        .get("partType")
-        .or_else(|| node.attributes.get("attributeType"))
-        .or_else(|| node.attributes.get("portType"))
-        .or_else(|| node.attributes.get("actorType"))
-        .or_else(|| node.attributes.get("itemType"))
-        .and_then(|value| value.as_str())
-    {
-        md.push_str(&format!("*Type:* `{}`\n\n", type_name));
-    }
-
-    if let Some(multiplicity) = node
-        .attributes
-        .get("multiplicity")
-        .and_then(|value| value.as_str())
-    {
-        md.push_str(&format!("*Multiplicity:* `{}`\n\n", multiplicity));
-    }
-
-    let typed_targets = graph.outgoing_typing_or_specializes_targets(node);
-    if let Some(target) = typed_targets.first() {
-        md.push_str(&format!(
-            "*Resolves to:* `{}` ({})\n\n",
-            target.name, target.element_kind
-        ));
-    }
-
-    if show_location {
-        md.push_str(&format!("*Defined in:* {}", node.id.uri.path()));
-    }
-
-    md
-}
-
-/// Collects symbol entries for a URI from the semantic graph (replaces AST-based collect_symbol_entries).
-pub fn symbol_entries_for_uri(graph: &SemanticGraph, uri: &Url) -> Vec<SymbolEntry> {
-    let mut out = Vec::new();
-    for node in graph.nodes_for_uri(uri) {
-        let container_name = node
-            .parent_id
-            .as_ref()
-            .and_then(|pid| graph.get_node(pid))
-            .map(|p| p.name.clone());
-        let description = format!("{} '{}'", node.element_kind, node.name);
-        let signature = signature_from_node(node);
-        out.push(SymbolEntry {
-            name: node.name.clone(),
-            uri: node.id.uri.clone(),
-            range: node.range,
-            kind: element_kind_to_symbol_kind(&node.element_kind),
-            container_name,
-            detail: Some(node.element_kind.clone()),
-            description: Some(description),
-            signature,
-        });
-    }
-    out
 }
 
 #[cfg(test)]
