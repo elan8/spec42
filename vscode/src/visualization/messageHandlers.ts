@@ -107,12 +107,27 @@ export function createMessageHandlers(context: MessageHandlerContext) {
     let activeHighlightEditor: vscode.TextEditor | undefined;
 
     function clearActiveSourceHighlight(): void {
+        const trackedUris = new Set(
+            (fileUris.length > 0 ? fileUris : [document.uri]).map((uri) => uri.toString()),
+        );
+
         if (activeHighlightTimeout) {
             clearTimeout(activeHighlightTimeout);
             activeHighlightTimeout = undefined;
         }
+        vscode.window.visibleTextEditors.forEach((editor) => {
+            if (!trackedUris.has(editor.document.uri.toString())) {
+                return;
+            }
+            const caret = editor.selection.active;
+            editor.selection = new vscode.Selection(caret, caret);
+        });
         if (activeHighlightDecoration && activeHighlightEditor) {
             activeHighlightEditor.setDecorations(activeHighlightDecoration, []);
+        }
+        if (activeHighlightEditor) {
+            const anchor = activeHighlightEditor.selection.active;
+            activeHighlightEditor.selection = new vscode.Selection(anchor, anchor);
         }
         if (activeHighlightDecoration) {
             activeHighlightDecoration.dispose();

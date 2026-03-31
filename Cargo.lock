@@ -782,7 +782,7 @@ dependencies = [
  "petgraph",
  "serde",
  "serde_json",
- "sysml-parser 0.1.0 (git+https://github.com/elan8/sysml-parser)",
+ "sysml-parser",
  "tower-lsp",
 ]
 
@@ -893,7 +893,7 @@ version = "0.12.0"
 dependencies = [
  "serde_json",
  "spec42-core",
- "sysml-parser 0.1.0 (git+https://github.com/elan8/sysml-parser?rev=f11faf38cbc75ac57753fa86f57d120a14bb986a)",
+ "sysml-parser",
  "tempfile",
  "tokio",
  "url",
@@ -907,7 +907,7 @@ dependencies = [
  "semantic-model",
  "serde",
  "serde_json",
- "sysml-parser 0.1.0 (git+https://github.com/elan8/sysml-parser)",
+ "sysml-parser",
  "tempfile",
  "thiserror",
  "tokio",
@@ -955,17 +955,7 @@ dependencies = [
 [[package]]
 name = "sysml-parser"
 version = "0.1.0"
-source = "git+https://github.com/elan8/sysml-parser?rev=f11faf38cbc75ac57753fa86f57d120a14bb986a#f11faf38cbc75ac57753fa86f57d120a14bb986a"
-dependencies = [
- "log",
- "nom",
- "nom_locate",
-]
-
-[[package]]
-name = "sysml-parser"
-version = "0.1.0"
-source = "git+https://github.com/elan8/sysml-parser#bf468aac8ce251190f6f235ce9ce17730ab4cb0e"
+source = "git+https://github.com/elan8/sysml-parser?rev=41efd0f5874ca3734f1a3504e8c36799fd061e76#41efd0f5874ca3734f1a3504e8c36799fd061e76"
 dependencies = [
  "log",
  "nom",

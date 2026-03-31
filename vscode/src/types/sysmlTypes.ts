@@ -51,10 +51,16 @@ export interface Message {
 export interface ActivityDiagram {
   name: string;
   actions: ActivityAction[];
+  interface?: ActivityInterface;
   decisions: DecisionNode[];
   flows: ControlFlow[];
   states: ActivityState[];
   range: vscode.Range;
+}
+
+export interface ActivityInterface {
+  inputs: string[];
+  outputs: string[];
 }
 
 export interface ActivityAction {

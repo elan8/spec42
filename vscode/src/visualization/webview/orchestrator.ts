@@ -692,6 +692,11 @@ import { buildGeneralViewGraph } from './graphBuilders';
             el.style('stroke', el.attr('data-original-stroke') || 'var(--vscode-panel-border)');
             el.style('stroke-width', el.attr('data-original-width') || '2px');
         });
+        d3.selectAll('.activity-action .node-background').each(function() {
+            const el = d3.select(this);
+            el.style('stroke', el.attr('data-original-stroke') || 'var(--vscode-panel-border)');
+            el.style('stroke-width', el.attr('data-original-width') || '2px');
+        });
         d3.selectAll('.ibd-part rect:first-child').each(function() {
             const el = d3.select(this);
             const orig = el.attr('data-original-stroke');

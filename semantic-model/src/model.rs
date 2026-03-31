@@ -29,6 +29,8 @@ pub enum RelationshipKind {
     Specializes,
     Connection,
     Bind,
+    /// Control/data flow relationship inside behaviors (e.g. `flow`, `first ... then ...`).
+    Flow,
     Perform,
     Allocate,
     Satisfy,
@@ -45,6 +47,7 @@ impl RelationshipKind {
             RelationshipKind::Specializes => "specializes",
             RelationshipKind::Connection => "connection",
             RelationshipKind::Bind => "bind",
+            RelationshipKind::Flow => "flow",
             RelationshipKind::Perform => "perform",
             RelationshipKind::Allocate => "allocate",
             RelationshipKind::Satisfy => "satisfy",

@@ -907,6 +907,47 @@ mod tests {
     }
 
     #[test]
+    fn action_def_body_builds_bind_flow_and_action_usage_edges() {
+        let input = r#"
+            package P {
+                action def ExecuteMission {
+                    in route : Route;
+                    action captureVideo : CaptureVideo;
+                    bind route = captureVideo;
+                    flow captureVideo to route;
+                    first captureVideo then route;
+                    merge route;
+                    out report : MissionReport;
+                }
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let g = build_graph_from_doc(&root, &uri);
+        let nodes = g.nodes_for_uri(&uri);
+        let edges = g.edges_for_uri_as_strings(&uri);
+
+        assert!(
+            nodes.iter().any(|n| n.element_kind == "action" && n.name == "captureVideo"),
+            "expected action usage node for captureVideo"
+        );
+        assert!(
+            edges.iter().any(|(_, _, k, _)| *k == RelationshipKind::Bind),
+            "expected bind edge in action body; edges: {:?}",
+            edges
+        );
+        assert!(
+            edges.iter().any(|(_, _, k, _)| *k == RelationshipKind::Flow),
+            "expected flow edge in action body; edges: {:?}",
+            edges
+        );
+        assert!(
+            nodes.iter().any(|n| n.element_kind == "merge"),
+            "expected merge node"
+        );
+    }
+
+    #[test]
     fn requirement_body_import_and_require_constraint_nodes() {
         let input = r#"
             package P {

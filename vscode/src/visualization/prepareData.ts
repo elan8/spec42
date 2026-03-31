@@ -225,131 +225,93 @@ export function prepareDataForView(data: any, view: string): any {
                 return {
                     ...data,
                     diagrams: data.activityDiagrams.map((diagram: any) => {
-                        const decisionsAsActions = (diagram.decisions || []).map((d: any) => ({
+                        const decisionsAsNodes = (diagram.decisions || []).map((d: any) => ({
                             ...d,
                             id: d.id || d.name,
                             type: 'decision',
                             kind: 'decision'
                         }));
 
-                        const stateActions = (diagram.states || []).map((state: any, idx: number) => ({
-                            ...state,
-                            id: state.id || state.name || `state_${idx + 1}`,
-                            name: state.name || state.id || `State ${idx + 1}`,
-                            type: state.type || state.stateType || 'state',
-                            kind: state.type || state.stateType || 'state'
-                        }));
+                        const stateNodes = (diagram.states || [])
+                            .map((state: any, idx: number) => ({
+                                ...state,
+                                id: state.id || state.name || `state_${idx + 1}`,
+                                name: state.name || state.id || `State ${idx + 1}`,
+                                type: state.type || state.stateType || 'state',
+                                kind: state.type || state.stateType || 'state'
+                            }))
+                            .filter((state: any) => {
+                                const kind = String(state.kind || state.type || '').toLowerCase();
+                                return ['initial', 'final', 'decision', 'merge', 'fork', 'join'].some((allowed) => kind.includes(allowed));
+                            });
 
-                        const allActions = [
+                        const allNodes = [
                             ...(diagram.actions || []).map((a: any) => ({
                                 ...a,
                                 id: a.id || a.name,
+                                inputs: Array.isArray(a.inputs) ? a.inputs : [],
+                                outputs: Array.isArray(a.outputs) ? a.outputs : [],
                                 parent: (a.parent === diagram.name) ? undefined : a.parent
                             })),
-                            ...decisionsAsActions,
-                            ...stateActions
+                            ...decisionsAsNodes,
+                            ...stateNodes
                         ];
 
-                        const actionIds = new Set(allActions.map((a: any) => a.id || a.name));
-                        const flows = [...(diagram.flows || [])];
-                        const flowNodeNames = new Set<string>();
+                        const allowedKinds = new Set(['action', 'perform', 'decision', 'merge', 'fork', 'join', 'initial', 'final']);
+                        const nodes = allNodes.filter((node: any) => {
+                            const kind = String(node.kind || node.type || 'action').toLowerCase();
+                            return allowedKinds.has(kind);
+                        });
+
+                        const nodeIds = new Set(nodes.map((node: any) => node.id || node.name));
+                        const flows = (diagram.flows || []).map((flow: any, idx: number) => ({
+                            ...flow,
+                            id: flow.id || `${diagram.name}::flow::${idx + 1}`,
+                            flowKind: flow.flowKind || flow.type || 'control'
+                        }));
                         const incomingFlowCount = new Map<string, number>();
                         const outgoingFlowCount = new Map<string, number>();
 
                         flows.forEach((f: any) => {
-                            if (f.from) {
-                                flowNodeNames.add(f.from);
+                            if (f.from && nodeIds.has(f.from)) {
                                 outgoingFlowCount.set(f.from, (outgoingFlowCount.get(f.from) || 0) + 1);
                             }
-                            if (f.to) {
-                                flowNodeNames.add(f.to);
+                            if (f.to && nodeIds.has(f.to)) {
                                 incomingFlowCount.set(f.to, (incomingFlowCount.get(f.to) || 0) + 1);
-                            }
-                        });
-
-                        flowNodeNames.forEach((nodeName: string) => {
-                            if (!actionIds.has(nodeName)) {
-                                const incoming = incomingFlowCount.get(nodeName) || 0;
-                                const outgoing = outgoingFlowCount.get(nodeName) || 0;
-                                const nameLower = nodeName.toLowerCase();
-                                let nodeType = 'action';
-                                let nodeKind = 'action';
-
-                                if (nameLower.includes('merge') || nameLower.includes('join') || nameLower.endsWith('check')) {
-                                    nodeType = 'merge';
-                                    nodeKind = 'merge';
-                                } else if (nameLower.includes('fork')) {
-                                    nodeType = 'fork';
-                                    nodeKind = 'fork';
-                                } else if (nameLower.includes('decision') || nameLower.includes('decide')) {
-                                    nodeType = 'decision';
-                                    nodeKind = 'decision';
-                                } else if (incoming > 1) {
-                                    nodeType = 'merge';
-                                    nodeKind = 'merge';
-                                } else if (outgoing > 1) {
-                                    const hasGuards = flows.some((f: any) => f.from === nodeName && (f.guard || f.condition));
-                                    if (hasGuards) {
-                                        nodeType = 'decision';
-                                        nodeKind = 'decision';
-                                    } else {
-                                        nodeType = 'fork';
-                                        nodeKind = 'fork';
-                                    }
-                                }
-
-                                allActions.push({
-                                    name: nodeName,
-                                    id: nodeName,
-                                    type: nodeType,
-                                    kind: nodeKind
-                                });
-                                actionIds.add(nodeName);
                             }
                         });
 
                         const cleanFlows = flows.filter((f: any) =>
                             f.from !== f.to &&
-                            actionIds.has(f.from) &&
-                            actionIds.has(f.to)
+                            nodeIds.has(f.from) &&
+                            nodeIds.has(f.to)
                         );
-
-                        const hasInitialFlow = cleanFlows.some((f: any) => {
-                            const sourceNode = allActions.find((a: any) => (a.id || a.name) === f.from);
-                            return String(sourceNode?.kind || sourceNode?.type || '').toLowerCase().includes('initial');
-                        });
-                        const hasFinalFlow = cleanFlows.some((f: any) => {
-                            const targetNode = allActions.find((a: any) => (a.id || a.name) === f.to);
-                            return String(targetNode?.kind || targetNode?.type || '').toLowerCase().includes('final');
-                        });
-                        const initialNode = allActions.find((a: any) => String(a.kind || a.type || '').toLowerCase().includes('initial'));
-                        const finalNode = allActions.find((a: any) => String(a.kind || a.type || '').toLowerCase().includes('final'));
-                        const nonTerminalActions = allActions.filter((a: any) => {
-                            const kind = String(a.kind || a.type || '').toLowerCase();
-                            return !kind.includes('initial') && !kind.includes('final');
-                        });
-                        if (initialNode && nonTerminalActions.length > 0 && !hasInitialFlow) {
-                            cleanFlows.unshift({
-                                from: initialNode.id || initialNode.name,
-                                to: nonTerminalActions[0].id || nonTerminalActions[0].name,
-                                type: 'control'
-                            });
-                        }
-                        if (finalNode && nonTerminalActions.length > 0 && !hasFinalFlow) {
-                            const lastAction = nonTerminalActions[nonTerminalActions.length - 1];
-                            cleanFlows.push({
-                                from: lastAction.id || lastAction.name,
-                                to: finalNode.id || finalNode.name,
-                                type: 'control'
-                            });
-                        }
 
                         return {
                             name: diagram.name,
-                            actions: allActions,
+                            nodes: nodes.map((node: any) => {
+                                const nodeId = node.id || node.name;
+                                const incoming = incomingFlowCount.get(nodeId) || 0;
+                                const outgoing = outgoingFlowCount.get(nodeId) || 0;
+                                const hasGuards = cleanFlows.some((flow: any) => flow.from === nodeId && (flow.guard || flow.condition));
+                                let normalizedKind = String(node.kind || node.type || 'action').toLowerCase();
+                                if (normalizedKind === 'action' && outgoing > 1 && hasGuards) normalizedKind = 'decision';
+                                else if (normalizedKind === 'action' && outgoing > 1) normalizedKind = 'fork';
+                                else if (normalizedKind === 'action' && incoming > 1) normalizedKind = 'merge';
+
+                                return {
+                                    ...node,
+                                    id: nodeId,
+                                    name: node.name || nodeId || 'Action',
+                                    kind: normalizedKind,
+                                };
+                            }),
                             flows: cleanFlows,
-                            decisions: diagram.decisions || [],
-                            states: diagram.states || []
+                            interface: {
+                                inputs: Array.isArray(diagram.interface?.inputs) ? diagram.interface.inputs : [],
+                                outputs: Array.isArray(diagram.interface?.outputs) ? diagram.interface.outputs : [],
+                            },
+                            hasBehavioralFlow: cleanFlows.length > 0,
                         };
                     })
                 };
@@ -365,33 +327,38 @@ export function prepareDataForView(data: any, view: string): any {
             return {
                 ...data,
                 diagrams: activityActionDefs.map((actionDef: any) => {
-                    const childActions = actionDef.children
-                        .filter((c: any) => c.type && c.type.toLowerCase().includes('action'))
+                    const nodes = actionDef.children
+                        .filter((c: any) => {
+                            const type = String(c.type || '').toLowerCase();
+                            return type.includes('action') || type.includes('perform') || type.includes('decision') || type.includes('merge') || type.includes('fork') || type.includes('join');
+                        })
                         .map((c: any) => ({
                             name: c.name,
-                            type: 'action',
-                            kind: 'action',
-                            id: c.name
+                            type: c.type || 'action',
+                            kind: String(c.type || 'action').toLowerCase().includes('perform') ? 'perform' : 'action',
+                            id: c.id || c.name,
+                            inputs: [],
+                            outputs: [],
                         }));
 
-                    const flows: any[] = [];
-                    for (let i = 0; i < childActions.length - 1; i++) {
-                        flows.push({ from: childActions[i].name, to: childActions[i + 1].name });
-                    }
-
-                    if (childActions.length > 0) {
-                        flows.unshift({ from: 'start', to: childActions[0].name });
-                        flows.push({ from: childActions[childActions.length - 1].name, to: 'done' });
-                        childActions.unshift({ name: 'start', type: 'initial', kind: 'initial', id: 'start' });
-                        childActions.push({ name: 'done', type: 'final', kind: 'final', id: 'done' });
-                    }
+                    const interfaceInputs = actionDef.children
+                        .filter((c: any) => String(c.type || '').toLowerCase() === 'in out parameter' && String(c.attributes?.direction || '').toLowerCase() === 'in')
+                        .map((c: any) => c.name)
+                        .filter(Boolean);
+                    const interfaceOutputs = actionDef.children
+                        .filter((c: any) => String(c.type || '').toLowerCase() === 'in out parameter' && String(c.attributes?.direction || '').toLowerCase() === 'out')
+                        .map((c: any) => c.name)
+                        .filter(Boolean);
 
                     return {
                         name: actionDef.name,
-                        actions: childActions,
-                        flows,
-                        decisions: [],
-                        states: []
+                        nodes,
+                        flows: [],
+                        interface: {
+                            inputs: interfaceInputs,
+                            outputs: interfaceOutputs,
+                        },
+                        hasBehavioralFlow: false,
                     };
                 })
             };

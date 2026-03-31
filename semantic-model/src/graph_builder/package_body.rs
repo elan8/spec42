@@ -11,7 +11,7 @@ use crate::ast_util::{identification_name, span_to_range};
 use crate::graph::SemanticGraph;
 use super::requirement_body::{import_member_label, walk_requirement_def_body};
 use crate::model::{NodeId, RelationshipKind, SemanticNode};
-use crate::relationships::{add_specializes_edge_if_exists, add_typing_edge_if_exists};
+use crate::relationships::{add_edge_if_both_exist, add_specializes_edge_if_exists, add_typing_edge_if_exists};
 
 use super::expressions;
 use super::{add_node_and_recurse, qualified_name_for_node};
@@ -404,6 +404,104 @@ pub(super) fn build_from_package_body_element(
                                     Some(&qualified),
                                 );
                             }
+                        }
+                        ActionDefBodyElement::Bind(bind) => {
+                            expressions::add_expression_edge_if_both_exist(
+                                g,
+                                uri,
+                                Some(&qualified),
+                                &bind.value.left,
+                                &bind.value.right,
+                                RelationshipKind::Bind,
+                            );
+                        }
+                        ActionDefBodyElement::Flow(flow) => {
+                            expressions::add_expression_edge_if_both_exist(
+                                g,
+                                uri,
+                                Some(&qualified),
+                                &flow.value.from,
+                                &flow.value.to,
+                                RelationshipKind::Flow,
+                            );
+                        }
+                        ActionDefBodyElement::FirstStmt(first) => {
+                            expressions::add_expression_edge_if_both_exist(
+                                g,
+                                uri,
+                                Some(&qualified),
+                                &first.value.first,
+                                &first.value.then,
+                                RelationshipKind::Flow,
+                            );
+                        }
+                        ActionDefBodyElement::MergeStmt(merge) => {
+                            let merge_target =
+                                expressions::expression_to_debug_string(&merge.value.merge);
+                            let child_qualified = qualified_name_for_node(
+                                g,
+                                uri,
+                                Some(&qualified),
+                                &merge_target,
+                                "merge",
+                            );
+                            let mut attrs = HashMap::new();
+                            attrs.insert("mergeTarget".to_string(), serde_json::json!(merge_target));
+                            add_node_and_recurse(
+                                g,
+                                uri,
+                                &child_qualified,
+                                "merge",
+                                "merge".to_string(),
+                                span_to_range(&merge.span),
+                                attrs,
+                                Some(&action_id),
+                            );
+                        }
+                        ActionDefBodyElement::ActionUsage(action_usage) => {
+                            let au_node = action_usage.as_ref();
+                            let name = &au_node.name;
+                            let child_qualified =
+                                qualified_name_for_node(g, uri, Some(&qualified), name, "action");
+                            let mut attrs = HashMap::new();
+                            attrs.insert(
+                                "actionType".to_string(),
+                                serde_json::json!(&au_node.type_name),
+                            );
+                            if let Some((ref accept_name, ref accept_type)) = au_node.accept {
+                                attrs.insert(
+                                    "acceptName".to_string(),
+                                    serde_json::json!(accept_name),
+                                );
+                                attrs.insert(
+                                    "acceptType".to_string(),
+                                    serde_json::json!(accept_type),
+                                );
+                            }
+                            add_node_and_recurse(
+                                g,
+                                uri,
+                                &child_qualified,
+                                "action",
+                                name.clone(),
+                                span_to_range(&au_node.span),
+                                attrs,
+                                Some(&action_id),
+                            );
+                            add_typing_edge_if_exists(
+                                g,
+                                uri,
+                                &child_qualified,
+                                &au_node.type_name,
+                                Some(&qualified),
+                            );
+                            add_edge_if_both_exist(
+                                g,
+                                uri,
+                                &action_id.qualified_name,
+                                &child_qualified,
+                                RelationshipKind::Perform,
+                            );
                         }
                         ActionDefBodyElement::Doc(_) | ActionDefBodyElement::Error(_) => {}
                     }

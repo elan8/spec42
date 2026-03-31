@@ -125,40 +125,70 @@ describe("prepareDataForView", () => {
         assert.ok(Array.isArray(result.diagrams), "action-flow-view should have diagrams array");
     });
 
-    it("action-flow-view preserves real action names and connects initial/final states", () => {
+    it("action-flow-view keeps interface metadata out of behavioral nodes", () => {
         const data = createMockData({
             activityDiagrams: [
                 {
                     name: "UpdateDisplay",
                     actions: [
-                        { name: "currentTime", type: "action", kind: "input", id: "currentTime" },
                         { name: "renderDisplay", type: "action", kind: "perform", id: "renderDisplay" },
-                        { name: "displayText", type: "action", kind: "output", id: "displayText" },
                     ],
-                    flows: [
-                        { from: "currentTime", to: "renderDisplay" },
-                        { from: "renderDisplay", to: "displayText" },
-                    ],
+                    interface: {
+                        inputs: ["currentTime"],
+                        outputs: ["displayText"],
+                    },
+                    flows: [],
                     decisions: [],
-                    states: [
-                        { name: "initial", type: "initial", id: "initial" },
-                        { name: "final", type: "final", id: "final" },
-                    ],
+                    states: [],
                 }
             ]
         });
 
         const result = prepareDataForView(data, "action-flow-view");
         const diagram = result.diagrams[0];
-        const actionNames = diagram.actions.map((action: any) => action.name);
+        const nodeNames = diagram.nodes.map((node: any) => node.name);
 
-        assert.ok(actionNames.includes("currentTime"));
-        assert.ok(actionNames.includes("renderDisplay"));
-        assert.ok(actionNames.includes("displayText"));
-        assert.ok(actionNames.includes("initial"));
-        assert.ok(actionNames.includes("final"));
-        assert.ok(diagram.flows.some((flow: any) => flow.from === "initial" && flow.to === "currentTime"));
-        assert.ok(diagram.flows.some((flow: any) => flow.from === "displayText" && flow.to === "final"));
+        assert.deepStrictEqual(nodeNames, ["renderDisplay"]);
+        assert.deepStrictEqual(diagram.interface.inputs, ["currentTime"]);
+        assert.deepStrictEqual(diagram.interface.outputs, ["displayText"]);
+        assert.deepStrictEqual(diagram.flows, []);
+        assert.strictEqual(diagram.hasBehavioralFlow, false);
+    });
+
+    it("action-flow-view preserves explicit behavioral flows without synthesizing control edges", () => {
+        const data = createMockData({
+            activityDiagrams: [
+                {
+                    name: "ExecuteMission",
+                    actions: [
+                        { name: "captureVideo", type: "action", kind: "perform", id: "captureVideo" },
+                        { name: "sendReport", type: "action", kind: "perform", id: "sendReport" },
+                    ],
+                    interface: {
+                        inputs: ["route"],
+                        outputs: ["report"],
+                    },
+                    flows: [
+                        { from: "captureVideo", to: "sendReport", guard: "whenReady" },
+                    ],
+                    decisions: [],
+                    states: [],
+                }
+            ]
+        });
+
+        const result = prepareDataForView(data, "action-flow-view");
+        const diagram = result.diagrams[0];
+
+        assert.deepStrictEqual(
+            diagram.nodes.map((node: any) => node.name),
+            ["captureVideo", "sendReport"],
+        );
+        assert.strictEqual(diagram.flows.length, 1);
+        assert.strictEqual(diagram.flows[0].from, "captureVideo");
+        assert.strictEqual(diagram.flows[0].to, "sendReport");
+        assert.strictEqual(diagram.flows[0].guard, "whenReady");
+        assert.strictEqual(diagram.hasBehavioralFlow, true);
     });
 
     it("state-transition-view produces normalized state machines", () => {

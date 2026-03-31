@@ -272,10 +272,16 @@ export interface MessageDTO {
 export interface ActivityDiagramDTO {
   name: string;
   actions: ActivityActionDTO[];
+  interface?: ActivityInterfaceDTO;
   decisions: DecisionNodeDTO[];
   flows: ControlFlowDTO[];
   states: ActivityStateDTO[];
   range: RangeDTO;
+}
+
+export interface ActivityInterfaceDTO {
+  inputs: string[];
+  outputs: string[];
 }
 
 export interface ActivityActionDTO {

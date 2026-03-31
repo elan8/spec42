@@ -5,6 +5,47 @@ use serde::Serialize;
 use sysml_parser::ast::{ActionDefBody, ActionDefBodyElement, PackageBody, PackageBodyElement, RootElement};
 use sysml_parser::{RootNamespace, Span};
 
+fn expr_to_string(n: &sysml_parser::Node<sysml_parser::Expression>) -> String {
+    use sysml_parser::Expression;
+    match &n.value {
+        Expression::FeatureRef(s) => s.clone(),
+        Expression::MemberAccess(base, member) => {
+            let b = expr_to_string(base);
+            if b.is_empty() {
+                member.clone()
+            } else {
+                format!("{b}.{member}")
+            }
+        }
+        Expression::Index { base, index } => {
+            let b = expr_to_string(base);
+            let i = expr_to_string(index);
+            if b.is_empty() {
+                String::new()
+            } else if i.is_empty() {
+                format!("{b}#()")
+            } else {
+                format!("{b}#({i})")
+            }
+        }
+        Expression::Bracket(inner) => expr_to_string(inner),
+        Expression::LiteralString(s) => s.clone(),
+        Expression::LiteralInteger(i) => i.to_string(),
+        Expression::LiteralReal(s) => s.clone(),
+        Expression::LiteralBoolean(b) => b.to_string(),
+        Expression::LiteralWithUnit { value, unit } => {
+            let v = expr_to_string(value);
+            let u = expr_to_string(unit);
+            if u.is_empty() { v } else { format!("{v} [{u}]") }
+        }
+        Expression::BinaryOp { op, left, right } => {
+            format!("({} {} {})", expr_to_string(left), op, expr_to_string(right))
+        }
+        Expression::UnaryOp { op, operand } => format!("({}{})", op, expr_to_string(operand)),
+        Expression::Null => String::new(),
+    }
+}
+
 /// Position DTO for JSON (matches vscode sysmlModelTypes)
 #[derive(Debug, Clone, Serialize)]
 pub struct PositionDto {
@@ -55,6 +96,8 @@ fn default_range_dto() -> RangeDto {
 pub struct ActivityDiagramDto {
     pub name: String,
     pub actions: Vec<ActivityActionDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub interface: Option<ActivityInterfaceDto>,
     pub decisions: Vec<DecisionNodeDto>,
     pub flows: Vec<ControlFlowDto>,
     pub states: Vec<ActivityStateDto>,
@@ -70,7 +113,18 @@ pub struct ActivityActionDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub kind: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub inputs: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub outputs: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub range: Option<RangeDto>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ActivityInterfaceDto {
+    pub inputs: Vec<String>,
+    pub outputs: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -198,6 +252,10 @@ fn extract_activity_from_action(
     let name = identification_name(&node.identification);
     let range = span_to_range_dto(&node.span);
     let mut actions = Vec::new();
+    let mut flows = Vec::new();
+    let mut states = Vec::new();
+    let mut interface_inputs = Vec::new();
+    let mut interface_outputs = Vec::new();
     if let ActionDefBody::Brace { elements } = &node.body {
         for (i, element) in elements.iter().enumerate() {
             match &element.value {
@@ -207,16 +265,10 @@ fn extract_activity_from_action(
                     } else {
                         in_out.value.name.clone()
                     };
-                    let kind = Some(match in_out.value.direction {
-                        sysml_parser::ast::InOut::In => "input".to_string(),
-                        sysml_parser::ast::InOut::Out => "output".to_string(),
-                    });
-                    actions.push(ActivityActionDto {
-                        name: param_name,
-                        action_type: "action".to_string(),
-                        kind,
-                        range: Some(span_to_range_dto(&in_out.span)),
-                    });
+                    match in_out.value.direction {
+                        sysml_parser::ast::InOut::In => interface_inputs.push(param_name),
+                        sysml_parser::ast::InOut::Out => interface_outputs.push(param_name),
+                    }
                 }
                 ActionDefBodyElement::Perform(perform) => {
                     let perform_name = if perform.value.action_name.trim().is_empty() {
@@ -232,42 +284,84 @@ fn extract_activity_from_action(
                         name: perform_name,
                         action_type: "action".to_string(),
                         kind: Some("perform".to_string()),
+                        inputs: None,
+                        outputs: None,
                         range: Some(span_to_range_dto(&perform.span)),
+                    });
+                }
+                ActionDefBodyElement::ActionUsage(usage) => {
+                    let u = usage.as_ref();
+                    let mut inputs = Vec::new();
+                    if let Some((ref accept_name, _accept_type)) = &u.accept {
+                        inputs.push(accept_name.clone());
+                    }
+                    actions.push(ActivityActionDto {
+                        name: u.name.clone(),
+                        action_type: "action".to_string(),
+                        kind: Some("usage".to_string()),
+                        inputs: if inputs.is_empty() { None } else { Some(inputs) },
+                        outputs: None,
+                        range: Some(span_to_range_dto(&u.span)),
+                    });
+                }
+                ActionDefBodyElement::Bind(bind) => {
+                    let left = expr_to_string(&bind.value.left);
+                    let right = expr_to_string(&bind.value.right);
+                    if !left.is_empty() && !right.is_empty() {
+                        flows.push(ControlFlowDto {
+                            from: left,
+                            to: right,
+                            condition: None,
+                            guard: Some("bind".to_string()),
+                            range: span_to_range_dto(&bind.span),
+                        });
+                    }
+                }
+                ActionDefBodyElement::Flow(flow) => {
+                    let from = expr_to_string(&flow.value.from);
+                    let to = expr_to_string(&flow.value.to);
+                    if !from.is_empty() && !to.is_empty() {
+                        flows.push(ControlFlowDto {
+                            from,
+                            to,
+                            condition: None,
+                            guard: Some("flow".to_string()),
+                            range: span_to_range_dto(&flow.span),
+                        });
+                    }
+                }
+                ActionDefBodyElement::FirstStmt(first) => {
+                    let from = expr_to_string(&first.value.first);
+                    let to = expr_to_string(&first.value.then);
+                    if !from.is_empty() && !to.is_empty() {
+                        flows.push(ControlFlowDto {
+                            from,
+                            to,
+                            condition: None,
+                            guard: Some("first".to_string()),
+                            range: span_to_range_dto(&first.span),
+                        });
+                    }
+                }
+                ActionDefBodyElement::MergeStmt(merge) => {
+                    let m = expr_to_string(&merge.value.merge);
+                    states.push(ActivityStateDto {
+                        name: if m.is_empty() { format!("merge_{}", i) } else { m },
+                        state_type: "merge".to_string(),
+                        range: span_to_range_dto(&merge.span),
                     });
                 }
                 ActionDefBodyElement::Error(_) | ActionDefBodyElement::Doc(_) => {}
             }
         }
     }
-    let mut flows = Vec::new();
-    let mut prev: Option<String> = None;
-    for a in &actions {
-        if let Some(ref p) = prev {
-            flows.push(ControlFlowDto {
-                from: p.clone(),
-                to: a.name.clone(),
-                condition: None,
-                guard: None,
-                range: default_range_dto(),
-            });
-        }
-        prev = Some(a.name.clone());
-    }
-    let states = if actions.is_empty() {
-        vec![]
+    let interface = if interface_inputs.is_empty() && interface_outputs.is_empty() {
+        None
     } else {
-        vec![
-            ActivityStateDto {
-                name: "initial".to_string(),
-                state_type: "initial".to_string(),
-                range: default_range_dto(),
-            },
-            ActivityStateDto {
-                name: "final".to_string(),
-                state_type: "final".to_string(),
-                range: default_range_dto(),
-            },
-        ]
+        Some(ActivityInterfaceDto {
+            inputs: interface_inputs,
+            outputs: interface_outputs,
+        })
     };
     ActivityDiagramDto {
         name: if name.is_empty() {
@@ -276,6 +370,7 @@ fn extract_activity_from_action(
             name
         },
         actions,
+        interface,
         decisions: vec![],
         flows,
         states,
@@ -337,7 +432,7 @@ mod tests {
     use sysml_parser::parse;
 
     #[test]
-    fn extract_activity_diagrams_uses_real_in_out_names() {
+    fn extract_activity_diagrams_exposes_in_out_as_interface_metadata() {
         let input = r#"
             package P {
                 action def UpdateDisplay {
@@ -350,11 +445,11 @@ mod tests {
         let root = parse(input).expect("parse");
         let diagrams = extract_activity_diagrams(&root);
         let diagram = diagrams.iter().find(|d| d.name == "UpdateDisplay").expect("diagram");
-        let action_names: Vec<_> = diagram.actions.iter().map(|a| a.name.as_str()).collect();
 
-        assert_eq!(action_names, vec!["currentTime", "displayText"]);
-        assert_eq!(diagram.actions[0].kind.as_deref(), Some("input"));
-        assert_eq!(diagram.actions[1].kind.as_deref(), Some("output"));
+        assert!(diagram.actions.is_empty(), "interface declarations should not become flow steps");
+        assert_eq!(diagram.interface.as_ref().map(|itf| itf.inputs.clone()), Some(vec!["currentTime".to_string()]));
+        assert_eq!(diagram.interface.as_ref().map(|itf| itf.outputs.clone()), Some(vec!["displayText".to_string()]));
+        assert!(diagram.flows.is_empty(), "should not synthesize pseudo-flows");
     }
 
     #[test]
@@ -374,12 +469,73 @@ mod tests {
         let diagram = diagrams.iter().find(|d| d.name == "ExecuteMission").expect("diagram");
         let action_names: Vec<_> = diagram.actions.iter().map(|a| a.name.as_str()).collect();
 
-        assert_eq!(action_names, vec!["route", "captureVideo", "report"]);
-        assert_eq!(diagram.actions[1].kind.as_deref(), Some("perform"));
-        assert_eq!(diagram.flows.len(), 2);
-        assert_eq!(diagram.flows[0].from, "route");
-        assert_eq!(diagram.flows[0].to, "captureVideo");
-        assert_eq!(diagram.flows[1].from, "captureVideo");
-        assert_eq!(diagram.flows[1].to, "report");
+        assert_eq!(action_names, vec!["captureVideo"]);
+        assert_eq!(diagram.actions[0].kind.as_deref(), Some("perform"));
+        assert_eq!(diagram.interface.as_ref().map(|itf| itf.inputs.clone()), Some(vec!["route".to_string()]));
+        assert_eq!(diagram.interface.as_ref().map(|itf| itf.outputs.clone()), Some(vec!["report".to_string()]));
+        assert!(diagram.flows.is_empty(), "perform-only diagrams should not invent ordering edges");
+    }
+
+    #[test]
+    fn extract_activity_diagrams_includes_usage_bind_and_flows() {
+        let input = r#"
+            package P {
+                action def ExecuteMission {
+                    in route : Route;
+                    action captureVideo : CaptureVideo;
+                    bind route = captureVideo;
+                    flow captureVideo to route;
+                    first captureVideo then route;
+                    merge route;
+                    out report : MissionReport;
+                }
+            }
+        "#;
+
+        let root = parse(input).expect("parse");
+        let diagrams = extract_activity_diagrams(&root);
+        let diagram = diagrams.iter().find(|d| d.name == "ExecuteMission").expect("diagram");
+
+        assert!(
+            diagram.actions.iter().any(|a| a.name == "captureVideo" && a.kind.as_deref() == Some("usage")),
+            "expected action usage step"
+        );
+        assert!(
+            diagram.flows.iter().any(|f| f.guard.as_deref() == Some("bind")),
+            "expected bind to be represented as a guarded flow edge"
+        );
+        assert!(
+            diagram.flows.iter().any(|f| f.guard.as_deref() == Some("flow")),
+            "expected flow statement edge"
+        );
+        assert!(
+            diagram.flows.iter().any(|f| f.guard.as_deref() == Some("first")),
+            "expected first/then edge"
+        );
+        assert!(
+            diagram.states.iter().any(|s| s.state_type == "merge"),
+            "expected merge node"
+        );
+    }
+
+    #[test]
+    fn extract_activity_diagrams_with_only_interface_have_no_behavior_nodes() {
+        let input = r#"
+            package P {
+                action def ValidateRoute {
+                    in route : Route;
+                    out isValid : Boolean;
+                }
+            }
+        "#;
+
+        let root = parse(input).expect("parse");
+        let diagrams = extract_activity_diagrams(&root);
+        let diagram = diagrams.iter().find(|d| d.name == "ValidateRoute").expect("diagram");
+
+        assert!(diagram.actions.is_empty());
+        assert!(diagram.flows.is_empty());
+        assert!(diagram.states.is_empty());
+        assert!(diagram.interface.is_some());
     }
 }

@@ -16,6 +16,8 @@ type ActivityActionNode = {
     type?: string;
     kind?: string;
     parent?: string;
+    inputs?: string[];
+    outputs?: string[];
 };
 
 type ActivityFlow = {
@@ -77,32 +79,14 @@ function isFork(action: ActivityActionNode): boolean {
     return kind.includes('fork') || kind.includes('join');
 }
 
-function visualKind(action: ActivityActionNode): 'input' | 'output' | 'perform' | 'regular' {
+function visualKind(action: ActivityActionNode): 'perform' | 'regular' {
     const kind = nodeKind(action);
-    if (kind.includes('input') || kind === 'in') return 'input';
-    if (kind.includes('output') || kind === 'out') return 'output';
     if (kind.includes('perform')) return 'perform';
     return 'regular';
 }
 
 function actionPalette(action: ActivityActionNode): { fill: string; border: string; accent: string; chip: string } {
     const visual = visualKind(action);
-    if (visual === 'input') {
-        return {
-            fill: 'rgba(76, 163, 255, 0.10)',
-            border: '#4CA3FF',
-            accent: '#7FC0FF',
-            chip: 'INPUT',
-        };
-    }
-    if (visual === 'output') {
-        return {
-            fill: 'rgba(55, 196, 141, 0.10)',
-            border: '#37C48D',
-            accent: '#7FDEBA',
-            chip: 'OUTPUT',
-        };
-    }
     if (visual === 'perform') {
         return {
             fill: 'rgba(255, 184, 77, 0.12)',
@@ -209,6 +193,8 @@ function renderActionNode(
     if (isInitial(action) || isFinal(action)) {
         nodeGroup.append('circle')
             .attr('class', 'node-background')
+            .attr('data-original-stroke', DIAGRAM_STYLE.nodeBorder)
+            .attr('data-original-width', '2px')
             .attr('cx', layout.width / 2)
             .attr('cy', layout.height / 2)
             .attr('r', TERMINAL_SIZE / 2 - 2)
@@ -228,6 +214,8 @@ function renderActionNode(
         const cy = layout.height / 2;
         nodeGroup.append('path')
             .attr('class', 'node-background')
+            .attr('data-original-stroke', DIAGRAM_STYLE.edgePrimary)
+            .attr('data-original-width', '2px')
             .attr('d', `M${cx},0 L${layout.width},${cy} L${cx},${layout.height} L0,${cy} Z`)
             .style('fill', 'var(--vscode-editor-background)')
             .style('stroke', DIAGRAM_STYLE.edgePrimary)
@@ -235,6 +223,8 @@ function renderActionNode(
     } else if (isFork(action)) {
         nodeGroup.append('rect')
             .attr('class', 'node-background')
+            .attr('data-original-stroke', 'none')
+            .attr('data-original-width', '0px')
             .attr('x', 0)
             .attr('y', 0)
             .attr('width', layout.width)
@@ -245,6 +235,8 @@ function renderActionNode(
     } else {
         nodeGroup.append('rect')
             .attr('class', 'node-background')
+            .attr('data-original-stroke', palette.border)
+            .attr('data-original-width', '2px')
             .attr('width', layout.width)
             .attr('height', layout.height)
             .attr('rx', 8)
@@ -313,6 +305,35 @@ function renderActionNode(
             .style('letter-spacing', '0.5px')
             .style('fill', palette.accent)
             .style('pointer-events', 'none');
+    }
+
+    if (!isInitial(action) && !isFinal(action) && !isDecision(action) && !isFork(action)) {
+        const ioBadges = [
+            ...(Array.isArray(action.inputs) && action.inputs.length ? [`in: ${truncateToFit(action.inputs.join(', '), 18)}`] : []),
+            ...(Array.isArray(action.outputs) && action.outputs.length ? [`out: ${truncateToFit(action.outputs.join(', '), 18)}`] : []),
+        ];
+        ioBadges.forEach((badge, idx) => {
+            const badgeWidth = badge.length * 5.8 + 14;
+            const badgeY = layout.height - 22 - (palette.chip ? 18 : 0) - (idx * 17);
+            nodeGroup.append('rect')
+                .attr('x', layout.width / 2 - badgeWidth / 2)
+                .attr('y', badgeY)
+                .attr('width', badgeWidth)
+                .attr('height', 14)
+                .attr('rx', 7)
+                .style('fill', 'var(--vscode-editor-background)')
+                .style('stroke', DIAGRAM_STYLE.nodeBorder)
+                .style('stroke-width', '1px');
+            nodeGroup.append('text')
+                .attr('x', layout.width / 2)
+                .attr('y', badgeY + 10)
+                .attr('text-anchor', 'middle')
+                .text(badge)
+                .style('font-size', '8px')
+                .style('font-weight', '600')
+                .style('fill', 'var(--vscode-descriptionForeground)')
+                .style('pointer-events', 'none');
+        });
     }
 
     nodeGroup.on('click', handleClick)
@@ -417,12 +438,30 @@ export async function renderActivityView(ctx: ActivityRenderContext, data: any):
     }
 
     const diagram = data.diagrams[Math.min(selectedDiagramIndex, data.diagrams.length - 1)];
-    if (!diagram?.actions?.length) {
-        renderPlaceholder(width, height, 'Action Flow View', 'No actions found in the selected activity diagram.', data);
+    if (!diagram?.nodes?.length) {
+        renderPlaceholder(width, height, 'Action Flow View', 'No behavioral action nodes found in the selected activity diagram.', data);
+        return;
+    }
+    if (!diagram?.flows?.length) {
+        const interfaceSummary = [
+            Array.isArray(diagram.interface?.inputs) && diagram.interface.inputs.length
+                ? `Inputs: ${diagram.interface.inputs.join(', ')}`
+                : '',
+            Array.isArray(diagram.interface?.outputs) && diagram.interface.outputs.length
+                ? `Outputs: ${diagram.interface.outputs.join(', ')}`
+                : '',
+        ].filter(Boolean).join('\n');
+        renderPlaceholder(
+            width,
+            height,
+            'Action Flow View',
+            `No explicit behavioral flows found for "${diagram.name}".\n\nThis view no longer invents pseudo-flows from parameter order.${interfaceSummary ? `\n\n${interfaceSummary}` : ''}`,
+            data,
+        );
         return;
     }
 
-    const actions: ActivityActionNode[] = diagram.actions.map((action: any, idx: number) => ({
+    const actions: ActivityActionNode[] = diagram.nodes.map((action: any, idx: number) => ({
         ...action,
         id: action.id || action.name || `action_${idx + 1}`,
         name: action.name || action.id || `Action ${idx + 1}`,
@@ -462,6 +501,23 @@ export async function renderActivityView(ctx: ActivityRenderContext, data: any):
         .style('font-size', '16px')
         .style('font-weight', '700')
         .style('fill', 'var(--vscode-editor-foreground)');
+
+    const interfaceParts = [
+        Array.isArray(diagram.interface?.inputs) && diagram.interface.inputs.length
+            ? `Inputs: ${diagram.interface.inputs.join(', ')}`
+            : '',
+        Array.isArray(diagram.interface?.outputs) && diagram.interface.outputs.length
+            ? `Outputs: ${diagram.interface.outputs.join(', ')}`
+            : '',
+    ].filter(Boolean);
+    if (interfaceParts.length > 0) {
+        g.append('text')
+            .attr('x', 36)
+            .attr('y', 52)
+            .text(interfaceParts.join('  |  '))
+            .style('font-size', '11px')
+            .style('fill', 'var(--vscode-descriptionForeground)');
+    }
 
     const flowGroup = g.append('g').attr('class', 'activity-flows');
     const actionGroup = g.append('g').attr('class', 'activity-actions');
