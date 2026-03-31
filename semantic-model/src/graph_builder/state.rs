@@ -48,24 +48,99 @@ pub(super) fn build_from_state_body(
                 }
             }
             SDBE::Transition(transition_node) => {
-                if let Some(src_expr) = &transition_node.source {
+                let t = &transition_node.value;
+                let tgt_rel = expressions::expr_node_to_qualified_string(&t.target);
+                if tgt_rel.is_empty() {
+                    continue;
+                }
+                let tgt = if let Some(prefix) = container_prefix {
+                    format!("{}::{}", prefix, tgt_rel)
+                } else {
+                    tgt_rel
+                };
+                let src = if let Some(src_expr) = &t.source {
                     let src_rel = expressions::expr_node_to_qualified_string(src_expr);
-                    let tgt_rel =
-                        expressions::expr_node_to_qualified_string(&transition_node.target);
-                    if !src_rel.is_empty() && !tgt_rel.is_empty() {
-                        let (src, tgt) = if let Some(prefix) = container_prefix {
-                            (
-                                format!("{}::{}", prefix, src_rel),
-                                format!("{}::{}", prefix, tgt_rel),
-                            )
-                        } else {
-                            (src_rel, tgt_rel)
-                        };
-                        add_edge_if_both_exist(g, uri, &src, &tgt, RelationshipKind::Transition);
+                    if src_rel.is_empty() {
+                        continue;
                     }
+                    if let Some(prefix) = container_prefix {
+                        format!("{}::{}", prefix, src_rel)
+                    } else {
+                        src_rel
+                    }
+                } else {
+                    parent_id.qualified_name.clone()
+                };
+                add_edge_if_both_exist(g, uri, &src, &tgt, RelationshipKind::Transition);
+            }
+            SDBE::Then(then_node) => {
+                let state_name = &then_node.value.state_name;
+                let tgt = if let Some(prefix) = container_prefix {
+                    format!("{}::{}", prefix, state_name)
+                } else {
+                    state_name.clone()
+                };
+                add_edge_if_both_exist(
+                    g,
+                    uri,
+                    &parent_id.qualified_name,
+                    &tgt,
+                    RelationshipKind::InitialState,
+                );
+            }
+            SDBE::Entry(entry_node) => {
+                let en = &entry_node.value;
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    "_entry",
+                    "entry",
+                );
+                let mut attrs = HashMap::new();
+                if let Some(ref an) = en.action_name {
+                    attrs.insert("actionName".to_string(), serde_json::json!(an));
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "entry",
+                    "entry".to_string(),
+                    span_to_range(&entry_node.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                let entry_id = NodeId::new(uri, &qualified);
+                if let StateDefBody::Brace { elements } = &en.body {
+                    build_from_state_body(elements, uri, Some(&qualified), &entry_id, g);
                 }
             }
-            _ => {}
+            SDBE::Ref(r) => {
+                let n = &r.value;
+                let qualified = qualified_name_for_node(g, uri, container_prefix, &n.name, "ref");
+                let range = span_to_range(&r.span);
+                let mut attrs = HashMap::new();
+                attrs.insert("refType".to_string(), serde_json::json!(&n.type_name));
+                if let Some(ref v) = n.value {
+                    attrs.insert(
+                        "value".to_string(),
+                        serde_json::json!(expressions::expression_to_debug_string(v)),
+                    );
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "ref",
+                    n.name.clone(),
+                    range,
+                    attrs,
+                    Some(parent_id),
+                );
+                add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
+            }
+            SDBE::Error(_) | SDBE::Doc(_) => {}
         }
     }
 }

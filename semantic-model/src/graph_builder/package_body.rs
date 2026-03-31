@@ -1,21 +1,21 @@
 use std::collections::HashMap;
 
 use sysml_parser::ast::{
-    InterfaceDefBody, PackageBody, PackageBodyElement, PartDefBody, PartUsageBody, PortDefBody,
-    StateDefBody, UseCaseDefBody,
+    ConnectionDefBody, InterfaceDefBody, PackageBody, PackageBodyElement, PartDefBody,
+    PartUsageBody, PortDefBody, StateDefBody, UseCaseDefBody,
 };
 use sysml_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
 
 use crate::ast_util::{identification_name, span_to_range};
 use crate::graph::SemanticGraph;
-use super::requirement_subjects::add_requirement_subject_edges;
+use super::requirement_body::{import_member_label, walk_requirement_def_body};
 use crate::model::{NodeId, RelationshipKind, SemanticNode};
 use crate::relationships::{add_specializes_edge_if_exists, add_typing_edge_if_exists};
 
 use super::expressions;
 use super::{add_node_and_recurse, qualified_name_for_node};
-use super::{part_def, part_usage, port_def, state, stubs, use_case};
+use super::{interface_def, part_def, part_usage, port_def, state, stubs, use_case};
 
 pub(super) fn build_from_package_body_element(
     node: &sysml_parser::Node<PackageBodyElement>,
@@ -118,6 +118,15 @@ pub(super) fn build_from_package_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "part def");
             let range = span_to_range(&pd_node.span);
             let mut attrs = HashMap::new();
+            if let Some(ref p) = pd_node.definition_prefix {
+                attrs.insert(
+                    "definitionPrefix".to_string(),
+                    serde_json::json!(match p {
+                        sysml_parser::ast::DefinitionPrefix::Abstract => "abstract",
+                        sysml_parser::ast::DefinitionPrefix::Variation => "variation",
+                    }),
+                );
+            }
             if let Some(ref s) = pd_node.specializes {
                 attrs.insert("specializes".to_string(), serde_json::json!(s));
             }
@@ -161,6 +170,25 @@ pub(super) fn build_from_package_body_element(
             if let Some(ref m) = pu_node.multiplicity {
                 attrs.insert("multiplicity".to_string(), serde_json::json!(m));
             }
+            attrs.insert("ordered".to_string(), serde_json::json!(pu_node.ordered));
+            if let Some((ref feat, ref val)) = pu_node.subsets {
+                attrs.insert("subsetsFeature".to_string(), serde_json::json!(feat));
+                if let Some(v) = val {
+                    attrs.insert(
+                        "subsetsValue".to_string(),
+                        serde_json::json!(expressions::expression_to_debug_string(v)),
+                    );
+                }
+            }
+            if let Some(ref r) = pu_node.redefines {
+                attrs.insert("redefines".to_string(), serde_json::json!(r));
+            }
+            if let Some(ref v) = pu_node.value.value {
+                attrs.insert(
+                    "value".to_string(),
+                    serde_json::json!(expressions::expression_to_debug_string(v)),
+                );
+            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -199,6 +227,10 @@ pub(super) fn build_from_package_body_element(
             let name = identification_name(&pd_node.identification);
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "port def");
             let range = span_to_range(&pd_node.span);
+            let mut attrs = HashMap::new();
+            if let Some(ref s) = pd_node.specializes {
+                attrs.insert("specializes".to_string(), serde_json::json!(s));
+            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -206,7 +238,7 @@ pub(super) fn build_from_package_body_element(
                 "port def",
                 name.clone(),
                 range,
-                HashMap::new(),
+                attrs,
                 parent_id,
             );
             let node_id = NodeId::new(uri, &qualified);
@@ -220,6 +252,9 @@ pub(super) fn build_from_package_body_element(
                         g,
                     );
                 }
+            }
+            if let Some(ref s) = pd_node.specializes {
+                add_specializes_edge_if_exists(g, uri, &qualified, s, container_prefix);
             }
         }
         PBE::InterfaceDef(id_node) => {
@@ -236,10 +271,16 @@ pub(super) fn build_from_package_body_element(
                 HashMap::new(),
                 parent_id,
             );
-            let _node_id = NodeId::new(uri, &qualified);
+            let node_id = NodeId::new(uri, &qualified);
             if let InterfaceDefBody::Brace { elements } = &id_node.body {
-                for _ in elements {
-                    // EndDecl, RefDecl, ConnectStmt - we don't add graph nodes for them for now
+                for el in elements {
+                    interface_def::build_from_interface_def_body_element(
+                        el,
+                        uri,
+                        Some(&qualified),
+                        &node_id,
+                        g,
+                    );
                 }
             }
         }
@@ -331,7 +372,15 @@ pub(super) fn build_from_package_body_element(
                 HashMap::new(),
                 parent_id,
             );
-            add_requirement_subject_edges(g, uri, container_prefix, &qualified, &rd_node.body);
+            let node_id = NodeId::new(uri, &qualified);
+            walk_requirement_def_body(
+                g,
+                uri,
+                container_prefix,
+                &qualified,
+                &node_id,
+                &rd_node.body,
+            );
         }
         PBE::RequirementUsage(ru_node) => {
             let name = &ru_node.name;
@@ -354,7 +403,15 @@ pub(super) fn build_from_package_body_element(
             if let Some(ref t) = ru_node.type_name {
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
-            add_requirement_subject_edges(g, uri, container_prefix, &qualified, &ru_node.body);
+            let node_id = NodeId::new(uri, &qualified);
+            walk_requirement_def_body(
+                g,
+                uri,
+                container_prefix,
+                &qualified,
+                &node_id,
+                &ru_node.body,
+            );
         }
         PBE::Satisfy(satisfy_node) => {
             expressions::add_expression_edge_if_both_exist(
@@ -387,6 +444,15 @@ pub(super) fn build_from_package_body_element(
             if let Some(ref t) = cu_node.type_name {
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
+            let node_id = NodeId::new(uri, &qualified);
+            walk_requirement_def_body(
+                g,
+                uri,
+                container_prefix,
+                &qualified,
+                &node_id,
+                &cu_node.body,
+            );
         }
         PBE::UseCaseDef(ucd_node) => {
             let name = identification_name(&ucd_node.identification);
@@ -549,19 +615,34 @@ pub(super) fn build_from_package_body_element(
         }
         PBE::ConnectionDef(conn_node) => {
             let name = identification_name(&conn_node.identification);
-            if !name.is_empty() {
-                let qualified =
-                    qualified_name_for_node(g, uri, container_prefix, &name, "connection def");
-                add_node_and_recurse(
-                    g,
-                    uri,
-                    &qualified,
-                    "connection def",
-                    name,
-                    span_to_range(&conn_node.span),
-                    HashMap::new(),
-                    parent_id,
-                );
+            let base_name = if name.is_empty() {
+                "_connectionDef"
+            } else {
+                name.as_str()
+            };
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, base_name, "connection def");
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "connection def",
+                base_name.to_string(),
+                span_to_range(&conn_node.span),
+                HashMap::new(),
+                parent_id,
+            );
+            let node_id = NodeId::new(uri, &qualified);
+            if let ConnectionDefBody::Brace { elements } = &conn_node.body {
+                for el in elements {
+                    interface_def::build_from_connection_def_body_element(
+                        el,
+                        uri,
+                        Some(&qualified),
+                        &node_id,
+                        g,
+                    );
+                }
             }
         }
         PBE::FlowDef(flow_node) => {
@@ -937,7 +1018,164 @@ pub(super) fn build_from_package_body_element(
                 parent_id,
             );
         }
-        PBE::Import(_) => {}
-        _ => {}
+        PBE::Import(imp) => {
+            if let Some(pid) = parent_id {
+                let v = &imp.value;
+                let name = import_member_label(&v.target);
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "import");
+                let mut attrs = HashMap::new();
+                attrs.insert("importTarget".to_string(), serde_json::json!(&v.target));
+                attrs.insert("importAll".to_string(), serde_json::json!(v.is_import_all));
+                if let Some(vis) = &v.visibility {
+                    attrs.insert(
+                        "visibility".to_string(),
+                        serde_json::json!(format!("{vis:?}")),
+                    );
+                }
+                attrs.insert("recursive".to_string(), serde_json::json!(v.is_recursive));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "import",
+                    name,
+                    span_to_range(&imp.span),
+                    attrs,
+                    Some(pid),
+                );
+            }
+        }
+        // Intentionally omitted from the graph: parse placeholders and documentation-only members.
+        PBE::Error(_) | PBE::Doc(_) | PBE::Comment(_) => {}
+        PBE::TextualRep(t) => {
+            if let Some(pid) = parent_id {
+                let tr = &t.value;
+                let name = tr
+                    .rep_identification
+                    .as_ref()
+                    .map(identification_name)
+                    .filter(|s| !s.is_empty())
+                    .unwrap_or_else(|| "_textualRep".to_string());
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "textualRep");
+                let mut attrs = HashMap::new();
+                attrs.insert("language".to_string(), serde_json::json!(&tr.language));
+                attrs.insert("text".to_string(), serde_json::json!(&tr.text));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "textualRep",
+                    name,
+                    span_to_range(&t.span),
+                    attrs,
+                    Some(pid),
+                );
+            }
+        }
+        PBE::Filter(f) => {
+            if let Some(pid) = parent_id {
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, "_filter", "filter");
+                let mut attrs = HashMap::new();
+                attrs.insert(
+                    "condition".to_string(),
+                    serde_json::json!(expressions::expression_to_debug_string(
+                        &f.value.condition
+                    )),
+                );
+                if let Some(vis) = &f.value.visibility {
+                    attrs.insert(
+                        "visibility".to_string(),
+                        serde_json::json!(format!("{vis:?}")),
+                    );
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "filter",
+                    "_filter".to_string(),
+                    span_to_range(&f.span),
+                    attrs,
+                    Some(pid),
+                );
+            }
+        }
+        PBE::KermlSemanticDecl(k) => {
+            if let Some(pid) = parent_id {
+                let kv = &k.value;
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, "_kermlSemantic", "kermlDecl");
+                let mut attrs = HashMap::new();
+                attrs.insert(
+                    "bnfProduction".to_string(),
+                    serde_json::json!(&kv.bnf_production),
+                );
+                attrs.insert("text".to_string(), serde_json::json!(&kv.text));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "kermlDecl",
+                    "_kermlSemantic".to_string(),
+                    span_to_range(&k.span),
+                    attrs,
+                    Some(pid),
+                );
+            }
+        }
+        PBE::KermlFeatureDecl(k) => {
+            if let Some(pid) = parent_id {
+                let kv = &k.value;
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, "_kermlFeature", "kermlDecl");
+                let mut attrs = HashMap::new();
+                attrs.insert(
+                    "bnfProduction".to_string(),
+                    serde_json::json!(&kv.bnf_production),
+                );
+                attrs.insert("text".to_string(), serde_json::json!(&kv.text));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "kermlDecl",
+                    "_kermlFeature".to_string(),
+                    span_to_range(&k.span),
+                    attrs,
+                    Some(pid),
+                );
+            }
+        }
+        PBE::ExtendedLibraryDecl(k) => {
+            if let Some(pid) = parent_id {
+                let kv = &k.value;
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    "_extendedLibrary",
+                    "kermlDecl",
+                );
+                let mut attrs = HashMap::new();
+                attrs.insert(
+                    "bnfProduction".to_string(),
+                    serde_json::json!(&kv.bnf_production),
+                );
+                attrs.insert("text".to_string(), serde_json::json!(&kv.text));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "kermlDecl",
+                    "_extendedLibrary".to_string(),
+                    span_to_range(&k.span),
+                    attrs,
+                    Some(pid),
+                );
+            }
+        }
     }
 }

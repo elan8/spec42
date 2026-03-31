@@ -687,4 +687,162 @@ mod tests {
             edges
         );
     }
+
+    #[test]
+    fn interface_def_body_adds_end_ref_and_connect_structure() {
+        let input = r#"
+            package P {
+                port def A {}
+                port def B {}
+                interface def I {
+                    end a : A;
+                    ref r : A;
+                    connect a to r;
+                }
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let g = build_graph_from_doc(&root, &uri);
+        let kinds: Vec<_> = g
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .map(|n| n.element_kind.as_str())
+            .collect();
+        assert!(
+            kinds.iter().any(|k| *k == "interface end"),
+            "expected interface end node; kinds: {:?}",
+            kinds
+        );
+        assert!(
+            kinds.iter().filter(|k| **k == "ref").count() >= 1,
+            "expected ref node; kinds: {:?}",
+            kinds
+        );
+        let edges = g.edges_for_uri_as_strings(&uri);
+        assert!(
+            edges
+                .iter()
+                .any(|(_, _, k, _)| *k == RelationshipKind::Connection),
+            "expected connect stmt as connection edge; edges: {:?}",
+            edges
+        );
+    }
+
+    #[test]
+    fn part_def_exhibit_state_and_port_def_in_out_are_nodes() {
+        let input = r#"
+            package P {
+                state def S {}
+                part def Q {
+                    exhibit state x : S;
+                }
+                port def Pd {
+                    in p : A;
+                    attribute a;
+                }
+                item def A {}
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let g = build_graph_from_doc(&root, &uri);
+        assert!(
+            g.nodes_for_uri(&uri)
+                .iter()
+                .any(|n| n.element_kind == "exhibit state" && n.name == "x"),
+            "exhibit state node missing"
+        );
+        assert!(
+            g.nodes_for_uri(&uri)
+                .iter()
+                .any(|n| n.element_kind == "in out parameter" && n.name == "p"),
+            "in out parameter missing"
+        );
+    }
+
+    #[test]
+    fn state_body_then_and_transition_without_source() {
+        let input = r#"
+            package P {
+                state def M {
+                    state idle;
+                    state run;
+                    then idle;
+                    transition t then run;
+                    transition u first idle then run;
+                }
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let g = build_graph_from_doc(&root, &uri);
+        let edges = g.edges_for_uri_as_strings(&uri);
+        assert!(
+            edges.iter().any(|(_, _, k, _)| *k == RelationshipKind::InitialState),
+            "expected initialState edge; edges: {:?}",
+            edges
+        );
+        assert!(
+            edges.iter().any(|(s, t, k, _)| {
+                *k == RelationshipKind::Transition && s.ends_with("M") && t.contains("run")
+            }),
+            "expected transition from composite when source omitted; edges: {:?}",
+            edges
+        );
+    }
+
+    #[test]
+    fn use_case_subject_emits_subject_edge() {
+        let input = r#"
+            package P {
+                part def Sys {}
+                use case def U {
+                    subject s : Sys;
+                }
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let g = build_graph_from_doc(&root, &uri);
+        let edges = g.edges_for_uri_as_strings(&uri);
+        assert!(
+            edges.iter().any(|(src, tgt, k, _)| {
+                *k == RelationshipKind::Subject && src.ends_with("U") && tgt.ends_with("Sys")
+            }),
+            "use case subject edge missing; edges: {:?}",
+            edges
+        );
+    }
+
+    #[test]
+    fn requirement_body_import_and_require_constraint_nodes() {
+        let input = r#"
+            package P {
+                package Q {}
+                requirement def R {
+                    import Q::*;
+                    require constraint { }
+                }
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let g = build_graph_from_doc(&root, &uri);
+        let kinds: Vec<_> = g
+            .nodes_for_uri(&uri)
+            .iter()
+            .map(|n| n.element_kind.as_str())
+            .collect();
+        assert!(
+            kinds.contains(&"import"),
+            "expected import node in requirement body; kinds: {:?}",
+            kinds
+        );
+        assert!(
+            kinds.contains(&"require constraint"),
+            "expected require constraint node; kinds: {:?}",
+            kinds
+        );
+    }
 }

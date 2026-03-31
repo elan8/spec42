@@ -4,9 +4,10 @@ use tower_lsp::lsp_types::Url;
 
 use crate::ast_util::span_to_range;
 use crate::graph::SemanticGraph;
-use crate::model::NodeId;
-use crate::relationships::add_typing_edge_if_exists;
+use crate::model::{NodeId, RelationshipKind};
+use crate::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
+use super::requirement_body::resolve_subject_type_target_qualified;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
 pub(super) fn build_from_use_case_body(
@@ -18,26 +19,65 @@ pub(super) fn build_from_use_case_body(
 ) {
     use sysml_parser::ast::UseCaseDefBodyElement as UCBE;
     for node in elements {
-        if let UCBE::ActorUsage(actor_node) = &node.value {
-            let name = &actor_node.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "actor");
-            let range = span_to_range(&actor_node.span);
-            let mut attrs = HashMap::new();
-            attrs.insert(
-                "actorType".to_string(),
-                serde_json::json!(&actor_node.type_name),
-            );
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "actor",
-                name.clone(),
-                range,
-                attrs,
-                Some(parent_id),
-            );
-            add_typing_edge_if_exists(g, uri, &qualified, &actor_node.type_name, container_prefix);
+        match &node.value {
+            UCBE::ActorUsage(actor_node) => {
+                let name = &actor_node.name;
+                let qualified = qualified_name_for_node(g, uri, container_prefix, name, "actor");
+                let range = span_to_range(&actor_node.span);
+                let mut attrs = HashMap::new();
+                attrs.insert(
+                    "actorType".to_string(),
+                    serde_json::json!(&actor_node.type_name),
+                );
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "actor",
+                    name.clone(),
+                    range,
+                    attrs,
+                    Some(parent_id),
+                );
+                add_typing_edge_if_exists(g, uri, &qualified, &actor_node.type_name, container_prefix);
+            }
+            UCBE::SubjectDecl(sd) => {
+                let target = resolve_subject_type_target_qualified(
+                    g,
+                    uri,
+                    container_prefix,
+                    sd.value.type_name.as_str(),
+                );
+                if let Some(target_qualified) = target {
+                    add_edge_if_both_exist(
+                        g,
+                        uri,
+                        &parent_id.qualified_name,
+                        &target_qualified,
+                        RelationshipKind::Subject,
+                    );
+                }
+            }
+            UCBE::Objective(obj) => {
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    "_objective",
+                    "objective",
+                );
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "objective",
+                    "objective".to_string(),
+                    span_to_range(&obj.span),
+                    HashMap::new(),
+                    Some(parent_id),
+                );
+            }
+            UCBE::Error(_) | UCBE::Doc(_) => {}
         }
     }
 }

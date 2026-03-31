@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use sysml_parser::ast::{PartDefBody, PartUsageBody};
+use sysml_parser::ast::{PartDefBody, PartUsageBody, StateDefBody};
 use sysml_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
 
@@ -28,6 +28,16 @@ pub(super) fn build_from_part_usage_body_element(
             let name = &n.name;
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute");
             let range = span_to_range(&n.span);
+            let mut attrs = HashMap::new();
+            if let Some(ref r) = n.redefines {
+                attrs.insert("redefines".to_string(), serde_json::json!(r));
+            }
+            if let Some(ref v) = n.value.value {
+                attrs.insert(
+                    "value".to_string(),
+                    serde_json::json!(expressions::expression_to_debug_string(v)),
+                );
+            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -35,7 +45,7 @@ pub(super) fn build_from_part_usage_body_element(
                 "attribute",
                 name.clone(),
                 range,
-                HashMap::new(),
+                attrs,
                 Some(parent_id),
             );
         }
@@ -47,6 +57,25 @@ pub(super) fn build_from_part_usage_body_element(
             attrs.insert("partType".to_string(), serde_json::json!(&n.type_name));
             if let Some(ref m) = n.multiplicity {
                 attrs.insert("multiplicity".to_string(), serde_json::json!(m));
+            }
+            attrs.insert("ordered".to_string(), serde_json::json!(n.ordered));
+            if let Some((ref feat, ref val)) = n.subsets {
+                attrs.insert("subsetsFeature".to_string(), serde_json::json!(feat));
+                if let Some(v) = val {
+                    attrs.insert(
+                        "subsetsValue".to_string(),
+                        serde_json::json!(expressions::expression_to_debug_string(v)),
+                    );
+                }
+            }
+            if let Some(ref r) = n.redefines {
+                attrs.insert("redefines".to_string(), serde_json::json!(r));
+            }
+            if let Some(ref v) = n.value.value {
+                attrs.insert(
+                    "value".to_string(),
+                    serde_json::json!(expressions::expression_to_debug_string(v)),
+                );
             }
             add_node_and_recurse(
                 g,
@@ -89,6 +118,21 @@ pub(super) fn build_from_part_usage_body_element(
             let mut attrs = HashMap::new();
             if let Some(ref t) = n.type_name {
                 attrs.insert("portType".to_string(), serde_json::json!(t));
+            }
+            if let Some(ref m) = n.multiplicity {
+                attrs.insert("multiplicity".to_string(), serde_json::json!(m));
+            }
+            if let Some((ref feat, ref val)) = n.subsets {
+                attrs.insert("subsetsFeature".to_string(), serde_json::json!(feat));
+                if let Some(v) = val {
+                    attrs.insert(
+                        "subsetsValue".to_string(),
+                        serde_json::json!(expressions::expression_to_debug_string(v)),
+                    );
+                }
+            }
+            if let Some(ref r) = n.redefines {
+                attrs.insert("redefines".to_string(), serde_json::json!(r));
             }
             add_node_and_recurse(
                 g,
@@ -178,7 +222,87 @@ pub(super) fn build_from_part_usage_body_element(
                 RelationshipKind::Satisfy,
             );
         }
-        _ => {}
+        PUBE::Ref(r) => {
+            let n = &r.value;
+            let qualified = qualified_name_for_node(g, uri, container_prefix, &n.name, "ref");
+            let range = span_to_range(&r.span);
+            let mut attrs = HashMap::new();
+            attrs.insert("refType".to_string(), serde_json::json!(&n.type_name));
+            if let Some(ref v) = n.value {
+                attrs.insert(
+                    "value".to_string(),
+                    serde_json::json!(expressions::expression_to_debug_string(v)),
+                );
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "ref",
+                n.name.clone(),
+                range,
+                attrs,
+                Some(parent_id),
+            );
+            add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
+        }
+        PUBE::StateUsage(state_node) => {
+            let name = &state_node.name;
+            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "state");
+            let range = span_to_range(&state_node.span);
+            let mut attrs = HashMap::new();
+            if let Some(ref t) = state_node.type_name {
+                attrs.insert("stateType".to_string(), serde_json::json!(t));
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "state",
+                name.clone(),
+                range,
+                attrs,
+                Some(parent_id),
+            );
+            let state_id = NodeId::new(uri, &qualified);
+            if let Some(ref t) = state_node.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
+            if let StateDefBody::Brace { elements } = &state_node.body {
+                super::state::build_from_state_body(
+                    elements,
+                    uri,
+                    Some(&qualified),
+                    &state_id,
+                    g,
+                );
+            }
+        }
+        PUBE::MetadataAnnotation(meta) => {
+            let m = &meta.value;
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &m.name, "metadata usage");
+            let range = span_to_range(&meta.span);
+            let mut attrs = HashMap::new();
+            attrs.insert("annotationName".to_string(), serde_json::json!(&m.name));
+            if let Some(ref t) = m.type_name {
+                attrs.insert("metadataType".to_string(), serde_json::json!(t));
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "metadata usage",
+                m.name.clone(),
+                range,
+                attrs,
+                Some(parent_id),
+            );
+            if let Some(ref t) = m.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
+        }
+        PUBE::Error(_) | PUBE::Doc(_) => {}
     }
 }
 

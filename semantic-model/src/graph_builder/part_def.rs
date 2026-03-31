@@ -46,6 +46,50 @@ pub(super) fn build_from_part_def_body_element(
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
         }
+        PDBE::AttributeUsage(n) => {
+            let name = &n.name;
+            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute");
+            let range = span_to_range(&n.span);
+            let mut attrs = HashMap::new();
+            if let Some(ref r) = n.redefines {
+                attrs.insert("redefines".to_string(), serde_json::json!(r));
+            }
+            if let Some(ref v) = n.value.value {
+                attrs.insert(
+                    "value".to_string(),
+                    serde_json::json!(expressions::expression_to_debug_string(v)),
+                );
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "attribute",
+                name.clone(),
+                range,
+                attrs,
+                Some(parent_id),
+            );
+        }
+        PDBE::ExhibitState(es_node) => {
+            let es = &es_node.value;
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &es.name, "exhibit state");
+            let range = span_to_range(&es_node.span);
+            let mut attrs = HashMap::new();
+            attrs.insert("stateType".to_string(), serde_json::json!(&es.type_name));
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "exhibit state",
+                es.name.clone(),
+                range,
+                attrs,
+                Some(parent_id),
+            );
+            add_typing_edge_if_exists(g, uri, &qualified, &es.type_name, container_prefix);
+        }
         PDBE::PortUsage(n) => {
             let name = &n.name;
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "port");
@@ -76,6 +120,25 @@ pub(super) fn build_from_part_def_body_element(
             attrs.insert("partType".to_string(), serde_json::json!(&n.type_name));
             if let Some(ref m) = n.multiplicity {
                 attrs.insert("multiplicity".to_string(), serde_json::json!(m));
+            }
+            attrs.insert("ordered".to_string(), serde_json::json!(n.ordered));
+            if let Some((ref feat, ref val)) = n.subsets {
+                attrs.insert("subsetsFeature".to_string(), serde_json::json!(feat));
+                if let Some(v) = val {
+                    attrs.insert(
+                        "subsetsValue".to_string(),
+                        serde_json::json!(expressions::expression_to_debug_string(v)),
+                    );
+                }
+            }
+            if let Some(ref r) = n.redefines {
+                attrs.insert("redefines".to_string(), serde_json::json!(r));
+            }
+            if let Some(ref v) = n.value.value {
+                attrs.insert(
+                    "value".to_string(),
+                    serde_json::json!(expressions::expression_to_debug_string(v)),
+                );
             }
             add_node_and_recurse(
                 g,
@@ -165,6 +228,7 @@ pub(super) fn build_from_part_def_body_element(
                 RelationshipKind::Allocate,
             );
         }
-        _ => {}
+        // Intentionally omitted: parse errors and documentation-only members.
+        PDBE::Error(_) | PDBE::Doc(_) => {}
     }
 }

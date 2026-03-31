@@ -10,8 +10,9 @@ use crate::graph::SemanticGraph;
 use crate::model::{NodeId, SemanticNode};
 
 mod expressions;
+mod interface_def;
 mod package_body;
-mod requirement_subjects;
+mod requirement_body;
 mod part_def;
 mod part_usage;
 mod port_def;

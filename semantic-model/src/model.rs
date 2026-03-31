@@ -34,6 +34,8 @@ pub enum RelationshipKind {
     Satisfy,
     Subject,
     Transition,
+    /// `then` initial state in a state composite (`transition` without `first` uses the same resolution path with [`RelationshipKind::Transition`]).
+    InitialState,
 }
 
 impl RelationshipKind {
@@ -48,6 +50,7 @@ impl RelationshipKind {
             RelationshipKind::Satisfy => "satisfy",
             RelationshipKind::Subject => "subject",
             RelationshipKind::Transition => "transition",
+            RelationshipKind::InitialState => "initialState",
         }
     }
 }

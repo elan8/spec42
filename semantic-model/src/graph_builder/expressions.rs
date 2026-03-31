@@ -147,6 +147,56 @@ pub(super) fn add_expression_edge_if_both_exist(
     }
 }
 
+/// Best-effort display of an expression for attributes and diagnostics (not a full SysML text serializer).
+pub(super) fn expression_to_debug_string(n: &sysml_parser::Node<sysml_parser::Expression>) -> String {
+    use sysml_parser::Expression;
+    match &n.value {
+        Expression::LiteralInteger(i) => i.to_string(),
+        Expression::LiteralReal(s) => s.clone(),
+        Expression::LiteralString(s) => format!("{s:?}"),
+        Expression::LiteralBoolean(b) => b.to_string(),
+        Expression::FeatureRef(s) => s.clone(),
+        Expression::MemberAccess(box_base, member) => {
+            format!(
+                "{}.{}",
+                expression_to_debug_string(box_base),
+                member
+            )
+        }
+        Expression::Index { base, index } => {
+            format!(
+                "{}#({})",
+                expression_to_debug_string(base),
+                expression_to_debug_string(index)
+            )
+        }
+        Expression::Bracket(inner) => {
+            format!("[{}]", expression_to_debug_string(inner))
+        }
+        Expression::LiteralWithUnit { value, unit } => {
+            format!(
+                "{} [{}]",
+                expression_to_debug_string(value),
+                expression_to_debug_string(unit)
+            )
+        }
+        Expression::BinaryOp { op, left, right } => {
+            format!(
+                "({} {} {})",
+                expression_to_debug_string(left),
+                op,
+                expression_to_debug_string(right)
+            )
+        }
+        Expression::UnaryOp { op, operand } => {
+            format!("({}{})", op, expression_to_debug_string(operand))
+        }
+        Expression::Null => "()".to_string(),
+    }
+}
+
+/// Path-like string for resolving connection/satisfy/transition endpoints where possible.
+/// Literals and general expressions return empty so callers skip edge creation.
 pub(super) fn expr_node_to_qualified_string(
     n: &sysml_parser::Node<sysml_parser::Expression>,
 ) -> String {
@@ -154,9 +204,37 @@ pub(super) fn expr_node_to_qualified_string(
     match &n.value {
         Expression::FeatureRef(s) => s.clone(),
         Expression::MemberAccess(box_base, member) => {
-            format!("{}::{}", expr_node_to_qualified_string(box_base), member)
+            let base = expr_node_to_qualified_string(box_base);
+            if base.is_empty() {
+                return String::new();
+            }
+            format!("{}::{}", base, member)
         }
-        _ => "".to_string(),
+        Expression::Index { base, index } => {
+            let b = expr_node_to_qualified_string(base);
+            if b.is_empty() {
+                return String::new();
+            }
+            let i = expr_node_to_qualified_string(index);
+            if i.is_empty() {
+                let d = expression_to_debug_string(index);
+                if d.is_empty() {
+                    return String::new();
+                }
+                format!("{}#({})", b, d)
+            } else {
+                format!("{}#({})", b, i)
+            }
+        }
+        Expression::Bracket(inner) => expr_node_to_qualified_string(inner),
+        Expression::LiteralWithUnit { value, .. } => expr_node_to_qualified_string(value),
+        Expression::LiteralInteger(_)
+        | Expression::LiteralReal(_)
+        | Expression::LiteralString(_)
+        | Expression::LiteralBoolean(_)
+        | Expression::BinaryOp { .. }
+        | Expression::UnaryOp { .. }
+        | Expression::Null => String::new(),
     }
 }
 
@@ -189,6 +267,52 @@ pub(super) fn resolve_expression_endpoint_legacy(
         })
         .min_by_key(|node_id| node_id.qualified_name.len())
         .map(|node_id| node_id.qualified_name.clone())
+}
+
+#[cfg(test)]
+mod expr_string_tests {
+    use super::{expr_node_to_qualified_string, expression_to_debug_string};
+    use sysml_parser::ast::{Expression, Node};
+    use sysml_parser::Span;
+
+    fn node(expr: Expression) -> Node<Expression> {
+        Node::new(Span::dummy(), expr)
+    }
+
+    #[test]
+    fn qualified_string_member_chain() {
+        let e = node(Expression::MemberAccess(
+            Box::new(node(Expression::FeatureRef("a".into()))),
+            "b".into(),
+        ));
+        assert_eq!(expr_node_to_qualified_string(&e), "a::b");
+    }
+
+    #[test]
+    fn qualified_string_index_appends_slot() {
+        let e = node(Expression::Index {
+            base: Box::new(node(Expression::FeatureRef("w".into()))),
+            index: Box::new(node(Expression::LiteralInteger(1))),
+        });
+        assert_eq!(expr_node_to_qualified_string(&e), "w#(1)");
+    }
+
+    #[test]
+    fn qualified_string_bracket_unwraps() {
+        let inner = node(Expression::FeatureRef("u".into()));
+        let e = node(Expression::Bracket(Box::new(inner)));
+        assert_eq!(expr_node_to_qualified_string(&e), "u");
+    }
+
+    #[test]
+    fn debug_string_covers_binary_op() {
+        let e = node(Expression::BinaryOp {
+            op: "+".into(),
+            left: Box::new(node(Expression::LiteralInteger(1))),
+            right: Box::new(node(Expression::LiteralInteger(2))),
+        });
+        assert!(expression_to_debug_string(&e).contains('+'));
+    }
 }
 
 pub(super) fn add_diagnostic_node(
