@@ -59,7 +59,7 @@ export interface SysMLModelStatsDTO {
 
 export interface SysMLModelParams {
   textDocument: { uri: string };
-  scope?: Array<"graph" | "ibd" | "stats" | "sequenceDiagrams" | "activityDiagrams" | "renderedDiagrams" | "workspaceVisualization">;
+  scope?: Array<"graph" | "ibd" | "stats" | "sequenceDiagrams" | "activityDiagrams" | "workspaceVisualization">;
 }
 
 export interface IbdPartDTO {
@@ -96,56 +96,6 @@ export interface IbdDataDTO {
   defaultRoot?: string;
 }
 
-export interface DiagramBoundsDTO {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
-export interface HitRegionDTO {
-  id: string;
-  kind: string;
-  elementId: string;
-  qualifiedName?: string;
-  bounds: DiagramBoundsDTO;
-}
-
-export interface DiagramMetricsDTO {
-  nodeCount: number;
-  edgeCount: number;
-  overlapCount: number;
-  overlapArea: number;
-  edgeCrossingCount: number;
-  edgeNodeIntrusionCount: number;
-  totalEdgeLength: number;
-  bendCount: number;
-  orthogonalViolationCount: number;
-  minimumNodeClearance: number;
-  canvasArea: number;
-  aspectRatio: number;
-  compactness: number;
-}
-
-export interface DiagramViewStateDTO {
-  view: string;
-  selection?: string;
-}
-
-export interface RenderedDiagramDTO {
-  svg: string;
-  hitMap: HitRegionDTO[];
-  bounds: DiagramBoundsDTO;
-  metrics: DiagramMetricsDTO;
-  warnings: string[];
-  viewState: DiagramViewStateDTO;
-}
-
-export interface RenderedDiagramsDTO {
-  generalView?: RenderedDiagramDTO;
-  interconnectionView?: RenderedDiagramDTO;
-}
-
 export interface SysMLModelResult {
   version: number;
   graph?: SysMLGraphDTO;
@@ -153,7 +103,6 @@ export interface SysMLModelResult {
   sequenceDiagrams?: SequenceDiagramDTO[];
   activityDiagrams?: ActivityDiagramDTO[];
   ibd?: IbdDataDTO;
-  renderedDiagrams?: RenderedDiagramsDTO;
   stats?: SysMLModelStatsDTO;
 }
 

@@ -69,7 +69,6 @@ describe("SVG artifacts (SurveillanceDrone, elkjs)", () => {
       graph: model?.graph,
       generalViewGraph: model?.generalViewGraph,
       ibd: model?.ibd,
-      renderedDiagrams: model?.renderedDiagrams,
       sequenceDiagrams: model?.sequenceDiagrams ?? [],
       activityDiagrams: model?.activityDiagrams ?? [],
       currentView: "general-view",

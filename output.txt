@@ -1,677 +1,1167 @@
-[{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'foldableArms' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 63,
-	"startColumn": 3,
-	"endLineNumber": 63,
-	"endColumn": 35,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'ipRating' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 64,
-	"startColumn": 3,
-	"endLineNumber": 64,
-	"endColumn": 31,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~MotorCommandPort' for 'cmd' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 72,
-	"startColumn": 3,
-	"endLineNumber": 72,
-	"endColumn": 32,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~PowerPort' for 'pwr' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 73,
-	"startColumn": 3,
-	"endLineNumber": 73,
-	"endColumn": 25,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'supportedModes' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 88,
-	"startColumn": 3,
-	"endLineNumber": 88,
-	"endColumn": 37,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~MotorCommandPort' for 'motorCmd' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 89,
-	"startColumn": 3,
-	"endLineNumber": 89,
-	"endColumn": 37,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~GimbalCommandPort' for 'gimbalCmd' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 90,
-	"startColumn": 3,
-	"endLineNumber": 90,
-	"endColumn": 39,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~RCCommandPort' for 'rcIn' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 92,
-	"startColumn": 3,
-	"endLineNumber": 92,
-	"endColumn": 30,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~SensorDataPort' for 'sensorIn' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 93,
-	"startColumn": 3,
-	"endLineNumber": 93,
-	"endColumn": 35,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~PowerPort' for 'pwr' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 94,
-	"startColumn": 3,
-	"endLineNumber": 94,
-	"endColumn": 25,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~PowerPort' for 'pwr' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 100,
-	"startColumn": 3,
-	"endLineNumber": 100,
-	"endColumn": 25,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~PowerPort' for 'pwr' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 105,
-	"startColumn": 3,
-	"endLineNumber": 105,
-	"endColumn": 25,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~PowerPort' for 'pwr' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 110,
-	"startColumn": 3,
-	"endLineNumber": 110,
-	"endColumn": 25,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'supportedModes' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 115,
-	"startColumn": 3,
-	"endLineNumber": 115,
-	"endColumn": 44,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'geofenceBehavior' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 122,
-	"startColumn": 3,
-	"endLineNumber": 122,
-	"endColumn": 39,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'failsafeLogic' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 123,
-	"startColumn": 3,
-	"endLineNumber": 123,
-	"endColumn": 36,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~GimbalCommandPort' for 'cmd' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 132,
-	"startColumn": 3,
-	"endLineNumber": 132,
-	"endColumn": 33,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~PowerPort' for 'pwr' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 134,
-	"startColumn": 3,
-	"endLineNumber": 134,
-	"endColumn": 25,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'resolution' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 139,
-	"startColumn": 3,
-	"endLineNumber": 139,
-	"endColumn": 33,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~CameraControlPort' for 'control' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 144,
-	"startColumn": 3,
-	"endLineNumber": 144,
-	"endColumn": 37,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~PowerPort' for 'pwr' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 145,
-	"startColumn": 3,
-	"endLineNumber": 145,
-	"endColumn": 25,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~TelemetryPort' for 'telemetryIn' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 154,
-	"startColumn": 3,
-	"endLineNumber": 154,
-	"endColumn": 37,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~TelemetryPort' for 'videoIn' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 155,
-	"startColumn": 3,
-	"endLineNumber": 155,
-	"endColumn": 33,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~PowerPort' for 'pwr' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 156,
-	"startColumn": 3,
-	"endLineNumber": 156,
-	"endColumn": 25,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference '~PowerPort' for 'mainPower' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 168,
-	"startColumn": 3,
-	"endLineNumber": 168,
-	"endColumn": 31,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'foldableArms' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 185,
-	"startColumn": 3,
-	"endLineNumber": 185,
-	"endColumn": 28,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'ipRating' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 185,
-	"startColumn": 3,
-	"endLineNumber": 185,
-	"endColumn": 28,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'supportedModes' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 187,
-	"startColumn": 3,
-	"endLineNumber": 187,
-	"endColumn": 48,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'geofenceBehavior' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 187,
-	"startColumn": 3,
-	"endLineNumber": 187,
-	"endColumn": 48,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'failsafeLogic' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 187,
-	"startColumn": 3,
-	"endLineNumber": 187,
-	"endColumn": 48,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'resolution' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 189,
-	"startColumn": 3,
-	"endLineNumber": 189,
-	"endColumn": 38,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "port_type_mismatch",
-	"severity": 4,
-	"message": "Both ports have the same conjugation (~MotorCommandPort). For a connection, one should be conjugated (~) and the other not.",
-	"source": "semantic",
-	"startLineNumber": 194,
-	"startColumn": 11,
-	"endLineNumber": 194,
-	"endColumn": 50,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "port_type_mismatch",
-	"severity": 4,
-	"message": "Both ports have the same conjugation (~MotorCommandPort). For a connection, one should be conjugated (~) and the other not.",
-	"source": "semantic",
-	"startLineNumber": 195,
-	"startColumn": 11,
-	"endLineNumber": 195,
-	"endColumn": 50,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "port_type_mismatch",
-	"severity": 4,
-	"message": "Both ports have the same conjugation (~MotorCommandPort). For a connection, one should be conjugated (~) and the other not.",
-	"source": "semantic",
-	"startLineNumber": 196,
-	"startColumn": 11,
-	"endLineNumber": 196,
-	"endColumn": 50,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "port_type_mismatch",
-	"severity": 4,
-	"message": "Both ports have the same conjugation (~MotorCommandPort). For a connection, one should be conjugated (~) and the other not.",
-	"source": "semantic",
-	"startLineNumber": 197,
-	"startColumn": 11,
-	"endLineNumber": 197,
-	"endColumn": 50,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "port_type_mismatch",
-	"severity": 4,
-	"message": "Both ports have the same conjugation (~GimbalCommandPort). For a connection, one should be conjugated (~) and the other not.",
-	"source": "semantic",
-	"startLineNumber": 198,
-	"startColumn": 11,
-	"endLineNumber": 198,
-	"endColumn": 51,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'foldableArms' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 275,
-	"startColumn": 2,
-	"endLineNumber": 275,
-	"endColumn": 50,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'ipRating' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 275,
-	"startColumn": 2,
-	"endLineNumber": 275,
-	"endColumn": 50,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'supportedModes' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 275,
-	"startColumn": 2,
-	"endLineNumber": 275,
-	"endColumn": 50,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'geofenceBehavior' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 275,
-	"startColumn": 2,
-	"endLineNumber": 275,
-	"endColumn": 50,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'failsafeLogic' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 275,
-	"startColumn": 2,
-	"endLineNumber": 275,
-	"endColumn": 50,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'String' for 'resolution' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 275,
-	"startColumn": 2,
-	"endLineNumber": 275,
-	"endColumn": 50,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'ExecutePatrol' for 'executePatrol' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 361,
-	"startColumn": 3,
-	"endLineNumber": 361,
-	"endColumn": 48,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'ExecuteOrbit' for 'executeOrbit' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 362,
-	"startColumn": 3,
-	"endLineNumber": 362,
-	"endColumn": 46,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'ControlGimbal' for 'controlGimbal' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 363,
-	"startColumn": 3,
-	"endLineNumber": 363,
-	"endColumn": 48,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unresolved_type_reference",
-	"severity": 4,
-	"message": "Type reference 'CaptureVideo' for 'captureVideo' could not be resolved in the semantic graph.",
-	"source": "semantic",
-	"startLineNumber": 364,
-	"startColumn": 3,
-	"endLineNumber": 364,
-	"endColumn": 46,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unconnected_port",
-	"severity": 2,
-	"message": "Port 'rcIn' is not connected to any other port.",
-	"source": "semantic",
-	"startLineNumber": 92,
-	"startColumn": 3,
-	"endLineNumber": 92,
-	"endColumn": 30,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unconnected_port",
-	"severity": 2,
-	"message": "Port 'pwr' is not connected to any other port.",
-	"source": "semantic",
-	"startLineNumber": 100,
-	"startColumn": 3,
-	"endLineNumber": 100,
-	"endColumn": 25,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unconnected_port",
-	"severity": 2,
-	"message": "Port 'pwr' is not connected to any other port.",
-	"source": "semantic",
-	"startLineNumber": 105,
-	"startColumn": 3,
-	"endLineNumber": 105,
-	"endColumn": 25,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unconnected_port",
-	"severity": 2,
-	"message": "Port 'pwr' is not connected to any other port.",
-	"source": "semantic",
-	"startLineNumber": 110,
-	"startColumn": 3,
-	"endLineNumber": 110,
-	"endColumn": 25,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unconnected_port",
-	"severity": 2,
-	"message": "Port 'c2In' is not connected to any other port.",
-	"source": "semantic",
-	"startLineNumber": 153,
-	"startColumn": 3,
-	"endLineNumber": 153,
-	"endColumn": 29,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-},{
-	"resource": "/c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml",
-	"owner": "_generated_diagnostic_collection_name_#0",
-	"code": "unconnected_port",
-	"severity": 2,
-	"message": "Port 'regulated12V' is not connected to any other port.",
-	"source": "semantic",
-	"startLineNumber": 170,
-	"startColumn": 3,
-	"endLineNumber": 170,
-	"endColumn": 33,
-	"modelVersionId": 1,
-	"origin": "extHost1"
-}]
+﻿2026-03-31T08:07:26.0335120Z Current runner version: '2.333.0'
+2026-03-31T08:07:26.0370626Z ##[group]Runner Image Provisioner
+2026-03-31T08:07:26.0371895Z Hosted Compute Agent
+2026-03-31T08:07:26.0372976Z Version: 20260213.493
+2026-03-31T08:07:26.0374234Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+2026-03-31T08:07:26.0375394Z Build Date: 2026-02-13T00:28:41Z
+2026-03-31T08:07:26.0376876Z Worker ID: {911784c1-d9df-40fc-b016-ebe65d6ed517}
+2026-03-31T08:07:26.0378221Z Azure Region: eastus
+2026-03-31T08:07:26.0379053Z ##[endgroup]
+2026-03-31T08:07:26.0381583Z ##[group]Operating System
+2026-03-31T08:07:26.0382528Z Ubuntu
+2026-03-31T08:07:26.0383294Z 24.04.4
+2026-03-31T08:07:26.0384504Z LTS
+2026-03-31T08:07:26.0385312Z ##[endgroup]
+2026-03-31T08:07:26.0386163Z ##[group]Runner Image
+2026-03-31T08:07:26.0387186Z Image: ubuntu-24.04
+2026-03-31T08:07:26.0388093Z Version: 20260323.65.1
+2026-03-31T08:07:26.0390187Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260323.65/images/ubuntu/Ubuntu2404-Readme.md
+2026-03-31T08:07:26.0392728Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260323.65
+2026-03-31T08:07:26.0394639Z ##[endgroup]
+2026-03-31T08:07:26.0399091Z ##[group]GITHUB_TOKEN Permissions
+2026-03-31T08:07:26.0402145Z Actions: write
+2026-03-31T08:07:26.0402985Z ArtifactMetadata: write
+2026-03-31T08:07:26.0404099Z Attestations: write
+2026-03-31T08:07:26.0405024Z Checks: write
+2026-03-31T08:07:26.0405746Z Contents: write
+2026-03-31T08:07:26.0406498Z Deployments: write
+2026-03-31T08:07:26.0407357Z Discussions: write
+2026-03-31T08:07:26.0408210Z Issues: write
+2026-03-31T08:07:26.0408998Z Metadata: read
+2026-03-31T08:07:26.0409798Z Models: read
+2026-03-31T08:07:26.0410547Z Packages: write
+2026-03-31T08:07:26.0411267Z Pages: write
+2026-03-31T08:07:26.0412279Z PullRequests: write
+2026-03-31T08:07:26.0413092Z RepositoryProjects: write
+2026-03-31T08:07:26.0414450Z SecurityEvents: write
+2026-03-31T08:07:26.0415378Z Statuses: write
+2026-03-31T08:07:26.0416125Z ##[endgroup]
+2026-03-31T08:07:26.0419117Z Secret source: Actions
+2026-03-31T08:07:26.0420491Z Prepare workflow directory
+2026-03-31T08:07:26.0908581Z Prepare all required actions
+2026-03-31T08:07:26.0967876Z Getting action download info
+2026-03-31T08:07:26.3767227Z Download action repository 'actions/checkout@v6' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-03-31T08:07:26.5889104Z Download action repository 'actions/setup-node@v6' (SHA:53b83947a5a98c8d113130e565377fae1a50d02f)
+2026-03-31T08:07:26.8445037Z Download action repository 'dtolnay/rust-toolchain@stable' (SHA:29eef336d9b2848a0b548edc03f92a220660cdb8)
+2026-03-31T08:07:27.2156078Z Complete job name: VS Code extension tests
+2026-03-31T08:07:27.3036999Z ##[group]Run actions/checkout@v6
+2026-03-31T08:07:27.3038282Z with:
+2026-03-31T08:07:27.3038971Z   repository: elan8/spec42
+2026-03-31T08:07:27.3040084Z   token: ***
+2026-03-31T08:07:27.3040750Z   ssh-strict: true
+2026-03-31T08:07:27.3041452Z   ssh-user: git
+2026-03-31T08:07:27.3042177Z   persist-credentials: true
+2026-03-31T08:07:27.3043025Z   clean: true
+2026-03-31T08:07:27.3043946Z   sparse-checkout-cone-mode: true
+2026-03-31T08:07:27.3044826Z   fetch-depth: 1
+2026-03-31T08:07:27.3045522Z   fetch-tags: false
+2026-03-31T08:07:27.3046239Z   show-progress: true
+2026-03-31T08:07:27.3046974Z   lfs: false
+2026-03-31T08:07:27.3047657Z   submodules: false
+2026-03-31T08:07:27.3048382Z   set-safe-directory: true
+2026-03-31T08:07:27.3049444Z ##[endgroup]
+2026-03-31T08:07:27.3985010Z Syncing repository: elan8/spec42
+2026-03-31T08:07:27.3987353Z ##[group]Getting Git version info
+2026-03-31T08:07:27.3988543Z Working directory is '/home/runner/work/spec42/spec42'
+2026-03-31T08:07:27.3990308Z [command]/usr/bin/git version
+2026-03-31T08:07:27.4014014Z git version 2.53.0
+2026-03-31T08:07:27.4038875Z ##[endgroup]
+2026-03-31T08:07:27.4053744Z Temporarily overriding HOME='/home/runner/work/_temp/878c2f9d-a8e8-4457-b711-e4224c814580' before making global git config changes
+2026-03-31T08:07:27.4056543Z Adding repository directory to the temporary git global config as a safe directory
+2026-03-31T08:07:27.4059458Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/spec42/spec42
+2026-03-31T08:07:27.4094003Z Deleting the contents of '/home/runner/work/spec42/spec42'
+2026-03-31T08:07:27.4098027Z ##[group]Initializing the repository
+2026-03-31T08:07:27.4102331Z [command]/usr/bin/git init /home/runner/work/spec42/spec42
+2026-03-31T08:07:27.4188226Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-03-31T08:07:27.4192333Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-03-31T08:07:27.4194645Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-03-31T08:07:27.4196552Z hint: call:
+2026-03-31T08:07:27.4197195Z hint:
+2026-03-31T08:07:27.4198042Z hint: 	git config --global init.defaultBranch <name>
+2026-03-31T08:07:27.4199752Z hint:
+2026-03-31T08:07:27.4200896Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-03-31T08:07:27.4202595Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-03-31T08:07:27.4204233Z hint:
+2026-03-31T08:07:27.4204908Z hint: 	git branch -m <name>
+2026-03-31T08:07:27.4205835Z hint:
+2026-03-31T08:07:27.4207005Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-03-31T08:07:27.4208742Z Initialized empty Git repository in /home/runner/work/spec42/spec42/.git/
+2026-03-31T08:07:27.4211507Z [command]/usr/bin/git remote add origin https://github.com/elan8/spec42
+2026-03-31T08:07:27.4233622Z ##[endgroup]
+2026-03-31T08:07:27.4235096Z ##[group]Disabling automatic garbage collection
+2026-03-31T08:07:27.4236810Z [command]/usr/bin/git config --local gc.auto 0
+2026-03-31T08:07:27.4266139Z ##[endgroup]
+2026-03-31T08:07:27.4267392Z ##[group]Setting up auth
+2026-03-31T08:07:27.4268604Z Removing SSH command configuration
+2026-03-31T08:07:27.4272912Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-03-31T08:07:27.4305487Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-03-31T08:07:27.4570492Z Removing HTTP extra header
+2026-03-31T08:07:27.4576703Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-03-31T08:07:27.4607582Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-03-31T08:07:27.4847976Z Removing includeIf entries pointing to credentials config files
+2026-03-31T08:07:27.4852914Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-03-31T08:07:27.4884189Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-03-31T08:07:27.5106541Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-731468b1-a0d8-41c4-8324-6976471389f8.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-03-31T08:07:27.5142780Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/spec42/spec42/.git.path /home/runner/work/_temp/git-credentials-731468b1-a0d8-41c4-8324-6976471389f8.config
+2026-03-31T08:07:27.5171607Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/spec42/spec42/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-731468b1-a0d8-41c4-8324-6976471389f8.config
+2026-03-31T08:07:27.5201179Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-731468b1-a0d8-41c4-8324-6976471389f8.config
+2026-03-31T08:07:27.5230885Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-731468b1-a0d8-41c4-8324-6976471389f8.config
+2026-03-31T08:07:27.5257986Z ##[endgroup]
+2026-03-31T08:07:27.5259242Z ##[group]Fetching the repository
+2026-03-31T08:07:27.5266556Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +20ab1aef304e41916628fb51d6db325d8b243afa:refs/remotes/origin/main
+2026-03-31T08:07:27.8506824Z From https://github.com/elan8/spec42
+2026-03-31T08:07:27.8508434Z  * [new ref]         20ab1aef304e41916628fb51d6db325d8b243afa -> origin/main
+2026-03-31T08:07:27.8549794Z [command]/usr/bin/git branch --list --remote origin/main
+2026-03-31T08:07:27.8574541Z   origin/main
+2026-03-31T08:07:27.8582290Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+2026-03-31T08:07:27.8604429Z 20ab1aef304e41916628fb51d6db325d8b243afa
+2026-03-31T08:07:27.8608861Z ##[endgroup]
+2026-03-31T08:07:27.8610196Z ##[group]Determining the checkout info
+2026-03-31T08:07:27.8611324Z ##[endgroup]
+2026-03-31T08:07:27.8614095Z [command]/usr/bin/git sparse-checkout disable
+2026-03-31T08:07:27.8651077Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-03-31T08:07:27.8678621Z ##[group]Checking out the ref
+2026-03-31T08:07:27.8681826Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-03-31T08:07:27.9029457Z Switched to a new branch 'main'
+2026-03-31T08:07:27.9030871Z branch 'main' set up to track 'origin/main'.
+2026-03-31T08:07:27.9041658Z ##[endgroup]
+2026-03-31T08:07:27.9082069Z [command]/usr/bin/git log -1 --format=%H
+2026-03-31T08:07:27.9105745Z 20ab1aef304e41916628fb51d6db325d8b243afa
+2026-03-31T08:07:27.9383185Z ##[group]Run actions/setup-node@v6
+2026-03-31T08:07:27.9384389Z with:
+2026-03-31T08:07:27.9385054Z   node-version: 20
+2026-03-31T08:07:27.9385736Z   cache: npm
+2026-03-31T08:07:27.9386479Z   cache-dependency-path: vscode/package-lock.json
+2026-03-31T08:07:27.9387308Z   check-latest: false
+2026-03-31T08:07:27.9388171Z   token: ***
+2026-03-31T08:07:27.9388870Z   package-manager-cache: true
+2026-03-31T08:07:27.9389607Z ##[endgroup]
+2026-03-31T08:07:28.1731231Z Found in cache @ /opt/hostedtoolcache/node/20.20.1/x64
+2026-03-31T08:07:28.1735852Z ##[group]Environment details
+2026-03-31T08:07:31.4545763Z node: v20.20.1
+2026-03-31T08:07:31.4547085Z npm: 10.8.2
+2026-03-31T08:07:31.4547471Z yarn: 1.22.22
+2026-03-31T08:07:31.4548756Z ##[endgroup]
+2026-03-31T08:07:31.4563030Z [command]/opt/hostedtoolcache/node/20.20.1/x64/bin/npm config get cache
+2026-03-31T08:07:31.6881115Z /home/runner/.npm
+2026-03-31T08:07:31.8636983Z Cache hit for: node-cache-Linux-x64-npm-bc9df2e793cec8ecbdef7d5cd58d0d28a35c182c53500a6ea1af1a1ae510ac55
+2026-03-31T08:07:32.2020186Z Received 34154672 of 34154672 (100.0%), 122.5 MBs/sec
+2026-03-31T08:07:32.2020853Z Cache Size: ~33 MB (34154672 B)
+2026-03-31T08:07:32.2051842Z [command]/usr/bin/tar -xf /home/runner/work/_temp/cb507282-53ef-4016-a713-7a55d34cc9b4/cache.tzst -P -C /home/runner/work/spec42/spec42 --use-compress-program unzstd
+2026-03-31T08:07:32.3382166Z Cache restored successfully
+2026-03-31T08:07:32.3402893Z Cache restored from key: node-cache-Linux-x64-npm-bc9df2e793cec8ecbdef7d5cd58d0d28a35c182c53500a6ea1af1a1ae510ac55
+2026-03-31T08:07:32.3706123Z ##[group]Run dtolnay/rust-toolchain@stable
+2026-03-31T08:07:32.3706455Z with:
+2026-03-31T08:07:32.3706653Z   toolchain: stable
+2026-03-31T08:07:32.3706873Z ##[endgroup]
+2026-03-31T08:07:32.3829585Z ##[group]Run : parse toolchain version
+2026-03-31T08:07:32.3829988Z [36;1m: parse toolchain version[0m
+2026-03-31T08:07:32.3830275Z [36;1mif [[ -z $toolchain ]]; then[0m
+2026-03-31T08:07:32.3830802Z [36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070[0m
+2026-03-31T08:07:32.3831355Z [36;1m  echo "'toolchain' is a required input" >&2[0m
+2026-03-31T08:07:32.3831640Z [36;1m  exit 1[0m
+2026-03-31T08:07:32.3831980Z [36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then[0m
+2026-03-31T08:07:32.3832386Z [36;1m  if [[ Linux == macOS ]]; then[0m
+2026-03-31T08:07:32.3832959Z [36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-03-31T08:07:32.3833952Z [36;1m  else[0m
+2026-03-31T08:07:32.3834364Z [36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-03-31T08:07:32.3834827Z [36;1m  fi[0m
+2026-03-31T08:07:32.3835114Z [36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then[0m
+2026-03-31T08:07:32.3835653Z [36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT[0m
+2026-03-31T08:07:32.3836142Z [36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then[0m
+2026-03-31T08:07:32.3836652Z [36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT[0m
+2026-03-31T08:07:32.3837143Z [36;1melse[0m
+2026-03-31T08:07:32.3837372Z [36;1m  echo "toolchain=$toolchain" >> $GITHUB_OUTPUT[0m
+2026-03-31T08:07:32.3837664Z [36;1mfi[0m
+2026-03-31T08:07:32.3876002Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-03-31T08:07:32.3876380Z env:
+2026-03-31T08:07:32.3876591Z   toolchain: stable
+2026-03-31T08:07:32.3876799Z ##[endgroup]
+2026-03-31T08:07:32.4014406Z ##[group]Run : construct rustup command line
+2026-03-31T08:07:32.4014758Z [36;1m: construct rustup command line[0m
+2026-03-31T08:07:32.4015198Z [36;1mecho "targets=$(for t in ${targets//,/ }; do echo -n ' --target' $t; done)" >> $GITHUB_OUTPUT[0m
+2026-03-31T08:07:32.4015825Z [36;1mecho "components=$(for c in ${components//,/ }; do echo -n ' --component' $c; done)" >> $GITHUB_OUTPUT[0m
+2026-03-31T08:07:32.4016297Z [36;1mecho "downgrade=" >> $GITHUB_OUTPUT[0m
+2026-03-31T08:07:32.4043302Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-03-31T08:07:32.4043909Z env:
+2026-03-31T08:07:32.4044086Z   targets: 
+2026-03-31T08:07:32.4044268Z   components: 
+2026-03-31T08:07:32.4044457Z ##[endgroup]
+2026-03-31T08:07:32.4137932Z ##[group]Run : set $CARGO_HOME
+2026-03-31T08:07:32.4138240Z [36;1m: set $CARGO_HOME[0m
+2026-03-31T08:07:32.4138570Z [36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV[0m
+2026-03-31T08:07:32.4166476Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-03-31T08:07:32.4166839Z ##[endgroup]
+2026-03-31T08:07:32.4254031Z ##[group]Run : install rustup if needed
+2026-03-31T08:07:32.4254382Z [36;1m: install rustup if needed[0m
+2026-03-31T08:07:32.4254680Z [36;1mif ! command -v rustup &>/dev/null; then[0m
+2026-03-31T08:07:32.4255448Z [36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | sh -s -- --default-toolchain none -y[0m
+2026-03-31T08:07:32.4256165Z [36;1m  echo "$CARGO_HOME/bin" >> $GITHUB_PATH[0m
+2026-03-31T08:07:32.4256428Z [36;1mfi[0m
+2026-03-31T08:07:32.4284317Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-03-31T08:07:32.4284659Z env:
+2026-03-31T08:07:32.4284860Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:07:32.4285133Z ##[endgroup]
+2026-03-31T08:07:32.4373835Z ##[group]Run rustup toolchain install stable --profile minimal --no-self-update
+2026-03-31T08:07:32.4374468Z [36;1mrustup toolchain install stable --profile minimal --no-self-update[0m
+2026-03-31T08:07:32.4401809Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-03-31T08:07:32.4402148Z env:
+2026-03-31T08:07:32.4402338Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:07:32.4402594Z   RUSTUP_PERMIT_COPY_RENAME: 1
+2026-03-31T08:07:32.4402824Z ##[endgroup]
+2026-03-31T08:07:35.3556352Z info: syncing channel updates for stable-x86_64-unknown-linux-gnu
+2026-03-31T08:07:35.4814077Z info: latest update on 2026-03-26 for version 1.94.1 (e408947bf 2026-03-25)
+2026-03-31T08:07:35.5062098Z info: removing previous version of component clippy
+2026-03-31T08:07:35.5230415Z info: removing previous version of component rustfmt
+2026-03-31T08:07:35.5241209Z info: removing previous version of component cargo
+2026-03-31T08:07:35.5339909Z info: removing previous version of component rust-std
+2026-03-31T08:07:35.5386050Z info: removing previous version of component rustc
+2026-03-31T08:07:35.5482857Z info: downloading 5 components
+2026-03-31T08:07:43.7193227Z 
+2026-03-31T08:07:43.7277488Z   stable-x86_64-unknown-linux-gnu updated - rustc 1.94.1 (e408947bf 2026-03-25) (from rustc 1.94.0 (4a4ef493e 2026-03-02))
+2026-03-31T08:07:43.7278290Z 
+2026-03-31T08:07:43.7355680Z ##[group]Run rustup default stable
+2026-03-31T08:07:43.7355965Z [36;1mrustup default stable[0m
+2026-03-31T08:07:43.7382403Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-03-31T08:07:43.7382724Z env:
+2026-03-31T08:07:43.7382912Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:07:43.7383155Z ##[endgroup]
+2026-03-31T08:07:43.7484169Z info: using existing install for stable-x86_64-unknown-linux-gnu
+2026-03-31T08:07:43.7491054Z info: default toolchain set to stable-x86_64-unknown-linux-gnu
+2026-03-31T08:07:43.7491516Z 
+2026-03-31T08:07:43.7559302Z   stable-x86_64-unknown-linux-gnu unchanged - rustc 1.94.1 (e408947bf 2026-03-25)
+2026-03-31T08:07:43.7559826Z 
+2026-03-31T08:07:43.7560667Z info: note that the toolchain 'stable-x86_64-unknown-linux-gnu' is currently in use (overridden by '/home/runner/work/spec42/spec42/rust-toolchain.toml')
+2026-03-31T08:07:43.7592420Z ##[group]Run : create cachekey
+2026-03-31T08:07:43.7592696Z [36;1m: create cachekey[0m
+2026-03-31T08:07:43.7593175Z [36;1mDATE=$(rustc +stable --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')[0m
+2026-03-31T08:07:43.7594205Z [36;1mHASH=$(rustc +stable --version --verbose | sed -ne 's/^commit-hash: //p')[0m
+2026-03-31T08:07:43.7594691Z [36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT[0m
+2026-03-31T08:07:43.7621002Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-03-31T08:07:43.7621323Z env:
+2026-03-31T08:07:43.7621504Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:07:43.7621744Z ##[endgroup]
+2026-03-31T08:07:43.7991149Z ##[group]Run : disable incremental compilation
+2026-03-31T08:07:43.7991507Z [36;1m: disable incremental compilation[0m
+2026-03-31T08:07:43.7991827Z [36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then[0m
+2026-03-31T08:07:43.7992145Z [36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV[0m
+2026-03-31T08:07:43.7992411Z [36;1mfi[0m
+2026-03-31T08:07:43.8018338Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-03-31T08:07:43.8018649Z env:
+2026-03-31T08:07:43.8018830Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:07:43.8019070Z ##[endgroup]
+2026-03-31T08:07:43.8084292Z ##[group]Run : enable colors in Cargo output
+2026-03-31T08:07:43.8084591Z [36;1m: enable colors in Cargo output[0m
+2026-03-31T08:07:43.8084885Z [36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then[0m
+2026-03-31T08:07:43.8085226Z [36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV[0m
+2026-03-31T08:07:43.8085495Z [36;1mfi[0m
+2026-03-31T08:07:43.8108745Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-03-31T08:07:43.8109068Z env:
+2026-03-31T08:07:43.8109252Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:07:43.8109676Z   CARGO_INCREMENTAL: 0
+2026-03-31T08:07:43.8109877Z ##[endgroup]
+2026-03-31T08:07:43.8174854Z ##[group]Run : enable Cargo sparse registry
+2026-03-31T08:07:43.8175163Z [36;1m: enable Cargo sparse registry[0m
+2026-03-31T08:07:43.8175506Z [36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70[0m
+2026-03-31T08:07:43.8176196Z [36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol ]; then[0m
+2026-03-31T08:07:43.8176927Z [36;1m  if rustc +stable --version --verbose | grep -q '^release: 1\.6[89]\.'; then[0m
+2026-03-31T08:07:43.8177489Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-03-31T08:07:43.8178009Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV[0m
+2026-03-31T08:07:43.8178492Z [36;1m  elif rustc +stable --version --verbose | grep -q '^release: 1\.6[67]\.'; then[0m
+2026-03-31T08:07:43.8179202Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-03-31T08:07:43.8179705Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV[0m
+2026-03-31T08:07:43.8180033Z [36;1m  fi[0m
+2026-03-31T08:07:43.8180211Z [36;1mfi[0m
+2026-03-31T08:07:43.8204001Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-03-31T08:07:43.8204320Z env:
+2026-03-31T08:07:43.8204502Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:07:43.8204741Z   CARGO_INCREMENTAL: 0
+2026-03-31T08:07:43.8204949Z   CARGO_TERM_COLOR: always
+2026-03-31T08:07:43.8205158Z ##[endgroup]
+2026-03-31T08:07:43.8524164Z ##[group]Run : work around spurious network errors in curl 8.0
+2026-03-31T08:07:43.8524600Z [36;1m: work around spurious network errors in curl 8.0[0m
+2026-03-31T08:07:43.8525141Z [36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation[0m
+2026-03-31T08:07:43.8525769Z [36;1mif rustc +stable --version --verbose | grep -q '^release: 1\.7[01]\.'; then[0m
+2026-03-31T08:07:43.8526232Z [36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV[0m
+2026-03-31T08:07:43.8526527Z [36;1mfi[0m
+2026-03-31T08:07:43.8552450Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-03-31T08:07:43.8552761Z env:
+2026-03-31T08:07:43.8552940Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:07:43.8553180Z   CARGO_INCREMENTAL: 0
+2026-03-31T08:07:43.8553617Z   CARGO_TERM_COLOR: always
+2026-03-31T08:07:43.8553835Z ##[endgroup]
+2026-03-31T08:07:43.8748199Z ##[group]Run rustc +stable --version --verbose
+2026-03-31T08:07:43.8748550Z [36;1mrustc +stable --version --verbose[0m
+2026-03-31T08:07:43.8774933Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-03-31T08:07:43.8775246Z env:
+2026-03-31T08:07:43.8775428Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:07:43.8775675Z   CARGO_INCREMENTAL: 0
+2026-03-31T08:07:43.8775878Z   CARGO_TERM_COLOR: always
+2026-03-31T08:07:43.8776099Z ##[endgroup]
+2026-03-31T08:07:43.8938919Z rustc 1.94.1 (e408947bf 2026-03-25)
+2026-03-31T08:07:43.8939503Z binary: rustc
+2026-03-31T08:07:43.8939987Z commit-hash: e408947bfd200af42db322daf0fadfe7e26d3bd1
+2026-03-31T08:07:43.8940493Z commit-date: 2026-03-25
+2026-03-31T08:07:43.8940972Z host: x86_64-unknown-linux-gnu
+2026-03-31T08:07:43.8941406Z release: 1.94.1
+2026-03-31T08:07:43.8941784Z LLVM version: 21.1.8
+2026-03-31T08:07:43.9006339Z ##[group]Run cargo build -p spec42
+2026-03-31T08:07:43.9006749Z [36;1mcargo build -p spec42[0m
+2026-03-31T08:07:43.9033858Z shell: /usr/bin/bash -e {0}
+2026-03-31T08:07:43.9034108Z env:
+2026-03-31T08:07:43.9034299Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:07:43.9034541Z   CARGO_INCREMENTAL: 0
+2026-03-31T08:07:43.9034750Z   CARGO_TERM_COLOR: always
+2026-03-31T08:07:43.9034960Z ##[endgroup]
+2026-03-31T08:07:43.9615230Z [1m[92m    Updating[0m crates.io index
+2026-03-31T08:07:43.9616708Z [1m[92m    Updating[0m git repository `https://github.com/elan8/sysml-parser`
+2026-03-31T08:07:44.6402855Z [1m[92m Downloading[0m crates ...
+2026-03-31T08:07:44.7816492Z [1m[92m  Downloaded[0m cfg-if v1.0.4
+2026-03-31T08:07:44.7840443Z [1m[92m  Downloaded[0m anstyle-query v1.1.5
+2026-03-31T08:07:44.7862896Z [1m[92m  Downloaded[0m fastrand v2.3.0
+2026-03-31T08:07:44.7905228Z [1m[92m  Downloaded[0m clap_lex v1.1.0
+2026-03-31T08:07:44.7936853Z [1m[92m  Downloaded[0m yoke-derive v0.8.1
+2026-03-31T08:07:44.7956219Z [1m[92m  Downloaded[0m heck v0.5.0
+2026-03-31T08:07:44.7983825Z [1m[92m  Downloaded[0m percent-encoding v2.3.2
+2026-03-31T08:07:44.8010832Z [1m[92m  Downloaded[0m utf8parse v0.2.2
+2026-03-31T08:07:44.8031420Z [1m[92m  Downloaded[0m utf8_iter v1.0.4
+2026-03-31T08:07:44.8054680Z [1m[92m  Downloaded[0m tower-layer v0.3.3
+2026-03-31T08:07:44.8075442Z [1m[92m  Downloaded[0m tower-service v0.3.3
+2026-03-31T08:07:44.8096595Z [1m[92m  Downloaded[0m tower-lsp-macros v0.9.0
+2026-03-31T08:07:44.8107955Z [1m[92m  Downloaded[0m itoa v1.0.18
+2026-03-31T08:07:44.8134221Z [1m[92m  Downloaded[0m errno v0.3.14
+2026-03-31T08:07:44.8168400Z [1m[92m  Downloaded[0m potential_utf v0.1.4
+2026-03-31T08:07:44.8186955Z [1m[92m  Downloaded[0m scopeguard v1.2.0
+2026-03-31T08:07:44.8217033Z [1m[92m  Downloaded[0m zerofrom-derive v0.1.6
+2026-03-31T08:07:44.8239571Z [1m[92m  Downloaded[0m futures-core v0.3.32
+2026-03-31T08:07:44.8264665Z [1m[92m  Downloaded[0m tracing-log v0.2.0
+2026-03-31T08:07:44.8294627Z [1m[92m  Downloaded[0m yoke v0.8.1
+2026-03-31T08:07:44.8327320Z [1m[92m  Downloaded[0m walkdir v2.5.0
+2026-03-31T08:07:44.8363335Z [1m[92m  Downloaded[0m zmij v1.0.21
+2026-03-31T08:07:44.8413192Z [1m[92m  Downloaded[0m zerovec-derive v0.11.2
+2026-03-31T08:07:44.8440976Z [1m[92m  Downloaded[0m tracing-core v0.1.36
+2026-03-31T08:07:44.8496165Z [1m[92m  Downloaded[0m zerotrie v0.2.3
+2026-03-31T08:07:44.8542270Z [1m[92m  Downloaded[0m tempfile v3.27.0
+2026-03-31T08:07:44.8577269Z [1m[92m  Downloaded[0m smallvec v1.15.1
+2026-03-31T08:07:44.8600259Z [1m[92m  Downloaded[0m futures-channel v0.3.32
+2026-03-31T08:07:44.8625004Z [1m[92m  Downloaded[0m getrandom v0.4.2
+2026-03-31T08:07:44.8669989Z [1m[92m  Downloaded[0m zerovec v0.11.5
+2026-03-31T08:07:44.8731243Z [1m[92m  Downloaded[0m icu_normalizer_data v2.1.1
+2026-03-31T08:07:44.8755659Z [1m[92m  Downloaded[0m socket2 v0.6.3
+2026-03-31T08:07:44.8779036Z [1m[92m  Downloaded[0m mio v1.2.0
+2026-03-31T08:07:44.8847052Z [1m[92m  Downloaded[0m hashbrown v0.16.1
+2026-03-31T08:07:44.8901603Z [1m[92m  Downloaded[0m nom v8.0.0
+2026-03-31T08:07:44.8955917Z [1m[92m  Downloaded[0m serde_json v1.0.149
+2026-03-31T08:07:44.9029159Z [1m[92m  Downloaded[0m futures-util v0.3.32
+2026-03-31T08:07:44.9160008Z [1m[92m  Downloaded[0m clap_builder v4.6.0
+2026-03-31T08:07:44.9224173Z [1m[92m  Downloaded[0m aho-corasick v1.1.4
+2026-03-31T08:07:44.9276540Z [1m[92m  Downloaded[0m idna v1.1.0
+2026-03-31T08:07:44.9314170Z [1m[92m  Downloaded[0m hashbrown v0.14.5
+2026-03-31T08:07:44.9363521Z [1m[92m  Downloaded[0m icu_properties_data v2.1.2
+2026-03-31T08:07:44.9467106Z [1m[92m  Downloaded[0m hashbrown v0.15.5
+2026-03-31T08:07:44.9515400Z [1m[92m  Downloaded[0m syn v2.0.117
+2026-03-31T08:07:44.9618245Z [1m[92m  Downloaded[0m regex-syntax v0.8.10
+2026-03-31T08:07:44.9684125Z [1m[92m  Downloaded[0m tracing v0.1.44
+2026-03-31T08:07:44.9838535Z [1m[92m  Downloaded[0m indexmap v2.13.0
+2026-03-31T08:07:44.9880975Z [1m[92m  Downloaded[0m icu_collections v2.1.1
+2026-03-31T08:07:44.9942209Z [1m[92m  Downloaded[0m rustix v1.1.4
+2026-03-31T08:07:45.0211752Z [1m[92m  Downloaded[0m serde v1.0.228
+2026-03-31T08:07:45.0246915Z [1m[92m  Downloaded[0m memchr v2.8.0
+2026-03-31T08:07:45.0301414Z [1m[92m  Downloaded[0m lsp-types v0.94.1
+2026-03-31T08:07:45.0340142Z [1m[92m  Downloaded[0m log v0.4.29
+2026-03-31T08:07:45.0366138Z [1m[92m  Downloaded[0m icu_locale_core v2.1.1
+2026-03-31T08:07:45.0434445Z [1m[92m  Downloaded[0m icu_normalizer v2.1.1
+2026-03-31T08:07:45.0473068Z [1m[92m  Downloaded[0m futures v0.3.32
+2026-03-31T08:07:45.0525476Z [1m[92m  Downloaded[0m bytes v1.11.1
+2026-03-31T08:07:45.0568035Z [1m[92m  Downloaded[0m tracing-subscriber v0.3.23
+2026-03-31T08:07:45.0651339Z [1m[92m  Downloaded[0m tokio-util v0.7.18
+2026-03-31T08:07:45.0729184Z [1m[92m  Downloaded[0m sharded-slab v0.1.7
+2026-03-31T08:07:45.0763245Z [1m[92m  Downloaded[0m serde_derive v1.0.228
+2026-03-31T08:07:45.0794329Z [1m[92m  Downloaded[0m regex-automata v0.4.14
+2026-03-31T08:07:45.0933270Z [1m[92m  Downloaded[0m serde_core v1.0.228
+2026-03-31T08:07:45.0961270Z [1m[92m  Downloaded[0m proc-macro2 v1.0.106
+2026-03-31T08:07:45.0992071Z [1m[92m  Downloaded[0m pin-project v1.1.11
+2026-03-31T08:07:45.1126811Z [1m[92m  Downloaded[0m icu_provider v2.1.1
+2026-03-31T08:07:45.1152731Z [1m[92m  Downloaded[0m icu_properties v2.1.2
+2026-03-31T08:07:45.1176038Z [1m[92m  Downloaded[0m litemap v0.8.1
+2026-03-31T08:07:45.1199124Z [1m[92m  Downloaded[0m httparse v1.10.1
+2026-03-31T08:07:45.1225709Z [1m[92m  Downloaded[0m parking_lot_core v0.9.12
+2026-03-31T08:07:45.1248875Z [1m[92m  Downloaded[0m petgraph v0.8.3
+2026-03-31T08:07:45.1452208Z [1m[92m  Downloaded[0m parking_lot v0.12.5
+2026-03-31T08:07:45.1478862Z [1m[92m  Downloaded[0m tokio v1.50.0
+2026-03-31T08:07:45.1910584Z [1m[92m  Downloaded[0m libc v0.2.183
+2026-03-31T08:07:45.2294060Z [1m[92m  Downloaded[0m once_cell v1.21.4
+2026-03-31T08:07:45.2319575Z [1m[92m  Downloaded[0m foldhash v0.1.5
+2026-03-31T08:07:45.2331943Z [1m[92m  Downloaded[0m clap v4.6.0
+2026-03-31T08:07:45.2425497Z [1m[92m  Downloaded[0m url v2.5.8
+2026-03-31T08:07:45.2450924Z [1m[92m  Downloaded[0m slab v0.4.12
+2026-03-31T08:07:45.2464231Z [1m[92m  Downloaded[0m nu-ansi-term v0.50.3
+2026-03-31T08:07:45.2487693Z [1m[92m  Downloaded[0m nom_locate v5.0.0
+2026-03-31T08:07:45.2503935Z [1m[92m  Downloaded[0m idna_adapter v1.2.1
+2026-03-31T08:07:45.2513999Z [1m[92m  Downloaded[0m fixedbitset v0.5.7
+2026-03-31T08:07:45.2533742Z [1m[92m  Downloaded[0m tower-lsp v0.20.0
+2026-03-31T08:07:45.2568327Z [1m[92m  Downloaded[0m pin-project-lite v0.2.17
+2026-03-31T08:07:45.2625695Z [1m[92m  Downloaded[0m bitflags v2.11.0
+2026-03-31T08:07:45.2670736Z [1m[92m  Downloaded[0m auto_impl v1.3.0
+2026-03-31T08:07:45.2736658Z [1m[92m  Downloaded[0m unicode-ident v1.0.24
+2026-03-31T08:07:45.2764335Z [1m[92m  Downloaded[0m tracing-attributes v0.1.31
+2026-03-31T08:07:45.2790356Z [1m[92m  Downloaded[0m tower v0.4.13
+2026-03-31T08:07:45.2890942Z [1m[92m  Downloaded[0m tinystr v0.8.2
+2026-03-31T08:07:45.2910819Z [1m[92m  Downloaded[0m thiserror-impl v2.0.18
+2026-03-31T08:07:45.2925491Z [1m[92m  Downloaded[0m thiserror v2.0.18
+2026-03-31T08:07:45.2988854Z [1m[92m  Downloaded[0m synstructure v0.13.2
+2026-03-31T08:07:45.2999344Z [1m[92m  Downloaded[0m strsim v0.11.1
+2026-03-31T08:07:45.3012493Z [1m[92m  Downloaded[0m signal-hook-registry v1.4.8
+2026-03-31T08:07:45.3024755Z [1m[92m  Downloaded[0m serde_repr v0.1.20
+2026-03-31T08:07:45.3045144Z [1m[92m  Downloaded[0m quote v1.0.45
+2026-03-31T08:07:45.3071761Z [1m[92m  Downloaded[0m pin-project-internal v1.1.11
+2026-03-31T08:07:45.3087603Z [1m[92m  Downloaded[0m lazy_static v1.5.0
+2026-03-31T08:07:45.3105150Z [1m[92m  Downloaded[0m writeable v0.6.2
+2026-03-31T08:07:45.3123234Z [1m[92m  Downloaded[0m thread_local v1.1.9
+2026-03-31T08:07:45.3139048Z [1m[92m  Downloaded[0m lock_api v0.4.14
+2026-03-31T08:07:45.3152057Z [1m[92m  Downloaded[0m futures-macro v0.3.32
+2026-03-31T08:07:45.3162669Z [1m[92m  Downloaded[0m tokio-macros v2.6.1
+2026-03-31T08:07:45.3173309Z [1m[92m  Downloaded[0m displaydoc v0.2.5
+2026-03-31T08:07:45.3203176Z [1m[92m  Downloaded[0m clap_derive v4.6.0
+2026-03-31T08:07:45.3224995Z [1m[92m  Downloaded[0m zerofrom v0.1.6
+2026-03-31T08:07:45.3234038Z [1m[92m  Downloaded[0m futures-task v0.3.32
+2026-03-31T08:07:45.3246204Z [1m[92m  Downloaded[0m same-file v1.0.6
+2026-03-31T08:07:45.3260028Z [1m[92m  Downloaded[0m futures-io v0.3.32
+2026-03-31T08:07:45.3269052Z [1m[92m  Downloaded[0m matchers v0.2.0
+2026-03-31T08:07:45.3279911Z [1m[92m  Downloaded[0m futures-sink v0.3.32
+2026-03-31T08:07:45.3289047Z [1m[92m  Downloaded[0m form_urlencoded v1.2.2
+2026-03-31T08:07:45.3297704Z [1m[92m  Downloaded[0m anstyle-parse v1.0.0
+2026-03-31T08:07:45.3313285Z [1m[92m  Downloaded[0m anstyle v1.0.14
+2026-03-31T08:07:45.3328513Z [1m[92m  Downloaded[0m anstream v1.0.0
+2026-03-31T08:07:45.3348548Z [1m[92m  Downloaded[0m bitflags v1.3.2
+2026-03-31T08:07:45.3380747Z [1m[92m  Downloaded[0m stable_deref_trait v1.2.1
+2026-03-31T08:07:45.3389966Z [1m[92m  Downloaded[0m is_terminal_polyfill v1.70.2
+2026-03-31T08:07:45.3399733Z [1m[92m  Downloaded[0m dashmap v5.5.3
+2026-03-31T08:07:45.3423226Z [1m[92m  Downloaded[0m bytecount v0.6.9
+2026-03-31T08:07:45.3443343Z [1m[92m  Downloaded[0m async-trait v0.1.89
+2026-03-31T08:07:45.3480647Z [1m[92m  Downloaded[0m colorchoice v1.0.5
+2026-03-31T08:07:45.3490195Z [1m[92m  Downloaded[0m equivalent v1.0.2
+2026-03-31T08:07:45.3517239Z [1m[92m  Downloaded[0m linux-raw-sys v0.12.1
+2026-03-31T08:07:45.4521910Z [1m[92m   Compiling[0m proc-macro2 v1.0.106
+2026-03-31T08:07:45.4522804Z [1m[92m   Compiling[0m quote v1.0.45
+2026-03-31T08:07:45.4524007Z [1m[92m   Compiling[0m unicode-ident v1.0.24
+2026-03-31T08:07:45.4524790Z [1m[92m   Compiling[0m stable_deref_trait v1.2.1
+2026-03-31T08:07:45.4844052Z [1m[92m   Compiling[0m libc v0.2.183
+2026-03-31T08:07:45.5145154Z [1m[92m   Compiling[0m smallvec v1.15.1
+2026-03-31T08:07:45.6534253Z [1m[92m   Compiling[0m cfg-if v1.0.4
+2026-03-31T08:07:45.6745654Z [1m[92m   Compiling[0m memchr v2.8.0
+2026-03-31T08:07:45.8795559Z [1m[92m   Compiling[0m litemap v0.8.1
+2026-03-31T08:07:46.0245607Z [1m[92m   Compiling[0m writeable v0.6.2
+2026-03-31T08:07:46.1468161Z [1m[92m   Compiling[0m icu_normalizer_data v2.1.1
+2026-03-31T08:07:46.2318062Z [1m[92m   Compiling[0m icu_properties_data v2.1.2
+2026-03-31T08:07:46.3168938Z [1m[92m   Compiling[0m pin-project-lite v0.2.17
+2026-03-31T08:07:46.3846116Z [1m[92m   Compiling[0m serde_core v1.0.228
+2026-03-31T08:07:46.5545004Z [1m[92m   Compiling[0m syn v2.0.117
+2026-03-31T08:07:46.5575639Z [1m[92m   Compiling[0m once_cell v1.21.4
+2026-03-31T08:07:46.5635348Z [1m[92m   Compiling[0m parking_lot_core v0.9.12
+2026-03-31T08:07:46.7265113Z [1m[92m   Compiling[0m scopeguard v1.2.0
+2026-03-31T08:07:46.7622976Z [1m[92m   Compiling[0m futures-core v0.3.32
+2026-03-31T08:07:46.7959662Z [1m[92m   Compiling[0m futures-sink v0.3.32
+2026-03-31T08:07:46.8426095Z [1m[92m   Compiling[0m lock_api v0.4.14
+2026-03-31T08:07:47.0205299Z [1m[92m   Compiling[0m zmij v1.0.21
+2026-03-31T08:07:47.0321677Z [1m[92m   Compiling[0m serde v1.0.228
+2026-03-31T08:07:47.1730515Z [1m[92m   Compiling[0m futures-channel v0.3.32
+2026-03-31T08:07:47.2149350Z [1m[92m   Compiling[0m errno v0.3.14
+2026-03-31T08:07:47.2952367Z [1m[92m   Compiling[0m tracing-core v0.1.36
+2026-03-31T08:07:47.3486739Z [1m[92m   Compiling[0m utf8_iter v1.0.4
+2026-03-31T08:07:47.4325800Z [1m[92m   Compiling[0m percent-encoding v2.3.2
+2026-03-31T08:07:47.5575946Z [1m[92m   Compiling[0m serde_json v1.0.149
+2026-03-31T08:07:47.6502332Z [1m[92m   Compiling[0m futures-task v0.3.32
+2026-03-31T08:07:47.7575452Z [1m[92m   Compiling[0m slab v0.4.12
+2026-03-31T08:07:47.8793187Z [1m[92m   Compiling[0m futures-io v0.3.32
+2026-03-31T08:07:47.9268954Z [1m[92m   Compiling[0m form_urlencoded v1.2.2
+2026-03-31T08:07:47.9746084Z [1m[92m   Compiling[0m signal-hook-registry v1.4.8
+2026-03-31T08:07:48.2126485Z [1m[92m   Compiling[0m parking_lot v0.12.5
+2026-03-31T08:07:48.3233894Z [1m[92m   Compiling[0m mio v1.2.0
+2026-03-31T08:07:48.6192965Z [1m[92m   Compiling[0m socket2 v0.6.3
+2026-03-31T08:07:48.8345230Z [1m[92m   Compiling[0m utf8parse v0.2.2
+2026-03-31T08:07:48.8772744Z [1m[92m   Compiling[0m httparse v1.10.1
+2026-03-31T08:07:49.0801962Z [1m[92m   Compiling[0m itoa v1.0.18
+2026-03-31T08:07:49.1436331Z [1m[92m   Compiling[0m log v0.4.29
+2026-03-31T08:07:49.2034748Z [1m[92m   Compiling[0m bytes v1.11.1
+2026-03-31T08:07:49.3190565Z [1m[92m   Compiling[0m anstyle-parse v1.0.0
+2026-03-31T08:07:49.4340970Z [1m[92m   Compiling[0m nom v8.0.0
+2026-03-31T08:07:49.8488851Z [1m[92m   Compiling[0m tower-service v0.3.3
+2026-03-31T08:07:49.8841309Z [1m[92m   Compiling[0m regex-syntax v0.8.10
+2026-03-31T08:07:50.5883113Z [1m[92m   Compiling[0m synstructure v0.13.2
+2026-03-31T08:07:51.1085707Z [1m[92m   Compiling[0m rustix v1.1.4
+2026-03-31T08:07:51.3164327Z [1m[92m   Compiling[0m tower-layer v0.3.3
+2026-03-31T08:07:51.4275399Z [1m[92m   Compiling[0m anstyle-query v1.1.5
+2026-03-31T08:07:51.4671112Z [1m[92m   Compiling[0m bitflags v1.3.2
+2026-03-31T08:07:51.4959061Z [1m[92m   Compiling[0m hashbrown v0.16.1
+2026-03-31T08:07:51.9994336Z [1m[92m   Compiling[0m zerofrom-derive v0.1.6
+2026-03-31T08:07:52.0610481Z [1m[92m   Compiling[0m yoke-derive v0.8.1
+2026-03-31T08:07:52.3354908Z [1m[92m   Compiling[0m zerovec-derive v0.11.2
+2026-03-31T08:07:52.5922327Z [1m[92m   Compiling[0m displaydoc v0.2.5
+2026-03-31T08:07:53.0151485Z [1m[92m   Compiling[0m serde_derive v1.0.228
+2026-03-31T08:07:53.1145254Z [1m[92m   Compiling[0m futures-macro v0.3.32
+2026-03-31T08:07:53.1904968Z [1m[92m   Compiling[0m zerofrom v0.1.6
+2026-03-31T08:07:53.2604228Z [1m[92m   Compiling[0m yoke v0.8.1
+2026-03-31T08:07:53.3904399Z [1m[92m   Compiling[0m zerotrie v0.2.3
+2026-03-31T08:07:53.4671234Z [1m[92m   Compiling[0m zerovec v0.11.5
+2026-03-31T08:07:53.6392999Z [1m[92m   Compiling[0m pin-project-internal v1.1.11
+2026-03-31T08:07:53.8230547Z [1m[92m   Compiling[0m futures-util v0.3.32
+2026-03-31T08:07:53.9995813Z [1m[92m   Compiling[0m tinystr v0.8.2
+2026-03-31T08:07:54.1318371Z [1m[92m   Compiling[0m icu_locale_core v2.1.1
+2026-03-31T08:07:54.6245905Z [1m[92m   Compiling[0m potential_utf v0.1.4
+2026-03-31T08:07:54.7105627Z [1m[92m   Compiling[0m icu_collections v2.1.1
+2026-03-31T08:07:55.2102704Z [1m[92m   Compiling[0m icu_provider v2.1.1
+2026-03-31T08:07:55.2135810Z [1m[92m   Compiling[0m tokio-macros v2.6.1
+2026-03-31T08:07:55.4778811Z [1m[92m   Compiling[0m icu_normalizer v2.1.1
+2026-03-31T08:07:55.8072917Z [1m[92m   Compiling[0m icu_properties v2.1.2
+2026-03-31T08:07:56.1105143Z [1m[92m   Compiling[0m tracing-attributes v0.1.31
+2026-03-31T08:07:56.6736185Z [1m[92m   Compiling[0m tokio v1.50.0
+2026-03-31T08:07:56.9745666Z [1m[92m   Compiling[0m idna_adapter v1.2.1
+2026-03-31T08:07:57.0335781Z [1m[92m   Compiling[0m idna v1.1.0
+2026-03-31T08:07:57.1875205Z [1m[92m   Compiling[0m pin-project v1.1.11
+2026-03-31T08:07:57.2246071Z [1m[92m   Compiling[0m serde_repr v0.1.20
+2026-03-31T08:07:57.2787521Z [1m[92m   Compiling[0m tracing v0.1.44
+2026-03-31T08:07:57.4455526Z [1m[92m   Compiling[0m url v2.5.8
+2026-03-31T08:07:57.5486177Z [1m[92m   Compiling[0m getrandom v0.4.2
+2026-03-31T08:07:57.6684709Z [1m[92m   Compiling[0m colorchoice v1.0.5
+2026-03-31T08:07:57.7145701Z [1m[92m   Compiling[0m is_terminal_polyfill v1.70.2
+2026-03-31T08:07:57.7506225Z [1m[92m   Compiling[0m bytecount v0.6.9
+2026-03-31T08:07:57.8180657Z [1m[92m   Compiling[0m anstyle v1.0.14
+2026-03-31T08:07:57.9139931Z [1m[92m   Compiling[0m foldhash v0.1.5
+2026-03-31T08:07:57.9844138Z [1m[92m   Compiling[0m equivalent v1.0.2
+2026-03-31T08:07:58.0145791Z [1m[92m   Compiling[0m hashbrown v0.14.5
+2026-03-31T08:07:58.0327368Z [1m[92m   Compiling[0m indexmap v2.13.0
+2026-03-31T08:07:58.4215374Z [1m[92m   Compiling[0m hashbrown v0.15.5
+2026-03-31T08:07:58.5455797Z [1m[92m   Compiling[0m dashmap v5.5.3
+2026-03-31T08:07:58.6925378Z [1m[92m   Compiling[0m lsp-types v0.94.1
+2026-03-31T08:07:58.9345175Z [1m[92m   Compiling[0m anstream v1.0.0
+2026-03-31T08:07:58.9470719Z [1m[92m   Compiling[0m nom_locate v5.0.0
+2026-03-31T08:07:59.0249005Z [1m[92m   Compiling[0m tower v0.4.13
+2026-03-31T08:07:59.1985294Z [1m[92m   Compiling[0m futures v0.3.32
+2026-03-31T08:07:59.2309967Z [1m[92m   Compiling[0m auto_impl v1.3.0
+2026-03-31T08:07:59.3326511Z [1m[92m   Compiling[0m tower-lsp-macros v0.9.0
+2026-03-31T08:07:59.6275806Z [1m[92m   Compiling[0m async-trait v0.1.89
+2026-03-31T08:08:00.0991639Z [1m[92m   Compiling[0m regex-automata v0.4.14
+2026-03-31T08:08:00.6717961Z [1m[92m   Compiling[0m fixedbitset v0.5.7
+2026-03-31T08:08:00.9755964Z [1m[92m   Compiling[0m clap_lex v1.1.0
+2026-03-31T08:08:01.1370931Z [1m[92m   Compiling[0m tokio-util v0.7.18
+2026-03-31T08:08:01.6588778Z [1m[92m   Compiling[0m linux-raw-sys v0.12.1
+2026-03-31T08:08:02.0227549Z [1m[92m   Compiling[0m bitflags v2.11.0
+2026-03-31T08:08:02.1889840Z [1m[92m   Compiling[0m strsim v0.11.1
+2026-03-31T08:08:02.5505803Z [1m[92m   Compiling[0m heck v0.5.0
+2026-03-31T08:08:02.7055544Z [1m[92m   Compiling[0m lazy_static v1.5.0
+2026-03-31T08:08:02.7414941Z [1m[92m   Compiling[0m thiserror v2.0.18
+2026-03-31T08:08:02.9854073Z [1m[92m   Compiling[0m sharded-slab v0.1.7
+2026-03-31T08:08:03.4825430Z [1m[92m   Compiling[0m clap_derive v4.6.0
+2026-03-31T08:08:04.0285237Z [1m[92m   Compiling[0m clap_builder v4.6.0
+2026-03-31T08:08:05.3362904Z [1m[92m   Compiling[0m matchers v0.2.0
+2026-03-31T08:08:05.4034847Z [1m[92m   Compiling[0m petgraph v0.8.3
+2026-03-31T08:08:06.3566666Z [1m[92m   Compiling[0m sysml-parser v0.1.0 (https://github.com/elan8/sysml-parser#bf468aac)
+2026-03-31T08:08:07.5382455Z [1m[92m   Compiling[0m thiserror-impl v2.0.18
+2026-03-31T08:08:08.1203761Z [1m[92m   Compiling[0m tower-lsp v0.20.0
+2026-03-31T08:08:08.5279989Z [1m[92m   Compiling[0m tracing-log v0.2.0
+2026-03-31T08:08:08.7042577Z [1m[92m   Compiling[0m thread_local v1.1.9
+2026-03-31T08:08:08.7446040Z [1m[92m   Compiling[0m fastrand v2.3.0
+2026-03-31T08:08:08.8773182Z [1m[92m   Compiling[0m nu-ansi-term v0.50.3
+2026-03-31T08:08:08.9225349Z [1m[92m   Compiling[0m same-file v1.0.6
+2026-03-31T08:08:09.0174353Z [1m[92m   Compiling[0m walkdir v2.5.0
+2026-03-31T08:08:09.1508165Z [1m[92m   Compiling[0m tracing-subscriber v0.3.23
+2026-03-31T08:08:09.3227006Z [1m[92m   Compiling[0m tempfile v3.27.0
+2026-03-31T08:08:09.7995562Z [1m[92m   Compiling[0m clap v4.6.0
+2026-03-31T08:08:10.5001907Z [1m[92m   Compiling[0m semantic-model v0.11.0 (/home/runner/work/spec42/spec42/semantic-model)
+2026-03-31T08:08:11.3425515Z [1m[92m   Compiling[0m spec42-core v0.11.0 (/home/runner/work/spec42/spec42/spec42-core)
+2026-03-31T08:08:17.7636141Z [1m[92m   Compiling[0m spec42 v0.11.0 (/home/runner/work/spec42/spec42/server)
+2026-03-31T08:08:18.2145390Z [1m[92m    Finished[0m `dev` profile [unoptimized + debuginfo] target(s) in 34.28s
+2026-03-31T08:08:18.2585583Z ##[group]Run cargo build --release -p spec42
+2026-03-31T08:08:18.2585967Z [36;1mcargo build --release -p spec42[0m
+2026-03-31T08:08:18.2612293Z shell: /usr/bin/bash -e {0}
+2026-03-31T08:08:18.2612539Z env:
+2026-03-31T08:08:18.2612716Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:08:18.2612982Z   CARGO_INCREMENTAL: 0
+2026-03-31T08:08:18.2613190Z   CARGO_TERM_COLOR: always
+2026-03-31T08:08:18.2613722Z ##[endgroup]
+2026-03-31T08:08:18.3794558Z [1m[92m   Compiling[0m proc-macro2 v1.0.106
+2026-03-31T08:08:18.3795962Z [1m[92m   Compiling[0m unicode-ident v1.0.24
+2026-03-31T08:08:18.3796876Z [1m[92m   Compiling[0m quote v1.0.45
+2026-03-31T08:08:18.3797775Z [1m[92m   Compiling[0m stable_deref_trait v1.2.1
+2026-03-31T08:08:18.4160125Z [1m[92m   Compiling[0m libc v0.2.183
+2026-03-31T08:08:18.4432276Z [1m[92m   Compiling[0m smallvec v1.15.1
+2026-03-31T08:08:18.5293960Z [1m[92m   Compiling[0m cfg-if v1.0.4
+2026-03-31T08:08:18.5565721Z [1m[92m   Compiling[0m litemap v0.8.1
+2026-03-31T08:08:18.6397693Z [1m[92m   Compiling[0m writeable v0.6.2
+2026-03-31T08:08:18.7101767Z [1m[92m   Compiling[0m memchr v2.8.0
+2026-03-31T08:08:18.8025208Z [1m[92m   Compiling[0m icu_normalizer_data v2.1.1
+2026-03-31T08:08:18.8708623Z [1m[92m   Compiling[0m icu_properties_data v2.1.2
+2026-03-31T08:08:18.9619999Z [1m[92m   Compiling[0m pin-project-lite v0.2.17
+2026-03-31T08:08:19.2616502Z [1m[92m   Compiling[0m syn v2.0.117
+2026-03-31T08:08:19.2847609Z [1m[92m   Compiling[0m serde_core v1.0.228
+2026-03-31T08:08:19.4480063Z [1m[92m   Compiling[0m once_cell v1.21.4
+2026-03-31T08:08:19.6185510Z [1m[92m   Compiling[0m parking_lot_core v0.9.12
+2026-03-31T08:08:19.7338585Z [1m[92m   Compiling[0m futures-sink v0.3.32
+2026-03-31T08:08:19.7860018Z [1m[92m   Compiling[0m scopeguard v1.2.0
+2026-03-31T08:08:19.8097002Z [1m[92m   Compiling[0m futures-core v0.3.32
+2026-03-31T08:08:19.8306447Z [1m[92m   Compiling[0m lock_api v0.4.14
+2026-03-31T08:08:20.0820293Z [1m[92m   Compiling[0m serde v1.0.228
+2026-03-31T08:08:20.1627438Z [1m[92m   Compiling[0m zmij v1.0.21
+2026-03-31T08:08:20.2595282Z [1m[92m   Compiling[0m futures-channel v0.3.32
+2026-03-31T08:08:20.2920387Z [1m[92m   Compiling[0m errno v0.3.14
+2026-03-31T08:08:20.3865790Z [1m[92m   Compiling[0m tracing-core v0.1.36
+2026-03-31T08:08:20.4711241Z [1m[92m   Compiling[0m futures-io v0.3.32
+2026-03-31T08:08:20.5957340Z [1m[92m   Compiling[0m utf8_iter v1.0.4
+2026-03-31T08:08:20.6933810Z [1m[92m   Compiling[0m percent-encoding v2.3.2
+2026-03-31T08:08:20.8899821Z [1m[92m   Compiling[0m serde_json v1.0.149
+2026-03-31T08:08:20.9736572Z [1m[92m   Compiling[0m slab v0.4.12
+2026-03-31T08:08:21.1146220Z [1m[92m   Compiling[0m futures-task v0.3.32
+2026-03-31T08:08:21.2265906Z [1m[92m   Compiling[0m form_urlencoded v1.2.2
+2026-03-31T08:08:21.4290573Z [1m[92m   Compiling[0m signal-hook-registry v1.4.8
+2026-03-31T08:08:21.8385852Z [1m[92m   Compiling[0m parking_lot v0.12.5
+2026-03-31T08:08:21.8885394Z [1m[92m   Compiling[0m socket2 v0.6.3
+2026-03-31T08:08:22.7889350Z [1m[92m   Compiling[0m mio v1.2.0
+2026-03-31T08:08:22.8406090Z [1m[92m   Compiling[0m utf8parse v0.2.2
+2026-03-31T08:08:22.8822732Z [1m[92m   Compiling[0m itoa v1.0.18
+2026-03-31T08:08:22.9099880Z [1m[92m   Compiling[0m log v0.4.29
+2026-03-31T08:08:23.0748169Z [1m[92m   Compiling[0m bytes v1.11.1
+2026-03-31T08:08:23.0878256Z [1m[92m   Compiling[0m httparse v1.10.1
+2026-03-31T08:08:23.2788377Z [1m[92m   Compiling[0m synstructure v0.13.2
+2026-03-31T08:08:23.8286058Z [1m[92m   Compiling[0m anstyle-parse v1.0.0
+2026-03-31T08:08:23.9798530Z [1m[92m   Compiling[0m nom v8.0.0
+2026-03-31T08:08:24.0632490Z [1m[92m   Compiling[0m bytecount v0.6.9
+2026-03-31T08:08:24.1765708Z [1m[92m   Compiling[0m tower-service v0.3.3
+2026-03-31T08:08:24.2125496Z [1m[92m   Compiling[0m colorchoice v1.0.5
+2026-03-31T08:08:24.2598569Z [1m[92m   Compiling[0m bitflags v1.3.2
+2026-03-31T08:08:24.2883691Z [1m[92m   Compiling[0m regex-syntax v0.8.10
+2026-03-31T08:08:24.8785653Z [1m[92m   Compiling[0m zerofrom-derive v0.1.6
+2026-03-31T08:08:26.0486275Z [1m[92m   Compiling[0m zerofrom v0.1.6
+2026-03-31T08:08:26.1242377Z [1m[92m   Compiling[0m yoke-derive v0.8.1
+2026-03-31T08:08:26.5713646Z [1m[92m   Compiling[0m zerovec-derive v0.11.2
+2026-03-31T08:08:27.0377995Z [1m[92m   Compiling[0m yoke v0.8.1
+2026-03-31T08:08:27.1878817Z [1m[92m   Compiling[0m displaydoc v0.2.5
+2026-03-31T08:08:27.6611804Z [1m[92m   Compiling[0m zerovec v0.11.5
+2026-03-31T08:08:27.7396012Z [1m[92m   Compiling[0m zerotrie v0.2.3
+2026-03-31T08:08:27.8755539Z [1m[92m   Compiling[0m futures-macro v0.3.32
+2026-03-31T08:08:28.1564996Z [1m[92m   Compiling[0m serde_derive v1.0.228
+2026-03-31T08:08:28.3409014Z [1m[92m   Compiling[0m tinystr v0.8.2
+2026-03-31T08:08:28.4927002Z [1m[92m   Compiling[0m icu_locale_core v2.1.1
+2026-03-31T08:08:28.5858112Z [1m[92m   Compiling[0m potential_utf v0.1.4
+2026-03-31T08:08:28.6895210Z [1m[92m   Compiling[0m icu_collections v2.1.1
+2026-03-31T08:08:29.4321891Z [1m[92m   Compiling[0m icu_provider v2.1.1
+2026-03-31T08:08:29.8125887Z [1m[92m   Compiling[0m icu_normalizer v2.1.1
+2026-03-31T08:08:31.2195689Z [1m[92m   Compiling[0m icu_properties v2.1.2
+2026-03-31T08:08:31.3632682Z [1m[92m   Compiling[0m futures-util v0.3.32
+2026-03-31T08:08:31.8647020Z [1m[92m   Compiling[0m pin-project-internal v1.1.11
+2026-03-31T08:08:32.2576061Z [1m[92m   Compiling[0m tokio-macros v2.6.1
+2026-03-31T08:08:32.8332878Z [1m[92m   Compiling[0m idna_adapter v1.2.1
+2026-03-31T08:08:32.8916927Z [1m[92m   Compiling[0m idna v1.1.0
+2026-03-31T08:08:32.8982354Z [1m[92m   Compiling[0m tracing-attributes v0.1.31
+2026-03-31T08:08:33.0523191Z [1m[92m   Compiling[0m pin-project v1.1.11
+2026-03-31T08:08:33.0884383Z [1m[92m   Compiling[0m tokio v1.50.0
+2026-03-31T08:08:34.0661620Z [1m[92m   Compiling[0m tracing v0.1.44
+2026-03-31T08:08:34.3865473Z [1m[92m   Compiling[0m url v2.5.8
+2026-03-31T08:08:34.6445830Z [1m[92m   Compiling[0m serde_repr v0.1.20
+2026-03-31T08:08:34.9682059Z [1m[92m   Compiling[0m anstyle v1.0.14
+2026-03-31T08:08:35.1938956Z [1m[92m   Compiling[0m hashbrown v0.16.1
+2026-03-31T08:08:35.4286028Z [1m[92m   Compiling[0m rustix v1.1.4
+2026-03-31T08:08:35.6336571Z [1m[92m   Compiling[0m equivalent v1.0.2
+2026-03-31T08:08:35.6681019Z [1m[92m   Compiling[0m hashbrown v0.14.5
+2026-03-31T08:08:35.9396300Z [1m[92m   Compiling[0m anstyle-query v1.1.5
+2026-03-31T08:08:35.9835914Z [1m[92m   Compiling[0m tower-layer v0.3.3
+2026-03-31T08:08:36.1655791Z [1m[92m   Compiling[0m foldhash v0.1.5
+2026-03-31T08:08:36.3244238Z [1m[92m   Compiling[0m is_terminal_polyfill v1.70.2
+2026-03-31T08:08:36.3558801Z [1m[92m   Compiling[0m getrandom v0.4.2
+2026-03-31T08:08:36.3568542Z [1m[92m   Compiling[0m anstream v1.0.0
+2026-03-31T08:08:36.4661466Z [1m[92m   Compiling[0m dashmap v5.5.3
+2026-03-31T08:08:36.8446856Z [1m[92m   Compiling[0m hashbrown v0.15.5
+2026-03-31T08:08:37.0393635Z [1m[92m   Compiling[0m tower v0.4.13
+2026-03-31T08:08:37.4006666Z [1m[92m   Compiling[0m indexmap v2.13.0
+2026-03-31T08:08:37.5523583Z [1m[92m   Compiling[0m lsp-types v0.94.1
+2026-03-31T08:08:37.5564653Z [1m[92m   Compiling[0m futures v0.3.32
+2026-03-31T08:08:37.5902070Z [1m[92m   Compiling[0m nom_locate v5.0.0
+2026-03-31T08:08:37.6712390Z [1m[92m   Compiling[0m regex-automata v0.4.14
+2026-03-31T08:08:38.3165555Z [1m[92m   Compiling[0m tower-lsp-macros v0.9.0
+2026-03-31T08:08:38.6059336Z [1m[92m   Compiling[0m tokio-util v0.7.18
+2026-03-31T08:08:39.5909066Z [1m[92m   Compiling[0m async-trait v0.1.89
+2026-03-31T08:08:40.3508036Z [1m[92m   Compiling[0m auto_impl v1.3.0
+2026-03-31T08:08:41.5315852Z [1m[92m   Compiling[0m clap_lex v1.1.0
+2026-03-31T08:08:41.8147172Z [1m[92m   Compiling[0m strsim v0.11.1
+2026-03-31T08:08:42.6488816Z [1m[92m   Compiling[0m fixedbitset v0.5.7
+2026-03-31T08:08:43.0887474Z [1m[92m   Compiling[0m thiserror v2.0.18
+2026-03-31T08:08:43.2581091Z [1m[92m   Compiling[0m heck v0.5.0
+2026-03-31T08:08:43.4096211Z [1m[92m   Compiling[0m linux-raw-sys v0.12.1
+2026-03-31T08:08:43.7695610Z [1m[92m   Compiling[0m lazy_static v1.5.0
+2026-03-31T08:08:43.8050641Z [1m[92m   Compiling[0m bitflags v2.11.0
+2026-03-31T08:08:47.0905859Z [1m[92m   Compiling[0m sharded-slab v0.1.7
+2026-03-31T08:08:47.6497504Z [1m[92m   Compiling[0m clap_derive v4.6.0
+2026-03-31T08:08:47.7973187Z [1m[92m   Compiling[0m petgraph v0.8.3
+2026-03-31T08:08:48.3195246Z [1m[92m   Compiling[0m tower-lsp v0.20.0
+2026-03-31T08:08:48.3478111Z [1m[92m   Compiling[0m clap_builder v4.6.0
+2026-03-31T08:08:49.5484205Z [1m[92m   Compiling[0m matchers v0.2.0
+2026-03-31T08:08:49.6347519Z [1m[92m   Compiling[0m sysml-parser v0.1.0 (https://github.com/elan8/sysml-parser#bf468aac)
+2026-03-31T08:08:51.0331740Z [1m[92m   Compiling[0m thiserror-impl v2.0.18
+2026-03-31T08:08:52.2070295Z [1m[92m   Compiling[0m tracing-log v0.2.0
+2026-03-31T08:08:52.5242289Z [1m[92m   Compiling[0m thread_local v1.1.9
+2026-03-31T08:08:52.7585749Z [1m[92m   Compiling[0m nu-ansi-term v0.50.3
+2026-03-31T08:08:53.2575167Z [1m[92m   Compiling[0m same-file v1.0.6
+2026-03-31T08:08:53.3585869Z [1m[92m   Compiling[0m fastrand v2.3.0
+2026-03-31T08:08:53.5843323Z [1m[92m   Compiling[0m tempfile v3.27.0
+2026-03-31T08:08:53.7409586Z [1m[92m   Compiling[0m walkdir v2.5.0
+2026-03-31T08:08:54.5316049Z [1m[92m   Compiling[0m tracing-subscriber v0.3.23
+2026-03-31T08:08:54.5945660Z [1m[92m   Compiling[0m clap v4.6.0
+2026-03-31T08:08:54.6835656Z [1m[92m   Compiling[0m semantic-model v0.11.0 (/home/runner/work/spec42/spec42/semantic-model)
+2026-03-31T08:09:01.2556924Z [1m[92m   Compiling[0m spec42-core v0.11.0 (/home/runner/work/spec42/spec42/spec42-core)
+2026-03-31T08:09:16.2470008Z [1m[92m   Compiling[0m spec42 v0.11.0 (/home/runner/work/spec42/spec42/server)
+2026-03-31T08:09:27.9261717Z [1m[92m    Finished[0m `release` profile [optimized] target(s) in 1m 09s
+2026-03-31T08:09:27.9381341Z ##[group]Run echo "/home/runner/work/spec42/spec42/target/debug" >> $GITHUB_PATH
+2026-03-31T08:09:27.9381918Z [36;1mecho "/home/runner/work/spec42/spec42/target/debug" >> $GITHUB_PATH[0m
+2026-03-31T08:09:27.9382391Z [36;1mecho "/home/runner/work/spec42/spec42/target/release" >> $GITHUB_PATH[0m
+2026-03-31T08:09:27.9383137Z [36;1m# Ensure VS Code extension tests use the in-repo server binary (avoid PATH/order flakiness).[0m
+2026-03-31T08:09:27.9384106Z [36;1m# Prefer debug (built for the test host), fallback to release.[0m
+2026-03-31T08:09:27.9384565Z [36;1mif [ -x "/home/runner/work/spec42/spec42/target/debug/spec42" ]; then[0m
+2026-03-31T08:09:27.9385034Z [36;1m  chmod +x "/home/runner/work/spec42/spec42/target/debug/spec42" || true[0m
+2026-03-31T08:09:27.9385576Z [36;1m  echo "SPEC42_SERVER_PATH=/home/runner/work/spec42/spec42/target/debug/spec42" >> $GITHUB_ENV[0m
+2026-03-31T08:09:27.9386068Z [36;1m  echo "SPEC42_SERVER_PATH set to debug binary"[0m
+2026-03-31T08:09:27.9386522Z [36;1melif [ -x "/home/runner/work/spec42/spec42/target/release/spec42" ]; then[0m
+2026-03-31T08:09:27.9387030Z [36;1m  chmod +x "/home/runner/work/spec42/spec42/target/release/spec42" || true[0m
+2026-03-31T08:09:27.9387603Z [36;1m  echo "SPEC42_SERVER_PATH=/home/runner/work/spec42/spec42/target/release/spec42" >> $GITHUB_ENV[0m
+2026-03-31T08:09:27.9388110Z [36;1m  echo "SPEC42_SERVER_PATH set to release binary"[0m
+2026-03-31T08:09:27.9388397Z [36;1melse[0m
+2026-03-31T08:09:27.9388678Z [36;1m  echo "WARNING: spec42 binary not found in target/{debug,release}"[0m
+2026-03-31T08:09:27.9389098Z [36;1m  ls -la "/home/runner/work/spec42/spec42/target" || true[0m
+2026-03-31T08:09:27.9389484Z [36;1m  ls -la "/home/runner/work/spec42/spec42/target/debug" || true[0m
+2026-03-31T08:09:27.9389880Z [36;1m  ls -la "/home/runner/work/spec42/spec42/target/release" || true[0m
+2026-03-31T08:09:27.9390201Z [36;1mfi[0m
+2026-03-31T08:09:27.9416218Z shell: /usr/bin/bash -e {0}
+2026-03-31T08:09:27.9416453Z env:
+2026-03-31T08:09:27.9416633Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:09:27.9416875Z   CARGO_INCREMENTAL: 0
+2026-03-31T08:09:27.9417073Z   CARGO_TERM_COLOR: always
+2026-03-31T08:09:27.9417277Z ##[endgroup]
+2026-03-31T08:09:27.9478768Z SPEC42_SERVER_PATH set to debug binary
+2026-03-31T08:09:27.9505816Z ##[group]Run echo "SPEC42_SERVER_PATH=${SPEC42_SERVER_PATH:-"(unset)"}"
+2026-03-31T08:09:27.9506324Z [36;1mecho "SPEC42_SERVER_PATH=${SPEC42_SERVER_PATH:-"(unset)"}"[0m
+2026-03-31T08:09:27.9506695Z [36;1mif [ -n "${SPEC42_SERVER_PATH:-}" ]; then[0m
+2026-03-31T08:09:27.9507001Z [36;1m  ls -la "${SPEC42_SERVER_PATH}" || true[0m
+2026-03-31T08:09:27.9507289Z [36;1m  file "${SPEC42_SERVER_PATH}" || true[0m
+2026-03-31T08:09:27.9507569Z [36;1m  ldd "${SPEC42_SERVER_PATH}" || true[0m
+2026-03-31T08:09:27.9507850Z [36;1m  "${SPEC42_SERVER_PATH}" --version || true[0m
+2026-03-31T08:09:27.9508143Z [36;1m  "${SPEC42_SERVER_PATH}" --help || true[0m
+2026-03-31T08:09:27.9508392Z [36;1mfi[0m
+2026-03-31T08:09:27.9535157Z shell: /usr/bin/bash -e {0}
+2026-03-31T08:09:27.9535389Z env:
+2026-03-31T08:09:27.9535575Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:09:27.9535824Z   CARGO_INCREMENTAL: 0
+2026-03-31T08:09:27.9536025Z   CARGO_TERM_COLOR: always
+2026-03-31T08:09:27.9536384Z   SPEC42_SERVER_PATH: /home/runner/work/spec42/spec42/target/debug/spec42
+2026-03-31T08:09:27.9536749Z ##[endgroup]
+2026-03-31T08:09:27.9586468Z SPEC42_SERVER_PATH=/home/runner/work/spec42/spec42/target/debug/spec42
+2026-03-31T08:09:27.9600717Z -rwxr-xr-x 2 runner runner 99649720 Mar 31 08:08 /home/runner/work/spec42/spec42/target/debug/spec42
+2026-03-31T08:09:28.0684900Z /home/runner/work/spec42/spec42/target/debug/spec42: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=92fec6af862997ea76209c83ae4bffd484d5adc1, with debug_info, not stripped
+2026-03-31T08:09:28.0829353Z 	linux-vdso.so.1 (0x00007f8b13290000)
+2026-03-31T08:09:28.0830069Z 	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f8b121d2000)
+2026-03-31T08:09:28.0830582Z 	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f8b120e9000)
+2026-03-31T08:09:28.0831026Z 	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f8b11e00000)
+2026-03-31T08:09:28.0831884Z 	/lib64/ld-linux-x86-64.so.2 (0x00007f8b13292000)
+2026-03-31T08:09:28.0953954Z ##[group]Run echo "single-file settings.json:"
+2026-03-31T08:09:28.0954358Z [36;1mecho "single-file settings.json:"[0m
+2026-03-31T08:09:28.0954908Z [36;1mcat "/home/runner/work/spec42/spec42/vscode/testFixture/workspaces/single-file/.vscode/settings.json" || true[0m
+2026-03-31T08:09:28.0955477Z [36;1mecho "large-workspace settings.json:"[0m
+2026-03-31T08:09:28.0956035Z [36;1mcat "/home/runner/work/spec42/spec42/vscode/testFixture/workspaces/large-workspace/.vscode/settings.json" || true[0m
+2026-03-31T08:09:28.0982986Z shell: /usr/bin/bash -e {0}
+2026-03-31T08:09:28.0983227Z env:
+2026-03-31T08:09:28.0983659Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:09:28.0983996Z   CARGO_INCREMENTAL: 0
+2026-03-31T08:09:28.0984204Z   CARGO_TERM_COLOR: always
+2026-03-31T08:09:28.0984526Z   SPEC42_SERVER_PATH: /home/runner/work/spec42/spec42/target/debug/spec42
+2026-03-31T08:09:28.0984893Z ##[endgroup]
+2026-03-31T08:09:28.1034329Z single-file settings.json:
+2026-03-31T08:09:28.1044625Z {
+2026-03-31T08:09:28.1045196Z   "spec42.serverPath": "C:\\Git\\spec42\\target\\debug\\spec42.exe"
+2026-03-31T08:09:28.1045756Z }
+2026-03-31T08:09:28.1046219Z large-workspace settings.json:
+2026-03-31T08:09:28.1055646Z {
+2026-03-31T08:09:28.1056187Z   "spec42.serverPath": "C:\\Git\\spec42\\target\\debug\\spec42.exe",
+2026-03-31T08:09:28.1056792Z   "spec42.workspace.maxFilesPerPattern": 2,
+2026-03-31T08:09:28.1057093Z   "spec42.debug": true
+2026-03-31T08:09:28.1057296Z }
+2026-03-31T08:09:28.1081812Z ##[group]Run cd vscode && npm ci
+2026-03-31T08:09:28.1082100Z [36;1mcd vscode && npm ci[0m
+2026-03-31T08:09:28.1108476Z shell: /usr/bin/bash -e {0}
+2026-03-31T08:09:28.1108706Z env:
+2026-03-31T08:09:28.1108887Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:09:28.1109122Z   CARGO_INCREMENTAL: 0
+2026-03-31T08:09:28.1109327Z   CARGO_TERM_COLOR: always
+2026-03-31T08:09:28.1109647Z   SPEC42_SERVER_PATH: /home/runner/work/spec42/spec42/target/debug/spec42
+2026-03-31T08:09:28.1110018Z ##[endgroup]
+2026-03-31T08:09:31.5968680Z npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+2026-03-31T08:09:31.6826622Z npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+2026-03-31T08:09:31.7998666Z npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+2026-03-31T08:09:31.8928617Z npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+2026-03-31T08:09:32.6086858Z npm warn deprecated glob@11.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+2026-03-31T08:09:32.6182809Z npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+2026-03-31T08:09:34.7248702Z 
+2026-03-31T08:09:34.7249427Z added 477 packages, and audited 478 packages in 7s
+2026-03-31T08:09:34.7249864Z 
+2026-03-31T08:09:34.7250130Z 125 packages are looking for funding
+2026-03-31T08:09:34.7250613Z   run `npm fund` for details
+2026-03-31T08:09:34.7376098Z 
+2026-03-31T08:09:34.7376856Z 7 vulnerabilities (1 low, 2 moderate, 4 high)
+2026-03-31T08:09:34.7377343Z 
+2026-03-31T08:09:34.7377700Z To address issues that do not require attention, run:
+2026-03-31T08:09:34.7378923Z   npm audit fix
+2026-03-31T08:09:34.7379143Z 
+2026-03-31T08:09:34.7379521Z To address all issues (including breaking changes), run:
+2026-03-31T08:09:34.7380106Z   npm audit fix --force
+2026-03-31T08:09:34.7380345Z 
+2026-03-31T08:09:34.7380543Z Run `npm audit` for details.
+2026-03-31T08:09:34.7742043Z ##[group]Run cd vscode && npm run build:webview-assets && npm run build:webview && npm run compile
+2026-03-31T08:09:34.7742694Z [36;1mcd vscode && npm run build:webview-assets && npm run build:webview && npm run compile[0m
+2026-03-31T08:09:34.7775285Z shell: /usr/bin/bash -e {0}
+2026-03-31T08:09:34.7775527Z env:
+2026-03-31T08:09:34.7775713Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:09:34.7775960Z   CARGO_INCREMENTAL: 0
+2026-03-31T08:09:34.7776164Z   CARGO_TERM_COLOR: always
+2026-03-31T08:09:34.7776489Z   SPEC42_SERVER_PATH: /home/runner/work/spec42/spec42/target/debug/spec42
+2026-03-31T08:09:34.7776839Z ##[endgroup]
+2026-03-31T08:09:34.8992365Z 
+2026-03-31T08:09:34.8994362Z > spec42@0.11.0 build:webview-assets
+2026-03-31T08:09:34.8996663Z > node scripts/copy-webview-assets.js
+2026-03-31T08:09:34.8997038Z 
+2026-03-31T08:09:34.9338754Z Copied @vscode/codicons to media/codicons/
+2026-03-31T08:09:34.9374602Z Copied /home/runner/work/spec42/spec42/vscode/node_modules/d3/dist/d3.min.js -> /home/runner/work/spec42/spec42/vscode/media/vendor/d3.min.js
+2026-03-31T08:09:34.9388788Z Copied /home/runner/work/spec42/spec42/vscode/node_modules/elkjs/lib/elk.bundled.js -> /home/runner/work/spec42/spec42/vscode/media/vendor/elk.bundled.js
+2026-03-31T08:09:34.9398867Z Copied /home/runner/work/spec42/spec42/vscode/node_modules/elkjs/lib/elk-worker.min.js -> /home/runner/work/spec42/spec42/vscode/media/webview/elkWorker.js
+2026-03-31T08:09:34.9400133Z Webview vendor assets copied successfully.
+2026-03-31T08:09:35.0659417Z 
+2026-03-31T08:09:35.0660473Z > spec42@0.11.0 build:webview
+2026-03-31T08:09:35.0661032Z > node scripts/build-webview.js
+2026-03-31T08:09:35.0661310Z 
+2026-03-31T08:09:35.1519890Z Webview bundle written to /home/runner/work/spec42/spec42/vscode/media/webview/visualizer.js
+2026-03-31T08:09:35.2826581Z 
+2026-03-31T08:09:35.2827726Z > spec42@0.11.0 compile
+2026-03-31T08:09:35.2829904Z > tsc -p ./
+2026-03-31T08:09:35.2830133Z 
+2026-03-31T08:09:37.9839904Z ##[group]Run cd vscode && xvfb-run -a npm test
+2026-03-31T08:09:37.9840260Z [36;1mcd vscode && xvfb-run -a npm test[0m
+2026-03-31T08:09:37.9871318Z shell: /usr/bin/bash -e {0}
+2026-03-31T08:09:37.9871674Z env:
+2026-03-31T08:09:37.9871929Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:09:37.9872265Z   CARGO_INCREMENTAL: 0
+2026-03-31T08:09:37.9872549Z   CARGO_TERM_COLOR: always
+2026-03-31T08:09:37.9872994Z   SPEC42_SERVER_PATH: /home/runner/work/spec42/spec42/target/debug/spec42
+2026-03-31T08:09:37.9873822Z ##[endgroup]
+2026-03-31T08:09:38.5481319Z 
+2026-03-31T08:09:38.5481790Z > spec42@0.11.0 test
+2026-03-31T08:09:38.5482143Z > vscode-test
+2026-03-31T08:09:38.5482276Z 
+2026-03-31T08:09:38.8205603Z - Resolving version...
+2026-03-31T08:09:38.9538398Z ✔ Validated version: 1.113.0
+2026-03-31T08:09:38.9555581Z - Found at https://update.code.visualstudio.com/1.113.0/linux-x64/stable?released=true
+2026-03-31T08:09:39.0742693Z ✔ Found at https://update.code.visualstudio.com/1.113.0/linux-x64/stable?released=true
+2026-03-31T08:09:39.0744670Z - Downloading (178.40 MB)
+2026-03-31T08:09:43.1308932Z ✔ Downloaded VS Code into /home/runner/work/spec42/spec42/vscode/.vscode-test/vscode-linux-x64-1.113.0
+2026-03-31T08:09:48.6411830Z [6910:0331/080948.640188:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:09:48.6507736Z [6910:0331/080948.650138:ERROR:dbus/object_proxy.cc:573] Failed to call method: org.freedesktop.DBus.NameHasOwner: object_path= /org/freedesktop/DBus: unknown error type: 
+2026-03-31T08:09:48.6514391Z [6910:0331/080948.650835:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:09:48.6517200Z [6910:0331/080948.650868:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:09:48.6519615Z [6910:0331/080948.650878:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:09:48.6523756Z [6910:0331/080948.650890:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:09:48.6526155Z [6910:0331/080948.650898:ERROR:dbus/object_proxy.cc:573] Failed to call method: org.freedesktop.DBus.NameHasOwner: object_path= /org/freedesktop/DBus: unknown error type: 
+2026-03-31T08:09:48.8691258Z [90m[main 2026-03-31T08:09:48.866Z][0m update#setState disabled
+2026-03-31T08:09:48.8694719Z [90m[main 2026-03-31T08:09:48.867Z][0m update#ctor - updates are disabled by the environment
+2026-03-31T08:09:48.8698505Z [6910:0331/080948.869369:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:09:48.9704208Z [6934:0331/080948.969975:ERROR:components/viz/service/main/viz_main_impl.cc:189] Exiting GPU process due to errors during initialization
+2026-03-31T08:09:49.9126393Z workbench#open()
+2026-03-31T08:09:50.5609866Z Started local extension host with pid 7177.
+2026-03-31T08:09:50.5612565Z IExtensionHostStarter.start() took 40 ms.
+2026-03-31T08:09:50.6524969Z Started initializing default profile extensions in extensions installation folder. file:///home/runner/work/spec42/spec42/vscode/.vscode-test/extensions
+2026-03-31T08:09:51.0466209Z Completed initializing default profile extensions in extensions installation folder. file:///home/runner/work/spec42/spec42/vscode/.vscode-test/extensions
+2026-03-31T08:09:51.2159656Z Loading development extension at /home/runner/work/spec42/spec42/vscode
+2026-03-31T08:09:51.2859112Z Ignoring spec42.debug.dumpSemanticTokens as spec42.debug is false
+2026-03-31T08:09:51.4092550Z Ignoring spec42.debug.dumpSemanticTokens as spec42.debug is false
+2026-03-31T08:09:51.4662115Z NativeExtensionHostFactory._createLocalProcessExtensionHostDataProvider.scannedExtensions: vscode.bat,vscode.clojure,vscode.coffeescript,vscode.configuration-editing,vscode.cpp,vscode.csharp,vscode.css,vscode.css-language-features,vscode.dart,vscode.debug-auto-launch,vscode.debug-server-ready,vscode.diff,vscode.docker,vscode.dotenv,vscode.emmet,vscode.extension-editing,vscode.fsharp,vscode.git,vscode.git-base,vscode.github,vscode.github-authentication,vscode.go,vscode.groovy,vscode.grunt,vscode.gulp,vscode.handlebars,vscode.hlsl,vscode.html,vscode.html-language-features,vscode.ini,vscode.ipynb,vscode.jake,vscode.java,vscode.javascript,vscode.json,vscode.json-language-features,vscode.julia,vscode.latex,vscode.less,vscode.log,vscode.lua,vscode.make,vscode.markdown,vscode.markdown-language-features,vscode.markdown-math,vscode.media-preview,vscode.merge-conflict,vscode.mermaid-chat-features,vscode.microsoft-authentication,ms-vscode.js-debug,ms-vscode.js-debug-companion,ms-vscode.vscode-js-profile-table,vscode.builtin-notebook-renderers,vscode.npm,vscode.objective-c,vscode.perl,vscode.php,vscode.php-language-features,vscode.powershell,vscode.prompt,vscode.pug,vscode.python,vscode.r,vscode.razor,vscode.references-view,vscode.restructuredtext,vscode.ruby,vscode.rust,vscode.scss,vscode.search-result,vscode.shaderlab,vscode.shellscript,vscode.simple-browser,vscode.sql,vscode.swift,vscode.terminal-suggest,vscode.theme-abyss,vscode.theme-defaults,vscode.theme-kimbie-dark,vscode.theme-monokai,vscode.theme-monokai-dimmed,vscode.theme-quietlight,vscode.theme-red,vscode.vscode-theme-seti,vscode.theme-solarized-dark,vscode.theme-solarized-light,vscode.theme-tomorrow-night-blue,vscode.tunnel-forwarding,vscode.typescript,vscode.typescript-language-features,vscode.vb,vscode.xml,vscode.yaml,Elan8.spec42
+2026-03-31T08:09:51.4819093Z NativeExtensionHostFactory._createLocalProcessExtensionHostDataProvider.localExtensions: Elan8.spec42,vscode.bat,vscode.clojure,vscode.coffeescript,vscode.configuration-editing,vscode.cpp,vscode.csharp,vscode.css,vscode.css-language-features,vscode.dart,vscode.debug-auto-launch,vscode.debug-server-ready,vscode.diff,vscode.docker,vscode.dotenv,vscode.emmet,vscode.extension-editing,vscode.fsharp,vscode.git,vscode.git-base,vscode.github,vscode.github-authentication,vscode.go,vscode.groovy,vscode.grunt,vscode.gulp,vscode.handlebars,vscode.hlsl,vscode.html,vscode.html-language-features,vscode.ini,vscode.ipynb,vscode.jake,vscode.java,vscode.javascript,vscode.json,vscode.json-language-features,vscode.julia,vscode.latex,vscode.less,vscode.log,vscode.lua,vscode.make,vscode.markdown,vscode.markdown-language-features,vscode.markdown-math,vscode.media-preview,vscode.merge-conflict,vscode.mermaid-chat-features,vscode.microsoft-authentication,ms-vscode.js-debug,ms-vscode.js-debug-companion,ms-vscode.vscode-js-profile-table,vscode.builtin-notebook-renderers,vscode.npm,vscode.objective-c,vscode.perl,vscode.php,vscode.php-language-features,vscode.powershell,vscode.prompt,vscode.pug,vscode.python,vscode.r,vscode.razor,vscode.references-view,vscode.restructuredtext,vscode.ruby,vscode.rust,vscode.scss,vscode.search-result,vscode.shaderlab,vscode.shellscript,vscode.simple-browser,vscode.sql,vscode.swift,vscode.terminal-suggest,vscode.theme-abyss,vscode.theme-defaults,vscode.theme-kimbie-dark,vscode.theme-monokai,vscode.theme-monokai-dimmed,vscode.theme-quietlight,vscode.theme-red,vscode.vscode-theme-seti,vscode.theme-solarized-dark,vscode.theme-solarized-light,vscode.theme-tomorrow-night-blue,vscode.tunnel-forwarding,vscode.typescript,vscode.typescript-language-features,vscode.vb,vscode.xml,vscode.yaml
+2026-03-31T08:09:51.4969246Z NativeExtensionHostFactory._createLocalProcessExtensionHostDataProvider.myExtensions: Elan8.spec42,vscode.bat,vscode.clojure,vscode.coffeescript,vscode.configuration-editing,vscode.cpp,vscode.csharp,vscode.css,vscode.css-language-features,vscode.dart,vscode.debug-auto-launch,vscode.debug-server-ready,vscode.diff,vscode.docker,vscode.dotenv,vscode.emmet,vscode.extension-editing,vscode.fsharp,vscode.git,vscode.git-base,vscode.github,vscode.github-authentication,vscode.go,vscode.groovy,vscode.grunt,vscode.gulp,vscode.handlebars,vscode.hlsl,vscode.html,vscode.html-language-features,vscode.ini,vscode.ipynb,vscode.jake,vscode.java,vscode.javascript,vscode.json,vscode.json-language-features,vscode.julia,vscode.latex,vscode.less,vscode.log,vscode.lua,vscode.make,vscode.markdown,vscode.markdown-language-features,vscode.markdown-math,vscode.media-preview,vscode.merge-conflict,vscode.mermaid-chat-features,vscode.microsoft-authentication,ms-vscode.js-debug,ms-vscode.js-debug-companion,ms-vscode.vscode-js-profile-table,vscode.builtin-notebook-renderers,vscode.npm,vscode.objective-c,vscode.perl,vscode.php,vscode.php-language-features,vscode.powershell,vscode.prompt,vscode.pug,vscode.python,vscode.r,vscode.razor,vscode.references-view,vscode.restructuredtext,vscode.ruby,vscode.rust,vscode.scss,vscode.search-result,vscode.shaderlab,vscode.shellscript,vscode.simple-browser,vscode.sql,vscode.swift,vscode.terminal-suggest,vscode.theme-abyss,vscode.theme-defaults,vscode.theme-kimbie-dark,vscode.theme-monokai,vscode.theme-monokai-dimmed,vscode.theme-quietlight,vscode.theme-red,vscode.vscode-theme-seti,vscode.theme-solarized-dark,vscode.theme-solarized-light,vscode.theme-tomorrow-night-blue,vscode.tunnel-forwarding,vscode.typescript,vscode.typescript-language-features,vscode.vb,vscode.xml,vscode.yaml
+2026-03-31T08:09:52.5831609Z Settings Sync: Account status changed from uninitialized to unavailable
+2026-03-31T08:09:52.6085525Z [SysML][startup] {"traceId":"startup-1774944592583-wwv6ha","phase":"activate:start","elapsedMs":0}
+2026-03-31T08:09:52.6089194Z [SysML] Server command: /home/runner/work/spec42/spec42/target/debug/spec42
+2026-03-31T08:09:52.6093988Z [SysML][startup] {"traceId":"startup-1774944592583-wwv6ha","phase":"languageClient:start","elapsedMs":12}
+2026-03-31T08:09:52.8748032Z [SysML][startup] {"traceId":"startup-1774944592583-wwv6ha","phase":"languageClient:ready","elapsedMs":228}
+2026-03-31T08:09:52.9761631Z 
+2026-03-31T08:09:52.9823084Z   Extension Test Suite
+2026-03-31T08:09:53.7947692Z     ✔ Extension should be present
+2026-03-31T08:09:53.8299893Z     ✔ SysML language should be registered
+2026-03-31T08:09:54.1714597Z     ✔ Hover over keyword returns content (340ms)
+2026-03-31T08:09:55.1448609Z     ✔ Go to definition from usage to definition (959ms)
+2026-03-31T08:09:55.5536192Z     ✔ Server stays usable after invalid intermediate edits (385ms)
+2026-03-31T08:09:55.6635066Z [SysML][startup] {"traceId":"startup-1774944592583-wwv6ha","phase":"workspaceIndexing:start","elapsedMs":3023}
+2026-03-31T08:09:55.7290777Z [SysML] ERROR: getModel failed because the language client is not running for file:///home/runner/work/spec42/spec42/vscode/testFixture/workspaces/single-file/SurveillanceDrone.sysml Error: Client is not running
+2026-03-31T08:09:55.7300777Z 	at LanguageClient.sendRequest (/home/runner/work/spec42/spec42/vscode/node_modules/vscode-languageclient/lib/common/client.js:337:35)
+2026-03-31T08:09:55.7302313Z 	at doRequest (/home/runner/work/spec42/spec42/vscode/out/providers/lspModelProvider.js:87:45)
+2026-03-31T08:09:55.7306507Z 	at LspModelProvider.getModel (/home/runner/work/spec42/spec42/vscode/out/providers/lspModelProvider.js:89:32)
+2026-03-31T08:09:55.7307947Z 	at async /home/runner/work/spec42/spec42/vscode/out/explorer/modelExplorerProvider.js:306:40
+2026-03-31T08:09:55.7309707Z 	at async Promise.all (index 0)
+2026-03-31T08:09:55.7310944Z 	at async ModelExplorerProvider.loadWorkspaceModel (/home/runner/work/spec42/spec42/vscode/out/explorer/modelExplorerProvider.js:332:13)
+2026-03-31T08:09:55.7312932Z 	at async /home/runner/work/spec42/spec42/vscode/out/extension.js:688:17
+2026-03-31T08:09:55.7315009Z [SysML] ERROR: loadWorkspaceModel: skip file (failed): file:///home/runner/work/spec42/spec42/vscode/testFixture/workspaces/single-file/SurveillanceDrone.sysml Error: Client is not running
+2026-03-31T08:09:55.7316513Z 	at LanguageClient.sendRequest (/home/runner/work/spec42/spec42/vscode/node_modules/vscode-languageclient/lib/common/client.js:337:35)
+2026-03-31T08:09:55.7317377Z 	at doRequest (/home/runner/work/spec42/spec42/vscode/out/providers/lspModelProvider.js:87:45)
+2026-03-31T08:09:55.7318159Z 	at LspModelProvider.getModel (/home/runner/work/spec42/spec42/vscode/out/providers/lspModelProvider.js:89:32)
+2026-03-31T08:09:55.7318964Z 	at async /home/runner/work/spec42/spec42/vscode/out/explorer/modelExplorerProvider.js:306:40
+2026-03-31T08:09:55.7319616Z 	at async Promise.all (index 0)
+2026-03-31T08:09:55.7320299Z 	at async ModelExplorerProvider.loadWorkspaceModel (/home/runner/work/spec42/spec42/vscode/out/explorer/modelExplorerProvider.js:332:13)
+2026-03-31T08:09:55.7321049Z 	at async /home/runner/work/spec42/spec42/vscode/out/extension.js:688:17
+2026-03-31T08:09:55.7322371Z [SysML][startup] {"phase":"explorer:loadWorkspaceModel","fileCount":1,"loadedFiles":0,"failures":1,"totalMs":1,"perFileAvgMs":1,"perFileP95Ms":1,"concurrency":1}
+2026-03-31T08:09:55.7324591Z [SysML][startup] {"traceId":"startup-1774944592583-wwv6ha","phase":"workspaceIndexing:end","elapsedMs":3145,"scannedFiles":1,"loadedFiles":1,"truncated":false,"durationMs":122}
+2026-03-31T08:09:55.9104783Z [SysML] ERROR: getModel failed Error: Pending response rejected since connection got disposed
+2026-03-31T08:09:55.9108177Z 	at Object.dispose (/home/runner/work/spec42/spec42/vscode/node_modules/vscode-jsonrpc/lib/common/connection.js:1167:27)
+2026-03-31T08:09:55.9120694Z 	at Object.dispose (/home/runner/work/spec42/spec42/vscode/node_modules/vscode-languageclient/lib/common/client.js:1586:35)
+2026-03-31T08:09:55.9122125Z 	at /home/runner/work/spec42/spec42/vscode/node_modules/vscode-languageclient/lib/common/client.js:979:28
+2026-03-31T08:09:55.9123857Z 	at processTicksAndRejections (node:internal/process/task_queues:103:5)
+2026-03-31T08:09:55.9124645Z 	at runNextTicks (node:internal/process/task_queues:68:3)
+2026-03-31T08:09:55.9125444Z 	at process.processImmediate (node:internal/timers:452:9)
+2026-03-31T08:09:55.9126223Z 	at async /home/runner/work/spec42/spec42/vscode/out/extension.js:811:13
+2026-03-31T08:09:55.9127949Z 	at async cg._executeContributedCommand (file:///home/runner/work/spec42/spec42/vscode/.vscode-test/vscode-linux-x64-1.113.0/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:501:48675)
+2026-03-31T08:09:55.9129112Z 	at async Context.<anonymous> (/home/runner/work/spec42/spec42/vscode/out/test/suite/extension.test.js:126:9)
+2026-03-31T08:09:55.9130413Z [SysML] ERROR: loadDocument failed for file:///home/runner/work/spec42/spec42/vscode/testFixture/workspaces/single-file/SurveillanceDrone.sysml Error: Pending response rejected since connection got disposed
+2026-03-31T08:09:55.9131600Z 	at Object.dispose (/home/runner/work/spec42/spec42/vscode/node_modules/vscode-jsonrpc/lib/common/connection.js:1167:27)
+2026-03-31T08:09:55.9132489Z 	at Object.dispose (/home/runner/work/spec42/spec42/vscode/node_modules/vscode-languageclient/lib/common/client.js:1586:35)
+2026-03-31T08:09:55.9133297Z 	at /home/runner/work/spec42/spec42/vscode/node_modules/vscode-languageclient/lib/common/client.js:979:28
+2026-03-31T08:09:55.9134231Z 	at processTicksAndRejections (node:internal/process/task_queues:103:5)
+2026-03-31T08:09:55.9134695Z 	at runNextTicks (node:internal/process/task_queues:68:3)
+2026-03-31T08:09:55.9135093Z 	at process.processImmediate (node:internal/timers:452:9)
+2026-03-31T08:09:55.9135534Z 	at async /home/runner/work/spec42/spec42/vscode/out/extension.js:811:13
+2026-03-31T08:09:55.9136540Z 	at async cg._executeContributedCommand (file:///home/runner/work/spec42/spec42/vscode/.vscode-test/vscode-linux-x64-1.113.0/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:501:48675)
+2026-03-31T08:09:55.9137633Z 	at async Context.<anonymous> (/home/runner/work/spec42/spec42/vscode/out/test/suite/extension.test.js:126:9)
+2026-03-31T08:09:56.0843751Z     ✔ Server recovers after manual restart (517ms)
+2026-03-31T08:09:56.3624052Z   Visualization Diagram Views
+2026-03-31T08:09:56.7828786Z [SysML][startup] {"phase":"explorer:loadWorkspaceModel","fileCount":1,"loadedFiles":1,"failures":0,"totalMs":364,"perFileAvgMs":364,"perFileP95Ms":364,"concurrency":1}
+2026-03-31T08:10:02.2530277Z     ✔ exports SVG for all views (5452ms)
+2026-03-31T08:10:02.5020642Z [SysML][startup] {"phase":"explorer:loadWorkspaceModel","fileCount":1,"loadedFiles":1,"failures":0,"totalMs":236,"perFileAvgMs":236,"perFileP95Ms":236,"concurrency":1}
+2026-03-31T08:10:02.5903846Z   prepareDataForView
+2026-03-31T08:10:02.5910194Z     ✔ returns non-null for view "general-view"
+2026-03-31T08:10:02.5919134Z     ✔ returns non-null for view "interconnection-view"
+2026-03-31T08:10:02.5933730Z     ✔ returns data unchanged for unknown view (pass-through)
+2026-03-31T08:10:02.5960058Z     ✔ returns null/undefined for null input
+2026-03-31T08:10:02.5962561Z     ✔ interconnection-view produces parts and connectors
+2026-03-31T08:10:02.5963340Z     - action-flow-view produces diagrams (disabled for release)
+2026-03-31T08:10:02.5964629Z     - state-transition-view produces states and transitions (disabled for release)
+2026-03-31T08:10:02.5979610Z     - sequence-view produces sequenceDiagrams (disabled for release)
+2026-03-31T08:10:02.5981883Z     ✔ handles empty elements
+2026-03-31T08:10:02.5985990Z     ✔ handles graph input and produces elements for views
+2026-03-31T08:10:02.5995019Z     ✔ graphToElementTree builds tree from contains edges
+2026-03-31T08:10:02.6000277Z     interconnection-view with backend IBD (no fallback)
+2026-03-31T08:10:02.6009946Z       ✔ uses backend defaultRoot to choose root-specific view payload
+2026-03-31T08:10:02.6014813Z       ✔ uses frontend selectedIbdRoot to choose among backend root views
+2026-03-31T08:10:02.6020066Z       ✔ uses backend rootViews payload for selected root
+2026-03-31T08:10:02.6022407Z       ✔ returns empty IBD when no backend ibd (no fallback)
+2026-03-31T08:10:02.6026315Z       ✔ falls back to first available root view when defaultRoot is missing
+2026-03-31T08:10:02.6034896Z   20 passing (10s)
+2026-03-31T08:10:02.6041202Z   3 pending
+2026-03-31T08:10:02.6051515Z Extension host test runner exit code: 0
+2026-03-31T08:10:02.6318423Z [90m[main 2026-03-31T08:10:02.631Z][0m Extension host with pid 7177 exited with code: 0, signal: unknown.
+2026-03-31T08:10:02.6520800Z Asking native host service to exit with code 0.
+2026-03-31T08:10:02.7565465Z Exit code:   0
+2026-03-31T08:10:02.7767883Z ##[group]Run cd vscode && xvfb-run -a npm run test:multi-file
+2026-03-31T08:10:02.7768374Z [36;1mcd vscode && xvfb-run -a npm run test:multi-file[0m
+2026-03-31T08:10:02.7796628Z shell: /usr/bin/bash -e {0}
+2026-03-31T08:10:02.7797008Z env:
+2026-03-31T08:10:02.7797296Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:10:02.7797811Z   CARGO_INCREMENTAL: 0
+2026-03-31T08:10:02.7798223Z   CARGO_TERM_COLOR: always
+2026-03-31T08:10:02.7798822Z   SPEC42_SERVER_PATH: /home/runner/work/spec42/spec42/target/debug/spec42
+2026-03-31T08:10:02.7799434Z ##[endgroup]
+2026-03-31T08:10:02.9378495Z 
+2026-03-31T08:10:02.9379253Z > spec42@0.11.0 test:multi-file
+2026-03-31T08:10:02.9379968Z > vscode-test --config .vscode-test.multi-file.mjs
+2026-03-31T08:10:02.9380386Z 
+2026-03-31T08:10:03.1839776Z - Resolving version...
+2026-03-31T08:10:03.3298870Z ✔ Validated version: 1.113.0
+2026-03-31T08:10:03.3305766Z ✔ Found existing install in /home/runner/work/spec42/spec42/vscode/.vscode-test/vscode-linux-x64-1.113.0
+2026-03-31T08:10:03.6963784Z [7519:0331/081003.695424:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:03.7095831Z [7519:0331/081003.706595:ERROR:dbus/object_proxy.cc:573] Failed to call method: org.freedesktop.DBus.NameHasOwner: object_path= /org/freedesktop/DBus: unknown error type: 
+2026-03-31T08:10:03.7099495Z [7519:0331/081003.707086:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:03.7101881Z [7519:0331/081003.707106:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:03.7114710Z [7519:0331/081003.707115:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:03.7117121Z [7519:0331/081003.707124:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:03.7119631Z [7519:0331/081003.707132:ERROR:dbus/object_proxy.cc:573] Failed to call method: org.freedesktop.DBus.NameHasOwner: object_path= /org/freedesktop/DBus: unknown error type: 
+2026-03-31T08:10:03.8053018Z [7549:0331/081003.804860:ERROR:components/viz/service/main/viz_main_impl.cc:189] Exiting GPU process due to errors during initialization
+2026-03-31T08:10:03.9218133Z [90m[main 2026-03-31T08:10:03.917Z][0m update#setState disabled
+2026-03-31T08:10:03.9221171Z [90m[main 2026-03-31T08:10:03.919Z][0m update#ctor - updates are disabled by the environment
+2026-03-31T08:10:03.9223090Z [7519:0331/081003.920224:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:03.9343878Z [7582:0331/081003.933711:ERROR:components/viz/service/main/viz_main_impl.cc:189] Exiting GPU process due to errors during initialization
+2026-03-31T08:10:04.0382904Z [7601:0331/081004.037576:ERROR:gpu/ipc/client/command_buffer_proxy_impl.cc:128] ContextResult::kTransientFailure: Failed to send GpuControl.CreateCommandBuffer.
+2026-03-31T08:10:04.3774734Z workbench#open()
+2026-03-31T08:10:05.1279131Z Started local extension host with pid 7812.
+2026-03-31T08:10:05.1282287Z IExtensionHostStarter.start() took 23 ms.
+2026-03-31T08:10:05.8754711Z Loading development extension at /home/runner/work/spec42/spec42/vscode
+2026-03-31T08:10:05.9317798Z Ignoring spec42.debug.dumpSemanticTokens as spec42.debug is false
+2026-03-31T08:10:06.0415041Z Ignoring spec42.debug.dumpSemanticTokens as spec42.debug is false
+2026-03-31T08:10:06.1249105Z NativeExtensionHostFactory._createLocalProcessExtensionHostDataProvider.scannedExtensions: vscode.bat,vscode.clojure,vscode.coffeescript,vscode.configuration-editing,vscode.cpp,vscode.csharp,vscode.css,vscode.css-language-features,vscode.dart,vscode.debug-auto-launch,vscode.debug-server-ready,vscode.diff,vscode.docker,vscode.dotenv,vscode.emmet,vscode.extension-editing,vscode.fsharp,vscode.git,vscode.git-base,vscode.github,vscode.github-authentication,vscode.go,vscode.groovy,vscode.grunt,vscode.gulp,vscode.handlebars,vscode.hlsl,vscode.html,vscode.html-language-features,vscode.ini,vscode.ipynb,vscode.jake,vscode.java,vscode.javascript,vscode.json,vscode.json-language-features,vscode.julia,vscode.latex,vscode.less,vscode.log,vscode.lua,vscode.make,vscode.markdown,vscode.markdown-language-features,vscode.markdown-math,vscode.media-preview,vscode.merge-conflict,vscode.mermaid-chat-features,vscode.microsoft-authentication,ms-vscode.js-debug,ms-vscode.js-debug-companion,ms-vscode.vscode-js-profile-table,vscode.builtin-notebook-renderers,vscode.npm,vscode.objective-c,vscode.perl,vscode.php,vscode.php-language-features,vscode.powershell,vscode.prompt,vscode.pug,vscode.python,vscode.r,vscode.razor,vscode.references-view,vscode.restructuredtext,vscode.ruby,vscode.rust,vscode.scss,vscode.search-result,vscode.shaderlab,vscode.shellscript,vscode.simple-browser,vscode.sql,vscode.swift,vscode.terminal-suggest,vscode.theme-abyss,vscode.theme-defaults,vscode.theme-kimbie-dark,vscode.theme-monokai,vscode.theme-monokai-dimmed,vscode.theme-quietlight,vscode.theme-red,vscode.vscode-theme-seti,vscode.theme-solarized-dark,vscode.theme-solarized-light,vscode.theme-tomorrow-night-blue,vscode.tunnel-forwarding,vscode.typescript,vscode.typescript-language-features,vscode.vb,vscode.xml,vscode.yaml,Elan8.spec42
+2026-03-31T08:10:06.1381972Z NativeExtensionHostFactory._createLocalProcessExtensionHostDataProvider.localExtensions: Elan8.spec42,vscode.bat,vscode.clojure,vscode.coffeescript,vscode.configuration-editing,vscode.cpp,vscode.csharp,vscode.css,vscode.css-language-features,vscode.dart,vscode.debug-auto-launch,vscode.debug-server-ready,vscode.diff,vscode.docker,vscode.dotenv,vscode.emmet,vscode.extension-editing,vscode.fsharp,vscode.git,vscode.git-base,vscode.github,vscode.github-authentication,vscode.go,vscode.groovy,vscode.grunt,vscode.gulp,vscode.handlebars,vscode.hlsl,vscode.html,vscode.html-language-features,vscode.ini,vscode.ipynb,vscode.jake,vscode.java,vscode.javascript,vscode.json,vscode.json-language-features,vscode.julia,vscode.latex,vscode.less,vscode.log,vscode.lua,vscode.make,vscode.markdown,vscode.markdown-language-features,vscode.markdown-math,vscode.media-preview,vscode.merge-conflict,vscode.mermaid-chat-features,vscode.microsoft-authentication,ms-vscode.js-debug,ms-vscode.js-debug-companion,ms-vscode.vscode-js-profile-table,vscode.builtin-notebook-renderers,vscode.npm,vscode.objective-c,vscode.perl,vscode.php,vscode.php-language-features,vscode.powershell,vscode.prompt,vscode.pug,vscode.python,vscode.r,vscode.razor,vscode.references-view,vscode.restructuredtext,vscode.ruby,vscode.rust,vscode.scss,vscode.search-result,vscode.shaderlab,vscode.shellscript,vscode.simple-browser,vscode.sql,vscode.swift,vscode.terminal-suggest,vscode.theme-abyss,vscode.theme-defaults,vscode.theme-kimbie-dark,vscode.theme-monokai,vscode.theme-monokai-dimmed,vscode.theme-quietlight,vscode.theme-red,vscode.vscode-theme-seti,vscode.theme-solarized-dark,vscode.theme-solarized-light,vscode.theme-tomorrow-night-blue,vscode.tunnel-forwarding,vscode.typescript,vscode.typescript-language-features,vscode.vb,vscode.xml,vscode.yaml
+2026-03-31T08:10:06.1507537Z NativeExtensionHostFactory._createLocalProcessExtensionHostDataProvider.myExtensions: Elan8.spec42,vscode.bat,vscode.clojure,vscode.coffeescript,vscode.configuration-editing,vscode.cpp,vscode.csharp,vscode.css,vscode.css-language-features,vscode.dart,vscode.debug-auto-launch,vscode.debug-server-ready,vscode.diff,vscode.docker,vscode.dotenv,vscode.emmet,vscode.extension-editing,vscode.fsharp,vscode.git,vscode.git-base,vscode.github,vscode.github-authentication,vscode.go,vscode.groovy,vscode.grunt,vscode.gulp,vscode.handlebars,vscode.hlsl,vscode.html,vscode.html-language-features,vscode.ini,vscode.ipynb,vscode.jake,vscode.java,vscode.javascript,vscode.json,vscode.json-language-features,vscode.julia,vscode.latex,vscode.less,vscode.log,vscode.lua,vscode.make,vscode.markdown,vscode.markdown-language-features,vscode.markdown-math,vscode.media-preview,vscode.merge-conflict,vscode.mermaid-chat-features,vscode.microsoft-authentication,ms-vscode.js-debug,ms-vscode.js-debug-companion,ms-vscode.vscode-js-profile-table,vscode.builtin-notebook-renderers,vscode.npm,vscode.objective-c,vscode.perl,vscode.php,vscode.php-language-features,vscode.powershell,vscode.prompt,vscode.pug,vscode.python,vscode.r,vscode.razor,vscode.references-view,vscode.restructuredtext,vscode.ruby,vscode.rust,vscode.scss,vscode.search-result,vscode.shaderlab,vscode.shellscript,vscode.simple-browser,vscode.sql,vscode.swift,vscode.terminal-suggest,vscode.theme-abyss,vscode.theme-defaults,vscode.theme-kimbie-dark,vscode.theme-monokai,vscode.theme-monokai-dimmed,vscode.theme-quietlight,vscode.theme-red,vscode.vscode-theme-seti,vscode.theme-solarized-dark,vscode.theme-solarized-light,vscode.theme-tomorrow-night-blue,vscode.tunnel-forwarding,vscode.typescript,vscode.typescript-language-features,vscode.vb,vscode.xml,vscode.yaml
+2026-03-31T08:10:06.7934454Z Settings Sync: Account status changed from uninitialized to unavailable
+2026-03-31T08:10:07.0075114Z [SysML][startup] {"traceId":"startup-1774944606955-3g9bxu","phase":"activate:start","elapsedMs":0}
+2026-03-31T08:10:07.0076618Z [SysML] Server command: /home/runner/work/spec42/spec42/target/debug/spec42
+2026-03-31T08:10:07.0078056Z [SysML][startup] {"traceId":"startup-1774944606955-3g9bxu","phase":"languageClient:start","elapsedMs":9}
+2026-03-31T08:10:07.0554230Z 
+2026-03-31T08:10:07.0760526Z   Multi-file VS Code Flows
+2026-03-31T08:10:07.1700736Z [SysML][startup] {"traceId":"startup-1774944606955-3g9bxu","phase":"languageClient:ready","elapsedMs":180}
+2026-03-31T08:10:08.0776143Z     ✔ finds references across files (122ms)
+2026-03-31T08:10:08.1981814Z     ✔ renames symbols across files (104ms)
+2026-03-31T08:10:08.4700191Z   2 passing (1s)
+2026-03-31T08:10:08.4706432Z Extension host test runner exit code: 0
+2026-03-31T08:10:08.4935730Z [90m[main 2026-03-31T08:10:08.492Z][0m Extension host with pid 7812 exited with code: 0, signal: unknown.
+2026-03-31T08:10:08.5061083Z Asking native host service to exit with code 0.
+2026-03-31T08:10:08.5744413Z Exit code:   0
+2026-03-31T08:10:08.5930160Z ##[group]Run cd vscode && xvfb-run -a npm run test:workspace-smoke
+2026-03-31T08:10:08.5930655Z [36;1mcd vscode && xvfb-run -a npm run test:workspace-smoke[0m
+2026-03-31T08:10:08.5958629Z shell: /usr/bin/bash -e {0}
+2026-03-31T08:10:08.5958874Z env:
+2026-03-31T08:10:08.5959059Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:10:08.5959298Z   CARGO_INCREMENTAL: 0
+2026-03-31T08:10:08.5959507Z   CARGO_TERM_COLOR: always
+2026-03-31T08:10:08.5959828Z   SPEC42_SERVER_PATH: /home/runner/work/spec42/spec42/target/debug/spec42
+2026-03-31T08:10:08.5960174Z ##[endgroup]
+2026-03-31T08:10:08.7431978Z 
+2026-03-31T08:10:08.7432691Z > spec42@0.11.0 test:workspace-smoke
+2026-03-31T08:10:08.7433643Z > vscode-test --config .vscode-test.workspace-smoke.mjs
+2026-03-31T08:10:08.7434005Z 
+2026-03-31T08:10:08.9943018Z - Resolving version...
+2026-03-31T08:10:09.1376802Z ✔ Validated version: 1.113.0
+2026-03-31T08:10:09.1384866Z ✔ Found existing install in /home/runner/work/spec42/spec42/vscode/.vscode-test/vscode-linux-x64-1.113.0
+2026-03-31T08:10:09.4990564Z [8092:0331/081009.498374:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:09.5115901Z [8092:0331/081009.509886:ERROR:dbus/object_proxy.cc:573] Failed to call method: org.freedesktop.DBus.NameHasOwner: object_path= /org/freedesktop/DBus: unknown error type: 
+2026-03-31T08:10:09.5118379Z [8092:0331/081009.510091:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:09.5120853Z [8092:0331/081009.510140:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:09.5123345Z [8092:0331/081009.510150:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:09.5126039Z [8092:0331/081009.510161:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:09.5128443Z [8092:0331/081009.510171:ERROR:dbus/object_proxy.cc:573] Failed to call method: org.freedesktop.DBus.NameHasOwner: object_path= /org/freedesktop/DBus: unknown error type: 
+2026-03-31T08:10:09.6102289Z [8119:0331/081009.609792:ERROR:components/viz/service/main/viz_main_impl.cc:189] Exiting GPU process due to errors during initialization
+2026-03-31T08:10:09.7127291Z [90m[main 2026-03-31T08:10:09.711Z][0m update#setState disabled
+2026-03-31T08:10:09.7135056Z [90m[main 2026-03-31T08:10:09.712Z][0m update#ctor - updates are disabled by the environment
+2026-03-31T08:10:09.7150235Z [8092:0331/081009.713983:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:10.0874787Z workbench#open()
+2026-03-31T08:10:10.7462661Z Started local extension host with pid 8366.
+2026-03-31T08:10:10.7517236Z IExtensionHostStarter.start() took 29 ms.
+2026-03-31T08:10:10.8569668Z Loading development extension at /home/runner/work/spec42/spec42/vscode
+2026-03-31T08:10:10.9211376Z Ignoring spec42.debug.dumpSemanticTokens as spec42.debug is false
+2026-03-31T08:10:11.0284486Z Ignoring spec42.debug.dumpSemanticTokens as spec42.debug is false
+2026-03-31T08:10:11.5935675Z NativeExtensionHostFactory._createLocalProcessExtensionHostDataProvider.scannedExtensions: vscode.bat,vscode.clojure,vscode.coffeescript,vscode.configuration-editing,vscode.cpp,vscode.csharp,vscode.css,vscode.css-language-features,vscode.dart,vscode.debug-auto-launch,vscode.debug-server-ready,vscode.diff,vscode.docker,vscode.dotenv,vscode.emmet,vscode.extension-editing,vscode.fsharp,vscode.git,vscode.git-base,vscode.github,vscode.github-authentication,vscode.go,vscode.groovy,vscode.grunt,vscode.gulp,vscode.handlebars,vscode.hlsl,vscode.html,vscode.html-language-features,vscode.ini,vscode.ipynb,vscode.jake,vscode.java,vscode.javascript,vscode.json,vscode.json-language-features,vscode.julia,vscode.latex,vscode.less,vscode.log,vscode.lua,vscode.make,vscode.markdown,vscode.markdown-language-features,vscode.markdown-math,vscode.media-preview,vscode.merge-conflict,vscode.mermaid-chat-features,vscode.microsoft-authentication,ms-vscode.js-debug,ms-vscode.js-debug-companion,ms-vscode.vscode-js-profile-table,vscode.builtin-notebook-renderers,vscode.npm,vscode.objective-c,vscode.perl,vscode.php,vscode.php-language-features,vscode.powershell,vscode.prompt,vscode.pug,vscode.python,vscode.r,vscode.razor,vscode.references-view,vscode.restructuredtext,vscode.ruby,vscode.rust,vscode.scss,vscode.search-result,vscode.shaderlab,vscode.shellscript,vscode.simple-browser,vscode.sql,vscode.swift,vscode.terminal-suggest,vscode.theme-abyss,vscode.theme-defaults,vscode.theme-kimbie-dark,vscode.theme-monokai,vscode.theme-monokai-dimmed,vscode.theme-quietlight,vscode.theme-red,vscode.vscode-theme-seti,vscode.theme-solarized-dark,vscode.theme-solarized-light,vscode.theme-tomorrow-night-blue,vscode.tunnel-forwarding,vscode.typescript,vscode.typescript-language-features,vscode.vb,vscode.xml,vscode.yaml,Elan8.spec42
+2026-03-31T08:10:11.6074876Z NativeExtensionHostFactory._createLocalProcessExtensionHostDataProvider.localExtensions: Elan8.spec42,vscode.bat,vscode.clojure,vscode.coffeescript,vscode.configuration-editing,vscode.cpp,vscode.csharp,vscode.css,vscode.css-language-features,vscode.dart,vscode.debug-auto-launch,vscode.debug-server-ready,vscode.diff,vscode.docker,vscode.dotenv,vscode.emmet,vscode.extension-editing,vscode.fsharp,vscode.git,vscode.git-base,vscode.github,vscode.github-authentication,vscode.go,vscode.groovy,vscode.grunt,vscode.gulp,vscode.handlebars,vscode.hlsl,vscode.html,vscode.html-language-features,vscode.ini,vscode.ipynb,vscode.jake,vscode.java,vscode.javascript,vscode.json,vscode.json-language-features,vscode.julia,vscode.latex,vscode.less,vscode.log,vscode.lua,vscode.make,vscode.markdown,vscode.markdown-language-features,vscode.markdown-math,vscode.media-preview,vscode.merge-conflict,vscode.mermaid-chat-features,vscode.microsoft-authentication,ms-vscode.js-debug,ms-vscode.js-debug-companion,ms-vscode.vscode-js-profile-table,vscode.builtin-notebook-renderers,vscode.npm,vscode.objective-c,vscode.perl,vscode.php,vscode.php-language-features,vscode.powershell,vscode.prompt,vscode.pug,vscode.python,vscode.r,vscode.razor,vscode.references-view,vscode.restructuredtext,vscode.ruby,vscode.rust,vscode.scss,vscode.search-result,vscode.shaderlab,vscode.shellscript,vscode.simple-browser,vscode.sql,vscode.swift,vscode.terminal-suggest,vscode.theme-abyss,vscode.theme-defaults,vscode.theme-kimbie-dark,vscode.theme-monokai,vscode.theme-monokai-dimmed,vscode.theme-quietlight,vscode.theme-red,vscode.vscode-theme-seti,vscode.theme-solarized-dark,vscode.theme-solarized-light,vscode.theme-tomorrow-night-blue,vscode.tunnel-forwarding,vscode.typescript,vscode.typescript-language-features,vscode.vb,vscode.xml,vscode.yaml
+2026-03-31T08:10:11.6201431Z NativeExtensionHostFactory._createLocalProcessExtensionHostDataProvider.myExtensions: Elan8.spec42,vscode.bat,vscode.clojure,vscode.coffeescript,vscode.configuration-editing,vscode.cpp,vscode.csharp,vscode.css,vscode.css-language-features,vscode.dart,vscode.debug-auto-launch,vscode.debug-server-ready,vscode.diff,vscode.docker,vscode.dotenv,vscode.emmet,vscode.extension-editing,vscode.fsharp,vscode.git,vscode.git-base,vscode.github,vscode.github-authentication,vscode.go,vscode.groovy,vscode.grunt,vscode.gulp,vscode.handlebars,vscode.hlsl,vscode.html,vscode.html-language-features,vscode.ini,vscode.ipynb,vscode.jake,vscode.java,vscode.javascript,vscode.json,vscode.json-language-features,vscode.julia,vscode.latex,vscode.less,vscode.log,vscode.lua,vscode.make,vscode.markdown,vscode.markdown-language-features,vscode.markdown-math,vscode.media-preview,vscode.merge-conflict,vscode.mermaid-chat-features,vscode.microsoft-authentication,ms-vscode.js-debug,ms-vscode.js-debug-companion,ms-vscode.vscode-js-profile-table,vscode.builtin-notebook-renderers,vscode.npm,vscode.objective-c,vscode.perl,vscode.php,vscode.php-language-features,vscode.powershell,vscode.prompt,vscode.pug,vscode.python,vscode.r,vscode.razor,vscode.references-view,vscode.restructuredtext,vscode.ruby,vscode.rust,vscode.scss,vscode.search-result,vscode.shaderlab,vscode.shellscript,vscode.simple-browser,vscode.sql,vscode.swift,vscode.terminal-suggest,vscode.theme-abyss,vscode.theme-defaults,vscode.theme-kimbie-dark,vscode.theme-monokai,vscode.theme-monokai-dimmed,vscode.theme-quietlight,vscode.theme-red,vscode.vscode-theme-seti,vscode.theme-solarized-dark,vscode.theme-solarized-light,vscode.theme-tomorrow-night-blue,vscode.tunnel-forwarding,vscode.typescript,vscode.typescript-language-features,vscode.vb,vscode.xml,vscode.yaml
+2026-03-31T08:10:12.3875288Z [SysML][startup] {"traceId":"startup-1774944612344-32wajq","phase":"activate:start","elapsedMs":1}
+2026-03-31T08:10:12.3881683Z [SysML] Server command: /home/runner/work/spec42/spec42/target/debug/spec42
+2026-03-31T08:10:12.3883899Z [SysML][startup] {"traceId":"startup-1774944612344-32wajq","phase":"languageClient:start","elapsedMs":13}
+2026-03-31T08:10:12.4476640Z Settings Sync: Account status changed from uninitialized to unavailable
+2026-03-31T08:10:12.4484057Z 
+2026-03-31T08:10:12.4750237Z   Workspace Indexing Smoke Test
+2026-03-31T08:10:12.6072525Z [SysML][startup] {"traceId":"startup-1774944612344-32wajq","phase":"languageClient:ready","elapsedMs":181}
+2026-03-31T08:10:15.3644252Z [SysML][startup] {"traceId":"startup-1774944612344-32wajq","phase":"workspaceIndexing:start","elapsedMs":3018}
+2026-03-31T08:10:15.4120655Z [SysML][startup] {"phase":"explorer:loadWorkspaceModel","fileCount":2,"loadedFiles":2,"failures":0,"totalMs":7,"perFileAvgMs":7,"perFileP95Ms":7,"concurrency":2}
+2026-03-31T08:10:15.4122837Z [SysML][startup] {"traceId":"startup-1774944612344-32wajq","phase":"workspaceIndexing:end","elapsedMs":3062,"scannedFiles":2,"loadedFiles":2,"truncated":true,"durationMs":44}
+2026-03-31T08:10:15.7008229Z     ✔ keeps the workspace usable when indexing is truncated (2428ms)
+2026-03-31T08:10:15.9714801Z   1 passing (4s)
+2026-03-31T08:10:15.9717583Z Extension host test runner exit code: 0
+2026-03-31T08:10:15.9935596Z [90m[main 2026-03-31T08:10:15.992Z][0m Extension host with pid 8366 exited with code: 0, signal: unknown.
+2026-03-31T08:10:16.0048132Z Asking native host service to exit with code 0.
+2026-03-31T08:10:16.0768853Z Exit code:   0
+2026-03-31T08:10:16.0965569Z ##[group]Run cd vscode && xvfb-run -a npm run test:interconnection
+2026-03-31T08:10:16.0966350Z [36;1mcd vscode && xvfb-run -a npm run test:interconnection[0m
+2026-03-31T08:10:16.1004457Z shell: /usr/bin/bash -e {0}
+2026-03-31T08:10:16.1004704Z env:
+2026-03-31T08:10:16.1004891Z   CARGO_HOME: /home/runner/.cargo
+2026-03-31T08:10:16.1005152Z   CARGO_INCREMENTAL: 0
+2026-03-31T08:10:16.1005358Z   CARGO_TERM_COLOR: always
+2026-03-31T08:10:16.1005678Z   SPEC42_SERVER_PATH: /home/runner/work/spec42/spec42/target/debug/spec42
+2026-03-31T08:10:16.1006035Z ##[endgroup]
+2026-03-31T08:10:16.2467310Z 
+2026-03-31T08:10:16.2467918Z > spec42@0.11.0 test:interconnection
+2026-03-31T08:10:16.2468527Z > vscode-test --config .vscode-test.interconnection.mjs
+2026-03-31T08:10:16.2468837Z 
+2026-03-31T08:10:16.4836854Z - Resolving version...
+2026-03-31T08:10:16.6265815Z ✔ Validated version: 1.113.0
+2026-03-31T08:10:16.6272532Z ✔ Found existing install in /home/runner/work/spec42/spec42/vscode/.vscode-test/vscode-linux-x64-1.113.0
+2026-03-31T08:10:16.9912022Z [8657:0331/081016.990361:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:17.0013794Z [8657:0331/081017.000811:ERROR:dbus/object_proxy.cc:573] Failed to call method: org.freedesktop.DBus.NameHasOwner: object_path= /org/freedesktop/DBus: unknown error type: 
+2026-03-31T08:10:17.0021281Z [8657:0331/081017.001757:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:17.0026598Z [8657:0331/081017.001811:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:17.0029853Z [8657:0331/081017.001840:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:17.0038040Z [8657:0331/081017.001852:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:17.0040460Z [8657:0331/081017.001863:ERROR:dbus/object_proxy.cc:573] Failed to call method: org.freedesktop.DBus.NameHasOwner: object_path= /org/freedesktop/DBus: unknown error type: 
+2026-03-31T08:10:17.0833942Z [8685:0331/081017.082745:ERROR:components/viz/service/main/viz_main_impl.cc:189] Exiting GPU process due to errors during initialization
+2026-03-31T08:10:17.1972830Z [90m[main 2026-03-31T08:10:17.196Z][0m update#setState disabled
+2026-03-31T08:10:17.1980052Z [90m[main 2026-03-31T08:10:17.197Z][0m update#ctor - updates are disabled by the environment
+2026-03-31T08:10:17.1990259Z [8657:0331/081017.198743:ERROR:dbus/bus.cc:408] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+2026-03-31T08:10:17.5630352Z workbench#open()
+2026-03-31T08:10:18.2655727Z Started local extension host with pid 8931.
+2026-03-31T08:10:18.2659348Z IExtensionHostStarter.start() took 30 ms.
+2026-03-31T08:10:18.9522068Z Loading development extension at /home/runner/work/spec42/spec42/vscode
+2026-03-31T08:10:19.0257721Z Ignoring spec42.debug.dumpSemanticTokens as spec42.debug is false
+2026-03-31T08:10:19.1308788Z Ignoring spec42.debug.dumpSemanticTokens as spec42.debug is false
+2026-03-31T08:10:19.2037055Z NativeExtensionHostFactory._createLocalProcessExtensionHostDataProvider.scannedExtensions: vscode.bat,vscode.clojure,vscode.coffeescript,vscode.configuration-editing,vscode.cpp,vscode.csharp,vscode.css,vscode.css-language-features,vscode.dart,vscode.debug-auto-launch,vscode.debug-server-ready,vscode.diff,vscode.docker,vscode.dotenv,vscode.emmet,vscode.extension-editing,vscode.fsharp,vscode.git,vscode.git-base,vscode.github,vscode.github-authentication,vscode.go,vscode.groovy,vscode.grunt,vscode.gulp,vscode.handlebars,vscode.hlsl,vscode.html,vscode.html-language-features,vscode.ini,vscode.ipynb,vscode.jake,vscode.java,vscode.javascript,vscode.json,vscode.json-language-features,vscode.julia,vscode.latex,vscode.less,vscode.log,vscode.lua,vscode.make,vscode.markdown,vscode.markdown-language-features,vscode.markdown-math,vscode.media-preview,vscode.merge-conflict,vscode.mermaid-chat-features,vscode.microsoft-authentication,ms-vscode.js-debug,ms-vscode.js-debug-companion,ms-vscode.vscode-js-profile-table,vscode.builtin-notebook-renderers,vscode.npm,vscode.objective-c,vscode.perl,vscode.php,vscode.php-language-features,vscode.powershell,vscode.prompt,vscode.pug,vscode.python,vscode.r,vscode.razor,vscode.references-view,vscode.restructuredtext,vscode.ruby,vscode.rust,vscode.scss,vscode.search-result,vscode.shaderlab,vscode.shellscript,vscode.simple-browser,vscode.sql,vscode.swift,vscode.terminal-suggest,vscode.theme-abyss,vscode.theme-defaults,vscode.theme-kimbie-dark,vscode.theme-monokai,vscode.theme-monokai-dimmed,vscode.theme-quietlight,vscode.theme-red,vscode.vscode-theme-seti,vscode.theme-solarized-dark,vscode.theme-solarized-light,vscode.theme-tomorrow-night-blue,vscode.tunnel-forwarding,vscode.typescript,vscode.typescript-language-features,vscode.vb,vscode.xml,vscode.yaml,Elan8.spec42
+2026-03-31T08:10:19.2130018Z NativeExtensionHostFactory._createLocalProcessExtensionHostDataProvider.localExtensions: Elan8.spec42,vscode.bat,vscode.clojure,vscode.coffeescript,vscode.configuration-editing,vscode.cpp,vscode.csharp,vscode.css,vscode.css-language-features,vscode.dart,vscode.debug-auto-launch,vscode.debug-server-ready,vscode.diff,vscode.docker,vscode.dotenv,vscode.emmet,vscode.extension-editing,vscode.fsharp,vscode.git,vscode.git-base,vscode.github,vscode.github-authentication,vscode.go,vscode.groovy,vscode.grunt,vscode.gulp,vscode.handlebars,vscode.hlsl,vscode.html,vscode.html-language-features,vscode.ini,vscode.ipynb,vscode.jake,vscode.java,vscode.javascript,vscode.json,vscode.json-language-features,vscode.julia,vscode.latex,vscode.less,vscode.log,vscode.lua,vscode.make,vscode.markdown,vscode.markdown-language-features,vscode.markdown-math,vscode.media-preview,vscode.merge-conflict,vscode.mermaid-chat-features,vscode.microsoft-authentication,ms-vscode.js-debug,ms-vscode.js-debug-companion,ms-vscode.vscode-js-profile-table,vscode.builtin-notebook-renderers,vscode.npm,vscode.objective-c,vscode.perl,vscode.php,vscode.php-language-features,vscode.powershell,vscode.prompt,vscode.pug,vscode.python,vscode.r,vscode.razor,vscode.references-view,vscode.restructuredtext,vscode.ruby,vscode.rust,vscode.scss,vscode.search-result,vscode.shaderlab,vscode.shellscript,vscode.simple-browser,vscode.sql,vscode.swift,vscode.terminal-suggest,vscode.theme-abyss,vscode.theme-defaults,vscode.theme-kimbie-dark,vscode.theme-monokai,vscode.theme-monokai-dimmed,vscode.theme-quietlight,vscode.theme-red,vscode.vscode-theme-seti,vscode.theme-solarized-dark,vscode.theme-solarized-light,vscode.theme-tomorrow-night-blue,vscode.tunnel-forwarding,vscode.typescript,vscode.typescript-language-features,vscode.vb,vscode.xml,vscode.yaml
+2026-03-31T08:10:19.2272826Z NativeExtensionHostFactory._createLocalProcessExtensionHostDataProvider.myExtensions: Elan8.spec42,vscode.bat,vscode.clojure,vscode.coffeescript,vscode.configuration-editing,vscode.cpp,vscode.csharp,vscode.css,vscode.css-language-features,vscode.dart,vscode.debug-auto-launch,vscode.debug-server-ready,vscode.diff,vscode.docker,vscode.dotenv,vscode.emmet,vscode.extension-editing,vscode.fsharp,vscode.git,vscode.git-base,vscode.github,vscode.github-authentication,vscode.go,vscode.groovy,vscode.grunt,vscode.gulp,vscode.handlebars,vscode.hlsl,vscode.html,vscode.html-language-features,vscode.ini,vscode.ipynb,vscode.jake,vscode.java,vscode.javascript,vscode.json,vscode.json-language-features,vscode.julia,vscode.latex,vscode.less,vscode.log,vscode.lua,vscode.make,vscode.markdown,vscode.markdown-language-features,vscode.markdown-math,vscode.media-preview,vscode.merge-conflict,vscode.mermaid-chat-features,vscode.microsoft-authentication,ms-vscode.js-debug,ms-vscode.js-debug-companion,ms-vscode.vscode-js-profile-table,vscode.builtin-notebook-renderers,vscode.npm,vscode.objective-c,vscode.perl,vscode.php,vscode.php-language-features,vscode.powershell,vscode.prompt,vscode.pug,vscode.python,vscode.r,vscode.razor,vscode.references-view,vscode.restructuredtext,vscode.ruby,vscode.rust,vscode.scss,vscode.search-result,vscode.shaderlab,vscode.shellscript,vscode.simple-browser,vscode.sql,vscode.swift,vscode.terminal-suggest,vscode.theme-abyss,vscode.theme-defaults,vscode.theme-kimbie-dark,vscode.theme-monokai,vscode.theme-monokai-dimmed,vscode.theme-quietlight,vscode.theme-red,vscode.vscode-theme-seti,vscode.theme-solarized-dark,vscode.theme-solarized-light,vscode.theme-tomorrow-night-blue,vscode.tunnel-forwarding,vscode.typescript,vscode.typescript-language-features,vscode.vb,vscode.xml,vscode.yaml
+2026-03-31T08:10:19.8495082Z Settings Sync: Account status changed from uninitialized to unavailable
+2026-03-31T08:10:20.0826076Z [SysML][startup] {"traceId":"startup-1774944620041-v2u1aj","phase":"activate:start","elapsedMs":0}
+2026-03-31T08:10:20.0861897Z [SysML] Server command: /home/runner/work/spec42/spec42/target/debug/spec42
+2026-03-31T08:10:20.0877657Z [SysML][startup] {"traceId":"startup-1774944620041-v2u1aj","phase":"languageClient:start","elapsedMs":15}
+2026-03-31T08:10:20.1826717Z 
+2026-03-31T08:10:20.1897670Z   Interconnection Visualization
+2026-03-31T08:10:20.3080289Z [SysML][startup] {"traceId":"startup-1774944620041-v2u1aj","phase":"languageClient:ready","elapsedMs":245}
+2026-03-31T08:10:21.0720358Z     ✔ orders and filters interconnection roots with instance-first semantics
+2026-03-31T08:10:23.0662621Z [SysML][startup] {"traceId":"startup-1774944620041-v2u1aj","phase":"workspaceIndexing:start","elapsedMs":3022}
+2026-03-31T08:10:23.1799103Z [SysML][startup] {"phase":"explorer:loadWorkspaceModel","fileCount":2,"loadedFiles":2,"failures":0,"totalMs":41,"perFileAvgMs":41,"perFileP95Ms":41,"concurrency":2}
+2026-03-31T08:10:23.1800484Z [SysML][startup] {"traceId":"startup-1774944620041-v2u1aj","phase":"workspaceIndexing:end","elapsedMs":3132,"scannedFiles":2,"loadedFiles":2,"truncated":false,"durationMs":110}
+2026-03-31T08:10:23.8950661Z     ✔ exports interconnection diagrams with connectors and port badges (2791ms)
+2026-03-31T08:10:23.9499261Z [SysML][startup] {"phase":"explorer:loadWorkspaceModel","fileCount":2,"loadedFiles":2,"failures":0,"totalMs":21,"perFileAvgMs":20,"perFileP95Ms":21,"concurrency":2}
+2026-03-31T08:10:24.0302649Z [SysML][startup] {"phase":"explorer:loadWorkspaceModel","fileCount":2,"loadedFiles":2,"failures":0,"totalMs":39,"perFileAvgMs":37,"perFileP95Ms":39,"concurrency":2}
+2026-03-31T08:10:24.0496278Z [SysML][startup] {"phase":"explorer:loadWorkspaceModel","fileCount":2,"loadedFiles":2,"failures":0,"totalMs":38,"perFileAvgMs":38,"perFileP95Ms":38,"concurrency":2}
+2026-03-31T08:10:55.9370219Z     1) routes container-port connector outside nested child nodes
+2026-03-31T08:10:55.9940909Z [SysML][startup] {"phase":"explorer:loadWorkspaceModel","fileCount":2,"loadedFiles":2,"failures":0,"totalMs":21,"perFileAvgMs":21,"perFileP95Ms":21,"concurrency":2}
+2026-03-31T08:10:55.9969136Z   2 passing (36s)
+2026-03-31T08:10:55.9981800Z   1 failing
+2026-03-31T08:10:56.0045462Z   1) Interconnection Visualization
+2026-03-31T08:10:56.0046410Z        routes container-port connector outside nested child nodes:
+2026-03-31T08:10:56.0214340Z      AssertionError [ERR_ASSERTION]: interconnection-view svg export did not become ready within 30000ms. Last value: "<svg width=\"2176.800048828125\" height=\"830\" viewBox=\"0 0 2176.800048828125 830\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"0\" y=\"0\" width=\"2176.800048828125\" height=\"830\" fill=\"rgb(255, 255, 255)\"/><g><g class=\"ibd-parts\"><g transform=\"translate(294,294)\" class=\"ibd-part definition-node ibd-container\" data-element-name=\"System\" data-bounds=\"294,294,1862.7999999999997,516\" style=\"cursor: pointer;\"><rect width=\"1862.7999999999997\" height=\"516\" rx=\"8\" class=\"graph-node-background\" data-original-stroke=\"#E5E7EB\" data-original-width=\"2px\" style=\"fill: rgb(255, 255, 255); stroke: rgb(229, 231, 235); stroke-width: 2px; stroke-dasharray: none;\"/><rect width=\"1862.7999999999997\" height=\"28\" rx=\"6\" y=\"0\" style=\"fill: rgb(232, 232, 232);stroke-width: 1px; \"/><text x=\"931.3999999999999\" y=\"18\" text-anchor=\"middle\" style=\"font-size: 11px; font-weight: bold; fill: rgb(0, 0, 0); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">System</text></g><g transform=\"translate(1069.6,612)\" class=\"ibd-part usage-node\" data-element-name=\"flightController\" data-bounds=\"1069.6,612,338,174\" style=\"cursor: pointer;\"><rect width=\"338\" height=\"174\" rx=\"8\" data-original-stroke=\"#E5E7EB\" data-original-width=\"3px\" style=\"fill: rgb(255, 255, 255); stroke: rgb(229, 231, 235); stroke-width: 3px; stroke-dasharray: none;\"/><rect y=\"0\" width=\"338\" height=\"33\" style=\"fill: rgb(232, 232, 232);stroke-width: 1px; \"/><text x=\"169\" y=\"17\" text-anchor=\"middle\" style=\"font-size: 9px; fill: rgb(0, 0, 0); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; font-weight: 400;\">«part»</text><text class=\"node-name-text\" x=\"169\" y=\"31\" text-anchor=\"middle\" style=\"font-size: 11px; font-weight: bold; fill: rgb(0, 0, 0); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">flightController</text><rect class=\"port-icon\" x=\"-15\" y=\"112\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"6\" y=\"120\" text-anchor=\"start\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">imuIn</text><rect class=\"port-icon\" x=\"-15\" y=\"92\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"6\" y=\"100\" text-anchor=\"start\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">navIn</text><rect class=\"port-icon\" x=\"-15\" y=\"72\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"6\" y=\"80\" text-anchor=\"start\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">pwr</text><rect class=\"port-icon\" x=\"-15\" y=\"52\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"6\" y=\"60\" text-anchor=\"start\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">radioCmdIn</text><rect class=\"port-icon\" x=\"343\" y=\"72\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"332\" y=\"80\" text-anchor=\"end\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">gimbalCmd</text><rect class=\"port-icon\" x=\"343\" y=\"92\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"332\" y=\"100\" text-anchor=\"end\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">telemetryOut</text></g><g transform=\"translate(318,579)\" class=\"ibd-part usage-node\" data-element-name=\"power\" data-bounds=\"318,579,327.6,200\" style=\"cursor: pointer;\"><rect width=\"327.6\" height=\"200\" rx=\"8\" data-original-stroke=\"#E5E7EB\" data-original-width=\"3px\" style=\"fill: rgb(255, 255, 255); stroke: rgb(229, 231, 235); stroke-width: 3px; stroke-dasharray: none;\"/><rect y=\"0\" width=\"327.6\" height=\"33\" style=\"fill: rgb(232, 232, 232);stroke-width: 1px; \"/><text x=\"163.8\" y=\"17\" text-anchor=\"middle\" style=\"font-size: 9px; fill: rgb(0, 0, 0); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; font-weight: 400;\">«part»</text><text class=\"node-name-text\" x=\"163.8\" y=\"31\" text-anchor=\"middle\" style=\"font-size: 11px; font-weight: bold; fill: rgb(0, 0, 0); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">power</text><rect class=\"port-icon\" x=\"332.6\" y=\"55\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"321.6\" y=\"63\" text-anchor=\"end\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">cameraPower</text><rect class=\"port-icon\" x=\"332.6\" y=\"75\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"321.6\" y=\"83\" text-anchor=\"end\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">fcPower</text><rect class=\"port-icon\" x=\"332.6\" y=\"95\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"321.6\" y=\"103\" text-anchor=\"end\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">gimbalPower</text><rect class=\"port-icon\" x=\"332.6\" y=\"115\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"321.6\" y=\"123\" text-anchor=\"end\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">radioPower</text><rect class=\"port-icon\" x=\"332.6\" y=\"135\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"321.6\" y=\"143\" text-anchor=\"end\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">sensorPower</text></g><g transform=\"translate(1447.6,470)\" class=\"ibd-part usage-node\" data-element-name=\"gimbal\" data-bounds=\"1447.6,470,307.6,122\" style=\"cursor: pointer;\"><rect width=\"307.6\" height=\"122\" rx=\"8\" data-original-stroke=\"#E5E7EB\" data-original-width=\"3px\" style=\"fill: rgb(255, 255, 255); stroke: rgb(229, 231, 235); stroke-width: 3px; stroke-dasharray: none;\"/><rect y=\"0\" width=\"307.6\" height=\"33\" style=\"fill: rgb(232, 232, 232);stroke-width: 1px; \"/><text x=\"153.8\" y=\"17\" text-anchor=\"middle\" style=\"font-size: 9px; fill: rgb(0, 0, 0); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; font-weight: 400;\">«part»</text><text class=\"node-name-text\" x=\"153.8\" y=\"31\" text-anchor=\"middle\" style=\"font-size: 11px; font-weight: bold; fill: rgb(0, 0, 0); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">gimbal</text><rect class=\"port-icon\" x=\"-15\" y=\"66\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"6\" y=\"74\" text-anchor=\"start\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">cmdIn</text><rect class=\"port-icon\" x=\"-15\" y=\"46\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"6\" y=\"54\" text-anchor=\"start\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">pwr</text><rect class=\"port-icon\" x=\"312.5999999999999\" y=\"56\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"301.5999999999999\" y=\"64\" text-anchor=\"end\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">statusOut</text></g><g transform=\"translate(1805.1999999999998,460)\" class=\"ibd-part usage-node\" data-element-name=\"radio\" data-bounds=\"1805.1999999999998,460,307.6,122\" style=\"cursor: pointer;\"><rect width=\"307.6\" height=\"122\" rx=\"8\" data-original-stroke=\"#E5E7EB\" data-original-width=\"3px\" style=\"fill: rgb(255, 255, 255); stroke: rgb(229, 231, 235); stroke-width: 3px; stroke-dasharray: none;\"/><rect y=\"0\" width=\"307.6\" height=\"33\" style=\"fill: rgb(232, 232, 232);stroke-width: 1px; \"/><text x=\"153.8\" y=\"17\" text-anchor=\"middle\" style=\"font-size: 9px; fill: rgb(0, 0, 0); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; font-weight: 400;\">«part»</text><text class=\"node-name-text\" x=\"153.8\" y=\"31\" text-anchor=\"middle\" style=\"font-size: 11px; font-weight: bold; fill: rgb(0, 0, 0); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">radio</text><rect class=\"port-icon\" x=\"-15\" y=\"66\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"6\" y=\"74\" text-anchor=\"start\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">telemetryIn</text><rect class=\"port-icon\" x=\"-15\" y=\"46\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"6\" y=\"54\" text-anchor=\"start\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">pwr</text><rect class=\"port-icon\" x=\"312.5999999999999\" y=\"56\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"301.5999999999999\" y=\"64\" text-anchor=\"end\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">uplinkOut</text></g><g transform=\"translate(715.6,658)\" class=\"ibd-part usage-node\" data-element-name=\"navigation\" data-bounds=\"715.6,658,304,122\" style=\"cursor: pointer;\"><rect width=\"304\" height=\"122\" rx=\"8\" data-original-stroke=\"#E5E7EB\" data-original-width=\"3px\" style=\"fill: rgb(255, 255, 255); stroke: rgb(229, 231, 235); stroke-width: 3px; stroke-dasharray: none;\"/><rect y=\"0\" width=\"304\" height=\"33\" style=\"fill: rgb(232, 232, 232);stroke-width: 1px; \"/><text x=\"152\" y=\"17\" text-anchor=\"middle\" style=\"font-size: 9px; fill: rgb(0, 0, 0); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; font-weight: 400;\">«part»</text><text class=\"node-name-text\" x=\"152\" y=\"31\" text-anchor=\"middle\" style=\"font-size: 11px; font-weight: bold; fill: rgb(0, 0, 0); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">navigation</text><rect class=\"port-icon\" x=\"-15\" y=\"56\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"6\" y=\"64\" text-anchor=\"start\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">pwr</text><rect class=\"port-icon\" x=\"308.9999999999999\" y=\"46\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"297.9999999999999\" y=\"54\" text-anchor=\"end\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">gpsOut</text><rect class=\"port-icon\" x=\"308.9999999999999\" y=\"66\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"297.9999999999999\" y=\"74\" text-anchor=\"end\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">imuOut</text></g><g transform=\"translate(1089.8,342)\" class=\"ibd-part usage-node\" data-element-name=\"camera\" data-bounds=\"1089.8,342,297.6,96\" style=\"cursor: pointer;\"><rect width=\"297.6\" height=\"96\" rx=\"8\" data-original-stroke=\"#E5E7EB\" data-original-width=\"3px\" style=\"fill: rgb(255, 255, 255); stroke: rgb(229, 231, 235); stroke-width: 3px; stroke-dasharray: none;\"/><rect y=\"0\" width=\"297.6\" height=\"33\" style=\"fill: rgb(232, 232, 232);stroke-width: 1px; \"/><text x=\"148.8\" y=\"17\" text-anchor=\"middle\" style=\"font-size: 9px; fill: rgb(0, 0, 0); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; font-weight: 400;\">«part»</text><text class=\"node-name-text\" x=\"148.8\" y=\"31\" text-anchor=\"middle\" style=\"font-size: 11px; font-weight: bold; fill: rgb(0, 0, 0); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">camera</text><rect class=\"port-icon\" x=\"-15\" y=\"43\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"6\" y=\"51\" text-anchor=\"start\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">pwr</text><rect class=\"port-icon\" x=\"302.60000000000014\" y=\"43\" width=\"10\" height=\"10\" style=\"fill: none; stroke: rgb(0, 122, 204); stroke-width: 1.8px;\"/><text x=\"291.60000000000014\" y=\"51\" text-anchor=\"end\" style=\"font-size: 8px; font-weight: 500; fill: rgb(0, 122, 204); font-family: system-ui, Ubuntu, &quot;Droid Sans&quot;, sans-serif, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;\">statusOut</text></g></g><g class=\"ibd-connectors\"><path d=\"M1029.6,709 L1059.6,709\" class=\"ibd-connector\" data-connector-id=\"edge-0\" data-source=\"ConnectedBlocks.System.navigation.gpsOut\" data-target=\"ConnectedBlocks.System.flightController.navIn\" data-route-points=\"1029.6,709 1059.6,709\" style=\"stroke: rgb(47, 111, 221); stroke-width: 2px; fill: none; \"/><path d=\"M1029.6,729 L1059.6,729\" class=\"ibd-connector\" data-connector-id=\"edge-1\" data-source=\"ConnectedBlocks.System.navigation.imuOut\" data-target=\"ConnectedBlocks.System.flightController.imuIn\" data-route-points=\"1029.6,729 1059.6,729\" style=\"stroke: rgb(47, 111, 221); stroke-width: 2px; fill: none; \"/><path d=\"M2122.7999999999997,521 L2132.7999999999997,521 L2132.7999999999997,602 L1049.6,602 L1049.6,669 L1059.6,669\" class=\"ibd-connector\" data-connector-id=\"edge-2\" data-source=\"ConnectedBlocks.System.radio.uplinkOut\" data-target=\"ConnectedBlocks.System.flightController.radioCmdIn\" data-route-points=\"2122.7999999999997,521 2132.7999999999997,521 2132.7999999999997,602 1049.6,602 1049.6,669 1059.6,669\" style=\"stroke: rgb(47, 111, 221); stroke-width: 2px; fill: none; \"/><path d=\"M1417.6,689 L1427.6,689 L1427.6,541 L1437.6,541\" class=\"ibd-connector\" data-connector-id=\"edge-3\" data-source=\"ConnectedBlocks.System.flightController.gimbalCmd\" data-target=\"ConnectedBlocks.System.gimbal.cmdIn\" data-route-points=\"1417.6,689 1427.6,689 1427.6,541 1437.6,541\" style=\"stroke: rgb(47, 111, 221); stroke-width: 2px; fill: none; \"/><path d=\"M1417.6,709 L1785.1999999999998,709 L1785.1999999999998,531 L1795.1999999999998,531\" class=\"ibd-connector\" data-connector-id=\"edge-4\" data-source=\"ConnectedBlocks.System.flightController.telemetryOut\" data-target=\"ConnectedBlocks.System.radio.telemetryIn\" data-route-points=\"1417.6,709 1785.1999999999998,709 1785.1999999999998,531 1795.1999999999998,531\" style=\"stroke: rgb(47, 111, 221); stroke-width: 2px; fill: none; \"/><path d=\"M1765.1999999999998,531 L1795.1999999999998,531\" class=\"ibd-connector\" data-connector-id=\"edge-5\" data-source=\"ConnectedBlocks.System.gimbal.statusOut\" data-target=\"ConnectedBlocks.System.radio.telemetryIn\" data-route-points=\"1765.1999999999998,531 1795.1999999999998,531\" style=\"stroke: rgb(47, 111, 221); stroke-width: 2px; fill: none; \"/><path d=\"M1397.4,390 L1785.1999999999998,390 L1785.1999999999998,531 L1795.1999999999998,531\" class=\"ibd-connector\" data-connector-id=\"edge-6\" data-source=\"ConnectedBlocks.System.camera.statusOut\" data-target=\"ConnectedBlocks.System.radio.telemetryIn\" data-route-points=\"1397.4,390 1785.1999999999998,390 1785.1999999999998,531 1795.1999999999998,531\" style=\"stroke: rgb(47, 111, 221); stroke-width: 2px; fill: none; \"/><path d=\"M655.6,659 L675.6,659 L675.6,437 L1039.6,437 L1039.6,689 L1059.6,689\" class=\"ibd-connector\" data-connector-id=\"edge-7\" data-source=\"ConnectedBlocks.System.power.fcPower\" data-target=\"ConnectedBlocks.System.flightController.pwr\" data-route-points=\"655.6,659 675.6,659 675.6,437 1039.6,437 1039.6,689 1059.6,689\" style=\"stroke: rgb(47, 111, 221); stroke-width: 2px; fill: none; \"/><path d=\"M655.6,719 L705.6,719\" class=\"ibd-connector\" data-connector-id=\"edge-8\" data-source=\"ConnectedBlocks.System.power.sensorPower\" data-target=\"ConnectedBlocks.System.navigation.pwr\" data-route-points=\"655.6,719 705.6,719\" style=\"stroke: rgb(47, 111, 221); stroke-width: 2px; fill: none; \"/><path d=\"M655.6,699 L695.6,699 L695.6,459 L1775.1999999999998,459 L1775.1999999999998,511 L1795.1999999999998,511\" class=\"ibd-connector\" data-connector-id=\"edge-9\" data-source=\"ConnectedBlocks.System.power.radioPower\" data-target=\"ConnectedBlocks.System.radio.pwr\" data-route-points=\"655.6,699 695.6,699 695.6,459 1775.1999999999998,459 1775.1999999999998,511 1795.1999999999998,511\" style=\"stroke: rgb(47, 111, 221); stroke-width: 2px; fill: none; \"/><path d=\"M655.6,679 L685.6,679 L685.6,448 L1427.6,448 L1427.6,521 L1437.6,521\" class=\"ibd-connector\" data-connector-id=\"edge-10\" data-source=\"ConnectedBlocks.System.power.gimbalPower\" data-target=\"ConnectedBlocks.System.gimbal.pwr\" data-route-points=\"655.6,679 685.6,679 685.6,448 1427.6,448 1427.6,521 1437.6,521\" style=\"stroke: rgb(47, 111, 221); stroke-width: 2px; fill: none; \"/><path d=\"M655.6,639 L665.6,639 L665.6,390 L1079.8,390\" class=\"ibd-connector\" data-connector-id=\"edge-11\" data-source=\"ConnectedBlocks.System.power.cameraPower\" data-target=\"ConnectedBlocks.System.camera.pwr\" data-route-points=\"655.6,639 665.6,639 665.6,390 1079.8,390\" style=\"stroke: rgb(47, 111, 221); stroke-width: 2px; fill: none; \"/></g><g class=\"ibd-connector-labels\"/></g><defs><marker id=\"ibd-flow-arrow\" viewBox=\"0 -5 10 10\" refX=\"10\" refY=\"0\" markerWidth=\"8\" markerHeight=\"8\" orient=\"auto\"><path d=\"M0,-4L10,0L0,4Z\" style=\"stroke-width: 1px; fill: rgb(47, 111, 221); \"/></marker><marker id=\"ibd-interface-arrow\" viewBox=\"0 -5 10 10\" refX=\"10\" refY=\"0\" markerWidth=\"8\" markerHeight=\"8\" orient=\"auto\"><path d=\"M0,-4L10,0L0,4Z\" style=\"stroke: rgb(47, 111, 221); stroke-width: 1.5px; fill: none; \"/></marker><marker id=\"ibd-connection-dot\" viewBox=\"0 0 10 10\" refX=\"5\" refY=\"5\" markerWidth=\"5\" markerHeight=\"5\"><circle cx=\"5\" cy=\"5\" r=\"4\" style=\"stroke-width: 1px; fill: rgb(47, 111, 221); \"/></marker><marker id=\"ibd-port-connector\" viewBox=\"0 0 8 8\" refX=\"4\" refY=\"4\" markerWidth=\"4\" markerHeight=\"4\"><rect x=\"1\" y=\"1\" width=\"6\" height=\"6\" style=\"fill: rgb(101, 45, 144);stroke-width: 1px; \"/></marker></defs></svg>"
+2026-03-31T08:10:56.0320223Z   	at waitFor (out/test/suite/testUtils.js:97:12)
+2026-03-31T08:10:56.0321036Z   	at async waitForDiagramExport (out/test/suite/testUtils.js:134:21)
+2026-03-31T08:10:56.0322004Z   	at async Context.<anonymous> (out/test/suite/interconnection.visualization.test.js:254:29)
+2026-03-31T08:10:56.0322581Z 
+2026-03-31T08:10:56.0322703Z 1 test failed.
+2026-03-31T08:10:56.0323158Z Extension host test runner error 1 test failed.
+2026-03-31T08:10:56.0324908Z [90m[main 2026-03-31T08:10:56.026Z][0m Extension host with pid 8931 exited with code: 0, signal: unknown.
+2026-03-31T08:10:56.0457548Z Asking native host service to exit with code 1.
+2026-03-31T08:10:56.1021130Z Exit code:   1
+2026-03-31T08:10:56.1188947Z ##[error]Process completed with exit code 1.
+2026-03-31T08:10:56.1274153Z Post job cleanup.
+2026-03-31T08:10:56.2071917Z [command]/usr/bin/git version
+2026-03-31T08:10:56.2142231Z git version 2.53.0
+2026-03-31T08:10:56.2184793Z Temporarily overriding HOME='/home/runner/work/_temp/9bab16a3-6c6c-43b7-9e1b-5d366e752b49' before making global git config changes
+2026-03-31T08:10:56.2186338Z Adding repository directory to the temporary git global config as a safe directory
+2026-03-31T08:10:56.2190791Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/spec42/spec42
+2026-03-31T08:10:56.2221190Z Removing SSH command configuration
+2026-03-31T08:10:56.2227674Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-03-31T08:10:56.2262265Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-03-31T08:10:56.2481892Z Removing HTTP extra header
+2026-03-31T08:10:56.2487528Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-03-31T08:10:56.2522490Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-03-31T08:10:56.2734055Z Removing includeIf entries pointing to credentials config files
+2026-03-31T08:10:56.2741271Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-03-31T08:10:56.2765367Z includeif.gitdir:/home/runner/work/spec42/spec42/.git.path
+2026-03-31T08:10:56.2766107Z includeif.gitdir:/home/runner/work/spec42/spec42/.git/worktrees/*.path
+2026-03-31T08:10:56.2766594Z includeif.gitdir:/github/workspace/.git.path
+2026-03-31T08:10:56.2767029Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-03-31T08:10:56.2776027Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/spec42/spec42/.git.path
+2026-03-31T08:10:56.2797385Z /home/runner/work/_temp/git-credentials-731468b1-a0d8-41c4-8324-6976471389f8.config
+2026-03-31T08:10:56.2807004Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/spec42/spec42/.git.path /home/runner/work/_temp/git-credentials-731468b1-a0d8-41c4-8324-6976471389f8.config
+2026-03-31T08:10:56.2841119Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/spec42/spec42/.git/worktrees/*.path
+2026-03-31T08:10:56.2862169Z /home/runner/work/_temp/git-credentials-731468b1-a0d8-41c4-8324-6976471389f8.config
+2026-03-31T08:10:56.2873004Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/spec42/spec42/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-731468b1-a0d8-41c4-8324-6976471389f8.config
+2026-03-31T08:10:56.2905095Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-03-31T08:10:56.2925067Z /github/runner_temp/git-credentials-731468b1-a0d8-41c4-8324-6976471389f8.config
+2026-03-31T08:10:56.2933920Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-731468b1-a0d8-41c4-8324-6976471389f8.config
+2026-03-31T08:10:56.2965348Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-03-31T08:10:56.2986198Z /github/runner_temp/git-credentials-731468b1-a0d8-41c4-8324-6976471389f8.config
+2026-03-31T08:10:56.2996374Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-731468b1-a0d8-41c4-8324-6976471389f8.config
+2026-03-31T08:10:56.3029154Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-03-31T08:10:56.3256156Z Removing credentials config '/home/runner/work/_temp/git-credentials-731468b1-a0d8-41c4-8324-6976471389f8.config'
+2026-03-31T08:10:56.3412108Z Cleaning up orphan processes

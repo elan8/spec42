@@ -9,7 +9,7 @@ use tower_lsp::Client;
 pub(crate) async fn sysml_model_result(
     client: &Client,
     state: &ServerState,
-    config: &Spec42Config,
+    _config: &Spec42Config,
     params: serde_json::Value,
 ) -> Result<dto::SysmlModelResultDto> {
     let (uri, scope) = crate::views::parse_sysml_model_params(&params)?;
@@ -46,7 +46,6 @@ pub(crate) async fn sysml_model_result(
         &scope,
         build_start,
         client,
-        &config.diagram_providers,
     )
     .await)
 }

@@ -1,6 +1,4 @@
-//! Default server configuration without built-in diagram renderers.
-//!
-//! Diagram providers remain pluggable via `Spec42Config`, but no renderer ships in-tree.
+//! Default server configuration for the OSS host.
 
 pub fn default_config() -> crate::Spec42Config {
     crate::Spec42Config::new()

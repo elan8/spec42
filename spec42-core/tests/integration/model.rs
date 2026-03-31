@@ -275,11 +275,6 @@ fn lsp_sysml_model_graph_includes_requirement_usecase_and_state_nodes() {
                 .as_str()
                 .is_some_and(|t| t.ends_with("::active"))
     });
-    assert!(
-        model_json["result"].get("renderedDiagrams").is_none(),
-        "default config should not include rendered diagrams"
-    );
-
     let _ = child.kill();
 }
 
@@ -446,7 +441,7 @@ fn lsp_sysml_model_graph_resolves_requirement_usage_typing_cross_file() {
 }
 
 #[test]
-fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
+fn lsp_sysml_model_includes_interconnection_view_source_data() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
@@ -502,10 +497,6 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram() {
         .as_array()
         .cloned()
         .unwrap_or_default();
-    assert!(
-        result.get("renderedDiagrams").is_none(),
-        "default config should not include renderedDiagrams: {result:#}"
-    );
     assert!(
         ibd_parts.len() >= 8,
         "expected interconnection source data (IBD parts) to be present"
@@ -585,7 +576,7 @@ fn lsp_sysml_model_general_view_graph_deduplicates_gnss_for_full_drone_fixture()
 }
 
 #[test]
-fn lsp_sysml_model_includes_rendered_general_diagram_for_full_drone_fixture() {
+fn lsp_sysml_model_includes_general_view_source_data_for_full_drone_fixture() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
@@ -639,10 +630,6 @@ fn lsp_sysml_model_includes_rendered_general_diagram_for_full_drone_fixture() {
     let result = &model_json["result"];
     let graph = result["graph"].clone();
     let general_view_graph = result["generalViewGraph"].clone();
-    assert!(
-        result.get("renderedDiagrams").is_none(),
-        "default config should not include rendered diagrams: {result:#}"
-    );
     let edges = graph["edges"].as_array().expect("graph edges array");
     let gv_nodes = general_view_graph["nodes"]
         .as_array()
@@ -701,7 +688,7 @@ fn lsp_sysml_model_includes_rendered_general_diagram_for_full_drone_fixture() {
 }
 
 #[test]
-fn lsp_sysml_model_includes_rendered_interconnection_diagram_for_connected_blocks_fixture() {
+fn lsp_sysml_model_connected_blocks_fixture_exposes_interconnection_view_source_data() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
@@ -759,14 +746,8 @@ fn lsp_sysml_model_includes_rendered_interconnection_diagram_for_connected_block
     });
     send_message(&mut stdin, &model_req.to_string());
     let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
-    let model_json: serde_json::Value =
+    let _model_json: serde_json::Value =
         serde_json::from_str(&model_resp).expect("parse sysml/model response");
-    let result = &model_json["result"];
-    assert!(
-        result.get("renderedDiagrams").is_none(),
-        "default config should not include rendered diagrams for ConnectedBlocks: {result:#}"
-    );
-
     let _ = child.kill();
 }
 

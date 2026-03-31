@@ -1,12 +1,10 @@
 //! sysml/model request parsing and response building.
-//! Diagram output is collected from [crate::config::DiagramProvider] implementations.
 
 #[path = "model_params.rs"]
 mod model_params;
 #[path = "model_projection.rs"]
 mod model_projection;
 
-use std::sync::Arc;
 use std::time::Instant;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::{MessageType, Url};
@@ -15,10 +13,9 @@ use tower_lsp::Client;
 use sysml_parser::RootNamespace;
 
 use crate::common::util;
-use crate::host::config::{DiagramContext, DiagramProvider};
 use crate::views::dto::{
-    range_to_dto, rendered_diagram_to_dto, GraphEdgeDto, GraphNodeDto, RenderedDiagramsDto,
-    SysmlGraphDto, SysmlModelResultDto, SysmlModelStatsDto,
+    range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlGraphDto, SysmlModelResultDto,
+    SysmlModelStatsDto,
 };
 use crate::views::extracted_model as model;
 use crate::views::ibd;
@@ -61,7 +58,6 @@ pub async fn build_sysml_model_response(
     scope: &[String],
     build_start: Instant,
     client: &Client,
-    diagram_providers: &[Arc<dyn DiagramProvider>],
 ) -> SysmlModelResultDto {
     let want_graph = scope.is_empty()
         || scope.iter().any(|s| s == "graph")
@@ -72,7 +68,6 @@ pub async fn build_sysml_model_response(
     let want_stats = scope.is_empty() || scope.iter().any(|s| s == "stats");
     let want_activity_diagrams = scope.is_empty() || scope.iter().any(|s| s == "activityDiagrams");
     let want_sequence_diagrams = scope.is_empty() || scope.iter().any(|s| s == "sequenceDiagrams");
-    let want_rendered_diagrams = scope.is_empty() || scope.iter().any(|s| s == "renderedDiagrams");
 
     let workspace_viz = workspace_visualization_enabled(scope);
     let raw_graph = if want_graph && workspace_viz {
@@ -233,24 +228,6 @@ pub async fn build_sysml_model_response(
         None
     };
 
-    let rendered_diagrams = if want_rendered_diagrams && (graph.is_some() || ibd.is_some()) {
-        let context = DiagramContext {
-            graph: graph.as_ref(),
-            ibd: ibd.as_ref(),
-            uri,
-        };
-        let mut diagrams = std::collections::HashMap::new();
-        for provider in diagram_providers {
-            if let Some(diagram) = provider.render(&context) {
-                let dto = rendered_diagram_to_dto(diagram);
-                diagrams.insert(provider.diagram_id().to_string(), dto);
-            }
-        }
-        Some(RenderedDiagramsDto(diagrams))
-    } else {
-        None
-    };
-
     SysmlModelResultDto {
         version: 0,
         graph,
@@ -258,7 +235,6 @@ pub async fn build_sysml_model_response(
         stats,
         activity_diagrams,
         sequence_diagrams,
-        rendered_diagrams,
         ibd,
     }
 }

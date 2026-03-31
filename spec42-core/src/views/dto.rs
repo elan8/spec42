@@ -3,7 +3,6 @@
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::Range;
 
-use crate::views::diagram_types::{Bounds, HitRegionKind, RenderedDiagram};
 use crate::views::extracted_model as model;
 use crate::views::ibd;
 
@@ -88,69 +87,6 @@ pub struct SysmlModelStatsDto {
     pub parse_cached: bool,
 }
 
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct DiagramBoundsDto {
-    pub x: f32,
-    pub y: f32,
-    pub width: f32,
-    pub height: f32,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct HitRegionDto {
-    pub id: String,
-    pub kind: String,
-    pub element_id: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub qualified_name: Option<String>,
-    pub bounds: DiagramBoundsDto,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct DiagramMetricsDto {
-    pub node_count: usize,
-    pub edge_count: usize,
-    pub overlap_count: usize,
-    pub overlap_area: f32,
-    pub edge_crossing_count: usize,
-    pub edge_node_intrusion_count: usize,
-    pub total_edge_length: f32,
-    pub bend_count: usize,
-    pub orthogonal_violation_count: usize,
-    pub minimum_node_clearance: f32,
-    pub canvas_area: f32,
-    pub aspect_ratio: f32,
-    pub compactness: f32,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct DiagramViewStateDto {
-    pub view: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub selection: Option<String>,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct RenderedDiagramDto {
-    pub svg: String,
-    pub hit_map: Vec<HitRegionDto>,
-    pub bounds: DiagramBoundsDto,
-    pub metrics: DiagramMetricsDto,
-    pub warnings: Vec<String>,
-    pub view_state: DiagramViewStateDto,
-}
-
-/// Map of diagram id (e.g. "generalView", "interconnectionView") to rendered diagram.
-/// Serializes as a flat JSON object so clients get renderedDiagrams: { "generalView": {...}, ... }.
-#[derive(Debug, Clone, Serialize)]
-#[serde(transparent)]
-pub struct RenderedDiagramsDto(pub std::collections::HashMap<String, RenderedDiagramDto>);
-
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SysmlModelResultDto {
@@ -164,8 +100,6 @@ pub struct SysmlModelResultDto {
     pub sequence_diagrams: Option<Vec<model::SequenceDiagramDto>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ibd: Option<ibd::IbdDataDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub rendered_diagrams: Option<RenderedDiagramsDto>,
     pub stats: Option<SysmlModelStatsDto>,
 }
 
@@ -257,53 +191,3 @@ pub fn range_to_dto(r: Range) -> RangeDto {
     }
 }
 
-pub fn bounds_to_dto(bounds: Bounds) -> DiagramBoundsDto {
-    DiagramBoundsDto {
-        x: bounds.x,
-        y: bounds.y,
-        width: bounds.width,
-        height: bounds.height,
-    }
-}
-
-pub fn rendered_diagram_to_dto(diagram: RenderedDiagram) -> RenderedDiagramDto {
-    RenderedDiagramDto {
-        svg: diagram.svg,
-        hit_map: diagram
-            .hit_map
-            .into_iter()
-            .map(|hit| HitRegionDto {
-                id: hit.id,
-                kind: match hit.kind {
-                    HitRegionKind::Node => "node".to_string(),
-                    HitRegionKind::Port => "port".to_string(),
-                    HitRegionKind::EdgeLabel => "label".to_string(),
-                },
-                element_id: hit.element_id,
-                qualified_name: hit.qualified_name,
-                bounds: bounds_to_dto(hit.bounds),
-            })
-            .collect(),
-        bounds: bounds_to_dto(diagram.bounds),
-        metrics: DiagramMetricsDto {
-            node_count: diagram.metrics.node_count,
-            edge_count: diagram.metrics.edge_count,
-            overlap_count: diagram.metrics.overlap_count,
-            overlap_area: diagram.metrics.overlap_area,
-            edge_crossing_count: diagram.metrics.edge_crossing_count,
-            edge_node_intrusion_count: diagram.metrics.edge_node_intrusion_count,
-            total_edge_length: diagram.metrics.total_edge_length,
-            bend_count: diagram.metrics.bend_count,
-            orthogonal_violation_count: diagram.metrics.orthogonal_violation_count,
-            minimum_node_clearance: diagram.metrics.minimum_node_clearance,
-            canvas_area: diagram.metrics.canvas_area,
-            aspect_ratio: diagram.metrics.aspect_ratio,
-            compactness: diagram.metrics.compactness,
-        },
-        warnings: diagram.warnings,
-        view_state: DiagramViewStateDto {
-            view: diagram.view_state.view,
-            selection: diagram.view_state.selection,
-        },
-    }
-}

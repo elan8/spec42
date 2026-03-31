@@ -1,39 +1,14 @@
-//! Extension traits and server configuration for pluggable checks, diagrams, and host hooks.
+//! Extension traits and server configuration for pluggable checks and host hooks.
 
 use std::sync::Arc;
 use tower_lsp::lsp_types::{Diagnostic, ServerCapabilities, Url};
 
-use crate::views::diagram_types::RenderedDiagram;
-use crate::views::dto::SysmlGraphDto;
-use crate::views::ibd::IbdDataDto;
 use crate::semantic_model::SemanticGraph;
 
 /// Provider of semantic/quality diagnostics. Implement this to add custom checks (e.g. naming rules, complexity).
 pub trait SemanticCheckProvider: Send + Sync {
     /// Returns LSP diagnostics for the given document using the semantic graph.
     fn compute_diagnostics(&self, graph: &SemanticGraph, uri: &Url) -> Vec<Diagnostic>;
-}
-
-/// Context passed to diagram providers when building the sysml/model response.
-/// Carries the graph DTO, optional IBD, and document URI.
-#[derive(Debug, Clone)]
-pub struct DiagramContext<'a> {
-    /// Graph nodes and edges for the document (for general view and similar diagrams).
-    pub graph: Option<&'a SysmlGraphDto>,
-    /// IBD data for the document (for interconnection view).
-    pub ibd: Option<&'a IbdDataDto>,
-    /// Document URI.
-    pub uri: &'a Url,
-}
-
-/// Provider of a single diagram type. Implement this to add custom diagrams (e.g. extra views in Pro).
-pub trait DiagramProvider: Send + Sync {
-    /// Unique id for this diagram (e.g. `"generalView"`, `"interconnectionView"`). Used as the key in the rendered_diagrams map.
-    fn diagram_id(&self) -> &str;
-
-    /// Renders the diagram if this provider can produce one for the given context.
-    /// Returns None if the diagram is not applicable or rendering failed.
-    fn render(&self, context: &DiagramContext<'_>) -> Option<RenderedDiagram>;
 }
 
 /// Optional host hook for capability augmentation.
@@ -54,13 +29,11 @@ pub trait CustomMethodProvider: Send + Sync {
     fn custom_method_names(&self) -> Vec<String>;
 }
 
-/// Server configuration: list of check and diagram providers. Built by the binary and passed to the core server.
+/// Server configuration built by the binary and passed to the core server.
 #[derive(Default, Clone)]
 pub struct Spec42Config {
     /// Semantic/quality check providers run when publishing diagnostics after a successful parse.
     pub check_providers: Vec<Arc<dyn SemanticCheckProvider>>,
-    /// Diagram providers run when building the sysml/model rendered_diagrams response.
-    pub diagram_providers: Vec<Arc<dyn DiagramProvider>>,
     /// Optional capability augmenters for additive host composition.
     pub capability_augmenters: Vec<Arc<dyn CapabilityAugmenter>>,
     /// Optional custom-method declaration providers for additive host composition.
@@ -71,7 +44,6 @@ impl std::fmt::Debug for Spec42Config {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Spec42Config")
             .field("check_providers", &self.check_providers.len())
-            .field("diagram_providers", &self.diagram_providers.len())
             .field("capability_augmenters", &self.capability_augmenters.len())
             .field(
                 "custom_method_providers",
@@ -89,12 +61,6 @@ impl Spec42Config {
     /// Add a semantic check provider.
     pub fn with_check_provider(mut self, p: Arc<dyn SemanticCheckProvider>) -> Self {
         self.check_providers.push(p);
-        self
-    }
-
-    /// Add a diagram provider.
-    pub fn with_diagram_provider(mut self, p: Arc<dyn DiagramProvider>) -> Self {
-        self.diagram_providers.push(p);
         self
     }
 

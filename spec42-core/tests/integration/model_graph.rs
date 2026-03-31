@@ -68,11 +68,6 @@ fn lsp_sysml_model_graph() {
         .as_array()
         .expect("graph should have edges array");
     assert!(
-        result.get("renderedDiagrams").is_none(),
-        "default config should not include renderedDiagrams when no providers are registered"
-    );
-
-    assert!(
         !nodes.is_empty(),
         "graph.nodes should not be empty for package P with part def X and part a"
     );

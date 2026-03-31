@@ -6,7 +6,6 @@ import type {
     GraphNodeDTO,
     GraphEdgeDTO,
     IbdDataDTO,
-    RenderedDiagramsDTO,
 } from '../providers/sysmlModelTypes';
 
 export interface FetchModelParams {
@@ -22,7 +21,6 @@ export interface UpdateMessage {
     graph?: SysMLGraphDTO;
     generalViewGraph?: SysMLGraphDTO;
     ibd?: IbdDataDTO;
-    renderedDiagrams?: RenderedDiagramsDTO;
     sequenceDiagrams: unknown[];
     activityDiagrams: unknown[];
     currentView: string;
@@ -173,15 +171,12 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     const primaryResult = results.find(r => r.graph?.nodes?.length || r.graph?.edges?.length) ?? results[0];
     const primaryGeneralViewGraph = primaryResult?.generalViewGraph;
     const ibd = primaryResult?.ibd;
-    // renderedDiagrams are intentionally not requested by default (backend SVG/layout is expensive).
-    const renderedDiagrams = requestUris.length === 1 ? primaryResult?.renderedDiagrams : undefined;
 
     const msg: UpdateMessage = {
         command: 'update',
         graph: mergedGraph,
         generalViewGraph: primaryGeneralViewGraph,
         ibd,
-        renderedDiagrams,
         sequenceDiagrams: allSequenceDiagrams,
         activityDiagrams: allActivityDiagrams,
         currentView,
