@@ -2,10 +2,10 @@ import * as vscode from 'vscode';
 import type { LspModelProvider } from '../providers/lspModelProvider';
 import { isVerboseLoggingEnabled, log, logError } from '../logger';
 import type {
+    SysMLDiagramResult,
     SysMLGraphDTO,
     GraphNodeDTO,
     GraphEdgeDTO,
-    IbdDataDTO,
 } from '../providers/sysmlModelTypes';
 
 export interface FetchModelParams {
@@ -19,8 +19,8 @@ export interface FetchModelParams {
 export interface UpdateMessage {
     command: 'update';
     graph?: SysMLGraphDTO;
-    generalViewGraph?: SysMLGraphDTO;
-    ibd?: IbdDataDTO;
+    diagramGeneral?: SysMLDiagramResult;
+    diagramInterconnection?: SysMLDiagramResult;
     sequenceDiagrams: unknown[];
     activityDiagrams: unknown[];
     currentView: string;
@@ -87,8 +87,8 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         pendingPackageName,
     } = params;
 
-    const scopes: ('graph' | 'ibd' | 'sequenceDiagrams' | 'activityDiagrams' | 'stats')[] =
-        ['graph', 'ibd', 'sequenceDiagrams', 'activityDiagrams', 'stats'];
+    const scopes: ('graph' | 'sequenceDiagrams' | 'activityDiagrams' | 'stats')[] =
+        ['graph', 'sequenceDiagrams', 'activityDiagrams', 'stats'];
     const isWorkspaceVisualization = fileUris.length > 1;
     const requestScopes = isWorkspaceVisualization
         ? [...scopes, 'workspaceVisualization' as const]
@@ -125,6 +125,14 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     const settledResults = await Promise.allSettled(
         requestUris.map(uri => lspModelProvider.getModel(uri, requestScopes)),
     );
+    const [generalDiagramResult, interconnectionDiagramResult] = await Promise.allSettled([
+        lspModelProvider.getDiagram(documentUri, 'general-view', {
+            workspaceVisualization: isWorkspaceVisualization,
+        }),
+        lspModelProvider.getDiagram(documentUri, 'interconnection-view', {
+            workspaceVisualization: isWorkspaceVisualization,
+        }),
+    ]);
 
     const results = settledResults
         .filter((result): result is PromiseFulfilledResult<Awaited<ReturnType<LspModelProvider["getModel"]>>> => result.status === 'fulfilled')
@@ -132,6 +140,12 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     const failures = settledResults.filter(
         (result): result is PromiseRejectedResult => result.status === 'rejected',
     );
+    if (generalDiagramResult.status === 'rejected') {
+        logError('fetchModelData: general-view diagram request failed', generalDiagramResult.reason);
+    }
+    if (interconnectionDiagramResult.status === 'rejected') {
+        logError('fetchModelData: interconnection-view diagram request failed', interconnectionDiagramResult.reason);
+    }
 
     if (failures.length > 0) {
         for (const failure of failures) {
@@ -169,14 +183,13 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     const uniqueMergedPackageNames = [...new Set(mergedPackageNames)];
 
     const primaryResult = results.find(r => r.graph?.nodes?.length || r.graph?.edges?.length) ?? results[0];
-    const primaryGeneralViewGraph = primaryResult?.generalViewGraph;
-    const ibd = primaryResult?.ibd;
-
+    const generalDiagram = generalDiagramResult.status === 'fulfilled' ? generalDiagramResult.value : undefined;
+    const interconnectionDiagram = interconnectionDiagramResult.status === 'fulfilled' ? interconnectionDiagramResult.value : undefined;
     const msg: UpdateMessage = {
         command: 'update',
         graph: mergedGraph,
-        generalViewGraph: primaryGeneralViewGraph,
-        ibd,
+        diagramGeneral: generalDiagram,
+        diagramInterconnection: interconnectionDiagram,
         sequenceDiagrams: allSequenceDiagrams,
         activityDiagrams: allActivityDiagrams,
         currentView,
@@ -191,8 +204,8 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         `mergedNodes=${mergedGraph.nodes?.length || 0}`,
         `mergedEdges=${mergedGraph.edges?.length || 0}`,
         `mergedPackages=${uniqueMergedPackageNames.join('|') || '(none)'}`,
-        `primaryGeneralNodes=${primaryGeneralViewGraph?.nodes?.length || 0}`,
-        `primaryGeneralEdges=${primaryGeneralViewGraph?.edges?.length || 0}`,
+        `generalSceneNodes=${generalDiagram?.scene?.generalView?.nodes?.length || 0}`,
+        `generalSceneEdges=${generalDiagram?.scene?.generalView?.edges?.length || 0}`,
     );
     if (isVerboseLoggingEnabled()) {
         try {
@@ -205,8 +218,8 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
                     mergedNodes: mergedGraph.nodes?.length || 0,
                     mergedEdges: mergedGraph.edges?.length || 0,
                     mergedPackages: uniqueMergedPackageNames,
-                    primaryGeneralNodes: primaryGeneralViewGraph?.nodes?.length || 0,
-                    primaryGeneralEdges: primaryGeneralViewGraph?.edges?.length || 0,
+                    generalSceneNodes: generalDiagram?.scene?.generalView?.nodes?.length || 0,
+                    generalSceneEdges: generalDiagram?.scene?.generalView?.edges?.length || 0,
                 })
             );
         } catch {

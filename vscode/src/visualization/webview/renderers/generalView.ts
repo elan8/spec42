@@ -42,6 +42,12 @@ export interface GeneralViewContext extends RenderContext {
     elkWorkerUrl: string;
 }
 
+function pointsToPath(points: Array<{ x: number; y: number }>): string {
+    if (!Array.isArray(points) || points.length === 0) return '';
+    const [first, ...rest] = points;
+    return ['M' + first.x + ',' + first.y, ...rest.map((p) => 'L' + p.x + ',' + p.y)].join(' ');
+}
+
 type Side = 'NORTH' | 'SOUTH' | 'EAST' | 'WEST';
 type NodeRect = { x: number; y: number; width: number; height: number };
 type ElkSection = { startPoint?: { x: number; y: number }; endPoint?: { x: number; y: number }; bendPoints?: Array<{ x: number; y: number }> };
@@ -90,15 +96,6 @@ function scorePathAgainstObstacles(
         }
     }
     return score;
-}
-
-function pointsToPath(points: Array<{ x: number; y: number }>): string {
-    if (points.length === 0) return '';
-    const parts = ['M' + points[0].x + ',' + points[0].y];
-    for (let i = 1; i < points.length; i++) {
-        parts.push('L' + points[i].x + ',' + points[i].y);
-    }
-    return parts.join(' ');
 }
 
 function buildPortPoint(
@@ -502,6 +499,159 @@ function renderGeneralNodes(
 
 export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): Promise<void> {
     const { width, height, svg, g, postMessage, renderPlaceholder, clearVisualHighlights } = ctx;
+
+    const backendScene = data?.diagramGeneral?.scene?.generalView;
+    if (backendScene?.nodes?.length) {
+        const defs = svg.select('defs').empty() ? svg.append('defs') : svg.select('defs');
+        defs.selectAll('#general-d3-arrow').remove();
+        defs.selectAll('#general-d3-arrow-open').remove();
+        defs.selectAll('#general-d3-specializes').remove();
+        defs.selectAll('#general-d3-diamond').remove();
+        defs.append('marker')
+            .attr('id', 'general-d3-arrow')
+            .attr('viewBox', '0 -5 10 10')
+            .attr('refX', 8)
+            .attr('refY', 0)
+            .attr('markerWidth', 5)
+            .attr('markerHeight', 5)
+            .attr('orient', 'auto')
+            .append('path')
+            .attr('d', 'M0,-4L10,0L0,4')
+            .style('fill', GENERAL_NEUTRAL_EDGE);
+        defs.append('marker')
+            .attr('id', 'general-d3-arrow-open')
+            .attr('viewBox', '0 -5 10 10')
+            .attr('refX', 9)
+            .attr('refY', 0)
+            .attr('markerWidth', 8)
+            .attr('markerHeight', 8)
+            .attr('orient', 'auto')
+            .append('path')
+            .attr('d', 'M0,-4L10,0L0,4')
+            .style('fill', 'none')
+            .style('stroke', GENERAL_NEUTRAL_EDGE)
+            .style('stroke-width', '1.3');
+        defs.append('marker')
+            .attr('id', 'general-d3-specializes')
+            .attr('viewBox', '0 -6 12 12')
+            .attr('refX', 11)
+            .attr('refY', 0)
+            .attr('markerWidth', 8)
+            .attr('markerHeight', 8)
+            .attr('orient', 'auto')
+            .append('path')
+            .attr('d', 'M0,0L10,-4L10,4Z')
+            .style('fill', 'var(--vscode-editor-background)')
+            .style('stroke', GENERAL_NEUTRAL_EDGE)
+            .style('stroke-width', '1.2');
+        defs.append('marker')
+            .attr('id', 'general-d3-diamond')
+            .attr('viewBox', '0 -6 12 12')
+            .attr('refX', 2)
+            .attr('refY', 0)
+            .attr('markerWidth', 7)
+            .attr('markerHeight', 7)
+            .attr('orient', 'auto')
+            .append('path')
+            .attr('d', 'M0,0L5,-4L10,0L5,4Z')
+            .style('fill', GENERAL_NEUTRAL_EDGE);
+
+        g.selectAll('*').remove();
+        const edgeGroup = g.append('g').attr('class', 'general-edges');
+        const nodeGroup = g.append('g').attr('class', 'general-nodes');
+
+        backendScene.edges.forEach((edge: any) => {
+            const relType = String(edge.type || edge.relType || '').toLowerCase();
+            let markerStart = 'none';
+            let markerEnd = 'url(#general-d3-arrow)';
+            let strokeDash = 'none';
+            let strokeWidth = '2px';
+            if (relType === 'specializes') {
+                markerEnd = 'url(#general-d3-specializes)';
+                strokeWidth = '1.7px';
+            } else if (relType === 'typing') {
+                markerEnd = 'url(#general-d3-arrow-open)';
+                strokeDash = '5,3';
+            } else if (relType === 'contains') {
+                markerStart = 'url(#general-d3-diamond)';
+                markerEnd = 'none';
+            } else if (relType === 'bind' || relType === 'binding') {
+                markerEnd = 'none';
+                strokeDash = '2,2';
+            } else if (relType === 'allocate' || relType === 'allocation') {
+                strokeDash = '8,4';
+            }
+            edgeGroup.append('path')
+                .attr('d', pointsToPath(edge.points || []))
+                .attr('class', 'general-connector')
+                .attr('data-source', edge.source)
+                .attr('data-target', edge.target)
+                .attr('data-type', relType)
+                .style('fill', 'none')
+                .style('stroke', GENERAL_NEUTRAL_EDGE)
+                .style('stroke-width', strokeWidth)
+                .style('stroke-dasharray', strokeDash)
+                .style('opacity', 0.85)
+                .style('marker-start', markerStart)
+                .style('marker-end', markerEnd)
+                .style('cursor', 'pointer');
+        });
+
+        backendScene.nodes.forEach((node: any) => {
+            const compartments = node.compartments || {
+                stereotype: (node.type || 'element').toLowerCase(),
+                name: node.name || 'Unnamed',
+                typedByName: null,
+                attributes: [],
+                parts: [],
+                ports: [],
+                other: [],
+            };
+            const nodeG = renderSysMLNode(nodeGroup, {
+                header: {
+                    stereotype: compartments.stereotype,
+                    name: compartments.name,
+                },
+                typedByName: compartments.typedByName || null,
+                attributes: compartments.attributes || [],
+                parts: compartments.parts || [],
+                ports: compartments.ports || [],
+                other: compartments.other || [],
+            }, {
+                x: node.x,
+                y: node.y,
+                width: node.width,
+                height: node.height,
+                config: GENERAL_VIEW_NODE_CONFIG,
+                isDefinition: node.isDefinition === true,
+                typeColor: getTypeColor(node.type),
+                formatStereotype: (t) => formatSysMLStereotype(t) || ('«' + t + '»'),
+                nodeClass: 'general-node backend-node',
+                dataElementName: node.name,
+            });
+            nodeG.select('.graph-node-background')
+                .style('fill', 'var(--vscode-editor-background)')
+                .style('stroke', GENERAL_NEUTRAL_BORDER);
+            nodeG.selectAll('.sysml-header-compartment')
+                .style('fill', 'var(--vscode-button-secondaryBackground)');
+            nodeG.on('click', function(event: any) {
+                event.stopPropagation();
+                clearVisualHighlights();
+                g.selectAll('.general-node').select('.graph-node-background').each(function(this: any) {
+                    const r = d3.select(this);
+                    r.style('stroke', r.attr('data-original-stroke')).style('stroke-width', r.attr('data-original-width'));
+                });
+                nodeG.select('.graph-node-background').style('stroke', DIAGRAM_STYLE.highlight).style('stroke-width', '4px');
+                const statusEl = document.getElementById('status-text');
+                if (statusEl) statusEl.textContent = (node.name || '') + ' [' + (node.type || 'element') + ']';
+                postJumpToElement(postMessage, { name: node.name, id: node.qualifiedName || node.id });
+            });
+        });
+
+        const statusEl = document.getElementById('status-text');
+        if (statusEl) statusEl.textContent = 'General View • Backend scene';
+        return;
+    }
 
     const result = ctx.buildGeneralViewGraph(data);
     const { elements, typeStats, packageGroups } = result;

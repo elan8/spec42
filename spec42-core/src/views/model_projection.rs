@@ -212,6 +212,30 @@ pub fn canonical_general_view_graph(
             &mut out_edge_keys,
         );
     }
+
+    // Pull in semantic neighbors so General View is not limited to the structural
+    // part tree. This keeps related requirements/behaviors attached to retained nodes.
+    let mut changed = true;
+    while changed {
+        changed = false;
+        for edge in &graph.edges {
+            let rel = edge.rel_type.to_lowercase();
+            if matches!(rel.as_str(), "contains" | "typing" | "specializes") {
+                continue;
+            }
+            let source_present = out_node_ids.contains(&edge.source);
+            let target_present = out_node_ids.contains(&edge.target);
+            if source_present || target_present {
+                if out_node_ids.insert(edge.source.clone()) {
+                    changed = true;
+                }
+                if out_node_ids.insert(edge.target.clone()) {
+                    changed = true;
+                }
+            }
+        }
+    }
+
     for edge in specializes_edges {
         if out_node_ids.contains(&edge.source) && out_node_ids.contains(&edge.target) {
             let key = (
@@ -221,6 +245,21 @@ pub fn canonical_general_view_graph(
             );
             if out_edge_keys.insert(key) {
                 out_edges.push(edge);
+            }
+        }
+    }
+
+    // Preserve all semantic relationships between retained nodes. Structural edges are
+    // rebuilt explicitly above; everything else should survive canonicalization.
+    for edge in &graph.edges {
+        let rel = edge.rel_type.to_lowercase();
+        if matches!(rel.as_str(), "contains" | "typing" | "specializes") {
+            continue;
+        }
+        if out_node_ids.contains(&edge.source) && out_node_ids.contains(&edge.target) {
+            let key = (edge.source.clone(), edge.target.clone(), rel);
+            if out_edge_keys.insert(key) {
+                out_edges.push(edge.clone());
             }
         }
     }
@@ -240,6 +279,86 @@ pub fn canonical_general_view_graph(
     SysmlGraphDto {
         nodes: out_nodes,
         edges: out_edges,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::views::dto::{GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto};
+
+    fn range() -> RangeDto {
+        RangeDto {
+            start: PositionDto {
+                line: 0,
+                character: 0,
+            },
+            end: PositionDto {
+                line: 0,
+                character: 1,
+            },
+        }
+    }
+
+    #[test]
+    fn canonical_general_view_graph_preserves_subject_edges_for_retained_nodes() {
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::Drone".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "Drone".to_string(),
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Req".to_string(),
+                    element_type: "requirement def".to_string(),
+                    name: "Req".to_string(),
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Root".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "Root".to_string(),
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+            ],
+            edges: vec![
+                GraphEdgeDto {
+                    source: "Pkg::Root".to_string(),
+                    target: "Pkg::Drone".to_string(),
+                    rel_type: "contains".to_string(),
+                    name: None,
+                },
+                GraphEdgeDto {
+                    source: "Pkg::Req".to_string(),
+                    target: "Pkg::Drone".to_string(),
+                    rel_type: "subject".to_string(),
+                    name: None,
+                },
+            ],
+        };
+
+        let canonical = canonical_general_view_graph(&graph, false);
+        assert!(
+            canonical.nodes.iter().any(|node| node.id == "Pkg::Req"),
+            "subject source node should be pulled into the canonical General View"
+        );
+        assert!(
+            canonical
+                .edges
+                .iter()
+                .any(|edge| edge.rel_type == "subject"
+                    && edge.source == "Pkg::Req"
+                    && edge.target == "Pkg::Drone"),
+            "subject edge should survive canonical General View projection"
+        );
     }
 }
 
@@ -320,6 +439,7 @@ pub fn strip_synthetic_nodes(graph: &SysmlGraphDto) -> SysmlGraphDto {
     }
 }
 
+#[allow(dead_code)]
 pub fn workspace_visualization_enabled(scope: &[String]) -> bool {
     scope.iter().any(|s| s == "workspaceVisualization")
 }

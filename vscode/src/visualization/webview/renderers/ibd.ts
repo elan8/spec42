@@ -86,6 +86,111 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
     const LOG_ROUTE_FRAME_SELECTION = false;
     const ENDPOINT_DRIFT_WARN_PX = 1.25;
 
+    if (Array.isArray(data?.parts) && data.parts.length > 0 && typeof data.parts[0]?.x === 'number') {
+        const parts = data.parts;
+        const ports = Array.isArray(data?.ports) ? data.ports : [];
+        const connectors = Array.isArray(data?.connectors) ? data.connectors : [];
+        const partGroup = g.append('g').attr('class', 'ibd-parts');
+        const connectorGroup = g.append('g').attr('class', 'ibd-connectors');
+        const labelGroup = g.append('g').attr('class', 'ibd-connector-labels');
+
+        connectors.forEach((connector: any) => {
+            const path = Array.isArray(connector.points) && connector.points.length > 0
+                ? connector.points.map((p: any, idx: number) => `${idx === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ')
+                : '';
+            connectorGroup.append('path')
+                .attr('d', path)
+                .attr('class', 'ibd-connector')
+                .attr('data-source', connector.source)
+                .attr('data-target', connector.target)
+                .style('fill', 'none')
+                .style('stroke', DIAGRAM_STYLE.edgePrimary)
+                .style('stroke-width', '2px');
+            const midpoint = Array.isArray(connector.points) && connector.points.length > 1
+                ? connector.points[Math.floor(connector.points.length / 2)]
+                : null;
+            if (midpoint) {
+                labelGroup.append('text')
+                    .attr('x', midpoint.x)
+                    .attr('y', midpoint.y - 4)
+                    .attr('text-anchor', 'middle')
+                    .text(connector.type || '')
+                    .style('font-size', '9px')
+                    .style('fill', 'var(--vscode-descriptionForeground)');
+            }
+        });
+
+        parts
+            .slice()
+            .sort((a: any, b: any) => (a.depth || 0) - (b.depth || 0))
+            .forEach((part: any) => {
+                const partG = partGroup.append('g')
+                    .attr('transform', `translate(${part.x},${part.y})`)
+                    .attr('class', 'ibd-part' + (part.isContainer ? ' ibd-container' : ''))
+                    .attr('data-element-name', part.name)
+                    .style('cursor', 'pointer');
+                partG.append('rect')
+                    .attr('width', part.width)
+                    .attr('height', part.height)
+                    .attr('rx', part.isContainer ? 8 : 6)
+                    .attr('class', 'graph-node-background')
+                    .attr('data-original-stroke', DIAGRAM_STYLE.nodeBorder)
+                    .attr('data-original-width', part.isContainer ? '2px' : '2.5px')
+                    .style('fill', 'var(--vscode-editor-background)')
+                    .style('stroke', DIAGRAM_STYLE.nodeBorder)
+                    .style('stroke-width', part.isContainer ? '2px' : '2.5px')
+                    .style('stroke-dasharray', part.isContainer ? '4,4' : 'none');
+                partG.append('rect')
+                    .attr('width', part.width)
+                    .attr('height', 34)
+                    .style('fill', 'var(--vscode-button-secondaryBackground)');
+                partG.append('text')
+                    .attr('x', part.width / 2)
+                    .attr('y', 16)
+                    .attr('text-anchor', 'middle')
+                    .text('«' + (part.type || 'part') + '»')
+                    .style('font-size', '9px')
+                    .style('fill', DIAGRAM_STYLE.textPrimary);
+                partG.append('text')
+                    .attr('x', part.width / 2)
+                    .attr('y', 29)
+                    .attr('text-anchor', 'middle')
+                    .text(part.name)
+                    .style('font-size', '11px')
+                    .style('font-weight', 'bold')
+                    .style('fill', DIAGRAM_STYLE.textPrimary);
+                partG.on('click', function(event: any) {
+                    event.stopPropagation();
+                    clearVisualHighlights();
+                    const clickedPart = d3.select(this);
+                    clickedPart.classed('highlighted-element', true);
+                    clickedPart.select('rect')
+                        .style('stroke', DIAGRAM_STYLE.highlight)
+                        .style('stroke-width', '3px');
+                    postJumpToElement(postMessage, { name: part.name, id: part.qualifiedName || part.id }, { skipCentering: true });
+                }).on('dblclick', function(event: any) {
+                    event.stopPropagation();
+                    onStartInlineEdit(d3.select(this), part.name, part.x, part.y, part.width);
+                });
+            });
+
+        ports.forEach((port: any) => {
+            g.append('rect')
+                .attr('class', 'port-icon')
+                .attr('x', port.x - 5)
+                .attr('y', port.y - 5)
+                .attr('width', 10)
+                .attr('height', 10)
+                .style('fill', 'none')
+                .style('stroke', 'var(--vscode-button-background)')
+                .style('stroke-width', '1.8px');
+        });
+
+        const statusEl = document.getElementById('status-text');
+        if (statusEl) statusEl.textContent = 'Interconnection View • Backend scene';
+        return;
+    }
+
     if (!data || !data.parts || data.parts.length === 0) {
         renderPlaceholder(width, height, 'Interconnection View',
             'No parts or internal structure found to display.\\n\\nThis view shows internal block diagrams with parts, ports, and connectors.',

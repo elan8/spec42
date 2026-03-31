@@ -180,14 +180,32 @@ fn endpoint_matches_root(endpoint: &str, root_prefix: &str) -> bool {
     endpoint == root_prefix || endpoint.starts_with(&format!("{root_prefix}."))
 }
 
-fn endpoint_matches_any_prefix(endpoint: &str, prefixes: &[String]) -> bool {
-    prefixes
-        .iter()
-        .any(|prefix| endpoint_matches_root(endpoint, prefix))
-}
-
 fn endpoint_matches_part(endpoint: &str, part_qn_dot: &str) -> bool {
     endpoint == part_qn_dot || endpoint.starts_with(&format!("{part_qn_dot}."))
+}
+
+fn materialized_subtree_metrics(
+    root_prefix: &str,
+    parts: &[IbdPartDto],
+    ports: &[IbdPortDto],
+    connectors: &[IbdConnectorDto],
+) -> (usize, usize, usize) {
+    let part_count = parts
+        .iter()
+        .filter(|part| endpoint_matches_root(&part.qualified_name, root_prefix))
+        .count();
+    let port_count = ports
+        .iter()
+        .filter(|port| endpoint_matches_root(&port.parent_id, root_prefix))
+        .count();
+    let connector_count = connectors
+        .iter()
+        .filter(|connector| {
+            endpoint_matches_root(&connector.source_id, root_prefix)
+                && endpoint_matches_root(&connector.target_id, root_prefix)
+        })
+        .count();
+    (part_count, port_count, connector_count)
 }
 
 fn endpoint_under_definition_prefix(endpoint: &str, def_prefix: &str) -> bool {
@@ -530,34 +548,19 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         .iter()
         .filter(|p| is_part_instance_kind(&p.element_type))
         .filter_map(|p| {
-            graph.get_node(&NodeId::new(uri, &p.id)).and_then(|node| {
-                if graph
-                    .children_of(node)
-                    .iter()
-                    .any(|c| is_part_like(&c.element_kind))
-                {
-                    let root_prefix = p.qualified_name.as_str();
-                    let port_count = ports
-                        .iter()
-                        .filter(|port| endpoint_matches_root(&port.parent_id, root_prefix))
-                        .count();
-                    let connector_count = connectors
-                        .iter()
-                        .filter(|connector| {
-                            endpoint_matches_root(&connector.source_id, root_prefix)
-                                && endpoint_matches_root(&connector.target_id, root_prefix)
-                        })
-                        .count();
-                    Some((
-                        *p,
-                        part_tree_size(graph, node, uri),
-                        port_count,
-                        connector_count,
-                    ))
-                } else {
-                    None
-                }
-            })
+            let root_prefix = p.qualified_name.as_str();
+            let (part_count, port_count, connector_count) =
+                materialized_subtree_metrics(root_prefix, &parts, &ports, &connectors);
+            let has_materialized_structure = part_count > 1 || port_count > 0 || connector_count > 0;
+            if has_materialized_structure {
+                let tree_size = graph
+                    .get_node(&NodeId::new(uri, &p.id))
+                    .map(|node| part_tree_size(graph, node, uri))
+                    .unwrap_or(part_count.saturating_sub(1));
+                Some((*p, tree_size.max(part_count.saturating_sub(1)), port_count, connector_count))
+            } else {
+                None
+            }
         })
         .collect();
 
@@ -566,34 +569,19 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         roots_with_metrics = top_level_parts
             .iter()
             .filter_map(|p| {
-                graph.get_node(&NodeId::new(uri, &p.id)).and_then(|node| {
-                    if graph
-                        .children_of(node)
-                        .iter()
-                        .any(|c| is_part_like(&c.element_kind))
-                    {
-                        let root_prefix = p.qualified_name.as_str();
-                        let port_count = ports
-                            .iter()
-                            .filter(|port| endpoint_matches_root(&port.parent_id, root_prefix))
-                            .count();
-                        let connector_count = connectors
-                            .iter()
-                            .filter(|connector| {
-                                endpoint_matches_root(&connector.source_id, root_prefix)
-                                    && endpoint_matches_root(&connector.target_id, root_prefix)
-                            })
-                            .count();
-                        Some((
-                            *p,
-                            part_tree_size(graph, node, uri),
-                            port_count,
-                            connector_count,
-                        ))
-                    } else {
-                        None
-                    }
-                })
+                let root_prefix = p.qualified_name.as_str();
+                let (part_count, port_count, connector_count) =
+                    materialized_subtree_metrics(root_prefix, &parts, &ports, &connectors);
+                let has_materialized_structure = part_count > 1 || port_count > 0 || connector_count > 0;
+                if has_materialized_structure {
+                    let tree_size = graph
+                        .get_node(&NodeId::new(uri, &p.id))
+                        .map(|node| part_tree_size(graph, node, uri))
+                        .unwrap_or(part_count.saturating_sub(1));
+                    Some((*p, tree_size.max(part_count.saturating_sub(1)), port_count, connector_count))
+                } else {
+                    None
+                }
             })
             .collect();
     }
@@ -609,11 +597,6 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         .map(|(p, _, _, _)| p.name.clone())
         .collect();
     let default_root = root_candidates.first().cloned();
-    let package_instance_prefixes: Vec<String> = top_level_parts
-        .iter()
-        .filter(|p| is_part_instance_kind(&p.element_type))
-        .map(|p| p.qualified_name.clone())
-        .collect();
     let mut root_views: std::collections::HashMap<String, IbdRootViewDto> =
         std::collections::HashMap::new();
     for (p, _, _, _) in &roots_with_metrics {
@@ -621,28 +604,14 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         let focused_connectors: Vec<IbdConnectorDto> = connectors
             .iter()
             .filter(|connector| {
-                if !package_instance_prefixes.is_empty() {
-                    endpoint_matches_any_prefix(&connector.source_id, &package_instance_prefixes)
-                        && endpoint_matches_any_prefix(
-                            &connector.target_id,
-                            &package_instance_prefixes,
-                        )
-                } else {
-                    endpoint_matches_root(&connector.source_id, root_prefix)
-                        || endpoint_matches_root(&connector.target_id, root_prefix)
-                }
+                endpoint_matches_root(&connector.source_id, root_prefix)
+                    || endpoint_matches_root(&connector.target_id, root_prefix)
             })
             .cloned()
             .collect();
         let mut focused_part_ids: std::collections::HashSet<String> = parts
             .iter()
-            .filter(|part| {
-                if !package_instance_prefixes.is_empty() {
-                    endpoint_matches_any_prefix(&part.qualified_name, &package_instance_prefixes)
-                } else {
-                    endpoint_matches_root(&part.qualified_name, root_prefix)
-                }
-            })
+            .filter(|part| endpoint_matches_root(&part.qualified_name, root_prefix))
             .map(|part| part.qualified_name.clone())
             .collect();
         for connector in &focused_connectors {

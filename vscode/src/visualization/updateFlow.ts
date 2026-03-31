@@ -72,8 +72,8 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                     'updateFlow:post:update',
                     `graphNodes=${msg.graph?.nodes?.length || 0}`,
                     `graphEdges=${msg.graph?.edges?.length || 0}`,
-                    `generalNodes=${msg.generalViewGraph?.nodes?.length || 0}`,
-                    `generalEdges=${msg.generalViewGraph?.edges?.length || 0}`,
+                    `generalNodes=${msg.diagramGeneral?.scene?.generalView?.nodes?.length || 0}`,
+                    `generalEdges=${msg.diagramGeneral?.scene?.generalView?.edges?.length || 0}`,
                     `currentView=${msg.currentView}`,
                     `pendingPackage=${msg.pendingPackageName ?? '(none)'}`,
                 );
@@ -85,8 +85,8 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                             JSON.stringify({
                                 graphNodes: msg.graph?.nodes?.length || 0,
                                 graphEdges: msg.graph?.edges?.length || 0,
-                                generalNodes: msg.generalViewGraph?.nodes?.length || 0,
-                                generalEdges: msg.generalViewGraph?.edges?.length || 0,
+                                generalNodes: msg.diagramGeneral?.scene?.generalView?.nodes?.length || 0,
+                                generalEdges: msg.diagramGeneral?.scene?.generalView?.edges?.length || 0,
                                 currentView: msg.currentView,
                                 pendingPackage: msg.pendingPackageName ?? null,
                             })

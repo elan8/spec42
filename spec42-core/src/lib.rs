@@ -22,9 +22,16 @@ pub use lsp_runtime::run as run_lsp;
 // Core data model exports.
 pub use syntax::ast_util::{identification_name, span_to_range, span_to_source_range, SourceRange};
 pub use views::dto::{
-    GraphEdgeDto, GraphNodeDto, SysmlClearCacheResultDto, SysmlGraphDto, SysmlModelResultDto,
+    DiagramBoundsDto, DiagramNodeCompartmentsDto, DiagramPointDto, DiagramSceneDto,
+    GeneralDiagramEdgeDto, GeneralDiagramNodeDto, GeneralDiagramSceneDto, GraphEdgeDto,
+    GraphNodeDto, IbdDiagramSceneDto, IbdSceneConnectorDto, IbdScenePartDto, IbdScenePortDto,
+    IbdSceneRootDto, SysmlClearCacheResultDto, SysmlDiagramOptionsDto, SysmlDiagramParamsDto,
+    SysmlDiagramResultDto, SysmlDiagramStatsDto, SysmlGraphDto, SysmlModelResultDto,
     SysmlModelStatsDto, SysmlServerCachesDto, SysmlServerMemoryDto, SysmlServerStatsDto,
 };
 pub use views::ibd::{build_ibd_for_uri, is_port_like, IbdDataDto};
-pub use views::{build_sysml_model_response, empty_model_response, parse_sysml_model_params};
+pub use views::{
+    build_sysml_diagram_response, build_sysml_model_response, empty_diagram_response,
+    empty_model_response, parse_sysml_diagram_params, parse_sysml_model_params,
+};
 pub use {analysis::*, common::util::parse_library_paths_from_value};

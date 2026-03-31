@@ -58,6 +58,12 @@ pub struct SysmlGraphDto {
     pub edges: Vec<GraphEdgeDto>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TextDocumentIdentifierDto {
+    pub uri: String,
+}
+
 #[allow(dead_code)]
 #[derive(Debug, Clone, Serialize)]
 pub struct SysmlElementDto {
@@ -85,6 +91,190 @@ pub struct SysmlModelStatsDto {
     pub model_build_time_ms: u32,
     #[serde(rename = "parseCached")]
     pub parse_cached: bool,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlDiagramParamsDto {
+    pub text_document: TextDocumentIdentifierDto,
+    pub kind: String,
+    #[serde(default)]
+    pub options: Option<SysmlDiagramOptionsDto>,
+}
+
+#[derive(Debug, Clone, Default, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlDiagramOptionsDto {
+    #[serde(default)]
+    pub workspace_visualization: Option<bool>,
+    #[serde(default)]
+    pub root: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DiagramPointDto {
+    pub x: f32,
+    pub y: f32,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DiagramBoundsDto {
+    pub x: f32,
+    pub y: f32,
+    pub width: f32,
+    pub height: f32,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DiagramNodeCompartmentsDto {
+    pub stereotype: String,
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub typed_by_name: Option<String>,
+    pub attributes: Vec<String>,
+    pub parts: Vec<String>,
+    pub ports: Vec<String>,
+    pub other: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GeneralDiagramNodeDto {
+    pub id: String,
+    pub name: String,
+    pub qualified_name: String,
+    #[serde(rename = "type")]
+    pub element_type: String,
+    pub x: f32,
+    pub y: f32,
+    pub width: f32,
+    pub height: f32,
+    pub category: String,
+    pub is_definition: bool,
+    pub compartments: DiagramNodeCompartmentsDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GeneralDiagramEdgeDto {
+    pub id: String,
+    pub source: String,
+    pub target: String,
+    #[serde(rename = "type")]
+    pub rel_type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+    pub points: Vec<DiagramPointDto>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GeneralDiagramSceneDto {
+    pub nodes: Vec<GeneralDiagramNodeDto>,
+    pub edges: Vec<GeneralDiagramEdgeDto>,
+    pub bounds: DiagramBoundsDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IbdScenePartDto {
+    pub id: String,
+    pub name: String,
+    pub qualified_name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub container_id: Option<String>,
+    #[serde(rename = "type")]
+    pub element_type: String,
+    pub x: f32,
+    pub y: f32,
+    pub width: f32,
+    pub height: f32,
+    pub is_container: bool,
+    pub depth: u32,
+    pub attributes: std::collections::HashMap<String, serde_json::Value>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IbdScenePortDto {
+    pub id: String,
+    pub name: String,
+    pub parent_id: String,
+    pub x: f32,
+    pub y: f32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub direction: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub port_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub port_side: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IbdSceneConnectorDto {
+    pub id: String,
+    pub source: String,
+    pub target: String,
+    pub source_id: String,
+    pub target_id: String,
+    #[serde(rename = "type")]
+    pub rel_type: String,
+    pub points: Vec<DiagramPointDto>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IbdSceneRootDto {
+    pub name: String,
+    pub parts: Vec<IbdScenePartDto>,
+    pub ports: Vec<IbdScenePortDto>,
+    pub connectors: Vec<IbdSceneConnectorDto>,
+    pub bounds: DiagramBoundsDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IbdDiagramSceneDto {
+    pub root_candidates: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub default_root: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selected_root: Option<String>,
+    pub roots: std::collections::HashMap<String, IbdSceneRootDto>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DiagramSceneDto {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub general_view: Option<GeneralDiagramSceneDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub interconnection_view: Option<IbdDiagramSceneDto>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlDiagramStatsDto {
+    pub node_count: u32,
+    pub edge_count: u32,
+    pub build_time_ms: u32,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlDiagramResultDto {
+    pub version: u32,
+    pub kind: String,
+    pub source_uri: String,
+    pub scene: DiagramSceneDto,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub warnings: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stats: Option<SysmlDiagramStatsDto>,
 }
 
 #[derive(Debug, Serialize)]

@@ -280,7 +280,8 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 // Quick hash check - skip render if data unchanged
                 const newHash = quickHash({
                     graph: message.graph,
-                    generalViewGraph: message.generalViewGraph
+                    diagramGeneral: message.diagramGeneral,
+                    diagramInterconnection: message.diagramInterconnection
                 });
 
                 if (newHash === lastDataHash && currentData) {
@@ -304,8 +305,8 @@ import { buildGeneralViewGraph } from './graphBuilders';
                     pendingPackageName: message.pendingPackageName || null,
                     graphNodes: message.graph?.nodes?.length || 0,
                     graphEdges: message.graph?.edges?.length || 0,
-                    generalViewGraphNodes: message.generalViewGraph?.nodes?.length || 0,
-                    generalViewGraphEdges: message.generalViewGraph?.edges?.length || 0,
+                    generalSceneNodes: message.diagramGeneral?.scene?.generalView?.nodes?.length || 0,
+                    generalSceneEdges: message.diagramGeneral?.scene?.generalView?.edges?.length || 0,
                 });
 
                 // If the extension requested a specific package, apply it

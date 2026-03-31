@@ -3,6 +3,8 @@ import type { LanguageClient } from "vscode-languageclient/node";
 import { log, logError } from "../logger";
 import type {
   GraphNodeDTO,
+  SysMLDiagramParams,
+  SysMLDiagramResult,
   SysMLGraphDTO,
   PositionDTO,
   SysMLElementDTO,
@@ -161,6 +163,25 @@ export class LspModelProvider {
       logError("getModel failed", e);
       throw e;
     }
+  }
+
+  async getDiagram(
+    uri: string,
+    kind: SysMLDiagramParams["kind"],
+    options?: SysMLDiagramParams["options"],
+    token?: vscode.CancellationToken
+  ): Promise<SysMLDiagramResult> {
+    const trimmed = (uri || "").trim();
+    if (!trimmed) {
+      throw new Error("getDiagram requires a non-empty URI");
+    }
+    await this.whenReady;
+    const params: SysMLDiagramParams = {
+      textDocument: { uri: trimmed },
+      kind,
+      options,
+    };
+    return await this.client.sendRequest<SysMLDiagramResult>("sysml/diagram", params, token);
   }
 
   async getServerStats(): Promise<SysMLServerStats | undefined> {

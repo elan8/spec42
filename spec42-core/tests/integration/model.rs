@@ -631,6 +631,9 @@ fn lsp_sysml_model_includes_general_view_source_data_for_full_drone_fixture() {
     let graph = result["graph"].clone();
     let general_view_graph = result["generalViewGraph"].clone();
     let edges = graph["edges"].as_array().expect("graph edges array");
+    let general_edges = general_view_graph["edges"]
+        .as_array()
+        .expect("generalViewGraph edges array");
     let gv_nodes = general_view_graph["nodes"]
         .as_array()
         .expect("generalViewGraph nodes array");
@@ -670,6 +673,18 @@ fn lsp_sysml_model_includes_general_view_source_data_for_full_drone_fixture() {
         }),
         "expected graph to include subject edge EnduranceReq -> SurveillanceQuadrotorDrone, edges: {edges:#?}"
     );
+    assert!(
+        general_edges.iter().any(|edge| {
+            edge["type"].as_str() == Some("subject")
+                && edge["source"]
+                    .as_str()
+                    .is_some_and(|source| source.ends_with("EnduranceReq"))
+                && edge["target"]
+                    .as_str()
+                    .is_some_and(|target| target.ends_with("SurveillanceQuadrotorDrone"))
+        }),
+        "expected generalViewGraph to include subject edge EnduranceReq -> SurveillanceQuadrotorDrone, edges: {general_edges:#?}"
+    );
     let gnss_nodes: Vec<&serde_json::Value> = gv_nodes
         .iter()
         .filter(|node| node["name"].as_str() == Some("gnss"))
@@ -682,6 +697,77 @@ fn lsp_sysml_model_includes_general_view_source_data_for_full_drone_fixture() {
             .iter()
             .map(|n| n["id"].as_str().unwrap_or("<missing-id>"))
             .collect::<Vec<_>>()
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
+fn lsp_sysml_diagram_general_view_returns_scene_with_subject_edges() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///surveillance_drone_diagram_scene_test.sysml";
+    let content = fixture_text(FULL_DRONE_FIXTURE);
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+
+    let did_open = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+        }
+    });
+    send_message(&mut stdin, &did_open.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(180));
+
+    let diagram_id = next_id();
+    let diagram_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": diagram_id,
+        "method": "sysml/diagram",
+        "params": {
+            "textDocument": { "uri": uri },
+            "kind": "general-view"
+        }
+    });
+    send_message(&mut stdin, &diagram_req.to_string());
+    let diagram_resp = read_response(&mut stdout, diagram_id).expect("sysml/diagram response");
+    let diagram_json: serde_json::Value =
+        serde_json::from_str(&diagram_resp).expect("parse sysml/diagram response");
+    let edges = diagram_json["result"]["scene"]["generalView"]["edges"]
+        .as_array()
+        .expect("generalView scene edges");
+    assert!(
+        edges.iter().any(|edge| {
+            edge["type"].as_str() == Some("subject")
+                && edge["source"]
+                    .as_str()
+                    .is_some_and(|source| source.ends_with("EnduranceReq"))
+                && edge["target"]
+                    .as_str()
+                    .is_some_and(|target| target.ends_with("SurveillanceQuadrotorDrone"))
+        }),
+        "expected backend general-view scene to retain subject edges: {edges:#?}"
     );
 
     let _ = child.kill();
@@ -748,6 +834,103 @@ fn lsp_sysml_model_connected_blocks_fixture_exposes_interconnection_view_source_
     let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
     let _model_json: serde_json::Value =
         serde_json::from_str(&model_resp).expect("parse sysml/model response");
+    let _ = child.kill();
+}
+
+#[test]
+fn lsp_sysml_diagram_interconnection_view_materializes_instance_typed_roots() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///interconnection_instance_root_test.sysml";
+    let content = r#"
+        package Demo {
+            port def VideoPort;
+
+            part def Camera {
+                port videoOut : VideoPort;
+            }
+
+            part def Drone {
+                part camera : Camera;
+            }
+
+            part droneInstance : Drone;
+        }
+    "#;
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+
+    let did_open = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+        }
+    });
+    send_message(&mut stdin, &did_open.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(120));
+
+    let diagram_id = next_id();
+    let diagram_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": diagram_id,
+        "method": "sysml/diagram",
+        "params": {
+            "textDocument": { "uri": uri },
+            "kind": "interconnection-view"
+        }
+    });
+    send_message(&mut stdin, &diagram_req.to_string());
+    let diagram_resp = read_response(&mut stdout, diagram_id).expect("sysml/diagram response");
+    let diagram_json: serde_json::Value =
+        serde_json::from_str(&diagram_resp).expect("parse sysml/diagram response");
+
+    let interconnection = &diagram_json["result"]["scene"]["interconnectionView"];
+    let selected_root = interconnection["selectedRoot"]
+        .as_str()
+        .expect("selected interconnection root");
+    assert_eq!(
+        selected_root, "droneInstance",
+        "instance-typed interconnection diagrams must select the materialized instance root"
+    );
+
+    let root_parts = interconnection["roots"]["droneInstance"]["parts"]
+        .as_array()
+        .expect("root scene parts");
+    assert!(
+        root_parts.len() >= 2,
+        "expected instance root scene to include the root and materialized child parts, got {root_parts:#?}"
+    );
+
+    let root_candidates = interconnection["rootCandidates"]
+        .as_array()
+        .expect("root candidates");
+    assert!(
+        root_candidates
+            .iter()
+            .any(|candidate| candidate.as_str() == Some("droneInstance")),
+        "expected interconnection scene root candidates to include droneInstance, got {root_candidates:#?}"
+    );
+
     let _ = child.kill();
 }
 

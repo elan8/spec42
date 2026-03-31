@@ -21,7 +21,9 @@ use tower_lsp::{Client, LanguageServer, LspService, Server};
 use crate::host::config::Spec42Config;
 use crate::views::dto;
 use crate::workspace::ServerState;
-use custom::{sysml_clear_cache_result, sysml_model_result, sysml_server_stats_result};
+use custom::{
+    sysml_clear_cache_result, sysml_diagram_result, sysml_model_result, sysml_server_stats_result,
+};
 
 struct Backend {
     client: Client,
@@ -309,6 +311,11 @@ impl Backend {
         sysml_model_result(&self.client, &state, &self.config, params).await
     }
 
+    async fn sysml_diagram(&self, params: serde_json::Value) -> Result<dto::SysmlDiagramResultDto> {
+        let state = self.state.read().await;
+        sysml_diagram_result(&self.client, &state, &self.config, params).await
+    }
+
     async fn sysml_server_stats(&self) -> Result<dto::SysmlServerStatsDto> {
         let state = self.state.read().await;
         Ok(sysml_server_stats_result(&state, self.start_time))
@@ -412,6 +419,7 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
         server_name: server_name.clone(),
     })
     .custom_method("sysml/model", Backend::sysml_model)
+    .custom_method("sysml/diagram", Backend::sysml_diagram)
     .custom_method("sysml/serverStats", Backend::sysml_server_stats)
     .custom_method("sysml/clearCache", Backend::sysml_clear_cache)
     .custom_method("sysml/librarySearch", Backend::sysml_library_search)
