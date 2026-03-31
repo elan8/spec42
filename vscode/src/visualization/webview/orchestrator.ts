@@ -1683,10 +1683,10 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 updateDimensionsDisplay();
                 finishRender();
             }, 100);
-        } else if (view === 'sequence-view') {
+            } else if (view === 'sequence-view') {
                 renderSequenceViewModule(buildRenderContext(width, height), dataToRender);
             } else if (view === 'action-flow-view') {
-                renderActivityViewModule(buildRenderContext(width, height), dataToRender);
+                await renderActivityViewModule(buildRenderContext(width, height), dataToRender);
             } else if (view === 'state-transition-view') {
                 await renderStateViewModule(buildRenderContext(width, height), dataToRender);
                 setTimeout(() => {

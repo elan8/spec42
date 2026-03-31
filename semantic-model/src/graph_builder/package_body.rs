@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use sysml_parser::ast::{
-    ConnectionDefBody, InterfaceDefBody, PackageBody, PackageBodyElement, PartDefBody,
-    PartUsageBody, PortDefBody, StateDefBody, UseCaseDefBody,
+    ActionDefBody, ActionDefBodyElement, ConnectionDefBody, InOut, InterfaceDefBody, PackageBody,
+    PackageBodyElement, PartDefBody, PartUsageBody, PortDefBody, StateDefBody, UseCaseDefBody,
 };
 use sysml_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
@@ -311,6 +311,7 @@ pub(super) fn build_from_package_body_element(
             let name = identification_name(&ad_node.identification);
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "action def");
             let range = span_to_range(&ad_node.span);
+            let action_id = NodeId::new(uri, &qualified);
             add_node_and_recurse(
                 g,
                 uri,
@@ -321,6 +322,93 @@ pub(super) fn build_from_package_body_element(
                 HashMap::new(),
                 parent_id,
             );
+            if let ActionDefBody::Brace { elements } = &ad_node.body {
+                for element in elements {
+                    match &element.value {
+                        ActionDefBodyElement::InOutDecl(in_out) => {
+                            let parameter = &in_out.value;
+                            let child_qualified = qualified_name_for_node(
+                                g,
+                                uri,
+                                Some(&qualified),
+                                &parameter.name,
+                                "in out parameter",
+                            );
+                            let mut attrs = HashMap::new();
+                            attrs.insert(
+                                "direction".to_string(),
+                                serde_json::json!(match parameter.direction {
+                                    InOut::In => "in",
+                                    InOut::Out => "out",
+                                }),
+                            );
+                            attrs.insert(
+                                "parameterType".to_string(),
+                                serde_json::json!(&parameter.type_name),
+                            );
+                            add_node_and_recurse(
+                                g,
+                                uri,
+                                &child_qualified,
+                                "in out parameter",
+                                parameter.name.clone(),
+                                span_to_range(&in_out.span),
+                                attrs,
+                                Some(&action_id),
+                            );
+                            add_typing_edge_if_exists(
+                                g,
+                                uri,
+                                &child_qualified,
+                                &parameter.type_name,
+                                Some(&qualified),
+                            );
+                        }
+                        ActionDefBodyElement::Perform(perform) => {
+                            let step_name = if perform.value.action_name.trim().is_empty() {
+                                perform
+                                    .value
+                                    .type_name
+                                    .clone()
+                                    .unwrap_or_else(|| "perform".to_string())
+                            } else {
+                                perform.value.action_name.clone()
+                            };
+                            let child_qualified = qualified_name_for_node(
+                                g,
+                                uri,
+                                Some(&qualified),
+                                &step_name,
+                                "perform",
+                            );
+                            let mut attrs = HashMap::new();
+                            if let Some(ref action_type) = perform.value.type_name {
+                                attrs.insert("actionType".to_string(), serde_json::json!(action_type));
+                            }
+                            add_node_and_recurse(
+                                g,
+                                uri,
+                                &child_qualified,
+                                "perform",
+                                step_name,
+                                span_to_range(&perform.span),
+                                attrs,
+                                Some(&action_id),
+                            );
+                            if let Some(ref action_type) = perform.value.type_name {
+                                add_typing_edge_if_exists(
+                                    g,
+                                    uri,
+                                    &child_qualified,
+                                    action_type,
+                                    Some(&qualified),
+                                );
+                            }
+                        }
+                        ActionDefBodyElement::Doc(_) | ActionDefBodyElement::Error(_) => {}
+                    }
+                }
+            }
         }
         PBE::ActionUsage(au_node) => {
             let name = &au_node.name;

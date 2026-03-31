@@ -873,6 +873,40 @@ mod tests {
     }
 
     #[test]
+    fn action_def_body_builds_parameter_and_perform_nodes() {
+        let input = r#"
+            package P {
+                action def ExecuteMission {
+                    in route : Route;
+                    perform action captureVideo : CaptureVideo;
+                    out report : MissionReport;
+                }
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let g = build_graph_from_doc(&root, &uri);
+        let nodes = g.nodes_for_uri(&uri);
+
+        assert!(
+            nodes.iter().any(|n| n.element_kind == "action def" && n.name == "ExecuteMission"),
+            "action def node missing"
+        );
+        assert!(
+            nodes.iter().any(|n| n.element_kind == "in out parameter" && n.name == "route"),
+            "input parameter node missing"
+        );
+        assert!(
+            nodes.iter().any(|n| n.element_kind == "perform" && n.name == "captureVideo"),
+            "perform step node missing"
+        );
+        assert!(
+            nodes.iter().any(|n| n.element_kind == "in out parameter" && n.name == "report"),
+            "output parameter node missing"
+        );
+    }
+
+    #[test]
     fn requirement_body_import_and_require_constraint_nodes() {
         let input = r#"
             package P {

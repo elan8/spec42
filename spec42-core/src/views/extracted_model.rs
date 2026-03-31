@@ -2,7 +2,7 @@
 
 use crate::syntax::ast_util::identification_name;
 use serde::Serialize;
-use sysml_parser::ast::{ActionDefBody, PackageBody, PackageBodyElement, RootElement};
+use sysml_parser::ast::{ActionDefBody, ActionDefBodyElement, PackageBody, PackageBodyElement, RootElement};
 use sysml_parser::{RootNamespace, Span};
 
 /// Position DTO for JSON (matches vscode sysmlModelTypes)
@@ -199,14 +199,44 @@ fn extract_activity_from_action(
     let range = span_to_range_dto(&node.span);
     let mut actions = Vec::new();
     if let ActionDefBody::Brace { elements } = &node.body {
-        for (i, in_out) in elements.iter().enumerate() {
-            let param_name = format!("param_{}", i);
-            actions.push(ActivityActionDto {
-                name: param_name.clone(),
-                action_type: "action".to_string(),
-                kind: None,
-                range: Some(span_to_range_dto(&in_out.span)),
-            });
+        for (i, element) in elements.iter().enumerate() {
+            match &element.value {
+                ActionDefBodyElement::InOutDecl(in_out) => {
+                    let param_name = if in_out.value.name.trim().is_empty() {
+                        format!("param_{}", i)
+                    } else {
+                        in_out.value.name.clone()
+                    };
+                    let kind = Some(match in_out.value.direction {
+                        sysml_parser::ast::InOut::In => "input".to_string(),
+                        sysml_parser::ast::InOut::Out => "output".to_string(),
+                    });
+                    actions.push(ActivityActionDto {
+                        name: param_name,
+                        action_type: "action".to_string(),
+                        kind,
+                        range: Some(span_to_range_dto(&in_out.span)),
+                    });
+                }
+                ActionDefBodyElement::Perform(perform) => {
+                    let perform_name = if perform.value.action_name.trim().is_empty() {
+                        perform
+                            .value
+                            .type_name
+                            .clone()
+                            .unwrap_or_else(|| format!("perform_{}", i))
+                    } else {
+                        perform.value.action_name.clone()
+                    };
+                    actions.push(ActivityActionDto {
+                        name: perform_name,
+                        action_type: "action".to_string(),
+                        kind: Some("perform".to_string()),
+                        range: Some(span_to_range_dto(&perform.span)),
+                    });
+                }
+                ActionDefBodyElement::Error(_) | ActionDefBodyElement::Doc(_) => {}
+            }
         }
     }
     let mut flows = Vec::new();
@@ -298,5 +328,58 @@ fn extract_sequence_from_action(
         participants,
         messages: vec![],
         range,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::extract_activity_diagrams;
+    use sysml_parser::parse;
+
+    #[test]
+    fn extract_activity_diagrams_uses_real_in_out_names() {
+        let input = r#"
+            package P {
+                action def UpdateDisplay {
+                    in currentTime : TimeValue;
+                    out displayText : String;
+                }
+            }
+        "#;
+
+        let root = parse(input).expect("parse");
+        let diagrams = extract_activity_diagrams(&root);
+        let diagram = diagrams.iter().find(|d| d.name == "UpdateDisplay").expect("diagram");
+        let action_names: Vec<_> = diagram.actions.iter().map(|a| a.name.as_str()).collect();
+
+        assert_eq!(action_names, vec!["currentTime", "displayText"]);
+        assert_eq!(diagram.actions[0].kind.as_deref(), Some("input"));
+        assert_eq!(diagram.actions[1].kind.as_deref(), Some("output"));
+    }
+
+    #[test]
+    fn extract_activity_diagrams_includes_perform_steps() {
+        let input = r#"
+            package P {
+                action def ExecuteMission {
+                    in route : Route;
+                    perform action captureVideo : CaptureVideo;
+                    out report : MissionReport;
+                }
+            }
+        "#;
+
+        let root = parse(input).expect("parse");
+        let diagrams = extract_activity_diagrams(&root);
+        let diagram = diagrams.iter().find(|d| d.name == "ExecuteMission").expect("diagram");
+        let action_names: Vec<_> = diagram.actions.iter().map(|a| a.name.as_str()).collect();
+
+        assert_eq!(action_names, vec!["route", "captureVideo", "report"]);
+        assert_eq!(diagram.actions[1].kind.as_deref(), Some("perform"));
+        assert_eq!(diagram.flows.len(), 2);
+        assert_eq!(diagram.flows[0].from, "route");
+        assert_eq!(diagram.flows[0].to, "captureVideo");
+        assert_eq!(diagram.flows[1].from, "captureVideo");
+        assert_eq!(diagram.flows[1].to, "report");
     }
 }

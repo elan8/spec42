@@ -232,17 +232,26 @@ export function prepareDataForView(data: any, view: string): any {
                             kind: 'decision'
                         }));
 
+                        const stateActions = (diagram.states || []).map((state: any, idx: number) => ({
+                            ...state,
+                            id: state.id || state.name || `state_${idx + 1}`,
+                            name: state.name || state.id || `State ${idx + 1}`,
+                            type: state.type || state.stateType || 'state',
+                            kind: state.type || state.stateType || 'state'
+                        }));
+
                         const allActions = [
                             ...(diagram.actions || []).map((a: any) => ({
                                 ...a,
                                 id: a.id || a.name,
                                 parent: (a.parent === diagram.name) ? undefined : a.parent
                             })),
-                            ...decisionsAsActions
+                            ...decisionsAsActions,
+                            ...stateActions
                         ];
 
                         const actionIds = new Set(allActions.map((a: any) => a.id || a.name));
-                        const flows = diagram.flows || [];
+                        const flows = [...(diagram.flows || [])];
                         const flowNodeNames = new Set<string>();
                         const incomingFlowCount = new Map<string, number>();
                         const outgoingFlowCount = new Map<string, number>();
@@ -304,6 +313,36 @@ export function prepareDataForView(data: any, view: string): any {
                             actionIds.has(f.from) &&
                             actionIds.has(f.to)
                         );
+
+                        const hasInitialFlow = cleanFlows.some((f: any) => {
+                            const sourceNode = allActions.find((a: any) => (a.id || a.name) === f.from);
+                            return String(sourceNode?.kind || sourceNode?.type || '').toLowerCase().includes('initial');
+                        });
+                        const hasFinalFlow = cleanFlows.some((f: any) => {
+                            const targetNode = allActions.find((a: any) => (a.id || a.name) === f.to);
+                            return String(targetNode?.kind || targetNode?.type || '').toLowerCase().includes('final');
+                        });
+                        const initialNode = allActions.find((a: any) => String(a.kind || a.type || '').toLowerCase().includes('initial'));
+                        const finalNode = allActions.find((a: any) => String(a.kind || a.type || '').toLowerCase().includes('final'));
+                        const nonTerminalActions = allActions.filter((a: any) => {
+                            const kind = String(a.kind || a.type || '').toLowerCase();
+                            return !kind.includes('initial') && !kind.includes('final');
+                        });
+                        if (initialNode && nonTerminalActions.length > 0 && !hasInitialFlow) {
+                            cleanFlows.unshift({
+                                from: initialNode.id || initialNode.name,
+                                to: nonTerminalActions[0].id || nonTerminalActions[0].name,
+                                type: 'control'
+                            });
+                        }
+                        if (finalNode && nonTerminalActions.length > 0 && !hasFinalFlow) {
+                            const lastAction = nonTerminalActions[nonTerminalActions.length - 1];
+                            cleanFlows.push({
+                                from: lastAction.id || lastAction.name,
+                                to: finalNode.id || finalNode.name,
+                                type: 'control'
+                            });
+                        }
 
                         return {
                             name: diagram.name,

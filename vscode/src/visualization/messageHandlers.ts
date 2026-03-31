@@ -102,6 +102,24 @@ async function handleTestDiagramExported(viewId: string, svgString: string): Pro
 
 export function createMessageHandlers(context: MessageHandlerContext) {
     const { panel, document, lspModelProvider, fileUris, updateVisualization, setNavigating } = context;
+    let activeHighlightDecoration: vscode.TextEditorDecorationType | undefined;
+    let activeHighlightTimeout: ReturnType<typeof setTimeout> | undefined;
+    let activeHighlightEditor: vscode.TextEditor | undefined;
+
+    function clearActiveSourceHighlight(): void {
+        if (activeHighlightTimeout) {
+            clearTimeout(activeHighlightTimeout);
+            activeHighlightTimeout = undefined;
+        }
+        if (activeHighlightDecoration && activeHighlightEditor) {
+            activeHighlightEditor.setDecorations(activeHighlightDecoration, []);
+        }
+        if (activeHighlightDecoration) {
+            activeHighlightDecoration.dispose();
+            activeHighlightDecoration = undefined;
+        }
+        activeHighlightEditor = undefined;
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function logWebviewMessage(level: string, args: any[]) {
@@ -174,10 +192,12 @@ export function createMessageHandlers(context: MessageHandlerContext) {
                 preserveFocus: true,
                 preview: false,
             }).then(editor => {
-                editor.selection = new vscode.Selection(element!.range.start, element!.range.end);
+                clearActiveSourceHighlight();
+
+                editor.selection = new vscode.Selection(element!.range.start, element!.range.start);
                 editor.revealRange(element!.range, vscode.TextEditorRevealType.InCenter);
 
-                const decorationType = vscode.window.createTextEditorDecorationType({
+                activeHighlightDecoration = vscode.window.createTextEditorDecorationType({
                     backgroundColor: 'rgba(255, 215, 0, 0.4)',
                     border: '2px solid #FFD700',
                     borderRadius: '3px',
@@ -185,10 +205,11 @@ export function createMessageHandlers(context: MessageHandlerContext) {
                     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
                 });
 
-                editor.setDecorations(decorationType, [element!.range]);
+                activeHighlightEditor = editor;
+                editor.setDecorations(activeHighlightDecoration, [element!.range]);
 
-                setTimeout(() => {
-                    decorationType.dispose();
+                activeHighlightTimeout = setTimeout(() => {
+                    clearActiveSourceHighlight();
                 }, 3000);
 
                 if (!skipCentering) {

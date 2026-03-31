@@ -1,5 +1,5 @@
 /**
- * Activity/Action Flow View renderer - decisions, merge nodes, swim lanes.
+ * Activity/Action Flow View renderer - ELK-backed action-flow layout with D3 rendering.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -8,368 +8,441 @@ import { postJumpToElement } from '../jumpToElement';
 import { DIAGRAM_STYLE } from '../styleTokens';
 
 declare const d3: any;
+declare const ELK: any;
 
-export function renderActivityView(ctx: RenderContext, data: any): void {
-    const { width, height, svg, g, activityLayoutDirection, activityDebugLabels, selectedDiagramIndex, postMessage, onStartInlineEdit, renderPlaceholder } = ctx;
+type ActivityActionNode = {
+    id: string;
+    name: string;
+    type?: string;
+    kind?: string;
+    parent?: string;
+};
 
-    if (!data || !data.diagrams || data.diagrams.length === 0) {
-        renderPlaceholder(width, height, 'Action Flow View',
-            'No activity diagrams found to display.\\n\\nThis view shows action flows with decisions, merge nodes, and swim lanes.',
-            data);
+type ActivityFlow = {
+    id?: string;
+    from: string;
+    to: string;
+    guard?: string;
+    condition?: string;
+};
+
+type ElkSection = {
+    startPoint?: { x: number; y: number };
+    endPoint?: { x: number; y: number };
+    bendPoints?: Array<{ x: number; y: number }>;
+};
+
+type ActivityRenderContext = RenderContext & { elkWorkerUrl?: string };
+
+const ACTION_WIDTH = 220;
+const ACTION_HEIGHT = 68;
+const DECISION_SIZE = 76;
+const FORK_WIDTH = 220;
+const FORK_HEIGHT = 14;
+const TERMINAL_SIZE = 40;
+
+function truncateToFit(text: string | null | undefined, maxChars: number): string {
+    if (!text) return '';
+    return text.length > maxChars ? text.substring(0, maxChars - 2) + '..' : text;
+}
+
+function normalizeEdgeLabel(text: string | null | undefined): string {
+    const trimmed = String(text || '').trim();
+    if (!trimmed) return '';
+    const namespaceStripped = trimmed.replace(/.*::/, '');
+    return namespaceStripped.length > 24 ? `${namespaceStripped.substring(0, 21)}...` : namespaceStripped;
+}
+
+function nodeKind(action: ActivityActionNode): string {
+    return String(action.kind || action.type || 'action').toLowerCase();
+}
+
+function isInitial(action: ActivityActionNode): boolean {
+    const kind = nodeKind(action);
+    return kind.includes('initial') || kind.includes('start') || action.name === 'start';
+}
+
+function isFinal(action: ActivityActionNode): boolean {
+    const kind = nodeKind(action);
+    return kind.includes('final') || kind.includes('done') || kind.includes('end') || action.name === 'done';
+}
+
+function isDecision(action: ActivityActionNode): boolean {
+    const kind = nodeKind(action);
+    return kind.includes('decision') || kind.includes('merge');
+}
+
+function isFork(action: ActivityActionNode): boolean {
+    const kind = nodeKind(action);
+    return kind.includes('fork') || kind.includes('join');
+}
+
+function visualKind(action: ActivityActionNode): 'input' | 'output' | 'perform' | 'regular' {
+    const kind = nodeKind(action);
+    if (kind.includes('input') || kind === 'in') return 'input';
+    if (kind.includes('output') || kind === 'out') return 'output';
+    if (kind.includes('perform')) return 'perform';
+    return 'regular';
+}
+
+function actionPalette(action: ActivityActionNode): { fill: string; border: string; accent: string; chip: string } {
+    const visual = visualKind(action);
+    if (visual === 'input') {
+        return {
+            fill: 'rgba(76, 163, 255, 0.10)',
+            border: '#4CA3FF',
+            accent: '#7FC0FF',
+            chip: 'INPUT',
+        };
+    }
+    if (visual === 'output') {
+        return {
+            fill: 'rgba(55, 196, 141, 0.10)',
+            border: '#37C48D',
+            accent: '#7FDEBA',
+            chip: 'OUTPUT',
+        };
+    }
+    if (visual === 'perform') {
+        return {
+            fill: 'rgba(255, 184, 77, 0.12)',
+            border: '#FFB84D',
+            accent: '#FFD08B',
+            chip: 'PERFORM',
+        };
+    }
+    return {
+        fill: 'var(--vscode-editor-background)',
+        border: DIAGRAM_STYLE.nodeBorder,
+        accent: 'var(--vscode-descriptionForeground)',
+        chip: '',
+    };
+}
+
+function nodeSize(action: ActivityActionNode): { width: number; height: number } {
+    if (isInitial(action) || isFinal(action)) return { width: TERMINAL_SIZE, height: TERMINAL_SIZE };
+    if (isDecision(action)) return { width: DECISION_SIZE, height: DECISION_SIZE };
+    if (isFork(action)) return { width: FORK_WIDTH, height: FORK_HEIGHT };
+    return { width: ACTION_WIDTH, height: ACTION_HEIGHT };
+}
+
+function pathFromSections(sections: ElkSection[] | undefined): string | null {
+    if (!sections?.length) return null;
+    const parts: string[] = [];
+    sections.forEach((section) => {
+        if (!section.startPoint || !section.endPoint) return;
+        parts.push(`M${section.startPoint.x},${section.startPoint.y}`);
+        (section.bendPoints || []).forEach((point) => parts.push(`L${point.x},${point.y}`));
+        parts.push(`L${section.endPoint.x},${section.endPoint.y}`);
+    });
+    return parts.length ? parts.join(' ') : null;
+}
+
+function edgeLabelPosition(sections: ElkSection[] | undefined): { x: number; y: number } | null {
+    if (!sections?.length) return null;
+    const points: Array<{ x: number; y: number }> = [];
+    sections.forEach((section) => {
+        if (section.startPoint) points.push(section.startPoint);
+        (section.bendPoints || []).forEach((point) => points.push(point));
+        if (section.endPoint) points.push(section.endPoint);
+    });
+    return points.length ? points[Math.floor(points.length / 2)] : null;
+}
+
+function fallbackEdgePath(
+    source: { x: number; y: number; width: number; height: number },
+    target: { x: number; y: number; width: number; height: number },
+    isHorizontal: boolean,
+): { path: string; x: number; y: number } {
+    if (isHorizontal) {
+        const startX = source.x + source.width;
+        const startY = source.y + source.height / 2;
+        const endX = target.x;
+        const endY = target.y + target.height / 2;
+        const midX = (startX + endX) / 2;
+        return {
+            path: `M${startX},${startY} L${midX},${startY} L${midX},${endY} L${endX},${endY}`,
+            x: midX,
+            y: (startY + endY) / 2 - 6,
+        };
+    }
+    const startX = source.x + source.width / 2;
+    const startY = source.y + source.height;
+    const endX = target.x + target.width / 2;
+    const endY = target.y;
+    const midY = (startY + endY) / 2;
+    return {
+        path: `M${startX},${startY} L${startX},${midY} L${endX},${midY} L${endX},${endY}`,
+        x: (startX + endX) / 2,
+        y: midY - 6,
+    };
+}
+
+function renderActionNode(
+    group: any,
+    action: ActivityActionNode,
+    layout: { x: number; y: number; width: number; height: number },
+    postMessage: (msg: unknown) => void,
+    onStartInlineEdit: (nodeG: any, elementName: string, x: number, y: number, width: number) => void,
+    clearVisualHighlights: () => void,
+    parentContext: string,
+): void {
+    const kind = nodeKind(action);
+    const palette = actionPalette(action);
+    const nodeGroup = group.append('g')
+        .attr('class', `activity-action elk-node ${kind.replace(/\s+/g, '-')}`)
+        .attr('data-element-name', action.name)
+        .attr('transform', `translate(${layout.x},${layout.y})`)
+        .style('cursor', 'pointer');
+
+    const handleClick = function(event: any) {
+        event.stopPropagation();
+        clearVisualHighlights();
+        const selected = d3.select(this);
+        selected.classed('highlighted-element', true);
+        selected.select('.node-background')
+            .style('stroke', DIAGRAM_STYLE.highlight)
+            .style('stroke-width', '3px');
+        postJumpToElement(postMessage, { name: action.name, id: action.id }, { parentContext, skipCentering: true });
+    };
+
+    if (isInitial(action) || isFinal(action)) {
+        nodeGroup.append('circle')
+            .attr('class', 'node-background')
+            .attr('cx', layout.width / 2)
+            .attr('cy', layout.height / 2)
+            .attr('r', TERMINAL_SIZE / 2 - 2)
+            .style('fill', isInitial(action) ? DIAGRAM_STYLE.edgePrimary : 'var(--vscode-editor-background)')
+            .style('stroke', DIAGRAM_STYLE.nodeBorder)
+            .style('stroke-width', '2px');
+        if (isFinal(action)) {
+            nodeGroup.append('circle')
+                .attr('cx', layout.width / 2)
+                .attr('cy', layout.height / 2)
+                .attr('r', 10)
+                .style('fill', DIAGRAM_STYLE.edgePrimary)
+                .style('stroke', 'none');
+        }
+    } else if (isDecision(action)) {
+        const cx = layout.width / 2;
+        const cy = layout.height / 2;
+        nodeGroup.append('path')
+            .attr('class', 'node-background')
+            .attr('d', `M${cx},0 L${layout.width},${cy} L${cx},${layout.height} L0,${cy} Z`)
+            .style('fill', 'var(--vscode-editor-background)')
+            .style('stroke', DIAGRAM_STYLE.edgePrimary)
+            .style('stroke-width', '2px');
+    } else if (isFork(action)) {
+        nodeGroup.append('rect')
+            .attr('class', 'node-background')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', layout.width)
+            .attr('height', layout.height)
+            .attr('rx', 3)
+            .style('fill', 'var(--vscode-panel-border)')
+            .style('stroke', 'none');
+    } else {
+        nodeGroup.append('rect')
+            .attr('class', 'node-background')
+            .attr('width', layout.width)
+            .attr('height', layout.height)
+            .attr('rx', 8)
+            .attr('ry', 8)
+            .style('fill', palette.fill)
+            .style('stroke', palette.border)
+            .style('stroke-width', '2px');
+
+        nodeGroup.append('rect')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', layout.width)
+            .attr('height', 6)
+            .attr('rx', 8)
+            .attr('ry', 8)
+            .style('fill', palette.border)
+            .style('stroke', 'none');
+    }
+
+    const label = truncateToFit(action.name, isDecision(action) ? 18 : 24);
+    const labelY = isFork(action)
+        ? layout.height + 16
+        : isInitial(action) || isFinal(action)
+            ? layout.height + 18
+            : layout.height / 2 + 2;
+    nodeGroup.append('text')
+        .attr('class', 'node-name-text')
+        .attr('x', layout.width / 2)
+        .attr('y', labelY)
+        .attr('text-anchor', 'middle')
+        .text(label)
+        .style('font-size', isDecision(action) ? '11px' : '12px')
+        .style('font-weight', isDecision(action) || isFork(action) ? '600' : '700')
+        .style('fill', 'var(--vscode-editor-foreground)')
+        .style('pointer-events', 'none');
+
+    if (!isInitial(action) && !isFinal(action) && !isDecision(action) && !isFork(action) && kind !== 'action') {
+        nodeGroup.append('text')
+            .attr('x', layout.width / 2)
+            .attr('y', layout.height / 2 + 18)
+            .attr('text-anchor', 'middle')
+            .text(`«${truncateToFit(kind, 16)}»`)
+            .style('font-size', '9px')
+            .style('fill', 'var(--vscode-descriptionForeground)')
+            .style('pointer-events', 'none');
+    }
+
+    if (!isInitial(action) && !isFinal(action) && !isDecision(action) && !isFork(action) && palette.chip) {
+        const chipWidth = palette.chip.length * 6 + 14;
+        nodeGroup.append('rect')
+            .attr('x', layout.width / 2 - chipWidth / 2)
+            .attr('y', layout.height - 22)
+            .attr('width', chipWidth)
+            .attr('height', 14)
+            .attr('rx', 7)
+            .style('fill', 'var(--vscode-editor-background)')
+            .style('stroke', palette.border)
+            .style('stroke-width', '1px');
+        nodeGroup.append('text')
+            .attr('x', layout.width / 2)
+            .attr('y', layout.height - 12)
+            .attr('text-anchor', 'middle')
+            .text(palette.chip)
+            .style('font-size', '8px')
+            .style('font-weight', '700')
+            .style('letter-spacing', '0.5px')
+            .style('fill', palette.accent)
+            .style('pointer-events', 'none');
+    }
+
+    nodeGroup.on('click', handleClick)
+        .on('dblclick', function(event: any) {
+            event.stopPropagation();
+            onStartInlineEdit(d3.select(this), action.name, layout.x, layout.y, layout.width);
+        });
+}
+
+async function layoutActivityDiagram(
+    ctx: ActivityRenderContext,
+    diagram: any,
+): Promise<{
+    positions: Map<string, { x: number; y: number; width: number; height: number }>;
+    edgeSectionsById: Map<string, ElkSection[]>;
+}> {
+    if (typeof ELK === 'undefined') throw new Error('ELK layout library not loaded');
+    const elk = new ELK({ workerUrl: ctx.elkWorkerUrl || undefined });
+    const isHorizontal = ctx.activityLayoutDirection === 'horizontal';
+    const actions: ActivityActionNode[] = (diagram.actions || []).map((action: any, idx: number) => ({
+        ...action,
+        id: action.id || action.name || `action_${idx + 1}`,
+        name: action.name || action.id || `Action ${idx + 1}`,
+    }));
+    const flows: ActivityFlow[] = (diagram.flows || []).map((flow: any, idx: number) => ({
+        ...flow,
+        id: flow.id || `${diagram.name}::flow::${idx + 1}`,
+    }));
+
+    const elkGraph = {
+        id: diagram.name || 'activity-diagram',
+        layoutOptions: {
+            'elk.algorithm': 'layered',
+            'elk.direction': isHorizontal ? 'RIGHT' : 'DOWN',
+            'elk.edgeRouting': 'ORTHOGONAL',
+            'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
+            'elk.layered.crossingMinimization.strategy': 'LAYER_SWEEP',
+            'elk.spacing.nodeNode': isHorizontal ? '90' : '120',
+            'elk.layered.spacing.nodeNodeBetweenLayers': isHorizontal ? '190' : '170',
+            'elk.spacing.edgeNode': '80',
+            'elk.spacing.edgeEdge': '60',
+            'elk.padding': '[top=80,left=80,bottom=80,right=80]',
+            'elk.separateConnectedComponents': 'true',
+            'elk.json.edgeCoords': 'ROOT',
+        },
+        children: actions.map((action) => {
+            const size = nodeSize(action);
+            return { id: action.id, width: size.width, height: size.height };
+        }),
+        edges: flows.map((flow) => ({
+            id: flow.id,
+            sources: [flow.from],
+            targets: [flow.to],
+        })),
+    };
+
+    const laidOut = await elk.layout(elkGraph);
+    const positions = new Map<string, { x: number; y: number; width: number; height: number }>();
+    (laidOut?.children || []).forEach((child: any) => {
+        const action = actions.find((candidate) => candidate.id === child.id);
+        const fallbackSize = action ? nodeSize(action) : { width: ACTION_WIDTH, height: ACTION_HEIGHT };
+        positions.set(String(child.id), {
+            x: child.x ?? 0,
+            y: child.y ?? 0,
+            width: child.width ?? fallbackSize.width,
+            height: child.height ?? fallbackSize.height,
+        });
+    });
+
+    const edgeSectionsById = new Map<string, ElkSection[]>();
+    (laidOut?.edges || []).forEach((edge: any) => {
+        if (edge?.id && Array.isArray(edge.sections)) {
+            edgeSectionsById.set(String(edge.id), edge.sections as ElkSection[]);
+        }
+    });
+
+    return { positions, edgeSectionsById };
+}
+
+export async function renderActivityView(ctx: ActivityRenderContext, data: any): Promise<void> {
+    const {
+        width,
+        height,
+        svg,
+        g,
+        selectedDiagramIndex,
+        postMessage,
+        onStartInlineEdit,
+        renderPlaceholder,
+        clearVisualHighlights,
+    } = ctx;
+
+    if (!data?.diagrams?.length) {
+        renderPlaceholder(
+            width,
+            height,
+            'Action Flow View',
+            'No activity diagrams found to display.\n\nThis view shows action flows with decisions and control flows.',
+            data,
+        );
         return;
     }
 
-    const diagramIndex = Math.min(selectedDiagramIndex, data.diagrams.length - 1);
-    const diagram = data.diagrams[diagramIndex];
+    const diagram = data.diagrams[Math.min(selectedDiagramIndex, data.diagrams.length - 1)];
+    if (!diagram?.actions?.length) {
+        renderPlaceholder(width, height, 'Action Flow View', 'No actions found in the selected activity diagram.', data);
+        return;
+    }
 
-    const allActions = (diagram.actions || []).map((action: any, idx: number) => ({
+    const actions: ActivityActionNode[] = diagram.actions.map((action: any, idx: number) => ({
         ...action,
-        id: action.id || action.name || 'action_' + idx,
-        name: action.name || action.id || 'Action ' + (idx + 1)
+        id: action.id || action.name || `action_${idx + 1}`,
+        name: action.name || action.id || `Action ${idx + 1}`,
+    }));
+    const flows: ActivityFlow[] = (diagram.flows || []).map((flow: any, idx: number) => ({
+        ...flow,
+        id: flow.id || `${diagram.name}::flow::${idx + 1}`,
     }));
 
-    const actions = allActions.filter((action: any) => !action.parent);
-    const nestedActions = allActions.filter((action: any) => action.parent);
-
-    const containerChildren = new Map<string, any[]>();
-    nestedActions.forEach((action: any) => {
-        if (!containerChildren.has(action.parent)) {
-            containerChildren.set(action.parent, []);
-        }
-        containerChildren.get(action.parent)!.push(action);
-    });
-
-    let flows = diagram.flows || [];
-
-    if (flows.length === 0 && actions.length > 1) {
-        flows = [];
-        for (let i = 0; i < actions.length - 1; i++) {
-            flows.push({
-                from: actions[i].id || actions[i].name,
-                to: actions[i + 1].id || actions[i + 1].name,
-                type: 'control'
-            });
-        }
+    let layout;
+    try {
+        layout = await layoutActivityDiagram(ctx, { ...diagram, actions, flows });
+    } catch (error) {
+        console.error('[Action Flow View] ELK layout failed:', error);
+        renderPlaceholder(width, height, 'Action Flow View', 'ELK layout failed for this activity diagram.', data);
+        return;
     }
-
-    const isHorizontal = activityLayoutDirection === 'horizontal';
-    const actionWidth = 220;
-    const actionHeight = 60;
-    const verticalSpacing = 100;
-    const horizontalSpacing = 60;
-    const startX = 80;
-    const startY = 80;
-    const swimLaneWidth = 280;
-
-    const swimLanes = new Map<string, any[]>();
-    const noLaneActions: any[] = [];
-
-    actions.forEach((action: any) => {
-        if (action.lane) {
-            if (!swimLanes.has(action.lane)) {
-                swimLanes.set(action.lane, []);
-            }
-            swimLanes.get(action.lane)!.push(action);
-        } else {
-            noLaneActions.push(action);
-        }
-    });
-
-    const actionPositions = new Map<string, { x: number; y: number; action: any }>();
-    const levels = new Map<string, number>();
-    const visited = new Set<string>();
-
-    function calculateLevel(actionId: string): number {
-        if (visited.has(actionId)) {
-            return levels.get(actionId) || 0;
-        }
-        visited.add(actionId);
-
-        const incomingFlows = flows.filter((f: any) => f.to === actionId);
-        let maxSourceLevel = -1;
-
-        incomingFlows.forEach((flow: any) => {
-            const sourceLevel = calculateLevel(flow.from);
-            maxSourceLevel = Math.max(maxSourceLevel, sourceLevel);
-        });
-
-        const level = maxSourceLevel + 1;
-        levels.set(actionId, level);
-        return level;
-    }
-
-    actions.forEach((action: any) => {
-        if (!visited.has(action.id)) {
-            calculateLevel(action.id);
-        }
-    });
-
-    const actionsByLevel = new Map<number, any[]>();
-    actions.forEach((action: any) => {
-        const level = levels.get(action.id) || 0;
-        if (!actionsByLevel.has(level)) {
-            actionsByLevel.set(level, []);
-        }
-        actionsByLevel.get(level)!.push(action);
-    });
-
-    const childPadding = 10;
-    const childActionHeight = 35;
-    const childSpacing = 8;
-    function getActionHeight(action: any): number {
-        const children = containerChildren.get(action.name || action.id);
-        if (children && children.length > 0) {
-            return 30 + children.length * (childActionHeight + childSpacing) + childPadding;
-        }
-        return actionHeight;
-    }
-
-    const levelYPositions = new Map<number, number>();
-    const sortedLevels = Array.from(actionsByLevel.keys()).sort((a, b) => a - b);
-    let cumulativeY = startY;
-    sortedLevels.forEach(level => {
-        levelYPositions.set(level, cumulativeY);
-        const actionsAtLevel = actionsByLevel.get(level) || [];
-        const maxHeightAtLevel = Math.max(...actionsAtLevel.map((a: any) => getActionHeight(a)), actionHeight);
-        cumulativeY += maxHeightAtLevel + verticalSpacing - actionHeight;
-    });
-
-    let laneIndex = 0;
-    const lanePositions = new Map<string, { x: number; index: number }>();
-
-    if (swimLanes.size > 0) {
-        swimLanes.forEach((laneActions: any[], laneName: string) => {
-            const laneX = 60 + laneIndex * (swimLaneWidth + 40);
-            lanePositions.set(laneName, { x: laneX, index: laneIndex });
-
-            laneActions.forEach((action: any) => {
-                const level = levels.get(action.id) || 0;
-                actionPositions.set(action.id, {
-                    x: laneX + (swimLaneWidth - actionWidth) / 2,
-                    y: levelYPositions.get(level) || startY + level * verticalSpacing,
-                    action: action
-                });
-            });
-
-            laneIndex++;
-        });
-
-        if (noLaneActions.length > 0) {
-            const noLaneX = 60 + laneIndex * (swimLaneWidth + 40);
-
-            const noLaneActionsByLevel = new Map<number, any[]>();
-            noLaneActions.forEach((action: any) => {
-                const level = levels.get(action.id) || 0;
-                if (!noLaneActionsByLevel.has(level)) {
-                    noLaneActionsByLevel.set(level, []);
-                }
-                noLaneActionsByLevel.get(level)!.push(action);
-            });
-
-            noLaneActions.forEach((action: any) => {
-                const level = levels.get(action.id) || 0;
-                const actionsAtLevel = noLaneActionsByLevel.get(level) || [action];
-                const positionInLevel = actionsAtLevel.indexOf(action);
-                const totalAtLevel = actionsAtLevel.length;
-                const centerOffset = (totalAtLevel - 1) * (actionWidth + horizontalSpacing) / 2;
-
-                actionPositions.set(action.id, {
-                    x: noLaneX + (swimLaneWidth / 2) - centerOffset + positionInLevel * (actionWidth + horizontalSpacing),
-                    y: levelYPositions.get(level) || startY + level * verticalSpacing,
-                    action: action
-                });
-            });
-        }
-    } else {
-        actions.forEach((action: any) => {
-            const level = levels.get(action.id) || 0;
-            const actionsAtLevel = actionsByLevel.get(level) || [action];
-            const positionInLevel = actionsAtLevel.indexOf(action);
-            const totalAtLevel = actionsAtLevel.length;
-
-            if (isHorizontal) {
-                const centerOffset = (totalAtLevel - 1) * (actionHeight + verticalSpacing) / 2;
-                actionPositions.set(action.id, {
-                    x: startX + level * (actionWidth + horizontalSpacing),
-                    y: height / 2 - centerOffset + positionInLevel * (actionHeight + verticalSpacing),
-                    action: action
-                });
-            } else {
-                const centerOffset = (totalAtLevel - 1) * (actionWidth + horizontalSpacing) / 2;
-                const yPos = levelYPositions.get(level) || startY + level * verticalSpacing;
-                actionPositions.set(action.id, {
-                    x: width / 2 - centerOffset + positionInLevel * (actionWidth + horizontalSpacing),
-                    y: yPos,
-                    action: action
-                });
-            }
-        });
-    }
-
-    if (swimLanes.size > 0) {
-        const maxLevel = Math.max(...Array.from(levels.values()), 0);
-        const lastLevelY = levelYPositions.get(maxLevel) || startY + maxLevel * verticalSpacing;
-        const laneHeight = lastLevelY + 100;
-
-        lanePositions.forEach((pos, laneName) => {
-            g.append('rect')
-                .attr('x', pos.x - 10)
-                .attr('y', 20)
-                .attr('width', swimLaneWidth)
-                .attr('height', laneHeight)
-                .attr('rx', 4)
-                .style('fill', 'none')
-                .style('stroke', DIAGRAM_STYLE.nodeBorder)
-                .style('stroke-width', '2px')
-                .style('stroke-dasharray', '5,5')
-                .style('opacity', 0.5);
-
-            g.append('text')
-                .attr('x', pos.x + swimLaneWidth / 2)
-                .attr('y', 40)
-                .attr('text-anchor', 'middle')
-                .text(laneName)
-                .style('font-size', '12px')
-                .style('font-weight', 'bold')
-                .style('fill', 'var(--vscode-descriptionForeground)');
-        });
-    }
-
-    const flowGroup = g.append('g').attr('class', 'activity-flows');
-
-    const flowsFromSource = new Map<string, any[]>();
-    flows.forEach((flow: any) => {
-        if (!flowsFromSource.has(flow.from)) {
-            flowsFromSource.set(flow.from, []);
-        }
-        flowsFromSource.get(flow.from)!.push(flow);
-    });
-
-    const flowsToTarget = new Map<string, any[]>();
-    flows.forEach((flow: any) => {
-        if (!flowsToTarget.has(flow.to)) {
-            flowsToTarget.set(flow.to, []);
-        }
-        flowsToTarget.get(flow.to)!.push(flow);
-    });
-
-    flows.forEach((flow: any) => {
-        const sourcePos = actionPositions.get(flow.from);
-        const targetPos = actionPositions.get(flow.to);
-
-        if (!sourcePos || !targetPos) return;
-
-        let pathData: string;
-        let labelX: number, labelY: number;
-
-        const siblingsFromSource = flowsFromSource.get(flow.from) || [flow];
-        const siblingIndexFromSource = siblingsFromSource.indexOf(flow);
-        const totalSiblingsFromSource = siblingsFromSource.length;
-
-        const siblingsToTarget = flowsToTarget.get(flow.to) || [flow];
-        const siblingIndexToTarget = siblingsToTarget.indexOf(flow);
-        const totalSiblingsToTarget = siblingsToTarget.length;
-
-        if (isHorizontal) {
-            const flowStartX = sourcePos.x + actionWidth;
-            const flowStartY = sourcePos.y + actionHeight / 2;
-            const endX = targetPos.x;
-            const endY = targetPos.y + actionHeight / 2;
-
-            const midX = (flowStartX + endX) / 2;
-            pathData = 'M ' + flowStartX + ',' + flowStartY +
-                       ' L ' + midX + ',' + flowStartY +
-                       ' L ' + midX + ',' + endY +
-                       ' L ' + endX + ',' + endY;
-            labelX = midX;
-            labelY = (flowStartY + endY) / 2 - 5;
-        } else {
-            const flowStartX = sourcePos.x + actionWidth / 2;
-            const flowStartY = sourcePos.y + actionHeight;
-            const endX = targetPos.x + actionWidth / 2;
-            const endY = targetPos.y;
-
-            let startXOffset = 0;
-            let endXOffset = 0;
-            const isForkSource = (sourcePos.action?.kind === 'fork' || sourcePos.action?.type === 'fork');
-            const isJoinTarget = (targetPos.action?.kind === 'join' || targetPos.action?.type === 'join');
-
-            if (isForkSource && totalSiblingsFromSource > 1) {
-                const offsetRange = Math.min(actionWidth * 0.8, 100);
-                startXOffset = (siblingIndexFromSource - (totalSiblingsFromSource - 1) / 2) * (offsetRange / (totalSiblingsFromSource - 1 || 1));
-            }
-
-            if (isJoinTarget && totalSiblingsToTarget > 1) {
-                const offsetRange = Math.min(actionWidth * 0.8, 100);
-                endXOffset = (siblingIndexToTarget - (totalSiblingsToTarget - 1) / 2) * (offsetRange / (totalSiblingsToTarget - 1 || 1));
-            }
-
-            const adjustedStartX = flowStartX + startXOffset;
-            const adjustedEndX = endX + endXOffset;
-
-            let midY: number;
-            if (isJoinTarget) {
-                midY = endY - 15;
-            } else {
-                midY = (flowStartY + endY) / 2;
-            }
-
-            pathData = 'M ' + adjustedStartX + ',' + flowStartY +
-                       ' L ' + adjustedStartX + ',' + midY +
-                       ' L ' + adjustedEndX + ',' + midY +
-                       ' L ' + adjustedEndX + ',' + endY;
-
-            labelX = (adjustedStartX + adjustedEndX) / 2;
-            labelY = midY - 5;
-        }
-
-        flowGroup.append('path')
-            .attr('d', pathData)
-            .style('fill', 'none')
-            .style('stroke', DIAGRAM_STYLE.edgePrimary)
-            .style('stroke-width', '2px')
-            .style('marker-end', 'url(#activity-arrowhead)');
-
-        const guardLabel = flow.guard || flow.condition;
-
-        if (guardLabel) {
-            let displayLabel: string;
-            const trimmedGuard = String(guardLabel).trim();
-
-            const enumMatch = trimmedGuard.match(/::(\w+)/);
-            if (enumMatch) {
-                displayLabel = enumMatch[1];
-            } else {
-                displayLabel = trimmedGuard.length > 25 ? trimmedGuard.substring(0, 22) + '...' : trimmedGuard;
-            }
-
-            const labelText = '[' + displayLabel + ']';
-            const labelWidth = labelText.length * 6 + 8;
-
-            flowGroup.append('rect')
-                .attr('x', labelX - labelWidth / 2)
-                .attr('y', labelY - 10)
-                .attr('width', labelWidth)
-                .attr('height', 14)
-                .attr('rx', 3)
-                .style('fill', 'var(--vscode-editor-background)')
-                .style('stroke', DIAGRAM_STYLE.edgePrimary)
-                .style('stroke-width', '1px')
-                .style('opacity', 0.9);
-
-            flowGroup.append('text')
-                .attr('x', labelX)
-                .attr('y', labelY)
-                .attr('text-anchor', 'middle')
-                .text(labelText)
-                .style('font-size', '10px')
-                .style('fill', DIAGRAM_STYLE.edgePrimary)
-                .style('font-weight', 'bold');
-        }
-    });
 
     const defs = svg.select('defs').empty() ? svg.append('defs') : svg.select('defs');
-
+    defs.selectAll('#activity-arrowhead').remove();
     defs.append('marker')
         .attr('id', 'activity-arrowhead')
         .attr('viewBox', '0 -5 10 10')
@@ -382,195 +455,69 @@ export function renderActivityView(ctx: RenderContext, data: any): void {
         .attr('d', 'M0,-5L10,0L0,5')
         .style('fill', DIAGRAM_STYLE.edgePrimary);
 
+    g.append('text')
+        .attr('x', 36)
+        .attr('y', 32)
+        .text(`Action Flow: ${diagram.name}`)
+        .style('font-size', '16px')
+        .style('font-weight', '700')
+        .style('fill', 'var(--vscode-editor-foreground)');
+
+    const flowGroup = g.append('g').attr('class', 'activity-flows');
     const actionGroup = g.append('g').attr('class', 'activity-actions');
+    const isHorizontal = ctx.activityLayoutDirection === 'horizontal';
 
-    function truncateToFit(text: string | null | undefined, maxChars: number): string {
-        if (!text) return '';
-        if (text.length <= maxChars) return text;
-        return text.substring(0, maxChars - 2) + '..';
-    }
+    flows.forEach((flow) => {
+        const source = layout.positions.get(flow.from);
+        const target = layout.positions.get(flow.to);
+        if (!source || !target) return;
 
-    function handleActionClick(action: any) {
-        if (action && action.name) {
-            postJumpToElement(postMessage, { name: action.name, id: action.id }, { parentContext: diagram.name, skipCentering: true });
-        }
-    }
+        const sections = layout.edgeSectionsById.get(flow.id || '');
+        const fallback = fallbackEdgePath(source, target, isHorizontal);
+        flowGroup.append('path')
+            .attr('class', 'activity-flow')
+            .attr('d', pathFromSections(sections) || fallback.path)
+            .style('fill', 'none')
+            .style('stroke', DIAGRAM_STYLE.edgePrimary)
+            .style('stroke-width', '2px')
+            .style('marker-end', 'url(#activity-arrowhead)');
 
-    actionPositions.forEach((pos, actionId) => {
-        const action = pos.action;
-        const actionKind = (action.kind || action.type || 'action').toLowerCase();
-        const actionName = action.name || actionId || 'unnamed';
-
-        const isDecision = actionKind.includes('decision') || actionKind.includes('merge');
-        const isFork = actionKind.includes('fork') || actionKind.includes('join');
-        const isStart = actionKind.includes('initial') || actionKind.includes('start') || actionName === 'start';
-        const isEnd = actionKind.includes('final') || actionKind.includes('end') || actionKind.includes('done') || actionName === 'done';
-
-        const actionElement = actionGroup.append('g')
-            .attr('class', 'activity-action')
-            .attr('transform', 'translate(' + pos.x + ',' + pos.y + ')')
-            .style('cursor', 'pointer')
-            .on('click', function(event: any) {
-                event.stopPropagation();
-                handleActionClick(action);
-            });
-
-        if (isStart || isEnd) {
-            actionElement.append('circle')
-                .attr('cx', actionWidth / 2)
-                .attr('cy', actionHeight / 2)
-                .attr('r', 20)
-                .style('fill', isStart ? 'var(--vscode-charts-green)' : 'var(--vscode-charts-red)')
-                .style('stroke', DIAGRAM_STYLE.nodeBorder)
-                .style('stroke-width', '3px');
-
-            if (isEnd) {
-                actionElement.append('circle')
-                    .attr('cx', actionWidth / 2)
-                    .attr('cy', actionHeight / 2)
-                    .attr('r', 12)
-                    .style('fill', DIAGRAM_STYLE.edgePrimary)
-                    .style('stroke', 'none');
-            }
-        } else if (isDecision) {
-            const diamond = 'M ' + (actionWidth / 2) + ',0 ' +
-                          'L ' + actionWidth + ',' + (actionHeight / 2) + ' ' +
-                          'L ' + (actionWidth / 2) + ',' + actionHeight + ' ' +
-                          'L 0,' + (actionHeight / 2) + ' Z';
-
-            actionElement.append('path')
-                .attr('d', diamond)
+        const guardLabel = String(flow.guard || flow.condition || '').trim();
+        if (guardLabel) {
+            const position = edgeLabelPosition(sections) || { x: fallback.x, y: fallback.y };
+            const displayLabel = `[${normalizeEdgeLabel(guardLabel)}]`;
+            const labelWidth = Math.max(38, displayLabel.length * 6 + 8);
+            flowGroup.append('rect')
+                .attr('x', position.x - labelWidth / 2)
+                .attr('y', position.y - 10)
+                .attr('width', labelWidth)
+                .attr('height', 16)
+                .attr('rx', 3)
                 .style('fill', 'var(--vscode-editor-background)')
                 .style('stroke', DIAGRAM_STYLE.edgePrimary)
-                .style('stroke-width', '2px');
-
-            let decisionLabel = '?';
-            if (actionKind.includes('merge')) {
-                decisionLabel = truncateToFit(actionName, 18);
-            } else if (action.condition && action.condition !== 'decide') {
-                decisionLabel = truncateToFit(action.condition, 18);
-            }
-
-            actionElement.append('text')
-                .attr('x', actionWidth / 2)
-                .attr('y', actionHeight / 2 + 5)
+                .style('stroke-width', '1px');
+            flowGroup.append('text')
+                .attr('x', position.x)
+                .attr('y', position.y + 2)
                 .attr('text-anchor', 'middle')
-                .text(decisionLabel)
-                .style('font-size', actionKind.includes('merge') ? '11px' : '16px')
-                .style('font-weight', 'bold')
-                .style('fill', 'var(--vscode-editor-foreground)')
-                .style('user-select', 'none');
-        } else if (isFork) {
-            actionElement.append('rect')
-                .attr('x', 0)
-                .attr('y', actionHeight / 2 - 5)
-                .attr('width', actionWidth)
-                .attr('height', 10)
-                .attr('rx', 2)
-                .style('fill', 'var(--vscode-panel-border)')
-                .style('stroke', 'none');
-
-            if (activityDebugLabels) {
-                actionElement.append('text')
-                    .attr('class', 'fork-join-debug-label')
-                    .attr('x', actionWidth / 2)
-                    .attr('y', actionHeight / 2 + 25)
-                    .attr('text-anchor', 'middle')
-                    .text(actionName)
-                    .style('font-size', '10px')
-                    .style('fill', 'var(--vscode-descriptionForeground)')
-                    .style('font-style', 'italic')
-                    .style('user-select', 'none');
-            }
-        } else {
-            const children = containerChildren.get(actionName);
-            const isContainer = children && children.length > 0;
-
-            let containerWidth = actionWidth;
-            let containerHeight = actionHeight;
-
-            if (isContainer) {
-                containerWidth = actionWidth + 20;
-                containerHeight = 30 + children!.length * (childActionHeight + childSpacing) + childPadding;
-            }
-
-            actionElement.append('rect')
-                .attr('width', containerWidth)
-                .attr('height', containerHeight)
-                .attr('rx', 8)
-                .style('fill', 'var(--vscode-editor-background)')
-                .style('stroke', DIAGRAM_STYLE.nodeBorder)
-                .style('stroke-width', isContainer ? '3px' : '2px');
-
-            const maxChars = isContainer ? 28 : 24;
-            const displayName = truncateToFit(actionName, maxChars);
-
-            const fontSize = actionName.length > 20 ? '11px' : '13px';
-
-            actionElement.append('text')
-                .attr('class', 'node-name-text')
-                .attr('data-element-name', actionName)
-                .attr('x', containerWidth / 2)
-                .attr('y', isContainer ? 18 : containerHeight / 2 - 5)
-                .attr('text-anchor', 'middle')
-                .text(displayName)
-                .style('font-size', fontSize)
-                .style('font-weight', 'bold')
-                .style('fill', 'var(--vscode-editor-foreground)')
-                .style('user-select', 'none');
-
-            if (isContainer) {
-                let childY = 30;
-                children!.forEach((child: any) => {
-                    const childName = child.name || child;
-                    const childDisplayName = truncateToFit(childName, 22);
-
-                    actionElement.append('rect')
-                        .attr('x', childPadding)
-                        .attr('y', childY)
-                        .attr('width', containerWidth - 2 * childPadding)
-                        .attr('height', childActionHeight)
-                        .attr('rx', 4)
-                        .style('fill', 'var(--vscode-editor-inactiveSelectionBackground)')
-                        .style('stroke', DIAGRAM_STYLE.nodeBorder)
-                        .style('stroke-width', '1px')
-                        .style('cursor', 'pointer')
-                        .on('click', function(event: any) {
-                            event.stopPropagation();
-                            handleActionClick(child);
-                        });
-
-                    actionElement.append('text')
-                        .attr('class', 'node-name-text')
-                        .attr('data-element-name', childName)
-                        .attr('x', containerWidth / 2)
-                        .attr('y', childY + childActionHeight / 2 + 4)
-                        .attr('text-anchor', 'middle')
-                        .text(childDisplayName)
-                        .style('font-size', '11px')
-                        .style('fill', 'var(--vscode-editor-foreground)')
-                        .style('pointer-events', 'none')
-                        .style('user-select', 'none');
-
-                    childY += childActionHeight + childSpacing;
-                });
-            }
-
-            if (!isContainer && actionKind !== 'action' && actionKind !== displayName.toLowerCase()) {
-                actionElement.append('text')
-                    .attr('x', containerWidth / 2)
-                    .attr('y', containerHeight / 2 + 12)
-                    .attr('text-anchor', 'middle')
-                    .text('«' + truncateToFit(actionKind, 14) + '»')
-                    .style('font-size', '9px')
-                    .style('fill', 'var(--vscode-descriptionForeground)')
-                    .style('user-select', 'none');
-            }
-
-            actionElement.on('dblclick', function(event: any) {
-                event.stopPropagation();
-                onStartInlineEdit(d3.select(this), actionName, pos.x, pos.y, containerWidth);
-            });
+                .text(displayLabel)
+                .style('font-size', '10px')
+                .style('font-weight', '700')
+                .style('fill', DIAGRAM_STYLE.edgePrimary);
         }
+    });
+
+    actions.forEach((action) => {
+        const position = layout.positions.get(action.id);
+        if (!position) return;
+        renderActionNode(
+            actionGroup,
+            action,
+            position,
+            postMessage,
+            onStartInlineEdit,
+            clearVisualHighlights,
+            diagram.name,
+        );
     });
 }

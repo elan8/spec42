@@ -125,6 +125,42 @@ describe("prepareDataForView", () => {
         assert.ok(Array.isArray(result.diagrams), "action-flow-view should have diagrams array");
     });
 
+    it("action-flow-view preserves real action names and connects initial/final states", () => {
+        const data = createMockData({
+            activityDiagrams: [
+                {
+                    name: "UpdateDisplay",
+                    actions: [
+                        { name: "currentTime", type: "action", kind: "input", id: "currentTime" },
+                        { name: "renderDisplay", type: "action", kind: "perform", id: "renderDisplay" },
+                        { name: "displayText", type: "action", kind: "output", id: "displayText" },
+                    ],
+                    flows: [
+                        { from: "currentTime", to: "renderDisplay" },
+                        { from: "renderDisplay", to: "displayText" },
+                    ],
+                    decisions: [],
+                    states: [
+                        { name: "initial", type: "initial", id: "initial" },
+                        { name: "final", type: "final", id: "final" },
+                    ],
+                }
+            ]
+        });
+
+        const result = prepareDataForView(data, "action-flow-view");
+        const diagram = result.diagrams[0];
+        const actionNames = diagram.actions.map((action: any) => action.name);
+
+        assert.ok(actionNames.includes("currentTime"));
+        assert.ok(actionNames.includes("renderDisplay"));
+        assert.ok(actionNames.includes("displayText"));
+        assert.ok(actionNames.includes("initial"));
+        assert.ok(actionNames.includes("final"));
+        assert.ok(diagram.flows.some((flow: any) => flow.from === "initial" && flow.to === "currentTime"));
+        assert.ok(diagram.flows.some((flow: any) => flow.from === "displayText" && flow.to === "final"));
+    });
+
     it("state-transition-view produces normalized state machines", () => {
         const data = createMockData({
             elements: [
