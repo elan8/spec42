@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-03-31
+
+### Changed
+
+- **CI reliability** - Removed integration tests that depended on an external `C:\Git\sysml-examples\office\office.sysml` fixture path.
+- **VS Code extension tests** - Removed a brittle interconnection SVG route-analysis test that depended on webview render/export timing and exact SVG geometry.
+
 ## [0.11.0] - 2026-03-30
 
 ### Added
@@ -178,6 +185,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Some constructs may have incomplete semantic token or outline coverage.
 
 [0.11.0]: https://github.com/elan8/spec42/releases/tag/v0.11.0
+[0.12.0]: https://github.com/elan8/spec42/releases/tag/v0.12.0
 [0.10.0]: https://github.com/elan8/spec42/releases/tag/v0.10.0
 [0.9.1]: https://github.com/elan8/spec42/releases/tag/v0.9.1
 [0.9.0]: https://github.com/elan8/spec42/releases/tag/v0.9.0

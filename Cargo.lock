@@ -777,7 +777,7 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
 name = "semantic-model"
-version = "0.11.0"
+version = "0.12.0"
 dependencies = [
  "petgraph",
  "serde",
@@ -889,7 +889,7 @@ dependencies = [
 
 [[package]]
 name = "spec42"
-version = "0.11.0"
+version = "0.12.0"
 dependencies = [
  "serde_json",
  "spec42-core",
@@ -901,7 +901,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-core"
-version = "0.11.0"
+version = "0.12.0"
 dependencies = [
  "clap",
  "semantic-model",
