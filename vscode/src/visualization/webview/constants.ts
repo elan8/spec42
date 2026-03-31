@@ -86,6 +86,67 @@ export const GENERAL_VIEW_CATEGORIES = [
     { id: 'other', label: 'Other', keywords: [] as string[], color: '#808080' },
 ] as const;
 
+export const GENERAL_VIEW_CONCERNS = [
+    {
+        id: 'structure',
+        label: 'Structure',
+        categories: ['partDefs', 'parts', 'portDefs', 'ports', 'attributeDefs', 'attributes', 'items', 'packages'],
+        color: '#2D8A6E',
+    },
+    {
+        id: 'requirements',
+        label: 'Requirements',
+        categories: ['reqDefs', 'requirements', 'usecaseDefs', 'usecases', 'concerns'],
+        color: '#5B8FC4',
+    },
+    {
+        id: 'behavior',
+        label: 'Behavior',
+        categories: ['actionDefs', 'actions'],
+        color: '#D4A02C',
+    },
+    {
+        id: 'states',
+        label: 'States',
+        categories: ['stateDefs', 'states'],
+        color: '#B85C38',
+    },
+    {
+        id: 'interfaces',
+        label: 'Interfaces',
+        categories: ['interfaceDefs', 'interfaces'],
+        color: '#7BAA7D',
+    },
+    {
+        id: 'allocations',
+        label: 'Allocations',
+        categories: ['allocationDefs', 'allocations'],
+        color: '#9CA3AF',
+    },
+] as const;
+
+export const GENERAL_VIEW_ALWAYS_ON_CATEGORIES = [
+    'other',
+    'constraintDefs',
+    'constraints',
+    'enumerations',
+    'metadata',
+    'occurrences',
+] as const;
+
+export function getGeneralViewEnabledCategoryIds(enabledConcernIds: Iterable<string>): Set<string> {
+    const enabled = new Set<string>(GENERAL_VIEW_ALWAYS_ON_CATEGORIES);
+    const concernSet = new Set(enabledConcernIds);
+
+    GENERAL_VIEW_CONCERNS.forEach((concern) => {
+        if (concernSet.has(concern.id)) {
+            concern.categories.forEach((categoryId) => enabled.add(categoryId));
+        }
+    });
+
+    return enabled;
+}
+
 /**
  * General View palette - Option C semantic (align with SysML pillars).
  * Structural: greens/teals | Behavior: ambers | Requirements: soft blues.

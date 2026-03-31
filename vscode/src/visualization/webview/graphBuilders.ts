@@ -10,7 +10,7 @@ import { formatSysMLStereotype, getTypeColor } from './shared';
 import { GENERAL_VIEW_CATEGORIES } from './constants';
 
 export interface GeneralViewGraphContext {
-    expandedGeneralCategories: Set<string>;
+    enabledGeneralCategories: Set<string>;
     webviewLog?: (level: 'info' | 'warn' | 'error', ...args: any[]) => void;
 }
 const verboseWebviewLogging = Boolean((typeof window !== 'undefined' && (window as any).__VIZ_INIT?.verboseLogging));
@@ -206,7 +206,7 @@ export function graphToGeneralViewElements(
         const typeLower = ((node.type || node.element_type || '') as string).toLowerCase().trim();
         const category = getCategoryForType(typeLower);
         if (category === 'packages') return false;
-        return ctx.expandedGeneralCategories.has(category) || (category === 'other' && ctx.expandedGeneralCategories.has('other'));
+        return ctx.enabledGeneralCategories.has(category);
     });
     const dedupedNodesById = new Map<string, any>();
     filteredNodes.forEach((node: any) => {

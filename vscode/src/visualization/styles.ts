@@ -37,7 +37,8 @@ export function getVisualizerStyles(): string {
     }
     #general-chips {
         display: none;
-        align-items: center;
+        align-items: flex-start;
+        flex-direction: column;
         gap: 8px;
         flex-wrap: wrap;
         margin-top: 10px;
@@ -59,11 +60,38 @@ export function getVisualizerStyles(): string {
         color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
         font-size: 11px;
         font-weight: 600;
+        gap: 8px;
+        box-shadow: none;
+    }
+    .general-preset-btn:hover {
+        border-color: var(--general-chip-accent, var(--vscode-focusBorder));
+        box-shadow: none;
     }
     .general-preset-btn.active {
+        background: color-mix(in srgb, var(--general-chip-accent, var(--vscode-button-background)) 18%, var(--vscode-editor-background));
+        color: var(--vscode-editor-foreground);
+        border-color: var(--general-chip-accent, var(--vscode-button-background));
+    }
+    .general-preset-btn-secondary {
+        font-weight: 500;
+    }
+    .general-preset-btn-secondary.active {
         background: var(--vscode-button-background);
         color: var(--vscode-button-foreground);
         border-color: var(--vscode-button-background);
+    }
+    .general-preset-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--general-chip-accent, var(--vscode-badge-background, var(--vscode-button-background))) 22%, transparent);
+        color: inherit;
+        font-size: 10px;
+        font-weight: 700;
     }
     #view-status-banner {
         display: none;

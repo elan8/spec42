@@ -31,7 +31,9 @@ import {
     STATE_LAYOUT_ICONS,
     VIEW_OPTIONS,
     GENERAL_VIEW_PALETTE,
-    GENERAL_VIEW_CATEGORIES
+    GENERAL_VIEW_CATEGORIES,
+    GENERAL_VIEW_CONCERNS,
+    getGeneralViewEnabledCategoryIds
 } from './constants';
 import {
     convertToHierarchy,
@@ -89,7 +91,8 @@ import { buildGeneralViewGraph } from './graphBuilders';
     let activityLayoutDirection = 'vertical'; // Action-flow diagrams default to top-down
     let stateLayoutOrientation = 'horizontal'; // State-transition layout: 'horizontal', 'vertical', or 'force'
     let filteredData = null; // Active filter state shared across views
-    let requirementsVisible = true; // General View toggle for requirement nodes/links
+    const defaultGeneralConcernIds = new Set(GENERAL_VIEW_CONCERNS.map((concern) => concern.id));
+    let enabledGeneralConcerns = new Set(defaultGeneralConcernIds);
     let isRendering = false;
     let showMetadata = false;
     let showCategoryHeaders = true; // Show category headers in General View
@@ -351,8 +354,12 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 break;
             case 'setRequirementsVisibleForTest':
                 if (typeof message.enabled === 'boolean') {
-                    requirementsVisible = message.enabled;
-                    updateActiveViewButton(currentView);
+                    if (message.enabled) {
+                        enabledGeneralConcerns.add('requirements');
+                    } else {
+                        enabledGeneralConcerns.delete('requirements');
+                    }
+                    renderGeneralChips();
                     if (currentView === 'general-view') {
                         renderVisualization('general-view', false);
                     }
@@ -692,28 +699,75 @@ import { buildGeneralViewGraph } from './graphBuilders';
         d3.selectAll('.hierarchy-cell').style('opacity', null);
     }
 
-    const expandedGeneralCategories = new Set([
-        'partDefs',
-        'parts',
-        'reqDefs',
-        'requirements',
-        'stateDefs',
-        'states',
-        'usecaseDefs',
-        'usecases',
-        'interfaceDefs',
-        'interfaces',
-        'items',
-        'concerns',
-    ]);
-
-    function renderGeneralChips(_typeStats) {
+    function renderGeneralChips(typeStats = {}) {
         const container = document.getElementById('general-chips');
         if (!container) return;
         container.innerHTML = '';
+        if (currentView !== 'general-view') return;
 
-        // General View preset toolbar removed by request.
-        // Keep method as a no-op for renderer call-site compatibility.
+        const concernStats = new Map();
+        GENERAL_VIEW_CONCERNS.forEach((concern) => {
+            const count = concern.categories.reduce((total, categoryId) => total + (Number(typeStats?.[categoryId]) || 0), 0);
+            concernStats.set(concern.id, count);
+        });
+
+        const concernRow = document.createElement('div');
+        concernRow.className = 'general-presets';
+
+        GENERAL_VIEW_CONCERNS.forEach((concern) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'general-preset-btn';
+            if (enabledGeneralConcerns.has(concern.id)) {
+                button.classList.add('active');
+            }
+            button.style.setProperty('--general-chip-accent', concern.color);
+            button.setAttribute('data-concern-id', concern.id);
+            button.setAttribute(
+                'title',
+                enabledGeneralConcerns.has(concern.id)
+                    ? `Hide ${concern.label.toLowerCase()} elements`
+                    : `Show ${concern.label.toLowerCase()} elements`
+            );
+            const count = concernStats.get(concern.id);
+            button.innerHTML = `<span>${concern.label}</span><span class="general-preset-count">${count}</span>`;
+            button.addEventListener('click', async () => {
+                if (enabledGeneralConcerns.has(concern.id)) {
+                    enabledGeneralConcerns.delete(concern.id);
+                } else {
+                    enabledGeneralConcerns.add(concern.id);
+                }
+                renderGeneralChips(typeStats);
+                if (currentView === 'general-view') {
+                    await renderVisualization('general-view', false);
+                }
+            });
+            concernRow.appendChild(button);
+        });
+
+        const actionsRow = document.createElement('div');
+        actionsRow.className = 'general-presets';
+
+        const showAllButton = document.createElement('button');
+        showAllButton.type = 'button';
+        showAllButton.className = 'general-preset-btn general-preset-btn-secondary';
+        const allEnabled = enabledGeneralConcerns.size === defaultGeneralConcernIds.size;
+        if (allEnabled) {
+            showAllButton.classList.add('active');
+        }
+        showAllButton.textContent = 'Show all';
+        showAllButton.title = 'Enable all General View concerns';
+        showAllButton.addEventListener('click', async () => {
+            enabledGeneralConcerns = new Set(defaultGeneralConcernIds);
+            renderGeneralChips(typeStats);
+            if (currentView === 'general-view') {
+                await renderVisualization('general-view', false);
+            }
+        });
+        actionsRow.appendChild(showAllButton);
+
+        container.appendChild(concernRow);
+        container.appendChild(actionsRow);
     }
 
     function getCategoryForType(typeLower) {
@@ -727,7 +781,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
     function buildGeneralViewGraphForView(dataOrElements, relationships = []) {
         return buildGeneralViewGraph(dataOrElements, relationships, {
-            expandedGeneralCategories,
+            enabledGeneralCategories: getGeneralViewEnabledCategoryIds(enabledGeneralConcerns),
             webviewLog
         });
     }
@@ -903,7 +957,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
         // Show/hide appropriate chip containers based on active view
         const generalChips = document.getElementById('general-chips');
         if (generalChips) {
-            generalChips.style.display = 'none';
+            generalChips.style.display = activeView === 'general-view' ? 'flex' : 'none';
         }
 
         // Show/hide layout direction button for specific views
@@ -911,20 +965,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
         if (layoutDirBtn) {
             const showLayoutBtn = ['state-transition-view'].includes(activeView);
             layoutDirBtn.style.display = showLayoutBtn ? 'inline-flex' : 'none';
-        }
-
-        const requirementsToggleBtn = document.getElementById('requirements-toggle-btn');
-        if (requirementsToggleBtn) {
-            const showRequirementsToggle = activeView === 'general-view';
-            requirementsToggleBtn.style.display = showRequirementsToggle ? 'inline-flex' : 'none';
-            requirementsToggleBtn.innerHTML = '<span class="codicon ' + (requirementsVisible ? 'codicon-check' : 'codicon-x') + '"></span> Requirements: ' + (requirementsVisible ? 'ON' : 'OFF');
-            requirementsToggleBtn.setAttribute(
-                'title',
-                requirementsVisible
-                    ? 'Hide requirement nodes and requirement edges'
-                    : 'Show requirement nodes and requirement edges'
-            );
-            requirementsToggleBtn.classList.toggle('view-btn-active', requirementsVisible);
         }
 
         const dropdownButton = document.getElementById('view-dropdown-btn');
@@ -1405,39 +1445,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
                     packageNames: packagesArray.map((p: any) => p?.name).filter(Boolean),
                 });
             }
-        }
-
-        if (view === 'general-view' && !requirementsVisible) {
-            const filterGraphRequirements = (graph: any) => {
-                if (!graph || !Array.isArray(graph.nodes) || !Array.isArray(graph.edges)) {
-                    return graph;
-                }
-                const isRequirementNode = (node: any) => {
-                    const t = String(node?.type || node?.element_type || '').toLowerCase();
-                    return t.includes('requirement');
-                };
-                const requirementEdgeTypes = new Set(['subject', 'satisfy', 'verify']);
-                const keptNodes = graph.nodes.filter((node: any) => !isRequirementNode(node));
-                const keptNodeIds = new Set(keptNodes.map((n: any) => n.id));
-                const keptEdges = graph.edges.filter((edge: any) => {
-                    const edgeType = String(edge?.type || edge?.rel_type || '').toLowerCase();
-                    if (requirementEdgeTypes.has(edgeType)) {
-                        return false;
-                    }
-                    return keptNodeIds.has(edge.source) && keptNodeIds.has(edge.target);
-                });
-                return { nodes: keptNodes, edges: keptEdges };
-            };
-
-            const sourceGraph = (baseData?.generalViewGraph?.nodes || baseData?.generalViewGraph?.edges)
-                ? baseData.generalViewGraph
-                : baseData?.graph;
-            const filteredGraph = filterGraphRequirements(sourceGraph);
-            baseData = {
-                ...baseData,
-                graph: filteredGraph,
-                generalViewGraph: filteredGraph,
-            };
         }
 
         const dataForPrepare = view === 'interconnection-view' ? { ...baseData, selectedIbdRoot } : baseData;
@@ -2452,16 +2459,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
     // Add event listeners for action buttons
     document.getElementById('reset-btn').addEventListener('click', resetZoom);
     document.getElementById('layout-direction-btn').addEventListener('click', toggleLayoutDirection);
-    const requirementsToggleBtn = document.getElementById('requirements-toggle-btn');
-    if (requirementsToggleBtn) {
-        requirementsToggleBtn.addEventListener('click', async () => {
-            requirementsVisible = !requirementsVisible;
-            updateActiveViewButton(currentView);
-            if (currentView === 'general-view') {
-                await renderVisualization('general-view', false);
-            }
-        });
-    }
 
     // Legend popup toggle
     (function setupLegend() {
