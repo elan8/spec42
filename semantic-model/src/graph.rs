@@ -828,6 +828,25 @@ mod tests {
             "expected transition from composite when source omitted; edges: {:?}",
             edges
         );
+        let transition_nodes = g.nodes_for_uri(&uri);
+        let named_transition = transition_nodes
+            .iter()
+            .find(|n| n.element_kind == "transition" && n.name == "u")
+            .expect("expected named transition node");
+        assert_eq!(
+            named_transition
+                .attributes
+                .get("source")
+                .and_then(|v| v.as_str()),
+            Some("P::M::idle")
+        );
+        assert_eq!(
+            named_transition
+                .attributes
+                .get("target")
+                .and_then(|v| v.as_str()),
+            Some("P::M::run")
+        );
     }
 
     #[test]

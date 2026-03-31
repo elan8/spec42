@@ -125,11 +125,194 @@ describe("prepareDataForView", () => {
         assert.ok(Array.isArray(result.diagrams), "action-flow-view should have diagrams array");
     });
 
-    it.skip("state-transition-view produces states and transitions (disabled for release)", () => {
-        const data = createMockData();
+    it("state-transition-view produces normalized state machines", () => {
+        const data = createMockData({
+            elements: [
+                {
+                    name: "TimerStateMachine",
+                    type: "state def",
+                    id: "TimerStateMachine",
+                    children: [
+                        { name: "idle", type: "state", id: "idle", children: [], relationships: [] },
+                        { name: "running", type: "state", id: "running", children: [], relationships: [] },
+                    ],
+                    relationships: [],
+                },
+            ],
+            relationships: [
+                { type: "transition", source: "idle", target: "running", name: "start" },
+            ],
+        });
         const result = prepareDataForView(data, "state-transition-view");
+        assert.ok(Array.isArray(result.stateMachines), "state-transition-view should have stateMachines array");
+        assert.strictEqual(result.stateMachines.length, 1, "should detect one state machine");
         assert.ok(Array.isArray(result.states), "state-transition-view should have states array");
         assert.ok(Array.isArray(result.transitions), "state-transition-view should have transitions array");
+        assert.ok(
+            result.stateMachines[0].states.length >= 2,
+            "state machine should contain normalized states",
+        );
+        assert.ok(
+            result.stateMachines[0].transitions.length >= 1,
+            "state machine should contain transitions",
+        );
+    });
+
+    it("state-transition-view classifies initial/final states and self loops", () => {
+        const data = createMockData({
+            elements: [
+                {
+                    name: "TimerStateMachine",
+                    type: "state def",
+                    id: "TimerStateMachine",
+                    children: [
+                        { name: "start", type: "initial state", id: "start", children: [], relationships: [] },
+                        { name: "active", type: "state", id: "active", children: [], relationships: [] },
+                        { name: "done", type: "final state", id: "done", children: [], relationships: [] },
+                    ],
+                    relationships: [],
+                },
+            ],
+            relationships: [
+                { type: "transition", source: "start", target: "active", name: "boot" },
+                { type: "transition", source: "active", target: "active", name: "tick" },
+                { type: "transition", source: "active", target: "done", name: "finish" },
+            ],
+        });
+        const result = prepareDataForView(data, "state-transition-view");
+        const machine = result.stateMachines[0];
+        const start = machine.states.find((state: any) => state.id === "start");
+        const done = machine.states.find((state: any) => state.id === "done");
+        const selfLoop = machine.transitions.find((transition: any) => transition.name === "tick");
+
+        assert.strictEqual(start.kind, "initial");
+        assert.strictEqual(done.kind, "final");
+        assert.strictEqual(selfLoop.selfLoop, true, "self-loop transition should be marked");
+    });
+
+    it("state-transition-view preserves multiple transitions between the same states", () => {
+        const data = createMockData({
+            elements: [
+                {
+                    name: "DoorStateMachine",
+                    type: "state def",
+                    id: "DoorStateMachine",
+                    children: [
+                        { name: "closed", type: "state", id: "closed", children: [], relationships: [] },
+                        { name: "open", type: "state", id: "open", children: [], relationships: [] },
+                    ],
+                    relationships: [],
+                },
+            ],
+            relationships: [
+                { type: "transition", source: "closed", target: "open", name: "unlock" },
+                { type: "transition", source: "closed", target: "open", name: "force_open" },
+            ],
+        });
+        const result = prepareDataForView(data, "state-transition-view");
+        assert.strictEqual(
+            result.stateMachines[0].transitions.filter((transition: any) => transition.name !== "entry").length,
+            2,
+        );
+    });
+
+    it("state-transition-view prefers transition element names over synthetic relationship names", () => {
+        const data = createMockData({
+            elements: [
+                {
+                    name: "FlightModeStateMachine",
+                    type: "state def",
+                    id: "FlightModeStateMachine",
+                    children: [
+                        { name: "manual", type: "state", id: "manual", children: [], relationships: [] },
+                        { name: "attitudeHold", type: "state", id: "attitudeHold", children: [], relationships: [] },
+                        {
+                            name: "to_attitude_from_manual",
+                            type: "transition",
+                            id: "transition-a",
+                            source: "manual",
+                            target: "attitudeHold",
+                            children: [],
+                            relationships: [],
+                        },
+                    ],
+                    relationships: [],
+                },
+            ],
+            relationships: [
+                { type: "transition", source: "manual", target: "attitudeHold", name: "transition_15" },
+            ],
+        });
+
+        const result = prepareDataForView(data, "state-transition-view");
+        const transition = result.stateMachines[0].transitions.find((candidate: any) => candidate.name !== "entry");
+
+        assert.strictEqual(transition.name, "to_attitude_from_manual");
+        assert.strictEqual(transition.label, "to_attitude_from_manual");
+    });
+
+    it("state-transition-view preserves parent-child links for composite states", () => {
+        const data = createMockData({
+            elements: [
+                {
+                    name: "OvenStateMachine",
+                    type: "state def",
+                    id: "OvenStateMachine",
+                    children: [
+                        {
+                            name: "heating",
+                            type: "state",
+                            id: "heating",
+                            children: [
+                                { name: "preheat", type: "state", id: "preheat", children: [], relationships: [] },
+                                { name: "cook", type: "state", id: "cook", children: [], relationships: [] },
+                            ],
+                            relationships: [],
+                        },
+                    ],
+                    relationships: [],
+                },
+            ],
+            relationships: [
+                { type: "transition", source: "preheat", target: "cook", name: "ready" },
+            ],
+        });
+        const result = prepareDataForView(data, "state-transition-view");
+        const machine = result.stateMachines[0];
+        const composite = machine.states.find((state: any) => state.id === "heating");
+        const child = machine.states.find((state: any) => state.id === "preheat");
+
+        assert.strictEqual(composite.kind, "composite");
+        assert.ok(Array.isArray(composite.childIds) && composite.childIds.includes("preheat"));
+        assert.strictEqual(child.parentId, "heating");
+    });
+
+    it("state-transition-view synthesizes an entry node when no explicit initial state exists", () => {
+        const data = createMockData({
+            elements: [
+                {
+                    name: "FlightModeStateMachine",
+                    type: "state def",
+                    id: "FlightModeStateMachine",
+                    children: [
+                        { name: "manual", type: "state", id: "manual", children: [], relationships: [] },
+                        { name: "gpsHold", type: "state", id: "gpsHold", children: [], relationships: [] },
+                    ],
+                    relationships: [],
+                },
+            ],
+            relationships: [
+                { type: "transition", source: "manual", target: "gpsHold", name: "to_gps" },
+            ],
+        });
+        const result = prepareDataForView(data, "state-transition-view");
+        const machine = result.stateMachines[0];
+        const entry = machine.states.find((state: any) => state.kind === "initial");
+        const entryTransition = machine.transitions.find((transition: any) => transition.source === entry.id);
+
+        assert.ok(entry, "an entry state should be synthesized");
+        assert.strictEqual(entry.name, "entry");
+        assert.strictEqual(entryTransition.target, "manual");
     });
 
     it.skip("sequence-view produces sequenceDiagrams (disabled for release)", () => {

@@ -54,7 +54,7 @@ export function renderSequenceView(ctx: RenderContext, data: any): void {
             .style('font-weight', 'bold')
             .style('fill', 'var(--vscode-editor-foreground)')
             .on('click', () => {
-                postJumpToElement(postMessage, { name: diagram.name, id: diagram.id });
+                postJumpToElement(postMessage, { name: diagram.name, id: diagram.id }, { skipCentering: true });
             })
             .style('cursor', 'pointer');
 
@@ -132,7 +132,7 @@ export function renderSequenceView(ctx: RenderContext, data: any): void {
 
             participantGroup.on('click', function (event: any) {
                 event.stopPropagation();
-                postJumpToElement(postMessage, { name: participant.name, id: participant.id || participant.element?.id });
+                postJumpToElement(postMessage, { name: participant.name, id: participant.id || participant.element?.id }, { skipCentering: true });
             })
                 .on('dblclick', function (event: any) {
                     event.stopPropagation();
@@ -168,7 +168,7 @@ export function renderSequenceView(ctx: RenderContext, data: any): void {
             const messageGroup = diagramGroup.append('g')
                 .attr('class', 'sequence-message')
                 .on('click', () => {
-                    postJumpToElement(postMessage, { name: message.name, id: message.id });
+                    postJumpToElement(postMessage, { name: message.name, id: message.id }, { skipCentering: true });
                 })
                 .style('cursor', 'pointer');
 

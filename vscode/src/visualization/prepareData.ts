@@ -359,15 +359,348 @@ export function prepareDataForView(data: any, view: string): any {
         }
 
         case 'state-transition-view': {
-            const stateElements = allElements.filter((el: any) => el.type && (
-                el.type.includes('state') || el.type.includes('State')
-            ));
+            const typeLower = (value: any) => String(value || '').toLowerCase();
+            const normalizeKey = (value: any) => String(value || '').replace(/::/g, '.').trim();
+            const lastSegment = (value: any) => {
+                const normalized = normalizeKey(value);
+                if (!normalized) return '';
+                const parts = normalized.split('.');
+                return parts[parts.length - 1] || '';
+            };
+            const asStringList = (value: any): string[] => {
+                if (Array.isArray(value)) {
+                    return value.flatMap((item) => asStringList(item));
+                }
+                if (value == null) return [];
+                if (typeof value === 'object') {
+                    return Object.values(value).flatMap((item) => asStringList(item));
+                }
+                const normalized = normalizeKey(value);
+                return normalized ? [normalized] : [];
+            };
+            const extractTransitionEndpointAliases = (el: any, direction: 'source' | 'target'): string[] => {
+                const keys = direction === 'source'
+                    ? ['source', 'src', 'from', 'first', 'state', 'start']
+                    : ['target', 'tgt', 'to', 'then', 'next', 'destination'];
+                const directCandidates = keys.flatMap((key) => asStringList(el?.[key]));
+                const attributeCandidates = keys.flatMap((key) => asStringList(el?.attributes?.[key]));
+                const nestedCandidates = keys.flatMap((key) => asStringList(el?.value?.[key]));
+                return Array.from(new Set([...directCandidates, ...attributeCandidates, ...nestedCandidates]));
+            };
+            const likelySyntheticTransitionName = (value: any) => /^transition_\d+$/i.test(String(value || '').trim());
+            const isTransitionElement = (el: any) => typeLower(el?.type).includes('transition');
+            const isStateElement = (el: any) => {
+                const t = typeLower(el?.type);
+                return (t.includes('state') || t.includes('exhibit')) && !isTransitionElement(el);
+            };
+            const isStateDefinition = (el: any) => {
+                const t = typeLower(el?.type);
+                return t.includes('state') && (t.includes('def') || t.includes('definition'));
+            };
+            const hasStateChildren = (el: any) => Array.isArray(el?.children) && el.children.some((child: any) => isStateElement(child));
+            const hasTransitionChildren = (el: any) => Array.isArray(el?.children) && el.children.some((child: any) => isTransitionElement(child));
+            const isLikelyStateMachine = (el: any) => {
+                if (!isStateElement(el)) return false;
+                const t = typeLower(el?.type);
+                const n = typeLower(el?.name);
+                return t.includes('exhibit')
+                    || n.endsWith('states')
+                    || n.includes('statemachine')
+                    || hasTransitionChildren(el)
+                    || hasStateChildren(el);
+            };
+
+            const machineRoots: any[] = [];
+            function findMachineRoots(elementList: any[], insideMachine = false): void {
+                elementList.forEach((el: any) => {
+                    const startsMachine = isLikelyStateMachine(el) && !insideMachine;
+                    if (startsMachine) {
+                        machineRoots.push(el);
+                    }
+                    if (Array.isArray(el?.children) && el.children.length > 0) {
+                        findMachineRoots(el.children, insideMachine || startsMachine);
+                    }
+                });
+            }
+            findMachineRoots(elements);
+
+            function makeStableId(prefix: string, el: any, path: string[]): string {
+                const explicitId = String(el?.id || '').trim();
+                if (explicitId) return explicitId;
+                const explicitQName = String(el?.qualifiedName || '').trim();
+                if (explicitQName) return explicitQName;
+                const fallbackName = String(el?.name || prefix).trim() || prefix;
+                return [prefix, ...path, fallbackName].join('::');
+            }
+
+            function buildMachine(root: any, machineIndex: number) {
+                const machineId = makeStableId(`state-machine-${machineIndex + 1}`, root, []);
+                const normalizedStates: any[] = [];
+                const stateIdByAlias = new Map<string, string>();
+                const transitionElements: any[] = [];
+
+                function registerStateAlias(state: any, normalizedId: string): void {
+                    [
+                        state?.id,
+                        state?.name,
+                        state?.qualifiedName,
+                        state?.parent,
+                    ].forEach((candidate) => {
+                        const key = normalizeKey(candidate);
+                        if (key) stateIdByAlias.set(key, normalizedId);
+                    });
+                }
+
+                function collectTransitionElements(elementList: any[]): void {
+                    elementList.forEach((el: any) => {
+                        if (isTransitionElement(el)) {
+                            transitionElements.push(el);
+                        }
+                        if (Array.isArray(el?.children) && el.children.length > 0) {
+                            collectTransitionElements(el.children);
+                        }
+                    });
+                }
+
+                function collectStates(elementList: any[], parentStateId: string | null, path: string[], depth: number): void {
+                    elementList.forEach((el: any) => {
+                        if (!isStateElement(el) || isTransitionElement(el)) {
+                            return;
+                        }
+
+                        const stateId = makeStableId(`state-${normalizedStates.length + 1}`, el, path);
+                        const nestedChildren = Array.isArray(el?.children) ? el.children.filter((child: any) => isStateElement(child)) : [];
+                        const kind = (() => {
+                            const t = typeLower(el?.type);
+                            if (t.includes('initial')) return 'initial';
+                            if (t.includes('final')) return 'final';
+                            if (nestedChildren.length > 0 || hasTransitionChildren(el)) return 'composite';
+                            return 'state';
+                        })();
+
+                        const normalizedState = {
+                            id: stateId,
+                            name: String(el?.name || `State ${normalizedStates.length + 1}`),
+                            qualifiedName: el?.qualifiedName || el?.id || el?.name || stateId,
+                            type: el?.type || 'state',
+                            kind,
+                            parentId: parentStateId,
+                            childIds: [] as string[],
+                            isDefinition: isStateDefinition(el),
+                            depth,
+                            element: removeCircularRefs(el),
+                        };
+
+                        normalizedStates.push(normalizedState);
+                        registerStateAlias(el, stateId);
+
+                        if (nestedChildren.length > 0) {
+                            collectStates(nestedChildren, stateId, [...path, normalizedState.name], depth + 1);
+                        }
+                    });
+                }
+
+                const rootStateChildren = Array.isArray(root?.children)
+                    ? root.children.filter((child: any) => isStateElement(child))
+                    : [];
+                if (Array.isArray(root?.children) && root.children.length > 0) {
+                    collectTransitionElements(root.children);
+                }
+                collectStates(rootStateChildren, null, [String(root?.name || `StateMachine${machineIndex + 1}`)], 0);
+
+                const statesById = new Map<string, any>();
+                normalizedStates.forEach((state: any) => statesById.set(state.id, state));
+                normalizedStates.forEach((state: any) => {
+                    if (state.parentId && statesById.has(state.parentId)) {
+                        statesById.get(state.parentId).childIds.push(state.id);
+                    }
+                });
+
+                const transitionRecords = transitionElements.map((transitionElement: any, transitionIndex: number) => {
+                    const sourceAliases = extractTransitionEndpointAliases(transitionElement, 'source');
+                    const targetAliases = extractTransitionEndpointAliases(transitionElement, 'target');
+                    return {
+                        element: transitionElement,
+                        index: transitionIndex,
+                        matched: false,
+                        name: String(transitionElement?.name || '').trim(),
+                        label: String(
+                            transitionElement?.label
+                            || transitionElement?.guard
+                            || transitionElement?.attributes?.label
+                            || transitionElement?.attributes?.guard
+                            || '',
+                        ).trim(),
+                        sourceAliases,
+                        targetAliases,
+                    };
+                });
+
+                function resolveStateIdFromRelationshipEndpoint(value: any): string | null {
+                    const aliasCandidates = Array.from(new Set([
+                        normalizeKey(value),
+                        lastSegment(value),
+                    ].filter(Boolean)));
+                    for (const alias of aliasCandidates) {
+                        const match = stateIdByAlias.get(alias);
+                        if (match) return match;
+                    }
+                    return null;
+                }
+
+                function matchTransitionRecord(rel: any, sourceId: string, targetId: string) {
+                    const relName = String(rel?.name || '').trim();
+                    const relSourceName = lastSegment(rel?.source) || statesById.get(sourceId)?.name || '';
+                    const relTargetName = lastSegment(rel?.target) || statesById.get(targetId)?.name || '';
+                    const availableRecords = transitionRecords.filter((record: any) => !record.matched);
+
+                    const scoredRecords = availableRecords.map((record: any) => {
+                        let score = 0;
+                        const sourceMatches = record.sourceAliases.some((alias: string) => {
+                            const resolved = resolveStateIdFromRelationshipEndpoint(alias);
+                            return resolved === sourceId || lastSegment(alias) === normalizeKey(relSourceName);
+                        });
+                        const targetMatches = record.targetAliases.some((alias: string) => {
+                            const resolved = resolveStateIdFromRelationshipEndpoint(alias);
+                            return resolved === targetId || lastSegment(alias) === normalizeKey(relTargetName);
+                        });
+                        if (sourceMatches) score += 5;
+                        if (targetMatches) score += 5;
+                        if (record.name && relName && record.name === relName) score += 8;
+                        if (record.name && likelySyntheticTransitionName(relName)) score += 3;
+                        if (!record.sourceAliases.length && !record.targetAliases.length) {
+                            score += 1;
+                        }
+                        return { record, score };
+                    }).filter(({ score }) => score > 0);
+
+                    scoredRecords.sort((a: any, b: any) => {
+                        if (b.score !== a.score) return b.score - a.score;
+                        return a.record.index - b.record.index;
+                    });
+
+                    const best = scoredRecords[0]?.record || null;
+                    if (best) {
+                        best.matched = true;
+                    }
+                    return best;
+                }
+
+                const transitions = relationships
+                    .filter((rel: any) => typeLower(rel?.type).includes('transition'))
+                    .map((rel: any, relIndex: number) => {
+                        const sourceId = resolveStateIdFromRelationshipEndpoint(rel?.source);
+                        const targetId = resolveStateIdFromRelationshipEndpoint(rel?.target);
+                        if (!sourceId || !targetId) {
+                            return null;
+                        }
+                        const transitionRecord = matchTransitionRecord(rel, sourceId, targetId);
+                        const resolvedName = String(
+                            (!likelySyntheticTransitionName(rel?.name) && rel?.name)
+                            || transitionRecord?.name
+                            || rel?.name
+                            || `transition_${relIndex + 1}`,
+                        ).trim();
+                        const resolvedLabel = String(
+                            rel?.label
+                            || rel?.guard
+                            || ((!likelySyntheticTransitionName(rel?.name) && rel?.name) || '')
+                            || transitionRecord?.label
+                            || transitionRecord?.name
+                            || '',
+                        ).trim();
+                        return {
+                            id: String(rel?.id || `${machineId}::transition::${relIndex + 1}`),
+                            name: resolvedName,
+                            label: resolvedLabel,
+                            source: sourceId,
+                            target: targetId,
+                            sourceName: statesById.get(sourceId)?.name || String(rel?.source || ''),
+                            targetName: statesById.get(targetId)?.name || String(rel?.target || ''),
+                            selfLoop: sourceId === targetId,
+                            relationship: rel,
+                        };
+                    })
+                    .filter(Boolean);
+
+                const hasInitialState = normalizedStates.some((state: any) => state.kind === 'initial');
+                if (!hasInitialState && normalizedStates.length > 0) {
+                    const incomingCount = new Map<string, number>();
+                    normalizedStates.forEach((state: any) => incomingCount.set(state.id, 0));
+                    transitions.forEach((transition: any) => {
+                        incomingCount.set(transition.target, (incomingCount.get(transition.target) || 0) + 1);
+                    });
+                    const preferredInitial =
+                        normalizedStates.find((state: any) => /^idle$/i.test(state.name)) ||
+                        normalizedStates.find((state: any) => /^manual$/i.test(state.name)) ||
+                        normalizedStates
+                            .filter((state: any) => state.kind !== 'final')
+                            .sort((a: any, b: any) => {
+                                const incomingDelta = (incomingCount.get(a.id) || 0) - (incomingCount.get(b.id) || 0);
+                                if (incomingDelta !== 0) return incomingDelta;
+                                return a.name.localeCompare(b.name);
+                            })[0];
+
+                    if (preferredInitial) {
+                        const entryId = `${machineId}::entry`;
+                        normalizedStates.unshift({
+                            id: entryId,
+                            name: 'entry',
+                            qualifiedName: entryId,
+                            type: 'initial state',
+                            kind: 'initial',
+                            parentId: null,
+                            childIds: [],
+                            isDefinition: false,
+                            depth: 0,
+                            element: { name: 'entry', type: 'initial state', id: entryId },
+                        });
+                        transitions.unshift({
+                            id: `${machineId}::entry-transition`,
+                            name: 'entry',
+                            label: 'entry',
+                            source: entryId,
+                            target: preferredInitial.id,
+                            sourceName: 'entry',
+                            targetName: preferredInitial.name,
+                            selfLoop: false,
+                            relationship: null,
+                        });
+                    }
+                }
+
+                return {
+                    id: machineId,
+                    name: String(root?.name || `State Machine ${machineIndex + 1}`),
+                    container: removeCircularRefs(root),
+                    states: normalizedStates,
+                    transitions,
+                };
+            }
+
+            let stateMachines = machineRoots.map((root: any, index: number) => buildMachine(root, index));
+
+            if (stateMachines.length === 0) {
+                const fallbackStates = allElements.filter((el: any) => isStateElement(el) && !isStateDefinition(el));
+                if (fallbackStates.length > 0) {
+                    const fallbackRoot = {
+                        id: 'fallback-state-machine',
+                        name: 'State Machine',
+                        type: 'state machine',
+                        children: fallbackStates,
+                    };
+                    stateMachines = [buildMachine(fallbackRoot, 0)];
+                }
+            }
+
+            const flatStates = stateMachines.flatMap((machine: any) => machine.states);
+            const flatTransitions = stateMachines.flatMap((machine: any) => machine.transitions);
+
             return {
                 ...data,
-                states: stateElements,
-                transitions: relationships.filter((rel: any) =>
-                    rel.type && rel.type.includes('transition')
-                )
+                stateMachines,
+                states: flatStates,
+                transitions: flatTransitions,
             };
         }
 

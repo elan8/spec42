@@ -392,7 +392,7 @@ export function renderActivityView(ctx: RenderContext, data: any): void {
 
     function handleActionClick(action: any) {
         if (action && action.name) {
-            postJumpToElement(postMessage, { name: action.name, id: action.id }, { parentContext: diagram.name });
+            postJumpToElement(postMessage, { name: action.name, id: action.id }, { parentContext: diagram.name, skipCentering: true });
         }
     }
 

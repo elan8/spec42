@@ -71,6 +71,35 @@ pub(super) fn build_from_state_body(
                 } else {
                     parent_id.qualified_name.clone()
                 };
+                let transition_name = if t.name.trim().is_empty() {
+                    format!(
+                        "transition_{}_to_{}",
+                        src.rsplit("::").next().unwrap_or("source"),
+                        tgt.rsplit("::").next().unwrap_or("target")
+                    )
+                } else {
+                    t.name.clone()
+                };
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    &transition_name,
+                    "transition",
+                );
+                let mut attrs = HashMap::new();
+                attrs.insert("source".to_string(), serde_json::json!(&src));
+                attrs.insert("target".to_string(), serde_json::json!(&tgt));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "transition",
+                    transition_name,
+                    span_to_range(&transition_node.span),
+                    attrs,
+                    Some(parent_id),
+                );
                 add_edge_if_both_exist(g, uri, &src, &tgt, RelationshipKind::Transition);
             }
             SDBE::Then(then_node) => {

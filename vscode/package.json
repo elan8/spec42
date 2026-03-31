@@ -462,6 +462,7 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "test": "vscode-test",
+    "test:state-view": "vscode-test --config .vscode-test.state-view.mjs",
     "test:interconnection": "vscode-test --config .vscode-test.interconnection.mjs",
     "test:interconnection-drone": "vscode-test --config .vscode-test.interconnection-drone.mjs",
     "test:multi-file": "vscode-test --config .vscode-test.multi-file.mjs",

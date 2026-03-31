@@ -491,7 +491,7 @@ function renderGeneralNodes(
             const elementName = d.elementName;
             const elementQualifiedName = d.elementQualifiedName || elementName;
             if (elementName) {
-                postJumpToElement(postMessage, { name: elementName, id: elementQualifiedName || undefined });
+                postJumpToElement(postMessage, { name: elementName, id: elementQualifiedName || undefined }, { skipCentering: true });
             }
         });
     });
@@ -644,7 +644,7 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
                 nodeG.select('.graph-node-background').style('stroke', DIAGRAM_STYLE.highlight).style('stroke-width', '4px');
                 const statusEl = document.getElementById('status-text');
                 if (statusEl) statusEl.textContent = (node.name || '') + ' [' + (node.type || 'element') + ']';
-                postJumpToElement(postMessage, { name: node.name, id: node.qualifiedName || node.id });
+                postJumpToElement(postMessage, { name: node.name, id: node.qualifiedName || node.id }, { skipCentering: true });
             });
         });
 

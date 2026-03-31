@@ -89,7 +89,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
     let zoom = null;
     let layoutDirection = 'horizontal'; // Universal layout direction: 'horizontal', 'vertical', or 'auto'
     let activityLayoutDirection = 'vertical'; // Action-flow diagrams default to top-down
-    let stateLayoutOrientation = 'horizontal'; // State-transition layout: 'horizontal', 'vertical', or 'force'
+    let stateLayoutOrientation = 'force'; // State-transition layout: 'horizontal', 'vertical', or 'force'
     let filteredData = null; // Active filter state shared across views
     const defaultGeneralConcernIds = new Set(GENERAL_VIEW_CONCERNS.map((concern) => concern.id));
     let enabledGeneralConcerns = new Set(defaultGeneralConcernIds);
@@ -687,6 +687,11 @@ import { buildGeneralViewGraph } from './graphBuilders';
             el.style('stroke', el.attr('data-original-stroke') || 'var(--vscode-panel-border)');
             el.style('stroke-width', el.attr('data-original-width') || '2px');
         });
+        d3.selectAll('.state-node .node-background').each(function() {
+            const el = d3.select(this);
+            el.style('stroke', el.attr('data-original-stroke') || 'var(--vscode-panel-border)');
+            el.style('stroke-width', el.attr('data-original-width') || '2px');
+        });
         d3.selectAll('.ibd-part rect:first-child').each(function() {
             const el = d3.select(this);
             const orig = el.attr('data-original-stroke');
@@ -856,6 +861,15 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 if (partName === elementName) {
                     targetElement = partG;
                     elementData = { name: elementName, type: 'part' };
+                }
+            });
+        } else if (currentView === 'state-transition-view') {
+            d3.selectAll('.state-node').each(function() {
+                const stateNode = d3.select(this);
+                const stateName = stateNode.attr('data-element-name');
+                if (stateName === elementName) {
+                    targetElement = stateNode;
+                    elementData = { name: elementName, type: 'state' };
                 }
             });
         }
@@ -1085,48 +1099,12 @@ import { buildGeneralViewGraph } from './graphBuilders';
             diagrams = preparedData?.diagrams || [];
             labelText = 'Action Flow';
         } else if (activeView === 'state-transition-view') {
-            // For state view, extract state machines from state elements
             const preparedData = prepareDataForView(currentData, 'state-transition-view');
-            const stateElements = preparedData?.states || [];
-
-            // Find state machine containers using recursive search (same logic as renderStateView)
-            const stateMachineMap = new Map();
-
-            function findStateMachinesForSelector(stateList) {
-                stateList.forEach(s => {
-                    const typeLower = (s.type || '').toLowerCase();
-                    const nameLower = (s.name || '').toLowerCase();
-
-                    // State machine containers: exhibit state, or names ending with "States"
-                    const isContainer = typeLower.includes('exhibit') ||
-                                       nameLower.endsWith('states') ||
-                                       (typeLower.includes('state') && s.children && s.children.length > 0 &&
-                                        s.children.some(c => (c.type || '').toLowerCase().includes('state')));
-
-                    // Skip definitions
-                    if (isContainer && !typeLower.includes('def')) {
-                        stateMachineMap.set(s.name, s);
-                    }
-
-                    // Recurse into children
-                    if (s.children && s.children.length > 0) {
-                        findStateMachinesForSelector(s.children);
-                    }
-                });
-            }
-
-            findStateMachinesForSelector(stateElements);
-
-            diagrams = Array.from(stateMachineMap.entries()).map(([name, element]) => ({
-                name: name,
-                element: element
+            diagrams = (preparedData?.stateMachines || []).map((machine: any) => ({
+                name: machine.name,
+                element: machine.container || null,
+                label: machine.name,
             }));
-
-            // If no state machines found but there are states, show "All States" as single option
-            if (diagrams.length === 0 && stateElements.length > 0) {
-                diagrams = [{ name: 'All States', element: null }];
-            }
-
             labelText = 'State Machine';
         } else if (activeView === 'sequence-view') {
             // Get sequence diagrams
@@ -1710,13 +1688,22 @@ import { buildGeneralViewGraph } from './graphBuilders';
             } else if (view === 'action-flow-view') {
                 renderActivityViewModule(buildRenderContext(width, height), dataToRender);
             } else if (view === 'state-transition-view') {
-                renderStateViewModule(buildRenderContext(width, height), dataToRender);
+                await renderStateViewModule(buildRenderContext(width, height), dataToRender);
+                setTimeout(() => {
+                    if (shouldPreserveZoom) {
+                        restoreZoom();
+                    } else {
+                        zoomToFit('auto');
+                    }
+                    updateDimensionsDisplay();
+                    finishRender();
+                }, 100);
             } else {
                 renderPlaceholderView(width, height, 'Unknown View', 'The selected view is not yet implemented.', dataToRender);
             }
 
             // General view and interconnection view handle zoom/hide in their async .then(); others run here
-            if (view !== 'general-view' && view !== 'interconnection-view') {
+            if (view !== 'general-view' && view !== 'interconnection-view' && view !== 'state-transition-view') {
                 // If zoom was previously modified, restore it; otherwise zoom to fit
                 if (shouldPreserveZoom) {
                     restoreZoom();

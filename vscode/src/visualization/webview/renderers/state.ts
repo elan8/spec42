@@ -1,5 +1,5 @@
 /**
- * State Transition View renderer - states, transitions, guards.
+ * State Transition View renderer - ELK-backed state-machine layout with D3 rendering.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -8,617 +8,570 @@ import { postJumpToElement } from '../jumpToElement';
 import { DIAGRAM_STYLE } from '../styleTokens';
 
 declare const d3: any;
+declare const ELK: any;
 
-export function renderStateView(ctx: RenderContext, data: any): void {
-    const { width, height, svg, g, stateLayoutOrientation, selectedDiagramIndex, postMessage, onStartInlineEdit, renderPlaceholder } = ctx;
+type StateNode = {
+    id: string;
+    name: string;
+    kind: 'initial' | 'final' | 'state' | 'composite';
+    parentId: string | null;
+    childIds: string[];
+    depth?: number;
+};
 
-    if (!data || !data.states || data.states.length === 0) {
-        renderPlaceholder(width, height, 'State Transition View',
-            'No states found to display.\\n\\nThis view shows state machines with states, transitions, and guards.',
-            data);
+type StateTransition = {
+    id: string;
+    name?: string;
+    source: string;
+    target: string;
+    label?: string;
+    selfLoop?: boolean;
+};
+
+type StateMachineScene = {
+    id: string;
+    name: string;
+    states: StateNode[];
+    transitions: StateTransition[];
+};
+
+type ElkSection = {
+    startPoint?: { x: number; y: number };
+    endPoint?: { x: number; y: number };
+    bendPoints?: Array<{ x: number; y: number }>;
+};
+
+type StateRenderContext = RenderContext & { elkWorkerUrl?: string };
+
+const STATE_WIDTH = 240;
+const STATE_HEIGHT = 180;
+const PSEUDO_SIZE = 34;
+const COMPOSITE_MIN_WIDTH = 340;
+const COMPOSITE_MIN_HEIGHT = 320;
+const COMPOSITE_HEADER_HEIGHT = 34;
+
+function sanitizeId(value: string): string {
+    return String(value || '').replace(/[^A-Za-z0-9_.-]/g, '_');
+}
+
+function truncateLabel(value: string | null | undefined, maxLength: number): string {
+    const text = String(value || '');
+    return text.length > maxLength ? text.substring(0, maxLength - 2) + '..' : text;
+}
+
+function pathFromSections(sections: ElkSection[] | undefined): string | null {
+    if (!sections || sections.length === 0) return null;
+    const parts: string[] = [];
+    sections.forEach((section) => {
+        if (!section.startPoint || !section.endPoint) return;
+        parts.push(`M${section.startPoint.x},${section.startPoint.y}`);
+        (section.bendPoints || []).forEach((point) => {
+            parts.push(`L${point.x},${point.y}`);
+        });
+        parts.push(`L${section.endPoint.x},${section.endPoint.y}`);
+    });
+    return parts.length > 0 ? parts.join(' ') : null;
+}
+
+function edgeLabelPositionFromSections(sections: ElkSection[] | undefined): { x: number; y: number } | null {
+    if (!sections || sections.length === 0) return null;
+    const points: Array<{ x: number; y: number }> = [];
+    sections.forEach((section) => {
+        if (section.startPoint) points.push(section.startPoint);
+        (section.bendPoints || []).forEach((point) => points.push(point));
+        if (section.endPoint) points.push(section.endPoint);
+    });
+    if (points.length === 0) return null;
+    return points[Math.floor(points.length / 2)];
+}
+
+function buildSelfLoopPath(node: { x: number; y: number; width: number; height: number }): { path: string; labelX: number; labelY: number } {
+    const startX = node.x + node.width;
+    const startY = node.y + node.height / 2 - 8;
+    const loopRadius = 28;
+    return {
+        path:
+            `M${startX},${startY}` +
+            ` C${startX + loopRadius},${startY - loopRadius}` +
+            ` ${startX + loopRadius},${startY + loopRadius}` +
+            ` ${startX},${startY + 18}`,
+        labelX: startX + loopRadius + 8,
+        labelY: startY,
+    };
+}
+
+function buildFallbackEdgePath(
+    source: { x: number; y: number; width: number; height: number },
+    target: { x: number; y: number; width: number; height: number },
+): { path: string; labelX: number; labelY: number } {
+    const sourceX = source.x + source.width;
+    const sourceY = source.y + source.height / 2;
+    const targetX = target.x;
+    const targetY = target.y + target.height / 2;
+    const midX = (sourceX + targetX) / 2;
+    return {
+        path: `M${sourceX},${sourceY} L${midX},${sourceY} L${midX},${targetY} L${targetX},${targetY}`,
+        labelX: midX,
+        labelY: (sourceY + targetY) / 2 - 8,
+    };
+}
+
+function nodeSizeFor(
+    state: StateNode,
+    metrics?: { degreeByStateId?: Map<string, number>; maxLabelLength?: number; maxDegree?: number; transitionCount?: number },
+): { width: number; height: number } {
+    if (state.kind === 'initial' || state.kind === 'final') {
+        return { width: PSEUDO_SIZE, height: PSEUDO_SIZE };
+    }
+    if (state.kind === 'composite') {
+        const degree = metrics?.degreeByStateId?.get(state.id) || 0;
+        const widthBoost = Math.min(80, degree * 8);
+        const heightBoost = Math.min(180, degree * 18);
+        return { width: COMPOSITE_MIN_WIDTH + widthBoost, height: COMPOSITE_MIN_HEIGHT + heightBoost };
+    }
+    const degree = metrics?.degreeByStateId?.get(state.id) || 0;
+    const denseMachineHeightBoost = Math.min(120, Math.max(0, (metrics?.transitionCount || 0) - 10) * 2.4);
+    const labelBoost = Math.min(45, Math.max(0, (metrics?.maxLabelLength || 0) - 14) * 1.5);
+    const degreeWidthBoost = Math.min(70, Math.max(0, degree - 2) * 7);
+    const degreeHeightBoost = Math.min(190, Math.max(0, degree - 2) * 18);
+    const maxDegreeHeightBoost = Math.min(90, Math.max(0, (metrics?.maxDegree || 0) - 6) * 8);
+    return {
+        width: STATE_WIDTH + labelBoost + degreeWidthBoost,
+        height: STATE_HEIGHT + denseMachineHeightBoost + degreeHeightBoost + maxDegreeHeightBoost,
+    };
+}
+
+function stateKindClass(kind: string): string {
+    if (kind === 'initial') return 'state-initial';
+    if (kind === 'final') return 'state-final';
+    if (kind === 'composite') return 'state-composite';
+    return 'state-regular';
+}
+
+function machineDirection(
+    layoutOrientation: string,
+    machine?: StateMachineScene,
+): string {
+    if (layoutOrientation === 'vertical') return 'DOWN';
+    if (layoutOrientation === 'horizontal') return 'RIGHT';
+    const stateCount = machine?.states.filter((state) => state.kind !== 'initial' && state.kind !== 'final').length || 0;
+    const transitionCount = machine?.transitions.length || 0;
+    const density = stateCount > 0 ? transitionCount / stateCount : 0;
+    return density >= 2 ? 'DOWN' : 'RIGHT';
+}
+
+function renderStateNode(
+    group: any,
+    state: StateNode,
+    layout: { x: number; y: number; width: number; height: number },
+    defs: any,
+    postMessage: (msg: unknown) => void,
+    onStartInlineEdit: (nodeG: any, elementName: string, x: number, y: number, width: number) => void,
+    clearVisualHighlights: () => void,
+): void {
+    const nodeGroup = group.append('g')
+        .attr('class', `state-node elk-node ${stateKindClass(state.kind)}`)
+        .attr('data-element-name', state.name)
+        .attr('data-state-id', state.id)
+        .attr('transform', `translate(${layout.x}, ${layout.y})`)
+        .style('cursor', 'pointer');
+
+    const gradientId = `state-gradient-${sanitizeId(state.id)}`;
+
+    if (state.kind === 'initial') {
+        nodeGroup.append('circle')
+            .attr('class', 'graph-node-background node-background')
+            .attr('cx', layout.width / 2)
+            .attr('cy', layout.height / 2)
+            .attr('r', 14)
+            .attr('data-original-stroke', DIAGRAM_STYLE.nodeBorder)
+            .attr('data-original-width', '2px')
+            .style('fill', DIAGRAM_STYLE.edgePrimary)
+            .style('stroke', DIAGRAM_STYLE.nodeBorder)
+            .style('stroke-width', '2px');
+    } else if (state.kind === 'final') {
+        nodeGroup.append('circle')
+            .attr('class', 'graph-node-background node-background')
+            .attr('cx', layout.width / 2)
+            .attr('cy', layout.height / 2)
+            .attr('r', 15)
+            .attr('data-original-stroke', DIAGRAM_STYLE.nodeBorder)
+            .attr('data-original-width', '2px')
+            .style('fill', 'var(--vscode-editor-background)')
+            .style('stroke', DIAGRAM_STYLE.nodeBorder)
+            .style('stroke-width', '2px');
+        nodeGroup.append('circle')
+            .attr('cx', layout.width / 2)
+            .attr('cy', layout.height / 2)
+            .attr('r', 9)
+            .style('fill', DIAGRAM_STYLE.edgePrimary)
+            .style('stroke', 'none');
+    } else {
+        const gradient = defs.append('linearGradient')
+            .attr('id', gradientId)
+            .attr('x1', '0%')
+            .attr('y1', '0%')
+            .attr('x2', '0%')
+            .attr('y2', '100%');
+        gradient.append('stop')
+            .attr('offset', '0%')
+            .style('stop-color', 'var(--vscode-editor-background)');
+        gradient.append('stop')
+            .attr('offset', '100%')
+            .style('stop-color', state.kind === 'composite'
+                ? 'var(--vscode-editorWidget-background)'
+                : 'var(--vscode-sideBar-background)');
+
+        nodeGroup.append('rect')
+            .attr('class', 'graph-node-background node-background')
+            .attr('width', layout.width)
+            .attr('height', layout.height)
+            .attr('rx', state.kind === 'composite' ? 10 : 8)
+            .attr('ry', state.kind === 'composite' ? 10 : 8)
+            .attr('data-original-stroke', DIAGRAM_STYLE.nodeBorder)
+            .attr('data-original-width', state.kind === 'composite' ? '2.5px' : '2px')
+            .style('fill', `url(#${gradientId})`)
+            .style('stroke', DIAGRAM_STYLE.nodeBorder)
+            .style('stroke-width', state.kind === 'composite' ? '2.5px' : '2px');
+
+        if (state.kind === 'composite') {
+            nodeGroup.append('rect')
+                .attr('width', layout.width)
+                .attr('height', COMPOSITE_HEADER_HEIGHT)
+                .attr('rx', 10)
+                .style('fill', 'var(--vscode-button-secondaryBackground)')
+                .style('stroke', 'none');
+        }
+    }
+
+    const nameY = state.kind === 'composite'
+        ? 22
+        : (state.kind === 'state' ? layout.height / 2 + 4 : layout.height + 18);
+
+    nodeGroup.append('text')
+        .attr('class', 'node-name-text')
+        .attr('x', layout.width / 2)
+        .attr('y', nameY)
+        .attr('text-anchor', 'middle')
+        .text(truncateLabel(state.name, state.kind === 'composite' ? 26 : 20))
+        .style('font-size', state.kind === 'composite' ? '12px' : '11px')
+        .style('font-weight', '600')
+        .style('fill', 'var(--vscode-editor-foreground)')
+        .style('pointer-events', 'none');
+
+    if (state.kind === 'state') {
+        nodeGroup.append('text')
+            .attr('x', layout.width / 2)
+            .attr('y', 18)
+            .attr('text-anchor', 'middle')
+            .text('«state»')
+            .style('font-size', '9px')
+            .style('fill', 'var(--vscode-descriptionForeground)')
+            .style('pointer-events', 'none');
+    }
+
+    nodeGroup.on('click', function(event: any) {
+        event.stopPropagation();
+        clearVisualHighlights();
+        const selected = d3.select(this);
+        selected.classed('highlighted-element', true);
+        selected.select('.graph-node-background')
+            .style('stroke', DIAGRAM_STYLE.highlight)
+            .style('stroke-width', '3px');
+        postJumpToElement(postMessage, { name: state.name, id: state.id }, { skipCentering: true });
+    }).on('dblclick', function(event: any) {
+        event.stopPropagation();
+        onStartInlineEdit(d3.select(this), state.name, layout.x, layout.y, layout.width);
+    });
+}
+
+function extractStateLayouts(
+    elkNode: any,
+    machine: StateMachineScene,
+    offset: { x: number; y: number },
+    layouts: Map<string, { x: number; y: number; width: number; height: number; depth: number }>,
+    depth: number,
+): void {
+    const absoluteX = offset.x + (elkNode?.x ?? 0);
+    const absoluteY = offset.y + (elkNode?.y ?? 0);
+    const state = machine.states.find((candidate) => candidate.id === elkNode?.id);
+    if (state) {
+        layouts.set(state.id, {
+            x: absoluteX,
+            y: absoluteY,
+            width: elkNode?.width ?? nodeSizeFor(state).width,
+            height: elkNode?.height ?? nodeSizeFor(state).height,
+            depth,
+        });
+    }
+    (elkNode?.children || []).forEach((child: any) => {
+        extractStateLayouts(child, machine, { x: absoluteX, y: absoluteY }, layouts, depth + 1);
+    });
+}
+
+function collectEdgeSections(
+    elkNode: any,
+    offset: { x: number; y: number },
+    acc: Map<string, ElkSection[]>,
+): void {
+    (elkNode?.edges || []).forEach((edge: any) => {
+        if (!edge?.id || !Array.isArray(edge.sections)) return;
+        acc.set(String(edge.id), edge.sections.map((section: ElkSection) => ({
+            startPoint: section.startPoint
+                ? { x: section.startPoint.x + offset.x, y: section.startPoint.y + offset.y }
+                : undefined,
+            endPoint: section.endPoint
+                ? { x: section.endPoint.x + offset.x, y: section.endPoint.y + offset.y }
+                : undefined,
+            bendPoints: Array.isArray(section.bendPoints)
+                ? section.bendPoints.map((point) => ({ x: point.x + offset.x, y: point.y + offset.y }))
+                : undefined,
+        })));
+    });
+    (elkNode?.children || []).forEach((child: any) => {
+        collectEdgeSections(child, { x: offset.x + (child?.x ?? 0), y: offset.y + (child?.y ?? 0) }, acc);
+    });
+}
+
+function buildElkChild(
+    state: StateNode,
+    childrenByParent: Map<string | null, StateNode[]>,
+    direction: string,
+    metrics: { degreeByStateId: Map<string, number>; maxLabelLength: number },
+): any {
+    const size = nodeSizeFor(state, metrics);
+    const childStates = childrenByParent.get(state.id) || [];
+    const elkNode: any = {
+        id: state.id,
+        width: size.width,
+        height: size.height,
+    };
+
+    if (state.kind === 'composite') {
+        elkNode.layoutOptions = {
+            'elk.algorithm': 'layered',
+            'elk.direction': direction,
+            'elk.padding': `[top=${COMPOSITE_HEADER_HEIGHT + 16},left=20,bottom=20,right=20]`,
+            'elk.edgeRouting': 'ORTHOGONAL',
+            'elk.hierarchyHandling': 'INCLUDE_CHILDREN',
+            'elk.layered.spacing.nodeNodeBetweenLayers': '110',
+            'elk.spacing.nodeNode': '90',
+        };
+        elkNode.children = childStates.map((child) => buildElkChild(child, childrenByParent, direction, metrics));
+    }
+
+    return elkNode;
+}
+
+async function layoutStateMachine(
+    ctx: StateRenderContext,
+    machine: StateMachineScene,
+): Promise<{
+    layouts: Map<string, { x: number; y: number; width: number; height: number; depth: number }>;
+    edgeSectionsById: Map<string, ElkSection[]>;
+}> {
+    const direction = machineDirection(ctx.stateLayoutOrientation, machine);
+    const childrenByParent = new Map<string | null, StateNode[]>();
+    machine.states.forEach((state) => {
+        const key = state.parentId || null;
+        if (!childrenByParent.has(key)) {
+            childrenByParent.set(key, []);
+        }
+        childrenByParent.get(key)!.push(state);
+    });
+
+    const topLevelStates = childrenByParent.get(null) || [];
+    const degreeByStateId = new Map<string, number>();
+    machine.states.forEach((state) => degreeByStateId.set(state.id, 0));
+    machine.transitions.forEach((transition) => {
+        degreeByStateId.set(transition.source, (degreeByStateId.get(transition.source) || 0) + 1);
+        degreeByStateId.set(transition.target, (degreeByStateId.get(transition.target) || 0) + 1);
+    });
+    const maxLabelLength = Math.max(
+        0,
+        ...machine.transitions.map((transition) => String(transition.label || transition.name || '').length),
+    );
+    const maxDegree = Math.max(0, ...Array.from(degreeByStateId.values()));
+    const metrics = { degreeByStateId, maxLabelLength, maxDegree, transitionCount: machine.transitions.length };
+    if (typeof ELK === 'undefined') {
+        throw new Error('ELK layout library not loaded');
+    }
+
+    const elk = new ELK({ workerUrl: ctx.elkWorkerUrl || undefined });
+    const elkGraph = {
+        id: machine.id,
+        layoutOptions: {
+            'elk.algorithm': 'layered',
+            'elk.direction': direction,
+            'elk.hierarchyHandling': 'INCLUDE_CHILDREN',
+            'elk.edgeRouting': 'ORTHOGONAL',
+            'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
+            'elk.layered.crossingMinimization.strategy': 'LAYER_SWEEP',
+            'elk.layered.spacing.nodeNodeBetweenLayers': '230',
+            'elk.spacing.nodeNode': '190',
+            'elk.spacing.edgeNode': '130',
+            'elk.spacing.edgeEdge': '110',
+            'elk.padding': '[top=100,left=90,bottom=90,right=90]',
+            'elk.separateConnectedComponents': 'true',
+            'elk.json.edgeCoords': 'ROOT',
+        },
+        children: topLevelStates.map((state) => buildElkChild(state, childrenByParent, direction, metrics)),
+        edges: machine.transitions.map((transition) => ({
+            id: transition.id,
+            sources: [transition.source],
+            targets: [transition.target],
+        })),
+    };
+
+    const laidOut = await elk.layout(elkGraph);
+    const layouts = new Map<string, { x: number; y: number; width: number; height: number; depth: number }>();
+    (laidOut?.children || []).forEach((child: any) => {
+        extractStateLayouts(child, machine, { x: 0, y: 0 }, layouts, 0);
+    });
+    const edgeSectionsById = new Map<string, ElkSection[]>();
+    collectEdgeSections(laidOut, { x: 0, y: 0 }, edgeSectionsById);
+    return { layouts, edgeSectionsById };
+}
+
+export async function renderStateView(ctx: StateRenderContext, data: any): Promise<void> {
+    const {
+        width,
+        height,
+        svg,
+        g,
+        selectedDiagramIndex,
+        postMessage,
+        onStartInlineEdit,
+        renderPlaceholder,
+        clearVisualHighlights,
+    } = ctx;
+
+    const stateMachines: StateMachineScene[] = Array.isArray(data?.stateMachines) ? data.stateMachines : [];
+    if (stateMachines.length === 0) {
+        renderPlaceholder(
+            width,
+            height,
+            'State Transition View',
+            'No state machines found to display.\n\nThis view shows states, transitions, and composite states.',
+            data,
+        );
         return;
-    }
-
-    const allStates = data.states || [];
-    const transitions = data.transitions || [];
-
-    const stateMachineMap = new Map<string, { container: any; states: any[]; transitions: any[]; depth: number }>();
-    const orphanStates: any[] = [];
-
-    function collectChildStates(container: any, collected: any[] = []): any[] {
-        if (container.children && container.children.length > 0) {
-            container.children.forEach((child: any) => {
-                const childType = (child.type || '').toLowerCase();
-                const childName = (child.name || '').toLowerCase();
-
-                const isNestedMachine = childName.endsWith('states') || childType.includes('exhibit');
-
-                if (childType.includes('state') && !childType.includes('def')) {
-                    if (!isNestedMachine) {
-                        collected.push(child);
-                    }
-                }
-                if (!isNestedMachine && child.children) {
-                    collectChildStates(child, collected);
-                }
-            });
-        }
-        return collected;
-    }
-
-    function findStateMachines(stateList: any[], depth = 0) {
-        stateList.forEach((s: any) => {
-            const typeLower = (s.type || '').toLowerCase();
-            const nameLower = (s.name || '').toLowerCase();
-
-            const isContainer = typeLower.includes('exhibit') ||
-                               nameLower.endsWith('states') ||
-                               (typeLower.includes('state') && s.children && s.children.length > 0 &&
-                                s.children.some((c: any) => (c.type || '').toLowerCase().includes('state')));
-
-            const childStates = collectChildStates(s);
-            const isStateMachine = isContainer && (childStates.length > 0 || !typeLower.includes('def'));
-            if (isStateMachine) {
-                stateMachineMap.set(s.name, {
-                    container: s,
-                    states: childStates,
-                    transitions: [],
-                    depth: depth
-                });
-            }
-
-            if (s.children && s.children.length > 0) {
-                findStateMachines(s.children, depth + 1);
-            }
-        });
-    }
-
-    findStateMachines(allStates);
-
-    allStates.forEach((s: any) => {
-        const typeLower = (s.type || '').toLowerCase();
-
-        if (typeLower.includes('def') || typeLower.includes('definition')) {
-            return;
-        }
-        if (stateMachineMap.has(s.name)) {
-            return;
-        }
-
-        let alreadyAssigned = false;
-        for (const [, machineData] of stateMachineMap) {
-            if (machineData.states.some((existing: any) => existing.name === s.name)) {
-                alreadyAssigned = true;
-                break;
-            }
-        }
-        if (alreadyAssigned) return;
-
-        if (s.parent) {
-            for (const [machineName, machineData] of stateMachineMap) {
-                if (s.parent === machineName || (typeof s.parent === 'string' && s.parent.includes(machineName))) {
-                    if (!machineData.states.some((existing: any) => existing.name === s.name)) {
-                        machineData.states.push(s);
-                    }
-                    return;
-                }
-            }
-        }
-
-        orphanStates.push(s);
-    });
-
-    transitions.forEach((t: any) => {
-        for (const [, machineData] of stateMachineMap) {
-            const stateIds = new Set(machineData.states.map((s: any) => s.id || s.name));
-            if (stateIds.has(t.source) || stateIds.has(t.target)) {
-                machineData.transitions.push(t);
-                break;
-            }
-        }
-    });
-
-    const stateMachines = Array.from(stateMachineMap.entries()).map(([name, data]) => ({
-        name,
-        container: data.container,
-        states: data.states,
-        transitions: data.transitions
-    }));
-
-    if (stateMachines.length === 0 && (allStates.length > 0 || orphanStates.length > 0)) {
-        stateMachines.push({
-            name: 'State Machine',
-            container: null,
-            states: allStates.filter((s: any) => {
-                const typeLower = (s.type || '').toLowerCase();
-                return !typeLower.includes('def') && !typeLower.includes('definition');
-            }),
-            transitions: transitions
-        });
-    }
-
-    if (orphanStates.length > 0 && stateMachines.length > 0) {
-        const firstMachine = stateMachines[0];
-        orphanStates.forEach((s: any) => {
-            if (!firstMachine.states.find((existing: any) => existing.name === s.name)) {
-                firstMachine.states.push(s);
-            }
-        });
     }
 
     const machineIndex = Math.min(selectedDiagramIndex, stateMachines.length - 1);
-    const selectedMachine = stateMachines[machineIndex];
-
-    if (!selectedMachine || selectedMachine.states.length === 0) {
-        renderPlaceholder(width, height, 'State Transition View',
-            'No states found in selected state machine.\\n\\nTry selecting a different state machine from the dropdown.',
-            data);
+    const machine = stateMachines[machineIndex];
+    if (!machine || machine.states.length === 0) {
+        renderPlaceholder(
+            width,
+            height,
+            'State Transition View',
+            'No states found in the selected state machine.',
+            data,
+        );
         return;
     }
 
-    const states = selectedMachine.states;
-    const stateMachineNames = [selectedMachine.name];
-
-    const stateWidth = 160;
-    const stateHeight = 60;
-    const horizontalSpacing = 80;
-    const verticalSpacing = 100;
-    const marginLeft = 80;
-    const marginTop = stateMachineNames.length > 0 ? 110 : 80;
-
-    const getStateKey = (state: any) => state.id || state.name || ('state-' + Math.random().toString(36).substr(2, 9));
-
-    const stateUsages = states.filter((s: any) => {
-        const typeLower = (s.type || '').toLowerCase();
-        const nameLower = (s.name || '').toLowerCase();
-
-        if (typeLower.includes('def') || typeLower.includes('definition')) {
-            return false;
-        }
-        if (nameLower.endsWith('states') || nameLower.includes('machine')) {
-            return false;
-        }
-        return true;
-    });
-
-    const stateKeys = new Set(stateUsages.map((s: any) => getStateKey(s)));
-    const outgoing = new Map<string, string[]>();
-    const incoming = new Map<string, string[]>();
-
-    stateUsages.forEach((s: any) => {
-        const key = getStateKey(s);
-        outgoing.set(key, []);
-        incoming.set(key, []);
-    });
-
-    const machineTransitions = selectedMachine.transitions || transitions;
-    machineTransitions.forEach((t: any) => {
-        if (stateKeys.has(t.source) && stateKeys.has(t.target)) {
-            if (outgoing.has(t.source)) {
-                outgoing.get(t.source)!.push(t.target);
-            }
-            if (incoming.has(t.target)) {
-                incoming.get(t.target)!.push(t.source);
-            }
-        }
-    });
-
-    const initialStates = stateUsages.filter((s: any) => {
-        const typeLower = (s.type || '').toLowerCase();
-        return typeLower.includes('initial') && !typeLower.includes('state');
-    });
-    const finalStates = stateUsages.filter((s: any) => {
-        const typeLower = (s.type || '').toLowerCase();
-        return typeLower.includes('final') && !typeLower.includes('state');
-    });
-
-    const levels = new Map<string, number>();
-    const visited = new Set<string>();
-
-    const roots = stateUsages.filter((s: any) => {
-        const key = getStateKey(s);
-        const inc = incoming.get(key) || [];
-        return inc.length === 0 || initialStates.includes(s);
-    });
-
-    let queue: { state: any; level: number }[] = roots.map((s: any) => ({ state: s, level: 0 }));
-    if (queue.length === 0 && stateUsages.length > 0) {
-        queue = [{ state: stateUsages[0], level: 0 }];
-    }
-
-    while (queue.length > 0) {
-        const item = queue.shift()!;
-        const { state, level } = item;
-        const key = getStateKey(state);
-
-        if (visited.has(key)) continue;
-        visited.add(key);
-        levels.set(key, level);
-
-        const targets = outgoing.get(key) || [];
-        targets.forEach((targetKey: string) => {
-            const targetState = stateUsages.find((s: any) => getStateKey(s) === targetKey);
-            if (targetState && !visited.has(targetKey)) {
-                queue.push({ state: targetState, level: level + 1 });
-            }
-        });
-    }
-
-    stateUsages.forEach((s: any) => {
-        const key = getStateKey(s);
-        if (!visited.has(key)) {
-            levels.set(key, Math.max(...Array.from(levels.values()), 0) + 1);
-        }
-    });
-
-    const statesByLevel = new Map<number, any[]>();
-    stateUsages.forEach((s: any) => {
-        const key = getStateKey(s);
-        const level = levels.get(key) || 0;
-        if (!statesByLevel.has(level)) {
-            statesByLevel.set(level, []);
-        }
-        statesByLevel.get(level)!.push(s);
-    });
-
-    const statePositions = new Map<string, { x: number; y: number; state: any }>();
-
-    if (stateLayoutOrientation === 'force') {
-        const nodes = stateUsages.map((s: any) => ({
-            id: getStateKey(s),
-            state: s,
-            x: marginLeft + Math.random() * (width - marginLeft * 2 - stateWidth),
-            y: marginTop + Math.random() * (height - marginTop * 2 - stateHeight)
-        }));
-
-        const nodeMap = new Map<string, any>();
-        nodes.forEach((n: any) => nodeMap.set(n.id, n));
-
-        const links: { source: any; target: any }[] = [];
-        machineTransitions.forEach((t: any) => {
-            const sourceKey = t.sourceName || t.source;
-            const targetKey = t.targetName || t.target;
-            if (nodeMap.has(sourceKey) && nodeMap.has(targetKey) && sourceKey !== targetKey) {
-                links.push({
-                    source: nodeMap.get(sourceKey),
-                    target: nodeMap.get(targetKey)
-                });
-            }
-        });
-
-        const simulation = d3.forceSimulation(nodes)
-            .force('center', d3.forceCenter(width / 2 - stateWidth / 2, height / 2 - stateHeight / 2))
-            .force('charge', d3.forceManyBody().strength(-800))
-            .force('link', d3.forceLink(links).distance(stateWidth + horizontalSpacing).strength(0.5))
-            .force('collide', d3.forceCollide().radius(stateWidth * 0.8))
-            .force('x', d3.forceX(width / 2 - stateWidth / 2).strength(0.05))
-            .force('y', d3.forceY(height / 2 - stateHeight / 2).strength(0.05));
-
-        simulation.stop();
-        for (let i = 0; i < 300; ++i) simulation.tick();
-
-        nodes.forEach((n: any) => {
-            statePositions.set(n.id, {
-                x: Math.max(marginLeft, Math.min(width - stateWidth - marginLeft, n.x)),
-                y: Math.max(marginTop, Math.min(height - stateHeight - marginTop, n.y)),
-                state: n.state
-            });
-        });
-    } else if (stateLayoutOrientation === 'horizontal') {
-        statesByLevel.forEach((statesInLevel, level) => {
-            const levelX = marginLeft + level * (stateWidth + horizontalSpacing);
-            const compactSpacing = 20;
-            const totalHeight = statesInLevel.length * stateHeight + (statesInLevel.length - 1) * compactSpacing;
-            const startY = marginTop + Math.max(0, (height - totalHeight - marginTop * 2) / 3);
-
-            statesInLevel.forEach((state: any, index: number) => {
-                const key = getStateKey(state);
-                statePositions.set(key, {
-                    x: levelX,
-                    y: startY + index * (stateHeight + compactSpacing),
-                    state: state
-                });
-            });
-        });
-    } else {
-        statesByLevel.forEach((statesInLevel, level) => {
-            const levelY = marginTop + level * (stateHeight + verticalSpacing);
-            const compactSpacing = 30;
-            const totalWidth = statesInLevel.length * stateWidth + (statesInLevel.length - 1) * compactSpacing;
-            const startX = marginLeft + Math.max(0, (width - totalWidth - marginLeft * 2) / 3);
-
-            statesInLevel.forEach((state: any, index: number) => {
-                const key = getStateKey(state);
-                statePositions.set(key, {
-                    x: startX + index * (stateWidth + compactSpacing),
-                    y: levelY,
-                    state: state
-                });
-            });
-        });
+    let layoutResult;
+    try {
+        layoutResult = await layoutStateMachine(ctx, machine);
+    } catch (error) {
+        console.error('[State View] ELK layout failed:', error);
+        renderPlaceholder(
+            width,
+            height,
+            'State Transition View',
+            'ELK layout failed for this state machine. Check the output panel for details.',
+            data,
+        );
+        return;
     }
 
     const defs = svg.select('defs').empty() ? svg.append('defs') : svg.select('defs');
     defs.selectAll('#state-arrowhead').remove();
-
     defs.append('marker')
         .attr('id', 'state-arrowhead')
         .attr('viewBox', '0 -5 10 10')
-        .attr('refX', 10)
+        .attr('refX', 9)
         .attr('refY', 0)
-        .attr('markerWidth', 8)
-        .attr('markerHeight', 8)
+        .attr('markerWidth', 7)
+        .attr('markerHeight', 7)
         .attr('orient', 'auto')
         .append('path')
         .attr('d', 'M0,-4L10,0L0,4')
         .style('fill', DIAGRAM_STYLE.edgePrimary);
 
-    const transitionGroup = g.append('g').attr('class', 'state-transitions');
-    const stateGroup = g.append('g').attr('class', 'state-nodes');
+    g.append('text')
+        .attr('x', 36)
+        .attr('y', 32)
+        .attr('class', 'state-machine-title')
+        .text(`State Machine: ${machine.name}`)
+        .style('font-size', '16px')
+        .style('font-weight', '700')
+        .style('fill', 'var(--vscode-editor-foreground)');
 
-    if (stateMachineNames.length > 0) {
-        const titleText = stateMachineNames.length === 1
-            ? 'State Machine: ' + stateMachineNames[0]
-            : 'State Machines: ' + stateMachineNames.join(', ');
+    const edgeGroup = g.append('g').attr('class', 'state-transitions');
+    const nodeGroup = g.append('g').attr('class', 'state-nodes');
 
-        g.append('text')
-            .attr('x', marginLeft)
-            .attr('y', 30)
-            .attr('class', 'state-machine-title')
-            .style('font-size', '16px')
-            .style('font-weight', 'bold')
-            .style('fill', 'var(--vscode-editor-foreground)')
-            .style('opacity', '0.9')
-            .text(titleText);
-    }
+    machine.transitions.forEach((transition) => {
+        const sourceLayout = layoutResult.layouts.get(transition.source);
+        const targetLayout = layoutResult.layouts.get(transition.target);
+        if (!sourceLayout || !targetLayout) return;
 
-    function calculateEdgePath(sourceKey: string, targetKey: string, transitionIndex = 0, totalTransitions = 1): { path: string; labelX: number; labelY: number } | null {
-        const sourcePos = statePositions.get(sourceKey);
-        const targetPos = statePositions.get(targetKey);
+        const sections = layoutResult.edgeSectionsById.get(transition.id);
+        const labelFromSections = edgeLabelPositionFromSections(sections);
+        const path = pathFromSections(sections);
+        const fallback = transition.selfLoop
+            ? buildSelfLoopPath(sourceLayout)
+            : buildFallbackEdgePath(sourceLayout, targetLayout);
 
-        if (!sourcePos || !targetPos) return null;
+        edgeGroup.append('path')
+            .attr('class', 'state-transition')
+            .attr('data-source', transition.source)
+            .attr('data-target', transition.target)
+            .attr('d', path || fallback.path)
+            .style('fill', 'none')
+            .style('stroke', DIAGRAM_STYLE.edgePrimary)
+            .style('stroke-width', '2px')
+            .style('marker-end', 'url(#state-arrowhead)');
 
-        const sx = sourcePos.x;
-        const sy = sourcePos.y;
-        const tx = targetPos.x;
-        const ty = targetPos.y;
+        const label = String(transition.label || transition.name || '').trim();
+        if (label) {
+            const labelPosition = labelFromSections || { x: fallback.labelX, y: fallback.labelY };
+            const displayLabel = truncateLabel(label, 28);
+            const labelWidth = Math.max(42, displayLabel.length * 6 + 10);
 
-        if (sourceKey === targetKey) {
-            const loopSize = 30;
-            return {
-                path: 'M ' + (sx + stateWidth) + ' ' + (sy + stateHeight/2) +
-                       ' C ' + (sx + stateWidth + loopSize) + ' ' + (sy + stateHeight/2 - loopSize) + ',' +
-                         ' ' + (sx + stateWidth + loopSize) + ' ' + (sy + stateHeight/2 + loopSize) + ',' +
-                         ' ' + (sx + stateWidth) + ' ' + (sy + stateHeight/2 + 5),
-                labelX: sx + stateWidth + loopSize + 5,
-                labelY: sy + stateHeight/2
-            };
-        }
+            edgeGroup.append('rect')
+                .attr('x', labelPosition.x - labelWidth / 2)
+                .attr('y', labelPosition.y - 10)
+                .attr('width', labelWidth)
+                .attr('height', 18)
+                .attr('rx', 4)
+                .style('fill', 'var(--vscode-editor-background)')
+                .style('stroke', DIAGRAM_STYLE.edgePrimary)
+                .style('stroke-width', '1px');
 
-        let startX: number, startY: number, endX: number, endY: number;
-        const dx = tx - sx;
-        const dy = ty - sy;
-
-        const offset = (transitionIndex - (totalTransitions - 1) / 2) * 15;
-
-        if (Math.abs(dx) > Math.abs(dy)) {
-            if (dx > 0) {
-                startX = sx + stateWidth;
-                startY = sy + stateHeight / 2 + offset;
-                endX = tx;
-                endY = ty + stateHeight / 2 + offset;
-            } else {
-                startX = sx;
-                startY = sy + stateHeight / 2 + offset;
-                endX = tx + stateWidth;
-                endY = ty + stateHeight / 2 + offset;
-            }
-        } else {
-            if (dy > 0) {
-                startX = sx + stateWidth / 2 + offset;
-                startY = sy + stateHeight;
-                endX = tx + stateWidth / 2 + offset;
-                endY = ty;
-            } else {
-                startX = sx + stateWidth / 2 + offset;
-                startY = sy;
-                endX = tx + stateWidth / 2 + offset;
-                endY = ty + stateHeight;
-            }
-        }
-
-        const midX = (startX + endX) / 2;
-        const midY = (startY + endY) / 2;
-
-        const curveOffset = offset * 0.5;
-        const controlX = midX + curveOffset;
-        const controlY = midY + curveOffset;
-
-        return {
-            path: 'M ' + startX + ' ' + startY + ' Q ' + controlX + ' ' + controlY + ' ' + endX + ' ' + endY,
-            labelX: controlX,
-            labelY: controlY - 8
-        };
-    }
-
-    function drawTransitions() {
-        transitionGroup.selectAll('*').remove();
-
-        const transitionPairs = new Map<string, any[]>();
-        machineTransitions.forEach((t: any) => {
-            const pairKey = t.source + '->' + t.target;
-            if (!transitionPairs.has(pairKey)) {
-                transitionPairs.set(pairKey, []);
-            }
-            transitionPairs.get(pairKey)!.push(t);
-        });
-
-        transitionPairs.forEach((transitionsForPair) => {
-            transitionsForPair.forEach((transition: any, index: number) => {
-                const edgeData = calculateEdgePath(
-                    transition.source,
-                    transition.target,
-                    index,
-                    transitionsForPair.length
-                );
-
-                if (!edgeData) return;
-
-                transitionGroup.append('path')
-                    .attr('d', edgeData.path)
-                    .attr('class', 'transition-path')
-                    .style('fill', 'none')
-                    .style('stroke', DIAGRAM_STYLE.edgePrimary)
-                    .style('stroke-width', '2px')
-                    .style('marker-end', 'url(#state-arrowhead)');
-
-                if (transition.label) {
-                    const labelText = transition.label.length > 15
-                        ? transition.label.substring(0, 12) + '...'
-                        : transition.label;
-
-                    transitionGroup.append('rect')
-                        .attr('x', edgeData.labelX - 25)
-                        .attr('y', edgeData.labelY - 10)
-                        .attr('width', 50)
-                        .attr('height', 14)
-                        .attr('rx', 3)
-                        .style('fill', 'var(--vscode-editor-background)')
-                        .style('opacity', 0.9);
-
-                    transitionGroup.append('text')
-                        .attr('x', edgeData.labelX)
-                        .attr('y', edgeData.labelY)
-                        .attr('text-anchor', 'middle')
-                        .attr('dominant-baseline', 'middle')
-                        .text(labelText)
-                        .style('font-size', '10px')
-                        .style('fill', DIAGRAM_STYLE.edgePrimary)
-                        .style('font-weight', '500');
-                }
-            });
-        });
-    }
-
-    drawTransitions();
-
-    statePositions.forEach((pos, stateKey) => {
-        const state = pos.state;
-        const isInitial = initialStates.includes(state);
-        const isFinal = finalStates.includes(state);
-
-        const stateElement = stateGroup.append('g')
-            .attr('class', 'state-node')
-            .attr('data-state-key', stateKey)
-            .attr('transform', 'translate(' + pos.x + ', ' + pos.y + ')')
-            .style('cursor', 'grab');
-
-        const drag = d3.drag()
-            .on('start', function() {
-                d3.select(this).raise().style('cursor', 'grabbing');
-            })
-            .on('drag', function(event: any) {
-                const newX = pos.x + event.dx;
-                const newY = pos.y + event.dy;
-                pos.x = newX;
-                pos.y = newY;
-
-                d3.select(this).attr('transform', 'translate(' + newX + ', ' + newY + ')');
-
-                drawTransitions();
-            })
-            .on('end', function() {
-                d3.select(this).style('cursor', 'grab');
-            });
-
-        stateElement.call(drag);
-
-        if (isInitial) {
-            stateElement.append('circle')
-                .attr('cx', stateWidth / 2)
-                .attr('cy', stateHeight / 2)
-                .attr('r', 15)
-                .style('fill', 'var(--vscode-charts-green)')
-                .style('stroke', DIAGRAM_STYLE.nodeBorder)
-                .style('stroke-width', '2px');
-
-            stateElement.append('text')
-                .attr('x', stateWidth / 2)
-                .attr('y', stateHeight / 2 + 30)
+            edgeGroup.append('text')
+                .attr('x', labelPosition.x)
+                .attr('y', labelPosition.y + 3)
                 .attr('text-anchor', 'middle')
-                .text(state.name)
-                .style('font-size', '11px')
-                .style('fill', 'var(--vscode-editor-foreground)');
-
-        } else if (isFinal) {
-            stateElement.append('circle')
-                .attr('cx', stateWidth / 2)
-                .attr('cy', stateHeight / 2)
-                .attr('r', 18)
-                .style('fill', 'none')
-                .style('stroke', DIAGRAM_STYLE.nodeBorder)
-                .style('stroke-width', '2px');
-            stateElement.append('circle')
-                .attr('cx', stateWidth / 2)
-                .attr('cy', stateHeight / 2)
-                .attr('r', 12)
+                .text(displayLabel)
+                .style('font-size', '10px')
+                .style('font-weight', '500')
                 .style('fill', DIAGRAM_STYLE.edgePrimary);
-
-            stateElement.append('text')
-                .attr('x', stateWidth / 2)
-                .attr('y', stateHeight / 2 + 30)
-                .attr('text-anchor', 'middle')
-                .text(state.name)
-                .style('font-size', '11px')
-                .style('fill', 'var(--vscode-editor-foreground)');
-
-        } else {
-            const gradient = defs.append('linearGradient')
-                .attr('id', 'state-gradient-' + stateKey.replace(/[^a-zA-Z0-9]/g, '_'))
-                .attr('x1', '0%').attr('y1', '0%')
-                .attr('x2', '0%').attr('y2', '100%');
-            gradient.append('stop')
-                .attr('offset', '0%')
-                .style('stop-color', 'var(--vscode-editor-background)');
-            gradient.append('stop')
-                .attr('offset', '100%')
-                .style('stop-color', 'var(--vscode-editorWidget-background)');
-
-            stateElement.append('rect')
-                .attr('width', stateWidth)
-                .attr('height', stateHeight)
-                .attr('rx', 8)
-                .attr('ry', 8)
-                .style('fill', 'url(#state-gradient-' + stateKey.replace(/[^a-zA-Z0-9]/g, '_') + ')')
-                .style('stroke', DIAGRAM_STYLE.nodeBorder)
-                .style('stroke-width', '2px')
-                .style('filter', 'drop-shadow(2px 2px 3px rgba(0,0,0,0.2))');
-
-            const displayName = state.name.length > 18
-                ? state.name.substring(0, 15) + '...'
-                : state.name;
-
-            stateElement.append('text')
-                .attr('class', 'node-name-text')
-                .attr('data-element-name', state.name)
-                .attr('x', stateWidth / 2)
-                .attr('y', stateHeight / 2 + 4)
-                .attr('text-anchor', 'middle')
-                .text(displayName)
-                .style('font-size', '12px')
-                .style('font-weight', '600')
-                .style('fill', 'var(--vscode-editor-foreground)')
-                .style('pointer-events', 'none');
-
-            stateElement.style('cursor', 'pointer');
-            stateElement.on('click', function(event: any) {
-                event.stopPropagation();
-                postJumpToElement(postMessage, { name: state.name, id: state.id });
-            })
-            .on('dblclick', function(event: any) {
-                event.stopPropagation();
-                onStartInlineEdit(d3.select(this), state.name, pos.x, pos.y, stateWidth);
-            });
         }
     });
+
+    machine.states
+        .slice()
+        .sort((a, b) => (layoutResult.layouts.get(a.id)?.depth || 0) - (layoutResult.layouts.get(b.id)?.depth || 0))
+        .forEach((state) => {
+            const layout = layoutResult.layouts.get(state.id);
+            if (!layout) return;
+            renderStateNode(nodeGroup, state, layout, defs, postMessage, onStartInlineEdit, clearVisualHighlights);
+        });
+
+    const statusEl = document.getElementById('status-text');
+    if (statusEl) {
+        statusEl.textContent = `State Transition View • ${machine.name}`;
+    }
 }
