@@ -995,7 +995,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
         // Show/hide layout direction button for specific views
         const layoutDirBtn = document.getElementById('layout-direction-btn');
         if (layoutDirBtn) {
-            const showLayoutBtn = ['state-transition-view'].includes(activeView);
+            const showLayoutBtn = false;
             layoutDirBtn.style.display = showLayoutBtn ? 'inline-flex' : 'none';
         }
 
