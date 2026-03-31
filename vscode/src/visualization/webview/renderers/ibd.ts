@@ -86,7 +86,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
     const LOG_ROUTE_FRAME_SELECTION = false;
     const ENDPOINT_DRIFT_WARN_PX = 1.25;
 
-    if (Array.isArray(data?.parts) && data.parts.length > 0 && typeof data.parts[0]?.x === 'number') {
+    if (false && Array.isArray(data?.parts) && data.parts.length > 0 && typeof data.parts[0]?.x === 'number') {
         const parts = data.parts;
         const ports = Array.isArray(data?.ports) ? data.ports : [];
         const connectors = Array.isArray(data?.connectors) ? data.connectors : [];

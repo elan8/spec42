@@ -1369,9 +1369,9 @@ import { buildGeneralViewGraph } from './graphBuilders';
                         collectElementIds(selectedPackage.element);
 
                         if (selectedElementIds.size > 0) {
-                            const sourceGraph = (baseData.graph?.nodes?.length || baseData.graph?.edges?.length)
-                                ? baseData.graph
-                                : baseData.generalViewGraph;
+                            const sourceGraph = (baseData.generalViewGraph?.nodes?.length || baseData.generalViewGraph?.edges?.length)
+                                ? baseData.generalViewGraph
+                                : baseData.graph;
                             const filteredNodes = (sourceGraph?.nodes || []).filter((n: any) => selectedElementIds.has(n.id));
                             const filteredEdges = (sourceGraph?.edges || []).filter((e: any) =>
                                 selectedElementIds.has(e.source) && selectedElementIds.has(e.target)
@@ -1429,9 +1429,9 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 return { nodes: keptNodes, edges: keptEdges };
             };
 
-            const sourceGraph = (baseData?.graph?.nodes || baseData?.graph?.edges)
-                ? baseData.graph
-                : baseData?.generalViewGraph;
+            const sourceGraph = (baseData?.generalViewGraph?.nodes || baseData?.generalViewGraph?.edges)
+                ? baseData.generalViewGraph
+                : baseData?.graph;
             const filteredGraph = filterGraphRequirements(sourceGraph);
             baseData = {
                 ...baseData,

@@ -11,8 +11,8 @@ use crate::views::dto::{
     DiagramBoundsDto, DiagramNodeCompartmentsDto, DiagramPointDto, DiagramSceneDto,
     GeneralDiagramEdgeDto, GeneralDiagramNodeDto, GeneralDiagramSceneDto, GraphEdgeDto,
     GraphNodeDto, IbdDiagramSceneDto, IbdSceneConnectorDto, IbdScenePartDto, IbdScenePortDto,
-    IbdSceneRootDto, SysmlDiagramOptionsDto, SysmlDiagramParamsDto, SysmlDiagramResultDto,
-    SysmlDiagramStatsDto, SysmlGraphDto,
+    IbdSceneRootDto, SysmlDiagramOptionsDto, SysmlDiagramResultDto, SysmlDiagramStatsDto,
+    SysmlGraphDto,
 };
 use crate::views::ibd::{self, IbdConnectorDto, IbdDataDto, IbdPartDto, IbdPortDto};
 use crate::semantic_model;
@@ -21,15 +21,78 @@ use crate::semantic_model;
 mod model_projection;
 
 pub fn parse_sysml_diagram_params(v: &serde_json::Value) -> Result<(Url, String, SysmlDiagramOptionsDto)> {
-    let params: SysmlDiagramParamsDto = serde_json::from_value(v.clone())
-        .map_err(|error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()))?;
-    let uri = Url::parse(&params.text_document.uri)
+    let (uri_str, kind, options_value) = if let Some(arr) = v.as_array() {
+        let first = arr.first().ok_or_else(|| {
+            tower_lsp::jsonrpc::Error::invalid_params(
+                "sysml/diagram params array must have at least one element",
+            )
+        })?;
+        let uri_str = if let Some(s) = first.as_str() {
+            Some(s.to_string())
+        } else if let Some(obj) = first.as_object() {
+            obj.get("uri")
+                .and_then(|u| u.as_str())
+                .map(String::from)
+                .or_else(|| {
+                    obj.get("textDocument")
+                        .and_then(|td| td.get("uri"))
+                        .and_then(|u| u.as_str())
+                        .map(String::from)
+                })
+        } else {
+            None
+        };
+        let kind = arr
+            .get(1)
+            .and_then(|value| value.as_str())
+            .map(String::from)
+            .or_else(|| {
+                first.as_object()
+                    .and_then(|obj| obj.get("kind"))
+                    .and_then(|value| value.as_str())
+                    .map(String::from)
+            });
+        let options_value = arr.get(2).cloned().or_else(|| {
+            first.as_object()
+                .and_then(|obj| obj.get("options"))
+                .cloned()
+        });
+        (uri_str, kind, options_value)
+    } else if let Some(obj) = v.as_object() {
+        let uri_str = obj
+            .get("uri")
+            .and_then(|u| u.as_str())
+            .map(String::from)
+            .or_else(|| {
+                obj.get("textDocument")
+                    .and_then(|td| td.get("uri"))
+                    .and_then(|u| u.as_str())
+                    .map(String::from)
+            });
+        let kind = obj.get("kind").and_then(|value| value.as_str()).map(String::from);
+        let options_value = obj.get("options").cloned();
+        (uri_str, kind, options_value)
+    } else {
+        return Err(tower_lsp::jsonrpc::Error::invalid_params(
+            "sysml/diagram params must be an object or array",
+        ));
+    };
+
+    let uri = uri_str.as_ref().ok_or_else(|| {
+        tower_lsp::jsonrpc::Error::invalid_params(
+            "sysml/diagram requires 'uri' or 'textDocument.uri'",
+        )
+    })?;
+    let kind = kind.ok_or_else(|| {
+        tower_lsp::jsonrpc::Error::invalid_params("sysml/diagram requires 'kind'")
+    })?;
+    let uri = Url::parse(uri)
         .map_err(|_| tower_lsp::jsonrpc::Error::invalid_params("sysml/diagram: invalid URI"))?;
-    Ok((
-        crate::common::util::normalize_file_uri(&uri),
-        params.kind,
-        params.options.unwrap_or_default(),
-    ))
+    let options = options_value
+        .and_then(|value| serde_json::from_value::<SysmlDiagramOptionsDto>(value).ok())
+        .unwrap_or_default();
+
+    Ok((crate::common::util::normalize_file_uri(&uri), kind, options))
 }
 
 pub fn empty_diagram_response(kind: &str, uri: &Url, build_start: Instant) -> SysmlDiagramResultDto {
@@ -769,7 +832,7 @@ fn compute_bounds(rects: Vec<(f32, f32, f32, f32)>) -> DiagramBoundsDto {
 
 #[cfg(test)]
 mod tests {
-    use super::build_ibd_scene;
+    use super::{build_ibd_scene, parse_sysml_diagram_params};
     use crate::views::ibd::{IbdConnectorDto, IbdDataDto, IbdPartDto, IbdPortDto, IbdRootViewDto};
 
     #[test]
@@ -861,5 +924,22 @@ mod tests {
                 .len(),
             1
         );
+    }
+
+    #[test]
+    fn parse_sysml_diagram_params_accepts_top_level_uri_shape() {
+        let params = serde_json::json!({
+            "uri": "file:///C:/demo.sysml",
+            "kind": "interconnection-view",
+            "options": {
+                "workspaceVisualization": true
+            }
+        });
+
+        let (uri, kind, options) =
+            parse_sysml_diagram_params(&params).expect("parse diagram params");
+        assert_eq!(uri.as_str(), "file:///c:/demo.sysml");
+        assert_eq!(kind, "interconnection-view");
+        assert_eq!(options.workspace_visualization, Some(true));
     }
 }

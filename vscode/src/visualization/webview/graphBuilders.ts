@@ -541,9 +541,9 @@ export function buildGeneralViewGraph(
     _relationships: any[],
     ctx: GeneralViewGraphContext
 ): { elements: any[]; typeStats: Record<string, number>; packageGroups: GeneralViewPackageGroup[] } {
-    // Prefer merged workspace graph so "All Packages" is not limited to the
-    // first document's generalViewGraph in multi-file workspaces.
-    const graph = dataOrElements?.graph || dataOrElements?.generalViewGraph;
+    // Prefer the canonical backend General View graph so preserved semantic
+    // edges like `subject` survive into the ELK layout input.
+    const graph = dataOrElements?.generalViewGraph || dataOrElements?.graph;
     if (!graph || (!graph.nodes?.length && !graph.edges?.length)) {
         if (!graph && ctx.webviewLog) {
             ctx.webviewLog('info', '[GV] No graph in data; General View requires graph from LSP');

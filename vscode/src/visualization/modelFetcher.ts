@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import type { LspModelProvider } from '../providers/lspModelProvider';
 import { isVerboseLoggingEnabled, log, logError } from '../logger';
 import type {
+    IbdDataDTO,
+    SysMLModelResult,
     SysMLDiagramResult,
     SysMLGraphDTO,
     GraphNodeDTO,
@@ -19,8 +21,10 @@ export interface FetchModelParams {
 export interface UpdateMessage {
     command: 'update';
     graph?: SysMLGraphDTO;
+    generalViewGraph?: SysMLGraphDTO;
     diagramGeneral?: SysMLDiagramResult;
     diagramInterconnection?: SysMLDiagramResult;
+    ibd?: IbdDataDTO;
     sequenceDiagrams: unknown[];
     activityDiagrams: unknown[];
     currentView: string;
@@ -73,6 +77,14 @@ export function mergeGraphs(graphs: SysMLGraphDTO[]): SysMLGraphDTO {
         nodes: Array.from(nodeMap.values()),
         edges,
     };
+}
+
+export function mergeOptionalGraphs(graphs: Array<SysMLGraphDTO | undefined>): SysMLGraphDTO | undefined {
+    const present = graphs.filter((graph): graph is SysMLGraphDTO => Boolean(graph));
+    if (present.length === 0) {
+        return undefined;
+    }
+    return mergeGraphs(present);
 }
 
 /**
@@ -135,7 +147,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     ]);
 
     const results = settledResults
-        .filter((result): result is PromiseFulfilledResult<Awaited<ReturnType<LspModelProvider["getModel"]>>> => result.status === 'fulfilled')
+        .filter((result): result is PromiseFulfilledResult<SysMLModelResult> => result.status === 'fulfilled')
         .map((result) => result.value);
     const failures = settledResults.filter(
         (result): result is PromiseRejectedResult => result.status === 'rejected',
@@ -164,6 +176,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     }
 
     const allGraphs: SysMLGraphDTO[] = [];
+    const allGeneralViewGraphs: SysMLGraphDTO[] = [];
     const allSequenceDiagrams: unknown[] = [];
     const allActivityDiagrams: unknown[] = [];
 
@@ -171,11 +184,15 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         if (result.graph?.nodes?.length || result.graph?.edges?.length) {
             allGraphs.push(result.graph);
         }
+        if (result.generalViewGraph?.nodes?.length || result.generalViewGraph?.edges?.length) {
+            allGeneralViewGraphs.push(result.generalViewGraph);
+        }
         if (result.sequenceDiagrams) allSequenceDiagrams.push(...result.sequenceDiagrams);
         if (result.activityDiagrams) allActivityDiagrams.push(...result.activityDiagrams);
     }
 
     const mergedGraph = mergeGraphs(allGraphs);
+    const mergedGeneralViewGraph = mergeOptionalGraphs(allGeneralViewGraphs);
     const mergedPackageNames = (mergedGraph.nodes || [])
         .filter((n) => ((n.type || '') as string).toLowerCase().includes('package'))
         .map((n) => n.name)
@@ -188,8 +205,10 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     const msg: UpdateMessage = {
         command: 'update',
         graph: mergedGraph,
+        generalViewGraph: mergedGeneralViewGraph ?? primaryResult?.generalViewGraph,
         diagramGeneral: generalDiagram,
         diagramInterconnection: interconnectionDiagram,
+        ibd: primaryResult?.ibd,
         sequenceDiagrams: allSequenceDiagrams,
         activityDiagrams: allActivityDiagrams,
         currentView,

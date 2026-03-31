@@ -85,8 +85,14 @@ fn add_edge_if_both_exist_opt(
     let tgt_key = normalize_for_lookup(target_qualified);
     let src_id = NodeId::new(uri, &src_key);
     let tgt_id = NodeId::new(uri, &tgt_key);
-    let (Some(&src_idx), Some(tgt_node)) = (g.node_index_by_id.get(&src_id), g.get_node(&tgt_id))
-    else {
+    let (Some(&src_idx), Some(tgt_node)) = (g.node_index_by_id.get(&src_id), g.get_node(&tgt_id)) else {
+        g.pending_relationships.push(crate::graph::PendingRelationship {
+            uri: uri.clone(),
+            source_qualified: src_key,
+            target_qualified: tgt_key,
+            kind,
+            target_kinds: target_kinds.map(|kinds| kinds.iter().map(|kind| kind.to_string()).collect()),
+        });
         return false;
     };
     if let Some(kinds) = target_kinds {
@@ -100,6 +106,32 @@ fn add_edge_if_both_exist_opt(
     };
     g.graph.add_edge(src_idx, tgt_idx, kind);
     true
+}
+
+pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
+    let pending = std::mem::take(&mut g.pending_relationships);
+    for pending_edge in pending {
+        if &pending_edge.uri != uri {
+            g.pending_relationships.push(pending_edge);
+            continue;
+        }
+        let source_id = NodeId::new(uri, &pending_edge.source_qualified);
+        let target_id = NodeId::new(uri, &pending_edge.target_qualified);
+        let (Some(&src_idx), Some(tgt_node), Some(&tgt_idx)) = (
+            g.node_index_by_id.get(&source_id),
+            g.get_node(&target_id),
+            g.node_index_by_id.get(&target_id),
+        ) else {
+            g.pending_relationships.push(pending_edge);
+            continue;
+        };
+        if let Some(ref target_kinds) = pending_edge.target_kinds {
+            if !target_kinds.iter().any(|kind| kind == &tgt_node.element_kind) {
+                continue;
+            }
+        }
+        g.graph.add_edge(src_idx, tgt_idx, pending_edge.kind);
+    }
 }
 
 /// Adds a typing edge if source exists and target can be resolved. Tries type_ref as-is,

@@ -19,6 +19,7 @@ pub struct SemanticGraph {
     pub(crate) node_index_by_id: HashMap<NodeId, NodeIndex>,
     pub(crate) nodes_by_uri: HashMap<Url, Vec<NodeId>>,
     pub(crate) connection_occurrences_by_uri: HashMap<Url, Vec<ConnectionOccurrence>>,
+    pub(crate) pending_relationships: Vec<PendingRelationship>,
 }
 
 #[derive(Debug, Clone)]
@@ -28,6 +29,15 @@ pub(crate) struct ConnectionOccurrence {
     pub range: Range,
 }
 
+#[derive(Debug, Clone)]
+pub(crate) struct PendingRelationship {
+    pub uri: Url,
+    pub source_qualified: String,
+    pub target_qualified: String,
+    pub kind: RelationshipKind,
+    pub target_kinds: Option<Vec<String>>,
+}
+
 impl SemanticGraph {
     pub fn new() -> Self {
         Self {
@@ -35,6 +45,7 @@ impl SemanticGraph {
             node_index_by_id: HashMap::new(),
             nodes_by_uri: HashMap::new(),
             connection_occurrences_by_uri: HashMap::new(),
+            pending_relationships: Vec::new(),
         }
     }
 
@@ -60,6 +71,8 @@ impl SemanticGraph {
                 .or_default()
                 .extend(occurrences.iter().cloned());
         }
+        self.pending_relationships
+            .extend(other.pending_relationships.iter().cloned());
         for (id, node) in other.iter_nodes() {
             let idx = self.graph.add_node(node.clone());
             self.node_index_by_id.insert(id.clone(), idx);
@@ -684,6 +697,31 @@ mod tests {
         assert!(
             has_subject,
             "expected subject edge in semantic graph; edges: {:?}",
+            edges
+        );
+    }
+
+    #[test]
+    fn requirement_usage_subject_edges_resolve_forward_references() {
+        let input = r#"
+            package P {
+                requirement goodComputer {
+                    subject laptop : Laptop;
+                }
+                part def Laptop { }
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let g = build_graph_from_doc(&root, &uri);
+        let edges = g.edges_for_uri_as_strings(&uri);
+        assert!(
+            edges.iter().any(|(src, tgt, kind, _)| {
+                *kind == RelationshipKind::Subject
+                    && src.ends_with("goodComputer")
+                    && tgt.ends_with("Laptop")
+            }),
+            "expected forward subject edge in semantic graph; edges: {:?}",
             edges
         );
     }

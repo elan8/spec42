@@ -500,7 +500,7 @@ function renderGeneralNodes(
 export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): Promise<void> {
     const { width, height, svg, g, postMessage, renderPlaceholder, clearVisualHighlights } = ctx;
 
-    const backendScene = data?.diagramGeneral?.scene?.generalView;
+    const backendScene = null;
     if (backendScene?.nodes?.length) {
         const defs = svg.select('defs').empty() ? svg.append('defs') : svg.select('defs');
         defs.selectAll('#general-d3-arrow').remove();

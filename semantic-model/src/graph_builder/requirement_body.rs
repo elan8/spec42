@@ -228,4 +228,12 @@ pub(super) fn resolve_subject_type_target_qualified(
             }
         })
         .min_by_key(|qualified| qualified.len())
+        .or_else(|| {
+            candidates
+                .iter()
+                .rev()
+                .find(|candidate| candidate.contains("::"))
+                .cloned()
+                .or_else(|| candidates.last().cloned())
+        })
 }

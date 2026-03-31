@@ -74,6 +74,7 @@ pub fn build_graph_from_doc(root: &RootNamespace, uri: &Url) -> SemanticGraph {
             );
         }
     }
+    crate::relationships::resolve_pending_relationships_for_uri(&mut g, uri);
     g
 }
 
