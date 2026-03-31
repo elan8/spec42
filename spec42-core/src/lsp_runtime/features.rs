@@ -8,13 +8,12 @@ use crate::language::{
     line_prefix_at_position, suggest_create_matching_part_def_quick_fix, suggest_wrap_in_package,
     sysml_keywords, word_at_position,
 };
-use crate::lsp::symbols::build_code_lens;
-use crate::lsp::{hierarchy, navigation, references_resolver};
 use crate::semantic_model;
 use crate::semantic_tokens::{ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range};
 use crate::util;
 use crate::workspace::ServerState;
 
+use super::{hierarchy, navigation, references_resolver, symbols};
 use super::lookup_helpers::{collect_symbol_matches_for_lookup, debug_qualified_lookup_context};
 
 pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Option<Hover>> {
@@ -502,7 +501,7 @@ pub(crate) fn code_action(
 
 pub(crate) fn code_lens(state: &ServerState, uri: Url) -> Result<Option<Vec<CodeLens>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    Ok(Some(build_code_lens(state, &uri_norm)))
+    Ok(Some(symbols::build_code_lens(state, &uri_norm)))
 }
 
 pub(crate) fn formatting(

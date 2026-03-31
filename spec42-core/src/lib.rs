@@ -2,21 +2,29 @@
 //! Used by the spec42 and spec42-pro binaries.
 
 pub mod analysis;
+#[path = "syntax/ast_util.rs"]
 pub mod ast_util;
+#[path = "host/config.rs"]
 pub mod config;
+#[path = "host/default_diagram_providers.rs"]
 mod default_diagram_providers;
+#[path = "views/diagram_types.rs"]
 pub mod diagram_types;
+#[path = "views/dto.rs"]
 mod dto;
+#[path = "views/ibd.rs"]
 mod ibd;
 pub mod language;
+#[path = "host/logging.rs"]
 pub mod logging;
-pub(crate) mod lsp;
 mod lsp_runtime;
-mod lsp_server;
+#[path = "views/extracted_model.rs"]
 mod model;
+#[path = "analysis/checks.rs"]
 pub mod semantic_checks;
 pub mod semantic_model;
 pub mod semantic_tokens;
+#[path = "common/util.rs"]
 pub mod util;
 pub mod views;
 pub(crate) mod workspace;
@@ -27,7 +35,7 @@ pub use config::{
     SemanticCheckProvider, Spec42Config,
 };
 pub use default_diagram_providers::default_config as default_server_config;
-pub use lsp_server::run as run_lsp;
+pub use lsp_runtime::run as run_lsp;
 
 // Core data model exports.
 pub use ast_util::{identification_name, span_to_range, span_to_source_range, SourceRange};

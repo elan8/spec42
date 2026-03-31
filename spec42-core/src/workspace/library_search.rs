@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use tower_lsp::lsp_types::{Range, SymbolKind, Url};
 
 use crate::dto;
+use crate::workspace::IndexEntry;
 
 pub(crate) fn symbol_kind_label(kind: SymbolKind) -> &'static str {
     match kind {
@@ -38,7 +39,7 @@ pub(crate) fn symbol_kind_label(kind: SymbolKind) -> &'static str {
 
 pub(crate) fn normalized_library_symbol_name(
     entry: &crate::language::SymbolEntry,
-    index_entry: Option<&crate::lsp::types::IndexEntry>,
+    index_entry: Option<&IndexEntry>,
 ) -> String {
     if !is_generic_symbol_name(&entry.name) {
         return entry.name.clone();

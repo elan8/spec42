@@ -7,14 +7,15 @@ use tower_lsp::Client;
 use tracing::{debug, info, warn};
 
 use crate::config::Spec42Config;
-use crate::lsp::lifecycle::{scan_roots, workspace_roots_from_initialize};
 use crate::util;
 use crate::workspace::{
     clear_documents_under_roots, parse_scanned_entries, refresh_document, remove_document,
     scan_sysml_files, store_document_text, ServerState,
 };
 
+use super::capabilities::server_capabilities;
 use super::diagnostics::{publish_document_diagnostics, publish_workspace_diagnostics};
+use super::lifecycle::{scan_roots, workspace_roots_from_initialize};
 
 pub(crate) async fn initialize(
     state: &Arc<RwLock<ServerState>>,
@@ -47,7 +48,7 @@ pub(crate) async fn initialize(
             name: server_name.to_string(),
             version: Some(env!("CARGO_PKG_VERSION").to_string()),
         }),
-        capabilities: crate::lsp::capabilities::server_capabilities(config),
+        capabilities: server_capabilities(config),
     })
 }
 

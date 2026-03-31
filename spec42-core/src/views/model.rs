@@ -1,10 +1,10 @@
 //! sysml/model request parsing and response building.
 //! Diagram output is collected from [crate::config::DiagramProvider] implementations.
 
-#[path = "../sysml_model/params.rs"]
-mod params;
-#[path = "../sysml_model/projection.rs"]
-mod projection;
+#[path = "model_params.rs"]
+mod model_params;
+#[path = "model_projection.rs"]
+mod model_projection;
 
 use std::sync::Arc;
 use std::time::Instant;
@@ -25,30 +25,30 @@ use crate::semantic_model;
 use crate::util;
 
 pub fn parse_sysml_model_params(v: &serde_json::Value) -> Result<(Url, Vec<String>)> {
-    params::parse_sysml_model_params(v)
+    model_params::parse_sysml_model_params(v)
 }
 
 pub fn empty_model_response(build_start: Instant) -> SysmlModelResultDto {
-    params::empty_model_response(build_start)
+    model_params::empty_model_response(build_start)
 }
 
 fn canonical_general_view_graph(graph: &SysmlGraphDto, include_all_roots: bool) -> SysmlGraphDto {
-    projection::canonical_general_view_graph(graph, include_all_roots)
+    model_projection::canonical_general_view_graph(graph, include_all_roots)
 }
 
 fn build_workspace_graph_dto(
     semantic_graph: &semantic_model::SemanticGraph,
     library_paths: &[Url],
 ) -> SysmlGraphDto {
-    projection::build_workspace_graph_dto(semantic_graph, library_paths)
+    model_projection::build_workspace_graph_dto(semantic_graph, library_paths)
 }
 
 fn strip_synthetic_nodes(graph: &SysmlGraphDto) -> SysmlGraphDto {
-    projection::strip_synthetic_nodes(graph)
+    model_projection::strip_synthetic_nodes(graph)
 }
 
 fn workspace_visualization_enabled(scope: &[String]) -> bool {
-    projection::workspace_visualization_enabled(scope)
+    model_projection::workspace_visualization_enabled(scope)
 }
 
 #[allow(clippy::too_many_arguments)]

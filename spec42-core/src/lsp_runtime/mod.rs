@@ -1,7 +1,14 @@
+mod capabilities;
 mod diagnostics;
 mod documents;
 mod features;
+mod custom;
+mod hierarchy;
+mod lifecycle;
 mod lookup_helpers;
+mod navigation;
+mod references_resolver;
+mod symbols;
 
 use std::sync::Arc;
 use std::time::Instant;
@@ -13,8 +20,8 @@ use tower_lsp::{Client, LanguageServer, LspService, Server};
 
 use crate::config::Spec42Config;
 use crate::dto;
-use crate::lsp::custom::{sysml_clear_cache_result, sysml_model_result, sysml_server_stats_result};
 use crate::workspace::ServerState;
+use custom::{sysml_clear_cache_result, sysml_model_result, sysml_server_stats_result};
 
 struct Backend {
     client: Client,
@@ -327,14 +334,14 @@ impl Backend {
             .iter()
             .filter(|entry| crate::util::uri_under_any_library(&entry.uri, &state.library_paths))
             .filter_map(|entry| {
-                let normalized_name = crate::lsp::library_search::normalized_library_symbol_name(
+                let normalized_name = crate::workspace::library_search::normalized_library_symbol_name(
                     entry,
                     state.index.get(&entry.uri),
                 );
                 let score = if query.is_empty() {
                     1_000
                 } else {
-                    crate::lsp::library_search::library_search_score(&normalized_name, &query)?
+                    crate::workspace::library_search::library_search_score(&normalized_name, &query)?
                 };
                 Some((score, entry))
             })
@@ -352,21 +359,21 @@ impl Backend {
             .into_iter()
             .take(limit)
             .map(|(score, entry)| dto::SysmlLibrarySearchItemDto {
-                name: crate::lsp::library_search::normalized_library_symbol_name(
+                name: crate::workspace::library_search::normalized_library_symbol_name(
                     entry,
                     state.index.get(&entry.uri),
                 ),
-                kind: crate::lsp::library_search::symbol_kind_label(entry.kind).to_string(),
+                kind: crate::workspace::library_search::symbol_kind_label(entry.kind).to_string(),
                 container: entry.container_name.clone(),
                 uri: entry.uri.to_string(),
                 range: dto::range_to_dto(entry.range),
                 score,
-                source: crate::lsp::library_search::library_source_label(&entry.uri).to_string(),
+                source: crate::workspace::library_search::library_source_label(&entry.uri).to_string(),
                 path: entry.uri.path().to_string(),
             })
             .collect();
 
-        let sources = crate::lsp::library_search::build_library_tree(items);
+        let sources = crate::workspace::library_search::build_library_tree(items);
         let symbol_total = sources
             .iter()
             .map(|src| src.packages.iter().map(|pkg| pkg.symbols.len()).sum::<usize>())

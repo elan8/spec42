@@ -1,6 +1,6 @@
 use crate::config::Spec42Config;
 use crate::dto;
-use crate::lsp::types::ServerState;
+use crate::workspace::ServerState;
 use std::time::Instant;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::MessageType;

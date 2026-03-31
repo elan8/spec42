@@ -1,7 +1,7 @@
-use crate::lsp::library_search;
 use crate::semantic_model;
 use crate::util;
 use crate::workspace::state::{IndexEntry, ScanSummary, ServerState};
+use crate::workspace::library_search;
 use sysml_parser::RootNamespace;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
 use walkdir::WalkDir;

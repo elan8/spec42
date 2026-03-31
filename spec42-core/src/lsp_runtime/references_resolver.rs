@@ -1,7 +1,7 @@
 use crate::language::{find_reference_ranges, is_reserved_keyword, word_at_position, SymbolEntry};
-use crate::lsp::types::ServerState;
 use crate::semantic_model::NodeId;
 use crate::semantic_model::ResolveResult;
+use crate::workspace::ServerState;
 use tower_lsp::lsp_types::{Location, Position, Url};
 
 type LocationKey = (String, u32, u32, u32, u32);

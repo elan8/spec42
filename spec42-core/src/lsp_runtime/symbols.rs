@@ -1,4 +1,4 @@
-use crate::lsp::types::ServerState;
+use crate::workspace::ServerState;
 use tower_lsp::lsp_types::{CodeLens, Command, Url};
 
 pub(crate) fn build_code_lens(state: &ServerState, uri_norm: &Url) -> Vec<CodeLens> {
@@ -32,10 +32,13 @@ pub(crate) fn build_code_lens(state: &ServerState, uri_norm: &Url) -> Vec<CodeLe
         if !seen_ranges.insert(key) {
             continue;
         }
-        let refs =
-            crate::lsp::references_resolver::resolved_references_for_symbol(state, sym, false)
-                .len();
-        let reference_position = crate::lsp::references_resolver::symbol_name_position(state, sym)
+        let refs = crate::lsp_runtime::references_resolver::resolved_references_for_symbol(
+            state, sym, false,
+        )
+        .len();
+        let reference_position = crate::lsp_runtime::references_resolver::symbol_name_position(
+            state, sym,
+        )
             .unwrap_or(sym.range.start);
         out.push(CodeLens {
             range: sym.range,
