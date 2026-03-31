@@ -2,7 +2,7 @@ use tower_lsp::lsp_types::Url;
 use tracing::warn;
 
 use crate::language::SymbolEntry;
-use crate::util;
+use crate::common::util;
 use crate::workspace::ServerState;
 
 pub(super) fn collect_symbol_matches_for_lookup<'a>(

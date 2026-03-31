@@ -1,6 +1,6 @@
 //! Activity and sequence diagram extraction for sysml/model response.
 
-use crate::ast_util::identification_name;
+use crate::syntax::ast_util::identification_name;
 use serde::Serialize;
 use sysml_parser::ast::{ActionDefBody, PackageBody, PackageBodyElement, RootElement};
 use sysml_parser::{RootNamespace, Span};

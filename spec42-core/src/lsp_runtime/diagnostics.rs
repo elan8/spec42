@@ -6,8 +6,8 @@ use tower_lsp::lsp_types::{
 };
 use tower_lsp::Client;
 
-use crate::config::Spec42Config;
-use crate::util;
+use crate::common::util;
+use crate::host::config::Spec42Config;
 use crate::workspace::ServerState;
 
 pub(crate) async fn publish_document_diagnostics(

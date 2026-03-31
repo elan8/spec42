@@ -6,8 +6,8 @@ use tower_lsp::lsp_types::*;
 use tower_lsp::Client;
 use tracing::{debug, info, warn};
 
-use crate::config::Spec42Config;
-use crate::util;
+use crate::common::util;
+use crate::host::config::Spec42Config;
 use crate::workspace::{
     clear_documents_under_roots, parse_scanned_entries, refresh_document, remove_document,
     scan_sysml_files, store_document_text, ServerState,

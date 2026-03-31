@@ -1,4 +1,4 @@
-use crate::config::Spec42Config;
+use crate::host::config::Spec42Config;
 use tower_lsp::lsp_types::*;
 
 pub(crate) fn server_capabilities(config: &Spec42Config) -> ServerCapabilities {

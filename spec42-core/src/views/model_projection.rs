@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use tower_lsp::lsp_types::Url;
 
-use crate::dto::{range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlGraphDto};
+use crate::views::dto::{range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlGraphDto};
 use crate::semantic_model;
 
 pub fn canonical_general_view_graph(

@@ -1,6 +1,6 @@
 //! AST-driven semantic token ranges: collects (SourceRange, type_index) from parsed AST.
 
-use crate::ast_util::{span_to_source_range, SourceRange};
+use crate::syntax::ast_util::{span_to_source_range, SourceRange};
 use sysml_parser::ast::{
     ActionDefBody, ActionUsageBody, ActionUsageBodyElement, InterfaceDefBody,
     InterfaceDefBodyElement, PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement,
@@ -43,7 +43,7 @@ fn collect_semantic_ranges_package_body_element(
     use sysml_parser::ast::PackageBodyElement as PBE;
     match &node.value {
         PBE::Package(pkg_node) => {
-            let name = crate::ast_util::identification_name(&pkg_node.identification);
+            let name = crate::syntax::ast_util::identification_name(&pkg_node.identification);
             if !name.is_empty() {
                 out.push((span_to_source_range(&pkg_node.span), TYPE_NAMESPACE));
             }

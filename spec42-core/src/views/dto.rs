@@ -3,9 +3,9 @@
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::Range;
 
-use crate::diagram_types::{Bounds, HitRegionKind, RenderedDiagram};
-use crate::ibd;
-use crate::model;
+use crate::views::diagram_types::{Bounds, HitRegionKind, RenderedDiagram};
+use crate::views::extracted_model as model;
+use crate::views::ibd;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Serialize)]

@@ -14,15 +14,15 @@ use tower_lsp::Client;
 
 use sysml_parser::RootNamespace;
 
-use crate::config::{DiagramContext, DiagramProvider};
-use crate::dto::{
+use crate::common::util;
+use crate::host::config::{DiagramContext, DiagramProvider};
+use crate::views::dto::{
     range_to_dto, rendered_diagram_to_dto, GraphEdgeDto, GraphNodeDto, RenderedDiagramsDto,
     SysmlGraphDto, SysmlModelResultDto, SysmlModelStatsDto,
 };
-use crate::ibd;
-use crate::model;
+use crate::views::extracted_model as model;
+use crate::views::ibd;
 use crate::semantic_model;
-use crate::util;
 
 pub fn parse_sysml_model_params(v: &serde_json::Value) -> Result<(Url, Vec<String>)> {
     model_params::parse_sysml_model_params(v)

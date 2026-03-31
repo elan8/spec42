@@ -3,13 +3,11 @@
 //! These checks use the semantic graph (parts, ports, connections) to report
 //! diagnostics such as: unconnected ports, connection to non-port, port type mismatch.
 
-mod helpers;
-
 use std::collections::HashSet;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, Url};
 
+use crate::analysis::helpers::*;
 use crate::semantic_model::{NodeId, SemanticGraph};
-use helpers::*;
 
 /// Returns LSP diagnostics for semantic rules in the given document.
 /// Only runs when the document has been parsed and merged into the graph.
@@ -220,11 +218,11 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
 }
 
 /// Default semantic checks (port connectivity, type compatibility, unconnected ports, duplicate connections).
-/// Implements [crate::config::SemanticCheckProvider] for use in [crate::config::Spec42Config].
+/// Implements [crate::host::config::SemanticCheckProvider] for use in [crate::host::config::Spec42Config].
 #[derive(Debug, Default)]
 pub struct DefaultSemanticChecks;
 
-impl crate::config::SemanticCheckProvider for DefaultSemanticChecks {
+impl crate::host::config::SemanticCheckProvider for DefaultSemanticChecks {
     fn compute_diagnostics(&self, graph: &SemanticGraph, uri: &Url) -> Vec<Diagnostic> {
         compute_semantic_diagnostics(graph, uri)
     }

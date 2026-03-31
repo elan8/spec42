@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use tower_lsp::lsp_types::{Range, SymbolKind, Url};
 
-use crate::dto;
+use crate::views::dto;
 use crate::workspace::IndexEntry;
 
 pub(crate) fn symbol_kind_label(kind: SymbolKind) -> &'static str {

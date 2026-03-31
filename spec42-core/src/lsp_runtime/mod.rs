@@ -18,8 +18,8 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 
-use crate::config::Spec42Config;
-use crate::dto;
+use crate::host::config::Spec42Config;
+use crate::views::dto;
 use crate::workspace::ServerState;
 use custom::{sysml_clear_cache_result, sysml_model_result, sysml_server_stats_result};
 
@@ -332,7 +332,7 @@ impl Backend {
         let mut ranked: Vec<(i64, &crate::language::SymbolEntry)> = state
             .symbol_table
             .iter()
-            .filter(|entry| crate::util::uri_under_any_library(&entry.uri, &state.library_paths))
+            .filter(|entry| crate::common::util::uri_under_any_library(&entry.uri, &state.library_paths))
             .filter_map(|entry| {
                 let normalized_name = crate::workspace::library_search::normalized_library_symbol_name(
                     entry,
@@ -347,17 +347,28 @@ impl Backend {
             })
             .collect();
 
-        ranked.sort_by(|(score_a, entry_a), (score_b, entry_b)| {
-            score_b
-                .cmp(score_a)
-                .then(entry_a.name.len().cmp(&entry_b.name.len()))
-                .then(entry_a.name.cmp(&entry_b.name))
-        });
+        if query.is_empty() {
+            ranked.sort_by(|(_, entry_a), (_, entry_b)| {
+                entry_a
+                    .uri
+                    .path()
+                    .cmp(entry_b.uri.path())
+                    .then(entry_a.name.cmp(&entry_b.name))
+            });
+        } else {
+            ranked.sort_by(|(score_a, entry_a), (score_b, entry_b)| {
+                score_b
+                    .cmp(score_a)
+                    .then(entry_a.name.len().cmp(&entry_b.name.len()))
+                    .then(entry_a.name.cmp(&entry_b.name))
+            });
+        }
 
         let total = ranked.len();
+        let effective_limit = if query.is_empty() { total } else { limit };
         let items: Vec<dto::SysmlLibrarySearchItemDto> = ranked
             .into_iter()
-            .take(limit)
+            .take(effective_limit)
             .map(|(score, entry)| dto::SysmlLibrarySearchItemDto {
                 name: crate::workspace::library_search::normalized_library_symbol_name(
                     entry,
@@ -387,7 +398,7 @@ impl Backend {
 }
 
 pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
-    crate::logging::init_tracing();
+    crate::host::logging::init_tracing();
     let (stdin, stdout) = (tokio::io::stdin(), tokio::io::stdout());
     let state = Arc::new(RwLock::new(ServerState::default()));
     let start_time = Instant::now();

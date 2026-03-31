@@ -1,7 +1,7 @@
 //! Document symbols, definition ranges, folding ranges, and symbol table helpers.
 #![allow(deprecated)] // DocumentSymbol/SymbolInformation.deprecated; use tags in future
 
-use crate::ast_util::{identification_name, span_to_range};
+use crate::syntax::ast_util::{identification_name, span_to_range};
 use sysml_parser::ast::{
     PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
     PartUsageBodyElement, PortDefBody, PortDefBodyElement, RootElement,

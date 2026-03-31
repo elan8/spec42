@@ -1,5 +1,5 @@
-use crate::config::Spec42Config;
-use crate::dto;
+use crate::host::config::Spec42Config;
+use crate::views::dto;
 use crate::workspace::ServerState;
 use std::time::Instant;
 use tower_lsp::jsonrpc::Result;

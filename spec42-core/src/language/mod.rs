@@ -9,7 +9,7 @@ pub use keywords::*;
 pub use position::*;
 pub use symbols::*;
 
-use crate::ast_util::identification_name;
+use crate::syntax::ast_util::identification_name;
 use sysml_parser::ast::{PackageBody, RootElement};
 use tower_lsp::lsp_types::{
     CodeAction, CodeActionKind, Diagnostic, FormattingOptions, OneOf,
@@ -816,7 +816,7 @@ mod tests {
     }
 
     #[cfg(test)]
-    fn range_text_from_source(source: &str, r: &crate::ast_util::SourceRange) -> String {
+    fn range_text_from_source(source: &str, r: &crate::syntax::ast_util::SourceRange) -> String {
         let lines: Vec<&str> = source.lines().collect();
         let line = match lines.get(r.start_line as usize) {
             Some(l) => l,
@@ -834,7 +834,7 @@ mod tests {
     #[cfg(test)]
     fn write_semantic_ranges_for_review(
         source: &str,
-        ranges: &[(crate::ast_util::SourceRange, u32)],
+        ranges: &[(crate::syntax::ast_util::SourceRange, u32)],
         out_path: &std::path::Path,
     ) {
         use std::io::Write;

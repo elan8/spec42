@@ -10,7 +10,7 @@ use crate::language::{
 };
 use crate::semantic_model;
 use crate::semantic_tokens::{ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range};
-use crate::util;
+use crate::common::util;
 use crate::workspace::ServerState;
 
 use super::{hierarchy, navigation, references_resolver, symbols};

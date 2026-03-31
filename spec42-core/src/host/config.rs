@@ -3,9 +3,9 @@
 use std::sync::Arc;
 use tower_lsp::lsp_types::{Diagnostic, ServerCapabilities, Url};
 
-use crate::diagram_types::RenderedDiagram;
-use crate::dto::SysmlGraphDto;
-use crate::ibd::IbdDataDto;
+use crate::views::diagram_types::RenderedDiagram;
+use crate::views::dto::SysmlGraphDto;
+use crate::views::ibd::IbdDataDto;
 use crate::semantic_model::SemanticGraph;
 
 /// Provider of semantic/quality diagnostics. Implement this to add custom checks (e.g. naming rules, complexity).

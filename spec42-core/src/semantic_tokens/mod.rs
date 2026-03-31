@@ -14,7 +14,7 @@ mod types;
 
 pub use ast_ranges::ast_semantic_ranges;
 
-use crate::ast_util::SourceRange;
+use crate::syntax::ast_util::SourceRange;
 use tower_lsp::lsp_types::{
     SemanticToken, SemanticTokenType, SemanticTokens, SemanticTokensLegend,
 };
