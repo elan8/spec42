@@ -1,0 +1,353 @@
+use std::sync::Arc;
+use std::time::Instant;
+
+use tokio::sync::RwLock;
+use tower_lsp::lsp_types::*;
+use tower_lsp::Client;
+use tracing::{debug, info, warn};
+
+use crate::config::Spec42Config;
+use crate::lsp::lifecycle::{scan_roots, workspace_roots_from_initialize};
+use crate::util;
+use crate::workspace::{
+    clear_documents_under_roots, parse_scanned_entries, refresh_document, remove_document,
+    scan_sysml_files, store_document_text, ServerState,
+};
+
+use super::diagnostics::{publish_document_diagnostics, publish_workspace_diagnostics};
+
+pub(crate) async fn initialize(
+    state: &Arc<RwLock<ServerState>>,
+    config: &Arc<Spec42Config>,
+    server_name: &str,
+    params: InitializeParams,
+) -> tower_lsp::jsonrpc::Result<InitializeResult> {
+    let initialize_start = Instant::now();
+    info!("startup:initialize:start");
+    let roots = workspace_roots_from_initialize(&params);
+    let library_paths = util::parse_library_paths_from_value(params.initialization_options.as_ref());
+    let startup_trace_id =
+        util::parse_startup_trace_id_from_value(params.initialization_options.as_ref());
+    info!(
+        trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
+        elapsed_ms = initialize_start.elapsed().as_millis() as u64,
+        workspace_roots = roots.len(),
+        library_paths = library_paths.len(),
+        paths = ?library_paths.iter().map(|uri| uri.as_str()).collect::<Vec<_>>(),
+        "startup:initialize:end"
+    );
+    {
+        let mut state = state.write().await;
+        state.workspace_roots = roots;
+        state.library_paths = library_paths;
+        state.startup_trace_id = startup_trace_id;
+    }
+    Ok(InitializeResult {
+        server_info: Some(ServerInfo {
+            name: server_name.to_string(),
+            version: Some(env!("CARGO_PKG_VERSION").to_string()),
+        }),
+        capabilities: crate::lsp::capabilities::server_capabilities(config),
+    })
+}
+
+pub(crate) async fn initialized(
+    client: &Client,
+    state: &Arc<RwLock<ServerState>>,
+    config: &Arc<Spec42Config>,
+    server_name: &str,
+) {
+    client
+        .log_message(MessageType::INFO, format!("{} initialized", server_name))
+        .await;
+    let (workspace_roots, library_paths, startup_trace_id) = {
+        let st = state.read().await;
+        (
+            st.workspace_roots.clone(),
+            st.library_paths.clone(),
+            st.startup_trace_id.clone(),
+        )
+    };
+    let scan_roots = scan_roots(&workspace_roots, &library_paths);
+    if scan_roots.is_empty() {
+        return;
+    }
+    info!(
+        trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
+        scan_roots = scan_roots.len(),
+        "startup:initialized:scan:start"
+    );
+    client
+        .log_message(
+            MessageType::INFO,
+            format!(
+                "[startup][backend] trace_id={} phase=initialized:scan:start roots={}",
+                startup_trace_id.as_deref().unwrap_or("-"),
+                scan_roots.len()
+            ),
+        )
+        .await;
+
+    let state = Arc::clone(state);
+    let config = Arc::clone(config);
+    let client = client.clone();
+    tokio::spawn(async move {
+        let scan_total_start = Instant::now();
+        let discover_read_start = Instant::now();
+        let (entries, summary) =
+            tokio::task::spawn_blocking(move || scan_sysml_files(scan_roots))
+                .await
+                .unwrap_or_default();
+        let discover_read_ms = discover_read_start.elapsed().as_millis() as u64;
+        let parallel_parse_enabled =
+            util::env_flag_enabled("SPEC42_PARALLEL_STARTUP_PARSE", true);
+        let parallel_parse_min_files =
+            util::env_usize("SPEC42_PARALLEL_STARTUP_PARSE_MIN_FILES", 10);
+        let should_parallel_parse =
+            parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
+        let parse_worker_start = Instant::now();
+        let parsed_entries = tokio::task::spawn_blocking(move || {
+            parse_scanned_entries(entries, should_parallel_parse)
+        })
+        .await
+        .unwrap_or_default();
+        let parse_worker_ms = parse_worker_start.elapsed().as_millis() as u64;
+        let merge_index_start = Instant::now();
+        let mut st = state.write().await;
+        let mut uris_loaded = Vec::new();
+        let mut low_coverage_library_files = Vec::new();
+        for parsed_entry in parsed_entries {
+            let uri_norm = util::normalize_file_uri(&parsed_entry.uri);
+            if parsed_entry.parsed.is_none() {
+                warn!(
+                    uri = %uri_norm,
+                    diagnostics = parsed_entry.parse_errors.len(),
+                    errors = ?parsed_entry.parse_errors,
+                    "workspace scan parse failed"
+                );
+            }
+            let _ = refresh_document(&mut st, &uri_norm, parsed_entry.content);
+            uris_loaded.push(uri_norm.clone());
+            if util::uri_under_any_library(&uri_norm, &st.library_paths) {
+                let graph_nodes_for_uri = st.semantic_graph.nodes_for_uri(&uri_norm).len();
+                let symbol_entries = crate::semantic_model::symbol_entries_for_uri(
+                    &st.semantic_graph,
+                    &uri_norm,
+                );
+                debug!(
+                    uri = %uri_norm,
+                    graph_nodes = graph_nodes_for_uri,
+                    symbol_entries = symbol_entries.len(),
+                    "library file indexed"
+                );
+                if st
+                    .index
+                    .get(&uri_norm)
+                    .and_then(|entry| entry.parsed.as_ref())
+                    .is_some()
+                    && symbol_entries.len() <= 2
+                {
+                    low_coverage_library_files.push((
+                        uri_norm.to_string(),
+                        graph_nodes_for_uri,
+                        symbol_entries.len(),
+                    ));
+                }
+            }
+        }
+        let merge_index_ms = merge_index_start.elapsed().as_millis() as u64;
+        info!(
+            trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
+            phase_discover_read_ms = discover_read_ms,
+            phase_parse_workers_ms = parse_worker_ms,
+            phase_merge_index_ms = merge_index_ms,
+            phase_index_parse_ms = parse_worker_ms + merge_index_ms,
+            parallel_parse_enabled = parallel_parse_enabled,
+            parallel_parse_min_files = parallel_parse_min_files,
+            parallel_parse_active = should_parallel_parse,
+            elapsed_ms = scan_total_start.elapsed().as_millis() as u64,
+            loaded = uris_loaded.len(),
+            candidate_files = summary.candidate_files,
+            roots = summary.roots_scanned,
+            skipped_non_file_roots = summary.roots_skipped_non_file,
+            read_failures = summary.read_failures,
+            uri_failures = summary.uri_failures,
+            sample = ?uris_loaded.iter().take(5).map(|uri| uri.as_str()).collect::<Vec<_>>(),
+            "startup:initialized:scan:end"
+        );
+        if !low_coverage_library_files.is_empty() {
+            warn!(
+                files = low_coverage_library_files.len(),
+                "workspace scan low-coverage library files (showing up to 10)"
+            );
+        }
+        drop(st);
+        publish_workspace_diagnostics(&client, &state, &config, None).await;
+    });
+}
+
+pub(crate) async fn did_open(
+    client: &Client,
+    state: &Arc<RwLock<ServerState>>,
+    config: &Arc<Spec42Config>,
+    params: DidOpenTextDocumentParams,
+) {
+    let uri = params.text_document.uri.clone();
+    let uri_norm = util::normalize_file_uri(&uri);
+    let text = params.text_document.text;
+    let warning = {
+        let mut state = state.write().await;
+        store_document_text(&mut state, &uri_norm, text.clone())
+    };
+    if let Some(message) = warning {
+        client.log_message(MessageType::WARNING, message).await;
+    }
+    publish_document_diagnostics(client, state, config, uri, &text).await;
+}
+
+pub(crate) async fn did_change(
+    client: &Client,
+    state: &Arc<RwLock<ServerState>>,
+    config: &Arc<Spec42Config>,
+    params: DidChangeTextDocumentParams,
+) {
+    let uri = params.text_document.uri.clone();
+    let uri_norm = util::normalize_file_uri(&uri);
+    let version = params.text_document.version;
+    let warnings = {
+        let mut state = state.write().await;
+        crate::workspace::apply_document_changes(
+            &mut state,
+            &uri_norm,
+            version,
+            params.content_changes,
+        )
+    };
+    let text = {
+        let state = state.read().await;
+        crate::workspace::indexed_text_or_empty(&state, &uri_norm)
+    };
+    for (ty, message) in warnings {
+        client.log_message(ty, message).await;
+    }
+    publish_document_diagnostics(client, state, config, uri, &text).await;
+}
+
+pub(crate) async fn did_close(client: &Client, params: DidCloseTextDocumentParams) {
+    client
+        .publish_diagnostics(params.text_document.uri, vec![], None)
+        .await;
+}
+
+pub(crate) async fn did_change_watched_files(
+    client: &Client,
+    state: &Arc<RwLock<ServerState>>,
+    config: &Arc<Spec42Config>,
+    params: DidChangeWatchedFilesParams,
+) {
+    use tower_lsp::lsp_types::FileChangeType;
+
+    let mut runtime_warnings = Vec::new();
+    let mut changed_or_created_uris = Vec::new();
+    let mut deleted_uris = Vec::new();
+    for event in params.changes {
+        let uri_norm = util::normalize_file_uri(&event.uri);
+        if event.typ == FileChangeType::CREATED || event.typ == FileChangeType::CHANGED {
+            match event.uri.to_file_path() {
+                Ok(path) => match tokio::fs::read_to_string(&path).await {
+                    Ok(content) => {
+                        let warning = {
+                            let mut state = state.write().await;
+                            refresh_document(&mut state, &uri_norm, content)
+                        };
+                        if let Some(message) = warning {
+                            runtime_warnings.push(format!("didChangeWatchedFiles: {}", message));
+                        }
+                        changed_or_created_uris.push(uri_norm.clone());
+                    }
+                    Err(error) => runtime_warnings.push(format!(
+                        "didChangeWatchedFiles: failed to read changed file {}: {}",
+                        uri_norm, error
+                    )),
+                },
+                Err(_) => runtime_warnings.push(format!(
+                    "didChangeWatchedFiles: ignored non-file URI {}",
+                    uri_norm
+                )),
+            }
+        } else if event.typ == FileChangeType::DELETED {
+            let mut state = state.write().await;
+            remove_document(&mut state, &uri_norm);
+            deleted_uris.push(uri_norm);
+        }
+    }
+    for msg in runtime_warnings {
+        client.log_message(MessageType::WARNING, msg).await;
+    }
+    if !changed_or_created_uris.is_empty() {
+        publish_workspace_diagnostics(client, state, config, Some(&changed_or_created_uris)).await;
+    }
+    for uri in deleted_uris {
+        client.publish_diagnostics(uri, vec![], None).await;
+    }
+}
+
+pub(crate) async fn did_change_configuration(
+    client: &Client,
+    state: &Arc<RwLock<ServerState>>,
+    params: DidChangeConfigurationParams,
+) {
+    let new_library_paths = params
+        .settings
+        .get("spec42")
+        .map(|value| util::parse_library_paths_from_value(Some(value)))
+        .unwrap_or_else(|| util::parse_library_paths_from_value(Some(&params.settings)));
+    let changed = {
+        let mut state = state.write().await;
+        let old_library_paths = std::mem::take(&mut state.library_paths);
+        if new_library_paths == old_library_paths {
+            state.library_paths = old_library_paths;
+            false
+        } else {
+            let _ = clear_documents_under_roots(&mut state, &old_library_paths);
+            state.library_paths = new_library_paths.clone();
+            true
+        }
+    };
+    if !changed {
+        return;
+    }
+
+    let state = Arc::clone(state);
+    let client = client.clone();
+    tokio::spawn(async move {
+        let (entries, summary) =
+            tokio::task::spawn_blocking(move || scan_sysml_files(new_library_paths))
+                .await
+                .unwrap_or_default();
+        let mut st = state.write().await;
+        let mut warnings = Vec::new();
+        for (uri, content) in entries {
+            let uri_norm = util::normalize_file_uri(&uri);
+            if let Some(message) = refresh_document(&mut st, &uri_norm, content) {
+                warnings.push(format!("didChangeConfiguration: {}", message));
+            }
+        }
+        drop(st);
+        if summary.roots_skipped_non_file > 0 || summary.read_failures > 0 || summary.uri_failures > 0
+        {
+            warnings.push(format!(
+                "didChangeConfiguration: library reindex completed with skips: loaded {} of {} candidate SysML/KerML files across {} root(s); skipped_non_file_roots={}, read_failures={}, uri_failures={}.",
+                summary.files_loaded,
+                summary.candidate_files,
+                summary.roots_scanned,
+                summary.roots_skipped_non_file,
+                summary.read_failures,
+                summary.uri_failures,
+            ));
+        }
+        for warning in warnings {
+            client.log_message(MessageType::WARNING, warning).await;
+        }
+    });
+}

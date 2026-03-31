@@ -12,7 +12,7 @@ pub(crate) async fn sysml_model_result(
     config: &Spec42Config,
     params: serde_json::Value,
 ) -> Result<dto::SysmlModelResultDto> {
-    let (uri, scope) = crate::sysml_model::parse_sysml_model_params(&params)?;
+    let (uri, scope) = crate::views::parse_sysml_model_params(&params)?;
     let build_start = Instant::now();
     let entry = match state.index.get(&uri) {
         Some(e) => e,
@@ -34,7 +34,7 @@ pub(crate) async fn sysml_model_result(
                     ),
                 )
                 .await;
-            return Ok(crate::sysml_model::empty_model_response(build_start));
+            return Ok(crate::views::empty_model_response(build_start));
         }
     };
     Ok(crate::build_sysml_model_response(

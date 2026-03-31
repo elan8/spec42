@@ -1,7 +1,9 @@
 //! sysml/model request parsing and response building.
 //! Diagram output is collected from [crate::config::DiagramProvider] implementations.
 
+#[path = "../sysml_model/params.rs"]
 mod params;
+#[path = "../sysml_model/projection.rs"]
 mod projection;
 
 use std::sync::Arc;
@@ -22,7 +24,6 @@ use crate::model;
 use crate::semantic_model;
 use crate::util;
 
-/// Parse sysml/model params from JSON-RPC value.
 pub fn parse_sysml_model_params(v: &serde_json::Value) -> Result<(Url, Vec<String>)> {
     params::parse_sysml_model_params(v)
 }
@@ -50,7 +51,6 @@ fn workspace_visualization_enabled(scope: &[String]) -> bool {
     projection::workspace_visualization_enabled(scope)
 }
 
-/// Build sysml/model response. Uses `diagram_providers` to fill `rendered_diagrams` (generalView, interconnectionView by diagram_id).
 #[allow(clippy::too_many_arguments)]
 pub async fn build_sysml_model_response(
     content: &str,
@@ -169,21 +169,14 @@ pub async fn build_sysml_model_response(
     };
 
     let doc = parsed;
-
     let activity_diagrams = if want_activity_diagrams {
-        Some(
-            doc.map(model::extract_activity_diagrams)
-                .unwrap_or_default(),
-        )
+        Some(doc.map(model::extract_activity_diagrams).unwrap_or_default())
     } else {
         None
     };
 
     let sequence_diagrams = if want_sequence_diagrams {
-        Some(
-            doc.map(model::extract_sequence_diagrams)
-                .unwrap_or_default(),
-        )
+        Some(doc.map(model::extract_sequence_diagrams).unwrap_or_default())
     } else {
         None
     };
@@ -262,216 +255,10 @@ pub async fn build_sysml_model_response(
         version: 0,
         graph,
         general_view_graph,
+        stats,
         activity_diagrams,
         sequence_diagrams,
-        ibd,
         rendered_diagrams,
-        stats,
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::canonical_general_view_graph;
-    use crate::dto::{GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, SysmlGraphDto};
-    use std::collections::HashMap;
-
-    fn range() -> RangeDto {
-        RangeDto {
-            start: PositionDto {
-                line: 0,
-                character: 0,
-            },
-            end: PositionDto {
-                line: 0,
-                character: 1,
-            },
-        }
-    }
-
-    fn node(id: &str, ty: &str, name: &str, parent_id: Option<&str>) -> GraphNodeDto {
-        GraphNodeDto {
-            id: id.to_string(),
-            element_type: ty.to_string(),
-            name: name.to_string(),
-            parent_id: parent_id.map(str::to_string),
-            range: range(),
-            attributes: HashMap::new(),
-        }
-    }
-
-    fn edge(source: &str, target: &str, rel_type: &str) -> GraphEdgeDto {
-        GraphEdgeDto {
-            source: source.to_string(),
-            target: target.to_string(),
-            rel_type: rel_type.to_string(),
-            name: None,
-        }
-    }
-
-    #[test]
-    fn canonical_general_view_graph_selects_single_root_drone_tree() {
-        let graph = SysmlGraphDto {
-            nodes: vec![
-                node("Pkg", "package", "SurveillanceDrone", None),
-                node(
-                    "Drone",
-                    "part def",
-                    "SurveillanceQuadrotorDrone",
-                    Some("Pkg"),
-                ),
-                node("Alt", "part def", "FlightControlAndSensing", Some("Pkg")),
-                node(
-                    "Drone::fc",
-                    "part",
-                    "flightControlAndSensing",
-                    Some("Drone"),
-                ),
-                node("Alt::gnss", "part", "gnss", Some("Alt")),
-                node("GNSSReceiver", "part def", "GNSSReceiver", Some("Pkg")),
-            ],
-            edges: vec![
-                edge("Pkg", "Drone", "contains"),
-                edge("Pkg", "Alt", "contains"),
-                edge("Drone", "Drone::fc", "contains"),
-                edge("Drone::fc", "Alt", "typing"),
-                edge("Alt", "Alt::gnss", "contains"),
-                edge("Alt::gnss", "GNSSReceiver", "typing"),
-            ],
-        };
-
-        let projected = canonical_general_view_graph(&graph, false);
-        let ids: std::collections::HashSet<String> =
-            projected.nodes.iter().map(|n| n.id.clone()).collect();
-        assert!(ids.contains("Drone"));
-        assert!(ids.contains("Drone::fc"));
-        assert!(ids.contains("Alt"));
-        assert!(ids.contains("Alt::gnss"));
-        assert!(ids.contains("GNSSReceiver"));
-        assert!(
-            !ids.contains("Pkg"),
-            "package node should not be part of canonical projection"
-        );
-    }
-
-    #[test]
-    fn canonical_general_view_graph_edges_reference_existing_nodes_and_are_unique() {
-        let graph = SysmlGraphDto {
-            nodes: vec![
-                node("Root", "part def", "Root", None),
-                node("Root::a", "part", "a", Some("Root")),
-                node("AType", "part def", "AType", None),
-            ],
-            edges: vec![
-                edge("Root", "Root::a", "contains"),
-                edge("Root::a", "AType", "typing"),
-                edge("Root::a", "AType", "typing"),
-            ],
-        };
-
-        let projected = canonical_general_view_graph(&graph, false);
-        let ids: std::collections::HashSet<String> =
-            projected.nodes.iter().map(|n| n.id.clone()).collect();
-        let mut seen = std::collections::HashSet::new();
-        for e in &projected.edges {
-            assert!(
-                ids.contains(&e.source),
-                "missing edge source node {}",
-                e.source
-            );
-            assert!(
-                ids.contains(&e.target),
-                "missing edge target node {}",
-                e.target
-            );
-            let key = (e.source.clone(), e.target.clone(), e.rel_type.clone());
-            assert!(seen.insert(key), "duplicate edge found in projected graph");
-        }
-    }
-
-    #[test]
-    fn canonical_general_view_graph_includes_part_def_with_no_part_usages() {
-        let graph = SysmlGraphDto {
-            nodes: vec![
-                node("Pkg", "package", "MyPkg", None),
-                node("Widget", "part def", "Widget", Some("Pkg")),
-            ],
-            edges: vec![edge("Pkg", "Widget", "contains")],
-        };
-
-        let projected = canonical_general_view_graph(&graph, false);
-        let ids: std::collections::HashSet<String> =
-            projected.nodes.iter().map(|n| n.id.clone()).collect();
-        assert!(
-            ids.contains("Widget"),
-            "empty part def under package should still appear in general view graph: {:?}",
-            ids
-        );
-        assert!(!ids.contains("Pkg"));
-        assert!(projected.edges.is_empty());
-    }
-
-    #[test]
-    fn canonical_general_view_graph_skips_inline_nested_usage_duplicates() {
-        let graph = SysmlGraphDto {
-            nodes: vec![
-                node("Drone", "part def", "Drone", None),
-                node(
-                    "Drone::flightControl",
-                    "part",
-                    "flightControl",
-                    Some("Drone"),
-                ),
-                node(
-                    "Drone::flightControl::gnss",
-                    "part",
-                    "gnss",
-                    Some("Drone::flightControl"),
-                ),
-                node(
-                    "FlightControlAndSensing",
-                    "part def",
-                    "FlightControlAndSensing",
-                    None,
-                ),
-                node(
-                    "FlightControlAndSensing::gnss",
-                    "part",
-                    "gnss",
-                    Some("FlightControlAndSensing"),
-                ),
-                node("GNSSReceiver", "part def", "GNSSReceiver", None),
-            ],
-            edges: vec![
-                edge("Drone", "Drone::flightControl", "contains"),
-                edge("Drone", "Drone::flightControl::gnss", "contains"),
-                edge("Drone::flightControl", "FlightControlAndSensing", "typing"),
-                edge("Drone::flightControl::gnss", "GNSSReceiver", "typing"),
-                edge(
-                    "FlightControlAndSensing",
-                    "FlightControlAndSensing::gnss",
-                    "contains",
-                ),
-                edge("FlightControlAndSensing::gnss", "GNSSReceiver", "typing"),
-            ],
-        };
-
-        let projected = canonical_general_view_graph(&graph, false);
-        let gnss_nodes: Vec<_> = projected
-            .nodes
-            .iter()
-            .filter(|n| n.name == "gnss")
-            .map(|n| n.id.as_str())
-            .collect();
-        assert_eq!(
-            gnss_nodes.len(),
-            1,
-            "expected inline expanded gnss usage to be removed, got: {:?}",
-            gnss_nodes
-        );
-        assert!(
-            gnss_nodes.contains(&"FlightControlAndSensing::gnss"),
-            "expected canonical branch to retain typed-definition gnss"
-        );
+        ibd,
     }
 }
