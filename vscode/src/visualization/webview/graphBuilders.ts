@@ -46,6 +46,34 @@ function normalizeEdgeType(edge: any): string {
     return type || 'relationship';
 }
 
+function buildContainsChildrenMap(edges: any[]): Map<string, string[]> {
+    const containsChildren = new Map<string, string[]>();
+    edges.forEach((edge: any) => {
+        const edgeType = ((edge?.type || edge?.rel_type || edge?.relType || '') as string).toLowerCase();
+        if (edgeType !== 'contains' || !edge?.source || !edge?.target) return;
+        if (!containsChildren.has(edge.source)) containsChildren.set(edge.source, []);
+        containsChildren.get(edge.source)!.push(edge.target);
+    });
+    return containsChildren;
+}
+
+function collectHiddenDescendants(hiddenNodeIds: Set<string>, containsChildren: Map<string, string[]>): Set<string> {
+    const hiddenDescendants = new Set<string>();
+    const stack = Array.from(hiddenNodeIds);
+
+    while (stack.length > 0) {
+        const current = stack.pop();
+        const children = containsChildren.get(current || '') || [];
+        children.forEach((childId) => {
+            if (hiddenDescendants.has(childId) || hiddenNodeIds.has(childId)) return;
+            hiddenDescendants.add(childId);
+            stack.push(childId);
+        });
+    }
+
+    return hiddenDescendants;
+}
+
 /**
  * Build synthetic tree edges for General View: root PartDef → parts → typing → PartDef → nested parts.
  */
@@ -202,11 +230,27 @@ export function graphToGeneralViewElements(
         typeStats[category] = (typeStats[category] || 0) + 1;
     });
 
-    const filteredNodes = allCandidateNodes.filter((node: any) => {
+    const containsChildren = buildContainsChildrenMap(edges);
+    const categoryFilteredOutNodeIds = new Set<string>();
+    const nonRenderedContainerNodeIds = new Set<string>();
+    allCandidateNodes.forEach((node: any) => {
         const typeLower = ((node.type || node.element_type || '') as string).toLowerCase().trim();
         const category = getCategoryForType(typeLower);
-        if (category === 'packages') return false;
-        return ctx.enabledGeneralCategories.has(category);
+        if (category === 'packages') {
+            nonRenderedContainerNodeIds.add(node.id);
+            return;
+        }
+        if (!ctx.enabledGeneralCategories.has(category)) {
+            categoryFilteredOutNodeIds.add(node.id);
+        }
+    });
+
+    const hiddenDescendantNodeIds = collectHiddenDescendants(categoryFilteredOutNodeIds, containsChildren);
+
+    const filteredNodes = allCandidateNodes.filter((node: any) => {
+        if (nonRenderedContainerNodeIds.has(node.id)) return false;
+        if (categoryFilteredOutNodeIds.has(node.id)) return false;
+        return !hiddenDescendantNodeIds.has(node.id);
     });
     const dedupedNodesById = new Map<string, any>();
     filteredNodes.forEach((node: any) => {

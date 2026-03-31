@@ -126,6 +126,22 @@ export function collectCompartmentsFromElement(element: any): SysMLNodeCompartme
     }
 
     if (!element?.children?.length) {
+        const inlineAttributes = Array.isArray(element?.attributes?.generalViewAttributes)
+            ? element.attributes.generalViewAttributes
+            : [];
+        inlineAttributes.forEach((line: any) => {
+            if (typeof line === 'string' && !result.attributes.includes(line)) {
+                result.attributes.push(line);
+            }
+        });
+        const inlinePorts = Array.isArray(element?.attributes?.generalViewPorts)
+            ? element.attributes.generalViewPorts
+            : [];
+        inlinePorts.forEach((line: any) => {
+            if (typeof line === 'string' && !result.ports.includes(line)) {
+                result.ports.push(line);
+            }
+        });
         return result;
     }
 
@@ -164,6 +180,23 @@ export function collectCompartmentsFromElement(element: any): SysMLNodeCompartme
             if (!result.ports.some((l) => l.includes(pName))) result.ports.push('  ' + pName);
         });
     }
+
+    const inlineAttributes = Array.isArray(element?.attributes?.generalViewAttributes)
+        ? element.attributes.generalViewAttributes
+        : [];
+    inlineAttributes.forEach((line: any) => {
+        if (typeof line === 'string' && !result.attributes.includes(line)) {
+            result.attributes.push(line);
+        }
+    });
+    const inlinePorts = Array.isArray(element?.attributes?.generalViewPorts)
+        ? element.attributes.generalViewPorts
+        : [];
+    inlinePorts.forEach((line: any) => {
+        if (typeof line === 'string' && !result.ports.includes(line)) {
+            result.ports.push(line);
+        }
+    });
 
     if (isRequirement && result.other!.length) {
         result.attributes = [];

@@ -766,6 +766,24 @@ import { buildGeneralViewGraph } from './graphBuilders';
         });
         actionsRow.appendChild(showAllButton);
 
+        const hideAllButton = document.createElement('button');
+        hideAllButton.type = 'button';
+        hideAllButton.className = 'general-preset-btn general-preset-btn-secondary';
+        const allDisabled = enabledGeneralConcerns.size === 0;
+        if (allDisabled) {
+            hideAllButton.classList.add('active');
+        }
+        hideAllButton.textContent = 'Hide all';
+        hideAllButton.title = 'Disable all General View concerns';
+        hideAllButton.addEventListener('click', async () => {
+            enabledGeneralConcerns = new Set();
+            renderGeneralChips(typeStats);
+            if (currentView === 'general-view') {
+                await renderVisualization('general-view', false);
+            }
+        });
+        actionsRow.appendChild(hideAllButton);
+
         container.appendChild(concernRow);
         container.appendChild(actionsRow);
     }

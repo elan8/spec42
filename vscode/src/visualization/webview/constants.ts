@@ -90,19 +90,25 @@ export const GENERAL_VIEW_CONCERNS = [
     {
         id: 'structure',
         label: 'Structure',
-        categories: ['partDefs', 'parts', 'portDefs', 'ports', 'attributeDefs', 'attributes', 'items', 'packages'],
+        categories: ['partDefs', 'parts', 'portDefs', 'ports', 'attributeDefs', 'attributes', 'packages'],
         color: '#2D8A6E',
+    },
+    {
+        id: 'items',
+        label: 'Items',
+        categories: ['items'],
+        color: '#5A9B6E',
     },
     {
         id: 'requirements',
         label: 'Requirements',
-        categories: ['reqDefs', 'requirements', 'usecaseDefs', 'usecases', 'concerns'],
+        categories: ['reqDefs', 'requirements', 'concerns'],
         color: '#5B8FC4',
     },
     {
         id: 'behavior',
         label: 'Behavior',
-        categories: ['actionDefs', 'actions'],
+        categories: ['actionDefs', 'actions', 'usecaseDefs', 'usecases'],
         color: '#D4A02C',
     },
     {
@@ -135,8 +141,11 @@ export const GENERAL_VIEW_ALWAYS_ON_CATEGORIES = [
 ] as const;
 
 export function getGeneralViewEnabledCategoryIds(enabledConcernIds: Iterable<string>): Set<string> {
-    const enabled = new Set<string>(GENERAL_VIEW_ALWAYS_ON_CATEGORIES);
     const concernSet = new Set(enabledConcernIds);
+    const enableFallbackCategories = concernSet.size === GENERAL_VIEW_CONCERNS.length;
+    const enabled = new Set<string>(
+        enableFallbackCategories ? GENERAL_VIEW_ALWAYS_ON_CATEGORIES : []
+    );
 
     GENERAL_VIEW_CONCERNS.forEach((concern) => {
         if (concernSet.has(concern.id)) {

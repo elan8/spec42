@@ -919,6 +919,208 @@ fn lsp_sysml_model_general_view_graph_keeps_valid_office_subject_edge_without_sy
 }
 
 #[test]
+fn lsp_sysml_model_general_view_graph_inlines_ports_and_attributes_into_owner_nodes() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///general_view_inline_details.sysml";
+    let content = r#"
+        package P {
+            port def PowerPort;
+
+            part def Laptop {
+                attribute voltage;
+                port powerIn : PowerPort;
+            }
+        }
+    "#;
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+
+    let did_open = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+        }
+    });
+    send_message(&mut stdin, &did_open.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(120));
+
+    let model_id = next_id();
+    let model_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": model_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": uri },
+            "scope": ["graph", "generalViewGraph"]
+        }
+    });
+    send_message(&mut stdin, &model_req.to_string());
+    let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+
+    let gv_nodes = model_json["result"]["generalViewGraph"]["nodes"]
+        .as_array()
+        .expect("generalViewGraph nodes array");
+    let gv_edges = model_json["result"]["generalViewGraph"]["edges"]
+        .as_array()
+        .expect("generalViewGraph edges array");
+
+    assert!(
+        gv_nodes.iter().all(|node| {
+            let node_type = node["type"].as_str().unwrap_or_default().to_lowercase();
+            !node_type.contains("port") && !node_type.contains("attribute")
+        }),
+        "generalViewGraph should not keep standalone port/attribute nodes: {gv_nodes:#?}"
+    );
+
+    let laptop = gv_nodes
+        .iter()
+        .find(|node| node["name"].as_str() == Some("Laptop"))
+        .expect("Laptop node in General View");
+    let attributes = laptop["attributes"]["generalViewAttributes"]
+        .as_array()
+        .expect("inline attributes array");
+    let ports = laptop["attributes"]["generalViewPorts"]
+        .as_array()
+        .expect("inline ports array");
+    assert!(
+        attributes.iter().any(|line| line.as_str() == Some("  voltage")),
+        "owner node should preserve inline attribute summaries: {attributes:#?}"
+    );
+    assert!(
+        ports.iter().any(|line| line.as_str() == Some("  powerIn : PowerPort")),
+        "owner node should preserve inline port summaries: {ports:#?}"
+    );
+    assert!(
+        gv_edges.iter().all(|edge| {
+            let source = edge["source"].as_str().unwrap_or_default();
+            let target = edge["target"].as_str().unwrap_or_default();
+            !source.contains("powerIn")
+                && !target.contains("powerIn")
+                && !source.contains("voltage")
+                && !target.contains("voltage")
+        }),
+        "General View edges should not reference inlined port/attribute nodes: {gv_edges:#?}"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
+fn lsp_sysml_model_general_view_graph_filters_parameter_nodes() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///general_view_parameters.sysml";
+    let content = r#"
+        package P {
+            action def Operate {
+                in out p;
+            }
+        }
+    "#;
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+
+    let did_open = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+        }
+    });
+    send_message(&mut stdin, &did_open.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(120));
+
+    let model_id = next_id();
+    let model_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": model_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": uri },
+            "scope": ["graph", "generalViewGraph"]
+        }
+    });
+    send_message(&mut stdin, &model_req.to_string());
+    let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+
+    let gv_nodes = model_json["result"]["generalViewGraph"]["nodes"]
+        .as_array()
+        .expect("generalViewGraph nodes array");
+    let gv_edges = model_json["result"]["generalViewGraph"]["edges"]
+        .as_array()
+        .expect("generalViewGraph edges array");
+
+    assert!(
+        gv_nodes.iter().any(|node| node["name"].as_str() == Some("Operate")),
+        "owner action should remain in General View"
+    );
+    assert!(
+        gv_nodes.iter().all(|node| {
+            !node["type"]
+                .as_str()
+                .unwrap_or_default()
+                .to_lowercase()
+                .contains("parameter")
+        }),
+        "parameter nodes should be filtered from generalViewGraph: {gv_nodes:#?}"
+    );
+    assert!(
+        gv_edges.iter().all(|edge| {
+            let source = edge["source"].as_str().unwrap_or_default();
+            let target = edge["target"].as_str().unwrap_or_default();
+            !source.contains("::p") && !target.contains("::p")
+        }),
+        "General View edges should not reference filtered parameter nodes: {gv_edges:#?}"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
 fn lsp_sysml_diagram_interconnection_view_materializes_instance_typed_roots() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");

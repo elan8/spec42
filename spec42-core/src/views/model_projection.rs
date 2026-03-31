@@ -9,14 +9,16 @@ pub fn canonical_general_view_graph(
     graph: &SysmlGraphDto,
     _include_all_roots: bool,
 ) -> SysmlGraphDto {
+    let filtered_graph = fold_general_view_leaf_details_into_owners(graph);
+
     let mut node_by_id: HashMap<String, GraphNodeDto> = HashMap::new();
-    for node in &graph.nodes {
+    for node in &filtered_graph.nodes {
         node_by_id.entry(node.id.clone()).or_insert_with(|| node.clone());
     }
 
     let mut edge_keys: HashSet<(String, String, String, Option<String>)> = HashSet::new();
     let mut out_edges: Vec<GraphEdgeDto> = Vec::new();
-    for edge in &graph.edges {
+    for edge in &filtered_graph.edges {
         let key = (
             edge.source.clone(),
             edge.target.clone(),
@@ -45,6 +47,160 @@ pub fn canonical_general_view_graph(
             ))
     });
     SysmlGraphDto { nodes: out_nodes, edges: out_edges }
+}
+
+fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) -> SysmlGraphDto {
+    let node_by_id: HashMap<&str, &GraphNodeDto> = graph
+        .nodes
+        .iter()
+        .map(|node| (node.id.as_str(), node))
+        .collect();
+    let typing_targets: HashMap<&str, &str> = graph
+        .edges
+        .iter()
+        .filter(|edge| edge.rel_type.eq_ignore_ascii_case("typing"))
+        .map(|edge| (edge.source.as_str(), edge.target.as_str()))
+        .collect();
+
+    let detail_ids: HashSet<&str> = graph
+        .nodes
+        .iter()
+        .filter(|node| is_general_view_inline_detail(&node.element_type))
+        .map(|node| node.id.as_str())
+        .collect();
+
+    if detail_ids.is_empty() {
+        return graph.clone();
+    }
+
+    let mut owner_detail_lines: HashMap<String, (Vec<String>, Vec<String>)> = HashMap::new();
+    for detail in graph.nodes.iter().filter(|node| detail_ids.contains(node.id.as_str())) {
+        let Some(owner_id) = detail.parent_id.as_ref() else {
+            continue;
+        };
+        if detail_ids.contains(owner_id.as_str()) {
+            continue;
+        }
+        if !node_by_id.contains_key(owner_id.as_str()) {
+            continue;
+        }
+
+        let detail_line = format_general_view_detail_line(detail, &node_by_id, &typing_targets);
+        let entry = owner_detail_lines
+            .entry(owner_id.clone())
+            .or_insert_with(|| (Vec::new(), Vec::new()));
+        if is_port_like(&detail.element_type) {
+            push_unique_line(&mut entry.1, detail_line);
+        } else if is_attribute_like(&detail.element_type) {
+            push_unique_line(&mut entry.0, detail_line);
+        }
+    }
+
+    let mut out_nodes: Vec<GraphNodeDto> = graph
+        .nodes
+        .iter()
+        .filter(|node| !detail_ids.contains(node.id.as_str()))
+        .cloned()
+        .collect();
+    for node in &mut out_nodes {
+        if let Some((attributes, ports)) = owner_detail_lines.get(&node.id) {
+            if !attributes.is_empty() {
+                node.attributes.insert(
+                    "generalViewAttributes".to_string(),
+                    serde_json::Value::Array(
+                        attributes
+                            .iter()
+                            .cloned()
+                            .map(serde_json::Value::String)
+                            .collect(),
+                    ),
+                );
+            }
+            if !ports.is_empty() {
+                node.attributes.insert(
+                    "generalViewPorts".to_string(),
+                    serde_json::Value::Array(
+                        ports
+                            .iter()
+                            .cloned()
+                            .map(serde_json::Value::String)
+                            .collect(),
+                    ),
+                );
+            }
+        }
+    }
+
+    let out_edges: Vec<GraphEdgeDto> = graph
+        .edges
+        .iter()
+        .filter(|edge| {
+            !detail_ids.contains(edge.source.as_str())
+                && !detail_ids.contains(edge.target.as_str())
+        })
+        .cloned()
+        .collect();
+
+    SysmlGraphDto {
+        nodes: out_nodes,
+        edges: out_edges,
+    }
+}
+
+fn is_general_view_inline_detail(element_type: &str) -> bool {
+    let lower = element_type.to_lowercase();
+    is_port_like(&lower) || is_attribute_like(&lower) || is_parameter_like(&lower)
+}
+
+fn is_port_like(element_type: &str) -> bool {
+    element_type.to_lowercase().contains("port")
+}
+
+fn is_attribute_like(element_type: &str) -> bool {
+    let lower = element_type.to_lowercase();
+    lower.contains("attribute") || lower.contains("property")
+}
+
+fn is_parameter_like(element_type: &str) -> bool {
+    element_type.to_lowercase().contains("parameter")
+}
+
+fn push_unique_line(lines: &mut Vec<String>, line: String) {
+    if !lines.iter().any(|existing| existing == &line) {
+        lines.push(line);
+    }
+}
+
+fn format_general_view_detail_line(
+    detail: &GraphNodeDto,
+    node_by_id: &HashMap<&str, &GraphNodeDto>,
+    typing_targets: &HashMap<&str, &str>,
+) -> String {
+    let name = detail.name.trim();
+    let typed = typing_targets
+        .get(detail.id.as_str())
+        .and_then(|target_id| node_by_id.get(target_id))
+        .map(|target| target.name.as_str())
+        .or_else(|| {
+            if is_port_like(&detail.element_type) {
+                detail
+                    .attributes
+                    .get("portType")
+                    .and_then(|value| value.as_str())
+            } else {
+                detail
+                    .attributes
+                    .get("dataType")
+                    .and_then(|value| value.as_str())
+                    .or_else(|| detail.attributes.get("type").and_then(|value| value.as_str()))
+            }
+        })
+        .map(|type_name| type_name.split("::").last().unwrap_or(type_name).to_string());
+
+    match typed {
+        Some(type_name) if !type_name.is_empty() => format!("  {name} : {type_name}"),
+        _ => format!("  {name}"),
+    }
 }
 
 #[cfg(test)]
@@ -193,6 +349,126 @@ mod tests {
                 .iter()
                 .map(|edge| (&edge.source, &edge.target, &edge.rel_type))
                 .collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn canonical_general_view_graph_inlines_ports_and_attributes_into_owner_nodes() {
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::Laptop".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "Laptop".to_string(),
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Laptop::voltage".to_string(),
+                    element_type: "attribute".to_string(),
+                    name: "voltage".to_string(),
+                    parent_id: Some("Pkg::Laptop".to_string()),
+                    range: range(),
+                    attributes: serde_json::json!({ "dataType": "ScalarValues::Volt" })
+                        .as_object()
+                        .unwrap()
+                        .iter()
+                        .map(|(k, v)| (k.clone(), v.clone()))
+                        .collect(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Laptop::powerIn".to_string(),
+                    element_type: "port".to_string(),
+                    name: "powerIn".to_string(),
+                    parent_id: Some("Pkg::Laptop".to_string()),
+                    range: range(),
+                    attributes: serde_json::json!({ "portType": "PowerPort" })
+                        .as_object()
+                        .unwrap()
+                        .iter()
+                        .map(|(k, v)| (k.clone(), v.clone()))
+                        .collect(),
+                },
+            ],
+            edges: vec![
+                GraphEdgeDto {
+                    source: "Pkg::Laptop".to_string(),
+                    target: "Pkg::Laptop::voltage".to_string(),
+                    rel_type: "contains".to_string(),
+                    name: None,
+                },
+                GraphEdgeDto {
+                    source: "Pkg::Laptop".to_string(),
+                    target: "Pkg::Laptop::powerIn".to_string(),
+                    rel_type: "contains".to_string(),
+                    name: None,
+                },
+            ],
+        };
+
+        let canonical = canonical_general_view_graph(&graph, false);
+        assert_eq!(canonical.nodes.len(), 1, "port and attribute nodes should be filtered from General View");
+        let owner = canonical.nodes.iter().find(|node| node.id == "Pkg::Laptop").expect("owner node");
+        assert_eq!(
+            owner.attributes.get("generalViewAttributes"),
+            Some(&serde_json::json!(["  voltage : Volt"])),
+            "attribute should be preserved in owner node compartments"
+        );
+        assert_eq!(
+            owner.attributes.get("generalViewPorts"),
+            Some(&serde_json::json!(["  powerIn : PowerPort"])),
+            "port should be preserved in owner node compartments"
+        );
+        assert!(
+            canonical.edges.is_empty(),
+            "contains edges to inlined details should be removed from General View"
+        );
+    }
+
+    #[test]
+    fn canonical_general_view_graph_filters_parameter_nodes() {
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::Operate".to_string(),
+                    element_type: "action def".to_string(),
+                    name: "Operate".to_string(),
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Operate::p".to_string(),
+                    element_type: "in out parameter".to_string(),
+                    name: "p".to_string(),
+                    parent_id: Some("Pkg::Operate".to_string()),
+                    range: range(),
+                    attributes: serde_json::json!({ "parameterType": "Signal" })
+                        .as_object()
+                        .unwrap()
+                        .iter()
+                        .map(|(k, v)| (k.clone(), v.clone()))
+                        .collect(),
+                },
+            ],
+            edges: vec![GraphEdgeDto {
+                source: "Pkg::Operate".to_string(),
+                target: "Pkg::Operate::p".to_string(),
+                rel_type: "contains".to_string(),
+                name: None,
+            }],
+        };
+
+        let canonical = canonical_general_view_graph(&graph, false);
+        assert_eq!(canonical.nodes.len(), 1, "parameter nodes should be filtered from General View");
+        assert!(
+            canonical.nodes.iter().all(|node| !node.element_type.to_lowercase().contains("parameter")),
+            "parameter nodes should not remain in generalViewGraph"
+        );
+        assert!(
+            canonical.edges.is_empty(),
+            "contains edges to filtered parameter nodes should be removed too"
         );
     }
 }
