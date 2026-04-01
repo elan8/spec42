@@ -82,7 +82,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
     let selectedDiagramIndex = 0; // Track currently selected diagram for multi-diagram views
     let selectedDiagramName = null; // Track selected diagram by name to preserve across updates
     let selectedIbdRoot = null; // Block to show as root in Interconnection View (IBD)
-    let activityDebugLabels = false; // Toggle for showing debug labels on forks/joins in Activity view
     let lastView = currentView;
     let svg = null;
     let g = null;
@@ -149,39 +148,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
         });
     }
 
-    // Activity Debug Labels toggle
-    function setupActivityDebugToggle() {
-        const debugBtn = document.getElementById('activity-debug-btn');
-        if (!debugBtn) return;
-
-        debugBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            activityDebugLabels = !activityDebugLabels;
-
-            if (activityDebugLabels) {
-                debugBtn.classList.add('active');
-                debugBtn.style.background = 'var(--vscode-button-background)';
-                debugBtn.style.color = 'var(--vscode-button-foreground)';
-            } else {
-                debugBtn.classList.remove('active');
-                debugBtn.style.background = '';
-                debugBtn.style.color = '';
-            }
-
-            // Re-render current view to apply label changes
-            if (currentView === 'action-flow-view') {
-                renderVisualization('action-flow-view');
-            }
-        });
-    }
-
-    // Show/hide activity debug button based on current view
     function updateActivityDebugButtonVisibility(view) {
-        const debugBtn = document.getElementById('activity-debug-btn');
-        if (debugBtn) {
-            debugBtn.style.display = (view === 'action-flow-view') ? 'inline-block' : 'none';
-        }
-
         // Show legend button only for Cytoscape-based views
         const legendBtn = document.getElementById('legend-btn');
         const legendPopup = document.getElementById('legend-popup');
@@ -198,8 +165,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
         }
     }
 
-    // Initialize activity debug toggle
-    document.addEventListener('DOMContentLoaded', setupActivityDebugToggle);
     // buildEnhancedElementLabel, getLibraryChain, getLibraryKind imported from ./helpers
 
     // Track manual zoom interactions to preserve user's zoom state
@@ -1155,7 +1120,10 @@ import { buildGeneralViewGraph } from './graphBuilders';
         } else if (activeView === 'action-flow-view') {
             // Get activity diagrams
             const preparedData = prepareDataForView(currentData, 'action-flow-view');
-            diagrams = preparedData?.diagrams || [];
+            diagrams = (preparedData?.diagrams || []).map((diagram: any) => ({
+                ...diagram,
+                label: diagram?.name || 'Action Flow',
+            }));
             labelText = 'Action Flow';
         } else if (activeView === 'state-transition-view') {
             const preparedData = prepareDataForView(currentData, 'state-transition-view');
@@ -1167,7 +1135,10 @@ import { buildGeneralViewGraph } from './graphBuilders';
             labelText = 'State Machine';
         } else if (activeView === 'sequence-view') {
             // Get sequence diagrams
-            diagrams = currentData?.sequenceDiagrams || [];
+            diagrams = (currentData?.sequenceDiagrams || []).map((diagram: any) => ({
+                ...diagram,
+                label: diagram?.name || 'Sequence',
+            }));
             labelText = 'Sequence';
         } else if (activeView === 'interconnection-view') {
             const preparedData = prepareDataForView({ ...currentData, selectedIbdRoot }, 'interconnection-view');
@@ -1244,6 +1215,11 @@ import { buildGeneralViewGraph } from './graphBuilders';
             setSelectorSummary('');
         }
 
+        const selectedDiagram = diagrams[selectedDiagramIndex];
+        if (pkgLabel && selectedDiagram) {
+            pkgLabel.textContent = selectedDiagram.label || selectedDiagram.name || labelText;
+        }
+
         // Populate dropdown menu
         pkgMenu.innerHTML = '';
         diagrams.forEach((d, idx) => {
@@ -1281,6 +1257,9 @@ import { buildGeneralViewGraph } from './graphBuilders';
             selectedDiagramIndex = 0;
             selectedDiagramName = diagrams[0]?.name || null;
             logSelectionTransition('selector.index-out-of-range-fallback', before, { diagramsLength: diagrams.length });
+            if (pkgLabel && diagrams[0]) {
+                pkgLabel.textContent = diagrams[0].label || diagrams[0].name || labelText;
+            }
         }
     }
 
@@ -1604,7 +1583,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 getCy: () => null,
                 layoutDirection,
                 activityLayoutDirection,
-                activityDebugLabels,
                 stateLayoutOrientation,
                 selectedDiagramIndex,
                 postMessage: (msg) => vscode.postMessage(msg),

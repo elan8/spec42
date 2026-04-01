@@ -13,7 +13,6 @@ export interface RenderContext {
     getCy: () => any;
     layoutDirection: string;
     activityLayoutDirection: string;
-    activityDebugLabels: boolean;
     stateLayoutOrientation: string;
     selectedDiagramIndex: number;
     postMessage: (msg: unknown) => void;
