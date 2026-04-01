@@ -179,10 +179,9 @@ export class VisualizationPanel {
 
         this._panel.webview.onDidReceiveMessage(dispatch, null, this._disposables);
 
-        // Force the initial render. During session restore the panel can exist
-        // before VS Code considers it visible; a non-forced update would defer
-        // and could leave the webview stuck on the initial loading overlay.
-        this.updateVisualization(true);
+        // Let the webview bootstrap drive the first forced render via the
+        // `webviewReady` message. Doing it here as well causes an immediate
+        // duplicate fetch/render cycle on startup.
         this.persistRestoreState();
     }
 
