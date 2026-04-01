@@ -19,13 +19,13 @@ export function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri
     let html = fs.readFileSync(templatePath, 'utf8');
 
     const nonce = getNonce();
-    const enabledViews: string[] = [...DEFAULT_ENABLED_VIEWS];
+    const enabledViews = new Set<string>(DEFAULT_ENABLED_VIEWS);
     const includeExperimentalViews =
         vscode.workspace.getConfiguration('spec42').get<boolean>('visualization.enableExperimentalViews') ??
         vscode.workspace.getConfiguration('sysml-language-server').get<boolean>('visualization.enableExperimentalViews') ??
         false;
     if (includeExperimentalViews) {
-        enabledViews.push(...EXPERIMENTAL_VIEWS);
+        EXPERIMENTAL_VIEWS.forEach((viewId) => enabledViews.add(viewId));
     }
 
     const vars: Record<string, string> = {
@@ -38,7 +38,7 @@ export function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri
         CODICONS_CSS_URI: webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'media', 'codicons', 'codicon.css')).toString(),
         STYLES: getVisualizerStyles(),
         EXTENSION_VERSION: extensionVersion ?? '0.0.0',
-        ENABLED_VIEW_IDS_JSON: JSON.stringify(enabledViews),
+        ENABLED_VIEW_IDS_JSON: JSON.stringify(Array.from(enabledViews)),
         EXPERIMENTAL_VIEW_IDS_JSON: JSON.stringify(EXPERIMENTAL_VIEWS),
         VERBOSE_LOGGING_JSON: JSON.stringify(isVerboseLoggingEnabled()),
     };

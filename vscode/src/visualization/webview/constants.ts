@@ -10,7 +10,12 @@ export const MAX_SYSML_ZOOM = 20;
 
 export const STRUCTURAL_VIEWS = new Set(['general-view', 'interconnection-view']);
 
-export const DEFAULT_ENABLED_VIEWS = ['general-view', 'interconnection-view'] as const;
+export const DEFAULT_ENABLED_VIEWS = [
+    'general-view',
+    'interconnection-view',
+    'action-flow-view',
+    'state-transition-view',
+] as const;
 
 export const EXPERIMENTAL_VIEWS = [
     'action-flow-view',
