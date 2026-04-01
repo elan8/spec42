@@ -214,6 +214,60 @@ import { buildGeneralViewGraph } from './graphBuilders';
     let lastDataHash = '';
     let pendingRenderRequest: { view: string; preserveZoomOverride: any; allowDuringResize: boolean } | null = null;
 
+    function ensureVisualizationCanvas(width: number, height: number): void {
+        const root = d3.select('#visualization');
+
+        if (!svg || svg.empty()) {
+            svg = root
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+        } else {
+            svg
+                .attr('width', width)
+                .attr('height', height);
+        }
+
+        if (!zoom) {
+            zoom = d3.zoom()
+                .scaleExtent([MIN_CANVAS_ZOOM, MAX_CANVAS_ZOOM])
+                .on('zoom', (event) => {
+                    g.attr('transform', event.transform);
+                    if (event.sourceEvent) {
+                        window.userHasManuallyZoomed = true;
+                    }
+                });
+
+            svg.call(zoom)
+                .on('dblclick.zoom', null)
+                .on('wheel.zoom', function(event) {
+                    event.preventDefault();
+
+                    window.userHasManuallyZoomed = true;
+
+                    const mouse = d3.pointer(event, this);
+                    const currentTransform = d3.zoomTransform(this);
+                    const factor = event.deltaY > 0 ? 0.7 : 1.45;
+                    const newScale = Math.min(
+                        Math.max(currentTransform.k * factor, MIN_CANVAS_ZOOM),
+                        MAX_CANVAS_ZOOM
+                    );
+                    const translateX = mouse[0] - (mouse[0] - currentTransform.x) * (newScale / currentTransform.k);
+                    const translateY = mouse[1] - (mouse[1] - currentTransform.y) * (newScale / currentTransform.k);
+
+                    d3.select(this)
+                        .transition()
+                        .duration(50)
+                        .call(zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(newScale));
+                });
+        }
+
+        g = svg.select('g.codex-render-root');
+        if (g.empty()) {
+            g = svg.append('g').attr('class', 'codex-render-root');
+        }
+    }
+
     function populateViewDropdown() {
         const viewDropdownMenu = document.getElementById('view-dropdown-menu');
         if (!viewDropdownMenu) return;
@@ -1522,57 +1576,10 @@ import { buildGeneralViewGraph } from './graphBuilders';
             }
         }
 
-        d3.select('#visualization').selectAll('*').remove();
-
         const width = document.getElementById('visualization').clientWidth;
         const height = document.getElementById('visualization').clientHeight;
-
-        svg = d3.select('#visualization')
-            .append('svg')
-            .attr('width', width)
-            .attr('height', height);
-
-        zoom = d3.zoom()
-            .scaleExtent([MIN_CANVAS_ZOOM, MAX_CANVAS_ZOOM])
-            .on('zoom', (event) => {
-                g.attr('transform', event.transform);
-                // Mark as manual interaction if triggered by user (not programmatic)
-                if (event.sourceEvent) {
-                    window.userHasManuallyZoomed = true;
-                }
-            });
-
-        // Enable mouse-centered zooming by setting the zoom center
-        svg.call(zoom)
-            .on('dblclick.zoom', null) // Disable default double-click zoom behavior
-            .on('wheel.zoom', function(event) {
-                event.preventDefault();
-
-                // Mark that user has manually zoomed
-                window.userHasManuallyZoomed = true;
-
-                // Get mouse position relative to SVG
-                const mouse = d3.pointer(event, this);
-                const currentTransform = d3.zoomTransform(this);
-
-                // Calculate zoom factor - larger values for faster zooming
-                const factor = event.deltaY > 0 ? 0.7 : 1.45;
-                const newScale = Math.min(
-                    Math.max(currentTransform.k * factor, MIN_CANVAS_ZOOM),
-                    MAX_CANVAS_ZOOM
-                );
-
-                // Calculate new translation to zoom around mouse position
-                const translateX = mouse[0] - (mouse[0] - currentTransform.x) * (newScale / currentTransform.k);
-                const translateY = mouse[1] - (mouse[1] - currentTransform.y) * (newScale / currentTransform.k);
-
-                // Apply the transform
-                d3.select(this)
-                    .transition()
-                    .duration(50)
-                    .call(zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(newScale));
-            });
-        g = svg.append('g');
+        ensureVisualizationCanvas(width, height);
+        g.selectAll('*').remove();
 
         // Restore the zoom state after creating new elements, but do it after render
         const restoreZoom = () => {
