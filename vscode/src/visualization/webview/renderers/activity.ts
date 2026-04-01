@@ -6,6 +6,7 @@
 import type { RenderContext } from '../types';
 import { postJumpToElement } from '../jumpToElement';
 import { DIAGRAM_STYLE } from '../styleTokens';
+import { estimateElkLabelBox, toAbsoluteElkLabelBox, type ElkLabelBox } from './elkLabelUtils';
 
 declare const d3: any;
 declare const ELK: any;
@@ -131,6 +132,12 @@ function edgeLabelPosition(sections: ElkSection[] | undefined): { x: number; y: 
         if (section.endPoint) points.push(section.endPoint);
     });
     return points.length ? points[Math.floor(points.length / 2)] : null;
+}
+
+function flowDisplayLabel(flow: ActivityFlow): string {
+    const guardLabel = String(flow.guard || flow.condition || '').trim();
+    if (!guardLabel) return '';
+    return `[${normalizeEdgeLabel(guardLabel)}]`;
 }
 
 function fallbackEdgePath(
@@ -349,6 +356,7 @@ async function layoutActivityDiagram(
 ): Promise<{
     positions: Map<string, { x: number; y: number; width: number; height: number }>;
     edgeSectionsById: Map<string, ElkSection[]>;
+    edgeLabelsById: Map<string, ElkLabelBox[]>;
 }> {
     if (typeof ELK === 'undefined') throw new Error('ELK layout library not loaded');
     const elk = new ELK({ workerUrl: ctx.elkWorkerUrl || undefined });
@@ -375,6 +383,7 @@ async function layoutActivityDiagram(
             'elk.layered.spacing.nodeNodeBetweenLayers': isHorizontal ? '190' : '170',
             'elk.spacing.edgeNode': '80',
             'elk.spacing.edgeEdge': '60',
+            'elk.spacing.edgeLabel': '12',
             'elk.padding': '[top=80,left=80,bottom=80,right=80]',
             'elk.separateConnectedComponents': 'true',
             'elk.json.edgeCoords': 'ROOT',
@@ -387,6 +396,27 @@ async function layoutActivityDiagram(
             id: flow.id,
             sources: [flow.from],
             targets: [flow.to],
+            labels: (() => {
+                const displayLabel = flowDisplayLabel(flow);
+                if (!displayLabel || !flow.id) return [];
+                const labelBox = estimateElkLabelBox(`${flow.id}::label`, displayLabel, {
+                    minWidth: 38,
+                    minHeight: 16,
+                    paddingX: 8,
+                    paddingY: 6,
+                    charWidth: 6,
+                });
+                return [{
+                    id: labelBox.id,
+                    text: labelBox.text,
+                    width: labelBox.width,
+                    height: labelBox.height,
+                    layoutOptions: {
+                        'org.eclipse.elk.edgeLabels.placement': 'CENTER',
+                        'org.eclipse.elk.edgeLabels.inline': 'false',
+                    },
+                }];
+            })(),
         })),
     };
 
@@ -404,13 +434,22 @@ async function layoutActivityDiagram(
     });
 
     const edgeSectionsById = new Map<string, ElkSection[]>();
+    const edgeLabelsById = new Map<string, ElkLabelBox[]>();
     (laidOut?.edges || []).forEach((edge: any) => {
         if (edge?.id && Array.isArray(edge.sections)) {
             edgeSectionsById.set(String(edge.id), edge.sections as ElkSection[]);
         }
+        if (edge?.id && Array.isArray(edge.labels) && edge.labels.length > 0) {
+            const labels = edge.labels
+                .map((label: any) => toAbsoluteElkLabelBox(label))
+                .filter((label: ElkLabelBox | null): label is ElkLabelBox => Boolean(label));
+            if (labels.length > 0) {
+                edgeLabelsById.set(String(edge.id), labels);
+            }
+        }
     });
 
-    return { positions, edgeSectionsById };
+    return { positions, edgeSectionsById, edgeLabelsById };
 }
 
 export async function renderActivityView(ctx: ActivityRenderContext, data: any): Promise<void> {
@@ -538,16 +577,19 @@ export async function renderActivityView(ctx: ActivityRenderContext, data: any):
             .style('stroke-width', '2px')
             .style('marker-end', 'url(#activity-arrowhead)');
 
-        const guardLabel = String(flow.guard || flow.condition || '').trim();
-        if (guardLabel) {
-            const position = edgeLabelPosition(sections) || { x: fallback.x, y: fallback.y };
-            const displayLabel = `[${normalizeEdgeLabel(guardLabel)}]`;
-            const labelWidth = Math.max(38, displayLabel.length * 6 + 8);
+        const displayLabel = flowDisplayLabel(flow);
+        if (displayLabel) {
+            const elkLabel = layout.edgeLabelsById.get(flow.id || '')?.[0];
+            const position = elkLabel
+                ? { x: elkLabel.x + elkLabel.width / 2, y: elkLabel.y + elkLabel.height / 2 }
+                : (edgeLabelPosition(sections) || { x: fallback.x, y: fallback.y });
+            const labelWidth = elkLabel?.width ?? Math.max(38, displayLabel.length * 6 + 8);
+            const labelHeight = elkLabel?.height ?? 16;
             flowGroup.append('rect')
-                .attr('x', position.x - labelWidth / 2)
-                .attr('y', position.y - 10)
+                .attr('x', elkLabel ? elkLabel.x : position.x - labelWidth / 2)
+                .attr('y', elkLabel ? elkLabel.y : position.y - 10)
                 .attr('width', labelWidth)
-                .attr('height', 16)
+                .attr('height', labelHeight)
                 .attr('rx', 3)
                 .style('fill', 'var(--vscode-editor-background)')
                 .style('stroke', DIAGRAM_STYLE.edgePrimary)

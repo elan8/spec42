@@ -6,6 +6,7 @@
 import type { RenderContext } from '../types';
 import { postJumpToElement } from '../jumpToElement';
 import { DIAGRAM_STYLE } from '../styleTokens';
+import { estimateElkLabelBox, toAbsoluteElkLabelBox, type ElkLabelBox } from './elkLabelUtils';
 
 declare const d3: any;
 declare const ELK: any;
@@ -83,6 +84,10 @@ function edgeLabelPositionFromSections(sections: ElkSection[] | undefined): { x:
     });
     if (points.length === 0) return null;
     return points[Math.floor(points.length / 2)];
+}
+
+function transitionDisplayLabel(transition: StateTransition): string {
+    return truncateLabel(String(transition.label || transition.name || '').trim(), 28);
 }
 
 function buildSelfLoopPath(node: { x: number; y: number; width: number; height: number }): { path: string; labelX: number; labelY: number } {
@@ -333,6 +338,25 @@ function collectEdgeSections(
     });
 }
 
+function collectEdgeLabels(
+    elkNode: any,
+    offset: { x: number; y: number },
+    acc: Map<string, ElkLabelBox[]>,
+): void {
+    (elkNode?.edges || []).forEach((edge: any) => {
+        if (!edge?.id || !Array.isArray(edge.labels) || edge.labels.length === 0) return;
+        const labels = edge.labels
+            .map((label: any) => toAbsoluteElkLabelBox(label, offset))
+            .filter((label: ElkLabelBox | null): label is ElkLabelBox => Boolean(label));
+        if (labels.length > 0) {
+            acc.set(String(edge.id), labels);
+        }
+    });
+    (elkNode?.children || []).forEach((child: any) => {
+        collectEdgeLabels(child, { x: offset.x + (child?.x ?? 0), y: offset.y + (child?.y ?? 0) }, acc);
+    });
+}
+
 function buildElkChild(
     state: StateNode,
     childrenByParent: Map<string | null, StateNode[]>,
@@ -369,6 +393,7 @@ async function layoutStateMachine(
 ): Promise<{
     layouts: Map<string, { x: number; y: number; width: number; height: number; depth: number }>;
     edgeSectionsById: Map<string, ElkSection[]>;
+    edgeLabelsById: Map<string, ElkLabelBox[]>;
 }> {
     const direction = machineDirection(ctx.stateLayoutOrientation, machine);
     const childrenByParent = new Map<string | null, StateNode[]>();
@@ -411,16 +436,39 @@ async function layoutStateMachine(
             'elk.spacing.nodeNode': '190',
             'elk.spacing.edgeNode': '130',
             'elk.spacing.edgeEdge': '110',
+            'elk.spacing.edgeLabel': '12',
             'elk.padding': '[top=100,left=90,bottom=90,right=90]',
             'elk.separateConnectedComponents': 'true',
             'elk.json.edgeCoords': 'ROOT',
         },
         children: topLevelStates.map((state) => buildElkChild(state, childrenByParent, direction, metrics)),
-        edges: machine.transitions.map((transition) => ({
-            id: transition.id,
-            sources: [transition.source],
-            targets: [transition.target],
-        })),
+        edges: machine.transitions.map((transition) => {
+            const displayLabel = transitionDisplayLabel(transition);
+            const labelBox = displayLabel
+                ? estimateElkLabelBox(`${transition.id}::label`, displayLabel, {
+                    minWidth: 42,
+                    minHeight: 18,
+                    paddingX: 10,
+                    paddingY: 8,
+                    charWidth: 6,
+                })
+                : null;
+            return {
+                id: transition.id,
+                sources: [transition.source],
+                targets: [transition.target],
+                labels: labelBox ? [{
+                    id: labelBox.id,
+                    text: labelBox.text,
+                    width: labelBox.width,
+                    height: labelBox.height,
+                    layoutOptions: {
+                        'org.eclipse.elk.edgeLabels.placement': 'CENTER',
+                        'org.eclipse.elk.edgeLabels.inline': 'false',
+                    },
+                }] : [],
+            };
+        }),
     };
 
     const laidOut = await elk.layout(elkGraph);
@@ -429,8 +477,10 @@ async function layoutStateMachine(
         extractStateLayouts(child, machine, { x: 0, y: 0 }, layouts, 0);
     });
     const edgeSectionsById = new Map<string, ElkSection[]>();
+    const edgeLabelsById = new Map<string, ElkLabelBox[]>();
     collectEdgeSections(laidOut, { x: 0, y: 0 }, edgeSectionsById);
-    return { layouts, edgeSectionsById };
+    collectEdgeLabels(laidOut, { x: 0, y: 0 }, edgeLabelsById);
+    return { layouts, edgeSectionsById, edgeLabelsById };
 }
 
 export async function renderStateView(ctx: StateRenderContext, data: any): Promise<void> {
@@ -518,6 +568,7 @@ export async function renderStateView(ctx: StateRenderContext, data: any): Promi
         if (!sourceLayout || !targetLayout) return;
 
         const sections = layoutResult.edgeSectionsById.get(transition.id);
+        const elkLabel = layoutResult.edgeLabelsById.get(transition.id)?.[0];
         const labelFromSections = edgeLabelPositionFromSections(sections);
         const path = pathFromSections(sections);
         const fallback = transition.selfLoop
@@ -534,17 +585,19 @@ export async function renderStateView(ctx: StateRenderContext, data: any): Promi
             .style('stroke-width', '2px')
             .style('marker-end', 'url(#state-arrowhead)');
 
-        const label = String(transition.label || transition.name || '').trim();
+        const label = transitionDisplayLabel(transition);
         if (label) {
-            const labelPosition = labelFromSections || { x: fallback.labelX, y: fallback.labelY };
-            const displayLabel = truncateLabel(label, 28);
-            const labelWidth = Math.max(42, displayLabel.length * 6 + 10);
+            const labelPosition = elkLabel
+                ? { x: elkLabel.x + elkLabel.width / 2, y: elkLabel.y + elkLabel.height / 2 }
+                : (labelFromSections || { x: fallback.labelX, y: fallback.labelY });
+            const labelWidth = elkLabel?.width ?? Math.max(42, label.length * 6 + 10);
+            const labelHeight = elkLabel?.height ?? 18;
 
             edgeGroup.append('rect')
-                .attr('x', labelPosition.x - labelWidth / 2)
-                .attr('y', labelPosition.y - 10)
+                .attr('x', elkLabel ? elkLabel.x : labelPosition.x - labelWidth / 2)
+                .attr('y', elkLabel ? elkLabel.y : labelPosition.y - 10)
                 .attr('width', labelWidth)
-                .attr('height', 18)
+                .attr('height', labelHeight)
                 .attr('rx', 4)
                 .style('fill', 'var(--vscode-editor-background)')
                 .style('stroke', DIAGRAM_STYLE.edgePrimary)
@@ -554,7 +607,7 @@ export async function renderStateView(ctx: StateRenderContext, data: any): Promi
                 .attr('x', labelPosition.x)
                 .attr('y', labelPosition.y + 3)
                 .attr('text-anchor', 'middle')
-                .text(displayLabel)
+                .text(label)
                 .style('font-size', '10px')
                 .style('font-weight', '500')
                 .style('fill', DIAGRAM_STYLE.edgePrimary);
