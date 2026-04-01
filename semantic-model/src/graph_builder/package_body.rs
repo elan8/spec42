@@ -340,6 +340,7 @@ pub(super) fn build_from_package_body_element(
                                 serde_json::json!(match parameter.direction {
                                     InOut::In => "in",
                                     InOut::Out => "out",
+                                    InOut::InOut => "inout",
                                 }),
                             );
                             attrs.insert(
@@ -504,6 +505,7 @@ pub(super) fn build_from_package_body_element(
                             );
                         }
                         ActionDefBodyElement::Doc(_) | ActionDefBodyElement::Error(_) => {}
+                        _ => {}
                     }
                 }
             }

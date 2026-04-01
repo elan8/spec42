@@ -138,7 +138,8 @@ pub(super) fn walk_requirement_def_body(
                 );
             }
             RequirementDefBodyElement::Doc(_)
-            | RequirementDefBodyElement::Error(_) => {}
+            | RequirementDefBodyElement::Error(_)
+            | RequirementDefBodyElement::Other(_) => {}
         }
     }
 }

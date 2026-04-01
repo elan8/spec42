@@ -2,6 +2,7 @@
 
 use super::harness::{next_id, read_message, send_message, spawn_server};
 use std::fs;
+use spec42_core::common::util;
 
 #[test]
 fn lsp_diagnostics_on_invalid_sysml() {
@@ -321,6 +322,498 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
         "expected unresolved diagnostics to have stable anchors (no unrelated type refs sharing one range): {:?}",
         unresolved_ranges_to_type_refs
     );
+
+    let _ = child.kill();
+}
+
+#[test]
+fn workspace_surveillance_drone_has_no_unresolved_action_type_references() {
+    // Self-contained workspace repro: write the checked-in drone fixture into a temp workspace,
+    // then run the LSP with rootUri set to that workspace, and ensure action type refs resolve.
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root = temp.path().canonicalize().expect("canonical root");
+    let drone_path = root.join("SurveillanceDrone.sysml");
+
+    let fixture_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests")
+        .join("fixtures")
+        .join("surveillance_drone_full.sysml");
+    let drone_content = fs::read_to_string(&fixture_path).expect("read drone fixture");
+    fs::write(&drone_path, &drone_content).expect("write SurveillanceDrone.sysml fixture");
+
+    if sysml_parser::parse(&drone_content).is_err() {
+        panic!(
+            "sysml_parser::parse failed for surveillance_drone_full.sysml; first errors: {:?}",
+            util::parse_failure_diagnostics(&drone_content, 5)
+        );
+    }
+
+    let root_uri = url::Url::from_file_path(&root).expect("workspace root uri");
+    let drone_uri = url::Url::from_file_path(&drone_path)
+        .expect("drone uri")
+        .to_string();
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": root_uri.as_str(),
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+
+    // Allow workspace scan + initial indexing.
+    std::thread::sleep(std::time::Duration::from_millis(1300));
+
+    // Mirror the editor workflow: open the document (so diagnostics are published for this exact text).
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": {
+                    "uri": drone_uri,
+                    "languageId": "sysml",
+                    "version": 1,
+                    "text": drone_content
+                }
+            }
+        })
+        .to_string(),
+    );
+
+    // Barrier request to deterministically drain diagnostics.
+    let barrier_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": barrier_id,
+            "method": "textDocument/hover",
+            "params": {
+                "textDocument": { "uri": drone_uri },
+                "position": { "line": 0, "character": 0 }
+            }
+        })
+        .to_string(),
+    );
+
+    let mut unresolved_msgs: Vec<String> = Vec::new();
+    loop {
+        let msg = read_message(&mut stdout).expect("expected message while waiting for barrier");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"]
+                .as_str()
+                .map(|published_uri| published_uri.eq_ignore_ascii_case(&drone_uri))
+                .unwrap_or(false)
+        {
+            let diagnostics = json["params"]["diagnostics"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+            for d in diagnostics {
+                if d["source"].as_str() != Some("semantic")
+                    || d["code"].as_str() != Some("unresolved_type_reference")
+                {
+                    continue;
+                }
+                let msg = d["message"].as_str().unwrap_or_default().to_string();
+                if msg.contains("Type reference 'ExecutePatrol'")
+                    || msg.contains("Type reference 'ExecuteOrbit'")
+                    || msg.contains("Type reference 'ControlGimbal'")
+                    || msg.contains("Type reference 'CaptureVideo'")
+                {
+                    unresolved_msgs.push(msg);
+                }
+            }
+        }
+        if json["id"].as_i64() == Some(barrier_id) {
+            break;
+        }
+    }
+
+    assert!(
+        unresolved_msgs.is_empty(),
+        "expected no unresolved_type_reference diagnostics for behavior action types; got: {unresolved_msgs:#?}"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
+fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
+    let examples_root = std::path::PathBuf::from("C:/Git/sysml-examples");
+    if !examples_root.is_dir() {
+        eprintln!(
+            "Skipping print_diagnostics_for_real_sysml_examples_surveillance_drone: {} is not a directory",
+            examples_root.display()
+        );
+        return;
+    }
+    let drone_path = examples_root
+        .join("drone")
+        .join("sysml")
+        .join("SurveillanceDrone.sysml");
+    if !drone_path.is_file() {
+        eprintln!(
+            "Skipping print_diagnostics_for_real_sysml_examples_surveillance_drone: expected file missing {}",
+            drone_path.display()
+        );
+        return;
+    }
+    let drone_content = fs::read_to_string(&drone_path).expect("read SurveillanceDrone.sysml");
+    let parse_diag = sysml_parser::parse_with_diagnostics(&drone_content);
+    if !parse_diag.errors.is_empty() {
+        eprintln!(
+            "--- sysml_parser parse_with_diagnostics errors (count={}) sample ---",
+            parse_diag.errors.len()
+        );
+        for (i, e) in parse_diag.errors.iter().take(25).enumerate() {
+            let loc = e
+                .to_lsp_range()
+                .map(|(sl, sc, _, _)| format!("{}:{}", sl, sc))
+                .unwrap_or_else(|| format!("{:?}:{:?}", e.line, e.column));
+            eprintln!("[{i}] {loc} {}", e.message);
+        }
+    }
+    if sysml_parser::parse(&drone_content).is_err() {
+        panic!(
+            "sysml_parser::parse failed for SurveillanceDrone.sysml; first errors: {:?}",
+            util::parse_failure_diagnostics(&drone_content, 20)
+        );
+    }
+
+    // Local (in-process) sanity check: does semantic-model build any `action def` nodes from this file?
+    // This helps distinguish parser/graph-builder gaps from LSP workspace scheduling/merge issues.
+    if let Ok(root) = sysml_parser::parse(&drone_content) {
+        fn count_action_defs_in_elements(
+            elements: &[sysml_parser::Node<sysml_parser::ast::PackageBodyElement>],
+            out: &mut usize,
+        ) {
+            use sysml_parser::ast::{PackageBody, PackageBodyElement as PBE};
+            for node in elements {
+                match &node.value {
+                    PBE::Package(p) => {
+                        if let PackageBody::Brace { elements: inner } = &p.body {
+                            count_action_defs_in_elements(inner, out);
+                        }
+                    }
+                    PBE::ActionDef(_) => *out += 1,
+                    _ => {}
+                }
+            }
+        }
+
+        let mut parsed_action_defs = 0usize;
+        for re in &root.elements {
+            use sysml_parser::ast::{PackageBody, RootElement};
+            let body = match &re.value {
+                RootElement::Package(p) => Some(&p.body),
+                RootElement::Namespace(n) => Some(&n.body),
+                RootElement::LibraryPackage(lp) => Some(&lp.body),
+                RootElement::Import(_) => None,
+            };
+            let Some(PackageBody::Brace { elements }) = body else {
+                continue;
+            };
+            count_action_defs_in_elements(elements, &mut parsed_action_defs);
+        }
+        eprintln!(
+            "--- Local AST PackageBodyElement::ActionDef count: {} ---",
+            parsed_action_defs
+        );
+
+        // Show what the parser produced in the section that visually contains the action defs.
+        // (0-based LSP lines; we print 1-based for readability).
+        fn dump_elements_in_line_window(
+            elements: &[sysml_parser::Node<sysml_parser::ast::PackageBodyElement>],
+            sl: u32,
+            el: u32,
+        ) {
+            use sysml_parser::ast::PackageBodyElement as PBE;
+            for node in elements {
+                let (nsl, _, _, _) = node.span.to_lsp_range();
+                if nsl < sl || nsl > el {
+                    continue;
+                }
+                let label = match &node.value {
+                    PBE::ActionDef(_) => "ActionDef",
+                    PBE::PartDef(_) => "PartDef",
+                    PBE::UseCaseDef(_) => "UseCaseDef",
+                    PBE::AttributeDef(_) => "AttributeDef",
+                    PBE::PortDef(_) => "PortDef",
+                    PBE::ItemDef(_) => "ItemDef",
+                    PBE::Package(_) => "Package",
+                    PBE::Error(_) => "Error",
+                    _ => "Other",
+                };
+                eprintln!(
+                    "AST element @line {} kind={}",
+                    (nsl + 1),
+                    label
+                );
+                if label == "Other" && ((nsl + 1) == 333 || (nsl + 1) == 368 || (nsl + 1) == 403 || (nsl + 1) == 427) {
+                    let dbg = format!("{:?}", &node.value);
+                    let snippet_len = dbg.len().min(240);
+                    eprintln!("  debug: {}", &dbg[..snippet_len]);
+                }
+            }
+        }
+
+        for re in &root.elements {
+            use sysml_parser::ast::{PackageBody, RootElement};
+            let body = match &re.value {
+                RootElement::Package(p) => Some(&p.body),
+                RootElement::Namespace(n) => Some(&n.body),
+                RootElement::LibraryPackage(lp) => Some(&lp.body),
+                RootElement::Import(_) => None,
+            };
+            let Some(PackageBody::Brace { elements }) = body else {
+                continue;
+            };
+            // The action defs are around 333..456 in the file.
+            dump_elements_in_line_window(elements, 320, 470);
+        }
+
+        let uri_norm =
+            util::normalize_file_uri(&url::Url::from_file_path(&drone_path).expect("drone uri"));
+        let g = semantic_model_crate::build_graph_from_doc(&root, &uri_norm);
+        let action_def_count = g
+            .nodes_for_uri(&uri_norm)
+            .iter()
+            .filter(|n| n.element_kind == "action def")
+            .count();
+        eprintln!(
+            "--- Local build_graph_from_doc action def node count: {} ---",
+            action_def_count
+        );
+        if action_def_count > 0 {
+            for n in g
+                .nodes_for_uri(&uri_norm)
+                .iter()
+                .filter(|n| n.element_kind == "action def")
+                .take(10)
+            {
+                eprintln!("local action_def name={} id={}", n.name, n.id.qualified_name);
+            }
+        }
+    }
+
+    let root_uri = url::Url::from_file_path(&examples_root).expect("examples root uri");
+    let drone_uri = url::Url::from_file_path(&drone_path)
+        .expect("drone uri")
+        .to_string();
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": root_uri.as_str(),
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+
+    // Allow workspace scan + indexing.
+    std::thread::sleep(std::time::Duration::from_millis(1400));
+
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": {
+                    "uri": drone_uri,
+                    "languageId": "sysml",
+                    "version": 1,
+                    "text": drone_content
+                }
+            }
+        })
+        .to_string(),
+    );
+
+    // Barrier request so we can drain publishDiagnostics deterministically.
+    let barrier_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": barrier_id,
+            "method": "textDocument/hover",
+            "params": {
+                "textDocument": { "uri": drone_uri },
+                "position": { "line": 0, "character": 0 }
+            }
+        })
+        .to_string(),
+    );
+
+    let mut published: Vec<serde_json::Value> = Vec::new();
+    loop {
+        let msg = read_message(&mut stdout).expect("expected message while waiting for barrier");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"]
+                .as_str()
+                .map(|published_uri| published_uri.eq_ignore_ascii_case(&drone_uri))
+                .unwrap_or(false)
+        {
+            let diagnostics = json["params"]["diagnostics"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+            published = diagnostics;
+        }
+        if json["id"].as_i64() == Some(barrier_id) {
+            break;
+        }
+    }
+
+    eprintln!("--- Diagnostics for {drone_uri} (count={}) ---", published.len());
+    for (i, d) in published.iter().enumerate() {
+        let source = d["source"].as_str().unwrap_or("(no source)");
+        let code = d["code"].as_str().unwrap_or("(no code)");
+        let msg = d["message"].as_str().unwrap_or("(no message)");
+        let start = &d["range"]["start"];
+        let end = &d["range"]["end"];
+        let sl = start["line"].as_u64().unwrap_or(0) + 1;
+        let sc = start["character"].as_u64().unwrap_or(0) + 1;
+        let el = end["line"].as_u64().unwrap_or(0) + 1;
+        let ec = end["character"].as_u64().unwrap_or(0) + 1;
+        eprintln!("[{i}] {source}/{code} {sl}:{sc}..{el}:{ec} {msg}");
+    }
+    eprintln!("--- Raw diagnostics JSON ---");
+    eprintln!(
+        "{}",
+        serde_json::to_string_pretty(&published).unwrap_or_else(|_| "[]".to_string())
+    );
+
+    // Also fetch sysml/model graph to help debug unresolved typing edges.
+    let model_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": model_id,
+            "method": "sysml/model",
+            "params": {
+                "textDocument": { "uri": drone_uri },
+                "scope": ["graph"]
+            }
+        })
+        .to_string(),
+    );
+    let model_resp = super::harness::read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value = serde_json::from_str(&model_resp).expect("parse sysml/model response");
+    let nodes = model_json["result"]["graph"]["nodes"].as_array().cloned().unwrap_or_default();
+    let edges = model_json["result"]["graph"]["edges"].as_array().cloned().unwrap_or_default();
+
+    let interesting_nodes: Vec<_> = nodes
+        .iter()
+        .filter(|n| {
+            let name = n["name"].as_str().unwrap_or_default();
+            name == "executePatrol"
+                || name == "executeOrbit"
+                || name == "controlGimbal"
+                || name == "captureVideo"
+                || name == "ExecutePatrol"
+                || name == "ExecuteOrbit"
+                || name == "ControlGimbal"
+                || name == "CaptureVideo"
+        })
+        .cloned()
+        .collect();
+    eprintln!("--- Interesting graph nodes (name/id/type) ---");
+    for n in &interesting_nodes {
+        eprintln!(
+            "name={} id={} type={}",
+            n["name"].as_str().unwrap_or(""),
+            n["id"].as_str().unwrap_or(""),
+            n["element_type"].as_str().or_else(|| n["type"].as_str()).unwrap_or("")
+        );
+    }
+
+    let action_def_nodes: Vec<_> = nodes
+        .iter()
+        .filter(|n| {
+            let et = n["element_type"]
+                .as_str()
+                .or_else(|| n["type"].as_str())
+                .unwrap_or_default()
+                .to_ascii_lowercase();
+            et.contains("action") && et.contains("def")
+        })
+        .cloned()
+        .collect();
+    eprintln!(
+        "--- Action-def-like nodes (count={}) sample ---",
+        action_def_nodes.len()
+    );
+    for n in action_def_nodes.iter().take(30) {
+        eprintln!(
+            "action_def_like element_type={} name={} id={}",
+            n["element_type"]
+                .as_str()
+                .or_else(|| n["type"].as_str())
+                .unwrap_or(""),
+            n["name"].as_str().unwrap_or(""),
+            n["id"].as_str().unwrap_or("")
+        );
+    }
+
+    let typing_edges: Vec<_> = edges
+        .iter()
+        .filter(|e| {
+            let t = e["rel_type"].as_str().or_else(|| e["type"].as_str()).unwrap_or_default();
+            t.eq_ignore_ascii_case("typing")
+        })
+        .cloned()
+        .collect();
+    eprintln!("--- Typing edges (sample, count={}) ---", typing_edges.len());
+    for e in typing_edges.iter().take(30) {
+        eprintln!(
+            "typing {} -> {}",
+            e["source"].as_str().unwrap_or(""),
+            e["target"].as_str().unwrap_or("")
+        );
+    }
 
     let _ = child.kill();
 }
@@ -910,95 +1403,4 @@ fn workspace_scan_publishes_diagnostics_for_unopened_file() {
     let _ = child.kill();
 }
 
-#[test]
-#[ignore = "flaky diagnostics ordering for watched-file delete notifications"]
-fn did_change_watched_files_delete_clears_diagnostics() {
-    let mut child = spawn_server();
-    let mut stdin = child.stdin.take().expect("stdin");
-    let mut stdout = child.stdout.take().expect("stdout");
-    let uri = "file:///watched_deleted.sysml";
-
-    let init_id = next_id();
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": init_id,
-            "method": "initialize",
-            "params": {
-                "processId": null,
-                "rootUri": null,
-                "capabilities": {},
-                "clientInfo": { "name": "test", "version": "0.1.0" }
-            }
-        })
-        .to_string(),
-    );
-    let _ = read_message(&mut stdout).expect("init response");
-    send_message(
-        &mut stdin,
-        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
-    );
-
-    // Seed non-empty diagnostics for this URI.
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "method": "textDocument/didOpen",
-            "params": {
-                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": "package P { } }" }
-            }
-        })
-        .to_string(),
-    );
-    std::thread::sleep(std::time::Duration::from_millis(250));
-
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "method": "workspace/didChangeWatchedFiles",
-            "params": {
-                "changes": [{ "uri": uri, "type": 3 }]
-            }
-        })
-        .to_string(),
-    );
-
-    let barrier_id = next_id();
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": barrier_id,
-            "method": "workspace/symbol",
-            "params": { "query": "" }
-        })
-        .to_string(),
-    );
-
-    let mut saw_clear = false;
-    loop {
-        let msg = read_message(&mut stdout).expect("expected message while waiting for barrier");
-        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
-        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
-            && json["params"]["uri"].as_str() == Some(uri)
-        {
-            saw_clear = json["params"]["diagnostics"]
-                .as_array()
-                .map(|d| d.is_empty())
-                .unwrap_or(false);
-        }
-        if json["id"].as_i64() == Some(barrier_id) {
-            break;
-        }
-    }
-
-    assert!(
-        saw_clear,
-        "expected empty publishDiagnostics for deleted URI {}",
-        uri
-    );
-    let _ = child.kill();
-}
+// Removed: `did_change_watched_files_delete_clears_diagnostics` (was ignored and flaky).

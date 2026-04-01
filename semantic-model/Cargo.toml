@@ -7,7 +7,7 @@ license.workspace = true
 description = "Pure semantic graph model for SysML v2 documents (petgraph)"
 
 [dependencies]
-sysml-parser = { git = "https://github.com/elan8/sysml-parser", rev = "41efd0f5874ca3734f1a3504e8c36799fd061e76" }
+sysml-parser = { git = "https://github.com/elan8/sysml-parser", rev = "5fed0acc64bc17af9e53dbba116fc9a90910e3dc" }
 tower-lsp = "0.20"
 petgraph = { workspace = true }
 serde = { workspace = true }

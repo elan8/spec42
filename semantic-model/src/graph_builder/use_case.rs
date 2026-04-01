@@ -78,6 +78,7 @@ pub(super) fn build_from_use_case_body(
                 );
             }
             UCBE::Error(_) | UCBE::Doc(_) => {}
+            _ => {}
         }
     }
 }

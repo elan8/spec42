@@ -10,6 +10,44 @@ use crate::graph::SemanticGraph;
 use crate::model::{NodeId, RelationshipKind};
 use crate::root_element_body;
 
+const TYPING_TARGET_KINDS: &[&str] = &[
+    "part def",
+    "port def",
+    "interface",
+    "item def",
+    "attribute def",
+    "action def",
+    "actor def",
+    "occurrence def",
+    "flow def",
+    "allocation def",
+    "state def",
+    "requirement def",
+    "use case def",
+    "concern def",
+];
+
+const SPECIALIZES_TARGET_KINDS: &[&str] = &["part def"];
+
+/// Canonical set of #kind suffixes that `qualified_name_for_node` may append.
+/// Note: these are suffix spellings, not element_kind strings.
+const DISAMBIGUATION_SUFFIX_KINDS: &[&str] = &[
+    "part_def",
+    "port_def",
+    "action_def",
+    "state_def",
+    "flow_def",
+    "allocation_def",
+    "requirement_def",
+    "use_case_def",
+    "attribute_def",
+    "item_def",
+    "actor_def",
+    "occurrence_def",
+    "interface",
+    "concern_def",
+];
+
 /// Normalizes "a.b.c" to "a::b::c" for node lookup (SysML uses dot for feature access).
 pub(crate) fn normalize_for_lookup(s: &str) -> String {
     s.replace('.', "::")
@@ -58,6 +96,53 @@ pub(crate) fn type_ref_candidates_with_kind(
         }
     }
     out
+}
+
+fn element_kind_allowed(element_kind: &str, allowed_kinds: &[&str]) -> bool {
+    allowed_kinds.iter().any(|k| *k == element_kind)
+}
+
+fn resolve_type_target_local(
+    g: &SemanticGraph,
+    uri: &Url,
+    type_ref: &str,
+    container_prefix: Option<&str>,
+    allowed_target_kinds: &[&str],
+) -> Option<NodeId> {
+    // 1) Try deterministic candidate qualified names (plain + #kind variants).
+    for suffix_kind in DISAMBIGUATION_SUFFIX_KINDS {
+        for candidate in type_ref_candidates_with_kind(container_prefix, type_ref, suffix_kind) {
+            let tgt_key = normalize_for_lookup(&candidate);
+            let tgt_id = NodeId::new(uri, &tgt_key);
+            if let Some(tgt) = g.get_node(&tgt_id) {
+                if element_kind_allowed(tgt.element_kind.as_str(), allowed_target_kinds) {
+                    return Some(tgt_id);
+                }
+            }
+        }
+    }
+
+    // 2) Fallback: find by short name within the same document (best-effort).
+    // This is intentionally conservative: only matches allowed definitional kinds,
+    // and returns the shortest qualified name to prefer nearer scopes.
+    let mut best: Option<NodeId> = None;
+    for n in g.nodes_for_uri(uri) {
+        if !element_kind_allowed(n.element_kind.as_str(), allowed_target_kinds) {
+            continue;
+        }
+        if n.name != type_ref {
+            continue;
+        }
+        let candidate = n.id.clone();
+        let take = match &best {
+            None => true,
+            Some(current) => candidate.qualified_name.len() < current.qualified_name.len(),
+        };
+        if take {
+            best = Some(candidate);
+        }
+    }
+    best
 }
 
 /// Returns true if the edge was added.
@@ -149,35 +234,22 @@ pub(crate) fn add_typing_edge_if_exists(
     if normalized_type_ref.is_empty() {
         return;
     }
-    const TYPING_TARGET_KINDS: &[&str] = &[
-        "part def",
-        "port def",
-        "interface",
-        "item def",
-        "attribute def",
-        "action def",
-        "actor def",
-        "occurrence def",
-        "flow def",
-        "allocation def",
-        "state def",
-        "requirement def",
-        "use case def",
-        "concern def",
-    ];
-    for kind in ["part_def", "port_def"] {
-        for tgt in type_ref_candidates_with_kind(container_prefix, &normalized_type_ref, kind) {
-            if add_edge_if_both_exist_opt(
-                g,
-                uri,
-                source_qualified,
-                &tgt,
-                RelationshipKind::Typing,
-                Some(TYPING_TARGET_KINDS),
-            ) {
-                return;
-            }
-        }
+    if let Some(target_id) = resolve_type_target_local(
+        g,
+        uri,
+        &normalized_type_ref,
+        container_prefix,
+        TYPING_TARGET_KINDS,
+    ) {
+        let target_qualified = target_id.qualified_name.clone();
+        let _ = add_edge_if_both_exist_opt(
+            g,
+            uri,
+            source_qualified,
+            &target_qualified,
+            RelationshipKind::Typing,
+            Some(TYPING_TARGET_KINDS),
+        );
     }
 }
 
@@ -192,18 +264,22 @@ pub(crate) fn add_specializes_edge_if_exists(
     specializes_ref: &str,
     container_prefix: Option<&str>,
 ) {
-    const SPECIALIZES_TARGET_KINDS: &[&str] = &["part def"];
-    for tgt in type_ref_candidates_with_kind(container_prefix, specializes_ref, "part_def") {
-        if add_edge_if_both_exist_opt(
+    let normalized = normalize_declared_type_ref(specializes_ref);
+    if normalized.is_empty() {
+        return;
+    }
+    if let Some(target_id) =
+        resolve_type_target_local(g, uri, &normalized, container_prefix, SPECIALIZES_TARGET_KINDS)
+    {
+        let target_qualified = target_id.qualified_name.clone();
+        let _ = add_edge_if_both_exist_opt(
             g,
             uri,
             source_qualified,
-            &tgt,
+            &target_qualified,
             RelationshipKind::Specializes,
             Some(SPECIALIZES_TARGET_KINDS),
-        ) {
-            break;
-        }
+        );
     }
 }
 
@@ -279,16 +355,24 @@ pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
             .and_then(|pid| g.get_node(pid))
             .map(|p| p.id.qualified_name.clone());
 
-        if let Some(v) = node
-            .attributes
-            .get("partType")
-            .or_else(|| node.attributes.get("attributeType"))
-            .or_else(|| node.attributes.get("portType"))
-            .or_else(|| node.attributes.get("actorType"))
-            .or_else(|| node.attributes.get("itemType"))
-            .or_else(|| node.attributes.get("requirementType"))
-        {
-            if let Some(type_ref) = v.as_str() {
+        // Keep in sync with spec42-core semantic checks `declared_type_ref` keys.
+        // Cross-document typing is added after merge, so include all known *Type attributes.
+        for key in [
+            "partType",
+            "attributeType",
+            "portType",
+            "actionType",
+            "actorType",
+            "itemType",
+            "occurrenceType",
+            "flowType",
+            "allocationType",
+            "stateType",
+            "requirementType",
+            "useCaseType",
+            "concernType",
+        ] {
+            if let Some(type_ref) = node.attributes.get(key).and_then(|v| v.as_str()) {
                 work.push((
                     node_id.clone(),
                     type_ref.to_string(),
@@ -328,43 +412,29 @@ fn add_typing_edge_cross_document(
         return;
     }
     let target_element_kinds: &[&str] = match kind {
-        RelationshipKind::Typing => &[
-            "part def",
-            "port def",
-            "interface",
-            "item def",
-            "attribute def",
-            "action def",
-            "actor def",
-            "occurrence def",
-            "flow def",
-            "allocation def",
-            "state def",
-            "requirement def",
-            "use case def",
-            "concern def",
-        ],
-        RelationshipKind::Specializes => &["part def"],
-        _ => &[],
+        RelationshipKind::Typing => TYPING_TARGET_KINDS,
+        RelationshipKind::Specializes => SPECIALIZES_TARGET_KINDS,
+        _ => return,
     };
     let src_idx = match g.node_index_by_id.get(src_id) {
         Some(&idx) => idx,
         None => return,
     };
-    let suffix_kinds = ["part_def", "port_def"];
-    let candidates: Vec<String> = suffix_kinds
-        .iter()
-        .flat_map(|k| type_ref_candidates_with_kind(container_prefix, &normalized_type_ref, k))
-        .collect();
-    for tgt_qualified in candidates {
-        let tgt_qualified = normalize_for_lookup(&tgt_qualified);
-        for uri in g.nodes_by_uri.keys() {
-            let tgt_id = NodeId::new(uri, &tgt_qualified);
-            if let Some(tgt_node) = g.get_node(&tgt_id) {
-                if target_element_kinds.contains(&tgt_node.element_kind.as_str()) {
-                    if let Some(&tgt_idx) = g.node_index_by_id.get(&tgt_id) {
-                        g.graph.add_edge(src_idx, tgt_idx, kind.clone());
-                        return;
+
+    // 1) Deterministic candidate qualified names (plain + #kind variants), searched across all URIs.
+    for suffix_kind in DISAMBIGUATION_SUFFIX_KINDS {
+        for tgt_qualified in
+            type_ref_candidates_with_kind(container_prefix, &normalized_type_ref, suffix_kind)
+        {
+            let tgt_qualified = normalize_for_lookup(&tgt_qualified);
+            for uri in g.nodes_by_uri.keys() {
+                let tgt_id = NodeId::new(uri, &tgt_qualified);
+                if let Some(tgt_node) = g.get_node(&tgt_id) {
+                    if element_kind_allowed(tgt_node.element_kind.as_str(), target_element_kinds) {
+                        if let Some(&tgt_idx) = g.node_index_by_id.get(&tgt_id) {
+                            g.graph.add_edge(src_idx, tgt_idx, kind.clone());
+                            return;
+                        }
                     }
                 }
             }

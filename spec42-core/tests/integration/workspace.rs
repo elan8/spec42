@@ -2,6 +2,7 @@
 
 use std::path::PathBuf;
 
+use spec42_core::common::util;
 use super::harness::{next_id, read_message, read_response, send_message, spawn_server};
 
 /// Workspace scan: definition file exists only on disk; we never didOpen it.
@@ -786,6 +787,126 @@ fn lsp_workspace_visualization_model_includes_all_sysml_examples_packages_when_c
         "workspace graph missing expected packages {:?}; available names sample: {:?}",
         missing,
         node_names.iter().take(40).copied().collect::<Vec<_>>()
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
+fn lsp_sysml_model_activity_diagrams_from_surveillance_drone_example_are_non_empty() {
+    if std::env::var_os("SPEC42_RUN_SYSML_EXAMPLES_ACTIVITY_TESTS").is_none() {
+        eprintln!(
+            "Skipping lsp_sysml_model_activity_diagrams_from_surveillance_drone_example_are_non_empty: set SPEC42_RUN_SYSML_EXAMPLES_ACTIVITY_TESTS=1 to enable"
+        );
+        return;
+    }
+    let examples_root = std::env::var_os("SYSML_EXAMPLES_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from("C:/Git/sysml-examples"));
+    if !examples_root.is_dir() {
+        eprintln!(
+            "Skipping lsp_sysml_model_activity_diagrams_from_surveillance_drone_example_are_non_empty: {} is not a directory (set SYSML_EXAMPLES_DIR if needed)",
+            examples_root.display()
+        );
+        return;
+    }
+
+    let drone_path = examples_root
+        .join("drone")
+        .join("sysml")
+        .join("SurveillanceDrone.sysml");
+    if !drone_path.is_file() {
+        eprintln!(
+            "Skipping lsp_sysml_model_activity_diagrams_from_surveillance_drone_example_are_non_empty: expected fixture file missing {}",
+            drone_path.display()
+        );
+        return;
+    }
+    let drone_content =
+        std::fs::read_to_string(&drone_path).expect("read SurveillanceDrone.sysml");
+    if sysml_parser::parse(&drone_content).is_err() {
+        panic!(
+            "sysml_parser::parse failed for SurveillanceDrone.sysml; first errors: {:?}",
+            util::parse_failure_diagnostics(&drone_content, 5)
+        );
+    }
+
+    let root_uri = url::Url::from_file_path(&examples_root).expect("examples root uri");
+    let drone_uri = url::Url::from_file_path(&drone_path).expect("drone uri");
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": root_uri.as_str(),
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+
+    // Allow workspace scan + initial indexing.
+    std::thread::sleep(std::time::Duration::from_millis(1300));
+
+    // Mirror the editor workflow: open the document so the server stores a parsed AST for sysml/model.
+    let did_open = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": {
+                "uri": drone_uri.as_str(),
+                "languageId": "sysml",
+                "version": 1,
+                "text": drone_content
+            }
+        }
+    });
+    send_message(&mut stdin, &did_open.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(50));
+
+    let model_id = next_id();
+    let model_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": model_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": drone_uri.as_str() },
+            "scope": ["activityDiagrams"]
+        }
+    });
+    send_message(&mut stdin, &model_req.to_string());
+    let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+
+    let diagrams = model_json["result"]["activityDiagrams"]
+        .as_array()
+        .expect("activityDiagrams array");
+    assert!(
+        !diagrams.is_empty(),
+        "expected activityDiagrams to be non-empty for SurveillanceDrone.sysml"
+    );
+
+    let diagram_names: std::collections::HashSet<&str> = diagrams
+        .iter()
+        .filter_map(|d| d["name"].as_str())
+        .collect();
+    assert!(
+        diagram_names.contains("ExecutePatrol") || diagram_names.contains("CaptureVideo"),
+        "expected ExecutePatrol or CaptureVideo activity diagram; got names: {:?}",
+        diagram_names
     );
 
     let _ = child.kill();

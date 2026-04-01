@@ -65,17 +65,26 @@ pub(crate) struct ParsedScanEntry {
 
 fn parse_scanned_entry(ordinal: usize, uri: Url, content: String) -> ParsedScanEntry {
     let parsed_result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        sysml_parser::parse(&content)
+        util::parse_for_editor(&content)
     }));
     let parser_panicked = parsed_result.is_err();
-    let parsed = match parsed_result {
-        Ok(result) => result.ok(),
-        Err(_) => None,
-    };
-    let mut parse_errors = if parsed.is_none() {
-        util::parse_failure_diagnostics(&content, 5)
-    } else {
-        Vec::new()
+    let (parsed, mut parse_errors) = match parsed_result {
+        Ok(result) => {
+            let errs = result
+                .errors
+                .iter()
+                .take(5)
+                .map(|e| {
+                    let loc = e
+                        .to_lsp_range()
+                        .map(|(sl, sc, _, _)| format!("{}:{}", sl, sc))
+                        .unwrap_or_else(|| format!("{:?}:{:?}", e.line, e.column));
+                    format!("{loc} {}", e.message)
+                })
+                .collect::<Vec<_>>();
+            (Some(result.root), errs)
+        }
+        Err(_) => (None, util::parse_failure_diagnostics(&content, 5)),
     };
     if parser_panicked {
         parse_errors.push("parser panicked while parsing scanned workspace file".to_string());
@@ -169,24 +178,23 @@ pub(crate) fn store_document_text(
     uri_norm: &Url,
     text: String,
 ) -> Option<String> {
-    let parsed = sysml_parser::parse(&text).ok();
-    let warning = if parsed.is_none() {
-        let errs = util::parse_failure_diagnostics(&text, 5);
-        Some(if errs.is_empty() {
-            format!(
-                "sysml parse failed for {} (0 diagnostics; parser returned no AST and no error list)",
-                uri_norm.as_str(),
-            )
-        } else {
-            format!(
-                "sysml parse failed for {} ({} error(s)): {}",
-                uri_norm.as_str(),
-                errs.len(),
-                errs.join("; "),
-            )
-        })
-    } else {
+    let parsed_result = util::parse_for_editor(&text);
+    let parsed = Some(parsed_result.root);
+    let warning = if parsed_result.errors.is_empty() {
         None
+    } else {
+        let errs = parsed_result
+            .errors
+            .iter()
+            .take(5)
+            .map(|e| e.message.as_str())
+            .collect::<Vec<_>>();
+        Some(format!(
+            "sysml parse for editor produced {} diagnostic(s) for {}: {}",
+            parsed_result.errors.len(),
+            uri_norm.as_str(),
+            errs.join("; ")
+        ))
     };
 
     update_semantic_graph_for_uri(state, uri_norm, parsed.as_ref());
@@ -247,25 +255,17 @@ pub(crate) fn apply_document_changes(
             }
         }
         if content_changed {
-            entry.parsed = sysml_parser::parse(&entry.content).ok();
-            if entry.parsed.is_none() {
-                let errs = util::parse_failure_diagnostics(&entry.content, 5);
+            let parsed_result = util::parse_for_editor(&entry.content);
+            entry.parsed = Some(parsed_result.root);
+            if !parsed_result.errors.is_empty() {
                 runtime_warnings.push((
                     MessageType::LOG,
-                    if errs.is_empty() {
-                        format!(
-                            "sysml parse failed after didChange for {} (version {}): parser returned no AST and no diagnostics; keeping diagnostics-only degraded mode.",
-                            uri_norm, version
-                        )
-                    } else {
-                        format!(
-                            "sysml parse failed after didChange for {} (version {}, {} error(s)): {}; keeping diagnostics-only degraded mode.",
-                            uri_norm,
-                            version,
-                            errs.len(),
-                            errs.join("; "),
-                        )
-                    },
+                    format!(
+                        "sysml parse_for_editor produced {} diagnostic(s) after didChange for {} (version {}).",
+                        parsed_result.errors.len(),
+                        uri_norm,
+                        version
+                    ),
                 ));
             }
         }

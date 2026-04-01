@@ -1,0 +1,202 @@
+[2m2026-04-01T08:11:35.664433Z[0m [32m INFO[0m [2mspec42_core::lsp_runtime::documents[0m[2m:[0m startup:initialize:start
+[2m2026-04-01T08:11:35.664663Z[0m [32m INFO[0m [2mspec42_core::lsp_runtime::documents[0m[2m:[0m startup:initialize:end [3mtrace_id[0m[2m=[0mstartup-1775031095465-3rcc46 [3melapsed_ms[0m[2m=[0m0 [3mworkspace_roots[0m[2m=[0m1 [3mlibrary_paths[0m[2m=[0m1 [3mpaths[0m[2m=[0m["file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library"]
+[2m2026-04-01T08:11:35.678929Z[0m [32m INFO[0m [2mspec42_core::lsp_runtime::documents[0m[2m:[0m startup:initialized:scan:start [3mtrace_id[0m[2m=[0mstartup-1775031095465-3rcc46 [3mscan_roots[0m[2m=[0m2
+[Info  - 10:11:35 AM] spec42 initialized
+[Info  - 10:11:35 AM] [startup][backend] trace_id=startup-1775031095465-3rcc46 phase=initialized:scan:start roots=2
+[2m2026-04-01T08:11:35.836556Z[0m [33m WARN[0m [2mspec42_core::lsp_runtime::documents[0m[2m:[0m workspace scan parse failed [3muri[0m[2m=[0mfile:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/SampledFunctions.sysml [3mdiagnostics[0m[2m=[0m5 [3merrors[0m[2m=[0m["73:2 expected keyword or token", "74:2 expected keyword or token", "75:3 expected keyword or token", "76:2 expected keyword or token", "77:1 expected keyword or token"]
+[2m2026-04-01T08:11:35.839604Z[0m [33m WARN[0m [2mspec42_core::lsp_runtime::documents[0m[2m:[0m workspace scan parse failed [3muri[0m[2m=[0mfile:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/StateSpaceRepresentation.sysml [3mdiagnostics[0m[2m=[0m5 [3merrors[0m[2m=[0m["109:11 expected keyword or token", "110:8 expected keyword or token", "112:8 expected keyword or token", "114:8 expected keyword or token", "115:4 expected keyword or token"]
+[2m2026-04-01T08:11:35.843922Z[0m [33m WARN[0m [2mspec42_core::lsp_runtime::documents[0m[2m:[0m workspace scan parse failed [3muri[0m[2m=[0mfile:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/TradeStudies.sysml [3mdiagnostics[0m[2m=[0m5 [3merrors[0m[2m=[0m["145:2 expected keyword or token", "146:3 expected keyword or token", "156:12 expected keyword or token", "157:3 expected keyword or token", "158:3 expected keyword or token"]
+[2m2026-04-01T08:11:36.471656Z[0m [33m WARN[0m [2mspec42_core::lsp_runtime::documents[0m[2m:[0m workspace scan parse failed [3muri[0m[2m=[0mfile:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Quantities%20and%20Units/VectorCalculations.sysml [3mdiagnostics[0m[2m=[0m5 [3merrors[0m[2m=[0m["55:5 expected keyword or token", "56:9 expected keyword or token", "57:13 expected keyword or token", "58:9 expected keyword or token", "59:5 expected keyword or token"]
+[2m2026-04-01T08:11:36.515612Z[0m [33m WARN[0m [2mspec42_core::lsp_runtime::documents[0m[2m:[0m workspace scan parse failed [3muri[0m[2m=[0mfile:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Function%20Library/TrigFunctions.kerml [3mdiagnostics[0m[2m=[0m5 [3merrors[0m[2m=[0m["9:1 expected keyword or token", "11:1 expected keyword or token", "12:2 expected keyword or token", "13:1 expected keyword or token", "14:1 expected keyword or token"]
+[2m2026-04-01T08:11:36.521140Z[0m [33m WARN[0m [2mspec42_core::lsp_runtime::documents[0m[2m:[0m workspace scan parse failed [3muri[0m[2m=[0mfile:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Base.kerml [3mdiagnostics[0m[2m=[0m5 [3merrors[0m[2m=[0m["65:1 expected keyword or token", "66:2 expected keyword or token", "70:1 expected keyword or token", "72:1 expected keyword or token", "73:2 expected keyword or token"]
+[2m2026-04-01T08:11:36.543869Z[0m [33m WARN[0m [2mspec42_core::lsp_runtime::documents[0m[2m:[0m workspace scan parse failed [3muri[0m[2m=[0mfile:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Occurrences.kerml [3mdiagnostics[0m[2m=[0m5 [3merrors[0m[2m=[0m["704:1 expected keyword or token", "705:2 expected keyword or token", "706:1 expected keyword or token", "708:1 expected keyword or token", "709:2 expected keyword or token"]
+[2m2026-04-01T08:11:36.561179Z[0m [33m WARN[0m [2mspec42_core::lsp_runtime::documents[0m[2m:[0m workspace scan parse failed [3muri[0m[2m=[0mfile:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Transfers.kerml [3mdiagnostics[0m[2m=[0m5 [3merrors[0m[2m=[0m["16:4 expected keyword or token", "17:8 expected keyword or token", "23:8 expected keyword or token", "24:12 expected keyword or token", "29:12 expected keyword or token"]
+[2m2026-04-01T08:11:36.570306Z[0m [33m WARN[0m [2mspec42_core::lsp_runtime::documents[0m[2m:[0m workspace scan parse failed [3muri[0m[2m=[0mfile:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Actions.sysml [3mdiagnostics[0m[2m=[0m5 [3merrors[0m[2m=[0m["199:1 expected keyword or token", "200:2 expected keyword or token", "204:1 expected keyword or token", "206:1 illegal top-level definition", "207:2 expected keyword or token"]
+[2m2026-04-01T08:11:36.618748Z[0m [32m INFO[0m [2mspec42_core::lsp_runtime::documents[0m[2m:[0m startup:initialized:scan:end [3mtrace_id[0m[2m=[0mstartup-1775031095465-3rcc46 [3mphase_discover_read_ms[0m[2m=[0m9 [3mphase_parse_workers_ms[0m[2m=[0m58 [3mphase_merge_index_ms[0m[2m=[0m871 [3mphase_index_parse_ms[0m[2m=[0m929 [3mparallel_parse_enabled[0m[2m=[0mtrue [3mparallel_parse_min_files[0m[2m=[0m10 [3mparallel_parse_active[0m[2m=[0mtrue [3melapsed_ms[0m[2m=[0m939 [3mloaded[0m[2m=[0m95 [3mcandidate_files[0m[2m=[0m95 [3mroots[0m[2m=[0m2 [3mskipped_non_file_roots[0m[2m=[0m0 [3mread_failures[0m[2m=[0m0 [3muri_failures[0m[2m=[0m0 [3msample[0m[2m=[0m["file:///c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/AnalysisTooling.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/SampledFunctions.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/StateSpaceRepresentation.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/TradeStudies.sysml"]
+[Info  - 10:11:37 AM] sysml/model: req_uri=file:///c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml index_ok=true parsed_ok=true semantic_nodes=483 graph_uris_count=5 graph_uris_sample=["file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Attributes.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Performances.kerml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/AnalysisTooling.sysml"]
+[Info  - 10:11:37 AM] sysml/model: req_uri=file:///c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml index_ok=true parsed_ok=true semantic_nodes=483 graph_uris_count=5 graph_uris_sample=["file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Attributes.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Performances.kerml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/AnalysisTooling.sysml"]
+[Info  - 10:11:37 AM] sysml/model: req_uri=file:///c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml index_ok=true parsed_ok=true semantic_nodes=483 graph_uris_count=5 graph_uris_sample=["file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Attributes.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Performances.kerml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/AnalysisTooling.sysml"]
+[Info  - 10:11:37 AM] sysml/model: uri=file:///c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml scope=[] -> graph nodes=267 edges=536 generalViewGraph nodes=176 edges=283
+[Info  - 10:11:37 AM] sysml/model: uri=file:///c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml scope=[] -> graph nodes=267 edges=536 generalViewGraph nodes=176 edges=283
+[Info  - 10:11:37 AM] sysml/model: uri=file:///c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml scope=[] -> graph nodes=267 edges=536 generalViewGraph nodes=176 edges=283
+[Info  - 10:11:38 AM] sysml/model: req_uri=file:///c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml index_ok=true parsed_ok=true semantic_nodes=483 graph_uris_count=5 graph_uris_sample=["file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Attributes.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Performances.kerml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/AnalysisTooling.sysml"]
+[Info  - 10:11:38 AM] sysml/model: uri=file:///c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml scope=[] -> graph nodes=267 edges=536 generalViewGraph nodes=176 edges=283
+[SYSML semantic tokens] AST ranges (131 total, first 20):
+  #0 9:1..20 PROPERTY "attribute def Real;"
+  #1 10:1..25 PROPERTY "attribute def MassValue;"
+[SYSML semantic tokens] AST ranges (131 total, first 20):
+[SYSML semantic tokens] AST ranges (131 total, first 20):
+  #2 11:1..25 PROPERTY "attribute def TimeValue;"
+  #3 12:1..29 PROPERTY "attribute def DistanceValue;"
+  #0 9:1..20 PROPERTY "attribute def Real;"
+  #0 9:1..20 PROPERTY "attribute def Real;"
+[Info  - 10:11:52 AM] sysml/model: req_uri=file:///c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml index_ok=true parsed_ok=true semantic_nodes=483 graph_uris_count=5 graph_uris_sample=["file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Attributes.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Performances.kerml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/AnalysisTooling.sysml"]
+  #4 13:1..26 PROPERTY "attribute def SpeedValue;"
+  #1 10:1..25 PROPERTY "attribute def MassValue;"
+  #2 11:1..25 PROPERTY "attribute def TimeValue;"
+  #1 10:1..25 PROPERTY "attribute def MassValue;"
+[Info  - 10:11:52 AM] sysml/model: uri=file:///c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml scope=[] -> graph nodes=267 edges=536 generalViewGraph nodes=176 edges=283
+  #5 16:1..60 TYPE "port def MotorCommandPort {"
+  #3 12:1..29 PROPERTY "attribute def DistanceValue;"
+  #4 13:1..26 PROPERTY "attribute def SpeedValue;"
+  #2 11:1..25 PROPERTY "attribute def TimeValue;"
+  #6 20:1..97 TYPE "port def GimbalCommandPort {"
+  #5 16:1..60 TYPE "port def MotorCommandPort {"
+  #3 12:1..29 PROPERTY "attribute def DistanceValue;"
+  #4 13:1..26 PROPERTY "attribute def SpeedValue;"
+  #7 26:1..114 TYPE "port def CameraControlPort {"
+  #6 20:1..97 TYPE "port def GimbalCommandPort {"
+  #5 16:1..60 TYPE "port def MotorCommandPort {"
+  #6 20:1..97 TYPE "port def GimbalCommandPort {"
+  #8 32:1..131 TYPE "port def TelemetryPort {"
+  #7 26:1..114 TYPE "port def CameraControlPort {"
+  #7 26:1..114 TYPE "port def CameraControlPort {"
+  #8 32:1..131 TYPE "port def TelemetryPort {"
+  #9 39:1..68 TYPE "port def PowerPort {"
+  #8 32:1..131 TYPE "port def TelemetryPort {"
+  #9 39:1..68 TYPE "port def PowerPort {"
+  #10 44:1..127 TYPE "port def SensorDataPort {"
+  #11 51:1..81 TYPE "port def RCCommandPort {"
+  #9 39:1..68 TYPE "port def PowerPort {"
+  #10 44:1..127 TYPE "port def SensorDataPort {"
+  #12 57:1..266 CLASS "part def Airframe {"
+  #13 59:2..29 PROPERTY "attribute wheelbase : Real;"
+  #10 44:1..127 TYPE "port def SensorDataPort {"
+  #11 51:1..81 TYPE "port def RCCommandPort {"
+  #14 60:2..31 PROPERTY "attribute weight : MassValue;"
+  #15 61:2..43 PROPERTY "attribute maxPayloadCapacity : MassValue;"
+  #11 51:1..81 TYPE "port def RCCommandPort {"
+  #12 57:1..266 CLASS "part def Airframe {"
+[SYSML semantic tokens] AST ranges (131 total, first 20):
+  #16 62:2..34 PROPERTY "attribute foldableArms : String;"
+  #17 63:2..30 PROPERTY "attribute ipRating : String;"
+  #12 57:1..266 CLASS "part def Airframe {"
+  #13 59:2..29 PROPERTY "attribute wheelbase : Real;"
+  #0 9:1..20 PROPERTY "attribute def Real;"
+  #18 66:1..252 CLASS "part def PropulsionUnit {"
+  #19 68:2..26 PROPERTY "attribute thrust : Real;"
+  #13 59:2..29 PROPERTY "attribute wheelbase : Real;"
+  #14 60:2..31 PROPERTY "attribute weight : MassValue;"
+  #1 10:1..25 PROPERTY "attribute def MassValue;"
+  ... and 111 more
+[SYSML semantic tokens] OVERRIDE token "SurveillanceQuadrotorDrone" at 451:52 len 26: VARIABLE -> TYPE (matched AST range #130: 451:48..78 TYPE)
+  #14 60:2..31 PROPERTY "attribute weight : MassValue;"
+  #15 61:2..43 PROPERTY "attribute maxPayloadCapacity : MassValue;"
+  #2 11:1..25 PROPERTY "attribute def TimeValue;"
+  #15 61:2..43 PROPERTY "attribute maxPayloadCapacity : MassValue;"
+  #16 62:2..34 PROPERTY "attribute foldableArms : String;"
+  #16 62:2..34 PROPERTY "attribute foldableArms : String;"
+  #3 12:1..29 PROPERTY "attribute def DistanceValue;"
+  #17 63:2..30 PROPERTY "attribute ipRating : String;"
+  #18 66:1..252 CLASS "part def PropulsionUnit {"
+  #17 63:2..30 PROPERTY "attribute ipRating : String;"
+  #4 13:1..26 PROPERTY "attribute def SpeedValue;"
+  #19 68:2..26 PROPERTY "attribute thrust : Real;"
+  ... and 111 more
+  #18 66:1..252 CLASS "part def PropulsionUnit {"
+  #5 16:1..60 TYPE "port def MotorCommandPort {"
+[SYSML semantic tokens] OVERRIDE token "SurveillanceQuadrotorDrone" at 451:52 len 26: VARIABLE -> TYPE (matched AST range #130: 451:48..78 TYPE)
+  #19 68:2..26 PROPERTY "attribute thrust : Real;"
+  ... and 111 more
+  #6 20:1..97 TYPE "port def GimbalCommandPort {"
+[SYSML semantic tokens] OVERRIDE token "cmd" at 71:7 len 3: VARIABLE -> PROPERTY (matched AST range #22: 71:7..10 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "MotorCommandPort" at 71:14 len 16: TYPE -> TYPE (matched AST range #23: 71:14..30 TYPE)
+  #7 26:1..114 TYPE "port def CameraControlPort {"
+[SYSML semantic tokens] OVERRIDE token "pwr" at 72:7 len 3: VARIABLE -> PROPERTY (matched AST range #24: 72:7..10 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "PowerPort" at 72:14 len 9: TYPE -> TYPE (matched AST range #25: 72:14..23 TYPE)
+  #8 32:1..131 TYPE "port def TelemetryPort {"
+[SYSML semantic tokens] OVERRIDE token "motorCmd" at 88:7 len 8: VARIABLE -> PROPERTY (matched AST range #31: 88:7..15 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "MotorCommandPort" at 88:19 len 16: TYPE -> TYPE (matched AST range #32: 88:19..35 TYPE)
+  #9 39:1..68 TYPE "port def PowerPort {"
+[SYSML semantic tokens] OVERRIDE token "gimbalCmd" at 89:7 len 9: VARIABLE -> PROPERTY (matched AST range #33: 89:7..16 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "GimbalCommandPort" at 89:20 len 17: TYPE -> TYPE (matched AST range #34: 89:20..37 TYPE)
+  #10 44:1..127 TYPE "port def SensorDataPort {"
+[SYSML semantic tokens] OVERRIDE token "telemetryOut" at 90:7 len 12: VARIABLE -> PROPERTY (matched AST range #35: 90:7..19 PROPERTY)
+  #11 51:1..81 TYPE "port def RCCommandPort {"
+  #12 57:1..266 CLASS "part def Airframe {"
+[SYSML semantic tokens] OVERRIDE token "TelemetryPort" at 90:22 len 13: TYPE -> TYPE (matched AST range #36: 90:22..35 TYPE)
+[SYSML semantic tokens] AST ranges (131 total, first 20):
+  #0 9:1..20 PROPERTY "attribute def Real;"
+  #13 59:2..29 PROPERTY "attribute wheelbase : Real;"
+[SYSML semantic tokens] OVERRIDE token "rcIn" at 91:7 len 4: VARIABLE -> PROPERTY (matched AST range #37: 91:7..11 PROPERTY)
+  #1 10:1..25 PROPERTY "attribute def MassValue;"
+  #2 11:1..25 PROPERTY "attribute def TimeValue;"
+  #14 60:2..31 PROPERTY "attribute weight : MassValue;"
+[SYSML semantic tokens] OVERRIDE token "RCCommandPort" at 91:15 len 13: TYPE -> TYPE (matched AST range #38: 91:15..28 TYPE)
+  #3 12:1..29 PROPERTY "attribute def DistanceValue;"
+  #15 61:2..43 PROPERTY "attribute maxPayloadCapacity : MassValue;"
+[SYSML semantic tokens] OVERRIDE token "sensorIn" at 92:7 len 8: VARIABLE -> PROPERTY (matched AST range #39: 92:7..15 PROPERTY)
+[Info  - 10:12:49 AM] sysml/model: req_uri=file:///c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml index_ok=true parsed_ok=true semantic_nodes=483 graph_uris_count=5 graph_uris_sample=["file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Attributes.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Performances.kerml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/AnalysisTooling.sysml"]
+  #4 13:1..26 PROPERTY "attribute def SpeedValue;"
+  #5 16:1..60 TYPE "port def MotorCommandPort {"
+  #16 62:2..34 PROPERTY "attribute foldableArms : String;"
+[SYSML semantic tokens] OVERRIDE token "SensorDataPort" at 92:19 len 14: TYPE -> TYPE (matched AST range #40: 92:19..33 TYPE)
+[Info  - 10:12:51 AM] sysml/model: uri=file:///c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml scope=["graph", "stats"] -> graph nodes=267 edges=536 generalViewGraph nodes=176 edges=283
+  #6 20:1..97 TYPE "port def GimbalCommandPort {"
+  #7 26:1..114 TYPE "port def CameraControlPort {"
+  #17 63:2..30 PROPERTY "attribute ipRating : String;"
+[SYSML semantic tokens] OVERRIDE token "pwr" at 93:7 len 3: VARIABLE -> PROPERTY (matched AST range #41: 93:7..10 PROPERTY)
+  #8 32:1..131 TYPE "port def TelemetryPort {"
+  #18 66:1..252 CLASS "part def PropulsionUnit {"
+[SYSML semantic tokens] OVERRIDE token "PowerPort" at 93:14 len 9: TYPE -> TYPE (matched AST range #42: 93:14..23 TYPE)
+  #9 39:1..68 TYPE "port def PowerPort {"
+  #19 68:2..26 PROPERTY "attribute thrust : Real;"
+  ... and 111 more
+[SYSML semantic tokens] OVERRIDE token "dataOut" at 98:7 len 7: VARIABLE -> PROPERTY (matched AST range #45: 98:7..14 PROPERTY)
+  #10 44:1..127 TYPE "port def SensorDataPort {"
+[SYSML semantic tokens] OVERRIDE token "SurveillanceQuadrotorDrone" at 451:52 len 26: VARIABLE -> TYPE (matched AST range #130: 451:48..78 TYPE)
+[SYSML semantic tokens] OVERRIDE token "SensorDataPort" at 98:17 len 14: TYPE -> TYPE (matched AST range #46: 98:17..31 TYPE)
+  #11 51:1..81 TYPE "port def RCCommandPort {"
+[SYSML semantic tokens] OVERRIDE token "pwr" at 99:7 len 3: VARIABLE -> PROPERTY (matched AST range #47: 99:7..10 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "PowerPort" at 99:14 len 9: TYPE -> TYPE (matched AST range #48: 99:14..23 TYPE)
+  #12 57:1..266 CLASS "part def Airframe {"
+[SYSML semantic tokens] OVERRIDE token "altitudeOut" at 103:7 len 11: VARIABLE -> PROPERTY (matched AST range #50: 103:7..18 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "SensorDataPort" at 103:21 len 14: TYPE -> TYPE (matched AST range #51: 103:21..35 TYPE)
+  #13 59:2..29 PROPERTY "attribute wheelbase : Real;"
+[SYSML semantic tokens] OVERRIDE token "pwr" at 104:7 len 3: VARIABLE -> PROPERTY (matched AST range #52: 104:7..10 PROPERTY)
+  #14 60:2..31 PROPERTY "attribute weight : MassValue;"
+[Info  - 10:13:24 AM] sysml/model: req_uri=file:///c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml index_ok=true parsed_ok=true semantic_nodes=483 graph_uris_count=5 graph_uris_sample=["file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Systems%20Library/Attributes.sysml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Kernel%20Libraries/Kernel%20Semantic%20Library/Performances.kerml", "file:///c:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library/Domain%20Libraries/Analysis/AnalysisTooling.sysml"]
+[SYSML semantic tokens] OVERRIDE token "PowerPort" at 104:14 len 9: TYPE -> TYPE (matched AST range #53: 104:14..23 TYPE)
+[SYSML semantic tokens] OVERRIDE token "positionOut" at 108:7 len 11: VARIABLE -> PROPERTY (matched AST range #55: 108:7..18 PROPERTY)
+  #15 61:2..43 PROPERTY "attribute maxPayloadCapacity : MassValue;"
+[Info  - 10:13:24 AM] sysml/model: uri=file:///c:/Git/sysml-examples/drone/sysml/SurveillanceDrone.sysml scope=[] -> graph nodes=267 edges=536 generalViewGraph nodes=176 edges=283
+[SYSML semantic tokens] OVERRIDE token "SensorDataPort" at 108:21 len 14: TYPE -> TYPE (matched AST range #56: 108:21..35 TYPE)
+[SYSML semantic tokens] OVERRIDE token "pwr" at 109:7 len 3: VARIABLE -> PROPERTY (matched AST range #57: 109:7..10 PROPERTY)
+  #16 62:2..34 PROPERTY "attribute foldableArms : String;"
+[SYSML semantic tokens] OVERRIDE token "PowerPort" at 109:14 len 9: TYPE -> TYPE (matched AST range #58: 109:14..23 TYPE)
+  #17 63:2..30 PROPERTY "attribute ipRating : String;"
+[SYSML semantic tokens] OVERRIDE token "cmd" at 131:7 len 3: VARIABLE -> PROPERTY (matched AST range #67: 131:7..10 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "GimbalCommandPort" at 131:14 len 17: TYPE -> TYPE (matched AST range #68: 131:14..31 TYPE)
+  #18 66:1..252 CLASS "part def PropulsionUnit {"
+[SYSML semantic tokens] OVERRIDE token "cameraCtrl" at 132:7 len 10: VARIABLE -> PROPERTY (matched AST range #69: 132:7..17 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "CameraControlPort" at 132:20 len 17: TYPE -> TYPE (matched AST range #70: 132:20..37 TYPE)
+  #19 68:2..26 PROPERTY "attribute thrust : Real;"
+[SYSML semantic tokens] OVERRIDE token "pwr" at 133:7 len 3: VARIABLE -> PROPERTY (matched AST range #71: 133:7..10 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "PowerPort" at 133:14 len 9: TYPE -> TYPE (matched AST range #72: 133:14..23 TYPE)
+  ... and 111 more
+[SYSML semantic tokens] OVERRIDE token "videoOut" at 142:7 len 8: VARIABLE -> PROPERTY (matched AST range #78: 142:7..15 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "TelemetryPort" at 142:18 len 13: TYPE -> TYPE (matched AST range #79: 142:18..31 TYPE)
+[SYSML semantic tokens] OVERRIDE token "SurveillanceQuadrotorDrone" at 451:52 len 26: VARIABLE -> TYPE (matched AST range #130: 451:48..78 TYPE)
+[SYSML semantic tokens] OVERRIDE token "control" at 143:7 len 7: VARIABLE -> PROPERTY (matched AST range #80: 143:7..14 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "CameraControlPort" at 143:18 len 17: TYPE -> TYPE (matched AST range #81: 143:18..35 TYPE)
+[SYSML semantic tokens] OVERRIDE token "pwr" at 144:7 len 3: VARIABLE -> PROPERTY (matched AST range #82: 144:7..10 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "PowerPort" at 144:14 len 9: TYPE -> TYPE (matched AST range #83: 144:14..23 TYPE)
+[SYSML semantic tokens] OVERRIDE token "c2In" at 152:7 len 4: VARIABLE -> PROPERTY (matched AST range #88: 152:7..11 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "RCCommandPort" at 152:14 len 13: TYPE -> TYPE (matched AST range #89: 152:14..27 TYPE)
+[SYSML semantic tokens] OVERRIDE token "telemetryIn" at 153:7 len 11: VARIABLE -> PROPERTY (matched AST range #90: 153:7..18 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "TelemetryPort" at 153:22 len 13: TYPE -> TYPE (matched AST range #91: 153:22..35 TYPE)
+[SYSML semantic tokens] OVERRIDE token "videoIn" at 154:7 len 7: VARIABLE -> PROPERTY (matched AST range #92: 154:7..14 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "TelemetryPort" at 154:18 len 13: TYPE -> TYPE (matched AST range #93: 154:18..31 TYPE)
+[SYSML semantic tokens] OVERRIDE token "pwr" at 155:7 len 3: VARIABLE -> PROPERTY (matched AST range #94: 155:7..10 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "PowerPort" at 155:14 len 9: TYPE -> TYPE (matched AST range #95: 155:14..23 TYPE)
+[SYSML semantic tokens] OVERRIDE token "pwrOut" at 163:7 len 6: VARIABLE -> PROPERTY (matched AST range #101: 163:7..13 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "PowerPort" at 163:16 len 9: TYPE -> TYPE (matched AST range #102: 163:16..25 TYPE)
+[SYSML semantic tokens] OVERRIDE token "mainPower" at 167:7 len 9: VARIABLE -> PROPERTY (matched AST range #104: 167:7..16 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "PowerPort" at 167:20 len 9: TYPE -> TYPE (matched AST range #105: 167:20..29 TYPE)
+[SYSML semantic tokens] OVERRIDE token "regulated5V" at 168:7 len 11: VARIABLE -> PROPERTY (matched AST range #106: 168:7..18 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "PowerPort" at 168:21 len 9: TYPE -> TYPE (matched AST range #107: 168:21..30 TYPE)
+[SYSML semantic tokens] OVERRIDE token "regulated12V" at 169:7 len 12: VARIABLE -> PROPERTY (matched AST range #108: 169:7..19 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "PowerPort" at 169:22 len 9: TYPE -> TYPE (matched AST range #109: 169:22..31 TYPE)
+[SYSML semantic tokens] OVERRIDE token "droneInstance" at 274:6 len 13: VARIABLE -> PROPERTY (matched AST range #113: 274:6..19 PROPERTY)
+[SYSML semantic tokens] OVERRIDE token "SurveillanceQuadrotorDrone" at 274:22 len 26: TYPE -> TYPE (matched AST range #114: 274:22..48 TYPE)
+[SYSML semantic tokens] OVERRIDE token "SurveillanceQuadrotorDrone" at 451:52 len 26: VARIABLE -> TYPE (matched AST range #130: 451:48..78 TYPE)

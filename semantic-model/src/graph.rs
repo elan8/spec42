@@ -977,4 +977,41 @@ mod tests {
             kinds
         );
     }
+
+    #[test]
+    fn perform_action_in_part_def_is_typed_to_action_def() {
+        let input = r#"
+            package SurveillanceDrone {
+                action def ExecutePatrol { }
+                part def Drone {
+                    perform action executePatrol : ExecutePatrol;
+                }
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let g = build_graph_from_doc(&root, &uri);
+
+        let perform_id = NodeId::new(&uri, "SurveillanceDrone::Drone::executePatrol");
+        let action_def_id = NodeId::new(&uri, "SurveillanceDrone::ExecutePatrol");
+
+        assert!(
+            g.node_index_by_id.contains_key(&perform_id),
+            "expected perform action usage node; ids: {:?}",
+            g.nodes_by_uri.get(&uri).map(|v| v.iter().map(|id| id.qualified_name.as_str()).collect::<Vec<_>>())
+        );
+        assert!(
+            g.node_index_by_id.contains_key(&action_def_id),
+            "expected action def node"
+        );
+
+        let edges = g.edges_for_uri_as_strings(&uri);
+        assert!(
+            edges
+                .iter()
+                .any(|(src, tgt, k, _)| *k == RelationshipKind::Typing && src == &perform_id.qualified_name && tgt == &action_def_id.qualified_name),
+            "expected typing edge from perform action to action def; edges: {:?}",
+            edges
+        );
+    }
 }

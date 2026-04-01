@@ -74,6 +74,13 @@ pub fn parse_failure_diagnostics(content: &str, max_errors: usize) -> Vec<String
         .collect()
 }
 
+/// Editor-oriented parse: returns a (possibly partial) AST plus diagnostics.
+///
+/// `sysml-parser` currently exposes this behavior as `parse_with_diagnostics`.
+pub fn parse_for_editor(text: &str) -> sysml_parser::ParseResult {
+    sysml_parser::parse_with_diagnostics(text)
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UntypedPartUsage {
     pub name: String,

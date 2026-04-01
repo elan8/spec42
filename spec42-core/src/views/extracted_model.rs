@@ -213,6 +213,11 @@ fn collect_action_defs_from_elements(
                     out.extend(collect_action_defs_from_elements(inner));
                 }
             }
+            PBE::LibraryPackage(lp) => {
+                if let PackageBody::Brace { elements: inner } = &lp.body {
+                    out.extend(collect_action_defs_from_elements(inner));
+                }
+            }
             _ => {}
         }
     }
@@ -268,6 +273,10 @@ fn extract_activity_from_action(
                     match in_out.value.direction {
                         sysml_parser::ast::InOut::In => interface_inputs.push(param_name),
                         sysml_parser::ast::InOut::Out => interface_outputs.push(param_name),
+                        sysml_parser::ast::InOut::InOut => {
+                            interface_inputs.push(param_name.clone());
+                            interface_outputs.push(param_name);
+                        }
                     }
                 }
                 ActionDefBodyElement::Perform(perform) => {
@@ -298,7 +307,9 @@ fn extract_activity_from_action(
                     actions.push(ActivityActionDto {
                         name: u.name.clone(),
                         action_type: "action".to_string(),
-                        kind: Some("usage".to_string()),
+                        // VS Code Action Flow view filters allowed node kinds. Use a compatible kind
+                        // for action usages so they appear as regular action nodes.
+                        kind: Some("action".to_string()),
                         inputs: if inputs.is_empty() { None } else { Some(inputs) },
                         outputs: None,
                         range: Some(span_to_range_dto(&u.span)),
@@ -352,9 +363,73 @@ fn extract_activity_from_action(
                     });
                 }
                 ActionDefBodyElement::Error(_) | ActionDefBodyElement::Doc(_) => {}
+                _ => {}
             }
         }
     }
+
+    // Synthesize action nodes referenced by flow endpoints so the UI can render sequencing like
+    // `first validateRoute then startMission;` even when the parser doesn't surface those steps
+    // as ActionUsage/Perform nodes.
+    fn endpoint_to_step_name(endpoint: &str) -> Option<String> {
+        let s = endpoint.trim();
+        if s.is_empty() {
+            return None;
+        }
+        // `foo::bar` -> `foo`, `foo.bar` -> `foo`
+        let step = s
+            .split_once("::")
+            .map(|(head, _)| head)
+            .or_else(|| s.split_once('.').map(|(head, _)| head))
+            .unwrap_or(s)
+            .trim();
+        if step.is_empty() {
+            None
+        } else {
+            Some(step.to_string())
+        }
+    }
+
+    let existing_action_names: std::collections::HashSet<String> =
+        actions.iter().map(|a| a.name.clone()).collect();
+    let mut referenced_step_names: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+    let interface_param_names: std::collections::HashSet<String> = interface_inputs
+        .iter()
+        .chain(interface_outputs.iter())
+        .cloned()
+        .collect();
+
+    for f in &flows {
+        if let Some(step) = endpoint_to_step_name(&f.from) {
+            if !interface_param_names.contains(&step) {
+                referenced_step_names.insert(step);
+            }
+        }
+        if let Some(step) = endpoint_to_step_name(&f.to) {
+            if !interface_param_names.contains(&step) {
+                referenced_step_names.insert(step);
+            }
+        }
+    }
+
+    // Avoid turning the activity itself into a node (e.g., `ExecutePatrol::route`).
+    referenced_step_names.remove(&name);
+
+    for step in referenced_step_names {
+        if existing_action_names.contains(&step) {
+            continue;
+        }
+        actions.push(ActivityActionDto {
+            name: step,
+            action_type: "action".to_string(),
+            kind: Some("action".to_string()),
+            inputs: None,
+            outputs: None,
+            range: None,
+        });
+    }
+
     let interface = if interface_inputs.is_empty() && interface_outputs.is_empty() {
         None
     } else {
@@ -497,8 +572,8 @@ mod tests {
         let diagram = diagrams.iter().find(|d| d.name == "ExecuteMission").expect("diagram");
 
         assert!(
-            diagram.actions.iter().any(|a| a.name == "captureVideo" && a.kind.as_deref() == Some("usage")),
-            "expected action usage step"
+            diagram.actions.iter().any(|a| a.name == "captureVideo" && a.kind.as_deref() == Some("action")),
+            "expected action usage step to be emitted as a regular action node kind"
         );
         assert!(
             diagram.flows.iter().any(|f| f.guard.as_deref() == Some("bind")),
@@ -537,5 +612,88 @@ mod tests {
         assert!(diagram.flows.is_empty());
         assert!(diagram.states.is_empty());
         assert!(diagram.interface.is_some());
+    }
+
+    #[test]
+    fn extract_activity_diagrams_finds_action_defs_in_library_package() {
+        let input = r#"
+            standard library package P {
+                action def ExecuteMission {
+                    perform action captureVideo : CaptureVideo;
+                }
+            }
+        "#;
+
+        let root = parse(input).expect("parse");
+        let diagrams = extract_activity_diagrams(&root);
+        assert!(
+            diagrams.iter().any(|d| d.name == "ExecuteMission"),
+            "expected action def inside library package to be discovered; diagrams: {:?}",
+            diagrams.iter().map(|d| d.name.as_str()).collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn extract_activity_diagrams_synthesizes_nodes_referenced_by_first_then() {
+        let input = r#"
+            package P {
+                action def ExecuteMission {
+                    action validateRoute { out ok : Boolean; };
+                    action startMission { out started : Boolean; };
+                    first validateRoute then startMission;
+                }
+            }
+        "#;
+
+        let root = parse(input).expect("parse");
+        let diagrams = extract_activity_diagrams(&root);
+        let diagram = diagrams.iter().find(|d| d.name == "ExecuteMission").expect("diagram");
+
+        assert!(
+            diagram.actions.iter().any(|a| a.name == "validateRoute"),
+            "expected referenced step node validateRoute to exist"
+        );
+        assert!(
+            diagram.actions.iter().any(|a| a.name == "startMission"),
+            "expected referenced step node startMission to exist"
+        );
+        assert!(
+            diagram.flows.iter().any(|f| f.guard.as_deref() == Some("first") && f.from == "validateRoute" && f.to == "startMission"),
+            "expected first/then flow edge"
+        );
+    }
+
+    #[test]
+    fn extract_activity_diagrams_does_not_synthesize_interface_parameters_as_step_nodes() {
+        let input = r#"
+            package P {
+                action def ExecutePatrol {
+                    in route : String;
+                    out status : String;
+
+                    action finishMission { out missionStatus : String; };
+                    bind status = finishMission::missionStatus;
+                }
+            }
+        "#;
+
+        let root = parse(input).expect("parse");
+        let diagrams = extract_activity_diagrams(&root);
+        let diagram = diagrams.iter().find(|d| d.name == "ExecutePatrol").expect("diagram");
+
+        assert_eq!(
+            diagram.interface.as_ref().map(|itf| itf.inputs.clone()),
+            Some(vec!["route".to_string()])
+        );
+        assert_eq!(
+            diagram.interface.as_ref().map(|itf| itf.outputs.clone()),
+            Some(vec!["status".to_string()])
+        );
+
+        assert!(
+            diagram.actions.iter().all(|a| a.name != "route" && a.name != "status"),
+            "interface parameters should not be synthesized into action nodes; actions={:?}",
+            diagram.actions.iter().map(|a| a.name.as_str()).collect::<Vec<_>>()
+        );
     }
 }

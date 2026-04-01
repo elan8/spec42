@@ -32,6 +32,7 @@ pub(super) fn build_from_port_def_body_element(
                 serde_json::json!(match d.direction {
                     InOut::In => "in",
                     InOut::Out => "out",
+                    InOut::InOut => "inout",
                 }),
             );
             attrs.insert("parameterType".to_string(), serde_json::json!(&d.type_name));

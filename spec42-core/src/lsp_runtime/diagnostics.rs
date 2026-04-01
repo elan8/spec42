@@ -64,7 +64,7 @@ async fn collect_diagnostics_for_document(
     text: &str,
 ) -> Vec<Diagnostic> {
     let mut diagnostics = Vec::new();
-    let result = sysml_parser::parse_with_diagnostics(text);
+    let result = util::parse_for_editor(text);
     for error in &result.errors {
         let range = error
             .to_lsp_range()

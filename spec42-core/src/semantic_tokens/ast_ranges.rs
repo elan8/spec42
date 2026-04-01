@@ -261,6 +261,13 @@ fn collect_semantic_ranges_action_usage_body_element(
         | AUBE::FirstStmt(_)
         | AUBE::MergeStmt(_)
         | AUBE::ActionUsage(_)
-        | AUBE::Error(_) => {}
+        | AUBE::Error(_)
+        | AUBE::Doc(_)
+        | AUBE::RefDecl(_)
+        | AUBE::StateUsage(_)
+        | AUBE::Assign(_)
+        | AUBE::ForLoop(_)
+        | AUBE::ThenAction(_)
+        | AUBE::Decl(_) => {}
     }
 }

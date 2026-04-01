@@ -186,6 +186,19 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
                 type_ref, node.name
             ),
         ));
+
+        // Debug observability: print normalized type ref and node id when enabled.
+        if crate::common::util::env_flag_enabled("SPEC42_TRACE_UNRESOLVED_TYPES", false) {
+            tracing::info!(
+                uri = %uri,
+                node_id = %node.id.qualified_name,
+                node_kind = %node.element_kind,
+                node_name = %node.name,
+                type_ref_raw = %type_ref,
+                type_ref_normalized = %normalized_type_ref,
+                "unresolved type reference"
+            );
+        }
     }
 
     // 6) Redefines consistency, when the parser/graph captures a `redefines` attribute.
