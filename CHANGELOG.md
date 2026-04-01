@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-04-01
+
+### Added
+
+- **State transition visualization** - Added a new state-transition view for visualizing state machines with states and transitions, including SVG export and dedicated test fixtures.
+- **Parsing performance benchmarking** - Added Criterion benchmarks (including a `parse_scan` benchmark) and documented how to run them.
+
+### Changed
+
+- **SysML parser + semantic model enhancements** - Updated the `sysml-parser` dependency and expanded action-definition handling in the semantic model (including parameters, perform steps, and richer connection extraction for activity diagrams).
+- **Indexing performance** - Improved startup and workspace indexing performance, including graph lookup caching and additional indexing/stdlib parsing optimizations.
+- **Repository hygiene** - Removed outdated output/reference files that no longer reflect the current project structure.
+
+### Fixed
+
+- **Visualizer UI** - Disabled the layout-direction button for the state-transition view to avoid presenting a non-applicable control.
+
 ## [0.12.0] - 2026-03-31
 
 ### Changed
@@ -185,6 +202,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Some constructs may have incomplete semantic token or outline coverage.
 
 [0.11.0]: https://github.com/elan8/spec42/releases/tag/v0.11.0
+[0.13.0]: https://github.com/elan8/spec42/releases/tag/v0.13.0
 [0.12.0]: https://github.com/elan8/spec42/releases/tag/v0.12.0
 [0.10.0]: https://github.com/elan8/spec42/releases/tag/v0.10.0
 [0.9.1]: https://github.com/elan8/spec42/releases/tag/v0.9.1
