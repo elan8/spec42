@@ -85,19 +85,6 @@ fn span_to_range_dto(span: &Span) -> RangeDto {
     }
 }
 
-fn default_range_dto() -> RangeDto {
-    RangeDto {
-        start: PositionDto {
-            line: 0,
-            character: 0,
-        },
-        end: PositionDto {
-            line: 0,
-            character: 0,
-        },
-    }
-}
-
 // ---------------------------------------------------------------------------
 // Activity diagrams
 // ---------------------------------------------------------------------------
@@ -171,39 +158,6 @@ pub struct ActivityStateDto {
     pub name: String,
     #[serde(rename = "type")]
     pub state_type: String,
-    pub range: RangeDto,
-}
-
-// ---------------------------------------------------------------------------
-// Sequence diagrams
-// ---------------------------------------------------------------------------
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SequenceDiagramDto {
-    pub name: String,
-    pub participants: Vec<ParticipantDto>,
-    pub messages: Vec<MessageDto>,
-    pub range: RangeDto,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ParticipantDto {
-    pub name: String,
-    #[serde(rename = "type")]
-    pub participant_type: String,
-    pub range: RangeDto,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct MessageDto {
-    pub name: String,
-    pub from: String,
-    pub to: String,
-    pub payload: String,
-    pub occurrence: u32,
     pub range: RangeDto,
 }
 
@@ -469,54 +423,6 @@ fn extract_activity_from_action(
         decisions: vec![],
         flows,
         states,
-        range,
-    }
-}
-
-/// Extracts sequence diagrams from the document (one per ActionDef; no Call/Perform in sysml-parser action body).
-pub fn extract_sequence_diagrams(root: &RootNamespace) -> Vec<SequenceDiagramDto> {
-    let mut out = Vec::new();
-    for node in &root.elements {
-        let elements = match &node.value {
-            RootElement::Package(p) => match &p.body {
-                PackageBody::Brace { elements } => elements,
-                _ => continue,
-            },
-            RootElement::Namespace(n) => match &n.body {
-                PackageBody::Brace { elements } => elements,
-                _ => continue,
-            },
-            RootElement::LibraryPackage(lp) => match &lp.body {
-                PackageBody::Brace { elements } => elements,
-                _ => continue,
-            },
-            RootElement::Import(_) => continue,
-        };
-        for action in collect_action_defs_from_elements(elements) {
-            out.push(extract_sequence_from_action(action));
-        }
-    }
-    out
-}
-
-fn extract_sequence_from_action(
-    node: &sysml_parser::Node<sysml_parser::ast::ActionDef>,
-) -> SequenceDiagramDto {
-    let name = identification_name(&node.identification);
-    let range = span_to_range_dto(&node.span);
-    let participants = vec![ParticipantDto {
-        name: "self".to_string(),
-        participant_type: "participant".to_string(),
-        range: default_range_dto(),
-    }];
-    SequenceDiagramDto {
-        name: if name.is_empty() {
-            "action".to_string()
-        } else {
-            name
-        },
-        participants,
-        messages: vec![],
         range,
     }
 }

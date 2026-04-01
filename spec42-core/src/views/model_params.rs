@@ -78,7 +78,6 @@ pub fn empty_model_response(build_start: Instant) -> SysmlModelResultDto {
             edges: vec![],
         }),
         activity_diagrams: None,
-        sequence_diagrams: None,
         ibd: None,
         stats: Some(SysmlModelStatsDto {
             total_elements: 0,

@@ -62,14 +62,13 @@ describe("SVG artifacts (SurveillanceDrone, elkjs)", () => {
     const model = (await vscode.commands.executeCommand(
       "sysml.debug.getModelForTests",
       doc.uri.toString(),
-      ["graph", "ibd", "sequenceDiagrams", "activityDiagrams", "stats"]
+      ["graph", "ibd", "activityDiagrams", "stats"]
     )) as any;
     panel.getWebview()?.postMessage({
       command: "update",
       graph: model?.graph,
       generalViewGraph: model?.generalViewGraph,
       ibd: model?.ibd,
-      sequenceDiagrams: model?.sequenceDiagrams ?? [],
       activityDiagrams: model?.activityDiagrams ?? [],
       currentView: "general-view",
     });

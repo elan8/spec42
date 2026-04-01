@@ -15,7 +15,6 @@ export const DEFAULT_ENABLED_VIEWS = ['general-view', 'interconnection-view'] as
 export const EXPERIMENTAL_VIEWS = [
     'action-flow-view',
     'state-transition-view',
-    'sequence-view',
 ] as const;
 
 /** Default release-enabled views. Experimental views can be enabled from extension settings. */
@@ -43,7 +42,6 @@ export const VIEW_OPTIONS: Record<string, { label: string; shortLabel: string; i
     'interconnection-view': { label: 'Interconnection View', shortLabel: 'Interconnection', icon: 'plug' },
     'action-flow-view': { label: 'Action Flow View', shortLabel: 'Action Flow', icon: 'git-commit' },
     'state-transition-view': { label: 'State Transition View', shortLabel: 'State Transition', icon: 'git-compare' },
-    'sequence-view': { label: 'Sequence View', shortLabel: 'Sequence', icon: 'list-ordered' },
 };
 
 /** Documentation: rendering technology per view. All views use D3 + ELK. */
@@ -52,7 +50,6 @@ export const VIEW_RENDERER_TECH: Record<string, string> = {
     'interconnection-view': 'D3+ELK',
     'action-flow-view': 'D3+ELK',
     'state-transition-view': 'D3+ELK',
-    'sequence-view': 'D3+ELK',
 };
 
 /** General View type filter categories - def categories first for correct matching. */

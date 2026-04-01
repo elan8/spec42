@@ -25,7 +25,6 @@ export interface UpdateMessage {
     diagramGeneral?: SysMLDiagramResult;
     diagramInterconnection?: SysMLDiagramResult;
     ibd?: IbdDataDTO;
-    sequenceDiagrams: unknown[];
     activityDiagrams: unknown[];
     currentView: string;
     pendingPackageName?: string;
@@ -99,8 +98,8 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         pendingPackageName,
     } = params;
 
-    const scopes: ('graph' | 'sequenceDiagrams' | 'activityDiagrams' | 'stats')[] =
-        ['graph', 'sequenceDiagrams', 'activityDiagrams', 'stats'];
+    const scopes: ('graph' | 'activityDiagrams' | 'stats')[] =
+        ['graph', 'activityDiagrams', 'stats'];
     const isWorkspaceVisualization = fileUris.length > 1;
     const requestScopes = isWorkspaceVisualization
         ? [...scopes, 'workspaceVisualization' as const]
@@ -177,7 +176,6 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
 
     const allGraphs: SysMLGraphDTO[] = [];
     const allGeneralViewGraphs: SysMLGraphDTO[] = [];
-    const allSequenceDiagrams: unknown[] = [];
     const allActivityDiagrams: unknown[] = [];
 
     for (const result of results) {
@@ -187,7 +185,6 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         if (result.generalViewGraph?.nodes?.length || result.generalViewGraph?.edges?.length) {
             allGeneralViewGraphs.push(result.generalViewGraph);
         }
-        if (result.sequenceDiagrams) allSequenceDiagrams.push(...result.sequenceDiagrams);
         if (result.activityDiagrams) allActivityDiagrams.push(...result.activityDiagrams);
     }
 
@@ -209,7 +206,6 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         diagramGeneral: generalDiagram,
         diagramInterconnection: interconnectionDiagram,
         ibd: primaryResult?.ibd,
-        sequenceDiagrams: allSequenceDiagrams,
         activityDiagrams: allActivityDiagrams,
         currentView,
     };

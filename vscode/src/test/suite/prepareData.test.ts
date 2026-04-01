@@ -8,7 +8,6 @@ import { prepareDataForView, graphToElementTree } from "../../visualization/prep
 const createMockData = (overrides: Partial<{
     elements: unknown[];
     relationships: unknown[];
-    sequenceDiagrams: unknown[];
     activityDiagrams: unknown[];
 }> = {}) => ({
     elements: [
@@ -70,13 +69,6 @@ const createMockData = (overrides: Partial<{
     relationships: [
         { type: "specializes", source: "A", target: "B" },
         { type: "connection", source: "X", target: "Y" }
-    ],
-    sequenceDiagrams: [
-        {
-            name: "Seq1",
-            participants: [{ name: "Actor1", type: "actor" }],
-            messages: [{ name: "msg1", from: "Actor1", to: "System", payload: "data", occurrence: 1 }]
-        }
     ],
     activityDiagrams: [
         {
@@ -379,12 +371,6 @@ describe("prepareDataForView", () => {
         assert.ok(entry, "an entry state should be synthesized");
         assert.strictEqual(entry.name, "entry");
         assert.strictEqual(entryTransition.target, "manual");
-    });
-
-    it.skip("sequence-view produces sequenceDiagrams (disabled for release)", () => {
-        const data = createMockData();
-        const result = prepareDataForView(data, "sequence-view");
-        assert.ok(Array.isArray(result.sequenceDiagrams), "sequence-view should have sequenceDiagrams array");
     });
 
     it("handles empty elements", () => {

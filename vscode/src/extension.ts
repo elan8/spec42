@@ -276,7 +276,6 @@ function getVisualizationViews(): Array<{ id: string; label: string; description
     { id: "interconnection-view", label: "Interconnection", description: "Interconnection view (internal block and connector routing)" },
     { id: "action-flow-view", label: "Action Flow", description: "Experimental: behavior and flow rendering" },
     { id: "state-transition-view", label: "State Transition", description: "Experimental: state-machine rendering" },
-    { id: "sequence-view", label: "Sequence", description: "Experimental: interaction rendering" },
   ].filter((v) => enabledViews.has(v.id));
 }
 
@@ -1375,7 +1374,7 @@ export function activate(context: vscode.ExtensionContext): void {
       "sysml.debug.getModelForTests",
       async (
         uri: string,
-        scope?: Array<"graph" | "ibd" | "sequenceDiagrams" | "activityDiagrams" | "stats">
+        scope?: Array<"graph" | "ibd" | "activityDiagrams" | "stats">
       ) => {
         return await lspModelProvider.getModel(uri, scope);
       }

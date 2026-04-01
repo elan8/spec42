@@ -67,7 +67,6 @@ pub async fn build_sysml_model_response(
         scope.is_empty() || scope.iter().any(|s| s == "generalViewGraph") || want_graph;
     let want_stats = scope.is_empty() || scope.iter().any(|s| s == "stats");
     let want_activity_diagrams = scope.is_empty() || scope.iter().any(|s| s == "activityDiagrams");
-    let want_sequence_diagrams = scope.is_empty() || scope.iter().any(|s| s == "sequenceDiagrams");
 
     let workspace_viz = workspace_visualization_enabled(scope);
     let raw_graph = if want_graph && workspace_viz {
@@ -173,15 +172,6 @@ pub async fn build_sysml_model_response(
         None
     };
 
-    let sequence_diagrams = if want_sequence_diagrams {
-        Some(
-            doc.map(model::extract_sequence_diagrams)
-                .unwrap_or_default(),
-        )
-    } else {
-        None
-    };
-
     let stats = if want_stats {
         let total = graph.as_ref().map(|g| g.nodes.len() as u32).unwrap_or(0);
         Some(SysmlModelStatsDto {
@@ -240,7 +230,6 @@ pub async fn build_sysml_model_response(
         general_view_graph,
         stats,
         activity_diagrams,
-        sequence_diagrams,
         ibd,
     }
 }

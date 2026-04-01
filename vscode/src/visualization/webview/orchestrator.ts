@@ -49,7 +49,6 @@ import {
     getLibraryKind,
     slugify
 } from './helpers';
-import { renderSequenceView as renderSequenceViewModule } from './renderers/sequence';
 import { renderActivityView as renderActivityViewModule } from './renderers/activity';
 import { renderStateView as renderStateViewModule } from './renderers/state';
 import { renderGeneralViewD3 } from './renderers/generalView';
@@ -849,24 +848,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
                     elementData = d.data;
                 }
             });
-        } else if (currentView === 'sequence-view') {
-            // In sequence view, find by diagram, participant, or message name
-            d3.selectAll('.sequence-diagram text').each(function(d) {
-                const textElement = d3.select(this);
-                if (textElement.text() === elementName) {
-                    targetElement = textElement;
-                    elementData = { name: elementName, type: 'sequence element' };
-                }
-            });
-
-            // Also check for participants and messages
-            d3.selectAll('.sequence-participant text, .sequence-message').each(function(d) {
-                const element = d3.select(this);
-                if (element.text && element.text() === elementName) {
-                    targetElement = element;
-                    elementData = { name: elementName, type: 'sequence element' };
-                }
-            });
         } else if (currentView === 'general-view') {
             // In General View (Cytoscape), find nodes by data-element-name attribute
             d3.selectAll('.general-node').each(function() {
@@ -1133,13 +1114,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 label: machine.name,
             }));
             labelText = 'State Machine';
-        } else if (activeView === 'sequence-view') {
-            // Get sequence diagrams
-            diagrams = (currentData?.sequenceDiagrams || []).map((diagram: any) => ({
-                ...diagram,
-                label: diagram?.name || 'Sequence',
-            }));
-            labelText = 'Sequence';
         } else if (activeView === 'interconnection-view') {
             const preparedData = prepareDataForView({ ...currentData, selectedIbdRoot }, 'interconnection-view');
             const candidates = preparedData?.ibdRootCandidates || [];
@@ -1673,8 +1647,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 updateDimensionsDisplay();
                 finishRender();
             }, 100);
-            } else if (view === 'sequence-view') {
-                renderSequenceViewModule(buildRenderContext(width, height), dataToRender);
             } else if (view === 'action-flow-view') {
                 await renderActivityViewModule(buildRenderContext(width, height), dataToRender);
             } else if (view === 'state-transition-view') {

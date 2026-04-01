@@ -287,8 +287,6 @@ pub struct SysmlModelResultDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub activity_diagrams: Option<Vec<model::ActivityDiagramDto>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub sequence_diagrams: Option<Vec<model::SequenceDiagramDto>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub ibd: Option<ibd::IbdDataDto>,
     pub stats: Option<SysmlModelStatsDto>,
 }

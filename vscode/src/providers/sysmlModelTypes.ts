@@ -59,7 +59,7 @@ export interface SysMLModelStatsDTO {
 
 export interface SysMLModelParams {
   textDocument: { uri: string };
-  scope?: Array<"graph" | "ibd" | "stats" | "sequenceDiagrams" | "activityDiagrams" | "workspaceVisualization">;
+  scope?: Array<"graph" | "ibd" | "stats" | "activityDiagrams" | "workspaceVisualization">;
 }
 
 export interface SysMLDiagramOptions {
@@ -111,7 +111,6 @@ export interface SysMLModelResult {
   version: number;
   graph?: SysMLGraphDTO;
   generalViewGraph?: SysMLGraphDTO;
-  sequenceDiagrams?: SequenceDiagramDTO[];
   activityDiagrams?: ActivityDiagramDTO[];
   ibd?: IbdDataDTO;
   stats?: SysMLModelStatsDTO;
@@ -237,32 +236,6 @@ export interface SysMLDiagramResult {
   scene: DiagramSceneDTO;
   warnings?: string[];
   stats?: SysMLDiagramStatsDTO;
-}
-
-// ---------------------------------------------------------------------------
-// Sequence Diagrams (optional - our server returns empty if not implemented)
-// ---------------------------------------------------------------------------
-
-export interface SequenceDiagramDTO {
-  name: string;
-  participants: ParticipantDTO[];
-  messages: MessageDTO[];
-  range: RangeDTO;
-}
-
-export interface ParticipantDTO {
-  name: string;
-  type: string;
-  range: RangeDTO;
-}
-
-export interface MessageDTO {
-  name: string;
-  from: string;
-  to: string;
-  payload: string;
-  occurrence: number;
-  range: RangeDTO;
 }
 
 // ---------------------------------------------------------------------------

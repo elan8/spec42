@@ -26,28 +26,6 @@ export interface Relationship {
   name?: string;
 }
 
-export interface SequenceDiagram {
-  name: string;
-  participants: Participant[];
-  messages: Message[];
-  range: vscode.Range;
-}
-
-export interface Participant {
-  name: string;
-  type: string;
-  range: vscode.Range;
-}
-
-export interface Message {
-  name: string;
-  from: string;
-  to: string;
-  payload: string;
-  occurrence: number;
-  range: vscode.Range;
-}
-
 export interface ActivityDiagram {
   name: string;
   actions: ActivityAction[];
