@@ -11,6 +11,7 @@ pub mod semantic_tokens;
 pub mod syntax;
 pub mod views;
 pub(crate) mod workspace;
+pub mod bench;
 
 // Host contract exports (intended stable composition surface for edition hosts).
 pub use host::config::{

@@ -78,6 +78,30 @@ cargo test
 
 This runs workspace tests for Spec42 crates, including LSP integration tests.
 
+## Benchmarks (parse performance)
+
+Spec42’s “editor parse” path uses `sysml_parser::parse_with_diagnostics` via `spec42-core`’s `parse_for_editor`. Criterion benchmarks are provided in `spec42-core/benches/parse_scan.rs`.
+
+### Run (PowerShell)
+
+```powershell
+# Drone workspace scan (default root matches the sysml-examples layout)
+cargo bench -p spec42-core --bench parse_scan
+
+# Override the drone root (bench scans for .sysml/.kerml files under this directory)
+$env:SPEC42_BENCH_DRONE_ROOT = 'C:\Git\sysml-examples\drone\sysml'
+cargo bench -p spec42-core --bench parse_scan
+
+# Benchmark SysML v2 Release “stdlib” (set to the repo root of SysML-v2-Release)
+$env:SYSML_V2_RELEASE_DIR = 'C:\Git\SysML-v2-Release-2026-01'
+cargo bench -p spec42-core --bench parse_scan
+
+# Match Spec42’s parallel startup parsing toggles (optional)
+$env:SPEC42_PARALLEL_STARTUP_PARSE = 'true'
+$env:SPEC42_PARALLEL_STARTUP_PARSE_MIN_FILES = '10'
+cargo bench -p spec42-core --bench parse_scan
+```
+
 ## Semantic diagnostics pipeline
 
 `spec42-core/src/lsp_server.rs` publishes diagnostics in two stages:

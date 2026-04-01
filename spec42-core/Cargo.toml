@@ -24,5 +24,11 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 
 [dev-dependencies]
+# Benchmarks
+criterion = { version = "0.5", features = ["html_reports"] }
 # Used by LSP integration tests when constructing `file://` URIs.
 url = "2"
+
+[[bench]]
+name = "parse_scan"
+harness = false
