@@ -1,9 +1,7 @@
 use std::sync::Arc;
 
 use tokio::sync::RwLock;
-use tower_lsp::lsp_types::{
-    Diagnostic, DiagnosticSeverity, NumberOrString, Position, Range, Url,
-};
+use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Position, Range, Url};
 use tower_lsp::Client;
 
 use crate::common::util;

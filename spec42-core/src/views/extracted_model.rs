@@ -2,7 +2,9 @@
 
 use crate::syntax::ast_util::identification_name;
 use serde::Serialize;
-use sysml_parser::ast::{ActionDefBody, ActionDefBodyElement, PackageBody, PackageBodyElement, RootElement};
+use sysml_parser::ast::{
+    ActionDefBody, ActionDefBodyElement, PackageBody, PackageBodyElement, RootElement,
+};
 use sysml_parser::{RootNamespace, Span};
 
 fn expr_to_string(n: &sysml_parser::Node<sysml_parser::Expression>) -> String {
@@ -36,10 +38,19 @@ fn expr_to_string(n: &sysml_parser::Node<sysml_parser::Expression>) -> String {
         Expression::LiteralWithUnit { value, unit } => {
             let v = expr_to_string(value);
             let u = expr_to_string(unit);
-            if u.is_empty() { v } else { format!("{v} [{u}]") }
+            if u.is_empty() {
+                v
+            } else {
+                format!("{v} [{u}]")
+            }
         }
         Expression::BinaryOp { op, left, right } => {
-            format!("({} {} {})", expr_to_string(left), op, expr_to_string(right))
+            format!(
+                "({} {} {})",
+                expr_to_string(left),
+                op,
+                expr_to_string(right)
+            )
         }
         Expression::UnaryOp { op, operand } => format!("({}{})", op, expr_to_string(operand)),
         Expression::Null => String::new(),
@@ -310,7 +321,11 @@ fn extract_activity_from_action(
                         // VS Code Action Flow view filters allowed node kinds. Use a compatible kind
                         // for action usages so they appear as regular action nodes.
                         kind: Some("action".to_string()),
-                        inputs: if inputs.is_empty() { None } else { Some(inputs) },
+                        inputs: if inputs.is_empty() {
+                            None
+                        } else {
+                            Some(inputs)
+                        },
                         outputs: None,
                         range: Some(span_to_range_dto(&u.span)),
                     });
@@ -357,7 +372,11 @@ fn extract_activity_from_action(
                 ActionDefBodyElement::MergeStmt(merge) => {
                     let m = expr_to_string(&merge.value.merge);
                     states.push(ActivityStateDto {
-                        name: if m.is_empty() { format!("merge_{}", i) } else { m },
+                        name: if m.is_empty() {
+                            format!("merge_{}", i)
+                        } else {
+                            m
+                        },
                         state_type: "merge".to_string(),
                         range: span_to_range_dto(&merge.span),
                     });
@@ -392,7 +411,8 @@ fn extract_activity_from_action(
 
     let existing_action_names: std::collections::HashSet<String> =
         actions.iter().map(|a| a.name.clone()).collect();
-    let mut referenced_step_names: std::collections::HashSet<String> = std::collections::HashSet::new();
+    let mut referenced_step_names: std::collections::HashSet<String> =
+        std::collections::HashSet::new();
 
     let interface_param_names: std::collections::HashSet<String> = interface_inputs
         .iter()
@@ -519,12 +539,27 @@ mod tests {
 
         let root = parse(input).expect("parse");
         let diagrams = extract_activity_diagrams(&root);
-        let diagram = diagrams.iter().find(|d| d.name == "UpdateDisplay").expect("diagram");
+        let diagram = diagrams
+            .iter()
+            .find(|d| d.name == "UpdateDisplay")
+            .expect("diagram");
 
-        assert!(diagram.actions.is_empty(), "interface declarations should not become flow steps");
-        assert_eq!(diagram.interface.as_ref().map(|itf| itf.inputs.clone()), Some(vec!["currentTime".to_string()]));
-        assert_eq!(diagram.interface.as_ref().map(|itf| itf.outputs.clone()), Some(vec!["displayText".to_string()]));
-        assert!(diagram.flows.is_empty(), "should not synthesize pseudo-flows");
+        assert!(
+            diagram.actions.is_empty(),
+            "interface declarations should not become flow steps"
+        );
+        assert_eq!(
+            diagram.interface.as_ref().map(|itf| itf.inputs.clone()),
+            Some(vec!["currentTime".to_string()])
+        );
+        assert_eq!(
+            diagram.interface.as_ref().map(|itf| itf.outputs.clone()),
+            Some(vec!["displayText".to_string()])
+        );
+        assert!(
+            diagram.flows.is_empty(),
+            "should not synthesize pseudo-flows"
+        );
     }
 
     #[test]
@@ -541,14 +576,26 @@ mod tests {
 
         let root = parse(input).expect("parse");
         let diagrams = extract_activity_diagrams(&root);
-        let diagram = diagrams.iter().find(|d| d.name == "ExecuteMission").expect("diagram");
+        let diagram = diagrams
+            .iter()
+            .find(|d| d.name == "ExecuteMission")
+            .expect("diagram");
         let action_names: Vec<_> = diagram.actions.iter().map(|a| a.name.as_str()).collect();
 
         assert_eq!(action_names, vec!["captureVideo"]);
         assert_eq!(diagram.actions[0].kind.as_deref(), Some("perform"));
-        assert_eq!(diagram.interface.as_ref().map(|itf| itf.inputs.clone()), Some(vec!["route".to_string()]));
-        assert_eq!(diagram.interface.as_ref().map(|itf| itf.outputs.clone()), Some(vec!["report".to_string()]));
-        assert!(diagram.flows.is_empty(), "perform-only diagrams should not invent ordering edges");
+        assert_eq!(
+            diagram.interface.as_ref().map(|itf| itf.inputs.clone()),
+            Some(vec!["route".to_string()])
+        );
+        assert_eq!(
+            diagram.interface.as_ref().map(|itf| itf.outputs.clone()),
+            Some(vec!["report".to_string()])
+        );
+        assert!(
+            diagram.flows.is_empty(),
+            "perform-only diagrams should not invent ordering edges"
+        );
     }
 
     #[test]
@@ -569,22 +616,37 @@ mod tests {
 
         let root = parse(input).expect("parse");
         let diagrams = extract_activity_diagrams(&root);
-        let diagram = diagrams.iter().find(|d| d.name == "ExecuteMission").expect("diagram");
+        let diagram = diagrams
+            .iter()
+            .find(|d| d.name == "ExecuteMission")
+            .expect("diagram");
 
         assert!(
-            diagram.actions.iter().any(|a| a.name == "captureVideo" && a.kind.as_deref() == Some("action")),
+            diagram
+                .actions
+                .iter()
+                .any(|a| a.name == "captureVideo" && a.kind.as_deref() == Some("action")),
             "expected action usage step to be emitted as a regular action node kind"
         );
         assert!(
-            diagram.flows.iter().any(|f| f.guard.as_deref() == Some("bind")),
+            diagram
+                .flows
+                .iter()
+                .any(|f| f.guard.as_deref() == Some("bind")),
             "expected bind to be represented as a guarded flow edge"
         );
         assert!(
-            diagram.flows.iter().any(|f| f.guard.as_deref() == Some("flow")),
+            diagram
+                .flows
+                .iter()
+                .any(|f| f.guard.as_deref() == Some("flow")),
             "expected flow statement edge"
         );
         assert!(
-            diagram.flows.iter().any(|f| f.guard.as_deref() == Some("first")),
+            diagram
+                .flows
+                .iter()
+                .any(|f| f.guard.as_deref() == Some("first")),
             "expected first/then edge"
         );
         assert!(
@@ -606,7 +668,10 @@ mod tests {
 
         let root = parse(input).expect("parse");
         let diagrams = extract_activity_diagrams(&root);
-        let diagram = diagrams.iter().find(|d| d.name == "ValidateRoute").expect("diagram");
+        let diagram = diagrams
+            .iter()
+            .find(|d| d.name == "ValidateRoute")
+            .expect("diagram");
 
         assert!(diagram.actions.is_empty());
         assert!(diagram.flows.is_empty());
@@ -647,7 +712,10 @@ mod tests {
 
         let root = parse(input).expect("parse");
         let diagrams = extract_activity_diagrams(&root);
-        let diagram = diagrams.iter().find(|d| d.name == "ExecuteMission").expect("diagram");
+        let diagram = diagrams
+            .iter()
+            .find(|d| d.name == "ExecuteMission")
+            .expect("diagram");
 
         assert!(
             diagram.actions.iter().any(|a| a.name == "validateRoute"),
@@ -658,7 +726,12 @@ mod tests {
             "expected referenced step node startMission to exist"
         );
         assert!(
-            diagram.flows.iter().any(|f| f.guard.as_deref() == Some("first") && f.from == "validateRoute" && f.to == "startMission"),
+            diagram
+                .flows
+                .iter()
+                .any(|f| f.guard.as_deref() == Some("first")
+                    && f.from == "validateRoute"
+                    && f.to == "startMission"),
             "expected first/then flow edge"
         );
     }
@@ -679,7 +752,10 @@ mod tests {
 
         let root = parse(input).expect("parse");
         let diagrams = extract_activity_diagrams(&root);
-        let diagram = diagrams.iter().find(|d| d.name == "ExecutePatrol").expect("diagram");
+        let diagram = diagrams
+            .iter()
+            .find(|d| d.name == "ExecutePatrol")
+            .expect("diagram");
 
         assert_eq!(
             diagram.interface.as_ref().map(|itf| itf.inputs.clone()),
@@ -691,9 +767,16 @@ mod tests {
         );
 
         assert!(
-            diagram.actions.iter().all(|a| a.name != "route" && a.name != "status"),
+            diagram
+                .actions
+                .iter()
+                .all(|a| a.name != "route" && a.name != "status"),
             "interface parameters should not be synthesized into action nodes; actions={:?}",
-            diagram.actions.iter().map(|a| a.name.as_str()).collect::<Vec<_>>()
+            diagram
+                .actions
+                .iter()
+                .map(|a| a.name.as_str())
+                .collect::<Vec<_>>()
         );
     }
 }

@@ -70,7 +70,11 @@ pub(crate) async fn sysml_diagram_result(
                     ),
                 )
                 .await;
-            return Ok(crate::views::empty_diagram_response(&kind, &uri, build_start));
+            return Ok(crate::views::empty_diagram_response(
+                &kind,
+                &uri,
+                build_start,
+            ));
         }
     };
     Ok(crate::build_sysml_diagram_response(

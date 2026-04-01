@@ -1,7 +1,7 @@
-use crate::semantic_model;
-use crate::workspace::state::{IndexEntry, ScanSummary, ServerState};
-use crate::workspace::library_search;
 use crate::common::util;
+use crate::semantic_model;
+use crate::workspace::library_search;
+use crate::workspace::state::{IndexEntry, ScanSummary, ServerState};
 use sysml_parser::RootNamespace;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
 use walkdir::WalkDir;
@@ -61,6 +61,25 @@ pub(crate) struct ParsedScanEntry {
     pub(crate) content: String,
     pub(crate) parsed: Option<RootNamespace>,
     pub(crate) parse_errors: Vec<String>,
+}
+
+fn warning_from_parse_errors(
+    uri_norm: &Url,
+    parse_errors: &[String],
+    diagnostic_count: usize,
+    context: &str,
+) -> Option<String> {
+    if parse_errors.is_empty() {
+        None
+    } else {
+        Some(format!(
+            "sysml parse for editor produced {} diagnostic(s) for {} during {}: {}",
+            diagnostic_count,
+            uri_norm.as_str(),
+            context,
+            parse_errors.join("; ")
+        ))
+    }
 }
 
 fn parse_scanned_entry(ordinal: usize, uri: Url, content: String) -> ParsedScanEntry {
@@ -173,30 +192,15 @@ fn refresh_symbols_for_uri(state: &mut ServerState, uri: &Url) {
     update_symbol_table_for_uri(state, uri, Some(&new_entries));
 }
 
-pub(crate) fn store_document_text(
+pub(crate) fn store_parsed_document_text(
     state: &mut ServerState,
     uri_norm: &Url,
     text: String,
+    parsed: Option<RootNamespace>,
+    parse_errors: &[String],
+    diagnostic_count: usize,
+    context: &str,
 ) -> Option<String> {
-    let parsed_result = util::parse_for_editor(&text);
-    let parsed = Some(parsed_result.root);
-    let warning = if parsed_result.errors.is_empty() {
-        None
-    } else {
-        let errs = parsed_result
-            .errors
-            .iter()
-            .take(5)
-            .map(|e| e.message.as_str())
-            .collect::<Vec<_>>();
-        Some(format!(
-            "sysml parse for editor produced {} diagnostic(s) for {}: {}",
-            parsed_result.errors.len(),
-            uri_norm.as_str(),
-            errs.join("; ")
-        ))
-    };
-
     update_semantic_graph_for_uri(state, uri_norm, parsed.as_ref());
     state.index.insert(
         uri_norm.clone(),
@@ -206,7 +210,30 @@ pub(crate) fn store_document_text(
         },
     );
     refresh_symbols_for_uri(state, uri_norm);
-    warning
+    warning_from_parse_errors(uri_norm, parse_errors, diagnostic_count, context)
+}
+
+pub(crate) fn store_document_text(
+    state: &mut ServerState,
+    uri_norm: &Url,
+    text: String,
+) -> Option<String> {
+    let parsed_result = util::parse_for_editor(&text);
+    let parse_errors = parsed_result
+        .errors
+        .iter()
+        .take(5)
+        .map(|e| e.message.clone())
+        .collect::<Vec<_>>();
+    store_parsed_document_text(
+        state,
+        uri_norm,
+        text,
+        Some(parsed_result.root),
+        &parse_errors,
+        parsed_result.errors.len(),
+        "store_document_text",
+    )
 }
 
 pub(crate) fn refresh_document(
@@ -215,6 +242,27 @@ pub(crate) fn refresh_document(
     content: String,
 ) -> Option<String> {
     store_document_text(state, uri_norm, content)
+}
+
+pub(crate) fn ingest_parsed_scan_entries(
+    state: &mut ServerState,
+    entries: Vec<ParsedScanEntry>,
+) -> Vec<(Url, Option<String>)> {
+    let mut loaded = Vec::with_capacity(entries.len());
+    for entry in entries {
+        let uri_norm = util::normalize_file_uri(&entry.uri);
+        let warning = store_parsed_document_text(
+            state,
+            &uri_norm,
+            entry.content,
+            entry.parsed,
+            &entry.parse_errors,
+            entry.parse_errors.len(),
+            "workspace_scan",
+        );
+        loaded.push((uri_norm, warning));
+    }
+    loaded
 }
 
 pub(crate) fn apply_document_changes(
@@ -349,7 +397,12 @@ mod tests {
             }],
         );
         assert!(warnings.is_empty());
-        assert!(state.index.get(&uri).expect("updated doc").content.contains("Motor"));
+        assert!(state
+            .index
+            .get(&uri)
+            .expect("updated doc")
+            .content
+            .contains("Motor"));
 
         remove_document(&mut state, &uri);
         assert!(!state.index.contains_key(&uri));

@@ -13,13 +13,13 @@ use tower_lsp::Client;
 use sysml_parser::RootNamespace;
 
 use crate::common::util;
+use crate::semantic_model;
 use crate::views::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlGraphDto, SysmlModelResultDto,
     SysmlModelStatsDto,
 };
 use crate::views::extracted_model as model;
 use crate::views::ibd;
-use crate::semantic_model;
 
 pub fn parse_sysml_model_params(v: &serde_json::Value) -> Result<(Url, Vec<String>)> {
     model_params::parse_sysml_model_params(v)
@@ -165,13 +165,19 @@ pub async fn build_sysml_model_response(
 
     let doc = parsed;
     let activity_diagrams = if want_activity_diagrams {
-        Some(doc.map(model::extract_activity_diagrams).unwrap_or_default())
+        Some(
+            doc.map(model::extract_activity_diagrams)
+                .unwrap_or_default(),
+        )
     } else {
         None
     };
 
     let sequence_diagrams = if want_sequence_diagrams {
-        Some(doc.map(model::extract_sequence_diagrams).unwrap_or_default())
+        Some(
+            doc.map(model::extract_sequence_diagrams)
+                .unwrap_or_default(),
+        )
     } else {
         None
     };

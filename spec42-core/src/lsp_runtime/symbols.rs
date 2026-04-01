@@ -36,10 +36,9 @@ pub(crate) fn build_code_lens(state: &ServerState, uri_norm: &Url) -> Vec<CodeLe
             state, sym, false,
         )
         .len();
-        let reference_position = crate::lsp_runtime::references_resolver::symbol_name_position(
-            state, sym,
-        )
-            .unwrap_or(sym.range.start);
+        let reference_position =
+            crate::lsp_runtime::references_resolver::symbol_name_position(state, sym)
+                .unwrap_or(sym.range.start);
         out.push(CodeLens {
             range: sym.range,
             command: Some(Command {

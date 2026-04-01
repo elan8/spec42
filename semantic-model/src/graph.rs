@@ -817,7 +817,9 @@ mod tests {
         let g = build_graph_from_doc(&root, &uri);
         let edges = g.edges_for_uri_as_strings(&uri);
         assert!(
-            edges.iter().any(|(_, _, k, _)| *k == RelationshipKind::InitialState),
+            edges
+                .iter()
+                .any(|(_, _, k, _)| *k == RelationshipKind::InitialState),
             "expected initialState edge; edges: {:?}",
             edges
         );
@@ -889,19 +891,27 @@ mod tests {
         let nodes = g.nodes_for_uri(&uri);
 
         assert!(
-            nodes.iter().any(|n| n.element_kind == "action def" && n.name == "ExecuteMission"),
+            nodes
+                .iter()
+                .any(|n| n.element_kind == "action def" && n.name == "ExecuteMission"),
             "action def node missing"
         );
         assert!(
-            nodes.iter().any(|n| n.element_kind == "in out parameter" && n.name == "route"),
+            nodes
+                .iter()
+                .any(|n| n.element_kind == "in out parameter" && n.name == "route"),
             "input parameter node missing"
         );
         assert!(
-            nodes.iter().any(|n| n.element_kind == "perform" && n.name == "captureVideo"),
+            nodes
+                .iter()
+                .any(|n| n.element_kind == "perform" && n.name == "captureVideo"),
             "perform step node missing"
         );
         assert!(
-            nodes.iter().any(|n| n.element_kind == "in out parameter" && n.name == "report"),
+            nodes
+                .iter()
+                .any(|n| n.element_kind == "in out parameter" && n.name == "report"),
             "output parameter node missing"
         );
     }
@@ -928,16 +938,22 @@ mod tests {
         let edges = g.edges_for_uri_as_strings(&uri);
 
         assert!(
-            nodes.iter().any(|n| n.element_kind == "action" && n.name == "captureVideo"),
+            nodes
+                .iter()
+                .any(|n| n.element_kind == "action" && n.name == "captureVideo"),
             "expected action usage node for captureVideo"
         );
         assert!(
-            edges.iter().any(|(_, _, k, _)| *k == RelationshipKind::Bind),
+            edges
+                .iter()
+                .any(|(_, _, k, _)| *k == RelationshipKind::Bind),
             "expected bind edge in action body; edges: {:?}",
             edges
         );
         assert!(
-            edges.iter().any(|(_, _, k, _)| *k == RelationshipKind::Flow),
+            edges
+                .iter()
+                .any(|(_, _, k, _)| *k == RelationshipKind::Flow),
             "expected flow edge in action body; edges: {:?}",
             edges
         );
@@ -998,7 +1014,10 @@ mod tests {
         assert!(
             g.node_index_by_id.contains_key(&perform_id),
             "expected perform action usage node; ids: {:?}",
-            g.nodes_by_uri.get(&uri).map(|v| v.iter().map(|id| id.qualified_name.as_str()).collect::<Vec<_>>())
+            g.nodes_by_uri.get(&uri).map(|v| v
+                .iter()
+                .map(|id| id.qualified_name.as_str())
+                .collect::<Vec<_>>())
         );
         assert!(
             g.node_index_by_id.contains_key(&action_def_id),
@@ -1009,7 +1028,9 @@ mod tests {
         assert!(
             edges
                 .iter()
-                .any(|(src, tgt, k, _)| *k == RelationshipKind::Typing && src == &perform_id.qualified_name && tgt == &action_def_id.qualified_name),
+                .any(|(src, tgt, k, _)| *k == RelationshipKind::Typing
+                    && src == &perform_id.qualified_name
+                    && tgt == &action_def_id.qualified_name),
             "expected typing edge from perform action to action def; edges: {:?}",
             edges
         );

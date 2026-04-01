@@ -7,11 +7,13 @@ use sysml_parser::ast::{
 use sysml_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
 
+use super::requirement_body::{import_member_label, walk_requirement_def_body};
 use crate::ast_util::{identification_name, span_to_range};
 use crate::graph::SemanticGraph;
-use super::requirement_body::{import_member_label, walk_requirement_def_body};
 use crate::model::{NodeId, RelationshipKind, SemanticNode};
-use crate::relationships::{add_edge_if_both_exist, add_specializes_edge_if_exists, add_typing_edge_if_exists};
+use crate::relationships::{
+    add_edge_if_both_exist, add_specializes_edge_if_exists, add_typing_edge_if_exists,
+};
 
 use super::expressions;
 use super::{add_node_and_recurse, qualified_name_for_node};
@@ -384,7 +386,10 @@ pub(super) fn build_from_package_body_element(
                             );
                             let mut attrs = HashMap::new();
                             if let Some(ref action_type) = perform.value.type_name {
-                                attrs.insert("actionType".to_string(), serde_json::json!(action_type));
+                                attrs.insert(
+                                    "actionType".to_string(),
+                                    serde_json::json!(action_type),
+                                );
                             }
                             add_node_and_recurse(
                                 g,
@@ -447,7 +452,8 @@ pub(super) fn build_from_package_body_element(
                                 "merge",
                             );
                             let mut attrs = HashMap::new();
-                            attrs.insert("mergeTarget".to_string(), serde_json::json!(merge_target));
+                            attrs
+                                .insert("mergeTarget".to_string(), serde_json::json!(merge_target));
                             add_node_and_recurse(
                                 g,
                                 uri,
@@ -1210,8 +1216,7 @@ pub(super) fn build_from_package_body_element(
             if let Some(pid) = parent_id {
                 let v = &imp.value;
                 let name = import_member_label(&v.target);
-                let qualified =
-                    qualified_name_for_node(g, uri, container_prefix, &name, "import");
+                let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "import");
                 let mut attrs = HashMap::new();
                 attrs.insert("importTarget".to_string(), serde_json::json!(&v.target));
                 attrs.insert("importAll".to_string(), serde_json::json!(v.is_import_all));
@@ -1269,9 +1274,7 @@ pub(super) fn build_from_package_body_element(
                 let mut attrs = HashMap::new();
                 attrs.insert(
                     "condition".to_string(),
-                    serde_json::json!(expressions::expression_to_debug_string(
-                        &f.value.condition
-                    )),
+                    serde_json::json!(expressions::expression_to_debug_string(&f.value.condition)),
                 );
                 if let Some(vis) = &f.value.visibility {
                     attrs.insert(
@@ -1294,8 +1297,13 @@ pub(super) fn build_from_package_body_element(
         PBE::KermlSemanticDecl(k) => {
             if let Some(pid) = parent_id {
                 let kv = &k.value;
-                let qualified =
-                    qualified_name_for_node(g, uri, container_prefix, "_kermlSemantic", "kermlDecl");
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    "_kermlSemantic",
+                    "kermlDecl",
+                );
                 let mut attrs = HashMap::new();
                 attrs.insert(
                     "bnfProduction".to_string(),

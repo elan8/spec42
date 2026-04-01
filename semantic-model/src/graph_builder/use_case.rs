@@ -39,7 +39,13 @@ pub(super) fn build_from_use_case_body(
                     attrs,
                     Some(parent_id),
                 );
-                add_typing_edge_if_exists(g, uri, &qualified, &actor_node.type_name, container_prefix);
+                add_typing_edge_if_exists(
+                    g,
+                    uri,
+                    &qualified,
+                    &actor_node.type_name,
+                    container_prefix,
+                );
             }
             UCBE::SubjectDecl(sd) => {
                 let target = resolve_subject_type_target_qualified(

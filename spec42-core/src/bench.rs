@@ -6,6 +6,8 @@
 
 use tower_lsp::lsp_types::Url;
 
+use crate::workspace::state::ServerState;
+
 /// Scan roots for `.sysml` / `.kerml` files and read their contents.
 ///
 /// This mirrors the discovery+read portion of Spec42’s workspace scan.
@@ -20,3 +22,12 @@ pub fn parse_scanned_entries(entries: Vec<(Url, String)>, parallel_enabled: bool
     crate::workspace::parse_scanned_entries(entries, parallel_enabled).len()
 }
 
+/// Parse a batch of scanned `(Url, String)` entries and ingest them into a fresh server state.
+///
+/// Returns the number of indexed documents after the ingest.
+pub fn startup_index_scanned_entries(entries: Vec<(Url, String)>, parallel_enabled: bool) -> usize {
+    let parsed_entries = crate::workspace::parse_scanned_entries(entries, parallel_enabled);
+    let mut state = ServerState::default();
+    crate::workspace::ingest_parsed_scan_entries(&mut state, parsed_entries);
+    state.index.len()
+}

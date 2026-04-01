@@ -2,8 +2,8 @@
 
 use std::path::PathBuf;
 
-use spec42_core::common::util;
 use super::harness::{next_id, read_message, read_response, send_message, spawn_server};
+use spec42_core::common::util;
 
 /// Workspace scan: definition file exists only on disk; we never didOpen it.
 /// Proves the server indexes files from the workspace root and goto_definition resolves across them.
@@ -822,8 +822,7 @@ fn lsp_sysml_model_activity_diagrams_from_surveillance_drone_example_are_non_emp
         );
         return;
     }
-    let drone_content =
-        std::fs::read_to_string(&drone_path).expect("read SurveillanceDrone.sysml");
+    let drone_content = std::fs::read_to_string(&drone_path).expect("read SurveillanceDrone.sysml");
     if sysml_parser::parse(&drone_content).is_err() {
         panic!(
             "sysml_parser::parse failed for SurveillanceDrone.sysml; first errors: {:?}",
@@ -899,10 +898,8 @@ fn lsp_sysml_model_activity_diagrams_from_surveillance_drone_example_are_non_emp
         "expected activityDiagrams to be non-empty for SurveillanceDrone.sysml"
     );
 
-    let diagram_names: std::collections::HashSet<&str> = diagrams
-        .iter()
-        .filter_map(|d| d["name"].as_str())
-        .collect();
+    let diagram_names: std::collections::HashSet<&str> =
+        diagrams.iter().filter_map(|d| d["name"].as_str()).collect();
     assert!(
         diagram_names.contains("ExecutePatrol") || diagram_names.contains("CaptureVideo"),
         "expected ExecutePatrol or CaptureVideo activity diagram; got names: {:?}",

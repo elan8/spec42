@@ -1,8 +1,8 @@
 mod capabilities;
+mod custom;
 mod diagnostics;
 mod documents;
 mod features;
-mod custom;
 mod hierarchy;
 mod lifecycle;
 mod lookup_helpers;
@@ -173,14 +173,21 @@ impl LanguageServer for Backend {
     }
 
     #[allow(deprecated)]
-    async fn symbol(&self, params: WorkspaceSymbolParams) -> Result<Option<Vec<SymbolInformation>>> {
+    async fn symbol(
+        &self,
+        params: WorkspaceSymbolParams,
+    ) -> Result<Option<Vec<SymbolInformation>>> {
         let state = self.state.read().await;
         features::workspace_symbol(&state, params.query)
     }
 
     async fn code_action(&self, params: CodeActionParams) -> Result<Option<CodeActionResponse>> {
         let state = self.state.read().await;
-        features::code_action(&state, params.text_document.uri, &params.context.diagnostics)
+        features::code_action(
+            &state,
+            params.text_document.uri,
+            &params.context.diagnostics,
+        )
     }
 
     async fn code_lens(&self, params: CodeLensParams) -> Result<Option<Vec<CodeLens>>> {
@@ -215,8 +222,11 @@ impl LanguageServer for Backend {
         params: SemanticTokensRangeParams,
     ) -> Result<Option<SemanticTokensRangeResult>> {
         let state = self.state.read().await;
-        let Some((tokens, log_lines)) =
-            features::semantic_tokens_range_request(&state, params.text_document.uri, params.range)?
+        let Some((tokens, log_lines)) = features::semantic_tokens_range_request(
+            &state,
+            params.text_document.uri,
+            params.range,
+        )?
         else {
             return Ok(None);
         };
@@ -339,16 +349,22 @@ impl Backend {
         let mut ranked: Vec<(i64, &crate::language::SymbolEntry)> = state
             .symbol_table
             .iter()
-            .filter(|entry| crate::common::util::uri_under_any_library(&entry.uri, &state.library_paths))
+            .filter(|entry| {
+                crate::common::util::uri_under_any_library(&entry.uri, &state.library_paths)
+            })
             .filter_map(|entry| {
-                let normalized_name = crate::workspace::library_search::normalized_library_symbol_name(
-                    entry,
-                    state.index.get(&entry.uri),
-                );
+                let normalized_name =
+                    crate::workspace::library_search::normalized_library_symbol_name(
+                        entry,
+                        state.index.get(&entry.uri),
+                    );
                 let score = if query.is_empty() {
                     1_000
                 } else {
-                    crate::workspace::library_search::library_search_score(&normalized_name, &query)?
+                    crate::workspace::library_search::library_search_score(
+                        &normalized_name,
+                        &query,
+                    )?
                 };
                 Some((score, entry))
             })
@@ -386,7 +402,8 @@ impl Backend {
                 uri: entry.uri.to_string(),
                 range: dto::range_to_dto(entry.range),
                 score,
-                source: crate::workspace::library_search::library_source_label(&entry.uri).to_string(),
+                source: crate::workspace::library_search::library_source_label(&entry.uri)
+                    .to_string(),
                 path: entry.uri.path().to_string(),
             })
             .collect();
@@ -394,7 +411,12 @@ impl Backend {
         let sources = crate::workspace::library_search::build_library_tree(items);
         let symbol_total = sources
             .iter()
-            .map(|src| src.packages.iter().map(|pkg| pkg.symbols.len()).sum::<usize>())
+            .map(|src| {
+                src.packages
+                    .iter()
+                    .map(|pkg| pkg.symbols.len())
+                    .sum::<usize>()
+            })
             .sum();
         Ok(dto::SysmlLibrarySearchResultDto {
             sources,

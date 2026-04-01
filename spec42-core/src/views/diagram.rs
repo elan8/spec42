@@ -7,6 +7,7 @@ use tower_lsp::Client;
 
 use sysml_parser::RootNamespace;
 
+use crate::semantic_model;
 use crate::views::dto::{
     DiagramBoundsDto, DiagramNodeCompartmentsDto, DiagramPointDto, DiagramSceneDto,
     GeneralDiagramEdgeDto, GeneralDiagramNodeDto, GeneralDiagramSceneDto, GraphEdgeDto,
@@ -15,12 +16,13 @@ use crate::views::dto::{
     SysmlGraphDto,
 };
 use crate::views::ibd::{self, IbdConnectorDto, IbdDataDto, IbdPartDto, IbdPortDto};
-use crate::semantic_model;
 
 #[path = "model_projection.rs"]
 mod model_projection;
 
-pub fn parse_sysml_diagram_params(v: &serde_json::Value) -> Result<(Url, String, SysmlDiagramOptionsDto)> {
+pub fn parse_sysml_diagram_params(
+    v: &serde_json::Value,
+) -> Result<(Url, String, SysmlDiagramOptionsDto)> {
     let (uri_str, kind, options_value) = if let Some(arr) = v.as_array() {
         let first = arr.first().ok_or_else(|| {
             tower_lsp::jsonrpc::Error::invalid_params(
@@ -47,13 +49,15 @@ pub fn parse_sysml_diagram_params(v: &serde_json::Value) -> Result<(Url, String,
             .and_then(|value| value.as_str())
             .map(String::from)
             .or_else(|| {
-                first.as_object()
+                first
+                    .as_object()
                     .and_then(|obj| obj.get("kind"))
                     .and_then(|value| value.as_str())
                     .map(String::from)
             });
         let options_value = arr.get(2).cloned().or_else(|| {
-            first.as_object()
+            first
+                .as_object()
                 .and_then(|obj| obj.get("options"))
                 .cloned()
         });
@@ -69,7 +73,10 @@ pub fn parse_sysml_diagram_params(v: &serde_json::Value) -> Result<(Url, String,
                     .and_then(|u| u.as_str())
                     .map(String::from)
             });
-        let kind = obj.get("kind").and_then(|value| value.as_str()).map(String::from);
+        let kind = obj
+            .get("kind")
+            .and_then(|value| value.as_str())
+            .map(String::from);
         let options_value = obj.get("options").cloned();
         (uri_str, kind, options_value)
     } else {
@@ -95,7 +102,11 @@ pub fn parse_sysml_diagram_params(v: &serde_json::Value) -> Result<(Url, String,
     Ok((crate::common::util::normalize_file_uri(&uri), kind, options))
 }
 
-pub fn empty_diagram_response(kind: &str, uri: &Url, build_start: Instant) -> SysmlDiagramResultDto {
+pub fn empty_diagram_response(
+    kind: &str,
+    uri: &Url,
+    build_start: Instant,
+) -> SysmlDiagramResultDto {
     SysmlDiagramResultDto {
         version: 0,
         kind: kind.to_string(),
@@ -127,7 +138,16 @@ pub async fn build_sysml_diagram_response(
 ) -> SysmlDiagramResultDto {
     match kind {
         "general-view" => {
-            let graph = build_general_source_graph(content, parsed, semantic_graph, uri, library_paths, options, client).await;
+            let graph = build_general_source_graph(
+                content,
+                parsed,
+                semantic_graph,
+                uri,
+                library_paths,
+                options,
+                client,
+            )
+            .await;
             let scene = build_general_scene(&graph);
             SysmlDiagramResultDto {
                 version: 0,
@@ -147,7 +167,8 @@ pub async fn build_sysml_diagram_response(
         }
         "interconnection-view" => {
             let ibd = if options.workspace_visualization.unwrap_or(false) {
-                let workspace_uris = semantic_graph.workspace_uris_excluding_libraries(library_paths);
+                let workspace_uris =
+                    semantic_graph.workspace_uris_excluding_libraries(library_paths);
                 let ibds = workspace_uris
                     .iter()
                     .map(|workspace_uri| ibd::build_ibd_for_uri(semantic_graph, workspace_uri))
@@ -259,23 +280,41 @@ async fn build_general_source_graph(
 }
 
 fn build_general_scene(graph: &SysmlGraphDto) -> GeneralDiagramSceneDto {
-    let node_by_id: HashMap<String, &GraphNodeDto> = graph.nodes.iter().map(|n| (n.id.clone(), n)).collect();
+    let node_by_id: HashMap<String, &GraphNodeDto> =
+        graph.nodes.iter().map(|n| (n.id.clone(), n)).collect();
     let contains_children = contains_children(graph);
     let typing_targets = typing_targets(graph);
     let category_order = [
-        "system", "structure", "requirements", "behavior", "interfaces", "analysis", "other",
+        "system",
+        "structure",
+        "requirements",
+        "behavior",
+        "interfaces",
+        "analysis",
+        "other",
     ];
-    let category_rank: HashMap<&str, usize> = category_order.iter().enumerate().map(|(i, c)| (*c, i)).collect();
+    let category_rank: HashMap<&str, usize> = category_order
+        .iter()
+        .enumerate()
+        .map(|(i, c)| (*c, i))
+        .collect();
     let mut hierarchy_adjacency: HashMap<String, Vec<String>> = HashMap::new();
-    let mut indegree: HashMap<String, usize> = graph.nodes.iter().map(|n| (n.id.clone(), 0)).collect();
+    let mut indegree: HashMap<String, usize> =
+        graph.nodes.iter().map(|n| (n.id.clone(), 0)).collect();
     for edge in &graph.edges {
         let rel = edge.rel_type.to_lowercase();
         if matches!(rel.as_str(), "contains" | "typing" | "specializes") {
-            hierarchy_adjacency.entry(edge.source.clone()).or_default().push(edge.target.clone());
+            hierarchy_adjacency
+                .entry(edge.source.clone())
+                .or_default()
+                .push(edge.target.clone());
             *indegree.entry(edge.target.clone()).or_default() += 1;
         }
     }
-    let mut roots: Vec<String> = indegree.iter().filter_map(|(id, deg)| (*deg == 0).then_some(id.clone())).collect();
+    let mut roots: Vec<String> = indegree
+        .iter()
+        .filter_map(|(id, deg)| (*deg == 0).then_some(id.clone()))
+        .collect();
     if roots.is_empty() {
         roots = graph.nodes.iter().map(|n| n.id.clone()).collect();
     }
@@ -288,7 +327,11 @@ fn build_general_scene(graph: &SysmlGraphDto) -> GeneralDiagramSceneDto {
     }
     while let Some(node_id) = queue.pop_front() {
         let depth = *depth_by_id.get(&node_id).unwrap_or(&0);
-        for child in hierarchy_adjacency.get(&node_id).cloned().unwrap_or_default() {
+        for child in hierarchy_adjacency
+            .get(&node_id)
+            .cloned()
+            .unwrap_or_default()
+        {
             let next_depth = depth + 1;
             let entry = depth_by_id.entry(child.clone()).or_insert(next_depth);
             if next_depth > *entry {
@@ -303,7 +346,10 @@ fn build_general_scene(graph: &SysmlGraphDto) -> GeneralDiagramSceneDto {
 
     let mut lanes: BTreeMap<usize, Vec<&GraphNodeDto>> = BTreeMap::new();
     for node in &graph.nodes {
-        lanes.entry(*depth_by_id.get(&node.id).unwrap_or(&0)).or_default().push(node);
+        lanes
+            .entry(*depth_by_id.get(&node.id).unwrap_or(&0))
+            .or_default()
+            .push(node);
     }
 
     let node_width = 220.0_f32;
@@ -325,7 +371,8 @@ fn build_general_scene(graph: &SysmlGraphDto) -> GeneralDiagramSceneDto {
         let mut cursor_x = start_x;
         let y = start_y + (*depth as f32) * vertical_gap;
         for node in lane_nodes.iter() {
-            let compartments = build_general_compartments(node, &node_by_id, &contains_children, &typing_targets);
+            let compartments =
+                build_general_compartments(node, &node_by_id, &contains_children, &typing_targets);
             let line_count = compartments.attributes.len()
                 + compartments.parts.len()
                 + compartments.ports.len()
@@ -342,7 +389,8 @@ fn build_general_scene(graph: &SysmlGraphDto) -> GeneralDiagramSceneDto {
         .iter()
         .filter_map(|node| {
             let (x, y, width, height) = layout_by_id.get(&node.id).copied()?;
-            let compartments = build_general_compartments(node, &node_by_id, &contains_children, &typing_targets);
+            let compartments =
+                build_general_compartments(node, &node_by_id, &contains_children, &typing_targets);
             Some(GeneralDiagramNodeDto {
                 id: node.id.clone(),
                 name: node.name.clone(),
@@ -368,8 +416,11 @@ fn build_general_scene(graph: &SysmlGraphDto) -> GeneralDiagramSceneDto {
             let src = layout_by_id.get(&edge.source)?;
             let tgt = layout_by_id.get(&edge.target)?;
             let label = edge.name.clone().or_else(|| {
-                (!matches!(edge.rel_type.as_str(), "contains" | "typing" | "specializes"))
-                    .then_some(edge.rel_type.clone())
+                (!matches!(
+                    edge.rel_type.as_str(),
+                    "contains" | "typing" | "specializes"
+                ))
+                .then_some(edge.rel_type.clone())
             });
             Some(GeneralDiagramEdgeDto {
                 id: format!("general-edge-{idx}"),
@@ -405,7 +456,10 @@ fn build_ibd_scene(ibd: &IbdDataDto, selected_root: Option<&str>) -> IbdDiagramS
         root_candidates = synthesized;
     }
     for root_name in ibd.root_views.keys() {
-        if !root_candidates.iter().any(|candidate| candidate == root_name) {
+        if !root_candidates
+            .iter()
+            .any(|candidate| candidate == root_name)
+        {
             root_candidates.push(root_name.clone());
         }
     }
@@ -429,9 +483,7 @@ fn build_ibd_scene(ibd: &IbdDataDto, selected_root: Option<&str>) -> IbdDiagramS
             .iter()
             .filter(|part| {
                 part.qualified_name == root_prefix
-                    || part
-                        .qualified_name
-                        .starts_with(&format!("{root_prefix}."))
+                    || part.qualified_name.starts_with(&format!("{root_prefix}."))
             })
             .cloned()
             .collect();
@@ -461,12 +513,20 @@ fn build_ibd_scene(ibd: &IbdDataDto, selected_root: Option<&str>) -> IbdDiagramS
             build_ibd_root_scene(root_name, &root_parts, &root_ports, &root_connectors),
         );
     }
-    let default_root = ibd.default_root.clone().filter(|root| roots.contains_key(root));
+    let default_root = ibd
+        .default_root
+        .clone()
+        .filter(|root| roots.contains_key(root));
     let selected_root = selected_root
         .map(|root| root.to_string())
         .filter(|root| roots.contains_key(root))
         .or_else(|| default_root.clone())
-        .or_else(|| root_candidates.iter().find(|root| roots.contains_key(*root)).cloned());
+        .or_else(|| {
+            root_candidates
+                .iter()
+                .find(|root| roots.contains_key(*root))
+                .cloned()
+        });
     IbdDiagramSceneDto {
         root_candidates,
         default_root,
@@ -481,12 +541,18 @@ fn build_ibd_root_scene(
     ports: &[IbdPortDto],
     connectors: &[IbdConnectorDto],
 ) -> IbdSceneRootDto {
-    let part_by_qn: HashMap<String, &IbdPartDto> = parts.iter().map(|part| (part.qualified_name.clone(), part)).collect();
+    let part_by_qn: HashMap<String, &IbdPartDto> = parts
+        .iter()
+        .map(|part| (part.qualified_name.clone(), part))
+        .collect();
     let mut children_by_container: HashMap<String, Vec<&IbdPartDto>> = HashMap::new();
     let mut root_parts: Vec<&IbdPartDto> = Vec::new();
     for part in parts {
         if let Some(container_id) = &part.container_id {
-            children_by_container.entry(container_id.clone()).or_default().push(part);
+            children_by_container
+                .entry(container_id.clone())
+                .or_default()
+                .push(part);
         } else {
             root_parts.push(part);
         }
@@ -496,14 +562,23 @@ fn build_ibd_root_scene(
     let mut layout_by_qn: HashMap<String, (f32, f32, f32, f32, bool, u32)> = HashMap::new();
     let mut cursor_y = 100.0_f32;
     for root_part in &root_parts {
-        let size = layout_ibd_part_tree(root_part, &children_by_container, ports, &mut layout_by_qn, 100.0, cursor_y, 0);
+        let size = layout_ibd_part_tree(
+            root_part,
+            &children_by_container,
+            ports,
+            &mut layout_by_qn,
+            100.0,
+            cursor_y,
+            0,
+        );
         cursor_y += size.1 + 80.0;
     }
 
     let scene_parts: Vec<IbdScenePartDto> = parts
         .iter()
         .filter_map(|part| {
-            let (x, y, width, height, is_container, depth) = layout_by_qn.get(&part.qualified_name).copied()?;
+            let (x, y, width, height, is_container, depth) =
+                layout_by_qn.get(&part.qualified_name).copied()?;
             Some(IbdScenePartDto {
                 id: part.id.clone(),
                 name: part.name.clone(),
@@ -527,7 +602,9 @@ fn build_ibd_root_scene(
             let parent = if let Some(parent) = part_by_qn.get(&port.parent_id) {
                 *parent
             } else {
-                parts.iter().find(|part| part.name == port.parent_id || part.id == port.parent_id)?
+                parts
+                    .iter()
+                    .find(|part| part.name == port.parent_id || part.id == port.parent_id)?
             };
             let (px, py) = ibd_port_anchor(parent, port, &layout_by_qn, ports);
             Some(IbdScenePortDto {
@@ -547,8 +624,10 @@ fn build_ibd_root_scene(
         .iter()
         .enumerate()
         .map(|(idx, connector)| {
-            let source_anchor = ibd_endpoint_anchor(connector.source_id.as_str(), parts, ports, &layout_by_qn);
-            let target_anchor = ibd_endpoint_anchor(connector.target_id.as_str(), parts, ports, &layout_by_qn);
+            let source_anchor =
+                ibd_endpoint_anchor(connector.source_id.as_str(), parts, ports, &layout_by_qn);
+            let target_anchor =
+                ibd_endpoint_anchor(connector.target_id.as_str(), parts, ports, &layout_by_qn);
             IbdSceneConnectorDto {
                 id: format!("ibd-edge-{idx}"),
                 source: connector.source.clone(),
@@ -589,7 +668,14 @@ fn layout_ibd_part_tree(
         .get(&part.qualified_name)
         .cloned()
         .unwrap_or_default();
-    let port_count = ports.iter().filter(|port| port.parent_id == part.qualified_name || port.parent_id == part.name || port.parent_id == part.id).count();
+    let port_count = ports
+        .iter()
+        .filter(|port| {
+            port.parent_id == part.qualified_name
+                || port.parent_id == part.name
+                || port.parent_id == part.id
+        })
+        .count();
     let width = (220.0_f32 + (port_count.min(4) as f32) * 20.0_f32).min(360.0_f32);
     let mut height = 90.0_f32 + (port_count as f32) * 22.0_f32;
     let is_container = !children.is_empty();
@@ -617,7 +703,10 @@ fn layout_ibd_part_tree(
         );
         (adjusted_width, height)
     } else {
-        layout_by_qn.insert(part.qualified_name.clone(), (x, y, width, height, false, depth));
+        layout_by_qn.insert(
+            part.qualified_name.clone(),
+            (x, y, width, height, false, depth),
+        );
         (width, height)
     }
 }
@@ -699,19 +788,34 @@ fn general_category(element_type: &str) -> String {
     if ["package", "namespace"].iter().any(|kw| lower.contains(kw)) {
         return "packages".to_string();
     }
-    if ["requirement", "constraint"].iter().any(|kw| lower.contains(kw)) {
+    if ["requirement", "constraint"]
+        .iter()
+        .any(|kw| lower.contains(kw))
+    {
         return "requirements".to_string();
     }
-    if ["action", "state", "use case", "usecase", "mission"].iter().any(|kw| lower.contains(kw)) {
+    if ["action", "state", "use case", "usecase", "mission"]
+        .iter()
+        .any(|kw| lower.contains(kw))
+    {
         return "behavior".to_string();
     }
-    if ["port", "interface", "connection"].iter().any(|kw| lower.contains(kw)) {
+    if ["port", "interface", "connection"]
+        .iter()
+        .any(|kw| lower.contains(kw))
+    {
         return "interfaces".to_string();
     }
-    if ["analysis", "trade", "measure"].iter().any(|kw| lower.contains(kw)) {
+    if ["analysis", "trade", "measure"]
+        .iter()
+        .any(|kw| lower.contains(kw))
+    {
         return "analysis".to_string();
     }
-    if ["system", "part def", "part usage", "part"].iter().any(|kw| lower.contains(kw)) {
+    if ["system", "part def", "part usage", "part"]
+        .iter()
+        .any(|kw| lower.contains(kw))
+    {
         return "structure".to_string();
     }
     "other".to_string()
@@ -731,16 +835,16 @@ fn orthogonal_points(src: (f32, f32, f32, f32), tgt: (f32, f32, f32, f32)) -> Ve
     let mid_y = (start.y + end.y) / 2.0;
     vec![
         start.clone(),
-        DiagramPointDto { x: start.x, y: mid_y },
+        DiagramPointDto {
+            x: start.x,
+            y: mid_y,
+        },
         DiagramPointDto { x: end.x, y: mid_y },
         end,
     ]
 }
 
-fn orthogonal_connector_points(
-    src: (f32, f32),
-    tgt: (f32, f32),
-) -> Vec<DiagramPointDto> {
+fn orthogonal_connector_points(src: (f32, f32), tgt: (f32, f32)) -> Vec<DiagramPointDto> {
     let mid_x = (src.0 + tgt.0) / 2.0;
     vec![
         DiagramPointDto { x: src.0, y: src.1 },
@@ -763,7 +867,9 @@ fn ibd_endpoint_anchor(
             || endpoint_id.ends_with(&format!("::{}", port.name))
     }) {
         let parent = parts.iter().find(|part| {
-            part.qualified_name == port.parent_id || part.name == port.parent_id || part.id == port.parent_id
+            part.qualified_name == port.parent_id
+                || part.name == port.parent_id
+                || part.id == port.parent_id
         });
         if let Some(parent) = parent {
             return ibd_port_anchor(parent, port, layout_by_qn, ports);
@@ -818,10 +924,22 @@ fn compute_bounds(rects: Vec<(f32, f32, f32, f32)>) -> DiagramBoundsDto {
             height: 0.0,
         };
     }
-    let min_x = rects.iter().map(|(x, _, _, _)| *x).fold(f32::INFINITY, f32::min);
-    let min_y = rects.iter().map(|(_, y, _, _)| *y).fold(f32::INFINITY, f32::min);
-    let max_x = rects.iter().map(|(x, _, width, _)| x + width).fold(f32::NEG_INFINITY, f32::max);
-    let max_y = rects.iter().map(|(_, y, _, height)| y + height).fold(f32::NEG_INFINITY, f32::max);
+    let min_x = rects
+        .iter()
+        .map(|(x, _, _, _)| *x)
+        .fold(f32::INFINITY, f32::min);
+    let min_y = rects
+        .iter()
+        .map(|(_, y, _, _)| *y)
+        .fold(f32::INFINITY, f32::min);
+    let max_x = rects
+        .iter()
+        .map(|(x, _, width, _)| x + width)
+        .fold(f32::NEG_INFINITY, f32::max);
+    let max_y = rects
+        .iter()
+        .map(|(_, y, _, height)| y + height)
+        .fold(f32::NEG_INFINITY, f32::max);
     DiagramBoundsDto {
         x: min_x,
         y: min_y,

@@ -1,8 +1,8 @@
 //! Diagnostics integration tests.
 
 use super::harness::{next_id, read_message, send_message, spawn_server};
-use std::fs;
 use spec42_core::common::util;
+use std::fs;
 
 #[test]
 fn lsp_diagnostics_on_invalid_sysml() {
@@ -566,12 +566,13 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
                     PBE::Error(_) => "Error",
                     _ => "Other",
                 };
-                eprintln!(
-                    "AST element @line {} kind={}",
-                    (nsl + 1),
-                    label
-                );
-                if label == "Other" && ((nsl + 1) == 333 || (nsl + 1) == 368 || (nsl + 1) == 403 || (nsl + 1) == 427) {
+                eprintln!("AST element @line {} kind={}", (nsl + 1), label);
+                if label == "Other"
+                    && ((nsl + 1) == 333
+                        || (nsl + 1) == 368
+                        || (nsl + 1) == 403
+                        || (nsl + 1) == 427)
+                {
                     let dbg = format!("{:?}", &node.value);
                     let snippet_len = dbg.len().min(240);
                     eprintln!("  debug: {}", &dbg[..snippet_len]);
@@ -613,7 +614,10 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
                 .filter(|n| n.element_kind == "action def")
                 .take(10)
             {
-                eprintln!("local action_def name={} id={}", n.name, n.id.qualified_name);
+                eprintln!(
+                    "local action_def name={} id={}",
+                    n.name, n.id.qualified_name
+                );
             }
         }
     }
@@ -706,7 +710,10 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
         }
     }
 
-    eprintln!("--- Diagnostics for {drone_uri} (count={}) ---", published.len());
+    eprintln!(
+        "--- Diagnostics for {drone_uri} (count={}) ---",
+        published.len()
+    );
     for (i, d) in published.iter().enumerate() {
         let source = d["source"].as_str().unwrap_or("(no source)");
         let code = d["code"].as_str().unwrap_or("(no code)");
@@ -740,10 +747,18 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
         })
         .to_string(),
     );
-    let model_resp = super::harness::read_response(&mut stdout, model_id).expect("sysml/model response");
-    let model_json: serde_json::Value = serde_json::from_str(&model_resp).expect("parse sysml/model response");
-    let nodes = model_json["result"]["graph"]["nodes"].as_array().cloned().unwrap_or_default();
-    let edges = model_json["result"]["graph"]["edges"].as_array().cloned().unwrap_or_default();
+    let model_resp =
+        super::harness::read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+    let nodes = model_json["result"]["graph"]["nodes"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
+    let edges = model_json["result"]["graph"]["edges"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
 
     let interesting_nodes: Vec<_> = nodes
         .iter()
@@ -766,7 +781,10 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
             "name={} id={} type={}",
             n["name"].as_str().unwrap_or(""),
             n["id"].as_str().unwrap_or(""),
-            n["element_type"].as_str().or_else(|| n["type"].as_str()).unwrap_or("")
+            n["element_type"]
+                .as_str()
+                .or_else(|| n["type"].as_str())
+                .unwrap_or("")
         );
     }
 
@@ -801,12 +819,18 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
     let typing_edges: Vec<_> = edges
         .iter()
         .filter(|e| {
-            let t = e["rel_type"].as_str().or_else(|| e["type"].as_str()).unwrap_or_default();
+            let t = e["rel_type"]
+                .as_str()
+                .or_else(|| e["type"].as_str())
+                .unwrap_or_default();
             t.eq_ignore_ascii_case("typing")
         })
         .cloned()
         .collect();
-    eprintln!("--- Typing edges (sample, count={}) ---", typing_edges.len());
+    eprintln!(
+        "--- Typing edges (sample, count={}) ---",
+        typing_edges.len()
+    );
     for e in typing_edges.iter().take(30) {
         eprintln!(
             "typing {} -> {}",

@@ -170,14 +170,17 @@ fn add_edge_if_both_exist_opt(
     let tgt_key = normalize_for_lookup(target_qualified);
     let src_id = NodeId::new(uri, &src_key);
     let tgt_id = NodeId::new(uri, &tgt_key);
-    let (Some(&src_idx), Some(tgt_node)) = (g.node_index_by_id.get(&src_id), g.get_node(&tgt_id)) else {
-        g.pending_relationships.push(crate::graph::PendingRelationship {
-            uri: uri.clone(),
-            source_qualified: src_key,
-            target_qualified: tgt_key,
-            kind,
-            target_kinds: target_kinds.map(|kinds| kinds.iter().map(|kind| kind.to_string()).collect()),
-        });
+    let (Some(&src_idx), Some(tgt_node)) = (g.node_index_by_id.get(&src_id), g.get_node(&tgt_id))
+    else {
+        g.pending_relationships
+            .push(crate::graph::PendingRelationship {
+                uri: uri.clone(),
+                source_qualified: src_key,
+                target_qualified: tgt_key,
+                kind,
+                target_kinds: target_kinds
+                    .map(|kinds| kinds.iter().map(|kind| kind.to_string()).collect()),
+            });
         return false;
     };
     if let Some(kinds) = target_kinds {
@@ -211,7 +214,10 @@ pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
             continue;
         };
         if let Some(ref target_kinds) = pending_edge.target_kinds {
-            if !target_kinds.iter().any(|kind| kind == &tgt_node.element_kind) {
+            if !target_kinds
+                .iter()
+                .any(|kind| kind == &tgt_node.element_kind)
+            {
                 continue;
             }
         }
@@ -268,9 +274,13 @@ pub(crate) fn add_specializes_edge_if_exists(
     if normalized.is_empty() {
         return;
     }
-    if let Some(target_id) =
-        resolve_type_target_local(g, uri, &normalized, container_prefix, SPECIALIZES_TARGET_KINDS)
-    {
+    if let Some(target_id) = resolve_type_target_local(
+        g,
+        uri,
+        &normalized,
+        container_prefix,
+        SPECIALIZES_TARGET_KINDS,
+    ) {
         let target_qualified = target_id.qualified_name.clone();
         let _ = add_edge_if_both_exist_opt(
             g,

@@ -838,7 +838,9 @@ fn lsp_sysml_model_connected_blocks_fixture_exposes_interconnection_view_source_
 }
 
 #[test]
-fn lsp_sysml_model_general_view_graph_keeps_valid_office_subject_edge_without_synthetic_expansion() {}
+fn lsp_sysml_model_general_view_graph_keeps_valid_office_subject_edge_without_synthetic_expansion()
+{
+}
 
 #[test]
 fn lsp_sysml_model_general_view_graph_inlines_ports_and_attributes_into_owner_nodes() {
@@ -928,11 +930,15 @@ fn lsp_sysml_model_general_view_graph_inlines_ports_and_attributes_into_owner_no
         .as_array()
         .expect("inline ports array");
     assert!(
-        attributes.iter().any(|line| line.as_str() == Some("  voltage")),
+        attributes
+            .iter()
+            .any(|line| line.as_str() == Some("  voltage")),
         "owner node should preserve inline attribute summaries: {attributes:#?}"
     );
     assert!(
-        ports.iter().any(|line| line.as_str() == Some("  powerIn : PowerPort")),
+        ports
+            .iter()
+            .any(|line| line.as_str() == Some("  powerIn : PowerPort")),
         "owner node should preserve inline port summaries: {ports:#?}"
     );
     assert!(
@@ -1017,7 +1023,9 @@ fn lsp_sysml_model_general_view_graph_filters_parameter_nodes() {
         .expect("generalViewGraph edges array");
 
     assert!(
-        gv_nodes.iter().any(|node| node["name"].as_str() == Some("Operate")),
+        gv_nodes
+            .iter()
+            .any(|node| node["name"].as_str() == Some("Operate")),
         "owner action should remain in General View"
     );
     assert!(

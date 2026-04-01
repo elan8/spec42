@@ -2,8 +2,8 @@ use std::collections::{HashMap, HashSet};
 
 use tower_lsp::lsp_types::Url;
 
-use crate::views::dto::{range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlGraphDto};
 use crate::semantic_model;
+use crate::views::dto::{range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlGraphDto};
 
 pub fn canonical_general_view_graph(
     graph: &SysmlGraphDto,
@@ -13,7 +13,9 @@ pub fn canonical_general_view_graph(
 
     let mut node_by_id: HashMap<String, GraphNodeDto> = HashMap::new();
     for node in &filtered_graph.nodes {
-        node_by_id.entry(node.id.clone()).or_insert_with(|| node.clone());
+        node_by_id
+            .entry(node.id.clone())
+            .or_insert_with(|| node.clone());
     }
 
     let mut edge_keys: HashSet<(String, String, String, Option<String>)> = HashSet::new();
@@ -46,7 +48,10 @@ pub fn canonical_general_view_graph(
                 b.name.as_deref().unwrap_or(""),
             ))
     });
-    SysmlGraphDto { nodes: out_nodes, edges: out_edges }
+    SysmlGraphDto {
+        nodes: out_nodes,
+        edges: out_edges,
+    }
 }
 
 fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) -> SysmlGraphDto {
@@ -74,7 +79,11 @@ fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) -> SysmlGra
     }
 
     let mut owner_detail_lines: HashMap<String, (Vec<String>, Vec<String>)> = HashMap::new();
-    for detail in graph.nodes.iter().filter(|node| detail_ids.contains(node.id.as_str())) {
+    for detail in graph
+        .nodes
+        .iter()
+        .filter(|node| detail_ids.contains(node.id.as_str()))
+    {
         let Some(owner_id) = detail.parent_id.as_ref() else {
             continue;
         };
@@ -135,8 +144,7 @@ fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) -> SysmlGra
         .edges
         .iter()
         .filter(|edge| {
-            !detail_ids.contains(edge.source.as_str())
-                && !detail_ids.contains(edge.target.as_str())
+            !detail_ids.contains(edge.source.as_str()) && !detail_ids.contains(edge.target.as_str())
         })
         .cloned()
         .collect();
@@ -192,10 +200,21 @@ fn format_general_view_detail_line(
                     .attributes
                     .get("dataType")
                     .and_then(|value| value.as_str())
-                    .or_else(|| detail.attributes.get("type").and_then(|value| value.as_str()))
+                    .or_else(|| {
+                        detail
+                            .attributes
+                            .get("type")
+                            .and_then(|value| value.as_str())
+                    })
             }
         })
-        .map(|type_name| type_name.split("::").last().unwrap_or(type_name).to_string());
+        .map(|type_name| {
+            type_name
+                .split("::")
+                .last()
+                .unwrap_or(type_name)
+                .to_string()
+        });
 
     match typed {
         Some(type_name) if !type_name.is_empty() => format!("  {name} : {type_name}"),
@@ -272,12 +291,9 @@ mod tests {
             "subject source node should be pulled into the canonical General View"
         );
         assert!(
-            canonical
-                .edges
-                .iter()
-                .any(|edge| edge.rel_type == "subject"
-                    && edge.source == "Pkg::Req"
-                    && edge.target == "Pkg::Drone"),
+            canonical.edges.iter().any(|edge| edge.rel_type == "subject"
+                && edge.source == "Pkg::Req"
+                && edge.target == "Pkg::Drone"),
             "subject edge should survive canonical General View projection"
         );
     }
@@ -408,8 +424,16 @@ mod tests {
         };
 
         let canonical = canonical_general_view_graph(&graph, false);
-        assert_eq!(canonical.nodes.len(), 1, "port and attribute nodes should be filtered from General View");
-        let owner = canonical.nodes.iter().find(|node| node.id == "Pkg::Laptop").expect("owner node");
+        assert_eq!(
+            canonical.nodes.len(),
+            1,
+            "port and attribute nodes should be filtered from General View"
+        );
+        let owner = canonical
+            .nodes
+            .iter()
+            .find(|node| node.id == "Pkg::Laptop")
+            .expect("owner node");
         assert_eq!(
             owner.attributes.get("generalViewAttributes"),
             Some(&serde_json::json!(["  voltage : Volt"])),
@@ -461,9 +485,16 @@ mod tests {
         };
 
         let canonical = canonical_general_view_graph(&graph, false);
-        assert_eq!(canonical.nodes.len(), 1, "parameter nodes should be filtered from General View");
+        assert_eq!(
+            canonical.nodes.len(),
+            1,
+            "parameter nodes should be filtered from General View"
+        );
         assert!(
-            canonical.nodes.iter().all(|node| !node.element_type.to_lowercase().contains("parameter")),
+            canonical
+                .nodes
+                .iter()
+                .all(|node| !node.element_type.to_lowercase().contains("parameter")),
             "parameter nodes should not remain in generalViewGraph"
         );
         assert!(

@@ -148,7 +148,9 @@ pub(super) fn add_expression_edge_if_both_exist(
 }
 
 /// Best-effort display of an expression for attributes and diagnostics (not a full SysML text serializer).
-pub(super) fn expression_to_debug_string(n: &sysml_parser::Node<sysml_parser::Expression>) -> String {
+pub(super) fn expression_to_debug_string(
+    n: &sysml_parser::Node<sysml_parser::Expression>,
+) -> String {
     use sysml_parser::Expression;
     match &n.value {
         Expression::LiteralInteger(i) => i.to_string(),
@@ -157,11 +159,7 @@ pub(super) fn expression_to_debug_string(n: &sysml_parser::Node<sysml_parser::Ex
         Expression::LiteralBoolean(b) => b.to_string(),
         Expression::FeatureRef(s) => s.clone(),
         Expression::MemberAccess(box_base, member) => {
-            format!(
-                "{}.{}",
-                expression_to_debug_string(box_base),
-                member
-            )
+            format!("{}.{}", expression_to_debug_string(box_base), member)
         }
         Expression::Index { base, index } => {
             format!(

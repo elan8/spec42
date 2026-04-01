@@ -2,6 +2,7 @@
 //! Used by the spec42 and spec42-pro binaries.
 
 pub mod analysis;
+pub mod bench;
 pub mod common;
 pub mod host;
 pub mod language;
@@ -11,7 +12,6 @@ pub mod semantic_tokens;
 pub mod syntax;
 pub mod views;
 pub(crate) mod workspace;
-pub mod bench;
 
 // Host contract exports (intended stable composition surface for edition hosts).
 pub use host::config::{

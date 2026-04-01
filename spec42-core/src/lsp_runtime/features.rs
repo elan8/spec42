@@ -2,6 +2,7 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tracing::debug;
 
+use crate::common::util;
 use crate::language::{
     collect_document_symbols, collect_folding_ranges, completion_prefix, find_reference_ranges,
     format_document, is_reserved_keyword, keyword_doc, keyword_hover_markdown,
@@ -10,15 +11,18 @@ use crate::language::{
 };
 use crate::semantic_model;
 use crate::semantic_tokens::{ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range};
-use crate::common::util;
 use crate::workspace::ServerState;
 
-use super::{hierarchy, navigation, references_resolver, symbols};
 use super::lookup_helpers::{collect_symbol_matches_for_lookup, debug_qualified_lookup_context};
+use super::{hierarchy, navigation, references_resolver, symbols};
 
 pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Option<Hover>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content.clone()) {
+    let text = match state
+        .index
+        .get(&uri_norm)
+        .map(|entry| entry.content.clone())
+    {
         Some(text) => text,
         None => return Ok(None),
     };
@@ -33,7 +37,10 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
         .map(str::to_string)
         .unwrap_or_else(|| word.clone());
     let qualifier = word.rsplit_once("::").map(|(q, _)| q.to_string());
-    let range = Range::new(Position::new(line, char_start), Position::new(line, char_end));
+    let range = Range::new(
+        Position::new(line, char_start),
+        Position::new(line, char_end),
+    );
 
     if let Some(md) = keyword_hover_markdown(&lookup_name.to_lowercase()) {
         return Ok(Some(Hover {
@@ -122,7 +129,11 @@ pub(crate) fn completion(
     pos: Position,
 ) -> Result<Option<CompletionResponse>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content.as_str()) {
+    let text = match state
+        .index
+        .get(&uri_norm)
+        .map(|entry| entry.content.as_str())
+    {
         Some(text) => text,
         None => return Ok(None),
     };
@@ -143,7 +154,8 @@ pub(crate) fn completion(
 
     let mut seen = std::collections::HashSet::<String>::new();
     for entry in &state.symbol_table {
-        if (prefix.is_empty() || entry.name.starts_with(prefix)) && seen.insert(entry.name.clone()) {
+        if (prefix.is_empty() || entry.name.starts_with(prefix)) && seen.insert(entry.name.clone())
+        {
             items.push(CompletionItem {
                 label: entry.name.clone(),
                 kind: Some(CompletionItemKind::REFERENCE),
@@ -162,12 +174,19 @@ pub(crate) fn signature_help(
     pos: Position,
 ) -> Result<Option<SignatureHelp>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content.as_str()) {
+    let text = match state
+        .index
+        .get(&uri_norm)
+        .map(|entry| entry.content.as_str())
+    {
         Some(text) => text,
         None => return Ok(None),
     };
     let line = text.lines().nth(pos.line as usize).unwrap_or("");
-    let cursor_prefix = line.chars().take(pos.character as usize).collect::<String>();
+    let cursor_prefix = line
+        .chars()
+        .take(pos.character as usize)
+        .collect::<String>();
     let active_param = cursor_prefix.matches(',').count() as u32;
     let label = if line.contains("part def") {
         "part def <Name> : <Type>"
@@ -198,7 +217,11 @@ pub(crate) fn goto_definition(
     pos: Position,
 ) -> Result<Option<GotoDefinitionResponse>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content.clone()) {
+    let text = match state
+        .index
+        .get(&uri_norm)
+        .map(|entry| entry.content.clone())
+    {
         Some(text) => text,
         None => return Ok(None),
     };
@@ -227,7 +250,10 @@ pub(crate) fn goto_definition(
     }
 
     if let Some(node) = state.semantic_graph.find_node_at_position(&uri_norm, pos) {
-        for target in state.semantic_graph.outgoing_typing_or_specializes_targets(node) {
+        for target in state
+            .semantic_graph
+            .outgoing_typing_or_specializes_targets(node)
+        {
             if target.name == lookup_name
                 || target
                     .id
@@ -258,7 +284,11 @@ pub(crate) fn goto_definition(
             range: entry.range,
         })
         .collect();
-    let locations = if same_file.is_empty() { other_files } else { same_file };
+    let locations = if same_file.is_empty() {
+        other_files
+    } else {
+        same_file
+    };
     if let [location] = locations.as_slice() {
         return Ok(Some(GotoDefinitionResponse::Scalar(location.clone())));
     }
@@ -288,7 +318,11 @@ pub(crate) fn references(
 
 pub(crate) fn document_link(state: &ServerState, uri: Url) -> Result<Option<Vec<DocumentLink>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content.as_str()) {
+    let text = match state
+        .index
+        .get(&uri_norm)
+        .map(|entry| entry.content.as_str())
+    {
         Some(text) => text,
         None => return Ok(None),
     };
@@ -308,7 +342,11 @@ pub(crate) fn document_highlight(
     pos: Position,
 ) -> Result<Option<Vec<DocumentHighlight>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content.clone()) {
+    let text = match state
+        .index
+        .get(&uri_norm)
+        .map(|entry| entry.content.clone())
+    {
         Some(text) => text,
         None => return Ok(None),
     };
@@ -335,7 +373,11 @@ pub(crate) fn selection_range(
     positions: Vec<Position>,
 ) -> Result<Option<Vec<SelectionRange>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content.as_str()) {
+    let text = match state
+        .index
+        .get(&uri_norm)
+        .map(|entry| entry.content.as_str())
+    {
         Some(text) => text,
         None => return Ok(None),
     };
@@ -352,7 +394,11 @@ pub(crate) fn prepare_rename(
     pos: Position,
 ) -> Result<Option<PrepareRenameResponse>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content.clone()) {
+    let text = match state
+        .index
+        .get(&uri_norm)
+        .map(|entry| entry.content.clone())
+    {
         Some(text) => text,
         None => return Ok(None),
     };
@@ -377,7 +423,11 @@ pub(crate) fn rename(
     new_name: String,
 ) -> Result<Option<WorkspaceEdit>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content.clone()) {
+    let text = match state
+        .index
+        .get(&uri_norm)
+        .map(|entry| entry.content.clone())
+    {
         Some(text) => text,
         None => return Ok(None),
     };
@@ -402,12 +452,16 @@ pub(crate) fn rename(
         return Ok(Some(WorkspaceEdit::default()));
     }
 
-    let mut changes: std::collections::HashMap<Url, Vec<TextEdit>> = std::collections::HashMap::new();
+    let mut changes: std::collections::HashMap<Url, Vec<TextEdit>> =
+        std::collections::HashMap::new();
     for location in locations {
-        changes.entry(location.uri.clone()).or_default().push(TextEdit {
-            range: location.range,
-            new_text: new_name.clone(),
-        });
+        changes
+            .entry(location.uri.clone())
+            .or_default()
+            .push(TextEdit {
+                range: location.range,
+                new_text: new_name.clone(),
+            });
     }
     Ok(Some(WorkspaceEdit {
         changes: Some(changes),
@@ -429,7 +483,9 @@ pub(crate) fn document_symbol(
         Some(doc) => doc,
         None => return Ok(None),
     };
-    Ok(Some(DocumentSymbolResponse::Nested(collect_document_symbols(doc))))
+    Ok(Some(DocumentSymbolResponse::Nested(
+        collect_document_symbols(doc),
+    )))
 }
 
 pub(crate) fn folding_range(state: &ServerState, uri: Url) -> Result<Option<Vec<FoldingRange>>> {
@@ -476,7 +532,11 @@ pub(crate) fn code_action(
     diagnostics: &[Diagnostic],
 ) -> Result<Option<CodeActionResponse>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content.clone()) {
+    let text = match state
+        .index
+        .get(&uri_norm)
+        .map(|entry| entry.content.clone())
+    {
         Some(text) => text,
         None => return Ok(None),
     };
@@ -490,7 +550,8 @@ pub(crate) fn code_action(
             Some(NumberOrString::String(code)) if code == "untyped_part_usage"
         );
         if is_untyped_part_usage {
-            if let Some(action) = suggest_create_matching_part_def_quick_fix(&text, &uri, diagnostic)
+            if let Some(action) =
+                suggest_create_matching_part_def_quick_fix(&text, &uri, diagnostic)
             {
                 actions.push(CodeActionOrCommand::CodeAction(action));
             }
@@ -510,7 +571,11 @@ pub(crate) fn formatting(
     options: FormattingOptions,
 ) -> Result<Option<Vec<TextEdit>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content.clone()) {
+    let text = match state
+        .index
+        .get(&uri_norm)
+        .map(|entry| entry.content.clone())
+    {
         Some(text) => text,
         None => return Ok(None),
     };
@@ -523,7 +588,10 @@ pub(crate) fn semantic_tokens_full_request(
 ) -> Result<Option<(SemanticTokens, Vec<String>)>> {
     let uri_norm = util::normalize_file_uri(&uri);
     let (text, ast_ranges) = match state.index.get(&uri_norm) {
-        Some(entry) => (entry.content.clone(), entry.parsed.as_ref().map(ast_semantic_ranges)),
+        Some(entry) => (
+            entry.content.clone(),
+            entry.parsed.as_ref().map(ast_semantic_ranges),
+        ),
         None => return Ok(None),
     };
     let (tokens, logs) = semantic_tokens_full(&text, ast_ranges.as_deref());
@@ -537,7 +605,10 @@ pub(crate) fn semantic_tokens_range_request(
 ) -> Result<Option<(SemanticTokens, Vec<String>)>> {
     let uri_norm = util::normalize_file_uri(&uri);
     let (text, ast_ranges) = match state.index.get(&uri_norm) {
-        Some(entry) => (entry.content.clone(), entry.parsed.as_ref().map(ast_semantic_ranges)),
+        Some(entry) => (
+            entry.content.clone(),
+            entry.parsed.as_ref().map(ast_semantic_ranges),
+        ),
         None => return Ok(None),
     };
     let (tokens, logs) = semantic_tokens_range(
@@ -557,7 +628,11 @@ pub(crate) fn linked_editing_range(
     pos: Position,
 ) -> Result<Option<LinkedEditingRanges>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state.index.get(&uri_norm).map(|entry| entry.content.as_str()) {
+    let text = match state
+        .index
+        .get(&uri_norm)
+        .map(|entry| entry.content.as_str())
+    {
         Some(text) => text,
         None => return Ok(None),
     };
@@ -590,7 +665,11 @@ pub(crate) fn linked_editing_range(
     }))
 }
 
-pub(crate) fn moniker(state: &ServerState, uri: Url, pos: Position) -> Result<Option<Vec<Moniker>>> {
+pub(crate) fn moniker(
+    state: &ServerState,
+    uri: Url,
+    pos: Position,
+) -> Result<Option<Vec<Moniker>>> {
     let uri_norm = util::normalize_file_uri(&uri);
     let node = match state.semantic_graph.find_node_at_position(&uri_norm, pos) {
         Some(node) => node,
@@ -617,7 +696,10 @@ pub(crate) fn supertypes(
     uri: Url,
     range: Range,
 ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-    let node = match state.semantic_graph.find_node_at_position(&uri, range.start) {
+    let node = match state
+        .semantic_graph
+        .find_node_at_position(&uri, range.start)
+    {
         Some(node) => node,
         None => return Ok(None),
     };
@@ -635,7 +717,10 @@ pub(crate) fn subtypes(
     uri: Url,
     range: Range,
 ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-    let node = match state.semantic_graph.find_node_at_position(&uri, range.start) {
+    let node = match state
+        .semantic_graph
+        .find_node_at_position(&uri, range.start)
+    {
         Some(node) => node,
         None => return Ok(None),
     };
@@ -666,7 +751,10 @@ pub(crate) fn incoming_calls(
     uri: Url,
     range: Range,
 ) -> Result<Option<Vec<CallHierarchyIncomingCall>>> {
-    let node = match state.semantic_graph.find_node_at_position(&uri, range.start) {
+    let node = match state
+        .semantic_graph
+        .find_node_at_position(&uri, range.start)
+    {
         Some(node) => node,
         None => return Ok(None),
     };
@@ -688,7 +776,10 @@ pub(crate) fn outgoing_calls(
     uri: Url,
     range: Range,
 ) -> Result<Option<Vec<CallHierarchyOutgoingCall>>> {
-    let node = match state.semantic_graph.find_node_at_position(&uri, range.start) {
+    let node = match state
+        .semantic_graph
+        .find_node_at_position(&uri, range.start)
+    {
         Some(node) => node,
         None => return Ok(None),
     };

@@ -269,13 +269,7 @@ pub(super) fn build_from_part_usage_body_element(
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
             if let StateDefBody::Brace { elements } = &state_node.body {
-                super::state::build_from_state_body(
-                    elements,
-                    uri,
-                    Some(&qualified),
-                    &state_id,
-                    g,
-                );
+                super::state::build_from_state_body(elements, uri, Some(&qualified), &state_id, g);
             }
         }
         PUBE::MetadataAnnotation(meta) => {

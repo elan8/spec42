@@ -9,8 +9,8 @@ use tracing::{debug, info, warn};
 use crate::common::util;
 use crate::host::config::Spec42Config;
 use crate::workspace::{
-    clear_documents_under_roots, parse_scanned_entries, refresh_document, remove_document,
-    scan_sysml_files, store_document_text, ServerState,
+    clear_documents_under_roots, ingest_parsed_scan_entries, parse_scanned_entries,
+    refresh_document, remove_document, scan_sysml_files, store_document_text, ServerState,
 };
 
 use super::capabilities::server_capabilities;
@@ -26,7 +26,8 @@ pub(crate) async fn initialize(
     let initialize_start = Instant::now();
     info!("startup:initialize:start");
     let roots = workspace_roots_from_initialize(&params);
-    let library_paths = util::parse_library_paths_from_value(params.initialization_options.as_ref());
+    let library_paths =
+        util::parse_library_paths_from_value(params.initialization_options.as_ref());
     let startup_trace_id =
         util::parse_startup_trace_id_from_value(params.initialization_options.as_ref());
     info!(
@@ -95,13 +96,11 @@ pub(crate) async fn initialized(
     tokio::spawn(async move {
         let scan_total_start = Instant::now();
         let discover_read_start = Instant::now();
-        let (entries, summary) =
-            tokio::task::spawn_blocking(move || scan_sysml_files(scan_roots))
-                .await
-                .unwrap_or_default();
+        let (entries, summary) = tokio::task::spawn_blocking(move || scan_sysml_files(scan_roots))
+            .await
+            .unwrap_or_default();
         let discover_read_ms = discover_read_start.elapsed().as_millis() as u64;
-        let parallel_parse_enabled =
-            util::env_flag_enabled("SPEC42_PARALLEL_STARTUP_PARSE", true);
+        let parallel_parse_enabled = util::env_flag_enabled("SPEC42_PARALLEL_STARTUP_PARSE", true);
         let parallel_parse_min_files =
             util::env_usize("SPEC42_PARALLEL_STARTUP_PARSE_MIN_FILES", 10);
         let should_parallel_parse =
@@ -117,7 +116,7 @@ pub(crate) async fn initialized(
         let mut st = state.write().await;
         let mut uris_loaded = Vec::new();
         let mut low_coverage_library_files = Vec::new();
-        for parsed_entry in parsed_entries {
+        for parsed_entry in &parsed_entries {
             let uri_norm = util::normalize_file_uri(&parsed_entry.uri);
             if parsed_entry.parsed.is_none() {
                 warn!(
@@ -127,14 +126,16 @@ pub(crate) async fn initialized(
                     "workspace scan parse failed"
                 );
             }
-            let _ = refresh_document(&mut st, &uri_norm, parsed_entry.content);
+        }
+        for (uri_norm, warning) in ingest_parsed_scan_entries(&mut st, parsed_entries) {
+            if let Some(message) = warning {
+                warn!("workspace scan ingest warning: {}", message);
+            }
             uris_loaded.push(uri_norm.clone());
             if util::uri_under_any_library(&uri_norm, &st.library_paths) {
                 let graph_nodes_for_uri = st.semantic_graph.nodes_for_uri(&uri_norm).len();
-                let symbol_entries = crate::semantic_model::symbol_entries_for_uri(
-                    &st.semantic_graph,
-                    &uri_norm,
-                );
+                let symbol_entries =
+                    crate::semantic_model::symbol_entries_for_uri(&st.semantic_graph, &uri_norm);
                 debug!(
                     uri = %uri_norm,
                     graph_nodes = graph_nodes_for_uri,
@@ -326,16 +327,27 @@ pub(crate) async fn did_change_configuration(
             tokio::task::spawn_blocking(move || scan_sysml_files(new_library_paths))
                 .await
                 .unwrap_or_default();
+        let parallel_parse_enabled = util::env_flag_enabled("SPEC42_PARALLEL_STARTUP_PARSE", true);
+        let parallel_parse_min_files =
+            util::env_usize("SPEC42_PARALLEL_STARTUP_PARSE_MIN_FILES", 10);
+        let should_parallel_parse =
+            parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
+        let parsed_entries = tokio::task::spawn_blocking(move || {
+            parse_scanned_entries(entries, should_parallel_parse)
+        })
+        .await
+        .unwrap_or_default();
         let mut st = state.write().await;
         let mut warnings = Vec::new();
-        for (uri, content) in entries {
-            let uri_norm = util::normalize_file_uri(&uri);
-            if let Some(message) = refresh_document(&mut st, &uri_norm, content) {
+        for (_uri_norm, warning) in ingest_parsed_scan_entries(&mut st, parsed_entries) {
+            if let Some(message) = warning {
                 warnings.push(format!("didChangeConfiguration: {}", message));
             }
         }
         drop(st);
-        if summary.roots_skipped_non_file > 0 || summary.read_failures > 0 || summary.uri_failures > 0
+        if summary.roots_skipped_non_file > 0
+            || summary.read_failures > 0
+            || summary.uri_failures > 0
         {
             warnings.push(format!(
                 "didChangeConfiguration: library reindex completed with skips: loaded {} of {} candidate SysML/KerML files across {} root(s); skipped_non_file_roots={}, read_failures={}, uri_failures={}.",

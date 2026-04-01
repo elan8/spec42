@@ -551,13 +551,19 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             let root_prefix = p.qualified_name.as_str();
             let (part_count, port_count, connector_count) =
                 materialized_subtree_metrics(root_prefix, &parts, &ports, &connectors);
-            let has_materialized_structure = part_count > 1 || port_count > 0 || connector_count > 0;
+            let has_materialized_structure =
+                part_count > 1 || port_count > 0 || connector_count > 0;
             if has_materialized_structure {
                 let tree_size = graph
                     .get_node(&NodeId::new(uri, &p.id))
                     .map(|node| part_tree_size(graph, node, uri))
                     .unwrap_or(part_count.saturating_sub(1));
-                Some((*p, tree_size.max(part_count.saturating_sub(1)), port_count, connector_count))
+                Some((
+                    *p,
+                    tree_size.max(part_count.saturating_sub(1)),
+                    port_count,
+                    connector_count,
+                ))
             } else {
                 None
             }
@@ -572,13 +578,19 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 let root_prefix = p.qualified_name.as_str();
                 let (part_count, port_count, connector_count) =
                     materialized_subtree_metrics(root_prefix, &parts, &ports, &connectors);
-                let has_materialized_structure = part_count > 1 || port_count > 0 || connector_count > 0;
+                let has_materialized_structure =
+                    part_count > 1 || port_count > 0 || connector_count > 0;
                 if has_materialized_structure {
                     let tree_size = graph
                         .get_node(&NodeId::new(uri, &p.id))
                         .map(|node| part_tree_size(graph, node, uri))
                         .unwrap_or(part_count.saturating_sub(1));
-                    Some((*p, tree_size.max(part_count.saturating_sub(1)), port_count, connector_count))
+                    Some((
+                        *p,
+                        tree_size.max(part_count.saturating_sub(1)),
+                        port_count,
+                        connector_count,
+                    ))
                 } else {
                     None
                 }
