@@ -18,6 +18,7 @@ pub struct SemanticGraph {
     pub(crate) graph: StableGraph<SemanticNode, RelationshipKind, Directed>,
     pub(crate) node_index_by_id: HashMap<NodeId, NodeIndex>,
     pub(crate) nodes_by_uri: HashMap<Url, Vec<NodeId>>,
+    pub(crate) node_ids_by_qualified_name: HashMap<String, Vec<NodeId>>,
     pub(crate) connection_occurrences_by_uri: HashMap<Url, Vec<ConnectionOccurrence>>,
     pub(crate) pending_relationships: Vec<PendingRelationship>,
 }
@@ -44,6 +45,7 @@ impl SemanticGraph {
             graph: StableGraph::new(),
             node_index_by_id: HashMap::new(),
             nodes_by_uri: HashMap::new(),
+            node_ids_by_qualified_name: HashMap::new(),
             connection_occurrences_by_uri: HashMap::new(),
             pending_relationships: Vec::new(),
         }
@@ -56,6 +58,14 @@ impl SemanticGraph {
             return;
         };
         for id in node_ids {
+            let mut remove_lookup_entry = false;
+            if let Some(ids) = self.node_ids_by_qualified_name.get_mut(&id.qualified_name) {
+                ids.retain(|existing| existing != &id);
+                remove_lookup_entry = ids.is_empty();
+            }
+            if remove_lookup_entry {
+                self.node_ids_by_qualified_name.remove(&id.qualified_name);
+            }
             if let Some(idx) = self.node_index_by_id.remove(&id) {
                 self.graph.remove_node(idx);
             }
@@ -79,6 +89,10 @@ impl SemanticGraph {
             self.nodes_by_uri
                 .entry(id.uri.clone())
                 .or_default()
+                .push(id.clone());
+            self.node_ids_by_qualified_name
+                .entry(id.qualified_name.clone())
+                .or_default()
                 .push(id);
         }
         for (src_id, tgt_id, kind) in other.iter_edges() {
@@ -98,6 +112,12 @@ impl SemanticGraph {
                 .and_then(|&idx| self.graph.node_weight(idx))
                 .map(|n| (id.clone(), n))
         })
+    }
+
+    pub(crate) fn node_ids_for_qualified_name(&self, qualified_name: &str) -> Option<&[NodeId]> {
+        self.node_ids_by_qualified_name
+            .get(qualified_name)
+            .map(Vec::as_slice)
     }
 
     fn iter_edges(&self) -> impl Iterator<Item = (NodeId, NodeId, RelationshipKind)> + '_ {

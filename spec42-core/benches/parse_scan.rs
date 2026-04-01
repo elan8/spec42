@@ -3,7 +3,10 @@ use std::path::PathBuf;
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
 use tower_lsp::lsp_types::Url;
 
-use spec42_core::bench::{parse_scanned_entries, scan_sysml_files, startup_index_scanned_entries};
+use spec42_core::bench::{
+    build_document_graphs, extract_symbols_from_workspace, link_cross_document_relationships,
+    merge_document_graphs, parse_scanned_entries, scan_sysml_files, startup_index_scanned_entries,
+};
 use spec42_core::common::util as spec42_util;
 
 fn env_path(name: &str) -> Option<PathBuf> {
@@ -91,6 +94,42 @@ fn bench_root_set(c: &mut Criterion, group_name: &str, roots: Vec<PathBuf>) {
             b.iter(|| {
                 let indexed = startup_index_scanned_entries(entries.clone(), should_parallel_parse);
                 criterion::black_box(indexed);
+            })
+        },
+    );
+
+    group.bench_function(BenchmarkId::new("graph_build_total", entries.len()), |b| {
+        b.iter(|| {
+            let nodes = build_document_graphs(entries.clone(), should_parallel_parse);
+            criterion::black_box(nodes);
+        })
+    });
+
+    group.bench_function(BenchmarkId::new("graph_merge_total", entries.len()), |b| {
+        b.iter(|| {
+            let merged = merge_document_graphs(entries.clone(), should_parallel_parse);
+            criterion::black_box(merged);
+        })
+    });
+
+    group.bench_function(
+        BenchmarkId::new("cross_document_link_total", entries.len()),
+        |b| {
+            b.iter(|| {
+                let linked =
+                    link_cross_document_relationships(entries.clone(), should_parallel_parse);
+                criterion::black_box(linked);
+            })
+        },
+    );
+
+    group.bench_function(
+        BenchmarkId::new("symbol_extract_total", entries.len()),
+        |b| {
+            b.iter(|| {
+                let symbols =
+                    extract_symbols_from_workspace(entries.clone(), should_parallel_parse);
+                criterion::black_box(symbols);
             })
         },
     );

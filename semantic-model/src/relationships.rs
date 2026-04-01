@@ -437,13 +437,17 @@ fn add_typing_edge_cross_document(
             type_ref_candidates_with_kind(container_prefix, &normalized_type_ref, suffix_kind)
         {
             let tgt_qualified = normalize_for_lookup(&tgt_qualified);
-            for uri in g.nodes_by_uri.keys() {
-                let tgt_id = NodeId::new(uri, &tgt_qualified);
-                if let Some(tgt_node) = g.get_node(&tgt_id) {
-                    if element_kind_allowed(tgt_node.element_kind.as_str(), target_element_kinds) {
-                        if let Some(&tgt_idx) = g.node_index_by_id.get(&tgt_id) {
-                            g.graph.add_edge(src_idx, tgt_idx, kind.clone());
-                            return;
+            if let Some(target_ids) = g.node_ids_for_qualified_name(&tgt_qualified) {
+                for tgt_id in target_ids {
+                    if let Some(tgt_node) = g.get_node(tgt_id) {
+                        if element_kind_allowed(
+                            tgt_node.element_kind.as_str(),
+                            target_element_kinds,
+                        ) {
+                            if let Some(&tgt_idx) = g.node_index_by_id.get(tgt_id) {
+                                g.graph.add_edge(src_idx, tgt_idx, kind.clone());
+                                return;
+                            }
                         }
                     }
                 }

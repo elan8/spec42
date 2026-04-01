@@ -128,6 +128,10 @@ pub(super) fn add_node_and_recurse(
     let idx = g.graph.add_node(node);
     g.node_index_by_id.insert(node_id.clone(), idx);
     g.nodes_by_uri.entry(uri.clone()).or_default().push(node_id);
+    g.node_ids_by_qualified_name
+        .entry(qualified.to_string())
+        .or_default()
+        .push(NodeId::new(uri, qualified));
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -169,4 +173,8 @@ pub(super) fn add_node_if_not_exists(
     let idx = g.graph.add_node(node);
     g.node_index_by_id.insert(node_id.clone(), idx);
     g.nodes_by_uri.entry(uri.clone()).or_default().push(node_id);
+    g.node_ids_by_qualified_name
+        .entry(qualified.to_string())
+        .or_default()
+        .push(NodeId::new(uri, qualified));
 }
