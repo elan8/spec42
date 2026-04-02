@@ -1056,11 +1056,29 @@ export function activate(context: vscode.ExtensionContext): void {
         new vscode.Position(dtoRange.start.line, dtoRange.start.character),
         new vscode.Position(dtoRange.end.line, dtoRange.end.character)
       );
-      const doc = await vscode.workspace.openTextDocument(uri);
-      const editor = await vscode.window.showTextDocument(doc, {
-        preserveFocus: false,
-        preview: true,
-      });
+      const targetUri = uri.toString();
+      const activeEditor = vscode.window.activeTextEditor;
+      const existingVisibleEditor =
+        activeEditor?.document.uri.toString() === targetUri
+          ? activeEditor
+          : vscode.window.visibleTextEditors.find(
+              (editorCandidate) =>
+                editorCandidate.document.uri.toString() === targetUri
+            );
+
+      const editor = existingVisibleEditor
+        ? await vscode.window.showTextDocument(existingVisibleEditor.document, {
+            viewColumn: existingVisibleEditor.viewColumn,
+            preserveFocus: false,
+            preview: false,
+          })
+        : await vscode.window.showTextDocument(
+            await vscode.workspace.openTextDocument(uri),
+            {
+              preserveFocus: false,
+              preview: true,
+            }
+          );
       editor.selection = new vscode.Selection(range.start, range.start);
       editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
     })
