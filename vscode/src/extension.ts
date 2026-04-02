@@ -22,7 +22,6 @@ import type { GraphNodeDTO } from "./providers/sysmlModelTypes";
 import { getOutputChannel, log, logError, showChannel } from "./logger";
 import {
   decodeSemanticTokens,
-  dumpSemanticTokens,
   getTokenAtPosition,
   SEMANTIC_TYPE_NAMES,
 } from "./semanticTokensDump";
@@ -542,23 +541,7 @@ export function activate(context: vscode.ExtensionContext): void {
     connectionOptions: {
       maxRestartCount: 4,
     },
-    middleware: {
-      provideDocumentSemanticTokens: (document, token, next) => {
-        const result = next(document, token);
-        const dumpIfEnabled = (res: vscode.SemanticTokens | null | undefined): vscode.SemanticTokens | null | undefined => {
-          if (getConfigBoolean("debug.dumpSemanticTokens", false) && res) {
-            const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-            if (workspaceFolder) {
-              const outPath = path.join(workspaceFolder, "semantic_tokens_frontend_dump.txt");
-              dumpSemanticTokens(document, res, outPath);
-              log(`Semantic tokens dump written to ${outPath}`);
-            }
-          }
-          return res;
-        };
-        return Promise.resolve(result).then(dumpIfEnabled);
-      },
-    },
+    // No semantic-token dump middleware: production/runtime never writes token dumps.
   };
 
   client = new LanguageClient(

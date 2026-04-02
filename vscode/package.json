@@ -396,11 +396,6 @@
           "default": false,
           "description": "Enable verbose runtime logging for troubleshooting in production installs (visualizer/webview/message flow)."
         },
-        "spec42.debug.dumpSemanticTokens": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, dump semantic tokens received from the server to semantic_tokens_frontend_dump.txt in the workspace root (for debugging highlighting)."
-        },
         "spec42.visualization.enableExperimentalViews": {
           "type": "boolean",
           "default": false,
