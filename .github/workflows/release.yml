@@ -13,6 +13,7 @@ on:
 
 env:
   BINARY_NAME: spec42
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   preflight:
@@ -113,7 +114,7 @@ jobs:
         shell: pwsh
 
       - name: Upload server artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: server-${{ matrix.package_dir }}
           path: ${{ env.BINARY_NAME }}-${{ steps.version.outputs.version }}-${{ matrix.package_dir }}.${{ matrix.archive_ext }}
@@ -135,7 +136,7 @@ jobs:
           ref: ${{ steps.version.outputs.tag || github.ref }}
 
       - name: Download server artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: server-*
           path: artifacts/server
@@ -154,7 +155,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "20"
+          node-version: "24"
           cache: "npm"
           cache-dependency-path: vscode/package-lock.json
 
@@ -170,7 +171,7 @@ jobs:
           node scripts/verify-package-layout.js --vsix "$VSIX_FILE"
 
       - name: Upload extension artifact (bundled)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: extension
           path: vscode/*.vsix
@@ -195,14 +196,14 @@ jobs:
           ref: ${{ steps.version.outputs.tag || github.ref }}
 
       - name: Download server artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: server-*
           path: artifacts/server
           merge-multiple: false
 
       - name: Download extension artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: extension
           path: artifacts/extension
@@ -220,16 +221,17 @@ jobs:
           cat SHA256SUMS.txt
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.version.outputs.tag }}
-          name: Release ${{ steps.version.outputs.tag }}
-          body: |
-            Release ${{ steps.version.outputs.tag }}.
-            The VS Code extension (.vsix) includes the language server; install it for one-click use. Server-only archives are also attached for use with other editors.
-          files: |
-            artifacts/server/*/*
-            artifacts/extension/*.vsix
-            SHA256SUMS.txt
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          cat > RELEASE_NOTES.txt <<EOF
+          Release ${TAG}.
+          The VS Code extension (.vsix) includes the language server; install it for one-click use. Server-only archives are also attached for use with other editors.
+          EOF
+          gh release create "$TAG" \
+            --title "Release $TAG" \
+            --notes-file RELEASE_NOTES.txt \
+            artifacts/server/*/* \
+            artifacts/extension/*.vsix \
+            SHA256SUMS.txt
