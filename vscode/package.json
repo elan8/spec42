@@ -401,14 +401,6 @@
           "default": false,
           "description": "When true, dump semantic tokens received from the server to semantic_tokens_frontend_dump.txt in the workspace root (for debugging highlighting)."
         },
-        "spec42.visualization.defaultView": {
-          "type": "string",
-          "enum": [
-            "general-view"
-          ],
-          "default": "general-view",
-          "description": "Default view when opening the SysML Model Visualizer (SysML v2 frameless-view types)."
-        },
         "spec42.visualization.enableExperimentalViews": {
           "type": "boolean",
           "default": false,
@@ -420,15 +412,6 @@
           "minimum": 1,
           "maximum": 4,
           "description": "Scale factor for PNG/SVG export of the visualization."
-        },
-        "spec42.visualization.generalViewPalette": {
-          "type": "string",
-          "enum": [
-            "distinct",
-            "classic"
-          ],
-          "default": "distinct",
-          "description": "Color palette for General View: 'distinct' (semantic SysML pillar colors) or 'classic' (VS Code default syntax colors)."
         }
       }
     },

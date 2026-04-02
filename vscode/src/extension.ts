@@ -1757,6 +1757,38 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.languages.onDidChangeDiagnostics(() => updateStatusBar(context))
   );
 
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      if (
+        event.affectsConfiguration("spec42.statusBar.enabled") ||
+        event.affectsConfiguration("sysml-language-server.statusBar.enabled")
+      ) {
+        updateStatusBar(context);
+      }
+
+      const visualizationConfigChanged =
+        event.affectsConfiguration("spec42.visualization.enableExperimentalViews") ||
+        event.affectsConfiguration("sysml-language-server.visualization.enableExperimentalViews");
+      const verboseLoggingChanged =
+        event.affectsConfiguration("spec42.logging.verbose") ||
+        event.affectsConfiguration("spec42.debug") ||
+        event.affectsConfiguration("sysml-language-server.debug");
+
+      // Recreate the panel so webview bootstrap flags (enabled views / verbose logging)
+      // are regenerated without requiring a full VS Code reload.
+      if ((visualizationConfigChanged || verboseLoggingChanged) && VisualizationPanel.currentPanel) {
+        const panelDoc = VisualizationPanel.currentPanel.getDocument();
+        const workspaceUris =
+          modelExplorerProvider?.isWorkspaceMode() &&
+          (modelExplorerProvider?.getWorkspaceFileUris()?.length ?? 0) > 1
+            ? modelExplorerProvider.getWorkspaceFileUris()
+            : undefined;
+        VisualizationPanel.currentPanel.dispose();
+        VisualizationPanel.createOrShow(context, panelDoc, undefined, lspModelProvider, workspaceUris);
+      }
+    })
+  );
+
   // Keep Model Explorer aligned with source changes similar to visualizer auto-refresh.
   let modelExplorerRefreshTimer: ReturnType<typeof setTimeout> | undefined;
   const scheduleModelExplorerRefresh = (
