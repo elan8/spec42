@@ -43,7 +43,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "20"
+          node-version: "24"
           cache: "npm"
           cache-dependency-path: vscode/package-lock.json
 
@@ -100,6 +100,18 @@ jobs:
 
       - name: Build extension and webview
         run: cd vscode && npm run build:webview-assets && npm run build:webview && npm run compile
+
+      - name: Package VSIX
+        run: cd vscode && npm run package
+
+      - name: Smoke test packaged VSIX activation
+        run: |
+          cd vscode
+          xvfb-run -a node scripts/smoke-vsix-activation.js \
+            --vsix "spec42-*.vsix" \
+            --workspace "testFixture/workspaces/single-file" \
+            --doc "testFixture/workspaces/single-file/SurveillanceDrone.sysml" \
+            --server-path "${SPEC42_SERVER_PATH}"
 
       - name: npm test (extension tests)
         run: cd vscode && xvfb-run -a npm test

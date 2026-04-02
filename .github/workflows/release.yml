@@ -170,6 +170,16 @@ jobs:
           test -n "$VSIX_FILE"
           node scripts/verify-package-layout.js --vsix "$VSIX_FILE"
 
+      - name: Smoke test packaged VSIX activation
+        run: |
+          cd vscode
+          VSIX_FILE="$(find . -maxdepth 1 -name '*.vsix' | head -n 1)"
+          test -n "$VSIX_FILE"
+          xvfb-run -a node scripts/smoke-vsix-activation.js \
+            --vsix "$VSIX_FILE" \
+            --workspace "testFixture/workspaces/single-file" \
+            --doc "testFixture/workspaces/single-file/SurveillanceDrone.sysml"
+
       - name: Upload extension artifact (bundled)
         uses: actions/upload-artifact@v6
         with:
