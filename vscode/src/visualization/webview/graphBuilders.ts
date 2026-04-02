@@ -364,7 +364,7 @@ export function graphToGeneralViewElements(
     const verifyEdgeIds = new Set<string>();
     const subjectEdgeIds = new Set<string>();
     const transitionEdgeIds = new Set<string>();
-    const resolveCyId = (backendId: string) => idToCyId.get(backendId) || null;
+    const resolveCyId = (graphId: string) => idToCyId.get(graphId) || null;
     let edgesResolved = 0;
     const allEdgesToUse = rawVisibleEdges;
 
@@ -585,7 +585,7 @@ export function buildGeneralViewGraph(
     _relationships: any[],
     ctx: GeneralViewGraphContext
 ): { elements: any[]; typeStats: Record<string, number>; packageGroups: GeneralViewPackageGroup[] } {
-    // Prefer the canonical backend General View graph so preserved semantic
+    // Prefer the canonical LSP-provided General View graph so preserved semantic
     // edges like `subject` survive into the ELK layout input.
     const graph = dataOrElements?.generalViewGraph || dataOrElements?.graph;
     if (!graph || (!graph.nodes?.length && !graph.edges?.length)) {

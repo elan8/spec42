@@ -41,7 +41,7 @@ function parseConnectorRoutes(svgText: string): ParsedRoute[] {
         if (points.length >= 2) {
             routes.push({
                 points,
-                // Client IBD renderer includes data-source/data-target; backend-style SVG does not.
+                // Client IBD renderer includes data-source/data-target; fallback SVG parsing does not.
                 source: (attributes.match(/\bdata-source="([^"]*)"/)?.[1] || ""),
                 target: (attributes.match(/\bdata-target="([^"]*)"/)?.[1] || ""),
             });
@@ -70,9 +70,9 @@ function parsePartBounds(svgText: string): Array<{ name: string; x: number; y: n
         return bounds;
     }
 
-    // Backend-style SVG: <g class="diagram-node ..." data-element-name="X"> <rect class="node-background" x y width height ...>
-    const backendRegex = /<g class="([^"]*diagram-node[^"]*)"[^>]*data-element-name="([^"]+)"[^>]*>\s*<rect class="node-background" x="([0-9.+-]+)" y="([0-9.+-]+)" width="([0-9.+-]+)" height="([0-9.+-]+)"/g;
-    while ((match = backendRegex.exec(svgText)) !== null) {
+    // Fallback SVG shape: <g class="diagram-node ..." data-element-name="X"> <rect class="node-background" x y width height ...>
+    const fallbackRegex = /<g class="([^"]*diagram-node[^"]*)"[^>]*data-element-name="([^"]+)"[^>]*>\s*<rect class="node-background" x="([0-9.+-]+)" y="([0-9.+-]+)" width="([0-9.+-]+)" height="([0-9.+-]+)"/g;
+    while ((match = fallbackRegex.exec(svgText)) !== null) {
         const classAttr = match[1] || "";
         const name = match[2];
         const x = Number(match[3]);
@@ -281,7 +281,7 @@ describe("Interconnection Visualization Drone", () => {
             "regulated5V should be rendered on the right side of distribution"
         );
 
-        // Note: backend-style SVG edges do not expose endpoint metadata; keep routing checks focused
+        // Note: fallback SVG edges do not expose endpoint metadata; keep routing checks focused
         // on orthogonality + port label sides rather than per-connector obstacle avoidance here.
 
         for (let routeIndex = 0; routeIndex < routes.length; routeIndex++) {

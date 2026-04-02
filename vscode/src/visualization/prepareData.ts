@@ -157,20 +157,20 @@ export function prepareDataForView(data: any, view: string): any {
                 };
             }
 
-            const backendScene = data.diagramInterconnection?.scene?.interconnectionView;
-            if (backendScene && typeof backendScene === 'object') {
-                const rootCandidates = Array.isArray(backendScene.rootCandidates) ? backendScene.rootCandidates : [];
+            const serverScene = data.diagramInterconnection?.scene?.interconnectionView;
+            if (serverScene && typeof serverScene === 'object') {
+                const rootCandidates = Array.isArray(serverScene.rootCandidates) ? serverScene.rootCandidates : [];
                 const explicitSelection = (typeof data.selectedIbdRoot === 'string' && data.selectedIbdRoot.trim().length > 0)
                     ? data.selectedIbdRoot
                     : null;
-                const selectedRoot = explicitSelection && backendScene.roots?.[explicitSelection]
+                const selectedRoot = explicitSelection && serverScene.roots?.[explicitSelection]
                     ? explicitSelection
-                    : (backendScene.selectedRoot && backendScene.roots?.[backendScene.selectedRoot]
-                        ? backendScene.selectedRoot
-                        : (backendScene.defaultRoot && backendScene.roots?.[backendScene.defaultRoot]
-                            ? backendScene.defaultRoot
-                            : (rootCandidates.find((name: string) => backendScene.roots?.[name]) || null)));
-                const selectedScene = selectedRoot ? backendScene.roots?.[selectedRoot] : null;
+                    : (serverScene.selectedRoot && serverScene.roots?.[serverScene.selectedRoot]
+                        ? serverScene.selectedRoot
+                        : (serverScene.defaultRoot && serverScene.roots?.[serverScene.defaultRoot]
+                            ? serverScene.defaultRoot
+                            : (rootCandidates.find((name: string) => serverScene.roots?.[name]) || null)));
+                const selectedScene = selectedRoot ? serverScene.roots?.[selectedRoot] : null;
                 return {
                     ...data,
                     parts: (selectedScene?.parts || []).map((part: any) => ({
@@ -200,15 +200,15 @@ export function prepareDataForView(data: any, view: string): any {
                     ibdRootCandidates: rootCandidates,
                     ibdRootSummaries: rootCandidates.map((name: string) => ({
                         name,
-                        partCount: backendScene.roots?.[name]?.parts?.length || 0,
-                        portCount: backendScene.roots?.[name]?.ports?.length || 0,
-                        connectorCount: backendScene.roots?.[name]?.connectors?.length || 0,
+                        partCount: serverScene.roots?.[name]?.parts?.length || 0,
+                        portCount: serverScene.roots?.[name]?.ports?.length || 0,
+                        connectorCount: serverScene.roots?.[name]?.connectors?.length || 0,
                     })),
                     selectedIbdRoot: selectedRoot,
                 };
             }
 
-            // No backend IBD: interconnection view uses server data only (no client fallback).
+            // No interconnection scene payload available from the server.
             return {
                 ...data,
                 elements: [],

@@ -671,7 +671,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
     function clearVisualHighlights() {
         // Remove visual highlights without refreshing the view
-        // New backend-SVG highlight mechanism: only node border rects.
+        // Current highlight mechanism: only node border rects.
         d3.selectAll('.outline-highlighted').each(function() {
             const t = d3.select(this);
             t.classed('outline-highlighted', false);

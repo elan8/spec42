@@ -414,8 +414,8 @@ describe("prepareDataForView", () => {
         assert.strictEqual(roots[0].children[0].name, "child");
     });
 
-    describe("interconnection-view with backend IBD (no fallback)", () => {
-        const mockIbdFromBackend = {
+    describe("interconnection-view with server IBD payload (no fallback)", () => {
+        const mockIbdFromServer = {
             parts: [
                 { id: "SurveillanceDrone::SurveillanceQuadrotorDrone", name: "SurveillanceQuadrotorDrone", qualifiedName: "SurveillanceDrone.SurveillanceQuadrotorDrone", containerId: null, type: "part def", attributes: {} },
                 { id: "SurveillanceDrone::SurveillanceQuadrotorDrone::propulsion", name: "propulsion", qualifiedName: "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion", containerId: "SurveillanceDrone.SurveillanceQuadrotorDrone", type: "part", attributes: {} },
@@ -448,25 +448,25 @@ describe("prepareDataForView", () => {
             },
         };
 
-        it("uses backend defaultRoot to choose root-specific view payload", () => {
-            const data = { graph: { nodes: [], edges: [] }, ibd: mockIbdFromBackend };
+        it("uses server defaultRoot to choose root-specific view payload", () => {
+            const data = { graph: { nodes: [], edges: [] }, ibd: mockIbdFromServer };
             const result = prepareDataForView(data, "interconnection-view");
-            assert.strictEqual(result.selectedIbdRoot, "SurveillanceQuadrotorDrone", "selectedIbdRoot must be backend defaultRoot");
-            assert.strictEqual(result.parts.length, 3, "parts should come from selected backend root view");
+            assert.strictEqual(result.selectedIbdRoot, "SurveillanceQuadrotorDrone", "selectedIbdRoot must be server defaultRoot");
+            assert.strictEqual(result.parts.length, 3, "parts should come from selected server root view");
         });
 
-        it("uses frontend selectedIbdRoot to choose among backend root views", () => {
-            const data = { graph: { nodes: [], edges: [] }, ibd: mockIbdFromBackend, selectedIbdRoot: "Propulsion" };
+        it("uses frontend selectedIbdRoot to choose among server root views", () => {
+            const data = { graph: { nodes: [], edges: [] }, ibd: mockIbdFromServer, selectedIbdRoot: "Propulsion" };
             const result = prepareDataForView(data, "interconnection-view");
             assert.strictEqual(result.selectedIbdRoot, "Propulsion");
             assert.strictEqual(result.parts.length, 2);
         });
 
-        it("uses backend rootViews payload for selected root", () => {
+        it("uses server rootViews payload for selected root", () => {
             const data = {
                 graph: { nodes: [], edges: [] },
                 ibd: {
-                    ...mockIbdFromBackend,
+                    ...mockIbdFromServer,
                     ports: [
                         { id: "p1", name: "motorOut", parentId: "SurveillanceDrone.Propulsion.propulsionUnit1" },
                         { id: "p2", name: "flightIn", parentId: "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl" },
@@ -486,9 +486,9 @@ describe("prepareDataForView", () => {
                         },
                     ],
                     rootViews: {
-                        ...mockIbdFromBackend.rootViews,
+                        ...mockIbdFromServer.rootViews,
                         Propulsion: {
-                            parts: mockIbdFromBackend.rootViews.Propulsion.parts,
+                            parts: mockIbdFromServer.rootViews.Propulsion.parts,
                             ports: [
                                 { id: "p1", name: "motorOut", parentId: "SurveillanceDrone.Propulsion.propulsionUnit1" },
                             ],
@@ -506,11 +506,11 @@ describe("prepareDataForView", () => {
                 selectedIbdRoot: "Propulsion",
             };
             const result = prepareDataForView(data, "interconnection-view");
-            assert.strictEqual(result.connectors.length, 1, "selected root should use backend-filtered connectors");
+            assert.strictEqual(result.connectors.length, 1, "selected root should use server-filtered connectors");
             assert.strictEqual(result.connectors[0].name, "internalLoop");
         });
 
-        it("returns empty IBD when no backend ibd (no fallback)", () => {
+        it("returns empty IBD when no server ibd (no fallback)", () => {
             const data = { graph: { nodes: [{ id: "a", name: "A", type: "part def" }], edges: [] } };
             const result = prepareDataForView(data, "interconnection-view");
             assert.deepStrictEqual(result.parts, []);

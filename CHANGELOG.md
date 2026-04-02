@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Visualization terminology/docs alignment** - Updated visualization docs and test/code terminology to reflect frontend-rendered diagrams (webview rendering) and removed stale backend-render wording/branches.
+
 ## [0.13.0] - 2026-04-01
 
 ### Added

@@ -158,11 +158,9 @@ Optional: set `SYSML_V2_RELEASE_DIR` to run `lsp_workspace_scan_sysml_release`, 
 
 ### Layout SVG checks
 
-Backend-rendered diagram SVGs for the full drone fixture are written to `server/tests/output/` during Rust integration tests.
+Diagram SVG export checks now validate frontend-rendered output from the VS Code webview test suites (`vscode/src/test/suite`), with snapshots written under `spec42-core/tests/output/`.
 
-The tests validate semantic expectations instead of exact SVG equality. Use the observed SVGs for manual layout review while iterating on `elk-rust` and diagram generation.
-
-`elk-rust` is vendored as the `vendor/elk-rust` submodule. When you update or patch it, commit the change in the submodule and then commit the updated submodule pointer in this repository.
+The tests validate semantic/layout expectations instead of exact SVG byte-for-byte equality. Use observed SVG output for manual layout review while iterating on frontend ELK layout/render behavior.
 
 ### VS Code extension tests
 
