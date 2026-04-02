@@ -7,9 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-04-02
+
+### Added
+
+- **Visualizer canvas interactions** - Added richer visualizer canvas handling, including zoom/pan improvements for diagram exploration.
+
 ### Changed
 
-- **Visualization terminology/docs alignment** - Updated visualization docs and test/code terminology to reflect frontend-rendered diagrams (webview rendering) and removed stale backend-render wording/branches.
+- **Frontend visualization architecture cleanup** - Removed legacy sequence view/debug-label paths, tightened enabled-view handling, and refined visualizer initialization/render flow.
+- **Documentation alignment** - Updated root/development/extension docs to reflect frontend-rendered diagrams and current Spec42 feature/configuration status.
+- **Configuration surface reduction** - Removed unused visualization settings and semantic-token dump setting from the VS Code extension contribution surface.
+- **Model Explorer navigation UX** - Updated tree selection navigation to better reuse existing editors when opening source locations.
 
 ## [0.13.0] - 2026-04-01
 
@@ -206,6 +215,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Some constructs may have incomplete semantic token or outline coverage.
 
 [0.11.0]: https://github.com/elan8/spec42/releases/tag/v0.11.0
+[0.14.0]: https://github.com/elan8/spec42/releases/tag/v0.14.0
 [0.13.0]: https://github.com/elan8/spec42/releases/tag/v0.13.0
 [0.12.0]: https://github.com/elan8/spec42/releases/tag/v0.12.0
 [0.10.0]: https://github.com/elan8/spec42/releases/tag/v0.10.0
