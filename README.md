@@ -24,6 +24,18 @@ Download from [Releases](https://github.com/elan8/spec42/releases):
 1. **VS Code**: install the `.vsix` (Extensions → "…" → Install from VSIX). The server binary is bundled.
 2. **Server only** (other editors): download the archive for your OS, extract, and put the binary on PATH.
 
+## Export GitHub code scanning findings
+
+If you enabled GitHub code scanning (CodeQL), you can export JSON findings (requires `gh` and `gh auth login`):
+
+```powershell
+.\scripts\export-code-scanning.ps1
+```
+
+Default output directory: `.\code-scanning-export\`
+
+- `code-scanning-alerts-<timestamp>.json` (all code scanning alerts)
+
 ## Building
 
 ```bash

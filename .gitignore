@@ -8,3 +8,5 @@ vscode/out/
 vscode/media/webview/visualizer.js
 vscode/media/webview/visualizer.js.map
 internal_docs/
+scripts/code-scanning-export/
+code-scanning-export/

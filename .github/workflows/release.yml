@@ -11,6 +11,9 @@ on:
         description: "Tag to release (e.g. v0.1.0). Leave empty to use the tag that triggered the workflow."
         required: false
 
+permissions:
+  contents: read
+
 env:
   BINARY_NAME: spec42
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

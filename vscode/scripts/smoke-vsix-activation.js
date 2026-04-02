@@ -17,12 +17,38 @@ function getArg(name) {
   return undefined;
 }
 
-function runShell(command, cwd) {
-  return cp.execSync(command, {
-    cwd,
-    encoding: "utf8",
-    stdio: ["ignore", "pipe", "pipe"],
-  }).trim();
+function globToRegExp(pattern) {
+  const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&");
+  const regex = escaped.replace(/\*/g, ".*").replace(/\?/g, ".");
+  return new RegExp(`^${regex}$`, "i");
+}
+
+function resolveSingleFileGlob(input, cwd) {
+  const absoluteInput = path.resolve(cwd, input);
+  const dir = path.dirname(absoluteInput);
+  const base = path.basename(absoluteInput);
+  const re = globToRegExp(base);
+
+  let entries;
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch (err) {
+    throw new Error(
+      `Unable to read directory for VSIX glob: ${dir}\n${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
+  const candidates = entries
+    .filter((e) => e.isFile() && re.test(e.name))
+    .map((e) => path.join(dir, e.name));
+
+  if (candidates.length === 0) {
+    throw new Error(`No VSIX matched pattern: ${input}`);
+  }
+  if (candidates.length > 1) {
+    throw new Error(`VSIX pattern is ambiguous: ${input}\n${candidates.join("\n")}`);
+  }
+  return candidates[0];
 }
 
 function runCodeCli(cliPath, args) {
@@ -38,20 +64,7 @@ function resolveVsix(input, cwd) {
     throw new Error("Missing required --vsix argument.");
   }
   if (input.includes("*") || input.includes("?")) {
-    const out = runShell(
-      process.platform === "win32"
-        ? `powershell -NoProfile -Command "(Get-ChildItem -Path '${input}' | Select-Object -ExpandProperty FullName) -join '\\n'"`
-        : `ls -1 ${input}`,
-      cwd
-    );
-    const candidates = out.split(/\r?\n/).filter(Boolean);
-    if (candidates.length === 0) {
-      throw new Error(`No VSIX matched pattern: ${input}`);
-    }
-    if (candidates.length > 1) {
-      throw new Error(`VSIX pattern is ambiguous: ${input}\n${candidates.join("\n")}`);
-    }
-    return path.resolve(cwd, candidates[0]);
+    return resolveSingleFileGlob(input, cwd);
   }
   return path.resolve(cwd, input);
 }
