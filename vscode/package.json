@@ -133,6 +133,18 @@
         "category": "SysML"
       },
       {
+        "command": "sysml.showTypeHierarchy",
+        "title": "Show Type Hierarchy",
+        "icon": "$(type-hierarchy)",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.showCallHierarchy",
+        "title": "Show Call Hierarchy",
+        "icon": "$(call-hierarchy)",
+        "category": "SysML"
+      },
+      {
         "command": "sysml.clearCache",
         "title": "Clear SysML Parse Cache",
         "category": "SysML"
@@ -273,6 +285,14 @@
         },
         {
           "command": "sysml.showVisualizer"
+        },
+        {
+          "command": "sysml.showTypeHierarchy",
+          "when": "resourceLangId == sysml || resourceLangId == kerml"
+        },
+        {
+          "command": "sysml.showCallHierarchy",
+          "when": "resourceLangId == sysml || resourceLangId == kerml"
         },
         {
           "command": "sysml.clearCache"

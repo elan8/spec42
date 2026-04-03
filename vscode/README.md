@@ -26,9 +26,24 @@ If you work with **MBSE** and want fast feedback while editing models, this exte
 - **Completion**: suggestions while editing
 - **Navigation**: go to definition, find references, rename
 - **Symbols**: document symbols and workspace symbol search
+- **Hierarchy**: type hierarchy and call hierarchy commands for supported SysML/KerML symbols
+- **Editor workflows**: folding ranges, selection ranges, document links, linked editing, and semantic highlighting
+- **CodeLens**: reference-count lenses where the current editor/theme configuration shows CodeLens
 - **Code actions & formatting**: where supported by the server
 - **Model Explorer**: workspace/package tree with model navigation
 - **Model Visualizer**: diagram views with SVG/PNG/JSON export and theme-aware rendering
+- **Status feedback**: startup/indexing/degraded workspace status in the SysML status bar item
+
+## Available Today
+
+The current extension intentionally focuses on reliable editing, navigation, workspace indexing, library support, and visualization.
+
+Not in scope for the current release surface:
+
+- feature inspector panels
+- model dashboards
+- complexity scoring or MCI-style metrics
+- AI/MCP-specific modeling surfaces
 
 ## Getting started
 
@@ -36,6 +51,7 @@ If you work with **MBSE** and want fast feedback while editing models, this exte
 2. Open any `.sysml` or `.kerml` file.
 3. (Optional) Configure library roots for better cross-file navigation and completion.
 4. Use the command palette to open the Model Explorer/Visualizer when needed.
+5. Use **SysML: Show Type Hierarchy** or **SysML: Show Call Hierarchy** for supported symbols when you want to inspect relationships from the current cursor location.
 
 ## Configuration
 
@@ -100,10 +116,13 @@ Example `settings.json`:
   - Save the active SysML/KerML file and reopen the visualizer.
   - If needed, enable `spec42.logging.verbose` and check Output -> **SysML** for fetch/render diagnostics.
 
+- **Workspace results look incomplete**
+  - The status bar tooltip reports whether workspace indexing hit the configured discovery limit.
+  - Increase `spec42.workspace.maxFilesPerPattern` if your repository is larger and you want more files indexed up front.
+
 ## Links
 
 - Source & releases: `https://github.com/elan8/spec42`
 - Issues: `https://github.com/elan8/spec42/issues`
 - SysML v2: `https://www.omg.org/sysml/sysmlv2/`
 - SysML v2 reference libraries: `https://github.com/Systems-Modeling/SysML-v2-Release`
-

@@ -339,7 +339,7 @@ function updateStatusBar(context: vscode.ExtensionContext): void {
     ? `Server state: ${serverHealthState}${serverHealthDetail ? `\n${serverHealthDetail}` : ""}`
     : `${errors} error(s), ${warnings} warning(s)\nClick to open Problems panel.`;
   const workspaceTooltip = lastWorkspaceIndexSummary
-    ? `\n\nWorkspace indexing:\nScanned ${lastWorkspaceIndexSummary.scannedFiles} file(s)\nLoaded ${lastWorkspaceIndexSummary.loadedFiles} file(s)\nLimit ${lastWorkspaceIndexSummary.perPatternLimit} per folder and file type${lastWorkspaceIndexSummary.truncated ? "\nResults truncated" : ""}${lastWorkspaceIndexSummary.cancelled ? "\nLast scan was cancelled" : ""}`
+    ? `\n\nWorkspace indexing:\nScanned ${lastWorkspaceIndexSummary.scannedFiles} file(s)\nLoaded ${lastWorkspaceIndexSummary.loadedFiles} file(s)\nLimit ${lastWorkspaceIndexSummary.perPatternLimit} per folder and file type${lastWorkspaceIndexSummary.truncated ? "\nResults may be incomplete (discovery limit reached)." : ""}${lastWorkspaceIndexSummary.cancelled ? "\nLast scan was cancelled." : ""}`
     : "";
   item.tooltip = `${baseTooltip}${workspaceTooltip}`;
   item.show();
@@ -354,7 +354,7 @@ function updateStatusBar(context: vscode.ExtensionContext): void {
           ? `${Math.floor(stats.uptime / 60)}m ${stats.uptime % 60}s`
           : `${stats.uptime}s`;
       const caches = stats.caches;
-      item.tooltip = `${baseTooltip}\n\n── LSP Server ──\nUptime: ${uptimeStr}\nCaches: ${caches.documents} docs, ${caches.symbolTables} symbols`;
+      item.tooltip = `${baseTooltip}${workspaceTooltip}\n\n── LSP Server ──\nUptime: ${uptimeStr}\nCaches: ${caches.documents} docs, ${caches.symbolTables} symbols`;
     }).catch(() => {});
   }
 }
@@ -1361,6 +1361,28 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   context.subscriptions.push(
+    vscode.commands.registerCommand("sysml.showTypeHierarchy", async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor || !isSysmlDoc(editor.document)) {
+        vscode.window.showWarningMessage(
+          "Open a SysML/KerML file to view the type hierarchy."
+        );
+        return;
+      }
+      await vscode.commands.executeCommand("editor.showTypeHierarchy");
+    }),
+
+    vscode.commands.registerCommand("sysml.showCallHierarchy", async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor || !isSysmlDoc(editor.document)) {
+        vscode.window.showWarningMessage(
+          "Open a SysML/KerML file to view the call hierarchy."
+        );
+        return;
+      }
+      await vscode.commands.executeCommand("editor.showCallHierarchy");
+    }),
+
     vscode.commands.registerCommand("sysml.showOutput", () => {
       showChannel();
     }),

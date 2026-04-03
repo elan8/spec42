@@ -76,6 +76,12 @@ describe("Extension Test Suite", () => {
     );
   });
 
+  it("Hierarchy commands should be registered", async () => {
+    const commands = await vscode.commands.getCommands(true);
+    assert.ok(commands.includes("sysml.showTypeHierarchy"));
+    assert.ok(commands.includes("sysml.showCallHierarchy"));
+  });
+
   it("Hover over keyword returns content", async () => {
     const filePath = getFixturePath(FIXTURE_FILE);
     const doc = await vscode.workspace.openTextDocument(filePath);
@@ -127,6 +133,32 @@ describe("Extension Test Suite", () => {
       "def.sysml",
       "Definition should resolve to def.sysml"
     );
+  });
+
+  it("Hierarchy commands execute for SysML and KerML editors", async function () {
+    this.timeout(20000);
+    const sysmlDoc = await vscode.workspace.openTextDocument(getFixturePath(FIXTURE_FILE));
+    const sysmlEditor = await vscode.window.showTextDocument(sysmlDoc);
+    sysmlEditor.selection = new vscode.Selection(
+      findPosition(sysmlDoc, "part def Airframe"),
+      findPosition(sysmlDoc, "part def Airframe")
+    );
+
+    await vscode.commands.executeCommand("sysml.showTypeHierarchy");
+    await vscode.commands.executeCommand("sysml.showCallHierarchy");
+
+    const kermlDoc = await vscode.workspace.openTextDocument({
+      language: "kerml",
+      content: "package KernelPackage { part def KernelPart; }",
+    });
+    const kermlEditor = await vscode.window.showTextDocument(kermlDoc);
+    kermlEditor.selection = new vscode.Selection(
+      new vscode.Position(0, 28),
+      new vscode.Position(0, 28)
+    );
+
+    await vscode.commands.executeCommand("sysml.showTypeHierarchy");
+    await vscode.commands.executeCommand("sysml.showCallHierarchy");
   });
 
   it("Server stays usable after invalid intermediate edits", async function () {
