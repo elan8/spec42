@@ -70,6 +70,19 @@ fn lsp_remaining_feature_requests_round_trip() {
         custom_method
     );
 
+    let feature_inspector = session.request(
+        "sysml/featureInspector",
+        serde_json::json!({
+            "textDocument": { "uri": uri },
+            "position": { "line": 2, "character": 7 }
+        }),
+    );
+    assert!(
+        feature_inspector.get("error").is_none(),
+        "core sysml/featureInspector custom method should remain available: {}",
+        feature_inspector
+    );
+
     let prepare_vehicle = session.request(
         "textDocument/prepareTypeHierarchy",
         serde_json::json!({"textDocument":{"uri":uri},"position":{"line":2,"character":7}}),

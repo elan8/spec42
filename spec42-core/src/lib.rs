@@ -27,12 +27,16 @@ pub use views::dto::{
     GeneralDiagramEdgeDto, GeneralDiagramNodeDto, GeneralDiagramSceneDto, GraphEdgeDto,
     GraphNodeDto, IbdDiagramSceneDto, IbdSceneConnectorDto, IbdScenePartDto, IbdScenePortDto,
     IbdSceneRootDto, SysmlClearCacheResultDto, SysmlDiagramOptionsDto, SysmlDiagramParamsDto,
-    SysmlDiagramResultDto, SysmlDiagramStatsDto, SysmlGraphDto, SysmlModelResultDto,
-    SysmlModelStatsDto, SysmlServerCachesDto, SysmlServerMemoryDto, SysmlServerStatsDto,
+    SysmlDiagramResultDto, SysmlDiagramStatsDto, SysmlFeatureInspectorElementDto,
+    SysmlFeatureInspectorElementRefDto, SysmlFeatureInspectorParamsDto,
+    SysmlFeatureInspectorRelationshipDto, SysmlFeatureInspectorResolutionDto,
+    SysmlFeatureInspectorResultDto, SysmlGraphDto, SysmlModelResultDto, SysmlModelStatsDto,
+    SysmlServerCachesDto, SysmlServerMemoryDto, SysmlServerStatsDto,
 };
 pub use views::ibd::{build_ibd_for_uri, is_port_like, IbdDataDto};
 pub use views::{
     build_sysml_diagram_response, build_sysml_model_response, empty_diagram_response,
-    empty_model_response, parse_sysml_diagram_params, parse_sysml_model_params,
+    empty_feature_inspector_response, empty_model_response, parse_sysml_diagram_params,
+    parse_sysml_feature_inspector_params, parse_sysml_model_params,
 };
 pub use {analysis::*, common::util::parse_library_paths_from_value};

@@ -273,6 +273,34 @@ impl SemanticGraph {
         targets
     }
 
+    /// Returns target nodes of outgoing edges with the given relationship kind.
+    pub fn outgoing_targets_by_kind(
+        &self,
+        node: &SemanticNode,
+        kind: RelationshipKind,
+    ) -> Vec<&SemanticNode> {
+        let src_idx = match self.node_index_by_id.get(&node.id) {
+            Some(&idx) => idx,
+            None => return Vec::new(),
+        };
+        let id_by_idx: HashMap<NodeIndex, NodeId> = self
+            .node_index_by_id
+            .iter()
+            .map(|(k, v)| (*v, k.clone()))
+            .collect();
+        let mut targets = Vec::new();
+        for edge in self.graph.edges_directed(src_idx, Direction::Outgoing) {
+            if edge.weight() == &kind {
+                if let Some(tgt_id) = id_by_idx.get(&edge.target()) {
+                    if let Some(tgt) = self.get_node(tgt_id) {
+                        targets.push(tgt);
+                    }
+                }
+            }
+        }
+        targets
+    }
+
     /// Returns source nodes that have typing/specializes edges to the given node.
     pub fn incoming_typing_or_specializes_sources(
         &self,
@@ -301,6 +329,84 @@ impl SemanticGraph {
             }
         }
         sources
+    }
+
+    /// Returns source nodes of incoming edges with the given relationship kind.
+    pub fn incoming_sources_by_kind(
+        &self,
+        node: &SemanticNode,
+        kind: RelationshipKind,
+    ) -> Vec<&SemanticNode> {
+        let tgt_idx = match self.node_index_by_id.get(&node.id) {
+            Some(&idx) => idx,
+            None => return Vec::new(),
+        };
+        let id_by_idx: HashMap<NodeIndex, NodeId> = self
+            .node_index_by_id
+            .iter()
+            .map(|(k, v)| (*v, k.clone()))
+            .collect();
+        let mut sources = Vec::new();
+        for edge in self.graph.edges_directed(tgt_idx, Direction::Incoming) {
+            if edge.weight() == &kind {
+                if let Some(src_id) = id_by_idx.get(&edge.source()) {
+                    if let Some(src) = self.get_node(src_id) {
+                        sources.push(src);
+                    }
+                }
+            }
+        }
+        sources
+    }
+
+    /// Returns all direct outgoing relationships from the given node.
+    pub fn outgoing_relationships(
+        &self,
+        node: &SemanticNode,
+    ) -> Vec<(&SemanticNode, RelationshipKind)> {
+        let src_idx = match self.node_index_by_id.get(&node.id) {
+            Some(&idx) => idx,
+            None => return Vec::new(),
+        };
+        let id_by_idx: HashMap<NodeIndex, NodeId> = self
+            .node_index_by_id
+            .iter()
+            .map(|(k, v)| (*v, k.clone()))
+            .collect();
+        let mut relationships = Vec::new();
+        for edge in self.graph.edges_directed(src_idx, Direction::Outgoing) {
+            if let Some(tgt_id) = id_by_idx.get(&edge.target()) {
+                if let Some(tgt) = self.get_node(tgt_id) {
+                    relationships.push((tgt, edge.weight().clone()));
+                }
+            }
+        }
+        relationships
+    }
+
+    /// Returns all direct incoming relationships into the given node.
+    pub fn incoming_relationships(
+        &self,
+        node: &SemanticNode,
+    ) -> Vec<(&SemanticNode, RelationshipKind)> {
+        let tgt_idx = match self.node_index_by_id.get(&node.id) {
+            Some(&idx) => idx,
+            None => return Vec::new(),
+        };
+        let id_by_idx: HashMap<NodeIndex, NodeId> = self
+            .node_index_by_id
+            .iter()
+            .map(|(k, v)| (*v, k.clone()))
+            .collect();
+        let mut relationships = Vec::new();
+        for edge in self.graph.edges_directed(tgt_idx, Direction::Incoming) {
+            if let Some(src_id) = id_by_idx.get(&edge.source()) {
+                if let Some(src) = self.get_node(src_id) {
+                    relationships.push((src, edge.weight().clone()));
+                }
+            }
+        }
+        relationships
     }
 
     /// Returns target nodes of perform edges from the given node.

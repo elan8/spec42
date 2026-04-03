@@ -57,6 +57,53 @@ export interface SysMLModelStatsDTO {
   parseCached: boolean;
 }
 
+export interface SysMLFeatureInspectorParams {
+  textDocument: { uri: string };
+  position: PositionDTO;
+}
+
+export interface SysMLFeatureInspectorElementRefDTO {
+  id: string;
+  name: string;
+  qualifiedName: string;
+  type: string;
+  uri: string;
+  range: RangeDTO;
+}
+
+export interface SysMLFeatureInspectorResolutionDTO {
+  status: "resolved" | "unresolved" | "notApplicable";
+  targets: SysMLFeatureInspectorElementRefDTO[];
+}
+
+export interface SysMLFeatureInspectorRelationshipDTO {
+  type: string;
+  peer: SysMLFeatureInspectorElementRefDTO;
+  name?: string;
+}
+
+export interface SysMLFeatureInspectorElementDTO {
+  id: string;
+  name: string;
+  qualifiedName: string;
+  type: string;
+  uri: string;
+  range: RangeDTO;
+  parent?: SysMLFeatureInspectorElementRefDTO;
+  attributes: Record<string, unknown>;
+  typing: SysMLFeatureInspectorResolutionDTO;
+  specialization: SysMLFeatureInspectorResolutionDTO;
+  incomingRelationships: SysMLFeatureInspectorRelationshipDTO[];
+  outgoingRelationships: SysMLFeatureInspectorRelationshipDTO[];
+}
+
+export interface SysMLFeatureInspectorResult {
+  version: number;
+  sourceUri: string;
+  requestedPosition: PositionDTO;
+  element?: SysMLFeatureInspectorElementDTO | null;
+}
+
 export interface SysMLModelParams {
   textDocument: { uri: string };
   scope?: Array<"graph" | "ibd" | "stats" | "activityDiagrams" | "workspaceVisualization">;

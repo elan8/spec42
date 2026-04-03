@@ -7,14 +7,14 @@ use crate::views::extracted_model as model;
 use crate::views::ibd;
 
 #[allow(dead_code)]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PositionDto {
     pub line: u32,
     pub character: u32,
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RangeDto {
     pub start: PositionDto,
     pub end: PositionDto,
@@ -62,6 +62,70 @@ pub struct SysmlGraphDto {
 #[serde(rename_all = "camelCase")]
 pub struct TextDocumentIdentifierDto {
     pub uri: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlFeatureInspectorParamsDto {
+    pub text_document: TextDocumentIdentifierDto,
+    pub position: PositionDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlFeatureInspectorElementRefDto {
+    pub id: String,
+    pub name: String,
+    pub qualified_name: String,
+    #[serde(rename = "type")]
+    pub element_type: String,
+    pub uri: String,
+    pub range: RangeDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlFeatureInspectorResolutionDto {
+    pub status: String,
+    pub targets: Vec<SysmlFeatureInspectorElementRefDto>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlFeatureInspectorRelationshipDto {
+    #[serde(rename = "type")]
+    pub rel_type: String,
+    pub peer: SysmlFeatureInspectorElementRefDto,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlFeatureInspectorElementDto {
+    pub id: String,
+    pub name: String,
+    pub qualified_name: String,
+    #[serde(rename = "type")]
+    pub element_type: String,
+    pub uri: String,
+    pub range: RangeDto,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parent: Option<SysmlFeatureInspectorElementRefDto>,
+    pub attributes: std::collections::HashMap<String, serde_json::Value>,
+    pub typing: SysmlFeatureInspectorResolutionDto,
+    pub specialization: SysmlFeatureInspectorResolutionDto,
+    pub incoming_relationships: Vec<SysmlFeatureInspectorRelationshipDto>,
+    pub outgoing_relationships: Vec<SysmlFeatureInspectorRelationshipDto>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlFeatureInspectorResultDto {
+    pub version: u32,
+    pub source_uri: String,
+    pub requested_position: PositionDto,
+    pub element: Option<SysmlFeatureInspectorElementDto>,
 }
 
 #[allow(dead_code)]

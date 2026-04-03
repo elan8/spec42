@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 import type { LanguageClient } from "vscode-languageclient/node";
 import { log, logError } from "../logger";
 import type {
+  SysMLFeatureInspectorParams,
+  SysMLFeatureInspectorResult,
   GraphNodeDTO,
   SysMLDiagramParams,
   SysMLDiagramResult,
@@ -182,6 +184,27 @@ export class LspModelProvider {
       options,
     };
     return await this.client.sendRequest<SysMLDiagramResult>("sysml/diagram", params, token);
+  }
+
+  async getFeatureInspector(
+    uri: string,
+    position: PositionDTO,
+    token?: vscode.CancellationToken
+  ): Promise<SysMLFeatureInspectorResult> {
+    const trimmed = (uri || "").trim();
+    if (!trimmed) {
+      throw new Error("getFeatureInspector requires a non-empty URI");
+    }
+    await this.whenReady;
+    const params: SysMLFeatureInspectorParams = {
+      textDocument: { uri: trimmed },
+      position,
+    };
+    return await this.client.sendRequest<SysMLFeatureInspectorResult>(
+      "sysml/featureInspector",
+      params,
+      token
+    );
   }
 
   async getServerStats(): Promise<SysMLServerStats | undefined> {

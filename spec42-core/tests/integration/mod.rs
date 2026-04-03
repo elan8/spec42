@@ -11,6 +11,7 @@ mod definition;
 mod diagnostics;
 mod experimental_capabilities;
 mod experimental_requests;
+mod feature_inspector;
 mod harness;
 mod hover;
 mod lifecycle;

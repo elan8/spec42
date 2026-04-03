@@ -97,6 +97,12 @@
         "category": "SysML"
       },
       {
+        "command": "sysml.featureInspector.refresh",
+        "title": "Refresh SysML Feature Inspector",
+        "icon": "$(refresh)",
+        "category": "SysML"
+      },
+      {
         "command": "sysml.library.refresh",
         "title": "Refresh Library View",
         "icon": "$(refresh)",
@@ -233,6 +239,11 @@
           "command": "sysml.library.refresh",
           "when": "view == spec42Library",
           "group": "navigation"
+        },
+        {
+          "command": "sysml.featureInspector.refresh",
+          "when": "view == sysmlFeatureInspector",
+          "group": "navigation"
         }
       ],
       "editor/title": [
@@ -346,6 +357,10 @@
           "name": "Library",
           "type": "webview",
           "contextualTitle": "Spec42 Library"
+        },
+        {
+          "id": "sysmlFeatureInspector",
+          "name": "Feature Inspector"
         }
       ]
     },
@@ -357,6 +372,10 @@
       {
         "view": "sysmlModelExplorer",
         "contents": "No SysML model loaded.\\n\\n- Open a `.sysml` or `.kerml` file\\n- Or run **SysML: Show SysML Model Explorer**"
+      },
+      {
+        "view": "sysmlFeatureInspector",
+        "contents": "Open a `.sysml` or `.kerml` file and move the cursor onto a model element to inspect it."
       }
     ],
     "configuration": {

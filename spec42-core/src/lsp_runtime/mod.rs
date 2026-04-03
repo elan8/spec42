@@ -22,7 +22,8 @@ use crate::host::config::Spec42Config;
 use crate::views::dto;
 use crate::workspace::ServerState;
 use custom::{
-    sysml_clear_cache_result, sysml_diagram_result, sysml_model_result, sysml_server_stats_result,
+    sysml_clear_cache_result, sysml_diagram_result, sysml_feature_inspector_result,
+    sysml_model_result, sysml_server_stats_result,
 };
 
 struct Backend {
@@ -326,6 +327,14 @@ impl Backend {
         sysml_diagram_result(&self.client, &state, &self.config, params).await
     }
 
+    async fn sysml_feature_inspector(
+        &self,
+        params: serde_json::Value,
+    ) -> Result<dto::SysmlFeatureInspectorResultDto> {
+        let state = self.state.read().await;
+        sysml_feature_inspector_result(&state, params)
+    }
+
     async fn sysml_server_stats(&self) -> Result<dto::SysmlServerStatsDto> {
         let state = self.state.read().await;
         Ok(sysml_server_stats_result(&state, self.start_time))
@@ -442,6 +451,7 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     })
     .custom_method("sysml/model", Backend::sysml_model)
     .custom_method("sysml/diagram", Backend::sysml_diagram)
+    .custom_method("sysml/featureInspector", Backend::sysml_feature_inspector)
     .custom_method("sysml/serverStats", Backend::sysml_server_stats)
     .custom_method("sysml/clearCache", Backend::sysml_clear_cache)
     .custom_method("sysml/librarySearch", Backend::sysml_library_search)

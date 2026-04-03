@@ -57,6 +57,28 @@ pub(crate) async fn sysml_model_result(
     Ok(response)
 }
 
+pub(crate) fn sysml_feature_inspector_result(
+    state: &ServerState,
+    params: serde_json::Value,
+) -> Result<dto::SysmlFeatureInspectorResultDto> {
+    let (uri, position) = crate::views::parse_sysml_feature_inspector_params(&params)?;
+    let Some(entry) = state.index.get(&uri) else {
+        return Ok(crate::views::empty_feature_inspector_response(
+            &uri, position,
+        ));
+    };
+    if entry.parsed.is_none() {
+        return Ok(crate::views::empty_feature_inspector_response(
+            &uri, position,
+        ));
+    }
+    Ok(crate::views::build_sysml_feature_inspector_response(
+        &state.semantic_graph,
+        &uri,
+        position,
+    ))
+}
+
 pub(crate) async fn sysml_diagram_result(
     client: &Client,
     state: &ServerState,
