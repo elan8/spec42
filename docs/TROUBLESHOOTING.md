@@ -82,23 +82,3 @@ What to do:
 1. Run `SysML: Refresh SysML Model Explorer`.
 2. Run `SysML: Refresh Visualization`.
 3. Check whether the current visualization view is experimental in the roadmap/docs.
-
-## Current Support Boundaries
-
-The current extension is focused on a stable core editing loop first.
-
-Stable first:
-
-- diagnostics
-- hover
-- definition
-- references
-- rename
-- formatting
-- semantic tokens
-
-Still maturing:
-
-- large-workspace behavior
-- deeper SysML v2 semantic coverage
-- non-general visualization views

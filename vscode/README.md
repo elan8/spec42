@@ -37,16 +37,6 @@ If you work with **MBSE** and want fast feedback while editing models, this exte
 - **Model Visualizer**: diagram views with SVG/PNG/JSON export and theme-aware rendering
 - **Status feedback**: startup/indexing/degraded workspace status in the SysML status bar item
 
-## Available Today
-
-The current extension intentionally focuses on reliable editing, navigation, workspace indexing, library support, inspection, and visualization.
-
-Not in scope for the current release surface:
-
-- model dashboards
-- complexity scoring or MCI-style metrics
-- AI/MCP-specific modeling surfaces
-
 ## Getting started
 
 1. Install the extension.
@@ -67,14 +57,6 @@ The shared snippet pack is aimed at the modeling patterns already used in this r
 - specialization forms such as `:>`
 - connections, typed interface connects, and flow statements
 - architecture and multi-file starter skeletons
-
-## Sample workspaces
-
-If you want a quick starting point, open one of these repo workspaces directly:
-
-- [`single-file`](testFixture/workspaces/single-file): architecture-oriented surveillance drone model
-- [`state-view`](testFixture/workspaces/state-view): compact state-machine example
-- [`multi-file`](testFixture/workspaces/multi-file): minimal cross-file definition and usage example
 
 ## Configuration
 
@@ -120,10 +102,7 @@ Example `settings.json`:
 
 ```json
 {
-  "spec42.libraryPaths": [
-    "../SysML-v2-Release",
-    "./my-company-sysml-library"
-  ]
+  "spec42.libraryPaths": ["../SysML-v2-Release", "./my-company-sysml-library"]
 }
 ```
 

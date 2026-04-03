@@ -26,14 +26,6 @@ Today `spec42` focuses on dependable core editing and navigation workflows:
 - editor assistance: hover, completion, linked editing, document links, folding, selection ranges, TextMate fallback highlighting, and semantic tokens
 - workspace-aware model exploration with the Feature Inspector, Model Explorer, and visualizer workflows
 
-Complex dashboards and speculative model scoring are still out of scope.
-
-## Editing Experience
-
-The VS Code extension now layers a lightweight TextMate grammar under the language server so SysML/KerML files get immediate syntax coloring on open, even before the server is fully warm. Once the server is ready, semantic tokens remain the authoritative highlighting path.
-
-The shared snippet pack covers common modeling workflows such as packages/imports, part and port definitions/usages, state-machine scaffolds, requirement scaffolds, interface connections, and small architecture or multi-file starters.
-
 ## Sample Workspaces
 
 Recommended examples under [`vscode/testFixture/workspaces`](vscode/testFixture/workspaces):
@@ -53,18 +45,6 @@ Download from [Releases](https://github.com/elan8/spec42/releases):
 1. **VS Code**: install the `.vsix` (Extensions → "…" → Install from VSIX). The server binary is bundled.
 2. **Server only** (other editors): download the archive for your OS, extract, and put the binary on PATH.
 
-## Export GitHub code scanning findings
-
-If you enabled GitHub code scanning (CodeQL), you can export JSON findings (requires `gh` and `gh auth login`):
-
-```powershell
-.\scripts\export-code-scanning.ps1
-```
-
-Default output directory: `.\code-scanning-export\`
-
-- `code-scanning-alerts-<timestamp>.json` (all code scanning alerts)
-
 ## Building
 
 ```bash
@@ -73,10 +53,6 @@ cd vscode && npm install && npm run compile   # VS Code extension
 ```
 
 For development and testing details, see [DEVELOPMENT.md](DEVELOPMENT.md). For extension usage/configuration, snippets, and sample-workspace guidance, see [`vscode/README.md`](vscode/README.md).
-
-## Roadmap
-
-- [Roadmap](docs/ROADMAP.md)
 
 ## License
 
