@@ -317,8 +317,8 @@ impl LanguageServer for Backend {
 
 impl Backend {
     async fn sysml_model(&self, params: serde_json::Value) -> Result<dto::SysmlModelResultDto> {
-        let state = self.state.read().await;
-        sysml_model_result(&self.client, &state, &self.config, params).await
+        let mut state = self.state.write().await;
+        sysml_model_result(&self.client, &mut state, &self.config, params).await
     }
 
     async fn sysml_diagram(&self, params: serde_json::Value) -> Result<dto::SysmlDiagramResultDto> {

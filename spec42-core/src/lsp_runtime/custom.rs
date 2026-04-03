@@ -8,7 +8,7 @@ use tower_lsp::Client;
 
 pub(crate) async fn sysml_model_result(
     client: &Client,
-    state: &ServerState,
+    state: &mut ServerState,
     _config: &Spec42Config,
     params: serde_json::Value,
 ) -> Result<dto::SysmlModelResultDto> {
@@ -37,9 +37,12 @@ pub(crate) async fn sysml_model_result(
             return Ok(crate::views::empty_model_response(build_start));
         }
     };
-    Ok(crate::build_sysml_model_response(
+    let parse_metadata = entry.parse_metadata;
+    let response = crate::build_sysml_model_response(
         &entry.content,
         entry.parsed.as_ref(),
+        parse_metadata.parse_time_ms,
+        parse_metadata.parse_cached,
         &state.semantic_graph,
         &uri,
         &state.library_paths,
@@ -47,7 +50,11 @@ pub(crate) async fn sysml_model_result(
         build_start,
         client,
     )
-    .await)
+    .await;
+    if let Some(entry) = state.index.get_mut(&uri) {
+        entry.parse_metadata.parse_cached = true;
+    }
+    Ok(response)
 }
 
 pub(crate) async fn sysml_diagram_result(

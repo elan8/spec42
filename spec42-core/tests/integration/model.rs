@@ -1,6 +1,8 @@
 //! sysml/model integration tests.
 
-use super::harness::{next_id, read_message, read_response, send_message, spawn_server};
+use super::harness::{
+    next_id, read_message, read_response, send_message, spawn_server, TestSession,
+};
 use std::fs;
 
 const FULL_DRONE_FIXTURE: &str = "surveillance_drone_full.sysml";
@@ -11,6 +13,131 @@ fn fixture_text(name: &str) -> String {
         .join("fixtures")
         .join(name);
     fs::read_to_string(path).expect("read fixture")
+}
+
+fn request_model(session: &mut TestSession, uri: &str) -> serde_json::Value {
+    session.request(
+        "sysml/model",
+        serde_json::json!({
+            "textDocument": { "uri": uri },
+            "scope": ["graph", "stats"]
+        }),
+    )
+}
+
+#[test]
+fn lsp_sysml_model_stats_report_parse_and_build_timing_and_cache_transitions() {
+    let mut session = TestSession::new();
+    session.initialize_default("model-stats");
+
+    let uri = "file:///model_stats_test.sysml";
+    let initial = r#"
+        package Demo {
+            part def Engine;
+            part motor : Engine;
+        }
+    "#;
+
+    session.did_open(uri, initial, 1);
+    session.barrier();
+
+    let first = request_model(&mut session, uri);
+    let first_stats = &first["result"]["stats"];
+    assert!(
+        first_stats["parseTimeMs"].as_u64().unwrap_or(0) > 0,
+        "expected parseTimeMs > 0, got {first_stats:#?}"
+    );
+    assert!(
+        first_stats["modelBuildTimeMs"].as_u64().unwrap_or(0) > 0,
+        "expected modelBuildTimeMs > 0, got {first_stats:#?}"
+    );
+    assert_eq!(
+        first_stats["parseCached"].as_bool(),
+        Some(false),
+        "first model read should consume a fresh parse result"
+    );
+
+    let second = request_model(&mut session, uri);
+    assert_eq!(
+        second["result"]["stats"]["parseCached"].as_bool(),
+        Some(true),
+        "repeated model read should report cached parse reuse"
+    );
+
+    let changed = r#"
+        package Demo {
+            part def Motor;
+            part motor : Motor;
+        }
+    "#;
+    session.did_change_full(uri, changed, 2);
+    session.barrier();
+
+    let after_change = request_model(&mut session, uri);
+    let changed_stats = &after_change["result"]["stats"];
+    assert!(
+        changed_stats["parseTimeMs"].as_u64().unwrap_or(0) > 0,
+        "expected parseTimeMs > 0 after change, got {changed_stats:#?}"
+    );
+    assert_eq!(
+        changed_stats["parseCached"].as_bool(),
+        Some(false),
+        "first model read after content change should not be cached"
+    );
+}
+
+#[test]
+fn lsp_sysml_model_stats_report_resolved_and_unresolved_elements_honestly() {
+    let mut session = TestSession::new();
+    session.initialize_default("model-resolution-stats");
+
+    let defs_uri = "file:///resolution_defs.sysml";
+    let defs = r#"
+        package R {
+            requirement def EnduranceReq;
+        }
+    "#;
+    let usage_uri = "file:///resolution_usage.sysml";
+    let usage = r#"
+        package R {
+            requirement enduranceCheck : EnduranceReq;
+            requirement brokenCheck : MissingReq;
+        }
+    "#;
+
+    session.did_open(defs_uri, defs, 1);
+    session.did_open(usage_uri, usage, 2);
+    session.barrier();
+
+    let response = request_model(&mut session, usage_uri);
+    let stats = &response["result"]["stats"];
+    assert!(
+        stats["resolvedElements"].as_u64().unwrap_or(0) > 0,
+        "expected at least one resolved element, got {stats:#?}"
+    );
+    assert!(
+        stats["unresolvedElements"].as_u64().unwrap_or(0) > 0,
+        "expected at least one unresolved element, got {stats:#?}"
+    );
+}
+
+#[test]
+fn lsp_sysml_model_empty_response_keeps_stats_honest() {
+    let mut session = TestSession::new();
+    session.initialize_default("model-empty-stats");
+
+    let uri = "file:///missing_model_stats.sysml";
+    let response = request_model(&mut session, uri);
+    let stats = &response["result"]["stats"];
+    assert_eq!(stats["totalElements"].as_u64(), Some(0));
+    assert_eq!(stats["resolvedElements"].as_u64(), Some(0));
+    assert_eq!(stats["unresolvedElements"].as_u64(), Some(0));
+    assert_eq!(stats["parseTimeMs"].as_u64(), Some(0));
+    assert_eq!(stats["parseCached"].as_bool(), Some(false));
+    assert!(
+        stats["modelBuildTimeMs"].as_u64().unwrap_or(0) > 0,
+        "expected empty response modelBuildTimeMs > 0, got {stats:#?}"
+    );
 }
 
 /// sysml/model with scope ["graph"] returns state machine nodes and transition edges.

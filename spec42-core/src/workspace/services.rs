@@ -1,10 +1,15 @@
 use crate::common::util;
 use crate::semantic_model;
 use crate::workspace::library_search;
-use crate::workspace::state::{IndexEntry, ScanSummary, ServerState};
+use crate::workspace::state::{IndexEntry, ParseMetadata, ScanSummary, ServerState};
+use std::time::Instant;
 use sysml_parser::RootNamespace;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
 use walkdir::WalkDir;
+
+fn elapsed_ms(start: Instant) -> u32 {
+    start.elapsed().as_millis().max(1) as u32
+}
 
 pub(crate) fn indexed_text(state: &ServerState, uri_norm: &Url) -> Option<String> {
     state.index.get(uri_norm).map(|entry| entry.content.clone())
@@ -61,6 +66,7 @@ pub(crate) struct ParsedScanEntry {
     pub(crate) content: String,
     pub(crate) parsed: Option<RootNamespace>,
     pub(crate) parse_errors: Vec<String>,
+    pub(crate) parse_metadata: ParseMetadata,
 }
 
 fn warning_from_parse_errors(
@@ -83,9 +89,11 @@ fn warning_from_parse_errors(
 }
 
 fn parse_scanned_entry(ordinal: usize, uri: Url, content: String) -> ParsedScanEntry {
+    let parse_start = Instant::now();
     let parsed_result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         util::parse_for_editor(&content)
     }));
+    let parse_time_ms = elapsed_ms(parse_start);
     let parser_panicked = parsed_result.is_err();
     let (parsed, mut parse_errors) = match parsed_result {
         Ok(result) => {
@@ -114,6 +122,10 @@ fn parse_scanned_entry(ordinal: usize, uri: Url, content: String) -> ParsedScanE
         content,
         parsed,
         parse_errors,
+        parse_metadata: ParseMetadata {
+            parse_time_ms,
+            parse_cached: false,
+        },
     }
 }
 
@@ -197,6 +209,7 @@ pub(crate) fn store_parsed_document_text(
     uri_norm: &Url,
     text: String,
     parsed: Option<RootNamespace>,
+    parse_metadata: ParseMetadata,
     parse_errors: &[String],
     diagnostic_count: usize,
     context: &str,
@@ -207,6 +220,7 @@ pub(crate) fn store_parsed_document_text(
         IndexEntry {
             content: text,
             parsed,
+            parse_metadata,
         },
     );
     refresh_symbols_for_uri(state, uri_norm);
@@ -218,7 +232,9 @@ pub(crate) fn store_document_text(
     uri_norm: &Url,
     text: String,
 ) -> Option<String> {
+    let parse_start = Instant::now();
     let parsed_result = util::parse_for_editor(&text);
+    let parse_time_ms = elapsed_ms(parse_start);
     let parse_errors = parsed_result
         .errors
         .iter()
@@ -230,6 +246,10 @@ pub(crate) fn store_document_text(
         uri_norm,
         text,
         Some(parsed_result.root),
+        ParseMetadata {
+            parse_time_ms,
+            parse_cached: false,
+        },
         &parse_errors,
         parsed_result.errors.len(),
         "store_document_text",
@@ -256,6 +276,7 @@ pub(crate) fn ingest_parsed_scan_entries(
             &uri_norm,
             entry.content,
             entry.parsed,
+            entry.parse_metadata,
             &entry.parse_errors,
             entry.parse_errors.len(),
             "workspace_scan",
@@ -303,8 +324,13 @@ pub(crate) fn apply_document_changes(
             }
         }
         if content_changed {
+            let parse_start = Instant::now();
             let parsed_result = util::parse_for_editor(&entry.content);
             entry.parsed = Some(parsed_result.root);
+            entry.parse_metadata = ParseMetadata {
+                parse_time_ms: elapsed_ms(parse_start),
+                parse_cached: false,
+            };
             if !parsed_result.errors.is_empty() {
                 runtime_warnings.push((
                     MessageType::LOG,
@@ -383,6 +409,9 @@ mod tests {
         );
         assert!(warning.is_none());
         assert!(state.index.contains_key(&uri));
+        let first_entry = state.index.get(&uri).expect("stored doc");
+        assert!(first_entry.parse_metadata.parse_time_ms > 0);
+        assert!(!first_entry.parse_metadata.parse_cached);
         assert!(!state.symbol_table.is_empty());
         assert!(!state.semantic_graph.nodes_for_uri(&uri).is_empty());
 
@@ -403,6 +432,23 @@ mod tests {
             .expect("updated doc")
             .content
             .contains("Motor"));
+        assert!(
+            state
+                .index
+                .get(&uri)
+                .expect("updated doc")
+                .parse_metadata
+                .parse_time_ms
+                > 0
+        );
+        assert!(
+            !state
+                .index
+                .get(&uri)
+                .expect("updated doc")
+                .parse_metadata
+                .parse_cached
+        );
 
         remove_document(&mut state, &uri);
         assert!(!state.index.contains_key(&uri));

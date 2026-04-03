@@ -84,8 +84,8 @@ pub fn empty_model_response(build_start: Instant) -> SysmlModelResultDto {
             resolved_elements: 0,
             unresolved_elements: 0,
             parse_time_ms: 0,
-            model_build_time_ms: build_start.elapsed().as_millis() as u32,
-            parse_cached: true,
+            model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
+            parse_cached: false,
         }),
     }
 }

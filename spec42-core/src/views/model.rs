@@ -48,10 +48,68 @@ fn workspace_visualization_enabled(scope: &[String]) -> bool {
     model_projection::workspace_visualization_enabled(scope)
 }
 
+fn elapsed_ms(start: Instant) -> u32 {
+    start.elapsed().as_millis().max(1) as u32
+}
+
+const TYPING_ATTRIBUTE_KEYS: &[&str] = &[
+    "partType",
+    "attributeType",
+    "portType",
+    "actionType",
+    "actorType",
+    "itemType",
+    "occurrenceType",
+    "flowType",
+    "allocationType",
+    "stateType",
+    "requirementType",
+    "useCaseType",
+    "concernType",
+    "endType",
+    "refType",
+    "parameterType",
+];
+
+fn node_expects_resolution(node: &semantic_model::SemanticNode) -> bool {
+    TYPING_ATTRIBUTE_KEYS
+        .iter()
+        .any(|key| node.attributes.get(*key).and_then(|v| v.as_str()).is_some())
+        || node
+            .attributes
+            .get("specializes")
+            .and_then(|v| v.as_str())
+            .is_some()
+}
+
+fn count_resolution_stats(semantic_graph: &semantic_model::SemanticGraph, uri: &Url) -> (u32, u32) {
+    let mut resolved = 0_u32;
+    let mut unresolved = 0_u32;
+
+    for node in semantic_graph.nodes_for_uri(uri) {
+        if !node_expects_resolution(node) {
+            continue;
+        }
+
+        if semantic_graph
+            .outgoing_typing_or_specializes_targets(node)
+            .is_empty()
+        {
+            unresolved += 1;
+        } else {
+            resolved += 1;
+        }
+    }
+
+    (resolved, unresolved)
+}
+
 #[allow(clippy::too_many_arguments)]
 pub async fn build_sysml_model_response(
     content: &str,
     parsed: Option<&RootNamespace>,
+    parse_time_ms: u32,
+    parse_cached: bool,
     semantic_graph: &semantic_model::SemanticGraph,
     uri: &Url,
     library_paths: &[Url],
@@ -174,13 +232,14 @@ pub async fn build_sysml_model_response(
 
     let stats = if want_stats {
         let total = graph.as_ref().map(|g| g.nodes.len() as u32).unwrap_or(0);
+        let (resolved_elements, unresolved_elements) = count_resolution_stats(semantic_graph, uri);
         Some(SysmlModelStatsDto {
             total_elements: total,
-            resolved_elements: 0,
-            unresolved_elements: 0,
-            parse_time_ms: 0,
-            model_build_time_ms: build_start.elapsed().as_millis() as u32,
-            parse_cached: true,
+            resolved_elements,
+            unresolved_elements,
+            parse_time_ms,
+            model_build_time_ms: elapsed_ms(build_start),
+            parse_cached,
         })
     } else {
         None

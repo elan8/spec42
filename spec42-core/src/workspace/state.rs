@@ -3,10 +3,17 @@ use crate::semantic_model;
 use sysml_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
 
+#[derive(Debug, Clone, Copy, Default)]
+pub(crate) struct ParseMetadata {
+    pub(crate) parse_time_ms: u32,
+    pub(crate) parse_cached: bool,
+}
+
 #[derive(Debug)]
 pub(crate) struct IndexEntry {
     pub(crate) content: String,
     pub(crate) parsed: Option<RootNamespace>,
+    pub(crate) parse_metadata: ParseMetadata,
 }
 
 #[derive(Debug, Default)]
