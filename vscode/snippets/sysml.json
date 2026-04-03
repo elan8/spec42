@@ -9,10 +9,32 @@
     "body": ["library package ${1:Name} {", "\t$0", "}"],
     "description": "Create a library package"
   },
+  "SysML: package with imports": {
+    "prefix": "packageimports",
+    "body": [
+      "package ${1:Name} {",
+      "\tpublic import ${2:LibraryPackage};",
+      "\tprivate import ${3:InternalNamespace};",
+      "",
+      "\t$0",
+      "}"
+    ],
+    "description": "Create a package scaffold with public/private imports"
+  },
+  "SysML: namespace import": {
+    "prefix": "nsimport",
+    "body": ["public import ${1:Package}::${2:Member};$0"],
+    "description": "Import a package member with namespace qualification"
+  },
   "SysML: part def": {
     "prefix": "partdef",
     "body": ["part def ${1:TypeName}${2: : ${3:SuperType}} {", "\t$0", "}"],
     "description": "Define a part type"
+  },
+  "SysML: part def specialization": {
+    "prefix": "partdefspec",
+    "body": ["part def ${1:TypeName} :> ${2:BaseType} {", "\t$0", "}"],
+    "description": "Define a specializing part type"
   },
   "SysML: part usage": {
     "prefix": "part",
@@ -33,6 +55,17 @@
     "prefix": "portdef",
     "body": ["port def ${1:PortType}${2: : ${3:Interface}};$0"],
     "description": "Define a port"
+  },
+  "SysML: port def block": {
+    "prefix": "portdefblock",
+    "body": [
+      "port def ${1:PortType} {",
+      "\tin ${2:incoming} : ${3:SignalType};",
+      "\tout ${4:outgoing} : ${5:SignalType};",
+      "\t$0",
+      "}"
+    ],
+    "description": "Define a port type with in/out features"
   },
   "SysML: port usage": {
     "prefix": "port",
@@ -70,10 +103,29 @@
     "body": ["state def ${1:StateName} {", "\t$0", "}"],
     "description": "Define a state"
   },
+  "SysML: state machine skeleton": {
+    "prefix": "statemachine",
+    "body": [
+      "state def ${1:StateMachineName} {",
+      "\tentry;",
+      "\tthen ${2:idle};",
+      "\tstate ${2:idle} : ${3:Idle};",
+      "\tstate ${4:running} : ${5:Running};",
+      "\ttransition ${6:to_running} first ${2:idle} then ${4:running};",
+      "\t$0",
+      "}"
+    ],
+    "description": "Create a simple state machine skeleton"
+  },
   "SysML: requirement def": {
     "prefix": "reqdef",
     "body": ["requirement def ${1:ReqName} {", "\t$0", "}"],
     "description": "Define a requirement"
+  },
+  "SysML: requirement usage": {
+    "prefix": "req",
+    "body": ["requirement ${1:name} : ${2:RequirementType};$0"],
+    "description": "Declare a requirement usage"
   },
   "SysML: requirement def (text+verify)": {
     "prefix": "reqd",
@@ -129,15 +181,71 @@
     "body": ["import ${1:PackageOrLibrary};$0"],
     "description": "Import a package/library"
   },
+  "SysML: private import": {
+    "prefix": "pimport",
+    "body": ["private import ${1:PackageOrLibrary};$0"],
+    "description": "Import a package privately"
+  },
   "SysML: connection": {
     "prefix": "connect",
     "body": ["connection ${1:name} (${2:a}, ${3:b});$0"],
     "description": "Create a connection"
   },
+  "SysML: connect features": {
+    "prefix": "connectto",
+    "body": ["connect ${1:left}.${2:portA} to ${3:right}.${4:portB};$0"],
+    "description": "Connect two part features"
+  },
   "SysML: flow": {
     "prefix": "flow",
     "body": ["flow ${1:from} -> ${2:to};$0"],
     "description": "Create a flow"
+  },
+  "SysML: interface connection": {
+    "prefix": "ifaceconnect",
+    "body": [
+      "interface : ${1:ConnectionType} connect",
+      "\t${2:source} ::> ${3:left}.${4:leftPort} to",
+      "\t${5:target} ::> ${6:right}.${7:rightPort};$0"
+    ],
+    "description": "Create a typed interface connection"
+  },
+  "SysML: architecture system skeleton": {
+    "prefix": "systemarch",
+    "body": [
+      "package ${1:SystemArchitecture} {",
+      "\tpart def ${2:System} {",
+      "\t\tpart ${3:controller} : ${4:Controller};",
+      "\t\tpart ${5:payload} : ${6:Payload};",
+      "\t\tpart ${7:power} : ${8:PowerSubsystem};",
+      "\t\tconnect ${3:controller}.${9:commandOut} to ${5:payload}.${10:commandIn};",
+      "\t}",
+      "",
+      "\tpart def ${4:Controller} {",
+      "\t\tport ${9:commandOut} : ${11:CommandPort};",
+      "\t}",
+      "",
+      "\tpart def ${6:Payload} {",
+      "\t\tport ${10:commandIn} : ~${11:CommandPort};",
+      "\t}",
+      "",
+      "\tpart def ${8:PowerSubsystem} {",
+      "\t\t$0",
+      "\t}",
+      "",
+      "\tport def ${11:CommandPort};",
+      "}"
+    ],
+    "description": "Create a small architecture-oriented system skeleton"
+  },
+  "SysML: multi-file usage skeleton": {
+    "prefix": "multifileuse",
+    "body": [
+      "package ${1:UsagePackage} {",
+      "\tpublic import ${2:DefinitionsPackage}::${3:Widget};",
+      "\tpart ${4:item} : ${3:Widget};$0",
+      "}"
+    ],
+    "description": "Create a cross-file usage scaffold"
   }
 }
-

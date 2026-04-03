@@ -14,10 +14,11 @@ If you work with **MBSE** and want fast feedback while editing models, this exte
 - **Workspace-aware**: features work across your whole workspace, not just the active file
 - **Library indexing**: point the extension to library roots (for example the SysML v2 release repo) for richer navigation and completion
 - **Managed standard library** tooling for pinned SysML v2 library installs
+- **Editing baseline**: TextMate fallback highlighting on open, semantic tokens once the server is ready, and shared SysML/KerML snippets
 - **Model Explorer + Model Visualizer** for model navigation and diagram inspection/export
+- **Feature Inspector** for trustworthy selected-element details and source navigation
 - **Frontend-rendered diagrams** in the webview (General/Interconnection stable; additional views optional/experimental)
 - **Bundled server binary** in published builds (with a safe fallback to `spec42` on your PATH)
-- **Syntax highlighting** for SysML v2 / KerML
 
 ## Features
 
@@ -27,20 +28,21 @@ If you work with **MBSE** and want fast feedback while editing models, this exte
 - **Navigation**: go to definition, find references, rename
 - **Symbols**: document symbols and workspace symbol search
 - **Hierarchy**: type hierarchy and call hierarchy commands for supported SysML/KerML symbols
-- **Editor workflows**: folding ranges, selection ranges, document links, linked editing, and semantic highlighting
+- **Editor workflows**: folding ranges, selection ranges, document links, linked editing, TextMate fallback highlighting, and semantic highlighting
 - **CodeLens**: reference-count lenses where the current editor/theme configuration shows CodeLens
 - **Code actions & formatting**: where supported by the server
+- **Snippets**: shared SysML/KerML scaffolds for packages, imports, structure, state machines, requirements, and interface connections
+- **Feature Inspector**: selection-driven semantic details for the current element, including parent, typing, specialization, and direct relationships
 - **Model Explorer**: workspace/package tree with model navigation
 - **Model Visualizer**: diagram views with SVG/PNG/JSON export and theme-aware rendering
 - **Status feedback**: startup/indexing/degraded workspace status in the SysML status bar item
 
 ## Available Today
 
-The current extension intentionally focuses on reliable editing, navigation, workspace indexing, library support, and visualization.
+The current extension intentionally focuses on reliable editing, navigation, workspace indexing, library support, inspection, and visualization.
 
 Not in scope for the current release surface:
 
-- feature inspector panels
 - model dashboards
 - complexity scoring or MCI-style metrics
 - AI/MCP-specific modeling surfaces
@@ -51,7 +53,28 @@ Not in scope for the current release surface:
 2. Open any `.sysml` or `.kerml` file.
 3. (Optional) Configure library roots for better cross-file navigation and completion.
 4. Use the command palette to open the Model Explorer/Visualizer when needed.
-5. Use **SysML: Show Type Hierarchy** or **SysML: Show Call Hierarchy** for supported symbols when you want to inspect relationships from the current cursor location.
+5. Use **SysML Feature Inspector** in the sidebar for selected-element details, or **SysML: Show Type Hierarchy** / **SysML: Show Call Hierarchy** for supported symbols when you want to inspect relationships from the current cursor location.
+
+## Editing experience
+
+The extension ships a first-pass TextMate grammar for both SysML and KerML so files look readable immediately on open. After the language server finishes startup and indexing, semantic tokens provide the richer highlight layer.
+
+The shared snippet pack is aimed at the modeling patterns already used in this repo:
+
+- packages and library packages
+- public/private imports and namespace-qualified imports
+- part, port, attribute, action, state, item, and requirement scaffolds
+- specialization forms such as `:>`
+- connections, typed interface connects, and flow statements
+- architecture and multi-file starter skeletons
+
+## Sample workspaces
+
+If you want a quick starting point, open one of these repo workspaces directly:
+
+- [`single-file`](testFixture/workspaces/single-file): architecture-oriented surveillance drone model
+- [`state-view`](testFixture/workspaces/state-view): compact state-machine example
+- [`multi-file`](testFixture/workspaces/multi-file): minimal cross-file definition and usage example
 
 ## Configuration
 

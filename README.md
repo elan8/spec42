@@ -15,7 +15,7 @@ Language server for [SysML v2](https://www.omg.org/sysml/sysmlv2/) (and KerML). 
 - **LSP**: text sync, diagnostics, hover, completion, go to definition, find references, rename, document symbols, workspace symbol search, code actions, formatting, folding ranges, selection ranges, document links, linked editing, call hierarchy, and type hierarchy.
 - **Workspace-aware**: all features use `.sysml` and `.kerml` files across the workspace (and library paths).
 - **Library paths + managed standard library**: configure `spec42.libraryPaths` for custom roots and use the extension-managed pinned SysML v2 standard library support.
-- **VS Code extension**: syntax highlighting, Model Explorer, Model Visualizer, workspace indexing feedback, and frontend-rendered diagram views/export (General + Interconnection stable; additional views optional/experimental).
+- **VS Code extension**: TextMate fallback highlighting plus semantic tokens, snippets, Feature Inspector, Model Explorer, Model Visualizer, workspace indexing feedback, and frontend-rendered diagram views/export (General + Interconnection stable; additional views optional/experimental).
 
 ## Available Today
 
@@ -23,10 +23,24 @@ Today `spec42` focuses on dependable core editing and navigation workflows:
 
 - editor navigation: go to definition, references, rename, document/workspace symbols
 - hierarchy workflows: call hierarchy and type hierarchy
-- editor assistance: hover, completion, linked editing, document links, folding, and selection ranges
-- workspace-aware model exploration and visualizer workflows
+- editor assistance: hover, completion, linked editing, document links, folding, selection ranges, TextMate fallback highlighting, and semantic tokens
+- workspace-aware model exploration with the Feature Inspector, Model Explorer, and visualizer workflows
 
-Advanced model-intelligence surfaces such as a dedicated feature inspector or dashboard are not part of the current release surface yet.
+Complex dashboards and speculative model scoring are still out of scope.
+
+## Editing Experience
+
+The VS Code extension now layers a lightweight TextMate grammar under the language server so SysML/KerML files get immediate syntax coloring on open, even before the server is fully warm. Once the server is ready, semantic tokens remain the authoritative highlighting path.
+
+The shared snippet pack covers common modeling workflows such as packages/imports, part and port definitions/usages, state-machine scaffolds, requirement scaffolds, interface connections, and small architecture or multi-file starters.
+
+## Sample Workspaces
+
+Recommended examples under [`vscode/testFixture/workspaces`](vscode/testFixture/workspaces):
+
+- [`single-file`](vscode/testFixture/workspaces/single-file): realistic surveillance-drone architecture with parts, ports, requirements, and connections
+- [`state-view`](vscode/testFixture/workspaces/state-view): compact state-machine example for behavior-focused editing and visualization
+- [`multi-file`](vscode/testFixture/workspaces/multi-file): minimal cross-file definition/usage workspace for navigation and indexing checks
 
 ## Installing
 
@@ -58,7 +72,7 @@ cargo build --release          # Rust server → target/release/spec42
 cd vscode && npm install && npm run compile   # VS Code extension
 ```
 
-For development and testing details, see [DEVELOPMENT.md](DEVELOPMENT.md). For extension usage/configuration, see [`vscode/README.md`](vscode/README.md).
+For development and testing details, see [DEVELOPMENT.md](DEVELOPMENT.md). For extension usage/configuration, snippets, and sample-workspace guidance, see [`vscode/README.md`](vscode/README.md).
 
 ## Roadmap
 

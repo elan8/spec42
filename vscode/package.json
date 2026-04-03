@@ -69,6 +69,18 @@
         "path": "./snippets/sysml.json"
       }
     ],
+    "grammars": [
+      {
+        "language": "sysml",
+        "scopeName": "source.sysml",
+        "path": "./syntaxes/sysml.tmLanguage.json"
+      },
+      {
+        "language": "kerml",
+        "scopeName": "source.kerml",
+        "path": "./syntaxes/kerml.tmLanguage.json"
+      }
+    ],
     "commands": [
       {
         "command": "sysml.formatDocument",

@@ -1,0 +1,152 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "SysML",
+  "scopeName": "source.sysml",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#definition-keywords"
+    },
+    {
+      "include": "#usage-keywords"
+    },
+    {
+      "include": "#control-keywords"
+    },
+    {
+      "include": "#operators"
+    },
+    {
+      "include": "#punctuation"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.sysml",
+          "begin": "/\\*",
+          "end": "\\*/"
+        },
+        {
+          "name": "comment.line.double-slash.sysml",
+          "match": "//.*$"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.sysml",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.sysml",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.sysml",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "name": "constant.character.escape.sysml",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.sysml",
+          "match": "\\b\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?\\b"
+        }
+      ]
+    },
+    "definition-keywords": {
+      "patterns": [
+        {
+          "name": "keyword.declaration.package.sysml",
+          "match": "\\b(?:library\\s+package|package)\\b"
+        },
+        {
+          "name": "keyword.declaration.import.sysml",
+          "match": "\\b(?:private\\s+import|public\\s+import|import)\\b"
+        },
+        {
+          "name": "keyword.declaration.definition.sysml",
+          "match": "\\b(?:part\\s+def|port\\s+def|action\\s+def|state\\s+def|requirement\\s+def|attribute\\s+def|item\\s+def|enum\\s+def|interface\\s+def)\\b"
+        }
+      ]
+    },
+    "usage-keywords": {
+      "patterns": [
+        {
+          "name": "keyword.other.usage.sysml",
+          "match": "\\b(?:part|port|attribute|action|state|requirement|item|interface|subject|entry|accept|doc|exhibit|end)\\b"
+        }
+      ]
+    },
+    "control-keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.relationship.sysml",
+          "match": "\\b(?:connect|flow|transition|first|then|perform|inout|in|out|to)\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.namespace.sysml",
+          "match": "::"
+        },
+        {
+          "name": "keyword.operator.specialization.sysml",
+          "match": ":>>|:>"
+        },
+        {
+          "name": "keyword.operator.typing.sysml",
+          "match": ":"
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.section.block.begin.sysml",
+          "match": "\\{"
+        },
+        {
+          "name": "punctuation.section.block.end.sysml",
+          "match": "\\}"
+        },
+        {
+          "name": "punctuation.section.group.begin.sysml",
+          "match": "\\("
+        },
+        {
+          "name": "punctuation.section.group.end.sysml",
+          "match": "\\)"
+        },
+        {
+          "name": "punctuation.separator.sysml",
+          "match": "[;,]"
+        }
+      ]
+    }
+  }
+}
