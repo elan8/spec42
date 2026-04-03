@@ -91,13 +91,22 @@ async function handleTestDiagramExported(viewId: string, svgString: string): Pro
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
     if (!workspaceFolder) return;
 
-    const outputDir = vscode.Uri.joinPath(workspaceFolder.uri, 'test-output', 'diagrams');
-    await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(workspaceFolder.uri, 'test-output'));
+    const outputDir = getTestDiagramOutputDir(workspaceFolder);
     await vscode.workspace.fs.createDirectory(outputDir);
 
     const safeViewId = (viewId || 'unknown').replace(/[^a-zA-Z0-9_-]/g, '_');
     const fileUri = vscode.Uri.joinPath(outputDir, `${safeViewId}.svg`);
     await vscode.workspace.fs.writeFile(fileUri, Buffer.from(svgString, 'utf8'));
+}
+
+function getTestDiagramOutputDir(workspaceFolder: vscode.WorkspaceFolder): vscode.Uri {
+    const configuredDir = (process.env.SPEC42_TEST_EXPORT_DIR || '').trim();
+    if (!configuredDir) {
+        return vscode.Uri.joinPath(workspaceFolder.uri, 'test-output', 'diagrams');
+    }
+
+    const safeWorkspaceName = workspaceFolder.name.replace(/[^a-zA-Z0-9_-]/g, '_');
+    return vscode.Uri.file(path.join(configuredDir, safeWorkspaceName));
 }
 
 export function createMessageHandlers(context: MessageHandlerContext) {

@@ -4,6 +4,7 @@ import { VisualizationPanel } from "../../visualization/visualizationPanel";
 import {
     configureServerForTests,
     getExternalFixturePath,
+    getDiagramExportUri,
     getTestWorkspaceFolder,
     waitFor,
     waitForLanguageServerReady,
@@ -202,7 +203,7 @@ describe("Interconnection Visualization Drone", () => {
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
         await new Promise((r) => setTimeout(r, 2600));
 
-        const uri = vscode.Uri.joinPath(workspaceFolder.uri, "test-output", "diagrams", "interconnection-view.svg");
+        const uri = getDiagramExportUri(workspaceFolder.uri, "interconnection-view");
         try {
             await vscode.workspace.fs.delete(uri, { useTrash: false });
         } catch {

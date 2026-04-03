@@ -5,6 +5,7 @@ import * as vscode from "vscode";
 import { VisualizationPanel } from "../../visualization/visualizationPanel";
 import {
   configureServerForTests,
+  getDiagramExportUri,
   getTestWorkspaceFolder,
   waitFor,
   waitForDiagramExport,
@@ -142,12 +143,7 @@ describe("SysML Examples General View", () => {
       30000,
       300
     );
-    const exportUri = vscode.Uri.joinPath(
-      getTestWorkspaceFolder().uri,
-      "test-output",
-      "diagrams",
-      "general-view.svg"
-    );
+    const exportUri = getDiagramExportUri(getTestWorkspaceFolder().uri, "general-view");
     try {
       await vscode.workspace.fs.delete(exportUri, { useTrash: false });
     } catch {
@@ -290,4 +286,3 @@ describe("SysML Examples General View", () => {
     panel.getWebview()?.postMessage({ command: "setRequirementsVisibleForTest", enabled: true });
   });
 });
-

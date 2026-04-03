@@ -1,5 +1,6 @@
 import * as assert from "assert";
 import * as fs from "fs";
+import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
 
@@ -84,6 +85,10 @@ export async function waitFor<T>(
 }
 
 export async function configureServerForTests(): Promise<void> {
+  const testExportDir = path.join(os.tmpdir(), "spec42-vscode-test-exports");
+  fs.mkdirSync(testExportDir, { recursive: true });
+  process.env.SPEC42_TEST_EXPORT_DIR = testExportDir;
+
   const extension = vscode.extensions.all.find(
     (e) => e.packageJSON?.name === "spec42"
   );
@@ -159,13 +164,23 @@ export async function waitForLanguageServerReady(
   );
 }
 
+export function getDiagramExportUri(workspaceUri: vscode.Uri, viewId: string): vscode.Uri {
+  const configuredDir = (process.env.SPEC42_TEST_EXPORT_DIR || "").trim();
+  if (!configuredDir) {
+    return vscode.Uri.joinPath(workspaceUri, "test-output", "diagrams", `${viewId}.svg`);
+  }
+
+  const workspaceName = path.basename(workspaceUri.fsPath).replace(/[^a-zA-Z0-9_-]/g, "_");
+  return vscode.Uri.file(path.join(configuredDir, workspaceName, `${viewId}.svg`));
+}
+
 export async function waitForDiagramExport(
   workspaceUri: vscode.Uri,
   viewId: string,
   isReady: (svgText: string) => boolean,
   timeoutMs = 12000
 ): Promise<{ uri: vscode.Uri; svgText: string }> {
-  const uri = vscode.Uri.joinPath(workspaceUri, "test-output", "diagrams", `${viewId}.svg`);
+  const uri = getDiagramExportUri(workspaceUri, viewId);
   const svgText = await waitFor(
     `${viewId} svg export`,
     async () => (await tryReadWorkspaceText(uri)) ?? "",

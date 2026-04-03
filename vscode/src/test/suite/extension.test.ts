@@ -1,5 +1,4 @@
 import * as assert from "assert";
-import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { VisualizationPanel } from "../../visualization/visualizationPanel";
@@ -95,28 +94,25 @@ describe("Extension Test Suite", () => {
     assert.ok(commands.includes("sysml.featureInspector.refresh"));
   });
 
-  it("Package contributions register SysML and KerML grammars", () => {
-    const extension = vscode.extensions.all.find(
-      (candidate) => candidate.packageJSON?.name === "spec42"
-    );
-    assert.ok(extension, "Expected spec42 extension metadata");
-    const grammars = extension?.packageJSON?.contributes?.grammars;
-    assert.ok(Array.isArray(grammars), "Expected grammar contributions");
-
-    const sysmlGrammar = grammars.find((grammar: { language: string }) => grammar.language === "sysml");
-    const kermlGrammar = grammars.find((grammar: { language: string }) => grammar.language === "kerml");
-    assert.ok(sysmlGrammar, "Expected SysML grammar contribution");
-    assert.ok(kermlGrammar, "Expected KerML grammar contribution");
-  });
-
   it("Snippet pack exposes editing baseline scaffolds", () => {
     const extension = vscode.extensions.all.find(
       (candidate) => candidate.packageJSON?.name === "spec42"
     );
     assert.ok(extension, "Expected spec42 extension metadata");
-    const snippetPath = path.join(extension.extensionPath, "snippets", "sysml.json");
-    const snippets = JSON.parse(fs.readFileSync(snippetPath, "utf8")) as Record<string, unknown>;
+    const snippetContributions = extension.packageJSON?.contributes?.snippets;
+    assert.ok(Array.isArray(snippetContributions), "Expected snippet contributions");
+    assert.ok(
+      snippetContributions.some((entry: { language: string; path: string }) => entry.language === "sysml" && entry.path === "./snippets/sysml.json"),
+      "Expected SysML snippet contribution"
+    );
+    assert.ok(
+      snippetContributions.some((entry: { language: string; path: string }) => entry.language === "kerml" && entry.path === "./snippets/sysml.json"),
+      "Expected KerML snippet contribution"
+    );
 
+    const snippetPath = path.join(extension.extensionPath, "snippets", "sysml.json");
+    const snippetText = require("fs").readFileSync(snippetPath, "utf8");
+    const snippets = JSON.parse(snippetText) as Record<string, unknown>;
     assert.ok(snippets["SysML: package with imports"]);
     assert.ok(snippets["SysML: state machine skeleton"]);
     assert.ok(snippets["SysML: architecture system skeleton"]);

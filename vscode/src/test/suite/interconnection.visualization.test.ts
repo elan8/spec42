@@ -5,6 +5,7 @@ import { prepareDataForView } from "../../visualization/prepareData";
 import {
     configureServerForTests,
     getFixturePath,
+    getDiagramExportUri,
     getTestWorkspaceFolder,
     waitForDiagramExport,
     waitFor,
@@ -193,12 +194,7 @@ describe("Interconnection Visualization", () => {
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
         // CI runners can take longer to settle after view changes before export is ready.
         await new Promise((r) => setTimeout(r, 1800));
-        const exportUri = vscode.Uri.joinPath(
-            workspaceFolder.uri,
-            "test-output",
-            "diagrams",
-            "interconnection-view.svg"
-        );
+        const exportUri = getDiagramExportUri(workspaceFolder.uri, "interconnection-view");
         try {
             await vscode.workspace.fs.delete(exportUri, { useTrash: false });
         } catch {

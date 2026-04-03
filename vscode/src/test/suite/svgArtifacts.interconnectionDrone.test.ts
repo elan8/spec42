@@ -6,6 +6,7 @@ import { VisualizationPanel } from "../../visualization/visualizationPanel";
 import {
   configureServerForTests,
   getFixturePath,
+  getDiagramExportUri,
   getTestWorkspaceFolder,
   waitForDiagramExport,
   waitFor,
@@ -72,11 +73,9 @@ describe("SVG artifacts (SurveillanceDrone, elkjs)", () => {
       activityDiagrams: model?.activityDiagrams ?? [],
       currentView: "general-view",
     });
-    const outputDir = vscode.Uri.joinPath(workspaceFolder.uri, "test-output", "diagrams");
-
     async function exportView(viewId: string): Promise<{ svgText: string; fileName: string }> {
       await vscode.commands.executeCommand("sysml.changeVisualizerView", viewId);
-      const uri = vscode.Uri.joinPath(outputDir, `${viewId}.svg`);
+      const uri = getDiagramExportUri(workspaceFolder.uri, viewId);
       try {
         await vscode.workspace.fs.delete(uri, { useTrash: false });
       } catch {

@@ -4,6 +4,7 @@ import { VisualizationPanel } from "../../visualization/visualizationPanel";
 import {
     configureServerForTests,
     getFixturePath,
+    getDiagramExportUri,
     getTestWorkspaceFolder,
     waitFor,
     waitForLanguageServerReady,
@@ -74,9 +75,8 @@ describe("Visualization Diagram Views", () => {
             await new Promise((r) => setTimeout(r, 1200)); // Wait for export + file write
         }
 
-        const outputDir = vscode.Uri.joinPath(workspaceFolder.uri, "test-output", "diagrams");
         for (const viewId of VIEW_IDS) {
-            const uri = vscode.Uri.joinPath(outputDir, `${viewId}.svg`);
+            const uri = getDiagramExportUri(workspaceFolder.uri, viewId);
             try {
                 const stat = await vscode.workspace.fs.stat(uri);
                 assert.ok(stat.size >= 0, `${viewId}.svg should exist`);
@@ -90,7 +90,7 @@ describe("Visualization Diagram Views", () => {
                     );
                 }
             } catch {
-                assert.fail(`${viewId}.svg was not created in test-output/diagrams/`);
+                assert.fail(`${viewId}.svg was not created in the test export directory`);
             }
         }
     });

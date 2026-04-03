@@ -14,7 +14,7 @@ If you work with **MBSE** and want fast feedback while editing models, this exte
 - **Workspace-aware**: features work across your whole workspace, not just the active file
 - **Library indexing**: point the extension to library roots (for example the SysML v2 release repo) for richer navigation and completion
 - **Managed standard library** tooling for pinned SysML v2 library installs
-- **Editing baseline**: TextMate fallback highlighting on open, semantic tokens once the server is ready, and shared SysML/KerML snippets
+- **Editing baseline**: semantic highlighting from the language server and shared SysML/KerML snippets
 - **Model Explorer + Model Visualizer** for model navigation and diagram inspection/export
 - **Feature Inspector** for trustworthy selected-element details and source navigation
 - **Frontend-rendered diagrams** in the webview (General/Interconnection stable; additional views optional/experimental)
@@ -28,7 +28,7 @@ If you work with **MBSE** and want fast feedback while editing models, this exte
 - **Navigation**: go to definition, find references, rename
 - **Symbols**: document symbols and workspace symbol search
 - **Hierarchy**: type hierarchy and call hierarchy commands for supported SysML/KerML symbols
-- **Editor workflows**: folding ranges, selection ranges, document links, linked editing, TextMate fallback highlighting, and semantic highlighting
+- **Editor workflows**: folding ranges, selection ranges, document links, linked editing, and semantic highlighting
 - **CodeLens**: reference-count lenses where the current editor/theme configuration shows CodeLens
 - **Code actions & formatting**: where supported by the server
 - **Snippets**: shared SysML/KerML scaffolds for packages, imports, structure, state machines, requirements, and interface connections
@@ -57,7 +57,7 @@ Not in scope for the current release surface:
 
 ## Editing experience
 
-The extension ships a first-pass TextMate grammar for both SysML and KerML so files look readable immediately on open. After the language server finishes startup and indexing, semantic tokens provide the richer highlight layer.
+The extension currently relies on semantic tokens from the language server for syntax coloring. That keeps the color model consistent once the server is ready, even though it means there is no separate TextMate fallback layer during startup.
 
 The shared snippet pack is aimed at the modeling patterns already used in this repo:
 
