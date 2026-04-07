@@ -2,7 +2,9 @@ use crate::language::{find_reference_ranges, is_reserved_keyword, word_at_positi
 use crate::semantic_model::NodeId;
 use crate::semantic_model::ResolveResult;
 use crate::workspace::ServerState;
+use std::time::Instant;
 use tower_lsp::lsp_types::{Location, Position, Url};
+use tracing::info;
 
 type LocationKey = (String, u32, u32, u32, u32);
 
@@ -29,7 +31,22 @@ pub(crate) fn resolved_references_for_symbol(
     include_declaration: bool,
 ) -> Vec<Location> {
     let selected_defs = vec![symbol];
-    collect_references_for_lookup(state, &symbol.name, selected_defs, include_declaration)
+    let started_at = Instant::now();
+    let locations =
+        collect_references_for_lookup(state, &symbol.name, selected_defs, include_declaration);
+    let elapsed_ms = started_at.elapsed().as_millis();
+    if state.perf_logging_enabled && elapsed_ms >= 10 {
+        info!(
+            target: "spec42_core::lsp_runtime::references_resolver",
+            event = "referencesResolver:resolvedForSymbol",
+            symbol = %symbol.name,
+            include_declaration,
+            locations = locations.len(),
+            elapsed_ms,
+            "resolved references for symbol"
+        );
+    }
+    locations
 }
 
 pub(crate) fn resolved_references_at_position(
@@ -38,6 +55,7 @@ pub(crate) fn resolved_references_at_position(
     pos: Position,
     include_declaration: bool,
 ) -> Option<Vec<Location>> {
+    let started_at = Instant::now();
     let text = state.index.get(uri_norm).map(|e| e.content.as_str())?;
     let (_, _, _, word) = word_at_position(text, pos.line, pos.character)?;
     let lookup_name = word
@@ -53,12 +71,28 @@ pub(crate) fn resolved_references_at_position(
     let selected_defs =
         select_defs_for_position(state, uri_norm, &lookup_name, qualifier.as_deref(), pos);
 
-    Some(collect_references_for_lookup(
+    let locations = collect_references_for_lookup(
         state,
         &lookup_name,
         selected_defs,
         include_declaration,
-    ))
+    );
+    let elapsed_ms = started_at.elapsed().as_millis();
+    if state.perf_logging_enabled && elapsed_ms >= 10 {
+        info!(
+            target: "spec42_core::lsp_runtime::references_resolver",
+            event = "referencesResolver:resolvedAtPosition",
+            uri = %uri_norm,
+            line = pos.line,
+            character = pos.character,
+            lookup_name = %lookup_name,
+            include_declaration,
+            locations = locations.len(),
+            elapsed_ms,
+            "resolved references at position"
+        );
+    }
+    Some(locations)
 }
 
 fn collect_references_for_lookup(
@@ -67,6 +101,7 @@ fn collect_references_for_lookup(
     selected_defs: Vec<&SymbolEntry>,
     include_declaration: bool,
 ) -> Vec<Location> {
+    let started_at = Instant::now();
     let target_ids: std::collections::HashSet<NodeId> = selected_defs
         .iter()
         .filter_map(|entry| symbol_entry_node_id(state, entry))
@@ -120,14 +155,30 @@ fn collect_references_for_lookup(
         }
     }
 
-    if include_declaration {
+    let result = if include_declaration {
         locations
     } else {
         locations
             .into_iter()
             .filter(|loc| !def_locations.contains(&location_key_for_location(loc)))
             .collect()
+    };
+    let elapsed_ms = started_at.elapsed().as_millis();
+    if state.perf_logging_enabled && elapsed_ms >= 10 {
+        info!(
+            target: "spec42_core::lsp_runtime::references_resolver",
+            event = "referencesResolver:collect",
+            lookup_name = %lookup_name,
+            selected_defs = target_ids.len(),
+            include_declaration,
+            indexed_documents = state.index.len(),
+            symbol_table = state.symbol_table.len(),
+            locations = result.len(),
+            elapsed_ms,
+            "collect_references_for_lookup completed"
+        );
     }
+    result
 }
 
 fn select_defs_for_position<'a>(

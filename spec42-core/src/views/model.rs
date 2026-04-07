@@ -317,7 +317,10 @@ fn elapsed_ms(start: Instant) -> u32 {
     start.elapsed().as_millis().max(1) as u32
 }
 
-async fn log_perf(client: &Client, event: &str, fields: Vec<(&str, String)>) {
+async fn log_perf(client: &Client, enabled: bool, event: &str, fields: Vec<(&str, String)>) {
+    if !enabled {
+        return;
+    }
     let details = fields
         .into_iter()
         .map(|(key, value)| format!("\"{}\":{}", key, value))
@@ -394,6 +397,7 @@ pub async fn build_sysml_model_response(
     library_paths: &[Url],
     scope: &[String],
     build_start: Instant,
+    perf_logging_enabled: bool,
     client: &Client,
 ) -> SysmlModelResultDto {
     let request_phase_start = Instant::now();
@@ -550,6 +554,7 @@ pub async fn build_sysml_model_response(
     let total_ms = request_phase_start.elapsed().as_millis().max(1);
     log_perf(
         client,
+        perf_logging_enabled,
         "backend:buildSysmlModelResponse",
         vec![
             ("uri", format!("{:?}", uri.as_str())),

@@ -674,6 +674,12 @@ export function activate(context: vscode.ExtensionContext): void {
     initializationOptions: {
       libraryPaths,
       startupTraceId,
+      codeLens: {
+        enabled: getConfigBoolean("codeLens.enabled", false),
+      },
+      performanceLogging: {
+        enabled: getConfigBoolean("performanceLogging.enabled", false),
+      },
     },
     initializationFailedHandler: (error) => {
       const detail = error instanceof Error ? error.message : String(error ?? "unknown initialization error");
@@ -2051,6 +2057,12 @@ export function activate(context: vscode.ExtensionContext): void {
         event.affectsConfiguration("spec42.logging.verbose") ||
         event.affectsConfiguration("spec42.debug") ||
         event.affectsConfiguration("sysml-language-server.debug");
+      const codeLensConfigChanged =
+        event.affectsConfiguration("spec42.codeLens.enabled") ||
+        event.affectsConfiguration("sysml-language-server.codeLens.enabled");
+      const performanceLoggingConfigChanged =
+        event.affectsConfiguration("spec42.performanceLogging.enabled") ||
+        event.affectsConfiguration("sysml-language-server.performanceLogging.enabled");
 
       // Recreate the panel so webview bootstrap flags (enabled views / verbose logging)
       // are regenerated without requiring a full VS Code reload.
@@ -2063,6 +2075,19 @@ export function activate(context: vscode.ExtensionContext): void {
             : undefined;
         VisualizationPanel.currentPanel.dispose();
         VisualizationPanel.createOrShow(context, panelDoc, undefined, lspModelProvider, workspaceUris);
+      }
+
+      if (codeLensConfigChanged || performanceLoggingConfigChanged) {
+        void vscode.window
+          .showInformationMessage(
+            "A SysML server setting changed. Restart the SysML language server to apply it.",
+            "Restart Server"
+          )
+          .then(async (selection) => {
+            if (selection === "Restart Server") {
+              await vscode.commands.executeCommand("sysml.restartServer");
+            }
+          });
       }
     })
   );

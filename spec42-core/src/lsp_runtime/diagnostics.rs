@@ -1,12 +1,19 @@
 use std::sync::Arc;
+use std::time::Instant;
 
 use tokio::sync::RwLock;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Position, Range, Url};
 use tower_lsp::Client;
+use tracing::info;
 
 use crate::common::util;
 use crate::host::config::Spec42Config;
 use crate::workspace::ServerState;
+
+async fn perf_logging_enabled(state: &Arc<RwLock<ServerState>>) -> bool {
+    let locked = state.read().await;
+    locked.perf_logging_enabled
+}
 
 pub(crate) async fn publish_document_diagnostics(
     client: &Client,
@@ -15,7 +22,16 @@ pub(crate) async fn publish_document_diagnostics(
     uri: Url,
     text: &str,
 ) {
+    let started_at = Instant::now();
     let diagnostics = collect_diagnostics_for_document(state, config, &uri, text).await;
+    if perf_logging_enabled(state).await {
+        info!(
+            event = "diagnostics:document",
+            uri = %uri,
+            count = diagnostics.len(),
+            elapsed_ms = started_at.elapsed().as_millis() as u64
+        );
+    }
     client.publish_diagnostics(uri, diagnostics, None).await;
 }
 
@@ -25,6 +41,7 @@ pub(crate) async fn publish_workspace_diagnostics(
     config: &Arc<Spec42Config>,
     target_uris: Option<&[Url]>,
 ) {
+    let started_at = Instant::now();
     let docs: Vec<(Url, String)> = {
         let st = state.read().await;
         if let Some(targets) = target_uris {
@@ -45,9 +62,24 @@ pub(crate) async fn publish_workspace_diagnostics(
         }
     };
 
+    let doc_count = docs.len();
+    let mut published_count = 0usize;
+    let mut diagnostic_count = 0usize;
     for (uri, text) in docs {
         let diagnostics = collect_diagnostics_for_document(state, config, &uri, &text).await;
+        diagnostic_count += diagnostics.len();
+        published_count += 1;
         client.publish_diagnostics(uri, diagnostics, None).await;
+    }
+    if perf_logging_enabled(state).await {
+        info!(
+            event = "diagnostics:workspace",
+            target_uris = target_uris.map(|uris| uris.len()).unwrap_or(0),
+            published_docs = published_count,
+            discovered_docs = doc_count,
+            diagnostics = diagnostic_count,
+            elapsed_ms = started_at.elapsed().as_millis() as u64
+        );
     }
 }
 

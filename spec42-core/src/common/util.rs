@@ -256,6 +256,28 @@ pub fn parse_startup_trace_id_from_value(value: Option<&serde_json::Value>) -> O
         .map(ToOwned::to_owned)
 }
 
+pub fn parse_code_lens_enabled_from_value(
+    value: Option<&serde_json::Value>,
+    default_enabled: bool,
+) -> bool {
+    value
+        .and_then(|opts| opts.get("codeLens"))
+        .and_then(|code_lens| code_lens.get("enabled"))
+        .and_then(|enabled| enabled.as_bool())
+        .unwrap_or(default_enabled)
+}
+
+pub fn parse_perf_logging_enabled_from_value(
+    value: Option<&serde_json::Value>,
+    default_enabled: bool,
+) -> bool {
+    value
+        .and_then(|opts| opts.get("performanceLogging"))
+        .and_then(|perf| perf.get("enabled"))
+        .and_then(|enabled| enabled.as_bool())
+        .unwrap_or(default_enabled)
+}
+
 pub fn env_flag_enabled(name: &str, default_enabled: bool) -> bool {
     let Ok(raw_value) = std::env::var(name) else {
         return default_enabled;

@@ -1,7 +1,10 @@
 use crate::host::config::Spec42Config;
 use tower_lsp::lsp_types::*;
 
-pub(crate) fn server_capabilities(config: &Spec42Config) -> ServerCapabilities {
+pub(crate) fn server_capabilities(
+    config: &Spec42Config,
+    code_lens_enabled: bool,
+) -> ServerCapabilities {
     let mut capabilities = ServerCapabilities {
         text_document_sync: Some(TextDocumentSyncCapability::Kind(
             TextDocumentSyncKind::INCREMENTAL,
@@ -29,9 +32,13 @@ pub(crate) fn server_capabilities(config: &Spec42Config) -> ServerCapabilities {
         }),
         workspace_symbol_provider: Some(OneOf::Left(true)),
         code_action_provider: Some(CodeActionProviderCapability::Simple(true)),
-        code_lens_provider: Some(CodeLensOptions {
-            resolve_provider: Some(false),
-        }),
+        code_lens_provider: if code_lens_enabled {
+            Some(CodeLensOptions {
+                resolve_provider: Some(false),
+            })
+        } else {
+            None
+        },
         inlay_hint_provider: None,
         linked_editing_range_provider: Some(LinkedEditingRangeServerCapabilities::Simple(true)),
         document_formatting_provider: Some(OneOf::Left(true)),

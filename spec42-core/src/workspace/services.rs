@@ -69,6 +69,17 @@ pub(crate) struct ParsedScanEntry {
     pub(crate) parse_metadata: ParseMetadata,
 }
 
+#[derive(Debug, Clone, Copy, Default)]
+pub(crate) struct RebuildAllDocumentLinksMetrics {
+    pub(crate) uri_count: usize,
+    pub(crate) parsed_doc_count: usize,
+    pub(crate) remove_nodes_ms: u32,
+    pub(crate) rebuild_graphs_ms: u32,
+    pub(crate) cross_document_edges_ms: u32,
+    pub(crate) refresh_symbols_ms: u32,
+    pub(crate) total_ms: u32,
+}
+
 fn warning_from_parse_errors(
     uri_norm: &Url,
     parse_errors: &[String],
@@ -374,7 +385,10 @@ pub(crate) fn remove_document(state: &mut ServerState, uri_norm: &Url) {
     state.semantic_graph.remove_nodes_for_uri(uri_norm);
 }
 
-pub(crate) fn rebuild_all_document_links(state: &mut ServerState) {
+pub(crate) fn rebuild_all_document_links(
+    state: &mut ServerState,
+) -> RebuildAllDocumentLinksMetrics {
+    let total_start = Instant::now();
     let uris: Vec<Url> = state.index.keys().cloned().collect();
     let parsed_docs: Vec<(Url, RootNamespace)> = uris
         .iter()
@@ -388,21 +402,39 @@ pub(crate) fn rebuild_all_document_links(state: &mut ServerState) {
         })
         .collect();
 
+    let remove_nodes_start = Instant::now();
     for uri in &uris {
         state.semantic_graph.remove_nodes_for_uri(uri);
     }
+    let remove_nodes_ms = elapsed_ms(remove_nodes_start);
 
+    let rebuild_graphs_start = Instant::now();
     for (uri, parsed) in &parsed_docs {
         let new_graph = semantic_model::build_graph_from_doc(parsed, uri);
         state.semantic_graph.merge(new_graph);
     }
+    let rebuild_graphs_ms = elapsed_ms(rebuild_graphs_start);
 
+    let cross_document_edges_start = Instant::now();
     for uri in &uris {
         semantic_model::add_cross_document_edges_for_uri(&mut state.semantic_graph, uri);
     }
+    let cross_document_edges_ms = elapsed_ms(cross_document_edges_start);
 
+    let refresh_symbols_start = Instant::now();
     for uri in uris {
         refresh_symbols_for_uri(state, &uri);
+    }
+    let refresh_symbols_ms = elapsed_ms(refresh_symbols_start);
+
+    RebuildAllDocumentLinksMetrics {
+        uri_count: state.index.len(),
+        parsed_doc_count: parsed_docs.len(),
+        remove_nodes_ms,
+        rebuild_graphs_ms,
+        cross_document_edges_ms,
+        refresh_symbols_ms,
+        total_ms: elapsed_ms(total_start),
     }
 }
 

@@ -1,6 +1,8 @@
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::time::Instant;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
-use tracing::debug;
+use tracing::{debug, info};
 
 use crate::common::util;
 use crate::language::{
@@ -17,7 +19,12 @@ use crate::workspace::ServerState;
 use super::lookup_helpers::{collect_symbol_matches_for_lookup, debug_qualified_lookup_context};
 use super::{hierarchy, navigation, references_resolver, symbols};
 
+static CODE_LENS_REQUEST_COUNT: AtomicU64 = AtomicU64::new(0);
+static SEMANTIC_TOKENS_FULL_REQUEST_COUNT: AtomicU64 = AtomicU64::new(0);
+static SEMANTIC_TOKENS_RANGE_REQUEST_COUNT: AtomicU64 = AtomicU64::new(0);
+
 pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Option<Hover>> {
+    let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
     let text = match state
         .index
@@ -44,13 +51,27 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
     );
 
     if let Some(md) = keyword_hover_markdown(&lookup_name.to_lowercase()) {
-        return Ok(Some(Hover {
+        let response = Some(Hover {
             contents: HoverContents::Markup(MarkupContent {
                 kind: MarkupKind::Markdown,
                 value: md,
             }),
             range: Some(range),
-        }));
+        });
+        let elapsed_ms = started_at.elapsed().as_millis();
+        if elapsed_ms >= 10 {
+            info!(
+                target: "spec42_core::lsp_runtime::features",
+                event = "feature:hover",
+                uri = %uri_norm,
+                line = pos.line,
+                character = pos.character,
+                lookup_name = %lookup_name,
+                elapsed_ms,
+                "hover resolved via keyword docs"
+            );
+        }
+        return Ok(response);
     }
 
     if let Some(node) = state.semantic_graph.find_node_at_position(&uri_norm, pos) {
@@ -78,13 +99,27 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
                 node.id.uri != uri_norm,
             )
         };
-        return Ok(Some(Hover {
+        let response = Some(Hover {
             contents: HoverContents::Markup(MarkupContent {
                 kind: MarkupKind::Markdown,
                 value: markdown,
             }),
             range: Some(range),
-        }));
+        });
+        let elapsed_ms = started_at.elapsed().as_millis();
+        if elapsed_ms >= 10 {
+            info!(
+                target: "spec42_core::lsp_runtime::features",
+                event = "feature:hover",
+                uri = %uri_norm,
+                line = pos.line,
+                character = pos.character,
+                lookup_name = %lookup_name,
+                elapsed_ms,
+                "hover resolved via semantic graph"
+            );
+        }
+        return Ok(response);
     }
 
     let (same_file, other_files) =
@@ -112,15 +147,44 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
         } else {
             util::symbol_hover_markdown(entry, entry.uri != uri_norm)
         };
-        return Ok(Some(Hover {
+        let response = Some(Hover {
             contents: HoverContents::Markup(MarkupContent {
                 kind: MarkupKind::Markdown,
                 value,
             }),
             range: Some(range),
-        }));
+        });
+        let elapsed_ms = started_at.elapsed().as_millis();
+        if elapsed_ms >= 10 {
+            info!(
+                target: "spec42_core::lsp_runtime::features",
+                event = "feature:hover",
+                uri = %uri_norm,
+                line = pos.line,
+                character = pos.character,
+                lookup_name = %lookup_name,
+                same_file_matches = same_file.len(),
+                other_file_matches = other_files.len(),
+                elapsed_ms,
+                "hover resolved via symbol lookup"
+            );
+        }
+        return Ok(response);
     }
 
+    let elapsed_ms = started_at.elapsed().as_millis();
+    if elapsed_ms >= 10 {
+        info!(
+            target: "spec42_core::lsp_runtime::features",
+            event = "feature:hover",
+            uri = %uri_norm,
+            line = pos.line,
+            character = pos.character,
+            lookup_name = %lookup_name,
+            elapsed_ms,
+            "hover completed with no result"
+        );
+    }
     Ok(None)
 }
 
@@ -217,6 +281,7 @@ pub(crate) fn goto_definition(
     uri: Url,
     pos: Position,
 ) -> Result<Option<GotoDefinitionResponse>> {
+    let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
     let text = match state
         .index
@@ -261,16 +326,32 @@ pub(crate) fn goto_definition(
                     .qualified_name
                     .ends_with(&format!("::{}", lookup_name))
             {
-                return Ok(Some(GotoDefinitionResponse::Scalar(Location {
+                let response = Some(GotoDefinitionResponse::Scalar(Location {
                     uri: target.id.uri.clone(),
                     range: target.range,
-                })));
+                }));
+                let elapsed_ms = started_at.elapsed().as_millis();
+                if elapsed_ms >= 10 {
+                    info!(
+                        target: "spec42_core::lsp_runtime::features",
+                        event = "feature:gotoDefinition",
+                        uri = %uri_norm,
+                        line = pos.line,
+                        character = pos.character,
+                        lookup_name = %lookup_name,
+                        elapsed_ms,
+                        "goto definition resolved via semantic graph"
+                    );
+                }
+                return Ok(response);
             }
         }
     }
 
     let (same_file_matches, other_file_matches) =
         collect_symbol_matches_for_lookup(state, &uri_norm, &lookup_name, qualifier.as_deref());
+    let same_file_match_count = same_file_matches.len();
+    let other_file_match_count = other_file_matches.len();
     let same_file: Vec<Location> = same_file_matches
         .into_iter()
         .map(|entry| Location {
@@ -291,13 +372,63 @@ pub(crate) fn goto_definition(
         same_file
     };
     if let [location] = locations.as_slice() {
-        return Ok(Some(GotoDefinitionResponse::Scalar(location.clone())));
+        let response = Some(GotoDefinitionResponse::Scalar(location.clone()));
+        let elapsed_ms = started_at.elapsed().as_millis();
+        if elapsed_ms >= 10 {
+            info!(
+                target: "spec42_core::lsp_runtime::features",
+                event = "feature:gotoDefinition",
+                uri = %uri_norm,
+                line = pos.line,
+                character = pos.character,
+                lookup_name = %lookup_name,
+                same_file_matches = same_file_match_count,
+                other_file_matches = other_file_match_count,
+                locations = 1,
+                elapsed_ms,
+                "goto definition resolved to single location"
+            );
+        }
+        return Ok(response);
     }
     if !locations.is_empty() {
-        return Ok(Some(GotoDefinitionResponse::Array(locations)));
+        let location_count = locations.len();
+        let response = Some(GotoDefinitionResponse::Array(locations));
+        let elapsed_ms = started_at.elapsed().as_millis();
+        if elapsed_ms >= 10 {
+            info!(
+                target: "spec42_core::lsp_runtime::features",
+                event = "feature:gotoDefinition",
+                uri = %uri_norm,
+                line = pos.line,
+                character = pos.character,
+                lookup_name = %lookup_name,
+                same_file_matches = same_file_match_count,
+                other_file_matches = other_file_match_count,
+                locations = location_count,
+                elapsed_ms,
+                "goto definition resolved to multiple locations"
+            );
+        }
+        return Ok(response);
     }
     if let Some(qualifier) = qualifier.as_deref() {
         debug_qualified_lookup_context(state, &lookup_name, qualifier, &uri_norm);
+    }
+    let elapsed_ms = started_at.elapsed().as_millis();
+    if elapsed_ms >= 10 {
+        info!(
+            target: "spec42_core::lsp_runtime::features",
+            event = "feature:gotoDefinition",
+            uri = %uri_norm,
+            line = pos.line,
+            character = pos.character,
+            lookup_name = %lookup_name,
+            same_file_matches = same_file_match_count,
+            other_file_matches = other_file_match_count,
+            elapsed_ms,
+            "goto definition completed with no result"
+        );
     }
     Ok(None)
 }
@@ -308,13 +439,29 @@ pub(crate) fn references(
     pos: Position,
     include_declaration: bool,
 ) -> Result<Option<Vec<Location>>> {
+    let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
-    Ok(references_resolver::resolved_references_at_position(
+    let locations = references_resolver::resolved_references_at_position(
         state,
         &uri_norm,
         pos,
         include_declaration,
-    ))
+    );
+    let elapsed_ms = started_at.elapsed().as_millis();
+    if elapsed_ms >= 10 {
+        info!(
+            target: "spec42_core::lsp_runtime::features",
+            event = "feature:references",
+            uri = %uri_norm,
+            line = pos.line,
+            character = pos.character,
+            include_declaration,
+            locations = locations.as_ref().map(|items| items.len()).unwrap_or(0),
+            elapsed_ms,
+            "references request completed"
+        );
+    }
+    Ok(locations)
 }
 
 pub(crate) fn document_link(state: &ServerState, uri: Url) -> Result<Option<Vec<DocumentLink>>> {
@@ -574,8 +721,26 @@ pub(crate) fn code_action(
 }
 
 pub(crate) fn code_lens(state: &ServerState, uri: Url) -> Result<Option<Vec<CodeLens>>> {
+    if !state.code_lens_enabled {
+        return Ok(None);
+    }
+    let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
-    Ok(Some(symbols::build_code_lens(state, &uri_norm)))
+    let lenses = symbols::build_code_lens(state, &uri_norm);
+    let elapsed_ms = started_at.elapsed().as_millis();
+    let request_count = CODE_LENS_REQUEST_COUNT.fetch_add(1, Ordering::Relaxed) + 1;
+    if state.perf_logging_enabled {
+        info!(
+            target: "spec42_core::lsp_runtime::features",
+            event = "feature:codeLens",
+            uri = %uri_norm,
+            lenses = lenses.len(),
+            elapsed_ms,
+            request_count,
+            "code lens request completed"
+        );
+    }
+    Ok(Some(lenses))
 }
 
 pub(crate) fn formatting(
@@ -599,6 +764,7 @@ pub(crate) fn semantic_tokens_full_request(
     state: &ServerState,
     uri: Url,
 ) -> Result<Option<(SemanticTokens, Vec<String>)>> {
+    let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
     let (text, ast_ranges) = match state.index.get(&uri_norm) {
         Some(entry) => (
@@ -608,6 +774,18 @@ pub(crate) fn semantic_tokens_full_request(
         None => return Ok(None),
     };
     let (tokens, logs) = semantic_tokens_full(&text, ast_ranges.as_deref());
+    let elapsed_ms = started_at.elapsed().as_millis();
+    let request_count = SEMANTIC_TOKENS_FULL_REQUEST_COUNT.fetch_add(1, Ordering::Relaxed) + 1;
+    info!(
+        target: "spec42_core::lsp_runtime::features",
+        event = "feature:semanticTokensFull",
+        uri = %uri_norm,
+        token_count = tokens.data.len(),
+        log_count = logs.len(),
+        elapsed_ms,
+        request_count,
+        "semantic tokens full request completed"
+    );
     Ok(Some((tokens, logs)))
 }
 
@@ -616,6 +794,7 @@ pub(crate) fn semantic_tokens_range_request(
     uri: Url,
     range: Range,
 ) -> Result<Option<(SemanticTokens, Vec<String>)>> {
+    let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
     let (text, ast_ranges) = match state.index.get(&uri_norm) {
         Some(entry) => (
@@ -631,6 +810,20 @@ pub(crate) fn semantic_tokens_range_request(
         range.end.line,
         range.end.character,
         ast_ranges.as_deref(),
+    );
+    let elapsed_ms = started_at.elapsed().as_millis();
+    let request_count = SEMANTIC_TOKENS_RANGE_REQUEST_COUNT.fetch_add(1, Ordering::Relaxed) + 1;
+    info!(
+        target: "spec42_core::lsp_runtime::features",
+        event = "feature:semanticTokensRange",
+        uri = %uri_norm,
+        start_line = range.start.line,
+        end_line = range.end.line,
+        token_count = tokens.data.len(),
+        log_count = logs.len(),
+        elapsed_ms,
+        request_count,
+        "semantic tokens range request completed"
     );
     Ok(Some((tokens, logs)))
 }

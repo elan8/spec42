@@ -21,6 +21,8 @@ pub(crate) struct ServerState {
     pub(crate) workspace_roots: Vec<Url>,
     pub(crate) library_paths: Vec<Url>,
     pub(crate) startup_trace_id: Option<String>,
+    pub(crate) code_lens_enabled: bool,
+    pub(crate) perf_logging_enabled: bool,
     pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
     pub(crate) symbol_table: Vec<SymbolEntry>,
     pub(crate) semantic_graph: semantic_model::SemanticGraph,

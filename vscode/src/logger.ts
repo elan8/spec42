@@ -24,6 +24,14 @@ export function isVerboseLoggingEnabled(): boolean {
   );
 }
 
+export function isPerformanceLoggingEnabled(): boolean {
+  return (
+    vscode.workspace.getConfiguration("spec42").get<boolean>("performanceLogging.enabled") ??
+    vscode.workspace.getConfiguration("sysml-language-server").get<boolean>("performanceLogging.enabled") ??
+    false
+  );
+}
+
 function timestamp(): string {
   return new Date().toISOString();
 }
@@ -48,10 +56,12 @@ export function log(msg: string, ...args: unknown[]): void {
 }
 
 export function logPerfEvent(event: string, extra?: Record<string, unknown>): void {
+  if (!isPerformanceLoggingEnabled()) return;
   appendStructuredLine("[SysML][perf]", { event, ...(extra ?? {}) });
 }
 
 export function logStartupEvent(phase: string, extra?: Record<string, unknown>): void {
+  if (!isPerformanceLoggingEnabled()) return;
   appendStructuredLine("[SysML][startup]", { phase, ...(extra ?? {}) });
 }
 

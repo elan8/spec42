@@ -395,6 +395,16 @@
           "default": true,
           "description": "Show a SysML status bar item with error/warning counts for the active SysML/KerML file."
         },
+        "spec42.codeLens.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable SysML code lenses such as inline reference counts above declarations. This can be expensive in larger workspaces."
+        },
+        "spec42.performanceLogging.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable structured performance and startup logging for troubleshooting. Leave this off during normal use."
+        },
         "spec42.workspace.maxFilesPerPattern": {
           "type": "number",
           "default": 500,

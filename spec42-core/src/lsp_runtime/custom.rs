@@ -6,7 +6,10 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::{MessageType, Url};
 use tower_lsp::Client;
 
-async fn log_perf(client: &Client, event: &str, fields: Vec<(&str, String)>) {
+async fn log_perf(client: &Client, enabled: bool, event: &str, fields: Vec<(&str, String)>) {
+    if !enabled {
+        return;
+    }
     let details = fields
         .into_iter()
         .map(|(key, value)| format!("\"{}\":{}", key, value))
@@ -65,6 +68,7 @@ pub(crate) async fn sysml_model_result(
                     let index_lookup_ms = index_lookup_start.elapsed().as_millis().max(1);
                     log_perf(
                         client,
+                        state.perf_logging_enabled,
                         "backend:sysmlModelLookupMiss",
                         vec![
                             ("uri", format!("{:?}", uri.as_str())),
@@ -87,6 +91,7 @@ pub(crate) async fn sysml_model_result(
             let index_lookup_ms = index_lookup_start.elapsed().as_millis().max(1);
             log_perf(
                 client,
+                state.perf_logging_enabled,
                 "backend:sysmlModelLookupMiss",
                 vec![
                     ("uri", format!("{:?}", uri.as_str())),
@@ -134,6 +139,7 @@ pub(crate) async fn sysml_model_result(
         &state.library_paths,
         &scope,
         build_start,
+        state.perf_logging_enabled,
         client,
     )
     .await;
@@ -157,6 +163,7 @@ pub(crate) async fn sysml_model_result(
     let total_ms = request_start.elapsed().as_millis().max(1);
     log_perf(
         client,
+        state.perf_logging_enabled,
         "backend:sysmlModelResult",
         vec![
             ("uri", format!("{:?}", uri.as_str())),

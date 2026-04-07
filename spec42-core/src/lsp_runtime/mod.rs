@@ -353,8 +353,15 @@ impl Backend {
             .as_ref()
             .map(|graph| graph.edges.len())
             .unwrap_or(0);
+        let perf_logging_enabled = {
+            let state = self.state.read().await;
+            state.perf_logging_enabled
+        };
         let client = self.client.clone();
         tokio::spawn(async move {
+            if !perf_logging_enabled {
+                return;
+            }
             client
                 .log_message(
                     MessageType::INFO,
