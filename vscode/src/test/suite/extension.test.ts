@@ -1,6 +1,11 @@
 import * as assert from "assert";
 import * as path from "path";
 import * as vscode from "vscode";
+import {
+  buildElementPresentation,
+  type ElementMetadata,
+  type ElementPresentationContext,
+} from "../../explorer/modelExplorerProvider";
 import { VisualizationPanel } from "../../visualization/visualizationPanel";
 import {
   configureServerForTests,
@@ -12,14 +17,8 @@ import {
 
 const FIXTURE_FILE = "SurveillanceDrone.sysml";
 type ExtensionDebugState = Awaited<ReturnType<typeof vscode.commands.executeCommand>> & {
-  featureInspector?: {
-    state: "inactive" | "loading" | "ready" | "empty" | "error";
-    selectedElementId?: string;
-    selectedElementName?: string;
-    emptyMessage?: string;
-    errorMessage?: string;
-    lastRequestedUri?: string;
-    lastRequestedPosition?: { line: number; character: number };
+  modelExplorer?: {
+    lastRevealedElementId?: string;
   };
 };
 
@@ -91,7 +90,8 @@ describe("Extension Test Suite", () => {
     const commands = await vscode.commands.getCommands(true);
     assert.ok(commands.includes("sysml.showTypeHierarchy"));
     assert.ok(commands.includes("sysml.showCallHierarchy"));
-    assert.ok(commands.includes("sysml.featureInspector.refresh"));
+    assert.ok(commands.includes("sysml.refreshModelTree"));
+    assert.ok(!commands.includes("sysml.featureInspector.refresh"));
   });
 
   it("Snippet pack exposes editing baseline scaffolds", () => {
@@ -119,115 +119,148 @@ describe("Extension Test Suite", () => {
     assert.ok(snippets["SysML: multi-file usage skeleton"]);
   });
 
-  it("Feature Inspector tracks active SysML selection", async function () {
+  it("Model Explorer reveals the selected source element", async function () {
     this.timeout(20000);
     const filePath = getFixturePath(FIXTURE_FILE);
     const doc = await vscode.workspace.openTextDocument(filePath);
     const editor = await vscode.window.showTextDocument(doc);
-    const position = findPosition(doc, "part def Airframe");
+    const position = findPosition(doc, "part def PropulsionUnit");
     editor.selection = new vscode.Selection(position, position);
 
     const state = await waitFor(
-      "feature inspector selection sync",
+      "model explorer source selection sync",
       () =>
         vscode.commands.executeCommand<ExtensionDebugState>(
           "sysml.debug.getExtensionState"
         ),
       (value) =>
-        value?.featureInspector?.state === "ready" &&
-        value.featureInspector.selectedElementName === "Airframe"
+        value?.modelExplorer?.lastRevealedElementId?.includes("PropulsionUnit") === true
     );
-    assert.strictEqual(state.featureInspector?.selectedElementName, "Airframe");
-    assert.strictEqual(state.featureInspector?.lastRequestedUri, doc.uri.toString());
+    assert.ok(state.modelExplorer?.lastRevealedElementId?.includes("PropulsionUnit"));
   });
 
-  it("Feature Inspector clears for non-SysML editors", async function () {
-    this.timeout(20000);
-    const txtDoc = await vscode.workspace.openTextDocument({
-      language: "plaintext",
-      content: "just text",
-    });
-    await vscode.window.showTextDocument(txtDoc);
-
-    const state = await waitFor(
-      "feature inspector inactive state",
-      () =>
-        vscode.commands.executeCommand<ExtensionDebugState>(
-          "sysml.debug.getExtensionState"
-        ),
-      (value) =>
-        value?.featureInspector?.state === "inactive" &&
-        value.featureInspector.emptyMessage?.includes("Open a SysML/KerML file") === true
-    );
-    assert.strictEqual(state.featureInspector?.state, "inactive");
-  });
-
-  it("Feature Inspector shows empty state for whitespace", async function () {
-    this.timeout(20000);
-    const doc = await vscode.workspace.openTextDocument({
-      language: "sysml",
-      content: "package Demo {\n  part def Engine;\n}\n",
-    });
-    const editor = await vscode.window.showTextDocument(doc);
-    const position = new vscode.Position(3, 0);
-    editor.selection = new vscode.Selection(position, position);
-
-    const state = await waitFor(
-      "feature inspector empty state",
-      () =>
-        vscode.commands.executeCommand<ExtensionDebugState>(
-          "sysml.debug.getExtensionState"
-        ),
-      (value) =>
-        value?.featureInspector?.state === "empty" &&
-        value.featureInspector.emptyMessage?.includes("No inspectable element") === true
-    );
-    assert.strictEqual(state.featureInspector?.state, "empty");
-  });
-
-  it("Feature Inspector navigation command opens and reveals target range", async function () {
-    this.timeout(20000);
-    const doc = await vscode.workspace.openTextDocument(getFixturePath(FIXTURE_FILE));
-    await vscode.window.showTextDocument(doc);
-    const position = findPosition(doc, "part def Airframe");
-    const targetRange = new vscode.Range(position, position.translate(0, "part def Airframe".length));
-
-    await vscode.commands.executeCommand("sysml.featureInspector.openReference", {
-      uri: doc.uri.toString(),
-      range: {
-        start: { line: targetRange.start.line, character: targetRange.start.character },
-        end: { line: targetRange.end.line, character: targetRange.end.character },
+  it("Model Explorer presentation summarizes typing, multiplicity, and source context", () => {
+    const uri = vscode.Uri.file("C:/Git/spec42/example.sysml");
+    const typeUri = vscode.Uri.file("C:/Git/spec42/types.sysml");
+    const metadataById = new Map<string, ElementMetadata>([
+      [
+        "Drone::Airframe",
+        {
+          reference: {
+            id: "Drone::Airframe",
+            name: "Airframe",
+            type: "part def",
+            uri: typeUri,
+            range: {
+              start: { line: 1, character: 0 },
+              end: { line: 1, character: 16 },
+            },
+          },
+        },
+      ],
+    ]);
+    const context: ElementPresentationContext = {
+      activeUri: vscode.Uri.file("C:/Git/spec42/other.sysml"),
+      metadataById,
+      incomingRelationshipCounts: new Map([["Drone::body", 2]]),
+    };
+    const presentation = buildElementPresentation(
+      {
+        id: "Drone::body",
+        type: "part",
+        name: "body",
+        range: {
+          start: { line: 5, character: 2 },
+          end: { line: 5, character: 18 },
+        },
+        children: [],
+        attributes: { multiplicity: "1" },
+        relationships: [{ type: "typing", source: "Drone::body", target: "Drone::Airframe" }],
       },
-    });
-
-    const activeEditor = vscode.window.activeTextEditor;
-    assert.ok(activeEditor, "Expected an active editor after navigation");
-    assert.strictEqual(activeEditor?.document.uri.toString(), doc.uri.toString());
-    assert.strictEqual(activeEditor?.selection.active.line, targetRange.start.line);
-    assert.strictEqual(activeEditor?.selection.active.character, targetRange.start.character);
+      uri,
+      undefined,
+      context
+    );
+    assert.strictEqual(presentation.description, ": Airframe [1] @ example.sysml");
+    assert.ok(presentation.tooltip.includes("Qualified name: Drone::body"));
+    assert.ok(presentation.tooltip.includes("Type: Airframe"));
+    assert.ok(presentation.tooltip.includes("Relationships: 1 outgoing, 2 incoming"));
   });
 
-  it("Feature Inspector keeps latest selection after rapid cursor changes", async function () {
-    this.timeout(20000);
-    const filePath = getFixturePath(FIXTURE_FILE);
-    const doc = await vscode.workspace.openTextDocument(filePath);
-    const editor = await vscode.window.showTextDocument(doc);
-    const first = findPosition(doc, "part def Airframe");
-    const second = findPosition(doc, "part def PropulsionUnit");
-    editor.selection = new vscode.Selection(first, first);
-    editor.selection = new vscode.Selection(second, second);
-
-    const state = await waitFor(
-      "feature inspector final rapid selection state",
-      () =>
-        vscode.commands.executeCommand<ExtensionDebugState>(
-          "sysml.debug.getExtensionState"
-        ),
-      (value) =>
-        value?.featureInspector?.state === "ready" &&
-        value.featureInspector.selectedElementName === "PropulsionUnit"
+  it("Model Explorer presentation summarizes specialization and parent context", () => {
+    const uri = vscode.Uri.file("C:/Git/spec42/drone.sysml");
+    const metadataById = new Map<string, ElementMetadata>([
+      [
+        "Drone::Base",
+        {
+          reference: {
+            id: "Drone::Base",
+            name: "Base",
+            type: "part def",
+            uri,
+            range: {
+              start: { line: 1, character: 0 },
+              end: { line: 1, character: 14 },
+            },
+          },
+        },
+      ],
+      [
+        "Drone::Package",
+        {
+          reference: {
+            id: "Drone::Package",
+            name: "DronePackage",
+            type: "package",
+            uri,
+            range: {
+              start: { line: 0, character: 0 },
+              end: { line: 20, character: 0 },
+            },
+          },
+        },
+      ],
+    ]);
+    const parentItem = {
+      itemType: "sysml-element" as const,
+      element: {
+        id: "Drone::Package",
+        type: "package",
+        name: "DronePackage",
+        range: {
+          start: { line: 0, character: 0 },
+          end: { line: 20, character: 0 },
+        },
+        children: [],
+        attributes: {},
+        relationships: [],
+      },
+      elementUri: uri,
+    } as any;
+    const presentation = buildElementPresentation(
+      {
+        id: "Drone::Advanced",
+        type: "part def",
+        name: "Advanced",
+        range: {
+          start: { line: 10, character: 0 },
+          end: { line: 10, character: 20 },
+        },
+        children: [],
+        attributes: {},
+        relationships: [{ type: "specializes", source: "Drone::Advanced", target: "Drone::Base" }],
+      },
+      uri,
+      parentItem,
+      {
+        activeUri: uri,
+        metadataById,
+        incomingRelationshipCounts: new Map(),
+      }
     );
-    assert.strictEqual(state.featureInspector?.selectedElementName, "PropulsionUnit");
+    assert.strictEqual(presentation.description, ":> Base");
+    assert.ok(presentation.tooltip.includes("Parent: DronePackage"));
+    assert.ok(presentation.tooltip.includes("Specializes: Base"));
   });
 
   it("Hover over keyword returns content", async () => {

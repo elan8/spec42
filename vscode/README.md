@@ -15,8 +15,7 @@ If you work with **MBSE** and want fast feedback while editing models, this exte
 - **Library indexing**: point the extension to library roots (for example the SysML v2 release repo) for richer navigation and completion
 - **Managed standard library** tooling for pinned SysML v2 library installs
 - **Editing baseline**: semantic highlighting from the language server and shared SysML/KerML snippets
-- **Model Explorer + Model Visualizer** for model navigation and diagram inspection/export
-- **Feature Inspector** for trustworthy selected-element details and source navigation
+- **Model Explorer + Model Visualizer** for model navigation, lightweight semantic inspection, and diagram export
 - **Frontend-rendered diagrams** in the webview (General/Interconnection stable; additional views optional/experimental)
 - **Bundled server binary** in published builds (with a safe fallback to `spec42` on your PATH)
 
@@ -32,8 +31,7 @@ If you work with **MBSE** and want fast feedback while editing models, this exte
 - **CodeLens**: reference-count lenses where the current editor/theme configuration shows CodeLens
 - **Code actions & formatting**: where supported by the server
 - **Snippets**: shared SysML/KerML scaffolds for packages, imports, structure, state machines, requirements, and interface connections
-- **Feature Inspector**: selection-driven semantic details for the current element, including parent, typing, specialization, and direct relationships
-- **Model Explorer**: workspace/package tree with model navigation
+- **Model Explorer**: workspace/package tree with navigation, semantic summaries, richer tooltips, and source-synced selection reveal
 - **Model Visualizer**: diagram views with SVG/PNG/JSON export and theme-aware rendering
 - **Status feedback**: startup/indexing/degraded workspace status in the SysML status bar item
 
@@ -43,7 +41,7 @@ If you work with **MBSE** and want fast feedback while editing models, this exte
 2. Open any `.sysml` or `.kerml` file.
 3. (Optional) Configure library roots for better cross-file navigation and completion.
 4. Use the command palette to open the Model Explorer/Visualizer when needed.
-5. Use **SysML Feature Inspector** in the sidebar for selected-element details, or **SysML: Show Type Hierarchy** / **SysML: Show Call Hierarchy** for supported symbols when you want to inspect relationships from the current cursor location.
+5. Use **SysML Model Explorer** in the sidebar for navigation and lightweight semantic details, or **SysML: Show Type Hierarchy** / **SysML: Show Call Hierarchy** for supported symbols when you want to inspect relationships from the current cursor location.
 
 ## Editing experience
 

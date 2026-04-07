@@ -2,8 +2,6 @@ import * as vscode from "vscode";
 import type { LanguageClient } from "vscode-languageclient/node";
 import { log, logError } from "../logger";
 import type {
-  SysMLFeatureInspectorParams,
-  SysMLFeatureInspectorResult,
   GraphNodeDTO,
   SysMLDiagramParams,
   SysMLDiagramResult,
@@ -29,7 +27,7 @@ function graphNodeToElementDTO(
   visited: Set<string> = new Set()
 ): SysMLElementDTO {
   if (visited.has(node.id)) {
-    return { type: node.type, name: node.name, range: node.range, children: [], attributes: node.attributes || {}, relationships: [] };
+    return { id: node.id, type: node.type, name: node.name, range: node.range, children: [], attributes: node.attributes || {}, relationships: [] };
   }
   visited.add(node.id);
   const children = (graph.nodes || []).filter((n) => n.parentId === node.id);
@@ -39,6 +37,7 @@ function graphNodeToElementDTO(
     .filter((e) => e.source === node.id && edgeType(e).toLowerCase() !== 'contains')
     .map((e) => ({ source: e.source, target: e.target, type: edgeType(e), name: e.name }));
   return {
+    id: node.id,
     type: node.type,
     name: node.name,
     range: node.range,
@@ -184,27 +183,6 @@ export class LspModelProvider {
       options,
     };
     return await this.client.sendRequest<SysMLDiagramResult>("sysml/diagram", params, token);
-  }
-
-  async getFeatureInspector(
-    uri: string,
-    position: PositionDTO,
-    token?: vscode.CancellationToken
-  ): Promise<SysMLFeatureInspectorResult> {
-    const trimmed = (uri || "").trim();
-    if (!trimmed) {
-      throw new Error("getFeatureInspector requires a non-empty URI");
-    }
-    await this.whenReady;
-    const params: SysMLFeatureInspectorParams = {
-      textDocument: { uri: trimmed },
-      position,
-    };
-    return await this.client.sendRequest<SysMLFeatureInspectorResult>(
-      "sysml/featureInspector",
-      params,
-      token
-    );
   }
 
   async getServerStats(): Promise<SysMLServerStats | undefined> {

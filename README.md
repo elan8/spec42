@@ -15,7 +15,7 @@ Language server for [SysML v2](https://www.omg.org/sysml/sysmlv2/) (and KerML). 
 - **LSP**: text sync, diagnostics, hover, completion, go to definition, find references, rename, document symbols, workspace symbol search, code actions, formatting, folding ranges, selection ranges, document links, linked editing, call hierarchy, and type hierarchy.
 - **Workspace-aware**: all features use `.sysml` and `.kerml` files across the workspace (and library paths).
 - **Library paths + managed standard library**: configure `spec42.libraryPaths` for custom roots and use the extension-managed pinned SysML v2 standard library support.
-- **VS Code extension**: TextMate fallback highlighting plus semantic tokens, snippets, Feature Inspector, Model Explorer, Model Visualizer, workspace indexing feedback, and frontend-rendered diagram views/export (General + Interconnection stable; additional views optional/experimental).
+- **VS Code extension**: TextMate fallback highlighting plus semantic tokens, snippets, Model Explorer, Model Visualizer, workspace indexing feedback, and frontend-rendered diagram views/export (General + Interconnection stable; additional views optional/experimental).
 
 ## Available Today
 
@@ -24,7 +24,7 @@ Today `spec42` focuses on dependable core editing and navigation workflows:
 - editor navigation: go to definition, references, rename, document/workspace symbols
 - hierarchy workflows: call hierarchy and type hierarchy
 - editor assistance: hover, completion, linked editing, document links, folding, selection ranges, TextMate fallback highlighting, and semantic tokens
-- workspace-aware model exploration with the Feature Inspector, Model Explorer, and visualizer workflows
+- workspace-aware model exploration with the Model Explorer and visualizer workflows
 
 ## Sample Workspaces
 

@@ -18,6 +18,7 @@ export function toVscodeRange(dto: RangeDTO): vscode.Range {
 
 export class FileTreeItem extends vscode.TreeItem {
   readonly itemType = "file-node" as const;
+  childrenItems: ModelTreeItem[] = [];
 
   constructor(
     public readonly fileUri: vscode.Uri,
@@ -55,13 +56,191 @@ export class ExplorerInfoItem extends vscode.TreeItem {
   }
 }
 
+export type ElementReferenceSummary = {
+  id?: string;
+  name: string;
+  type?: string;
+  uri: vscode.Uri;
+  range: RangeDTO;
+};
+
+type ElementPresentation = {
+  description?: string;
+  tooltip: string;
+};
+
+export type ElementMetadata = {
+  reference: ElementReferenceSummary;
+  parentId?: string;
+};
+
+export type ElementPresentationContext = {
+  activeUri?: vscode.Uri;
+  metadataById: Map<string, ElementMetadata>;
+  incomingRelationshipCounts: Map<string, number>;
+};
+
+function tryString(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : undefined;
+}
+
+function basename(uri: vscode.Uri): string {
+  return uri.fsPath.split(/[/\\]/).pop() ?? uri.toString();
+}
+
+function rangeLabel(range: RangeDTO): string {
+  const startLine = range.start.line + 1;
+  const startChar = range.start.character + 1;
+  const endLine = range.end.line + 1;
+  const endChar = range.end.character + 1;
+  return startLine === endLine
+    ? `L${startLine}:${startChar}-${endChar}`
+    : `L${startLine}:${startChar} to L${endLine}:${endChar}`;
+}
+
+function flattenAttributeEntries(attributes: Record<string, unknown> | undefined): string[] {
+  if (!attributes) {
+    return [];
+  }
+  const preferredKeys = [
+    "partType",
+    "portType",
+    "attributeType",
+    "actionType",
+    "itemType",
+    "flowType",
+    "stateType",
+    "requirementType",
+    "specializes",
+    "multiplicity",
+    "direction",
+  ];
+  const entries = preferredKeys
+    .map((key) => {
+      const value = attributes[key];
+      if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+        return `${key}: ${String(value)}`;
+      }
+      if (Array.isArray(value) && value.every((entry) => typeof entry === "string" || typeof entry === "number" || typeof entry === "boolean")) {
+        return `${key}: ${value.join(", ")}`;
+      }
+      return undefined;
+    })
+    .filter((entry): entry is string => !!entry);
+  return Array.from(new Set(entries));
+}
+
+function summarizeRelationshipTarget(
+  element: SysMLElementDTO,
+  relationshipType: "typing" | "specializes",
+  context: ElementPresentationContext
+): ElementReferenceSummary | undefined {
+  const rel = (element.relationships ?? []).find(
+    (relationship) => String(relationship.type || "").toLowerCase() === relationshipType
+  );
+  if (!rel) {
+    return undefined;
+  }
+  return context.metadataById.get(rel.target)?.reference ?? {
+    id: rel.target,
+    name: rel.name || rel.target,
+    uri: context.activeUri ?? vscode.Uri.parse("untitled:unknown"),
+    range: element.range,
+  };
+}
+
+function parentSummary(
+  parentItem: ModelTreeItem | FileTreeItem | undefined,
+  context: ElementPresentationContext
+): ElementReferenceSummary | undefined {
+  if (!parentItem || parentItem.itemType !== "sysml-element") {
+    return undefined;
+  }
+  return context.metadataById.get(parentItem.element.id ?? "")?.reference ?? {
+    id: parentItem.element.id,
+    name: parentItem.element.name || "(anonymous)",
+    type: parentItem.element.type,
+    uri: parentItem.elementUri,
+    range: parentItem.element.range,
+  };
+}
+
+export function buildElementPresentation(
+  element: SysMLElementDTO,
+  uri: vscode.Uri,
+  parentItem: ModelTreeItem | FileTreeItem | undefined,
+  context: ElementPresentationContext
+): ElementPresentation {
+  const typingTarget = summarizeRelationshipTarget(element, "typing", context);
+  const specializationTarget = summarizeRelationshipTarget(element, "specializes", context);
+  const multiplicity = tryString(element.attributes?.multiplicity);
+  const parent = parentSummary(parentItem, context);
+  const activeUri = context.activeUri?.toString();
+  const crossFile = !!activeUri && activeUri !== uri.toString();
+
+  const descriptionParts: string[] = [];
+  if (typingTarget?.name) {
+    descriptionParts.push(`: ${typingTarget.name}`);
+  } else if (specializationTarget?.name) {
+    descriptionParts.push(`:> ${specializationTarget.name}`);
+  }
+  if (multiplicity) {
+    descriptionParts.push(`[${multiplicity}]`);
+  }
+  if (descriptionParts.length === 0 && parent?.name) {
+    descriptionParts.push(`in ${parent.name}`);
+  }
+  if (crossFile) {
+    descriptionParts.push(`@ ${basename(uri)}`);
+  }
+
+  const tooltipParts: string[] = [];
+  const qualifiedName = tryString(element.id) ?? element.name ?? "(anonymous)";
+  tooltipParts.push(`${element.type}: ${element.name || "(anonymous)"}`);
+  tooltipParts.push(`Qualified name: ${qualifiedName}`);
+  tooltipParts.push(`Source: ${basename(uri)} ${rangeLabel(element.range)}`);
+  if (parent?.name) {
+    tooltipParts.push(`Parent: ${parent.name}`);
+  }
+  if (typingTarget?.name) {
+    tooltipParts.push(`Type: ${typingTarget.name}`);
+  } else if (tryString(element.attributes?.partType) || tryString(element.attributes?.portType)) {
+    tooltipParts.push(`Type: ${tryString(element.attributes?.partType) ?? tryString(element.attributes?.portType)}`);
+  }
+  if (specializationTarget?.name) {
+    tooltipParts.push(`Specializes: ${specializationTarget.name}`);
+  } else if (tryString(element.attributes?.specializes)) {
+    tooltipParts.push(`Specializes: ${tryString(element.attributes?.specializes)}`);
+  }
+  if (multiplicity) {
+    tooltipParts.push(`Multiplicity: [${multiplicity}]`);
+  }
+  const outgoingCount = element.relationships?.length ?? 0;
+  const incomingCount = context.incomingRelationshipCounts.get(element.id ?? "") ?? 0;
+  if (outgoingCount > 0 || incomingCount > 0) {
+    tooltipParts.push(`Relationships: ${outgoingCount} outgoing, ${incomingCount} incoming`);
+  }
+  for (const entry of flattenAttributeEntries(element.attributes).slice(0, 6)) {
+    tooltipParts.push(entry);
+  }
+
+  return {
+    description: descriptionParts.join(" ").trim() || undefined,
+    tooltip: tooltipParts.join("\n"),
+  };
+}
+
 export class ModelTreeItem extends vscode.TreeItem {
   readonly itemType = "sysml-element" as const;
   readonly elementUri: vscode.Uri;
+  readonly parentItem?: ModelTreeItem | FileTreeItem;
+  childrenItems: ModelTreeItem[] = [];
 
   constructor(
     public readonly element: SysMLElementDTO,
-    uri: vscode.Uri
+    uri: vscode.Uri,
+    parentItem?: ModelTreeItem | FileTreeItem,
+    presentation?: ElementPresentation
   ) {
     const hasChildren =
       (element.children?.length ?? 0) > 0 ||
@@ -75,6 +254,7 @@ export class ModelTreeItem extends vscode.TreeItem {
     );
 
     this.elementUri = uri;
+    this.parentItem = parentItem;
     this.contextValue =
       element.type === "package" ? "sysmlPackage" : "sysmlElement";
     this.iconPath = iconForElementType(String(element.type || "").toLowerCase());
@@ -85,23 +265,23 @@ export class ModelTreeItem extends vscode.TreeItem {
     const typeName = partType ?? portType;
     const multiplicity = element.attributes?.multiplicity as string | undefined;
     this.label = element.name || "(anonymous)";
-    if (element.type === "package") {
-      this.description = undefined;
-    } else {
-      this.description = undefined;
-    }
+    this.description = presentation?.description;
 
-    const tooltipParts: string[] = [`${element.type}: ${element.name || "(anonymous)"}`];
+    const tooltipParts: string[] = presentation?.tooltip
+      ? [presentation.tooltip]
+      : [`${element.type}: ${element.name || "(anonymous)"}`];
     if (element.type === "package") {
       const stats = computePackageStats(element);
       tooltipParts.push(`Parts: ${stats.parts}`);
       tooltipParts.push(`Part defs: ${stats.partDefs}`);
       tooltipParts.push(`Ports: ${stats.ports}`);
     }
-    if (typeName) tooltipParts.push(`Type: ${typeName}`);
-    if (multiplicity) tooltipParts.push(`Multiplicity: [${multiplicity}]`);
-    if (element.children?.length) tooltipParts.push(`Children: ${element.children.length}`);
-    if (element.relationships?.length) tooltipParts.push(`Relationships: ${element.relationships.length}`);
+    if (!presentation?.tooltip) {
+      if (typeName) tooltipParts.push(`Type: ${typeName}`);
+      if (multiplicity) tooltipParts.push(`Multiplicity: [${multiplicity}]`);
+      if (element.children?.length) tooltipParts.push(`Children: ${element.children.length}`);
+      if (element.relationships?.length) tooltipParts.push(`Relationships: ${element.relationships.length}`);
+    }
     this.tooltip = tooltipParts.join("\n");
 
     this.command = {
@@ -197,6 +377,10 @@ type WorkspaceLoadStatus = {
   failures: number;
 };
 
+type ModelExplorerDebugState = {
+  lastRevealedElementId?: string;
+};
+
 export class ModelExplorerProvider
   implements vscode.TreeDataProvider<ExplorerTreeItem>
 {
@@ -217,6 +401,11 @@ export class ModelExplorerProvider
   private _workspaceViewMode: "byFile" | "bySemantic" = "bySemantic";
   private treeView?: vscode.TreeView<ExplorerTreeItem>;
   private uriToRootItems = new Map<string, ExplorerTreeItem[]>();
+  private rootItemsCache: ExplorerTreeItem[] | undefined;
+  private elementIndex = new Map<string, ModelTreeItem>();
+  private metadataById = new Map<string, ElementMetadata>();
+  private incomingRelationshipCounts = new Map<string, number>();
+  private lastRevealedElementId: string | undefined;
   private workspaceLoadStatus: WorkspaceLoadStatus = {
     state: "idle",
     scannedFiles: 0,
@@ -231,6 +420,19 @@ export class ModelExplorerProvider
 
   setTreeView(treeView: vscode.TreeView<ExplorerTreeItem>): void {
     this.treeView = treeView;
+  }
+
+  getDebugState(): ModelExplorerDebugState {
+    return {
+      lastRevealedElementId: this.lastRevealedElementId,
+    };
+  }
+
+  getParent(element: ExplorerTreeItem): ExplorerTreeItem | undefined {
+    if (element.itemType === "sysml-element") {
+      return element.parentItem;
+    }
+    return undefined;
   }
 
   isWorkspaceMode(): boolean {
@@ -253,6 +455,7 @@ export class ModelExplorerProvider
       "sysml.workspaceViewMode",
       this._workspaceViewMode
     );
+    this.invalidateTreeCache();
     this._onDidChangeTreeData.fire();
   }
 
@@ -265,11 +468,13 @@ export class ModelExplorerProvider
       "sysml.workspaceViewMode",
       this._workspaceViewMode
     );
+    this.invalidateTreeCache();
     this._onDidChangeTreeData.fire();
   }
 
   async revealActiveDocument(docUri: vscode.Uri): Promise<void> {
     if (!this.treeView) return;
+    this.ensureTreeCache();
     const items = this.uriToRootItems.get(docUri.toString());
     if (!items?.length) return;
     const seen = new Set<ExplorerTreeItem>();
@@ -288,6 +493,29 @@ export class ModelExplorerProvider
     }
   }
 
+  async revealElement(
+    docUri: vscode.Uri,
+    elementId?: string,
+    range?: RangeDTO
+  ): Promise<void> {
+    if (!this.treeView) return;
+    this.ensureTreeCache();
+    const item = this.findElementTreeItem(docUri, elementId, range);
+    if (!item) {
+      return;
+    }
+    try {
+      await this.treeView.reveal(item, {
+        select: true,
+        focus: false,
+        expand: true,
+      });
+      this.lastRevealedElementId = item.element.id;
+    } catch {
+      // Ignore reveal failures when the view is not visible yet.
+    }
+  }
+
   clear(): void {
     this.lastUri = undefined;
     this.lastElements = undefined;
@@ -295,6 +523,11 @@ export class ModelExplorerProvider
     this.workspaceFileData.clear();
     this.workspaceFileUris = [];
     this.uriToRootItems.clear();
+    this.rootItemsCache = undefined;
+    this.elementIndex.clear();
+    this.metadataById.clear();
+    this.incomingRelationshipCounts.clear();
+    this.lastRevealedElementId = undefined;
     this.workspaceLoadStatus = {
       state: "idle",
       scannedFiles: 0,
@@ -312,6 +545,7 @@ export class ModelExplorerProvider
       ...this.workspaceLoadStatus,
       ...status,
     };
+    this.invalidateTreeCache();
     this._onDidChangeTreeData.fire();
   }
 
@@ -326,6 +560,7 @@ export class ModelExplorerProvider
     this.lastElements = undefined;
     this.workspaceFileData.clear();
     this.uriToRootItems.clear();
+    this.invalidateTreeCache();
     let failures = 0;
     const perFileDurationsMs: number[] = [];
     const loadStartedAt = Date.now();
@@ -399,6 +634,7 @@ export class ModelExplorerProvider
         failures,
       };
       log("loadWorkspaceModel: done,", this.workspaceFileData.size, "files loaded");
+      this.invalidateTreeCache();
       try {
         // eslint-disable-next-line no-console
         console.log(
@@ -430,6 +666,7 @@ export class ModelExplorerProvider
     this.workspaceFileUris = [];
     this.lastUri = document.uri;
     this.documentLoadState = "loading";
+    this.invalidateTreeCache();
     this._onDidChangeTreeData.fire();
 
     try {
@@ -452,6 +689,7 @@ export class ModelExplorerProvider
       this.lastElements = [];
       this.documentLoadState = "error";
     } finally {
+      this.invalidateTreeCache();
       this._onDidChangeTreeData.fire();
     }
   }
@@ -498,28 +736,6 @@ export class ModelExplorerProvider
 
   async getChildren(element?: ExplorerTreeItem): Promise<ExplorerTreeItem[]> {
     if (!element) {
-      const infoItems = this.getWorkspaceInfoItems();
-      if (this.workspaceMode && this.workspaceFileData.size > 0) {
-        if (this._workspaceViewMode === "byFile") {
-          const items = Array.from(this.workspaceFileData.entries()).map(
-            ([, data]) => new FileTreeItem(data.uri, data.elements.length)
-          );
-          this.uriToRootItems.clear();
-          for (const item of items) {
-            this.uriToRootItems.set(item.fileUri.toString(), [item]);
-          }
-          return [...infoItems, ...items];
-        }
-        const entries = Array.from(this.workspaceFileData.entries());
-        const items = this.mergeNamespaceElements(entries);
-        this.buildSemanticUriMapping(items);
-        return [...infoItems, ...items];
-      }
-
-      if (this.workspaceMode && infoItems.length > 0) {
-        return infoItems;
-      }
-
       if (!this.lastUri && !this.workspaceMode) {
         const active = vscode.window.activeTextEditor?.document;
         if (
@@ -555,59 +771,18 @@ export class ModelExplorerProvider
           return [];
         }
       }
-
-      if (this.documentLoadState === "loading") {
-        return [
-          new ExplorerInfoItem(
-            "Loading model...",
-            "Parsing and indexing",
-            "The language server is building the semantic model.",
-            "sync"
-          ),
-        ];
-      }
-
-      if (this.lastUri && this.lastElements) {
-        const merged = this.mergeElements(this.lastElements);
-        const items = merged.map(
-          (e) => new ModelTreeItem(e, this.lastUri!)
-        );
-        this.uriToRootItems.clear();
-        this.uriToRootItems.set(this.lastUri.toString(), items);
-        if (items.length === 0 && this.documentLoadState === "ready") {
-          return [
-            new ExplorerInfoItem(
-              "No model elements found",
-              "0 loaded",
-              "The active file has no extracted model elements yet.",
-              "info"
-            ),
-          ];
-        }
-        return items;
-      }
-      return [];
+      return this.ensureTreeCache();
     }
 
     if (element.itemType === "file-node") {
-      const data = this.workspaceFileData.get(element.fileUri.toString());
-      if (!data) return [];
-      return data.elements.map(
-        (e) => new ModelTreeItem(e, data.uri)
-      );
+      return element.childrenItems;
     }
 
     if (element.itemType === "explorer-info") {
       return [];
     }
 
-    const children: ExplorerTreeItem[] = [];
-    const el = element.element;
-    const childElements = el.children ?? [];
-    for (const c of childElements) {
-      children.push(new ModelTreeItem(c, element.elementUri));
-    }
-    return children;
+    return element.childrenItems;
   }
 
   private getWorkspaceInfoItems(): ExplorerInfoItem[] {
@@ -652,7 +827,7 @@ export class ModelExplorerProvider
 
   private mergeNamespaceElements(
     entries: [string, { uri: vscode.Uri; elements: SysMLElementDTO[] }][]
-  ): ModelTreeItem[] {
+  ): { element: SysMLElementDTO; uri: vscode.Uri }[] {
     const pairs: { el: SysMLElementDTO; uri: vscode.Uri }[] = [];
     for (const [, data] of entries) {
       for (const el of data.elements) {
@@ -661,7 +836,7 @@ export class ModelExplorerProvider
     }
 
     const mergedMap = new Map<string, { merged: SysMLElementDTO; uri: vscode.Uri }>();
-    const result: ModelTreeItem[] = [];
+    const result: { element: SysMLElementDTO; uri: vscode.Uri }[] = [];
 
     for (const { el, uri } of pairs) {
       const key = `${el.type}::${el.name || "(anonymous)"}`;
@@ -671,9 +846,9 @@ export class ModelExplorerProvider
       } else if (this.namespaceTypes.has(el.type)) {
         const clone = this.cloneElement(el);
         mergedMap.set(key, { merged: clone, uri });
-        result.push(new ModelTreeItem(clone, uri));
+        result.push({ element: clone, uri });
       } else {
-        result.push(new ModelTreeItem(el, uri));
+        result.push({ element: el, uri });
       }
     }
     return result;
@@ -764,6 +939,7 @@ export class ModelExplorerProvider
 
   private cloneElement(el: SysMLElementDTO): SysMLElementDTO {
     return {
+      id: el.id,
       type: el.type,
       name: el.name,
       range: el.range,
@@ -772,5 +948,214 @@ export class ModelExplorerProvider
       relationships: [...(el.relationships ?? [])],
       errors: el.errors ? [...el.errors] : undefined,
     };
+  }
+
+  private invalidateTreeCache(): void {
+    this.rootItemsCache = undefined;
+    this.elementIndex.clear();
+    this.uriToRootItems.clear();
+    this.metadataById.clear();
+    this.incomingRelationshipCounts.clear();
+  }
+
+  private ensureTreeCache(): ExplorerTreeItem[] {
+    if (this.rootItemsCache) {
+      return this.rootItemsCache;
+    }
+
+    const infoItems = this.getWorkspaceInfoItems();
+    if (this.workspaceMode && this.workspaceFileData.size > 0) {
+      if (this._workspaceViewMode === "byFile") {
+        this.buildElementMetadata(
+          Array.from(this.workspaceFileData.values()).flatMap((data) =>
+            data.elements.map((element) => ({ element, uri: data.uri }))
+          )
+        );
+        const items = Array.from(this.workspaceFileData.entries()).map(([, data]) =>
+          this.createFileItem(data.uri, data.elements)
+        );
+        for (const item of items) {
+          this.uriToRootItems.set(item.fileUri.toString(), [item]);
+        }
+        this.rootItemsCache = [...infoItems, ...items];
+        return this.rootItemsCache;
+      }
+      const entries = Array.from(this.workspaceFileData.entries());
+      const merged = this.mergeNamespaceElements(entries);
+      this.buildElementMetadata(merged);
+      const items = merged.map(({ element, uri }) =>
+        this.createModelTreeItem(element, uri)
+      );
+      this.buildSemanticUriMapping(items);
+      this.rootItemsCache = [...infoItems, ...items];
+      return this.rootItemsCache;
+    }
+
+    if (this.workspaceMode && infoItems.length > 0) {
+      this.rootItemsCache = infoItems;
+      return this.rootItemsCache;
+    }
+
+    if (this.documentLoadState === "loading") {
+      this.rootItemsCache = [
+        new ExplorerInfoItem(
+          "Loading model...",
+          "Parsing and indexing",
+          "The language server is building the semantic model.",
+          "sync"
+        ),
+      ];
+      return this.rootItemsCache;
+    }
+
+    if (this.lastUri && this.lastElements) {
+      const merged = this.mergeElements(this.lastElements);
+      this.buildElementMetadata(merged.map((element) => ({ element, uri: this.lastUri! })));
+      const items = merged.map((e) => this.createModelTreeItem(e, this.lastUri!));
+      this.uriToRootItems.set(this.lastUri.toString(), items);
+      if (items.length === 0 && this.documentLoadState === "ready") {
+        this.rootItemsCache = [
+          new ExplorerInfoItem(
+            "No model elements found",
+            "0 loaded",
+            "The active file has no extracted model elements yet.",
+            "info"
+          ),
+        ];
+        return this.rootItemsCache;
+      }
+      this.rootItemsCache = items;
+      return this.rootItemsCache;
+    }
+
+    this.rootItemsCache = [];
+    return this.rootItemsCache;
+  }
+
+  private createFileItem(uri: vscode.Uri, elements: SysMLElementDTO[]): FileTreeItem {
+    const item = new FileTreeItem(uri, elements.length);
+    item.childrenItems = elements.map((element) =>
+      this.createModelTreeItem(element, uri, item)
+    );
+    return item;
+  }
+
+  private createModelTreeItem(
+    element: SysMLElementDTO,
+    uri: vscode.Uri,
+    parentItem?: ModelTreeItem | FileTreeItem
+  ): ModelTreeItem {
+    const item = new ModelTreeItem(
+      element,
+      uri,
+      parentItem,
+      buildElementPresentation(element, uri, parentItem, {
+        activeUri: vscode.window.activeTextEditor?.document.uri,
+        metadataById: this.metadataById,
+        incomingRelationshipCounts: this.incomingRelationshipCounts,
+      })
+    );
+    item.childrenItems = (element.children ?? []).map((child) =>
+      this.createModelTreeItem(child, uri, item)
+    );
+    this.registerElementItem(item);
+    return item;
+  }
+
+  private registerElementItem(item: ModelTreeItem): void {
+    const byId = this.elementIdKey(item.elementUri, item.element.id);
+    if (byId && !this.elementIndex.has(byId)) {
+      this.elementIndex.set(byId, item);
+    }
+    const byRange = this.elementRangeKey(item.elementUri, item.element.range);
+    if (byRange && !this.elementIndex.has(byRange)) {
+      this.elementIndex.set(byRange, item);
+    }
+    const byIdOnly = this.elementIdOnlyKey(item.element.id);
+    if (byIdOnly && !this.elementIndex.has(byIdOnly)) {
+      this.elementIndex.set(byIdOnly, item);
+    }
+  }
+
+  private findElementTreeItem(
+    docUri: vscode.Uri,
+    elementId?: string,
+    range?: RangeDTO
+  ): ModelTreeItem | undefined {
+    const byId = this.elementIdKey(docUri, elementId);
+    if (byId && this.elementIndex.has(byId)) {
+      return this.elementIndex.get(byId);
+    }
+    const byRange = this.elementRangeKey(docUri, range);
+    if (byRange && this.elementIndex.has(byRange)) {
+      return this.elementIndex.get(byRange);
+    }
+    const byIdOnly = this.elementIdOnlyKey(elementId);
+    if (byIdOnly && this.elementIndex.has(byIdOnly)) {
+      return this.elementIndex.get(byIdOnly);
+    }
+    return undefined;
+  }
+
+  private elementIdKey(uri: vscode.Uri, elementId?: string): string | undefined {
+    if (!elementId) {
+      return undefined;
+    }
+    return `${uri.toString().toLowerCase()}::${elementId.toLowerCase()}`;
+  }
+
+  private elementIdOnlyKey(elementId?: string): string | undefined {
+    if (!elementId) {
+      return undefined;
+    }
+    return `id::${elementId.toLowerCase()}`;
+  }
+
+  private elementRangeKey(uri: vscode.Uri, range?: RangeDTO): string | undefined {
+    if (!range) {
+      return undefined;
+    }
+    return `${uri.toString().toLowerCase()}::${range.start.line}:${range.start.character}-${range.end.line}:${range.end.character}`;
+  }
+
+  private buildElementMetadata(
+    entries: { element: SysMLElementDTO; uri: vscode.Uri }[]
+  ): void {
+    this.metadataById.clear();
+    this.incomingRelationshipCounts.clear();
+    for (const { element, uri } of entries) {
+      this.collectElementMetadata(element, uri);
+    }
+  }
+
+  private collectElementMetadata(
+    element: SysMLElementDTO,
+    uri: vscode.Uri,
+    parentId?: string
+  ): void {
+    if (element.id) {
+      this.metadataById.set(element.id, {
+        reference: {
+          id: element.id,
+          name: element.name || "(anonymous)",
+          type: element.type,
+          uri,
+          range: element.range,
+        },
+        parentId,
+      });
+    }
+    for (const relationship of element.relationships ?? []) {
+      const targetId = relationship.target;
+      if (targetId) {
+        this.incomingRelationshipCounts.set(
+          targetId,
+          (this.incomingRelationshipCounts.get(targetId) ?? 0) + 1
+        );
+      }
+    }
+    for (const child of element.children ?? []) {
+      this.collectElementMetadata(child, uri, element.id);
+    }
   }
 }

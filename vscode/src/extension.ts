@@ -14,9 +14,6 @@ import {
 } from "vscode-languageclient/node";
 import { LspModelProvider } from "./providers/lspModelProvider";
 import {
-  FeatureInspectorProvider,
-} from "./providers/featureInspectorProvider";
-import {
   ModelExplorerProvider,
   ModelTreeItem,
 } from "./explorer/modelExplorerProvider";
@@ -59,13 +56,13 @@ type ServerHealthState =
 let client: LanguageClient | undefined;
 let statusItem: vscode.StatusBarItem | undefined;
 let modelExplorerProvider: ModelExplorerProvider | undefined;
-let featureInspectorProvider: FeatureInspectorProvider | undefined;
 let libraryWebviewProvider: LibraryWebviewViewProvider | undefined;
 let lspModelProviderForStatus: LspModelProvider | undefined;
 let serverHealthState: ServerHealthState = "starting";
 let serverHealthDetail = "";
 let workspaceIndexingCts: vscode.CancellationTokenSource | undefined;
 let sourceSelectionSyncTimer: ReturnType<typeof setTimeout> | undefined;
+let modelExplorerSelectionSyncTimer: ReturnType<typeof setTimeout> | undefined;
 
 function getConfig() {
   return {
@@ -121,7 +118,9 @@ type DebugExtensionState = {
   serverHealthState: ServerHealthState;
   serverHealthDetail: string;
   workspaceIndexSummary?: WorkspaceIndexSummary;
-  featureInspector?: ReturnType<FeatureInspectorProvider["getDebugState"]>;
+  modelExplorer?: {
+    lastRevealedElementId?: string;
+  };
 };
 
 function setServerHealth(
@@ -560,15 +559,12 @@ export function activate(context: vscode.ExtensionContext): void {
     client.onDidChangeState(({ newState }) => {
       if (newState === State.Starting) {
         setServerHealth(context, "starting", "Starting SysML language server.");
-        featureInspectorProvider?.refresh(true);
       } else if (newState === State.Running) {
         restartCount = 0;
         crashDialogShown = false;
         setServerHealth(context, "ready", "SysML language server is ready.");
-        featureInspectorProvider?.refresh(true);
       } else if (newState === State.Stopped && !manualStopInProgress) {
         setServerHealth(context, "crashed", "SysML language server is stopped.");
-        featureInspectorProvider?.refresh(true);
       }
     })
   );
@@ -581,7 +577,6 @@ export function activate(context: vscode.ExtensionContext): void {
       log("Language client ready, refreshing Model Explorer");
       logStartupPhase("languageClient:ready");
       modelExplorerProvider?.refresh();
-      featureInspectorProvider?.refresh(true);
     })
     .catch((error) => {
       const detail = error instanceof Error ? error.message : String(error ?? "unknown startup failure");
@@ -599,14 +594,6 @@ export function activate(context: vscode.ExtensionContext): void {
   const lspModelProvider = new LspModelProvider(client, clientReadyPromise);
   lspModelProviderForStatus = lspModelProvider;
   modelExplorerProvider = new ModelExplorerProvider(lspModelProvider);
-  featureInspectorProvider = new FeatureInspectorProvider(
-    lspModelProvider,
-    isSysmlDoc,
-    () => ({
-      state: serverHealthState,
-      detail: serverHealthDetail,
-    })
-  );
   libraryWebviewProvider = new LibraryWebviewViewProvider(
     context.extensionUri,
     lspModelProvider,
@@ -657,12 +644,6 @@ export function activate(context: vscode.ExtensionContext): void {
   });
   modelExplorerProvider.setTreeView(treeView);
   context.subscriptions.push(treeView);
-
-  const featureInspectorTreeView = vscode.window.createTreeView("sysmlFeatureInspector", {
-    treeDataProvider: featureInspectorProvider,
-  });
-  featureInspectorProvider.setTreeView(featureInspectorTreeView);
-  context.subscriptions.push(featureInspectorTreeView);
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider("spec42Library", libraryWebviewProvider)
@@ -811,7 +792,32 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     vscode.window.onDidChangeTextEditorSelection((event) => {
-      featureInspectorProvider?.handleSelectionChanged(event);
+      if (modelExplorerSelectionSyncTimer) {
+        clearTimeout(modelExplorerSelectionSyncTimer);
+      }
+      modelExplorerSelectionSyncTimer = setTimeout(async () => {
+        modelExplorerSelectionSyncTimer = undefined;
+        const doc = event.textEditor.document;
+        if (!isSysmlDoc(doc)) {
+          return;
+        }
+        try {
+          const position =
+            event.selections[0]?.active ?? event.textEditor.selection.active;
+          const result = await lspModelProvider.getModel(doc.uri.toString(), ["graph"]);
+          const node = bestGraphNodeAtPosition(result.graph?.nodes, position);
+          if (!node) {
+            return;
+          }
+          await modelExplorerProvider?.revealElement(
+            doc.uri,
+            node.id,
+            node.range
+          );
+        } catch (error) {
+          logError(`Source-to-explorer sync failed for ${doc.uri.toString()}`, error);
+        }
+      }, 150);
       const panel = VisualizationPanel.currentPanel;
       const doc = event.textEditor.document;
       if (!panel || !isSysmlDoc(doc) || !panel.tracksUri(doc.uri) || panel.isNavigating()) {
@@ -1065,33 +1071,6 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("sysml.featureInspector.refresh", async () => {
-      featureInspectorProvider?.refresh(true);
-    })
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "sysml.featureInspector.openReference",
-      async (target?: {
-        uri?: string;
-        range?: {
-          start: { line: number; character: number };
-          end: { line: number; character: number };
-        };
-      }) => {
-        if (!target?.uri || !target.range) {
-          return;
-        }
-        await featureInspectorProvider?.openReference({
-          uri: target.uri,
-          range: target.range,
-        });
-      }
-    )
-  );
-
-  context.subscriptions.push(
     vscode.commands.registerCommand("sysml.openLocation", async (item: ModelTreeItem) => {
       log("openLocation called", "item:", !!item, "elementUri:", !!item?.elementUri, "resourceUri:", !!item?.resourceUri);
       if (!item) return;
@@ -1178,7 +1157,6 @@ export function activate(context: vscode.ExtensionContext): void {
       try {
         manualStopInProgress = true;
         setServerHealth(context, "restarting", "Restarting SysML language server.");
-        featureInspectorProvider?.cancelPendingWork();
         await client.stop();
         manualStopInProgress = false;
         restartCount = 0;
@@ -1443,7 +1421,9 @@ export function activate(context: vscode.ExtensionContext): void {
       serverHealthState,
       serverHealthDetail,
       workspaceIndexSummary: lastWorkspaceIndexSummary,
-      featureInspector: featureInspectorProvider?.getDebugState(),
+      modelExplorer: {
+        lastRevealedElementId: modelExplorerProvider?.getDebugState().lastRevealedElementId,
+      },
     })),
 
     vscode.commands.registerCommand(
@@ -1811,7 +1791,6 @@ export function activate(context: vscode.ExtensionContext): void {
     const loaded = shouldShowModelExplorerContext(modelExplorerProvider);
     vscode.commands.executeCommand("setContext", "sysml.modelLoaded", loaded);
     updateStatusBar(context);
-    featureInspectorProvider?.handleActiveEditorChanged(vscode.window.activeTextEditor);
     // Refresh Model Explorer when switching to a SysML doc so the tree shows the correct model
     if (active && isSysmlDoc(active)) {
       modelExplorerProvider?.refresh();
@@ -1827,18 +1806,6 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.workspace.onDidOpenTextDocument((doc) => {
       if (doc.languageId === "sysml" || doc.languageId === "kerml") {
         modelExplorerProvider?.refresh();
-        if (vscode.window.activeTextEditor?.document.uri.toString() === doc.uri.toString()) {
-          featureInspectorProvider?.refresh(true);
-        }
-      }
-    })
-  );
-  context.subscriptions.push(
-    vscode.workspace.onDidSaveTextDocument((doc) => {
-      if (doc.languageId === "sysml" || doc.languageId === "kerml") {
-        if (vscode.window.activeTextEditor?.document.uri.toString() === doc.uri.toString()) {
-          featureInspectorProvider?.refresh(true);
-        }
       }
     })
   );
@@ -1960,6 +1927,5 @@ export function deactivate(): Thenable<void> | undefined {
   workspaceIndexingCts?.cancel();
   workspaceIndexingCts?.dispose();
   workspaceIndexingCts = undefined;
-  featureInspectorProvider?.dispose();
   return client?.stop();
 }
