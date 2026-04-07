@@ -42,6 +42,7 @@ export interface SysMLElementDTO {
   id?: string;
   type: string;
   name: string;
+  uri?: string;
   range: RangeDTO;
   children: SysMLElementDTO[];
   attributes: Record<string, unknown>;
@@ -56,6 +57,24 @@ export interface SysMLModelStatsDTO {
   parseTimeMs: number;
   modelBuildTimeMs: number;
   parseCached: boolean;
+}
+
+export interface WorkspaceFileModelDTO {
+  uri: string;
+  elements: SysMLElementDTO[];
+}
+
+export interface WorkspaceModelSummaryDTO {
+  scannedFiles: number;
+  loadedFiles: number;
+  failures: number;
+  truncated: boolean;
+}
+
+export interface WorkspaceModelDTO {
+  files: WorkspaceFileModelDTO[];
+  semantic: SysMLElementDTO[];
+  summary: WorkspaceModelSummaryDTO;
 }
 
 export interface SysMLModelParams {
@@ -112,6 +131,7 @@ export interface SysMLModelResult {
   version: number;
   graph?: SysMLGraphDTO;
   generalViewGraph?: SysMLGraphDTO;
+  workspaceModel?: WorkspaceModelDTO;
   activityDiagrams?: ActivityDiagramDTO[];
   ibd?: IbdDataDTO;
   stats?: SysMLModelStatsDTO;

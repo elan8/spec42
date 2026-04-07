@@ -120,9 +120,9 @@ function isDefaultServerPath(value: string): boolean {
 type WorkspaceIndexSummary = {
   scannedFiles: number;
   loadedFiles: number;
-  perPatternLimit: number;
   truncated: boolean;
   cancelled: boolean;
+  failures?: number;
 };
 
 let lastWorkspaceIndexSummary: WorkspaceIndexSummary | undefined;
@@ -130,7 +130,7 @@ let lastWorkspaceIndexSummary: WorkspaceIndexSummary | undefined;
 type WorkspaceLoadRun = {
   runId: string;
   cts: vscode.CancellationTokenSource;
-  targetViewMode: "bySemantic";
+  targetViewMode: "bySemantic" | "byFile";
   discoveredFiles: vscode.Uri[];
   startedAt: number;
 };
@@ -279,16 +279,14 @@ function bestGraphNodeAtPosition(
     .sort((a, b) => rangeSpanScore(a.range) - rangeSpanScore(b.range))[0];
 }
 
-function getWorkspaceFileQueryLimit(): number {
-  return getConfigNumber("workspace.maxFilesPerPattern", 500);
-}
-
 function shouldShowModelExplorerContext(
   provider: ModelExplorerProvider | undefined
 ): boolean {
   const hasWorkspace = (vscode.workspace.workspaceFolders?.length ?? 0) > 0;
   const activeIsSysml = isSysmlDoc(vscode.window.activeTextEditor?.document);
-  const hasModelData = (provider?.getAllElements().length ?? 0) > 0;
+  const hasModelData =
+    (provider?.getAllElements().length ?? 0) > 0 ||
+    (provider?.isWorkspaceBacked() ?? false);
   return hasWorkspace || activeIsSysml || hasModelData;
 }
 
@@ -368,7 +366,7 @@ function cancelWorkspaceLoad(
 
 function startWorkspaceLoad(
   provider: ModelExplorerProvider,
-  targetViewMode: "bySemantic"
+  targetViewMode: "bySemantic" | "byFile"
 ): WorkspaceLoadRun {
   cancelWorkspaceLoad(provider, "superseded");
   const run: WorkspaceLoadRun = {
@@ -461,7 +459,7 @@ function updateStatusBar(context: vscode.ExtensionContext): void {
     ? `Server state: ${serverHealthState}${serverHealthDetail ? `\n${serverHealthDetail}` : ""}`
     : `${errors} error(s), ${warnings} warning(s)\nClick to open Problems panel.`;
   const workspaceTooltip = lastWorkspaceIndexSummary
-    ? `\n\nWorkspace indexing:\nScanned ${lastWorkspaceIndexSummary.scannedFiles} file(s)\nLoaded ${lastWorkspaceIndexSummary.loadedFiles} file(s)\nLimit ${lastWorkspaceIndexSummary.perPatternLimit} per folder and file type${lastWorkspaceIndexSummary.truncated ? "\nResults may be incomplete (discovery limit reached)." : ""}${lastWorkspaceIndexSummary.cancelled ? "\nLast scan was cancelled." : ""}`
+    ? `\n\nWorkspace indexing:\nScanned ${lastWorkspaceIndexSummary.scannedFiles} file(s)\nLoaded ${lastWorkspaceIndexSummary.loadedFiles} file(s)${(lastWorkspaceIndexSummary.failures ?? 0) > 0 ? `\nFailures: ${lastWorkspaceIndexSummary.failures}` : ""}${lastWorkspaceIndexSummary.truncated ? "\nResults may be incomplete." : ""}${lastWorkspaceIndexSummary.cancelled ? "\nLast scan was cancelled." : ""}`
     : "";
   item.tooltip = `${baseTooltip}${workspaceTooltip}`;
   item.show();
@@ -725,7 +723,7 @@ export function activate(context: vscode.ExtensionContext): void {
       setServerHealth(context, "ready", "SysML language server is ready.");
       log("Language client ready, scheduling Model Explorer refresh");
       logStartupPhase("languageClient:ready");
-      scheduleActiveDocumentExplorerRefresh("languageClient:ready");
+      scheduleModelExplorerRefreshForCurrentMode("languageClient:ready");
     })
     .catch((error) => {
       const detail = error instanceof Error ? error.message : String(error ?? "unknown startup failure");
@@ -759,7 +757,7 @@ export function activate(context: vscode.ExtensionContext): void {
       !languageClientReady ||
       !targetDoc ||
       !modelExplorerProvider ||
-      modelExplorerProvider.isWorkspaceMode()
+      modelExplorerProvider.isWorkspaceBacked()
     ) {
       return;
     }
@@ -791,6 +789,24 @@ export function activate(context: vscode.ExtensionContext): void {
           );
         });
     }, 75);
+  }
+
+  function scheduleModelExplorerRefreshForCurrentMode(
+    reason: string,
+    doc?: vscode.TextDocument
+  ): void {
+    const provider = modelExplorerProvider;
+    if (!languageClientReady || !provider) {
+      return;
+    }
+    if ((vscode.workspace.workspaceFolders?.length ?? 0) > 0) {
+      log("scheduleModelExplorerRefreshForCurrentMode: workspace", reason);
+      void ensureWorkspaceModelLoaded(provider).catch((error) => {
+        logError(`Workspace explorer refresh failed (${reason})`, error);
+      });
+      return;
+    }
+    scheduleActiveDocumentExplorerRefresh(reason, doc);
   }
 
   context.subscriptions.push(
@@ -837,6 +853,14 @@ export function activate(context: vscode.ExtensionContext): void {
   });
   modelExplorerProvider.setTreeView(treeView);
   context.subscriptions.push(treeView);
+  context.subscriptions.push(
+    treeView.onDidChangeVisibility((event) => {
+      if (!event.visible) {
+        return;
+      }
+      scheduleModelExplorerRefreshForCurrentMode("treeView:visible");
+    })
+  );
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider("spec42Library", libraryWebviewProvider)
@@ -1083,7 +1107,7 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.refreshModelTree", async () => {
       lspModelProvider.clearModelCache();
-      if (modelExplorerProvider?.getWorkspaceViewMode() === "bySemantic") {
+      if ((vscode.workspace.workspaceFolders?.length ?? 0) > 0 && modelExplorerProvider) {
         await loadWorkspaceSysMLFiles(modelExplorerProvider);
       } else {
         modelExplorerProvider?.refresh();
@@ -1099,19 +1123,20 @@ export function activate(context: vscode.ExtensionContext): void {
       log("loadWorkspaceSysMLFiles: no workspace folders");
       return;
     }
-    const run = startWorkspaceLoad(provider, "bySemantic");
+    const run = startWorkspaceLoad(provider, provider.getWorkspaceViewMode());
     const cancellationToken = run.cts.token;
-    const perPatternLimit = getWorkspaceFileQueryLimit();
+    const activeDocument = activeSysmlDocument();
+    const anchorUri = activeDocument?.uri ?? folders[0].uri;
+    run.discoveredFiles = [anchorUri];
     setServerHealth(
       context,
       "indexing",
-      `Scanning workspace for SysML/KerML files (limit ${perPatternLimit} per folder and file type).`
+      "Building workspace model from indexed SysML/KerML documents."
     );
     provider.setWorkspaceLoadStatus({
       state: "indexing",
       scannedFiles: 0,
       loadedFiles: 0,
-      perPatternLimit,
       truncated: false,
       cancelled: false,
       failures: 0,
@@ -1129,232 +1154,114 @@ export function activate(context: vscode.ExtensionContext): void {
             cancelled: true,
           });
         });
-        const fileUris: vscode.Uri[] = [];
-        let limitHit = false;
-        const totalSteps = Math.max(folders.length * 2, 1);
-        const discoveryStartedAt = Date.now();
-
-        for (const [folderIndex, folder] of folders.entries()) {
-          if (!isWorkspaceLoadCurrent(run) || cancellationToken.isCancellationRequested) {
-            break;
-          }
-          const sysmlScanStartedAt = Date.now();
-          progress.report({
-            message: `Scanning ${path.basename(folder.uri.fsPath) || folder.name} for .sysml files`,
-            increment: 100 / totalSteps,
-          });
-          const sysml = await vscode.workspace.findFiles(
-            new vscode.RelativePattern(folder, "**/*.sysml"),
-            null,
-            perPatternLimit
-          );
-          if (sysml.length >= perPatternLimit) {
-            limitHit = true;
-          }
-          fileUris.push(...sysml);
-          logPerf("workspaceDiscovery:sysmlScan", {
-            folder: folder.uri.toString(),
-            totalMs: Date.now() - sysmlScanStartedAt,
-            fileCount: sysml.length,
-            limitHit: sysml.length >= perPatternLimit,
-          });
-
-          if (!isWorkspaceLoadCurrent(run) || cancellationToken.isCancellationRequested) {
-            break;
-          }
-
-          const kermlScanStartedAt = Date.now();
-          progress.report({
-            message: `Scanning ${path.basename(folder.uri.fsPath) || folder.name} for .kerml files`,
-            increment: 100 / totalSteps,
-          });
-          const kerml = await vscode.workspace.findFiles(
-            new vscode.RelativePattern(folder, "**/*.kerml"),
-            null,
-            perPatternLimit
-          );
-          if (kerml.length >= perPatternLimit) {
-            limitHit = true;
-          }
-          fileUris.push(...kerml);
-          logPerf("workspaceDiscovery:kermlScan", {
-            folder: folder.uri.toString(),
-            totalMs: Date.now() - kermlScanStartedAt,
-            fileCount: kerml.length,
-            limitHit: kerml.length >= perPatternLimit,
-          });
-
-          if (folderIndex === folders.length - 1) {
-            progress.report({
-              message: "Preparing workspace model",
-            });
-          }
-        }
-
-        const dedupeStartedAt = Date.now();
-        const uniqueFiles = [...new Map(fileUris.map((f) => [f.toString(), f])).values()];
-        run.discoveredFiles = uniqueFiles;
-        logPerf("workspaceDiscovery:complete", {
-          runId: run.runId,
-          totalMs: Date.now() - discoveryStartedAt,
-          dedupeMs: Date.now() - dedupeStartedAt,
-          rawFileCount: fileUris.length,
-          uniqueFileCount: uniqueFiles.length,
-          limitHit,
-          workspaceFolderCount: folders.length,
-        });
-        log("loadWorkspaceSysMLFiles: found", uniqueFiles.length, "unique files");
-        provider.setWorkspaceLoadStatus({
-          state: "indexing",
-          scannedFiles: uniqueFiles.length,
-          loadedFiles: 0,
-          perPatternLimit,
-          truncated: limitHit,
-          cancelled: false,
-          failures: 0,
+        progress.report({
+          message: `Requesting workspace model via ${path.basename(anchorUri.fsPath) || anchorUri.toString()}`,
         });
 
         if (!isWorkspaceLoadCurrent(run) || cancellationToken.isCancellationRequested) {
           setWorkspaceIndexSummary({
-            scannedFiles: uniqueFiles.length,
+            scannedFiles: 0,
             loadedFiles: 0,
-            perPatternLimit,
-            truncated: limitHit,
+            truncated: false,
             cancelled: true,
           });
           provider.setWorkspaceLoadStatus({
             state: "degraded",
-            scannedFiles: uniqueFiles.length,
+            scannedFiles: 0,
             loadedFiles: 0,
-            perPatternLimit,
-            truncated: limitHit,
+            truncated: false,
             cancelled: true,
           });
           setServerHealth(
             context,
             "degraded",
-            `Workspace indexing was cancelled after scanning ${uniqueFiles.length} file(s).`
+            "Workspace indexing was cancelled before the workspace model request completed."
           );
           return;
         }
 
-        if (uniqueFiles.length > 0) {
-          progress.report({
-            message: `Loading model for ${uniqueFiles.length} file(s)`,
-          });
-          const loadStartedAt = Date.now();
-          const result = await provider.loadWorkspaceModel(uniqueFiles, {
+        const loadStartedAt = Date.now();
+        const result = await provider.loadWorkspaceModel([anchorUri], {
+          runId: run.runId,
+          token: cancellationToken,
+        });
+        logPerf("workspaceIndexing:modelLoadComplete", {
+          runId: run.runId,
+          totalMs: Date.now() - loadStartedAt,
+          scannedFiles: result.fileCount,
+          loadedFiles: result.loadedFiles,
+          committed: result.committed,
+          stale: result.stale,
+          failures: result.failures,
+          cancelled: result.cancelled,
+        });
+        if (!isWorkspaceLoadCurrent(run) || result.stale) {
+          logPerfEvent("workspaceLoad:staleCompletionIgnored", {
             runId: run.runId,
-            token: cancellationToken,
-          });
-          logPerf("workspaceIndexing:modelLoadComplete", {
-            runId: run.runId,
-            totalMs: Date.now() - loadStartedAt,
-            uniqueFileCount: uniqueFiles.length,
-            committed: result.committed,
-            stale: result.stale,
+            loadedFiles: result.loadedFiles,
             failures: result.failures,
             cancelled: result.cancelled,
           });
-          if (!isWorkspaceLoadCurrent(run) || result.stale) {
-            logPerfEvent("workspaceLoad:staleCompletionIgnored", {
-              runId: run.runId,
-              loadedFiles: result.loadedFiles,
-              failures: result.failures,
-              cancelled: result.cancelled,
-            });
-            return;
-          }
-          const loadedFiles = result.committed ? result.loadedFiles : 0;
-          setWorkspaceIndexSummary({
-            scannedFiles: uniqueFiles.length,
-            loadedFiles,
-            perPatternLimit,
-            truncated: limitHit,
-            cancelled: result.cancelled > 0 && !result.committed,
-          });
-          provider.setWorkspaceLoadStatus({
-            state:
-              result.failures > 0 || result.cancelled > 0 || limitHit
-                ? "degraded"
-                : "ready",
-            scannedFiles: uniqueFiles.length,
-            loadedFiles,
-            perPatternLimit,
-            truncated: limitHit,
-            cancelled: result.cancelled > 0 && !result.committed,
-            failures: result.failures,
-          });
-          log("loadWorkspaceSysMLFiles: loaded model for", uniqueFiles.length, "files");
-          logStartupPhase("workspaceIndexing:end", {
-            scannedFiles: uniqueFiles.length,
-            loadedFiles,
-            truncated: limitHit,
-            durationMs: Date.now() - workspaceIndexingStartedAt,
-          });
-          vscode.commands.executeCommand("setContext", "sysml.hasWorkspace", true);
-          vscode.commands.executeCommand(
-            "setContext",
-            "sysml.workspaceViewMode",
-            provider.getWorkspaceViewMode()
+          return;
+        }
+
+        const loadedFiles = result.committed ? result.loadedFiles : 0;
+        setWorkspaceIndexSummary({
+          scannedFiles: result.fileCount,
+          loadedFiles,
+          truncated: false,
+          cancelled: result.cancelled > 0 && !result.committed,
+          failures: result.failures,
+        });
+        provider.setWorkspaceLoadStatus({
+          state:
+            result.failures > 0 || result.cancelled > 0
+              ? "degraded"
+              : "ready",
+          scannedFiles: result.fileCount,
+          loadedFiles,
+          truncated: false,
+          cancelled: result.cancelled > 0 && !result.committed,
+          failures: result.failures,
+        });
+        log("loadWorkspaceSysMLFiles: loaded backend workspace model for", result.fileCount, "files");
+        logStartupPhase("workspaceIndexing:end", {
+          scannedFiles: result.fileCount,
+          loadedFiles,
+          truncated: false,
+          durationMs: Date.now() - workspaceIndexingStartedAt,
+        });
+        vscode.commands.executeCommand("setContext", "sysml.hasWorkspace", true);
+        vscode.commands.executeCommand(
+          "setContext",
+          "sysml.workspaceViewMode",
+          provider.getWorkspaceViewMode()
+        );
+        vscode.commands.executeCommand("setContext", "sysml.modelLoaded", true);
+        if (result.failures > 0) {
+          setServerHealth(
+            context,
+            "degraded",
+            `Workspace indexed ${loadedFiles}/${result.fileCount} SysML/KerML file(s); ${result.failures} file(s) failed to load.`
           );
-          vscode.commands.executeCommand("setContext", "sysml.modelLoaded", true);
-          if (result.failures > 0) {
-            setServerHealth(
-              context,
-              "degraded",
-              `Workspace indexed ${loadedFiles}/${uniqueFiles.length} SysML/KerML file(s); ${result.failures} file(s) failed to load.`
-            );
-          } else if (result.cancelled > 0 && !result.committed) {
-            setServerHealth(
-              context,
-              "degraded",
-              `Workspace indexing was cancelled after loading ${loadedFiles} of ${uniqueFiles.length} file(s).`
-            );
-          } else if (limitHit) {
-            setServerHealth(
-              context,
-              "degraded",
-              `Workspace indexing is truncated at ${perPatternLimit} files per folder and file type. Scanned ${uniqueFiles.length} file(s).`
-            );
-            void showServerIssue(
-              `SysML workspace indexing hit the configured limit of ${perPatternLimit} files per folder and file type. Results may be incomplete.`,
-              "warning"
-            );
-          } else {
-            setServerHealth(
-              context,
-              "ready",
-              `Workspace indexed ${uniqueFiles.length} SysML/KerML file(s).`
-            );
-          }
-        } else {
-          setWorkspaceIndexSummary({
-            scannedFiles: 0,
-            loadedFiles: 0,
-            perPatternLimit,
-            truncated: false,
-            cancelled: false,
-          });
-          provider.setWorkspaceLoadStatus({
-            state: "ready",
-            scannedFiles: 0,
-            loadedFiles: 0,
-            perPatternLimit,
-            truncated: false,
-            cancelled: false,
-          });
+        } else if (result.cancelled > 0 && !result.committed) {
+          setServerHealth(
+            context,
+            "degraded",
+            `Workspace indexing was cancelled after loading ${loadedFiles} of ${result.fileCount} file(s).`
+          );
+        } else if (result.fileCount === 0) {
           setServerHealth(
             context,
             "ready",
             "No SysML/KerML files were found in the current workspace."
           );
-          logStartupPhase("workspaceIndexing:end", {
-            scannedFiles: 0,
-            loadedFiles: 0,
-            truncated: false,
-            durationMs: Date.now() - workspaceIndexingStartedAt,
-          });
+        } else {
+          setServerHealth(
+            context,
+            "ready",
+            `Workspace indexed ${result.fileCount} SysML/KerML file(s).`
+          );
         }
       }
     );
@@ -1368,10 +1275,6 @@ export function activate(context: vscode.ExtensionContext): void {
     provider: ModelExplorerProvider | undefined
   ): Promise<void> {
     if (!provider) {
-      return;
-    }
-    if (provider.getWorkspaceViewMode() !== "bySemantic") {
-      provider.refresh();
       return;
     }
     if (provider.hasWorkspaceData()) {
@@ -1390,11 +1293,7 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.switchToByFile", async () => {
       modelExplorerProvider?.setWorkspaceViewMode("byFile");
-      cancelWorkspaceLoad(modelExplorerProvider, "mode-switch", {
-        nextStatus: "idle",
-        cancelled: false,
-      });
-      modelExplorerProvider?.refresh();
+      await ensureWorkspaceModelLoaded(modelExplorerProvider);
     })
   );
   context.subscriptions.push(
@@ -1406,14 +1305,6 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.toggleWorkspaceViewMode", async () => {
       modelExplorerProvider?.toggleWorkspaceViewMode();
-      if (modelExplorerProvider?.getWorkspaceViewMode() === "byFile") {
-        cancelWorkspaceLoad(modelExplorerProvider, "mode-switch", {
-          nextStatus: "idle",
-          cancelled: false,
-        });
-        modelExplorerProvider.refresh();
-        return;
-      }
       await ensureWorkspaceModelLoaded(modelExplorerProvider);
     })
   );
@@ -1540,9 +1431,9 @@ export function activate(context: vscode.ExtensionContext): void {
         shouldShowModelExplorerContext(modelExplorerProvider)
       );
       await vscode.commands.executeCommand("sysmlModelExplorer.focus");
-      if (modelExplorerProvider?.getWorkspaceViewMode() === "bySemantic") {
+      if ((vscode.workspace.workspaceFolders?.length ?? 0) > 0) {
         await ensureWorkspaceModelLoaded(modelExplorerProvider);
-      } else if (modelExplorerProvider?.isWorkspaceMode()) {
+      } else if (modelExplorerProvider?.isWorkspaceBacked()) {
         modelExplorerProvider.refresh();
       } else {
         scheduleActiveDocumentExplorerRefresh("showModelExplorer");
@@ -1566,7 +1457,7 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
       }
       // When in workspace mode, pass all workspace file URIs so the diagram shows merged model from all files
-      const isWorkspace = modelExplorerProvider?.isWorkspaceMode() ?? false;
+      const isWorkspace = modelExplorerProvider?.isWorkspaceBacked() ?? false;
       const workspaceUris = isWorkspace ? modelExplorerProvider?.getWorkspaceFileUris() : undefined;
       if (isWorkspace && workspaceUris && workspaceUris.length > 1) {
         const openDocs: vscode.TextDocument[] = [];
@@ -1672,15 +1563,6 @@ export function activate(context: vscode.ExtensionContext): void {
           if (uniqueFiles.length === 0) {
             vscode.window.showInformationMessage("No SysML/KerML files found in the selected folders/files");
             return;
-          }
-
-          // Ensure the server parses all selected files before the first visualizer fetch.
-          // Without this preload, workspaceVisualization can initially contain only the
-          // anchor document and render a single package.
-          if (modelExplorerProvider) {
-            await modelExplorerProvider.loadWorkspaceModel(uniqueFiles, {
-              runId: `visualizer-preload-${Date.now()}`,
-            });
           }
 
           const openDocs: vscode.TextDocument[] = [];
@@ -1879,7 +1761,7 @@ export function activate(context: vscode.ExtensionContext): void {
         const packageName = item.element.name;
         const fileUri = item.elementUri;
 
-        const isWorkspace = modelExplorerProvider?.isWorkspaceMode() ?? false;
+        const isWorkspace = modelExplorerProvider?.isWorkspaceBacked() ?? false;
         const workspaceUris = isWorkspace ? modelExplorerProvider?.getWorkspaceFileUris() : undefined;
 
         const document = await vscode.workspace.openTextDocument(fileUri);
@@ -2031,7 +1913,7 @@ export function activate(context: vscode.ExtensionContext): void {
       }
       const doc = VisualizationPanel.currentPanel.getDocument();
       const workspaceUris =
-        modelExplorerProvider?.isWorkspaceMode() && (modelExplorerProvider?.getWorkspaceFileUris()?.length ?? 0) > 1
+        modelExplorerProvider?.isWorkspaceBacked() && (modelExplorerProvider?.getWorkspaceFileUris()?.length ?? 0) > 1
           ? modelExplorerProvider.getWorkspaceFileUris()
           : undefined;
       VisualizationPanel.currentPanel.dispose();
@@ -2112,7 +1994,7 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.executeCommand("setContext", "sysml.modelLoaded", loaded);
     updateStatusBar(context);
     if (active && isSysmlDoc(active)) {
-      scheduleActiveDocumentExplorerRefresh("refreshContext", active);
+      scheduleModelExplorerRefreshForCurrentMode("refreshContext", active);
     }
   };
 
@@ -2129,7 +2011,7 @@ export function activate(context: vscode.ExtensionContext): void {
           vscode.window.activeTextEditor?.document.uri.toString() ===
           doc.uri.toString()
         ) {
-          scheduleActiveDocumentExplorerRefresh("didOpen", doc);
+          scheduleModelExplorerRefreshForCurrentMode("didOpen", doc);
         }
       }
     })
@@ -2175,7 +2057,7 @@ export function activate(context: vscode.ExtensionContext): void {
       if ((visualizationConfigChanged || verboseLoggingChanged) && VisualizationPanel.currentPanel) {
         const panelDoc = VisualizationPanel.currentPanel.getDocument();
         const workspaceUris =
-          modelExplorerProvider?.isWorkspaceMode() &&
+          modelExplorerProvider?.isWorkspaceBacked() &&
           (modelExplorerProvider?.getWorkspaceFileUris()?.length ?? 0) > 1
             ? modelExplorerProvider.getWorkspaceFileUris()
             : undefined;
@@ -2212,8 +2094,8 @@ export function activate(context: vscode.ExtensionContext): void {
       }
       // In workspace mode, file additions/removals require rediscovery.
       if (
-        provider.isWorkspaceMode() &&
-        (changeKind === "create" || changeKind === "delete")
+        ((vscode.workspace.workspaceFolders?.length ?? 0) > 0 || provider.isWorkspaceBacked()) &&
+        (changeKind === "save" || changeKind === "create" || changeKind === "delete")
       ) {
         void loadWorkspaceSysMLFiles(provider);
         return;

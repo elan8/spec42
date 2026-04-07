@@ -928,6 +928,112 @@ fn lsp_workspace_visualization_model_includes_all_workspace_systems() {
 }
 
 #[test]
+fn lsp_workspace_visualization_returns_workspace_model_payload_for_workspace_root_uri() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root: PathBuf = temp.path().canonicalize().expect("canonical root");
+
+    let alpha_path = root.join("Alpha.sysml");
+    let beta_path = root.join("Beta.sysml");
+    std::fs::write(
+        &alpha_path,
+        "package Alpha { part def AlphaPart; part alphaInstance : AlphaPart; }",
+    )
+    .expect("write alpha");
+    std::fs::write(
+        &beta_path,
+        "package Beta { part def BetaPart; part betaInstance : BetaPart; }",
+    )
+    .expect("write beta");
+
+    let root_uri = url::Url::from_file_path(&root).expect("root uri");
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": root_uri.as_str(),
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(800));
+
+    let model_id = next_id();
+    let model_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": model_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": root_uri.as_str() },
+            "scope": ["graph", "workspaceVisualization"]
+        }
+    });
+    send_message(&mut stdin, &model_req.to_string());
+    let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+
+    let workspace_files = model_json["result"]["workspaceModel"]["files"]
+        .as_array()
+        .expect("workspaceModel.files array");
+    let workspace_semantic = model_json["result"]["workspaceModel"]["semantic"]
+        .as_array()
+        .expect("workspaceModel.semantic array");
+    let summary = &model_json["result"]["workspaceModel"]["summary"];
+
+    assert_eq!(
+        summary["scannedFiles"].as_u64(),
+        Some(2),
+        "expected summary to report both workspace files"
+    );
+    assert_eq!(
+        summary["loadedFiles"].as_u64(),
+        Some(2),
+        "expected summary to report both workspace files as loaded"
+    );
+    assert_eq!(workspace_files.len(), 2, "expected one file entry per workspace file");
+    let file_uris: std::collections::HashSet<&str> = workspace_files
+        .iter()
+        .filter_map(|entry| entry["uri"].as_str())
+        .collect();
+    assert!(
+        file_uris.iter().any(|uri| uri.contains("Alpha.sysml")),
+        "workspace payload should include Alpha.sysml, got {file_uris:?}"
+    );
+    assert!(
+        file_uris.iter().any(|uri| uri.contains("Beta.sysml")),
+        "workspace payload should include Beta.sysml, got {file_uris:?}"
+    );
+    let semantic_names: std::collections::HashSet<&str> = workspace_semantic
+        .iter()
+        .filter_map(|entry| entry["name"].as_str())
+        .collect();
+    assert!(
+        semantic_names.contains("Alpha"),
+        "semantic workspace payload should include Alpha package"
+    );
+    assert!(
+        semantic_names.contains("Beta"),
+        "semantic workspace payload should include Beta package"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
 fn lsp_workspace_visualization_model_includes_all_sysml_examples_packages_when_configured() {
     let examples_root = std::env::var_os("SYSML_EXAMPLES_DIR")
         .map(PathBuf::from)

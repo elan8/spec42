@@ -131,14 +131,42 @@ pub struct SysmlFeatureInspectorResultDto {
 #[allow(dead_code)]
 #[derive(Debug, Clone, Serialize)]
 pub struct SysmlElementDto {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
     #[serde(rename = "type")]
     pub element_type: String,
     pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
     pub range: RangeDto,
     pub children: Vec<SysmlElementDto>,
     pub attributes: std::collections::HashMap<String, serde_json::Value>,
     pub relationships: Vec<RelationshipDto>,
     pub errors: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WorkspaceFileModelDto {
+    pub uri: String,
+    pub elements: Vec<SysmlElementDto>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WorkspaceModelSummaryDto {
+    pub scanned_files: usize,
+    pub loaded_files: usize,
+    pub failures: usize,
+    pub truncated: bool,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WorkspaceModelDto {
+    pub files: Vec<WorkspaceFileModelDto>,
+    pub semantic: Vec<SysmlElementDto>,
+    pub summary: WorkspaceModelSummaryDto,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -348,6 +376,8 @@ pub struct SysmlModelResultDto {
     pub graph: Option<SysmlGraphDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub general_view_graph: Option<SysmlGraphDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub workspace_model: Option<WorkspaceModelDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub activity_diagrams: Option<Vec<model::ActivityDiagramDto>>,
     #[serde(skip_serializing_if = "Option::is_none")]

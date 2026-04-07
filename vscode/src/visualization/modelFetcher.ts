@@ -139,13 +139,13 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     const requestScopes = isWorkspaceVisualization
         ? [...scopes, 'workspaceVisualization' as const]
         : scopes;
-    const requestUris = fileUris.length > 0
-        ? fileUris.map(u => u.toString())
-        : [documentUri];
+    const requestUri = fileUris.length > 0
+        ? fileUris[0].toString()
+        : documentUri;
     log(
         'fetchModelData:start',
         `workspace=${isWorkspaceVisualization}`,
-        `uris=${requestUris.length}`,
+        `uri=${requestUri}`,
         `scopes=${requestScopes.join(',')}`,
         `currentView=${currentView}`,
         `pendingPackage=${pendingPackageName ?? '(none)'}`,
@@ -157,7 +157,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
                 '[viz][fetchModelData:start]',
                 JSON.stringify({
                     workspace: isWorkspaceVisualization,
-                    uris: requestUris.length,
+                    uri: requestUri,
                     scopes: requestScopes,
                     currentView,
                     pendingPackage: pendingPackageName ?? null,
@@ -169,16 +169,14 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     }
 
     const modelRequestsStartedAt = Date.now();
-    const settledResults = await Promise.allSettled(
-        requestUris.map(uri =>
-            lspModelProvider.getModel(
-                uri,
-                requestScopes,
-                undefined,
-                `visualizer.fetchModelData:${currentView}`
-            )
+    const settledResults = await Promise.allSettled([
+        lspModelProvider.getModel(
+            requestUri,
+            requestScopes,
+            undefined,
+            `visualizer.fetchModelData:${currentView}`
         ),
-    );
+    ]);
     const modelRequestsMs = Date.now() - modelRequestsStartedAt;
     const diagramRequestsStartedAt = Date.now();
     const diagramFetchResult = await Promise.allSettled([
@@ -220,7 +218,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         logPerfEvent('visualizer:fetchModelData', {
             currentView,
             workspaceVisualization: isWorkspaceVisualization,
-            requestUriCount: requestUris.length,
+            requestUriCount: 1,
             requestScopes,
             results: 0,
             failures: failures.length,
@@ -231,29 +229,15 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         return null;
     }
 
-    const allGraphs: SysMLGraphDTO[] = [];
-    const allGeneralViewGraphs: SysMLGraphDTO[] = [];
-    const allActivityDiagrams: unknown[] = [];
-
-    for (const result of results) {
-        if (result.graph?.nodes?.length || result.graph?.edges?.length) {
-            allGraphs.push(result.graph);
-        }
-        if (result.generalViewGraph?.nodes?.length || result.generalViewGraph?.edges?.length) {
-            allGeneralViewGraphs.push(result.generalViewGraph);
-        }
-        if (result.activityDiagrams) allActivityDiagrams.push(...result.activityDiagrams);
-    }
-
-    const mergedGraph = mergeGraphs(allGraphs);
-    const mergedGeneralViewGraph = mergeOptionalGraphs(allGeneralViewGraphs);
+    const primaryResult = results[0];
+    const mergedGraph = primaryResult.graph ?? { nodes: [], edges: [] };
+    const mergedGeneralViewGraph = primaryResult.generalViewGraph;
+    const allActivityDiagrams = primaryResult.activityDiagrams ?? [];
     const mergedPackageNames = (mergedGraph.nodes || [])
         .filter((n) => ((n.type || '') as string).toLowerCase().includes('package'))
         .map((n) => n.name)
         .filter((name): name is string => typeof name === 'string' && name.length > 0);
     const uniqueMergedPackageNames = [...new Set(mergedPackageNames)];
-
-    const primaryResult = results.find(r => r.graph?.nodes?.length || r.graph?.edges?.length) ?? results[0];
     const diagrams = diagramFetchResult[0]?.status === 'fulfilled' ? diagramFetchResult[0].value : {};
     const generalDiagram = diagrams.generalDiagram;
     const interconnectionDiagram = diagrams.interconnectionDiagram;
@@ -273,7 +257,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     log(
         'fetchModelData:done',
         `results=${results.length}`,
-        `graphs=${allGraphs.length}`,
+        `graphs=${primaryResult.graph ? 1 : 0}`,
         `mergedNodes=${mergedGraph.nodes?.length || 0}`,
         `mergedEdges=${mergedGraph.edges?.length || 0}`,
         `mergedPackages=${uniqueMergedPackageNames.join('|') || '(none)'}`,
@@ -287,7 +271,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
                 '[viz][fetchModelData:done]',
                 JSON.stringify({
                     results: results.length,
-                    graphs: allGraphs.length,
+                    graphs: primaryResult.graph ? 1 : 0,
                     mergedNodes: mergedGraph.nodes?.length || 0,
                     mergedEdges: mergedGraph.edges?.length || 0,
                     mergedPackages: uniqueMergedPackageNames,
@@ -302,11 +286,11 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     logPerfEvent('visualizer:fetchModelData', {
         currentView,
         workspaceVisualization: isWorkspaceVisualization,
-        requestUriCount: requestUris.length,
+        requestUriCount: 1,
         requestScopes,
         results: results.length,
         failures: failures.length,
-        graphCount: allGraphs.length,
+        graphCount: primaryResult.graph ? 1 : 0,
         mergedNodes: mergedGraph.nodes?.length || 0,
         mergedEdges: mergedGraph.edges?.length || 0,
         generalDiagramNodes: generalDiagram?.scene?.generalView?.nodes?.length || 0,

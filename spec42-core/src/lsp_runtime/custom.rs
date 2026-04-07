@@ -29,11 +29,60 @@ pub(crate) async fn sysml_model_result(
     let request_start = Instant::now();
     let params_start = Instant::now();
     let (uri, scope) = crate::views::parse_sysml_model_params(&params)?;
+    let workspace_visualization_requested =
+        scope.iter().any(|entry| entry == "workspaceVisualization");
     let params_ms = params_start.elapsed().as_millis().max(1);
     let build_start = Instant::now();
     let index_lookup_start = Instant::now();
-    let entry = match state.index.get(&uri) {
-        Some(e) => e,
+    let (effective_uri, entry) = match state.index.get(&uri) {
+        Some(e) => (uri.clone(), e),
+        None if workspace_visualization_requested => {
+            let fallback_uri = state
+                .semantic_graph
+                .workspace_uris_excluding_libraries(&state.library_paths)
+                .into_iter()
+                .find(|candidate_uri| state.index.contains_key(candidate_uri));
+            match fallback_uri.and_then(|fallback_uri| {
+                state
+                    .index
+                    .get(&fallback_uri)
+                    .map(|entry| (fallback_uri, entry))
+            }) {
+                Some((fallback_uri, entry)) => {
+                    client
+                        .log_message(
+                            MessageType::INFO,
+                            format!(
+                                "sysml/model: request_uri={} not indexed; using workspaceVisualization fallback uri={}",
+                                uri.as_str(),
+                                fallback_uri.as_str()
+                            ),
+                        )
+                        .await;
+                    (fallback_uri, entry)
+                }
+                None => {
+                    let index_lookup_ms = index_lookup_start.elapsed().as_millis().max(1);
+                    log_perf(
+                        client,
+                        "backend:sysmlModelLookupMiss",
+                        vec![
+                            ("uri", format!("{:?}", uri.as_str())),
+                            ("scope", format!("{:?}", scope)),
+                            ("paramsMs", params_ms.to_string()),
+                            ("indexLookupMs", index_lookup_ms.to_string()),
+                            ("indexSize", state.index.len().to_string()),
+                            (
+                                "totalMs",
+                                request_start.elapsed().as_millis().max(1).to_string(),
+                            ),
+                        ],
+                    )
+                    .await;
+                    return Ok((crate::views::empty_model_response(build_start), None));
+                }
+            }
+        }
         None => {
             let index_lookup_ms = index_lookup_start.elapsed().as_millis().max(1);
             log_perf(
@@ -81,7 +130,7 @@ pub(crate) async fn sysml_model_result(
         parse_metadata.parse_time_ms,
         parse_metadata.parse_cached,
         &state.semantic_graph,
-        &uri,
+        &effective_uri,
         &state.library_paths,
         &scope,
         build_start,
@@ -128,7 +177,7 @@ pub(crate) async fn sysml_model_result(
     Ok((
         response,
         if should_mark_parse_cached {
-            Some(uri)
+            Some(effective_uri)
         } else {
             None
         },

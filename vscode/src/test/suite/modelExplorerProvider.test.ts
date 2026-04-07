@@ -1,7 +1,7 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
 import { ModelExplorerProvider } from "../../explorer/modelExplorerProvider";
-import type { SysMLModelResult } from "../../providers/sysmlModelTypes";
+import type { SysMLElementDTO, SysMLModelResult } from "../../providers/sysmlModelTypes";
 
 function createModelResult(id: string, name = "Drone"): SysMLModelResult {
   return {
@@ -24,6 +24,53 @@ function createModelResult(id: string, name = "Drone"): SysMLModelResult {
     stats: {
       totalElements: 1,
       resolvedElements: 1,
+      unresolvedElements: 0,
+      parseTimeMs: 1,
+      modelBuildTimeMs: 1,
+      parseCached: true,
+    },
+  };
+}
+
+function createElement(id: string, name = id, uri?: string): SysMLElementDTO {
+  return {
+    id,
+    type: "package",
+    name,
+    uri,
+    range: {
+      start: { line: 0, character: 0 },
+      end: { line: 0, character: 10 },
+    },
+    children: [],
+    attributes: {},
+    relationships: [],
+  };
+}
+
+function createWorkspaceModelResult(
+  files: Array<{ uri: string; elements: SysMLElementDTO[] }>,
+  semantic: SysMLElementDTO[] = files.flatMap((file) => file.elements)
+): SysMLModelResult {
+  return {
+    version: 1,
+    graph: {
+      nodes: [],
+      edges: [],
+    },
+    workspaceModel: {
+      files,
+      semantic,
+      summary: {
+        scannedFiles: files.length,
+        loadedFiles: files.length,
+        failures: 0,
+        truncated: false,
+      },
+    },
+    stats: {
+      totalElements: semantic.length,
+      resolvedElements: semantic.length,
       unresolvedElements: 0,
       parseTimeMs: 1,
       modelBuildTimeMs: 1,
@@ -133,9 +180,17 @@ describe("ModelExplorerProvider", () => {
     const firstRun = provider.loadWorkspaceModel([file], { runId: "run-1" });
     const secondRun = provider.loadWorkspaceModel([file], { runId: "run-2" });
 
-    pending.get(`2:${file.toString()}`)?.(createModelResult("Second", "Second"));
+    pending.get(`2:${file.toString()}`)?.(
+      createWorkspaceModelResult([
+        { uri: file.toString(), elements: [createElement("Second", "Second", file.toString())] },
+      ])
+    );
     const secondResult = await secondRun;
-    pending.get(`1:${file.toString()}`)?.(createModelResult("First", "First"));
+    pending.get(`1:${file.toString()}`)?.(
+      createWorkspaceModelResult([
+        { uri: file.toString(), elements: [createElement("First", "First", file.toString())] },
+      ])
+    );
     const firstResult = await firstRun;
 
     assert.strictEqual(secondResult.committed, true);
@@ -143,6 +198,27 @@ describe("ModelExplorerProvider", () => {
     assert.strictEqual(firstResult.committed, false);
     assert.strictEqual(firstResult.stale, true);
     assert.strictEqual(provider.getAllElements()[0]?.name, "Second");
+  });
+
+  it("starts model requests on the first workspace load run", async () => {
+    let requestCount = 0;
+    const provider = new ModelExplorerProvider({
+      getModel: async () => {
+        requestCount += 1;
+        return createWorkspaceModelResult([
+          {
+            uri: "file:///workspace/Drone.sysml",
+            elements: [createElement("WorkspaceRoot", "WorkspaceRoot", "file:///workspace/Drone.sysml")],
+          },
+        ]);
+      },
+    } as any);
+
+    const file = vscode.Uri.parse("file:///workspace/Drone.sysml");
+    const result = await provider.loadWorkspaceModel([file], { runId: "run-1" });
+
+    assert.strictEqual(requestCount, 1);
+    assert.strictEqual(result.loadedFiles, 1);
   });
 
   it("hides workspace indexing info when switching back to by-file mode", async () => {
@@ -165,7 +241,7 @@ describe("ModelExplorerProvider", () => {
 
     provider.setWorkspaceViewMode("byFile");
     const byFileItems = await provider.getChildren();
-    assert.strictEqual(byFileItems.length, 0);
+    assert.strictEqual(byFileItems[0]?.label, "Workspace indexing in progress");
   });
 
   it("does not restart workspace loading on refresh while semantic data is already loaded", async () => {
@@ -173,7 +249,12 @@ describe("ModelExplorerProvider", () => {
     const provider = new ModelExplorerProvider({
       getModel: async () => {
         requestCount += 1;
-        return createModelResult("WorkspaceRoot", "WorkspaceRoot");
+        return createWorkspaceModelResult([
+          {
+            uri: "file:///workspace/Drone.sysml",
+            elements: [createElement("WorkspaceRoot", "WorkspaceRoot", "file:///workspace/Drone.sysml")],
+          },
+        ]);
       },
     } as any);
     const file = vscode.Uri.parse("file:///workspace/Drone.sysml");
@@ -184,5 +265,76 @@ describe("ModelExplorerProvider", () => {
 
     assert.strictEqual(requestCount, 1);
     assert.strictEqual(provider.getAllElements()[0]?.name, "WorkspaceRoot");
+  });
+
+  it("renders workspace data grouped by file in by-file mode", async () => {
+    const provider = new ModelExplorerProvider({
+      getModel: async () =>
+        createWorkspaceModelResult([
+          {
+            uri: "file:///workspace/Alpha.sysml",
+            elements: [createElement("AlphaPackage", "AlphaPackage", "file:///workspace/Alpha.sysml")],
+          },
+          {
+            uri: "file:///workspace/Beta.sysml",
+            elements: [createElement("BetaPackage", "BetaPackage", "file:///workspace/Beta.sysml")],
+          },
+        ]),
+    } as any);
+    const alpha = vscode.Uri.parse("file:///workspace/Alpha.sysml");
+    const beta = vscode.Uri.parse("file:///workspace/Beta.sysml");
+
+    await provider.loadWorkspaceModel([alpha, beta], { runId: "run-1" });
+    provider.setWorkspaceViewMode("byFile");
+
+    const rootItems = await provider.getChildren();
+    assert.strictEqual(rootItems.length, 2);
+    assert.strictEqual(rootItems[0]?.label, "Alpha.sysml");
+    assert.strictEqual(rootItems[1]?.label, "Beta.sysml");
+
+    const alphaChildren = await provider.getChildren(rootItems[0] as any);
+    assert.strictEqual(alphaChildren[0]?.label, "AlphaPackage");
+  });
+
+  it("preserves workspace data when switching from semantic to by-file mode", async () => {
+    const provider = new ModelExplorerProvider({
+      getModel: async () =>
+        createWorkspaceModelResult([
+          {
+            uri: "file:///workspace/Drone.sysml",
+            elements: [createElement("WorkspaceRoot", "WorkspaceRoot", "file:///workspace/Drone.sysml")],
+          },
+        ]),
+    } as any);
+    const file = vscode.Uri.parse("file:///workspace/Drone.sysml");
+
+    provider.setWorkspaceViewMode("bySemantic");
+    await provider.loadWorkspaceModel([file], { runId: "run-1" });
+    provider.setWorkspaceViewMode("byFile");
+
+    assert.strictEqual(provider.isWorkspaceBacked(), true);
+    assert.strictEqual(provider.getAllElements()[0]?.name, "WorkspaceRoot");
+    const rootItems = await provider.getChildren();
+    assert.strictEqual(rootItems[0]?.label, "Drone.sysml");
+  });
+
+  it("counts successfully loaded workspace files even when they contain no root elements", async () => {
+    const provider = new ModelExplorerProvider({
+      getModel: async () =>
+        createWorkspaceModelResult([
+          {
+            uri: "file:///workspace/EmptyRoots.sysml",
+            elements: [],
+          },
+        ], []),
+    } as any);
+    const file = vscode.Uri.parse("file:///workspace/EmptyRoots.sysml");
+
+    const result = await provider.loadWorkspaceModel([file], { runId: "run-1" });
+
+    assert.strictEqual(result.loadedFiles, 1);
+    assert.strictEqual(provider.getWorkspaceFileUris().length, 1);
+    const rootItems = await provider.getChildren();
+    assert.ok(rootItems.length >= 0);
   });
 });

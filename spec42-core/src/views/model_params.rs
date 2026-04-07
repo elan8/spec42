@@ -77,6 +77,7 @@ pub fn empty_model_response(build_start: Instant) -> SysmlModelResultDto {
             nodes: vec![],
             edges: vec![],
         }),
+        workspace_model: None,
         activity_diagrams: None,
         ibd: None,
         stats: Some(SysmlModelStatsDto {

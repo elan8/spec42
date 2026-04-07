@@ -31,7 +31,8 @@ pub use views::dto::{
     SysmlFeatureInspectorElementRefDto, SysmlFeatureInspectorParamsDto,
     SysmlFeatureInspectorRelationshipDto, SysmlFeatureInspectorResolutionDto,
     SysmlFeatureInspectorResultDto, SysmlGraphDto, SysmlModelResultDto, SysmlModelStatsDto,
-    SysmlServerCachesDto, SysmlServerMemoryDto, SysmlServerStatsDto,
+    SysmlServerCachesDto, SysmlServerMemoryDto, SysmlServerStatsDto, WorkspaceFileModelDto,
+    WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
 pub use views::ibd::{build_ibd_for_uri, is_port_like, IbdDataDto};
 pub use views::{

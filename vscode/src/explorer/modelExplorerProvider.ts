@@ -426,11 +426,11 @@ export class ModelExplorerProvider
   private lastUri: vscode.Uri | undefined;
   private lastElements: SysMLElementDTO[] | undefined;
 
-  private workspaceMode = false;
   private workspaceFileData = new Map<
     string,
     { uri: vscode.Uri; elements: SysMLElementDTO[] }
   >();
+  private workspaceSemanticElements: SysMLElementDTO[] = [];
   private workspaceFileUris: vscode.Uri[] = [];
   private _workspaceViewMode: "byFile" | "bySemantic" = "bySemantic";
   private treeView?: vscode.TreeView<ExplorerTreeItem>;
@@ -474,8 +474,12 @@ export class ModelExplorerProvider
     return undefined;
   }
 
-  isWorkspaceMode(): boolean {
-    return this.workspaceMode;
+  isWorkspaceBacked(): boolean {
+    return (
+      this.workspaceFileData.size > 0 ||
+      this.workspaceFileUris.length > 0 ||
+      this.workspaceLoadStatus.state === "indexing"
+    );
   }
 
   getWorkspaceFileUris(): vscode.Uri[] {
@@ -489,7 +493,6 @@ export class ModelExplorerProvider
   setWorkspaceViewMode(mode: "byFile" | "bySemantic"): void {
     log("setWorkspaceViewMode:", mode);
     this._workspaceViewMode = mode;
-    this.workspaceMode = mode === "bySemantic";
     vscode.commands.executeCommand(
       "setContext",
       "sysml.workspaceViewMode",
@@ -503,7 +506,6 @@ export class ModelExplorerProvider
     log("toggleWorkspaceViewMode:", this._workspaceViewMode, "->", this._workspaceViewMode === "byFile" ? "bySemantic" : "byFile");
     this._workspaceViewMode =
       this._workspaceViewMode === "byFile" ? "bySemantic" : "byFile";
-    this.workspaceMode = this._workspaceViewMode === "bySemantic";
     vscode.commands.executeCommand(
       "setContext",
       "sysml.workspaceViewMode",
@@ -576,8 +578,8 @@ export class ModelExplorerProvider
   clear(): void {
     this.lastUri = undefined;
     this.lastElements = undefined;
-    this.workspaceMode = false;
     this.workspaceFileData.clear();
+    this.workspaceSemanticElements = [];
     this.workspaceFileUris = [];
     this.uriToRootItems.clear();
     this.rootItemsCache = undefined;
@@ -602,7 +604,7 @@ export class ModelExplorerProvider
   }
 
   hasWorkspaceData(): boolean {
-    return this.workspaceFileData.size > 0;
+    return this.workspaceFileData.size > 0 || this.workspaceSemanticElements.length > 0;
   }
 
   setWorkspaceLoadStatus(status: Partial<WorkspaceLoadStatus>): void {
@@ -624,156 +626,92 @@ export class ModelExplorerProvider
       "files. URIs:",
       fileUris.map((u) => u.toString())
     );
-    this.workspaceFileUris = fileUris;
-    this.lastUri = undefined;
-    this.lastElements = undefined;
-    this.uriToRootItems.clear();
-    this.invalidateTreeCache();
-
     if (this.inFlightWorkspaceLoad?.runId === options.runId) {
       return await this.inFlightWorkspaceLoad.promise;
     }
-
-    let failures = 0;
-    let cancelled = 0;
-    const perFileDurationsMs: number[] = [];
+    const anchorUri =
+      fileUris[0] ??
+      this.lastUri ??
+      vscode.window.activeTextEditor?.document.uri;
     const loadStartedAt = Date.now();
-    const configuredConcurrency = Number.parseInt(
-      process.env.SPEC42_EXPLORER_LOAD_CONCURRENCY ?? "",
-      10
-    );
-    const maxConcurrency =
-      Number.isFinite(configuredConcurrency) && configuredConcurrency > 0
-        ? configuredConcurrency
-        : 6;
-    let cursor = 0;
     const localWorkspaceFileData = new Map<
       string,
       { uri: vscode.Uri; elements: SysMLElementDTO[] }
     >();
+    let localWorkspaceSemanticElements: SysMLElementDTO[] = [];
+    let localWorkspaceFileUris: vscode.Uri[] = [];
+    let failures = 0;
+    let cancelled = 0;
+    let backendScannedFiles = 0;
+    let backendLoadedFiles = 0;
 
-    const promise = (async (): Promise<WorkspaceLoadResult> => {
+    const runPromise = async (): Promise<WorkspaceLoadResult> => {
       try {
-        const workers = Array.from(
-          { length: Math.min(maxConcurrency, Math.max(fileUris.length, 1)) },
-          () =>
-            (async () => {
-              while (!options.token?.isCancellationRequested) {
-                const index = cursor++;
-                if (index >= fileUris.length) {
-                  break;
-                }
-                if (this.inFlightWorkspaceLoad?.runId !== options.runId) {
-                  break;
-                }
-                const uri = fileUris[index];
-                const uriStr = uri.toString();
-                const fileStartMs = Date.now();
-                try {
-                  log("loadWorkspaceModel: requesting getModel for", uriStr);
-                  const result = await this.modelProvider.getModel(
-                    uriStr,
-                    ["graph", "stats"],
-                    options.token,
-                    "modelExplorer.loadWorkspaceModel"
-                  );
-                  if (
-                    options.token?.isCancellationRequested ||
-                    this.inFlightWorkspaceLoad?.runId !== options.runId
-                  ) {
-                    cancelled += 1;
-                    logPerf("modelExplorer:workspaceFileDropped", {
-                      runId: options.runId,
-                      uri: uriStr,
-                      reason: options.token?.isCancellationRequested
-                        ? "cancelled"
-                        : "stale-run",
-                      totalMs: Date.now() - fileStartMs,
-                    });
-                    break;
-                  }
-                  const graphTransformStartedAt = Date.now();
-                  const elements = result.graph
-                    ? (graphToElementTree(result.graph) as SysMLElementDTO[])
-                    : [];
-                  const graphTransformMs = Date.now() - graphTransformStartedAt;
-                  if (elements.length) {
-                    log(
-                      "loadWorkspaceModel: loaded",
-                      uriStr,
-                      "->",
-                      elements.length,
-                      "elements"
-                    );
-                    localWorkspaceFileData.set(uriStr, {
-                      uri,
-                      elements,
-                    });
-                  } else {
-                    log(
-                      "loadWorkspaceModel: 0 elements for",
-                      uriStr,
-                      "(graph nodes:",
-                      result.graph?.nodes?.length ?? 0,
-                      ")"
-                    );
-                  }
-                  logPerf("modelExplorer:workspaceFileLoaded", {
-                    runId: options.runId,
-                    uri: uriStr,
-                    totalMs: Date.now() - fileStartMs,
-                    graphTransformMs,
-                    elementCount: elements.length,
-                    nodeCount: result.graph?.nodes?.length ?? 0,
-                    edgeCount: result.graph?.edges?.length ?? 0,
-                    parseTimeMs: result.stats?.parseTimeMs,
-                    modelBuildTimeMs: result.stats?.modelBuildTimeMs,
-                  });
-                } catch (e) {
-                  if (
-                    e instanceof vscode.CancellationError ||
-                    options.token?.isCancellationRequested
-                  ) {
-                    cancelled += 1;
-                    log("loadWorkspaceModel: cancelled while loading", uriStr);
-                    break;
-                  }
-                  failures += 1;
-                  logError(`loadWorkspaceModel: skip file (failed): ${uriStr}`, e);
-                  logPerf("modelExplorer:workspaceFileFailed", {
-                    runId: options.runId,
-                    uri: uriStr,
-                    totalMs: Date.now() - fileStartMs,
-                    error: e instanceof Error ? e.message : String(e),
-                  });
-                } finally {
-                  perFileDurationsMs.push(Date.now() - fileStartMs);
-                }
-              }
-            })()
-        );
-        await Promise.all(workers);
+        if (!anchorUri) {
+          log("loadWorkspaceModel: no anchor URI available");
+        } else {
+          const anchorUriStr = anchorUri.toString();
+          log("loadWorkspaceModel: requesting backend workspace model for", anchorUriStr);
+          const result = await this.modelProvider.getModel(
+            anchorUriStr,
+            ["graph", "stats", "workspaceVisualization"],
+            options.token,
+            "modelExplorer.loadWorkspaceModel"
+          );
+          if (
+            options.token?.isCancellationRequested ||
+            this.inFlightWorkspaceLoad?.runId !== options.runId
+          ) {
+            cancelled += 1;
+            logPerf("modelExplorer:workspaceLoadDropped", {
+              runId: options.runId,
+              anchorUri: anchorUriStr,
+              reason: options.token?.isCancellationRequested ? "cancelled" : "stale-run",
+              totalMs: Date.now() - loadStartedAt,
+            });
+          } else {
+            const workspaceModel = result.workspaceModel;
+            backendScannedFiles = workspaceModel?.summary?.scannedFiles ?? 0;
+            backendLoadedFiles = workspaceModel?.summary?.loadedFiles ?? 0;
+            failures = workspaceModel?.summary?.failures ?? 0;
+            localWorkspaceSemanticElements = workspaceModel?.semantic ?? [];
+            for (const fileEntry of workspaceModel?.files ?? []) {
+              const fileUri = vscode.Uri.parse(fileEntry.uri);
+              localWorkspaceFileUris.push(fileUri);
+              localWorkspaceFileData.set(fileUri.toString(), {
+                uri: fileUri,
+                elements: fileEntry.elements ?? [],
+              });
+            }
+            logPerf("modelExplorer:workspaceModelLoaded", {
+              runId: options.runId,
+              anchorUri: anchorUriStr,
+              totalMs: Date.now() - loadStartedAt,
+              scannedFiles: backendScannedFiles,
+              loadedFiles: backendLoadedFiles,
+              semanticRoots: localWorkspaceSemanticElements.length,
+              fileRoots: localWorkspaceFileData.size,
+              nodeCount: result.graph?.nodes?.length ?? 0,
+              edgeCount: result.graph?.edges?.length ?? 0,
+              parseTimeMs: result.stats?.parseTimeMs,
+              modelBuildTimeMs: result.stats?.modelBuildTimeMs,
+            });
+          }
+        }
       } finally {
         const totalMs = Date.now() - loadStartedAt;
-        const avgMs =
-          perFileDurationsMs.length > 0
-            ? Math.round(
-                perFileDurationsMs.reduce((acc, value) => acc + value, 0) /
-                  perFileDurationsMs.length
-              )
-            : 0;
-        const p95Ms = percentileMs(perFileDurationsMs, 95);
         const stale = this.inFlightWorkspaceLoad?.runId !== options.runId;
         const committed = !stale && !options.token?.isCancellationRequested;
         if (committed) {
           this.workspaceFileData = localWorkspaceFileData;
-          this.workspaceMode = this._workspaceViewMode === "bySemantic";
+          this.workspaceSemanticElements = localWorkspaceSemanticElements;
+          this.workspaceFileUris = localWorkspaceFileUris;
           this.invalidateTreeCache();
           this._onDidChangeTreeData.fire();
         } else {
           logPerf("modelExplorer:workspaceLoadStaleResultDropped", {
             runId: options.runId,
-            workspaceMode: this.workspaceMode,
+            workspaceBacked: this.isWorkspaceBacked(),
             workspaceViewMode: this._workspaceViewMode,
             cancelled: options.token?.isCancellationRequested ?? false,
             totalMs,
@@ -782,23 +720,21 @@ export class ModelExplorerProvider
         log("loadWorkspaceModel: done,", localWorkspaceFileData.size, "files loaded");
         logStartupEvent("explorer:loadWorkspaceModel", {
           runId: options.runId,
-          fileCount: fileUris.length,
-          loadedFiles: localWorkspaceFileData.size,
+          fileCount: backendScannedFiles || fileUris.length,
+          loadedFiles: backendLoadedFiles || localWorkspaceFileData.size,
           failures,
           cancelled,
           committed,
           stale,
           totalMs,
-          perFileAvgMs: avgMs,
-          perFileP95Ms: p95Ms,
-          concurrency: Math.min(maxConcurrency, Math.max(fileUris.length, 1)),
+          anchorUri: anchorUri?.toString(),
         });
       }
 
       return {
         runId: options.runId,
-        fileCount: fileUris.length,
-        loadedFiles: localWorkspaceFileData.size,
+        fileCount: backendScannedFiles || fileUris.length,
+        loadedFiles: backendLoadedFiles || localWorkspaceFileData.size,
         failures,
         cancelled,
         committed:
@@ -807,7 +743,9 @@ export class ModelExplorerProvider
         stale: this.inFlightWorkspaceLoad?.runId !== options.runId,
         totalMs: Date.now() - loadStartedAt,
       };
-    })().finally(() => {
+    };
+
+    const promise = runPromise().finally(() => {
       if (this.inFlightWorkspaceLoad?.runId === options.runId) {
         this.inFlightWorkspaceLoad = undefined;
       }
@@ -883,9 +821,6 @@ export class ModelExplorerProvider
   ): Promise<void> {
     log("loadDocument:", document.uri.toString().slice(-50));
     const startedAt = Date.now();
-    this.workspaceMode = false;
-    this.workspaceFileData.clear();
-    this.workspaceFileUris = [];
     this.lastUri = document.uri;
     this.documentLoadState = "loading";
     this.invalidateTreeCache();
@@ -957,9 +892,8 @@ export class ModelExplorerProvider
   }
 
   refresh(): void {
-    log("refresh: workspaceMode=", this.workspaceMode, "fileCount=", this.workspaceFileUris.length);
-    if (this._workspaceViewMode === "bySemantic") {
-      this.workspaceMode = true;
+    log("refresh: workspaceBacked=", this.isWorkspaceBacked(), "fileCount=", this.workspaceFileUris.length);
+    if (this.isWorkspaceBacked()) {
       this.invalidateTreeCache();
       this._onDidChangeTreeData.fire();
     } else if (this.lastUri) {
@@ -982,10 +916,11 @@ export class ModelExplorerProvider
   }
 
   getAllElements(): SysMLElementDTO[] {
-    if (this._workspaceViewMode === "bySemantic") {
-      return Array.from(this.workspaceFileData.values()).flatMap(
+    if (this.hasWorkspaceData()) {
+      const fileElements = Array.from(this.workspaceFileData.values()).flatMap(
         (d) => d.elements
       );
+      return fileElements.length > 0 ? fileElements : this.workspaceSemanticElements;
     }
     return this.lastElements ?? [];
   }
@@ -1003,7 +938,7 @@ export class ModelExplorerProvider
       const active = vscode.window.activeTextEditor?.document;
       if (
         !this.lastUri &&
-        !this.workspaceMode &&
+        !this.isWorkspaceBacked() &&
         (!active ||
           (active.languageId !== "sysml" && active.languageId !== "kerml"))
       ) {
@@ -1024,9 +959,6 @@ export class ModelExplorerProvider
   }
 
   private getWorkspaceInfoItems(): ExplorerInfoItem[] {
-    if (this._workspaceViewMode !== "bySemantic") {
-      return [];
-    }
     const status = this.workspaceLoadStatus;
     if (status.state === "idle") {
       return [];
@@ -1061,35 +993,6 @@ export class ModelExplorerProvider
         "info"
       ),
     ];
-  }
-
-  private mergeNamespaceElements(
-    entries: [string, { uri: vscode.Uri; elements: SysMLElementDTO[] }][]
-  ): { element: SysMLElementDTO; uri: vscode.Uri }[] {
-    const pairs: { el: SysMLElementDTO; uri: vscode.Uri }[] = [];
-    for (const [, data] of entries) {
-      for (const el of data.elements) {
-        pairs.push({ el, uri: data.uri });
-      }
-    }
-
-    const mergedMap = new Map<string, { merged: SysMLElementDTO; uri: vscode.Uri }>();
-    const result: { element: SysMLElementDTO; uri: vscode.Uri }[] = [];
-
-    for (const { el, uri } of pairs) {
-      const key = `${el.type}::${el.name || "(anonymous)"}`;
-      if (this.namespaceTypes.has(el.type) && mergedMap.has(key)) {
-        const existing = mergedMap.get(key)!;
-        existing.merged = this.mergeTwo(existing.merged, el);
-      } else if (this.namespaceTypes.has(el.type)) {
-        const clone = this.cloneElement(el);
-        mergedMap.set(key, { merged: clone, uri });
-        result.push({ element: clone, uri });
-      } else {
-        result.push({ element: el, uri });
-      }
-    }
-    return result;
   }
 
   private buildSemanticUriMapping(rootItems: ModelTreeItem[]): void {
@@ -1203,29 +1106,58 @@ export class ModelExplorerProvider
     const startedAt = Date.now();
 
     const infoItems = this.getWorkspaceInfoItems();
-    if (this._workspaceViewMode === "bySemantic" && this.workspaceFileData.size > 0) {
-      const entries = Array.from(this.workspaceFileData.entries());
-      const mergeStartedAt = Date.now();
-      const merged = this.mergeNamespaceElements(entries);
-      const mergeMs = Date.now() - mergeStartedAt;
+    if (this._workspaceViewMode === "byFile" && this.workspaceFileData.size > 0) {
       const metadataStartedAt = Date.now();
-      this.buildElementMetadata(merged);
+      this.buildElementMetadata(
+        Array.from(this.workspaceFileData.values()).flatMap((data) =>
+          data.elements.map((element) => ({ element, uri: data.uri }))
+        )
+      );
       const metadataMs = Date.now() - metadataStartedAt;
       const itemBuildStartedAt = Date.now();
-      const items = merged.map(({ element, uri }) =>
-        this.createModelTreeItem(element, uri)
+      const fileItems = Array.from(this.workspaceFileData.values())
+        .sort((a, b) => a.uri.fsPath.localeCompare(b.uri.fsPath))
+        .map((data) => this.createFileItem(data.uri, data.elements));
+      const itemBuildMs = Date.now() - itemBuildStartedAt;
+      this.uriToRootItems.clear();
+      for (const fileItem of fileItems) {
+        this.uriToRootItems.set(fileItem.fileUri.toString(), [fileItem]);
+      }
+      this.rootItemsCache = [...infoItems, ...fileItems];
+      logPerf("modelExplorer:buildTreeCache", {
+        mode: "workspace-byFile",
+        metadataMs,
+        itemBuildMs,
+        totalMs: Date.now() - startedAt,
+        rootItemCount: this.rootItemsCache.length,
+        fileCount: this.workspaceFileData.size,
+      });
+      return this.rootItemsCache;
+    }
+    if (this._workspaceViewMode === "bySemantic" && this.workspaceSemanticElements.length > 0) {
+      const metadataStartedAt = Date.now();
+      this.buildElementMetadata(
+        this.workspaceSemanticElements.map((element) => ({
+          element,
+          uri: this.elementUriFor(element),
+        }))
+      );
+      const metadataMs = Date.now() - metadataStartedAt;
+      const itemBuildStartedAt = Date.now();
+      const items = this.workspaceSemanticElements.map((element) =>
+        this.createModelTreeItem(element, this.elementUriFor(element))
       );
       const itemBuildMs = Date.now() - itemBuildStartedAt;
       this.buildSemanticUriMapping(items);
       this.rootItemsCache = [...infoItems, ...items];
       logPerf("modelExplorer:buildTreeCache", {
         mode: "workspace-bySemantic",
-        mergeMs,
         metadataMs,
         itemBuildMs,
         totalMs: Date.now() - startedAt,
         rootItemCount: this.rootItemsCache.length,
         fileCount: this.workspaceFileData.size,
+        semanticRootCount: this.workspaceSemanticElements.length,
       });
       return this.rootItemsCache;
     }
@@ -1252,7 +1184,7 @@ export class ModelExplorerProvider
     }
 
     if (
-      !this.workspaceMode &&
+      !this.isWorkspaceBacked() &&
       !this.lastUri &&
       !this.lastElements &&
       vscode.window.activeTextEditor &&
@@ -1327,6 +1259,7 @@ export class ModelExplorerProvider
 
   private createFileItem(uri: vscode.Uri, elements: SysMLElementDTO[]): FileTreeItem {
     const item = new FileTreeItem(uri, elements.length);
+    this.uriToRootItems.set(uri.toString(), [item]);
     item.childrenItems = elements.map((element) =>
       this.createModelTreeItem(element, uri, item)
     );
@@ -1450,5 +1383,16 @@ export class ModelExplorerProvider
     for (const child of element.children ?? []) {
       this.collectElementMetadata(child, uri, element.id);
     }
+  }
+
+  private elementUriFor(element: SysMLElementDTO): vscode.Uri {
+    if (element.uri) {
+      try {
+        return vscode.Uri.parse(element.uri);
+      } catch {
+        // Fall back below.
+      }
+    }
+    return this.lastUri ?? this.workspaceFileUris[0] ?? vscode.Uri.parse("untitled:unknown");
   }
 }
