@@ -374,30 +374,35 @@ pub(crate) fn remove_document(state: &mut ServerState, uri_norm: &Url) {
     state.semantic_graph.remove_nodes_for_uri(uri_norm);
 }
 
-pub(crate) fn rebuild_document_links(state: &mut ServerState, uri_norm: &Url) {
-    let parsed = state
-        .index
-        .get(uri_norm)
-        .and_then(|entry| entry.parsed.as_ref())
-        .cloned();
-    state.semantic_graph.remove_nodes_for_uri(uri_norm);
-    if let Some(doc) = parsed.as_ref() {
-        let new_graph = semantic_model::build_graph_from_doc(doc, uri_norm);
-        state.semantic_graph.merge(new_graph);
-        semantic_model::add_cross_document_edges_for_uri(&mut state.semantic_graph, uri_norm);
-    }
-    refresh_symbols_for_uri(state, uri_norm);
-}
-
-pub(crate) fn rebuild_non_library_document_links(state: &mut ServerState) {
-    let uris: Vec<Url> = state
-        .index
-        .keys()
-        .filter(|uri| !util::uri_under_any_library(uri, &state.library_paths))
-        .cloned()
+pub(crate) fn rebuild_all_document_links(state: &mut ServerState) {
+    let uris: Vec<Url> = state.index.keys().cloned().collect();
+    let parsed_docs: Vec<(Url, RootNamespace)> = uris
+        .iter()
+        .filter_map(|uri| {
+            state
+                .index
+                .get(uri)
+                .and_then(|entry| entry.parsed.as_ref())
+                .cloned()
+                .map(|parsed| (uri.clone(), parsed))
+        })
         .collect();
+
+    for uri in &uris {
+        state.semantic_graph.remove_nodes_for_uri(uri);
+    }
+
+    for (uri, parsed) in &parsed_docs {
+        let new_graph = semantic_model::build_graph_from_doc(parsed, uri);
+        state.semantic_graph.merge(new_graph);
+    }
+
+    for uri in &uris {
+        semantic_model::add_cross_document_edges_for_uri(&mut state.semantic_graph, uri);
+    }
+
     for uri in uris {
-        rebuild_document_links(state, &uri);
+        refresh_symbols_for_uri(state, &uri);
     }
 }
 
@@ -416,9 +421,14 @@ pub(crate) fn clear_documents_under_roots(state: &mut ServerState, roots: &[Url]
 
 #[cfg(test)]
 mod tests {
-    use super::{apply_document_changes, remove_document, store_document_text};
+    use super::{
+        apply_document_changes, rebuild_all_document_links, remove_document, store_document_text,
+    };
+    use crate::analysis::checks::compute_semantic_diagnostics;
     use crate::workspace::state::ServerState;
-    use tower_lsp::lsp_types::{Position, Range, TextDocumentContentChangeEvent, Url};
+    use tower_lsp::lsp_types::{
+        NumberOrString, Position, Range, TextDocumentContentChangeEvent, Url,
+    };
 
     fn fixture_uri() -> Url {
         Url::parse("file:///C:/workspace/test.sysml").expect("fixture uri")
@@ -481,5 +491,62 @@ mod tests {
         assert!(!state.index.contains_key(&uri));
         assert!(state.semantic_graph.nodes_for_uri(&uri).is_empty());
         assert!(state.symbol_table.iter().all(|entry| entry.uri != uri));
+    }
+
+    #[test]
+    fn rebuild_all_document_links_relinks_library_documents_after_dependency_ingest() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let library_root = temp.path().canonicalize().expect("canonical library root");
+        let importer_uri =
+            Url::from_file_path(library_root.join("AImporter.sysml")).expect("importer uri");
+        let dependency_uri =
+            Url::from_file_path(library_root.join("ZBase.sysml")).expect("dependency uri");
+        let library_root_uri = Url::from_file_path(&library_root).expect("library root uri");
+        let mut state = ServerState::default();
+        state.library_paths = vec![library_root_uri];
+
+        store_document_text(
+            &mut state,
+            &importer_uri,
+            "package Demo { import Base::*; part def RuntimeCluster { attribute clusterName : Name; } }"
+                .to_string(),
+        );
+        store_document_text(
+            &mut state,
+            &dependency_uri,
+            "package Base { attribute def Name; }".to_string(),
+        );
+
+        let initial_diagnostics =
+            compute_semantic_diagnostics(&state.semantic_graph, &importer_uri);
+        assert!(
+            initial_diagnostics.iter().any(|d| {
+                d.code.as_ref().is_some_and(|code| {
+                    matches!(
+                        code,
+                        NumberOrString::String(value) if value == "unresolved_type_reference"
+                    )
+                })
+            }),
+            "expected unresolved_type_reference before full relink"
+        );
+
+        rebuild_all_document_links(&mut state);
+
+        let rebuilt_diagnostics =
+            compute_semantic_diagnostics(&state.semantic_graph, &importer_uri);
+        assert!(
+            rebuilt_diagnostics.iter().all(|d| {
+                d.code
+                    .as_ref()
+                    .is_none_or(|code| {
+                        !matches!(
+                            code,
+                            NumberOrString::String(value) if value == "unresolved_type_reference"
+                        )
+                    })
+            }),
+            "expected no unresolved_type_reference after full relink, got: {rebuilt_diagnostics:#?}"
+        );
     }
 }

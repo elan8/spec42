@@ -45,7 +45,10 @@ pub(crate) async fn sysml_model_result(
                     ("paramsMs", params_ms.to_string()),
                     ("indexLookupMs", index_lookup_ms.to_string()),
                     ("indexSize", state.index.len().to_string()),
-                    ("totalMs", request_start.elapsed().as_millis().max(1).to_string()),
+                    (
+                        "totalMs",
+                        request_start.elapsed().as_millis().max(1).to_string(),
+                    ),
                 ],
             )
             .await;

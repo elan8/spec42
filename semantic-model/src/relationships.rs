@@ -433,11 +433,9 @@ fn qualified_names_from_imports_for_simple_type(
             .and_then(|v| v.as_bool())
             .unwrap_or(false);
         if import_all {
-            if let Some(pkg) = target.strip_suffix("::*") {
-                let pkg = pkg.trim();
-                if !pkg.is_empty() {
-                    out.push(format!("{}::{}", pkg, simple_name));
-                }
+            let pkg = target.strip_suffix("::*").unwrap_or(target).trim();
+            if !pkg.is_empty() {
+                out.push(format!("{}::{}", pkg, simple_name));
             }
         } else if let Some(last) = target.rsplit("::").next() {
             if last == simple_name {
@@ -480,7 +478,8 @@ fn add_typing_edge_cross_document(
         let mut candidates =
             type_ref_candidates_with_kind(container_prefix, &normalized_type_ref, suffix_kind);
         if !normalized_type_ref.contains("::") {
-            for q in qualified_names_from_imports_for_simple_type(g, &src_id.uri, &normalized_type_ref)
+            for q in
+                qualified_names_from_imports_for_simple_type(g, &src_id.uri, &normalized_type_ref)
             {
                 candidates.extend(type_ref_candidates_with_kind(None, &q, suffix_kind));
             }

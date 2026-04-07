@@ -384,12 +384,35 @@ type WorkspaceLoadStatus = {
 type ModelExplorerDebugState = {
   lastRevealedElementId?: string;
   pendingDocumentLoadUri?: string;
+  pendingWorkspaceLoadRunId?: string;
 };
 
 type InFlightDocumentLoad = {
   uri: string;
   generation: number;
+  cts: vscode.CancellationTokenSource;
   promise: Promise<void>;
+};
+
+type WorkspaceLoadOptions = {
+  runId: string;
+  token?: vscode.CancellationToken;
+};
+
+type WorkspaceLoadResult = {
+  runId: string;
+  fileCount: number;
+  loadedFiles: number;
+  failures: number;
+  cancelled: number;
+  committed: boolean;
+  stale: boolean;
+  totalMs: number;
+};
+
+type InFlightWorkspaceLoad = {
+  runId: string;
+  promise: Promise<WorkspaceLoadResult>;
 };
 
 export class ModelExplorerProvider
@@ -428,6 +451,7 @@ export class ModelExplorerProvider
   private documentLoadState: "idle" | "loading" | "ready" | "error" = "idle";
   private documentLoadGeneration = 0;
   private inFlightDocumentLoad: InFlightDocumentLoad | undefined;
+  private inFlightWorkspaceLoad: InFlightWorkspaceLoad | undefined;
 
   constructor(private readonly modelProvider: LspModelProvider) {}
 
@@ -439,6 +463,7 @@ export class ModelExplorerProvider
     return {
       lastRevealedElementId: this.lastRevealedElementId,
       pendingDocumentLoadUri: this.inFlightDocumentLoad?.uri,
+      pendingWorkspaceLoadRunId: this.inFlightWorkspaceLoad?.runId,
     };
   }
 
@@ -464,6 +489,7 @@ export class ModelExplorerProvider
   setWorkspaceViewMode(mode: "byFile" | "bySemantic"): void {
     log("setWorkspaceViewMode:", mode);
     this._workspaceViewMode = mode;
+    this.workspaceMode = mode === "bySemantic";
     vscode.commands.executeCommand(
       "setContext",
       "sysml.workspaceViewMode",
@@ -477,6 +503,7 @@ export class ModelExplorerProvider
     log("toggleWorkspaceViewMode:", this._workspaceViewMode, "->", this._workspaceViewMode === "byFile" ? "bySemantic" : "byFile");
     this._workspaceViewMode =
       this._workspaceViewMode === "byFile" ? "bySemantic" : "byFile";
+    this.workspaceMode = this._workspaceViewMode === "bySemantic";
     vscode.commands.executeCommand(
       "setContext",
       "sysml.workspaceViewMode",
@@ -558,6 +585,9 @@ export class ModelExplorerProvider
     this.metadataById.clear();
     this.incomingRelationshipCounts.clear();
     this.lastRevealedElementId = undefined;
+    this.inFlightDocumentLoad?.cts.cancel();
+    this.inFlightDocumentLoad?.cts.dispose();
+    this.inFlightWorkspaceLoad = undefined;
     this.workspaceLoadStatus = {
       state: "idle",
       scannedFiles: 0,
@@ -571,6 +601,10 @@ export class ModelExplorerProvider
     this._onDidChangeTreeData.fire();
   }
 
+  hasWorkspaceData(): boolean {
+    return this.workspaceFileData.size > 0;
+  }
+
   setWorkspaceLoadStatus(status: Partial<WorkspaceLoadStatus>): void {
     this.workspaceLoadStatus = {
       ...this.workspaceLoadStatus,
@@ -582,17 +616,26 @@ export class ModelExplorerProvider
 
   async loadWorkspaceModel(
     fileUris: vscode.Uri[],
-    token?: vscode.CancellationToken
-  ): Promise<void> {
-    log("loadWorkspaceModel:", fileUris.length, "files. URIs:", fileUris.map((u) => u.toString()));
-    this.workspaceMode = true;
+    options: WorkspaceLoadOptions
+  ): Promise<WorkspaceLoadResult> {
+    log(
+      "loadWorkspaceModel:",
+      fileUris.length,
+      "files. URIs:",
+      fileUris.map((u) => u.toString())
+    );
     this.workspaceFileUris = fileUris;
     this.lastUri = undefined;
     this.lastElements = undefined;
-    this.workspaceFileData.clear();
     this.uriToRootItems.clear();
     this.invalidateTreeCache();
+
+    if (this.inFlightWorkspaceLoad?.runId === options.runId) {
+      return await this.inFlightWorkspaceLoad.promise;
+    }
+
     let failures = 0;
+    let cancelled = 0;
     const perFileDurationsMs: number[] = [];
     const loadStartedAt = Date.now();
     const configuredConcurrency = Number.parseInt(
@@ -604,97 +647,177 @@ export class ModelExplorerProvider
         ? configuredConcurrency
         : 6;
     let cursor = 0;
+    const localWorkspaceFileData = new Map<
+      string,
+      { uri: vscode.Uri; elements: SysMLElementDTO[] }
+    >();
 
-    try {
-      const workers = Array.from(
-        { length: Math.min(maxConcurrency, Math.max(fileUris.length, 1)) },
-        () =>
-          (async () => {
-            while (!token?.isCancellationRequested) {
-              const index = cursor++;
-              if (index >= fileUris.length) {
-                break;
-              }
-              const uri = fileUris[index];
-              const uriStr = uri.toString();
-              const fileStartMs = Date.now();
-              try {
-                log("loadWorkspaceModel: requesting getModel for", uriStr);
-                const result = await this.modelProvider.getModel(
-                  uriStr,
-                  ["graph", "stats"],
-                  token,
-                  "modelExplorer.loadWorkspaceModel"
-                );
-                const graphTransformStartedAt = Date.now();
-                const elements = result.graph ? (graphToElementTree(result.graph) as SysMLElementDTO[]) : [];
-                const graphTransformMs = Date.now() - graphTransformStartedAt;
-                if (elements.length) {
-                  log("loadWorkspaceModel: loaded", uriStr, "->", elements.length, "elements");
-                  this.workspaceFileData.set(uriStr, {
-                    uri,
-                    elements,
-                  });
-                } else {
-                  log("loadWorkspaceModel: 0 elements for", uriStr, "(graph nodes:", result.graph?.nodes?.length ?? 0, ")");
-                }
-                logPerf("modelExplorer:workspaceFileLoaded", {
-                  uri: uriStr,
-                  totalMs: Date.now() - fileStartMs,
-                  graphTransformMs,
-                  elementCount: elements.length,
-                  nodeCount: result.graph?.nodes?.length ?? 0,
-                  edgeCount: result.graph?.edges?.length ?? 0,
-                  parseTimeMs: result.stats?.parseTimeMs,
-                  modelBuildTimeMs: result.stats?.modelBuildTimeMs,
-                });
-              } catch (e) {
-                failures += 1;
-                if (e instanceof vscode.CancellationError || token?.isCancellationRequested) {
-                  log("loadWorkspaceModel: cancelled while loading", uriStr);
+    const promise = (async (): Promise<WorkspaceLoadResult> => {
+      try {
+        const workers = Array.from(
+          { length: Math.min(maxConcurrency, Math.max(fileUris.length, 1)) },
+          () =>
+            (async () => {
+              while (!options.token?.isCancellationRequested) {
+                const index = cursor++;
+                if (index >= fileUris.length) {
                   break;
                 }
-                logError(`loadWorkspaceModel: skip file (failed): ${uriStr}`, e);
-                logPerf("modelExplorer:workspaceFileFailed", {
-                  uri: uriStr,
-                  totalMs: Date.now() - fileStartMs,
-                  error: e instanceof Error ? e.message : String(e),
-                });
-              } finally {
-                perFileDurationsMs.push(Date.now() - fileStartMs);
+                if (this.inFlightWorkspaceLoad?.runId !== options.runId) {
+                  break;
+                }
+                const uri = fileUris[index];
+                const uriStr = uri.toString();
+                const fileStartMs = Date.now();
+                try {
+                  log("loadWorkspaceModel: requesting getModel for", uriStr);
+                  const result = await this.modelProvider.getModel(
+                    uriStr,
+                    ["graph", "stats"],
+                    options.token,
+                    "modelExplorer.loadWorkspaceModel"
+                  );
+                  if (
+                    options.token?.isCancellationRequested ||
+                    this.inFlightWorkspaceLoad?.runId !== options.runId
+                  ) {
+                    cancelled += 1;
+                    logPerf("modelExplorer:workspaceFileDropped", {
+                      runId: options.runId,
+                      uri: uriStr,
+                      reason: options.token?.isCancellationRequested
+                        ? "cancelled"
+                        : "stale-run",
+                      totalMs: Date.now() - fileStartMs,
+                    });
+                    break;
+                  }
+                  const graphTransformStartedAt = Date.now();
+                  const elements = result.graph
+                    ? (graphToElementTree(result.graph) as SysMLElementDTO[])
+                    : [];
+                  const graphTransformMs = Date.now() - graphTransformStartedAt;
+                  if (elements.length) {
+                    log(
+                      "loadWorkspaceModel: loaded",
+                      uriStr,
+                      "->",
+                      elements.length,
+                      "elements"
+                    );
+                    localWorkspaceFileData.set(uriStr, {
+                      uri,
+                      elements,
+                    });
+                  } else {
+                    log(
+                      "loadWorkspaceModel: 0 elements for",
+                      uriStr,
+                      "(graph nodes:",
+                      result.graph?.nodes?.length ?? 0,
+                      ")"
+                    );
+                  }
+                  logPerf("modelExplorer:workspaceFileLoaded", {
+                    runId: options.runId,
+                    uri: uriStr,
+                    totalMs: Date.now() - fileStartMs,
+                    graphTransformMs,
+                    elementCount: elements.length,
+                    nodeCount: result.graph?.nodes?.length ?? 0,
+                    edgeCount: result.graph?.edges?.length ?? 0,
+                    parseTimeMs: result.stats?.parseTimeMs,
+                    modelBuildTimeMs: result.stats?.modelBuildTimeMs,
+                  });
+                } catch (e) {
+                  if (
+                    e instanceof vscode.CancellationError ||
+                    options.token?.isCancellationRequested
+                  ) {
+                    cancelled += 1;
+                    log("loadWorkspaceModel: cancelled while loading", uriStr);
+                    break;
+                  }
+                  failures += 1;
+                  logError(`loadWorkspaceModel: skip file (failed): ${uriStr}`, e);
+                  logPerf("modelExplorer:workspaceFileFailed", {
+                    runId: options.runId,
+                    uri: uriStr,
+                    totalMs: Date.now() - fileStartMs,
+                    error: e instanceof Error ? e.message : String(e),
+                  });
+                } finally {
+                  perFileDurationsMs.push(Date.now() - fileStartMs);
+                }
               }
-            }
-          })()
-      );
-      await Promise.all(workers);
-    } finally {
-      const totalMs = Date.now() - loadStartedAt;
-      const avgMs =
-        perFileDurationsMs.length > 0
-          ? Math.round(perFileDurationsMs.reduce((acc, value) => acc + value, 0) / perFileDurationsMs.length)
-          : 0;
-      const p95Ms = percentileMs(perFileDurationsMs, 95);
-      this.workspaceLoadStatus = {
-        ...this.workspaceLoadStatus,
-        state: token?.isCancellationRequested
-          ? "degraded"
-          : (this.workspaceLoadStatus.truncated || failures > 0 ? "degraded" : "ready"),
-        loadedFiles: this.workspaceFileData.size,
-        failures,
-      };
-      log("loadWorkspaceModel: done,", this.workspaceFileData.size, "files loaded");
-      this.invalidateTreeCache();
-      logStartupEvent("explorer:loadWorkspaceModel", {
+            })()
+        );
+        await Promise.all(workers);
+      } finally {
+        const totalMs = Date.now() - loadStartedAt;
+        const avgMs =
+          perFileDurationsMs.length > 0
+            ? Math.round(
+                perFileDurationsMs.reduce((acc, value) => acc + value, 0) /
+                  perFileDurationsMs.length
+              )
+            : 0;
+        const p95Ms = percentileMs(perFileDurationsMs, 95);
+        const stale = this.inFlightWorkspaceLoad?.runId !== options.runId;
+        const committed = !stale && !options.token?.isCancellationRequested;
+        if (committed) {
+          this.workspaceFileData = localWorkspaceFileData;
+          this.workspaceMode = this._workspaceViewMode === "bySemantic";
+          this.invalidateTreeCache();
+          this._onDidChangeTreeData.fire();
+        } else {
+          logPerf("modelExplorer:workspaceLoadStaleResultDropped", {
+            runId: options.runId,
+            workspaceMode: this.workspaceMode,
+            workspaceViewMode: this._workspaceViewMode,
+            cancelled: options.token?.isCancellationRequested ?? false,
+            totalMs,
+          });
+        }
+        log("loadWorkspaceModel: done,", localWorkspaceFileData.size, "files loaded");
+        logStartupEvent("explorer:loadWorkspaceModel", {
+          runId: options.runId,
+          fileCount: fileUris.length,
+          loadedFiles: localWorkspaceFileData.size,
+          failures,
+          cancelled,
+          committed,
+          stale,
+          totalMs,
+          perFileAvgMs: avgMs,
+          perFileP95Ms: p95Ms,
+          concurrency: Math.min(maxConcurrency, Math.max(fileUris.length, 1)),
+        });
+      }
+
+      return {
+        runId: options.runId,
         fileCount: fileUris.length,
-        loadedFiles: this.workspaceFileData.size,
+        loadedFiles: localWorkspaceFileData.size,
         failures,
-        totalMs,
-        perFileAvgMs: avgMs,
-        perFileP95Ms: p95Ms,
-        concurrency: Math.min(maxConcurrency, Math.max(fileUris.length, 1)),
-      });
-      this._onDidChangeTreeData.fire();
-    }
+        cancelled,
+        committed:
+          this.inFlightWorkspaceLoad?.runId === options.runId &&
+          !options.token?.isCancellationRequested,
+        stale: this.inFlightWorkspaceLoad?.runId !== options.runId,
+        totalMs: Date.now() - loadStartedAt,
+      };
+    })().finally(() => {
+      if (this.inFlightWorkspaceLoad?.runId === options.runId) {
+        this.inFlightWorkspaceLoad = undefined;
+      }
+    });
+
+    this.inFlightWorkspaceLoad = {
+      runId: options.runId,
+      promise,
+    };
+    return await promise;
   }
 
   async loadDocument(
@@ -710,22 +833,47 @@ export class ModelExplorerProvider
       });
       return await this.inFlightDocumentLoad.promise;
     }
+    this.inFlightDocumentLoad?.cts.cancel();
+    this.inFlightDocumentLoad?.cts.dispose();
+    const cts = new vscode.CancellationTokenSource();
+    const effectiveToken = token
+      ? ModelExplorerProvider.mergeCancellationTokens(token, cts.token)
+      : cts.token;
     const generation = ++this.documentLoadGeneration;
-    const promise = this.performDocumentLoad(document, generation, token)
+    const promise = this.performDocumentLoad(document, generation, effectiveToken)
       .finally(() => {
         if (
           this.inFlightDocumentLoad?.uri === uriString &&
           this.inFlightDocumentLoad.generation === generation
         ) {
+          this.inFlightDocumentLoad.cts.dispose();
           this.inFlightDocumentLoad = undefined;
+        } else {
+          cts.dispose();
         }
       });
     this.inFlightDocumentLoad = {
       uri: uriString,
       generation,
+      cts,
       promise,
     };
     return await promise;
+  }
+
+  private static mergeCancellationTokens(
+    first: vscode.CancellationToken,
+    second: vscode.CancellationToken
+  ): vscode.CancellationToken {
+    const cts = new vscode.CancellationTokenSource();
+    const cancel = () => {
+      if (!cts.token.isCancellationRequested) {
+        cts.cancel();
+      }
+    };
+    first.onCancellationRequested(cancel);
+    second.onCancellationRequested(cancel);
+    return cts.token;
   }
 
   private async performDocumentLoad(
@@ -810,8 +958,10 @@ export class ModelExplorerProvider
 
   refresh(): void {
     log("refresh: workspaceMode=", this.workspaceMode, "fileCount=", this.workspaceFileUris.length);
-    if (this.workspaceMode && this.workspaceFileUris.length > 0) {
-      this.loadWorkspaceModel(this.workspaceFileUris);
+    if (this._workspaceViewMode === "bySemantic") {
+      this.workspaceMode = true;
+      this.invalidateTreeCache();
+      this._onDidChangeTreeData.fire();
     } else if (this.lastUri) {
       const doc = vscode.workspace.textDocuments.find(
         (d) => d.uri.toString() === this.lastUri!.toString()
@@ -832,7 +982,7 @@ export class ModelExplorerProvider
   }
 
   getAllElements(): SysMLElementDTO[] {
-    if (this.workspaceMode) {
+    if (this._workspaceViewMode === "bySemantic") {
       return Array.from(this.workspaceFileData.values()).flatMap(
         (d) => d.elements
       );
@@ -874,7 +1024,7 @@ export class ModelExplorerProvider
   }
 
   private getWorkspaceInfoItems(): ExplorerInfoItem[] {
-    if (!this.workspaceMode) {
+    if (this._workspaceViewMode !== "bySemantic") {
       return [];
     }
     const status = this.workspaceLoadStatus;
@@ -1053,34 +1203,7 @@ export class ModelExplorerProvider
     const startedAt = Date.now();
 
     const infoItems = this.getWorkspaceInfoItems();
-    if (this.workspaceMode && this.workspaceFileData.size > 0) {
-      if (this._workspaceViewMode === "byFile") {
-        const metadataStartedAt = Date.now();
-        this.buildElementMetadata(
-          Array.from(this.workspaceFileData.values()).flatMap((data) =>
-            data.elements.map((element) => ({ element, uri: data.uri }))
-          )
-        );
-        const metadataMs = Date.now() - metadataStartedAt;
-        const itemBuildStartedAt = Date.now();
-        const items = Array.from(this.workspaceFileData.entries()).map(([, data]) =>
-          this.createFileItem(data.uri, data.elements)
-        );
-        const itemBuildMs = Date.now() - itemBuildStartedAt;
-        for (const item of items) {
-          this.uriToRootItems.set(item.fileUri.toString(), [item]);
-        }
-        this.rootItemsCache = [...infoItems, ...items];
-        logPerf("modelExplorer:buildTreeCache", {
-          mode: "workspace-byFile",
-          metadataMs,
-          itemBuildMs,
-          totalMs: Date.now() - startedAt,
-          rootItemCount: this.rootItemsCache.length,
-          fileCount: this.workspaceFileData.size,
-        });
-        return this.rootItemsCache;
-      }
+    if (this._workspaceViewMode === "bySemantic" && this.workspaceFileData.size > 0) {
       const entries = Array.from(this.workspaceFileData.entries());
       const mergeStartedAt = Date.now();
       const merged = this.mergeNamespaceElements(entries);
@@ -1107,7 +1230,7 @@ export class ModelExplorerProvider
       return this.rootItemsCache;
     }
 
-    if (this.workspaceMode && infoItems.length > 0) {
+    if (this._workspaceViewMode === "bySemantic" && infoItems.length > 0) {
       this.rootItemsCache = infoItems;
       return this.rootItemsCache;
     }

@@ -1,4 +1,5 @@
 import * as assert from "assert";
+import * as vscode from "vscode";
 import { LspModelProvider } from "../../providers/lspModelProvider";
 import type { SysMLModelResult } from "../../providers/sysmlModelTypes";
 
@@ -87,5 +88,26 @@ describe("LspModelProvider", () => {
     await provider.getModel("file:///drone.sysml", ["graph", "stats"]);
 
     assert.strictEqual(requestCount, 2);
+  });
+
+  it("passes cancellation tokens through to sysml/model requests", async () => {
+    let capturedToken: vscode.CancellationToken | undefined;
+    const client = {
+      sendRequest: async (
+        _method: string,
+        _params: unknown,
+        token?: vscode.CancellationToken
+      ) => {
+        capturedToken = token;
+        return createModelResult();
+      },
+    } as any;
+    const provider = new LspModelProvider(client, Promise.resolve());
+    const cts = new vscode.CancellationTokenSource();
+
+    await provider.getModel("file:///drone.sysml", ["graph"], cts.token);
+
+    assert.strictEqual(capturedToken, cts.token);
+    cts.dispose();
   });
 });

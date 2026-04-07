@@ -286,6 +286,125 @@ fn lsp_republishes_diagnostics_for_loose_file_after_library_scan() {
     let _ = child.kill();
 }
 
+#[test]
+fn lsp_workspace_scan_clears_unresolved_for_wildcard_imported_workspace_types() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root: PathBuf = temp.path().canonicalize().expect("canonical root");
+
+    std::fs::write(
+        root.join("RoboticsCore.sysml"),
+        r#"
+        package RoboticsCore {
+            attribute def Name;
+        }
+        "#,
+    )
+    .expect("write RoboticsCore");
+    std::fs::write(
+        root.join("RobotAutonomy.sysml"),
+        r#"
+        package RobotAutonomy {
+            import RoboticsCore::*;
+
+            part def BehaviorModule {
+                attribute behaviorName : Name;
+            }
+        }
+        "#,
+    )
+    .expect("write RobotAutonomy");
+
+    let root_uri = url::Url::from_file_path(&root).expect("root uri");
+    let autonomy_uri =
+        url::Url::from_file_path(root.join("RobotAutonomy.sysml")).expect("autonomy uri");
+    let autonomy_text =
+        std::fs::read_to_string(root.join("RobotAutonomy.sysml")).expect("read RobotAutonomy");
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": root_uri.as_str(),
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+
+    let did_open = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": {
+                "uri": autonomy_uri.as_str(),
+                "languageId": "sysml",
+                "version": 1,
+                "text": autonomy_text
+            }
+        }
+    });
+    send_message(&mut stdin, &did_open.to_string());
+
+    std::thread::sleep(std::time::Duration::from_millis(700));
+
+    let barrier_id = next_id();
+    let barrier_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": barrier_id,
+        "method": "workspace/symbol",
+        "params": { "query": "" }
+    });
+    send_message(&mut stdin, &barrier_req.to_string());
+
+    let mut saw_publish = false;
+    let mut last_diagnostics = Vec::new();
+    loop {
+        let msg = read_message(&mut stdout).expect("expected message while waiting for barrier");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"]
+                .as_str()
+                .map(|uri| uri.eq_ignore_ascii_case(autonomy_uri.as_str()))
+                .unwrap_or(false)
+        {
+            saw_publish = true;
+            last_diagnostics = json["params"]["diagnostics"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+        }
+        if json["id"].as_i64() == Some(barrier_id) {
+            break;
+        }
+    }
+
+    assert!(
+        saw_publish,
+        "expected diagnostics to be published for RobotAutonomy"
+    );
+    assert!(
+        !last_diagnostics.iter().any(|d| {
+            d["source"].as_str() == Some("semantic")
+                && d["code"].as_str() == Some("unresolved_type_reference")
+        }),
+        "expected no unresolved_type_reference diagnostics after workspace scan, got: {last_diagnostics:#?}"
+    );
+
+    let _ = child.kill();
+}
+
 /// When SYSML_V2_RELEASE_DIR is set, index that folder and assert workspace/symbol finds symbols.
 /// Validates workspace awareness against the official OMG SysML v2 repo.
 const SYSML_V2_RELEASE_DIR_ENV: &str = "SYSML_V2_RELEASE_DIR";

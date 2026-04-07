@@ -331,8 +331,7 @@ impl Backend {
             let mut state = self.state.write().await;
             mark_sysml_model_parse_cached(&mut state, &uri);
         }
-        let cache_mark_lock_wait_ms =
-            cache_mark_lock_wait_start.elapsed().as_millis().max(1);
+        let cache_mark_lock_wait_ms = cache_mark_lock_wait_start.elapsed().as_millis().max(1);
         let total_ms = request_start.elapsed().as_millis().max(1);
         let parse_time_ms = response
             .stats

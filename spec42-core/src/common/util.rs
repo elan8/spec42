@@ -145,7 +145,7 @@ pub fn missing_semicolon_ranges(content: &str) -> Vec<Range> {
 
     let mut ranges = Vec::new();
     for (line_idx, raw_line) in content.lines().enumerate() {
-        let code_only = raw_line.split("//").next().unwrap_or("");
+        let code_only = strip_line_comment(raw_line);
         let trimmed = code_only.trim();
         if trimmed.is_empty() {
             continue;
@@ -179,6 +179,29 @@ pub fn missing_semicolon_ranges(content: &str) -> Vec<Range> {
     }
 
     ranges
+}
+
+fn strip_line_comment(line: &str) -> &str {
+    let bytes = line.as_bytes();
+    let mut idx = 0usize;
+    let mut in_string = false;
+    let mut escaped = false;
+    while idx + 1 < bytes.len() {
+        let ch = bytes[idx];
+        if escaped {
+            escaped = false;
+            idx += 1;
+            continue;
+        }
+        match ch {
+            b'\\' if in_string => escaped = true,
+            b'"' => in_string = !in_string,
+            b'/' if !in_string && bytes[idx + 1] == b'/' => return &line[..idx],
+            _ => {}
+        }
+        idx += 1;
+    }
+    line
 }
 
 pub fn import_statement_ranges(content: &str) -> Vec<Range> {
@@ -320,6 +343,13 @@ mod tests {
     #[test]
     fn missing_semicolon_ranges_ignores_terminated_lines() {
         let text = "package test {\n  part def Laptop {\n    part motherboard;\n  }\n}\n";
+        let ranges = missing_semicolon_ranges(text);
+        assert!(ranges.is_empty());
+    }
+
+    #[test]
+    fn missing_semicolon_ranges_ignores_url_like_strings() {
+        let text = "package test {\n  part def Repo {\n    attribute repositoryUrl = \"https://git.example.com/orders-service\";\n    attribute vaultUri = \"vault://orders/config\";\n  }\n}\n";
         let ranges = missing_semicolon_ranges(text);
         assert!(ranges.is_empty());
     }

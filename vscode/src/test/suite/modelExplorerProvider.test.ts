@@ -115,4 +115,74 @@ describe("ModelExplorerProvider", () => {
     resolveRequest?.(createModelResult("Drone"));
     await loadPromise;
   });
+
+  it("drops stale workspace load completions when a newer run supersedes them", async () => {
+    const pending = new Map<string, (value: SysMLModelResult) => void>();
+    let callCount = 0;
+    const provider = new ModelExplorerProvider({
+      getModel: async (uri: string) =>
+        await new Promise<SysMLModelResult>((resolve) => {
+          callCount += 1;
+          pending.set(`${callCount}:${uri}`, resolve);
+        }),
+    } as any);
+
+    const file = vscode.Uri.parse("file:///workspace/Drone.sysml");
+    provider.setWorkspaceViewMode("bySemantic");
+
+    const firstRun = provider.loadWorkspaceModel([file], { runId: "run-1" });
+    const secondRun = provider.loadWorkspaceModel([file], { runId: "run-2" });
+
+    pending.get(`2:${file.toString()}`)?.(createModelResult("Second", "Second"));
+    const secondResult = await secondRun;
+    pending.get(`1:${file.toString()}`)?.(createModelResult("First", "First"));
+    const firstResult = await firstRun;
+
+    assert.strictEqual(secondResult.committed, true);
+    assert.strictEqual(secondResult.stale, false);
+    assert.strictEqual(firstResult.committed, false);
+    assert.strictEqual(firstResult.stale, true);
+    assert.strictEqual(provider.getAllElements()[0]?.name, "Second");
+  });
+
+  it("hides workspace indexing info when switching back to by-file mode", async () => {
+    const provider = new ModelExplorerProvider({
+      getModel: async () => createModelResult("WorkspaceRoot"),
+    } as any);
+
+    provider.setWorkspaceViewMode("bySemantic");
+    provider.setWorkspaceLoadStatus({
+      state: "indexing",
+      scannedFiles: 3,
+      loadedFiles: 0,
+      cancelled: false,
+      failures: 0,
+      truncated: false,
+    });
+
+    const semanticItems = await provider.getChildren();
+    assert.strictEqual(semanticItems[0]?.label, "Workspace indexing in progress");
+
+    provider.setWorkspaceViewMode("byFile");
+    const byFileItems = await provider.getChildren();
+    assert.strictEqual(byFileItems.length, 0);
+  });
+
+  it("does not restart workspace loading on refresh while semantic data is already loaded", async () => {
+    let requestCount = 0;
+    const provider = new ModelExplorerProvider({
+      getModel: async () => {
+        requestCount += 1;
+        return createModelResult("WorkspaceRoot", "WorkspaceRoot");
+      },
+    } as any);
+    const file = vscode.Uri.parse("file:///workspace/Drone.sysml");
+    provider.setWorkspaceViewMode("bySemantic");
+
+    await provider.loadWorkspaceModel([file], { runId: "run-1" });
+    provider.refresh();
+
+    assert.strictEqual(requestCount, 1);
+    assert.strictEqual(provider.getAllElements()[0]?.name, "WorkspaceRoot");
+  });
 });

@@ -57,7 +57,7 @@ let libraryWebviewProvider: LibraryWebviewViewProvider | undefined;
 let lspModelProviderForStatus: LspModelProvider | undefined;
 let serverHealthState: ServerHealthState = "starting";
 let serverHealthDetail = "";
-let workspaceIndexingCts: vscode.CancellationTokenSource | undefined;
+let modelExplorerSelectionSyncCts: vscode.CancellationTokenSource | undefined;
 let sourceSelectionSyncTimer: ReturnType<typeof setTimeout> | undefined;
 let modelExplorerSelectionSyncTimer: ReturnType<typeof setTimeout> | undefined;
 let activeDocumentExplorerRefreshTimer: ReturnType<typeof setTimeout> | undefined;
@@ -126,6 +126,17 @@ type WorkspaceIndexSummary = {
 };
 
 let lastWorkspaceIndexSummary: WorkspaceIndexSummary | undefined;
+
+type WorkspaceLoadRun = {
+  runId: string;
+  cts: vscode.CancellationTokenSource;
+  targetViewMode: "bySemantic";
+  discoveredFiles: vscode.Uri[];
+  startedAt: number;
+};
+
+let activeWorkspaceLoadRun: WorkspaceLoadRun | undefined;
+let nextWorkspaceLoadRunId = 0;
 
 type DebugExtensionState = {
   serverHealthState: ServerHealthState;
@@ -307,6 +318,90 @@ function getVisualizationViews(): Array<{ id: string; label: string; description
 
 function setWorkspaceIndexSummary(summary: WorkspaceIndexSummary | undefined): void {
   lastWorkspaceIndexSummary = summary;
+}
+
+function nextWorkspaceLoadRunIdString(): string {
+  nextWorkspaceLoadRunId += 1;
+  return `workspace-load-${nextWorkspaceLoadRunId}`;
+}
+
+function isWorkspaceLoadCurrent(run: WorkspaceLoadRun | undefined): boolean {
+  return !!run && activeWorkspaceLoadRun?.runId === run.runId;
+}
+
+function cancelWorkspaceLoad(
+  provider: ModelExplorerProvider | undefined,
+  reason: "superseded" | "mode-switch" | "user-cancel" | "deactivate",
+  options?: {
+    nextStatus?: "idle" | "degraded";
+    cancelled?: boolean;
+  }
+): void {
+  const run = activeWorkspaceLoadRun;
+  if (!run) {
+    return;
+  }
+  const totalMs = Date.now() - run.startedAt;
+  logPerfEvent("workspaceLoad:cancelled", {
+    runId: run.runId,
+    reason,
+    targetViewMode: run.targetViewMode,
+    discoveredFiles: run.discoveredFiles.length,
+    totalMs,
+  });
+  run.cts.cancel();
+  run.cts.dispose();
+  activeWorkspaceLoadRun = undefined;
+
+  if (provider && options?.nextStatus) {
+    provider.setWorkspaceLoadStatus({
+      state: options.nextStatus,
+      scannedFiles: run.discoveredFiles.length,
+      loadedFiles:
+        options.nextStatus === "idle"
+          ? 0
+          : provider.getWorkspaceFileUris().length,
+      cancelled: options.cancelled ?? reason !== "superseded",
+    });
+  }
+}
+
+function startWorkspaceLoad(
+  provider: ModelExplorerProvider,
+  targetViewMode: "bySemantic"
+): WorkspaceLoadRun {
+  cancelWorkspaceLoad(provider, "superseded");
+  const run: WorkspaceLoadRun = {
+    runId: nextWorkspaceLoadRunIdString(),
+    cts: new vscode.CancellationTokenSource(),
+    targetViewMode,
+    discoveredFiles: [],
+    startedAt: Date.now(),
+  };
+  activeWorkspaceLoadRun = run;
+  logPerfEvent("workspaceLoad:started", {
+    runId: run.runId,
+    targetViewMode,
+  });
+  return run;
+}
+
+function finishWorkspaceLoad(
+  run: WorkspaceLoadRun,
+  extra?: Record<string, unknown>
+): void {
+  if (!isWorkspaceLoadCurrent(run)) {
+    return;
+  }
+  logPerfEvent("workspaceLoad:finished", {
+    runId: run.runId,
+    targetViewMode: run.targetViewMode,
+    discoveredFiles: run.discoveredFiles.length,
+    totalMs: Date.now() - run.startedAt,
+    ...extra,
+  });
+  run.cts.dispose();
+  activeWorkspaceLoadRun = undefined;
 }
 
 function ensureStatusItem(context: vscode.ExtensionContext): vscode.StatusBarItem {
@@ -899,6 +994,9 @@ export function activate(context: vscode.ExtensionContext): void {
         if (!isSysmlDoc(doc)) {
           return;
         }
+        modelExplorerSelectionSyncCts?.cancel();
+        modelExplorerSelectionSyncCts?.dispose();
+        modelExplorerSelectionSyncCts = new vscode.CancellationTokenSource();
         const selectionSyncStartedAt = Date.now();
         try {
           const position =
@@ -906,7 +1004,7 @@ export function activate(context: vscode.ExtensionContext): void {
           const result = await lspModelProvider.getModel(
             doc.uri.toString(),
             ["graph"],
-            undefined,
+            modelExplorerSelectionSyncCts.token,
             "selectionSync:modelExplorer"
           );
           const node = bestGraphNodeAtPosition(result.graph?.nodes, position);
@@ -985,7 +1083,7 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.refreshModelTree", async () => {
       lspModelProvider.clearModelCache();
-      if (modelExplorerProvider?.isWorkspaceMode()) {
+      if (modelExplorerProvider?.getWorkspaceViewMode() === "bySemantic") {
         await loadWorkspaceSysMLFiles(modelExplorerProvider);
       } else {
         modelExplorerProvider?.refresh();
@@ -1001,10 +1099,8 @@ export function activate(context: vscode.ExtensionContext): void {
       log("loadWorkspaceSysMLFiles: no workspace folders");
       return;
     }
-    workspaceIndexingCts?.cancel();
-    workspaceIndexingCts?.dispose();
-    workspaceIndexingCts = new vscode.CancellationTokenSource();
-    const cancellationToken = workspaceIndexingCts.token;
+    const run = startWorkspaceLoad(provider, "bySemantic");
+    const cancellationToken = run.cts.token;
     const perPatternLimit = getWorkspaceFileQueryLimit();
     setServerHealth(
       context,
@@ -1027,14 +1123,19 @@ export function activate(context: vscode.ExtensionContext): void {
         cancellable: true,
       },
       async (progress, token) => {
-        token.onCancellationRequested(() => workspaceIndexingCts?.cancel());
+        token.onCancellationRequested(() => {
+          cancelWorkspaceLoad(provider, "user-cancel", {
+            nextStatus: "degraded",
+            cancelled: true,
+          });
+        });
         const fileUris: vscode.Uri[] = [];
         let limitHit = false;
         const totalSteps = Math.max(folders.length * 2, 1);
         const discoveryStartedAt = Date.now();
 
         for (const [folderIndex, folder] of folders.entries()) {
-          if (cancellationToken.isCancellationRequested) {
+          if (!isWorkspaceLoadCurrent(run) || cancellationToken.isCancellationRequested) {
             break;
           }
           const sysmlScanStartedAt = Date.now();
@@ -1058,7 +1159,7 @@ export function activate(context: vscode.ExtensionContext): void {
             limitHit: sysml.length >= perPatternLimit,
           });
 
-          if (cancellationToken.isCancellationRequested) {
+          if (!isWorkspaceLoadCurrent(run) || cancellationToken.isCancellationRequested) {
             break;
           }
 
@@ -1092,7 +1193,9 @@ export function activate(context: vscode.ExtensionContext): void {
 
         const dedupeStartedAt = Date.now();
         const uniqueFiles = [...new Map(fileUris.map((f) => [f.toString(), f])).values()];
+        run.discoveredFiles = uniqueFiles;
         logPerf("workspaceDiscovery:complete", {
+          runId: run.runId,
           totalMs: Date.now() - discoveryStartedAt,
           dedupeMs: Date.now() - dedupeStartedAt,
           rawFileCount: fileUris.length,
@@ -1111,7 +1214,7 @@ export function activate(context: vscode.ExtensionContext): void {
           failures: 0,
         });
 
-        if (cancellationToken.isCancellationRequested) {
+        if (!isWorkspaceLoadCurrent(run) || cancellationToken.isCancellationRequested) {
           setWorkspaceIndexSummary({
             scannedFiles: uniqueFiles.length,
             loadedFiles: 0,
@@ -1140,26 +1243,47 @@ export function activate(context: vscode.ExtensionContext): void {
             message: `Loading model for ${uniqueFiles.length} file(s)`,
           });
           const loadStartedAt = Date.now();
-          await provider.loadWorkspaceModel(uniqueFiles, cancellationToken);
+          const result = await provider.loadWorkspaceModel(uniqueFiles, {
+            runId: run.runId,
+            token: cancellationToken,
+          });
           logPerf("workspaceIndexing:modelLoadComplete", {
+            runId: run.runId,
             totalMs: Date.now() - loadStartedAt,
             uniqueFileCount: uniqueFiles.length,
+            committed: result.committed,
+            stale: result.stale,
+            failures: result.failures,
+            cancelled: result.cancelled,
           });
-          const loadedFiles = provider.getWorkspaceFileUris().length;
+          if (!isWorkspaceLoadCurrent(run) || result.stale) {
+            logPerfEvent("workspaceLoad:staleCompletionIgnored", {
+              runId: run.runId,
+              loadedFiles: result.loadedFiles,
+              failures: result.failures,
+              cancelled: result.cancelled,
+            });
+            return;
+          }
+          const loadedFiles = result.committed ? result.loadedFiles : 0;
           setWorkspaceIndexSummary({
             scannedFiles: uniqueFiles.length,
             loadedFiles,
             perPatternLimit,
             truncated: limitHit,
-            cancelled: false,
+            cancelled: result.cancelled > 0 && !result.committed,
           });
           provider.setWorkspaceLoadStatus({
-            state: limitHit ? "degraded" : "ready",
+            state:
+              result.failures > 0 || result.cancelled > 0 || limitHit
+                ? "degraded"
+                : "ready",
             scannedFiles: uniqueFiles.length,
             loadedFiles,
             perPatternLimit,
             truncated: limitHit,
-            cancelled: false,
+            cancelled: result.cancelled > 0 && !result.committed,
+            failures: result.failures,
           });
           log("loadWorkspaceSysMLFiles: loaded model for", uniqueFiles.length, "files");
           logStartupPhase("workspaceIndexing:end", {
@@ -1175,7 +1299,19 @@ export function activate(context: vscode.ExtensionContext): void {
             provider.getWorkspaceViewMode()
           );
           vscode.commands.executeCommand("setContext", "sysml.modelLoaded", true);
-          if (limitHit) {
+          if (result.failures > 0) {
+            setServerHealth(
+              context,
+              "degraded",
+              `Workspace indexed ${loadedFiles}/${uniqueFiles.length} SysML/KerML file(s); ${result.failures} file(s) failed to load.`
+            );
+          } else if (result.cancelled > 0 && !result.committed) {
+            setServerHealth(
+              context,
+              "degraded",
+              `Workspace indexing was cancelled after loading ${loadedFiles} of ${uniqueFiles.length} file(s).`
+            );
+          } else if (limitHit) {
             setServerHealth(
               context,
               "degraded",
@@ -1222,6 +1358,9 @@ export function activate(context: vscode.ExtensionContext): void {
         }
       }
     );
+    finishWorkspaceLoad(run, {
+      workspaceViewMode: provider.getWorkspaceViewMode(),
+    });
     updateStatusBar(context);
   }
 
@@ -1231,7 +1370,12 @@ export function activate(context: vscode.ExtensionContext): void {
     if (!provider) {
       return;
     }
-    if (provider.isWorkspaceMode()) {
+    if (provider.getWorkspaceViewMode() !== "bySemantic") {
+      provider.refresh();
+      return;
+    }
+    if (provider.hasWorkspaceData()) {
+      provider.refresh();
       return;
     }
     const hasWorkspaceFolders =
@@ -1246,7 +1390,11 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.switchToByFile", async () => {
       modelExplorerProvider?.setWorkspaceViewMode("byFile");
-      await ensureWorkspaceModelLoaded(modelExplorerProvider);
+      cancelWorkspaceLoad(modelExplorerProvider, "mode-switch", {
+        nextStatus: "idle",
+        cancelled: false,
+      });
+      modelExplorerProvider?.refresh();
     })
   );
   context.subscriptions.push(
@@ -1258,6 +1406,14 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.toggleWorkspaceViewMode", async () => {
       modelExplorerProvider?.toggleWorkspaceViewMode();
+      if (modelExplorerProvider?.getWorkspaceViewMode() === "byFile") {
+        cancelWorkspaceLoad(modelExplorerProvider, "mode-switch", {
+          nextStatus: "idle",
+          cancelled: false,
+        });
+        modelExplorerProvider.refresh();
+        return;
+      }
       await ensureWorkspaceModelLoaded(modelExplorerProvider);
     })
   );
@@ -1384,7 +1540,9 @@ export function activate(context: vscode.ExtensionContext): void {
         shouldShowModelExplorerContext(modelExplorerProvider)
       );
       await vscode.commands.executeCommand("sysmlModelExplorer.focus");
-      if (modelExplorerProvider?.isWorkspaceMode()) {
+      if (modelExplorerProvider?.getWorkspaceViewMode() === "bySemantic") {
+        await ensureWorkspaceModelLoaded(modelExplorerProvider);
+      } else if (modelExplorerProvider?.isWorkspaceMode()) {
         modelExplorerProvider.refresh();
       } else {
         scheduleActiveDocumentExplorerRefresh("showModelExplorer");
@@ -1520,7 +1678,9 @@ export function activate(context: vscode.ExtensionContext): void {
           // Without this preload, workspaceVisualization can initially contain only the
           // anchor document and render a single package.
           if (modelExplorerProvider) {
-            await modelExplorerProvider.loadWorkspaceModel(uniqueFiles);
+            await modelExplorerProvider.loadWorkspaceModel(uniqueFiles, {
+              runId: `visualizer-preload-${Date.now()}`,
+            });
           }
 
           const openDocs: vscode.TextDocument[] = [];
@@ -2125,9 +2285,9 @@ export function deactivate(): Thenable<void> | undefined {
     clearTimeout(activeDocumentExplorerRefreshTimer);
     activeDocumentExplorerRefreshTimer = undefined;
   }
-  workspaceIndexingCts?.cancel();
-  workspaceIndexingCts?.dispose();
-  workspaceIndexingCts = undefined;
+  modelExplorerSelectionSyncCts?.cancel();
+  modelExplorerSelectionSyncCts?.dispose();
+  cancelWorkspaceLoad(modelExplorerProvider, "deactivate");
   return client?.stop();
 }
 

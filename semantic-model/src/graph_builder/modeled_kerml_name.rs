@@ -3,7 +3,11 @@
 
 /// Returns a short name suitable for `qualified_name_for_node` (e.g. `Real` for
 /// `datatype Real specializes Complex;`).
-pub(super) fn extract_modeled_decl_name(bnf_production: &str, text: &str, fallback: &str) -> String {
+pub(super) fn extract_modeled_decl_name(
+    bnf_production: &str,
+    text: &str,
+    fallback: &str,
+) -> String {
     let t = text.trim().trim_end_matches(';').trim();
     let tokens: Vec<String> = t
         .split_whitespace()

@@ -126,7 +126,9 @@ async fn collect_diagnostics_for_document(
         let has_unresolved_type_reference = diagnostics.iter().any(|diagnostic| {
             diagnostic.source.as_deref() == Some("semantic")
                 && diagnostic.code.as_ref()
-                    == Some(&NumberOrString::String("unresolved_type_reference".to_string()))
+                    == Some(&NumberOrString::String(
+                        "unresolved_type_reference".to_string(),
+                    ))
         });
         if has_unresolved_type_reference && locked.library_paths.is_empty() {
             if let Some(import_range) = util::import_statement_ranges(text).into_iter().next() {

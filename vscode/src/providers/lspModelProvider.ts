@@ -384,7 +384,7 @@ export class LspModelProvider {
     };
     const requestKey = buildRequestKey(trimmed, normalizedScopes);
     const doRequest = () =>
-      this.client.sendRequest<SysMLModelResult>("sysml/model", params);
+      this.client.sendRequest<SysMLModelResult>("sysml/model", params, token);
 
     try {
       logPerf("lspModelProvider:getModelRequestStart", {
