@@ -229,6 +229,15 @@ jobs:
             zed/languages
           echo "ARCHIVE_NAME=$ARCHIVE" >> $GITHUB_ENV
 
+      - name: Verify Zed extension bundle layout
+        run: |
+          tar -tzf "${{ env.ARCHIVE_NAME }}" > zed-bundle-contents.txt
+          grep -Fx "zed/extension.toml" zed-bundle-contents.txt
+          grep -Fx "zed/Cargo.toml" zed-bundle-contents.txt
+          grep -Fx "zed/src/lib.rs" zed-bundle-contents.txt
+          grep -Fx "zed/languages/sysml/config.toml" zed-bundle-contents.txt
+          grep -Fx "zed/languages/sysml/highlights.scm" zed-bundle-contents.txt
+
       - name: Upload Zed extension artifact
         uses: actions/upload-artifact@v6
         with:
@@ -295,6 +304,11 @@ jobs:
           cat > RELEASE_NOTES.txt <<EOF
           Release ${TAG}.
           The VS Code extension (.vsix) includes the language server. The Zed extension downloads the matching spec42 server binary automatically, and its source bundle is attached here for convenience.
+          
+          Zed install notes:
+          - Download and extract the attached spec42-zed bundle.
+          - In Zed, use "Install Dev Extension" and select the extracted zed directory.
+          - If no configured or PATH-installed spec42 binary is found, the extension downloads the matching release asset automatically.
           EOF
           gh release create "$TAG" \
             --title "Release $TAG" \

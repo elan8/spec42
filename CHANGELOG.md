@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-04-07
+
+### Added
+
+- **Initial Zed extension** - Added a Zed extension for SysML v2 with Tree-sitter-based language support, LSP wiring to `spec42`, and automatic download of the matching `spec42` release binary when no configured or `PATH` binary is available.
+- **Zed CI and release packaging** - Added CI coverage for building the Zed extension and release packaging that publishes a Zed extension source bundle alongside the existing server archives and VS Code extension artifact.
+
 ### Changed
 
 - **Explorer-first sidebar UX** - Upgraded the Model Explorer with richer semantic summaries/tooltips and retired the separate Feature Inspector view from the VS Code extension surface.
@@ -219,6 +226,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Some constructs may have incomplete semantic token or outline coverage.
 
 [0.11.0]: https://github.com/elan8/spec42/releases/tag/v0.11.0
+[0.15.0]: https://github.com/elan8/spec42/releases/tag/v0.15.0
 [0.14.0]: https://github.com/elan8/spec42/releases/tag/v0.14.0
 [0.13.0]: https://github.com/elan8/spec42/releases/tag/v0.13.0
 [0.12.0]: https://github.com/elan8/spec42/releases/tag/v0.12.0

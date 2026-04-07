@@ -1,7 +1,7 @@
 id = "spec42"
 name = "Spec42"
 description = "SysML v2 language support for Zed via the spec42 language server."
-version = "0.14.0"
+version = "0.15.0"
 schema_version = 1
 authors = ["Elan8"]
 repository = "https://github.com/elan8/spec42"
