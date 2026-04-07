@@ -49,7 +49,7 @@ fn workspace_visualization_enabled(scope: &[String]) -> bool {
 }
 
 fn ibd_requested(scope: &[String]) -> bool {
-    scope.iter().any(|s| s == "ibd")
+    scope.is_empty() || scope.iter().any(|s| s == "graph" || s == "ibd")
 }
 
 fn elapsed_ms(start: Instant) -> u32 {
@@ -356,8 +356,9 @@ mod tests {
 
     #[test]
     fn ibd_is_only_requested_when_scope_explicitly_includes_it() {
-        assert!(!ibd_requested(&[]));
-        assert!(!ibd_requested(&["graph".to_string(), "stats".to_string()]));
+        assert!(ibd_requested(&[]));
+        assert!(ibd_requested(&["graph".to_string(), "stats".to_string()]));
         assert!(ibd_requested(&["graph".to_string(), "ibd".to_string()]));
+        assert!(ibd_requested(&["ibd".to_string()]));
     }
 }
