@@ -1,6 +1,6 @@
 # Spec42
 
-Language server for [SysML v2](https://www.omg.org/sysml/sysmlv2/) (and KerML). Provides LSP over stdio and a VS Code extension.
+Language server for [SysML v2](https://www.omg.org/sysml/sysmlv2/) (and KerML). Provides LSP over stdio, a VS Code extension, and an initial Zed extension focused on SysML v2 LSP support.
 
 ![SysML v2](https://img.shields.io/badge/SysML-v2.0-blue)
 ![VS Code Extension](https://img.shields.io/badge/VS%20Code-Extension-007ACC?logo=visual-studio-code)
@@ -52,7 +52,12 @@ cargo build --release          # Rust server → target/release/spec42
 cd vscode && npm install && npm run compile   # VS Code extension
 ```
 
-For development and testing details, see [DEVELOPMENT.md](DEVELOPMENT.md). For extension usage/configuration, snippets, and sample-workspace guidance, see [`vscode/README.md`](vscode/README.md).
+```bash
+cd zed
+cargo build --target wasm32-wasip2 --release  # Zed development extension
+```
+
+For development and testing details, see [DEVELOPMENT.md](DEVELOPMENT.md). For extension usage/configuration, snippets, and sample-workspace guidance, see [`vscode/README.md`](vscode/README.md). For Zed-specific setup, including automatic server download behavior, see [`zed/README.md`](zed/README.md).
 
 ## License
 

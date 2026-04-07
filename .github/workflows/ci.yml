@@ -127,3 +127,20 @@ jobs:
 
       - name: npm test (interconnection)
         run: cd vscode && xvfb-run -a npm run test:interconnection
+
+  zed-extension:
+    name: Zed extension build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-wasip2
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: cargo check (zed extension)
+        run: cargo check --manifest-path zed/Cargo.toml --target wasm32-wasip2 --release

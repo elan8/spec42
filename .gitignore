@@ -1,4 +1,7 @@
 target/
+zed/target/
+zed/grammars/
+zed/extension.wasm
 vscode/node_modules/
 vscode/.vscode-test/
 vscode/testFixture/test-output/

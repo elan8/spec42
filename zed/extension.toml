@@ -1,0 +1,15 @@
+id = "spec42"
+name = "Spec42"
+description = "SysML v2 language support for Zed via the spec42 language server."
+version = "0.14.0"
+schema_version = 1
+authors = ["Elan8"]
+repository = "https://github.com/elan8/spec42"
+
+[grammars.sysml]
+repository = "https://gitlab.com/nomograph/tree-sitter-sysml"
+rev = "07a94a38c3090a0f730dc2b3ecdcd025d63226be"
+
+[language_servers.spec42]
+name = "spec42"
+languages = ["SysML v2"]
