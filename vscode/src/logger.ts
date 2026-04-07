@@ -28,6 +28,15 @@ function timestamp(): string {
   return new Date().toISOString();
 }
 
+function appendStructuredLine(prefix: string, payload: Record<string, unknown>): void {
+  const channel = getChannel();
+  try {
+    channel.appendLine(`${prefix} ${JSON.stringify(payload)}`);
+  } catch {
+    channel.appendLine(`${prefix} {"serializationError":true}`);
+  }
+}
+
 /**
  * Log a debug message to the SysML output channel (only when debug is enabled).
  */
@@ -36,6 +45,14 @@ export function log(msg: string, ...args: unknown[]): void {
   const channel = getChannel();
   const extra = args.length > 0 ? " " + args.map((a) => JSON.stringify(a)).join(" ") : "";
   channel.appendLine(`[${timestamp()}] ${msg}${extra}`);
+}
+
+export function logPerfEvent(event: string, extra?: Record<string, unknown>): void {
+  appendStructuredLine("[SysML][perf]", { event, ...(extra ?? {}) });
+}
+
+export function logStartupEvent(phase: string, extra?: Record<string, unknown>): void {
+  appendStructuredLine("[SysML][startup]", { phase, ...(extra ?? {}) });
 }
 
 /**

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import type { LspModelProvider } from '../providers/lspModelProvider';
-import { isVerboseLoggingEnabled, log, logError } from '../logger';
+import { isVerboseLoggingEnabled, log, logError, logPerfEvent } from '../logger';
 import type {
     IbdDataDTO,
     SysMLModelResult,
@@ -86,10 +86,41 @@ export function mergeOptionalGraphs(graphs: Array<SysMLGraphDTO | undefined>): S
     return mergeGraphs(present);
 }
 
+type DiagramFetchResult = {
+    generalDiagram?: SysMLDiagramResult;
+    interconnectionDiagram?: SysMLDiagramResult;
+};
+
+async function fetchDiagramsForCurrentView(
+    lspModelProvider: LspModelProvider,
+    documentUri: string,
+    currentView: string,
+    isWorkspaceVisualization: boolean,
+): Promise<DiagramFetchResult> {
+    if (currentView === 'general-view') {
+        return {
+            generalDiagram: await lspModelProvider.getDiagram(documentUri, 'general-view', {
+                workspaceVisualization: isWorkspaceVisualization,
+            }),
+        };
+    }
+
+    if (currentView === 'interconnection-view') {
+        return {
+            interconnectionDiagram: await lspModelProvider.getDiagram(documentUri, 'interconnection-view', {
+                workspaceVisualization: isWorkspaceVisualization,
+            }),
+        };
+    }
+
+    return {};
+}
+
 /**
  * Fetch model data from the LSP provider and convert it to the webview update message format.
  */
 export async function fetchModelData(params: FetchModelParams): Promise<UpdateMessage | null> {
+    const startedAt = Date.now();
     const {
         documentUri,
         fileUris,
@@ -137,6 +168,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         }
     }
 
+    const modelRequestsStartedAt = Date.now();
     const settledResults = await Promise.allSettled(
         requestUris.map(uri =>
             lspModelProvider.getModel(
@@ -147,14 +179,17 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
             )
         ),
     );
-    const [generalDiagramResult, interconnectionDiagramResult] = await Promise.allSettled([
-        lspModelProvider.getDiagram(documentUri, 'general-view', {
-            workspaceVisualization: isWorkspaceVisualization,
-        }),
-        lspModelProvider.getDiagram(documentUri, 'interconnection-view', {
-            workspaceVisualization: isWorkspaceVisualization,
-        }),
+    const modelRequestsMs = Date.now() - modelRequestsStartedAt;
+    const diagramRequestsStartedAt = Date.now();
+    const diagramFetchResult = await Promise.allSettled([
+        fetchDiagramsForCurrentView(
+            lspModelProvider,
+            documentUri,
+            currentView,
+            isWorkspaceVisualization,
+        ),
     ]);
+    const diagramRequestsMs = Date.now() - diagramRequestsStartedAt;
 
     const results = settledResults
         .filter((result): result is PromiseFulfilledResult<SysMLModelResult> => result.status === 'fulfilled')
@@ -162,11 +197,11 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     const failures = settledResults.filter(
         (result): result is PromiseRejectedResult => result.status === 'rejected',
     );
-    if (generalDiagramResult.status === 'rejected') {
-        logError('fetchModelData: general-view diagram request failed', generalDiagramResult.reason);
-    }
-    if (interconnectionDiagramResult.status === 'rejected') {
-        logError('fetchModelData: interconnection-view diagram request failed', interconnectionDiagramResult.reason);
+    const diagramFailure = diagramFetchResult.find(
+        (result): result is PromiseRejectedResult => result.status === 'rejected',
+    );
+    if (diagramFailure) {
+        logError(`fetchModelData: ${currentView} diagram request failed`, diagramFailure.reason);
     }
 
     if (failures.length > 0) {
@@ -182,6 +217,17 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
 
     if (results.length === 0) {
         log('fetchModelData: no successful model responses, returning null');
+        logPerfEvent('visualizer:fetchModelData', {
+            currentView,
+            workspaceVisualization: isWorkspaceVisualization,
+            requestUriCount: requestUris.length,
+            requestScopes,
+            results: 0,
+            failures: failures.length,
+            modelRequestsMs,
+            diagramRequestsMs,
+            totalMs: Date.now() - startedAt,
+        });
         return null;
     }
 
@@ -208,8 +254,9 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     const uniqueMergedPackageNames = [...new Set(mergedPackageNames)];
 
     const primaryResult = results.find(r => r.graph?.nodes?.length || r.graph?.edges?.length) ?? results[0];
-    const generalDiagram = generalDiagramResult.status === 'fulfilled' ? generalDiagramResult.value : undefined;
-    const interconnectionDiagram = interconnectionDiagramResult.status === 'fulfilled' ? interconnectionDiagramResult.value : undefined;
+    const diagrams = diagramFetchResult[0]?.status === 'fulfilled' ? diagramFetchResult[0].value : {};
+    const generalDiagram = diagrams.generalDiagram;
+    const interconnectionDiagram = diagrams.interconnectionDiagram;
     const msg: UpdateMessage = {
         command: 'update',
         graph: mergedGraph,
@@ -252,5 +299,23 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
             // ignore
         }
     }
+    logPerfEvent('visualizer:fetchModelData', {
+        currentView,
+        workspaceVisualization: isWorkspaceVisualization,
+        requestUriCount: requestUris.length,
+        requestScopes,
+        results: results.length,
+        failures: failures.length,
+        graphCount: allGraphs.length,
+        mergedNodes: mergedGraph.nodes?.length || 0,
+        mergedEdges: mergedGraph.edges?.length || 0,
+        generalDiagramNodes: generalDiagram?.scene?.generalView?.nodes?.length || 0,
+        generalDiagramEdges: generalDiagram?.scene?.generalView?.edges?.length || 0,
+        interconnectionDiagramNodes: interconnectionDiagram?.scene?.generalView?.nodes?.length || 0,
+        interconnectionDiagramEdges: interconnectionDiagram?.scene?.generalView?.edges?.length || 0,
+        modelRequestsMs,
+        diagramRequestsMs,
+        totalMs: Date.now() - startedAt,
+    });
     return msg;
 }

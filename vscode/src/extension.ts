@@ -19,7 +19,7 @@ import {
 } from "./explorer/modelExplorerProvider";
 import { LibraryWebviewViewProvider } from "./library/libraryWebviewViewProvider";
 import type { GraphNodeDTO } from "./providers/sysmlModelTypes";
-import { getOutputChannel, log, logError, showChannel } from "./logger";
+import { getOutputChannel, log, logError, logPerfEvent, logStartupEvent, showChannel } from "./logger";
 import { dumpGraphForGeneralView } from "./graphDump";
 import {
   RESTORE_STATE_KEY,
@@ -390,34 +390,34 @@ export function activate(context: vscode.ExtensionContext): void {
   const startupTraceId = `startup-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const startupT0 = Date.now();
   const logPerf = (event: string, extra?: Record<string, unknown>) => {
+    const elapsedMs = Date.now() - startupT0;
     const payload = {
       traceId: startupTraceId,
       event,
-      elapsedMs: Date.now() - startupT0,
+      elapsedMs,
       ...(extra ?? {}),
     };
     log("perf event", payload);
-    try {
-      // eslint-disable-next-line no-console
-      console.log("[SysML][perf]", JSON.stringify(payload));
-    } catch {
-      // ignore
-    }
+    logPerfEvent(event, {
+      traceId: startupTraceId,
+      elapsedMs,
+      ...(extra ?? {}),
+    });
   };
   const logStartupPhase = (phase: string, extra?: Record<string, unknown>) => {
+    const elapsedMs = Date.now() - startupT0;
     const payload = {
       traceId: startupTraceId,
       phase,
-      elapsedMs: Date.now() - startupT0,
+      elapsedMs,
       ...(extra ?? {}),
     };
     log("startup phase", payload);
-    try {
-      // eslint-disable-next-line no-console
-      console.log("[SysML][startup]", JSON.stringify(payload));
-    } catch {
-      // ignore
-    }
+    logStartupEvent(phase, {
+      traceId: startupTraceId,
+      elapsedMs,
+      ...(extra ?? {}),
+    });
   };
   logStartupPhase("activate:start");
   log("Extension activating");

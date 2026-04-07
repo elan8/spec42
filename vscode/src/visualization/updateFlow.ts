@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import type { LspModelProvider } from '../providers/lspModelProvider';
 import { fetchModelData, hashContent } from './modelFetcher';
-import { isVerboseLoggingEnabled, log, logError } from '../logger';
+import { isVerboseLoggingEnabled, log, logError, logPerfEvent } from '../logger';
 
 export interface UpdateFlowDeps {
     panel: vscode.WebviewPanel;
@@ -19,12 +19,7 @@ export interface UpdateFlowDeps {
 }
 
 function logPerf(event: string, extra?: Record<string, unknown>): void {
-    try {
-        // eslint-disable-next-line no-console
-        console.log('[SysML][perf]', JSON.stringify({ event, ...(extra ?? {}) }));
-    } catch {
-        // ignore
-    }
+    logPerfEvent(event, extra);
 }
 
 export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (force: boolean, triggerSource?: string) => Promise<void> } {
@@ -66,6 +61,7 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
     async function doUpdateVisualization(): Promise<void> {
         const document = getDocument();
         const fileUris = getFileUris();
+        const updateStartedAt = Date.now();
         try {
             log(
                 'updateFlow:fetch:start',
@@ -97,6 +93,12 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                 currentView: getCurrentView(),
                 pendingPackageName: getPendingPackageName(),
             });
+            logPerf('visualizer:fetchModelDataCompleted', {
+                currentView: getCurrentView(),
+                totalMs: Date.now() - updateStartedAt,
+                hasMessage: !!msg,
+                fileUriCount: fileUris.length,
+            });
             clearPendingPackageName();
             if (msg) {
                 log(
@@ -126,14 +128,27 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                         // ignore
                     }
                 }
-                panel.webview.postMessage(msg);
+                const postStartedAt = Date.now();
+                logPerf('visualizer:webviewPostMessageStarted', {
+                    command: msg.command,
+                    currentView: msg.currentView,
+                    graphNodes: msg.graph?.nodes?.length || 0,
+                    graphEdges: msg.graph?.edges?.length || 0,
+                });
+                const delivered = await panel.webview.postMessage(msg);
+                logPerf('visualizer:webviewPostMessageCompleted', {
+                    command: msg.command,
+                    currentView: msg.currentView,
+                    delivered,
+                    totalMs: Date.now() - postStartedAt,
+                });
             } else {
                 log('updateVisualization: no model data available, hiding loading state');
-                panel.webview.postMessage({ command: 'hideLoading' });
+                await panel.webview.postMessage({ command: 'hideLoading' });
             }
         } catch (error) {
             logError('updateVisualization failed', error);
-            panel.webview.postMessage({ command: 'hideLoading' });
+            await panel.webview.postMessage({ command: 'hideLoading' });
         }
     }
 

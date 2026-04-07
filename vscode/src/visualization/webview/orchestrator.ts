@@ -59,8 +59,19 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
     let vscode: { postMessage: (msg: unknown) => void };
 
+    function webviewPerf(event: string, data?: Record<string, unknown>) {
+        try {
+            if (vscode && typeof vscode.postMessage === 'function') {
+                vscode.postMessage({ command: 'webviewPerf', event, data });
+            }
+        } catch {
+            // ignore
+        }
+    }
+
     export function initializeOrchestrator(api: { postMessage: (msg: unknown) => void }): void {
         vscode = api;
+        webviewPerf('visualizer:webviewInitialized');
         vscode.postMessage({ command: 'webviewReady' });
     }
 
@@ -298,6 +309,13 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 hideLoading();
                 break;
             case 'update':
+                webviewPerf('visualizer:webviewUpdateReceived', {
+                    currentView: message.currentView || currentView,
+                    graphNodes: message.graph?.nodes?.length || 0,
+                    graphEdges: message.graph?.edges?.length || 0,
+                    generalDiagramNodes: message.diagramGeneral?.scene?.generalView?.nodes?.length || 0,
+                    generalDiagramEdges: message.diagramGeneral?.scene?.generalView?.edges?.length || 0,
+                });
                 // Quick hash check - skip render if data unchanged
                 const newHash = quickHash({
                     graph: message.graph,
@@ -307,6 +325,9 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
                 if (newHash === lastDataHash && currentData) {
                     // Data unchanged, skip expensive re-render
+                    webviewPerf('visualizer:webviewUpdateSkippedUnchanged', {
+                        currentView,
+                    });
                     hideLoading();
                     return;
                 }
@@ -1326,10 +1347,16 @@ import { buildGeneralViewGraph } from './graphBuilders';
             return;
         }
 
+        const renderStartedAt = Date.now();
+
         if (isRendering) {
             // A render is in-flight; queue the latest request so we don't lose updates
             // when switching folders/projects quickly.
             pendingRenderRequest = { view, preserveZoomOverride, allowDuringResize };
+            webviewPerf('visualizer:webviewRenderQueued', {
+                view,
+                allowDuringResize,
+            });
             return;
         }
 
@@ -1456,7 +1483,9 @@ import { buildGeneralViewGraph } from './graphBuilders';
         }
 
         const dataForPrepare = view === 'interconnection-view' ? { ...baseData, selectedIbdRoot } : baseData;
+        const prepareStartedAt = Date.now();
         const dataToRender = prepareDataForView(dataForPrepare, view);
+        const prepareMs = Date.now() - prepareStartedAt;
         if (view === 'interconnection-view') {
             const ibd = (dataForPrepare as any)?.ibd;
             const deepPropulsion = Array.isArray(ibd?.parts)
@@ -1493,6 +1522,11 @@ import { buildGeneralViewGraph } from './graphBuilders';
             clearTimeout(renderSafetyTimeout);
             isRendering = false;
             hideLoading();
+            webviewPerf('visualizer:webviewRenderCompleted', {
+                view,
+                prepareMs,
+                totalMs: Date.now() - renderStartedAt,
+            });
             if (pendingRenderRequest) {
                 const next = pendingRenderRequest;
                 pendingRenderRequest = null;
@@ -1504,6 +1538,11 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
         // Safety timeout: auto-reset isRendering after 10 seconds to prevent permanent lockup
         const renderSafetyTimeout = setTimeout(() => {
+            webviewPerf('visualizer:webviewRenderSafetyTimeout', {
+                view,
+                prepareMs,
+                elapsedMs: Date.now() - renderStartedAt,
+            });
             finishRender();
         }, 10000);
 
@@ -1512,6 +1551,12 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
         // Add error handling around rendering
         try {
+        webviewPerf('visualizer:webviewRenderStarted', {
+            view,
+            prepareMs,
+            graphNodes: dataToRender?.graph?.nodes?.length || 0,
+            graphEdges: dataToRender?.graph?.edges?.length || 0,
+        });
 
         // Preserve current zoom state before clearing
         let currentTransform = d3.zoomIdentity;
@@ -1684,6 +1729,12 @@ import { buildGeneralViewGraph } from './graphBuilders';
         // Update lastView after successful render start
         lastView = view;
         } catch (error) {
+            webviewPerf('visualizer:webviewRenderFailed', {
+                view,
+                prepareMs,
+                totalMs: Date.now() - renderStartedAt,
+                error: error instanceof Error ? error.message : String(error),
+            });
             console.error('Error during rendering:', error);
             finishRender();
 

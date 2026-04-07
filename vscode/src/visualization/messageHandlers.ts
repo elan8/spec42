@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { getOutputChannel, isVerboseLoggingEnabled } from '../logger';
+import { getOutputChannel, isVerboseLoggingEnabled, logPerfEvent } from '../logger';
 import { LspModelProvider, toVscodeRange } from '../providers/lspModelProvider';
 import type { SysMLElement } from '../types/sysmlTypes';
 
@@ -26,13 +26,15 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
         switch (message.command) {
             case 'webviewLog':
                 if (message.level === 'error' || message.level === 'warn' || isVerboseLoggingEnabled()) {
-                    try {
-                        // eslint-disable-next-line no-console
-                        console.log('[SysML Visualizer][WebviewLog]', message.level, ...(message.args ?? []));
-                    } catch {
-                        // ignore
-                    }
                     handlers.logWebviewMessage(message.level, message.args ?? []);
+                }
+                break;
+            case 'webviewPerf':
+                if (typeof message.event === 'string') {
+                    logPerfEvent(message.event, {
+                        source: 'webview',
+                        ...(message.data ?? {}),
+                    });
                 }
                 break;
             case 'jumpToElement':
@@ -64,6 +66,8 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
                 break;
             case 'viewChanged':
                 setCurrentView(message.view ?? '');
+                setLastContentHash('');
+                updateVisualization(true, 'viewChanged');
                 break;
             case 'openExternal':
                 if (message.url) {

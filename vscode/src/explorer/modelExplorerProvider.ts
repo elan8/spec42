@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { log, logError } from "../logger";
+import { log, logError, logPerfEvent, logStartupEvent } from "../logger";
 import type { LspModelProvider } from "../providers/lspModelProvider";
 import type {
   SysMLElementDTO,
@@ -9,12 +9,7 @@ import type {
 import { graphToElementTree } from "../visualization/prepareData";
 
 function logPerf(event: string, extra?: Record<string, unknown>): void {
-  try {
-    // eslint-disable-next-line no-console
-    console.log("[SysML][perf]", JSON.stringify({ event, ...(extra ?? {}) }));
-  } catch {
-    // ignore
-  }
+  logPerfEvent(event, extra);
 }
 
 /** Helper to convert RangeDTO to vscode.Range for openLocation. */
@@ -689,23 +684,15 @@ export class ModelExplorerProvider
       };
       log("loadWorkspaceModel: done,", this.workspaceFileData.size, "files loaded");
       this.invalidateTreeCache();
-      try {
-        // eslint-disable-next-line no-console
-        console.log(
-          `[SysML][startup] ${JSON.stringify({
-            phase: "explorer:loadWorkspaceModel",
-            fileCount: fileUris.length,
-            loadedFiles: this.workspaceFileData.size,
-            failures,
-            totalMs,
-            perFileAvgMs: avgMs,
-            perFileP95Ms: p95Ms,
-            concurrency: Math.min(maxConcurrency, Math.max(fileUris.length, 1)),
-          })}`
-        );
-      } catch {
-        // ignore
-      }
+      logStartupEvent("explorer:loadWorkspaceModel", {
+        fileCount: fileUris.length,
+        loadedFiles: this.workspaceFileData.size,
+        failures,
+        totalMs,
+        perFileAvgMs: avgMs,
+        perFileP95Ms: p95Ms,
+        concurrency: Math.min(maxConcurrency, Math.max(fileUris.length, 1)),
+      });
       this._onDidChangeTreeData.fire();
     }
   }

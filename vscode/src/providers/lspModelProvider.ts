@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import type { LanguageClient } from "vscode-languageclient/node";
-import { log, logError } from "../logger";
+import { log, logError, logPerfEvent } from "../logger";
 import type {
   GraphNodeDTO,
   SysMLDiagramParams,
@@ -13,12 +13,7 @@ import type {
 } from "./sysmlModelTypes";
 
 function logPerf(event: string, extra?: Record<string, unknown>): void {
-  try {
-    // eslint-disable-next-line no-console
-    console.log("[SysML][perf]", JSON.stringify({ event, ...(extra ?? {}) }));
-  } catch {
-    // ignore
-  }
+  logPerfEvent(event, extra);
 }
 
 function isCancellationError(error: unknown): boolean {
@@ -518,6 +513,7 @@ export class LspModelProvider {
     options?: SysMLDiagramParams["options"],
     token?: vscode.CancellationToken
   ): Promise<SysMLDiagramResult> {
+    const startedAt = Date.now();
     const trimmed = (uri || "").trim();
     if (!trimmed) {
       throw new Error("getDiagram requires a non-empty URI");
@@ -528,7 +524,16 @@ export class LspModelProvider {
       kind,
       options,
     };
-    return await this.client.sendRequest<SysMLDiagramResult>("sysml/diagram", params, token);
+    const result = await this.client.sendRequest<SysMLDiagramResult>("sysml/diagram", params, token);
+    logPerf("lspModelProvider:getDiagram", {
+      uri: trimmed,
+      kind,
+      workspaceVisualization: options?.workspaceVisualization === true,
+      totalMs: Date.now() - startedAt,
+      nodeCount: result.scene?.generalView?.nodes?.length ?? 0,
+      edgeCount: result.scene?.generalView?.edges?.length ?? 0,
+    });
+    return result;
   }
 
   async getServerStats(): Promise<SysMLServerStats | undefined> {

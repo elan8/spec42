@@ -66,12 +66,16 @@ function createDiagramResult(): SysMLDiagramResult {
 describe("fetchModelData", () => {
   it("omits activityDiagrams scope for general view requests", async () => {
     const requestedScopes: string[][] = [];
+    const requestedDiagrams: string[] = [];
     const provider = {
       getModel: async (_uri: string, scopes?: string[]) => {
         requestedScopes.push(scopes ?? []);
         return createModelResult();
       },
-      getDiagram: async () => createDiagramResult(),
+      getDiagram: async (_uri: string, kind: string) => {
+        requestedDiagrams.push(kind);
+        return createDiagramResult();
+      },
     } as any;
 
     await fetchModelData({
@@ -82,16 +86,21 @@ describe("fetchModelData", () => {
     });
 
     assert.deepStrictEqual(requestedScopes, [["graph", "stats"]]);
+    assert.deepStrictEqual(requestedDiagrams, ["general-view"]);
   });
 
   it("includes activityDiagrams scope for action flow view requests", async () => {
     const requestedScopes: string[][] = [];
+    const requestedDiagrams: string[] = [];
     const provider = {
       getModel: async (_uri: string, scopes?: string[]) => {
         requestedScopes.push(scopes ?? []);
         return createModelResult();
       },
-      getDiagram: async () => createDiagramResult(),
+      getDiagram: async (_uri: string, kind: string) => {
+        requestedDiagrams.push(kind);
+        return createDiagramResult();
+      },
     } as any;
 
     await fetchModelData({
@@ -102,16 +111,21 @@ describe("fetchModelData", () => {
     });
 
     assert.deepStrictEqual(requestedScopes, [["graph", "activityDiagrams", "stats"]]);
+    assert.deepStrictEqual(requestedDiagrams, []);
   });
 
   it("includes ibd scope for interconnection view requests", async () => {
     const requestedScopes: string[][] = [];
+    const requestedDiagrams: string[] = [];
     const provider = {
       getModel: async (_uri: string, scopes?: string[]) => {
         requestedScopes.push(scopes ?? []);
         return createModelResult();
       },
-      getDiagram: async () => createDiagramResult(),
+      getDiagram: async (_uri: string, kind: string) => {
+        requestedDiagrams.push(kind);
+        return createDiagramResult();
+      },
     } as any;
 
     await fetchModelData({
@@ -122,5 +136,6 @@ describe("fetchModelData", () => {
     });
 
     assert.deepStrictEqual(requestedScopes, [["graph", "ibd", "stats"]]);
+    assert.deepStrictEqual(requestedDiagrams, ["interconnection-view"]);
   });
 });
