@@ -1033,6 +1033,93 @@ fn unresolved_type_reference_emits_semantic_diagnostic() {
 }
 
 #[test]
+fn missing_library_context_info_is_emitted_for_imported_unresolved_types_without_library_paths() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///missing_library_context.sysml";
+    let content = r#"
+        package P {
+            import ScalarValues::Real;
+
+            part def Vehicle {
+                attribute mass : Real;
+            }
+        }
+    "#;
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+            }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(400));
+
+    let mut found_missing_library_context = false;
+    let mut found_unresolved = false;
+    for _ in 0..25 {
+        let Some(msg) = read_message(&mut stdout) else {
+            break;
+        };
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() != Some("textDocument/publishDiagnostics") {
+            continue;
+        }
+        let diagnostics = json["params"]["diagnostics"]
+            .as_array()
+            .cloned()
+            .unwrap_or_default();
+        found_missing_library_context = diagnostics.iter().any(|d| {
+            d["source"].as_str() == Some("semantic")
+                && d["code"].as_str() == Some("missing_library_context")
+        });
+        found_unresolved = diagnostics.iter().any(|d| {
+            d["source"].as_str() == Some("semantic")
+                && d["code"].as_str() == Some("unresolved_type_reference")
+        });
+        if found_missing_library_context && found_unresolved {
+            break;
+        }
+    }
+
+    assert!(
+        found_unresolved,
+        "expected unresolved_type_reference semantic diagnostic"
+    );
+    assert!(
+        found_missing_library_context,
+        "expected missing_library_context informational diagnostic"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
 fn unresolved_satisfy_reference_emits_semantic_diagnostic() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");
@@ -1342,6 +1429,118 @@ fn untyped_part_usage_offers_code_action_to_create_part_def_and_type_usage() {
     assert!(
         found,
         "expected quickfix that inserts matching part def and rewrites usage"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
+fn missing_library_context_offers_quick_fixes_for_stdlib_and_custom_libraries() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///quickfix_missing_library_context.sysml";
+    let content = "package P {\n  import ScalarValues::Real;\n  part def Vehicle {\n    attribute mass : Real;\n  }\n}\n";
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": null,
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+            }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(250));
+
+    let code_action_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": code_action_id,
+            "method": "textDocument/codeAction",
+            "params": {
+                "textDocument": { "uri": uri },
+                "range": {
+                    "start": { "line": 1, "character": 2 },
+                    "end": { "line": 1, "character": 28 }
+                },
+                "context": {
+                    "diagnostics": [
+                        {
+                            "range": {
+                                "start": { "line": 1, "character": 2 },
+                                "end": { "line": 1, "character": 28 }
+                            },
+                            "severity": 3,
+                            "code": "missing_library_context",
+                            "source": "semantic",
+                            "message": "This document imports external library symbols, but no SysML library paths are configured or indexed."
+                        }
+                    ],
+                    "only": ["quickfix"]
+                }
+            }
+        })
+        .to_string(),
+    );
+
+    let mut found_install = false;
+    let mut found_manage = false;
+    loop {
+        let msg = read_message(&mut stdout).expect("expected codeAction response");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["id"].as_i64() != Some(code_action_id) {
+            continue;
+        }
+        let actions = json["result"].as_array().cloned().unwrap_or_default();
+        for action in actions {
+            if action["title"].as_str() == Some("Install or Update Standard Library")
+                && action["command"]["command"].as_str() == Some("sysml.library.installStdLib")
+            {
+                found_install = true;
+            }
+            if action["title"].as_str() == Some("Manage Custom Libraries")
+                && action["command"]["command"].as_str() == Some("sysml.library.managePaths")
+            {
+                found_manage = true;
+            }
+        }
+        break;
+    }
+
+    assert!(
+        found_install,
+        "expected quickfix that runs sysml.library.installStdLib"
+    );
+    assert!(
+        found_manage,
+        "expected quickfix that runs sysml.library.managePaths"
     );
 
     let _ = child.kill();

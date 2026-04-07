@@ -6,8 +6,9 @@ use crate::common::util;
 use crate::language::{
     collect_document_symbols, collect_folding_ranges, completion_prefix, find_reference_ranges,
     format_document, is_reserved_keyword, keyword_doc, keyword_hover_markdown,
-    line_prefix_at_position, suggest_create_matching_part_def_quick_fix, suggest_wrap_in_package,
-    sysml_keywords, word_at_position,
+    line_prefix_at_position, suggest_create_matching_part_def_quick_fix,
+    suggest_install_stdlib_quick_fix, suggest_manage_custom_libraries_quick_fix,
+    suggest_wrap_in_package, sysml_keywords, word_at_position,
 };
 use crate::semantic_model;
 use crate::semantic_tokens::{ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range};
@@ -555,6 +556,18 @@ pub(crate) fn code_action(
             {
                 actions.push(CodeActionOrCommand::CodeAction(action));
             }
+        }
+        let is_missing_library_context = matches!(
+            diagnostic.code.as_ref(),
+            Some(NumberOrString::String(code)) if code == "missing_library_context"
+        );
+        if is_missing_library_context {
+            actions.push(CodeActionOrCommand::CodeAction(
+                suggest_install_stdlib_quick_fix(diagnostic),
+            ));
+            actions.push(CodeActionOrCommand::CodeAction(
+                suggest_manage_custom_libraries_quick_fix(diagnostic),
+            ));
         }
     }
     Ok(Some(actions))

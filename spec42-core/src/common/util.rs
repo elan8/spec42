@@ -181,6 +181,25 @@ pub fn missing_semicolon_ranges(content: &str) -> Vec<Range> {
     ranges
 }
 
+pub fn import_statement_ranges(content: &str) -> Vec<Range> {
+    let mut ranges = Vec::new();
+    for (line_idx, raw_line) in content.lines().enumerate() {
+        let code_only = raw_line.split("//").next().unwrap_or("");
+        let trimmed = code_only.trim();
+        if !trimmed.starts_with("import ") {
+            continue;
+        }
+
+        let start_char = utf16_len(raw_line) - utf16_len(raw_line.trim_start());
+        let end_char = start_char + utf16_len(trimmed);
+        ranges.push(Range {
+            start: Position::new(line_idx as u32, start_char),
+            end: Position::new(line_idx as u32, end_char),
+        });
+    }
+    ranges
+}
+
 /// Returns true if `uri` is under any of the library path roots (path prefix check).
 pub fn uri_under_any_library(uri: &Url, library_paths: &[Url]) -> bool {
     semantic_model_crate::uri_under_any_library(uri, library_paths)
@@ -268,7 +287,8 @@ pub fn symbol_hover_markdown(entry: &SymbolEntry, show_location: bool) -> String
 #[cfg(test)]
 mod tests {
     use super::{
-        apply_incremental_change, missing_semicolon_ranges, untyped_part_usage_diagnostics,
+        apply_incremental_change, import_statement_ranges, missing_semicolon_ranges,
+        untyped_part_usage_diagnostics,
     };
     use tower_lsp::lsp_types::{Position, Range};
 
@@ -278,6 +298,15 @@ mod tests {
         let range = Range::new(Position::new(1, 17), Position::new(1, 18));
         let updated = apply_incremental_change(text, &range, "").expect("edit applies");
         assert_eq!(updated, "package Demo {\n  part def Engine\n}\n");
+    }
+
+    #[test]
+    fn import_statement_ranges_detects_import_lines() {
+        let content = "package P {\n  import ScalarValues::Real;\n  // import Ignored::Type;\n}\n";
+        let ranges = import_statement_ranges(content);
+        assert_eq!(ranges.len(), 1);
+        assert_eq!(ranges[0].start.line, 1);
+        assert_eq!(ranges[0].start.character, 2);
     }
 
     #[test]
