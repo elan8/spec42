@@ -9,7 +9,7 @@ export interface MessageHandlerContext {
     document: vscode.TextDocument;
     lspModelProvider: LspModelProvider;
     fileUris: vscode.Uri[];
-    updateVisualization: (force: boolean) => void;
+    updateVisualization: (force: boolean, triggerSource?: string) => void;
     setNavigating: (value: boolean) => void;
     setCurrentView: (view: string) => void;
     setLastContentHash: (hash: string) => void;
@@ -75,7 +75,7 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
                 break;
             case 'webviewReady':
                 setLastContentHash('');
-                updateVisualization(true);
+                updateVisualization(true, 'webviewReady');
                 break;
             case 'testDiagramExported':
                 handleTestDiagramExported(message.viewId, message.svgString).catch(err =>
@@ -263,7 +263,7 @@ export function createMessageHandlers(context: MessageHandlerContext) {
 
         if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(newName)) {
             vscode.window.showErrorMessage(`Invalid element name: "${newName}". Names must start with a letter or underscore and contain only alphanumeric characters and underscores.`);
-            updateVisualization(true);
+            updateVisualization(true, 'renameElement:invalidName');
             return;
         }
 
@@ -282,7 +282,7 @@ export function createMessageHandlers(context: MessageHandlerContext) {
 
         if (!element || !element.range) {
             vscode.window.showErrorMessage(`Could not find element "${oldName}" to rename.`);
-            updateVisualization(true);
+            updateVisualization(true, 'renameElement:notFound');
             return;
         }
 
@@ -296,7 +296,7 @@ export function createMessageHandlers(context: MessageHandlerContext) {
 
         if (!nameMatch || nameMatch.index === undefined) {
             vscode.window.showErrorMessage(`Could not locate name "${oldName}" in the element definition.`);
-            updateVisualization(true);
+            updateVisualization(true, 'renameElement:matchMissing');
             return;
         }
 
@@ -317,7 +317,7 @@ export function createMessageHandlers(context: MessageHandlerContext) {
             vscode.window.showInformationMessage(`Renamed "${oldName}" to "${newName}"`);
         } else {
             vscode.window.showErrorMessage(`Failed to rename "${oldName}"`);
-            updateVisualization(true);
+            updateVisualization(true, 'renameElement:applyFailed');
         }
     }
 

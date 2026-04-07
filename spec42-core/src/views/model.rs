@@ -48,8 +48,26 @@ fn workspace_visualization_enabled(scope: &[String]) -> bool {
     model_projection::workspace_visualization_enabled(scope)
 }
 
+fn ibd_requested(scope: &[String]) -> bool {
+    scope.iter().any(|s| s == "ibd")
+}
+
 fn elapsed_ms(start: Instant) -> u32 {
     start.elapsed().as_millis().max(1) as u32
+}
+
+async fn log_perf(client: &Client, event: &str, fields: Vec<(&str, String)>) {
+    let details = fields
+        .into_iter()
+        .map(|(key, value)| format!("\"{}\":{}", key, value))
+        .collect::<Vec<_>>()
+        .join(",");
+    client
+        .log_message(
+            MessageType::INFO,
+            format!("[SysML][perf] {{\"event\":\"{}\",{}}}", event, details),
+        )
+        .await;
 }
 
 const TYPING_ATTRIBUTE_KEYS: &[&str] = &[
@@ -117,6 +135,7 @@ pub async fn build_sysml_model_response(
     build_start: Instant,
     client: &Client,
 ) -> SysmlModelResultDto {
+    let request_phase_start = Instant::now();
     let want_graph = scope.is_empty()
         || scope.iter().any(|s| s == "graph")
         || scope.iter().any(|s| s == "elements")
@@ -125,8 +144,11 @@ pub async fn build_sysml_model_response(
         scope.is_empty() || scope.iter().any(|s| s == "generalViewGraph") || want_graph;
     let want_stats = scope.is_empty() || scope.iter().any(|s| s == "stats");
     let want_activity_diagrams = scope.is_empty() || scope.iter().any(|s| s == "activityDiagrams");
+    let want_ibd = ibd_requested(scope);
+    let scope_eval_ms = request_phase_start.elapsed().as_millis().max(1);
 
     let workspace_viz = workspace_visualization_enabled(scope);
+    let graph_start = Instant::now();
     let raw_graph = if want_graph && workspace_viz {
         let graph = build_workspace_graph_dto(semantic_graph, library_paths);
         client
@@ -211,7 +233,11 @@ pub async fn build_sysml_model_response(
     } else {
         None
     };
+    let raw_graph_ms = graph_start.elapsed().as_millis().max(1);
+    let strip_start = Instant::now();
     let graph = raw_graph.as_ref().map(strip_synthetic_nodes);
+    let strip_ms = strip_start.elapsed().as_millis().max(1);
+    let general_view_start = Instant::now();
     let general_view_graph = if want_general_view_graph {
         graph
             .as_ref()
@@ -219,8 +245,10 @@ pub async fn build_sysml_model_response(
     } else {
         None
     };
+    let general_view_ms = general_view_start.elapsed().as_millis().max(1);
 
     let doc = parsed;
+    let activity_diagrams_start = Instant::now();
     let activity_diagrams = if want_activity_diagrams {
         Some(
             doc.map(model::extract_activity_diagrams)
@@ -229,7 +257,9 @@ pub async fn build_sysml_model_response(
     } else {
         None
     };
+    let activity_diagrams_ms = activity_diagrams_start.elapsed().as_millis().max(1);
 
+    let stats_start = Instant::now();
     let stats = if want_stats {
         let total = graph.as_ref().map(|g| g.nodes.len() as u32).unwrap_or(0);
         let (resolved_elements, unresolved_elements) = count_resolution_stats(semantic_graph, uri);
@@ -244,6 +274,7 @@ pub async fn build_sysml_model_response(
     } else {
         None
     };
+    let stats_ms = stats_start.elapsed().as_millis().max(1);
 
     let node_count = graph.as_ref().map(|g| g.nodes.len()).unwrap_or(0);
     let edge_count = graph.as_ref().map(|g| g.edges.len()).unwrap_or(0);
@@ -270,18 +301,44 @@ pub async fn build_sysml_model_response(
         )
         .await;
 
-    let ibd = if want_graph && graph.is_some() && workspace_viz {
+    let ibd_start = Instant::now();
+    let ibd = if want_ibd && want_graph && graph.is_some() && workspace_viz {
         let workspace_uris = semantic_graph.workspace_uris_excluding_libraries(library_paths);
         let ibds = workspace_uris
             .iter()
             .map(|workspace_uri| ibd::build_ibd_for_uri(semantic_graph, workspace_uri))
             .collect();
         Some(ibd::merge_ibd_payloads(ibds))
-    } else if want_graph && graph.is_some() {
+    } else if want_ibd && want_graph && graph.is_some() {
         Some(ibd::build_ibd_for_uri(semantic_graph, uri))
     } else {
         None
     };
+    let ibd_ms = ibd_start.elapsed().as_millis().max(1);
+    let total_ms = request_phase_start.elapsed().as_millis().max(1);
+    log_perf(
+        client,
+        "backend:buildSysmlModelResponse",
+        vec![
+            ("uri", format!("{:?}", uri.as_str())),
+            ("scope", format!("{:?}", scope)),
+            ("workspaceVisualization", workspace_viz.to_string()),
+            ("wantIbd", want_ibd.to_string()),
+            ("scopeEvalMs", scope_eval_ms.to_string()),
+            ("rawGraphMs", raw_graph_ms.to_string()),
+            ("stripSyntheticMs", strip_ms.to_string()),
+            ("generalViewMs", general_view_ms.to_string()),
+            ("activityDiagramsMs", activity_diagrams_ms.to_string()),
+            ("statsMs", stats_ms.to_string()),
+            ("ibdMs", ibd_ms.to_string()),
+            ("graphNodes", node_count.to_string()),
+            ("graphEdges", edge_count.to_string()),
+            ("generalViewNodes", gv_node_count.to_string()),
+            ("generalViewEdges", gv_edge_count.to_string()),
+            ("totalMs", total_ms.to_string()),
+        ],
+    )
+    .await;
 
     SysmlModelResultDto {
         version: 0,
@@ -290,5 +347,17 @@ pub async fn build_sysml_model_response(
         stats,
         activity_diagrams,
         ibd,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::ibd_requested;
+
+    #[test]
+    fn ibd_is_only_requested_when_scope_explicitly_includes_it() {
+        assert!(!ibd_requested(&[]));
+        assert!(!ibd_requested(&["graph".to_string(), "stats".to_string()]));
+        assert!(ibd_requested(&["graph".to_string(), "ibd".to_string()]));
     }
 }

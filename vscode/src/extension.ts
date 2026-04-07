@@ -20,11 +20,6 @@ import {
 import { LibraryWebviewViewProvider } from "./library/libraryWebviewViewProvider";
 import type { GraphNodeDTO } from "./providers/sysmlModelTypes";
 import { getOutputChannel, log, logError, showChannel } from "./logger";
-import {
-  decodeSemanticTokens,
-  getTokenAtPosition,
-  SEMANTIC_TYPE_NAMES,
-} from "./semanticTokensDump";
 import { dumpGraphForGeneralView } from "./graphDump";
 import {
   RESTORE_STATE_KEY,
@@ -53,6 +48,8 @@ type ServerHealthState =
   | "restarting"
   | "crashed";
 
+type StartupWorkspaceIndexingMode = "lazy" | "background" | "eager";
+
 let client: LanguageClient | undefined;
 let statusItem: vscode.StatusBarItem | undefined;
 let modelExplorerProvider: ModelExplorerProvider | undefined;
@@ -63,6 +60,10 @@ let serverHealthDetail = "";
 let workspaceIndexingCts: vscode.CancellationTokenSource | undefined;
 let sourceSelectionSyncTimer: ReturnType<typeof setTimeout> | undefined;
 let modelExplorerSelectionSyncTimer: ReturnType<typeof setTimeout> | undefined;
+let activeDocumentExplorerRefreshTimer: ReturnType<typeof setTimeout> | undefined;
+let activeDocumentExplorerRefreshUri: string | undefined;
+let activeDocumentExplorerRefreshGuardUntil = 0;
+let languageClientReady = false;
 
 function getConfig() {
   return {
@@ -89,6 +90,18 @@ function getConfigBoolean(key: string, defaultValue: boolean): boolean {
 function getConfigNumber(key: string, defaultValue: number): number {
   const { primary, legacy } = getConfig();
   return primary.get<number>(key) ?? legacy.get<number>(key) ?? defaultValue;
+}
+
+function getStartupWorkspaceIndexingMode(): StartupWorkspaceIndexingMode {
+  const configured = getConfigString("startup.workspaceIndexing");
+  if (
+    configured === "lazy" ||
+    configured === "background" ||
+    configured === "eager"
+  ) {
+    return configured;
+  }
+  return "lazy";
 }
 
 function getStandardLibraryConfig(): StandardLibraryConfig {
@@ -132,6 +145,16 @@ function setServerHealth(
   serverHealthDetail = detail;
   log("Server health:", state, detail);
   updateStatusBar(context);
+}
+
+function activeSysmlDocument(
+  doc?: vscode.TextDocument
+): vscode.TextDocument | undefined {
+  if (doc && isSysmlDoc(doc)) {
+    return doc;
+  }
+  const active = vscode.window.activeTextEditor?.document;
+  return isSysmlDoc(active) ? active : undefined;
 }
 
 async function showServerIssue(
@@ -366,6 +389,21 @@ function updateStatusBar(context: vscode.ExtensionContext): void {
 export function activate(context: vscode.ExtensionContext): void {
   const startupTraceId = `startup-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const startupT0 = Date.now();
+  const logPerf = (event: string, extra?: Record<string, unknown>) => {
+    const payload = {
+      traceId: startupTraceId,
+      event,
+      elapsedMs: Date.now() - startupT0,
+      ...(extra ?? {}),
+    };
+    log("perf event", payload);
+    try {
+      // eslint-disable-next-line no-console
+      console.log("[SysML][perf]", JSON.stringify(payload));
+    } catch {
+      // ignore
+    }
+  };
   const logStartupPhase = (phase: string, extra?: Record<string, unknown>) => {
     const payload = {
       traceId: startupTraceId,
@@ -387,6 +425,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
   // In CI/test environments we may provide an explicit server path via env to
   // avoid workspace/OS-specific settings issues.
+  const configStartedAt = Date.now();
   const envServerPath = (process.env.SPEC42_SERVER_PATH || "").trim();
   const serverPath = envServerPath || getConfigString("serverPath");
   const standardLibraryManager = new StandardLibraryManager(context);
@@ -403,8 +442,16 @@ export function activate(context: vscode.ExtensionContext): void {
     ...(installedStandardLibraryPath ? [installedStandardLibraryPath] : []),
     ...customLibraryPaths,
   ].filter((value, index, all) => all.indexOf(value) === index);
+  logPerf("activate:configResolved", {
+    totalMs: Date.now() - configStartedAt,
+    workspaceFolderCount: vscode.workspace.workspaceFolders?.length ?? 0,
+    libraryPathCount: libraryPaths.length,
+    customLibraryPathCount: customLibraryPaths.length,
+    hasInstalledStandardLibrary: !!installedStandardLibraryPath,
+  });
 
   let serverCommand: string;
+  const serverCommandResolutionStartedAt = Date.now();
   const devServerCommand = 
     context.extensionMode === vscode.ExtensionMode.Development
       ? prepareDevelopmentServerCommand(
@@ -441,6 +488,12 @@ export function activate(context: vscode.ExtensionContext): void {
       "warning"
     );
   }
+  logPerf("activate:serverCommandResolved", {
+    totalMs: Date.now() - serverCommandResolutionStartedAt,
+    serverCommand,
+    hasExplicitServerPath: !!serverPath,
+    usingDevServer: serverCommand === devServerCommand,
+  });
   const missingLibraryPaths = libraryPaths.filter((p) => !fs.existsSync(p));
   if (missingLibraryPaths.length > 0) {
     void showServerIssue(
@@ -573,13 +626,15 @@ export function activate(context: vscode.ExtensionContext): void {
     .then(() => {
       restartCount = 0;
       crashDialogShown = false;
+      languageClientReady = true;
       setServerHealth(context, "ready", "SysML language server is ready.");
-      log("Language client ready, refreshing Model Explorer");
+      log("Language client ready, scheduling Model Explorer refresh");
       logStartupPhase("languageClient:ready");
-      modelExplorerProvider?.refresh();
+      scheduleActiveDocumentExplorerRefresh("languageClient:ready");
     })
     .catch((error) => {
       const detail = error instanceof Error ? error.message : String(error ?? "unknown startup failure");
+      languageClientReady = false;
       setServerHealth(context, "crashed", `Startup failed: ${detail}`);
       logError("Language client failed to start", error);
       void showServerIssue(
@@ -599,6 +654,49 @@ export function activate(context: vscode.ExtensionContext): void {
     lspModelProvider,
     () => standardLibraryManager.getStatus(getStandardLibraryConfig())
   );
+
+  function scheduleActiveDocumentExplorerRefresh(
+    reason: string,
+    doc?: vscode.TextDocument
+  ): void {
+    const targetDoc = activeSysmlDocument(doc);
+    if (
+      !languageClientReady ||
+      !targetDoc ||
+      !modelExplorerProvider ||
+      modelExplorerProvider.isWorkspaceMode()
+    ) {
+      return;
+    }
+    const uri = targetDoc.uri.toString();
+    const now = Date.now();
+    if (
+      now < activeDocumentExplorerRefreshGuardUntil &&
+      activeDocumentExplorerRefreshUri === uri
+    ) {
+      log("scheduleActiveDocumentExplorerRefresh: skipped", reason, uri);
+      return;
+    }
+    activeDocumentExplorerRefreshUri = uri;
+    if (activeDocumentExplorerRefreshTimer) {
+      clearTimeout(activeDocumentExplorerRefreshTimer);
+    }
+    activeDocumentExplorerRefreshTimer = setTimeout(() => {
+      activeDocumentExplorerRefreshTimer = undefined;
+      activeDocumentExplorerRefreshGuardUntil = Date.now() + 300;
+      modelExplorerProvider
+        ?.loadDocument(targetDoc)
+        .then(() => {
+          log("Active document explorer refresh complete", reason, uri);
+        })
+        .catch((error) => {
+          logError(
+            `Active document explorer refresh failed for ${uri} (${reason})`,
+            error
+          );
+        });
+    }, 75);
+  }
 
   context.subscriptions.push(
     vscode.window.registerWebviewPanelSerializer("sysmlVisualizer", {
@@ -801,12 +899,22 @@ export function activate(context: vscode.ExtensionContext): void {
         if (!isSysmlDoc(doc)) {
           return;
         }
+        const selectionSyncStartedAt = Date.now();
         try {
           const position =
             event.selections[0]?.active ?? event.textEditor.selection.active;
-          const result = await lspModelProvider.getModel(doc.uri.toString(), ["graph"]);
+          const result = await lspModelProvider.getModel(
+            doc.uri.toString(),
+            ["graph"],
+            undefined,
+            "selectionSync:modelExplorer"
+          );
           const node = bestGraphNodeAtPosition(result.graph?.nodes, position);
           if (!node) {
+            logPerf("selectionSync:modelExplorerNoNode", {
+              uri: doc.uri.toString(),
+              totalMs: Date.now() - selectionSyncStartedAt,
+            });
             return;
           }
           await modelExplorerProvider?.revealElement(
@@ -814,8 +922,19 @@ export function activate(context: vscode.ExtensionContext): void {
             node.id,
             node.range
           );
+          logPerf("selectionSync:modelExplorer", {
+            uri: doc.uri.toString(),
+            totalMs: Date.now() - selectionSyncStartedAt,
+            nodeId: node.id,
+            nodeCount: result.graph?.nodes?.length ?? 0,
+          });
         } catch (error) {
           logError(`Source-to-explorer sync failed for ${doc.uri.toString()}`, error);
+          logPerf("selectionSync:modelExplorerFailed", {
+            uri: doc.uri.toString(),
+            totalMs: Date.now() - selectionSyncStartedAt,
+            error: error instanceof Error ? error.message : String(error),
+          });
         }
       }, 150);
       const panel = VisualizationPanel.currentPanel;
@@ -828,14 +947,36 @@ export function activate(context: vscode.ExtensionContext): void {
       }
       sourceSelectionSyncTimer = setTimeout(async () => {
         sourceSelectionSyncTimer = undefined;
+        const diagramSyncStartedAt = Date.now();
         try {
-          const result = await lspModelProvider.getModel(doc.uri.toString(), ["graph"]);
+          const result = await lspModelProvider.getModel(
+            doc.uri.toString(),
+            ["graph"],
+            undefined,
+            "selectionSync:diagram"
+          );
           const node = bestGraphNodeAtPosition(result.graph?.nodes, event.selections[0]?.active ?? event.textEditor.selection.active);
           if (node) {
             panel.revealSourceSelection(node);
+            logPerf("selectionSync:diagram", {
+              uri: doc.uri.toString(),
+              totalMs: Date.now() - diagramSyncStartedAt,
+              nodeId: node.id,
+              nodeCount: result.graph?.nodes?.length ?? 0,
+            });
+          } else {
+            logPerf("selectionSync:diagramNoNode", {
+              uri: doc.uri.toString(),
+              totalMs: Date.now() - diagramSyncStartedAt,
+            });
           }
         } catch (error) {
           logError(`Source-to-diagram sync failed for ${doc.uri.toString()}`, error);
+          logPerf("selectionSync:diagramFailed", {
+            uri: doc.uri.toString(),
+            totalMs: Date.now() - diagramSyncStartedAt,
+            error: error instanceof Error ? error.message : String(error),
+          });
         }
       }, 150);
     })
@@ -843,6 +984,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.refreshModelTree", async () => {
+      lspModelProvider.clearModelCache();
       if (modelExplorerProvider?.isWorkspaceMode()) {
         await loadWorkspaceSysMLFiles(modelExplorerProvider);
       } else {
@@ -889,11 +1031,13 @@ export function activate(context: vscode.ExtensionContext): void {
         const fileUris: vscode.Uri[] = [];
         let limitHit = false;
         const totalSteps = Math.max(folders.length * 2, 1);
+        const discoveryStartedAt = Date.now();
 
         for (const [folderIndex, folder] of folders.entries()) {
           if (cancellationToken.isCancellationRequested) {
             break;
           }
+          const sysmlScanStartedAt = Date.now();
           progress.report({
             message: `Scanning ${path.basename(folder.uri.fsPath) || folder.name} for .sysml files`,
             increment: 100 / totalSteps,
@@ -907,11 +1051,18 @@ export function activate(context: vscode.ExtensionContext): void {
             limitHit = true;
           }
           fileUris.push(...sysml);
+          logPerf("workspaceDiscovery:sysmlScan", {
+            folder: folder.uri.toString(),
+            totalMs: Date.now() - sysmlScanStartedAt,
+            fileCount: sysml.length,
+            limitHit: sysml.length >= perPatternLimit,
+          });
 
           if (cancellationToken.isCancellationRequested) {
             break;
           }
 
+          const kermlScanStartedAt = Date.now();
           progress.report({
             message: `Scanning ${path.basename(folder.uri.fsPath) || folder.name} for .kerml files`,
             increment: 100 / totalSteps,
@@ -925,6 +1076,12 @@ export function activate(context: vscode.ExtensionContext): void {
             limitHit = true;
           }
           fileUris.push(...kerml);
+          logPerf("workspaceDiscovery:kermlScan", {
+            folder: folder.uri.toString(),
+            totalMs: Date.now() - kermlScanStartedAt,
+            fileCount: kerml.length,
+            limitHit: kerml.length >= perPatternLimit,
+          });
 
           if (folderIndex === folders.length - 1) {
             progress.report({
@@ -933,7 +1090,16 @@ export function activate(context: vscode.ExtensionContext): void {
           }
         }
 
+        const dedupeStartedAt = Date.now();
         const uniqueFiles = [...new Map(fileUris.map((f) => [f.toString(), f])).values()];
+        logPerf("workspaceDiscovery:complete", {
+          totalMs: Date.now() - discoveryStartedAt,
+          dedupeMs: Date.now() - dedupeStartedAt,
+          rawFileCount: fileUris.length,
+          uniqueFileCount: uniqueFiles.length,
+          limitHit,
+          workspaceFolderCount: folders.length,
+        });
         log("loadWorkspaceSysMLFiles: found", uniqueFiles.length, "unique files");
         provider.setWorkspaceLoadStatus({
           state: "indexing",
@@ -973,7 +1139,12 @@ export function activate(context: vscode.ExtensionContext): void {
           progress.report({
             message: `Loading model for ${uniqueFiles.length} file(s)`,
           });
+          const loadStartedAt = Date.now();
           await provider.loadWorkspaceModel(uniqueFiles, cancellationToken);
+          logPerf("workspaceIndexing:modelLoadComplete", {
+            totalMs: Date.now() - loadStartedAt,
+            uniqueFileCount: uniqueFiles.length,
+          });
           const loadedFiles = provider.getWorkspaceFileUris().length;
           setWorkspaceIndexSummary({
             scannedFiles: uniqueFiles.length,
@@ -1054,19 +1225,40 @@ export function activate(context: vscode.ExtensionContext): void {
     updateStatusBar(context);
   }
 
+  async function ensureWorkspaceModelLoaded(
+    provider: ModelExplorerProvider | undefined
+  ): Promise<void> {
+    if (!provider) {
+      return;
+    }
+    if (provider.isWorkspaceMode()) {
+      return;
+    }
+    const hasWorkspaceFolders =
+      (vscode.workspace.workspaceFolders?.length ?? 0) > 0;
+    if (!hasWorkspaceFolders) {
+      provider.refresh();
+      return;
+    }
+    await loadWorkspaceSysMLFiles(provider);
+  }
+
   context.subscriptions.push(
-    vscode.commands.registerCommand("sysml.switchToByFile", () => {
+    vscode.commands.registerCommand("sysml.switchToByFile", async () => {
       modelExplorerProvider?.setWorkspaceViewMode("byFile");
+      await ensureWorkspaceModelLoaded(modelExplorerProvider);
     })
   );
   context.subscriptions.push(
-    vscode.commands.registerCommand("sysml.switchToSemanticModel", () => {
+    vscode.commands.registerCommand("sysml.switchToSemanticModel", async () => {
       modelExplorerProvider?.setWorkspaceViewMode("bySemantic");
+      await ensureWorkspaceModelLoaded(modelExplorerProvider);
     })
   );
   context.subscriptions.push(
-    vscode.commands.registerCommand("sysml.toggleWorkspaceViewMode", () => {
+    vscode.commands.registerCommand("sysml.toggleWorkspaceViewMode", async () => {
       modelExplorerProvider?.toggleWorkspaceViewMode();
+      await ensureWorkspaceModelLoaded(modelExplorerProvider);
     })
   );
 
@@ -1155,6 +1347,8 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
       }
       try {
+        lspModelProvider.clearModelCache();
+        languageClientReady = false;
         manualStopInProgress = true;
         setServerHealth(context, "restarting", "Restarting SysML language server.");
         await client.stop();
@@ -1162,9 +1356,13 @@ export function activate(context: vscode.ExtensionContext): void {
         restartCount = 0;
         crashDialogShown = false;
         await client.start();
+        lspModelProvider.clearModelCache();
+        languageClientReady = true;
+        scheduleActiveDocumentExplorerRefresh("restartServer");
         vscode.window.showInformationMessage("SysML language server restarted.");
       } catch (e) {
         manualStopInProgress = false;
+        languageClientReady = false;
         setServerHealth(
           context,
           "crashed",
@@ -1186,7 +1384,11 @@ export function activate(context: vscode.ExtensionContext): void {
         shouldShowModelExplorerContext(modelExplorerProvider)
       );
       await vscode.commands.executeCommand("sysmlModelExplorer.focus");
-      modelExplorerProvider?.refresh();
+      if (modelExplorerProvider?.isWorkspaceMode()) {
+        modelExplorerProvider.refresh();
+      } else {
+        scheduleActiveDocumentExplorerRefresh("showModelExplorer");
+      }
     })
   );
   context.subscriptions.push(
@@ -1432,58 +1634,14 @@ export function activate(context: vscode.ExtensionContext): void {
         uri: string,
         scope?: Array<"graph" | "ibd" | "activityDiagrams" | "stats">
       ) => {
-        return await lspModelProvider.getModel(uri, scope);
+        return await lspModelProvider.getModel(
+          uri,
+          scope,
+          undefined,
+          "debug.getModelForTests"
+        );
       }
     ),
-
-    vscode.commands.registerCommand("sysml.debugSemanticTokenAtCursor", async () => {
-      const editor = vscode.window.activeTextEditor;
-      if (!editor || !isSysmlDoc(editor.document)) {
-        vscode.window.showWarningMessage(
-          "Open a SysML/KerML file and place the cursor on the word to debug."
-        );
-        return;
-      }
-      if (!client) {
-        vscode.window.showErrorMessage("SysML language server is not running.");
-        return;
-      }
-      try {
-        const doc = editor.document;
-        const pos = editor.selection.active;
-        const result = await client.sendRequest<{ data?: number[] }>(
-          "textDocument/semanticTokens/full",
-          {
-            textDocument: { uri: doc.uri.toString(), version: doc.version },
-          }
-        );
-        if (!result?.data?.length) {
-          vscode.window.showInformationMessage(
-            "No semantic tokens returned. The server may not have indexed this document yet."
-          );
-          return;
-        }
-        const tokens = new vscode.SemanticTokens(new Uint32Array(result.data));
-        const decoded = decodeSemanticTokens(doc, tokens);
-        const token = getTokenAtPosition(decoded, pos.line, pos.character);
-        const typeName = token
-          ? SEMANTIC_TYPE_NAMES[token.type] ?? `?${token.type}`
-          : "(none)";
-        // Display 1-based line/col to match editor gutter
-        const line1 = pos.line + 1;
-        const col1 = pos.character + 1;
-        const msg = token
-          ? `Server token at line ${line1}, col ${col1}: "${token.text}" = ${typeName}`
-          : `No token at line ${line1}, col ${col1} (cursor may be in whitespace or between tokens)`;
-        vscode.window.showInformationMessage(msg);
-        log(msg, "→ Use Developer: Inspect Editor Tokens and Scopes to compare with VS Code's rendering");
-      } catch (err) {
-        logError("Debug semantic token failed", err);
-        vscode.window.showErrorMessage(
-          `Debug failed: ${err instanceof Error ? err.message : String(err)}`
-        );
-      }
-    }),
 
     vscode.commands.registerCommand("sysml.debugDumpGraphForGeneralView", async () => {
       const editor = vscode.window.activeTextEditor;
@@ -1501,7 +1659,9 @@ export function activate(context: vscode.ExtensionContext): void {
       try {
         const result = await lspModelProvider.getModel(
           editor.document.uri.toString(),
-          ["graph"]
+          ["graph"],
+          undefined,
+          "debugDumpGraphForGeneralView"
         );
         const outPath = path.join(workspaceFolder, "graph_general_view_dump.txt");
         await dumpGraphForGeneralView(result.graph, outPath);
@@ -1791,9 +1951,8 @@ export function activate(context: vscode.ExtensionContext): void {
     const loaded = shouldShowModelExplorerContext(modelExplorerProvider);
     vscode.commands.executeCommand("setContext", "sysml.modelLoaded", loaded);
     updateStatusBar(context);
-    // Refresh Model Explorer when switching to a SysML doc so the tree shows the correct model
     if (active && isSysmlDoc(active)) {
-      modelExplorerProvider?.refresh();
+      scheduleActiveDocumentExplorerRefresh("refreshContext", active);
     }
   };
 
@@ -1805,7 +1964,28 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.workspace.onDidOpenTextDocument((doc) => {
       if (doc.languageId === "sysml" || doc.languageId === "kerml") {
-        modelExplorerProvider?.refresh();
+        lspModelProvider.invalidateModelCache(doc.uri);
+        if (
+          vscode.window.activeTextEditor?.document.uri.toString() ===
+          doc.uri.toString()
+        ) {
+          scheduleActiveDocumentExplorerRefresh("didOpen", doc);
+        }
+      }
+    })
+  );
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeTextDocument((event) => {
+      const doc = event.document;
+      if (doc.languageId === "sysml" || doc.languageId === "kerml") {
+        lspModelProvider.invalidateModelCache(doc.uri);
+      }
+    })
+  );
+  context.subscriptions.push(
+    vscode.workspace.onDidCloseTextDocument((doc) => {
+      if (doc.languageId === "sysml" || doc.languageId === "kerml") {
+        lspModelProvider.invalidateModelCache(doc.uri);
       }
     })
   );
@@ -1885,14 +2065,17 @@ export function activate(context: vscode.ExtensionContext): void {
   // Notify visualizer when SysML files change so it can refresh
   const sysmlFileWatcher = vscode.workspace.createFileSystemWatcher("**/*.{sysml,kerml}");
   sysmlFileWatcher.onDidChange((uri) => {
+    lspModelProvider.invalidateModelCache(uri);
     VisualizationPanel.currentPanel?.notifyFileChanged(uri);
     scheduleModelExplorerRefresh("save", uri);
   });
   sysmlFileWatcher.onDidCreate((uri) => {
+    lspModelProvider.invalidateModelCache(uri);
     VisualizationPanel.currentPanel?.notifyFileChanged(uri);
     scheduleModelExplorerRefresh("create", uri);
   });
   sysmlFileWatcher.onDidDelete((uri) => {
+    lspModelProvider.invalidateModelCache(uri);
     VisualizationPanel.currentPanel?.notifyFileChanged(uri);
     scheduleModelExplorerRefresh("delete", uri);
   });
@@ -1909,6 +2092,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
   // Workspace mode: when workspace has folders (workspace file or opened folder), load all SysML/KerML files after delay
   const hasWorkspaceFolders = (vscode.workspace.workspaceFolders?.length ?? 0) > 0;
+  const startupWorkspaceIndexingMode = getStartupWorkspaceIndexingMode();
   log("Activation complete. Workspace folders:", hasWorkspaceFolders);
   vscode.commands.executeCommand(
     "setContext",
@@ -1917,15 +2101,33 @@ export function activate(context: vscode.ExtensionContext): void {
   );
   if (hasWorkspaceFolders && modelExplorerProvider) {
     const provider = modelExplorerProvider;
-    setTimeout(() => {
-      loadWorkspaceSysMLFiles(provider).catch(() => {});
-    }, 3000);
+    if (startupWorkspaceIndexingMode === "background") {
+      setTimeout(() => {
+        loadWorkspaceSysMLFiles(provider).catch(() => {});
+      }, 3000);
+    } else if (startupWorkspaceIndexingMode === "eager") {
+      setTimeout(() => {
+        loadWorkspaceSysMLFiles(provider).catch(() => {});
+      }, 0);
+    } else {
+      log(
+        "Startup workspace indexing deferred",
+        "mode=",
+        startupWorkspaceIndexingMode
+      );
+    }
   }
 }
 
 export function deactivate(): Thenable<void> | undefined {
+  languageClientReady = false;
+  if (activeDocumentExplorerRefreshTimer) {
+    clearTimeout(activeDocumentExplorerRefreshTimer);
+    activeDocumentExplorerRefreshTimer = undefined;
+  }
   workspaceIndexingCts?.cancel();
   workspaceIndexingCts?.dispose();
   workspaceIndexingCts = undefined;
   return client?.stop();
 }
+

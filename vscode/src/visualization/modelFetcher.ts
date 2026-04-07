@@ -98,8 +98,12 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         pendingPackageName,
     } = params;
 
-    const scopes: ('graph' | 'activityDiagrams' | 'stats')[] =
-        ['graph', 'activityDiagrams', 'stats'];
+    const scopes: ('graph' | 'activityDiagrams' | 'stats' | 'ibd')[] =
+        currentView === 'action-flow-view'
+            ? ['graph', 'activityDiagrams', 'stats']
+            : currentView === 'interconnection-view'
+                ? ['graph', 'ibd', 'stats']
+                : ['graph', 'stats'];
     const isWorkspaceVisualization = fileUris.length > 1;
     const requestScopes = isWorkspaceVisualization
         ? [...scopes, 'workspaceVisualization' as const]
@@ -134,7 +138,14 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     }
 
     const settledResults = await Promise.allSettled(
-        requestUris.map(uri => lspModelProvider.getModel(uri, requestScopes)),
+        requestUris.map(uri =>
+            lspModelProvider.getModel(
+                uri,
+                requestScopes,
+                undefined,
+                `visualizer.fetchModelData:${currentView}`
+            )
+        ),
     );
     const [generalDiagramResult, interconnectionDiagramResult] = await Promise.allSettled([
         lspModelProvider.getDiagram(documentUri, 'general-view', {

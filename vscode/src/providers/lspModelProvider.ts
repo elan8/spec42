@@ -12,6 +12,15 @@ import type {
   SysMLModelResult,
 } from "./sysmlModelTypes";
 
+function logPerf(event: string, extra?: Record<string, unknown>): void {
+  try {
+    // eslint-disable-next-line no-console
+    console.log("[SysML][perf]", JSON.stringify({ event, ...(extra ?? {}) }));
+  } catch {
+    // ignore
+  }
+}
+
 function isCancellationError(error: unknown): boolean {
   return error instanceof vscode.CancellationError;
 }
@@ -98,19 +107,224 @@ export interface SysMLLibrarySearchResult {
   total: number;
 }
 
+type NormalizedScope = NonNullable<SysMLModelParams["scope"]>[number];
+
+type CachedModelResult = {
+  key: string;
+  uri: string;
+  scopes: NormalizedScope[];
+  storedAt: number;
+  result: SysMLModelResult;
+};
+
+type InFlightModelRequest = {
+  key: string;
+  uri: string;
+  scopes: NormalizedScope[];
+  requestId: string;
+  caller: string;
+  promise: Promise<SysMLModelResult>;
+};
+
+const MODEL_CACHE_TTL_MS = 5000;
+
+function normalizeScopes(scopes?: SysMLModelParams["scope"]): NormalizedScope[] {
+  return [...new Set((scopes ?? []).slice().sort())] as NormalizedScope[];
+}
+
+function scopesKey(scopes: NormalizedScope[]): string {
+  return scopes.length > 0 ? scopes.join("|") : "(default)";
+}
+
+function buildRequestKey(uri: string, scopes: NormalizedScope[]): string {
+  return `${uri}::${scopesKey(scopes)}`;
+}
+
+function canReuseCachedScopes(
+  requested: NormalizedScope[],
+  available: NormalizedScope[]
+): boolean {
+  if (requested.length === 0 || available.length === 0) {
+    return (
+      requested.length === available.length &&
+      requested.every((scope, index) => scope === available[index])
+    );
+  }
+  if (
+    requested.includes("workspaceVisualization") !==
+    available.includes("workspaceVisualization")
+  ) {
+    return false;
+  }
+  const availableSet = new Set(available);
+  return requested.every((scope) => availableSet.has(scope));
+}
+
 export class LspModelProvider {
+  private readonly inFlightModelRequests = new Map<string, InFlightModelRequest>();
+  private readonly modelResultCache = new Map<string, CachedModelResult>();
+  private nextModelRequestId = 0;
+
   constructor(
     private readonly client: LanguageClient,
     /** Resolves when the LSP client is ready. Prevents getModel before didOpen is processed. */
     private readonly whenReady: Promise<void> = Promise.resolve()
   ) {}
 
+  private nextRequestId(): string {
+    this.nextModelRequestId += 1;
+    return `model-${this.nextModelRequestId}`;
+  }
+
+  private findReusableCacheEntry(
+    uri: string,
+    scopes: NormalizedScope[]
+  ): { entry: CachedModelResult; reuseType: "exact" | "superset" } | undefined {
+    const now = Date.now();
+    let supersetEntry: CachedModelResult | undefined;
+    for (const entry of this.modelResultCache.values()) {
+      if (entry.uri !== uri) {
+        continue;
+      }
+      if (now - entry.storedAt > MODEL_CACHE_TTL_MS) {
+        this.modelResultCache.delete(entry.key);
+        continue;
+      }
+      if (!canReuseCachedScopes(scopes, entry.scopes)) {
+        continue;
+      }
+      if (
+        entry.scopes.length === scopes.length &&
+        entry.scopes.every((scope, index) => scope === scopes[index])
+      ) {
+        return { entry, reuseType: "exact" };
+      }
+      if (!supersetEntry) {
+        supersetEntry = entry;
+      }
+    }
+    return supersetEntry
+      ? { entry: supersetEntry, reuseType: "superset" }
+      : undefined;
+  }
+
+  private findReusableInFlightRequest(
+    uri: string,
+    scopes: NormalizedScope[]
+  ): { request: InFlightModelRequest; reuseType: "exact" | "superset" } | undefined {
+    let supersetRequest: InFlightModelRequest | undefined;
+    for (const request of this.inFlightModelRequests.values()) {
+      if (request.uri !== uri) {
+        continue;
+      }
+      if (!canReuseCachedScopes(scopes, request.scopes)) {
+        continue;
+      }
+      if (
+        request.scopes.length === scopes.length &&
+        request.scopes.every((scope, index) => scope === scopes[index])
+      ) {
+        return { request, reuseType: "exact" };
+      }
+      if (!supersetRequest) {
+        supersetRequest = request;
+      }
+    }
+    return supersetRequest
+      ? { request: supersetRequest, reuseType: "superset" }
+      : undefined;
+  }
+
+  private storeModelResult(
+    uri: string,
+    scopes: NormalizedScope[],
+    result: SysMLModelResult
+  ): void {
+    const key = buildRequestKey(uri, scopes);
+    this.modelResultCache.set(key, {
+      key,
+      uri,
+      scopes,
+      storedAt: Date.now(),
+      result,
+    });
+  }
+
+  private async awaitWithCancellation<T>(
+    promise: Promise<T>,
+    token?: vscode.CancellationToken
+  ): Promise<T> {
+    if (!token) {
+      return await promise;
+    }
+    if (token.isCancellationRequested) {
+      throw new vscode.CancellationError();
+    }
+    return await new Promise<T>((resolve, reject) => {
+      let settled = false;
+      const subscription = token.onCancellationRequested(() => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        subscription.dispose();
+        reject(new vscode.CancellationError());
+      });
+      promise.then(
+        (value) => {
+          if (settled) {
+            return;
+          }
+          settled = true;
+          subscription.dispose();
+          resolve(value);
+        },
+        (error) => {
+          if (settled) {
+            return;
+          }
+          settled = true;
+          subscription.dispose();
+          reject(error);
+        }
+      );
+    });
+  }
+
+  invalidateModelCache(uri?: string | vscode.Uri): void {
+    if (!uri) {
+      this.modelResultCache.clear();
+      this.inFlightModelRequests.clear();
+      return;
+    }
+    const target = typeof uri === "string" ? uri.trim() : uri.toString();
+    for (const [key, entry] of this.modelResultCache.entries()) {
+      if (entry.uri === target) {
+        this.modelResultCache.delete(key);
+      }
+    }
+    for (const [key, request] of this.inFlightModelRequests.entries()) {
+      if (request.uri === target) {
+        this.inFlightModelRequests.delete(key);
+      }
+    }
+  }
+
+  clearModelCache(): void {
+    this.modelResultCache.clear();
+    this.inFlightModelRequests.clear();
+  }
+
   async getModel(
     uri: string,
     scopes?: SysMLModelParams["scope"],
-    token?: vscode.CancellationToken
+    token?: vscode.CancellationToken,
+    caller = "unknown"
   ): Promise<SysMLModelResult> {
+    const totalStartedAt = Date.now();
     const trimmed = (uri || "").trim();
+    const normalizedScopes = normalizeScopes(scopes);
+    const requestId = this.nextRequestId();
     if (!trimmed) {
       log("getModel: empty URI, returning empty model");
       return {
@@ -118,50 +332,182 @@ export class LspModelProvider {
         graph: { nodes: [], edges: [] },
       };
     }
-    log("getModel: uri (full)=", trimmed, "scopes:", scopes);
+    log("getModel: uri (full)=", trimmed, "scopes:", normalizedScopes);
+    const readyWaitStartedAt = Date.now();
     await this.whenReady;
+    const readyWaitMs = Date.now() - readyWaitStartedAt;
+    const cached = this.findReusableCacheEntry(trimmed, normalizedScopes);
+    if (cached) {
+      logPerf(
+        cached.reuseType === "exact"
+          ? "lspModelProvider:getModelCacheHit"
+          : "lspModelProvider:getModelSupersetCacheHit",
+        {
+          requestId,
+          caller,
+          uri: trimmed,
+          scopes: normalizedScopes,
+          cacheScopes: cached.entry.scopes,
+          readyWaitMs,
+          cacheAgeMs: Date.now() - cached.entry.storedAt,
+          totalMs: Date.now() - totalStartedAt,
+          nodeCount: cached.entry.result.graph?.nodes?.length ?? 0,
+          edgeCount: cached.entry.result.graph?.edges?.length ?? 0,
+        }
+      );
+      return cached.entry.result;
+    }
+    const joinedRequest = this.findReusableInFlightRequest(trimmed, normalizedScopes);
+    if (joinedRequest) {
+      const result = await this.awaitWithCancellation(
+        joinedRequest.request.promise,
+        token
+      );
+      logPerf(
+        joinedRequest.reuseType === "exact"
+          ? "lspModelProvider:getModelInFlightJoin"
+          : "lspModelProvider:getModelSupersetInFlightJoin",
+        {
+          requestId,
+          caller,
+          joinedRequestId: joinedRequest.request.requestId,
+          joinedCaller: joinedRequest.request.caller,
+          uri: trimmed,
+          scopes: normalizedScopes,
+          joinedScopes: joinedRequest.request.scopes,
+          readyWaitMs,
+          totalMs: Date.now() - totalStartedAt,
+          nodeCount: result.graph?.nodes?.length ?? 0,
+          edgeCount: result.graph?.edges?.length ?? 0,
+        }
+      );
+      return result;
+    }
     const params: SysMLModelParams = {
       textDocument: { uri: trimmed },
-      scope: scopes,
+      scope: normalizedScopes.length > 0 ? normalizedScopes : undefined,
     };
+    const requestKey = buildRequestKey(trimmed, normalizedScopes);
     const doRequest = () =>
-      this.client.sendRequest<SysMLModelResult>("sysml/model", params, token);
+      this.client.sendRequest<SysMLModelResult>("sysml/model", params);
 
     try {
-      let result = await doRequest();
-      const nodeCount = result.graph?.nodes?.length ?? 0;
-      const edgeCount = result.graph?.edges?.length ?? 0;
+      logPerf("lspModelProvider:getModelRequestStart", {
+        requestId,
+        caller,
+        uri: trimmed,
+        scopes: normalizedScopes,
+        readyWaitMs,
+        dedupe: "newRequest",
+      });
+      const requestStartedAt = Date.now();
+      const sharedPromise = (async () => {
+        let requestAttempts = 1;
+        let result = await doRequest();
+        let nodeCount = result.graph?.nodes?.length ?? 0;
+        let edgeCount = result.graph?.edges?.length ?? 0;
 
-      // Retry once if empty: server may not have processed didOpen/workspace scan yet
-      if (nodeCount === 0 && edgeCount === 0 && scopes?.includes("graph")) {
-        log("getModel: 0 nodes/edges for uri=", trimmed, ", retrying after 300ms");
-        await new Promise((r) => setTimeout(r, 300));
-        result = await doRequest();
-      }
+        if (
+          nodeCount === 0 &&
+          edgeCount === 0 &&
+          normalizedScopes.includes("graph")
+        ) {
+          log(
+            "getModel: 0 nodes/edges for uri=",
+            trimmed,
+            ", retrying after 300ms"
+          );
+          await new Promise((r) => setTimeout(r, 300));
+          requestAttempts += 1;
+          result = await doRequest();
+          nodeCount = result.graph?.nodes?.length ?? 0;
+          edgeCount = result.graph?.edges?.length ?? 0;
+        }
 
-      const containsCount = result.graph?.edges?.filter(
-        (e: { type?: string; rel_type?: string }) => (e.type || e.rel_type || "").toLowerCase() === "contains"
-      ).length ?? 0;
-      log(
-        "getModel result:",
-        result.graph?.nodes?.length ?? 0,
-        "nodes,",
-        result.graph?.edges?.length ?? 0,
-        "edges,",
-        containsCount,
-        "contains"
-      );
+        this.storeModelResult(trimmed, normalizedScopes, result);
+        const requestMs = Date.now() - requestStartedAt;
+        const containsCount = result.graph?.edges?.filter(
+          (e: { type?: string; rel_type?: string }) =>
+            (e.type || e.rel_type || "").toLowerCase() === "contains"
+        ).length ?? 0;
+        log(
+          "getModel result:",
+          result.graph?.nodes?.length ?? 0,
+          "nodes,",
+          result.graph?.edges?.length ?? 0,
+          "edges,",
+          containsCount,
+          "contains"
+        );
+        logPerf("lspModelProvider:getModel", {
+          requestId,
+          caller,
+          uri: trimmed,
+          scopes: normalizedScopes,
+          readyWaitMs,
+          requestMs,
+          totalMs: Date.now() - totalStartedAt,
+          requestAttempts,
+          nodeCount: result.graph?.nodes?.length ?? 0,
+          edgeCount: result.graph?.edges?.length ?? 0,
+          containsCount,
+          parseTimeMs: result.stats?.parseTimeMs,
+          modelBuildTimeMs: result.stats?.modelBuildTimeMs,
+          dedupe: "newRequest",
+        });
+        return result;
+      })();
+      const trackedPromise = sharedPromise.finally(() => {
+        const current = this.inFlightModelRequests.get(requestKey);
+        if (current?.requestId === requestId) {
+          this.inFlightModelRequests.delete(requestKey);
+        }
+      });
+      this.inFlightModelRequests.set(requestKey, {
+        key: requestKey,
+        uri: trimmed,
+        scopes: normalizedScopes,
+        requestId,
+        caller,
+        promise: trackedPromise,
+      });
+      const result = await this.awaitWithCancellation(trackedPromise, token);
       return result;
     } catch (e) {
       if (isCancellationError(e)) {
         log("getModel cancelled for uri=", trimmed);
+        logPerf("lspModelProvider:getModelCancelled", {
+          requestId,
+          caller,
+          uri: trimmed,
+          scopes: normalizedScopes,
+          readyWaitMs,
+          totalMs: Date.now() - totalStartedAt,
+        });
         throw e;
       }
       if (isClientNotRunningError(e)) {
         logError(`getModel failed because the language client is not running for ${trimmed}`, e);
+        logPerf("lspModelProvider:getModelClientNotRunning", {
+          requestId,
+          caller,
+          uri: trimmed,
+          scopes: normalizedScopes,
+          readyWaitMs,
+          totalMs: Date.now() - totalStartedAt,
+        });
         throw e;
       }
       logError("getModel failed", e);
+      logPerf("lspModelProvider:getModelFailed", {
+        requestId,
+        caller,
+        uri: trimmed,
+        scopes: normalizedScopes,
+        readyWaitMs,
+        totalMs: Date.now() - totalStartedAt,
+        error: e instanceof Error ? e.message : String(e),
+      });
       throw e;
     }
   }
@@ -225,7 +571,7 @@ export class LspModelProvider {
     elementQualifiedName?: string,
     token?: vscode.CancellationToken
   ): Promise<SysMLElementDTO | undefined> {
-    const result = await this.getModel(uri, ["graph"], token);
+    const result = await this.getModel(uri, ["graph"], token, "findElement");
     if (!result.graph?.nodes?.length) {
       return undefined;
     }

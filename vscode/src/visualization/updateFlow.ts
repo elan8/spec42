@@ -5,8 +5,8 @@ import { isVerboseLoggingEnabled, log, logError } from '../logger';
 
 export interface UpdateFlowDeps {
     panel: vscode.WebviewPanel;
-    document: vscode.TextDocument;
-    fileUris: vscode.Uri[];
+    getDocument: () => vscode.TextDocument;
+    getFileUris: () => vscode.Uri[];
     lspModelProvider: LspModelProvider;
     getCurrentView: () => string;
     getPendingPackageName: () => string | undefined;
@@ -18,11 +18,20 @@ export interface UpdateFlowDeps {
     clearPendingPackageName: () => void;
 }
 
-export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (force: boolean) => Promise<void> } {
+function logPerf(event: string, extra?: Record<string, unknown>): void {
+    try {
+        // eslint-disable-next-line no-console
+        console.log('[SysML][perf]', JSON.stringify({ event, ...(extra ?? {}) }));
+    } catch {
+        // ignore
+    }
+}
+
+export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (force: boolean, triggerSource?: string) => Promise<void> } {
     const {
         panel,
-        document,
-        fileUris,
+        getDocument,
+        getFileUris,
         lspModelProvider,
         getCurrentView,
         getPendingPackageName,
@@ -33,8 +42,30 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
         setNeedsUpdateWhenVisible,
         clearPendingPackageName,
     } = deps;
+    let bootstrapCompleted = false;
+    let inFlightUpdate:
+        | {
+            key: string;
+            triggerSource: string;
+            isBootstrap: boolean;
+            promise: Promise<void>;
+        }
+        | undefined;
+
+    function currentUpdateKey(): string {
+        const document = getDocument();
+        const fileUris = getFileUris();
+        return JSON.stringify({
+            documentUri: document.uri.toString(),
+            fileUris: fileUris.map((uri) => uri.toString()),
+            currentView: getCurrentView(),
+            pendingPackageName: getPendingPackageName() ?? null,
+        });
+    }
 
     async function doUpdateVisualization(): Promise<void> {
+        const document = getDocument();
+        const fileUris = getFileUris();
         try {
             log(
                 'updateFlow:fetch:start',
@@ -106,9 +137,28 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
         }
     }
 
-    async function update(forceUpdate: boolean = false): Promise<void> {
+    async function update(forceUpdate: boolean = false, triggerSource = 'unknown'): Promise<void> {
         if (getIsNavigating()) {
             return;
+        }
+
+        const isBootstrapTrigger = triggerSource === 'webviewReady';
+        if (!bootstrapCompleted && forceUpdate && !isBootstrapTrigger) {
+            logPerf('visualizer:updateSkippedDuplicateStartup', {
+                triggerSource,
+                reason: 'bootstrapPending',
+            });
+            return;
+        }
+
+        const key = currentUpdateKey();
+        if (inFlightUpdate && inFlightUpdate.key === key) {
+            logPerf('visualizer:updateJoined', {
+                triggerSource,
+                joinedTriggerSource: inFlightUpdate.triggerSource,
+                isBootstrap: inFlightUpdate.isBootstrap,
+            });
+            return await inFlightUpdate.promise;
         }
 
         // During session restore the panel may exist but not yet be considered
@@ -119,18 +169,51 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
             return;
         }
 
+        const document = getDocument();
         const content = document.getText();
         const contentHash = hashContent(content);
 
         if (!forceUpdate && contentHash === getLastContentHash()) {
             return;
         }
+        logPerf('visualizer:updateRequested', {
+            triggerSource,
+            forceUpdate,
+            isBootstrap: !bootstrapCompleted,
+            currentView: getCurrentView(),
+        });
         setLastContentHash(contentHash);
-
-        panel.webview.postMessage({ command: 'showLoading', message: 'Parsing SysML model...' });
-        await new Promise(resolve => setTimeout(resolve, 0));
-
-        await doUpdateVisualization();
+        const promise = (async () => {
+            logPerf('visualizer:updateStarted', {
+                triggerSource,
+                isBootstrap: !bootstrapCompleted,
+                currentView: getCurrentView(),
+            });
+            panel.webview.postMessage({ command: 'showLoading', message: 'Parsing SysML model...' });
+            await new Promise(resolve => setTimeout(resolve, 0));
+            const startedAt = Date.now();
+            try {
+                await doUpdateVisualization();
+                bootstrapCompleted = true;
+                logPerf('visualizer:updateCompleted', {
+                    triggerSource,
+                    isBootstrap: isBootstrapTrigger,
+                    currentView: getCurrentView(),
+                    totalMs: Date.now() - startedAt,
+                });
+            } finally {
+                if (inFlightUpdate?.key === key) {
+                    inFlightUpdate = undefined;
+                }
+            }
+        })();
+        inFlightUpdate = {
+            key,
+            triggerSource,
+            isBootstrap: !bootstrapCompleted,
+            promise,
+        };
+        await promise;
     }
 
     return { update };

@@ -22,8 +22,8 @@ use crate::host::config::Spec42Config;
 use crate::views::dto;
 use crate::workspace::ServerState;
 use custom::{
-    sysml_clear_cache_result, sysml_diagram_result, sysml_feature_inspector_result,
-    sysml_model_result, sysml_server_stats_result,
+    mark_sysml_model_parse_cached, sysml_clear_cache_result, sysml_diagram_result,
+    sysml_feature_inspector_result, sysml_model_result, sysml_server_stats_result,
 };
 
 struct Backend {
@@ -318,8 +318,62 @@ impl LanguageServer for Backend {
 
 impl Backend {
     async fn sysml_model(&self, params: serde_json::Value) -> Result<dto::SysmlModelResultDto> {
-        let mut state = self.state.write().await;
-        sysml_model_result(&self.client, &mut state, &self.config, params).await
+        let request_start = Instant::now();
+        let read_lock_wait_start = Instant::now();
+        let state = self.state.read().await;
+        let read_lock_wait_ms = read_lock_wait_start.elapsed().as_millis().max(1);
+        let (response, parse_cached_uri) =
+            sysml_model_result(&self.client, &state, &self.config, params).await?;
+        drop(state);
+
+        let cache_mark_lock_wait_start = Instant::now();
+        if let Some(uri) = parse_cached_uri {
+            let mut state = self.state.write().await;
+            mark_sysml_model_parse_cached(&mut state, &uri);
+        }
+        let cache_mark_lock_wait_ms =
+            cache_mark_lock_wait_start.elapsed().as_millis().max(1);
+        let total_ms = request_start.elapsed().as_millis().max(1);
+        let parse_time_ms = response
+            .stats
+            .as_ref()
+            .map(|stats| stats.parse_time_ms)
+            .unwrap_or(0);
+        let model_build_time_ms = response
+            .stats
+            .as_ref()
+            .map(|stats| stats.model_build_time_ms)
+            .unwrap_or(0);
+        let node_count = response
+            .graph
+            .as_ref()
+            .map(|graph| graph.nodes.len())
+            .unwrap_or(0);
+        let edge_count = response
+            .graph
+            .as_ref()
+            .map(|graph| graph.edges.len())
+            .unwrap_or(0);
+        let client = self.client.clone();
+        tokio::spawn(async move {
+            client
+                .log_message(
+                    MessageType::INFO,
+                    format!(
+                        "[SysML][perf] {{\"event\":\"backend:sysmlModelRequest\",\"lockWaitMs\":{},\"readLockWaitMs\":{},\"cacheMarkLockWaitMs\":{},\"totalMs\":{},\"parseTimeMs\":{},\"modelBuildTimeMs\":{},\"graphNodes\":{},\"graphEdges\":{}}}",
+                        read_lock_wait_ms + cache_mark_lock_wait_ms,
+                        read_lock_wait_ms,
+                        cache_mark_lock_wait_ms,
+                        total_ms,
+                        parse_time_ms,
+                        model_build_time_ms,
+                        node_count,
+                        edge_count,
+                    ),
+                )
+                .await;
+        });
+        Ok(response)
     }
 
     async fn sysml_diagram(&self, params: serde_json::Value) -> Result<dto::SysmlDiagramResultDto> {

@@ -8,6 +8,15 @@ import type {
 } from "../providers/sysmlModelTypes";
 import { graphToElementTree } from "../visualization/prepareData";
 
+function logPerf(event: string, extra?: Record<string, unknown>): void {
+  try {
+    // eslint-disable-next-line no-console
+    console.log("[SysML][perf]", JSON.stringify({ event, ...(extra ?? {}) }));
+  } catch {
+    // ignore
+  }
+}
+
 /** Helper to convert RangeDTO to vscode.Range for openLocation. */
 export function toVscodeRange(dto: RangeDTO): vscode.Range {
   return new vscode.Range(
@@ -379,6 +388,13 @@ type WorkspaceLoadStatus = {
 
 type ModelExplorerDebugState = {
   lastRevealedElementId?: string;
+  pendingDocumentLoadUri?: string;
+};
+
+type InFlightDocumentLoad = {
+  uri: string;
+  generation: number;
+  promise: Promise<void>;
 };
 
 export class ModelExplorerProvider
@@ -415,6 +431,8 @@ export class ModelExplorerProvider
     failures: 0,
   };
   private documentLoadState: "idle" | "loading" | "ready" | "error" = "idle";
+  private documentLoadGeneration = 0;
+  private inFlightDocumentLoad: InFlightDocumentLoad | undefined;
 
   constructor(private readonly modelProvider: LspModelProvider) {}
 
@@ -425,6 +443,7 @@ export class ModelExplorerProvider
   getDebugState(): ModelExplorerDebugState {
     return {
       lastRevealedElementId: this.lastRevealedElementId,
+      pendingDocumentLoadUri: this.inFlightDocumentLoad?.uri,
     };
   }
 
@@ -499,9 +518,15 @@ export class ModelExplorerProvider
     range?: RangeDTO
   ): Promise<void> {
     if (!this.treeView) return;
+    const startedAt = Date.now();
     this.ensureTreeCache();
     const item = this.findElementTreeItem(docUri, elementId, range);
     if (!item) {
+      logPerf("modelExplorer:revealElementMiss", {
+        uri: docUri.toString(),
+        elementId,
+        totalMs: Date.now() - startedAt,
+      });
       return;
     }
     try {
@@ -511,8 +536,18 @@ export class ModelExplorerProvider
         expand: true,
       });
       this.lastRevealedElementId = item.element.id;
+      logPerf("modelExplorer:revealElement", {
+        uri: docUri.toString(),
+        elementId: item.element.id,
+        totalMs: Date.now() - startedAt,
+      });
     } catch {
       // Ignore reveal failures when the view is not visible yet.
+      logPerf("modelExplorer:revealElementFailed", {
+        uri: docUri.toString(),
+        elementId: item.element.id,
+        totalMs: Date.now() - startedAt,
+      });
     }
   }
 
@@ -537,6 +572,7 @@ export class ModelExplorerProvider
       failures: 0,
     };
     this.documentLoadState = "idle";
+    this.inFlightDocumentLoad = undefined;
     this._onDidChangeTreeData.fire();
   }
 
@@ -592,9 +628,12 @@ export class ModelExplorerProvider
                 const result = await this.modelProvider.getModel(
                   uriStr,
                   ["graph", "stats"],
-                  token
+                  token,
+                  "modelExplorer.loadWorkspaceModel"
                 );
+                const graphTransformStartedAt = Date.now();
                 const elements = result.graph ? (graphToElementTree(result.graph) as SysMLElementDTO[]) : [];
+                const graphTransformMs = Date.now() - graphTransformStartedAt;
                 if (elements.length) {
                   log("loadWorkspaceModel: loaded", uriStr, "->", elements.length, "elements");
                   this.workspaceFileData.set(uriStr, {
@@ -604,6 +643,16 @@ export class ModelExplorerProvider
                 } else {
                   log("loadWorkspaceModel: 0 elements for", uriStr, "(graph nodes:", result.graph?.nodes?.length ?? 0, ")");
                 }
+                logPerf("modelExplorer:workspaceFileLoaded", {
+                  uri: uriStr,
+                  totalMs: Date.now() - fileStartMs,
+                  graphTransformMs,
+                  elementCount: elements.length,
+                  nodeCount: result.graph?.nodes?.length ?? 0,
+                  edgeCount: result.graph?.edges?.length ?? 0,
+                  parseTimeMs: result.stats?.parseTimeMs,
+                  modelBuildTimeMs: result.stats?.modelBuildTimeMs,
+                });
               } catch (e) {
                 failures += 1;
                 if (e instanceof vscode.CancellationError || token?.isCancellationRequested) {
@@ -611,6 +660,11 @@ export class ModelExplorerProvider
                   break;
                 }
                 logError(`loadWorkspaceModel: skip file (failed): ${uriStr}`, e);
+                logPerf("modelExplorer:workspaceFileFailed", {
+                  uri: uriStr,
+                  totalMs: Date.now() - fileStartMs,
+                  error: e instanceof Error ? e.message : String(e),
+                });
               } finally {
                 perFileDurationsMs.push(Date.now() - fileStartMs);
               }
@@ -660,7 +714,40 @@ export class ModelExplorerProvider
     document: vscode.TextDocument,
     token?: vscode.CancellationToken
   ): Promise<void> {
+    const uriString = document.uri.toString();
+    if (this.inFlightDocumentLoad?.uri === uriString) {
+      log("loadDocument: joining in-flight load for", uriString);
+      logPerf("modelExplorer:loadDocumentJoin", {
+        uri: uriString,
+        generation: this.inFlightDocumentLoad.generation,
+      });
+      return await this.inFlightDocumentLoad.promise;
+    }
+    const generation = ++this.documentLoadGeneration;
+    const promise = this.performDocumentLoad(document, generation, token)
+      .finally(() => {
+        if (
+          this.inFlightDocumentLoad?.uri === uriString &&
+          this.inFlightDocumentLoad.generation === generation
+        ) {
+          this.inFlightDocumentLoad = undefined;
+        }
+      });
+    this.inFlightDocumentLoad = {
+      uri: uriString,
+      generation,
+      promise,
+    };
+    return await promise;
+  }
+
+  private async performDocumentLoad(
+    document: vscode.TextDocument,
+    generation: number,
+    token?: vscode.CancellationToken
+  ): Promise<void> {
     log("loadDocument:", document.uri.toString().slice(-50));
+    const startedAt = Date.now();
     this.workspaceMode = false;
     this.workspaceFileData.clear();
     this.workspaceFileUris = [];
@@ -673,18 +760,58 @@ export class ModelExplorerProvider
       const result = await this.modelProvider.getModel(
         document.uri.toString(),
         ["graph", "stats"],
-        token
+        token,
+        "modelExplorer.loadDocument"
       );
+      if (generation !== this.documentLoadGeneration) {
+        logPerf("modelExplorer:loadDocumentStale", {
+          uri: document.uri.toString(),
+          generation,
+          activeGeneration: this.documentLoadGeneration,
+          totalMs: Date.now() - startedAt,
+        });
+        return;
+      }
+      const graphTransformStartedAt = Date.now();
       this.lastElements = result.graph
         ? (graphToElementTree(result.graph) as SysMLElementDTO[])
         : [];
+      const graphTransformMs = Date.now() - graphTransformStartedAt;
       this.documentLoadState = "ready";
       log("loadDocument: done,", this.lastElements.length, "elements");
+      logPerf("modelExplorer:loadDocument", {
+        uri: document.uri.toString(),
+        totalMs: Date.now() - startedAt,
+        graphTransformMs,
+        elementCount: this.lastElements.length,
+        nodeCount: result.graph?.nodes?.length ?? 0,
+        edgeCount: result.graph?.edges?.length ?? 0,
+        parseTimeMs: result.stats?.parseTimeMs,
+        modelBuildTimeMs: result.stats?.modelBuildTimeMs,
+      });
     } catch (error) {
+      if (generation !== this.documentLoadGeneration) {
+        logPerf("modelExplorer:loadDocumentStale", {
+          uri: document.uri.toString(),
+          generation,
+          activeGeneration: this.documentLoadGeneration,
+          totalMs: Date.now() - startedAt,
+        });
+        return;
+      }
       if (error instanceof vscode.CancellationError || token?.isCancellationRequested) {
         log("loadDocument: cancelled for", document.uri.toString());
+        logPerf("modelExplorer:loadDocumentCancelled", {
+          uri: document.uri.toString(),
+          totalMs: Date.now() - startedAt,
+        });
       } else {
         logError(`loadDocument failed for ${document.uri.toString()}`, error);
+        logPerf("modelExplorer:loadDocumentFailed", {
+          uri: document.uri.toString(),
+          totalMs: Date.now() - startedAt,
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
       this.lastElements = [];
       this.documentLoadState = "error";
@@ -736,40 +863,14 @@ export class ModelExplorerProvider
 
   async getChildren(element?: ExplorerTreeItem): Promise<ExplorerTreeItem[]> {
     if (!element) {
-      if (!this.lastUri && !this.workspaceMode) {
-        const active = vscode.window.activeTextEditor?.document;
-        if (
-          active &&
-          (active.languageId === "sysml" || active.languageId === "kerml")
-        ) {
-          this.documentLoadState = "loading";
-          try {
-            const result = await this.modelProvider.getModel(
-              active.uri.toString(),
-              ["graph", "stats"]
-            );
-            this.lastUri = active.uri;
-            this.lastElements = result.graph
-              ? (graphToElementTree(result.graph) as SysMLElementDTO[])
-              : [];
-            this.documentLoadState = "ready";
-          } catch (error) {
-            logError(`getChildren: failed to load active document model for ${active.uri.toString()}`, error);
-            this.lastUri = active.uri;
-            this.lastElements = [];
-            this.documentLoadState = "error";
-            return [
-              new ExplorerInfoItem(
-                "Model data unavailable",
-                "Open the SysML output for details",
-                `The language server did not return model data for ${active.uri.fsPath}.`,
-                "warning"
-              ),
-            ];
-          }
-        } else {
-          return [];
-        }
+      const active = vscode.window.activeTextEditor?.document;
+      if (
+        !this.lastUri &&
+        !this.workspaceMode &&
+        (!active ||
+          (active.languageId !== "sysml" && active.languageId !== "kerml"))
+      ) {
+        return [];
       }
       return this.ensureTreeCache();
     }
@@ -962,32 +1063,60 @@ export class ModelExplorerProvider
     if (this.rootItemsCache) {
       return this.rootItemsCache;
     }
+    const startedAt = Date.now();
 
     const infoItems = this.getWorkspaceInfoItems();
     if (this.workspaceMode && this.workspaceFileData.size > 0) {
       if (this._workspaceViewMode === "byFile") {
+        const metadataStartedAt = Date.now();
         this.buildElementMetadata(
           Array.from(this.workspaceFileData.values()).flatMap((data) =>
             data.elements.map((element) => ({ element, uri: data.uri }))
           )
         );
+        const metadataMs = Date.now() - metadataStartedAt;
+        const itemBuildStartedAt = Date.now();
         const items = Array.from(this.workspaceFileData.entries()).map(([, data]) =>
           this.createFileItem(data.uri, data.elements)
         );
+        const itemBuildMs = Date.now() - itemBuildStartedAt;
         for (const item of items) {
           this.uriToRootItems.set(item.fileUri.toString(), [item]);
         }
         this.rootItemsCache = [...infoItems, ...items];
+        logPerf("modelExplorer:buildTreeCache", {
+          mode: "workspace-byFile",
+          metadataMs,
+          itemBuildMs,
+          totalMs: Date.now() - startedAt,
+          rootItemCount: this.rootItemsCache.length,
+          fileCount: this.workspaceFileData.size,
+        });
         return this.rootItemsCache;
       }
       const entries = Array.from(this.workspaceFileData.entries());
+      const mergeStartedAt = Date.now();
       const merged = this.mergeNamespaceElements(entries);
+      const mergeMs = Date.now() - mergeStartedAt;
+      const metadataStartedAt = Date.now();
       this.buildElementMetadata(merged);
+      const metadataMs = Date.now() - metadataStartedAt;
+      const itemBuildStartedAt = Date.now();
       const items = merged.map(({ element, uri }) =>
         this.createModelTreeItem(element, uri)
       );
+      const itemBuildMs = Date.now() - itemBuildStartedAt;
       this.buildSemanticUriMapping(items);
       this.rootItemsCache = [...infoItems, ...items];
+      logPerf("modelExplorer:buildTreeCache", {
+        mode: "workspace-bySemantic",
+        mergeMs,
+        metadataMs,
+        itemBuildMs,
+        totalMs: Date.now() - startedAt,
+        rootItemCount: this.rootItemsCache.length,
+        fileCount: this.workspaceFileData.size,
+      });
       return this.rootItemsCache;
     }
 
@@ -1005,13 +1134,46 @@ export class ModelExplorerProvider
           "sync"
         ),
       ];
+      logPerf("modelExplorer:buildTreeCache", {
+        mode: "document-loading",
+        totalMs: Date.now() - startedAt,
+      });
+      return this.rootItemsCache;
+    }
+
+    if (
+      !this.workspaceMode &&
+      !this.lastUri &&
+      !this.lastElements &&
+      vscode.window.activeTextEditor &&
+      (vscode.window.activeTextEditor.document.languageId === "sysml" ||
+        vscode.window.activeTextEditor.document.languageId === "kerml")
+    ) {
+      this.rootItemsCache = [
+        new ExplorerInfoItem(
+          "Model pending",
+          "Waiting for active document load",
+          "The Model Explorer is waiting for the coordinated active-document load to finish.",
+          "sync"
+        ),
+      ];
+      logPerf("modelExplorer:buildTreeCache", {
+        mode: "document-pending",
+        totalMs: Date.now() - startedAt,
+      });
       return this.rootItemsCache;
     }
 
     if (this.lastUri && this.lastElements) {
+      const mergeStartedAt = Date.now();
       const merged = this.mergeElements(this.lastElements);
+      const mergeMs = Date.now() - mergeStartedAt;
+      const metadataStartedAt = Date.now();
       this.buildElementMetadata(merged.map((element) => ({ element, uri: this.lastUri! })));
+      const metadataMs = Date.now() - metadataStartedAt;
+      const itemBuildStartedAt = Date.now();
       const items = merged.map((e) => this.createModelTreeItem(e, this.lastUri!));
+      const itemBuildMs = Date.now() - itemBuildStartedAt;
       this.uriToRootItems.set(this.lastUri.toString(), items);
       if (items.length === 0 && this.documentLoadState === "ready") {
         this.rootItemsCache = [
@@ -1022,13 +1184,34 @@ export class ModelExplorerProvider
             "info"
           ),
         ];
+        logPerf("modelExplorer:buildTreeCache", {
+          mode: "document-empty",
+          mergeMs,
+          metadataMs,
+          itemBuildMs,
+          totalMs: Date.now() - startedAt,
+          rootItemCount: this.rootItemsCache.length,
+        });
         return this.rootItemsCache;
       }
       this.rootItemsCache = items;
+      logPerf("modelExplorer:buildTreeCache", {
+        mode: "document",
+        mergeMs,
+        metadataMs,
+        itemBuildMs,
+        totalMs: Date.now() - startedAt,
+        rootItemCount: items.length,
+        elementCount: this.lastElements.length,
+      });
       return this.rootItemsCache;
     }
 
     this.rootItemsCache = [];
+    logPerf("modelExplorer:buildTreeCache", {
+      mode: "empty",
+      totalMs: Date.now() - startedAt,
+    });
     return this.rootItemsCache;
   }
 

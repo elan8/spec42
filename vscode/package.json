@@ -202,11 +202,6 @@
         "category": "SysML"
       },
       {
-        "command": "sysml.debugSemanticTokenAtCursor",
-        "title": "Debug: Semantic Token at Cursor",
-        "category": "SysML"
-      },
-      {
         "command": "sysml.debugDumpGraphForGeneralView",
         "title": "Debug: Dump Graph for General View",
         "category": "SysML"
@@ -405,6 +400,12 @@
           "default": 500,
           "minimum": 50,
           "description": "Maximum number of .sysml or .kerml files to discover per workspace folder and file type during workspace indexing. Increase for larger repositories at the cost of slower loading."
+        },
+        "spec42.startup.workspaceIndexing": {
+          "type": "string",
+          "enum": ["lazy", "background", "eager"],
+          "default": "lazy",
+          "description": "Control when the Model Explorer indexes the full workspace at startup. 'lazy' loads only the active document until workspace mode is requested, 'background' starts indexing after a short delay, and 'eager' starts indexing immediately."
         },
         "spec42.debug": {
           "type": "boolean",

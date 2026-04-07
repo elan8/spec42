@@ -81,7 +81,6 @@ fn token_ast_type(
 
 /// Override token types using AST-derived (range, type) pairs. VARIABLE, NAMESPACE, and KEYWORD
 /// tokens are overridden when the AST has a role for that span (e.g. Property, Class).
-/// When log_out is Some, appends debug lines (AST ranges and each override) for LSP log_message.
 fn apply_ast_semantic_ranges(
     tokens: &mut [(u32, u32, u32, u32)],
     ast_ranges: &[(SourceRange, u32)],
@@ -235,7 +234,8 @@ fn encode(tokens: &[(u32, u32, u32, u32)], lines: &[&str]) -> Vec<SemanticToken>
 /// Produce semantic tokens for the full document.
 /// When `ast_ranges` is Some (from a successful parse), those (range, token_type) pairs
 /// override variable/namespace tokens for AST-driven highlighting; otherwise the lexer uses heuristics.
-/// Returns (tokens, debug_log_lines). When ast_ranges is Some, debug_log_lines contains AST range and override details for LSP logging.
+/// Returns semantic tokens plus an optional debug-log payload.
+/// The debug payload is intentionally left empty in production to avoid flooding the output.
 pub fn semantic_tokens_full(
     text: &str,
     ast_ranges: Option<&[(SourceRange, u32)]>,
@@ -248,9 +248,9 @@ pub fn semantic_tokens_full(
         in_block_comment = still_in;
         all_tokens.extend(line_tokens);
     }
-    let mut log_lines = Vec::new();
+    let log_lines = Vec::new();
     if let Some(ranges) = ast_ranges {
-        apply_ast_semantic_ranges(&mut all_tokens, ranges, &lines, Some(&mut log_lines));
+        apply_ast_semantic_ranges(&mut all_tokens, ranges, &lines, None);
     }
     let tokens = SemanticTokens {
         result_id: None,
@@ -272,7 +272,8 @@ fn block_comment_state_after_line(lines: &[&str], through_line: u32) -> bool {
 /// Produce semantic tokens for a range (for textDocument/semanticTokens/range).
 /// Only tokens that overlap the given range are included.
 /// When `ast_ranges` is Some, those (range, type) pairs override variable/namespace tokens.
-/// Returns (tokens, debug_log_lines) like semantic_tokens_full.
+/// Returns semantic tokens plus an optional debug-log payload.
+/// The debug payload is intentionally left empty in production to avoid flooding the output.
 pub fn semantic_tokens_range(
     text: &str,
     start_line: u32,
@@ -312,9 +313,9 @@ pub fn semantic_tokens_range(
         }
     }
 
-    let mut log_lines = Vec::new();
+    let log_lines = Vec::new();
     if let Some(ranges) = ast_ranges {
-        apply_ast_semantic_ranges(&mut all_tokens, ranges, &lines, Some(&mut log_lines));
+        apply_ast_semantic_ranges(&mut all_tokens, ranges, &lines, None);
     }
 
     let tokens = SemanticTokens {

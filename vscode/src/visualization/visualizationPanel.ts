@@ -132,7 +132,7 @@ export class VisualizationPanel {
                     this._needsUpdateWhenVisible = false;
                     // Reset content hash so the update is not skipped
                     this._lastContentHash = '';
-                    this.updateVisualization(true);
+                    this.updateVisualization(true, 'panelReveal');
                 }
             }
         }, null, this._disposables);
@@ -141,8 +141,8 @@ export class VisualizationPanel {
 
         this._updateFlow = createUpdateVisualizationFlow({
             panel: this._panel,
-            document: this._document,
-            fileUris: this._fileUris,
+            getDocument: () => this._document,
+            getFileUris: () => this._fileUris,
             lspModelProvider: this._lspModelProvider,
             getCurrentView: () => this._currentView,
             getPendingPackageName: () => this._pendingPackageName,
@@ -168,7 +168,7 @@ export class VisualizationPanel {
             document: this._document,
             lspModelProvider: this._lspModelProvider,
             fileUris: this._fileUris,
-            updateVisualization: (force) => this.updateVisualization(force),
+            updateVisualization: (force, triggerSource) => this.updateVisualization(force, triggerSource),
             setNavigating: (v) => { this._isNavigating = v; },
             setCurrentView: (v) => {
                 this._currentView = v;
@@ -233,7 +233,7 @@ export class VisualizationPanel {
             if (VisualizationPanel.currentPanel._document !== document || fileUrisChanged) {
                 VisualizationPanel.currentPanel._document = document;
                 VisualizationPanel.currentPanel._lastContentHash = ''; // force re-parse
-                VisualizationPanel.currentPanel.updateVisualization(true);
+                VisualizationPanel.currentPanel.updateVisualization(true, 'createOrShow');
             }
             VisualizationPanel.currentPanel.persistRestoreState();
             return;
@@ -307,8 +307,8 @@ export class VisualizationPanel {
         this._panel.webview.postMessage({ command: 'export', format: format.toLowerCase(), scale });
     }
 
-    private updateVisualization(forceUpdate: boolean = false): Promise<void> {
-        return this._updateFlow.update(forceUpdate);
+    private updateVisualization(forceUpdate: boolean = false, triggerSource: string = 'unknown'): Promise<void> {
+        return this._updateFlow.update(forceUpdate, triggerSource);
     }
 
     public getDocument(): vscode.TextDocument {
@@ -388,14 +388,14 @@ export class VisualizationPanel {
             }
             this._fileChangeDebounceTimer = setTimeout(() => {
                 this._fileChangeDebounceTimer = undefined;
-                this.updateVisualization(true);
+                this.updateVisualization(true, 'fileChanged');
             }, 400);
         }
     }
 
     /** Force a visualizer refresh (e.g. after cache clear). */
     public refresh(): void {
-        this.updateVisualization(true);
+        this.updateVisualization(true, 'manualRefresh');
     }
 
     public dispose() {
