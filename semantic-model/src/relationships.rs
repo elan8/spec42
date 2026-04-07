@@ -25,6 +25,8 @@ const TYPING_TARGET_KINDS: &[&str] = &[
     "requirement def",
     "use case def",
     "concern def",
+    // KerML modeled declarations (`datatype`, `class`, …) from `.kerml` / library sources.
+    "kermlDecl",
 ];
 
 const SPECIALIZES_TARGET_KINDS: &[&str] = &["part def"];
@@ -46,6 +48,7 @@ const DISAMBIGUATION_SUFFIX_KINDS: &[&str] = &[
     "occurrence_def",
     "interface",
     "concern_def",
+    "kermlDecl",
 ];
 
 /// Normalizes "a.b.c" to "a::b::c" for node lookup (SysML uses dot for feature access).
@@ -99,7 +102,7 @@ pub(crate) fn type_ref_candidates_with_kind(
 }
 
 fn element_kind_allowed(element_kind: &str, allowed_kinds: &[&str]) -> bool {
-    allowed_kinds.iter().any(|k| *k == element_kind)
+    allowed_kinds.contains(&element_kind)
 }
 
 fn resolve_type_target_local(
@@ -407,6 +410,46 @@ pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
     }
 }
 
+/// For an unqualified type name, returns fully qualified names introduced by `import` declarations
+/// in the same document (e.g. `private import ScalarValues::Real` → `ScalarValues::Real`).
+/// Also handles `import P::*` by producing `P::<simple_name>`.
+fn qualified_names_from_imports_for_simple_type(
+    g: &SemanticGraph,
+    uri: &Url,
+    simple_name: &str,
+) -> Vec<String> {
+    let mut out = Vec::new();
+    for node in g.nodes_for_uri(uri) {
+        if node.element_kind != "import" {
+            continue;
+        }
+        let Some(target) = node.attributes.get("importTarget").and_then(|v| v.as_str()) else {
+            continue;
+        };
+        let target = target.trim();
+        let import_all = node
+            .attributes
+            .get("importAll")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        if import_all {
+            if let Some(pkg) = target.strip_suffix("::*") {
+                let pkg = pkg.trim();
+                if !pkg.is_empty() {
+                    out.push(format!("{}::{}", pkg, simple_name));
+                }
+            }
+        } else if let Some(last) = target.rsplit("::").next() {
+            if last == simple_name {
+                out.push(normalize_for_lookup(target));
+            }
+        }
+    }
+    out.sort();
+    out.dedup();
+    out
+}
+
 /// Adds a typing or specializes edge when target may be in a different URI.
 /// Only matches targets that are actual types (part def, port def, interface, requirement def for typing;
 /// part def only for specializes).
@@ -432,10 +475,17 @@ fn add_typing_edge_cross_document(
     };
 
     // 1) Deterministic candidate qualified names (plain + #kind variants), searched across all URIs.
+    //    For unqualified references, also apply same-document imports (SysML scoping).
     for suffix_kind in DISAMBIGUATION_SUFFIX_KINDS {
-        for tgt_qualified in
-            type_ref_candidates_with_kind(container_prefix, &normalized_type_ref, suffix_kind)
-        {
+        let mut candidates =
+            type_ref_candidates_with_kind(container_prefix, &normalized_type_ref, suffix_kind);
+        if !normalized_type_ref.contains("::") {
+            for q in qualified_names_from_imports_for_simple_type(g, &src_id.uri, &normalized_type_ref)
+            {
+                candidates.extend(type_ref_candidates_with_kind(None, &q, suffix_kind));
+            }
+        }
+        for tgt_qualified in candidates {
             let tgt_qualified = normalize_for_lookup(&tgt_qualified);
             if let Some(target_ids) = g.node_ids_for_qualified_name(&tgt_qualified) {
                 for tgt_id in target_ids {

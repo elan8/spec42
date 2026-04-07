@@ -10,7 +10,8 @@ use crate::common::util;
 use crate::host::config::Spec42Config;
 use crate::workspace::{
     clear_documents_under_roots, ingest_parsed_scan_entries, parse_scanned_entries,
-    refresh_document, remove_document, scan_sysml_files, store_document_text, ServerState,
+    rebuild_non_library_document_links, refresh_document, remove_document, scan_sysml_files,
+    store_document_text, ServerState,
 };
 
 use super::capabilities::server_capabilities;
@@ -157,6 +158,7 @@ pub(crate) async fn initialized(
                 }
             }
         }
+        rebuild_non_library_document_links(&mut st);
         let merge_index_ms = merge_index_start.elapsed().as_millis() as u64;
         info!(
             trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
@@ -344,6 +346,7 @@ pub(crate) async fn did_change_configuration(
                 warnings.push(format!("didChangeConfiguration: {}", message));
             }
         }
+        rebuild_non_library_document_links(&mut st);
         drop(st);
         if summary.roots_skipped_non_file > 0
             || summary.read_failures > 0

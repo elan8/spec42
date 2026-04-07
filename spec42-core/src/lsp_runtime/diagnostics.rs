@@ -39,11 +39,7 @@ pub(crate) async fn publish_workspace_diagnostics(
         } else {
             st.index
                 .iter()
-                .filter(|(uri, _)| {
-                    !util::uri_under_any_library(uri, &st.library_paths)
-                        && (st.workspace_roots.is_empty()
-                            || uri_under_any_root(uri, &st.workspace_roots))
-                })
+                .filter(|(uri, _)| !util::uri_under_any_library(uri, &st.library_paths))
                 .map(|(uri, entry)| (uri.clone(), entry.content.clone()))
                 .collect()
         }
@@ -129,16 +125,4 @@ async fn collect_diagnostics_for_document(
         }
     }
     diagnostics
-}
-
-fn uri_under_any_root(uri: &Url, roots: &[Url]) -> bool {
-    let uri_path = match uri.to_file_path() {
-        Ok(path) => path,
-        Err(_) => return false,
-    };
-    roots.iter().any(|root| {
-        root.to_file_path()
-            .map(|root_path| uri_path.starts_with(root_path))
-            .unwrap_or(false)
-    })
 }

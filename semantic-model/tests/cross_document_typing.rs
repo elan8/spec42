@@ -41,3 +41,42 @@ fn cross_document_requirement_usage_typing_after_merge() {
         edges
     );
 }
+
+#[test]
+fn cross_document_attribute_typing_resolves_via_package_import() {
+    let lib = r#"
+        package ScalarValues {
+            attribute def Real;
+        }
+    "#;
+    let main = r#"
+        package Demo {
+            private import ScalarValues::Real;
+            part def P {
+                attribute x : Real;
+            }
+        }
+    "#;
+    let root_lib = parse(lib).expect("parse lib");
+    let root_main = parse(main).expect("parse main");
+    let uri_lib = Url::parse("file:///scalar_values.sysml").expect("uri lib");
+    let uri_main = Url::parse("file:///main.sysml").expect("uri main");
+
+    let mut g = SemanticGraph::new();
+    g.merge(build_graph_from_doc(&root_lib, &uri_lib));
+    g.merge(build_graph_from_doc(&root_main, &uri_main));
+
+    add_cross_document_edges_for_uri(&mut g, &uri_main);
+
+    let edges = g.edges_for_uri_as_strings(&uri_main);
+    let has_typing = edges.iter().any(|(src, tgt, kind, _)| {
+        *kind == RelationshipKind::Typing
+            && src.ends_with("x")
+            && tgt.ends_with("Real")
+    });
+    assert!(
+        has_typing,
+        "expected typing edge from attribute x to ScalarValues::Real via import; edges: {:?}",
+        edges
+    );
+}

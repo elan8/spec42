@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.1] - 2026-04-07
+
+### Fixed
+
+- **Imported library type resolution** - Resolved cross-document typing for unqualified type references introduced via `import` declarations, including KerML modeled declarations from library sources.
+- **Loose-file diagnostics after library refresh** - Rebuilt semantic links for non-library documents after initialization/configuration library scans so files outside workspace roots stop reporting stale unresolved-type diagnostics.
+
 ## [0.15.0] - 2026-04-07
 
 ### Added
@@ -225,6 +232,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.15.1]: https://github.com/elan8/spec42/releases/tag/v0.15.1
 [0.11.0]: https://github.com/elan8/spec42/releases/tag/v0.11.0
 [0.15.0]: https://github.com/elan8/spec42/releases/tag/v0.15.0
 [0.14.0]: https://github.com/elan8/spec42/releases/tag/v0.14.0

@@ -16,6 +16,7 @@ use crate::relationships::{
 };
 
 use super::expressions;
+use super::modeled_kerml_name::extract_modeled_decl_name;
 use super::{add_node_and_recurse, qualified_name_for_node};
 use super::{interface_def, part_def, part_usage, port_def, state, stubs, use_case};
 
@@ -1297,13 +1298,10 @@ pub(super) fn build_from_package_body_element(
         PBE::KermlSemanticDecl(k) => {
             if let Some(pid) = parent_id {
                 let kv = &k.value;
-                let qualified = qualified_name_for_node(
-                    g,
-                    uri,
-                    container_prefix,
-                    "_kermlSemantic",
-                    "kermlDecl",
-                );
+                let display_name =
+                    extract_modeled_decl_name(&kv.bnf_production, &kv.text, "_kermlSemantic");
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &display_name, "kermlDecl");
                 let mut attrs = HashMap::new();
                 attrs.insert(
                     "bnfProduction".to_string(),
@@ -1315,7 +1313,7 @@ pub(super) fn build_from_package_body_element(
                     uri,
                     &qualified,
                     "kermlDecl",
-                    "_kermlSemantic".to_string(),
+                    display_name,
                     span_to_range(&k.span),
                     attrs,
                     Some(pid),
@@ -1325,8 +1323,10 @@ pub(super) fn build_from_package_body_element(
         PBE::KermlFeatureDecl(k) => {
             if let Some(pid) = parent_id {
                 let kv = &k.value;
+                let display_name =
+                    extract_modeled_decl_name(&kv.bnf_production, &kv.text, "_kermlFeature");
                 let qualified =
-                    qualified_name_for_node(g, uri, container_prefix, "_kermlFeature", "kermlDecl");
+                    qualified_name_for_node(g, uri, container_prefix, &display_name, "kermlDecl");
                 let mut attrs = HashMap::new();
                 attrs.insert(
                     "bnfProduction".to_string(),
@@ -1338,7 +1338,7 @@ pub(super) fn build_from_package_body_element(
                     uri,
                     &qualified,
                     "kermlDecl",
-                    "_kermlFeature".to_string(),
+                    display_name,
                     span_to_range(&k.span),
                     attrs,
                     Some(pid),
@@ -1348,13 +1348,10 @@ pub(super) fn build_from_package_body_element(
         PBE::ExtendedLibraryDecl(k) => {
             if let Some(pid) = parent_id {
                 let kv = &k.value;
-                let qualified = qualified_name_for_node(
-                    g,
-                    uri,
-                    container_prefix,
-                    "_extendedLibrary",
-                    "kermlDecl",
-                );
+                let display_name =
+                    extract_modeled_decl_name(&kv.bnf_production, &kv.text, "_extendedLibrary");
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &display_name, "kermlDecl");
                 let mut attrs = HashMap::new();
                 attrs.insert(
                     "bnfProduction".to_string(),
@@ -1366,7 +1363,7 @@ pub(super) fn build_from_package_body_element(
                     uri,
                     &qualified,
                     "kermlDecl",
-                    "_extendedLibrary".to_string(),
+                    display_name,
                     span_to_range(&k.span),
                     attrs,
                     Some(pid),

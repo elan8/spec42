@@ -176,6 +176,116 @@ fn lsp_goto_definition_resolves_qualified_name_reference() {
     let _ = child.kill();
 }
 
+#[test]
+fn lsp_republishes_diagnostics_for_loose_file_after_library_scan() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root: PathBuf = temp.path().canonicalize().expect("canonical root");
+    let lib_dir = root.join("lib");
+    std::fs::create_dir_all(&lib_dir).expect("create lib dir");
+
+    std::fs::write(
+        lib_dir.join("ScalarValues.sysml"),
+        "standard library package ScalarValues { attribute def Real; }",
+    )
+    .expect("write ScalarValues library");
+
+    let lib_path = lib_dir.canonicalize().expect("canonical lib path");
+    let loose_uri = "file:///outside-workspace/loose.sysml";
+    let loose_text = r#"
+        package P {
+            private import ScalarValues::Real;
+            attribute x : Real;
+        }
+    "#;
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" },
+            "initializationOptions": {
+                "libraryPaths": [lib_path.to_string_lossy().to_string()]
+            }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+
+    let did_open_loose = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": {
+                "uri": loose_uri,
+                "languageId": "sysml",
+                "version": 1,
+                "text": loose_text
+            }
+        }
+    });
+    send_message(&mut stdin, &did_open_loose.to_string());
+
+    std::thread::sleep(std::time::Duration::from_millis(700));
+
+    let barrier_id = next_id();
+    let barrier_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": barrier_id,
+        "method": "workspace/symbol",
+        "params": { "query": "" }
+    });
+    send_message(&mut stdin, &barrier_req.to_string());
+
+    let mut saw_loose_publish = false;
+    let mut last_loose_diagnostics = Vec::new();
+    loop {
+        let msg = read_message(&mut stdout).expect("expected message while waiting for barrier");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"]
+                .as_str()
+                .map(|uri| uri.eq_ignore_ascii_case(loose_uri))
+                .unwrap_or(false)
+        {
+            saw_loose_publish = true;
+            last_loose_diagnostics = json["params"]["diagnostics"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+        }
+        if json["id"].as_i64() == Some(barrier_id) {
+            break;
+        }
+    }
+
+    assert!(
+        saw_loose_publish,
+        "expected diagnostics to be published for loose file after library indexing"
+    );
+    assert!(
+        !last_loose_diagnostics.iter().any(|d| {
+            d["source"].as_str() == Some("semantic")
+                && d["code"].as_str() == Some("unresolved_type_reference")
+        }),
+        "expected no unresolved_type_reference diagnostics after library indexing, got: {last_loose_diagnostics:#?}"
+    );
+
+    let _ = child.kill();
+}
+
 /// When SYSML_V2_RELEASE_DIR is set, index that folder and assert workspace/symbol finds symbols.
 /// Validates workspace awareness against the official OMG SysML v2 repo.
 const SYSML_V2_RELEASE_DIR_ENV: &str = "SYSML_V2_RELEASE_DIR";

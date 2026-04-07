@@ -374,6 +374,33 @@ pub(crate) fn remove_document(state: &mut ServerState, uri_norm: &Url) {
     state.semantic_graph.remove_nodes_for_uri(uri_norm);
 }
 
+pub(crate) fn rebuild_document_links(state: &mut ServerState, uri_norm: &Url) {
+    let parsed = state
+        .index
+        .get(uri_norm)
+        .and_then(|entry| entry.parsed.as_ref())
+        .cloned();
+    state.semantic_graph.remove_nodes_for_uri(uri_norm);
+    if let Some(doc) = parsed.as_ref() {
+        let new_graph = semantic_model::build_graph_from_doc(doc, uri_norm);
+        state.semantic_graph.merge(new_graph);
+        semantic_model::add_cross_document_edges_for_uri(&mut state.semantic_graph, uri_norm);
+    }
+    refresh_symbols_for_uri(state, uri_norm);
+}
+
+pub(crate) fn rebuild_non_library_document_links(state: &mut ServerState) {
+    let uris: Vec<Url> = state
+        .index
+        .keys()
+        .filter(|uri| !util::uri_under_any_library(uri, &state.library_paths))
+        .cloned()
+        .collect();
+    for uri in uris {
+        rebuild_document_links(state, &uri);
+    }
+}
+
 pub(crate) fn clear_documents_under_roots(state: &mut ServerState, roots: &[Url]) -> Vec<Url> {
     let uris_to_remove: Vec<Url> = state
         .index
