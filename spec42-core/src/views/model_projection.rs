@@ -74,7 +74,14 @@ fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) -> SysmlGra
         .map(|node| node.id.as_str())
         .collect();
 
-    if detail_ids.is_empty() {
+    let has_requirement_inline_content = graph.nodes.iter().any(|node| {
+        node.attributes
+            .get("requirementConstraints")
+            .and_then(|value| value.as_array())
+            .is_some_and(|lines| !lines.is_empty())
+    });
+
+    if detail_ids.is_empty() && !has_requirement_inline_content {
         return graph.clone();
     }
 
@@ -112,18 +119,38 @@ fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) -> SysmlGra
         .cloned()
         .collect();
     for node in &mut out_nodes {
+        if let Some(requirement_lines) = node
+            .attributes
+            .get("requirementConstraints")
+            .and_then(|value| value.as_array())
+            .cloned()
+        {
+            let merged_attributes = node
+                .attributes
+                .entry("generalViewAttributes".to_string())
+                .or_insert_with(|| serde_json::Value::Array(Vec::new()));
+            if let serde_json::Value::Array(attributes) = merged_attributes {
+                for line in &requirement_lines {
+                    if !attributes.iter().any(|existing| existing == line) {
+                        attributes.push(line.clone());
+                    }
+                }
+            }
+        }
         if let Some((attributes, ports)) = owner_detail_lines.get(&node.id) {
             if !attributes.is_empty() {
-                node.attributes.insert(
-                    "generalViewAttributes".to_string(),
-                    serde_json::Value::Array(
-                        attributes
-                            .iter()
-                            .cloned()
-                            .map(serde_json::Value::String)
-                            .collect(),
-                    ),
-                );
+                let merged_attributes = node
+                    .attributes
+                    .entry("generalViewAttributes".to_string())
+                    .or_insert_with(|| serde_json::Value::Array(Vec::new()));
+                if let serde_json::Value::Array(lines) = merged_attributes {
+                    for attribute in attributes {
+                        let value = serde_json::Value::String(attribute.clone());
+                        if !lines.iter().any(|existing| existing == &value) {
+                            lines.push(value);
+                        }
+                    }
+                }
             }
             if !ports.is_empty() {
                 node.attributes.insert(
@@ -295,6 +322,36 @@ mod tests {
                 && edge.source == "Pkg::Req"
                 && edge.target == "Pkg::Drone"),
             "subject edge should survive canonical General View projection"
+        );
+    }
+
+    #[test]
+    fn canonical_general_view_graph_preserves_requirement_constraints_as_inline_attributes() {
+        let graph = SysmlGraphDto {
+            nodes: vec![GraphNodeDto {
+                id: "Pkg::Req".to_string(),
+                element_type: "requirement def".to_string(),
+                name: "Req".to_string(),
+                parent_id: None,
+                range: range(),
+                attributes: serde_json::json!({
+                    "requirementConstraints": ["  flightTime >= 25 min."]
+                })
+                .as_object()
+                .unwrap()
+                .iter()
+                .map(|(k, v)| (k.clone(), v.clone()))
+                .collect(),
+            }],
+            edges: vec![],
+        };
+
+        let canonical = canonical_general_view_graph(&graph, false);
+        let owner = canonical.nodes.iter().find(|node| node.id == "Pkg::Req").unwrap();
+        assert_eq!(
+            owner.attributes.get("generalViewAttributes"),
+            Some(&serde_json::json!(["  flightTime >= 25 min."])),
+            "requirement constraints should be exposed through generalViewAttributes"
         );
     }
 

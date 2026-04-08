@@ -193,6 +193,12 @@ impl SemanticGraph {
             .and_then(|&idx| self.graph.node_weight(idx))
     }
 
+    /// Returns a mutable reference to the node for the given NodeId, if it exists.
+    pub fn get_node_mut(&mut self, id: &NodeId) -> Option<&mut SemanticNode> {
+        let idx = *self.node_index_by_id.get(id)?;
+        self.graph.node_weight_mut(idx)
+    }
+
     /// Returns the node whose range contains the given position (first match).
     pub fn find_node_at_position(&self, uri: &Url, pos: Position) -> Option<&SemanticNode> {
         self.nodes_for_uri(uri).into_iter().find(|n| {
@@ -1102,13 +1108,13 @@ mod tests {
     }
 
     #[test]
-    fn requirement_body_import_and_require_constraint_nodes() {
+    fn requirement_body_import_and_require_constraint_is_inlined_on_requirement() {
         let input = r#"
             package P {
                 package Q {}
                 requirement def R {
                     import Q::*;
-                    require constraint { }
+                    require constraint { doc /* flightTime >= 25 min. */ }
                 }
             }
         "#;
@@ -1126,9 +1132,27 @@ mod tests {
             kinds
         );
         assert!(
-            kinds.contains(&"require constraint"),
-            "expected require constraint node; kinds: {:?}",
+            !kinds.contains(&"require constraint"),
+            "require constraint should not be emitted as a standalone node; kinds: {:?}",
             kinds
+        );
+        let requirement = g
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|n| n.element_kind == "requirement def" && n.name == "R")
+            .expect("requirement node");
+        assert!(
+            requirement
+                .attributes
+                .get("requirementConstraints")
+                .and_then(|v| v.as_array())
+                .is_some_and(|lines| {
+                    lines
+                        .iter()
+                        .any(|line| line.as_str() == Some("  flightTime >= 25 min."))
+                }),
+            "requirement node should carry inline constraint summary: {:?}",
+            requirement.attributes
         );
     }
 

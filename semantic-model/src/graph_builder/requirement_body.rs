@@ -2,7 +2,10 @@
 
 use std::collections::HashMap;
 
-use sysml_parser::ast::{RequirementDefBody, RequirementDefBodyElement};
+use sysml_parser::ast::{
+    ConstraintDefBodyElement, InOut, InOutDecl, RequireConstraintBody, RequirementDefBody,
+    RequirementDefBodyElement,
+};
 use tower_lsp::lsp_types::Url;
 
 use crate::ast_util::span_to_range;
@@ -11,6 +14,84 @@ use crate::model::{NodeId, RelationshipKind};
 use crate::relationships::{add_edge_if_both_exist, type_ref_candidates};
 
 use super::{add_node_and_recurse, qualified_name_for_node};
+use super::expressions::expression_to_debug_string;
+
+const REQUIREMENT_CONSTRAINTS_ATTR: &str = "requirementConstraints";
+
+fn append_string_list_attribute(
+    g: &mut SemanticGraph,
+    node_id: &NodeId,
+    key: &str,
+    line: String,
+) {
+    let Some(node) = g.get_node_mut(node_id) else {
+        return;
+    };
+    let entry = node
+        .attributes
+        .entry(key.to_string())
+        .or_insert_with(|| serde_json::Value::Array(Vec::new()));
+    if !entry.is_array() {
+        *entry = serde_json::Value::Array(Vec::new());
+    }
+    if let serde_json::Value::Array(lines) = entry {
+        if !lines.iter().any(|existing| existing.as_str() == Some(line.as_str())) {
+            lines.push(serde_json::Value::String(line));
+        }
+    }
+}
+
+fn compact_whitespace(text: &str) -> String {
+    text.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+fn format_constraint_parameter_line(param: &InOutDecl) -> String {
+    let direction = match param.direction {
+        InOut::In => "in",
+        InOut::Out => "out",
+        InOut::InOut => "inout",
+    };
+    let type_name = param.type_name.trim();
+    if type_name.is_empty() {
+        format!("  {} {}", direction, param.name)
+    } else {
+        let short_type = type_name.split("::").last().unwrap_or(type_name);
+        format!("  {} {} : {}", direction, param.name, short_type)
+    }
+}
+
+fn require_constraint_display_lines(body: &RequireConstraintBody) -> Vec<String> {
+    match body {
+        RequireConstraintBody::Semicolon => vec!["  require constraint;".to_string()],
+        RequireConstraintBody::Brace { elements } => {
+            let mut lines = Vec::new();
+            for element in elements {
+                match &element.value {
+                    ConstraintDefBodyElement::Doc(doc) => {
+                        let text = compact_whitespace(&doc.value.text);
+                        if !text.is_empty() {
+                            lines.push(format!("  {}", text));
+                        }
+                    }
+                    ConstraintDefBodyElement::Expression(expr) => {
+                        let text = compact_whitespace(&expression_to_debug_string(expr));
+                        if !text.is_empty() {
+                            lines.push(format!("  {}", text));
+                        }
+                    }
+                    ConstraintDefBodyElement::InOutDecl(param) => {
+                        lines.push(format_constraint_parameter_line(&param.value));
+                    }
+                }
+            }
+            if lines.is_empty() {
+                vec!["  require constraint".to_string()]
+            } else {
+                lines
+            }
+        }
+    }
+}
 
 pub(super) fn import_member_label(target: &str) -> String {
     let t = target.trim();
@@ -38,7 +119,7 @@ pub(super) fn walk_requirement_def_body(
     let RequirementDefBody::Brace { elements } = body else {
         return;
     };
-    for (i, element) in elements.iter().enumerate() {
+    for element in elements {
         match &element.value {
             RequirementDefBodyElement::SubjectDecl(sd) => {
                 let target = resolve_subject_type_target_qualified(
@@ -57,25 +138,15 @@ pub(super) fn walk_requirement_def_body(
                     );
                 }
             }
-            RequirementDefBodyElement::RequireConstraint(_) => {
-                let name = format!("requireConstraint{}", i);
-                let qualified = qualified_name_for_node(
-                    g,
-                    uri,
-                    Some(parent_id.qualified_name.as_str()),
-                    &name,
-                    "require constraint",
-                );
-                add_node_and_recurse(
-                    g,
-                    uri,
-                    &qualified,
-                    "require constraint",
-                    name,
-                    span_to_range(&element.span),
-                    HashMap::new(),
-                    Some(parent_id),
-                );
+            RequirementDefBodyElement::RequireConstraint(rc) => {
+                for line in require_constraint_display_lines(&rc.value.body) {
+                    append_string_list_attribute(
+                        g,
+                        parent_id,
+                        REQUIREMENT_CONSTRAINTS_ATTR,
+                        line,
+                    );
+                }
             }
             RequirementDefBodyElement::Frame(f) => {
                 let frame = &f.value;
@@ -138,6 +209,8 @@ pub(super) fn walk_requirement_def_body(
                 );
             }
             RequirementDefBodyElement::Doc(_)
+            | RequirementDefBodyElement::AttributeDef(_)
+            | RequirementDefBodyElement::AttributeUsage(_)
             | RequirementDefBodyElement::Error(_)
             | RequirementDefBodyElement::Other(_) => {}
         }
