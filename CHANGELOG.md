@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-04-08
+
+### Added
+
+- **SysML v2 import semantics in semantic resolution** - Added shared import-membership resolution for membership imports, namespace imports, `public` re-export chains, and recursive `::**` imports across semantic linking.
+
+### Changed
+
+- **Import-aware editor navigation** - Updated hover and go-to-definition to resolve symbols through spec-valid import chains instead of relying only on direct local typing edges or symbol-table heuristics.
+- **Import-aware semantic diagnostics** - Updated unresolved-type diagnostics to respect SysML v2 import visibility rules so valid `public import` chains resolve cleanly while private-only chains continue to warn.
+- **Semantic-model backend architecture** - Introduced a reusable import-resolution layer with semantic-graph caching so future import-aware features can share one standards-aligned backend path.
+
 ## [0.15.1] - 2026-04-07
 
 ### Fixed
