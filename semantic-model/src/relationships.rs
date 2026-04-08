@@ -7,6 +7,7 @@ use tower_lsp::lsp_types::Url;
 
 use crate::ast_util::identification_name;
 use crate::graph::SemanticGraph;
+use crate::import_resolution::resolve_type_reference_targets;
 use crate::model::{NodeId, RelationshipKind};
 use crate::root_element_body;
 
@@ -410,44 +411,6 @@ pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
     }
 }
 
-/// For an unqualified type name, returns fully qualified names introduced by `import` declarations
-/// in the same document (e.g. `private import ScalarValues::Real` → `ScalarValues::Real`).
-/// Also handles `import P::*` by producing `P::<simple_name>`.
-fn qualified_names_from_imports_for_simple_type(
-    g: &SemanticGraph,
-    uri: &Url,
-    simple_name: &str,
-) -> Vec<String> {
-    let mut out = Vec::new();
-    for node in g.nodes_for_uri(uri) {
-        if node.element_kind != "import" {
-            continue;
-        }
-        let Some(target) = node.attributes.get("importTarget").and_then(|v| v.as_str()) else {
-            continue;
-        };
-        let target = target.trim();
-        let import_all = node
-            .attributes
-            .get("importAll")
-            .and_then(|v| v.as_bool())
-            .unwrap_or(false);
-        if import_all {
-            let pkg = target.strip_suffix("::*").unwrap_or(target).trim();
-            if !pkg.is_empty() {
-                out.push(format!("{}::{}", pkg, simple_name));
-            }
-        } else if let Some(last) = target.rsplit("::").next() {
-            if last == simple_name {
-                out.push(normalize_for_lookup(target));
-            }
-        }
-    }
-    out.sort();
-    out.dedup();
-    out
-}
-
 /// Adds a typing or specializes edge when target may be in a different URI.
 /// Only matches targets that are actual types (part def, port def, interface, requirement def for typing;
 /// part def only for specializes).
@@ -467,40 +430,37 @@ fn add_typing_edge_cross_document(
         RelationshipKind::Specializes => SPECIALIZES_TARGET_KINDS,
         _ => return,
     };
-    let src_idx = match g.node_index_by_id.get(src_id) {
-        Some(&idx) => idx,
-        None => return,
+    let (Some(src_idx), Some(src_node)) = (
+        g.node_index_by_id.get(src_id).copied(),
+        g.get_node(src_id),
+    ) else {
+        return;
     };
 
-    // 1) Deterministic candidate qualified names (plain + #kind variants), searched across all URIs.
-    //    For unqualified references, also apply same-document imports (SysML scoping).
-    for suffix_kind in DISAMBIGUATION_SUFFIX_KINDS {
-        let mut candidates =
-            type_ref_candidates_with_kind(container_prefix, &normalized_type_ref, suffix_kind);
-        if !normalized_type_ref.contains("::") {
-            for q in
-                qualified_names_from_imports_for_simple_type(g, &src_id.uri, &normalized_type_ref)
+    let mut targets = resolve_type_reference_targets(g, src_node, &normalized_type_ref, target_element_kinds);
+    if let Some(prefix) = container_prefix {
+        // Preserve existing prefix-guided lookup behavior for callers that computed a more specific scope.
+        for suffix_kind in DISAMBIGUATION_SUFFIX_KINDS {
+            for candidate in
+                type_ref_candidates_with_kind(Some(prefix), &normalized_type_ref, suffix_kind)
             {
-                candidates.extend(type_ref_candidates_with_kind(None, &q, suffix_kind));
-            }
-        }
-        for tgt_qualified in candidates {
-            let tgt_qualified = normalize_for_lookup(&tgt_qualified);
-            if let Some(target_ids) = g.node_ids_for_qualified_name(&tgt_qualified) {
-                for tgt_id in target_ids {
-                    if let Some(tgt_node) = g.get_node(tgt_id) {
-                        if element_kind_allowed(
-                            tgt_node.element_kind.as_str(),
-                            target_element_kinds,
-                        ) {
-                            if let Some(&tgt_idx) = g.node_index_by_id.get(tgt_id) {
-                                g.graph.add_edge(src_idx, tgt_idx, kind.clone());
-                                return;
+                let tgt_qualified = normalize_for_lookup(&candidate);
+                if let Some(target_ids) = g.node_ids_for_qualified_name(&tgt_qualified) {
+                    for target_id in target_ids {
+                        if let Some(target) = g.get_node(target_id) {
+                            if element_kind_allowed(target.element_kind.as_str(), target_element_kinds) {
+                                targets.push(target_id.clone());
                             }
                         }
                     }
                 }
             }
+        }
+    }
+    for tgt_id in targets {
+        if let Some(&tgt_idx) = g.node_index_by_id.get(&tgt_id) {
+            g.graph.add_edge(src_idx, tgt_idx, kind.clone());
+            return;
         }
     }
 }

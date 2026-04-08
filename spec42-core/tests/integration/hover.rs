@@ -328,3 +328,82 @@ fn lsp_hover_resolves_port_and_attribute_type_references() {
 
     let _ = child.kill();
 }
+
+#[test]
+fn lsp_hover_resolves_public_reexported_type_reference() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri_core = "file:///workspace/core.sysml";
+    let uri_domain = "file:///workspace/domain.sysml";
+    let uri_use = "file:///workspace/use.sysml";
+    let content_core = "package Core { attribute def Name; }";
+    let content_domain = "package Domain { public import Core::*; }";
+    let content_use =
+        "package Demo { import Domain::*; part def Consumer { attribute groupName : Name; } }";
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": "file:///workspace",
+            "capabilities": {},
+            "clientInfo": { "name": "lsp_integration_test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_response(&mut stdout, init_id).expect("initialize response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+
+    for (uri, text) in [
+        (uri_core, content_core),
+        (uri_domain, content_domain),
+        (uri_use, content_use),
+    ] {
+        send_message(
+            &mut stdin,
+            &serde_json::json!({
+                "jsonrpc": "2.0",
+                "method": "textDocument/didOpen",
+                "params": {
+                    "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": text }
+                }
+            })
+            .to_string(),
+        );
+    }
+    std::thread::sleep(std::time::Duration::from_millis(100));
+
+    let hover_id = next_id();
+    let hover_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": hover_id,
+        "method": "textDocument/hover",
+        "params": {
+            "textDocument": { "uri": uri_use },
+            "position": { "line": 0, "character": 75 }
+        }
+    });
+    send_message(&mut stdin, &hover_req.to_string());
+    let hover_resp = read_response(&mut stdout, hover_id).expect("hover response");
+    let hover_json: serde_json::Value =
+        serde_json::from_str(&hover_resp).expect("parse hover response");
+    let contents = hover_json["result"]["contents"]["value"]
+        .as_str()
+        .or_else(|| hover_json["result"]["contents"].as_str())
+        .expect("hover should return contents");
+    assert!(
+        contents.contains("Name") && contents.contains("attribute def"),
+        "hover on public re-exported type should resolve to the definition: {}",
+        contents
+    );
+
+    let _ = child.kill();
+}

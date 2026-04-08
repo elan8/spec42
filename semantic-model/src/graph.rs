@@ -1,6 +1,7 @@
 //! Petgraph-backed semantic graph and query API.
 
 use std::collections::HashMap;
+use std::sync::Mutex;
 
 use petgraph::stable_graph::{NodeIndex, StableGraph};
 use petgraph::visit::{EdgeRef, IntoEdgeReferences};
@@ -21,6 +22,7 @@ pub struct SemanticGraph {
     pub(crate) node_ids_by_qualified_name: HashMap<String, Vec<NodeId>>,
     pub(crate) connection_occurrences_by_uri: HashMap<Url, Vec<ConnectionOccurrence>>,
     pub(crate) pending_relationships: Vec<PendingRelationship>,
+    pub(crate) import_lookup_cache: Mutex<HashMap<(NodeId, String, bool), Vec<NodeId>>>,
 }
 
 #[derive(Debug, Clone)]
@@ -48,6 +50,7 @@ impl SemanticGraph {
             node_ids_by_qualified_name: HashMap::new(),
             connection_occurrences_by_uri: HashMap::new(),
             pending_relationships: Vec::new(),
+            import_lookup_cache: Mutex::new(HashMap::new()),
         }
     }
 
@@ -55,6 +58,7 @@ impl SemanticGraph {
     pub fn remove_nodes_for_uri(&mut self, uri: &Url) {
         let Some(node_ids) = self.nodes_by_uri.remove(uri) else {
             self.connection_occurrences_by_uri.remove(uri);
+            self.clear_import_lookup_cache();
             return;
         };
         for id in node_ids {
@@ -71,6 +75,7 @@ impl SemanticGraph {
             }
         }
         self.connection_occurrences_by_uri.remove(uri);
+        self.clear_import_lookup_cache();
     }
 
     /// Merges nodes and edges from another graph (built from a single document).
@@ -102,6 +107,13 @@ impl SemanticGraph {
             ) {
                 self.graph.add_edge(src_idx, tgt_idx, kind.clone());
             }
+        }
+        self.clear_import_lookup_cache();
+    }
+
+    pub(crate) fn clear_import_lookup_cache(&self) {
+        if let Ok(mut cache) = self.import_lookup_cache.lock() {
+            cache.clear();
         }
     }
 

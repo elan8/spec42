@@ -1626,4 +1626,204 @@ fn workspace_scan_publishes_diagnostics_for_unopened_file() {
     let _ = child.kill();
 }
 
+#[test]
+fn public_import_reexport_clears_unresolved_type_diagnostic() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri_core = "file:///workspace/core.sysml";
+    let uri_domain = "file:///workspace/domain.sysml";
+    let uri_use = "file:///workspace/use.sysml";
+    let content_core = "package Core { attribute def Name; }";
+    let content_domain = "package Domain { public import Core::*; }";
+    let content_use =
+        "package Demo { import Domain::*; part def Consumer { attribute groupName : Name; } }";
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": "file:///workspace",
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+
+    for (uri, text) in [
+        (uri_core, content_core),
+        (uri_domain, content_domain),
+        (uri_use, content_use),
+    ] {
+        send_message(
+            &mut stdin,
+            &serde_json::json!({
+                "jsonrpc": "2.0",
+                "method": "textDocument/didOpen",
+                "params": {
+                    "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": text }
+                }
+            })
+            .to_string(),
+        );
+    }
+    std::thread::sleep(std::time::Duration::from_millis(250));
+
+    let hover_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": hover_id,
+            "method": "textDocument/hover",
+            "params": {
+                "textDocument": { "uri": uri_use },
+                "position": { "line": 0, "character": 0 }
+            }
+        })
+        .to_string(),
+    );
+
+    let mut found_unresolved = false;
+    loop {
+        let msg =
+            read_message(&mut stdout).expect("expected message while waiting for hover response");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"].as_str() == Some(uri_use)
+        {
+            let diagnostics = json["params"]["diagnostics"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+            found_unresolved = diagnostics.iter().any(|d| {
+                d["source"].as_str() == Some("semantic")
+                    && d["code"].as_str() == Some("unresolved_type_reference")
+            });
+        }
+        if json["id"].as_i64() == Some(hover_id) {
+            break;
+        }
+    }
+
+    assert!(
+        !found_unresolved,
+        "public import re-export chain should not emit unresolved_type_reference"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
+fn private_import_chain_keeps_unresolved_type_diagnostic() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri_core = "file:///workspace/core.sysml";
+    let uri_domain = "file:///workspace/domain.sysml";
+    let uri_use = "file:///workspace/use.sysml";
+    let content_core = "package Core { attribute def Name; }";
+    let content_domain = "package Domain { private import Core::*; }";
+    let content_use =
+        "package Demo { import Domain::*; part def Consumer { attribute groupName : Name; } }";
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": "file:///workspace",
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+
+    for (uri, text) in [
+        (uri_core, content_core),
+        (uri_domain, content_domain),
+        (uri_use, content_use),
+    ] {
+        send_message(
+            &mut stdin,
+            &serde_json::json!({
+                "jsonrpc": "2.0",
+                "method": "textDocument/didOpen",
+                "params": {
+                    "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": text }
+                }
+            })
+            .to_string(),
+        );
+    }
+    std::thread::sleep(std::time::Duration::from_millis(250));
+
+    let hover_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": hover_id,
+            "method": "textDocument/hover",
+            "params": {
+                "textDocument": { "uri": uri_use },
+                "position": { "line": 0, "character": 0 }
+            }
+        })
+        .to_string(),
+    );
+
+    let mut found_unresolved = false;
+    loop {
+        let msg =
+            read_message(&mut stdout).expect("expected message while waiting for hover response");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"].as_str() == Some(uri_use)
+        {
+            let diagnostics = json["params"]["diagnostics"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+            found_unresolved = diagnostics.iter().any(|d| {
+                d["source"].as_str() == Some("semantic")
+                    && d["code"].as_str() == Some("unresolved_type_reference")
+            });
+        }
+        if json["id"].as_i64() == Some(hover_id) {
+            break;
+        }
+    }
+
+    assert!(
+        found_unresolved,
+        "private-only import chain should still emit unresolved_type_reference"
+    );
+
+    let _ = child.kill();
+}
+
 // Removed: `did_change_watched_files_delete_clears_diagnostics` (was ignored and flaky).

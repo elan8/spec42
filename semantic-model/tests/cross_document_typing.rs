@@ -115,3 +115,129 @@ fn cross_document_attribute_typing_resolves_via_wildcard_package_import() {
         edges
     );
 }
+
+#[test]
+fn cross_document_attribute_typing_resolves_via_public_reexport_chain() {
+    let lib = r#"
+        package Core {
+            attribute def Name;
+        }
+    "#;
+    let intermediate = r#"
+        package Domain {
+            public import Core::*;
+        }
+    "#;
+    let main = r#"
+        package Demo {
+            import Domain::*;
+            part def Consumer {
+                attribute groupName : Name;
+            }
+        }
+    "#;
+    let root_lib = parse(lib).expect("parse lib");
+    let root_intermediate = parse(intermediate).expect("parse intermediate");
+    let root_main = parse(main).expect("parse main");
+    let uri_lib = Url::parse("file:///core.sysml").expect("uri lib");
+    let uri_intermediate = Url::parse("file:///domain.sysml").expect("uri intermediate");
+    let uri_main = Url::parse("file:///main.sysml").expect("uri main");
+
+    let mut g = SemanticGraph::new();
+    g.merge(build_graph_from_doc(&root_lib, &uri_lib));
+    g.merge(build_graph_from_doc(&root_intermediate, &uri_intermediate));
+    g.merge(build_graph_from_doc(&root_main, &uri_main));
+
+    add_cross_document_edges_for_uri(&mut g, &uri_main);
+
+    let edges = g.edges_for_uri_as_strings(&uri_main);
+    assert!(
+        edges.iter().any(|(src, tgt, kind, _)| {
+            *kind == RelationshipKind::Typing && src.ends_with("groupName") && tgt.ends_with("Name")
+        }),
+        "expected typing edge via public import re-export; edges: {:?}",
+        edges
+    );
+}
+
+#[test]
+fn cross_document_attribute_typing_does_not_resolve_via_private_reexport_chain() {
+    let lib = r#"
+        package Core {
+            attribute def Name;
+        }
+    "#;
+    let intermediate = r#"
+        package Domain {
+            private import Core::*;
+        }
+    "#;
+    let main = r#"
+        package Demo {
+            import Domain::*;
+            part def Consumer {
+                attribute groupName : Name;
+            }
+        }
+    "#;
+    let root_lib = parse(lib).expect("parse lib");
+    let root_intermediate = parse(intermediate).expect("parse intermediate");
+    let root_main = parse(main).expect("parse main");
+    let uri_lib = Url::parse("file:///core.sysml").expect("uri lib");
+    let uri_intermediate = Url::parse("file:///domain.sysml").expect("uri intermediate");
+    let uri_main = Url::parse("file:///main.sysml").expect("uri main");
+
+    let mut g = SemanticGraph::new();
+    g.merge(build_graph_from_doc(&root_lib, &uri_lib));
+    g.merge(build_graph_from_doc(&root_intermediate, &uri_intermediate));
+    g.merge(build_graph_from_doc(&root_main, &uri_main));
+
+    add_cross_document_edges_for_uri(&mut g, &uri_main);
+
+    let edges = g.edges_for_uri_as_strings(&uri_main);
+    assert!(
+        !edges.iter().any(|(src, tgt, kind, _)| {
+            *kind == RelationshipKind::Typing && src.ends_with("groupName") && tgt.ends_with("Name")
+        }),
+        "did not expect typing edge through private-only import chain; edges: {:?}",
+        edges
+    );
+}
+
+#[test]
+fn cross_document_attribute_typing_resolves_via_recursive_namespace_import() {
+    let lib = r#"
+        package Core {
+            package Nested {
+                attribute def Name;
+            }
+        }
+    "#;
+    let main = r#"
+        package Demo {
+            import Core::**;
+            part def Consumer {
+                attribute groupName : Name;
+            }
+        }
+    "#;
+    let root_lib = parse(lib).expect("parse lib");
+    let root_main = parse(main).expect("parse main");
+    let uri_lib = Url::parse("file:///core.sysml").expect("uri lib");
+    let uri_main = Url::parse("file:///main.sysml").expect("uri main");
+
+    let mut g = SemanticGraph::new();
+    g.merge(build_graph_from_doc(&root_lib, &uri_lib));
+    g.merge(build_graph_from_doc(&root_main, &uri_main));
+
+    add_cross_document_edges_for_uri(&mut g, &uri_main);
+
+    let edges = g.edges_for_uri_as_strings(&uri_main);
+    assert!(
+        edges.iter().any(|(src, tgt, kind, _)| {
+            *kind == RelationshipKind::Typing && src.ends_with("groupName") && tgt.ends_with("Name")
+        }),
+        "expected typing edge via recursive import; edges: {:?}",
+        edges
+    );
+}

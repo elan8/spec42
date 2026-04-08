@@ -23,6 +23,24 @@ static CODE_LENS_REQUEST_COUNT: AtomicU64 = AtomicU64::new(0);
 static SEMANTIC_TOKENS_FULL_REQUEST_COUNT: AtomicU64 = AtomicU64::new(0);
 static SEMANTIC_TOKENS_RANGE_REQUEST_COUNT: AtomicU64 = AtomicU64::new(0);
 
+const TYPE_LOOKUP_KINDS: &[&str] = &[
+    "part def",
+    "port def",
+    "interface",
+    "item def",
+    "attribute def",
+    "action def",
+    "actor def",
+    "occurrence def",
+    "flow def",
+    "allocation def",
+    "state def",
+    "requirement def",
+    "use case def",
+    "concern def",
+    "kermlDecl",
+];
+
 pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Option<Hover>> {
     let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
@@ -86,7 +104,7 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
                         .qualified_name
                         .ends_with(&format!("::{}", lookup_name))
             });
-        let markdown = if let Some(target) = target_match {
+        let markdown = if let Some(target) = target_match.as_ref() {
             semantic_model::hover_markdown_for_node(
                 &state.semantic_graph,
                 target,
@@ -98,6 +116,26 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
                 node,
                 node.id.uri != uri_norm,
             )
+        };
+        let markdown = if target_match.is_none() && word != node.name {
+            semantic_model::resolve_type_reference_targets(
+                &state.semantic_graph,
+                node,
+                &word,
+                TYPE_LOOKUP_KINDS,
+            )
+            .into_iter()
+            .find_map(|target_id| state.semantic_graph.get_node(&target_id))
+            .map(|target| {
+                semantic_model::hover_markdown_for_node(
+                    &state.semantic_graph,
+                    target,
+                    target.id.uri != uri_norm,
+                )
+            })
+            .unwrap_or(markdown)
+        } else {
+            markdown
         };
         let response = Some(Hover {
             contents: HoverContents::Markup(MarkupContent {
@@ -341,6 +379,36 @@ pub(crate) fn goto_definition(
                         lookup_name = %lookup_name,
                         elapsed_ms,
                         "goto definition resolved via semantic graph"
+                    );
+                }
+                return Ok(response);
+            }
+        }
+        if word != node.name {
+            if let Some(target) = semantic_model::resolve_type_reference_targets(
+                &state.semantic_graph,
+                node,
+                &word,
+                TYPE_LOOKUP_KINDS,
+            )
+            .into_iter()
+            .find_map(|target_id| state.semantic_graph.get_node(&target_id))
+            {
+                let response = Some(GotoDefinitionResponse::Scalar(Location {
+                    uri: target.id.uri.clone(),
+                    range: target.range,
+                }));
+                let elapsed_ms = started_at.elapsed().as_millis();
+                if elapsed_ms >= 10 {
+                    info!(
+                        target: "spec42_core::lsp_runtime::features",
+                        event = "feature:gotoDefinition",
+                        uri = %uri_norm,
+                        line = pos.line,
+                        character = pos.character,
+                        lookup_name = %lookup_name,
+                        elapsed_ms,
+                        "goto definition resolved via import-aware semantic graph"
                     );
                 }
                 return Ok(response);

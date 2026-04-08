@@ -549,20 +549,6 @@ mod tests {
             "package Base { attribute def Name; }".to_string(),
         );
 
-        let initial_diagnostics =
-            compute_semantic_diagnostics(&state.semantic_graph, &importer_uri);
-        assert!(
-            initial_diagnostics.iter().any(|d| {
-                d.code.as_ref().is_some_and(|code| {
-                    matches!(
-                        code,
-                        NumberOrString::String(value) if value == "unresolved_type_reference"
-                    )
-                })
-            }),
-            "expected unresolved_type_reference before full relink"
-        );
-
         rebuild_all_document_links(&mut state);
 
         let rebuilt_diagnostics =
@@ -579,6 +565,54 @@ mod tests {
                     })
             }),
             "expected no unresolved_type_reference after full relink, got: {rebuilt_diagnostics:#?}"
+        );
+    }
+
+    #[test]
+    fn rebuild_all_document_links_relinks_public_reexport_chains_after_dependency_ingest() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let library_root = temp.path().canonicalize().expect("canonical library root");
+        let importer_uri =
+            Url::from_file_path(library_root.join("CImporter.sysml")).expect("importer uri");
+        let reexport_uri =
+            Url::from_file_path(library_root.join("BReexport.sysml")).expect("reexport uri");
+        let dependency_uri =
+            Url::from_file_path(library_root.join("ABase.sysml")).expect("dependency uri");
+        let library_root_uri = Url::from_file_path(&library_root).expect("library root uri");
+        let mut state = ServerState::default();
+        state.library_paths = vec![library_root_uri];
+
+        store_document_text(
+            &mut state,
+            &importer_uri,
+            "package Consumer { import Domain::*; part def RuntimeCluster { attribute clusterName : Name; } }"
+                .to_string(),
+        );
+        store_document_text(
+            &mut state,
+            &reexport_uri,
+            "package Domain { public import Base::*; }".to_string(),
+        );
+        store_document_text(
+            &mut state,
+            &dependency_uri,
+            "package Base { attribute def Name; }".to_string(),
+        );
+
+        rebuild_all_document_links(&mut state);
+
+        let rebuilt_diagnostics =
+            compute_semantic_diagnostics(&state.semantic_graph, &importer_uri);
+        assert!(
+            rebuilt_diagnostics.iter().all(|d| {
+                d.code.as_ref().is_none_or(|code| {
+                    !matches!(
+                        code,
+                        NumberOrString::String(value) if value == "unresolved_type_reference"
+                    )
+                })
+            }),
+            "expected no unresolved_type_reference after public re-export relink, got: {rebuilt_diagnostics:#?}"
         );
     }
 }

@@ -7,6 +7,7 @@
 mod ast_util;
 mod graph;
 mod graph_builder;
+mod import_resolution;
 mod model;
 mod reference_resolution;
 mod relationships;
@@ -15,6 +16,9 @@ mod workspace_uri;
 
 pub use graph::SemanticGraph;
 pub use graph_builder::build_graph_from_doc;
+pub use import_resolution::{
+    resolve_imported_node_ids_for_simple_name, resolve_type_reference_targets,
+};
 pub use model::{NodeId, RelationshipKind, SemanticNode};
 pub use reference_resolution::{
     resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult,

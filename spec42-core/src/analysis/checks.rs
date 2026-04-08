@@ -157,7 +157,26 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
         let has_resolved_type = !graph
             .outgoing_typing_or_specializes_targets(node)
             .is_empty();
-        if has_resolved_type {
+        let resolved_via_import_scope =
+            !crate::semantic_model::resolve_type_reference_targets(graph, node, type_ref, &[
+                "part def",
+                "port def",
+                "interface",
+                "item def",
+                "attribute def",
+                "action def",
+                "actor def",
+                "occurrence def",
+                "flow def",
+                "allocation def",
+                "state def",
+                "requirement def",
+                "use case def",
+                "concern def",
+                "kermlDecl",
+            ])
+            .is_empty();
+        if has_resolved_type || resolved_via_import_scope {
             continue;
         }
         let Some(range) = unresolved_type_diagnostic_range(node) else {
