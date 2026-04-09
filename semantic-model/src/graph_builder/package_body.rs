@@ -226,6 +226,43 @@ pub(super) fn build_from_package_body_element(
                 g,
             );
         }
+        PBE::FeatureDecl(feature_node) => {
+            let fv = &feature_node.value;
+            let name = extract_modeled_decl_name(&fv.keyword, &fv.text, "_feature");
+            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "feature decl");
+            let mut attrs = HashMap::new();
+            attrs.insert("keyword".to_string(), serde_json::json!(&fv.keyword));
+            attrs.insert("text".to_string(), serde_json::json!(&fv.text));
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "feature decl",
+                name,
+                span_to_range(&feature_node.span),
+                attrs,
+                parent_id,
+            );
+        }
+        PBE::ClassifierDecl(classifier_node) => {
+            let cv = &classifier_node.value;
+            let name = extract_modeled_decl_name(&cv.keyword, &cv.text, "_classifier");
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &name, "classifier decl");
+            let mut attrs = HashMap::new();
+            attrs.insert("keyword".to_string(), serde_json::json!(&cv.keyword));
+            attrs.insert("text".to_string(), serde_json::json!(&cv.text));
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "classifier decl",
+                name,
+                span_to_range(&classifier_node.span),
+                attrs,
+                parent_id,
+            );
+        }
         PBE::PortDef(pd_node) => {
             let name = identification_name(&pd_node.identification);
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "port def");
@@ -1370,7 +1407,5 @@ pub(super) fn build_from_package_body_element(
                 );
             }
         }
-        // Compatibility-only for parser v0.1.0 additions we do not model yet.
-        PBE::FeatureDecl(_) | PBE::ClassifierDecl(_) => {}
     }
 }

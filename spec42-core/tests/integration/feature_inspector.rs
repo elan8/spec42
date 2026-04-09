@@ -178,3 +178,32 @@ fn lsp_feature_inspector_returns_null_for_whitespace_and_missing_documents() {
     );
     assert!(missing["result"]["element"].is_null());
 }
+
+#[test]
+fn lsp_feature_inspector_surfaces_feature_and_classifier_decls_without_resolution_intent() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_classifier_inspector.sysml";
+    let content = "package P {\n  feature myFeature : BaseFeature;\n  class VehicleClass;\n}\n";
+    session.initialize_default("feature_classifier_inspector");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let feature = inspect(&mut session, uri, 1, 12);
+    let feature_element = &feature["result"]["element"];
+    assert_eq!(feature_element["name"].as_str(), Some("myFeature"));
+    assert_eq!(feature_element["type"].as_str(), Some("feature decl"));
+    assert_eq!(feature_element["typing"]["status"].as_str(), Some("notApplicable"));
+    assert_eq!(
+        feature_element["specialization"]["status"].as_str(),
+        Some("notApplicable")
+    );
+
+    let classifier = inspect(&mut session, uri, 2, 10);
+    let classifier_element = &classifier["result"]["element"];
+    assert_eq!(classifier_element["name"].as_str(), Some("VehicleClass"));
+    assert_eq!(classifier_element["type"].as_str(), Some("classifier decl"));
+    assert_eq!(
+        classifier_element["typing"]["status"].as_str(),
+        Some("notApplicable")
+    );
+}

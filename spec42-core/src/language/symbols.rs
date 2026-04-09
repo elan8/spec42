@@ -112,6 +112,19 @@ fn collect_definition_ranges_from_element(
         PBE::AttributeDef(p) => {
             out.push((p.name.clone(), span_to_range(&p.span)));
         }
+        PBE::FeatureDecl(p) => {
+            let name = modeled_decl_name(&p.keyword, &p.text, "_feature");
+            if !name.is_empty() {
+                out.push((name, span_to_range(&p.span)));
+            }
+        }
+        PBE::ClassifierDecl(p) => {
+            let name =
+                modeled_decl_name(&p.keyword, &p.text, "_classifier");
+            if !name.is_empty() {
+                out.push((name, span_to_range(&p.span)));
+            }
+        }
         PBE::ActionDef(p) => {
             let name = identification_name(&p.identification);
             if !name.is_empty() {
@@ -390,6 +403,42 @@ pub(crate) fn format_multiplicity(s: Option<&str>) -> String {
     s.unwrap_or("[*]").to_string()
 }
 
+fn modeled_decl_name(keyword: &str, text: &str, fallback: &str) -> String {
+    let t = text.trim().trim_end_matches(';').trim();
+    let tokens: Vec<String> = t
+        .split_whitespace()
+        .map(|s| {
+            s.trim_end_matches(';')
+                .trim_end_matches(',')
+                .trim_end_matches(')')
+                .to_string()
+        })
+        .filter(|s| !s.is_empty())
+        .collect();
+    let kw = keyword.trim();
+    if let Some(pos) = tokens.iter().position(|tok| tok.eq_ignore_ascii_case(kw)) {
+        if pos + 1 < tokens.len() {
+            let name = sanitize_identifier(&tokens[pos + 1]);
+            if !name.is_empty() && !name.eq_ignore_ascii_case("specializes") {
+                return name;
+            }
+        }
+    }
+    for tok in &tokens {
+        let name = sanitize_identifier(tok);
+        if !name.is_empty() {
+            return name;
+        }
+    }
+    fallback.to_string()
+}
+
+fn sanitize_identifier(s: &str) -> String {
+    s.chars()
+        .filter(|c| c.is_alphanumeric() || *c == '_')
+        .collect()
+}
+
 /// Workspace-wide symbol entry: one definable name with location and semantic info.
 #[derive(Debug, Clone)]
 pub struct SymbolEntry {
@@ -553,6 +602,39 @@ fn document_symbol_from_element(
             selection_range: range,
             children: None,
         }),
+        PBE::FeatureDecl(p) => {
+            let name = modeled_decl_name(&p.keyword, &p.text, "_feature");
+            if name.is_empty() {
+                return None;
+            }
+            Some(DocumentSymbol {
+                name,
+                detail: Some("feature decl".to_string()),
+                kind: SymbolKind::PROPERTY,
+                tags: None,
+                deprecated: None,
+                range,
+                selection_range: range,
+                children: None,
+            })
+        }
+        PBE::ClassifierDecl(p) => {
+            let name =
+                modeled_decl_name(&p.keyword, &p.text, "_classifier");
+            if name.is_empty() {
+                return None;
+            }
+            Some(DocumentSymbol {
+                name,
+                detail: Some("classifier decl".to_string()),
+                kind: SymbolKind::CLASS,
+                tags: None,
+                deprecated: None,
+                range,
+                selection_range: range,
+                children: None,
+            })
+        }
         PBE::ActionDef(p) => {
             let name = identification_name(&p.identification);
             if name.is_empty() {
@@ -866,6 +948,19 @@ fn collect_named_from_element(
             }
         }
         PBE::AttributeDef(p) => out.push((p.name.clone(), format!("attribute def '{}'", p.name))),
+        PBE::FeatureDecl(p) => {
+            let name = modeled_decl_name(&p.keyword, &p.text, "_feature");
+            if !name.is_empty() {
+                out.push((name.clone(), format!("feature decl '{}'", name)));
+            }
+        }
+        PBE::ClassifierDecl(p) => {
+            let name =
+                modeled_decl_name(&p.keyword, &p.text, "_classifier");
+            if !name.is_empty() {
+                out.push((name.clone(), format!("classifier decl '{}'", name)));
+            }
+        }
         PBE::ActionDef(p) => {
             let name = identification_name(&p.identification);
             if !name.is_empty() {
@@ -934,3 +1029,4 @@ fn collect_named_from_part_usage_body(
         _ => {}
     }
 }
+

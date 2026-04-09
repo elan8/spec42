@@ -516,6 +516,16 @@ mod tests {
     }
 
     #[test]
+    fn test_collect_named_elements_feature_and_classifier_decls() {
+        let text = "package P { feature myFeature : BaseFeature; class VehicleClass; }";
+        let root = sysml_v2_parser::parse(text).expect("parse");
+        let el = collect_named_elements(&root);
+        let pairs: Vec<_> = el.iter().map(|(n, d)| (n.as_str(), d.as_str())).collect();
+        assert!(pairs.contains(&("myFeature", "feature decl 'myFeature'")));
+        assert!(pairs.contains(&("VehicleClass", "classifier decl 'VehicleClass'")));
+    }
+
+    #[test]
     fn test_source_position_to_range() {
         let pos = SourcePosition {
             line: 0,
@@ -554,6 +564,16 @@ mod tests {
         assert_eq!(ranges.len(), 2); // package P + part Engine
         assert_eq!(ranges[0].0, "P");
         assert_eq!(ranges[1].0, "Engine");
+    }
+
+    #[test]
+    fn test_collect_definition_ranges_feature_and_classifier_decls() {
+        let text = "package P { feature myFeature : BaseFeature; class VehicleClass; }";
+        let root = sysml_v2_parser::parse(text).expect("parse");
+        let ranges = collect_definition_ranges(&root);
+        let names: Vec<_> = ranges.iter().map(|(name, _)| name.as_str()).collect();
+        assert!(names.contains(&"myFeature"));
+        assert!(names.contains(&"VehicleClass"));
     }
 
     #[test]
@@ -616,6 +636,24 @@ mod tests {
         assert_eq!(children[0].name, "Engine");
         assert_eq!(children[0].detail.as_deref(), Some("part def"));
         assert_eq!(children[0].kind, tower_lsp::lsp_types::SymbolKind::CLASS);
+    }
+
+    #[test]
+    fn test_collect_document_symbols_feature_and_classifier_decls() {
+        let text = "package P { feature myFeature : BaseFeature; class VehicleClass; }";
+        let root = sysml_v2_parser::parse(text).expect("parse");
+        let symbols = collect_document_symbols(&root);
+        let children = symbols[0].children.as_ref().expect("children");
+        assert!(children.iter().any(|child| {
+            child.name == "myFeature"
+                && child.detail.as_deref() == Some("feature decl")
+                && child.kind == tower_lsp::lsp_types::SymbolKind::PROPERTY
+        }));
+        assert!(children.iter().any(|child| {
+            child.name == "VehicleClass"
+                && child.detail.as_deref() == Some("classifier decl")
+                && child.kind == tower_lsp::lsp_types::SymbolKind::CLASS
+        }));
     }
 
     #[test]

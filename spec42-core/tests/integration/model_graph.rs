@@ -108,3 +108,71 @@ fn lsp_sysml_model_graph() {
 
     let _ = child.kill();
 }
+
+#[test]
+fn lsp_sysml_model_graph_includes_feature_and_classifier_decls() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///model_feature_classifier_test.sysml";
+    let content = "package P { feature myFeature : BaseFeature; class VehicleClass; }";
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+
+    let did_open = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+        }
+    });
+    send_message(&mut stdin, &did_open.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(80));
+
+    let model_id = next_id();
+    let model_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": model_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": uri },
+            "scope": ["graph"]
+        }
+    });
+    send_message(&mut stdin, &model_req.to_string());
+    let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+    let nodes = model_json["result"]["graph"]["nodes"]
+        .as_array()
+        .expect("graph nodes");
+
+    assert!(nodes.iter().any(|node| {
+        node["name"].as_str() == Some("myFeature")
+            && node["type"].as_str() == Some("feature decl")
+    }));
+    assert!(nodes.iter().any(|node| {
+        node["name"].as_str() == Some("VehicleClass")
+            && node["type"].as_str() == Some("classifier decl")
+    }));
+
+    let _ = child.kill();
+}

@@ -721,7 +721,7 @@ mod tests {
     }
 
     #[test]
-    fn graph_build_ignores_unmodeled_package_decls_from_new_parser() {
+    fn graph_build_includes_feature_and_classifier_package_decls() {
         let input = r#"
             package P {
                 feature myFeature : BaseFeature;
@@ -736,14 +736,30 @@ mod tests {
 
         let package_id = NodeId::new(&uri, "P");
         let part_id = NodeId::new(&uri, "P::Airframe");
+        let feature_id = NodeId::new(&uri, "P::myFeature");
+        let class_id = NodeId::new(&uri, "P::VehicleClass");
 
         assert!(
             g.node_index_by_id.contains_key(&package_id),
-            "expected package node to survive alongside unmodeled decls"
+            "expected package node to survive alongside package declarations"
+        );
+        assert!(
+            g.node_index_by_id.contains_key(&feature_id),
+            "expected feature decl node to be materialized"
+        );
+        assert!(
+            g.node_index_by_id.contains_key(&class_id),
+            "expected classifier decl node to be materialized"
         );
         assert!(
             g.node_index_by_id.contains_key(&part_id),
             "expected known modeled members to remain buildable when feature/classifier decls are present"
+        );
+        let nodes = g.nodes_for_uri(&uri);
+        assert!(nodes.iter().any(|n| n.element_kind == "feature decl" && n.name == "myFeature"));
+        assert!(
+            nodes.iter()
+                .any(|n| n.element_kind == "classifier decl" && n.name == "VehicleClass")
         );
     }
 

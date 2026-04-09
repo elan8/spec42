@@ -965,6 +965,76 @@ fn lsp_sysml_model_connected_blocks_fixture_exposes_interconnection_view_source_
 }
 
 #[test]
+fn lsp_sysml_diagram_general_view_shows_feature_and_classifier_decls() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///feature_classifier_diagram.sysml";
+    let content = "package P {\n  feature myFeature : BaseFeature;\n  class VehicleClass;\n}\n";
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+
+    let did_open = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+        }
+    });
+    send_message(&mut stdin, &did_open.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(120));
+
+    let diagram_id = next_id();
+    let diagram_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": diagram_id,
+        "method": "sysml/diagram",
+        "params": {
+            "textDocument": { "uri": uri },
+            "kind": "general-view"
+        }
+    });
+    send_message(&mut stdin, &diagram_req.to_string());
+    let diagram_resp = read_response(&mut stdout, diagram_id).expect("sysml/diagram response");
+    let diagram_json: serde_json::Value =
+        serde_json::from_str(&diagram_resp).expect("parse sysml/diagram response");
+    let nodes = diagram_json["result"]["scene"]["generalView"]["nodes"]
+        .as_array()
+        .expect("generalView nodes");
+
+    assert!(nodes.iter().any(|node| {
+        node["name"].as_str() == Some("myFeature")
+            && node["type"].as_str() == Some("feature decl")
+            && node["category"].as_str() == Some("structure")
+    }));
+    assert!(nodes.iter().any(|node| {
+        node["name"].as_str() == Some("VehicleClass")
+            && node["type"].as_str() == Some("classifier decl")
+            && node["category"].as_str() == Some("structure")
+    }));
+
+    let _ = child.kill();
+}
+
+#[test]
 fn lsp_sysml_model_general_view_graph_keeps_valid_office_subject_edge_without_synthetic_expansion()
 {
 }

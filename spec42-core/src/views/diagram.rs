@@ -818,6 +818,12 @@ fn general_category(element_type: &str) -> String {
     {
         return "structure".to_string();
     }
+    if ["feature decl", "classifier decl"]
+        .iter()
+        .any(|kw| lower.contains(kw))
+    {
+        return "structure".to_string();
+    }
     "other".to_string()
 }
 
