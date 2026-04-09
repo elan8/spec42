@@ -1004,7 +1004,11 @@ fn lsp_workspace_visualization_returns_workspace_model_payload_for_workspace_roo
         Some(2),
         "expected summary to report both workspace files as loaded"
     );
-    assert_eq!(workspace_files.len(), 2, "expected one file entry per workspace file");
+    assert_eq!(
+        workspace_files.len(),
+        2,
+        "expected one file entry per workspace file"
+    );
     let file_uris: std::collections::HashSet<&str> = workspace_files
         .iter()
         .filter_map(|entry| entry["uri"].as_str())

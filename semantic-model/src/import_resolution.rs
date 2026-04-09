@@ -62,7 +62,10 @@ fn import_visibility(import: &SemanticNode) -> String {
 }
 
 fn import_target(import: &SemanticNode) -> Option<&str> {
-    import.attributes.get("importTarget").and_then(|value| value.as_str())
+    import
+        .attributes
+        .get("importTarget")
+        .and_then(|value| value.as_str())
 }
 
 fn is_import_all(import: &SemanticNode) -> bool {
@@ -120,13 +123,17 @@ fn namespace_scope_chain(graph: &SemanticGraph, context_node: &SemanticNode) -> 
     out
 }
 
-fn namespace_node_ids_for_qualified_name(graph: &SemanticGraph, qualified_name: &str) -> Vec<NodeId> {
+fn namespace_node_ids_for_qualified_name(
+    graph: &SemanticGraph,
+    qualified_name: &str,
+) -> Vec<NodeId> {
     graph
         .node_ids_for_qualified_name(&normalize_for_lookup(qualified_name))
         .into_iter()
         .flatten()
         .filter(|id| {
-            graph.get_node(id)
+            graph
+                .get_node(id)
                 .map(|node| is_namespace_kind(&node.element_kind))
                 .unwrap_or(false)
         })
@@ -152,7 +159,8 @@ fn exact_named_members(graph: &SemanticGraph, qualified_name: &str) -> Vec<NodeI
         .into_iter()
         .flatten()
         .filter(|id| {
-            graph.get_node(id)
+            graph
+                .get_node(id)
                 .map(|node| node.element_kind != "import")
                 .unwrap_or(false)
         })
@@ -197,7 +205,12 @@ fn exported_members_named_from_namespace(
         if exported_only && import_visibility(import) != "public" {
             continue;
         }
-        out.extend(resolve_import_targets_named(graph, import, simple_name, stack));
+        out.extend(resolve_import_targets_named(
+            graph,
+            import,
+            simple_name,
+            stack,
+        ));
     }
 
     let out = dedupe_node_ids(out);
@@ -355,7 +368,8 @@ pub fn resolve_type_reference_targets(
         for candidate in
             type_ref_candidates_with_kind(container_prefix, &normalized_type_ref, suffix_kind)
         {
-            if let Some(target_ids) = graph.node_ids_for_qualified_name(&normalize_for_lookup(&candidate))
+            if let Some(target_ids) =
+                graph.node_ids_for_qualified_name(&normalize_for_lookup(&candidate))
             {
                 for target_id in target_ids {
                     if let Some(target) = graph.get_node(target_id) {

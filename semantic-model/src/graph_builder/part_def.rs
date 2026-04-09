@@ -229,10 +229,6 @@ pub(super) fn build_from_part_def_body_element(
             );
         }
         // Compatibility-only members introduced by newer parser versions are intentionally ignored.
-        PDBE::Error(_)
-        | PDBE::Doc(_)
-        | PDBE::Other(_)
-        | PDBE::Ref(_)
-        | PDBE::OpaqueMember(_) => {}
+        PDBE::Error(_) | PDBE::Doc(_) | PDBE::Other(_) | PDBE::Ref(_) | PDBE::OpaqueMember(_) => {}
     }
 }

@@ -10,6 +10,7 @@ mod lsp_runtime;
 pub mod semantic_model;
 pub mod semantic_tokens;
 pub mod syntax;
+pub mod validation;
 pub mod views;
 pub(crate) mod workspace;
 
@@ -22,6 +23,7 @@ pub use lsp_runtime::run as run_lsp;
 
 // Core data model exports.
 pub use syntax::ast_util::{identification_name, span_to_range, span_to_source_range, SourceRange};
+pub use validation::{validate_paths, ValidationReport, ValidationRequest, ValidationSummary};
 pub use views::dto::{
     DiagramBoundsDto, DiagramNodeCompartmentsDto, DiagramPointDto, DiagramSceneDto,
     GeneralDiagramEdgeDto, GeneralDiagramNodeDto, GeneralDiagramSceneDto, GraphEdgeDto,

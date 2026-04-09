@@ -430,14 +430,14 @@ fn add_typing_edge_cross_document(
         RelationshipKind::Specializes => SPECIALIZES_TARGET_KINDS,
         _ => return,
     };
-    let (Some(src_idx), Some(src_node)) = (
-        g.node_index_by_id.get(src_id).copied(),
-        g.get_node(src_id),
-    ) else {
+    let (Some(src_idx), Some(src_node)) =
+        (g.node_index_by_id.get(src_id).copied(), g.get_node(src_id))
+    else {
         return;
     };
 
-    let mut targets = resolve_type_reference_targets(g, src_node, &normalized_type_ref, target_element_kinds);
+    let mut targets =
+        resolve_type_reference_targets(g, src_node, &normalized_type_ref, target_element_kinds);
     if let Some(prefix) = container_prefix {
         // Preserve existing prefix-guided lookup behavior for callers that computed a more specific scope.
         for suffix_kind in DISAMBIGUATION_SUFFIX_KINDS {
@@ -448,7 +448,10 @@ fn add_typing_edge_cross_document(
                 if let Some(target_ids) = g.node_ids_for_qualified_name(&tgt_qualified) {
                     for target_id in target_ids {
                         if let Some(target) = g.get_node(target_id) {
-                            if element_kind_allowed(target.element_kind.as_str(), target_element_kinds) {
+                            if element_kind_allowed(
+                                target.element_kind.as_str(),
+                                target_element_kinds,
+                            ) {
                                 targets.push(target_id.clone());
                             }
                         }

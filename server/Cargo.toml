@@ -12,6 +12,13 @@ path = "src/main.rs"
 spec42-core = { path = "../spec42-core" }
 tokio = { version = "1", features = ["full"] }
 serde_json = { workspace = true }
+clap = { workspace = true }
+serde = { workspace = true }
+directories = "5"
+toml = "0.8"
+ureq = "2"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+tower-lsp = "0.20"
 
 [dev-dependencies]
 sysml-v2-parser = "0.1.0"

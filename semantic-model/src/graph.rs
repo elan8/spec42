@@ -756,11 +756,12 @@ mod tests {
             "expected known modeled members to remain buildable when feature/classifier decls are present"
         );
         let nodes = g.nodes_for_uri(&uri);
-        assert!(nodes.iter().any(|n| n.element_kind == "feature decl" && n.name == "myFeature"));
-        assert!(
-            nodes.iter()
-                .any(|n| n.element_kind == "classifier decl" && n.name == "VehicleClass")
-        );
+        assert!(nodes
+            .iter()
+            .any(|n| n.element_kind == "feature decl" && n.name == "myFeature"));
+        assert!(nodes
+            .iter()
+            .any(|n| n.element_kind == "classifier decl" && n.name == "VehicleClass"));
     }
 
     #[test]

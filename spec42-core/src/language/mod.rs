@@ -464,7 +464,10 @@ mod tests {
     #[test]
     fn test_completion_prefix_multibyte() {
         assert_eq!(completion_prefix("  caf\u{00E9} "), "caf\u{00E9}");
-        assert_eq!(completion_prefix("part \u{54C1}\u{8A5E} "), "\u{54C1}\u{8A5E}");
+        assert_eq!(
+            completion_prefix("part \u{54C1}\u{8A5E} "),
+            "\u{54C1}\u{8A5E}"
+        );
     }
 
     #[test]

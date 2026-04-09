@@ -119,8 +119,7 @@ fn collect_definition_ranges_from_element(
             }
         }
         PBE::ClassifierDecl(p) => {
-            let name =
-                modeled_decl_name(&p.keyword, &p.text, "_classifier");
+            let name = modeled_decl_name(&p.keyword, &p.text, "_classifier");
             if !name.is_empty() {
                 out.push((name, span_to_range(&p.span)));
             }
@@ -619,8 +618,7 @@ fn document_symbol_from_element(
             })
         }
         PBE::ClassifierDecl(p) => {
-            let name =
-                modeled_decl_name(&p.keyword, &p.text, "_classifier");
+            let name = modeled_decl_name(&p.keyword, &p.text, "_classifier");
             if name.is_empty() {
                 return None;
             }
@@ -955,8 +953,7 @@ fn collect_named_from_element(
             }
         }
         PBE::ClassifierDecl(p) => {
-            let name =
-                modeled_decl_name(&p.keyword, &p.text, "_classifier");
+            let name = modeled_decl_name(&p.keyword, &p.text, "_classifier");
             if !name.is_empty() {
                 out.push((name.clone(), format!("classifier decl '{}'", name)));
             }
@@ -1029,4 +1026,3 @@ fn collect_named_from_part_usage_body(
         _ => {}
     }
 }
-

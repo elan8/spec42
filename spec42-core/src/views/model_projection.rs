@@ -347,7 +347,11 @@ mod tests {
         };
 
         let canonical = canonical_general_view_graph(&graph, false);
-        let owner = canonical.nodes.iter().find(|node| node.id == "Pkg::Req").unwrap();
+        let owner = canonical
+            .nodes
+            .iter()
+            .find(|node| node.id == "Pkg::Req")
+            .unwrap();
         assert_eq!(
             owner.attributes.get("generalViewAttributes"),
             Some(&serde_json::json!(["  flightTime >= 25 min."])),

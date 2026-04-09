@@ -2,98 +2,81 @@
   <img src="https://raw.githubusercontent.com/elan8/spec42/HEAD/vscode/media/screenshot.png" alt="Spec42 SysML v2 Editor Screenshot" />
 </p>
 
-## Spec42: SysML v2 Language Support
+## Spec42 VS Code Extension
 
-This extension adds **SysML v2** (and **KerML**) language support to VS Code, powered by **Spec42** (`spec42`).
+This extension adds SysML v2 and KerML language support to VS Code, powered by the `spec42` language server.
 
-If you work with **MBSE** and want fast feedback while editing models, this extension provides IDE features like diagnostics, navigation, and completions across your workspace and (optionally) your library sources.
+The extension is for editor workflows. For automation, validation in CI, and environment inspection, use the `spec42` CLI directly:
+
+```bash
+spec42 check path/to/model-or-workspace
+spec42 doctor
+spec42 stdlib status
+```
 
 ## Highlights
 
-- **Language Server Protocol (LSP)** features for `.sysml` and `.kerml`
-- **Workspace-aware**: features work across your whole workspace, not just the active file
-- **Library indexing**: point the extension to library roots (for example the SysML v2 release repo) for richer navigation and completion
-- **Managed standard library** tooling for pinned SysML v2 library installs
-- **Editing baseline**: semantic highlighting from the language server and shared SysML/KerML snippets
-- **Model Explorer + Model Visualizer** for model navigation, lightweight semantic inspection, and diagram export
-- **Frontend-rendered diagrams** in the webview (General/Interconnection stable; additional views optional/experimental)
-- **Bundled server binary** in published builds (with a safe fallback to `spec42` on your PATH)
+- LSP support for `.sysml` and `.kerml`
+- workspace-aware navigation and diagnostics
+- configurable library indexing with `spec42.libraryPaths`
+- managed standard-library support
+- snippets, semantic tokens, Model Explorer, and Model Visualizer
+- bundled server binary in published builds
 
 ## Features
 
-- **Diagnostics**: syntax/validation feedback as you type
-- **Hover**: quick info on symbols
-- **Completion**: suggestions while editing
-- **Navigation**: go to definition, find references, rename
-- **Symbols**: document symbols and workspace symbol search
-- **Hierarchy**: type hierarchy and call hierarchy commands for supported SysML/KerML symbols
-- **Editor workflows**: folding ranges, selection ranges, document links, linked editing, and semantic highlighting
-- **CodeLens**: reference-count lenses where the current editor/theme configuration shows CodeLens
-- **Code actions & formatting**: where supported by the server
-- **Snippets**: shared SysML/KerML scaffolds for packages, imports, structure, state machines, requirements, and interface connections
-- **Model Explorer**: workspace/package tree with navigation, semantic summaries, richer tooltips, and source-synced selection reveal
-- **Model Visualizer**: diagram views with SVG/PNG/JSON export and theme-aware rendering
-- **Status feedback**: startup/indexing/degraded workspace status in the SysML status bar item
+- diagnostics
+- hover
+- completion
+- go to definition, references, rename
+- document symbols and workspace symbols
+- type hierarchy and call hierarchy
+- folding ranges, selection ranges, document links, linked editing, semantic highlighting
+- CodeLens where supported by editor/theme configuration
+- code actions and formatting where supported by the server
+- SysML/KerML snippets
+- Model Explorer and Model Visualizer
 
-## Getting started
+## Getting Started
 
 1. Install the extension.
 2. Open any `.sysml` or `.kerml` file.
-3. (Optional) Configure library roots for better cross-file navigation and completion.
-4. Use the command palette to open the Model Explorer/Visualizer when needed.
-5. Use **SysML Model Explorer** in the sidebar for navigation and lightweight semantic details, or **SysML: Show Type Hierarchy** / **SysML: Show Call Hierarchy** for supported symbols when you want to inspect relationships from the current cursor location.
+3. Optionally configure `spec42.libraryPaths` for custom library roots.
+4. Use the command palette to open the Model Explorer or Visualizer when needed.
 
-## Editing experience
-
-The extension currently relies on semantic tokens from the language server for syntax coloring. That keeps the color model consistent once the server is ready, even though it means there is no separate TextMate fallback layer during startup.
-
-The shared snippet pack is aimed at the modeling patterns already used in this repo:
-
-- packages and library packages
-- public/private imports and namespace-qualified imports
-- part, port, attribute, action, state, item, and requirement scaffolds
-- specialization forms such as `:>`
-- connections, typed interface connects, and flow statements
-- architecture and multi-file starter skeletons
-
-## Configuration
-
-This extension contributes the following settings:
+## Extension Settings
 
 - **`spec42.serverPath`**
   - Path to the `spec42` binary.
   - Default: `"spec42"`
-  - Notes:
-    - In published builds, the extension will try to use a **bundled** server when `serverPath` is left at the default.
-    - Set an absolute path (or workspace-relative path) if you want to use a custom build.
+  - Published builds prefer the bundled binary when this stays at the default.
 
 - **`spec42.libraryPaths`**
-  - An array of paths to **library roots** (absolute or workspace-relative).
-  - Files under these paths are indexed for hover, go-to-definition, and completion.
+  - Array of library-root paths.
+  - Files under these paths are indexed for hover, go-to-definition, references, and completion.
 
 - **`spec42.standardLibrary.enabled`**
-  - Enable managed standard library support.
+  - Enable managed standard-library support in the extension.
   - Default: `true`
 
 - **`spec42.standardLibrary.version`**
-  - Pinned SysML v2 release tag used for managed standard library installs.
+  - Pinned SysML v2 release tag for managed installs.
   - Default: `"2026-02"`
 
 - **`spec42.workspace.maxFilesPerPattern`**
-  - File discovery cap per workspace folder and file type for indexing.
-  - Increase for larger repositories if needed.
+  - Discovery cap per workspace folder and file type.
   - Default: `500`
 
 - **`spec42.visualization.enableExperimentalViews`**
-  - Enables experimental visualizer views (for example action flow / state transition / sequence).
+  - Enable experimental visualization views.
   - Default: `false`
 
 - **`spec42.visualization.exportScale`**
-  - Scale factor used for PNG/SVG diagram export.
+  - Scale factor used for PNG/SVG export.
   - Default: `2`
 
 - **`spec42.logging.verbose`**
-  - Enables verbose runtime logs for troubleshooting visualizer/webview/message flow.
+  - Enable verbose runtime logs.
   - Default: `false`
 
 Example `settings.json`:
@@ -104,25 +87,26 @@ Example `settings.json`:
 }
 ```
 
+## CLI + Extension
+
+The extension still manages editor startup and editor-facing commands, but the CLI is now the preferred path for:
+
+- validating files and workspaces outside VS Code
+- checking library and stdlib resolution with `spec42 doctor`
+- installing or removing the managed standard library with `spec42 stdlib ...`
+
+This keeps VS Code focused on the editing experience while making `spec42` usable in terminals and automation too.
+
 ## Troubleshooting
 
-- **The server can’t be started**
-  - If the bundled server isn’t available for your platform/arch (or you’re using a dev build), install `spec42` separately and ensure it’s on your PATH, or set `spec42.serverPath` to the binary location.
-
-- **Libraries don’t resolve**
-  - Make sure each entry in `spec42.libraryPaths` points to the **root folder(s)** that contain the library sources (and that the paths are correct relative to the opened workspace).
-
-- **Visualizer looks empty or stale**
-  - Save the active SysML/KerML file and reopen the visualizer.
-  - If needed, enable `spec42.logging.verbose` and check Output -> **SysML** for fetch/render diagnostics.
-
-- **Workspace results look incomplete**
-  - The status bar tooltip reports whether workspace indexing hit the configured discovery limit.
-  - Increase `spec42.workspace.maxFilesPerPattern` if your repository is larger and you want more files indexed up front.
+- If the server cannot start, check `spec42.serverPath` and open `SysML: Show SysML Output (Logs)`.
+- If libraries do not resolve, validate `spec42.libraryPaths` and compare with `spec42 doctor`.
+- If you want a CLI view of the same environment problems, run `spec42 doctor`.
+- For broader troubleshooting guidance, see [`docs/TROUBLESHOOTING.md`](../docs/TROUBLESHOOTING.md).
 
 ## Links
 
-- Source & releases: `https://github.com/elan8/spec42`
+- Source and releases: `https://github.com/elan8/spec42`
 - Issues: `https://github.com/elan8/spec42/issues`
 - SysML v2: `https://www.omg.org/sysml/sysmlv2/`
 - SysML v2 reference libraries: `https://github.com/Systems-Modeling/SysML-v2-Release`

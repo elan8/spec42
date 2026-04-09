@@ -1223,7 +1223,9 @@ fn lsp_sysml_model_general_view_graph_inlines_requirement_constraints_into_owner
         .expect("generalViewGraph nodes array");
 
     assert!(
-        graph_nodes.iter().all(|node| node["type"].as_str() != Some("require constraint")),
+        graph_nodes
+            .iter()
+            .all(|node| node["type"].as_str() != Some("require constraint")),
         "full graph should not keep standalone require constraint nodes: {graph_nodes:#?}"
     );
 

@@ -232,10 +232,7 @@ pub(crate) async fn initialized(
                 ("discoverReadMs", discover_read_ms.to_string()),
                 ("parseWorkersMs", parse_worker_ms.to_string()),
                 ("ingestMs", ingest_ms.to_string()),
-                (
-                    "relinkTotalMs",
-                    relink_metrics.total_ms.to_string(),
-                ),
+                ("relinkTotalMs", relink_metrics.total_ms.to_string()),
                 (
                     "relinkRemoveNodesMs",
                     relink_metrics.remove_nodes_ms.to_string(),
@@ -507,10 +504,7 @@ pub(crate) async fn did_change_configuration(
                 ("discoverReadMs", discover_read_ms.to_string()),
                 ("parseWorkersMs", parse_worker_ms.to_string()),
                 ("ingestMs", ingest_ms.to_string()),
-                (
-                    "relinkTotalMs",
-                    relink_metrics.total_ms.to_string(),
-                ),
+                ("relinkTotalMs", relink_metrics.total_ms.to_string()),
                 (
                     "relinkRemoveNodesMs",
                     relink_metrics.remove_nodes_ms.to_string(),
@@ -533,10 +527,7 @@ pub(crate) async fn did_change_configuration(
                     relink_metrics.parsed_doc_count.to_string(),
                 ),
                 ("loadedFiles", summary.files_loaded.to_string()),
-                (
-                    "candidateFiles",
-                    summary.candidate_files.to_string(),
-                ),
+                ("candidateFiles", summary.candidate_files.to_string()),
                 ("totalMs", total_start.elapsed().as_millis().to_string()),
             ],
         )

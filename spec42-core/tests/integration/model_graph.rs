@@ -166,8 +166,7 @@ fn lsp_sysml_model_graph_includes_feature_and_classifier_decls() {
         .expect("graph nodes");
 
     assert!(nodes.iter().any(|node| {
-        node["name"].as_str() == Some("myFeature")
-            && node["type"].as_str() == Some("feature decl")
+        node["name"].as_str() == Some("myFeature") && node["type"].as_str() == Some("feature decl")
     }));
     assert!(nodes.iter().any(|node| {
         node["name"].as_str() == Some("VehicleClass")

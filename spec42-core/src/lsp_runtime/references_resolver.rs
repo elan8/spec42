@@ -71,12 +71,8 @@ pub(crate) fn resolved_references_at_position(
     let selected_defs =
         select_defs_for_position(state, uri_norm, &lookup_name, qualifier.as_deref(), pos);
 
-    let locations = collect_references_for_lookup(
-        state,
-        &lookup_name,
-        selected_defs,
-        include_declaration,
-    );
+    let locations =
+        collect_references_for_lookup(state, &lookup_name, selected_defs, include_declaration);
     let elapsed_ms = started_at.elapsed().as_millis();
     if state.perf_logging_enabled && elapsed_ms >= 10 {
         info!(

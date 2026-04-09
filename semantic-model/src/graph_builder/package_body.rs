@@ -229,7 +229,8 @@ pub(super) fn build_from_package_body_element(
         PBE::FeatureDecl(feature_node) => {
             let fv = &feature_node.value;
             let name = extract_modeled_decl_name(&fv.keyword, &fv.text, "_feature");
-            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "feature decl");
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &name, "feature decl");
             let mut attrs = HashMap::new();
             attrs.insert("keyword".to_string(), serde_json::json!(&fv.keyword));
             attrs.insert("text".to_string(), serde_json::json!(&fv.text));

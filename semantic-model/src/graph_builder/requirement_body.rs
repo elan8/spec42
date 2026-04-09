@@ -13,17 +13,12 @@ use crate::graph::SemanticGraph;
 use crate::model::{NodeId, RelationshipKind};
 use crate::relationships::{add_edge_if_both_exist, type_ref_candidates};
 
-use super::{add_node_and_recurse, qualified_name_for_node};
 use super::expressions::expression_to_debug_string;
+use super::{add_node_and_recurse, qualified_name_for_node};
 
 const REQUIREMENT_CONSTRAINTS_ATTR: &str = "requirementConstraints";
 
-fn append_string_list_attribute(
-    g: &mut SemanticGraph,
-    node_id: &NodeId,
-    key: &str,
-    line: String,
-) {
+fn append_string_list_attribute(g: &mut SemanticGraph, node_id: &NodeId, key: &str, line: String) {
     let Some(node) = g.get_node_mut(node_id) else {
         return;
     };
@@ -35,7 +30,10 @@ fn append_string_list_attribute(
         *entry = serde_json::Value::Array(Vec::new());
     }
     if let serde_json::Value::Array(lines) = entry {
-        if !lines.iter().any(|existing| existing.as_str() == Some(line.as_str())) {
+        if !lines
+            .iter()
+            .any(|existing| existing.as_str() == Some(line.as_str()))
+        {
             lines.push(serde_json::Value::String(line));
         }
     }
@@ -141,12 +139,7 @@ pub(super) fn walk_requirement_def_body(
             }
             RequirementDefBodyElement::RequireConstraint(rc) => {
                 for line in require_constraint_display_lines(&rc.value.body) {
-                    append_string_list_attribute(
-                        g,
-                        parent_id,
-                        REQUIREMENT_CONSTRAINTS_ATTR,
-                        line,
-                    );
+                    append_string_list_attribute(g, parent_id, REQUIREMENT_CONSTRAINTS_ATTR, line);
                 }
             }
             RequirementDefBodyElement::Frame(f) => {

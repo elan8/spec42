@@ -192,7 +192,10 @@ fn lsp_feature_inspector_surfaces_feature_and_classifier_decls_without_resolutio
     let feature_element = &feature["result"]["element"];
     assert_eq!(feature_element["name"].as_str(), Some("myFeature"));
     assert_eq!(feature_element["type"].as_str(), Some("feature decl"));
-    assert_eq!(feature_element["typing"]["status"].as_str(), Some("notApplicable"));
+    assert_eq!(
+        feature_element["typing"]["status"].as_str(),
+        Some("notApplicable")
+    );
     assert_eq!(
         feature_element["specialization"]["status"].as_str(),
         Some("notApplicable")

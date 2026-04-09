@@ -157,8 +157,11 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
         let has_resolved_type = !graph
             .outgoing_typing_or_specializes_targets(node)
             .is_empty();
-        let resolved_via_import_scope =
-            !crate::semantic_model::resolve_type_reference_targets(graph, node, type_ref, &[
+        let resolved_via_import_scope = !crate::semantic_model::resolve_type_reference_targets(
+            graph,
+            node,
+            type_ref,
+            &[
                 "part def",
                 "port def",
                 "interface",
@@ -174,8 +177,9 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
                 "use case def",
                 "concern def",
                 "kermlDecl",
-            ])
-            .is_empty();
+            ],
+        )
+        .is_empty();
         if has_resolved_type || resolved_via_import_scope {
             continue;
         }

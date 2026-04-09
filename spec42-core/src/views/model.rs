@@ -194,7 +194,8 @@ fn clone_element(element: &SysmlElementDto) -> SysmlElementDto {
 
 fn merge_namespace_elements(elements: &[SysmlElementDto]) -> Vec<SysmlElementDto> {
     let namespace_types = ["package"];
-    let mut merged_by_key: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    let mut merged_by_key: std::collections::HashMap<String, usize> =
+        std::collections::HashMap::new();
     let mut merged: Vec<SysmlElementDto> = Vec::new();
 
     for element in elements {
@@ -237,7 +238,9 @@ fn merge_two_elements(a: &SysmlElementDto, b: &SysmlElementDto) -> SysmlElementD
                 child_by_key.insert(key, clone_element(child));
             }
         } else {
-            child_by_key.entry(key).or_insert_with(|| clone_element(child));
+            child_by_key
+                .entry(key)
+                .or_insert_with(|| clone_element(child));
         }
     }
 
@@ -282,7 +285,8 @@ fn build_workspace_model_dto(
     let mut all_elements = Vec::new();
 
     for workspace_uri in workspace_uris {
-        let graph = strip_synthetic_nodes(&build_document_graph_dto(semantic_graph, &workspace_uri));
+        let graph =
+            strip_synthetic_nodes(&build_document_graph_dto(semantic_graph, &workspace_uri));
         let elements = graph_to_element_tree(&graph, &workspace_uri);
         all_elements.extend(elements.iter().map(clone_element));
         files.push(WorkspaceFileModelDto {
