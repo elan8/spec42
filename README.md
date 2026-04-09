@@ -72,6 +72,14 @@ spec42 check ./models/workspace --format json
 5. the managed `spec42` standard-library install
 6. the legacy VS Code standard-library install location
 
+The canonical CLI workflow is:
+
+```bash
+spec42 stdlib install
+spec42 doctor
+spec42 check ./models/timer/KitchenTimer.sysml
+```
+
 Useful commands:
 
 ```bash
@@ -89,6 +97,7 @@ spec42 stdlib remove
 - config file in use
 - config/data directories
 - resolved standard-library path and source
+- whether the source is the canonical managed install or a compatibility fallback
 - whether legacy VS Code fallback was used
 - resolved library paths and whether each one exists
 

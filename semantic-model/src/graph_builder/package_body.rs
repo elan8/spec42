@@ -10,7 +10,7 @@ use tower_lsp::lsp_types::Url;
 use super::requirement_body::{import_member_label, walk_requirement_def_body};
 use crate::ast_util::{identification_name, span_to_range};
 use crate::graph::SemanticGraph;
-use crate::model::{NodeId, RelationshipKind, SemanticNode};
+use crate::model::{NodeId, RelationshipKind};
 use crate::relationships::{
     add_edge_if_both_exist, add_specializes_edge_if_exists, add_typing_edge_if_exists,
 };
@@ -40,21 +40,16 @@ pub(super) fn build_from_package_body_element(
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, name_display, "package");
             let node_id = NodeId::new(uri, &qualified);
-            let range = span_to_range(&pkg_node.span);
-            let sem_node = SemanticNode {
-                id: node_id.clone(),
-                element_kind: "package".to_string(),
-                name: name_display.to_string(),
-                range,
-                attributes: HashMap::new(),
-                parent_id: parent_id.cloned(),
-            };
-            let idx = g.graph.add_node(sem_node);
-            g.node_index_by_id.insert(node_id.clone(), idx);
-            g.nodes_by_uri
-                .entry(uri.clone())
-                .or_default()
-                .push(node_id.clone());
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "package",
+                name_display.to_string(),
+                span_to_range(&pkg_node.span),
+                HashMap::new(),
+                parent_id,
+            );
             let prefix = if name.is_empty() {
                 container_prefix.map(str::to_string)
             } else {

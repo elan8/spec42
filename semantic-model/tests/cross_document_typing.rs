@@ -241,3 +241,102 @@ fn cross_document_attribute_typing_resolves_via_recursive_namespace_import() {
         edges
     );
 }
+
+#[test]
+fn cross_document_attribute_typing_resolves_via_membership_import_from_public_reexported_library_package() {
+    let lib_base = r#"
+        standard library package ISQBase {
+            attribute def DurationValue;
+        }
+    "#;
+    let lib = r#"
+        standard library package ISQ {
+            public import ISQBase::*;
+        }
+    "#;
+    let main = r#"
+        package Demo {
+            private import ISQ::DurationValue;
+            part def Timer {
+                attribute duration : DurationValue;
+            }
+        }
+    "#;
+    let root_lib_base = parse(lib_base).expect("parse lib base");
+    let root_lib = parse(lib).expect("parse lib");
+    let root_main = parse(main).expect("parse main");
+    let uri_lib_base = Url::parse("file:///isq_base.sysml").expect("uri lib base");
+    let uri_lib = Url::parse("file:///isq.sysml").expect("uri lib");
+    let uri_main = Url::parse("file:///main.sysml").expect("uri main");
+
+    let mut g = SemanticGraph::new();
+    g.merge(build_graph_from_doc(&root_lib_base, &uri_lib_base));
+    g.merge(build_graph_from_doc(&root_lib, &uri_lib));
+    g.merge(build_graph_from_doc(&root_main, &uri_main));
+
+    add_cross_document_edges_for_uri(&mut g, &uri_main);
+
+    let edges = g.edges_for_uri_as_strings(&uri_main);
+    let has_typing = edges.iter().any(|(src, tgt, kind, _)| {
+        *kind == RelationshipKind::Typing && src.ends_with("duration") && tgt.ends_with("DurationValue")
+    });
+    assert!(
+        has_typing,
+        "expected typing edge from attribute duration to ISQBase::DurationValue via ISQ::DurationValue import; edges: {:?}",
+        edges
+    );
+}
+
+#[test]
+fn cross_document_attribute_typing_resolves_with_multiple_wildcard_import_siblings() {
+    let lib_base = r#"
+        standard library package ISQBase {
+            attribute def DurationValue;
+        }
+    "#;
+    let lib_other = r#"
+        standard library package ISQInformation {
+            attribute def BitRateValue;
+        }
+    "#;
+    let lib = r#"
+        standard library package ISQ {
+            public import ISQBase::*;
+            public import ISQInformation::*;
+        }
+    "#;
+    let main = r#"
+        package Demo {
+            private import ISQ::DurationValue;
+            part def Timer {
+                attribute duration : DurationValue;
+            }
+        }
+    "#;
+    let root_lib_base = parse(lib_base).expect("parse lib base");
+    let root_lib_other = parse(lib_other).expect("parse other lib");
+    let root_lib = parse(lib).expect("parse lib");
+    let root_main = parse(main).expect("parse main");
+    let uri_lib_base = Url::parse("file:///isq_base.sysml").expect("uri lib base");
+    let uri_lib_other = Url::parse("file:///isq_information.sysml").expect("uri other lib");
+    let uri_lib = Url::parse("file:///isq.sysml").expect("uri lib");
+    let uri_main = Url::parse("file:///main.sysml").expect("uri main");
+
+    let mut g = SemanticGraph::new();
+    g.merge(build_graph_from_doc(&root_lib_base, &uri_lib_base));
+    g.merge(build_graph_from_doc(&root_lib_other, &uri_lib_other));
+    g.merge(build_graph_from_doc(&root_lib, &uri_lib));
+    g.merge(build_graph_from_doc(&root_main, &uri_main));
+
+    add_cross_document_edges_for_uri(&mut g, &uri_main);
+
+    let edges = g.edges_for_uri_as_strings(&uri_main);
+    let has_typing = edges.iter().any(|(src, tgt, kind, _)| {
+        *kind == RelationshipKind::Typing && src.ends_with("duration") && tgt.ends_with("DurationValue")
+    });
+    assert!(
+        has_typing,
+        "expected typing edge from attribute duration to ISQBase::DurationValue even with multiple wildcard imports; edges: {:?}",
+        edges
+    );
+}

@@ -27,6 +27,7 @@ pub struct ValidationReport {
     pub resolved_library_paths: Vec<String>,
     pub documents: Vec<ValidatedDocument>,
     pub summary: ValidationSummary,
+    pub advice: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -113,6 +114,7 @@ pub fn validate_paths(
         .collect::<Vec<_>>();
 
     let summary = summarize(&documents);
+    let advice = build_advice(&documents, request.library_paths.is_empty());
 
     Ok(ValidationReport {
         workspace_root: workspace_root.map(|path| path.display().to_string()),
@@ -123,6 +125,7 @@ pub fn validate_paths(
             .collect(),
         documents,
         summary,
+        advice,
     })
 }
 
@@ -144,6 +147,36 @@ fn summarize(documents: &[ValidatedDocument]) -> ValidationSummary {
         }
     }
     summary
+}
+
+fn build_advice(documents: &[ValidatedDocument], no_library_paths: bool) -> Vec<String> {
+    if !no_library_paths {
+        return Vec::new();
+    }
+    let has_missing_library_context = documents.iter().any(|document| {
+        document.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code.as_ref()
+                == Some(&NumberOrString::String(
+                    "missing_library_context".to_string(),
+                ))
+        })
+    });
+    let has_unresolved_type_reference = documents.iter().any(|document| {
+        document.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code.as_ref()
+                == Some(&NumberOrString::String(
+                    "unresolved_type_reference".to_string(),
+                ))
+        })
+    });
+    if has_missing_library_context || has_unresolved_type_reference {
+        vec![
+            "Install the managed SysML standard library with `spec42 stdlib install`, or pass `--stdlib-path`/`--library-path` explicitly."
+                .to_string(),
+        ]
+    } else {
+        Vec::new()
+    }
 }
 
 fn resolve_workspace_root(request: &ValidationRequest) -> Result<Option<PathBuf>, String> {
@@ -313,4 +346,123 @@ fn collect_diagnostics_for_document(
         }
     }
     diagnostics
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn timer_like_model() -> &'static str {
+        r#"
+package KitchenTimer {
+    private import ScalarValues::*;
+    private import ISQ::DurationValue;
+
+    part def Battery {
+        attribute capacity : Real;
+        attribute runtimeEstimate : DurationValue;
+    }
+}
+"#
+    }
+
+    fn write_timer_fixture(temp: &tempfile::TempDir) -> PathBuf {
+        let model_path = temp.path().join("KitchenTimer.sysml");
+        std::fs::write(&model_path, timer_like_model()).expect("write timer fixture");
+        model_path
+    }
+
+    fn write_stdlib_fixture(temp: &tempfile::TempDir) -> PathBuf {
+        let stdlib_root = temp.path().join("sysml.library");
+        std::fs::create_dir_all(&stdlib_root).expect("create stdlib root");
+        std::fs::write(
+            stdlib_root.join("ScalarValues.sysml"),
+            "standard library package ScalarValues { attribute def Real; }",
+        )
+        .expect("write ScalarValues");
+        std::fs::write(
+            stdlib_root.join("ISQ.sysml"),
+            "standard library package ISQ { attribute def DurationValue; }",
+        )
+        .expect("write ISQ");
+        stdlib_root
+    }
+
+    #[test]
+    fn validate_paths_suggests_stdlib_install_when_imported_types_are_unresolved() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let model_path = write_timer_fixture(&temp);
+        let config = Arc::new(crate::default_server_config());
+
+        let report = validate_paths(
+            &config,
+            ValidationRequest {
+                targets: vec![model_path],
+                workspace_root: None,
+                library_paths: Vec::new(),
+                parallel_enabled: false,
+            },
+        )
+        .expect("validation report");
+
+        let unresolved: Vec<&Diagnostic> = report.documents[0]
+            .diagnostics
+            .iter()
+            .filter(|diagnostic| {
+                diagnostic.code.as_ref()
+                    == Some(&NumberOrString::String(
+                        "unresolved_type_reference".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            unresolved
+                .iter()
+                .any(|diagnostic| diagnostic.message.contains("Real")),
+            "expected unresolved Real diagnostic: {unresolved:#?}"
+        );
+        assert!(
+            unresolved
+                .iter()
+                .any(|diagnostic| diagnostic.message.contains("DurationValue")),
+            "expected unresolved DurationValue diagnostic: {unresolved:#?}"
+        );
+        assert_eq!(report.advice.len(), 1);
+        assert!(report.advice[0].contains("spec42 stdlib install"));
+    }
+
+    #[test]
+    fn validate_paths_resolves_timer_library_types_when_stdlib_root_is_present() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let model_path = write_timer_fixture(&temp);
+        let stdlib_root = write_stdlib_fixture(&temp);
+        let config = Arc::new(crate::default_server_config());
+
+        let report = validate_paths(
+            &config,
+            ValidationRequest {
+                targets: vec![model_path],
+                workspace_root: None,
+                library_paths: vec![stdlib_root],
+                parallel_enabled: false,
+            },
+        )
+        .expect("validation report");
+
+        let unresolved: Vec<&Diagnostic> = report.documents[0]
+            .diagnostics
+            .iter()
+            .filter(|diagnostic| {
+                diagnostic.code.as_ref()
+                    == Some(&NumberOrString::String(
+                        "unresolved_type_reference".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            unresolved.is_empty(),
+            "expected managed stdlib fixture to clear unresolved type refs: {unresolved:#?}"
+        );
+        assert!(report.advice.is_empty());
+    }
 }

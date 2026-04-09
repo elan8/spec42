@@ -14,6 +14,7 @@ Check:
 
 - which config file is in use
 - which standard-library path was resolved
+- whether that path is the canonical managed install or only a compatibility fallback
 - whether the resolved library paths actually exist
 - whether the CLI fell back to a legacy VS Code standard-library install
 
@@ -44,6 +45,7 @@ What to do:
 2. If needed, pass `--workspace-root` explicitly.
 3. Add `--library-path` or `--stdlib-path` explicitly to confirm the issue.
 4. Install the managed standard library with `spec42 stdlib install`.
+5. Re-run `spec42 check ...`; if library context is still missing, the CLI will now suggest `spec42 stdlib install` directly in text output.
 
 ## No Standard Library Is Found
 

@@ -9,6 +9,7 @@ use std::sync::Arc;
 use clap::Parser;
 use cli::{CheckArgs, Cli, Command, DoctorArgs, OutputFormat, StdlibCommand};
 use environment::{build_doctor_report, resolve_environment};
+use spec42_core::host::logging::init_tracing;
 use spec42_core::{validate_paths, ValidationReport, ValidationRequest};
 use stdlib::{
     install_standard_library, load_managed_metadata, managed_status, remove_standard_library,
@@ -16,6 +17,7 @@ use stdlib::{
 
 #[tokio::main]
 async fn main() -> ExitCode {
+    init_tracing();
     let cli = Cli::parse();
     match run(cli).await {
         Ok(code) => code,
@@ -189,6 +191,9 @@ fn print_check_report(report: &ValidationReport) {
         report.summary.warning_count,
         report.summary.information_count
     );
+    for advice in &report.advice {
+        println!("Advice: {advice}");
+    }
 }
 
 fn print_doctor_report(report: &environment::DoctorReport) {
@@ -208,6 +213,7 @@ fn print_doctor_report(report: &environment::DoctorReport) {
         "stdlib source: {}",
         report.stdlib_source.as_deref().unwrap_or("(none)")
     );
+    println!("stdlib source kind: {}", report.stdlib_source_kind);
     println!(
         "legacy VS Code fallback: {}",
         if report.used_legacy_vscode_fallback {
@@ -246,6 +252,14 @@ fn print_stdlib_status(status: &stdlib::StandardLibraryStatus) {
     );
     println!("ready: {}", if status.is_installed { "yes" } else { "no" });
     println!("source: {}", status.source.as_deref().unwrap_or("(none)"));
+    println!(
+        "canonical managed: {}",
+        if status.is_canonical_managed {
+            "yes"
+        } else {
+            "no"
+        }
+    );
 }
 
 fn severity_label(severity: tower_lsp::lsp_types::DiagnosticSeverity) -> &'static str {

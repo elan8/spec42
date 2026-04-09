@@ -7,7 +7,8 @@ use serde::{Deserialize, Serialize};
 use crate::cli::Cli;
 use crate::stdlib::{
     legacy_vscode_stdlib_path, load_managed_metadata, managed_status, project_dirs,
-    standard_library_paths, StandardLibraryConfig, StandardLibraryPaths, StandardLibraryStatus,
+    standard_library_paths_from_data_dir, StandardLibraryConfig, StandardLibraryPaths,
+    StandardLibraryStatus,
 };
 
 #[derive(Debug, Clone, Deserialize, Default)]
@@ -42,6 +43,7 @@ pub struct DoctorReport {
     pub data_dir: String,
     pub resolved_stdlib_path: Option<String>,
     pub stdlib_source: Option<String>,
+    pub stdlib_source_kind: String,
     pub used_legacy_vscode_fallback: bool,
     pub standard_library_status: StandardLibraryStatus,
     pub library_paths: Vec<DoctorPathStatus>,
@@ -55,9 +57,21 @@ pub struct DoctorPathStatus {
 
 pub fn resolve_environment(cli: &Cli) -> Result<ResolvedEnvironment, String> {
     let project_dirs = project_dirs()?;
-    let config_dir = project_dirs.config_dir().to_path_buf();
-    let data_dir = project_dirs.data_local_dir().to_path_buf();
-    let standard_library_paths = standard_library_paths()?;
+    resolve_environment_with_dirs(
+        cli,
+        project_dirs.config_dir().to_path_buf(),
+        project_dirs.data_local_dir().to_path_buf(),
+    )
+}
+
+fn resolve_environment_with_dirs(
+    cli: &Cli,
+    config_dir: PathBuf,
+    data_dir: PathBuf,
+) -> Result<ResolvedEnvironment, String> {
+    let project_dirs = project_dirs()?;
+    let _ = project_dirs;
+    let standard_library_paths = standard_library_paths_from_data_dir(data_dir.clone());
 
     let explicit_config_path = cli
         .config_path
@@ -85,8 +99,13 @@ pub fn resolve_environment(cli: &Cli) -> Result<ResolvedEnvironment, String> {
     };
 
     let standard_library = resolve_standard_library_config(cli, &explicit_config, &default_config);
-    let stdlib_resolution =
-        resolve_stdlib_path(cli, &explicit_config, &default_config, &standard_library)?;
+    let stdlib_resolution = resolve_stdlib_path(
+        cli,
+        &explicit_config,
+        &default_config,
+        &standard_library,
+        &standard_library_paths,
+    )?;
 
     let library_paths = resolve_library_paths(
         cli,
@@ -142,6 +161,15 @@ pub fn build_doctor_report(
             .as_ref()
             .map(|path| path.display().to_string()),
         stdlib_source: environment.stdlib_source.clone(),
+        stdlib_source_kind: if environment.stdlib_source.as_deref() == Some("managed") {
+            "canonical-managed".to_string()
+        } else if environment.used_legacy_vscode_fallback {
+            "compatibility-fallback".to_string()
+        } else if environment.stdlib_source.as_deref() == Some("disabled") {
+            "disabled".to_string()
+        } else {
+            "none".to_string()
+        },
         used_legacy_vscode_fallback: environment.used_legacy_vscode_fallback,
         standard_library_status: status,
         library_paths: environment
@@ -248,6 +276,7 @@ fn resolve_stdlib_path(
     explicit_config: &ConfigFile,
     default_config: &ConfigFile,
     standard_library: &StandardLibraryConfig,
+    standard_library_paths: &StandardLibraryPaths,
 ) -> Result<StdlibResolution, String> {
     let no_stdlib = cli.no_stdlib
         || std::env::var("SPEC42_NO_STDLIB")
@@ -292,8 +321,7 @@ fn resolve_stdlib_path(
         });
     }
 
-    let paths = standard_library_paths()?;
-    if let Some(metadata) = load_managed_metadata(&paths)? {
+    if let Some(metadata) = load_managed_metadata(standard_library_paths)? {
         let managed_path = PathBuf::from(metadata.install_path);
         if managed_path.is_dir() {
             return Ok(StdlibResolution {
@@ -345,6 +373,7 @@ fn canonicalize_lossy(path: &Path) -> PathBuf {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::stdlib::{save_managed_metadata, standard_library_paths_from_data_dir};
 
     #[test]
     fn explicit_library_paths_take_precedence() {
@@ -374,9 +403,60 @@ mod tests {
             &ConfigFile::default(),
             &ConfigFile::default(),
             &StandardLibraryConfig::default(),
+            &standard_library_paths_from_data_dir(std::env::temp_dir().join("spec42-stdlib-test")),
         )
         .expect("resolve stdlib");
         assert!(resolution.path.is_none());
         assert_eq!(resolution.source.as_deref(), Some("disabled"));
+    }
+
+    #[test]
+    fn resolve_environment_prefers_managed_stdlib_and_includes_it_in_library_paths() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let config_dir = temp.path().join("config");
+        let data_dir = temp.path().join("data");
+        std::fs::create_dir_all(&config_dir).expect("create config dir");
+        std::fs::create_dir_all(&data_dir).expect("create data dir");
+        let paths = standard_library_paths_from_data_dir(data_dir.clone());
+        let install_path = paths
+            .managed_root
+            .join("versions")
+            .join("2026-02")
+            .join("sysml.library");
+        std::fs::create_dir_all(&install_path).expect("create install path");
+        std::fs::write(
+            install_path.join("ScalarValues.sysml"),
+            "standard library package ScalarValues { attribute def Real; }",
+        )
+        .expect("write stdlib file");
+        save_managed_metadata(
+            &paths,
+            &crate::stdlib::StandardLibraryMetadata {
+                installed_version: "2026-02".to_string(),
+                install_path: install_path.display().to_string(),
+                installed_at: "0".to_string(),
+                repo: "Systems-Modeling/SysML-v2-Release".to_string(),
+                content_path: "sysml.library".to_string(),
+            },
+        )
+        .expect("save metadata");
+
+        let cli = Cli {
+            config_path: None,
+            library_paths: Vec::new(),
+            stdlib_path: None,
+            no_stdlib: false,
+            command: None,
+        };
+        let environment =
+            resolve_environment_with_dirs(&cli, config_dir, data_dir).expect("environment");
+        assert_eq!(environment.stdlib_source.as_deref(), Some("managed"));
+        assert!(environment
+            .library_paths
+            .iter()
+            .any(|path| path == &install_path));
+        let doctor = build_doctor_report("doctor", &environment).expect("doctor");
+        assert_eq!(doctor.stdlib_source_kind, "canonical-managed");
+        assert!(doctor.standard_library_status.is_canonical_managed);
     }
 }

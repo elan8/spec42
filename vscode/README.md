@@ -93,7 +93,7 @@ The extension still manages editor startup and editor-facing commands, but the C
 
 - validating files and workspaces outside VS Code
 - checking library and stdlib resolution with `spec42 doctor`
-- installing or removing the managed standard library with `spec42 stdlib ...`
+- installing or removing the canonical managed standard library with `spec42 stdlib ...`
 
 This keeps VS Code focused on the editing experience while making `spec42` usable in terminals and automation too.
 

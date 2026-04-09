@@ -43,6 +43,7 @@ pub struct StandardLibraryStatus {
     pub install_path: Option<String>,
     pub is_installed: bool,
     pub source: Option<String>,
+    pub is_canonical_managed: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -56,15 +57,13 @@ pub fn project_dirs() -> Result<ProjectDirs, String> {
         .ok_or_else(|| "Could not determine a user config directory for spec42.".to_string())
 }
 
-pub fn standard_library_paths() -> Result<StandardLibraryPaths, String> {
-    let project_dirs = project_dirs()?;
-    let data_dir = project_dirs.data_local_dir().to_path_buf();
+pub fn standard_library_paths_from_data_dir(data_dir: PathBuf) -> StandardLibraryPaths {
     let managed_root = data_dir.join("standard-library");
     let metadata_path = managed_root.join("metadata.toml");
-    Ok(StandardLibraryPaths {
+    StandardLibraryPaths {
         managed_root,
         metadata_path,
-    })
+    }
 }
 
 pub fn managed_install_path(
@@ -99,8 +98,16 @@ pub fn save_managed_metadata(
         .map_err(|err| format!("Failed to create {}: {err}", paths.managed_root.display()))?;
     let raw = toml::to_string(metadata)
         .map_err(|err| format!("Failed to serialize standard library metadata: {err}"))?;
-    fs::write(&paths.metadata_path, raw)
-        .map_err(|err| format!("Failed to write {}: {err}", paths.metadata_path.display()))
+    let temp_path = paths.metadata_path.with_extension("toml.tmp");
+    fs::write(&temp_path, raw)
+        .map_err(|err| format!("Failed to write {}: {err}", temp_path.display()))?;
+    fs::rename(&temp_path, &paths.metadata_path).map_err(|err| {
+        format!(
+            "Failed to move {} into place at {}: {err}",
+            temp_path.display(),
+            paths.metadata_path.display()
+        )
+    })
 }
 
 pub fn remove_managed_metadata(paths: &StandardLibraryPaths) -> Result<(), String> {
@@ -118,7 +125,7 @@ pub fn managed_status(
     let metadata = load_managed_metadata(paths)?;
     let is_installed = metadata
         .as_ref()
-        .is_some_and(|metadata| Path::new(&metadata.install_path).is_dir());
+        .is_some_and(|metadata| install_path_is_ready(Path::new(&metadata.install_path)));
     Ok(StandardLibraryStatus {
         pinned_version: config.version.clone(),
         installed_version: metadata
@@ -129,6 +136,7 @@ pub fn managed_status(
             .map(|metadata| metadata.install_path.clone()),
         is_installed,
         source: metadata.map(|_| "managed".to_string()),
+        is_canonical_managed: is_installed,
     })
 }
 
@@ -149,18 +157,67 @@ pub fn install_standard_library(
         config.repo, config.version
     );
     let bytes = download_archive(&url)?;
+    install_standard_library_from_bytes(paths, config, &bytes)
+}
+
+pub fn install_standard_library_from_bytes(
+    paths: &StandardLibraryPaths,
+    config: &StandardLibraryConfig,
+    archive_bytes: &[u8],
+) -> Result<StandardLibraryMetadata, String> {
+    let normalized_content_path = normalize_content_path(&config.content_path);
+    if normalized_content_path.is_empty() {
+        return Err("Standard library content path must not be empty.".to_string());
+    }
+
+    fs::create_dir_all(&paths.managed_root)
+        .map_err(|err| format!("Failed to create {}: {err}", paths.managed_root.display()))?;
+
     let install_path = managed_install_path(paths, config);
     let version_root = install_path
         .parent()
-        .and_then(Path::parent)
         .ok_or_else(|| "Managed install root is malformed.".to_string())?;
+    let staging_root =
+        paths
+            .managed_root
+            .join(format!("staging-{}-{}", config.version, std::process::id()));
+    if staging_root.exists() {
+        fs::remove_dir_all(&staging_root)
+            .map_err(|err| format!("Failed to clear {}: {err}", staging_root.display()))?;
+    }
+    let staging_version_root = staging_root.join(&config.version);
+    let staging_install_path = staging_version_root.join(&normalized_content_path);
+    fs::create_dir_all(&staging_install_path)
+        .map_err(|err| format!("Failed to create {}: {err}", staging_install_path.display()))?;
+    extract_archive_subset(
+        archive_bytes,
+        &normalized_content_path,
+        &staging_install_path,
+    )?;
     if version_root.exists() {
         fs::remove_dir_all(version_root)
             .map_err(|err| format!("Failed to replace {}: {err}", version_root.display()))?;
     }
-    fs::create_dir_all(&install_path)
-        .map_err(|err| format!("Failed to create {}: {err}", install_path.display()))?;
-    extract_archive_subset(&bytes, &normalized_content_path, &install_path)?;
+    if let Some(parent) = version_root.parent() {
+        fs::create_dir_all(parent)
+            .map_err(|err| format!("Failed to create {}: {err}", parent.display()))?;
+    }
+    fs::rename(&staging_version_root, version_root).map_err(|err| {
+        format!(
+            "Failed to move {} into {}: {err}",
+            staging_version_root.display(),
+            version_root.display()
+        )
+    })?;
+    if staging_root.exists() {
+        let _ = fs::remove_dir_all(&staging_root);
+    }
+    if !install_path_is_ready(&install_path) {
+        return Err(format!(
+            "Managed standard library install at {} is not readable after extraction.",
+            install_path.display()
+        ));
+    }
 
     let installed_at = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -186,7 +243,6 @@ pub fn remove_standard_library(paths: &StandardLibraryPaths) -> Result<bool, Str
     let managed_versions_root = paths.managed_root.join("versions");
     let version_root = install_path
         .parent()
-        .and_then(Path::parent)
         .ok_or_else(|| "Managed install root is malformed.".to_string())?;
     if !version_root.starts_with(&managed_versions_root) {
         return Err(format!(
@@ -247,6 +303,10 @@ fn legacy_vscode_base_dir() -> Option<PathBuf> {
 
 fn normalize_content_path(path: &str) -> String {
     path.trim_matches('/').trim_matches('\\').to_string()
+}
+
+fn install_path_is_ready(path: &Path) -> bool {
+    path.is_dir() && fs::read_dir(path).is_ok()
 }
 
 fn download_archive(url: &str) -> Result<Vec<u8>, String> {
@@ -362,5 +422,33 @@ mod tests {
 
         assert!(destination.join("A.sysml").is_file());
         assert!(!destination.join("B.sysml").exists());
+    }
+
+    #[test]
+    fn install_from_bytes_writes_metadata_and_reports_ready_status() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let paths = standard_library_paths_from_data_dir(temp.path().to_path_buf());
+        let archive_path = temp.path().join("archive.zip");
+        {
+            let file = fs::File::create(&archive_path).expect("create zip");
+            let mut zip = zip::ZipWriter::new(file);
+            let options = zip::write::SimpleFileOptions::default();
+            zip.start_file("release-2026-02/sysml.library/ScalarValues.sysml", options)
+                .expect("start file");
+            zip.write_all(b"standard library package ScalarValues { attribute def Real; }")
+                .expect("write file");
+            zip.finish().expect("finish zip");
+        }
+
+        let bytes = fs::read(&archive_path).expect("read archive");
+        let config = StandardLibraryConfig::default();
+        let metadata =
+            install_standard_library_from_bytes(&paths, &config, &bytes).expect("install");
+
+        assert!(Path::new(&metadata.install_path).is_dir());
+        let status = managed_status(&paths, &config).expect("status");
+        assert!(status.is_installed);
+        assert!(status.is_canonical_managed);
+        assert_eq!(status.source.as_deref(), Some("managed"));
     }
 }

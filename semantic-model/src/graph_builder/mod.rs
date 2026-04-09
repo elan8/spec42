@@ -98,11 +98,19 @@ pub(super) fn qualified_name_for_node(
 ) -> String {
     let base = qualified_name(container_prefix, name);
     let kind_suffix = kind.replace(' ', "_");
-    let node_id = NodeId::new(uri, &base);
-    if g.node_index_by_id.contains_key(&node_id) {
-        format!("{}#{}", base, kind_suffix)
-    } else {
-        base
+    let mut candidate = base.clone();
+    let mut ordinal = 0usize;
+    loop {
+        let node_id = NodeId::new(uri, &candidate);
+        if !g.node_index_by_id.contains_key(&node_id) {
+            return candidate;
+        }
+        ordinal += 1;
+        candidate = if ordinal == 1 {
+            format!("{}#{}", base, kind_suffix)
+        } else {
+            format!("{}#{}{}", base, kind_suffix, ordinal)
+        };
     }
 }
 
