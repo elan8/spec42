@@ -1,6 +1,6 @@
 [package]
 name = "spec42-zed"
-version = "0.16.0"
+version = "0.17.0"
 edition = "2021"
 description = "Zed extension for SysML v2 language support via the spec42 LSP"
 license = "MIT"

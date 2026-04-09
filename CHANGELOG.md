@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-04-09
+
+### Added
+
+- **Visible parser declaration support** - Added first-class support for `FeatureDecl` and `ClassifierDecl` so these package-level declarations now appear in document symbols, named-element extraction, semantic graph output, feature inspector responses, and General View diagrams.
+
+### Changed
+
+- **Published parser dependency** - Switched Spec42 from the old git-pinned parser dependency to the published `sysml-v2-parser` crate `0.1.0`.
+- **Parser compatibility handling** - Updated semantic graph, symbol, and diagnostic/token code paths to tolerate newly introduced parser AST variants without breaking existing behavior.
+
 ## [0.16.0] - 2026-04-08
 
 ### Added
