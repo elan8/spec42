@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use sysml_parser::ast::{InOut, PortDefBodyElement};
+use sysml_v2_parser::ast::{InOut, PortDefBodyElement};
 use tower_lsp::lsp_types::Url;
 
 use crate::ast_util::span_to_range;
@@ -12,13 +12,13 @@ use super::expressions;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
 pub(super) fn build_from_port_def_body_element(
-    node: &sysml_parser::Node<PortDefBodyElement>,
+    node: &sysml_v2_parser::Node<PortDefBodyElement>,
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: &NodeId,
     g: &mut SemanticGraph,
 ) {
-    use sysml_parser::ast::PortDefBodyElement as PDBE;
+    use sysml_v2_parser::ast::PortDefBodyElement as PDBE;
     match &node.value {
         PDBE::Doc(_) => {}
         PDBE::InOutDecl(w) => {

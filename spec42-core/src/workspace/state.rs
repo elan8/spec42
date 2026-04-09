@@ -1,6 +1,6 @@
 use crate::language::SymbolEntry;
 use crate::semantic_model;
-use sysml_parser::RootNamespace;
+use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
 
 #[derive(Debug, Clone, Copy, Default)]

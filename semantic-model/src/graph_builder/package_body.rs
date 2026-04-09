@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
-use sysml_parser::ast::{
+use sysml_v2_parser::ast::{
     ActionDefBody, ActionDefBodyElement, ConnectionDefBody, InOut, InterfaceDefBody, PackageBody,
     PackageBodyElement, PartDefBody, PartUsageBody, PortDefBody, StateDefBody, UseCaseDefBody,
 };
-use sysml_parser::RootNamespace;
+use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
 
 use super::requirement_body::{import_member_label, walk_requirement_def_body};
@@ -21,14 +21,14 @@ use super::{add_node_and_recurse, qualified_name_for_node};
 use super::{interface_def, part_def, part_usage, port_def, state, stubs, use_case};
 
 pub(super) fn build_from_package_body_element(
-    node: &sysml_parser::Node<PackageBodyElement>,
+    node: &sysml_v2_parser::Node<PackageBodyElement>,
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: Option<&NodeId>,
     root: &RootNamespace,
     g: &mut SemanticGraph,
 ) {
-    use sysml_parser::ast::PackageBodyElement as PBE;
+    use sysml_v2_parser::ast::PackageBodyElement as PBE;
     match &node.value {
         PBE::Package(pkg_node) => {
             let name = identification_name(&pkg_node.identification);
@@ -125,8 +125,8 @@ pub(super) fn build_from_package_body_element(
                 attrs.insert(
                     "definitionPrefix".to_string(),
                     serde_json::json!(match p {
-                        sysml_parser::ast::DefinitionPrefix::Abstract => "abstract",
-                        sysml_parser::ast::DefinitionPrefix::Variation => "variation",
+                        sysml_v2_parser::ast::DefinitionPrefix::Abstract => "abstract",
+                        sysml_v2_parser::ast::DefinitionPrefix::Variation => "variation",
                     }),
                 );
             }
@@ -1370,5 +1370,7 @@ pub(super) fn build_from_package_body_element(
                 );
             }
         }
+        // Compatibility-only for parser v0.1.0 additions we do not model yet.
+        PBE::FeatureDecl(_) | PBE::ClassifierDecl(_) => {}
     }
 }

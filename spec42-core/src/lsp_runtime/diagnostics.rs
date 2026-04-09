@@ -105,8 +105,8 @@ async fn collect_diagnostics_for_document(
         let severity = error
             .severity
             .map(|severity| match severity {
-                sysml_parser::DiagnosticSeverity::Error => DiagnosticSeverity::ERROR,
-                sysml_parser::DiagnosticSeverity::Warning => DiagnosticSeverity::WARNING,
+                sysml_v2_parser::DiagnosticSeverity::Error => DiagnosticSeverity::ERROR,
+                sysml_v2_parser::DiagnosticSeverity::Warning => DiagnosticSeverity::WARNING,
             })
             .unwrap_or(DiagnosticSeverity::ERROR);
         diagnostics.push(Diagnostic {

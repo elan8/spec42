@@ -1,12 +1,12 @@
 //! AST-driven semantic token ranges: collects (SourceRange, type_index) from parsed AST.
 
 use crate::syntax::ast_util::{span_to_source_range, SourceRange};
-use sysml_parser::ast::{
+use sysml_v2_parser::ast::{
     ActionDefBody, ActionUsageBody, ActionUsageBodyElement, InterfaceDefBody,
     InterfaceDefBodyElement, PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement,
     PartUsageBody, PartUsageBodyElement, PortDefBody, PortDefBodyElement, RootElement,
 };
-use sysml_parser::RootNamespace;
+use sysml_v2_parser::RootNamespace;
 
 use super::types::*;
 
@@ -37,10 +37,10 @@ pub fn ast_semantic_ranges(root: &RootNamespace) -> Vec<(SourceRange, u32)> {
 }
 
 fn collect_semantic_ranges_package_body_element(
-    node: &sysml_parser::Node<PackageBodyElement>,
+    node: &sysml_v2_parser::Node<PackageBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_parser::ast::PackageBodyElement as PBE;
+    use sysml_v2_parser::ast::PackageBodyElement as PBE;
     match &node.value {
         PBE::Package(pkg_node) => {
             let name = crate::syntax::ast_util::identification_name(&pkg_node.identification);
@@ -163,10 +163,10 @@ fn collect_semantic_ranges_package_body_element(
 }
 
 fn collect_semantic_ranges_part_def_body_element(
-    node: &sysml_parser::Node<PartDefBodyElement>,
+    node: &sysml_v2_parser::Node<PartDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_parser::ast::PartDefBodyElement as PDBE;
+    use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
     match &node.value {
         PDBE::AttributeDef(n) => out.push((span_to_source_range(&n.span), TYPE_PROPERTY)),
         PDBE::PortUsage(n) => {
@@ -182,10 +182,10 @@ fn collect_semantic_ranges_part_def_body_element(
 }
 
 fn collect_semantic_ranges_part_usage_body_element(
-    node: &sysml_parser::Node<PartUsageBodyElement>,
+    node: &sysml_v2_parser::Node<PartUsageBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_parser::ast::PartUsageBodyElement as PUBE;
+    use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
     match &node.value {
         PUBE::AttributeUsage(n) => out.push((span_to_source_range(&n.span), TYPE_PROPERTY)),
         PUBE::PartUsage(n) => {
@@ -209,10 +209,10 @@ fn collect_semantic_ranges_part_usage_body_element(
 }
 
 fn collect_semantic_ranges_port_def_body_element(
-    node: &sysml_parser::Node<PortDefBodyElement>,
+    node: &sysml_v2_parser::Node<PortDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_parser::ast::PortDefBodyElement as PDBE;
+    use sysml_v2_parser::ast::PortDefBodyElement as PDBE;
     if let PDBE::PortUsage(n) = &node.value {
         if let Some(ref s) = n.value.name_span {
             out.push((span_to_source_range(s), TYPE_PROPERTY));
@@ -224,10 +224,10 @@ fn collect_semantic_ranges_port_def_body_element(
 }
 
 fn collect_semantic_ranges_interface_def_body_element(
-    node: &sysml_parser::Node<InterfaceDefBodyElement>,
+    node: &sysml_v2_parser::Node<InterfaceDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_parser::ast::InterfaceDefBodyElement as IDBE;
+    use sysml_v2_parser::ast::InterfaceDefBodyElement as IDBE;
     match &node.value {
         IDBE::EndDecl(n) => {
             if let Some(ref s) = n.name_span {
@@ -250,10 +250,10 @@ fn collect_semantic_ranges_interface_def_body_element(
 }
 
 fn collect_semantic_ranges_action_usage_body_element(
-    node: &sysml_parser::Node<ActionUsageBodyElement>,
+    node: &sysml_v2_parser::Node<ActionUsageBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    use sysml_parser::ast::ActionUsageBodyElement as AUBE;
+    use sysml_v2_parser::ast::ActionUsageBodyElement as AUBE;
     match &node.value {
         AUBE::InOutDecl(n) => out.push((span_to_source_range(&n.span), TYPE_PROPERTY)),
         AUBE::Bind(_)

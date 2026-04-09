@@ -11,7 +11,7 @@ fn lsp_diagnostics_on_invalid_sysml() {
     let mut stdout = child.stdout.take().expect("stdout");
 
     let uri = "file:///bad.sysml";
-    // Use invalid input that sysml-parser's parse_with_diagnostics reports (e.g. extra "}" or invalid keyword).
+    // Use invalid input that sysml-v2-parser's parse_with_diagnostics reports (e.g. extra "}" or invalid keyword).
     // "package P { part def X " does NOT produce diagnostics - parser recovers without error.
     let content = "package P { } }"; // extra closing brace -> "expected end of input"
 
@@ -341,9 +341,9 @@ fn workspace_surveillance_drone_has_no_unresolved_action_type_references() {
     let drone_content = fs::read_to_string(&fixture_path).expect("read drone fixture");
     fs::write(&drone_path, &drone_content).expect("write SurveillanceDrone.sysml fixture");
 
-    if sysml_parser::parse(&drone_content).is_err() {
+    if sysml_v2_parser::parse(&drone_content).is_err() {
         panic!(
-            "sysml_parser::parse failed for surveillance_drone_full.sysml; first errors: {:?}",
+            "sysml_v2_parser::parse failed for surveillance_drone_full.sysml; first errors: {:?}",
             util::parse_failure_diagnostics(&drone_content, 5)
         );
     }
@@ -481,10 +481,10 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
         return;
     }
     let drone_content = fs::read_to_string(&drone_path).expect("read SurveillanceDrone.sysml");
-    let parse_diag = sysml_parser::parse_with_diagnostics(&drone_content);
+    let parse_diag = sysml_v2_parser::parse_with_diagnostics(&drone_content);
     if !parse_diag.errors.is_empty() {
         eprintln!(
-            "--- sysml_parser parse_with_diagnostics errors (count={}) sample ---",
+            "--- sysml_v2_parser parse_with_diagnostics errors (count={}) sample ---",
             parse_diag.errors.len()
         );
         for (i, e) in parse_diag.errors.iter().take(25).enumerate() {
@@ -495,21 +495,21 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
             eprintln!("[{i}] {loc} {}", e.message);
         }
     }
-    if sysml_parser::parse(&drone_content).is_err() {
+    if sysml_v2_parser::parse(&drone_content).is_err() {
         panic!(
-            "sysml_parser::parse failed for SurveillanceDrone.sysml; first errors: {:?}",
+            "sysml_v2_parser::parse failed for SurveillanceDrone.sysml; first errors: {:?}",
             util::parse_failure_diagnostics(&drone_content, 20)
         );
     }
 
     // Local (in-process) sanity check: does semantic-model build any `action def` nodes from this file?
     // This helps distinguish parser/graph-builder gaps from LSP workspace scheduling/merge issues.
-    if let Ok(root) = sysml_parser::parse(&drone_content) {
+    if let Ok(root) = sysml_v2_parser::parse(&drone_content) {
         fn count_action_defs_in_elements(
-            elements: &[sysml_parser::Node<sysml_parser::ast::PackageBodyElement>],
+            elements: &[sysml_v2_parser::Node<sysml_v2_parser::ast::PackageBodyElement>],
             out: &mut usize,
         ) {
-            use sysml_parser::ast::{PackageBody, PackageBodyElement as PBE};
+            use sysml_v2_parser::ast::{PackageBody, PackageBodyElement as PBE};
             for node in elements {
                 match &node.value {
                     PBE::Package(p) => {
@@ -525,7 +525,7 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
 
         let mut parsed_action_defs = 0usize;
         for re in &root.elements {
-            use sysml_parser::ast::{PackageBody, RootElement};
+            use sysml_v2_parser::ast::{PackageBody, RootElement};
             let body = match &re.value {
                 RootElement::Package(p) => Some(&p.body),
                 RootElement::Namespace(n) => Some(&n.body),
@@ -545,11 +545,11 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
         // Show what the parser produced in the section that visually contains the action defs.
         // (0-based LSP lines; we print 1-based for readability).
         fn dump_elements_in_line_window(
-            elements: &[sysml_parser::Node<sysml_parser::ast::PackageBodyElement>],
+            elements: &[sysml_v2_parser::Node<sysml_v2_parser::ast::PackageBodyElement>],
             sl: u32,
             el: u32,
         ) {
-            use sysml_parser::ast::PackageBodyElement as PBE;
+            use sysml_v2_parser::ast::PackageBodyElement as PBE;
             for node in elements {
                 let (nsl, _, _, _) = node.span.to_lsp_range();
                 if nsl < sl || nsl > el {
@@ -581,7 +581,7 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
         }
 
         for re in &root.elements {
-            use sysml_parser::ast::{PackageBody, RootElement};
+            use sysml_v2_parser::ast::{PackageBody, RootElement};
             let body = match &re.value {
                 RootElement::Package(p) => Some(&p.body),
                 RootElement::Namespace(n) => Some(&n.body),

@@ -3,7 +3,7 @@
 use semantic_model::{
     add_cross_document_edges_for_uri, build_graph_from_doc, RelationshipKind, SemanticGraph,
 };
-use sysml_parser::parse;
+use sysml_v2_parser::parse;
 use tower_lsp::lsp_types::Url;
 
 #[test]

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use sysml_parser::ast::{StateDefBody, StateDefBodyElement};
+use sysml_v2_parser::ast::{StateDefBody, StateDefBodyElement};
 use tower_lsp::lsp_types::Url;
 
 use crate::ast_util::span_to_range;
@@ -12,13 +12,13 @@ use super::expressions;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
 pub(super) fn build_from_state_body(
-    elements: &[sysml_parser::Node<StateDefBodyElement>],
+    elements: &[sysml_v2_parser::Node<StateDefBodyElement>],
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: &NodeId,
     g: &mut SemanticGraph,
 ) {
-    use sysml_parser::ast::StateDefBodyElement as SDBE;
+    use sysml_v2_parser::ast::StateDefBodyElement as SDBE;
     for node in elements {
         match &node.value {
             SDBE::StateUsage(state_node) => {
@@ -169,7 +169,7 @@ pub(super) fn build_from_state_body(
                 );
                 add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
             }
-            SDBE::Error(_) | SDBE::Doc(_) => {}
+            SDBE::Error(_) | SDBE::Doc(_) | SDBE::Other(_) => {}
         }
     }
 }

@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use sysml_parser::ast::{
+use sysml_v2_parser::ast::{
     ConnectStmt, ConnectionDefBodyElement, EndDecl, InterfaceDefBodyElement, RefDecl,
 };
 use tower_lsp::lsp_types::Url;
@@ -20,7 +20,7 @@ fn add_end_decl(
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: &NodeId,
-    wrap: &sysml_parser::Node<EndDecl>,
+    wrap: &sysml_v2_parser::Node<EndDecl>,
 ) {
     let n = &wrap.value;
     let range = span_to_range(&wrap.span);
@@ -45,7 +45,7 @@ fn add_ref_decl(
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: &NodeId,
-    wrap: &sysml_parser::Node<RefDecl>,
+    wrap: &sysml_v2_parser::Node<RefDecl>,
 ) {
     let n = &wrap.value;
     let range = span_to_range(&wrap.span);
@@ -75,7 +75,7 @@ fn add_connect_stmt(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
-    wrap: &sysml_parser::Node<ConnectStmt>,
+    wrap: &sysml_v2_parser::Node<ConnectStmt>,
 ) {
     let n = &wrap.value;
     expressions::add_expression_edge_if_both_exist(
@@ -89,13 +89,13 @@ fn add_connect_stmt(
 }
 
 pub(super) fn build_from_interface_def_body_element(
-    node: &sysml_parser::Node<InterfaceDefBodyElement>,
+    node: &sysml_v2_parser::Node<InterfaceDefBodyElement>,
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: &NodeId,
     g: &mut SemanticGraph,
 ) {
-    use sysml_parser::ast::InterfaceDefBodyElement as E;
+    use sysml_v2_parser::ast::InterfaceDefBodyElement as E;
     match &node.value {
         E::Doc(_) => {}
         E::EndDecl(w) => add_end_decl(g, uri, container_prefix, parent_id, w),
@@ -105,13 +105,13 @@ pub(super) fn build_from_interface_def_body_element(
 }
 
 pub(super) fn build_from_connection_def_body_element(
-    node: &sysml_parser::Node<ConnectionDefBodyElement>,
+    node: &sysml_v2_parser::Node<ConnectionDefBodyElement>,
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: &NodeId,
     g: &mut SemanticGraph,
 ) {
-    use sysml_parser::ast::ConnectionDefBodyElement as E;
+    use sysml_v2_parser::ast::ConnectionDefBodyElement as E;
     match &node.value {
         E::EndDecl(w) => add_end_decl(g, uri, container_prefix, parent_id, w),
         E::RefDecl(w) => add_ref_decl(g, uri, container_prefix, parent_id, w),

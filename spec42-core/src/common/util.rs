@@ -59,7 +59,7 @@ pub fn normalize_file_uri(uri: &Url) -> Url {
 
 /// When parse fails, get diagnostic messages from parse_with_diagnostics for logging.
 pub fn parse_failure_diagnostics(content: &str, max_errors: usize) -> Vec<String> {
-    let result = sysml_parser::parse_with_diagnostics(content);
+    let result = sysml_v2_parser::parse_with_diagnostics(content);
     result
         .errors
         .iter()
@@ -76,9 +76,9 @@ pub fn parse_failure_diagnostics(content: &str, max_errors: usize) -> Vec<String
 
 /// Editor-oriented parse: returns a (possibly partial) AST plus diagnostics.
 ///
-/// `sysml-parser` currently exposes this behavior as `parse_with_diagnostics`.
-pub fn parse_for_editor(text: &str) -> sysml_parser::ParseResult {
-    sysml_parser::parse_with_diagnostics(text)
+/// `sysml-v2-parser` currently exposes this behavior as `parse_with_diagnostics`.
+pub fn parse_for_editor(text: &str) -> sysml_v2_parser::ParseResult {
+    sysml_v2_parser::parse_with_diagnostics(text)
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

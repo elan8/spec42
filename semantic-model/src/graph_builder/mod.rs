@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use sysml_parser::RootNamespace;
+use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::{Range, Url};
 
 use crate::ast_util::span_to_range;
@@ -21,7 +21,7 @@ mod state;
 mod stubs;
 mod use_case;
 
-/// Builds a semantic graph from a parsed RootNamespace (sysml-parser AST).
+/// Builds a semantic graph from a parsed RootNamespace (sysml-v2-parser AST).
 /// Adds the root package/namespace as a node and sets parent_id on its direct children
 /// so that contains edges are emitted for the General View.
 pub fn build_graph_from_doc(root: &RootNamespace, uri: &Url) -> SemanticGraph {

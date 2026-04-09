@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use sysml_parser::ast::{
+use sysml_v2_parser::ast::{
     ConstraintDefBodyElement, InOut, InOutDecl, RequireConstraintBody, RequirementDefBody,
     RequirementDefBodyElement,
 };
@@ -82,6 +82,7 @@ fn require_constraint_display_lines(body: &RequireConstraintBody) -> Vec<String>
                     ConstraintDefBodyElement::InOutDecl(param) => {
                         lines.push(format_constraint_parameter_line(&param.value));
                     }
+                    ConstraintDefBodyElement::Error(_) | ConstraintDefBodyElement::Other(_) => {}
                 }
             }
             if lines.is_empty() {

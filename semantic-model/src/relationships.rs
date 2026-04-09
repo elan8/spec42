@@ -1,7 +1,7 @@
 //! Relationship edge logic: typing, specializes, connection, bind, cross-document resolution.
 
-use sysml_parser::ast::{PackageBody, PackageBodyElement};
-use sysml_parser::RootNamespace;
+use sysml_v2_parser::ast::{PackageBody, PackageBodyElement};
+use sysml_v2_parser::RootNamespace;
 
 use tower_lsp::lsp_types::Url;
 
@@ -26,7 +26,7 @@ const TYPING_TARGET_KINDS: &[&str] = &[
     "requirement def",
     "use case def",
     "concern def",
-    // KerML modeled declarations (`datatype`, `class`, …) from `.kerml` / library sources.
+    // KerML modeled declarations (`datatype`, `class`, â€¦) from `.kerml` / library sources.
     "kermlDecl",
 ];
 
@@ -301,7 +301,7 @@ pub(crate) fn add_specializes_edge_if_exists(
 pub(crate) fn find_part_def_in_root<'a>(
     root: &'a RootNamespace,
     qualified: &str,
-) -> Option<(&'a sysml_parser::Node<sysml_parser::PartDef>, String)> {
+) -> Option<(&'a sysml_v2_parser::Node<sysml_v2_parser::PartDef>, String)> {
     let mut prefix = String::new();
     for node in &root.elements {
         let elements = match root_element_body(&node.value) {
@@ -316,10 +316,10 @@ pub(crate) fn find_part_def_in_root<'a>(
 }
 
 pub(crate) fn find_part_def_in_elements<'a>(
-    elements: &'a [sysml_parser::Node<PackageBodyElement>],
+    elements: &'a [sysml_v2_parser::Node<PackageBodyElement>],
     prefix: &mut String,
     target: &str,
-) -> Option<(&'a sysml_parser::Node<sysml_parser::PartDef>, String)> {
+) -> Option<(&'a sysml_v2_parser::Node<sysml_v2_parser::PartDef>, String)> {
     for node in elements {
         match &node.value {
             PackageBodyElement::Package(pkg) => {

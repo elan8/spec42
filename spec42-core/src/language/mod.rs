@@ -10,7 +10,7 @@ pub use position::*;
 pub use symbols::*;
 
 use crate::syntax::ast_util::identification_name;
-use sysml_parser::ast::{PackageBody, RootElement};
+use sysml_v2_parser::ast::{PackageBody, RootElement};
 use tower_lsp::lsp_types::{
     CodeAction, CodeActionKind, Command, Diagnostic, FormattingOptions, OneOf,
     OptionalVersionedTextDocumentIdentifier, Position, Range, TextDocumentEdit, TextEdit, Url,
@@ -82,7 +82,7 @@ pub fn format_document(source: &str, options: &FormattingOptions) -> Vec<TextEdi
 
 /// Suggests a "Wrap in package" code action when the document has top-level members (one package with empty name and members).
 pub fn suggest_wrap_in_package(source: &str, uri: &Url) -> Option<CodeAction> {
-    let root = sysml_parser::parse(source).ok()?;
+    let root = sysml_v2_parser::parse(source).ok()?;
     let packages: Vec<_> = root
         .elements
         .iter()
@@ -391,20 +391,20 @@ mod tests {
 
     #[test]
     fn test_position_to_byte_offset_multibyte_utf8() {
-        // "café" = c,a,f,é = 4 chars, 5 bytes (é is 2 bytes)
-        let text = "café\n";
+        // "caf\u{00E9}" = c,a,f,é = 4 chars, 5 bytes.
+        let text = "caf\u{00E9}\n";
         assert_eq!(position_to_byte_offset(text, 0, 0), Some(0));
         assert_eq!(position_to_byte_offset(text, 0, 3), Some(3));
         assert_eq!(position_to_byte_offset(text, 0, 4), Some(5));
         assert_eq!(position_to_byte_offset(text, 0, 5), None);
-        // Japanese: 日本 = 2 chars, 6 bytes
-        let text2 = "日本\n";
+        // Japanese: 2 chars, 6 bytes
+        let text2 = "\u{65E5}\u{672C}\n";
         assert_eq!(position_to_byte_offset(text2, 0, 2), Some(6));
     }
 
     #[test]
     fn test_position_to_byte_offset_utf16_surrogate_pair() {
-        let text = "a😀b\n";
+        let text = "a\u{1F600}b\n";
         assert_eq!(position_to_byte_offset(text, 0, 0), Some(0));
         assert_eq!(position_to_byte_offset(text, 0, 1), Some(1));
         assert_eq!(position_to_byte_offset(text, 0, 2), None);
@@ -429,12 +429,12 @@ mod tests {
 
     #[test]
     fn test_word_at_position_non_ascii() {
-        let text = "part café : String";
+        let text = "part caf\u{00E9} : String";
         let (_, _, _, w) = word_at_position(text, 0, 6).unwrap();
-        assert_eq!(w, "café");
-        let text2 = "part 部品 : Type";
+        assert_eq!(w, "caf\u{00E9}");
+        let text2 = "part \u{54C1}\u{8A5E} : Type";
         let (_, _, _, w2) = word_at_position(text2, 0, 6).unwrap();
-        assert_eq!(w2, "部品");
+        assert_eq!(w2, "\u{54C1}\u{8A5E}");
     }
 
     #[test]
@@ -463,8 +463,8 @@ mod tests {
 
     #[test]
     fn test_completion_prefix_multibyte() {
-        assert_eq!(completion_prefix("  café "), "café");
-        assert_eq!(completion_prefix("part 部品 "), "部品");
+        assert_eq!(completion_prefix("  caf\u{00E9} "), "caf\u{00E9}");
+        assert_eq!(completion_prefix("part \u{54C1}\u{8A5E} "), "\u{54C1}\u{8A5E}");
     }
 
     #[test]
@@ -499,7 +499,7 @@ mod tests {
 
     #[test]
     fn test_collect_named_elements_empty() {
-        let root = sysml_parser::RootNamespace { elements: vec![] };
+        let root = sysml_v2_parser::RootNamespace { elements: vec![] };
         let el = collect_named_elements(&root);
         assert!(el.is_empty());
     }
@@ -507,7 +507,7 @@ mod tests {
     #[test]
     fn test_collect_named_elements_from_package() {
         let text = "package P { part def Engine { } }";
-        let root = sysml_parser::parse(text).expect("parse");
+        let root = sysml_v2_parser::parse(text).expect("parse");
         let el = collect_named_elements(&root);
         assert_eq!(el.len(), 2); // package P + part Engine
         let names: Vec<_> = el.iter().map(|(n, _)| n.as_str()).collect();
@@ -531,7 +531,7 @@ mod tests {
 
     #[test]
     fn test_collect_definition_ranges_empty() {
-        let root = sysml_parser::RootNamespace { elements: vec![] };
+        let root = sysml_v2_parser::RootNamespace { elements: vec![] };
         let ranges = collect_definition_ranges(&root);
         assert!(ranges.is_empty());
     }
@@ -539,7 +539,7 @@ mod tests {
     #[test]
     fn test_collect_definition_ranges_package() {
         let text = "package P { }";
-        let root = sysml_parser::parse(text).expect("parse");
+        let root = sysml_v2_parser::parse(text).expect("parse");
         let ranges = collect_definition_ranges(&root);
         assert_eq!(ranges.len(), 1);
         assert_eq!(ranges[0].0, "P");
@@ -547,9 +547,9 @@ mod tests {
 
     #[test]
     fn test_collect_definition_ranges_part_def() {
-        // sysml-parser requires package/namespace at root; part def must be nested
+        // sysml-v2-parser requires package/namespace at root; part def must be nested
         let text = "package P { part def Engine { } }";
-        let root = sysml_parser::parse(text).expect("parse");
+        let root = sysml_v2_parser::parse(text).expect("parse");
         let ranges = collect_definition_ranges(&root);
         assert_eq!(ranges.len(), 2); // package P + part Engine
         assert_eq!(ranges[0].0, "P");
@@ -588,7 +588,7 @@ mod tests {
 
     #[test]
     fn test_collect_document_symbols_empty() {
-        let root = sysml_parser::RootNamespace { elements: vec![] };
+        let root = sysml_v2_parser::RootNamespace { elements: vec![] };
         let symbols = collect_document_symbols(&root);
         assert!(symbols.is_empty());
     }
@@ -596,7 +596,7 @@ mod tests {
     #[test]
     fn test_collect_document_symbols_package() {
         let text = "package P { }";
-        let root = sysml_parser::parse(text).expect("parse");
+        let root = sysml_v2_parser::parse(text).expect("parse");
         let symbols = collect_document_symbols(&root);
         assert_eq!(symbols.len(), 1);
         assert_eq!(symbols[0].name, "P");
@@ -607,7 +607,7 @@ mod tests {
     #[test]
     fn test_collect_document_symbols_nested() {
         let text = "package P { part def Engine { } }";
-        let root = sysml_parser::parse(text).expect("parse");
+        let root = sysml_v2_parser::parse(text).expect("parse");
         let symbols = collect_document_symbols(&root);
         assert_eq!(symbols.len(), 1);
         assert_eq!(symbols[0].name, "P");
@@ -620,7 +620,7 @@ mod tests {
 
     #[test]
     fn test_collect_symbol_entries_empty() {
-        let root = sysml_parser::RootNamespace { elements: vec![] };
+        let root = sysml_v2_parser::RootNamespace { elements: vec![] };
         let uri = Url::parse("file:///test.sysml").unwrap();
         let entries = collect_symbol_entries(&root, &uri);
         assert!(entries.is_empty());
@@ -629,7 +629,7 @@ mod tests {
     #[test]
     fn test_collect_symbol_entries_package() {
         let text = "package P { }";
-        let root = sysml_parser::parse(text).expect("parse");
+        let root = sysml_v2_parser::parse(text).expect("parse");
         let uri = Url::parse("file:///test.sysml").unwrap();
         let entries = collect_symbol_entries(&root, &uri);
         // collect_symbol_entries is currently stubbed (returns empty)
@@ -639,7 +639,7 @@ mod tests {
     #[test]
     fn test_collect_symbol_entries_nested() {
         let text = "package P { part def Engine { } }";
-        let root = sysml_parser::parse(text).expect("parse");
+        let root = sysml_v2_parser::parse(text).expect("parse");
         let uri = Url::parse("file:///test.sysml").unwrap();
         let entries = collect_symbol_entries(&root, &uri);
         // collect_symbol_entries is currently stubbed (returns empty)
@@ -663,7 +663,7 @@ mod tests {
     #[test]
     fn test_suggest_wrap_in_package_unwrapped_member() {
         let uri = Url::parse("file:///test.sysml").unwrap();
-        // When source is a single top-level part def, sysml-parser may parse it as one anonymous package
+        // When source is a single top-level part def, sysml-v2-parser may parse it as one anonymous package
         // with one member, in which case we suggest "Wrap in package".
         let source = "part def X { }";
         if let Some(action) = suggest_wrap_in_package(source, &uri) {
@@ -825,7 +825,7 @@ mod tests {
             return; // skip when Vehicle Example not present (e.g. SYSML_V2_RELEASE_DIR unset)
         }
         let content = std::fs::read_to_string(&path).expect("read VehicleDefinitions.sysml");
-        let root = sysml_parser::parse(&content).expect("parse");
+        let root = sysml_v2_parser::parse(&content).expect("parse");
         let uri = Url::from_file_path(&path)
             .unwrap_or_else(|_| Url::parse("file:///VehicleDefinitions.sysml").unwrap());
 

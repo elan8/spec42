@@ -59,11 +59,11 @@ The parser runs a full validation suite over all `.sysml` files in the official 
 
 ## Parser dependency policy
 
-`spec42-core` consumes `sysml-parser` from git and pins an explicit commit in `spec42-core/Cargo.toml` (`rev = ...`) for reproducible CI and release behavior.
+`spec42-core` consumes the published `sysml-v2-parser` crate from crates.io and pins an explicit version in `spec42-core/Cargo.toml` for reproducible CI and release behavior.
 
 When updating parser behavior:
 
-1. Update the pinned `rev` in `spec42-core/Cargo.toml`.
+1. Update the `sysml-v2-parser` version in `spec42-core/Cargo.toml`.
 2. Run `cargo test --workspace`.
 3. Run targeted indexing/search checks in `spec42-core/tests/integration/workspace.rs`.
 4. Update `docs/SYSML-PARSER-UPDATE.md` if parser compatibility expectations changed.
@@ -80,7 +80,7 @@ This runs workspace tests for Spec42 crates, including LSP integration tests.
 
 ## Benchmarks (parse performance)
 
-Spec42’s “editor parse” path uses `sysml_parser::parse_with_diagnostics` via `spec42-core`’s `parse_for_editor`. Criterion benchmarks are provided in `spec42-core/benches/parse_scan.rs`.
+Spec42's "editor parse" path uses `sysml_v2_parser::parse_with_diagnostics` via `spec42-core`'s `parse_for_editor`. Criterion benchmarks are provided in `spec42-core/benches/parse_scan.rs`.
 
 ### Run (PowerShell)
 
@@ -92,11 +92,11 @@ cargo bench -p spec42-core --bench parse_scan
 $env:SPEC42_BENCH_DRONE_ROOT = 'C:\Git\sysml-examples\drone\sysml'
 cargo bench -p spec42-core --bench parse_scan
 
-# Benchmark SysML v2 Release “stdlib” (set to the repo root of SysML-v2-Release)
+# Benchmark SysML v2 Release "stdlib" (set to the repo root of SysML-v2-Release)
 $env:SYSML_V2_RELEASE_DIR = 'C:\Git\SysML-v2-Release-2026-01'
 cargo bench -p spec42-core --bench parse_scan
 
-# Match Spec42’s parallel startup parsing toggles (optional)
+# Match Spec42's parallel startup parsing toggles (optional)
 $env:SPEC42_PARALLEL_STARTUP_PARSE = 'true'
 $env:SPEC42_PARALLEL_STARTUP_PARSE_MIN_FILES = '10'
 cargo bench -p spec42-core --bench parse_scan
@@ -106,7 +106,7 @@ cargo bench -p spec42-core --bench parse_scan
 
 `spec42-core/src/lsp_server.rs` publishes diagnostics in two stages:
 
-1. Parser diagnostics from `sysml_parser::parse_with_diagnostics` (source `sysml`)
+1. Parser diagnostics from `sysml_v2_parser::parse_with_diagnostics` (source `sysml`)
 2. Semantic diagnostics from configured providers (source `semantic`) only when parse diagnostics are empty
 
 Default semantic checks are implemented in `spec42-core/src/semantic_checks.rs`.

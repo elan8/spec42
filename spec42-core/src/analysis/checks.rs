@@ -358,7 +358,7 @@ mod tests {
                 }
             }
         "#;
-        let root = sysml_parser::parse(input).expect("parse");
+        let root = sysml_v2_parser::parse(input).expect("parse");
         let uri = Url::parse("file:///test.sysml").expect("uri");
         let graph = build_graph_from_doc(&root, &uri);
         let diags = compute_semantic_diagnostics(&graph, &uri);

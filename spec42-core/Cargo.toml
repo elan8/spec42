@@ -10,7 +10,7 @@ description = "Core library for Spec42 LSP server: semantic model, DTOs, extensi
 name = "spec42_core"
 
 [dependencies]
-sysml-parser = { git = "https://github.com/elan8/sysml-parser", rev = "11aeaca228f16fe2672aa9713edf1fd53cb321a8" }
+sysml-v2-parser = "0.1.0"
 semantic-model-crate = { package = "semantic-model", path = "../semantic-model" }
 tower-lsp = "0.20"
 tokio = { version = "1", features = ["full"] }

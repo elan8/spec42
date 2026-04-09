@@ -648,7 +648,7 @@ impl SemanticGraph {
 
 #[cfg(test)]
 mod tests {
-    use sysml_parser::parse;
+    use sysml_v2_parser::parse;
     use tower_lsp::lsp_types::Url;
 
     use crate::graph_builder::build_graph_from_doc;
@@ -666,7 +666,7 @@ mod tests {
         let uri = Url::parse("file:///test.sysml").unwrap();
         let g = build_graph_from_doc(&root, &uri);
         let _edges = g.edges_for_uri_as_strings(&uri);
-        // Graph builds without panic; transition edges depend on sysml-parser state/transition support
+        // Graph builds without panic; transition edges depend on sysml-v2-parser state/transition support
         assert!(
             g.node_index_by_id.len() >= 2,
             "expected at least package and part def nodes: {:?}",
@@ -721,7 +721,34 @@ mod tests {
     }
 
     #[test]
-    #[ignore] // input uses port def CmdPort {} which sysml-parser may not accept (expected end of input)
+    fn graph_build_ignores_unmodeled_package_decls_from_new_parser() {
+        let input = r#"
+            package P {
+                feature myFeature : BaseFeature;
+                class VehicleClass;
+                struct LayoutStruct;
+                part def Airframe { }
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///compat.sysml").unwrap();
+        let g = build_graph_from_doc(&root, &uri);
+
+        let package_id = NodeId::new(&uri, "P");
+        let part_id = NodeId::new(&uri, "P::Airframe");
+
+        assert!(
+            g.node_index_by_id.contains_key(&package_id),
+            "expected package node to survive alongside unmodeled decls"
+        );
+        assert!(
+            g.node_index_by_id.contains_key(&part_id),
+            "expected known modeled members to remain buildable when feature/classifier decls are present"
+        );
+    }
+
+    #[test]
+    #[ignore] // input uses port def CmdPort {} which sysml-v2-parser may not accept (expected end of input)
     fn typed_part_usage_expansion_adds_nested_port_nodes() {
         // Typed PartUsages expand so connection endpoints (e.g. flightControl.flightController.motorCmd) exist.
         let input = r#"
@@ -756,7 +783,7 @@ mod tests {
     }
 
     #[test]
-    #[ignore] // input uses syntax (e.g. port def with {}) that sysml-parser may not accept
+    #[ignore] // input uses syntax (e.g. port def with {}) that sysml-v2-parser may not accept
     fn connection_edges_added_when_port_nodes_exist() {
         // Connection "connect flightControl.flightController.motorCmd to propulsion.propulsionUnit1.cmd"
         // requires port nodes from expand_typed_part_usage. Verifies connection edges are added.

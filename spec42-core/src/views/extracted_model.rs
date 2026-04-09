@@ -2,13 +2,13 @@
 
 use crate::syntax::ast_util::identification_name;
 use serde::Serialize;
-use sysml_parser::ast::{
+use sysml_v2_parser::ast::{
     ActionDefBody, ActionDefBodyElement, PackageBody, PackageBodyElement, RootElement,
 };
-use sysml_parser::{RootNamespace, Span};
+use sysml_v2_parser::{RootNamespace, Span};
 
-fn expr_to_string(n: &sysml_parser::Node<sysml_parser::Expression>) -> String {
-    use sysml_parser::Expression;
+fn expr_to_string(n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>) -> String {
+    use sysml_v2_parser::Expression;
     match &n.value {
         Expression::FeatureRef(s) => s.clone(),
         Expression::MemberAccess(base, member) => {
@@ -166,9 +166,9 @@ pub struct ActivityStateDto {
 // ---------------------------------------------------------------------------
 
 fn collect_action_defs_from_elements(
-    elements: &[sysml_parser::Node<PackageBodyElement>],
-) -> Vec<&sysml_parser::Node<sysml_parser::ast::ActionDef>> {
-    use sysml_parser::ast::PackageBodyElement as PBE;
+    elements: &[sysml_v2_parser::Node<PackageBodyElement>],
+) -> Vec<&sysml_v2_parser::Node<sysml_v2_parser::ast::ActionDef>> {
+    use sysml_v2_parser::ast::PackageBodyElement as PBE;
     let mut out = Vec::new();
     for node in elements {
         match &node.value {
@@ -190,7 +190,7 @@ fn collect_action_defs_from_elements(
 }
 
 /// Extracts activity diagrams from ActionDef nodes.
-/// Each ActionDef becomes one ActivityDiagramDto; sysml-parser ActionDefBody has InOutDecl only (no statements).
+/// Each ActionDef becomes one ActivityDiagramDto; sysml-v2-parser ActionDefBody has InOutDecl only (no statements).
 pub fn extract_activity_diagrams(root: &RootNamespace) -> Vec<ActivityDiagramDto> {
     let mut out = Vec::new();
     for node in &root.elements {
@@ -217,7 +217,7 @@ pub fn extract_activity_diagrams(root: &RootNamespace) -> Vec<ActivityDiagramDto
 }
 
 fn extract_activity_from_action(
-    node: &sysml_parser::Node<sysml_parser::ast::ActionDef>,
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::ActionDef>,
 ) -> ActivityDiagramDto {
     let name = identification_name(&node.identification);
     let range = span_to_range_dto(&node.span);
@@ -236,9 +236,9 @@ fn extract_activity_from_action(
                         in_out.value.name.clone()
                     };
                     match in_out.value.direction {
-                        sysml_parser::ast::InOut::In => interface_inputs.push(param_name),
-                        sysml_parser::ast::InOut::Out => interface_outputs.push(param_name),
-                        sysml_parser::ast::InOut::InOut => {
+                        sysml_v2_parser::ast::InOut::In => interface_inputs.push(param_name),
+                        sysml_v2_parser::ast::InOut::Out => interface_outputs.push(param_name),
+                        sysml_v2_parser::ast::InOut::InOut => {
                             interface_inputs.push(param_name.clone());
                             interface_outputs.push(param_name);
                         }
@@ -430,7 +430,7 @@ fn extract_activity_from_action(
 #[cfg(test)]
 mod tests {
     use super::extract_activity_diagrams;
-    use sysml_parser::parse;
+    use sysml_v2_parser::parse;
 
     #[test]
     fn extract_activity_diagrams_exposes_in_out_as_interface_metadata() {

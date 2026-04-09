@@ -2,11 +2,11 @@
 #![allow(deprecated)] // DocumentSymbol/SymbolInformation.deprecated; use tags in future
 
 use crate::syntax::ast_util::{identification_name, span_to_range};
-use sysml_parser::ast::{
+use sysml_v2_parser::ast::{
     PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
     PartUsageBodyElement, PortDefBody, PortDefBodyElement, RootElement,
 };
-use sysml_parser::RootNamespace;
+use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::{
     DocumentSymbol, FoldingRange, FoldingRangeKind, Location, Position, Range, SymbolInformation,
     SymbolKind, Url,
@@ -57,10 +57,10 @@ pub fn collect_definition_ranges(root: &RootNamespace) -> Vec<(String, Range)> {
 }
 
 fn collect_definition_ranges_from_element(
-    node: &sysml_parser::Node<PackageBodyElement>,
+    node: &sysml_v2_parser::Node<PackageBodyElement>,
     out: &mut Vec<(String, Range)>,
 ) {
-    use sysml_parser::ast::PackageBodyElement as PBE;
+    use sysml_v2_parser::ast::PackageBodyElement as PBE;
     match &node.value {
         PBE::Package(p) => {
             let name = identification_name(&p.identification);
@@ -148,10 +148,10 @@ fn collect_definition_ranges_from_element(
 }
 
 fn collect_definition_range_part_def_body(
-    node: &sysml_parser::Node<PartDefBodyElement>,
+    node: &sysml_v2_parser::Node<PartDefBodyElement>,
     out: &mut Vec<(String, Range)>,
 ) {
-    use sysml_parser::ast::PartDefBodyElement as PDBE;
+    use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
     match &node.value {
         PDBE::AttributeDef(n) => out.push((n.name.clone(), span_to_range(&n.span))),
         PDBE::PortUsage(n) => out.push((n.name.clone(), span_to_range(&n.span))),
@@ -160,10 +160,10 @@ fn collect_definition_range_part_def_body(
 }
 
 fn collect_definition_range_part_usage_body(
-    node: &sysml_parser::Node<PartUsageBodyElement>,
+    node: &sysml_v2_parser::Node<PartUsageBodyElement>,
     out: &mut Vec<(String, Range)>,
 ) {
-    use sysml_parser::ast::PartUsageBodyElement as PUBE;
+    use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
     match &node.value {
         PUBE::AttributeUsage(n) => out.push((n.name.clone(), span_to_range(&n.span))),
         PUBE::PartUsage(n) => {
@@ -180,10 +180,10 @@ fn collect_definition_range_part_usage_body(
 }
 
 fn collect_definition_range_port_def_body(
-    node: &sysml_parser::Node<PortDefBodyElement>,
+    node: &sysml_v2_parser::Node<PortDefBodyElement>,
     out: &mut Vec<(String, Range)>,
 ) {
-    use sysml_parser::ast::PortDefBodyElement as PDBE;
+    use sysml_v2_parser::ast::PortDefBodyElement as PDBE;
     if let PDBE::PortUsage(n) = &node.value {
         out.push((n.name.clone(), span_to_range(&n.span)));
     }
@@ -423,9 +423,9 @@ fn _symbol_entries_from_member_removed(
 }
 
 fn document_symbol_from_element(
-    node: &sysml_parser::Node<PackageBodyElement>,
+    node: &sysml_v2_parser::Node<PackageBodyElement>,
 ) -> Option<DocumentSymbol> {
-    use sysml_parser::ast::PackageBodyElement as PBE;
+    use sysml_v2_parser::ast::PackageBodyElement as PBE;
     let range = span_to_range(&node.span);
     match &node.value {
         PBE::Package(p) => {
@@ -663,11 +663,11 @@ fn document_symbol_from_element(
 }
 
 fn document_symbols_from_part_def_body(
-    elements: &[sysml_parser::Node<PartDefBodyElement>],
+    elements: &[sysml_v2_parser::Node<PartDefBodyElement>],
 ) -> Vec<DocumentSymbol> {
     let mut out = Vec::new();
     for node in elements {
-        use sysml_parser::ast::PartDefBodyElement as PDBE;
+        use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
         let range = span_to_range(&node.span);
         match &node.value {
             PDBE::AttributeDef(n) => out.push(DocumentSymbol {
@@ -697,11 +697,11 @@ fn document_symbols_from_part_def_body(
 }
 
 fn document_symbols_from_part_usage_body(
-    elements: &[sysml_parser::Node<PartUsageBodyElement>],
+    elements: &[sysml_v2_parser::Node<PartUsageBodyElement>],
 ) -> Vec<DocumentSymbol> {
     let mut out = Vec::new();
     for node in elements {
-        use sysml_parser::ast::PartUsageBodyElement as PUBE;
+        use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
         let range = span_to_range(&node.span);
         match &node.value {
             PUBE::AttributeUsage(n) => out.push(DocumentSymbol {
@@ -753,11 +753,11 @@ fn document_symbols_from_part_usage_body(
 }
 
 fn document_symbols_from_port_def_body(
-    elements: &[sysml_parser::Node<PortDefBodyElement>],
+    elements: &[sysml_v2_parser::Node<PortDefBodyElement>],
 ) -> Vec<DocumentSymbol> {
     let mut out = Vec::new();
     for node in elements {
-        use sysml_parser::ast::PortDefBodyElement as PDBE;
+        use sysml_v2_parser::ast::PortDefBodyElement as PDBE;
         let range = span_to_range(&node.span);
         if let PDBE::PortUsage(n) = &node.value {
             out.push(DocumentSymbol {
@@ -818,10 +818,10 @@ pub fn collect_named_elements(root: &RootNamespace) -> Vec<(String, String)> {
 }
 
 fn collect_named_from_element(
-    node: &sysml_parser::Node<PackageBodyElement>,
+    node: &sysml_v2_parser::Node<PackageBodyElement>,
     out: &mut Vec<(String, String)>,
 ) {
-    use sysml_parser::ast::PackageBodyElement as PBE;
+    use sysml_v2_parser::ast::PackageBodyElement as PBE;
     match &node.value {
         PBE::Package(p) => {
             let name = identification_name(&p.identification);
@@ -904,10 +904,10 @@ fn collect_named_from_element(
 }
 
 fn collect_named_from_part_def_body(
-    node: &sysml_parser::Node<PartDefBodyElement>,
+    node: &sysml_v2_parser::Node<PartDefBodyElement>,
     out: &mut Vec<(String, String)>,
 ) {
-    use sysml_parser::ast::PartDefBodyElement as PDBE;
+    use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
     match &node.value {
         PDBE::AttributeDef(n) => out.push((n.name.clone(), format!("attribute def '{}'", n.name))),
         PDBE::PortUsage(n) => out.push((n.name.clone(), format!("port usage '{}'", n.name))),
@@ -916,10 +916,10 @@ fn collect_named_from_part_def_body(
 }
 
 fn collect_named_from_part_usage_body(
-    node: &sysml_parser::Node<PartUsageBodyElement>,
+    node: &sysml_v2_parser::Node<PartUsageBodyElement>,
     out: &mut Vec<(String, String)>,
 ) {
-    use sysml_parser::ast::PartUsageBodyElement as PUBE;
+    use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
     match &node.value {
         PUBE::AttributeUsage(n) => out.push((n.name.clone(), format!("attribute '{}'", n.name))),
         PUBE::PartUsage(n) => {

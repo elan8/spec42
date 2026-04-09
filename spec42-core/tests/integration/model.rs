@@ -144,7 +144,7 @@ fn lsp_sysml_model_empty_response_keeps_stats_honest() {
 /// Validates semantic graph for state-transition-view: state def container, state usages (type "state"),
 /// contains edges, and transition edges.
 #[test]
-#[ignore] // sysml-parser does not expose state def / transition; graph has no state nodes yet
+#[ignore] // sysml-v2-parser does not expose state def / transition; graph has no state nodes yet
 fn lsp_sysml_model_state_transition_view() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");
@@ -1739,7 +1739,7 @@ fn lsp_sysml_model_ibd_surveillance_drone_is_complete_enough_for_interconnection
 /// sysml/model with scope ["graph"] returns ibd with defaultRoot = SurveillanceQuadrotorDrone
 /// (largest top-level part tree), not Propulsion. Validates IBD backend for interconnection-view.
 #[test]
-#[ignore] // ibd defaultRoot depends on graph/content that may differ with sysml-parser
+#[ignore] // ibd defaultRoot depends on graph/content that may differ with sysml-v2-parser
 fn lsp_sysml_model_ibd_default_root() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");

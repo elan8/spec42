@@ -1,10 +1,10 @@
-//! Helpers for working with sysml-parser AST: span/range conversion and name extraction.
+//! Helpers for working with sysml-v2-parser AST: span/range conversion and name extraction.
 
-use sysml_parser::ast::Identification;
-use sysml_parser::Span;
+use sysml_v2_parser::ast::Identification;
+use sysml_v2_parser::Span;
 use tower_lsp::lsp_types::{Position, Range};
 
-/// Converts sysml-parser Span (1-based line/column) to LSP Range (0-based).
+/// Converts sysml-v2-parser Span (1-based line/column) to LSP Range (0-based).
 pub(crate) fn span_to_range(span: &Span) -> Range {
     let (start_line, start_char, end_line, end_char) = span.to_lsp_range();
     Range::new(

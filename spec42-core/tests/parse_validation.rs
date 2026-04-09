@@ -3,12 +3,12 @@
 //! This reproduces the scenario where the language server reports a parse error at the end
 //! of the file (line 420) when opening in VS Code.
 //!
-//! **Root cause (bug in sysml-parser):** `parse_with_diagnostics` loops over `root_element`
+//! **Root cause (bug in sysml-v2-parser):** `parse_with_diagnostics` loops over `root_element`
 //! without skipping trailing whitespace at the start of each iteration. After successfully
 //! parsing the single top-level package, the remaining input is only a trailing newline
 //! (or `\r\n`). The loop then calls `root_element("\n")`. Inside `root_element`, ws is
 //! skipped so we reach empty input, then `alt(package, namespace)` fails and reports
-//! "expected keyword or token" at line 420. The fix is in sysml-parser: at the start of
+//! "expected keyword or token" at line 420. The fix is in sysml-v2-parser: at the start of
 //! the while loop, skip `ws_and_comments` and break if the remaining input is empty, so
 //! we never try to parse another root element when only trailing whitespace is left.
 //!
@@ -32,7 +32,7 @@ fn parse_clean_fixture_path() -> PathBuf {
 fn parse_with_diagnostics_clean_fixture_has_no_errors() {
     let path = parse_clean_fixture_path();
     let content = std::fs::read_to_string(&path).expect("read parse_clean.sysml");
-    let result = sysml_parser::parse_with_diagnostics(&content);
+    let result = sysml_v2_parser::parse_with_diagnostics(&content);
 
     if !result.errors.is_empty() {
         eprintln!(
@@ -76,7 +76,7 @@ fn parse_with_diagnostics_clean_fixture_has_no_errors() {
 
 #[test]
 fn parse_with_diagnostics_invalid_returns_errors() {
-    // Try several invalid inputs - sysml-parser's parse_with_diagnostics may not report
+    // Try several invalid inputs - sysml-v2-parser's parse_with_diagnostics may not report
     // errors for all invalid cases (e.g. incomplete "part def X " can parse partially).
     let invalid_inputs = [
         "package P { } }",        // extra closing brace
@@ -85,7 +85,7 @@ fn parse_with_diagnostics_invalid_returns_errors() {
     ];
     let mut any_has_errors = false;
     for content in invalid_inputs {
-        let result = sysml_parser::parse_with_diagnostics(content);
+        let result = sysml_v2_parser::parse_with_diagnostics(content);
         if !result.errors.is_empty() {
             any_has_errors = true;
             break;

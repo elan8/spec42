@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use sysml_parser::ast::{PartDefBody, PartUsageBody, StateDefBody};
-use sysml_parser::RootNamespace;
+use sysml_v2_parser::ast::{PartDefBody, PartUsageBody, StateDefBody};
+use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
 
 use crate::ast_util::span_to_range;
@@ -15,14 +15,14 @@ use super::expressions;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
 pub(super) fn build_from_part_usage_body_element(
-    node: &sysml_parser::Node<sysml_parser::ast::PartUsageBodyElement>,
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsageBodyElement>,
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: &NodeId,
     root: &RootNamespace,
     g: &mut SemanticGraph,
 ) {
-    use sysml_parser::ast::PartUsageBodyElement as PUBE;
+    use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
     match &node.value {
         PUBE::AttributeUsage(n) => {
             let name = &n.name;
@@ -169,7 +169,7 @@ pub(super) fn build_from_part_usage_body_element(
             );
         }
         PUBE::InterfaceUsage(interface_usage) => {
-            use sysml_parser::ast::InterfaceUsage;
+            use sysml_v2_parser::ast::InterfaceUsage;
             match &interface_usage.value {
                 InterfaceUsage::TypedConnect { from, to, .. }
                 | InterfaceUsage::Connection { from, to, .. } => {
@@ -339,7 +339,7 @@ pub(super) fn expand_part_def_members(
     root: &RootNamespace,
     uri: &Url,
     container_qualified: &str,
-    part_def: &sysml_parser::Node<sysml_parser::PartDef>,
+    part_def: &sysml_v2_parser::Node<sysml_v2_parser::PartDef>,
     parent_id: &NodeId,
     g: &mut SemanticGraph,
     pkg_prefix: &str,
@@ -347,7 +347,7 @@ pub(super) fn expand_part_def_members(
 ) {
     if let PartDefBody::Brace { elements } = &part_def.body {
         for node in elements {
-            use sysml_parser::ast::PartDefBodyElement as PDBE;
+            use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
             match &node.value {
                 PDBE::AttributeDef(n) => {
                     let qualified = qualified_name_for_node(

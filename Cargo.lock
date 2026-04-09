@@ -1034,7 +1034,7 @@ dependencies = [
  "petgraph",
  "serde",
  "serde_json",
- "sysml-parser",
+ "sysml-v2-parser",
  "tower-lsp",
 ]
 
@@ -1145,7 +1145,7 @@ version = "0.16.0"
 dependencies = [
  "serde_json",
  "spec42-core",
- "sysml-parser",
+ "sysml-v2-parser",
  "tempfile",
  "tokio",
  "url",
@@ -1160,7 +1160,7 @@ dependencies = [
  "semantic-model",
  "serde",
  "serde_json",
- "sysml-parser",
+ "sysml-v2-parser",
  "tempfile",
  "thiserror",
  "tokio",
@@ -1206,9 +1206,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "sysml-parser"
+name = "sysml-v2-parser"
 version = "0.1.0"
-source = "git+https://github.com/elan8/sysml-parser?rev=11aeaca228f16fe2672aa9713edf1fd53cb321a8#11aeaca228f16fe2672aa9713edf1fd53cb321a8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ede30bf66da3924327e8196b2ac9b174be0f6d07e68436f8e82ae7ae605e1458"
 dependencies = [
  "log",
  "nom",

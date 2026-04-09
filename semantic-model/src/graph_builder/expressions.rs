@@ -49,8 +49,8 @@ pub(super) fn add_expression_edge_if_both_exist(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
-    left: &sysml_parser::Node<sysml_parser::Expression>,
-    right: &sysml_parser::Node<sysml_parser::Expression>,
+    left: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
+    right: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
     kind: RelationshipKind,
 ) {
     let left_str = expr_node_to_qualified_string(left);
@@ -149,9 +149,9 @@ pub(super) fn add_expression_edge_if_both_exist(
 
 /// Best-effort display of an expression for attributes and diagnostics (not a full SysML text serializer).
 pub(super) fn expression_to_debug_string(
-    n: &sysml_parser::Node<sysml_parser::Expression>,
+    n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
 ) -> String {
-    use sysml_parser::Expression;
+    use sysml_v2_parser::Expression;
     match &n.value {
         Expression::LiteralInteger(i) => i.to_string(),
         Expression::LiteralReal(s) => s.clone(),
@@ -196,9 +196,9 @@ pub(super) fn expression_to_debug_string(
 /// Path-like string for resolving connection/satisfy/transition endpoints where possible.
 /// Literals and general expressions return empty so callers skip edge creation.
 pub(super) fn expr_node_to_qualified_string(
-    n: &sysml_parser::Node<sysml_parser::Expression>,
+    n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
 ) -> String {
-    use sysml_parser::Expression;
+    use sysml_v2_parser::Expression;
     match &n.value {
         Expression::FeatureRef(s) => s.clone(),
         Expression::MemberAccess(box_base, member) => {
@@ -270,8 +270,8 @@ pub(super) fn resolve_expression_endpoint_legacy(
 #[cfg(test)]
 mod expr_string_tests {
     use super::{expr_node_to_qualified_string, expression_to_debug_string};
-    use sysml_parser::ast::{Expression, Node};
-    use sysml_parser::Span;
+    use sysml_v2_parser::ast::{Expression, Node};
+    use sysml_v2_parser::Span;
 
     fn node(expr: Expression) -> Node<Expression> {
         Node::new(Span::dummy(), expr)

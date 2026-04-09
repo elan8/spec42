@@ -81,7 +81,7 @@ pub fn symbol_entries_for_uri(graph: &SemanticGraph, uri: &Url) -> Vec<SymbolEnt
 mod tests {
     use tower_lsp::lsp_types::Url;
 
-    use sysml_parser::parse;
+    use sysml_v2_parser::parse;
 
     use crate::semantic_model::build_graph_from_doc;
 

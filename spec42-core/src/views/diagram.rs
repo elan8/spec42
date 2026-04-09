@@ -5,7 +5,7 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::{MessageType, Url};
 use tower_lsp::Client;
 
-use sysml_parser::RootNamespace;
+use sysml_v2_parser::RootNamespace;
 
 use crate::semantic_model;
 use crate::views::dto::{

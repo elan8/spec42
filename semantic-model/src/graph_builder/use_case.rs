@@ -11,13 +11,13 @@ use super::requirement_body::resolve_subject_type_target_qualified;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
 pub(super) fn build_from_use_case_body(
-    elements: &[sysml_parser::Node<sysml_parser::ast::UseCaseDefBodyElement>],
+    elements: &[sysml_v2_parser::Node<sysml_v2_parser::ast::UseCaseDefBodyElement>],
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: &NodeId,
     g: &mut SemanticGraph,
 ) {
-    use sysml_parser::ast::UseCaseDefBodyElement as UCBE;
+    use sysml_v2_parser::ast::UseCaseDefBodyElement as UCBE;
     for node in elements {
         match &node.value {
             UCBE::ActorUsage(actor_node) => {

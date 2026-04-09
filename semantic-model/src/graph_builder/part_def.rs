@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use sysml_parser::ast::{PartDefBodyElement, PartUsageBody};
-use sysml_parser::RootNamespace;
+use sysml_v2_parser::ast::{PartDefBodyElement, PartUsageBody};
+use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
 
 use crate::ast_util::span_to_range;
@@ -14,14 +14,14 @@ use super::part_usage;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
 pub(super) fn build_from_part_def_body_element(
-    node: &sysml_parser::Node<PartDefBodyElement>,
+    node: &sysml_v2_parser::Node<PartDefBodyElement>,
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: &NodeId,
     root: &RootNamespace,
     g: &mut SemanticGraph,
 ) {
-    use sysml_parser::ast::PartDefBodyElement as PDBE;
+    use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
     match &node.value {
         PDBE::AttributeDef(n) => {
             let name = &n.name;
@@ -185,7 +185,7 @@ pub(super) fn build_from_part_def_body_element(
             );
         }
         PDBE::InterfaceUsage(interface_usage) => {
-            use sysml_parser::ast::InterfaceUsage;
+            use sysml_v2_parser::ast::InterfaceUsage;
             match &interface_usage.value {
                 InterfaceUsage::TypedConnect { from, to, .. }
                 | InterfaceUsage::Connection { from, to, .. } => {
@@ -228,7 +228,11 @@ pub(super) fn build_from_part_def_body_element(
                 RelationshipKind::Allocate,
             );
         }
-        // Intentionally omitted: parse errors and documentation-only members.
-        PDBE::Error(_) | PDBE::Doc(_) => {}
+        // Compatibility-only members introduced by newer parser versions are intentionally ignored.
+        PDBE::Error(_)
+        | PDBE::Doc(_)
+        | PDBE::Other(_)
+        | PDBE::Ref(_)
+        | PDBE::OpaqueMember(_) => {}
     }
 }

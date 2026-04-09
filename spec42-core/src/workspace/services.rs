@@ -3,7 +3,7 @@ use crate::semantic_model;
 use crate::workspace::library_search;
 use crate::workspace::state::{IndexEntry, ParseMetadata, ScanSummary, ServerState};
 use std::time::Instant;
-use sysml_parser::RootNamespace;
+use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
 use walkdir::WalkDir;
 
