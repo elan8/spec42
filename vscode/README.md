@@ -19,7 +19,7 @@ spec42 stdlib status
 - LSP support for `.sysml` and `.kerml`
 - workspace-aware navigation and diagnostics
 - configurable library indexing with `spec42.libraryPaths`
-- managed standard-library support
+- bundled SysML standard library (via the `spec42` server)
 - snippets, semantic tokens, Model Explorer, and Model Visualizer
 - bundled server binary in published builds
 
@@ -56,11 +56,10 @@ spec42 stdlib status
   - Files under these paths are indexed for hover, go-to-definition, references, and completion.
 
 - **`spec42.standardLibrary.enabled`**
-  - Enable managed standard-library support in the extension.
-  - Default: `true`
+  - Legacy setting; reserved for future use. The standard library is bundled with the server.
 
 - **`spec42.standardLibrary.version`**
-  - Pinned SysML v2 release tag for managed installs.
+  - Display-only hint for the bundled release; matches the embedded `sysml.library` in the server.
   - Default: `"2026-02"`
 
 - **`spec42.workspace.maxFilesPerPattern`**
@@ -93,7 +92,7 @@ The extension still manages editor startup and editor-facing commands, but the C
 
 - validating files and workspaces outside VS Code
 - checking library and stdlib resolution with `spec42 doctor`
-- installing or removing the canonical managed standard library with `spec42 stdlib ...`
+- inspecting the resolved standard library with `spec42 stdlib status` / `spec42 stdlib path` and clearing materialized cache with `spec42 stdlib clear-cache`
 
 This keeps VS Code focused on the editing experience while making `spec42` usable in terminals and automation too.
 

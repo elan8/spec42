@@ -1,5 +1,8 @@
 //! URI, config, and document helpers.
 
+use std::collections::BTreeSet;
+use std::path::PathBuf;
+
 use tower_lsp::lsp_types::{Position, Range, Url};
 
 use crate::language::{position_to_byte_offset, SymbolEntry};
@@ -245,6 +248,30 @@ pub fn parse_library_paths_from_value(value: Option<&serde_json::Value>) -> Vec<
                 .collect()
         })
         .unwrap_or_default()
+}
+
+/// Prepend host default library directories and merge with client `libraryPaths` (deduplicated).
+pub fn merge_host_and_client_library_paths(
+    host_defaults: &[PathBuf],
+    client: Vec<Url>,
+) -> Vec<Url> {
+    let mut seen = BTreeSet::<String>::new();
+    let mut out = Vec::new();
+    for p in host_defaults {
+        if let Ok(u) = Url::from_file_path(p) {
+            let n = normalize_file_uri(&u);
+            if seen.insert(n.as_str().to_string()) {
+                out.push(n);
+            }
+        }
+    }
+    for u in client {
+        let n = normalize_file_uri(&u);
+        if seen.insert(n.as_str().to_string()) {
+            out.push(n);
+        }
+    }
+    out
 }
 
 pub fn parse_startup_trace_id_from_value(value: Option<&serde_json::Value>) -> Option<String> {

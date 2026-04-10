@@ -1,14 +1,8 @@
 import * as vscode from "vscode";
-import type {
-  LspModelProvider,
-  SysMLLibrarySearchResult,
-} from "../providers/lspModelProvider";
+import type { LspModelProvider } from "../providers/lspModelProvider";
 
-type StandardLibraryStatus = {
-  enabled: boolean;
+type StdlibHeading = {
   pinnedVersion: string;
-  installedVersion?: string;
-  isInstalled: boolean;
 };
 
 type OpenRangeMessage = {
@@ -25,7 +19,7 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
   constructor(
     private readonly extensionUri: vscode.Uri,
     private readonly lspModelProvider: LspModelProvider,
-    private readonly getStandardLibraryStatus: () => StandardLibraryStatus
+    private readonly getStdlibHeading: () => StdlibHeading
   ) {}
 
   resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {
@@ -76,25 +70,9 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
         return;
       }
 
-      if (message?.type === "installStdLib") {
-        await vscode.commands.executeCommand("sysml.library.installStdLib");
-        this.refresh();
-        return;
-      }
-
-      if (message?.type === "removeStdLib") {
-        await vscode.commands.executeCommand("sysml.library.removeStdLib");
-        this.refresh();
-        return;
-      }
-
       if (message?.type === "manageCustomLibraries") {
         await vscode.commands.executeCommand("sysml.library.managePaths");
         return;
-      }
-
-      if (message?.type === "showStdLibStatus") {
-        await vscode.commands.executeCommand("sysml.library.showStdLibStatus");
       }
     });
 
@@ -124,8 +102,8 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
   }
 
   private postStatus(): void {
-    const status = this.getStandardLibraryStatus();
-    this.post({ type: "status", payload: status });
+    const heading = this.getStdlibHeading();
+    this.post({ type: "status", payload: heading });
   }
 
   private post(message: unknown): void {
@@ -150,7 +128,8 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
     body { font-family: var(--vscode-font-family); color: var(--vscode-foreground); padding: 8px; }
     .row { display: flex; gap: 6px; margin-bottom: 8px; }
     .stdlib-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; padding: 4px 0; }
-    .stdlib-title { font-weight: 600; font-size: 12px; letter-spacing: 0.2px; cursor: help; }
+    .stdlib-title { font-weight: 600; font-size: 12px; letter-spacing: 0.2px; }
+    .stdlib-version { font-weight: 400; opacity: 0.85; margin-left: 4px; }
     .actions { display: flex; gap: 6px; }
     .icon-btn { border: 1px solid var(--vscode-button-border, var(--vscode-panel-border)); background: transparent; color: var(--vscode-foreground); border-radius: 4px; width: 24px; height: 24px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
     .icon-btn:hover { background: var(--vscode-toolbar-hoverBackground); }
@@ -174,8 +153,7 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
 </head>
 <body>
   <div class="stdlib-row">
-    <div id="stdlibTitle" class="stdlib-title" title="Standard library">Standard library</div>
-    <div id="stdlibActions" class="actions"></div>
+    <div id="stdlibTitle" class="stdlib-title" title="Bundled with the Spec42 language server">Standard library<span id="stdlibVersion" class="stdlib-version"></span></div>
   </div>
   <div class="stdlib-row">
     <div class="stdlib-title" title="Custom libraries">Custom libraries</div>
@@ -198,7 +176,7 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
     const state = document.getElementById('state');
     const results = document.getElementById('results');
     const stdlibTitle = document.getElementById('stdlibTitle');
-    const stdlibActions = document.getElementById('stdlibActions');
+    const stdlibVersion = document.getElementById('stdlibVersion');
     const btnManageCustomLibraries = document.getElementById('btnManageCustomLibraries');
     const customPackages = document.getElementById('customPackages');
     let timer = null;
@@ -223,7 +201,7 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       if (visibleCount === 0) {
         state.textContent = queryText
           ? 'No results for "' + queryText + '".'
-          : 'No library symbols indexed yet. Install/Update Standard Library and restart the SysML server.';
+          : 'No library symbols indexed yet. Restart the SysML server or add library paths under spec42.libraryPaths.';
         results.innerHTML = '';
         return;
       }
@@ -274,43 +252,13 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
         .replaceAll('>', '&gt;');
     }
 
-    function renderStdlibActions(status) {
-      const enabled = !!status?.enabled;
-      const isInstalled = !!status?.isInstalled;
-      const installedVersion = status?.installedVersion || status?.pinnedVersion || 'unknown';
-      stdlibTitle.title = isInstalled
-        ? ('Installed version: ' + installedVersion)
-        : ('Pinned version: ' + (status?.pinnedVersion || 'unknown'));
-
-      const buttons = [];
-      if (isInstalled) {
-        buttons.push(
-          '<button id="btnUpdateStdlib" class="icon-btn" title="Update standard library"' + (enabled ? '' : ' disabled') + '>' +
-          '<span class="codicon codicon-cloud-download"></span></button>'
-        );
-        buttons.push(
-          '<button id="btnRemoveStdlib" class="icon-btn" title="Remove standard library"' + (enabled ? '' : ' disabled') + '>' +
-          '<span class="codicon codicon-trash"></span></button>'
-        );
-      } else {
-        buttons.push(
-          '<button id="btnAddStdlib" class="icon-btn" title="Add standard library"' + (enabled ? '' : ' disabled') + '>' +
-          '<span class="codicon codicon-add"></span></button>'
-        );
+    function renderStdlibHeading(heading) {
+      const v = heading?.pinnedVersion || 'unknown';
+      if (stdlibVersion) {
+        stdlibVersion.textContent = '(' + v + ')';
       }
-      stdlibActions.innerHTML = buttons.join('');
-
-      const btnAdd = document.getElementById('btnAddStdlib');
-      if (btnAdd) {
-        btnAdd.addEventListener('click', () => vscode.postMessage({ type: 'installStdLib' }));
-      }
-      const btnUpdate = document.getElementById('btnUpdateStdlib');
-      if (btnUpdate) {
-        btnUpdate.addEventListener('click', () => vscode.postMessage({ type: 'installStdLib' }));
-      }
-      const btnRemove = document.getElementById('btnRemoveStdlib');
-      if (btnRemove) {
-        btnRemove.addEventListener('click', () => vscode.postMessage({ type: 'removeStdLib' }));
+      if (stdlibTitle) {
+        stdlibTitle.title = 'Bundled SysML standard library (release ' + v + ')';
       }
     }
 
@@ -357,9 +305,9 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
         });
       });
 
-      const clearFilterButton = document.getElementById('btnClearCustomFilter');
-      if (clearFilterButton) {
-        clearFilterButton.addEventListener('click', () => {
+      const clearBtn = document.getElementById('btnClearCustomFilter');
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
           selectedCustomPackage = '';
           renderCustomPackages(latestTree);
           renderTree(latestTree, query.value.trim());
@@ -367,46 +315,38 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       }
     }
 
-    query.addEventListener('input', () => {
-      const value = query.value.trim();
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        vscode.postMessage({ type: 'search', query: value });
-      }, 250);
-    });
-
-    if (btnManageCustomLibraries) {
-      btnManageCustomLibraries.addEventListener('click', () => {
-        vscode.postMessage({ type: 'manageCustomLibraries' });
-      });
-    }
-
     window.addEventListener('message', (event) => {
-      const message = event.data;
-      if (message.type === 'searching') {
+      const msg = event.data;
+      if (msg?.type === 'status') {
+        renderStdlibHeading(msg.payload || {});
+        return;
+      }
+      if (msg?.type === 'searching') {
         state.textContent = 'Searching...';
         return;
       }
-      if (message.type === 'results') {
-        latestTree = message.payload || { sources: [], symbolTotal: 0, total: 0 };
+      if (msg?.type === 'error') {
+        state.textContent = 'Error: ' + (msg.payload || 'unknown');
+        results.innerHTML = '';
+        return;
+      }
+      if (msg?.type === 'allItems' || msg?.type === 'results') {
+        latestTree = msg.payload || latestTree;
         renderCustomPackages(latestTree);
         renderTree(latestTree, query.value.trim());
-        return;
       }
-      if (message.type === 'allItems') {
-        latestTree = message.payload || { sources: [], symbolTotal: 0, total: 0 };
-        renderCustomPackages(latestTree);
-        renderTree(latestTree, query.value.trim());
-        return;
-      }
-      if (message.type === 'error') {
-        state.textContent = 'Search failed: ' + message.payload;
-        return;
-      }
-      if (message.type === 'status') {
-        const s = message.payload;
-        renderStdlibActions(s);
-      }
+    });
+
+    query.addEventListener('input', () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        const q = query.value.trim();
+        vscode.postMessage({ type: 'search', query: q });
+      }, 200);
+    });
+
+    btnManageCustomLibraries.addEventListener('click', () => {
+      vscode.postMessage({ type: 'manageCustomLibraries' });
     });
 
     vscode.postMessage({ type: 'initLoad' });
@@ -417,16 +357,10 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
 }
 
 function getNonce(): string {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let out = "";
-  for (let i = 0; i < 32; i += 1) {
-    out += chars.charAt(Math.floor(Math.random() * chars.length));
+  let text = "";
+  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (let i = 0; i < 32; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
-  return out;
+  return text;
 }
-
-export type LibrarySearchResultMessage = {
-  sources: SysMLLibrarySearchResult["sources"];
-  symbolTotal: number;
-  total: number;
-};

@@ -1,5 +1,6 @@
 //! Extension traits and server configuration for pluggable checks and host hooks.
 
+use std::path::PathBuf;
 use std::sync::Arc;
 use tower_lsp::lsp_types::{Diagnostic, ServerCapabilities, Url};
 
@@ -32,6 +33,9 @@ pub trait CustomMethodProvider: Send + Sync {
 /// Server configuration built by the binary and passed to the core server.
 #[derive(Default, Clone)]
 pub struct Spec42Config {
+    /// Optional library roots supplied by the host (e.g. materialized standard library), merged
+    /// before client `libraryPaths` during LSP initialize / configuration.
+    pub default_library_paths: Vec<PathBuf>,
     /// Semantic/quality check providers run when publishing diagnostics after a successful parse.
     pub check_providers: Vec<Arc<dyn SemanticCheckProvider>>,
     /// Optional capability augmenters for additive host composition.
@@ -43,6 +47,7 @@ pub struct Spec42Config {
 impl std::fmt::Debug for Spec42Config {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Spec42Config")
+            .field("default_library_paths", &self.default_library_paths)
             .field("check_providers", &self.check_providers.len())
             .field("capability_augmenters", &self.capability_augmenters.len())
             .field(
@@ -73,6 +78,12 @@ impl Spec42Config {
     /// Add a custom method provider.
     pub fn with_custom_method_provider(mut self, p: Arc<dyn CustomMethodProvider>) -> Self {
         self.custom_method_providers.push(p);
+        self
+    }
+
+    /// Host-provided library roots (prepended when merging with client `libraryPaths`).
+    pub fn with_default_library_paths(mut self, paths: Vec<PathBuf>) -> Self {
+        self.default_library_paths = paths;
         self
     }
 

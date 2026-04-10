@@ -49,20 +49,20 @@ export class LibraryViewProvider
   getChildren(): LibraryTreeItem[] {
     const status = this.getStandardLibraryStatus?.();
     const stdLibDescription = !status
-      ? "Install or update standard library"
+      ? "Bundled with Spec42 server"
       : !status.enabled
       ? "Disabled in settings"
       : status.isInstalled
-      ? `Installed (${status.installedVersion ?? status.pinnedVersion})`
+      ? `Release ${status.installedVersion ?? status.pinnedVersion}`
       : status.installedVersion
-      ? `Pinned ${status.pinnedVersion}; installed ${status.installedVersion}`
-      : `Not installed (pinned ${status.pinnedVersion})`;
+      ? `Release ${status.pinnedVersion} (installed ${status.installedVersion})`
+      : `Release ${status.pinnedVersion}`;
 
     return [
       new LibraryTreeItem(
         "Standard Library",
         stdLibDescription,
-        "sysml.library.installStdLib"
+        "sysml.library.showStdLibStatus"
       ),
       new LibraryTreeItem(
         "Custom Libraries",

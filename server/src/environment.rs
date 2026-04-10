@@ -6,9 +6,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::cli::Cli;
 use crate::stdlib::{
-    legacy_vscode_stdlib_path, load_managed_metadata, managed_status, project_dirs,
-    standard_library_paths_from_data_dir, StandardLibraryConfig, StandardLibraryPaths,
-    StandardLibraryStatus,
+    install_embedded_standard_library, legacy_vscode_stdlib_path, load_managed_metadata,
+    managed_status, project_dirs, standard_library_paths_from_data_dir, EMBEDDED_STDLIB_ARCHIVE,
+    EMBEDDED_STDLIB_REPO, StandardLibraryConfig, StandardLibraryPaths, StandardLibraryStatus,
 };
 
 #[derive(Debug, Clone, Deserialize, Default)]
@@ -167,6 +167,8 @@ pub fn build_doctor_report(
             "compatibility-fallback".to_string()
         } else if environment.stdlib_source.as_deref() == Some("disabled") {
             "disabled".to_string()
+        } else if environment.stdlib_source.as_deref() == Some("bundled") {
+            "bundled".to_string()
         } else {
             "none".to_string()
         },
@@ -324,9 +326,14 @@ fn resolve_stdlib_path(
     if let Some(metadata) = load_managed_metadata(standard_library_paths)? {
         let managed_path = PathBuf::from(metadata.install_path);
         if managed_path.is_dir() {
+            let source = if metadata.repo == EMBEDDED_STDLIB_REPO {
+                "bundled".to_string()
+            } else {
+                "managed".to_string()
+            };
             return Ok(StdlibResolution {
                 path: Some(managed_path),
-                source: Some("managed".to_string()),
+                source: Some(source),
                 used_legacy_vscode_fallback: false,
             });
         }
@@ -338,6 +345,20 @@ fn resolve_stdlib_path(
             source: Some("legacy-vscode".to_string()),
             used_legacy_vscode_fallback: true,
         });
+    }
+
+    #[allow(clippy::const_is_empty)]
+    if !EMBEDDED_STDLIB_ARCHIVE.is_empty() {
+        return match install_embedded_standard_library(standard_library_paths, standard_library) {
+            Ok(metadata) => Ok(StdlibResolution {
+                path: Some(PathBuf::from(metadata.install_path)),
+                source: Some("bundled".to_string()),
+                used_legacy_vscode_fallback: false,
+            }),
+            Err(e) => Err(format!(
+                "Failed to materialize embedded SysML standard library: {e}"
+            )),
+        };
     }
 
     Ok(StdlibResolution {

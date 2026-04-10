@@ -3,10 +3,20 @@ name = "spec42"
 version = "0.17.0"
 edition = "2021"
 description = "Language server for SysML v2 (LSP over stdio)"
+build = "build.rs"
 
 [[bin]]
 name = "spec42"
 path = "src/main.rs"
+
+[features]
+default = ["embed-stdlib"]
+embed-stdlib = []
+
+[build-dependencies]
+sha2 = "0.10"
+ureq = { version = "2", default-features = true }
+zip = { version = "2", default-features = false, features = ["deflate"] }
 
 [dependencies]
 spec42-core = { path = "../spec42-core" }
@@ -16,7 +26,6 @@ clap = { workspace = true }
 serde = { workspace = true }
 directories = "5"
 toml = "0.8"
-ureq = "2"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 tower-lsp = "0.20"
 

@@ -43,8 +43,12 @@ pub(crate) async fn initialize(
 ) -> tower_lsp::jsonrpc::Result<InitializeResult> {
     let initialize_start = Instant::now();
     let roots = workspace_roots_from_initialize(&params);
-    let library_paths =
+    let client_library_paths =
         util::parse_library_paths_from_value(params.initialization_options.as_ref());
+    let library_paths = util::merge_host_and_client_library_paths(
+        &config.default_library_paths,
+        client_library_paths,
+    );
     let startup_trace_id =
         util::parse_startup_trace_id_from_value(params.initialization_options.as_ref());
     let code_lens_enabled =
@@ -419,13 +423,18 @@ pub(crate) async fn did_change_watched_files(
 pub(crate) async fn did_change_configuration(
     client: &Client,
     state: &Arc<RwLock<ServerState>>,
+    config: &Arc<Spec42Config>,
     params: DidChangeConfigurationParams,
 ) {
-    let new_library_paths = params
+    let client_library_paths = params
         .settings
         .get("spec42")
         .map(|value| util::parse_library_paths_from_value(Some(value)))
         .unwrap_or_else(|| util::parse_library_paths_from_value(Some(&params.settings)));
+    let new_library_paths = util::merge_host_and_client_library_paths(
+        &config.default_library_paths,
+        client_library_paths,
+    );
     let changed = {
         let mut state = state.write().await;
         let old_library_paths = std::mem::take(&mut state.library_paths);

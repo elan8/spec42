@@ -31,11 +31,6 @@ import {
   EXPERIMENTAL_VIEWS,
 } from "./visualization/webview/constants";
 import { getWebviewHtml } from "./visualization/htmlBuilder";
-import {
-  StandardLibraryConfig,
-  StandardLibraryManager,
-} from "./library/standardLibraryManager";
-
 const CONFIG_SECTION = "spec42";
 const LEGACY_CONFIG_SECTION = "sysml-language-server";
 const EXTENSION_ID = "Elan8.spec42";
@@ -91,6 +86,13 @@ function getConfigNumber(key: string, defaultValue: number): number {
   const { primary, legacy } = getConfig();
   return primary.get<number>(key) ?? legacy.get<number>(key) ?? defaultValue;
 }
+
+type StandardLibraryConfig = {
+  enabled: boolean;
+  version: string;
+  repo: string;
+  contentPath: string;
+};
 
 function getStartupWorkspaceIndexingMode(): StartupWorkspaceIndexingMode {
   const configured = getConfigString("startup.workspaceIndexing");
@@ -521,26 +523,19 @@ export function activate(context: vscode.ExtensionContext): void {
   const configStartedAt = Date.now();
   const envServerPath = (process.env.SPEC42_SERVER_PATH || "").trim();
   const serverPath = envServerPath || getConfigString("serverPath");
-  const standardLibraryManager = new StandardLibraryManager(context);
-  const standardLibraryConfig = getStandardLibraryConfig();
-  const installedStandardLibraryPath = standardLibraryManager.getInstalledPath(
-    standardLibraryConfig
-  );
   const libraryPathsRaw = getConfigStringArray("libraryPaths") ?? [];
   const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "";
   const customLibraryPaths = libraryPathsRaw.map((p) =>
     path.isAbsolute(p) ? p : path.resolve(workspaceRoot, p)
   );
-  const libraryPaths = [
-    ...(installedStandardLibraryPath ? [installedStandardLibraryPath] : []),
-    ...customLibraryPaths,
-  ].filter((value, index, all) => all.indexOf(value) === index);
+  const libraryPaths = customLibraryPaths.filter(
+    (value, index, all) => all.indexOf(value) === index
+  );
   logPerf("activate:configResolved", {
     totalMs: Date.now() - configStartedAt,
     workspaceFolderCount: vscode.workspace.workspaceFolders?.length ?? 0,
     libraryPathCount: libraryPaths.length,
     customLibraryPathCount: customLibraryPaths.length,
-    hasInstalledStandardLibrary: !!installedStandardLibraryPath,
   });
 
   let serverCommand: string;
@@ -752,7 +747,9 @@ export function activate(context: vscode.ExtensionContext): void {
   libraryWebviewProvider = new LibraryWebviewViewProvider(
     context.extensionUri,
     lspModelProvider,
-    () => standardLibraryManager.getStatus(getStandardLibraryConfig())
+    () => ({
+      pinnedVersion: getConfigString("standardLibrary.version") ?? "2026-02",
+    })
   );
 
   function scheduleActiveDocumentExplorerRefresh(
@@ -880,110 +877,6 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("sysml.library.installStdLib", async () => {
-      const cfg = getStandardLibraryConfig();
-      if (!cfg.enabled) {
-        const selected = await vscode.window.showWarningMessage(
-          "Managed standard library is disabled in settings.",
-          "Open Settings"
-        );
-        if (selected === "Open Settings") {
-          await vscode.commands.executeCommand(
-            "workbench.action.openSettings",
-            "spec42.standardLibrary.enabled"
-          );
-        }
-        return;
-      }
-
-      const confirm = await vscode.window.showWarningMessage(
-        `Install/Update the managed standard library to version ${cfg.version}?`,
-        { modal: true },
-        "Install/Update",
-        "Cancel"
-      );
-      if (confirm !== "Install/Update") {
-        return;
-      }
-
-      try {
-        const result = await vscode.window.withProgress(
-          {
-            location: vscode.ProgressLocation.Notification,
-            title: `Spec42: Installing standard library ${cfg.version}`,
-            cancellable: false,
-          },
-          async (progress) => {
-            return await standardLibraryManager.installPinnedStandardLibrary(
-              cfg,
-              progress
-            );
-          }
-        );
-        libraryWebviewProvider?.refresh();
-        const message = `Spec42 standard library ${result.installedVersion} installed at ${result.installPath}.`;
-        const action = await vscode.window.showInformationMessage(
-          message,
-          "Restart Server"
-        );
-        if (action === "Restart Server") {
-          await vscode.commands.executeCommand("sysml.restartServer");
-        }
-      } catch (error) {
-        const detail = error instanceof Error ? error.message : String(error);
-        vscode.window.showErrorMessage(
-          `Failed to install Spec42 standard library: ${detail}`
-        );
-      }
-    })
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("sysml.library.removeStdLib", async () => {
-      const status = standardLibraryManager.getStatus(getStandardLibraryConfig());
-      if (!status.installedVersion || !status.installPath) {
-        vscode.window.showInformationMessage(
-          "No managed standard library installation was found."
-        );
-        return;
-      }
-
-      const confirm = await vscode.window.showWarningMessage(
-        `Remove managed standard library ${status.installedVersion}?`,
-        { modal: true },
-        "Remove",
-        "Cancel"
-      );
-      if (confirm !== "Remove") {
-        return;
-      }
-
-      try {
-        const result = await standardLibraryManager.removeInstalledStandardLibrary();
-        libraryWebviewProvider?.refresh();
-        if (!result.removed) {
-          vscode.window.showInformationMessage(
-            "No managed standard library installation was found."
-          );
-          return;
-        }
-        const action = await vscode.window.showInformationMessage(
-          `Removed managed standard library ${result.removedVersion ?? ""}.`,
-          "Restart Server"
-        );
-        if (action === "Restart Server") {
-          await vscode.commands.executeCommand("sysml.restartServer");
-        }
-      } catch (error) {
-        const detail = error instanceof Error ? error.message : String(error);
-        vscode.window.showErrorMessage(
-          `Failed to remove Spec42 standard library: ${detail}`
-        );
-      }
-    })
-  );
-
-  context.subscriptions.push(
     vscode.commands.registerCommand("sysml.library.managePaths", async () => {
       await vscode.commands.executeCommand(
         "workbench.action.openSettings",
@@ -1002,14 +895,8 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.library.showStdLibStatus", async () => {
       const cfg = getStandardLibraryConfig();
-      const status = standardLibraryManager.getStatus(cfg);
-      const installedLine = status.installedVersion
-        ? `Installed version: ${status.installedVersion}`
-        : "Installed version: none";
-      const pinnedLine = `Pinned version: ${status.pinnedVersion}`;
-      const pathLine = status.installPath ? `Install path: ${status.installPath}` : "Install path: none";
-      vscode.window.showInformationMessage(
-        `Managed standard library ${status.isInstalled ? "is ready" : "is not installed"}.\n${pinnedLine}\n${installedLine}\n${pathLine}`
+      void vscode.window.showInformationMessage(
+        `The SysML standard library is bundled with the Spec42 language server (release ${cfg.version}). Add extra library roots with spec42.libraryPaths if needed.`
       );
     })
   );

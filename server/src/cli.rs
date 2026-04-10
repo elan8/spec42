@@ -46,16 +46,6 @@ pub struct DoctorArgs {
 }
 
 #[derive(Debug, Clone, Args)]
-pub struct StdlibInstallArgs {
-    #[arg(long = "version")]
-    pub version: Option<String>,
-    #[arg(long = "repo")]
-    pub repo: Option<String>,
-    #[arg(long = "content-path")]
-    pub content_path: Option<String>,
-}
-
-#[derive(Debug, Clone, Args)]
 pub struct StdlibStatusArgs {
     #[arg(long = "version")]
     pub version: Option<String>,
@@ -67,10 +57,12 @@ pub struct StdlibStatusArgs {
 
 #[derive(Debug, Clone, Subcommand)]
 pub enum StdlibCommand {
-    Install(StdlibInstallArgs),
+    /// Show pinned vs installed standard library metadata.
     Status(StdlibStatusArgs),
+    /// Print the resolved standard library directory path.
     Path(StdlibStatusArgs),
-    Remove,
+    /// Delete materialized standard-library files from the data directory (they are re-created from the embedded copy on next use).
+    ClearCache,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]

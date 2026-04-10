@@ -103,12 +103,6 @@
         "category": "Spec42"
       },
       {
-        "command": "sysml.library.installStdLib",
-        "title": "Library: Install or Update Standard Library",
-        "icon": "$(cloud-download)",
-        "category": "Spec42"
-      },
-      {
         "command": "sysml.library.managePaths",
         "title": "Library: Manage Custom Libraries",
         "icon": "$(folder-library)",
@@ -122,7 +116,7 @@
       },
       {
         "command": "sysml.library.showStdLibStatus",
-        "title": "Library: Show Standard Library Status",
+        "title": "Library: Standard Library Information",
         "icon": "$(info)",
         "category": "Spec42"
       },
@@ -308,9 +302,6 @@
           "command": "sysml.library.refresh"
         },
         {
-          "command": "sysml.library.installStdLib"
-        },
-        {
           "command": "sysml.library.managePaths"
         },
         {
@@ -347,7 +338,7 @@
     "viewsWelcome": [
       {
         "view": "spec42Library",
-        "contents": "Spec42 manages a pinned standard library after installation.\\n\\n- Run [Install or Update Standard Library](command:sysml.library.installStdLib)\\n- Run [Manage Custom Libraries](command:sysml.library.managePaths)\\n- Run [Show Standard Library Status](command:sysml.library.showStdLibStatus)"
+        "contents": "The SysML standard library is bundled with the Spec42 language server.\\n\\n- Run [Manage Custom Libraries](command:sysml.library.managePaths)\\n- Run [Standard Library Information](command:sysml.library.showStdLibStatus)"
       },
       {
         "view": "sysmlModelExplorer",
@@ -373,22 +364,22 @@
         "spec42.standardLibrary.enabled": {
           "type": "boolean",
           "default": true,
-          "description": "Enable managed standard library support from the configured SysML v2 release source."
+          "description": "Legacy: reserved for future use. The standard library is bundled with the Spec42 server."
         },
         "spec42.standardLibrary.version": {
           "type": "string",
           "default": "2026-02",
-          "description": "Pinned SysML v2 release tag to install for the managed standard library."
+          "description": "Display-only: SysML v2 release tag that matches the bundled standard library in this extension."
         },
         "spec42.standardLibrary.repo": {
           "type": "string",
           "default": "Systems-Modeling/SysML-v2-Release",
-          "description": "GitHub repository (owner/name) used for managed standard library downloads."
+          "description": "Legacy: not used for downloads; the library ships inside the Spec42 binary."
         },
         "spec42.standardLibrary.contentPath": {
           "type": "string",
           "default": "sysml.library",
-          "description": "Repository subfolder to install as the managed standard library."
+          "description": "Legacy: folder name inside the official release (bundled by the server)."
         },
         "spec42.statusBar.enabled": {
           "type": "boolean",

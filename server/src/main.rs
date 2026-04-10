@@ -11,9 +11,7 @@ use cli::{CheckArgs, Cli, Command, DoctorArgs, OutputFormat, StdlibCommand};
 use environment::{build_doctor_report, resolve_environment};
 use spec42_core::host::logging::init_tracing;
 use spec42_core::{validate_paths, ValidationReport, ValidationRequest};
-use stdlib::{
-    install_standard_library, load_managed_metadata, managed_status, remove_standard_library,
-};
+use stdlib::{load_managed_metadata, managed_status, remove_standard_library};
 
 #[tokio::main]
 async fn main() -> ExitCode {
@@ -30,19 +28,23 @@ async fn main() -> ExitCode {
 
 async fn run(cli: Cli) -> Result<ExitCode, String> {
     if cli.stdio && cli.command.is_none() {
-        return run_lsp().await;
+        return run_lsp(&cli).await;
     }
     match cli.command.as_ref() {
-        None => run_lsp().await,
-        Some(Command::Lsp) => run_lsp().await,
+        None => run_lsp(&cli).await,
+        Some(Command::Lsp) => run_lsp(&cli).await,
         Some(Command::Check(args)) => run_check(&cli, args),
         Some(Command::Doctor(args)) => run_doctor(&cli, args),
         Some(Command::Stdlib { command }) => run_stdlib(&cli, command),
     }
 }
 
-async fn run_lsp() -> Result<ExitCode, String> {
-    let config = Arc::new(spec42_core::default_server_config());
+async fn run_lsp(cli: &Cli) -> Result<ExitCode, String> {
+    let environment = resolve_environment(cli)?;
+    let config = Arc::new(
+        spec42_core::default_server_config()
+            .with_default_library_paths(environment.library_paths.clone()),
+    );
     spec42_core::run_lsp(config, "spec42").await;
     Ok(ExitCode::SUCCESS)
 }
@@ -98,22 +100,6 @@ fn run_stdlib(cli: &Cli, command: &StdlibCommand) -> Result<ExitCode, String> {
     let environment = resolve_environment(cli)?;
     let mut config = environment.standard_library.clone();
     match command {
-        StdlibCommand::Install(args) => {
-            if let Some(version) = &args.version {
-                config.version = version.clone();
-            }
-            if let Some(repo) = &args.repo {
-                config.repo = repo.clone();
-            }
-            if let Some(content_path) = &args.content_path {
-                config.content_path = content_path.clone();
-            }
-            let metadata = install_standard_library(&environment.standard_library_paths, &config)?;
-            println!(
-                "Installed SysML standard library {} to {}",
-                metadata.installed_version, metadata.install_path
-            );
-        }
         StdlibCommand::Status(args) => {
             if let Some(version) = &args.version {
                 config.version = version.clone();
@@ -151,12 +137,12 @@ fn run_stdlib(cli: &Cli, command: &StdlibCommand) -> Result<ExitCode, String> {
                 "No standard library path is currently configured or installed.".to_string(),
             );
         }
-        StdlibCommand::Remove => {
+        StdlibCommand::ClearCache => {
             let removed = remove_standard_library(&environment.standard_library_paths)?;
             if removed {
-                println!("Removed managed SysML standard library.");
+                println!("Cleared materialized standard library data from the spec42 data directory.");
             } else {
-                println!("No managed SysML standard library installation was found.");
+                println!("No materialized standard library data was found.");
             }
         }
     }

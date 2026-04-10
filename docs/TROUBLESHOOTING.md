@@ -14,7 +14,7 @@ Check:
 
 - which config file is in use
 - which standard-library path was resolved
-- whether that path is the canonical managed install or only a compatibility fallback
+- whether that path is the bundled materialization, a prior on-disk install, or only a compatibility fallback
 - whether the resolved library paths actually exist
 - whether the CLI fell back to a legacy VS Code standard-library install
 
@@ -35,7 +35,7 @@ spec42 check path/to/model-or-workspace
 Common causes:
 
 - the CLI and the editor are resolving different library roots
-- no standard library is installed for CLI use
+- the standard library failed to materialize from the embedded copy (see `spec42 doctor`)
 - a custom `--stdlib-path` or `--library-path` is missing
 - the workspace root used by the CLI is too narrow
 
@@ -44,8 +44,8 @@ What to do:
 1. Compare `spec42 doctor` with your editor setup.
 2. If needed, pass `--workspace-root` explicitly.
 3. Add `--library-path` or `--stdlib-path` explicitly to confirm the issue.
-4. Install the managed standard library with `spec42 stdlib install`.
-5. Re-run `spec42 check ...`; if library context is still missing, the CLI will now suggest `spec42 stdlib install` directly in text output.
+4. Run `spec42 doctor` and confirm `stdlib source` is **bundled** (or an explicit override you expect).
+5. Re-run `spec42 check ...`; validation advice points at `--stdlib-path` / `SPEC42_STDLIB_PATH` if library roots are still missing.
 
 ## No Standard Library Is Found
 
@@ -62,14 +62,16 @@ What `spec42` tries, in order:
 2. environment variables
 3. explicit config file
 4. default user config
-5. managed `spec42` install
+5. materialized install under the spec42 data directory (including embedded **bundled**)
 6. legacy VS Code standard-library install location
+7. first-time materialization from the **embedded** standard library in the binary
 
 What to do:
 
-1. Run `spec42 stdlib install`.
-2. If you already have a library checkout, pass `--stdlib-path /path/to/sysml.library`.
-3. Use `--no-stdlib` only when you intentionally want to validate without it.
+1. Run `spec42 doctor` and check `resolved stdlib` / `stdlib source`.
+2. If you use a custom checkout, pass `--stdlib-path /path/to/sysml.library`.
+3. Use `spec42 stdlib clear-cache` only to delete materialized files (they are re-extracted on next run).
+4. Use `--no-stdlib` only when you intentionally want to validate without it.
 
 ## Server Does Not Start In VS Code
 

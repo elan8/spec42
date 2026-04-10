@@ -1,5 +1,5 @@
 use std::fs;
-use std::io::{Cursor, Read};
+use std::io::Cursor;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -9,6 +9,16 @@ use serde::{Deserialize, Serialize};
 pub const DEFAULT_STDLIB_VERSION: &str = "2026-02";
 pub const DEFAULT_STDLIB_REPO: &str = "Systems-Modeling/SysML-v2-Release";
 pub const DEFAULT_STDLIB_CONTENT_PATH: &str = "sysml.library";
+/// Recorded in `metadata.toml` when the tree was materialized from the binary-embedded zip.
+pub const EMBEDDED_STDLIB_REPO: &str = "embedded";
+
+/// Minimal zip produced by `build.rs` (only `sysml.library/`). Empty when `embed-stdlib` is disabled.
+#[cfg(feature = "embed-stdlib")]
+pub const EMBEDDED_STDLIB_ARCHIVE: &[u8] =
+    include_bytes!(concat!(env!("OUT_DIR"), "/sysml.library.embedded.zip"));
+
+#[cfg(not(feature = "embed-stdlib"))]
+pub const EMBEDDED_STDLIB_ARCHIVE: &[u8] = &[];
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StandardLibraryConfig {
@@ -135,29 +145,31 @@ pub fn managed_status(
             .as_ref()
             .map(|metadata| metadata.install_path.clone()),
         is_installed,
-        source: metadata.map(|_| "managed".to_string()),
+        source: metadata.as_ref().map(|m| {
+            if m.repo == EMBEDDED_STDLIB_REPO {
+                "bundled".to_string()
+            } else {
+                "managed".to_string()
+            }
+        }),
         is_canonical_managed: is_installed,
     })
 }
 
-pub fn install_standard_library(
+/// Materialize the embedded standard library (same on-disk layout as a managed download).
+pub fn install_embedded_standard_library(
     paths: &StandardLibraryPaths,
     config: &StandardLibraryConfig,
 ) -> Result<StandardLibraryMetadata, String> {
-    let normalized_content_path = normalize_content_path(&config.content_path);
-    if normalized_content_path.is_empty() {
-        return Err("Standard library content path must not be empty.".to_string());
+    #[allow(clippy::const_is_empty)]
+    if EMBEDDED_STDLIB_ARCHIVE.is_empty() {
+        return Err(
+            "This spec42 binary was built without an embedded SysML standard library.".to_string(),
+        );
     }
-
-    fs::create_dir_all(&paths.managed_root)
-        .map_err(|err| format!("Failed to create {}: {err}", paths.managed_root.display()))?;
-
-    let url = format!(
-        "https://codeload.github.com/{}/zip/refs/tags/{}",
-        config.repo, config.version
-    );
-    let bytes = download_archive(&url)?;
-    install_standard_library_from_bytes(paths, config, &bytes)
+    let mut cfg = config.clone();
+    cfg.repo = EMBEDDED_STDLIB_REPO.to_string();
+    install_standard_library_from_bytes(paths, &cfg, EMBEDDED_STDLIB_ARCHIVE)
 }
 
 pub fn install_standard_library_from_bytes(
@@ -307,19 +319,6 @@ fn normalize_content_path(path: &str) -> String {
 
 fn install_path_is_ready(path: &Path) -> bool {
     path.is_dir() && fs::read_dir(path).is_ok()
-}
-
-fn download_archive(url: &str) -> Result<Vec<u8>, String> {
-    let response = ureq::get(url)
-        .set("User-Agent", "spec42-cli")
-        .call()
-        .map_err(|err| format!("Failed to download standard library archive from {url}: {err}"))?;
-    let mut reader = response.into_reader();
-    let mut out = Vec::new();
-    reader
-        .read_to_end(&mut out)
-        .map_err(|err| format!("Failed to read standard library archive: {err}"))?;
-    Ok(out)
 }
 
 fn extract_archive_subset(

@@ -42,4 +42,7 @@ pub use views::{
     empty_feature_inspector_response, empty_model_response, parse_sysml_diagram_params,
     parse_sysml_feature_inspector_params, parse_sysml_model_params,
 };
-pub use {analysis::*, common::util::parse_library_paths_from_value};
+pub use {
+    analysis::*,
+    common::util::{merge_host_and_client_library_paths, parse_library_paths_from_value},
+};

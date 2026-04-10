@@ -3,7 +3,7 @@
 Language tooling for [SysML v2](https://www.omg.org/sysml/sysmlv2/) and KerML. `spec42` now ships as both:
 
 - an LSP server for editors
-- a CLI for validation, troubleshooting, and managed standard-library workflows
+- a CLI for validation, troubleshooting, and standard-library diagnostics
 
 ![SysML v2](https://img.shields.io/badge/SysML-v2.0-blue)
 ![VS Code Extension](https://img.shields.io/badge/VS%20Code-Extension-007ACC?logo=visual-studio-code)
@@ -18,7 +18,7 @@ Language tooling for [SysML v2](https://www.omg.org/sysml/sysmlv2/) and KerML. `
 - `spec42 lsp`: run the language server over stdio for editors
 - `spec42 check <path>`: validate a file or recursively validate a folder in CI or local automation
 - `spec42 doctor`: inspect resolved config, library paths, and standard-library state
-- `spec42 stdlib ...`: install, inspect, print, or remove the pinned SysML standard library managed by `spec42`
+- `spec42 stdlib ...`: inspect or print the resolved SysML standard library; `clear-cache` removes materialized files (they are re-created from the embedded copy on next use)
 
 Bare `spec42` still starts the LSP server for backward compatibility with existing editor integrations.
 
@@ -27,7 +27,7 @@ Bare `spec42` still starts the LSP server for backward compatibility with existi
 - **LSP**: text sync, diagnostics, hover, completion, go to definition, find references, rename, document symbols, workspace symbol search, code actions, formatting, folding ranges, selection ranges, document links, linked editing, call hierarchy, and type hierarchy.
 - **Workspace-aware**: features operate across `.sysml` and `.kerml` files in your workspace and configured library roots.
 - **CLI validation**: deterministic file/folder validation without needing to speak JSON-RPC.
-- **Managed standard library**: install and reuse a pinned SysML v2 standard library from the CLI, with compatibility fallback to the legacy VS Code-managed install location.
+- **Bundled standard library**: the official `sysml.library` release is embedded in the `spec42` binary and materialized to your data directory when needed, with compatibility fallback to a legacy VS Code-managed install location.
 - **VS Code extension**: snippets, semantic tokens, Model Explorer, Model Visualizer, and standard editor workflows.
 
 ## CLI Quick Start
@@ -39,7 +39,6 @@ spec42 doctor
 spec42 check ./examples/timer/KitchenTimer.sysml
 spec42 check ./workspace --format json
 spec42 stdlib status
-spec42 stdlib install
 spec42 stdlib path
 ```
 
@@ -69,13 +68,13 @@ spec42 check ./models/workspace --format json
 2. environment variables such as `SPEC42_LIBRARY_PATHS` and `SPEC42_STDLIB_PATH`
 3. an explicit `--config` file
 4. the default user config file
-5. the managed `spec42` standard-library install
+5. materialized data from a previous run (including the embedded standard library)
 6. the legacy VS Code standard-library install location
+7. **embedded** standard library (materialized from the binary on first use)
 
-The canonical CLI workflow is:
+Typical workflow:
 
 ```bash
-spec42 stdlib install
 spec42 doctor
 spec42 check ./models/timer/KitchenTimer.sysml
 ```
@@ -84,9 +83,8 @@ Useful commands:
 
 ```bash
 spec42 stdlib status
-spec42 stdlib install
 spec42 stdlib path
-spec42 stdlib remove
+spec42 stdlib clear-cache
 ```
 
 ### Doctor
@@ -96,8 +94,8 @@ spec42 stdlib remove
 - current binary version
 - config file in use
 - config/data directories
-- resolved standard-library path and source
-- whether the source is the canonical managed install or a compatibility fallback
+- resolved standard-library path and source (including **bundled** when materialized from the embedded copy)
+- whether the source is the canonical on-disk install or a compatibility fallback
 - whether legacy VS Code fallback was used
 - resolved library paths and whether each one exists
 
@@ -128,4 +126,4 @@ For development details, see [DEVELOPMENT.md](DEVELOPMENT.md). For troubleshooti
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE). The embedded SysML standard library is subject to separate licensing; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

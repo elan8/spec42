@@ -1510,8 +1510,7 @@ fn missing_library_context_offers_quick_fixes_for_stdlib_and_custom_libraries() 
         .to_string(),
     );
 
-    let mut found_install = false;
-    let mut found_manage = false;
+    let mut found_configure = false;
     loop {
         let msg = read_message(&mut stdout).expect("expected codeAction response");
         let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
@@ -1520,26 +1519,17 @@ fn missing_library_context_offers_quick_fixes_for_stdlib_and_custom_libraries() 
         }
         let actions = json["result"].as_array().cloned().unwrap_or_default();
         for action in actions {
-            if action["title"].as_str() == Some("Install or Update Standard Library")
-                && action["command"]["command"].as_str() == Some("sysml.library.installStdLib")
-            {
-                found_install = true;
-            }
-            if action["title"].as_str() == Some("Manage Custom Libraries")
+            if action["title"].as_str() == Some("Configure SysML library paths")
                 && action["command"]["command"].as_str() == Some("sysml.library.managePaths")
             {
-                found_manage = true;
+                found_configure = true;
             }
         }
         break;
     }
 
     assert!(
-        found_install,
-        "expected quickfix that runs sysml.library.installStdLib"
-    );
-    assert!(
-        found_manage,
+        found_configure,
         "expected quickfix that runs sysml.library.managePaths"
     );
 

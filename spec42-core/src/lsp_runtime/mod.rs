@@ -65,7 +65,7 @@ impl LanguageServer for Backend {
     }
 
     async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
-        documents::did_change_configuration(&self.client, &self.state, params).await;
+        documents::did_change_configuration(&self.client, &self.state, &self.config, params).await;
     }
 
     async fn hover(&self, params: HoverParams) -> Result<Option<Hover>> {

@@ -171,7 +171,7 @@ fn build_advice(documents: &[ValidatedDocument], no_library_paths: bool) -> Vec<
     });
     if has_missing_library_context || has_unresolved_type_reference {
         vec![
-            "Install the managed SysML standard library with `spec42 stdlib install`, or pass `--stdlib-path`/`--library-path` explicitly."
+            "Configure SysML library roots: ensure the standard library is available (bundled materialization, or pass `--stdlib-path` / `SPEC42_STDLIB_PATH` / `--library-path` explicitly)."
                 .to_string(),
         ]
     } else {
@@ -389,7 +389,7 @@ package KitchenTimer {
     }
 
     #[test]
-    fn validate_paths_suggests_stdlib_install_when_imported_types_are_unresolved() {
+    fn validate_paths_suggests_library_advice_when_imported_types_are_unresolved() {
         let temp = tempfile::tempdir().expect("temp dir");
         let model_path = write_timer_fixture(&temp);
         let config = Arc::new(crate::default_server_config());
@@ -428,7 +428,7 @@ package KitchenTimer {
             "expected unresolved DurationValue diagnostic: {unresolved:#?}"
         );
         assert_eq!(report.advice.len(), 1);
-        assert!(report.advice[0].contains("spec42 stdlib install"));
+        assert!(report.advice[0].contains("library roots"));
     }
 
     #[test]

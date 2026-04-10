@@ -338,31 +338,14 @@ pub fn suggest_create_matching_part_def_quick_fix(
     })
 }
 
-pub fn suggest_install_stdlib_quick_fix(diagnostic: &Diagnostic) -> CodeAction {
-    CodeAction {
-        title: "Install or Update Standard Library".to_string(),
-        kind: Some(CodeActionKind::QUICKFIX),
-        diagnostics: Some(vec![diagnostic.clone()]),
-        edit: None,
-        command: Some(Command {
-            title: "Install or Update Standard Library".to_string(),
-            command: "sysml.library.installStdLib".to_string(),
-            arguments: None,
-        }),
-        is_preferred: Some(true),
-        disabled: None,
-        data: None,
-    }
-}
-
 pub fn suggest_manage_custom_libraries_quick_fix(diagnostic: &Diagnostic) -> CodeAction {
     CodeAction {
-        title: "Manage Custom Libraries".to_string(),
+        title: "Configure SysML library paths".to_string(),
         kind: Some(CodeActionKind::QUICKFIX),
         diagnostics: Some(vec![diagnostic.clone()]),
         edit: None,
         command: Some(Command {
-            title: "Manage Custom Libraries".to_string(),
+            title: "Configure SysML library paths".to_string(),
             command: "sysml.library.managePaths".to_string(),
             arguments: None,
         }),
