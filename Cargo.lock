@@ -1268,7 +1268,7 @@ dependencies = [
  "petgraph",
  "serde",
  "serde_json",
- "sysml-parser",
+ "sysml-v2-parser",
  "tower-lsp",
 ]
 
@@ -1415,7 +1415,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "spec42-core",
- "sysml-parser",
+ "sysml-v2-parser",
  "tempfile",
  "tokio",
  "toml",
@@ -1434,7 +1434,7 @@ dependencies = [
  "semantic-model",
  "serde",
  "serde_json",
- "sysml-parser",
+ "sysml-v2-parser",
  "tempfile",
  "thiserror 2.0.18",
  "tokio",
@@ -1486,8 +1486,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "sysml-parser"
-version = "0.1.0"
+name = "sysml-v2-parser"
+version = "0.3.0"
 dependencies = [
  "log",
  "nom",
