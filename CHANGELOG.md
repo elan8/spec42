@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-04-10
+
+### Added
+
+- **Bundled SysML standard library** - The official `sysml.library` tree from the SysML v2 Release is repacked at build time, embedded in the `spec42` binary, and materialized into the spec42 data directory when needed (metadata records `repo: "embedded"`).
+- **Default library paths in LSP** - `Spec42Config` carries default library search paths from the resolved environment; the server merges host defaults with paths from `initialize` / `didChangeConfiguration` so clients can extend discovery without replacing host layout.
+- **`spec42 stdlib` CLI** - Subcommands to show status, print the resolved path, and `clear-cache` to remove materialized standard-library files (re-created from the embedded copy on next use). Legacy `stdlib install` / remove flows were removed in favor of the bundled workflow.
+- **Import scope checks** - The semantic model applies import-scope rules so diagnostics and analysis respect SysML v2 import visibility beyond earlier membership/import resolution.
+
+### Changed
+
+- **Standard library resolution order** - After explicit flags, env, config, and a valid managed install under the data directory, resolution prefers **materializing the embedded archive** before falling back to the legacy VS Code `globalStorage` path, so upgrades pick the bundled release without manual cleanup.
+- **VS Code Library view** - The extension no longer downloads or manages the standard library from the UI; the Library view shows the bundled release inline and defers materialization to the server.
+- **`sysml-v2-parser` upgrade** - Bumped the parser dependency and adjusted semantic graph, token range, and graph-builder paths (including state machines, part definitions/usages, requirement bodies, package bodies) for compatibility with newer AST shapes and Apollo-oriented parsing behavior.
+- **Document symbols** - Normalized document symbol extraction in the semantic layer for more consistent outlines and navigation.
+- **Semantic graph and import resolution** - Expanded import-resolution and relationship handling (including cross-document typing tests) and refreshed validation/diagnostics integration.
+
 ## [0.17.0] - 2026-04-09
 
 ### Added
@@ -255,6 +272,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.18.0]: https://github.com/elan8/spec42/releases/tag/v0.18.0
+[0.17.0]: https://github.com/elan8/spec42/releases/tag/v0.17.0
 [0.15.1]: https://github.com/elan8/spec42/releases/tag/v0.15.1
 [0.11.0]: https://github.com/elan8/spec42/releases/tag/v0.11.0
 [0.15.0]: https://github.com/elan8/spec42/releases/tag/v0.15.0
