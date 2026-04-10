@@ -10,7 +10,9 @@ use tower_lsp::lsp_types::Url;
 use crate::ast_util::span_to_range;
 use crate::graph::SemanticGraph;
 use crate::model::{NodeId, RelationshipKind};
-use crate::relationships::add_typing_edge_if_exists;
+use crate::relationships::{
+    add_edge_if_both_exist, add_typing_edge_if_exists, normalize_for_lookup,
+};
 
 use super::expressions;
 use super::{add_node_and_recurse, qualified_name_for_node};
@@ -88,6 +90,57 @@ fn add_connect_stmt(
     );
 }
 
+fn maybe_add_derivation_edge(g: &mut SemanticGraph, uri: &Url, parent_id: &NodeId) {
+    let Some(parent) = g.get_node(parent_id) else {
+        return;
+    };
+    if parent
+        .attributes
+        .get("connectionAnnotation")
+        .and_then(|value| value.as_str())
+        != Some("derivation")
+    {
+        return;
+    }
+    let Some(original_target) = g
+        .child_named(parent_id, "#original")
+        .into_iter()
+        .next()
+        .and_then(|node| node.attributes.get("endType"))
+        .and_then(|value| value.as_str())
+    else {
+        return;
+    };
+    let Some(derived_target) = g
+        .child_named(parent_id, "#derive")
+        .into_iter()
+        .next()
+        .and_then(|node| node.attributes.get("endType"))
+        .and_then(|value| value.as_str())
+    else {
+        return;
+    };
+    let original_target = normalize_for_lookup(original_target);
+    let derived_target = normalize_for_lookup(derived_target);
+    let _ = add_edge_if_both_exist(
+        g,
+        uri,
+        &original_target,
+        &derived_target,
+        RelationshipKind::Derivation,
+    );
+    if let Some(parent) = g.get_node_mut(parent_id) {
+        parent.attributes.insert(
+            "derivationOriginal".to_string(),
+            serde_json::json!(original_target),
+        );
+        parent.attributes.insert(
+            "derivationDerived".to_string(),
+            serde_json::json!(derived_target),
+        );
+    }
+}
+
 pub(super) fn build_from_interface_def_body_element(
     node: &sysml_v2_parser::Node<InterfaceDefBodyElement>,
     uri: &Url,
@@ -113,7 +166,10 @@ pub(super) fn build_from_connection_def_body_element(
 ) {
     use sysml_v2_parser::ast::ConnectionDefBodyElement as E;
     match &node.value {
-        E::EndDecl(w) => add_end_decl(g, uri, container_prefix, parent_id, w),
+        E::EndDecl(w) => {
+            add_end_decl(g, uri, container_prefix, parent_id, w);
+            maybe_add_derivation_edge(g, uri, parent_id);
+        }
         E::RefDecl(w) => add_ref_decl(g, uri, container_prefix, parent_id, w),
         E::ConnectStmt(w) => add_connect_stmt(g, uri, container_prefix, w),
     }

@@ -13,6 +13,7 @@ use crate::graph::SemanticGraph;
 use crate::model::{NodeId, RelationshipKind};
 use crate::relationships::{
     add_edge_if_both_exist, add_specializes_edge_if_exists, add_typing_edge_if_exists,
+    normalize_for_lookup,
 };
 
 use super::expressions;
@@ -843,21 +844,37 @@ pub(super) fn build_from_package_body_element(
         }
         PBE::ConnectionDef(conn_node) => {
             let name = identification_name(&conn_node.identification);
+            let annotation = conn_node.annotation.as_deref();
             let base_name = if name.is_empty() {
-                "_connectionDef"
+                if annotation == Some("derivation") {
+                    "_derivationConnection"
+                } else {
+                    "_connectionDef"
+                }
             } else {
                 name.as_str()
             };
+            let mut attrs = HashMap::new();
+            if let Some(annotation) = annotation {
+                attrs.insert(
+                    "connectionAnnotation".to_string(),
+                    serde_json::json!(annotation),
+                );
+            }
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, base_name, "connection def");
             add_node_and_recurse(
                 g,
                 uri,
                 &qualified,
-                "connection def",
+                if annotation == Some("derivation") {
+                    "derivation connection"
+                } else {
+                    "connection def"
+                },
                 base_name.to_string(),
                 span_to_range(&conn_node.span),
-                HashMap::new(),
+                attrs,
                 parent_id,
             );
             let node_id = NodeId::new(uri, &qualified);
@@ -870,6 +887,47 @@ pub(super) fn build_from_package_body_element(
                         &node_id,
                         g,
                     );
+                }
+                if annotation == Some("derivation") {
+                    let original_end = g.child_named(&node_id, "#original").into_iter().next();
+                    let derived_end = g.child_named(&node_id, "#derive").into_iter().next();
+                    let original_target = original_end.and_then(|node| {
+                        g.outgoing_targets_by_kind(node, RelationshipKind::Typing)
+                            .into_iter()
+                            .next()
+                            .map(|target| target.id.clone())
+                    });
+                    let derived_target = derived_end.and_then(|node| {
+                        g.outgoing_targets_by_kind(node, RelationshipKind::Typing)
+                            .into_iter()
+                            .next()
+                            .map(|target| target.id.clone())
+                    });
+                    if let (Some(original_target), Some(derived_target)) =
+                        (original_target, derived_target)
+                    {
+                        if let (Some(&src_idx), Some(&tgt_idx)) = (
+                            g.node_index_by_id.get(&original_target),
+                            g.node_index_by_id.get(&derived_target),
+                        ) {
+                            g.graph
+                                .add_edge(src_idx, tgt_idx, RelationshipKind::Derivation);
+                        }
+                        if let Some(connection) = g.get_node_mut(&node_id) {
+                            connection.attributes.insert(
+                                "derivationOriginal".to_string(),
+                                serde_json::json!(normalize_for_lookup(
+                                    &original_target.qualified_name
+                                )),
+                            );
+                            connection.attributes.insert(
+                                "derivationDerived".to_string(),
+                                serde_json::json!(normalize_for_lookup(
+                                    &derived_target.qualified_name
+                                )),
+                            );
+                        }
+                    }
                 }
             }
         }

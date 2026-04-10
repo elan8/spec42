@@ -104,8 +104,7 @@ pub fn save_managed_metadata(
     paths: &StandardLibraryPaths,
     metadata: &StandardLibraryMetadata,
 ) -> Result<(), String> {
-    fs::create_dir_all(&paths.managed_root)
-        .map_err(|err| format!("Failed to create {}: {err}", paths.managed_root.display()))?;
+    ensure_directory_path(&paths.managed_root, "Managed standard-library root")?;
     let raw = toml::to_string(metadata)
         .map_err(|err| format!("Failed to serialize standard library metadata: {err}"))?;
     let temp_path = paths.metadata_path.with_extension("toml.tmp");
@@ -118,6 +117,16 @@ pub fn save_managed_metadata(
             paths.metadata_path.display()
         )
     })
+}
+
+fn ensure_directory_path(path: &Path, role: &str) -> Result<(), String> {
+    if path.exists() && !path.is_dir() {
+        return Err(format!(
+            "{role} path {} exists as a file; expected a directory.",
+            path.display()
+        ));
+    }
+    fs::create_dir_all(path).map_err(|err| format!("Failed to create {}: {err}", path.display()))
 }
 
 pub fn remove_managed_metadata(paths: &StandardLibraryPaths) -> Result<(), String> {
@@ -182,13 +191,41 @@ pub fn install_standard_library_from_bytes(
         return Err("Standard library content path must not be empty.".to_string());
     }
 
-    fs::create_dir_all(&paths.managed_root)
-        .map_err(|err| format!("Failed to create {}: {err}", paths.managed_root.display()))?;
+    ensure_directory_path(&paths.managed_root, "Managed standard-library root")?;
 
     let install_path = managed_install_path(paths, config);
+    if install_path_is_ready(&install_path) {
+        let installed_at = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|duration| duration.as_secs().to_string())
+            .unwrap_or_else(|_| "0".to_string());
+        let metadata = StandardLibraryMetadata {
+            installed_version: config.version.clone(),
+            install_path: install_path.display().to_string(),
+            installed_at,
+            repo: config.repo.clone(),
+            content_path: normalized_content_path,
+        };
+        save_managed_metadata(paths, &metadata)?;
+        return Ok(metadata);
+    }
     let version_root = install_path
         .parent()
         .ok_or_else(|| "Managed install root is malformed.".to_string())?;
+    let managed_versions_root = paths.managed_root.join("versions");
+    if !version_root.starts_with(&managed_versions_root) {
+        return Err(format!(
+            "Refusing to replace {} because it is outside {}.",
+            version_root.display(),
+            managed_versions_root.display()
+        ));
+    }
+    if version_root.exists() && !version_root.is_dir() {
+        return Err(format!(
+            "Managed version path {} exists as a file; expected a directory.",
+            version_root.display()
+        ));
+    }
     let staging_root =
         paths
             .managed_root
@@ -199,24 +236,29 @@ pub fn install_standard_library_from_bytes(
     }
     let staging_version_root = staging_root.join(&config.version);
     let staging_install_path = staging_version_root.join(&normalized_content_path);
-    fs::create_dir_all(&staging_install_path)
-        .map_err(|err| format!("Failed to create {}: {err}", staging_install_path.display()))?;
+    ensure_directory_path(
+        &staging_install_path,
+        "Managed standard-library staging path",
+    )?;
     extract_archive_subset(
         archive_bytes,
         &normalized_content_path,
         &staging_install_path,
     )?;
     if version_root.exists() {
-        fs::remove_dir_all(version_root)
-            .map_err(|err| format!("Failed to replace {}: {err}", version_root.display()))?;
+        fs::remove_dir_all(version_root).map_err(|err| {
+            format!(
+                "Failed to replace corrupt managed stdlib directory {}: {err}",
+                version_root.display()
+            )
+        })?;
     }
     if let Some(parent) = version_root.parent() {
-        fs::create_dir_all(parent)
-            .map_err(|err| format!("Failed to create {}: {err}", parent.display()))?;
+        ensure_directory_path(parent, "Managed standard-library versions root")?;
     }
     fs::rename(&staging_version_root, version_root).map_err(|err| {
         format!(
-            "Failed to move {} into {}: {err}",
+            "Failed replacing managed stdlib version directory {} with {}: {err}",
             staging_version_root.display(),
             version_root.display()
         )
@@ -449,5 +491,57 @@ mod tests {
         assert!(status.is_installed);
         assert!(status.is_canonical_managed);
         assert_eq!(status.source.as_deref(), Some("managed"));
+    }
+
+    #[test]
+    fn install_from_bytes_is_idempotent_when_install_is_already_ready() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let paths = standard_library_paths_from_data_dir(temp.path().to_path_buf());
+        let archive_path = temp.path().join("archive.zip");
+        {
+            let file = fs::File::create(&archive_path).expect("create zip");
+            let mut zip = zip::ZipWriter::new(file);
+            let options = zip::write::SimpleFileOptions::default();
+            zip.start_file("release-2026-02/sysml.library/ScalarValues.sysml", options)
+                .expect("start file");
+            zip.write_all(b"standard library package ScalarValues { attribute def Real; }")
+                .expect("write file");
+            zip.finish().expect("finish zip");
+        }
+
+        let bytes = fs::read(&archive_path).expect("read archive");
+        let config = StandardLibraryConfig::default();
+        let first = install_standard_library_from_bytes(&paths, &config, &bytes).expect("install");
+        let second =
+            install_standard_library_from_bytes(&paths, &config, &bytes).expect("reinstall");
+
+        assert_eq!(first.install_path, second.install_path);
+        assert!(Path::new(&second.install_path).is_dir());
+        assert!(load_managed_metadata(&paths).expect("metadata").is_some());
+    }
+
+    #[test]
+    fn install_from_bytes_errors_when_managed_root_is_a_file() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let paths = standard_library_paths_from_data_dir(temp.path().to_path_buf());
+        fs::write(&paths.managed_root, "not a directory").expect("write blocking file");
+
+        let archive_path = temp.path().join("archive.zip");
+        {
+            let file = fs::File::create(&archive_path).expect("create zip");
+            let mut zip = zip::ZipWriter::new(file);
+            let options = zip::write::SimpleFileOptions::default();
+            zip.start_file("release-2026-02/sysml.library/ScalarValues.sysml", options)
+                .expect("start file");
+            zip.write_all(b"standard library package ScalarValues { attribute def Real; }")
+                .expect("write file");
+            zip.finish().expect("finish zip");
+        }
+
+        let bytes = fs::read(&archive_path).expect("read archive");
+        let err =
+            install_standard_library_from_bytes(&paths, &StandardLibraryConfig::default(), &bytes)
+                .expect_err("expected managed-root error");
+        assert!(err.contains("exists as a file"));
     }
 }

@@ -929,6 +929,44 @@ mod tests {
     }
 
     #[test]
+    fn derivation_connections_emit_original_to_derived_edges() {
+        let input = r#"
+            package P {
+                requirement def OriginalReq;
+                requirement def DerivedReq;
+                #derivation connection {
+                    end #original ::> OriginalReq;
+                    end #derive ::> DerivedReq;
+                }
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let g = build_graph_from_doc(&root, &uri);
+        let edges = g.edges_for_uri_as_strings(&uri);
+        assert!(
+            edges.iter().any(|(src, tgt, kind, _)| {
+                *kind == RelationshipKind::Derivation
+                    && src.ends_with("OriginalReq")
+                    && tgt.ends_with("DerivedReq")
+            }),
+            "expected derivation edge in semantic graph; edges: {:?}",
+            edges
+        );
+        assert!(
+            g.nodes_for_uri(&uri).iter().any(|node| {
+                node.element_kind == "derivation connection"
+                    && node
+                        .attributes
+                        .get("connectionAnnotation")
+                        .and_then(|value| value.as_str())
+                        == Some("derivation")
+            }),
+            "expected derivation connection node"
+        );
+    }
+
+    #[test]
     fn interface_def_body_adds_end_ref_and_connect_structure() {
         let input = r#"
             package P {
