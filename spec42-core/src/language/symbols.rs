@@ -326,7 +326,26 @@ pub fn collect_document_symbols(root: &RootNamespace) -> Vec<DocumentSymbol> {
             out.push(s);
         }
     }
+    normalize_document_symbols(&mut out);
     out
+}
+
+fn normalize_document_symbols(symbols: &mut [DocumentSymbol]) {
+    for symbol in symbols {
+        if symbol.name.trim().is_empty() {
+            let fallback = symbol
+                .detail
+                .as_deref()
+                .map(str::trim)
+                .filter(|value| !value.is_empty())
+                .map(|value| format!("(anonymous {value})"))
+                .unwrap_or_else(|| "(anonymous)".to_string());
+            symbol.name = fallback;
+        }
+        if let Some(children) = symbol.children.as_mut() {
+            normalize_document_symbols(children);
+        }
+    }
 }
 
 /// Collects folding ranges from the AST. This reuses the document-symbol outline ranges and
