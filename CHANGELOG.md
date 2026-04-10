@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.18.1] - 2026-04-10
+
+### Fixed
+
+- **General View workspace loading hang** - Fixed an infinite traversal in General View scene construction that could leave the visualizer stuck on "Parsing SysML model" for larger workspace visualizations such as `apollo-11-sysml-v2`.
+- **Workspace package visibility in VS Code visualizer** - Fixed workspace General View package selection so the visualizer uses workspace-scoped model metadata instead of collapsing back to the currently open file, restoring visibility of packages outside the active document.
+
 ## [0.18.0] - 2026-04-10
 
 ### Added
@@ -272,6 +279,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.18.1]: https://github.com/elan8/spec42/releases/tag/v0.18.1
 [0.18.0]: https://github.com/elan8/spec42/releases/tag/v0.18.0
 [0.17.0]: https://github.com/elan8/spec42/releases/tag/v0.17.0
 [0.15.1]: https://github.com/elan8/spec42/releases/tag/v0.15.1

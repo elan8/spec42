@@ -1,8 +1,10 @@
+import * as path from 'path';
 import * as vscode from 'vscode';
 import type { LspModelProvider } from '../providers/lspModelProvider';
 import { isVerboseLoggingEnabled, log, logError, logPerfEvent } from '../logger';
 import type {
     IbdDataDTO,
+    SysMLElementDTO,
     SysMLModelResult,
     SysMLDiagramResult,
     SysMLGraphDTO,
@@ -21,6 +23,7 @@ export interface FetchModelParams {
 export interface UpdateMessage {
     command: 'update';
     graph?: SysMLGraphDTO;
+    elements?: SysMLElementDTO[];
     generalViewGraph?: SysMLGraphDTO;
     diagramGeneral?: SysMLDiagramResult;
     diagramInterconnection?: SysMLDiagramResult;
@@ -91,6 +94,54 @@ type DiagramFetchResult = {
     interconnectionDiagram?: SysMLDiagramResult;
 };
 
+function getWorkspaceModelRequestUri(fileUris: vscode.Uri[], documentUri: string): string {
+    if (fileUris.length === 0) {
+        return documentUri;
+    }
+
+    const directoryPaths = fileUris
+        .map((uri) => uri.fsPath)
+        .filter((fsPath): fsPath is string => typeof fsPath === 'string' && fsPath.length > 0)
+        .map((fsPath) => path.dirname(path.resolve(fsPath)));
+
+    if (directoryPaths.length === 0) {
+        return fileUris[0].toString();
+    }
+
+    const roots = directoryPaths.map((dirPath) => path.parse(dirPath).root.toLowerCase());
+    if (new Set(roots).size !== 1) {
+        return fileUris[0].toString();
+    }
+
+    const segmentLists = directoryPaths.map((dirPath) =>
+        dirPath
+            .slice(path.parse(dirPath).root.length)
+            .split(path.sep)
+            .filter((segment) => segment.length > 0)
+    );
+
+    const commonSegments: string[] = [];
+    const shortestLength = Math.min(...segmentLists.map((segments) => segments.length));
+    for (let index = 0; index < shortestLength; index += 1) {
+        const candidate = segmentLists[0][index];
+        const matches = segmentLists.every((segments) =>
+            (process.platform === 'win32'
+                ? segments[index].toLowerCase() === candidate.toLowerCase()
+                : segments[index] === candidate)
+        );
+        if (!matches) {
+            break;
+        }
+        commonSegments.push(candidate);
+    }
+
+    const root = path.parse(directoryPaths[0]).root;
+    const commonDirectory = commonSegments.length > 0
+        ? path.join(root, ...commonSegments)
+        : root;
+    return vscode.Uri.file(commonDirectory).toString();
+}
+
 async function fetchDiagramsForCurrentView(
     lspModelProvider: LspModelProvider,
     documentUri: string,
@@ -139,13 +190,17 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     const requestScopes = isWorkspaceVisualization
         ? [...scopes, 'workspaceVisualization' as const]
         : scopes;
-    const requestUri = fileUris.length > 0
+    const diagramRequestUri = fileUris.length > 0
         ? fileUris[0].toString()
         : documentUri;
+    const modelRequestUri = isWorkspaceVisualization
+        ? getWorkspaceModelRequestUri(fileUris, documentUri)
+        : diagramRequestUri;
     log(
         'fetchModelData:start',
         `workspace=${isWorkspaceVisualization}`,
-        `uri=${requestUri}`,
+        `diagramUri=${diagramRequestUri}`,
+        `modelUri=${modelRequestUri}`,
         `scopes=${requestScopes.join(',')}`,
         `currentView=${currentView}`,
         `pendingPackage=${pendingPackageName ?? '(none)'}`,
@@ -157,7 +212,8 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
                 '[viz][fetchModelData:start]',
                 JSON.stringify({
                     workspace: isWorkspaceVisualization,
-                    uri: requestUri,
+                    diagramUri: diagramRequestUri,
+                    modelUri: modelRequestUri,
                     scopes: requestScopes,
                     currentView,
                     pendingPackage: pendingPackageName ?? null,
@@ -171,7 +227,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     const modelRequestsStartedAt = Date.now();
     const settledResults = await Promise.allSettled([
         lspModelProvider.getModel(
-            requestUri,
+            modelRequestUri,
             requestScopes,
             undefined,
             `visualizer.fetchModelData:${currentView}`
@@ -182,7 +238,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     const diagramFetchResult = await Promise.allSettled([
         fetchDiagramsForCurrentView(
             lspModelProvider,
-            documentUri,
+            diagramRequestUri,
             currentView,
             isWorkspaceVisualization,
         ),
@@ -244,6 +300,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
     const msg: UpdateMessage = {
         command: 'update',
         graph: mergedGraph,
+        elements: primaryResult.workspaceModel?.semantic,
         generalViewGraph: mergedGeneralViewGraph ?? primaryResult?.generalViewGraph,
         diagramGeneral: generalDiagram,
         diagramInterconnection: interconnectionDiagram,

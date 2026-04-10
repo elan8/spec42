@@ -1,4 +1,5 @@
 import * as assert from "assert";
+import * as vscode from "vscode";
 import { fetchModelData } from "../../visualization/modelFetcher";
 import type { SysMLDiagramResult, SysMLModelResult } from "../../providers/sysmlModelTypes";
 
@@ -137,5 +138,87 @@ describe("fetchModelData", () => {
 
     assert.deepStrictEqual(requestedScopes, [["graph", "ibd", "stats"]]);
     assert.deepStrictEqual(requestedDiagrams, ["interconnection-view"]);
+  });
+
+  it("uses a workspace anchor URI for workspace visualization model requests", async () => {
+    const requestedUris: string[] = [];
+    const provider = {
+      getModel: async (uri: string, _scopes?: string[]) => {
+        requestedUris.push(uri);
+        return createModelResult();
+      },
+      getDiagram: async (_uri: string, _kind: string) => createDiagramResult(),
+    } as any;
+
+    await fetchModelData({
+      documentUri: "file:///c%3A/Git/apollo-11-sysml-v2/Analysis/AnalysisPackage.sysml",
+      fileUris: [
+        vscode.Uri.file("C:/Git/apollo-11-sysml-v2/Analysis/AnalysisPackage.sysml"),
+        vscode.Uri.file("C:/Git/apollo-11-sysml-v2/Function/FunctionsPackage.sysml"),
+      ],
+      lspModelProvider: provider,
+      currentView: "general-view",
+    });
+
+    assert.deepStrictEqual(requestedUris, ["file:///c%3A/Git/apollo-11-sysml-v2"]);
+  });
+
+  it("includes workspace semantic roots in the update message when available", async () => {
+    const provider = {
+      getModel: async (_uri: string, _scopes?: string[]) => ({
+        ...createModelResult(),
+        workspaceModel: {
+          semantic: [
+            {
+              id: "AnalysisPackage",
+              type: "package",
+              name: "AnalysisPackage",
+              range: {
+                start: { line: 0, character: 0 },
+                end: { line: 1, character: 0 },
+              },
+              children: [],
+              attributes: {},
+              relationships: [],
+            },
+            {
+              id: "FunctionsPackage",
+              type: "package",
+              name: "FunctionsPackage",
+              range: {
+                start: { line: 0, character: 0 },
+                end: { line: 1, character: 0 },
+              },
+              children: [],
+              attributes: {},
+              relationships: [],
+            },
+          ],
+          files: [],
+          summary: {
+            scannedFiles: 2,
+            loadedFiles: 2,
+            failures: 0,
+            truncated: false,
+          },
+        },
+      }),
+      getDiagram: async (_uri: string, _kind: string) => createDiagramResult(),
+    } as any;
+
+    const result = await fetchModelData({
+      documentUri: "file:///c%3A/Git/apollo-11-sysml-v2/Analysis/AnalysisPackage.sysml",
+      fileUris: [
+        vscode.Uri.file("C:/Git/apollo-11-sysml-v2/Analysis/AnalysisPackage.sysml"),
+        vscode.Uri.file("C:/Git/apollo-11-sysml-v2/Function/FunctionsPackage.sysml"),
+      ],
+      lspModelProvider: provider,
+      currentView: "general-view",
+    });
+
+    assert.deepStrictEqual(
+      result?.elements?.map((element) => element.name),
+      ["AnalysisPackage", "FunctionsPackage"]
+    );
   });
 });

@@ -246,7 +246,7 @@ pub(crate) async fn sysml_diagram_result(
             ));
         }
     };
-    Ok(crate::build_sysml_diagram_response(
+    let response = crate::build_sysml_diagram_response(
         &entry.content,
         entry.parsed.as_ref(),
         &state.semantic_graph,
@@ -257,7 +257,8 @@ pub(crate) async fn sysml_diagram_result(
         build_start,
         client,
     )
-    .await)
+    .await;
+    Ok(response)
 }
 
 pub(crate) fn sysml_server_stats_result(

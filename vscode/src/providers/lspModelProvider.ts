@@ -513,7 +513,6 @@ export class LspModelProvider {
     options?: SysMLDiagramParams["options"],
     token?: vscode.CancellationToken
   ): Promise<SysMLDiagramResult> {
-    const startedAt = Date.now();
     const trimmed = (uri || "").trim();
     if (!trimmed) {
       throw new Error("getDiagram requires a non-empty URI");
@@ -524,16 +523,13 @@ export class LspModelProvider {
       kind,
       options,
     };
-    const result = await this.client.sendRequest<SysMLDiagramResult>("sysml/diagram", params, token);
-    logPerf("lspModelProvider:getDiagram", {
-      uri: trimmed,
-      kind,
-      workspaceVisualization: options?.workspaceVisualization === true,
-      totalMs: Date.now() - startedAt,
-      nodeCount: result.scene?.generalView?.nodes?.length ?? 0,
-      edgeCount: result.scene?.generalView?.edges?.length ?? 0,
-    });
-    return result;
+    try {
+      const result = await this.client.sendRequest<SysMLDiagramResult>("sysml/diagram", params, token);
+      return result;
+    } catch (error) {
+      logError("getDiagram failed", error);
+      throw error;
+    }
   }
 
   async getServerStats(): Promise<SysMLServerStats | undefined> {

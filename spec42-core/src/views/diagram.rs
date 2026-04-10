@@ -276,7 +276,8 @@ async fn build_general_source_graph(
         SysmlGraphDto { nodes, edges }
     };
     let stripped = model_projection::strip_synthetic_nodes(&raw_graph);
-    model_projection::canonical_general_view_graph(&stripped, workspace_viz)
+    let canonical = model_projection::canonical_general_view_graph(&stripped, workspace_viz);
+    canonical
 }
 
 fn build_general_scene(graph: &SysmlGraphDto) -> GeneralDiagramSceneDto {
@@ -333,11 +334,10 @@ fn build_general_scene(graph: &SysmlGraphDto) -> GeneralDiagramSceneDto {
             .unwrap_or_default()
         {
             let next_depth = depth + 1;
-            let entry = depth_by_id.entry(child.clone()).or_insert(next_depth);
-            if next_depth > *entry {
-                *entry = next_depth;
+            if !depth_by_id.contains_key(&child) {
+                depth_by_id.insert(child.clone(), next_depth);
+                queue.push_back(child);
             }
-            queue.push_back(child);
         }
     }
     for node in &graph.nodes {
