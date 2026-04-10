@@ -9,6 +9,7 @@ use crate::model::{NodeId, RelationshipKind};
 use crate::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
 use super::expressions;
+use super::requirement_body::walk_requirement_def_body;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
 pub(super) fn build_from_state_body(
@@ -168,6 +169,41 @@ pub(super) fn build_from_state_body(
                     Some(parent_id),
                 );
                 add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
+            }
+            SDBE::RequirementUsage(ru_node) => {
+                let name = &ru_node.name;
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, name, "requirement");
+                let range = span_to_range(&ru_node.span);
+                let mut attrs = HashMap::new();
+                if let Some(ref t) = ru_node.type_name {
+                    attrs.insert("requirementType".to_string(), serde_json::json!(t));
+                }
+                if let Some(ref subsets) = ru_node.subsets {
+                    attrs.insert("subsetsFeature".to_string(), serde_json::json!(subsets));
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "requirement",
+                    name.clone(),
+                    range,
+                    attrs,
+                    Some(parent_id),
+                );
+                if let Some(ref t) = ru_node.type_name {
+                    add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+                }
+                let node_id = NodeId::new(uri, &qualified);
+                walk_requirement_def_body(
+                    g,
+                    uri,
+                    container_prefix,
+                    &qualified,
+                    &node_id,
+                    &ru_node.body,
+                );
             }
             SDBE::Error(_) | SDBE::Doc(_) | SDBE::Annotation(_) | SDBE::Other(_) => {}
         }

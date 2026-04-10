@@ -14,6 +14,7 @@ const TYPE_DISAMBIGUATION_SUFFIX_KINDS: &[&str] = &[
     "requirement_def",
     "use_case_def",
     "attribute_def",
+    "enum_def",
     "item_def",
     "actor_def",
     "occurrence_def",
@@ -107,6 +108,33 @@ fn dedupe_node_ids(ids: Vec<NodeId>) -> Vec<NodeId> {
         }
     }
     out
+}
+
+fn unique_graph_wide_named_members(
+    graph: &SemanticGraph,
+    simple_name: &str,
+    allowed_kinds: &[&str],
+) -> Vec<NodeId> {
+    let matches: Vec<NodeId> = graph
+        .nodes_by_uri
+        .values()
+        .flatten()
+        .filter_map(|id| {
+            let node = graph.get_node(id)?;
+            (node.name == simple_name && element_kind_allowed(&node.element_kind, allowed_kinds))
+                .then(|| id.clone())
+        })
+        .collect();
+
+    let qualified_names: HashSet<String> = matches
+        .iter()
+        .map(|id| id.qualified_name.clone())
+        .collect();
+    if qualified_names.len() == 1 {
+        matches
+    } else {
+        Vec::new()
+    }
 }
 
 fn namespace_scope_chain(graph: &SemanticGraph, context_node: &SemanticNode) -> Vec<NodeId> {
@@ -460,6 +488,14 @@ pub fn resolve_type_reference_targets(
                 .collect();
             local_matches.sort_by_key(|id| id.qualified_name.len());
             out.extend(local_matches);
+        }
+
+        if out.is_empty() {
+            out.extend(unique_graph_wide_named_members(
+                graph,
+                &normalized_type_ref,
+                allowed_kinds,
+            ));
         }
     }
 

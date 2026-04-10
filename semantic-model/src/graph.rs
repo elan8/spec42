@@ -171,6 +171,20 @@ impl SemanticGraph {
             .collect()
     }
 
+    /// Returns all nodes in the merged graph whose simple name matches `name`.
+    pub fn nodes_named(&self, name: &str) -> Vec<&SemanticNode> {
+        self.nodes_by_uri
+            .values()
+            .flatten()
+            .filter_map(|id| {
+                self.node_index_by_id
+                    .get(id)
+                    .and_then(|&idx| self.graph.node_weight(idx))
+            })
+            .filter(|node| node.name == name)
+            .collect()
+    }
+
     /// Returns child nodes of the given node (by matching parent_id).
     pub fn children_of(&self, parent: &SemanticNode) -> Vec<&SemanticNode> {
         self.nodes_by_uri

@@ -176,11 +176,37 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
                 "requirement def",
                 "use case def",
                 "concern def",
+                "enum def",
+                "alias",
                 "kermlDecl",
             ],
         )
         .is_empty();
-        if has_resolved_type || resolved_via_import_scope {
+        let resolved_via_graph_name_fallback = graph.nodes_named(&normalized_type_ref).iter().any(
+            |candidate| {
+                matches!(
+                    candidate.element_kind.as_str(),
+                    "part def"
+                        | "port def"
+                        | "interface"
+                        | "item def"
+                        | "attribute def"
+                        | "action def"
+                        | "actor def"
+                        | "occurrence def"
+                        | "flow def"
+                        | "allocation def"
+                        | "state def"
+                        | "requirement def"
+                        | "use case def"
+                        | "concern def"
+                        | "enum def"
+                        | "alias"
+                        | "kermlDecl"
+                )
+            },
+        );
+        if has_resolved_type || resolved_via_import_scope || resolved_via_graph_name_fallback {
             continue;
         }
         let Some(range) = unresolved_type_diagnostic_range(node) else {
@@ -397,5 +423,102 @@ mod tests {
         assert!(multiplicity_issue_message("[0..1]").is_none());
         assert!(multiplicity_issue_message("[1..*]").is_none());
         assert!(multiplicity_issue_message("[3]").is_none());
+    }
+
+    #[test]
+    fn same_document_part_type_references_resolve_to_later_part_defs() {
+        let input = r#"
+            package ContextPackage {
+                part def LaunchSite {
+                    part vehicleAssemblyBuilding : VehicleAssemblyBuilding;
+                }
+
+                part def VehicleAssemblyBuilding;
+
+                part def Apollo11MissionContext {
+                    part vehicleAssemblyBuilding : VehicleAssemblyBuilding;
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///context.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diags = compute_semantic_diagnostics(&graph, &uri);
+        let unresolved: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "unresolved_type_reference".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            unresolved.is_empty(),
+            "expected later same-document part defs to resolve: {unresolved:#?}"
+        );
+    }
+
+    #[test]
+    fn imported_part_defs_resolve_for_part_usages() {
+        use crate::workspace::{
+            ingest_parsed_scan_entries, parse_scanned_entries, rebuild_all_document_links,
+            store_document_text, ServerState,
+        };
+
+        let temp = tempfile::tempdir().expect("temp dir");
+        let root = temp.path().canonicalize().expect("canonical root");
+        let root_uri = Url::from_file_path(&root).expect("root uri");
+        let components_uri =
+            Url::from_file_path(root.join("TechnicalComponentsPackage.sysml")).expect("components");
+        let system_uri =
+            Url::from_file_path(root.join("SystemPackage.sysml")).expect("system");
+
+        let mut state = ServerState::default();
+        state.workspace_roots = vec![root_uri.clone()];
+
+        store_document_text(
+            &mut state,
+            &components_uri,
+            "package TechnicalComponentsPackage { part def ApolloSpacecraft; part def ExtravehicularMobilityUnit; }".to_string(),
+        );
+        store_document_text(
+            &mut state,
+            &system_uri,
+            "package SystemPackage { private import TechnicalComponentsPackage::*; part def Apollo11MissionSystem { part spacecraft : ApolloSpacecraft; part spaceSuits[2] : ExtravehicularMobilityUnit; } }".to_string(),
+        );
+
+        let entries = parse_scanned_entries(
+            vec![
+                (
+                    components_uri.clone(),
+                    "package TechnicalComponentsPackage { part def ApolloSpacecraft; part def ExtravehicularMobilityUnit; }"
+                        .to_string(),
+                ),
+                (
+                    system_uri.clone(),
+                    "package SystemPackage { private import TechnicalComponentsPackage::*; part def Apollo11MissionSystem { part spacecraft : ApolloSpacecraft; part spaceSuits[2] : ExtravehicularMobilityUnit; } }"
+                        .to_string(),
+                ),
+            ],
+            false,
+        );
+        ingest_parsed_scan_entries(&mut state, entries);
+        rebuild_all_document_links(&mut state);
+
+        let diags = compute_semantic_diagnostics(&state.semantic_graph, &system_uri);
+        let unresolved: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "unresolved_type_reference".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            unresolved.is_empty(),
+            "expected imported part defs to resolve: {unresolved:#?}"
+        );
     }
 }
