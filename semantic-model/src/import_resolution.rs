@@ -152,6 +152,21 @@ fn namespace_scope_chain(graph: &SemanticGraph, context_node: &SemanticNode) -> 
     out
 }
 
+fn has_any_import_in_scope(graph: &SemanticGraph, context_node: &SemanticNode) -> bool {
+    for namespace_id in namespace_scope_chain(graph, context_node) {
+        if let Some(namespace) = graph.get_node(&namespace_id) {
+            if graph
+                .children_of(namespace)
+                .into_iter()
+                .any(|child| child.element_kind == "import")
+            {
+                return true;
+            }
+        }
+    }
+    false
+}
+
 fn namespace_node_ids_for_qualified_name(
     graph: &SemanticGraph,
     qualified_name: &str,
@@ -490,7 +505,7 @@ pub fn resolve_type_reference_targets(
             out.extend(local_matches);
         }
 
-        if out.is_empty() {
+        if out.is_empty() && !has_any_import_in_scope(graph, context_node) {
             out.extend(unique_graph_wide_named_members(
                 graph,
                 &normalized_type_ref,

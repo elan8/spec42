@@ -9,6 +9,24 @@ use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, Url};
 use crate::analysis::helpers::*;
 use crate::semantic_model::{NodeId, SemanticGraph};
 
+fn has_import_in_scope(graph: &SemanticGraph, node: &crate::semantic_model::SemanticNode) -> bool {
+    let mut current = Some(node.id.clone());
+    while let Some(node_id) = current {
+        let Some(scope_node) = graph.get_node(&node_id) else {
+            break;
+        };
+        if graph
+            .children_of(scope_node)
+            .into_iter()
+            .any(|child| child.element_kind == "import")
+        {
+            return true;
+        }
+        current = scope_node.parent_id.clone();
+    }
+    false
+}
+
 /// Returns LSP diagnostics for semantic rules in the given document.
 /// Only runs when the document has been parsed and merged into the graph.
 pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Diagnostic> {
@@ -206,7 +224,11 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
                 )
             },
         );
-        if has_resolved_type || resolved_via_import_scope || resolved_via_graph_name_fallback {
+        let allow_graph_name_fallback = !has_import_in_scope(graph, node);
+        if has_resolved_type
+            || resolved_via_import_scope
+            || (allow_graph_name_fallback && resolved_via_graph_name_fallback)
+        {
             continue;
         }
         let Some(range) = unresolved_type_diagnostic_range(node) else {
