@@ -581,9 +581,11 @@ export function activate(context: vscode.ExtensionContext): void {
       "warning"
     );
   }
+  const serverArgs = ["lsp"];
   logPerf("activate:serverCommandResolved", {
     totalMs: Date.now() - serverCommandResolutionStartedAt,
     serverCommand,
+    serverArgs,
     hasExplicitServerPath: !!serverPath,
     usingDevServer: serverCommand === devServerCommand,
   });
@@ -594,12 +596,11 @@ export function activate(context: vscode.ExtensionContext): void {
       "warning"
     );
   }
-
-  log("Server command:", serverCommand, "libraryPaths:", libraryPaths);
+  log("Server command:", serverCommand, "args:", serverArgs, "libraryPaths:", libraryPaths);
   // Also log to console so CI captures the resolved command.
   try {
     // eslint-disable-next-line no-console
-    console.log("[SysML] Server command:", serverCommand);
+    console.log("[SysML] Server command:", serverCommand, "args:", serverArgs);
   } catch {
     // ignore
   }
@@ -659,7 +660,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
   const serverOptions: ServerOptions = {
     command: serverCommand,
-    args: [],
+    args: serverArgs,
     transport: TransportKind.stdio,
   };
 

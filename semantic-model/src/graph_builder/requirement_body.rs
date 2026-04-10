@@ -203,6 +203,7 @@ pub(super) fn walk_requirement_def_body(
                 );
             }
             RequirementDefBodyElement::Doc(_)
+            | RequirementDefBodyElement::Annotation(_)
             | RequirementDefBodyElement::AttributeDef(_)
             | RequirementDefBodyElement::AttributeUsage(_)
             | RequirementDefBodyElement::Error(_)

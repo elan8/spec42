@@ -382,6 +382,7 @@ mod tests {
             library_paths: vec![PathBuf::from("C:/models/lib")],
             stdlib_path: None,
             no_stdlib: false,
+            stdio: false,
             command: None,
         };
         let paths =
@@ -396,6 +397,7 @@ mod tests {
             library_paths: Vec::new(),
             stdlib_path: None,
             no_stdlib: true,
+            stdio: false,
             command: None,
         };
         let resolution = resolve_stdlib_path(
@@ -446,6 +448,7 @@ mod tests {
             library_paths: Vec::new(),
             stdlib_path: None,
             no_stdlib: false,
+            stdio: false,
             command: None,
         };
         let environment =

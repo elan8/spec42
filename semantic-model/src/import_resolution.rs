@@ -19,6 +19,7 @@ const TYPE_DISAMBIGUATION_SUFFIX_KINDS: &[&str] = &[
     "occurrence_def",
     "interface",
     "concern_def",
+    "alias",
     "kermlDecl",
 ];
 
@@ -165,6 +166,22 @@ fn exact_named_members(graph: &SemanticGraph, qualified_name: &str) -> Vec<NodeI
                 .unwrap_or(false)
         })
         .cloned()
+        .collect()
+}
+
+fn allowed_exact_named_members(
+    graph: &SemanticGraph,
+    qualified_name: &str,
+    allowed_kinds: &[&str],
+) -> Vec<NodeId> {
+    exact_named_members(graph, qualified_name)
+        .into_iter()
+        .filter(|id| {
+            graph
+                .get_node(id)
+                .map(|node| element_kind_allowed(&node.element_kind, allowed_kinds))
+                .unwrap_or(false)
+        })
         .collect()
 }
 
@@ -382,6 +399,33 @@ pub fn resolve_type_reference_targets(
         }
     }
 
+    if let Some((namespace_qualified, simple_name)) = normalized_type_ref.rsplit_once("::") {
+        out.extend(allowed_exact_named_members(
+            graph,
+            &normalized_type_ref,
+            allowed_kinds,
+        ));
+        let mut stack = HashSet::new();
+        for namespace_id in namespace_node_ids_for_qualified_name(graph, namespace_qualified) {
+            out.extend(
+                exported_members_named_from_namespace(
+                    graph,
+                    &namespace_id,
+                    simple_name,
+                    true,
+                    &mut stack,
+                )
+                .into_iter()
+                .filter(|id| {
+                    graph
+                        .get_node(id)
+                        .map(|node| element_kind_allowed(&node.element_kind, allowed_kinds))
+                        .unwrap_or(false)
+                }),
+            );
+        }
+    }
+
     if !normalized_type_ref.contains("::") {
         for imported_target in
             resolve_imported_node_ids_for_simple_name(graph, context_node, &normalized_type_ref)
@@ -391,6 +435,31 @@ pub fn resolve_type_reference_targets(
                     out.push(imported_target);
                 }
             }
+        }
+
+        if let Some(context_uri_nodes) = graph.nodes_by_uri.get(&context_node.id.uri) {
+            let local_suffixes: Vec<String> = TYPE_DISAMBIGUATION_SUFFIX_KINDS
+                .iter()
+                .map(|suffix| format!("::{}#{}", normalized_type_ref, suffix))
+                .collect();
+            let mut local_matches: Vec<NodeId> = context_uri_nodes
+                .iter()
+                .filter(|node_id| {
+                    node_id.qualified_name == normalized_type_ref
+                        || node_id
+                            .qualified_name
+                            .ends_with(&format!("::{}", normalized_type_ref))
+                        || local_suffixes
+                            .iter()
+                            .any(|suffix| node_id.qualified_name.ends_with(suffix))
+                })
+                .filter_map(|node_id| {
+                    let node = graph.get_node(node_id)?;
+                    element_kind_allowed(&node.element_kind, allowed_kinds).then(|| node_id.clone())
+                })
+                .collect();
+            local_matches.sort_by_key(|id| id.qualified_name.len());
+            out.extend(local_matches);
         }
     }
 

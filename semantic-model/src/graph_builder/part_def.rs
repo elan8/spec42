@@ -11,6 +11,7 @@ use crate::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
 use super::expressions;
 use super::part_usage;
+use super::requirement_body::walk_requirement_def_body;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
 pub(super) fn build_from_part_def_body_element(
@@ -77,7 +78,9 @@ pub(super) fn build_from_part_def_body_element(
                 qualified_name_for_node(g, uri, container_prefix, &es.name, "exhibit state");
             let range = span_to_range(&es_node.span);
             let mut attrs = HashMap::new();
-            attrs.insert("stateType".to_string(), serde_json::json!(&es.type_name));
+            if let Some(ref state_type) = es.type_name {
+                attrs.insert("stateType".to_string(), serde_json::json!(state_type));
+            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -88,7 +91,9 @@ pub(super) fn build_from_part_def_body_element(
                 attrs,
                 Some(parent_id),
             );
-            add_typing_edge_if_exists(g, uri, &qualified, &es.type_name, container_prefix);
+            if let Some(ref state_type) = es.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, state_type, container_prefix);
+            }
         }
         PDBE::PortUsage(n) => {
             let name = &n.name;
@@ -174,6 +179,62 @@ pub(super) fn build_from_part_def_body_element(
                 g,
             );
         }
+        PDBE::OccurrenceUsage(occ_node) => {
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &occ_node.name, "occurrence");
+            let range = span_to_range(&occ_node.span);
+            let mut attrs = HashMap::new();
+            if let Some(ref t) = occ_node.type_name {
+                attrs.insert("occurrenceType".to_string(), serde_json::json!(t));
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "occurrence",
+                occ_node.name.clone(),
+                range,
+                attrs,
+                Some(parent_id),
+            );
+            if let Some(ref t) = occ_node.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
+        }
+        PDBE::RequirementUsage(ru_node) => {
+            let name = &ru_node.name;
+            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "requirement");
+            let range = span_to_range(&ru_node.span);
+            let mut attrs = HashMap::new();
+            if let Some(ref t) = ru_node.type_name {
+                attrs.insert("requirementType".to_string(), serde_json::json!(t));
+            }
+            if let Some(ref subsets) = ru_node.subsets {
+                attrs.insert("subsetsFeature".to_string(), serde_json::json!(subsets));
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "requirement",
+                name.clone(),
+                range,
+                attrs,
+                Some(parent_id),
+            );
+            if let Some(ref t) = ru_node.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
+            let node_id = NodeId::new(uri, &qualified);
+            walk_requirement_def_body(
+                g,
+                uri,
+                container_prefix,
+                &qualified,
+                &node_id,
+                &ru_node.body,
+            );
+        }
         PDBE::Connect(c) => {
             expressions::add_expression_edge_if_both_exist(
                 g,
@@ -229,6 +290,11 @@ pub(super) fn build_from_part_def_body_element(
             );
         }
         // Compatibility-only members introduced by newer parser versions are intentionally ignored.
-        PDBE::Error(_) | PDBE::Doc(_) | PDBE::Other(_) | PDBE::Ref(_) | PDBE::OpaqueMember(_) => {}
+        PDBE::Annotation(_)
+        | PDBE::Error(_)
+        | PDBE::Doc(_)
+        | PDBE::Other(_)
+        | PDBE::Ref(_)
+        | PDBE::OpaqueMember(_) => {}
     }
 }

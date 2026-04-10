@@ -26,6 +26,7 @@ const TYPING_TARGET_KINDS: &[&str] = &[
     "requirement def",
     "use case def",
     "concern def",
+    "alias",
     // KerML modeled declarations (`datatype`, `class`, â€¦) from `.kerml` / library sources.
     "kermlDecl",
 ];
@@ -49,6 +50,7 @@ const DISAMBIGUATION_SUFFIX_KINDS: &[&str] = &[
     "occurrence_def",
     "interface",
     "concern_def",
+    "alias",
     "kermlDecl",
 ];
 

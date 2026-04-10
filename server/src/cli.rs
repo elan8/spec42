@@ -13,6 +13,8 @@ pub struct Cli {
     pub stdlib_path: Option<PathBuf>,
     #[arg(long = "no-stdlib", global = true, default_value_t = false)]
     pub no_stdlib: bool,
+    #[arg(long = "stdio", global = true, hide = true, default_value_t = false)]
+    pub stdio: bool,
     #[command(subcommand)]
     pub command: Option<Command>,
 }
@@ -84,6 +86,13 @@ mod tests {
     #[test]
     fn bare_invocation_keeps_lsp_compatibility() {
         let cli = Cli::parse_from(["spec42"]);
+        assert!(cli.command.is_none());
+    }
+
+    #[test]
+    fn stdio_flag_parses_for_legacy_editor_compatibility() {
+        let cli = Cli::parse_from(["spec42", "--stdio"]);
+        assert!(cli.stdio);
         assert!(cli.command.is_none());
     }
 

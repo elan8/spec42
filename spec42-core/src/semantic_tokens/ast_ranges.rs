@@ -263,6 +263,7 @@ fn collect_semantic_ranges_action_usage_body_element(
         | AUBE::ActionUsage(_)
         | AUBE::Error(_)
         | AUBE::Doc(_)
+        | AUBE::Annotation(_)
         | AUBE::RefDecl(_)
         | AUBE::StateUsage(_)
         | AUBE::Assign(_)

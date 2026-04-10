@@ -296,7 +296,29 @@ pub(super) fn build_from_part_usage_body_element(
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
         }
-        PUBE::Error(_) | PUBE::Doc(_) => {}
+        PUBE::OccurrenceUsage(occ_node) => {
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &occ_node.name, "occurrence");
+            let range = span_to_range(&occ_node.span);
+            let mut attrs = HashMap::new();
+            if let Some(ref t) = occ_node.type_name {
+                attrs.insert("occurrenceType".to_string(), serde_json::json!(t));
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "occurrence",
+                occ_node.name.clone(),
+                range,
+                attrs,
+                Some(parent_id),
+            );
+            if let Some(ref t) = occ_node.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
+        }
+        PUBE::Annotation(_) | PUBE::Error(_) | PUBE::Doc(_) => {}
     }
 }
 

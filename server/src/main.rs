@@ -29,6 +29,9 @@ async fn main() -> ExitCode {
 }
 
 async fn run(cli: Cli) -> Result<ExitCode, String> {
+    if cli.stdio && cli.command.is_none() {
+        return run_lsp().await;
+    }
     match cli.command.as_ref() {
         None => run_lsp().await,
         Some(Command::Lsp) => run_lsp().await,

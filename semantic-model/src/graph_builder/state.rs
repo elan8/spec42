@@ -71,14 +71,14 @@ pub(super) fn build_from_state_body(
                 } else {
                     parent_id.qualified_name.clone()
                 };
-                let transition_name = if t.name.trim().is_empty() {
+                let transition_name = if t.name.as_deref().unwrap_or("").trim().is_empty() {
                     format!(
                         "transition_{}_to_{}",
                         src.rsplit("::").next().unwrap_or("source"),
                         tgt.rsplit("::").next().unwrap_or("target")
                     )
                 } else {
-                    t.name.clone()
+                    t.name.clone().unwrap_or_default()
                 };
                 let qualified = qualified_name_for_node(
                     g,
@@ -169,7 +169,7 @@ pub(super) fn build_from_state_body(
                 );
                 add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
             }
-            SDBE::Error(_) | SDBE::Doc(_) | SDBE::Other(_) => {}
+            SDBE::Error(_) | SDBE::Doc(_) | SDBE::Annotation(_) | SDBE::Other(_) => {}
         }
     }
 }
