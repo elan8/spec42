@@ -69,8 +69,8 @@ spec42 check ./models/workspace --format json
 3. an explicit `--config` file
 4. the default user config file
 5. materialized data from a previous run (including the embedded standard library)
-6. the legacy VS Code standard-library install location
-7. **embedded** standard library (materialized from the binary on first use)
+6. **embedded** standard library (materialized from the binary on first use)
+7. the legacy VS Code standard-library install location
 
 Typical workflow:
 

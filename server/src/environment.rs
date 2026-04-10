@@ -339,14 +339,8 @@ fn resolve_stdlib_path(
         }
     }
 
-    if let Some(path) = legacy_vscode_stdlib_path(standard_library) {
-        return Ok(StdlibResolution {
-            path: Some(path),
-            source: Some("legacy-vscode".to_string()),
-            used_legacy_vscode_fallback: true,
-        });
-    }
-
+    // Prefer materializing the embedded release into the spec42 data dir over the legacy
+    // VS Code extension install location, so resolution matches the bundled workflow.
     #[allow(clippy::const_is_empty)]
     if !EMBEDDED_STDLIB_ARCHIVE.is_empty() {
         return match install_embedded_standard_library(standard_library_paths, standard_library) {
@@ -359,6 +353,14 @@ fn resolve_stdlib_path(
                 "Failed to materialize embedded SysML standard library: {e}"
             )),
         };
+    }
+
+    if let Some(path) = legacy_vscode_stdlib_path(standard_library) {
+        return Ok(StdlibResolution {
+            path: Some(path),
+            source: Some("legacy-vscode".to_string()),
+            used_legacy_vscode_fallback: true,
+        });
     }
 
     Ok(StdlibResolution {
@@ -393,8 +395,16 @@ fn canonicalize_lossy(path: &Path) -> PathBuf {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Mutex;
+
     use super::*;
-    use crate::stdlib::{save_managed_metadata, standard_library_paths_from_data_dir};
+    use crate::stdlib::{
+        save_managed_metadata, standard_library_paths_from_data_dir, DEFAULT_STDLIB_CONTENT_PATH,
+        DEFAULT_STDLIB_VERSION,
+    };
+
+    /// Serializes tests that mutate `APPDATA` (global process environment).
+    static APPDATA_TEST_LOCK: Mutex<()> = Mutex::new(());
 
     #[test]
     fn explicit_library_paths_take_precedence() {
@@ -482,5 +492,65 @@ mod tests {
         let doctor = build_doctor_report("doctor", &environment).expect("doctor");
         assert_eq!(doctor.stdlib_source_kind, "canonical-managed");
         assert!(doctor.standard_library_status.is_canonical_managed);
+    }
+
+    /// When both an embedded archive and a legacy VS Code install exist, resolution must use the
+    /// bundled materialization first (not `legacy-vscode`).
+    #[cfg(feature = "embed-stdlib")]
+    #[test]
+    fn embedded_stdlib_precedes_legacy_vscode_path() {
+        let _guard = APPDATA_TEST_LOCK.lock().expect("env lock");
+
+        assert!(
+            !EMBEDDED_STDLIB_ARCHIVE.is_empty(),
+            "embedded stdlib archive must be non-empty for this test"
+        );
+
+        let temp = tempfile::tempdir().expect("temp dir");
+        let data_dir = temp.path().join("data");
+        std::fs::create_dir_all(&data_dir).expect("create data dir");
+
+        let fake_appdata = temp.path().join("Roaming");
+        std::fs::create_dir_all(
+            fake_appdata
+                .join("Code")
+                .join("User")
+                .join("globalStorage")
+                .join("elan8.spec42")
+                .join("standard-library")
+                .join(DEFAULT_STDLIB_VERSION)
+                .join(DEFAULT_STDLIB_CONTENT_PATH),
+        )
+        .expect("create legacy vscode path");
+
+        let old_appdata = std::env::var_os("APPDATA");
+        std::env::set_var("APPDATA", &fake_appdata);
+
+        let paths = standard_library_paths_from_data_dir(data_dir);
+        let cli = Cli {
+            config_path: None,
+            library_paths: Vec::new(),
+            stdlib_path: None,
+            no_stdlib: false,
+            stdio: false,
+            command: None,
+        };
+        let resolution = resolve_stdlib_path(
+            &cli,
+            &ConfigFile::default(),
+            &ConfigFile::default(),
+            &StandardLibraryConfig::default(),
+            &paths,
+        )
+        .expect("resolve stdlib");
+
+        match old_appdata {
+            Some(v) => std::env::set_var("APPDATA", v),
+            None => std::env::remove_var("APPDATA"),
+        }
+
+        assert_eq!(resolution.source.as_deref(), Some("bundled"));
+        assert!(!resolution.used_legacy_vscode_fallback);
+        assert!(resolution.path.is_some());
     }
 }

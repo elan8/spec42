@@ -63,8 +63,8 @@ What `spec42` tries, in order:
 3. explicit config file
 4. default user config
 5. materialized install under the spec42 data directory (including embedded **bundled**)
-6. legacy VS Code standard-library install location
-7. first-time materialization from the **embedded** standard library in the binary
+6. first-time materialization from the **embedded** standard library in the binary
+7. legacy VS Code standard-library install location
 
 What to do:
 
