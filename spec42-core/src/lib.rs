@@ -46,3 +46,9 @@ pub use {
     analysis::*,
     common::util::{merge_host_and_client_library_paths, parse_library_paths_from_value},
 };
+
+/// SysML v2 textual parser (`sysml-v2-parser`). Version is pinned in the Spec42 workspace;
+/// hosts should use this module instead of depending on `sysml-v2-parser` directly.
+pub mod sysml_v2 {
+    pub use ::sysml_v2_parser::*;
+}
