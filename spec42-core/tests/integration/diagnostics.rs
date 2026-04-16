@@ -1141,6 +1141,123 @@ fn unresolved_satisfy_reference_emits_semantic_diagnostic() {
 }
 
 #[test]
+fn compatible_different_port_def_connection_has_no_port_type_mismatch_diagnostic() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///compatible_ports_lsp.sysml";
+    let content = r#"
+        package P {
+            item def Water;
+
+            port def DeviceWaterInletPort {
+                in item water : Water;
+            }
+
+            port def WaterSpigotPort {
+                out item water : Water;
+            }
+
+            part def Dishwasher {
+                port waterInlet : DeviceWaterInletPort;
+            }
+
+            part def Kitchen {
+                port waterSpigot : WaterSpigotPort;
+            }
+
+            part def Home {
+                part dishwasher : Dishwasher;
+                part kitchen : Kitchen;
+                connect dishwasher.waterInlet to kitchen.waterSpigot;
+            }
+        }
+    "#;
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": null,
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+            }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(250));
+
+    let hover_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": hover_id,
+            "method": "textDocument/hover",
+            "params": {
+                "textDocument": { "uri": uri },
+                "position": { "line": 0, "character": 0 }
+            }
+        })
+        .to_string(),
+    );
+
+    let mut found_port_type_mismatch = false;
+    loop {
+        let msg =
+            read_message(&mut stdout).expect("expected message while waiting for hover response");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"]
+                .as_str()
+                .map(|published_uri| published_uri.eq_ignore_ascii_case(uri))
+                .unwrap_or(false)
+        {
+            let diagnostics = json["params"]["diagnostics"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+            found_port_type_mismatch = diagnostics.iter().any(|d| {
+                d["source"].as_str() == Some("semantic")
+                    && d["code"].as_str() == Some("port_type_mismatch")
+            });
+        }
+        if json["id"].as_i64() == Some(hover_id) {
+            break;
+        }
+    }
+
+    assert!(
+        !found_port_type_mismatch,
+        "feature-compatible port definitions should not emit port_type_mismatch diagnostics"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
 fn top_level_part_def_emits_illegal_top_level_definition_diagnostic() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");

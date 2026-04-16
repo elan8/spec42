@@ -89,7 +89,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
                 ));
             }
             if is_port_like(&src.element_kind) && is_port_like(&tgt.element_kind) {
-                if let Some(msg) = port_type_mismatch(src, tgt) {
+                if let Some(msg) = port_compatibility_mismatch(graph, src, tgt) {
                     diagnostics.push(diag(
                         connection_range,
                         DiagnosticSeverity::WARNING,
@@ -116,6 +116,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
             && node.element_kind == "port"
             && !is_synthetic(node)
             && is_declaration_port(graph, node)
+            && !node.attributes.contains_key("redefines")
+            && !node.attributes.contains_key("subsetsFeature")
             && port_anchor_key(node)
                 .as_ref()
                 .is_some_and(|key| !connected_port_keys.contains(key))
@@ -377,27 +379,38 @@ mod tests {
 
     #[test]
     fn port_type_mismatch_different_base() {
+        let graph = SemanticGraph::new();
         let src = node_with_port_type("~PowerPort");
         let tgt = node_with_port_type("~TelemetryPort");
-        let msg = port_type_mismatch(&src, &tgt);
+        let msg = port_compatibility_mismatch(&graph, &src, &tgt);
         assert!(msg.is_some());
         assert!(msg.unwrap().contains("do not match"));
     }
 
     #[test]
     fn port_type_compatible() {
+        let graph = SemanticGraph::new();
         let src = node_with_port_type("~PowerPort");
         let tgt = node_with_port_type("PowerPort");
-        assert!(port_type_mismatch(&src, &tgt).is_none());
+        assert!(port_compatibility_mismatch(&graph, &src, &tgt).is_none());
     }
 
     #[test]
     fn port_type_both_conjugated() {
+        let graph = SemanticGraph::new();
         let src = node_with_port_type("~PowerPort");
         let tgt = node_with_port_type("~PowerPort");
-        let msg = port_type_mismatch(&src, &tgt);
+        let msg = port_compatibility_mismatch(&graph, &src, &tgt);
         assert!(msg.is_some());
         assert!(msg.unwrap().contains("same conjugation"));
+    }
+
+    #[test]
+    fn port_type_plain_to_plain_is_compatible() {
+        let graph = SemanticGraph::new();
+        let src = node_with_port_type("PowerPort");
+        let tgt = node_with_port_type("PowerPort");
+        assert!(port_compatibility_mismatch(&graph, &src, &tgt).is_none());
     }
 
     fn node_with_port_type(port_type: &str) -> SemanticNode {
@@ -696,6 +709,178 @@ mod tests {
         assert!(
             endpoint_not_port.is_empty(),
             "redefined outlet should stay port-like for connection analysis: {endpoint_not_port:#?}"
+        );
+    }
+
+    #[test]
+    fn delegated_port_usage_does_not_emit_unconnected_port() {
+        let input = r#"
+            package House {
+                port def PowerOutletPort {}
+
+                part def ElectricGrid {
+                    port outlets[1..*] : PowerOutletPort;
+                }
+
+                part def Room {
+                    port outlet : PowerOutletPort;
+                }
+
+                part def Home {
+                    part electricGrid : ElectricGrid;
+                    part livingRoom : Room {
+                        attribute :>> outlet :> electricGrid.outlets;
+                    }
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///delegated_unconnected.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diags = compute_semantic_diagnostics(&graph, &uri);
+        let unconnected_outlet: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "unconnected_port".to_string(),
+                    ))
+                    && d.message.contains("outlet")
+            })
+            .collect();
+        assert!(
+            unconnected_outlet.is_empty(),
+            "delegated/redefined outlet should not be treated as dangling: {unconnected_outlet:#?}"
+        );
+    }
+
+    #[test]
+    fn concrete_unconnected_port_still_emits_diagnostic() {
+        let input = r#"
+            package P {
+                port def PowerPort {}
+                part def Device {
+                    port outlet : PowerPort;
+                }
+                part device1 : Device {
+                    port localOutlet : PowerPort;
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///concrete_unconnected.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diags = compute_semantic_diagnostics(&graph, &uri);
+        let unconnected_local_outlet: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "unconnected_port".to_string(),
+                    ))
+                    && d.message.contains("localOutlet")
+            })
+            .collect();
+        assert!(
+            !unconnected_local_outlet.is_empty(),
+            "concrete instance ports with no wiring should still report unconnected_port"
+        );
+    }
+
+    #[test]
+    fn compatible_different_port_defs_do_not_emit_port_type_mismatch() {
+        let input = r#"
+            package P {
+                item def Water;
+
+                port def DeviceWaterInletPort {
+                    in item water : Water;
+                }
+
+                port def WaterSpigotPort {
+                    out item water : Water;
+                }
+
+                part def Dishwasher {
+                    port waterInlet : DeviceWaterInletPort;
+                }
+
+                part def Kitchen {
+                    port waterSpigot : WaterSpigotPort;
+                }
+
+                part def Home {
+                    part dishwasher : Dishwasher;
+                    part kitchen : Kitchen;
+                    connect dishwasher.waterInlet to kitchen.waterSpigot;
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///compatible_ports.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diags = compute_semantic_diagnostics(&graph, &uri);
+        let mismatches: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "port_type_mismatch".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            mismatches.is_empty(),
+            "feature-compatible different port definitions should not mismatch: {mismatches:#?}"
+        );
+    }
+
+    #[test]
+    fn incompatible_port_features_emit_port_type_mismatch() {
+        let input = r#"
+            package P {
+                item def Water;
+                item def Air;
+
+                port def DeviceWaterInletPort {
+                    in item water : Water;
+                }
+
+                port def AirSpigotPort {
+                    out item air : Air;
+                }
+
+                part def Dishwasher {
+                    port waterInlet : DeviceWaterInletPort;
+                }
+
+                part def Kitchen {
+                    port airSpigot : AirSpigotPort;
+                }
+
+                part def Home {
+                    part dishwasher : Dishwasher;
+                    part kitchen : Kitchen;
+                    connect dishwasher.waterInlet to kitchen.airSpigot;
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///incompatible_ports.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diags = compute_semantic_diagnostics(&graph, &uri);
+        let mismatches: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "port_type_mismatch".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            !mismatches.is_empty(),
+            "incompatible port features should emit mismatch diagnostics"
         );
     }
 }

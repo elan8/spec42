@@ -130,12 +130,28 @@ pub(super) fn normalize_edge_pair(a: &NodeId, b: &NodeId) -> (NodeId, NodeId) {
     }
 }
 
-pub(super) fn port_type_mismatch(src: &SemanticNode, tgt: &SemanticNode) -> Option<String> {
+pub(super) fn port_compatibility_mismatch(
+    graph: &SemanticGraph,
+    src: &SemanticNode,
+    tgt: &SemanticNode,
+) -> Option<String> {
     let src_type = src.attributes.get("portType").and_then(|v| v.as_str())?;
     let tgt_type = tgt.attributes.get("portType").and_then(|v| v.as_str())?;
 
     let (src_base, src_conj) = parse_port_type(src_type);
     let (tgt_base, tgt_conj) = parse_port_type(tgt_type);
+
+    let src_features = effective_port_features(graph, src, src_conj);
+    let tgt_features = effective_port_features(graph, tgt, tgt_conj);
+    if !src_features.is_empty() && !tgt_features.is_empty() {
+        if ports_feature_compatible(&src_features, &tgt_features) {
+            return None;
+        }
+        return Some(format!(
+            "Port definitions '{}' and '{}' are not feature-compatible.",
+            src_type, tgt_type
+        ));
+    }
 
     if src_base != tgt_base {
         return Some(format!(
@@ -143,13 +159,114 @@ pub(super) fn port_type_mismatch(src: &SemanticNode, tgt: &SemanticNode) -> Opti
             src_type, tgt_type
         ));
     }
-    if src_conj == tgt_conj {
+    if src_conj && tgt_conj {
         return Some(format!(
             "Both ports have the same conjugation ({}). For a connection, one should be conjugated (~) and the other not.",
             src_type
         ));
     }
     None
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+struct PortFeature {
+    direction: FeatureDirection,
+    normalized_type: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+enum FeatureDirection {
+    In,
+    Out,
+    InOut,
+}
+
+fn effective_port_features(
+    graph: &SemanticGraph,
+    port: &SemanticNode,
+    conjugated: bool,
+) -> Vec<PortFeature> {
+    let mut features = Vec::new();
+    for typed in graph.outgoing_typing_or_specializes_targets(port) {
+        if typed.element_kind != "port def" {
+            continue;
+        }
+        for child in graph.children_of(typed) {
+            if child.element_kind != "in out parameter" {
+                continue;
+            }
+            let Some(direction) = child
+                .attributes
+                .get("direction")
+                .and_then(|v| v.as_str())
+                .and_then(parse_feature_direction)
+            else {
+                continue;
+            };
+            let Some(parameter_type) = child.attributes.get("parameterType").and_then(|v| v.as_str())
+            else {
+                continue;
+            };
+            let mut effective_direction = direction;
+            if conjugated {
+                effective_direction = conjugated_direction(effective_direction);
+            }
+            features.push(PortFeature {
+                direction: effective_direction,
+                normalized_type: normalize_declared_type_ref(parameter_type),
+            });
+        }
+    }
+    features.sort_by(|a, b| {
+        a.normalized_type
+            .cmp(&b.normalized_type)
+            .then_with(|| feature_direction_rank(a.direction).cmp(&feature_direction_rank(b.direction)))
+    });
+    features.dedup();
+    features
+}
+
+fn parse_feature_direction(raw: &str) -> Option<FeatureDirection> {
+    match raw {
+        "in" => Some(FeatureDirection::In),
+        "out" => Some(FeatureDirection::Out),
+        "inout" => Some(FeatureDirection::InOut),
+        _ => None,
+    }
+}
+
+fn conjugated_direction(direction: FeatureDirection) -> FeatureDirection {
+    match direction {
+        FeatureDirection::In => FeatureDirection::Out,
+        FeatureDirection::Out => FeatureDirection::In,
+        FeatureDirection::InOut => FeatureDirection::InOut,
+    }
+}
+
+fn ports_feature_compatible(src: &[PortFeature], tgt: &[PortFeature]) -> bool {
+    src.iter().all(|src_feature| {
+        tgt.iter().any(|tgt_feature| feature_pair_compatible(src_feature, tgt_feature))
+    }) && tgt.iter().all(|tgt_feature| {
+        src.iter().any(|src_feature| feature_pair_compatible(src_feature, tgt_feature))
+    })
+}
+
+fn feature_pair_compatible(src: &PortFeature, tgt: &PortFeature) -> bool {
+    src.normalized_type == tgt.normalized_type
+        && matches!(
+            (src.direction, tgt.direction),
+            (FeatureDirection::In, FeatureDirection::Out)
+                | (FeatureDirection::Out, FeatureDirection::In)
+                | (FeatureDirection::InOut, FeatureDirection::InOut)
+        )
+}
+
+fn feature_direction_rank(direction: FeatureDirection) -> u8 {
+    match direction {
+        FeatureDirection::In => 0,
+        FeatureDirection::Out => 1,
+        FeatureDirection::InOut => 2,
+    }
 }
 
 pub(super) fn parse_port_type(s: &str) -> (String, bool) {
