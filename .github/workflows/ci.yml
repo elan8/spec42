@@ -40,6 +40,8 @@ jobs:
   extension-tests:
     name: VS Code extension tests
     runs-on: ubuntu-latest
+    env:
+      VSCODE_TEST_VERSION: "1.85.0"
     steps:
       - uses: actions/checkout@v6
 
