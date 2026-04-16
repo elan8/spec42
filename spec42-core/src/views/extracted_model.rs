@@ -53,6 +53,11 @@ fn expr_to_string(n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>) -> Str
             )
         }
         Expression::UnaryOp { op, operand } => format!("({}{})", op, expr_to_string(operand)),
+        Expression::Tuple(items) => items
+            .iter()
+            .map(expr_to_string)
+            .collect::<Vec<_>>()
+            .join(", "),
         Expression::Null => String::new(),
     }
 }

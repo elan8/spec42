@@ -287,7 +287,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
             ));
             continue;
         }
-        if redefines_raw.trim() == node.name || redefines_raw.trim() == node.id.qualified_name {
+        if redefines_raw.trim() == node.id.qualified_name {
             diagnostics.push(diag(
                 diagnostic_range(graph, node, None),
                 DiagnosticSeverity::WARNING,
@@ -541,6 +541,39 @@ mod tests {
         assert!(
             unresolved.is_empty(),
             "expected imported part defs to resolve: {unresolved:#?}"
+        );
+    }
+
+    #[test]
+    fn same_name_redefines_usage_does_not_report_self_reference() {
+        let input = r#"
+            package Office {
+                part def Laptop {
+                    attribute name : String;
+                }
+                part office: Office {
+                    part laptop1: Laptop{
+                        attribute :>> name = "My Laptop";
+                    }
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///demo.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diags = compute_semantic_diagnostics(&graph, &uri);
+        let invalid_redefines: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "invalid_redefines_reference".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            invalid_redefines.is_empty(),
+            "same-name redefines usage should be allowed: {invalid_redefines:#?}"
         );
     }
 }
