@@ -304,19 +304,6 @@ fn collect_diagnostics_for_document(
         });
     }
     if result.errors.is_empty() {
-        for range in util::missing_semicolon_ranges(text) {
-            diagnostics.push(Diagnostic {
-                range,
-                severity: Some(DiagnosticSeverity::ERROR),
-                code: Some(NumberOrString::String("missing_semicolon".to_string())),
-                code_description: None,
-                source: Some("sysml".to_string()),
-                message: "Missing ';' at end of statement.".to_string(),
-                related_information: None,
-                tags: None,
-                data: None,
-            });
-        }
         for provider in &config.check_providers {
             diagnostics.extend(provider.compute_diagnostics(&state.semantic_graph, uri));
         }

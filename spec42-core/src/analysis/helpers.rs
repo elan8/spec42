@@ -41,7 +41,7 @@ pub(super) fn is_declaration_port(graph: &SemanticGraph, node: &SemanticNode) ->
     let Some(parent) = graph.get_node(parent_id) else {
         return false;
     };
-    parent.element_kind == "part def" || parent.element_kind == "part"
+    parent.element_kind == "part" && !is_synthetic(parent)
 }
 
 pub(super) fn is_synthetic(node: &SemanticNode) -> bool {

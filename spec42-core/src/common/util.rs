@@ -130,83 +130,6 @@ pub fn untyped_part_usage_diagnostics(content: &str) -> Vec<UntypedPartUsage> {
     out
 }
 
-/// Lightweight fallback syntax checks for cases where parser diagnostics are empty.
-/// Currently flags likely statement lines missing a trailing semicolon.
-pub fn missing_semicolon_ranges(content: &str) -> Vec<Range> {
-    const KEYWORDS_REQUIRING_SEMICOLON: &[&str] = &[
-        "part",
-        "port",
-        "attribute",
-        "item",
-        "import",
-        "alias",
-        "connection",
-        "bind",
-        "allocate",
-        "ref",
-    ];
-
-    let mut ranges = Vec::new();
-    for (line_idx, raw_line) in content.lines().enumerate() {
-        let code_only = strip_line_comment(raw_line);
-        let trimmed = code_only.trim();
-        if trimmed.is_empty() {
-            continue;
-        }
-        if trimmed.ends_with(';') || trimmed.ends_with('{') || trimmed.ends_with('}') {
-            continue;
-        }
-        let first = match trimmed.split_whitespace().next() {
-            Some(token) => token,
-            None => continue,
-        };
-        if !KEYWORDS_REQUIRING_SEMICOLON.contains(&first) {
-            continue;
-        }
-        if trimmed.starts_with("part def")
-            || trimmed.starts_with("port def")
-            || trimmed.starts_with("attribute def")
-            || trimmed.starts_with("item def")
-            || trimmed.starts_with("connection def")
-            || trimmed.starts_with("allocation def")
-        {
-            continue;
-        }
-
-        let start_char = utf16_len(raw_line) - utf16_len(raw_line.trim_start());
-        let end_char = utf16_len(raw_line);
-        ranges.push(Range {
-            start: tower_lsp::lsp_types::Position::new(line_idx as u32, start_char),
-            end: tower_lsp::lsp_types::Position::new(line_idx as u32, end_char),
-        });
-    }
-
-    ranges
-}
-
-fn strip_line_comment(line: &str) -> &str {
-    let bytes = line.as_bytes();
-    let mut idx = 0usize;
-    let mut in_string = false;
-    let mut escaped = false;
-    while idx + 1 < bytes.len() {
-        let ch = bytes[idx];
-        if escaped {
-            escaped = false;
-            idx += 1;
-            continue;
-        }
-        match ch {
-            b'\\' if in_string => escaped = true,
-            b'"' => in_string = !in_string,
-            b'/' if !in_string && bytes[idx + 1] == b'/' => return &line[..idx],
-            _ => {}
-        }
-        idx += 1;
-    }
-    line
-}
-
 pub fn import_statement_ranges(content: &str) -> Vec<Range> {
     let mut ranges = Vec::new();
     for (line_idx, raw_line) in content.lines().enumerate() {
@@ -358,10 +281,7 @@ pub fn symbol_hover_markdown(entry: &SymbolEntry, show_location: bool) -> String
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        apply_incremental_change, import_statement_ranges, missing_semicolon_ranges,
-        untyped_part_usage_diagnostics,
-    };
+    use super::{apply_incremental_change, import_statement_ranges, untyped_part_usage_diagnostics};
     use tower_lsp::lsp_types::{Position, Range};
 
     #[test]
@@ -379,28 +299,6 @@ mod tests {
         assert_eq!(ranges.len(), 1);
         assert_eq!(ranges[0].start.line, 1);
         assert_eq!(ranges[0].start.character, 2);
-    }
-
-    #[test]
-    fn missing_semicolon_ranges_detects_unterminated_part_usage() {
-        let text = "package test {\n  part def Laptop {\n    part motherboard\n  }\n}\n";
-        let ranges = missing_semicolon_ranges(text);
-        assert_eq!(ranges.len(), 1);
-        assert_eq!(ranges[0].start.line, 2);
-    }
-
-    #[test]
-    fn missing_semicolon_ranges_ignores_terminated_lines() {
-        let text = "package test {\n  part def Laptop {\n    part motherboard;\n  }\n}\n";
-        let ranges = missing_semicolon_ranges(text);
-        assert!(ranges.is_empty());
-    }
-
-    #[test]
-    fn missing_semicolon_ranges_ignores_url_like_strings() {
-        let text = "package test {\n  part def Repo {\n    attribute repositoryUrl = \"https://git.example.com/orders-service\";\n    attribute vaultUri = \"vault://orders/config\";\n  }\n}\n";
-        let ranges = missing_semicolon_ranges(text);
-        assert!(ranges.is_empty());
     }
 
     #[test]

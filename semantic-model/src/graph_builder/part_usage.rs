@@ -7,6 +7,7 @@ use tower_lsp::lsp_types::Url;
 use crate::ast_util::span_to_range;
 use crate::graph::SemanticGraph;
 use crate::model::{NodeId, RelationshipKind};
+use crate::reference_resolution::{resolve_member_via_type, ResolveResult};
 use crate::relationships::{
     add_edge_if_both_exist, add_typing_edge_if_exists, find_part_def_in_root, type_ref_candidates,
 };
@@ -26,7 +27,8 @@ pub(super) fn build_from_part_usage_body_element(
     match &node.value {
         PUBE::AttributeUsage(n) => {
             let name = &n.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute");
+            let kind = infer_attribute_usage_kind(g, parent_id, n.redefines.as_deref());
+            let qualified = qualified_name_for_node(g, uri, container_prefix, name, kind);
             let range = span_to_range(&n.span);
             let mut attrs = HashMap::new();
             if let Some(ref r) = n.redefines {
@@ -42,7 +44,7 @@ pub(super) fn build_from_part_usage_body_element(
                 g,
                 uri,
                 &qualified,
-                "attribute",
+                kind,
                 name.clone(),
                 range,
                 attrs,
@@ -319,6 +321,27 @@ pub(super) fn build_from_part_usage_body_element(
             }
         }
         PUBE::Annotation(_) | PUBE::Error(_) | PUBE::Doc(_) => {}
+    }
+}
+
+fn infer_attribute_usage_kind(
+    g: &SemanticGraph,
+    parent_id: &NodeId,
+    redefines: Option<&str>,
+) -> &'static str {
+    let Some(owner) = g.get_node(parent_id) else {
+        return "attribute";
+    };
+    let Some(redefined_name) = redefines.map(str::trim).filter(|candidate| !candidate.is_empty())
+    else {
+        return "attribute";
+    };
+    match resolve_member_via_type(g, owner, redefined_name) {
+        ResolveResult::Resolved(target_id) => g
+            .get_node(&target_id)
+            .map(|target| if target.element_kind == "port" { "port" } else { "attribute" })
+            .unwrap_or("attribute"),
+        ResolveResult::Ambiguous | ResolveResult::Unresolved => "attribute",
     }
 }
 

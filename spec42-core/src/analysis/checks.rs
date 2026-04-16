@@ -7,7 +7,7 @@ use std::collections::HashSet;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, Url};
 
 use crate::analysis::helpers::*;
-use crate::semantic_model::{NodeId, SemanticGraph};
+use crate::semantic_model::{resolve_expression_endpoint_strict, NodeId, ResolveResult, SemanticGraph};
 
 fn has_import_in_scope(graph: &SemanticGraph, node: &crate::semantic_model::SemanticNode) -> bool {
     let mut current = Some(node.id.clone());
@@ -48,6 +48,9 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
             .and_then(|v| v.as_str())
             .unwrap_or("semantic diagnostic")
             .to_string();
+        if should_suppress_builder_diagnostic(graph, uri, node, code, &message) {
+            continue;
+        }
         diagnostics.push(diag(
             diagnostic_range(graph, node, None),
             DiagnosticSeverity::WARNING,
@@ -299,6 +302,46 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
     }
 
     diagnostics
+}
+
+fn should_suppress_builder_diagnostic(
+    graph: &SemanticGraph,
+    uri: &Url,
+    node: &crate::semantic_model::SemanticNode,
+    code: &str,
+    message: &str,
+) -> bool {
+    if !matches!(code, "unresolved_satisfy_source" | "unresolved_satisfy_target") {
+        return false;
+    }
+    let Some(reference_name) = extract_single_quoted_value(message) else {
+        return false;
+    };
+    if matches!(
+        resolve_expression_endpoint_strict(graph, uri, Some(diagnostic_container_prefix(node)), &reference_name),
+        ResolveResult::Resolved(_)
+    ) {
+        return true;
+    }
+    matches!(
+        resolve_expression_endpoint_strict(graph, uri, None, &reference_name),
+        ResolveResult::Resolved(_)
+    )
+}
+
+fn extract_single_quoted_value(message: &str) -> Option<String> {
+    let start = message.find('\'')?;
+    let rest = &message[start + 1..];
+    let end = rest.find('\'')?;
+    Some(rest[..end].to_string())
+}
+
+fn diagnostic_container_prefix(node: &crate::semantic_model::SemanticNode) -> &str {
+    node.id
+        .qualified_name
+        .rsplit_once("::")
+        .map(|(prefix, _)| prefix)
+        .unwrap_or("")
 }
 
 /// Default semantic checks (port connectivity, type compatibility, unconnected ports, duplicate connections).
@@ -574,6 +617,85 @@ mod tests {
         assert!(
             invalid_redefines.is_empty(),
             "same-name redefines usage should be allowed: {invalid_redefines:#?}"
+        );
+    }
+
+    #[test]
+    fn forward_declared_satisfy_reference_does_not_emit_unresolved_diagnostic() {
+        let input = r#"
+            package P {
+                part def Drone;
+                part droneInstance : Drone;
+                satisfy EnduranceReq by droneInstance;
+
+                requirement def EnduranceReq {
+                    subject drone : Drone;
+                    require constraint { doc /* placeholder */ }
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///forward_satisfy.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diags = compute_semantic_diagnostics(&graph, &uri);
+        let unresolved_satisfy: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "unresolved_satisfy_source".to_string(),
+                    ))
+                    || d.code.as_ref()
+                        == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                            "unresolved_satisfy_target".to_string(),
+                        ))
+            })
+            .collect();
+        assert!(
+            unresolved_satisfy.is_empty(),
+            "forward-declared satisfy references should be resolved after full graph build: {unresolved_satisfy:#?}"
+        );
+    }
+
+    #[test]
+    fn redefined_port_usage_keeps_connection_endpoints_port_typed() {
+        let input = r#"
+            package House {
+                port def PowerOutletPort {}
+
+                part def ElectricGrid {
+                    port outlets[1..*] : PowerOutletPort;
+                }
+
+                part def Room {
+                    port outlet : PowerOutletPort;
+                }
+
+                part def Home {
+                    part electricGrid : ElectricGrid;
+                    part livingRoom : Room {
+                        attribute :>> outlet :> electricGrid.outlets;
+                        connect outlet to outlet;
+                    }
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///house_like.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diags = compute_semantic_diagnostics(&graph, &uri);
+        let endpoint_not_port: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "connection_endpoint_not_port".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            endpoint_not_port.is_empty(),
+            "redefined outlet should stay port-like for connection analysis: {endpoint_not_port:#?}"
         );
     }
 }

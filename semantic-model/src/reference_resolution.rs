@@ -40,6 +40,18 @@ pub fn resolve_expression_endpoint_strict(
             return ResolveResult::Resolved(node_id);
         }
     }
+    if let Some(prefix) = container_prefix {
+        if !expression.contains("::") && !expression.contains('.') {
+            let owner_id = NodeId::new(uri, prefix);
+            if let Some(owner) = g.get_node(&owner_id) {
+                if let ResolveResult::Resolved(member_id) =
+                    resolve_member_via_type(g, owner, expression)
+                {
+                    return ResolveResult::Resolved(member_id);
+                }
+            }
+        }
+    }
 
     let suffixes: Vec<String> = expression_forms
         .iter()
