@@ -8,6 +8,7 @@ const {
   resolveCliPathFromVSCodeExecutablePath,
   runTests,
 } = require("@vscode/test-electron");
+const vscodeTestVersion = process.env.VSCODE_TEST_VERSION || "1.85.0";
 
 function getArg(name) {
   const idx = process.argv.indexOf(name);
@@ -151,7 +152,7 @@ async function main() {
   const tempUserDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "spec42-vsix-user-"));
   writeSmokeTestHost(tempDir);
 
-  const vscodeExecutablePath = await downloadAndUnzipVSCode("stable");
+  const vscodeExecutablePath = await downloadAndUnzipVSCode(vscodeTestVersion);
   const cliPath = resolveCliPathFromVSCodeExecutablePath(vscodeExecutablePath);
 
   runCodeCli(cliPath, [
