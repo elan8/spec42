@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-04-16
+
+### Changed
+
+- **`sysml-v2-parser` upgrade and host alignment** - Updated Spec42 to the newer `sysml-v2-parser` releases through `0.4.0`, aligned semantic/expression handling with the newer AST shapes, and added a shared `spec42_core::sysml_v2` re-export so hosts can use the pinned parser surface consistently.
+- **Semantic graph and endpoint resolution** - Expanded semantic graph construction and member resolution around package bodies, interface definitions, part usages, and connection endpoint lookup so port-like members and local references resolve more reliably.
+
+### Fixed
+
+- **Port compatibility diagnostics** - Replaced raw port type-name comparison with SysML v2 style feature-compatibility checks, reducing false `port_type_mismatch` warnings when differently named ports are directionally and structurally compatible.
+- **Semantic diagnostic false positives** - Reduced noisy diagnostics around `redefines`, forward-resolvable `satisfy` references, delegated/redefined ports, and syntax-only missing-semicolon guesses so valid models are less likely to receive misleading warnings.
+
 ## [0.18.1] - 2026-04-10
 
 ### Fixed
@@ -280,6 +292,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Some constructs may have incomplete semantic token or outline coverage.
 
 [0.18.1]: https://github.com/elan8/spec42/releases/tag/v0.18.1
+[0.19.0]: https://github.com/elan8/spec42/releases/tag/v0.19.0
 [0.18.0]: https://github.com/elan8/spec42/releases/tag/v0.18.0
 [0.17.0]: https://github.com/elan8/spec42/releases/tag/v0.17.0
 [0.15.1]: https://github.com/elan8/spec42/releases/tag/v0.15.1
