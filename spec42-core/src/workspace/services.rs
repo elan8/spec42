@@ -455,6 +455,8 @@ pub(crate) fn clear_documents_under_roots(state: &mut ServerState, roots: &[Url]
 
 #[cfg(test)]
 mod tests {
+    use std::fs;
+
     use super::{
         apply_document_changes, rebuild_all_document_links, remove_document, store_document_text,
     };
@@ -479,6 +481,43 @@ mod tests {
             .into_iter()
             .find(|node| node.element_kind == "attribute" && node.name == name)
             .expect("attribute node")
+    }
+
+    fn register_units_library_document(state: &mut ServerState) -> Url {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let library_root = temp.path().canonicalize().expect("canonical library root");
+        let units_path = library_root
+            .join("sysml.library")
+            .join("Domain Libraries")
+            .join("Quantities and Units")
+            .join("FixtureUnits.sysml");
+        fs::create_dir_all(
+            units_path
+                .parent()
+                .expect("fixture units parent directory exists"),
+        )
+        .expect("create units fixture directory");
+        fs::write(
+            &units_path,
+            r#"
+            package Units {
+                attribute <m> 'metre' : LengthUnit;
+                attribute <cm> 'centimetre' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 1E-02; } }
+                attribute <ft> 'foot' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 3.048E-01; } }
+            }
+            "#,
+        )
+        .expect("write units fixture");
+        let units_uri = Url::from_file_path(&units_path).expect("units uri");
+        // Keep the temporary directory alive for the lifetime of the test process.
+        std::mem::forget(temp);
+        let warning = store_document_text(
+            state,
+            &units_uri,
+            "package UnitsFixture { attribute def Marker; }".to_string(),
+        );
+        assert!(warning.is_none());
+        units_uri
     }
 
     #[test]
@@ -724,6 +763,76 @@ mod tests {
         assert_eq!(
             mass.attributes.get("evaluatedValue"),
             Some(&serde_json::json!(25))
+        );
+    }
+
+    #[test]
+    fn store_document_text_evaluates_unit_conversions() {
+        let mut state = ServerState::default();
+        let _units_uri = register_units_library_document(&mut state);
+        let uri = fixture_uri();
+        let warning = store_document_text(
+            &mut state,
+            &uri,
+            "package Demo { part def Rocket { attribute distance = 1 [m] + 50 [cm] + 1 [ft]; } }"
+                .to_string(),
+        );
+        assert!(warning.is_none());
+
+        let distance = find_attribute_node(&state, &uri, "distance");
+        assert_eq!(
+            distance.attributes.get("evaluationStatus"),
+            Some(&serde_json::json!("ok")),
+            "distance attributes: {:#?}",
+            distance.attributes
+        );
+        assert_eq!(
+            distance.attributes.get("evaluatedUnit"),
+            Some(&serde_json::json!("m"))
+        );
+        let value = distance
+            .attributes
+            .get("evaluatedValue")
+            .and_then(serde_json::Value::as_f64)
+            .expect("evaluated numeric value");
+        assert!(
+            (value - 1.8048).abs() < 1e-9,
+            "expected 1.8048 m after conversion, got {value}"
+        );
+    }
+
+    #[test]
+    fn rebuild_all_document_links_recomputes_unit_conversions() {
+        let mut state = ServerState::default();
+        let _units_uri = register_units_library_document(&mut state);
+        let uri = fixture_uri();
+        store_document_text(
+            &mut state,
+            &uri,
+            "package Demo { part def Rocket { attribute distance = 1 [m] + 1 [ft]; } }".to_string(),
+        );
+
+        rebuild_all_document_links(&mut state);
+
+        let distance = find_attribute_node(&state, &uri, "distance");
+        assert_eq!(
+            distance.attributes.get("evaluationStatus"),
+            Some(&serde_json::json!("ok")),
+            "distance attributes after rebuild: {:#?}",
+            distance.attributes
+        );
+        assert_eq!(
+            distance.attributes.get("evaluatedUnit"),
+            Some(&serde_json::json!("m"))
+        );
+        let value = distance
+            .attributes
+            .get("evaluatedValue")
+            .and_then(serde_json::Value::as_f64)
+            .expect("evaluated numeric value");
+        assert!(
+            (value - 1.3048).abs() < 1e-9,
+            "expected 1.3048 m after rebuild conversion, got {value}"
         );
     }
 }

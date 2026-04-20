@@ -197,7 +197,8 @@ impl<'a> EvalEngine<'a> {
     }
 
     fn evaluate_expression_text(&mut self, node_id: &NodeId, raw: &str) -> EvalOutcome {
-        let text = raw.trim();
+        let normalized = normalize_unit_brackets(raw.trim());
+        let text = normalized.as_str();
         if text.is_empty() {
             return EvalOutcome::error(EvalStatus::Unknown, "empty expression");
         }
@@ -704,6 +705,10 @@ fn trim_quotes(value: &str) -> String {
     out
 }
 
+fn normalize_unit_brackets(text: &str) -> String {
+    text.replace("[[", "[").replace("]]", "]")
+}
+
 #[cfg(test)]
 mod tests {
     use std::fs;
@@ -850,6 +855,31 @@ mod tests {
         assert_eq!(
             node_attr(&graph, &node, EVALUATED_VALUE_KEY),
             Some(&Value::Number(serde_json::Number::from_f64(1.5).expect("num")))
+        );
+    }
+
+    #[test]
+    fn evaluates_double_bracket_unit_syntax() {
+        let mut graph = SemanticGraph::new();
+        register_units_fixture(&mut graph);
+        let uri = Url::parse("file:///C:/workspace/unit-double-bracket.sysml").expect("uri");
+        let node = add_node(
+            &mut graph,
+            &uri,
+            "Demo::value",
+            "attribute",
+            "value",
+            None,
+            HashMap::from([("value".to_string(), Value::String("1 [[m]] + 50 [[cm]]".to_string()))]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &node, EVALUATION_STATUS_KEY),
+            Some(&Value::String(STATUS_OK.to_string()))
+        );
+        assert_eq!(
+            node_attr(&graph, &node, EVALUATED_UNIT_KEY),
+            Some(&Value::String("m".to_string()))
         );
     }
 

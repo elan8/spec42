@@ -175,7 +175,7 @@ pub(super) fn expression_to_debug_string(
             format!(
                 "{} [{}]",
                 expression_to_debug_string(value),
-                expression_to_debug_string(unit)
+                expression_to_unit_debug_string(unit)
             )
         }
         Expression::BinaryOp { op, left, right } => {
@@ -198,6 +198,18 @@ pub(super) fn expression_to_debug_string(
             format!("({rendered})")
         }
         Expression::Null => "()".to_string(),
+    }
+}
+
+fn expression_to_unit_debug_string(
+    n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
+) -> String {
+    use sysml_v2_parser::Expression;
+    match &n.value {
+        // Unit expressions are already bracket-delimited in source syntax,
+        // so unwrap here to avoid serializing as double brackets ("[[m]]").
+        Expression::Bracket(inner) => expression_to_unit_debug_string(inner),
+        _ => expression_to_debug_string(n),
     }
 }
 
@@ -319,6 +331,17 @@ mod expr_string_tests {
             right: Box::new(node(Expression::LiteralInteger(2))),
         });
         assert!(expression_to_debug_string(&e).contains('+'));
+    }
+
+    #[test]
+    fn debug_string_literal_with_unit_avoids_double_brackets() {
+        let e = node(Expression::LiteralWithUnit {
+            value: Box::new(node(Expression::LiteralInteger(1))),
+            unit: Box::new(node(Expression::Bracket(Box::new(node(Expression::FeatureRef(
+                "m".into(),
+            )))))),
+        });
+        assert_eq!(expression_to_debug_string(&e), "1 [m]");
     }
 }
 
