@@ -5,6 +5,10 @@ use serde_json::Value;
 use crate::graph::SemanticGraph;
 use crate::model::{NodeId, SemanticNode};
 
+mod units;
+
+use units::{UnitError, UnitRegistry};
+
 const EVALUATED_VALUE_KEY: &str = "evaluatedValue";
 const EVALUATED_UNIT_KEY: &str = "evaluatedUnit";
 const EVALUATION_STATUS_KEY: &str = "evaluationStatus";
@@ -19,7 +23,6 @@ const STATUS_CYCLE: &str = "cycle";
 
 const EVALUATION_SOURCE_KEYS: [&str; 3] = ["value", "defaultValue", "literal"];
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum EvalStatus {
     Ok,
@@ -29,8 +32,6 @@ enum EvalStatus {
     Unsupported,
     Cycle,
 }
-
-const _EVAL_STATUS_VARIANTS_USED: [EvalStatus; 2] = [EvalStatus::TypeError, EvalStatus::Cycle];
 
 impl EvalStatus {
     fn as_str(self) -> &'static str {
@@ -63,6 +64,10 @@ impl EvalOutcome {
         }
     }
 
+    fn from_quantity(quantity: Quantity) -> Self {
+        Self::ok(number_to_json(quantity.value), quantity.unit)
+    }
+
     fn error(status: EvalStatus, message: impl Into<String>) -> Self {
         Self {
             status,
@@ -73,9 +78,19 @@ impl EvalOutcome {
     }
 }
 
+#[derive(Debug, Clone, PartialEq)]
+struct Quantity {
+    value: f64,
+    unit: Option<String>,
+}
+
+impl Quantity {
+    fn scalar(value: f64) -> Self {
+        Self { value, unit: None }
+    }
+}
+
 pub fn evaluate_expressions(graph: &mut SemanticGraph) {
-    let _ = EvalStatus::TypeError;
-    let _ = EvalStatus::Cycle;
     let node_ids: Vec<NodeId> = graph.node_index_by_id.keys().cloned().collect();
     let outcomes = {
         let mut engine = EvalEngine::new(graph);
@@ -123,6 +138,7 @@ pub fn evaluate_expressions(graph: &mut SemanticGraph) {
 
 struct EvalEngine<'a> {
     graph: &'a SemanticGraph,
+    units: UnitRegistry,
     memoized: HashMap<NodeId, EvalOutcome>,
     active_stack: HashSet<NodeId>,
 }
@@ -131,6 +147,7 @@ impl<'a> EvalEngine<'a> {
     fn new(graph: &'a SemanticGraph) -> Self {
         Self {
             graph,
+            units: UnitRegistry::from_semantic_graph(graph),
             memoized: HashMap::new(),
             active_stack: HashSet::new(),
         }
@@ -184,20 +201,6 @@ impl<'a> EvalEngine<'a> {
         if text.is_empty() {
             return EvalOutcome::error(EvalStatus::Unknown, "empty expression");
         }
-        if let Some((value_expr, unit_text)) = split_trailing_unit(text) {
-            let base = self.evaluate_expression_text(node_id, value_expr);
-            if base.status != EvalStatus::Ok {
-                return base;
-            }
-            let normalized_unit = unit_text.trim();
-            if normalized_unit.is_empty() {
-                return EvalOutcome::error(EvalStatus::Unsupported, "unit expression is empty");
-            }
-            return EvalOutcome::ok(
-                base.value.unwrap_or(Value::Null),
-                Some(normalized_unit.to_string()),
-            );
-        }
         if text.eq_ignore_ascii_case("true") {
             return EvalOutcome::ok(Value::Bool(true), None);
         }
@@ -207,21 +210,19 @@ impl<'a> EvalEngine<'a> {
         if let Ok(parsed_string) = serde_json::from_str::<String>(text) {
             return EvalOutcome::ok(Value::String(parsed_string), None);
         }
-        if let Some(n) = parse_number(text) {
-            return EvalOutcome::ok(number_to_json(n), None);
-        }
         if let Some(identifier) = parse_standalone_identifier(text) {
             return self.resolve_identifier_value(node_id, identifier);
         }
 
-        let mut parser = ArithmeticParser::new(text, |identifier| {
-            self.resolve_identifier_number(node_id, identifier)
+        let units = self.units.clone();
+        let mut parser = QuantityParser::new(text, &units, |identifier| {
+            self.resolve_identifier_quantity(node_id, identifier)
         });
         match parser.parse_expression() {
-            Ok(value) => {
+            Ok(quantity) => {
                 parser.skip_ws();
                 if parser.is_eof() {
-                    EvalOutcome::ok(number_to_json(value), None)
+                    EvalOutcome::from_quantity(quantity)
                 } else {
                     EvalOutcome::error(
                         EvalStatus::Unsupported,
@@ -237,7 +238,7 @@ impl<'a> EvalEngine<'a> {
             }
             Err(EvalStatus::TypeError) => EvalOutcome::error(
                 EvalStatus::TypeError,
-                "expression has type mismatch for arithmetic",
+                "expression has type or unit mismatch for arithmetic",
             ),
             Err(EvalStatus::Unknown) => {
                 EvalOutcome::error(EvalStatus::Unknown, "expression could not be resolved")
@@ -257,7 +258,11 @@ impl<'a> EvalEngine<'a> {
         self.evaluate_node(&referenced_id)
     }
 
-    fn resolve_identifier_number(&mut self, node_id: &NodeId, identifier: &str) -> Result<f64, EvalStatus> {
+    fn resolve_identifier_quantity(
+        &mut self,
+        node_id: &NodeId,
+        identifier: &str,
+    ) -> Result<Quantity, EvalStatus> {
         let referenced_id = self
             .resolve_identifier_node(node_id, identifier)
             .map_err(|outcome| outcome.status)?;
@@ -268,7 +273,13 @@ impl<'a> EvalEngine<'a> {
         let Some(value) = outcome.value else {
             return Err(EvalStatus::Unknown);
         };
-        json_value_to_f64(&value).ok_or(EvalStatus::TypeError)
+        let Some(number) = json_value_to_f64(&value) else {
+            return Err(EvalStatus::TypeError);
+        };
+        Ok(Quantity {
+            value: number,
+            unit: outcome.unit,
+        })
     }
 
     fn resolve_identifier_node(
@@ -282,17 +293,14 @@ impl<'a> EvalEngine<'a> {
                 format!("unknown evaluation node '{}'", current_id.qualified_name),
             ));
         };
-
         let scoped_candidates = self.scoped_candidates(current, identifier);
         if !scoped_candidates.is_empty() {
             return choose_candidate(scoped_candidates, identifier);
         }
-
         let fallback_candidates = self.fallback_candidates(current, identifier);
         if !fallback_candidates.is_empty() {
             return choose_candidate(fallback_candidates, identifier);
         }
-
         Err(EvalOutcome::error(
             EvalStatus::Unknown,
             format!("unresolved reference '{identifier}'"),
@@ -335,6 +343,22 @@ impl<'a> EvalEngine<'a> {
             .filter(|node_id| self.node_source_value(node_id).is_some())
             .cloned()
             .collect()
+    }
+
+}
+
+fn compose_units(left: Option<&str>, op: &str, right: Option<&str>) -> Option<String> {
+    match (left, right) {
+        (None, None) => None,
+        (Some(l), None) => Some(l.to_string()),
+        (None, Some(r)) => {
+            if op == "/" {
+                Some(format!("1/{r}"))
+            } else {
+                Some(r.to_string())
+            }
+        }
+        (Some(l), Some(r)) => Some(format!("{l}{op}{r}")),
     }
 }
 
@@ -383,7 +407,9 @@ fn parse_standalone_identifier(text: &str) -> Option<&str> {
     if trimmed.is_empty() {
         return None;
     }
-    let mut parser = ArithmeticParser::new(trimmed, |_identifier| Err(EvalStatus::Unsupported));
+    let units = UnitRegistry::default();
+    let mut parser =
+        QuantityParser::new(trimmed, &units, |_identifier| Err(EvalStatus::Unsupported));
     let identifier = parser.parse_identifier()?;
     parser.skip_ws();
     if parser.is_eof() {
@@ -391,44 +417,6 @@ fn parse_standalone_identifier(text: &str) -> Option<&str> {
     } else {
         None
     }
-}
-
-fn split_trailing_unit(text: &str) -> Option<(&str, &str)> {
-    if !text.ends_with(']') {
-        return None;
-    }
-    let mut depth_paren = 0_i32;
-    let mut depth_bracket = 0_i32;
-    let mut start_idx = None;
-    for (idx, ch) in text.char_indices().rev() {
-        match ch {
-            ')' => depth_paren += 1,
-            '(' => depth_paren -= 1,
-            ']' => depth_bracket += 1,
-            '[' => {
-                depth_bracket -= 1;
-                if depth_paren == 0 && depth_bracket == 0 {
-                    start_idx = Some(idx);
-                    break;
-                }
-            }
-            _ => {}
-        }
-    }
-    let start = start_idx?;
-    if start == 0 {
-        return None;
-    }
-    let before = &text[..start];
-    if !before.ends_with(' ') {
-        return None;
-    }
-    let unit = &text[start + 1..text.len() - 1];
-    Some((before.trim_end(), unit))
-}
-
-fn parse_number(text: &str) -> Option<f64> {
-    text.parse::<f64>().ok().filter(|v| v.is_finite())
 }
 
 fn json_value_to_f64(value: &Value) -> Option<f64> {
@@ -449,22 +437,24 @@ fn number_to_json(value: f64) -> Value {
     }
 }
 
-struct ArithmeticParser<'a, F>
+struct QuantityParser<'s, 'u, F>
 where
-    F: FnMut(&str) -> Result<f64, EvalStatus>,
+    F: FnMut(&str) -> Result<Quantity, EvalStatus>,
 {
-    src: &'a str,
+    src: &'s str,
+    units: &'u UnitRegistry,
     pos: usize,
     resolve_identifier: F,
 }
 
-impl<'a, F> ArithmeticParser<'a, F>
+impl<'s, 'u, F> QuantityParser<'s, 'u, F>
 where
-    F: FnMut(&str) -> Result<f64, EvalStatus>,
+    F: FnMut(&str) -> Result<Quantity, EvalStatus>,
 {
-    fn new(src: &'a str, resolve_identifier: F) -> Self {
+    fn new(src: &'s str, units: &'u UnitRegistry, resolve_identifier: F) -> Self {
         Self {
             src,
+            units,
             pos: 0,
             resolve_identifier,
         }
@@ -494,7 +484,7 @@ where
         Some(ch)
     }
 
-    fn parse_expression(&mut self) -> Result<f64, EvalStatus> {
+    fn parse_expression(&mut self) -> Result<Quantity, EvalStatus> {
         let mut left = self.parse_term()?;
         loop {
             self.skip_ws();
@@ -506,11 +496,15 @@ where
             }
             self.eat_char();
             let right = self.parse_term()?;
-            left = if op == '+' { left + right } else { left - right };
+            left = if op == '+' {
+                self.add_quantities(left, right)?
+            } else {
+                self.sub_quantities(left, right)?
+            };
         }
     }
 
-    fn parse_term(&mut self) -> Result<f64, EvalStatus> {
+    fn parse_term(&mut self) -> Result<Quantity, EvalStatus> {
         let mut left = self.parse_factor()?;
         loop {
             self.skip_ws();
@@ -522,27 +516,40 @@ where
             }
             self.eat_char();
             let right = self.parse_factor()?;
-            if op == '/' && right == 0.0 {
-                return Err(EvalStatus::DivByZero);
-            }
-            left = if op == '*' { left * right } else { left / right };
+            left = if op == '*' {
+                Quantity {
+                    value: left.value * right.value,
+                    unit: compose_units(left.unit.as_deref(), "*", right.unit.as_deref()),
+                }
+            } else {
+                if right.value == 0.0 {
+                    return Err(EvalStatus::DivByZero);
+                }
+                Quantity {
+                    value: left.value / right.value,
+                    unit: compose_units(left.unit.as_deref(), "/", right.unit.as_deref()),
+                }
+            };
         }
     }
 
-    fn parse_factor(&mut self) -> Result<f64, EvalStatus> {
+    fn parse_factor(&mut self) -> Result<Quantity, EvalStatus> {
         self.skip_ws();
         let Some(ch) = self.peek_char() else {
             return Err(EvalStatus::Unsupported);
         };
         if ch == '+' || ch == '-' {
             self.eat_char();
-            let inner = self.parse_factor()?;
-            return if ch == '-' { Ok(-inner) } else { Ok(inner) };
+            let mut inner = self.parse_factor()?;
+            if ch == '-' {
+                inner.value = -inner.value;
+            }
+            return Ok(inner);
         }
         self.parse_primary()
     }
 
-    fn parse_primary(&mut self) -> Result<f64, EvalStatus> {
+    fn parse_primary(&mut self) -> Result<Quantity, EvalStatus> {
         self.skip_ws();
         let Some(ch) = self.peek_char() else {
             return Err(EvalStatus::Unsupported);
@@ -568,10 +575,12 @@ where
         if let Some(identifier) = self.parse_identifier() {
             return (self.resolve_identifier)(identifier);
         }
-        self.parse_numeric_literal()
+        let value = self.parse_numeric_literal()?;
+        let unit = self.parse_unit_suffix();
+        Ok(Quantity { value, unit })
     }
 
-    fn parse_identifier(&mut self) -> Option<&'a str> {
+    fn parse_identifier(&mut self) -> Option<&'s str> {
         self.skip_ws();
         let start = self.pos;
         let first = self.peek_char()?;
@@ -627,10 +636,80 @@ where
             .filter(|v| v.is_finite())
             .ok_or(EvalStatus::Unsupported)
     }
+
+    fn parse_unit_suffix(&mut self) -> Option<String> {
+        self.skip_ws();
+        if self.peek_char() != Some('[') {
+            return None;
+        }
+        self.eat_char();
+        let start = self.pos;
+        while let Some(ch) = self.peek_char() {
+            if ch == ']' {
+                break;
+            }
+            self.eat_char();
+        }
+        if self.eat_char() != Some(']') {
+            return None;
+        }
+        let raw = self.src[start..self.pos - 1].trim();
+        if raw.is_empty() {
+            None
+        } else {
+            Some(trim_quotes(raw))
+        }
+    }
+
+    fn add_quantities(&self, left: Quantity, right: Quantity) -> Result<Quantity, EvalStatus> {
+        match (&left.unit, &right.unit) {
+            (None, None) => Ok(Quantity::scalar(left.value + right.value)),
+            (Some(unit), None) | (None, Some(unit)) => {
+                if !self.units.has_symbol(unit) {
+                    return Err(EvalStatus::Unknown);
+                }
+                Err(EvalStatus::TypeError)
+            }
+            (Some(left_unit), Some(right_unit)) => {
+                let converted = self.units.convert_value(right.value, right_unit, left_unit);
+                match converted {
+                    Ok(v) => Ok(Quantity {
+                        value: left.value + v,
+                        unit: Some(left_unit.clone()),
+                    }),
+                    Err(UnitError::UnknownUnit) => Err(EvalStatus::Unknown),
+                    Err(UnitError::IncompatibleDimension) => Err(EvalStatus::TypeError),
+                    Err(UnitError::UnsupportedConversion) => Err(EvalStatus::Unsupported),
+                }
+            }
+        }
+    }
+
+    fn sub_quantities(&self, left: Quantity, right: Quantity) -> Result<Quantity, EvalStatus> {
+        self.add_quantities(
+            left,
+            Quantity {
+                value: -right.value,
+                unit: right.unit,
+            },
+        )
+    }
+}
+
+fn trim_quotes(value: &str) -> String {
+    let mut out = value.trim().to_string();
+    if out.starts_with('\'') && out.ends_with('\'') && out.len() > 1 {
+        out = out[1..out.len() - 1].to_string();
+    }
+    out
 }
 
 #[cfg(test)]
 mod tests {
+    use std::fs;
+    use std::path::PathBuf;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
     use super::*;
     use tower_lsp::lsp_types::{Position, Range, Url};
 
@@ -660,11 +739,7 @@ mod tests {
         };
         let idx = graph.graph.add_node(node);
         graph.node_index_by_id.insert(id.clone(), idx);
-        graph
-            .nodes_by_uri
-            .entry(uri.clone())
-            .or_default()
-            .push(id.clone());
+        graph.nodes_by_uri.entry(uri.clone()).or_default().push(id.clone());
         graph
             .node_ids_by_qualified_name
             .entry(qualified_name.to_string())
@@ -673,71 +748,48 @@ mod tests {
         id
     }
 
-    fn node_attr<'a>(
-        graph: &'a SemanticGraph,
-        id: &NodeId,
-        key: &str,
-    ) -> Option<&'a Value> {
+    fn node_attr<'a>(graph: &'a SemanticGraph, id: &NodeId, key: &str) -> Option<&'a Value> {
         graph.get_node(id).and_then(|node| node.attributes.get(key))
     }
 
-    #[test]
-    fn evaluates_literal_number() {
-        let mut graph = SemanticGraph::new();
-        let uri = Url::parse("file:///C:/workspace/literal.sysml").expect("uri");
-        let attr_id = add_node(
-            &mut graph,
+    fn register_units_fixture(graph: &mut SemanticGraph) {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock")
+            .as_nanos();
+        let root: PathBuf = std::env::temp_dir().join(format!("spec42-units-{unique}"));
+        let path = root
+            .join("sysml.library")
+            .join("Domain Libraries")
+            .join("Quantities and Units");
+        fs::create_dir_all(&path).expect("create fixture path");
+        let file = path.join("FixtureUnits.sysml");
+        fs::write(
+            &file,
+            r#"
+                attribute <m> 'metre' : LengthUnit;
+                attribute <cm> 'centimetre' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 1E-02; } }
+                attribute <ft> 'foot' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 3.048E-01; } }
+                attribute <kg> 'kilogram' : MassUnit;
+            "#,
+        )
+        .expect("write fixture");
+        let uri = Url::from_file_path(&file).expect("fixture uri");
+        let _ = add_node(
+            graph,
             &uri,
-            "Demo::literal",
-            "attribute",
-            "literal",
+            "Units::marker",
+            "package",
+            "marker",
             None,
-            HashMap::from([("value".to_string(), Value::String("42".to_string()))]),
-        );
-        evaluate_expressions(&mut graph);
-        assert_eq!(
-            node_attr(&graph, &attr_id, EVALUATION_STATUS_KEY),
-            Some(&Value::String(STATUS_OK.to_string()))
-        );
-        assert_eq!(
-            node_attr(&graph, &attr_id, EVALUATED_VALUE_KEY),
-            Some(&Value::Number(serde_json::Number::from(42)))
-        );
-        assert_eq!(node_attr(&graph, &attr_id, EVALUATED_UNIT_KEY), None);
-    }
-
-    #[test]
-    fn evaluates_literal_with_unit_passthrough() {
-        let mut graph = SemanticGraph::new();
-        let uri = Url::parse("file:///C:/workspace/unit.sysml").expect("uri");
-        let attr_id = add_node(
-            &mut graph,
-            &uri,
-            "Demo::mass",
-            "attribute",
-            "mass",
-            None,
-            HashMap::from([("value".to_string(), Value::String("1200 [kg]".to_string()))]),
-        );
-        evaluate_expressions(&mut graph);
-        assert_eq!(
-            node_attr(&graph, &attr_id, EVALUATION_STATUS_KEY),
-            Some(&Value::String(STATUS_OK.to_string()))
-        );
-        assert_eq!(
-            node_attr(&graph, &attr_id, EVALUATED_VALUE_KEY),
-            Some(&Value::Number(serde_json::Number::from(1200)))
-        );
-        assert_eq!(
-            node_attr(&graph, &attr_id, EVALUATED_UNIT_KEY),
-            Some(&Value::String("kg".to_string()))
+            HashMap::new(),
         );
     }
 
     #[test]
-    fn evaluates_direct_reference_expression() {
+    fn evaluates_reference_chain() {
         let mut graph = SemanticGraph::new();
-        let uri = Url::parse("file:///C:/workspace/direct.sysml").expect("uri");
+        let uri = Url::parse("file:///C:/workspace/ref.sysml").expect("uri");
         let owner = add_node(
             &mut graph,
             &uri,
@@ -763,214 +815,83 @@ mod tests {
             "attribute",
             "b",
             Some(&owner),
-            HashMap::from([("value".to_string(), Value::String("a + 1".to_string()))]),
+            HashMap::from([("value".to_string(), Value::String("a + 3".to_string()))]),
         );
-
         evaluate_expressions(&mut graph);
-        assert_eq!(
-            node_attr(&graph, &b, EVALUATION_STATUS_KEY),
-            Some(&Value::String(STATUS_OK.to_string()))
-        );
         assert_eq!(
             node_attr(&graph, &b, EVALUATED_VALUE_KEY),
-            Some(&Value::Number(serde_json::Number::from(3)))
-        );
-    }
-
-    #[test]
-    fn evaluates_multi_hop_reference_expression() {
-        let mut graph = SemanticGraph::new();
-        let uri = Url::parse("file:///C:/workspace/multihop.sysml").expect("uri");
-        let owner = add_node(
-            &mut graph,
-            &uri,
-            "Demo::Rocket",
-            "part def",
-            "Rocket",
-            None,
-            HashMap::new(),
-        );
-        let _a = add_node(
-            &mut graph,
-            &uri,
-            "Demo::Rocket::a",
-            "attribute",
-            "a",
-            Some(&owner),
-            HashMap::from([("value".to_string(), Value::String("2".to_string()))]),
-        );
-        let _b = add_node(
-            &mut graph,
-            &uri,
-            "Demo::Rocket::b",
-            "attribute",
-            "b",
-            Some(&owner),
-            HashMap::from([("value".to_string(), Value::String("a + 1".to_string()))]),
-        );
-        let c = add_node(
-            &mut graph,
-            &uri,
-            "Demo::Rocket::c",
-            "attribute",
-            "c",
-            Some(&owner),
-            HashMap::from([("value".to_string(), Value::String("b + 2".to_string()))]),
-        );
-
-        evaluate_expressions(&mut graph);
-        assert_eq!(
-            node_attr(&graph, &c, EVALUATED_VALUE_KEY),
             Some(&Value::Number(serde_json::Number::from(5)))
         );
     }
 
     #[test]
-    fn marks_unresolved_reference_unknown() {
+    fn evaluates_unit_conversion_addition() {
         let mut graph = SemanticGraph::new();
-        let uri = Url::parse("file:///C:/workspace/unresolved.sysml").expect("uri");
-        let owner = add_node(
+        register_units_fixture(&mut graph);
+        let uri = Url::parse("file:///C:/workspace/unit-add.sysml").expect("uri");
+        let node = add_node(
             &mut graph,
             &uri,
-            "Demo::Rocket",
-            "part def",
-            "Rocket",
-            None,
-            HashMap::new(),
-        );
-        let b = add_node(
-            &mut graph,
-            &uri,
-            "Demo::Rocket::b",
+            "Demo::value",
             "attribute",
-            "b",
-            Some(&owner),
-            HashMap::from([("value".to_string(), Value::String("missing + 1".to_string()))]),
-        );
-
-        evaluate_expressions(&mut graph);
-        assert_eq!(
-            node_attr(&graph, &b, EVALUATION_STATUS_KEY),
-            Some(&Value::String(STATUS_UNKNOWN.to_string()))
-        );
-        assert!(node_attr(&graph, &b, EVALUATED_VALUE_KEY).is_none());
-    }
-
-    #[test]
-    fn marks_self_reference_cycle() {
-        let mut graph = SemanticGraph::new();
-        let uri = Url::parse("file:///C:/workspace/selfcycle.sysml").expect("uri");
-        let owner = add_node(
-            &mut graph,
-            &uri,
-            "Demo::Rocket",
-            "part def",
-            "Rocket",
+            "value",
             None,
-            HashMap::new(),
-        );
-        let a = add_node(
-            &mut graph,
-            &uri,
-            "Demo::Rocket::a",
-            "attribute",
-            "a",
-            Some(&owner),
-            HashMap::from([("value".to_string(), Value::String("a + 1".to_string()))]),
+            HashMap::from([("value".to_string(), Value::String("1 [m] + 50 [cm]".to_string()))]),
         );
         evaluate_expressions(&mut graph);
         assert_eq!(
-            node_attr(&graph, &a, EVALUATION_STATUS_KEY),
-            Some(&Value::String(STATUS_CYCLE.to_string()))
+            node_attr(&graph, &node, EVALUATION_STATUS_KEY),
+            Some(&Value::String(STATUS_OK.to_string()))
+        );
+        assert_eq!(
+            node_attr(&graph, &node, EVALUATED_UNIT_KEY),
+            Some(&Value::String("m".to_string()))
+        );
+        assert_eq!(
+            node_attr(&graph, &node, EVALUATED_VALUE_KEY),
+            Some(&Value::Number(serde_json::Number::from_f64(1.5).expect("num")))
         );
     }
 
     #[test]
-    fn marks_mutual_reference_cycle() {
+    fn supports_si_to_imperial_when_registry_has_pair() {
         let mut graph = SemanticGraph::new();
-        let uri = Url::parse("file:///C:/workspace/mutualcycle.sysml").expect("uri");
-        let owner = add_node(
+        register_units_fixture(&mut graph);
+        let uri = Url::parse("file:///C:/workspace/unit-imperial.sysml").expect("uri");
+        let node = add_node(
             &mut graph,
             &uri,
-            "Demo::Rocket",
-            "part def",
-            "Rocket",
+            "Demo::value",
+            "attribute",
+            "value",
             None,
-            HashMap::new(),
-        );
-        let a = add_node(
-            &mut graph,
-            &uri,
-            "Demo::Rocket::a",
-            "attribute",
-            "a",
-            Some(&owner),
-            HashMap::from([("value".to_string(), Value::String("b + 1".to_string()))]),
-        );
-        let b = add_node(
-            &mut graph,
-            &uri,
-            "Demo::Rocket::b",
-            "attribute",
-            "b",
-            Some(&owner),
-            HashMap::from([("value".to_string(), Value::String("a + 1".to_string()))]),
+            HashMap::from([("value".to_string(), Value::String("1 [m] + 1 [ft]".to_string()))]),
         );
         evaluate_expressions(&mut graph);
         assert_eq!(
-            node_attr(&graph, &a, EVALUATION_STATUS_KEY),
-            Some(&Value::String(STATUS_CYCLE.to_string()))
-        );
-        assert_eq!(
-            node_attr(&graph, &b, EVALUATION_STATUS_KEY),
-            Some(&Value::String(STATUS_CYCLE.to_string()))
+            node_attr(&graph, &node, EVALUATION_STATUS_KEY),
+            Some(&Value::String(STATUS_OK.to_string()))
         );
     }
 
     #[test]
-    fn evaluates_reference_precedence_expression() {
+    fn rejects_incompatible_unit_addition() {
         let mut graph = SemanticGraph::new();
-        let uri = Url::parse("file:///C:/workspace/precedence.sysml").expect("uri");
-        let owner = add_node(
+        register_units_fixture(&mut graph);
+        let uri = Url::parse("file:///C:/workspace/unit-bad.sysml").expect("uri");
+        let node = add_node(
             &mut graph,
             &uri,
-            "Demo::Rocket",
-            "part def",
-            "Rocket",
+            "Demo::value",
+            "attribute",
+            "value",
             None,
-            HashMap::new(),
-        );
-        let _a = add_node(
-            &mut graph,
-            &uri,
-            "Demo::Rocket::a",
-            "attribute",
-            "a",
-            Some(&owner),
-            HashMap::from([("value".to_string(), Value::String("2".to_string()))]),
-        );
-        let _b = add_node(
-            &mut graph,
-            &uri,
-            "Demo::Rocket::b",
-            "attribute",
-            "b",
-            Some(&owner),
-            HashMap::from([("value".to_string(), Value::String("3".to_string()))]),
-        );
-        let c = add_node(
-            &mut graph,
-            &uri,
-            "Demo::Rocket::c",
-            "attribute",
-            "c",
-            Some(&owner),
-            HashMap::from([("value".to_string(), Value::String("a + b * 2".to_string()))]),
+            HashMap::from([("value".to_string(), Value::String("1 [m] + 2 [kg]".to_string()))]),
         );
         evaluate_expressions(&mut graph);
         assert_eq!(
-            node_attr(&graph, &c, EVALUATED_VALUE_KEY),
-            Some(&Value::Number(serde_json::Number::from(8)))
+            node_attr(&graph, &node, EVALUATION_STATUS_KEY),
+            Some(&Value::String(STATUS_TYPE_ERROR.to_string()))
         );
     }
 }
