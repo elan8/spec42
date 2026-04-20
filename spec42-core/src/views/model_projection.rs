@@ -335,7 +335,13 @@ fn collect_inherited_general_view_details(
 
 fn is_part_compartment_item(node: &GraphNodeDto) -> bool {
     let lower = node.element_type.to_lowercase();
-    lower.contains("part") && !is_port_like(&lower) && !is_anonymous_redefinition_stub(node)
+    if !lower.contains("part") || is_port_like(&lower) {
+        return false;
+    }
+    if node.name.trim().is_empty() {
+        return node.attributes.contains_key("redefines");
+    }
+    true
 }
 
 fn build_general_view_detail_item(
@@ -363,7 +369,7 @@ fn general_view_detail_name(detail: &GraphNodeDto) -> Option<String> {
     if !explicit_name.is_empty() {
         return Some(explicit_name.to_string());
     }
-    if is_attribute_like(&detail.element_type) {
+    if is_attribute_like(&detail.element_type) || is_part_compartment_item(detail) {
         return detail
             .attributes
             .get("redefines")
@@ -878,6 +884,176 @@ mod tests {
                 "displayText": "engine : Engine"
             }])),
             "inherited parts should be grouped separately with provenance"
+        );
+    }
+
+    #[test]
+    fn canonical_general_view_graph_moves_redefined_parts_into_direct_parts() {
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::Stage".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "Stage".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Stage::engine".to_string(),
+                    element_type: "part".to_string(),
+                    name: "engine".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::Stage".to_string()),
+                    range: range(),
+                    attributes: serde_json::json!({ "type": "Engine" })
+                        .as_object()
+                        .unwrap()
+                        .iter()
+                        .map(|(k, v)| (k.clone(), v.clone()))
+                        .collect(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::SIC".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "S-IC".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::SIC::engine-redef".to_string(),
+                    element_type: "part".to_string(),
+                    name: "".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::SIC".to_string()),
+                    range: range(),
+                    attributes: serde_json::json!({ "redefines": "Pkg::Stage::engine" })
+                        .as_object()
+                        .unwrap()
+                        .iter()
+                        .map(|(k, v)| (k.clone(), v.clone()))
+                        .collect(),
+                },
+            ],
+            edges: vec![GraphEdgeDto {
+                source: "Pkg::SIC".to_string(),
+                target: "Pkg::Stage".to_string(),
+                rel_type: "specializes".to_string(),
+                name: None,
+            }],
+        };
+
+        let canonical = canonical_general_view_graph(&graph, false);
+        let owner = canonical
+            .nodes
+            .iter()
+            .find(|node| node.id == "Pkg::SIC")
+            .expect("owner node");
+        assert_eq!(
+            owner.attributes.get("generalViewDirectParts"),
+            Some(&serde_json::json!([{
+                "name": "engine",
+                "typeName": null,
+                "valueText": null,
+                "declaredIn": null,
+                "displayText": "engine"
+            }])),
+            "redefined part rows should be surfaced as direct parts for the current owner"
+        );
+        assert_eq!(
+            owner.attributes.get("generalViewInheritedParts"),
+            None,
+            "redefined inherited part should not stay in inherited compartment"
+        );
+    }
+
+    #[test]
+    fn canonical_general_view_graph_moves_redefined_attributes_into_direct_attributes() {
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::Stage".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "Stage".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Stage::mass".to_string(),
+                    element_type: "attribute".to_string(),
+                    name: "mass".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::Stage".to_string()),
+                    range: range(),
+                    attributes: serde_json::json!({ "dataType": "ScalarValues::Kilogram" })
+                        .as_object()
+                        .unwrap()
+                        .iter()
+                        .map(|(k, v)| (k.clone(), v.clone()))
+                        .collect(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::SIC".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "S-IC".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::SIC::mass-redef".to_string(),
+                    element_type: "attribute".to_string(),
+                    name: "".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::SIC".to_string()),
+                    range: range(),
+                    attributes: serde_json::json!({
+                        "redefines": "Pkg::Stage::mass",
+                        "dataType": "ScalarValues::Kilogram",
+                        "value": "28500"
+                    })
+                    .as_object()
+                    .unwrap()
+                    .iter()
+                    .map(|(k, v)| (k.clone(), v.clone()))
+                    .collect(),
+                },
+            ],
+            edges: vec![GraphEdgeDto {
+                source: "Pkg::SIC".to_string(),
+                target: "Pkg::Stage".to_string(),
+                rel_type: "specializes".to_string(),
+                name: None,
+            }],
+        };
+
+        let canonical = canonical_general_view_graph(&graph, false);
+        let owner = canonical
+            .nodes
+            .iter()
+            .find(|node| node.id == "Pkg::SIC")
+            .expect("owner node");
+        assert_eq!(
+            owner.attributes.get("generalViewDirectAttributes"),
+            Some(&serde_json::json!([{
+                "name": "mass",
+                "typeName": "Kilogram",
+                "valueText": "28500",
+                "declaredIn": null,
+                "displayText": "mass : Kilogram = 28500"
+            }])),
+            "redefined attribute rows should be surfaced as direct attributes for the current owner"
+        );
+        assert_eq!(
+            owner.attributes.get("generalViewInheritedAttributes"),
+            None,
+            "redefined inherited attribute should not stay in inherited compartment"
         );
     }
 
