@@ -552,6 +552,7 @@ function renderGeneralNodes(
 
 export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): Promise<void> {
     const { width, height, svg, g, postMessage, renderPlaceholder, clearVisualHighlights } = ctx;
+    if (ctx.abortSignal?.aborted) return;
 
     const result = ctx.buildGeneralViewGraph(data);
     const { elements, typeStats, packageGroups } = result;
@@ -608,6 +609,7 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
     let cursorY = 80;
     const fixedPackageLaneX = 80;
     for (const pkg of packageOrder) {
+        if (ctx.abortSignal?.aborted) return;
         const nodesInPkg = packageNodeMap.get(pkg) || [];
         const nodeIdSet = new Set(nodesInPkg.map((n: any) => n.data.id));
         const edgesInPkg = cyEdges.filter((e: any) =>
@@ -616,6 +618,7 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
         internalEdgesToRender.push(...edgesInPkg);
 
         const laidOut = await layoutPackageWithElk(elk, nodesInPkg, edgesInPkg, nodeDataMap);
+        if (ctx.abortSignal?.aborted) return;
         const localPositions = laidOut.localPositions;
 
         const allLocal = [...localPositions.values()];
@@ -652,6 +655,7 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
     }
 
     g.selectAll('*').remove();
+    if (ctx.abortSignal?.aborted) return;
 
     const defs = svg.select('defs').empty() ? svg.append('defs') : svg.select('defs');
     defs.selectAll('#general-d3-arrow').remove();

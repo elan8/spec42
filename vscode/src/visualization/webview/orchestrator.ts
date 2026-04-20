@@ -187,6 +187,28 @@ import { buildGeneralViewGraph } from './graphBuilders';
     // Track last rendered data to avoid unnecessary re-renders
     let lastDataHash = '';
     let pendingRenderRequest: { view: string; preserveZoomOverride: any; allowDuringResize: boolean } | null = null;
+    let pendingViewRenderTimeout: ReturnType<typeof setTimeout> | null = null;
+    let activeRenderAbortController: AbortController | null = null;
+    let activeRenderRequestId = 0;
+
+    function cancelOutstandingRenderRequests(reason = 'view-switch') {
+        pendingRenderRequest = null;
+        if (pendingViewRenderTimeout) {
+            clearTimeout(pendingViewRenderTimeout);
+            pendingViewRenderTimeout = null;
+        }
+        if (activeRenderAbortController) {
+            try {
+                activeRenderAbortController.abort();
+            } catch {
+                // Ignore abort races.
+            }
+            activeRenderAbortController = null;
+        }
+        // Release render lock so the next view render can start immediately.
+        isRendering = false;
+        webviewPerf('visualizer:webviewRenderCancelled', { reason });
+    }
 
     function ensureVisualizationCanvas(width: number, height: number): void {
         const root = d3.select('#visualization');
@@ -947,6 +969,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
     function changeView(view) {
         // Clear any existing resize timeout to avoid conflicts
         clearTimeout(resizeTimeout);
+        cancelOutstandingRenderRequests('view-switch');
 
         // Reset manual zoom flag so the new view auto-fits
         window.userHasManuallyZoomed = false;
@@ -972,7 +995,8 @@ import { buildGeneralViewGraph } from './graphBuilders';
             updateActivityDebugButtonVisibility(view);
 
             // Small delay to allow UI to update before rendering
-            setTimeout(() => {
+            pendingViewRenderTimeout = setTimeout(() => {
+                pendingViewRenderTimeout = null;
                 renderVisualization(view);
             }, 50);
 
@@ -1281,11 +1305,27 @@ import { buildGeneralViewGraph } from './graphBuilders';
             return;
         }
 
+        const renderRequestId = ++activeRenderRequestId;
+        const renderAbortController = new AbortController();
+        if (activeRenderAbortController) {
+            try {
+                activeRenderAbortController.abort();
+            } catch {
+                // ignore abort races
+            }
+        }
+        activeRenderAbortController = renderAbortController;
+        const isStaleRender = () =>
+            renderAbortController.signal.aborted || renderRequestId !== activeRenderRequestId;
+
         const renderStartedAt = Date.now();
 
         if (isRendering) {
             // A render is in-flight; queue the latest request so we don't lose updates
             // when switching folders/projects quickly.
+            if (isStaleRender()) {
+                return;
+            }
             pendingRenderRequest = { view, preserveZoomOverride, allowDuringResize };
             webviewPerf('visualizer:webviewRenderQueued', {
                 view,
@@ -1353,6 +1393,9 @@ import { buildGeneralViewGraph } from './graphBuilders';
         const finishRender = () => {
             if (didFinishRender) return;
             didFinishRender = true;
+            if (renderRequestId !== activeRenderRequestId) {
+                return;
+            }
             clearTimeout(renderSafetyTimeout);
             isRendering = false;
             hideLoading();
@@ -1385,6 +1428,10 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
         // Add error handling around rendering
         try {
+        if (isStaleRender()) {
+            finishRender();
+            return;
+        }
         webviewPerf('visualizer:webviewRenderStarted', {
             view,
             prepareMs,
@@ -1442,7 +1489,8 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 onStartInlineEdit: (nodeG, elementName, x, y, wd) => startInlineEdit(nodeG, elementName, x, y, wd),
                 renderPlaceholder: (wd, ht, viewName, message, d) => renderPlaceholderView(wd, ht, viewName, message, d),
                 clearVisualHighlights,
-                elkWorkerUrl
+                elkWorkerUrl,
+                abortSignal: renderAbortController.signal,
             };
         }
 
@@ -1502,7 +1550,15 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 elkWorkerUrl,
             };
             await renderGeneralViewD3(ctx as any, dataToRender);
+            if (isStaleRender()) {
+                finishRender();
+                return;
+            }
             setTimeout(() => {
+                if (isStaleRender()) {
+                    finishRender();
+                    return;
+                }
                 if (shouldPreserveZoom) {
                     restoreZoom();
                 } else {
@@ -1517,7 +1573,15 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 elkWorkerUrl,
             };
             await renderIbdView(ctx as any, dataToRender);
+            if (isStaleRender()) {
+                finishRender();
+                return;
+            }
             setTimeout(() => {
+                if (isStaleRender()) {
+                    finishRender();
+                    return;
+                }
                 if (shouldPreserveZoom) {
                     restoreZoom();
                 } else {
@@ -1530,7 +1594,15 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 await renderActivityViewModule(buildRenderContext(width, height), dataToRender);
             } else if (view === 'state-transition-view') {
                 await renderStateViewModule(buildRenderContext(width, height), dataToRender);
+                if (isStaleRender()) {
+                    finishRender();
+                    return;
+                }
                 setTimeout(() => {
+                    if (isStaleRender()) {
+                        finishRender();
+                        return;
+                    }
                     if (shouldPreserveZoom) {
                         restoreZoom();
                     } else {
@@ -1563,6 +1635,10 @@ import { buildGeneralViewGraph } from './graphBuilders';
         // Update lastView after successful render start
         lastView = view;
         } catch (error) {
+            if (isStaleRender()) {
+                finishRender();
+                return;
+            }
             webviewPerf('visualizer:webviewRenderFailed', {
                 view,
                 prepareMs,

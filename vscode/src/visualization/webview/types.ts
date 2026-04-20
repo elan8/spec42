@@ -19,6 +19,7 @@ export interface RenderContext {
     onStartInlineEdit: (nodeG: any, elementName: string, x: number, y: number, width: number) => void;
     renderPlaceholder: (width: number, height: number, viewName: string, message: string, data: any) => void;
     clearVisualHighlights: () => void;
+    abortSignal?: AbortSignal;
 }
 
 export type PostMessageFn = (msg: unknown) => void;

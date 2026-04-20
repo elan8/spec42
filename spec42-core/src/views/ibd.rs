@@ -214,7 +214,9 @@ fn prune_ibd_payload_to_connected_scope(
     connectors: Vec<IbdConnectorDto>,
 ) -> (Vec<IbdPartDto>, Vec<IbdPortDto>, Vec<IbdConnectorDto>) {
     if connectors.is_empty() || parts.is_empty() {
-        return (parts, ports, connectors);
+        // Interconnection view should only include connector-relevant structure.
+        // If there are no connectors in this scope, keep the payload empty.
+        return (Vec::new(), Vec::new(), Vec::new());
     }
 
     let part_by_qn: std::collections::HashMap<String, IbdPartDto> = parts

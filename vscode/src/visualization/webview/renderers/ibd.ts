@@ -83,6 +83,7 @@ function collectElkEdgesWithOffsets(
 
 export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string }, data: any): Promise<void> {
     const { width, height, svg, g, layoutDirection, postMessage, onStartInlineEdit, renderPlaceholder, clearVisualHighlights } = ctx;
+    if (ctx.abortSignal?.aborted) return;
     const LOG_ENDPOINT_DRIFT = false;
     const LOG_ROUTE_FRAME_SELECTION = false;
     const ENDPOINT_DRIFT_WARN_PX = 1.25;
@@ -723,6 +724,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         };
 
         elkLaidOut = await elk.layout(elkGraph);
+        if (ctx.abortSignal?.aborted) return;
     } catch (e) {
         console.error('[IBD] ELK layout failed:', e);
         renderPlaceholder(
@@ -1388,31 +1390,24 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
 
     const findPartPos = (qualifiedName: string) => {
         if (!qualifiedName) return null;
-        const normalized = qualifiedName.lastIndexOf('::') >= 0
-            ? qualifiedName.substring(qualifiedName.lastIndexOf('::') + 2)
-            : qualifiedName;
+        const raw = String(qualifiedName).trim();
+        const normalized = normalizeEndpointId(raw);
 
-        if (partPositions.has(normalized)) {
-            return partPositions.get(normalized)!;
-        }
-        if (partPositions.has(qualifiedName)) {
-            return partPositions.get(qualifiedName)!;
-        }
+        // Prefer exact/normalized IDs to avoid ambiguous short-name matches.
+        const exact = partPositions.get(raw) || partPositions.get(normalized);
+        if (exact) return exact;
 
-        const segments = normalized.split('.');
+        // Fall back to semantic endpoint resolution by longest qualified-name prefix.
+        const resolvedPart = findPartForEndpoint(raw) || findPartForEndpoint(normalized);
+        if (!resolvedPart) return null;
 
-        for (let i = segments.length - 1; i >= 1; i--) {
-            const partialPath = segments.slice(0, i).join('.');
-            const pos = partPositions.get(partialPath);
-            if (pos) return pos;
-        }
-
-        for (let i = segments.length - 1; i >= 0; i--) {
-            const pos = partPositions.get(segments[i]);
-            if (pos) return pos;
-        }
-
-        return null;
+        return (
+            partPositions.get(partToElkId(resolvedPart))
+            || partPositions.get(resolvedPart.qualifiedName)
+            || partPositions.get(resolvedPart.id)
+            || partPositions.get(resolvedPart.name)
+            || null
+        );
     };
 
     const getRenderedPortAnchor = (partPos: { x: number; y: number; part: any; width?: number } | null, port: any) => {
@@ -2139,6 +2134,9 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
     }
 
     const partGroup = g.append('g').attr('class', 'ibd-parts');
+    // Keep containers behind all regular nodes by splitting render layers.
+    const containerLayer = partGroup.append('g').attr('class', 'ibd-container-layer');
+    const nodeLayer = partGroup.append('g').attr('class', 'ibd-node-layer');
 
     const drawnPartIds = new Set<string>();
     const partEntries = Array.from(partPositions.entries());
@@ -2258,7 +2256,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         const w = pos.width ?? partWidth;
         const h = pos.height ?? totalHeight;
 
-        const partG = partGroup.append('g')
+        const partG = (pos.isContainer ? containerLayer : nodeLayer).append('g')
             .attr('transform', 'translate(' + pos.x + ',' + pos.y + ')')
             .attr('class', 'ibd-part' + (isDefinition ? ' definition-node' : ' usage-node') + (pos.isContainer ? ' ibd-container' : ''))
             .attr('data-element-name', part.name)
