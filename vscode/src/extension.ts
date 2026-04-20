@@ -1037,7 +1037,7 @@ export function activate(context: vscode.ExtensionContext): void {
     });
     await vscode.window.withProgress(
       {
-        location: vscode.ProgressLocation.Notification,
+        location: vscode.ProgressLocation.Window,
         title: "SysML workspace indexing",
         cancellable: true,
       },
