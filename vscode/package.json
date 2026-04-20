@@ -388,7 +388,7 @@
         },
         "spec42.codeLens.enabled": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Enable SysML code lenses such as inline reference counts above declarations. This can be expensive in larger workspaces."
         },
         "spec42.performanceLogging.enabled": {

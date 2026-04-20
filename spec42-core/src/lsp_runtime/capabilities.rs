@@ -39,7 +39,7 @@ pub(crate) fn server_capabilities(
         } else {
             None
         },
-        inlay_hint_provider: None,
+        inlay_hint_provider: Some(OneOf::Left(true)),
         linked_editing_range_provider: Some(LinkedEditingRangeServerCapabilities::Simple(true)),
         document_formatting_provider: Some(OneOf::Left(true)),
         moniker_provider: Some(OneOf::Left(true)),

@@ -808,6 +808,15 @@ pub(crate) fn code_lens(state: &ServerState, uri: Url) -> Result<Option<Vec<Code
     Ok(Some(lenses))
 }
 
+pub(crate) fn inlay_hint(
+    state: &ServerState,
+    uri: Url,
+    range: Range,
+) -> Result<Option<Vec<InlayHint>>> {
+    let _ = (state, uri, range);
+    Ok(Some(Vec::new()))
+}
+
 pub(crate) fn formatting(
     state: &ServerState,
     uri: Url,

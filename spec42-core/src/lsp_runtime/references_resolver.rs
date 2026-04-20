@@ -8,47 +8,6 @@ use tracing::info;
 
 type LocationKey = (String, u32, u32, u32, u32);
 
-pub(crate) fn symbol_name_position(state: &ServerState, symbol: &SymbolEntry) -> Option<Position> {
-    let content = state.index.get(&symbol.uri)?.content.as_str();
-    let line_text = content.lines().nth(symbol.range.start.line as usize)?;
-    let start_char = symbol.range.start.character as usize;
-    let line_chars: Vec<char> = line_text.chars().collect();
-    if start_char >= line_chars.len() {
-        return None;
-    }
-    let tail: String = line_chars[start_char..].iter().collect();
-    let rel = tail.find(&symbol.name)?;
-    let rel_char = tail[..rel].chars().count() as u32;
-    Some(Position::new(
-        symbol.range.start.line,
-        symbol.range.start.character + rel_char,
-    ))
-}
-
-pub(crate) fn resolved_references_for_symbol(
-    state: &ServerState,
-    symbol: &SymbolEntry,
-    include_declaration: bool,
-) -> Vec<Location> {
-    let selected_defs = vec![symbol];
-    let started_at = Instant::now();
-    let locations =
-        collect_references_for_lookup(state, &symbol.name, selected_defs, include_declaration);
-    let elapsed_ms = started_at.elapsed().as_millis();
-    if state.perf_logging_enabled && elapsed_ms >= 10 {
-        info!(
-            target: "spec42_core::lsp_runtime::references_resolver",
-            event = "referencesResolver:resolvedForSymbol",
-            symbol = %symbol.name,
-            include_declaration,
-            locations = locations.len(),
-            elapsed_ms,
-            "resolved references for symbol"
-        );
-    }
-    locations
-}
-
 pub(crate) fn resolved_references_at_position(
     state: &ServerState,
     uri_norm: &Url,

@@ -919,14 +919,23 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
             // Only center the view if not skipping (i.e., click came from text editor, not diagram)
             if (!skipCentering) {
-                const bbox = targetElement.node().getBBox();
-                const centerX = bbox.x + bbox.width / 2;
-                const centerY = bbox.y + bbox.height / 2;
+                const targetNode = targetElement.node();
+                const svgNode = svg.node();
+                if (!targetNode || !svgNode || !zoom) {
+                    return;
+                }
+                // Use viewport coordinates and invert through the active zoom transform.
+                // getBBox() is local to the element and can ignore translated group offsets.
+                const targetRect = targetNode.getBoundingClientRect();
+                const svgRect = svgNode.getBoundingClientRect();
+                const targetCenterViewportX = (targetRect.left - svgRect.left) + (targetRect.width / 2);
+                const targetCenterViewportY = (targetRect.top - svgRect.top) + (targetRect.height / 2);
 
-                const transform = d3.zoomTransform(svg.node());
+                const transform = d3.zoomTransform(svgNode);
+                const [centerX, centerY] = transform.invert([targetCenterViewportX, targetCenterViewportY]);
                 const scale = Math.min(1.5, transform.k); // Don't zoom in too much
-                const translateX = (svg.node().clientWidth / 2) - (centerX * scale);
-                const translateY = (svg.node().clientHeight / 2) - (centerY * scale);
+                const translateX = (svgNode.clientWidth / 2) - (centerX * scale);
+                const translateY = (svgNode.clientHeight / 2) - (centerY * scale);
 
                 svg.transition()
                     .duration(750)

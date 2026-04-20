@@ -671,7 +671,7 @@ export function activate(context: vscode.ExtensionContext): void {
       libraryPaths,
       startupTraceId,
       codeLens: {
-        enabled: getConfigBoolean("codeLens.enabled", false),
+        enabled: getConfigBoolean("codeLens.enabled", true),
       },
       performanceLogging: {
         enabled: getConfigBoolean("performanceLogging.enabled", false),
@@ -1808,6 +1808,12 @@ export function activate(context: vscode.ExtensionContext): void {
       const doc = VisualizationPanel.currentPanel.getDocument();
       VisualizationPanel.currentPanel.dispose();
       VisualizationPanel.createOrShow(context, doc, undefined, lspModelProvider);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("spec42.showInheritedAttributeInfo", () => {
+      // Informational CodeLens only; intentionally no-op when clicked.
     })
   );
 

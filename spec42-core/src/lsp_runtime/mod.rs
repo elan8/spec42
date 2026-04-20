@@ -196,6 +196,11 @@ impl LanguageServer for Backend {
         features::code_lens(&state, params.text_document.uri)
     }
 
+    async fn inlay_hint(&self, params: InlayHintParams) -> Result<Option<Vec<InlayHint>>> {
+        let state = self.state.read().await;
+        features::inlay_hint(&state, params.text_document.uri, params.range)
+    }
+
     async fn formatting(&self, params: DocumentFormattingParams) -> Result<Option<Vec<TextEdit>>> {
         let state = self.state.read().await;
         features::formatting(&state, params.text_document.uri, params.options)
