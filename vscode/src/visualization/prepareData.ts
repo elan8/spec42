@@ -103,6 +103,7 @@ export function prepareDataForView(data: any, view: string): any {
                     parts: any[];
                     ports?: any[];
                     connectors?: any[];
+                    containerGroups?: any[];
                 };
                 return {
                     ...data,
@@ -110,6 +111,7 @@ export function prepareDataForView(data: any, view: string): any {
                     parts: Array.isArray(ibd.parts) ? ibd.parts : [],
                     ports: Array.isArray(ibd.ports) ? ibd.ports : [],
                     connectors: Array.isArray(ibd.connectors) ? ibd.connectors : [],
+                    containerGroups: Array.isArray(ibd.containerGroups) ? ibd.containerGroups : [],
                 };
             }
 
@@ -120,6 +122,7 @@ export function prepareDataForView(data: any, view: string): any {
                 parts: [],
                 ports: [],
                 connectors: [],
+                containerGroups: [],
             };
         }
 

@@ -8,6 +8,7 @@ use crate::semantic_model;
 use crate::views::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlElementDto, SysmlGraphDto,
     SysmlModelStatsDto, SysmlVisualizationPackageCandidateDto,
+    SysmlVisualizationGroupDto,
     SysmlVisualizationPackageFilterDto, SysmlVisualizationResultDto, WorkspaceFileModelDto,
     WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
@@ -289,6 +290,107 @@ fn graph_to_element_tree(graph: &SysmlGraphDto, uri: &Url) -> Vec<SysmlElementDt
         .collect()
 }
 
+fn build_package_groups_from_graph(graph: &SysmlGraphDto) -> Vec<SysmlVisualizationGroupDto> {
+    let contains_edges: Vec<_> = graph
+        .edges
+        .iter()
+        .filter(|edge| edge.rel_type.eq_ignore_ascii_case("contains"))
+        .collect();
+    if contains_edges.is_empty() {
+        return Vec::new();
+    }
+
+    let node_by_id: HashMap<&str, &GraphNodeDto> = graph
+        .nodes
+        .iter()
+        .map(|node| (node.id.as_str(), node))
+        .collect();
+    let package_ids: HashSet<&str> = graph
+        .nodes
+        .iter()
+        .filter(|node| node.element_type.to_lowercase().contains("package"))
+        .map(|node| node.id.as_str())
+        .collect();
+    let mut children_by_parent: HashMap<&str, Vec<&str>> = HashMap::new();
+    let mut package_parent: HashMap<&str, &str> = HashMap::new();
+    for edge in contains_edges {
+        children_by_parent
+            .entry(edge.source.as_str())
+            .or_default()
+            .push(edge.target.as_str());
+        if package_ids.contains(edge.source.as_str()) && package_ids.contains(edge.target.as_str()) {
+            package_parent.insert(edge.target.as_str(), edge.source.as_str());
+        }
+    }
+
+    fn collect_non_package_descendants<'a>(
+        package_id: &'a str,
+        package_ids: &HashSet<&'a str>,
+        children_by_parent: &HashMap<&'a str, Vec<&'a str>>,
+    ) -> Vec<&'a str> {
+        let mut out = Vec::new();
+        let mut stack: Vec<&str> = children_by_parent
+            .get(package_id)
+            .cloned()
+            .unwrap_or_default();
+        let mut visited: HashSet<&str> = HashSet::new();
+        while let Some(current) = stack.pop() {
+            if !visited.insert(current) {
+                continue;
+            }
+            if !package_ids.contains(current) {
+                out.push(current);
+            }
+            if let Some(children) = children_by_parent.get(current) {
+                stack.extend(children.iter().copied());
+            }
+        }
+        out.sort_unstable();
+        out.dedup();
+        out
+    }
+
+    let mut groups = Vec::new();
+    for package_id in &package_ids {
+        let Some(package_node) = node_by_id.get(package_id) else {
+            continue;
+        };
+        let node_ids: Vec<String> = collect_non_package_descendants(
+            package_id,
+            &package_ids,
+            &children_by_parent,
+        )
+        .into_iter()
+        .map(String::from)
+        .collect();
+        if node_ids.is_empty() {
+            continue;
+        }
+        let mut depth = 1usize;
+        let mut parent = package_parent.get(package_id).copied();
+        while let Some(parent_id) = parent {
+            depth += 1;
+            parent = package_parent.get(parent_id).copied();
+        }
+        groups.push(SysmlVisualizationGroupDto {
+            id: (*package_id).to_string(),
+            label: package_node.name.clone(),
+            depth,
+            parent_id: package_parent
+                .get(package_id)
+                .map(|value| value.to_string()),
+            node_ids,
+        });
+    }
+    groups.sort_by(|left, right| {
+        left.depth
+            .cmp(&right.depth)
+            .then_with(|| left.label.cmp(&right.label))
+            .then_with(|| left.id.cmp(&right.id))
+    });
+    groups
+}
+
 fn merge_namespace_elements(elements: &[SysmlElementDto]) -> Vec<SysmlElementDto> {
     let namespace_types = ["package"];
     let mut merged_by_key: HashMap<String, usize> = HashMap::new();
@@ -501,6 +603,18 @@ fn filter_ibd_by_package(ibd: &IbdDataDto, package_ref: &str) -> IbdDataDto {
         })
         .cloned()
         .collect();
+    let container_groups: Vec<_> = ibd
+        .container_groups
+        .iter()
+        .filter(|group| {
+            group.member_part_ids.iter().any(|part_id| {
+                parts
+                    .iter()
+                    .any(|part| &part.id == part_id || &part.qualified_name == part_id)
+            })
+        })
+        .cloned()
+        .collect();
 
     let mut root_views = HashMap::new();
     for (name, view) in &ibd.root_views {
@@ -530,6 +644,18 @@ fn filter_ibd_by_package(ibd: &IbdDataDto, package_ref: &str) -> IbdDataDto {
             })
             .cloned()
             .collect();
+        let filtered_container_groups: Vec<_> = view
+            .container_groups
+            .iter()
+            .filter(|group| {
+                group.member_part_ids.iter().any(|part_id| {
+                    filtered_parts
+                        .iter()
+                        .any(|part| &part.id == part_id || &part.qualified_name == part_id)
+                })
+            })
+            .cloned()
+            .collect();
         if !filtered_parts.is_empty() || !filtered_connectors.is_empty() {
             root_views.insert(
                 name.clone(),
@@ -537,6 +663,7 @@ fn filter_ibd_by_package(ibd: &IbdDataDto, package_ref: &str) -> IbdDataDto {
                     parts: filtered_parts,
                     ports: filtered_ports,
                     connectors: filtered_connectors,
+                    container_groups: filtered_container_groups,
                 },
             );
         }
@@ -554,6 +681,7 @@ fn filter_ibd_by_package(ibd: &IbdDataDto, package_ref: &str) -> IbdDataDto {
         parts,
         ports,
         connectors,
+        container_groups,
         root_candidates,
         default_root,
         root_views,
@@ -574,6 +702,7 @@ pub(crate) fn build_sysml_visualization_response(
     let graph = model_projection::strip_synthetic_nodes(&raw_graph);
     let mut general_view_graph =
         model_projection::canonical_general_view_graph(&graph, true);
+    let mut package_groups = Some(build_package_groups_from_graph(&general_view_graph));
     let mut workspace_model = build_workspace_model_dto_for_uris(semantic_graph, &workspace_uris);
     let mut package_candidates = Vec::new();
     let mut seen_packages = HashSet::new();
@@ -617,6 +746,7 @@ pub(crate) fn build_sysml_visualization_response(
                 };
                 general_view_graph =
                     model_projection::canonical_general_view_graph(&filtered_graph, true);
+                package_groups = Some(build_package_groups_from_graph(&general_view_graph));
                 workspace_model.semantic = vec![package_element.clone()];
                 workspace_model.files = filter_workspace_model_files(&workspace_model.files, package_ref);
                 workspace_model.summary.loaded_files = workspace_model.files.len();
@@ -634,6 +764,7 @@ pub(crate) fn build_sysml_visualization_response(
                     package_candidates,
                     selected_package,
                     selected_package_name,
+                    package_groups,
                     graph: Some(filtered_graph.clone()),
                     general_view_graph: Some(general_view_graph),
                     workspace_model: Some(workspace_model),
@@ -664,6 +795,7 @@ pub(crate) fn build_sysml_visualization_response(
         package_candidates,
         selected_package,
         selected_package_name,
+        package_groups,
         graph: Some(graph.clone()),
         general_view_graph: Some(general_view_graph),
         workspace_model: Some(workspace_model),
@@ -682,7 +814,24 @@ pub(crate) fn build_sysml_visualization_response(
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+
     use super::parse_sysml_visualization_params;
+    use super::build_package_groups_from_graph;
+    use crate::views::dto::{GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, SysmlGraphDto};
+
+    fn zero_range() -> RangeDto {
+        RangeDto {
+            start: PositionDto {
+                line: 0,
+                character: 0,
+            },
+            end: PositionDto {
+                line: 0,
+                character: 0,
+            },
+        }
+    }
 
     #[test]
     fn parse_visualization_params_accepts_workspace_root_and_package_filter() {
@@ -721,5 +870,64 @@ mod tests {
         assert_eq!(view, "interconnection-view");
         assert_eq!(package_filter.kind, "all");
         assert_eq!(package_filter.package, None);
+    }
+
+    #[test]
+    fn package_groups_are_built_from_contains_hierarchy() {
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "P".to_string(),
+                    element_type: "package".to_string(),
+                    name: "P".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "P::Inner".to_string(),
+                    element_type: "package".to_string(),
+                    name: "Inner".to_string(),
+                    uri: None,
+                    parent_id: Some("P".to_string()),
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "P::Inner::x".to_string(),
+                    element_type: "part".to_string(),
+                    name: "x".to_string(),
+                    uri: None,
+                    parent_id: Some("P::Inner".to_string()),
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+            ],
+            edges: vec![
+                GraphEdgeDto {
+                    source: "P".to_string(),
+                    target: "P::Inner".to_string(),
+                    rel_type: "contains".to_string(),
+                    name: None,
+                },
+                GraphEdgeDto {
+                    source: "P::Inner".to_string(),
+                    target: "P::Inner::x".to_string(),
+                    rel_type: "contains".to_string(),
+                    name: None,
+                },
+            ],
+        };
+
+        let groups = build_package_groups_from_graph(&graph);
+        assert_eq!(groups.len(), 2);
+        assert!(groups.iter().any(|group| group.id == "P"));
+        assert!(groups
+            .iter()
+            .any(|group| group.id == "P::Inner" && group.parent_id.as_deref() == Some("P")));
+        assert!(groups
+            .iter()
+            .any(|group| group.node_ids.iter().any(|node_id| node_id == "P::Inner::x")));
     }
 }

@@ -20,6 +20,7 @@ export interface GeneralViewPackageGroup {
     label: string;
     nodeIds: string[];
     depth: number;
+    parentId?: string | null;
 }
 
 function getCategoryForType(typeLower: string): string {
@@ -192,7 +193,8 @@ export function buildSyntheticTreeEdgesForGeneralView(
  */
 export function graphToGeneralViewElements(
     graph: any,
-    ctx: GeneralViewGraphContext
+    ctx: GeneralViewGraphContext,
+    backendPackageGroups: GeneralViewPackageGroup[] = []
 ): { elements: any[]; typeStats: Record<string, number>; packageGroups: GeneralViewPackageGroup[] } {
     if (!graph || (!graph.nodes?.length && !graph.edges?.length)) {
         return { elements: [], typeStats: {}, packageGroups: [] };
@@ -337,23 +339,25 @@ export function graphToGeneralViewElements(
         });
     });
     const packageGroupsMap = new Map<string, GeneralViewPackageGroup>();
-    cyElements
-        .filter((el: any) => el.group === 'nodes' && Array.isArray(el.data.packagePath) && el.data.packagePath.length > 0)
-        .forEach((el: any) => {
-            const path = el.data.packagePath as string[];
-            path.forEach((_segment, index) => {
-                const slice = path.slice(0, index + 1);
-                const groupId = slice.join(' / ');
-                const existing = packageGroupsMap.get(groupId) || {
-                    id: groupId,
-                    label: slice[slice.length - 1],
-                    nodeIds: [],
-                    depth: slice.length,
-                };
-                existing.nodeIds.push(el.data.id);
-                packageGroupsMap.set(groupId, existing);
+    if (!Array.isArray(backendPackageGroups) || backendPackageGroups.length === 0) {
+        cyElements
+            .filter((el: any) => el.group === 'nodes' && Array.isArray(el.data.packagePath) && el.data.packagePath.length > 0)
+            .forEach((el: any) => {
+                const path = el.data.packagePath as string[];
+                path.forEach((_segment, index) => {
+                    const slice = path.slice(0, index + 1);
+                    const groupId = slice.join(' / ');
+                    const existing = packageGroupsMap.get(groupId) || {
+                        id: groupId,
+                        label: slice[slice.length - 1],
+                        nodeIds: [],
+                        depth: slice.length,
+                    };
+                    existing.nodeIds.push(el.data.id);
+                    packageGroupsMap.set(groupId, existing);
+                });
             });
-        });
+    }
     const validNodeIds = new Set(cyElements.filter((el: any) => el.group === 'nodes').map((el: any) => el.data.id));
     const hierarchyEdgeIds = new Set<string>();
     const typingEdgeIds = new Set<string>();
@@ -560,8 +564,21 @@ export function graphToGeneralViewElements(
             edgesResolved
         );
     }
+    const packageGroups = Array.isArray(backendPackageGroups) && backendPackageGroups.length > 0
+        ? backendPackageGroups
+            .map((group: any) => ({
+                id: String(group?.id || ''),
+                label: String(group?.label || ''),
+                depth: Number(group?.depth || 0),
+                parentId: group?.parentId ?? null,
+                nodeIds: (Array.isArray(group?.nodeIds) ? group.nodeIds : [])
+                    .map((graphNodeId: string) => idToCyId.get(graphNodeId))
+                    .filter(Boolean) as string[],
+            }))
+            .filter((group) => group.id && group.nodeIds.length > 0)
+        : [...packageGroupsMap.values()].filter((group) => group.nodeIds.length > 0);
+
     if (ctx.webviewLog) {
-        const packageGroups = [...packageGroupsMap.values()].filter((group) => group.nodeIds.length > 0);
         ctx.webviewLog('info', '[GENERAL][graph-build]', {
             filteredNodes: filteredNodes.length,
             filteredUniqueNodes: filteredUniqueNodes.length,
@@ -574,7 +591,7 @@ export function graphToGeneralViewElements(
     return {
         elements: cyElements,
         typeStats,
-        packageGroups: [...packageGroupsMap.values()].filter((group) => group.nodeIds.length > 0),
+        packageGroups,
     };
 }
 
@@ -608,5 +625,8 @@ export function buildGeneralViewGraph(
             containsEdges: containsCount,
         });
     }
-    return graphToGeneralViewElements(graph, ctx);
+    const backendPackageGroups = Array.isArray(dataOrElements?.packageGroups)
+        ? dataOrElements.packageGroups
+        : [];
+    return graphToGeneralViewElements(graph, ctx, backendPackageGroups);
 }

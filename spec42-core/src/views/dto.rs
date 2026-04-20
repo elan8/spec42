@@ -204,6 +204,17 @@ pub struct SysmlVisualizationPackageCandidateDto {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct SysmlVisualizationGroupDto {
+    pub id: String,
+    pub label: String,
+    pub depth: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parent_id: Option<String>,
+    pub node_ids: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SysmlVisualizationResultDto {
     pub version: u32,
     pub view: String,
@@ -213,6 +224,8 @@ pub struct SysmlVisualizationResultDto {
     pub selected_package: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub selected_package_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub package_groups: Option<Vec<SysmlVisualizationGroupDto>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub graph: Option<SysmlGraphDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -232,6 +245,8 @@ pub struct SysmlVisualizationResultDto {
 pub struct SysmlModelResultDto {
     pub version: u32,
     pub graph: Option<SysmlGraphDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub package_groups: Option<Vec<SysmlVisualizationGroupDto>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub general_view_graph: Option<SysmlGraphDto>,
     #[serde(skip_serializing_if = "Option::is_none")]

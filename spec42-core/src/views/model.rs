@@ -585,6 +585,7 @@ pub async fn build_sysml_model_response(
     SysmlModelResultDto {
         version: 0,
         graph,
+        package_groups: None,
         general_view_graph,
         workspace_model,
         stats,

@@ -40,11 +40,12 @@ type RouteFrameDiagnostics = {
     translatedRootFinalScore?: number;
 };
 
-function selectIbdViewData(data: any): { parts: any[]; ports: any[]; connectors: any[] } {
+function selectIbdViewData(data: any): { parts: any[]; ports: any[]; connectors: any[]; containerGroups: any[] } {
     return {
         parts: data?.parts || [],
         ports: data?.ports || [],
         connectors: data?.connectors || [],
+        containerGroups: data?.containerGroups || [],
     };
 }
 
@@ -199,71 +200,54 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
     }
 
     const selected = selectIbdViewData(data);
-    const rawParts = selected.parts;
+    const containerGroups = Array.isArray(selected.containerGroups) ? selected.containerGroups : [];
+    const backendParts = Array.isArray(selected.parts) ? selected.parts.map((part: any) => ({ ...part })) : [];
+    const groupById = new Map<string, any>();
+    const groupByQualifiedName = new Map<string, any>();
+    const groupNodes = containerGroups.map((group: any) => {
+        const node = {
+            id: String(group?.id || ''),
+            name: String(group?.label || 'package'),
+            qualifiedName: String(group?.qualifiedName || group?.id || ''),
+            containerId: group?.parentId || null,
+            type: 'package',
+            attributes: {},
+            isSyntheticPackage: true,
+            isBackendContainerGroup: true,
+            depth: Number(group?.depth || 0),
+            memberPartIds: Array.isArray(group?.memberPartIds) ? group.memberPartIds : [],
+        };
+        if (node.id) groupById.set(node.id, node);
+        if (node.qualifiedName) groupByQualifiedName.set(node.qualifiedName, node);
+        return node;
+    }).filter((node: any) => node.id);
+    backendParts.forEach((part: any) => {
+        const existingContainer = String(part?.containerId || '');
+        if (existingContainer && groupByQualifiedName.has(existingContainer)) {
+            part.containerId = groupByQualifiedName.get(existingContainer)?.id || existingContainer;
+            return;
+        }
+        if (existingContainer && groupById.has(existingContainer)) {
+            return;
+        }
+        let bestGroup: any = null;
+        for (const groupNode of groupNodes) {
+            const members = Array.isArray(groupNode?.memberPartIds) ? groupNode.memberPartIds : [];
+            if (members.includes(part?.id)) {
+                if (!bestGroup || Number(groupNode?.depth || 0) > Number(bestGroup?.depth || 0)) {
+                    bestGroup = groupNode;
+                }
+            }
+        }
+        if (bestGroup) {
+            part.containerId = bestGroup.id;
+        }
+    });
+    const parts = [...groupNodes, ...backendParts];
     const ports = selected.ports;
     const connectors = selected.connectors;
     const toDot = (qn: string) => (qn || '').replace(/::/g, '.');
     const normalizeEndpointId = (value: string | null | undefined) => toDot(value || '').trim();
-    const withPackageContainers = (sourceParts: any[]): any[] => {
-        const partsCopy = (sourceParts || []).map((part: any) => ({ ...part }));
-        const partQualifiedNames = new Set<string>(
-            partsCopy
-                .map((part: any) => normalizeEndpointId(part?.qualifiedName || part?.id || part?.name || ''))
-                .filter(Boolean)
-        );
-        const packageContainers = new Map<string, any>();
-
-        const ensurePackageContainer = (qualifiedName: string, parentQualifiedName: string | null) => {
-            if (!qualifiedName || partQualifiedNames.has(qualifiedName) || packageContainers.has(qualifiedName)) {
-                return;
-            }
-            const segments = qualifiedName.split('.').filter(Boolean);
-            const name = segments[segments.length - 1] || qualifiedName;
-            packageContainers.set(qualifiedName, {
-                id: `__pkg__${qualifiedName.replace(/[^A-Za-z0-9_.-]/g, '_')}`,
-                name,
-                qualifiedName,
-                containerId: parentQualifiedName,
-                type: 'package',
-                attributes: {},
-                isSyntheticPackage: true,
-            });
-        };
-
-        for (const part of partsCopy) {
-            const qn = normalizeEndpointId(part?.qualifiedName || part?.id || part?.name || '');
-            if (!qn) continue;
-            const segments = qn.split('.').filter(Boolean);
-            if (segments.length < 2) continue;
-            for (let index = 1; index < segments.length; index += 1) {
-                const packageQn = segments.slice(0, index).join('.');
-                const packageParentQn = index > 1 ? segments.slice(0, index - 1).join('.') : null;
-                ensurePackageContainer(packageQn, packageParentQn);
-            }
-        }
-
-        const knownContainerQn = new Set<string>([
-            ...partQualifiedNames,
-            ...Array.from(packageContainers.keys()),
-        ]);
-        for (const part of partsCopy) {
-            const existingContainer = normalizeEndpointId(part?.containerId || '');
-            if (existingContainer) {
-                continue;
-            }
-            const qn = normalizeEndpointId(part?.qualifiedName || part?.id || part?.name || '');
-            if (!qn) continue;
-            const segments = qn.split('.').filter(Boolean);
-            if (segments.length < 2) continue;
-            const implicitContainerQn = segments.slice(0, segments.length - 1).join('.');
-            if (implicitContainerQn && implicitContainerQn !== qn && knownContainerQn.has(implicitContainerQn)) {
-                part.containerId = implicitContainerQn;
-            }
-        }
-
-        return [...Array.from(packageContainers.values()), ...partsCopy];
-    };
-    const parts = withPackageContainers(rawParts);
     const normalizedConnectorUsage = new Map<string, { sourceCount: number; targetCount: number }>();
 
     const getPortsForPartRef = (part: any) => ports.filter((p: any) =>
@@ -456,6 +440,9 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         return layout;
     };
     const elkPortIdFor = (part: any, port: any) => `${partToElkId(part)}__port__${sanitizeElkSegment(getPortLayoutKey(part, port))}`;
+    const partSizeKey = (part: any) => partToElkId(part) || String(part?.id || part?.name || '');
+    const isPartLikeType = (part: any): boolean => String(part?.type || '').toLowerCase().includes('part');
+    const isPartDefinitionType = (part: any): boolean => String(part?.type || '').toLowerCase().includes('part def');
 
     // Assign IDs to parts
     parts.forEach((part: any, index: number) => {
@@ -464,6 +451,9 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
 
     // Helper function to calculate part height based on content
     const calculatePartHeight = (part: any) => {
+        if (part?.isSyntheticPackage) {
+            return 64;
+        }
         const partPorts = getPortsForPartRef(part);
         const { leftPorts, rightPorts } = getPortLayoutForPart(part);
         const partChildren = part.children || [];
@@ -503,10 +493,19 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         const portSpacing = 26;
         const portsHeight = partPorts.length > 0 ? (portRows * portSpacing + 22) : 0;
 
-        return Math.max(96, headerHeight + contentHeight + portsHeight);
+        if (isPartDefinitionType(part)) {
+            return Math.min(180, Math.max(88, headerHeight + portsHeight + 8));
+        }
+        if (!isPartLikeType(part)) {
+            return Math.max(72, headerHeight + portsHeight);
+        }
+        return Math.min(340, Math.max(96, headerHeight + contentHeight + portsHeight));
     };
 
     const calculatePartWidth = (part: any) => {
+        if (part?.isSyntheticPackage) {
+            return Math.max(180, Math.min(300, 120 + String(part?.name || '').length * 8));
+        }
         const partPorts = getPortsForPartRef(part);
         let typedByName: string | null = null;
         if (part.attributes && part.attributes.get) {
@@ -529,16 +528,17 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             170 + longestHeader * 7 + connectednessBonus,
             150 + Math.min(longestPortLabel, 22) * 5.8 + connectednessBonus
         );
+        if (!isPartLikeType(part)) {
+            return Math.min(280, Math.max(170, 130 + Math.max(String(part?.name || '').length, longestHeader) * 7));
+        }
         return Math.min(460, desiredWidth);
     };
 
     const partHeights = new Map<string, number>();
     const partWidths = new Map<string, number>();
     parts.forEach((part: any) => {
-        partHeights.set(part.name, calculatePartHeight(part));
-        partWidths.set(part.name, calculatePartWidth(part));
-        if (part.id) partHeights.set(part.id, calculatePartHeight(part));
-        if (part.id) partWidths.set(part.id, calculatePartWidth(part));
+        partHeights.set(partSizeKey(part), calculatePartHeight(part));
+        partWidths.set(partSizeKey(part), calculatePartWidth(part));
     });
 
     // Build part tree from containment: roots have containerId null/absent; children have containerId === parent
@@ -570,15 +570,19 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
     const findPartForEndpoint = (endpointPath: string): any => {
         if (!endpointPath) return null;
         const pathDot = normalizeEndpointId(endpointPath);
-        let best: { part: any; len: number } | null = null;
+        let bestConcrete: { part: any; len: number } | null = null;
+        let bestAny: { part: any; len: number } | null = null;
         for (const part of parts) {
             const qn = normalizeEndpointId(part.qualifiedName || part.name);
             if (!qn) continue;
             if (pathDot === qn || pathDot.startsWith(qn + '.')) {
-                if (!best || qn.length > best.len) best = { part, len: qn.length };
+                if (!bestAny || qn.length > bestAny.len) bestAny = { part, len: qn.length };
+                if (!part?.isSyntheticPackage && (!bestConcrete || qn.length > bestConcrete.len)) {
+                    bestConcrete = { part, len: qn.length };
+                }
             }
         }
-        return best?.part ?? null;
+        return bestConcrete?.part ?? bestAny?.part ?? null;
     };
     const resolvePortForEndpointInData = (part: any, endpointId: string | null | undefined): any => {
         if (!part || !endpointId) return null;
@@ -620,8 +624,9 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         const treeToElkNode = (node: PartTreeNode): any => {
             const part = node.part;
             const id = partToElkId(part);
-            const h = partHeights.get(part.name) || 80;
-            const w = partWidths.get(part.name) || partWidth;
+            const h = partHeights.get(partSizeKey(part)) || 80;
+            const w = partWidths.get(partSizeKey(part)) || partWidth;
+            const isSyntheticPackage = !!part?.isSyntheticPackage;
             const { leftPorts, rightPorts } = getPortLayoutForPart(part);
             const buildElkPort = (port: any, side: 'WEST' | 'EAST', order: number) => ({
                 id: elkPortIdFor(part, port),
@@ -649,10 +654,14 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             }
             const childNodes = node.children.map((c) => treeToElkNode(c));
             const childWidthSum = node.children.reduce((sum: number, child: PartTreeNode) => {
-                return sum + (partWidths.get(child.part.name) || partWidth);
+                return sum + (partWidths.get(partSizeKey(child.part)) || partWidth);
             }, 0);
-            const minW = Math.max(w, Math.min(1040, childWidthSum + node.children.length * 72));
-            const minH = rootHeaderHeight + 160;
+            const minW = isSyntheticPackage
+                ? Math.max(w, Math.min(980, childWidthSum + node.children.length * 44))
+                : Math.max(w, Math.min(1040, childWidthSum + node.children.length * 72));
+            const minH = isSyntheticPackage
+                ? rootHeaderHeight + 72
+                : rootHeaderHeight + Math.max(72, Math.min(132, 58 + node.children.length * 14));
             return {
                 id,
                 width: minW,
@@ -664,7 +673,10 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 children: childNodes,
                 layoutOptions: {
                     // Reserve room for the rendered container header strip.
-                    'elk.padding': `[top=${containerTopInset},left=24,bottom=24,right=24]`,
+                    'elk.padding': isSyntheticPackage
+                        ? `[top=${rootHeaderHeight + 12},left=16,bottom=16,right=16]`
+                        : `[top=${containerTopInset},left=24,bottom=24,right=24]`,
+                    'elk.direction': isSyntheticPackage ? 'DOWN' : 'RIGHT',
                     'org.eclipse.elk.portConstraints': 'FIXED_ORDER',
                     'org.eclipse.elk.portAlignment.default': 'CENTER',
                 }
@@ -753,8 +765,8 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             }
             return;
         }
-        const w = elkNode.width ?? (partWidths.get(part.name) || partWidth);
-        const h = elkNode.height ?? (partHeights.get(part.name) || 80);
+        const w = elkNode.width ?? (partWidths.get(partSizeKey(part)) || partWidth);
+        const h = elkNode.height ?? (partHeights.get(partSizeKey(part)) || 80);
         const isContainer = elkNode.children && elkNode.children.length > 0;
         const posData = { x: absX + padding, y: absY + padding, part, height: h, width: w, isContainer, depth };
         setPos(part, posData);
@@ -2196,42 +2208,44 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 return props;
             };
 
-            partChildren.forEach((c: any) => {
-                try {
-                    if (!c || !c.name || !c.type) return;
+            if (!isDefinition) {
+                partChildren.forEach((c: any) => {
+                    try {
+                        if (!c || !c.name || !c.type) return;
 
-                    if (c.type === 'part') {
-                        contentLines.push('[part] ' + c.name);
-                        contentLines.push(...formatProperties(c));
-                        if (c.children && c.children.length > 0) {
-                            c.children.forEach((grandchild: any) => {
-                                if (grandchild.type === 'redefinition' && grandchild.name) {
-                                    const value = grandchild.attributes && grandchild.attributes.get ?
-                                        grandchild.attributes.get('value') :
-                                        (grandchild.attributes && grandchild.attributes.value);
-                                    if (value) {
-                                        contentLines.push('  :>> ' + grandchild.name + ' = ' + value);
+                        if (c.type === 'part') {
+                            contentLines.push('[part] ' + c.name);
+                            contentLines.push(...formatProperties(c));
+                            if (c.children && c.children.length > 0) {
+                                c.children.forEach((grandchild: any) => {
+                                    if (grandchild.type === 'redefinition' && grandchild.name) {
+                                        const value = grandchild.attributes && grandchild.attributes.get ?
+                                            grandchild.attributes.get('value') :
+                                            (grandchild.attributes && grandchild.attributes.value);
+                                        if (value) {
+                                            contentLines.push('  :>> ' + grandchild.name + ' = ' + value);
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
+                        } else if (c.type === 'redefinition') {
+                            const value = c.attributes && c.attributes.get ?
+                                c.attributes.get('value') :
+                                (c.attributes && c.attributes.value);
+                            if (value) {
+                                contentLines.push(':>> ' + c.name + ' = ' + value);
+                            }
+                        } else if (c.type === 'attribute' || c.type === 'property') {
+                            const valueStr = c.value !== undefined ? ' = ' + c.value : '';
+                            contentLines.push('[attr] ' + c.name + valueStr);
+                        } else if (c.type === 'state') {
+                            contentLines.push('[state] ' + c.name);
                         }
-                    } else if (c.type === 'redefinition') {
-                        const value = c.attributes && c.attributes.get ?
-                            c.attributes.get('value') :
-                            (c.attributes && c.attributes.value);
-                        if (value) {
-                            contentLines.push(':>> ' + c.name + ' = ' + value);
-                        }
-                    } else if (c.type === 'attribute' || c.type === 'property') {
-                        const valueStr = c.value !== undefined ? ' = ' + c.value : '';
-                        contentLines.push('[attr] ' + c.name + valueStr);
-                    } else if (c.type === 'state') {
-                        contentLines.push('[state] ' + c.name);
+                    } catch {
+                        // Skip problem children silently
                     }
-                } catch {
-                    // Skip problem children silently
-                }
-            });
+                });
+            }
 
         const lineHeight = 12;
         const headerHeight = typedByName ? 50 : 38;

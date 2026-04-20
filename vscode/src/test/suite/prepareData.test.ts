@@ -109,6 +109,7 @@ describe("prepareDataForView", () => {
         assert.ok(Array.isArray(result.parts), "interconnection-view should have parts array");
         assert.ok(Array.isArray(result.connectors), "interconnection-view should have connectors array");
         assert.ok(Array.isArray(result.ports), "interconnection-view should have ports array");
+        assert.ok(Array.isArray(result.containerGroups), "interconnection-view should have containerGroups array");
     });
 
     it("interconnection-view preserves connectors that only provide source/target ids", () => {
@@ -476,6 +477,28 @@ describe("prepareDataForView", () => {
             const result = prepareDataForView(data, "interconnection-view");
             assert.strictEqual(result.connectors.length, 1);
             assert.strictEqual(result.connectors[0].name, "crossPackageLink");
+        });
+
+        it("passes through backend container groups", () => {
+            const data = {
+                graph: { nodes: [], edges: [] },
+                ibd: {
+                    ...mockIbdFromServer,
+                    containerGroups: [
+                        {
+                            id: "container:SurveillanceDrone",
+                            label: "SurveillanceDrone",
+                            depth: 1,
+                            parentId: null,
+                            qualifiedName: "SurveillanceDrone",
+                            memberPartIds: ["SurveillanceDrone::SurveillanceQuadrotorDrone"],
+                        },
+                    ],
+                },
+            };
+            const result = prepareDataForView(data, "interconnection-view");
+            assert.strictEqual(result.containerGroups.length, 1);
+            assert.strictEqual(result.containerGroups[0].id, "container:SurveillanceDrone");
         });
 
         it("returns empty IBD when no server ibd (no fallback)", () => {

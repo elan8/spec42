@@ -103,10 +103,23 @@ pub struct IbdConnectorDto {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct IbdContainerGroupDto {
+    pub id: String,
+    pub label: String,
+    pub depth: usize,
+    pub qualified_name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parent_id: Option<String>,
+    pub member_part_ids: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IbdDataDto {
     pub parts: Vec<IbdPartDto>,
     pub ports: Vec<IbdPortDto>,
     pub connectors: Vec<IbdConnectorDto>,
+    pub container_groups: Vec<IbdContainerGroupDto>,
     pub root_candidates: Vec<String>,
     pub default_root: Option<String>,
     pub root_views: std::collections::HashMap<String, IbdRootViewDto>,
@@ -118,6 +131,7 @@ pub struct IbdRootViewDto {
     pub parts: Vec<IbdPartDto>,
     pub ports: Vec<IbdPortDto>,
     pub connectors: Vec<IbdConnectorDto>,
+    pub container_groups: Vec<IbdContainerGroupDto>,
 }
 
 /// Qualified name with "::" converted to "." for client path matching (e.g. "pkg::A::b" -> "A.b" when root is "A").
@@ -184,6 +198,72 @@ fn endpoint_matches_root(endpoint: &str, root_prefix: &str) -> bool {
 
 fn endpoint_matches_part(endpoint: &str, part_qn_dot: &str) -> bool {
     endpoint == part_qn_dot || endpoint.starts_with(&format!("{part_qn_dot}."))
+}
+
+fn resolve_owner_part_qn_for_endpoint(endpoint: &str, parts: &[IbdPartDto]) -> Option<String> {
+    parts
+        .iter()
+        .filter(|part| endpoint_matches_part(endpoint, &part.qualified_name))
+        .max_by_key(|part| part.qualified_name.len())
+        .map(|part| part.qualified_name.clone())
+}
+
+fn prune_ibd_payload_to_connected_scope(
+    parts: Vec<IbdPartDto>,
+    ports: Vec<IbdPortDto>,
+    connectors: Vec<IbdConnectorDto>,
+) -> (Vec<IbdPartDto>, Vec<IbdPortDto>, Vec<IbdConnectorDto>) {
+    if connectors.is_empty() || parts.is_empty() {
+        return (parts, ports, connectors);
+    }
+
+    let part_by_qn: std::collections::HashMap<String, IbdPartDto> = parts
+        .iter()
+        .cloned()
+        .map(|part| (part.qualified_name.clone(), part))
+        .collect();
+    let mut keep_part_qn: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+    for connector in &connectors {
+        for endpoint in [&connector.source_id, &connector.target_id] {
+            let Some(owner_qn) = resolve_owner_part_qn_for_endpoint(endpoint, &parts) else {
+                continue;
+            };
+            let mut current_qn = Some(owner_qn);
+            while let Some(qn) = current_qn {
+                if !keep_part_qn.insert(qn.clone()) {
+                    break;
+                }
+                current_qn = part_by_qn
+                    .get(&qn)
+                    .and_then(|part| part.container_id.clone())
+                    .filter(|container| !container.is_empty());
+            }
+        }
+    }
+
+    if keep_part_qn.is_empty() {
+        return (parts, ports, connectors);
+    }
+
+    let parts: Vec<IbdPartDto> = parts
+        .into_iter()
+        .filter(|part| keep_part_qn.contains(&part.qualified_name))
+        .collect();
+    let part_qn: std::collections::HashSet<String> =
+        parts.iter().map(|part| part.qualified_name.clone()).collect();
+    let ports: Vec<IbdPortDto> = ports
+        .into_iter()
+        .filter(|port| part_qn.contains(&port.parent_id))
+        .collect();
+    let connectors: Vec<IbdConnectorDto> = connectors
+        .into_iter()
+        .filter(|connector| {
+            resolve_owner_part_qn_for_endpoint(&connector.source_id, &parts).is_some()
+                && resolve_owner_part_qn_for_endpoint(&connector.target_id, &parts).is_some()
+        })
+        .collect();
+    (parts, ports, connectors)
 }
 
 fn resolve_endpoint_anchor_node<'a>(
@@ -293,6 +373,68 @@ fn map_definition_endpoint_to_usage(
         ));
     }
     None
+}
+
+fn build_container_groups(parts: &[IbdPartDto]) -> Vec<IbdContainerGroupDto> {
+    let part_qn: std::collections::HashSet<String> =
+        parts.iter().map(|part| part.qualified_name.clone()).collect();
+    let mut groups_by_qn: std::collections::HashMap<String, IbdContainerGroupDto> =
+        std::collections::HashMap::new();
+
+    for part in parts {
+        let qn = part.qualified_name.as_str();
+        let segments: Vec<&str> = qn.split('.').filter(|segment| !segment.is_empty()).collect();
+        if segments.len() < 2 {
+            continue;
+        }
+        for depth in 1..segments.len() {
+            let prefix = segments[..depth].join(".");
+            if part_qn.contains(&prefix) {
+                continue;
+            }
+            let parent_qn = if depth > 1 {
+                Some(segments[..depth - 1].join("."))
+            } else {
+                None
+            };
+            let id = format!("container:{prefix}");
+            groups_by_qn
+                .entry(prefix.clone())
+                .or_insert_with(|| IbdContainerGroupDto {
+                    id,
+                    label: segments[depth - 1].to_string(),
+                    depth,
+                    qualified_name: prefix.clone(),
+                    parent_id: parent_qn
+                        .map(|value| format!("container:{value}"))
+                        .filter(|value| !value.is_empty()),
+                    member_part_ids: Vec::new(),
+                });
+        }
+    }
+
+    for part in parts {
+        for group in groups_by_qn.values_mut() {
+            if part.qualified_name == group.qualified_name
+                || part
+                    .qualified_name
+                    .starts_with(&format!("{}.", group.qualified_name))
+            {
+                group.member_part_ids.push(part.id.clone());
+            }
+        }
+    }
+
+    let mut groups: Vec<IbdContainerGroupDto> = groups_by_qn
+        .into_values()
+        .filter(|group| !group.member_part_ids.is_empty())
+        .collect();
+    groups.sort_by(|left, right| {
+        left.depth
+            .cmp(&right.depth)
+            .then_with(|| left.qualified_name.cmp(&right.qualified_name))
+    });
+    groups
 }
 
 /// Builds IBD data for the given URI from the semantic graph.
@@ -596,6 +738,9 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
 
     ensure_endpoint_parts_present(&mut parts, &connectors, graph, uri);
 
+    let (parts, ports, connectors) = prune_ibd_payload_to_connected_scope(parts, ports, connectors);
+    let container_groups = build_container_groups(&parts);
+
     let top_level_parts: Vec<_> = parts
         .iter()
         .filter(|p| {
@@ -713,12 +858,22 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             .filter(|port| focused_part_ids.contains(&port.parent_id))
             .cloned()
             .collect();
+        let focused_container_groups: Vec<IbdContainerGroupDto> = container_groups
+            .iter()
+            .filter(|group| {
+                focused_parts
+                    .iter()
+                    .any(|part| group.member_part_ids.contains(&part.id))
+            })
+            .cloned()
+            .collect();
         root_views.insert(
             p.name.clone(),
             IbdRootViewDto {
                 parts: focused_parts,
                 ports: focused_ports,
                 connectors: focused_connectors,
+                container_groups: focused_container_groups,
             },
         );
     }
@@ -727,6 +882,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         parts,
         ports,
         connectors,
+        container_groups,
         root_candidates,
         default_root,
         root_views,
@@ -746,6 +902,8 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
     let mut root_candidates: std::collections::BTreeSet<String> = std::collections::BTreeSet::new();
     let mut root_views: std::collections::HashMap<String, IbdRootViewDto> =
         std::collections::HashMap::new();
+    let mut container_groups_by_id: std::collections::HashMap<String, IbdContainerGroupDto> =
+        std::collections::HashMap::new();
 
     for ibd in ibds {
         for p in ibd.parts {
@@ -761,6 +919,20 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
                 .entry((c.source_id.clone(), c.target_id.clone(), c.rel_type.clone()))
                 .or_insert(c);
         }
+        for group in ibd.container_groups {
+            container_groups_by_id
+                .entry(group.id.clone())
+                .and_modify(|existing| {
+                    let mut members: std::collections::HashSet<String> =
+                        existing.member_part_ids.iter().cloned().collect();
+                    for part_id in &group.member_part_ids {
+                        if members.insert(part_id.clone()) {
+                            existing.member_part_ids.push(part_id.clone());
+                        }
+                    }
+                })
+                .or_insert(group);
+        }
         for root in ibd.root_candidates {
             root_candidates.insert(root);
         }
@@ -769,6 +941,7 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
                 parts: Vec::new(),
                 ports: Vec::new(),
                 connectors: Vec::new(),
+                container_groups: Vec::new(),
             });
             let mut part_ids: std::collections::HashSet<String> =
                 merged.parts.iter().map(|p| p.id.clone()).collect();
@@ -799,6 +972,16 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
                     merged.connectors.push(c);
                 }
             }
+            let mut group_ids: std::collections::HashSet<String> = merged
+                .container_groups
+                .iter()
+                .map(|group| group.id.clone())
+                .collect();
+            for group in view.container_groups {
+                if group_ids.insert(group.id.clone()) {
+                    merged.container_groups.push(group);
+                }
+            }
         }
     }
 
@@ -806,6 +989,7 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
         parts: parts_by_id.into_values().collect(),
         ports: ports_by_key.into_values().collect(),
         connectors: connectors_by_key.into_values().collect(),
+        container_groups: container_groups_by_id.into_values().collect(),
         root_candidates: root_candidates.into_iter().collect(),
         default_root: None,
         root_views,
@@ -814,7 +998,9 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
 
 #[cfg(test)]
 mod tests {
-    use super::infer_port_side;
+    use std::collections::HashMap;
+
+    use super::{build_container_groups, infer_port_side, IbdPartDto};
 
     #[test]
     fn infer_port_side_prefers_direction() {
@@ -855,5 +1041,36 @@ mod tests {
             infer_port_side("status", None, Some("~TelemetryPort")),
             None
         );
+    }
+
+    #[test]
+    fn container_groups_are_derived_from_part_qualified_names() {
+        let parts = vec![
+            IbdPartDto {
+                id: "P::Inner::a".to_string(),
+                name: "a".to_string(),
+                qualified_name: "P.Inner.a".to_string(),
+                uri: None,
+                container_id: None,
+                element_type: "part".to_string(),
+                attributes: HashMap::new(),
+            },
+            IbdPartDto {
+                id: "P::Inner::b".to_string(),
+                name: "b".to_string(),
+                qualified_name: "P.Inner.b".to_string(),
+                uri: None,
+                container_id: None,
+                element_type: "part".to_string(),
+                attributes: HashMap::new(),
+            },
+        ];
+        let groups = build_container_groups(&parts);
+        assert!(groups
+            .iter()
+            .any(|group| group.qualified_name == "P" && group.member_part_ids.len() == 2));
+        assert!(groups
+            .iter()
+            .any(|group| group.qualified_name == "P.Inner" && group.member_part_ids.len() == 2));
     }
 }
