@@ -348,21 +348,6 @@ impl<'a> EvalEngine<'a> {
 
 }
 
-fn compose_units(left: Option<&str>, op: &str, right: Option<&str>) -> Option<String> {
-    match (left, right) {
-        (None, None) => None,
-        (Some(l), None) => Some(l.to_string()),
-        (None, Some(r)) => {
-            if op == "/" {
-                Some(format!("1/{r}"))
-            } else {
-                Some(r.to_string())
-            }
-        }
-        (Some(l), Some(r)) => Some(format!("{l}{op}{r}")),
-    }
-}
-
 fn scope_prefixes(graph: &SemanticGraph, current: &SemanticNode) -> Vec<String> {
     let mut prefixes = Vec::new();
     if let Some(parent) = graph.parent_of(current) {
@@ -517,19 +502,19 @@ where
             }
             self.eat_char();
             let right = self.parse_factor()?;
-            left = if op == '*' {
-                Quantity {
-                    value: left.value * right.value,
-                    unit: compose_units(left.unit.as_deref(), "*", right.unit.as_deref()),
-                }
-            } else {
-                if right.value == 0.0 {
-                    return Err(EvalStatus::DivByZero);
-                }
-                Quantity {
-                    value: left.value / right.value,
-                    unit: compose_units(left.unit.as_deref(), "/", right.unit.as_deref()),
-                }
+            if op == '/' && right.value == 0.0 {
+                return Err(EvalStatus::DivByZero);
+            }
+            let composed = self.units.compose_product(
+                left.value,
+                left.unit.as_deref(),
+                right.value,
+                right.unit.as_deref(),
+                op == '/',
+            );
+            left = match composed {
+                Ok((value, unit)) => Quantity { value, unit },
+                Err(err) => return Err(map_unit_error(err)),
             };
         }
     }
@@ -678,9 +663,7 @@ where
                         value: left.value + v,
                         unit: Some(left_unit.clone()),
                     }),
-                    Err(UnitError::UnknownUnit) => Err(EvalStatus::Unknown),
-                    Err(UnitError::IncompatibleDimension) => Err(EvalStatus::TypeError),
-                    Err(UnitError::UnsupportedConversion) => Err(EvalStatus::Unsupported),
+                    Err(err) => Err(map_unit_error(err)),
                 }
             }
         }
@@ -707,6 +690,14 @@ fn trim_quotes(value: &str) -> String {
 
 fn normalize_unit_brackets(text: &str) -> String {
     text.replace("[[", "[").replace("]]", "]")
+}
+
+fn map_unit_error(err: UnitError) -> EvalStatus {
+    match err {
+        UnitError::UnknownUnit => EvalStatus::Unknown,
+        UnitError::IncompatibleDimension => EvalStatus::TypeError,
+        UnitError::UnsupportedConversion | UnitError::AmbiguousMetadata => EvalStatus::Unsupported,
+    }
 }
 
 #[cfg(test)]
@@ -773,9 +764,21 @@ mod tests {
             &file,
             r#"
                 attribute <m> 'metre' : LengthUnit;
+                attribute <s> second : TimeUnit;
                 attribute <cm> 'centimetre' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 1E-02; } }
                 attribute <ft> 'foot' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 3.048E-01; } }
                 attribute <kg> 'kilogram' : MassUnit;
+                attribute <K> kelvin : ThermodynamicTemperatureUnit, TemperatureDifferenceUnit;
+                attribute <'°C'> 'degree celsius (temperature difference)' : TemperatureDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 1; } }
+                attribute <'°F'> 'degree Fahrenheit (temperature difference)' : TemperatureDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 5/9; } }
+                attribute <'°C_abs'> 'degree celsius (absolute temperature scale)' : IntervalScale {
+                    attribute :>> unit = '°C';
+                    private attribute zeroDegreeCelsiusInKelvin: ThermodynamicTemperatureValue = 273.15 [K];
+                }
+                attribute <'°F_abs'> 'degree fahrenheit (absolute temperature scale)' : IntervalScale {
+                    :>> unit = '°F';
+                    private attribute zeroDegreeFahrenheitInKelvin: ThermodynamicTemperatureValue = 229835/900 [K];
+                }
             "#,
         )
         .expect("write fixture");
@@ -922,6 +925,106 @@ mod tests {
         assert_eq!(
             node_attr(&graph, &node, EVALUATION_STATUS_KEY),
             Some(&Value::String(STATUS_TYPE_ERROR.to_string()))
+        );
+    }
+
+    #[test]
+    fn evaluates_affine_absolute_temperature_addition() {
+        let mut graph = SemanticGraph::new();
+        register_units_fixture(&mut graph);
+        let uri = Url::parse("file:///C:/workspace/unit-affine.sysml").expect("uri");
+        let node = add_node(
+            &mut graph,
+            &uri,
+            "Demo::value",
+            "attribute",
+            "value",
+            None,
+            HashMap::from([(
+                "value".to_string(),
+                Value::String("0 [°C_abs] + 32 [°F_abs]".to_string()),
+            )]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &node, EVALUATION_STATUS_KEY),
+            Some(&Value::String(STATUS_OK.to_string()))
+        );
+        assert_eq!(
+            node_attr(&graph, &node, EVALUATED_UNIT_KEY),
+            Some(&Value::String("°C_abs".to_string()))
+        );
+        let value = node_attr(&graph, &node, EVALUATED_VALUE_KEY)
+            .and_then(Value::as_f64)
+            .expect("numeric");
+        assert!((value - 0.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn canonicalizes_multiply_divide_units_and_values() {
+        let mut graph = SemanticGraph::new();
+        register_units_fixture(&mut graph);
+        let uri = Url::parse("file:///C:/workspace/unit-canonical.sysml").expect("uri");
+        let area = add_node(
+            &mut graph,
+            &uri,
+            "Demo::area",
+            "attribute",
+            "area",
+            None,
+            HashMap::from([("value".to_string(), Value::String("2 [cm] * 3 [m]".to_string()))]),
+        );
+        let speed = add_node(
+            &mut graph,
+            &uri,
+            "Demo::speed",
+            "attribute",
+            "speed",
+            None,
+            HashMap::from([("value".to_string(), Value::String("10 [m] / 2 [s]".to_string()))]),
+        );
+        evaluate_expressions(&mut graph);
+
+        assert_eq!(
+            node_attr(&graph, &area, EVALUATED_UNIT_KEY),
+            Some(&Value::String("m^2".to_string()))
+        );
+        let area_value = node_attr(&graph, &area, EVALUATED_VALUE_KEY)
+            .and_then(Value::as_f64)
+            .expect("area value");
+        assert!((area_value - 0.06).abs() < 1e-9);
+
+        assert_eq!(
+            node_attr(&graph, &speed, EVALUATED_UNIT_KEY),
+            Some(&Value::String("m/s".to_string()))
+        );
+        let speed_value = node_attr(&graph, &speed, EVALUATED_VALUE_KEY)
+            .and_then(Value::as_f64)
+            .expect("speed value");
+        assert!((speed_value - 5.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn rejects_affine_units_in_multiplication() {
+        let mut graph = SemanticGraph::new();
+        register_units_fixture(&mut graph);
+        let uri = Url::parse("file:///C:/workspace/unit-affine-mul.sysml").expect("uri");
+        let node = add_node(
+            &mut graph,
+            &uri,
+            "Demo::value",
+            "attribute",
+            "value",
+            None,
+            HashMap::from([(
+                "value".to_string(),
+                Value::String("1 [°C_abs] * 2 [m]".to_string()),
+            )]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &node, EVALUATION_STATUS_KEY),
+            Some(&Value::String(STATUS_UNSUPPORTED.to_string()))
         );
     }
 }
