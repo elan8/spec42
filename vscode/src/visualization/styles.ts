@@ -374,6 +374,10 @@ export function getVisualizerStyles(): string {
         position: absolute;
         top: calc(100% + 4px);
         left: 0;
+        max-height: min(60vh, 420px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable;
     }
     #visualization {
         width: 100%;

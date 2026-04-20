@@ -1107,6 +1107,12 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
             findPackages(elements);
 
+            packagesArray.sort((a, b) => {
+                const aName = String(a?.name || '');
+                const bName = String(b?.name || '');
+                return aName.localeCompare(bName, undefined, { sensitivity: 'base' });
+            });
+
             // Add packages to diagrams array
             packagesArray.forEach(pkg => {
                 diagrams.push(pkg);
@@ -1407,6 +1413,12 @@ import { buildGeneralViewGraph } from './graphBuilders';
             }
 
             findPackagesForRender(elements);
+            // Keep render-time fallback order aligned with selector order.
+            packagesArray.sort((a, b) => {
+                const aName = String(a?.name || '');
+                const bName = String(b?.name || '');
+                return aName.localeCompare(bName, undefined, { sensitivity: 'base' });
+            });
 
             const selectedPackage = packagesArray.find((p: any) => p.name === selectedDiagramName)
                 || (selectedDiagramIndex > 0 ? packagesArray[selectedDiagramIndex - 1] : null);
@@ -2573,11 +2585,62 @@ import { buildGeneralViewGraph } from './graphBuilders';
         const pkgMenu = document.getElementById('pkg-dropdown-menu');
         if (!pkgBtn || !pkgMenu) return;
 
+        const repositionPackageMenu = () => {
+            const buttonRect = pkgBtn.getBoundingClientRect();
+            const diagramCanvas = document.getElementById('visualization');
+            const panel = document.getElementById('visualization-wrapper');
+            const boundaryRect = diagramCanvas?.getBoundingClientRect() ?? panel?.getBoundingClientRect();
+            const viewportPadding = 8;
+            const menuGap = 4;
+            const preferredMenuHeight = 420;
+            const boundaryLeft = boundaryRect ? boundaryRect.left + viewportPadding : viewportPadding;
+            const boundaryRight = boundaryRect ? boundaryRect.right - viewportPadding : window.innerWidth - viewportPadding;
+            const boundaryTop = boundaryRect ? boundaryRect.top + viewportPadding : viewportPadding;
+            const boundaryBottom = boundaryRect ? boundaryRect.bottom - viewportPadding : window.innerHeight - viewportPadding;
+            const measuredWidth = Math.max(
+                pkgBtn.getBoundingClientRect().width,
+                pkgMenu.scrollWidth,
+                220,
+            );
+            const maxLeft = boundaryRight - measuredWidth;
+            const left = Math.max(boundaryLeft, Math.min(buttonRect.left, maxLeft));
+            const spaceBelow = boundaryBottom - buttonRect.bottom;
+            const spaceAbove = buttonRect.top - boundaryTop;
+            const shouldOpenUpward = spaceBelow < 220 && spaceAbove > spaceBelow;
+            const availableSpace = shouldOpenUpward ? spaceAbove : spaceBelow;
+            const maxHeight = Math.max(0, Math.min(preferredMenuHeight, availableSpace - menuGap));
+            const top = shouldOpenUpward
+                ? Math.max(boundaryTop, buttonRect.top - maxHeight - menuGap)
+                : Math.min(boundaryBottom - maxHeight, buttonRect.bottom + menuGap);
+
+            pkgMenu.style.position = 'fixed';
+            pkgMenu.style.left = left + 'px';
+            pkgMenu.style.top = top + 'px';
+            pkgMenu.style.bottom = 'auto';
+            pkgMenu.style.minWidth = Math.round(Math.max(buttonRect.width, 180)) + 'px';
+            pkgMenu.style.maxHeight = Math.round(maxHeight) + 'px';
+        };
+
         pkgBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            pkgMenu.classList.toggle('show');
+            const shouldShow = !pkgMenu.classList.contains('show');
+            pkgMenu.classList.toggle('show', shouldShow);
             // Close view dropdown if open
             if (viewDropdownMenu) viewDropdownMenu.classList.remove('show');
+            if (shouldShow) {
+                repositionPackageMenu();
+                requestAnimationFrame(() => {
+                    const activeItem = pkgMenu.querySelector('.view-dropdown-item.active') as HTMLElement | null;
+                    activeItem?.scrollIntoView({ block: 'nearest' });
+                });
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (!pkgMenu.classList.contains('show')) {
+                return;
+            }
+            repositionPackageMenu();
         });
     })();
 
