@@ -437,27 +437,7 @@ export function getVisualizerStyles(): string {
     .loading-text {
         font-size: 14px;
         color: var(--vscode-foreground);
-        margin-bottom: 12px;
         font-weight: 500;
-    }
-    .loading-progress-container {
-        width: 200px;
-        height: 4px;
-        background: var(--vscode-panel-border);
-        border-radius: 2px;
-        overflow: hidden;
-    }
-    .loading-progress-bar {
-        height: 100%;
-        width: 30%;
-        background: linear-gradient(90deg, var(--vscode-button-background), var(--vscode-button-hoverBackground));
-        border-radius: 2px;
-        animation: progress-indeterminate 1.5s ease-in-out infinite;
-    }
-    @keyframes progress-indeterminate {
-        0% { transform: translateX(-100%); width: 30%; }
-        50% { transform: translateX(150%); width: 50%; }
-        100% { transform: translateX(400%); width: 30%; }
     }
     #visualization.structural-transition-active {
         will-change: opacity, transform;
