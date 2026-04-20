@@ -70,7 +70,7 @@ fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) -> SysmlGra
     let detail_ids: HashSet<&str> = graph
         .nodes
         .iter()
-        .filter(|node| is_general_view_inline_detail(&node.element_type))
+        .filter(|node| is_general_view_inline_detail(node))
         .map(|node| node.id.as_str())
         .collect();
 
@@ -182,9 +182,14 @@ fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) -> SysmlGra
     }
 }
 
-fn is_general_view_inline_detail(element_type: &str) -> bool {
-    let lower = element_type.to_lowercase();
-    is_port_like(&lower) || is_attribute_like(&lower) || is_parameter_like(&lower)
+fn is_general_view_inline_detail(node: &GraphNodeDto) -> bool {
+    let lower = node.element_type.to_lowercase();
+    is_port_like(&lower)
+        || is_attribute_like(&lower)
+        || is_parameter_like(&lower)
+        // Anonymous redefinition stubs like `part :>> engines[5] = (...)` should not
+        // surface as standalone structure nodes in General View.
+        || is_anonymous_redefinition_stub(node)
 }
 
 fn is_port_like(element_type: &str) -> bool {
@@ -198,6 +203,10 @@ fn is_attribute_like(element_type: &str) -> bool {
 
 fn is_parameter_like(element_type: &str) -> bool {
     element_type.to_lowercase().contains("parameter")
+}
+
+fn is_anonymous_redefinition_stub(node: &GraphNodeDto) -> bool {
+    node.name.trim().is_empty() && node.attributes.contains_key("redefines")
 }
 
 fn push_unique_line(lines: &mut Vec<String>, line: String) {
@@ -573,6 +582,61 @@ mod tests {
         assert!(
             canonical.edges.is_empty(),
             "contains edges to filtered parameter nodes should be removed too"
+        );
+    }
+
+    #[test]
+    fn canonical_general_view_graph_filters_anonymous_redefinition_stubs() {
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::Vehicle".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "Vehicle".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Vehicle::engines-redef".to_string(),
+                    element_type: "part".to_string(),
+                    name: "".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::Vehicle".to_string()),
+                    range: range(),
+                    attributes: serde_json::json!({ "redefines": "engines" })
+                        .as_object()
+                        .unwrap()
+                        .iter()
+                        .map(|(k, v)| (k.clone(), v.clone()))
+                        .collect(),
+                },
+            ],
+            edges: vec![GraphEdgeDto {
+                source: "Pkg::Vehicle".to_string(),
+                target: "Pkg::Vehicle::engines-redef".to_string(),
+                rel_type: "contains".to_string(),
+                name: None,
+            }],
+        };
+
+        let canonical = canonical_general_view_graph(&graph, false);
+        assert_eq!(
+            canonical.nodes.len(),
+            1,
+            "anonymous redefinition stubs should not remain in General View"
+        );
+        assert!(
+            canonical
+                .nodes
+                .iter()
+                .all(|node| node.id != "Pkg::Vehicle::engines-redef"),
+            "redefinition stub should be filtered out"
+        );
+        assert!(
+            canonical.edges.is_empty(),
+            "contains edges to redefinition stubs should be removed too"
         );
     }
 }
