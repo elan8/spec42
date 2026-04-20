@@ -879,15 +879,13 @@ pub(super) fn build_from_package_body_element(
             );
             let node_id = NodeId::new(uri, &qualified);
             if let ConnectionDefBody::Brace { elements } = &conn_node.body {
-                for el in elements {
-                    interface_def::build_from_connection_def_body_element(
-                        el,
-                        uri,
-                        Some(&qualified),
-                        &node_id,
-                        g,
-                    );
-                }
+                interface_def::build_from_connection_def_body(
+                    elements,
+                    uri,
+                    Some(&qualified),
+                    &node_id,
+                    g,
+                );
                 if annotation == Some("derivation") {
                     let original_end = g.child_named(&node_id, "#original").into_iter().next();
                     let derived_end = g.child_named(&node_id, "#derive").into_iter().next();

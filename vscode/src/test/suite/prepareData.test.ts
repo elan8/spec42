@@ -111,6 +111,30 @@ describe("prepareDataForView", () => {
         assert.ok(Array.isArray(result.ports), "interconnection-view should have ports array");
     });
 
+    it("interconnection-view preserves connectors that only provide source/target ids", () => {
+        const result = prepareDataForView(
+            {
+                ibd: {
+                    parts: [
+                        { id: "P::capability", name: "capability", qualifiedName: "P.capability", type: "part" },
+                        { id: "P::goal", name: "goal", qualifiedName: "P.goal", type: "part" },
+                    ],
+                    connectors: [
+                        {
+                            source: "P::capability",
+                            target: "P::goal",
+                            type: "connection",
+                        },
+                    ],
+                },
+            },
+            "interconnection-view"
+        );
+        assert.strictEqual(result.connectors.length, 1);
+        assert.strictEqual(result.connectors[0].source, "P::capability");
+        assert.strictEqual(result.connectors[0].target, "P::goal");
+    });
+
     it.skip("action-flow-view produces diagrams (disabled for release)", () => {
         const data = createMockData();
         const result = prepareDataForView(data, "action-flow-view");

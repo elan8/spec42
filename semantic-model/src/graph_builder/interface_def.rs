@@ -141,6 +141,55 @@ fn maybe_add_derivation_edge(g: &mut SemanticGraph, uri: &Url, parent_id: &NodeI
     }
 }
 
+fn add_connection_edges_from_end_typing(g: &mut SemanticGraph, uri: &Url, parent_id: &NodeId) {
+    let Some(parent) = g.get_node(parent_id) else {
+        return;
+    };
+    let scope_prefix = parent
+        .parent_id
+        .as_ref()
+        .map(|id| id.qualified_name.as_str());
+    let mut end_targets: Vec<String> = g
+        .children_of(parent)
+        .into_iter()
+        .filter(|child| child.element_kind == "interface end")
+        .filter_map(|child| {
+            g.outgoing_targets_by_kind(child, RelationshipKind::Typing)
+                .into_iter()
+                .next()
+                .map(|target| target.id.qualified_name.clone())
+                .or_else(|| {
+                    child
+                        .attributes
+                        .get("endType")
+                        .and_then(|value| value.as_str())
+                        .and_then(|end_type| {
+                            expressions::resolve_expression_endpoint_legacy(
+                                g,
+                                uri,
+                                scope_prefix,
+                                end_type,
+                            )
+                        })
+                })
+        })
+        .collect();
+    if end_targets.len() < 2 {
+        return;
+    }
+    let mut seen = std::collections::HashSet::new();
+    end_targets.retain(|target| seen.insert(target.clone()));
+    if end_targets.len() < 2 {
+        return;
+    }
+
+    // Binary connections emit one edge; n-ary connections use the first end as hub.
+    let source = end_targets[0].clone();
+    for target in end_targets.into_iter().skip(1) {
+        let _ = add_edge_if_both_exist(g, uri, &source, &target, RelationshipKind::Connection);
+    }
+}
+
 pub(super) fn build_from_interface_def_body_element(
     node: &sysml_v2_parser::Node<InterfaceDefBodyElement>,
     uri: &Url,
@@ -173,4 +222,17 @@ pub(super) fn build_from_connection_def_body_element(
         E::RefDecl(w) => add_ref_decl(g, uri, container_prefix, parent_id, w),
         E::ConnectStmt(w) => add_connect_stmt(g, uri, container_prefix, w),
     }
+}
+
+pub(super) fn build_from_connection_def_body(
+    elements: &[sysml_v2_parser::Node<ConnectionDefBodyElement>],
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    g: &mut SemanticGraph,
+) {
+    for element in elements {
+        build_from_connection_def_body_element(element, uri, container_prefix, parent_id, g);
+    }
+    add_connection_edges_from_end_typing(g, uri, parent_id);
 }

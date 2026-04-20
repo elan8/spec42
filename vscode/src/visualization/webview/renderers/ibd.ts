@@ -199,12 +199,72 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
     }
 
     const selected = selectIbdViewData(data);
-    const parts = selected.parts;
+    const rawParts = selected.parts;
     const ports = selected.ports;
     const connectors = selected.connectors;
-    const normalizedConnectorUsage = new Map<string, { sourceCount: number; targetCount: number }>();
     const toDot = (qn: string) => (qn || '').replace(/::/g, '.');
     const normalizeEndpointId = (value: string | null | undefined) => toDot(value || '').trim();
+    const withPackageContainers = (sourceParts: any[]): any[] => {
+        const partsCopy = (sourceParts || []).map((part: any) => ({ ...part }));
+        const partQualifiedNames = new Set<string>(
+            partsCopy
+                .map((part: any) => normalizeEndpointId(part?.qualifiedName || part?.id || part?.name || ''))
+                .filter(Boolean)
+        );
+        const packageContainers = new Map<string, any>();
+
+        const ensurePackageContainer = (qualifiedName: string, parentQualifiedName: string | null) => {
+            if (!qualifiedName || partQualifiedNames.has(qualifiedName) || packageContainers.has(qualifiedName)) {
+                return;
+            }
+            const segments = qualifiedName.split('.').filter(Boolean);
+            const name = segments[segments.length - 1] || qualifiedName;
+            packageContainers.set(qualifiedName, {
+                id: `__pkg__${qualifiedName.replace(/[^A-Za-z0-9_.-]/g, '_')}`,
+                name,
+                qualifiedName,
+                containerId: parentQualifiedName,
+                type: 'package',
+                attributes: {},
+                isSyntheticPackage: true,
+            });
+        };
+
+        for (const part of partsCopy) {
+            const qn = normalizeEndpointId(part?.qualifiedName || part?.id || part?.name || '');
+            if (!qn) continue;
+            const segments = qn.split('.').filter(Boolean);
+            if (segments.length < 2) continue;
+            for (let index = 1; index < segments.length; index += 1) {
+                const packageQn = segments.slice(0, index).join('.');
+                const packageParentQn = index > 1 ? segments.slice(0, index - 1).join('.') : null;
+                ensurePackageContainer(packageQn, packageParentQn);
+            }
+        }
+
+        const knownContainerQn = new Set<string>([
+            ...partQualifiedNames,
+            ...Array.from(packageContainers.keys()),
+        ]);
+        for (const part of partsCopy) {
+            const existingContainer = normalizeEndpointId(part?.containerId || '');
+            if (existingContainer) {
+                continue;
+            }
+            const qn = normalizeEndpointId(part?.qualifiedName || part?.id || part?.name || '');
+            if (!qn) continue;
+            const segments = qn.split('.').filter(Boolean);
+            if (segments.length < 2) continue;
+            const implicitContainerQn = segments.slice(0, segments.length - 1).join('.');
+            if (implicitContainerQn && implicitContainerQn !== qn && knownContainerQn.has(implicitContainerQn)) {
+                part.containerId = implicitContainerQn;
+            }
+        }
+
+        return [...Array.from(packageContainers.values()), ...partsCopy];
+    };
+    const parts = withPackageContainers(rawParts);
+    const normalizedConnectorUsage = new Map<string, { sourceCount: number; targetCount: number }>();
 
     const getPortsForPartRef = (part: any) => ports.filter((p: any) =>
         p && (
@@ -613,16 +673,17 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
 
         const elkEdges: Array<{ id: string; sources: string[]; targets: string[] }> = [];
         connectors.forEach((conn: any, idx: number) => {
-            const srcPart = findPartForEndpoint(conn.sourceId || conn.source);
-            const tgtPart = findPartForEndpoint(conn.targetId || conn.target);
+            const sourceEndpoint = conn.sourceId || conn.source;
+            const targetEndpoint = conn.targetId || conn.target;
+            const srcPart = findPartForEndpoint(sourceEndpoint);
+            const tgtPart = findPartForEndpoint(targetEndpoint);
             if (!srcPart || !tgtPart) return;
-            const srcPort = resolvePortForEndpointInData(srcPart, conn.sourceId || conn.source);
-            const tgtPort = resolvePortForEndpointInData(tgtPart, conn.targetId || conn.target);
-            if (!srcPort || !tgtPort) return;
+            const srcPort = resolvePortForEndpointInData(srcPart, sourceEndpoint);
+            const tgtPort = resolvePortForEndpointInData(tgtPart, targetEndpoint);
             elkEdges.push({
                 id: getConnectorId(conn, idx),
-                sources: [elkPortIdFor(srcPart, srcPort)],
-                targets: [elkPortIdFor(tgtPart, tgtPort)]
+                sources: [srcPort ? elkPortIdFor(srcPart, srcPort) : partToElkId(srcPart)],
+                targets: [tgtPort ? elkPortIdFor(tgtPart, tgtPort) : partToElkId(tgtPart)]
             });
         });
 
@@ -789,16 +850,6 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         for (let i = 1; i < pts.length; i++) s += ' L' + pts[i].x + ',' + pts[i].y;
         return s;
     };
-    const minimalFallbackRoute = (srcX: number, srcY: number, tgtX: number, tgtY: number): { x: number; y: number }[] => {
-        const midX = (srcX + tgtX) / 2;
-        return pruneRoutePoints([
-            { x: srcX, y: srcY },
-            { x: midX, y: srcY },
-            { x: midX, y: tgtY },
-            { x: tgtX, y: tgtY },
-        ]);
-    };
-
     const pruneRoutePoints = (points: { x: number; y: number }[]): { x: number; y: number }[] => {
         const pruned: { x: number; y: number }[] = [];
         for (const point of points) {
@@ -1475,8 +1526,10 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         const portConnections = new Map<string, { connector: any; idx: number }[]>();
 
         connectors.forEach((connector: any, idx: number) => {
-            const srcPos = findPartPos(connector.sourceId);
-            const tgtPos = findPartPos(connector.targetId);
+            const srcEndpointId = connector.sourceId || connector.source || '';
+            const tgtEndpointId = connector.targetId || connector.target || '';
+            const srcPos = findPartPos(srcEndpointId);
+            const tgtPos = findPartPos(tgtEndpointId);
             if (!srcPos || !tgtPos) return;
 
             const srcKey = srcPos.part.name;
@@ -1488,8 +1541,8 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             }
             nodePairConnectors.get(pairKey)!.push({ connector, idx });
 
-            const srcPortName = connector.sourceId ? connector.sourceId.split('.').pop() : null;
-            const tgtPortName = connector.targetId ? connector.targetId.split('.').pop() : null;
+            const srcPortName = srcEndpointId ? srcEndpointId.split('.').pop() : null;
+            const tgtPortName = tgtEndpointId ? tgtEndpointId.split('.').pop() : null;
             const portKey = srcKey + '.' + (srcPortName || 'edge') + '->' + tgtKey + '.' + (tgtPortName || 'edge');
 
             if (!portConnections.has(portKey)) {
@@ -1681,8 +1734,8 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         const degradedReasons = new Set<string>();
 
         connectors.forEach((connector: any, connIdx: number) => {
-            const srcPos = findPartPos(connector.sourceId);
-            const tgtPos = findPartPos(connector.targetId);
+            const srcPos = findPartPos(connector.sourceId || connector.source);
+            const tgtPos = findPartPos(connector.targetId || connector.target);
 
             if (!srcPos || !tgtPos) return;
 
@@ -1757,7 +1810,15 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                     ? edgeOwnerOffset
                     : lcaOffset;
             const elkSections = elkEdge?.sections || ibdLayoutResult.connectorSectionsById.get(connectorId);
-            const authoritativeRouteResult = elkSections && srcPortPos && tgtPortPos
+            const sourceIsLeft =
+                srcPortPos
+                    ? !!srcPortPos.isLeft
+                    : srcX <= (srcPos.x + ((srcPos.width ?? partWidth) / 2));
+            const targetIsLeft =
+                tgtPortPos
+                    ? !!tgtPortPos.isLeft
+                    : tgtX <= (tgtPos.x + ((tgtPos.width ?? partWidth) / 2));
+            const authoritativeRouteResult = elkSections
                 ? pointsFromElkSectionsWithPorts(
                     elkSections,
                     effectiveEdgeOffset,
@@ -1765,8 +1826,8 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                     srcY,
                     tgtX,
                     tgtY,
-                    !!srcPortPos.isLeft,
-                    !!tgtPortPos.isLeft,
+                    sourceIsLeft,
+                    targetIsLeft,
                     routeObstacles,
                     endpointObstacles,
                 )
@@ -1813,11 +1874,9 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 const end = points[points.length - 1];
                 return Math.hypot(start.x - srcX, start.y - srcY) + Math.hypot(end.x - tgtX, end.y - tgtY);
             };
-            const authoritativeDrift = routeEndpointDrift(authoritativeRoute);
-            const AUTHORITATIVE_ROUTE_DRIFT_MAX = 64;
-            if (!authoritativeRoute || authoritativeRoute.length < 2 || authoritativeDrift > AUTHORITATIVE_ROUTE_DRIFT_MAX) {
+            if (!authoritativeRoute || authoritativeRoute.length < 2) {
                 degradedReasons.add(`ELK did not return a usable route for connector ${connectorId}.`);
-                pathPoints = minimalFallbackRoute(srcX, srcY, tgtX, tgtY);
+                return;
             } else {
                 pathPoints = authoritativeRoute;
             }
@@ -1876,8 +1935,8 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 .attr('d', pathD)
                 .attr('class', 'ibd-connector')
                 .attr('data-connector-id', connectorId)
-                .attr('data-source', connector.sourceId || '')
-                .attr('data-target', connector.targetId || '')
+                .attr('data-source', connector.sourceId || connector.source || '')
+                .attr('data-target', connector.targetId || connector.target || '')
                 .attr('data-route-points', (pathPoints ?? parsePathToPoints(pathD)).map((point) => `${point.x},${point.y}`).join(' '))
                 .style('fill', 'none')
                 .style('stroke', strokeColor)

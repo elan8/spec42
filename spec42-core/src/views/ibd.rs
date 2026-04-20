@@ -186,6 +186,66 @@ fn endpoint_matches_part(endpoint: &str, part_qn_dot: &str) -> bool {
     endpoint == part_qn_dot || endpoint.starts_with(&format!("{part_qn_dot}."))
 }
 
+fn resolve_endpoint_anchor_node<'a>(
+    graph: &'a SemanticGraph,
+    uri: &Url,
+    endpoint_id: &str,
+) -> Option<&'a SemanticNode> {
+    let mut candidate = endpoint_id.replace('.', "::");
+    loop {
+        let node_id = NodeId::new(uri, &candidate);
+        if let Some(node) = graph.get_node(&node_id) {
+            if is_port_like(&node.element_kind) {
+                if let Some(parent_id) = &node.parent_id {
+                    if let Some(parent) = graph.get_node(parent_id) {
+                        return Some(parent);
+                    }
+                }
+            }
+            return Some(node);
+        }
+        if let Some((prefix, _)) = candidate.rsplit_once("::") {
+            candidate = prefix.to_string();
+        } else {
+            break;
+        }
+    }
+    None
+}
+
+fn ensure_endpoint_parts_present(
+    parts: &mut Vec<IbdPartDto>,
+    connectors: &[IbdConnectorDto],
+    graph: &SemanticGraph,
+    uri: &Url,
+) {
+    let mut existing_part_qn: std::collections::HashSet<String> =
+        parts.iter().map(|part| part.qualified_name.clone()).collect();
+
+    for endpoint in connectors
+        .iter()
+        .flat_map(|connector| [&connector.source_id, &connector.target_id])
+    {
+        let Some(node) = resolve_endpoint_anchor_node(graph, uri, endpoint) else {
+            continue;
+        };
+        let qualified_name = qualified_name_to_dot(&node.id.qualified_name);
+        if !existing_part_qn.insert(qualified_name.clone()) {
+            continue;
+        }
+        let container_id = node.parent_id.as_ref().map(|parent| qualified_name_to_dot(&parent.qualified_name));
+        parts.push(IbdPartDto {
+            id: node.id.qualified_name.clone(),
+            name: node.name.clone(),
+            qualified_name,
+            uri: Some(node.id.uri.as_str().to_string()),
+            container_id,
+            element_type: node.element_kind.clone(),
+            attributes: node.attributes.clone(),
+        });
+    }
+}
+
 fn materialized_subtree_metrics(
     root_prefix: &str,
     parts: &[IbdPartDto],
@@ -533,6 +593,8 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             });
         }
     }
+
+    ensure_endpoint_parts_present(&mut parts, &connectors, graph, uri);
 
     let top_level_parts: Vec<_> = parts
         .iter()

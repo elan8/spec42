@@ -967,6 +967,39 @@ mod tests {
     }
 
     #[test]
+    fn connection_usage_end_references_emit_connection_edges() {
+        let input = r#"
+            package P {
+                part def Capability;
+                part def Goal;
+                connection def CapabilityToGoal {
+                    end capa : Capability;
+                    end goal : Goal;
+                }
+                part capability : Capability;
+                part goal : Goal;
+                connection c1 : CapabilityToGoal {
+                    end capa ::> capability;
+                    end goal ::> goal;
+                }
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let g = build_graph_from_doc(&root, &uri);
+        let edges = g.edges_for_uri_as_strings(&uri);
+        assert!(
+            edges.iter().any(|(src, tgt, kind, _)| {
+                *kind == RelationshipKind::Connection
+                    && src.ends_with("Capability")
+                    && tgt.ends_with("Goal")
+            }),
+            "expected connection edge from connection end references; edges: {:?}",
+            edges
+        );
+    }
+
+    #[test]
     fn interface_def_body_adds_end_ref_and_connect_structure() {
         let input = r#"
             package P {

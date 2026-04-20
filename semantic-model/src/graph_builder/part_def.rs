@@ -12,6 +12,7 @@ use crate::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 use super::expressions;
 use super::part_usage;
 use super::requirement_body::walk_requirement_def_body;
+use super::state;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
 pub(super) fn build_from_part_def_body_element(
@@ -93,6 +94,16 @@ pub(super) fn build_from_part_def_body_element(
             );
             if let Some(ref state_type) = es.type_name {
                 add_typing_edge_if_exists(g, uri, &qualified, state_type, container_prefix);
+            }
+            let exhibit_state_id = NodeId::new(uri, &qualified);
+            if let sysml_v2_parser::ast::StateDefBody::Brace { elements } = &es.body {
+                state::build_from_state_body(
+                    elements,
+                    uri,
+                    Some(&qualified),
+                    &exhibit_state_id,
+                    g,
+                );
             }
         }
         PDBE::PortUsage(n) => {
@@ -291,15 +302,13 @@ pub(super) fn build_from_part_def_body_element(
             }
             let connection_node_id = NodeId::new(uri, &qualified);
             if let sysml_v2_parser::ast::ConnectionDefBody::Brace { elements } = &connection.body {
-                for element in elements {
-                    super::interface_def::build_from_connection_def_body_element(
-                        element,
-                        uri,
-                        Some(&qualified),
-                        &connection_node_id,
-                        g,
-                    );
-                }
+                super::interface_def::build_from_connection_def_body(
+                    elements,
+                    uri,
+                    Some(&qualified),
+                    &connection_node_id,
+                    g,
+                );
             }
         }
         PDBE::Perform(perform_node) => {
