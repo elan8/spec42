@@ -12,6 +12,6 @@ pub use semantic_model_crate::{
     add_cross_document_edges_for_uri, build_graph_from_doc, resolve_expression_endpoint_strict,
     resolve_imported_node_ids_for_simple_name, resolve_member_via_type,
     resolve_type_reference_targets, NodeId, RelationshipKind, ResolveResult, SemanticGraph,
-    SemanticNode,
+    SemanticNode, evaluate_expressions,
 };
 pub use symbol_entries::symbol_entries_for_uri;

@@ -204,6 +204,7 @@ fn update_semantic_graph_for_uri(state: &mut ServerState, uri: &Url, doc: Option
         let new_graph = semantic_model::build_graph_from_doc(doc, uri);
         state.semantic_graph.merge(new_graph);
         semantic_model::add_cross_document_edges_for_uri(&mut state.semantic_graph, uri);
+        semantic_model::evaluate_expressions(&mut state.semantic_graph);
     }
 }
 
@@ -419,6 +420,7 @@ pub(crate) fn rebuild_all_document_links(
     for uri in &uris {
         semantic_model::add_cross_document_edges_for_uri(&mut state.semantic_graph, uri);
     }
+    semantic_model::evaluate_expressions(&mut state.semantic_graph);
     let cross_document_edges_ms = elapsed_ms(cross_document_edges_start);
 
     let refresh_symbols_start = Instant::now();
@@ -464,6 +466,19 @@ mod tests {
 
     fn fixture_uri() -> Url {
         Url::parse("file:///C:/workspace/test.sysml").expect("fixture uri")
+    }
+
+    fn find_attribute_node<'a>(
+        state: &'a ServerState,
+        uri: &Url,
+        name: &str,
+    ) -> &'a crate::semantic_model::SemanticNode {
+        state
+            .semantic_graph
+            .nodes_for_uri(uri)
+            .into_iter()
+            .find(|node| node.element_kind == "attribute" && node.name == name)
+            .expect("attribute node")
     }
 
     #[test]
@@ -613,6 +628,55 @@ mod tests {
                 })
             }),
             "expected no unresolved_type_reference after public re-export relink, got: {rebuilt_diagnostics:#?}"
+        );
+    }
+
+    #[test]
+    fn store_document_text_persists_phase1_evaluated_attributes() {
+        let uri = fixture_uri();
+        let mut state = ServerState::default();
+        let warning = store_document_text(
+            &mut state,
+            &uri,
+            "package Demo { part def Rocket { attribute mass = (1 + 2); } }".to_string(),
+        );
+        assert!(warning.is_none());
+
+        let mass = find_attribute_node(&state, &uri, "mass");
+        assert_eq!(
+            mass.attributes.get("evaluationStatus"),
+            Some(&serde_json::json!("ok"))
+        );
+        assert_eq!(
+            mass.attributes.get("evaluatedValue"),
+            Some(&serde_json::json!(3))
+        );
+        assert!(
+            !mass.attributes.contains_key("evaluatedUnit"),
+            "phase-1 arithmetic without unit should not emit evaluatedUnit"
+        );
+    }
+
+    #[test]
+    fn rebuild_all_document_links_recomputes_phase1_evaluated_attributes() {
+        let uri = fixture_uri();
+        let mut state = ServerState::default();
+        store_document_text(
+            &mut state,
+            &uri,
+            "package Demo { part def Rocket { attribute mass = (8 + 4) / 3; } }".to_string(),
+        );
+
+        rebuild_all_document_links(&mut state);
+
+        let mass = find_attribute_node(&state, &uri, "mass");
+        assert_eq!(
+            mass.attributes.get("evaluationStatus"),
+            Some(&serde_json::json!("ok"))
+        );
+        assert_eq!(
+            mass.attributes.get("evaluatedValue"),
+            Some(&serde_json::json!(4))
         );
     }
 }

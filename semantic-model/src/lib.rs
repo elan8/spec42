@@ -5,6 +5,7 @@
 //! (typing, specializes, connection, bind, allocate, transition).
 
 mod ast_util;
+mod evaluation;
 mod graph;
 mod graph_builder;
 mod import_resolution;
@@ -16,6 +17,7 @@ mod workspace_uri;
 
 pub use graph::SemanticGraph;
 pub use graph_builder::build_graph_from_doc;
+pub use evaluation::evaluate_expressions;
 pub use import_resolution::{
     resolve_imported_node_ids_for_simple_name, resolve_type_reference_targets,
 };
