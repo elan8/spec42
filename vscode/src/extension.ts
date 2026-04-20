@@ -52,9 +52,7 @@ let libraryWebviewProvider: LibraryWebviewViewProvider | undefined;
 let lspModelProviderForStatus: LspModelProvider | undefined;
 let serverHealthState: ServerHealthState = "starting";
 let serverHealthDetail = "";
-let modelExplorerSelectionSyncCts: vscode.CancellationTokenSource | undefined;
 let sourceSelectionSyncTimer: ReturnType<typeof setTimeout> | undefined;
-let modelExplorerSelectionSyncTimer: ReturnType<typeof setTimeout> | undefined;
 let activeDocumentExplorerRefreshTimer: ReturnType<typeof setTimeout> | undefined;
 let activeDocumentExplorerRefreshUri: string | undefined;
 let activeDocumentExplorerRefreshGuardUntil = 0;
@@ -903,56 +901,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     vscode.window.onDidChangeTextEditorSelection((event) => {
-      if (modelExplorerSelectionSyncTimer) {
-        clearTimeout(modelExplorerSelectionSyncTimer);
-      }
-      modelExplorerSelectionSyncTimer = setTimeout(async () => {
-        modelExplorerSelectionSyncTimer = undefined;
-        const doc = event.textEditor.document;
-        if (!isSysmlDoc(doc)) {
-          return;
-        }
-        modelExplorerSelectionSyncCts?.cancel();
-        modelExplorerSelectionSyncCts?.dispose();
-        modelExplorerSelectionSyncCts = new vscode.CancellationTokenSource();
-        const selectionSyncStartedAt = Date.now();
-        try {
-          const position =
-            event.selections[0]?.active ?? event.textEditor.selection.active;
-          const result = await lspModelProvider.getModel(
-            doc.uri.toString(),
-            ["graph"],
-            modelExplorerSelectionSyncCts.token,
-            "selectionSync:modelExplorer"
-          );
-          const node = bestGraphNodeAtPosition(result.graph?.nodes, position);
-          if (!node) {
-            logPerf("selectionSync:modelExplorerNoNode", {
-              uri: doc.uri.toString(),
-              totalMs: Date.now() - selectionSyncStartedAt,
-            });
-            return;
-          }
-          await modelExplorerProvider?.revealElement(
-            doc.uri,
-            node.id,
-            node.range
-          );
-          logPerf("selectionSync:modelExplorer", {
-            uri: doc.uri.toString(),
-            totalMs: Date.now() - selectionSyncStartedAt,
-            nodeId: node.id,
-            nodeCount: result.graph?.nodes?.length ?? 0,
-          });
-        } catch (error) {
-          logError(`Source-to-explorer sync failed for ${doc.uri.toString()}`, error);
-          logPerf("selectionSync:modelExplorerFailed", {
-            uri: doc.uri.toString(),
-            totalMs: Date.now() - selectionSyncStartedAt,
-            error: error instanceof Error ? error.message : String(error),
-          });
-        }
-      }, 150);
       const panel = VisualizationPanel.currentPanel;
       const doc = event.textEditor.document;
       if (!panel || !isSysmlDoc(doc) || !panel.tracksUri(doc.uri) || panel.isNavigating()) {
@@ -2077,8 +2025,6 @@ export function deactivate(): Thenable<void> | undefined {
     clearTimeout(activeDocumentExplorerRefreshTimer);
     activeDocumentExplorerRefreshTimer = undefined;
   }
-  modelExplorerSelectionSyncCts?.cancel();
-  modelExplorerSelectionSyncCts?.dispose();
   cancelWorkspaceLoad(modelExplorerProvider, "deactivate");
   return client?.stop();
 }
