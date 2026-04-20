@@ -27,6 +27,7 @@ const GENERAL_NEUTRAL_EDGE = 'var(--vscode-editor-foreground)';
 const GENERAL_NEUTRAL_BORDER = DIAGRAM_STYLE.nodeBorder;
 const collapsedGeneralViewSections = new Set<string>();
 const expandedGeneralViewSectionRows = new Set<string>();
+const initializedGeneralViewSections = new Set<string>();
 
 /** General view uses full SysML v2 compartments: Header, Attributes, Parts, Ports, Other */
 const GENERAL_VIEW_NODE_CONFIG: SysMLNodeConfig = {
@@ -215,8 +216,9 @@ function buildNodeDataMap(cyNodes: any[]): Map<string, { compartments: SysMLNode
         });
         compartments.collapsibleSections = (compartments.collapsibleSections || []).map((section) => {
             const key = sectionKeyPrefix + section.key;
-            if (!collapsedGeneralViewSections.has(key)) {
+            if (!initializedGeneralViewSections.has(key)) {
                 collapsedGeneralViewSections.add(key);
+                initializedGeneralViewSections.add(key);
             }
             if (section.items.length <= maxLines) {
                 expandedGeneralViewSectionRows.delete(key);

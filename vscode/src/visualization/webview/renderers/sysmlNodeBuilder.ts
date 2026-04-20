@@ -111,6 +111,48 @@ export const HEADER_COMPARTMENT_HEIGHT = 44;
 export const TYPED_BY_HEIGHT = 14;
 export const PADDING = 6;
 const SHOW_MORE_LINE_HEIGHT = 12;
+type CanvasLikeContext = { font: string; measureText: (text: string) => { width: number } };
+let sharedTextMeasureContext: CanvasLikeContext | null = null;
+
+function measureTextWidthPx(text: string, font: string): number {
+    if (typeof globalThis === 'undefined') {
+        // Conservative fallback for non-DOM contexts.
+        return text.length * 7;
+    }
+    if (!sharedTextMeasureContext) {
+        const doc = (globalThis as any).document;
+        const canvas = doc?.createElement ? doc.createElement('canvas') : null;
+        sharedTextMeasureContext = canvas?.getContext ? canvas.getContext('2d') : null;
+    }
+    const ctx = sharedTextMeasureContext;
+    if (!ctx) return text.length * 7;
+    ctx.font = font;
+    return ctx.measureText(text).width;
+}
+
+function truncateTextToWidth(text: string, maxWidthPx: number, font: string): string {
+    if (maxWidthPx <= 0) return '';
+    if (measureTextWidthPx(text, font) <= maxWidthPx) return text;
+
+    const ellipsis = '..';
+    const ellipsisWidth = measureTextWidthPx(ellipsis, font);
+    if (ellipsisWidth >= maxWidthPx) return '';
+
+    let low = 0;
+    let high = text.length;
+    let best = '';
+    while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+        const candidate = text.slice(0, mid) + ellipsis;
+        if (measureTextWidthPx(candidate, font) <= maxWidthPx) {
+            best = candidate;
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+    return best || ellipsis;
+}
 
 function normalizeDetailItem(item: any): SysMLNodeDetailItem | null {
     if (typeof item === 'string') {
@@ -493,7 +535,8 @@ export function renderSysMLNode(
         // Content lines
         slice.forEach((item) => {
             const line = item.displayText;
-            const truncated = line.length > 28 ? line.substring(0, 26) + '..' : line;
+            const maxTextWidth = options.width - (PADDING * 2);
+            const truncated = truncateTextToWidth(line, maxTextWidth, '9px sans-serif');
             nodeG.append('text')
                 .attr('x', PADDING)
                 .attr('y', contentY + 9)
