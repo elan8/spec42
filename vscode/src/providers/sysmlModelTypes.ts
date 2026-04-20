@@ -110,11 +110,39 @@ export interface IbdConnectorDTO {
   type: string;
 }
 
+export interface IbdContainerGroupDTO {
+  id: string;
+  label: string;
+  depth: number;
+  qualifiedName: string;
+  parentId?: string;
+  memberPartIds: string[];
+}
+
+export interface IbdPackageContainerGroupDTO {
+  id: string;
+  label: string;
+  qualifiedPackage: string;
+  parentId?: string;
+  memberPartIds: string[];
+}
+
+export interface IbdRootViewDTO {
+  parts: IbdPartDTO[];
+  ports: IbdPortDTO[];
+  connectors: IbdConnectorDTO[];
+  containerGroups?: IbdContainerGroupDTO[];
+  packageContainerGroups?: IbdPackageContainerGroupDTO[];
+}
+
 export interface IbdDataDTO {
   parts: IbdPartDTO[];
   ports: IbdPortDTO[];
   connectors: IbdConnectorDTO[];
+  containerGroups?: IbdContainerGroupDTO[];
+  packageContainerGroups?: IbdPackageContainerGroupDTO[];
   rootCandidates: string[];
+  rootViews?: Record<string, IbdRootViewDTO>;
   defaultRoot?: string;
 }
 

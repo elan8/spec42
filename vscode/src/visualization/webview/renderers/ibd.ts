@@ -40,12 +40,19 @@ type RouteFrameDiagnostics = {
     translatedRootFinalScore?: number;
 };
 
-function selectIbdViewData(data: any): { parts: any[]; ports: any[]; connectors: any[]; containerGroups: any[] } {
+function selectIbdViewData(data: any): {
+    parts: any[];
+    ports: any[];
+    connectors: any[];
+    containerGroups: any[];
+    packageContainerGroups: any[];
+} {
     return {
         parts: data?.parts || [],
         ports: data?.ports || [],
         connectors: data?.connectors || [],
         containerGroups: data?.containerGroups || [],
+        packageContainerGroups: data?.packageContainerGroups || [],
     };
 }
 
@@ -202,26 +209,87 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
 
     const selected = selectIbdViewData(data);
     const containerGroups = Array.isArray(selected.containerGroups) ? selected.containerGroups : [];
+    const packageContainerGroups = Array.isArray(selected.packageContainerGroups) ? selected.packageContainerGroups : [];
     const backendParts = Array.isArray(selected.parts) ? selected.parts.map((part: any) => ({ ...part })) : [];
-    const groupById = new Map<string, any>();
-    const groupByQualifiedName = new Map<string, any>();
-    const groupNodes = containerGroups.map((group: any) => {
+    const packageGroupQualifiedNames = new Set(
+        packageContainerGroups
+            .map((group: any) => String(group?.qualifiedPackage || '').replace(/::/g, '.').trim())
+            .filter(Boolean)
+    );
+    const packageGroupById = new Map<string, any>();
+    const packageGroupByQualifiedName = new Map<string, any>();
+    const packageGroupNodes = packageContainerGroups.map((group: any) => {
         const node = {
             id: String(group?.id || ''),
             name: String(group?.label || 'package'),
-            qualifiedName: String(group?.qualifiedName || group?.id || ''),
+            qualifiedName: String(group?.qualifiedPackage || group?.id || '').replace(/::/g, '.'),
             containerId: group?.parentId || null,
             type: 'package',
             attributes: {},
             isSyntheticPackage: true,
-            isBackendContainerGroup: true,
-            depth: Number(group?.depth || 0),
+            isPackageContainer: true,
             memberPartIds: Array.isArray(group?.memberPartIds) ? group.memberPartIds : [],
         };
-        if (node.id) groupById.set(node.id, node);
-        if (node.qualifiedName) groupByQualifiedName.set(node.qualifiedName, node);
+        if (node.id) packageGroupById.set(node.id, node);
+        if (node.qualifiedName) packageGroupByQualifiedName.set(node.qualifiedName, node);
         return node;
     }).filter((node: any) => node.id);
+    const groupById = new Map<string, any>();
+    const groupByQualifiedName = new Map<string, any>();
+    const groupNodes = containerGroups
+        .filter((group: any) => {
+            const qn = String(group?.qualifiedName || '').trim();
+            return qn.length === 0 || !packageGroupQualifiedNames.has(qn);
+        })
+        .map((group: any) => {
+            const node = {
+                id: String(group?.id || ''),
+                name: String(group?.label || 'package'),
+                qualifiedName: String(group?.qualifiedName || group?.id || ''),
+                containerId: group?.parentId || null,
+                type: 'package',
+                attributes: {},
+                isSyntheticPackage: true,
+                isBackendContainerGroup: true,
+                depth: Number(group?.depth || 0),
+                memberPartIds: Array.isArray(group?.memberPartIds) ? group.memberPartIds : [],
+            };
+            if (node.id) groupById.set(node.id, node);
+            if (node.qualifiedName) groupByQualifiedName.set(node.qualifiedName, node);
+            return node;
+        }).filter((node: any) => node.id);
+    const findBestPackageGroupForMember = (memberIds: Array<string | null | undefined>): any => {
+        let bestGroup: any = null;
+        for (const memberId of memberIds) {
+            if (!memberId) continue;
+            for (const groupNode of packageGroupNodes) {
+                const members = Array.isArray(groupNode?.memberPartIds) ? groupNode.memberPartIds : [];
+                if (!members.includes(memberId)) continue;
+                const groupQualifiedLength = String(groupNode?.qualifiedName || '').length;
+                if (!bestGroup || groupQualifiedLength > String(bestGroup?.qualifiedName || '').length) {
+                    bestGroup = groupNode;
+                }
+            }
+        }
+        return bestGroup;
+    };
+    groupNodes.forEach((groupNode: any) => {
+        const existingContainer = String(groupNode?.containerId || '');
+        if (existingContainer && packageGroupByQualifiedName.has(existingContainer)) {
+            groupNode.containerId = packageGroupByQualifiedName.get(existingContainer)?.id || existingContainer;
+            return;
+        }
+        if (existingContainer && packageGroupById.has(existingContainer)) {
+            return;
+        }
+        if (existingContainer) {
+            return;
+        }
+        const packageGroup = findBestPackageGroupForMember(Array.isArray(groupNode?.memberPartIds) ? groupNode.memberPartIds : []);
+        if (packageGroup) {
+            groupNode.containerId = packageGroup.id;
+        }
+    });
     backendParts.forEach((part: any) => {
         const existingContainer = String(part?.containerId || '');
         if (existingContainer && groupByQualifiedName.has(existingContainer)) {
@@ -231,20 +299,24 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         if (existingContainer && groupById.has(existingContainer)) {
             return;
         }
-        let bestGroup: any = null;
-        for (const groupNode of groupNodes) {
-            const members = Array.isArray(groupNode?.memberPartIds) ? groupNode.memberPartIds : [];
-            if (members.includes(part?.id)) {
-                if (!bestGroup || Number(groupNode?.depth || 0) > Number(bestGroup?.depth || 0)) {
-                    bestGroup = groupNode;
-                }
-            }
+        if (existingContainer && packageGroupByQualifiedName.has(existingContainer)) {
+            part.containerId = packageGroupByQualifiedName.get(existingContainer)?.id || existingContainer;
+            return;
         }
+        if (existingContainer && packageGroupById.has(existingContainer)) {
+            return;
+        }
+        // Preserve concrete part containment. Only synthesize package containment
+        // for nodes that truly do not already point at a real parent part/container.
+        if (existingContainer) {
+            return;
+        }
+        const bestGroup = findBestPackageGroupForMember([part?.id, part?.qualifiedName]);
         if (bestGroup) {
             part.containerId = bestGroup.id;
         }
     });
-    const parts = [...groupNodes, ...backendParts];
+    const parts = [...packageGroupNodes, ...groupNodes, ...backendParts];
     const ports = selected.ports;
     const connectors = selected.connectors;
     const toDot = (qn: string) => (qn || '').replace(/::/g, '.');

@@ -115,11 +115,23 @@ pub struct IbdContainerGroupDto {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct IbdPackageContainerGroupDto {
+    pub id: String,
+    pub label: String,
+    pub qualified_package: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parent_id: Option<String>,
+    pub member_part_ids: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct IbdDataDto {
     pub parts: Vec<IbdPartDto>,
     pub ports: Vec<IbdPortDto>,
     pub connectors: Vec<IbdConnectorDto>,
     pub container_groups: Vec<IbdContainerGroupDto>,
+    pub package_container_groups: Vec<IbdPackageContainerGroupDto>,
     pub root_candidates: Vec<String>,
     pub default_root: Option<String>,
     pub root_views: std::collections::HashMap<String, IbdRootViewDto>,
@@ -132,6 +144,7 @@ pub struct IbdRootViewDto {
     pub ports: Vec<IbdPortDto>,
     pub connectors: Vec<IbdConnectorDto>,
     pub container_groups: Vec<IbdContainerGroupDto>,
+    pub package_container_groups: Vec<IbdPackageContainerGroupDto>,
 }
 
 /// Qualified name with "::" converted to "." for client path matching (e.g. "pkg::A::b" -> "A.b" when root is "A").
@@ -350,6 +363,168 @@ fn materialized_subtree_metrics(
         })
         .count();
     (part_count, port_count, connector_count)
+}
+
+fn attribute_text(part: &IbdPartDto, key: &str) -> Option<String> {
+    part.attributes
+        .get(key)
+        .and_then(|value| value.as_str())
+        .map(|value| value.trim().trim_start_matches('~').to_string())
+        .filter(|value| !value.is_empty())
+}
+
+fn last_type_segment(value: &str) -> String {
+    value
+        .split("::")
+        .last()
+        .unwrap_or(value)
+        .split('.')
+        .last()
+        .unwrap_or(value)
+        .to_string()
+}
+
+fn typed_by_name(part: &IbdPartDto) -> Option<String> {
+    attribute_text(part, "partType")
+        .or_else(|| attribute_text(part, "type"))
+        .or_else(|| attribute_text(part, "typedBy"))
+        .map(|value| last_type_segment(&value))
+}
+
+fn is_top_level_part(part: &IbdPartDto, parts: &[IbdPartDto]) -> bool {
+    match part.container_id.as_deref() {
+        None | Some("") => true,
+        Some(container_id) => !parts
+            .iter()
+            .any(|candidate| candidate.qualified_name == container_id),
+    }
+}
+
+#[allow(dead_code)]
+fn prune_redundant_top_level_roots(
+    parts: Vec<IbdPartDto>,
+    ports: Vec<IbdPortDto>,
+    connectors: Vec<IbdConnectorDto>,
+    uri: &Url,
+) -> (Vec<IbdPartDto>, Vec<IbdPortDto>, Vec<IbdConnectorDto>) {
+    let top_level_parts: Vec<&IbdPartDto> = parts
+        .iter()
+        .filter(|part| is_top_level_part(part, &parts))
+        .collect();
+
+    let root_metrics: std::collections::HashMap<String, (usize, usize, usize)> = top_level_parts
+        .iter()
+        .map(|part| {
+            (
+                part.qualified_name.clone(),
+                materialized_subtree_metrics(&part.qualified_name, &parts, &ports, &connectors),
+            )
+        })
+        .collect();
+    let top_level_defs_by_name: std::collections::HashMap<String, &IbdPartDto> = top_level_parts
+        .iter()
+        .filter(|part| part.element_type.to_lowercase().contains("part def"))
+        .map(|part| (part.name.clone(), *part))
+        .collect();
+
+    let mut redundant_roots: std::collections::HashSet<String> = std::collections::HashSet::new();
+    for root in &top_level_parts {
+        if is_part_instance_kind(&root.element_type) {
+            if let Some(typed_name) = typed_by_name(root) {
+                if let Some(def_root) = top_level_defs_by_name.get(&typed_name) {
+                    let root_score = root_metrics
+                        .get(&root.qualified_name)
+                        .copied()
+                        .unwrap_or((0, 0, 0));
+                    let def_score = root_metrics
+                        .get(&def_root.qualified_name)
+                        .copied()
+                        .unwrap_or((0, 0, 0));
+                    if def_score.0 >= root_score.0
+                        && def_score.1 >= root_score.1
+                        && def_score.2 >= root_score.2
+                    {
+                        redundant_roots.insert(root.qualified_name.clone());
+                    }
+                }
+            }
+            continue;
+        }
+
+        let root_score = root_metrics
+            .get(&root.qualified_name)
+            .copied()
+            .unwrap_or((0, 0, 0));
+        let represented_elsewhere = top_level_parts.iter().any(|other_root| {
+            if other_root.qualified_name == root.qualified_name {
+                return false;
+            }
+            parts
+                .iter()
+                .filter(|candidate| {
+                    candidate.qualified_name != root.qualified_name
+                        && endpoint_matches_root(&candidate.qualified_name, &other_root.qualified_name)
+                })
+                .filter(|candidate| typed_by_name(candidate).as_deref() == Some(root.name.as_str()))
+                .any(|candidate| {
+                    let nested_score = materialized_subtree_metrics(
+                        &candidate.qualified_name,
+                        &parts,
+                        &ports,
+                        &connectors,
+                    );
+                    nested_score.0 >= root_score.0
+                        && nested_score.1 >= root_score.1
+                        && nested_score.2 >= root_score.2
+                })
+        });
+        if represented_elsewhere {
+            redundant_roots.insert(root.qualified_name.clone());
+        }
+    }
+
+    if redundant_roots.is_empty() {
+        return (parts, ports, connectors);
+    }
+
+    let parts: Vec<IbdPartDto> = parts
+        .into_iter()
+        .filter(|part| {
+            !redundant_roots
+                .iter()
+                .any(|root_prefix| endpoint_matches_root(&part.qualified_name, root_prefix))
+        })
+        .collect();
+    let remaining_part_ids: std::collections::HashSet<String> =
+        parts.iter().map(|part| part.qualified_name.clone()).collect();
+    let ports: Vec<IbdPortDto> = ports
+        .into_iter()
+        .filter(|port| remaining_part_ids.contains(&port.parent_id))
+        .collect();
+    let connectors: Vec<IbdConnectorDto> = connectors
+        .into_iter()
+        .filter(|connector| {
+            !redundant_roots
+                .iter()
+                .any(|root_prefix| {
+                    endpoint_matches_root(&connector.source_id, root_prefix)
+                        || endpoint_matches_root(&connector.target_id, root_prefix)
+                })
+        })
+        .collect();
+
+    #[cfg(debug_assertions)]
+    {
+        if !redundant_roots.is_empty() {
+            eprintln!(
+                "[IBD] pruned redundant top-level roots for {}: {}",
+                uri,
+                redundant_roots.iter().cloned().collect::<Vec<_>>().join(", ")
+            );
+        }
+    }
+
+    (parts, ports, connectors)
 }
 
 fn endpoint_under_definition_prefix(endpoint: &str, def_prefix: &str) -> bool {
@@ -745,16 +920,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
 
     let top_level_parts: Vec<_> = parts
         .iter()
-        .filter(|p| {
-            p.container_id.is_none()
-                || p.container_id
-                    .as_ref()
-                    .and_then(|container_id| {
-                        graph.get_node(&NodeId::new(uri, container_id.replace('.', "::")))
-                    })
-                    .map(|n| !is_part_like(&n.element_kind))
-                    .unwrap_or(true)
-        })
+        .filter(|p| is_top_level_part(p, &parts))
         .collect();
 
     let mut roots_with_metrics: Vec<(&IbdPartDto, usize, usize, usize)> = top_level_parts
@@ -876,6 +1042,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 ports: focused_ports,
                 connectors: focused_connectors,
                 container_groups: focused_container_groups,
+                package_container_groups: Vec::new(),
             },
         );
     }
@@ -885,6 +1052,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         ports,
         connectors,
         container_groups,
+        package_container_groups: Vec::new(),
         root_candidates,
         default_root,
         root_views,
@@ -906,6 +1074,10 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
         std::collections::HashMap::new();
     let mut container_groups_by_id: std::collections::HashMap<String, IbdContainerGroupDto> =
         std::collections::HashMap::new();
+    let mut package_container_groups_by_id: std::collections::HashMap<
+        String,
+        IbdPackageContainerGroupDto,
+    > = std::collections::HashMap::new();
 
     for ibd in ibds {
         for p in ibd.parts {
@@ -935,6 +1107,20 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
                 })
                 .or_insert(group);
         }
+        for group in ibd.package_container_groups {
+            package_container_groups_by_id
+                .entry(group.id.clone())
+                .and_modify(|existing| {
+                    let mut members: std::collections::HashSet<String> =
+                        existing.member_part_ids.iter().cloned().collect();
+                    for part_id in &group.member_part_ids {
+                        if members.insert(part_id.clone()) {
+                            existing.member_part_ids.push(part_id.clone());
+                        }
+                    }
+                })
+                .or_insert(group);
+        }
         for root in ibd.root_candidates {
             root_candidates.insert(root);
         }
@@ -944,6 +1130,7 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
                 ports: Vec::new(),
                 connectors: Vec::new(),
                 container_groups: Vec::new(),
+                package_container_groups: Vec::new(),
             });
             let mut part_ids: std::collections::HashSet<String> =
                 merged.parts.iter().map(|p| p.id.clone()).collect();
@@ -984,6 +1171,16 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
                     merged.container_groups.push(group);
                 }
             }
+            let mut package_group_ids: std::collections::HashSet<String> = merged
+                .package_container_groups
+                .iter()
+                .map(|group| group.id.clone())
+                .collect();
+            for group in view.package_container_groups {
+                if package_group_ids.insert(group.id.clone()) {
+                    merged.package_container_groups.push(group);
+                }
+            }
         }
     }
 
@@ -992,6 +1189,7 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
         ports: ports_by_key.into_values().collect(),
         connectors: connectors_by_key.into_values().collect(),
         container_groups: container_groups_by_id.into_values().collect(),
+        package_container_groups: package_container_groups_by_id.into_values().collect(),
         root_candidates: root_candidates.into_iter().collect(),
         default_root: None,
         root_views,
@@ -1002,7 +1200,12 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
 mod tests {
     use std::collections::HashMap;
 
-    use super::{build_container_groups, infer_port_side, IbdPartDto};
+    use tower_lsp::lsp_types::Url;
+
+    use super::{
+        build_container_groups, infer_port_side, prune_redundant_top_level_roots, IbdConnectorDto,
+        IbdPartDto, IbdPortDto,
+    };
 
     #[test]
     fn infer_port_side_prefers_direction() {
@@ -1074,5 +1277,143 @@ mod tests {
         assert!(groups
             .iter()
             .any(|group| group.qualified_name == "P.Inner" && group.member_part_ids.len() == 2));
+    }
+
+    #[test]
+    fn redundant_top_level_roots_are_pruned_when_already_represented() {
+        let parts = vec![
+            IbdPartDto {
+                id: "Pkg::Vehicle".to_string(),
+                name: "Vehicle".to_string(),
+                qualified_name: "Pkg.Vehicle".to_string(),
+                uri: None,
+                container_id: None,
+                element_type: "part def".to_string(),
+                attributes: HashMap::new(),
+            },
+            IbdPartDto {
+                id: "Pkg::Vehicle::controller".to_string(),
+                name: "controller".to_string(),
+                qualified_name: "Pkg.Vehicle.controller".to_string(),
+                uri: None,
+                container_id: Some("Pkg.Vehicle".to_string()),
+                element_type: "part".to_string(),
+                attributes: HashMap::from([(
+                    "partType".to_string(),
+                    serde_json::Value::String("Controller".to_string()),
+                )]),
+            },
+            IbdPartDto {
+                id: "Pkg::Controller".to_string(),
+                name: "Controller".to_string(),
+                qualified_name: "Pkg.Controller".to_string(),
+                uri: None,
+                container_id: None,
+                element_type: "part def".to_string(),
+                attributes: HashMap::new(),
+            },
+            IbdPartDto {
+                id: "Pkg::Controller::sensor".to_string(),
+                name: "sensor".to_string(),
+                qualified_name: "Pkg.Controller.sensor".to_string(),
+                uri: None,
+                container_id: Some("Pkg.Controller".to_string()),
+                element_type: "part".to_string(),
+                attributes: HashMap::new(),
+            },
+            IbdPartDto {
+                id: "Pkg::Vehicle::controller::sensor".to_string(),
+                name: "sensor".to_string(),
+                qualified_name: "Pkg.Vehicle.controller.sensor".to_string(),
+                uri: None,
+                container_id: Some("Pkg.Vehicle.controller".to_string()),
+                element_type: "part".to_string(),
+                attributes: HashMap::new(),
+            },
+            IbdPartDto {
+                id: "Pkg::VehicleInst".to_string(),
+                name: "vehicleInst".to_string(),
+                qualified_name: "Pkg.vehicleInst".to_string(),
+                uri: None,
+                container_id: None,
+                element_type: "part".to_string(),
+                attributes: HashMap::from([(
+                    "partType".to_string(),
+                    serde_json::Value::String("Vehicle".to_string()),
+                )]),
+            },
+        ];
+        let ports = vec![
+            IbdPortDto {
+                id: "Pkg.Vehicle.controller.out".to_string(),
+                name: "out".to_string(),
+                parent_id: "Pkg.Vehicle.controller".to_string(),
+                direction: None,
+                port_type: None,
+                port_side: None,
+            },
+            IbdPortDto {
+                id: "Pkg.Vehicle.controller.sensor.in".to_string(),
+                name: "in".to_string(),
+                parent_id: "Pkg.Vehicle.controller.sensor".to_string(),
+                direction: None,
+                port_type: None,
+                port_side: None,
+            },
+            IbdPortDto {
+                id: "Pkg.Controller.sensor.in".to_string(),
+                name: "in".to_string(),
+                parent_id: "Pkg.Controller.sensor".to_string(),
+                direction: None,
+                port_type: None,
+                port_side: None,
+            },
+            IbdPortDto {
+                id: "Pkg.vehicleInst.out".to_string(),
+                name: "out".to_string(),
+                parent_id: "Pkg.vehicleInst".to_string(),
+                direction: None,
+                port_type: None,
+                port_side: None,
+            },
+        ];
+        let connectors = vec![
+            IbdConnectorDto {
+                source: "Pkg.Vehicle.controller.out".to_string(),
+                target: "Pkg.Vehicle.controller.sensor.in".to_string(),
+                source_id: "Pkg.Vehicle.controller.out".to_string(),
+                target_id: "Pkg.Vehicle.controller.sensor.in".to_string(),
+                rel_type: "connection".to_string(),
+            },
+            IbdConnectorDto {
+                source: "Pkg.Controller.sensor.in".to_string(),
+                target: "Pkg.Controller.sensor.out".to_string(),
+                source_id: "Pkg.Controller.sensor.in".to_string(),
+                target_id: "Pkg.Controller.sensor.out".to_string(),
+                rel_type: "connection".to_string(),
+            },
+            IbdConnectorDto {
+                source: "Pkg.vehicleInst.out".to_string(),
+                target: "Pkg.vehicleInst.in".to_string(),
+                source_id: "Pkg.vehicleInst.out".to_string(),
+                target_id: "Pkg.vehicleInst.in".to_string(),
+                rel_type: "connection".to_string(),
+            },
+        ];
+
+        let (parts, ports, connectors) = prune_redundant_top_level_roots(
+            parts,
+            ports,
+            connectors,
+            &Url::parse("file:///test.sysml").expect("url"),
+        );
+
+        assert!(parts.iter().any(|part| part.qualified_name == "Pkg.Vehicle"));
+        assert!(!parts.iter().any(|part| part.qualified_name == "Pkg.Controller"));
+        assert!(!parts.iter().any(|part| part.qualified_name == "Pkg.vehicleInst"));
+        assert!(ports.iter().all(|port| !port.parent_id.starts_with("Pkg.Controller")));
+        assert!(connectors
+            .iter()
+            .all(|connector| !connector.source_id.starts_with("Pkg.Controller")));
     }
 }

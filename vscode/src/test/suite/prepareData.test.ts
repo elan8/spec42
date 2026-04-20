@@ -452,7 +452,7 @@ describe("prepareDataForView", () => {
             connectors: [] as { sourceId: string; targetId: string }[],
         };
 
-        it("passes through backend parts without frontend root selection", () => {
+        it("falls back to full backend parts when no root views are present", () => {
             const data = { graph: { nodes: [], edges: [] }, ibd: mockIbdFromServer };
             const result = prepareDataForView(data, "interconnection-view");
             assert.strictEqual(result.parts.length, 5);
@@ -499,6 +499,188 @@ describe("prepareDataForView", () => {
             const result = prepareDataForView(data, "interconnection-view");
             assert.strictEqual(result.containerGroups.length, 1);
             assert.strictEqual(result.containerGroups[0].id, "container:SurveillanceDrone");
+        });
+
+        it("passes through backend package container groups", () => {
+            const data = {
+                graph: { nodes: [], edges: [] },
+                ibd: {
+                    ...mockIbdFromServer,
+                    packageContainerGroups: [
+                        {
+                            id: "package:SurveillanceDrone",
+                            label: "SurveillanceDrone",
+                            qualifiedPackage: "SurveillanceDrone",
+                            memberPartIds: [
+                                "SurveillanceDrone::SurveillanceQuadrotorDrone",
+                                "SurveillanceDrone::Propulsion",
+                            ],
+                        },
+                    ],
+                },
+            };
+            const result = prepareDataForView(data, "interconnection-view");
+            assert.strictEqual(result.packageContainerGroups.length, 1);
+            assert.strictEqual(result.packageContainerGroups[0].id, "package:SurveillanceDrone");
+        });
+
+        it("uses the full IBD payload in All Packages mode instead of selecting one root", () => {
+            const data = {
+                graph: { nodes: [], edges: [] },
+                ibd: {
+                    ...mockIbdFromServer,
+                    packageContainerGroups: [
+                        {
+                            id: "package:SurveillanceDrone",
+                            label: "SurveillanceDrone",
+                            qualifiedPackage: "SurveillanceDrone",
+                            memberPartIds: mockIbdFromServer.parts.map((part) => part.id),
+                        },
+                    ],
+                    rootCandidates: ["SurveillanceQuadrotorDrone", "Propulsion"],
+                    defaultRoot: "SurveillanceQuadrotorDrone",
+                    rootViews: {
+                        SurveillanceQuadrotorDrone: {
+                            parts: mockIbdFromServer.parts.slice(0, 3),
+                            ports: [],
+                            connectors: [],
+                            containerGroups: [],
+                            packageContainerGroups: [],
+                        },
+                        Propulsion: {
+                            parts: mockIbdFromServer.parts.slice(3),
+                            ports: [],
+                            connectors: [],
+                            containerGroups: [],
+                            packageContainerGroups: [],
+                        },
+                    },
+                },
+            };
+            const result = prepareDataForView(data, "interconnection-view");
+            assert.strictEqual(result.selectedIbdRoot, null);
+            assert.strictEqual(result.parts.length, 5);
+            assert.strictEqual(result.packageContainerGroups.length, 1);
+        });
+
+        it("prefers the backend default root view when root views are present", () => {
+            const data = {
+                graph: { nodes: [], edges: [] },
+                selectedPackage: "SurveillanceDrone",
+                selectedPackageName: "SurveillanceDrone",
+                ibd: {
+                    ...mockIbdFromServer,
+                    rootCandidates: ["SurveillanceQuadrotorDrone", "Propulsion"],
+                    defaultRoot: "SurveillanceQuadrotorDrone",
+                    packageContainerGroups: [
+                        {
+                            id: "package:SurveillanceDrone",
+                            label: "SurveillanceDrone",
+                            qualifiedPackage: "SurveillanceDrone",
+                            memberPartIds: mockIbdFromServer.parts.map((part) => part.id),
+                        },
+                    ],
+                    rootViews: {
+                        SurveillanceQuadrotorDrone: {
+                            parts: mockIbdFromServer.parts.slice(0, 3),
+                            ports: [],
+                            connectors: [],
+                            containerGroups: [
+                                {
+                                    id: "container:SurveillanceDrone.SurveillanceQuadrotorDrone",
+                                    label: "SurveillanceQuadrotorDrone",
+                                    depth: 2,
+                                    parentId: "container:SurveillanceDrone",
+                                    qualifiedName: "SurveillanceDrone.SurveillanceQuadrotorDrone",
+                                    memberPartIds: [
+                                        "SurveillanceDrone::SurveillanceQuadrotorDrone",
+                                        "SurveillanceDrone::SurveillanceQuadrotorDrone::propulsion",
+                                        "SurveillanceDrone::SurveillanceQuadrotorDrone::flightControl",
+                                    ],
+                                },
+                            ],
+                            packageContainerGroups: [
+                                {
+                                    id: "package:SurveillanceDrone",
+                                    label: "SurveillanceDrone",
+                                    qualifiedPackage: "SurveillanceDrone",
+                                    memberPartIds: [
+                                        "SurveillanceDrone::SurveillanceQuadrotorDrone",
+                                        "SurveillanceDrone::SurveillanceQuadrotorDrone::propulsion",
+                                        "SurveillanceDrone::SurveillanceQuadrotorDrone::flightControl",
+                                    ],
+                                },
+                            ],
+                        },
+                        Propulsion: {
+                            parts: mockIbdFromServer.parts.slice(3),
+                            ports: [],
+                            connectors: [],
+                            containerGroups: [],
+                            packageContainerGroups: [],
+                        },
+                    },
+                },
+            };
+            const result = prepareDataForView(data, "interconnection-view");
+            assert.strictEqual(result.selectedIbdRoot, "SurveillanceQuadrotorDrone");
+            assert.strictEqual(result.parts.length, 3);
+            assert.strictEqual(result.parts[0].name, "SurveillanceQuadrotorDrone");
+            assert.strictEqual(result.containerGroups.length, 1);
+            assert.strictEqual(result.packageContainerGroups.length, 1);
+            assert.deepStrictEqual(result.ibdRootCandidates, ["SurveillanceQuadrotorDrone", "Propulsion"]);
+        });
+
+        it("honors an explicit selected IBD root when provided", () => {
+            const data = {
+                graph: { nodes: [], edges: [] },
+                selectedPackage: "SurveillanceDrone",
+                selectedPackageName: "SurveillanceDrone",
+                selectedIbdRoot: "Propulsion",
+                ibd: {
+                    ...mockIbdFromServer,
+                    rootCandidates: ["SurveillanceQuadrotorDrone", "Propulsion"],
+                    defaultRoot: "SurveillanceQuadrotorDrone",
+                    rootViews: {
+                        SurveillanceQuadrotorDrone: {
+                            parts: mockIbdFromServer.parts.slice(0, 3),
+                            ports: [],
+                            connectors: [],
+                            containerGroups: [],
+                            packageContainerGroups: [],
+                        },
+                        Propulsion: {
+                            parts: mockIbdFromServer.parts.slice(3),
+                            ports: [],
+                            connectors: [
+                                {
+                                    sourceId: "SurveillanceDrone.Propulsion.propulsionUnit1.motorOut",
+                                    targetId: "SurveillanceDrone.Propulsion.propulsionUnit2.motorIn",
+                                    type: "connection",
+                                },
+                            ],
+                            containerGroups: [],
+                            packageContainerGroups: [
+                                {
+                                    id: "package:SurveillanceDrone",
+                                    label: "SurveillanceDrone",
+                                    qualifiedPackage: "SurveillanceDrone",
+                                    memberPartIds: [
+                                        "SurveillanceDrone::Propulsion",
+                                        "SurveillanceDrone::Propulsion::propulsionUnit1",
+                                    ],
+                                },
+                            ],
+                        },
+                    },
+                },
+            };
+            const result = prepareDataForView(data, "interconnection-view");
+            assert.strictEqual(result.selectedIbdRoot, "Propulsion");
+            assert.strictEqual(result.parts.length, 2);
+            assert.strictEqual(result.parts[0].name, "Propulsion");
+            assert.strictEqual(result.connectors.length, 1);
+            assert.strictEqual(result.packageContainerGroups.length, 1);
         });
 
         it("returns empty IBD when no server ibd (no fallback)", () => {

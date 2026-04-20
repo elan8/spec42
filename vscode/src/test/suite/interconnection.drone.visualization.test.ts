@@ -247,10 +247,13 @@ describe("Interconnection Visualization Drone", () => {
         }
 
         const partBounds = parsePartBounds(svgText).filter((bound) => !bound.isContainer);
+        const containerBounds = parsePartBounds(svgText).filter((bound) => bound.isContainer);
         const flightController = partBounds.find((bound) => bound.name === "flightController");
         const communication = partBounds.find((bound) => bound.name === "communication");
         const cameraPayload = partBounds.find((bound) => bound.name === "cameraPayload");
         const powerDistribution = partBounds.find((bound) => bound.name === "distribution");
+        const packageContainer = containerBounds.find((bound) => bound.name === "SurveillanceDrone");
+        assert.ok(packageContainer, "expected SurveillanceDrone package container in drone export");
         assert.ok(flightController, "expected flightController node in drone export");
         assert.ok((flightController?.height || 0) >= 140, `flightController node should grow for many ports, got height ${flightController?.height}`);
         assert.ok(communication, "expected communication node in drone export");

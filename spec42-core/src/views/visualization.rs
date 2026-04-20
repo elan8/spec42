@@ -12,7 +12,7 @@ use crate::views::dto::{
     SysmlVisualizationPackageFilterDto, SysmlVisualizationResultDto, WorkspaceFileModelDto,
     WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
-use crate::views::ibd::{self, IbdDataDto};
+use crate::views::ibd::{self, IbdDataDto, IbdPackageContainerGroupDto};
 
 #[path = "model_projection.rs"]
 mod model_projection;
@@ -664,6 +664,7 @@ fn filter_ibd_by_package(ibd: &IbdDataDto, package_ref: &str) -> IbdDataDto {
                     ports: filtered_ports,
                     connectors: filtered_connectors,
                     container_groups: filtered_container_groups,
+                    package_container_groups: Vec::new(),
                 },
             );
         }
@@ -682,10 +683,113 @@ fn filter_ibd_by_package(ibd: &IbdDataDto, package_ref: &str) -> IbdDataDto {
         ports,
         connectors,
         container_groups,
+        package_container_groups: Vec::new(),
         root_candidates,
         default_root,
         root_views,
     }
+}
+
+fn package_group_id(package_ref: &str) -> String {
+    format!("package:{}", package_ref.replace("::", "."))
+}
+
+fn package_group_label(package_ref: &str, fallback_name: Option<&str>) -> String {
+    fallback_name
+        .map(String::from)
+        .filter(|name| !name.is_empty())
+        .unwrap_or_else(|| {
+            package_ref
+                .rsplit("::")
+                .next()
+                .map(String::from)
+                .unwrap_or_else(|| package_ref.to_string())
+        })
+}
+
+fn package_group_parent_id<'a>(
+    package_ref: &str,
+    candidate_ids: impl Iterator<Item = &'a str>,
+) -> Option<String> {
+    let mut best_parent: Option<&str> = None;
+    for candidate_id in candidate_ids {
+        if candidate_id == package_ref {
+            continue;
+        }
+        if package_ref.starts_with(&format!("{candidate_id}::")) {
+            match best_parent {
+                Some(current) if current.len() >= candidate_id.len() => {}
+                _ => best_parent = Some(candidate_id),
+            }
+        }
+    }
+    best_parent.map(package_group_id)
+}
+
+fn build_ibd_package_container_groups(
+    parts: &[ibd::IbdPartDto],
+    package_candidates: &[SysmlVisualizationPackageCandidateDto],
+    selected_package: Option<(&str, Option<&str>)>,
+) -> Vec<IbdPackageContainerGroupDto> {
+    let selected_candidates: Vec<SysmlVisualizationPackageCandidateDto> = match selected_package {
+        Some((package_ref, package_name)) => vec![SysmlVisualizationPackageCandidateDto {
+            id: package_ref.to_string(),
+            name: package_group_label(package_ref, package_name),
+        }],
+        None => package_candidates.to_vec(),
+    };
+    let candidate_ids: Vec<&str> = selected_candidates.iter().map(|candidate| candidate.id.as_str()).collect();
+
+    let mut groups = Vec::new();
+    for candidate in &selected_candidates {
+        let dot_prefix = candidate.id.replace("::", ".");
+        let member_part_ids: Vec<String> = parts
+            .iter()
+            .filter(|part| {
+                within_package_prefix(&part.id, &candidate.id, &dot_prefix)
+                    || within_package_prefix(&part.qualified_name, &candidate.id, &dot_prefix)
+            })
+            .map(|part| part.id.clone())
+            .collect();
+        if member_part_ids.is_empty() {
+            continue;
+        }
+        groups.push(IbdPackageContainerGroupDto {
+            id: package_group_id(&candidate.id),
+            label: package_group_label(&candidate.id, Some(candidate.name.as_str())),
+            qualified_package: candidate.id.clone(),
+            parent_id: package_group_parent_id(&candidate.id, candidate_ids.iter().copied()),
+            member_part_ids,
+        });
+    }
+    groups.sort_by(|left, right| {
+        left.qualified_package
+            .matches("::")
+            .count()
+            .cmp(&right.qualified_package.matches("::").count())
+            .then_with(|| left.label.cmp(&right.label))
+            .then_with(|| left.qualified_package.cmp(&right.qualified_package))
+    });
+    groups
+}
+
+fn attach_ibd_package_container_groups(
+    mut ibd: IbdDataDto,
+    package_candidates: &[SysmlVisualizationPackageCandidateDto],
+    selected_package: Option<(&str, Option<&str>)>,
+) -> IbdDataDto {
+    ibd.package_container_groups =
+        build_ibd_package_container_groups(&ibd.parts, package_candidates, selected_package);
+
+    for root_view in ibd.root_views.values_mut() {
+        root_view.package_container_groups = build_ibd_package_container_groups(
+            &root_view.parts,
+            package_candidates,
+            selected_package,
+        );
+    }
+
+    ibd
 }
 
 pub(crate) fn build_sysml_visualization_response(
@@ -751,7 +855,16 @@ pub(crate) fn build_sysml_visualization_response(
                 workspace_model.files = filter_workspace_model_files(&workspace_model.files, package_ref);
                 workspace_model.summary.loaded_files = workspace_model.files.len();
                 workspace_model.summary.scanned_files = workspace_model.files.len();
-                ibd = ibd.as_ref().map(|payload| filter_ibd_by_package(payload, package_ref));
+                ibd = ibd
+                    .as_ref()
+                    .map(|payload| filter_ibd_by_package(payload, package_ref))
+                    .map(|payload| {
+                        attach_ibd_package_container_groups(
+                            payload,
+                            &package_candidates,
+                            Some((package_ref, Some(package_element.name.as_str()))),
+                        )
+                    });
                 selected_package = package_element
                     .id
                     .clone()
@@ -788,6 +901,16 @@ pub(crate) fn build_sysml_visualization_response(
         .filter(|uri| index.get(*uri).and_then(|entry| entry.parsed.as_ref()).is_some())
         .count();
 
+    let attached_ibd = ibd.map(|payload| {
+        attach_ibd_package_container_groups(
+            payload,
+            &package_candidates,
+            selected_package
+                .as_deref()
+                .map(|package_ref| (package_ref, selected_package_name.as_deref())),
+        )
+    });
+
     SysmlVisualizationResultDto {
         version: 0,
         view: view.to_string(),
@@ -800,7 +923,7 @@ pub(crate) fn build_sysml_visualization_response(
         general_view_graph: Some(general_view_graph),
         workspace_model: Some(workspace_model),
         activity_diagrams: None,
-        ibd,
+        ibd: attached_ibd,
         stats: Some(SysmlModelStatsDto {
             total_elements: graph.nodes.len() as u32,
             resolved_elements: 0,
@@ -816,9 +939,12 @@ pub(crate) fn build_sysml_visualization_response(
 mod tests {
     use std::collections::HashMap;
 
-    use super::parse_sysml_visualization_params;
-    use super::build_package_groups_from_graph;
+    use super::{
+        attach_ibd_package_container_groups, build_package_groups_from_graph,
+        build_ibd_package_container_groups, parse_sysml_visualization_params,
+    };
     use crate::views::dto::{GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, SysmlGraphDto};
+    use crate::views::ibd::{IbdDataDto, IbdPartDto, IbdRootViewDto};
 
     fn zero_range() -> RangeDto {
         RangeDto {
@@ -929,5 +1055,112 @@ mod tests {
         assert!(groups
             .iter()
             .any(|group| group.node_ids.iter().any(|node_id| node_id == "P::Inner::x")));
+    }
+
+    #[test]
+    fn ibd_package_container_groups_follow_package_membership() {
+        let parts = vec![
+            IbdPartDto {
+                id: "Drone::Vehicle".to_string(),
+                name: "Vehicle".to_string(),
+                qualified_name: "Drone.Vehicle".to_string(),
+                uri: None,
+                container_id: None,
+                element_type: "part def".to_string(),
+                attributes: HashMap::new(),
+            },
+            IbdPartDto {
+                id: "Timer::TimerSystem".to_string(),
+                name: "TimerSystem".to_string(),
+                qualified_name: "Timer.TimerSystem".to_string(),
+                uri: None,
+                container_id: None,
+                element_type: "part def".to_string(),
+                attributes: HashMap::new(),
+            },
+        ];
+        let groups = build_ibd_package_container_groups(
+            &parts,
+            &[
+                crate::views::dto::SysmlVisualizationPackageCandidateDto {
+                    id: "Drone".to_string(),
+                    name: "Drone".to_string(),
+                },
+                crate::views::dto::SysmlVisualizationPackageCandidateDto {
+                    id: "Timer".to_string(),
+                    name: "Timer".to_string(),
+                },
+            ],
+            None,
+        );
+        assert_eq!(groups.len(), 2);
+        assert!(groups.iter().any(|group| {
+            group.id == "package:Drone"
+                && group.member_part_ids == vec!["Drone::Vehicle".to_string()]
+        }));
+        assert!(groups.iter().any(|group| {
+            group.id == "package:Timer"
+                && group.member_part_ids == vec!["Timer::TimerSystem".to_string()]
+        }));
+    }
+
+    #[test]
+    fn attach_ibd_package_container_groups_populates_root_views_for_selected_package() {
+        let payload = IbdDataDto {
+            parts: vec![IbdPartDto {
+                id: "Drone::Vehicle".to_string(),
+                name: "Vehicle".to_string(),
+                qualified_name: "Drone.Vehicle".to_string(),
+                uri: None,
+                container_id: None,
+                element_type: "part def".to_string(),
+                attributes: HashMap::new(),
+            }],
+            ports: Vec::new(),
+            connectors: Vec::new(),
+            container_groups: Vec::new(),
+            package_container_groups: Vec::new(),
+            root_candidates: vec!["Vehicle".to_string()],
+            default_root: Some("Vehicle".to_string()),
+            root_views: HashMap::from([(
+                "Vehicle".to_string(),
+                IbdRootViewDto {
+                    parts: vec![IbdPartDto {
+                        id: "Drone::Vehicle".to_string(),
+                        name: "Vehicle".to_string(),
+                        qualified_name: "Drone.Vehicle".to_string(),
+                        uri: None,
+                        container_id: None,
+                        element_type: "part def".to_string(),
+                        attributes: HashMap::new(),
+                    }],
+                    ports: Vec::new(),
+                    connectors: Vec::new(),
+                    container_groups: Vec::new(),
+                    package_container_groups: Vec::new(),
+                },
+            )]),
+        };
+
+        let attached = attach_ibd_package_container_groups(
+            payload,
+            &[crate::views::dto::SysmlVisualizationPackageCandidateDto {
+                id: "Drone".to_string(),
+                name: "Drone".to_string(),
+            }],
+            Some(("Drone", Some("Drone"))),
+        );
+
+        assert_eq!(attached.package_container_groups.len(), 1);
+        assert_eq!(attached.package_container_groups[0].id, "package:Drone");
+        assert_eq!(
+            attached
+                .root_views
+                .get("Vehicle")
+                .expect("root view")
+                .package_container_groups
+                .len(),
+            1
+        );
     }
 }

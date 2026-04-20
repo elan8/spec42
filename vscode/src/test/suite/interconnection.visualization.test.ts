@@ -278,6 +278,96 @@ describe("Interconnection Visualization", () => {
         assert.ok(multiBendRoutes.length >= 4, `expected several non-trivial routed connectors, got ${multiBendRoutes.length}`);
     });
 
+    it("renders package containers in All Packages mode", async function () {
+        this.timeout(60000);
+
+        const workspaceFolder = getTestWorkspaceFolder();
+        const doc = await vscode.workspace.openTextDocument(getFixturePath(INTERCONNECTION_FIXTURE));
+        await vscode.window.showTextDocument(doc);
+        await waitForLanguageServerReady(doc);
+
+        await vscode.commands.executeCommand("sysml.showVisualizer");
+        const panel = await waitFor(
+            "visualization panel",
+            async () => VisualizationPanel.currentPanel,
+            (value) => Boolean(value),
+            20000,
+            300
+        );
+
+        panel.clearPackageSelection();
+        await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
+        await new Promise((r) => setTimeout(r, 1800));
+        const exportUri = getDiagramExportUri(workspaceFolder.uri, "interconnection-view");
+        try {
+            await vscode.workspace.fs.delete(exportUri, { useTrash: false });
+        } catch {
+            // Ignore if there is no previous export yet.
+        }
+        panel.getWebview()?.postMessage({ command: "exportDiagramForTest" });
+        const { svgText } = await waitForDiagramExport(
+            workspaceFolder.uri,
+            "interconnection-view",
+            (text) => text.includes("ConnectedBlocks") && text.includes("IT"),
+            30000
+        );
+
+        const containerBounds = parsePartBounds(svgText).filter((bound) => bound.isContainer);
+        assert.ok(
+            containerBounds.some((bound) => bound.name === "ConnectedBlocks"),
+            "All Packages interconnection export should include a ConnectedBlocks package container"
+        );
+        assert.ok(
+            containerBounds.some((bound) => bound.name === "IT"),
+            "All Packages interconnection export should include an IT package container"
+        );
+    });
+
+    it("renders the selected package as the top-level interconnection container", async function () {
+        this.timeout(60000);
+
+        const workspaceFolder = getTestWorkspaceFolder();
+        const doc = await vscode.workspace.openTextDocument(getFixturePath(INTERCONNECTION_FIXTURE));
+        await vscode.window.showTextDocument(doc);
+        await waitForLanguageServerReady(doc);
+
+        await vscode.commands.executeCommand("sysml.showVisualizer");
+        const panel = await waitFor(
+            "visualization panel",
+            async () => VisualizationPanel.currentPanel,
+            (value) => Boolean(value),
+            20000,
+            300
+        );
+
+        panel.selectPackage("ConnectedBlocks");
+        await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
+        await new Promise((r) => setTimeout(r, 1800));
+        const exportUri = getDiagramExportUri(workspaceFolder.uri, "interconnection-view");
+        try {
+            await vscode.workspace.fs.delete(exportUri, { useTrash: false });
+        } catch {
+            // Ignore if there is no previous export yet.
+        }
+        panel.getWebview()?.postMessage({ command: "exportDiagramForTest" });
+        const { svgText } = await waitForDiagramExport(
+            workspaceFolder.uri,
+            "interconnection-view",
+            (text) => text.includes("ConnectedBlocks"),
+            30000
+        );
+
+        const containerBounds = parsePartBounds(svgText).filter((bound) => bound.isContainer);
+        assert.ok(
+            containerBounds.some((bound) => bound.name === "ConnectedBlocks"),
+            "selected-package interconnection export should include the package container"
+        );
+        assert.ok(
+            !containerBounds.some((bound) => bound.name === "IT"),
+            "selected-package interconnection export should exclude other package containers"
+        );
+    });
+
     // The container-ports interconnection export test was removed because it depended on
     // webview render/export timing and SVG content heuristics, which proved too brittle in CI.
 });
