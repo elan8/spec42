@@ -43,12 +43,29 @@ function classifyNodeCategory(stereotype: string): 'structure' | 'behavior' | 'r
 }
 
 /** SysML v2 compartment data. Order: Header, Attributes, Parts, Ports per spec. */
+export interface SysMLNodeDetailItem {
+    name: string;
+    typeName?: string | null;
+    valueText?: string | null;
+    declaredIn?: string | null;
+    displayText: string;
+}
+
+export interface SysMLNodeSection {
+    key: string;
+    title: string;
+    items: SysMLNodeDetailItem[];
+    collapsed?: boolean;
+    showAll?: boolean;
+}
+
 export interface SysMLNodeCompartments {
     header: { stereotype: string; name: string };
     typedByName?: string | null;
-    attributes: string[];
-    parts: string[];
-    ports: string[];
+    attributes: SysMLNodeDetailItem[];
+    parts: SysMLNodeDetailItem[];
+    ports: SysMLNodeDetailItem[];
+    collapsibleSections?: SysMLNodeSection[];
     /** Other content (Actions, Nested, etc.) for general view flexibility */
     other?: Array<{ title: string; lines: string[] }>;
 }
@@ -93,6 +110,54 @@ const COMPARTMENT_PADDING = 4;
 export const HEADER_COMPARTMENT_HEIGHT = 44;
 export const TYPED_BY_HEIGHT = 14;
 export const PADDING = 6;
+const SHOW_MORE_LINE_HEIGHT = 12;
+
+function normalizeDetailItem(item: any): SysMLNodeDetailItem | null {
+    if (typeof item === 'string') {
+        const text = item.trim();
+        if (!text) return null;
+        return { name: text, displayText: text };
+    }
+    if (!item || typeof item !== 'object') return null;
+    const displayText = typeof item.displayText === 'string' && item.displayText.trim().length > 0
+        ? normalizeUnitBrackets(item.displayText.trim())
+        : (typeof item.name === 'string' ? normalizeUnitBrackets(item.name.trim()) : '');
+    if (!displayText) return null;
+    return {
+        name: typeof item.name === 'string' && item.name.trim().length > 0 ? item.name.trim() : displayText,
+        typeName: typeof item.typeName === 'string' ? normalizeUnitBrackets(item.typeName) : null,
+        valueText: typeof item.valueText === 'string' ? normalizeUnitBrackets(item.valueText) : null,
+        declaredIn: typeof item.declaredIn === 'string' ? item.declaredIn : null,
+        displayText
+    };
+}
+
+function detailItemsFromAttributeBag(element: any, key: string): SysMLNodeDetailItem[] {
+    const attrs = element?.attributes;
+    const rawValue = attrs && typeof attrs.get === 'function'
+        ? attrs.get(key)
+        : attrs?.[key];
+    const raw = Array.isArray(rawValue) ? rawValue : [];
+    return raw
+        .map((item: any) => normalizeDetailItem(item))
+        .filter((item: SysMLNodeDetailItem | null): item is SysMLNodeDetailItem => Boolean(item));
+}
+
+function lineToDetailItem(line: string): SysMLNodeDetailItem {
+    const text = normalizeUnitBrackets(line.trim());
+    return { name: text, displayText: text };
+}
+
+function normalizeUnitBrackets(text: string): string {
+    if (!text) return text;
+    let out = text;
+    // Some upstream payloads can already include bracketed unit tokens and
+    // arrive wrapped again, resulting in forms like [[kg]].
+    while (/\[\[[^\[\]]+\]\]/.test(out)) {
+        out = out.replace(/\[\[([^\[\]]+)\]\]/g, '[$1]');
+    }
+    return out;
+}
 
 /**
  * Collect compartments from general-view element (from buildGeneralViewGraph).
@@ -108,6 +173,7 @@ export function collectCompartmentsFromElement(element: any): SysMLNodeCompartme
         attributes: [],
         parts: [],
         ports: [],
+        collapsibleSections: [],
         other: []
     };
 
@@ -125,83 +191,29 @@ export function collectCompartmentsFromElement(element: any): SysMLNodeCompartme
         }
     }
 
-    if (!element?.children?.length) {
-        const inlineAttributes = Array.isArray(element?.attributes?.generalViewAttributes)
-            ? element.attributes.generalViewAttributes
-            : [];
-        inlineAttributes.forEach((line: any) => {
-            if (typeof line === 'string' && !result.attributes.includes(line)) {
-                result.attributes.push(line);
-            }
-        });
-        const inlinePorts = Array.isArray(element?.attributes?.generalViewPorts)
-            ? element.attributes.generalViewPorts
-            : [];
-        inlinePorts.forEach((line: any) => {
-            if (typeof line === 'string' && !result.ports.includes(line)) {
-                result.ports.push(line);
-            }
-        });
-        return result;
-    }
+    result.attributes = detailItemsFromAttributeBag(element, 'generalViewDirectAttributes');
+    result.parts = detailItemsFromAttributeBag(element, 'generalViewDirectParts');
+    result.ports = detailItemsFromAttributeBag(element, 'generalViewDirectPorts');
 
-    const typeLower = (element.type || '').toLowerCase();
-    const isRequirement = typeLower.includes('requirement');
-
-    element.children.forEach((child: any) => {
-        if (!child?.name) return;
-        const cType = (child.type || '').toLowerCase();
-        if (cType.includes('package') || cType.includes('state')) return;
-
-        if (cType === 'attribute' || cType.includes('attribute')) {
-            const dataType = child.attributes?.get ? child.attributes.get('dataType') : (child.attributes?.dataType);
-            const typeStr = dataType ? ' : ' + String(dataType).split('::').pop() : '';
-            result.attributes.push('  ' + child.name + typeStr);
-        } else if (cType === 'port' || cType.includes('port')) {
-            const portType = child.attributes?.get ? child.attributes.get('portType') : (child.attributes?.portType);
-            const pTypeStr = portType ? ' : ' + portType : '';
-            result.ports.push('  ' + child.name + pTypeStr);
-        } else if (cType.includes('part')) {
-            result.parts.push('  ' + child.name);
-        } else if (cType.includes('action')) {
-            const existing = result.other!.find((o) => o.title === 'Actions');
-            if (existing) existing.lines.push('  ' + child.name);
-            else result.other!.push({ title: 'Actions', lines: ['  ' + child.name] });
-        } else if (cType.includes('requirement') || cType.includes('interface') || cType.includes('connect')) {
-            const existing = result.other!.find((o) => o.title === 'Nested');
-            if (existing) existing.lines.push('  ' + child.name);
-            else result.other!.push({ title: 'Nested', lines: ['  ' + child.name] });
-        }
-    });
-
-    if (element.ports?.length) {
-        element.ports.forEach((p: any) => {
-            const pName = typeof p === 'string' ? p : (p?.name || 'port');
-            if (!result.ports.some((l) => l.includes(pName))) result.ports.push('  ' + pName);
+    const inheritedAttributes = detailItemsFromAttributeBag(element, 'generalViewInheritedAttributes');
+    if (inheritedAttributes.length > 0) {
+        result.collapsibleSections!.push({
+            key: 'inherited-attributes',
+            title: 'Inherited Attributes',
+            items: inheritedAttributes,
+            collapsed: true,
+            showAll: false
         });
     }
-
-    const inlineAttributes = Array.isArray(element?.attributes?.generalViewAttributes)
-        ? element.attributes.generalViewAttributes
-        : [];
-    inlineAttributes.forEach((line: any) => {
-        if (typeof line === 'string' && !result.attributes.includes(line)) {
-            result.attributes.push(line);
-        }
-    });
-    const inlinePorts = Array.isArray(element?.attributes?.generalViewPorts)
-        ? element.attributes.generalViewPorts
-        : [];
-    inlinePorts.forEach((line: any) => {
-        if (typeof line === 'string' && !result.ports.includes(line)) {
-            result.ports.push(line);
-        }
-    });
-
-    if (isRequirement && result.other!.length) {
-        result.attributes = [];
-        result.parts = [];
-        result.ports = [];
+    const inheritedParts = detailItemsFromAttributeBag(element, 'generalViewInheritedParts');
+    if (inheritedParts.length > 0) {
+        result.collapsibleSections!.push({
+            key: 'inherited-parts',
+            title: 'Inherited Parts',
+            items: inheritedParts,
+            collapsed: true,
+            showAll: false
+        });
     }
 
     return result;
@@ -220,6 +232,7 @@ export function collectCompartmentsFromPart(part: any, ports: any[]): SysMLNodeC
         attributes: [],
         parts: [],
         ports: [],
+        collapsibleSections: [],
         other: []
     };
 
@@ -232,16 +245,26 @@ export function collectCompartmentsFromPart(part: any, ports: any[]): SysMLNodeC
     partPorts.forEach((p: any) => {
         if (p?.name) {
             const portType = p.attributes?.get ? p.attributes.get('portType') : (p.attributes?.portType);
-            result.ports.push('  ' + p.name + (portType ? ' : ' + portType : ''));
+            const normalizedPortType = portType ? normalizeUnitBrackets(String(portType)) : null;
+            result.ports.push({
+                name: p.name,
+                typeName: normalizedPortType,
+                displayText: (p.name + (normalizedPortType ? ' : ' + normalizedPortType : '')).trim()
+            });
         }
     });
 
     (part?.children || []).forEach((c: any) => {
         if (!c?.name || !c?.type) return;
-        if (c.type === 'part') result.parts.push('  ' + c.name);
+        if (c.type === 'part') result.parts.push({ name: c.name, displayText: c.name });
         else if (c.type === 'port') {
             const portType = c.attributes?.get ? c.attributes.get('portType') : (c.attributes?.portType);
-            result.ports.push('  ' + c.name + (portType ? ' : ' + portType : ''));
+            const normalizedPortType = portType ? normalizeUnitBrackets(String(portType)) : null;
+            result.ports.push({
+                name: c.name,
+                typeName: normalizedPortType,
+                displayText: (c.name + (normalizedPortType ? ' : ' + normalizedPortType : '')).trim()
+            });
         }
     });
 
@@ -266,20 +289,41 @@ export function computeNodeHeightFromCompartments(
     const hasBodyCompartments = (cfg.showAttributes && compartments.attributes.length > 0) ||
         (cfg.showParts && compartments.parts.length > 0) ||
         (cfg.showPorts && compartments.ports.length > 0) ||
+        (!!compartments.collapsibleSections?.some((section) => section.items.length > 0)) ||
         (cfg.showOther && !!compartments.other?.some((s) => s.lines.length > 0));
     if (cfg.showHeader && hasBodyCompartments) {
         h += COMPARTMENT_PADDING; // Gap between header and first compartment
     }
 
-    const addComp = (lines: string[]) => {
-        if (lines.length === 0) return;
-        const n = cfg.maxLinesPerCompartment ? Math.min(lines.length, cfg.maxLinesPerCompartment) : lines.length;
+    const addComp = (items: SysMLNodeDetailItem[]) => {
+        if (items.length === 0) return;
+        const n = cfg.maxLinesPerCompartment ? Math.min(items.length, cfg.maxLinesPerCompartment) : items.length;
         h += COMPARTMENT_PADDING * 2 + COMPARTMENT_LABEL_HEIGHT + n * LINE_HEIGHT + COMPARTMENT_GAP;
+        if (cfg.maxLinesPerCompartment && items.length > cfg.maxLinesPerCompartment) {
+            h += SHOW_MORE_LINE_HEIGHT;
+        }
+    };
+
+    const addCollapsibleSection = (section: SysMLNodeSection) => {
+        if (section.items.length === 0) return;
+        h += COMPARTMENT_PADDING * 2 + COMPARTMENT_LABEL_HEIGHT + COMPARTMENT_GAP;
+        if (!section.collapsed) {
+            const n = section.showAll || !cfg.maxLinesPerCompartment
+                ? section.items.length
+                : Math.min(section.items.length, cfg.maxLinesPerCompartment);
+            h += n * LINE_HEIGHT;
+            if (cfg.maxLinesPerCompartment && section.items.length > cfg.maxLinesPerCompartment) {
+                h += SHOW_MORE_LINE_HEIGHT;
+            }
+        }
     };
 
     if (cfg.showAttributes) addComp(compartments.attributes);
     if (cfg.showParts) addComp(compartments.parts);
     if (cfg.showPorts) addComp(compartments.ports);
+    if (compartments.collapsibleSections?.length) {
+        compartments.collapsibleSections.forEach(addCollapsibleSection);
+    }
     if (cfg.showOther && compartments.other?.length) {
         compartments.other.forEach((sec) => {
             const n = cfg.maxLinesPerCompartment ? Math.min(sec.lines.length, cfg.maxLinesPerCompartment) : sec.lines.length;
@@ -308,6 +352,8 @@ export function renderSysMLNode(
         formatStereotype?: (type: string) => string;
         nodeClass?: string;
         dataElementName?: string;
+        sectionKeyPrefix?: string;
+        onSectionToggle?: (key: string, action: 'collapse' | 'rows') => void;
     }
 ): any {
     const cfg = { ...DEFAULT_CONFIG, ...(options.config || {}) };
@@ -404,10 +450,19 @@ export function renderSysMLNode(
         contentY += COMPARTMENT_PADDING;
     }
 
-    const renderCompartment = (title: string, lines: string[]) => {
-        if (lines.length === 0) return;
-        const limit = cfg.maxLinesPerCompartment ? Math.min(lines.length, cfg.maxLinesPerCompartment) : lines.length;
-        const slice = lines.slice(0, limit);
+    const renderCompartment = (
+        title: string,
+        items: SysMLNodeDetailItem[],
+        sectionKey?: string,
+        collapsible = false,
+        collapsed = false,
+        showAll = false
+    ) => {
+        if (items.length === 0) return;
+        const limit = showAll || !cfg.maxLinesPerCompartment
+            ? items.length
+            : Math.min(items.length, cfg.maxLinesPerCompartment);
+        const slice = collapsed ? [] : items.slice(0, limit);
         const compTop = contentY;
         // Top line - compartment boundary
         nodeG.append('line')
@@ -420,42 +475,78 @@ export function renderSysMLNode(
             .style('stroke-width', '1px');
         contentY += 4;
         // Title (bold) on its own line
-        nodeG.append('text')
+        const titleText = nodeG.append('text')
             .attr('x', PADDING)
             .attr('y', contentY + 9)
-            .text(title)
+            .text(collapsible ? ((collapsed ? '▸ ' : '▾ ') + title) : title)
             .style('font-size', '9px')
             .style('font-weight', 'bold')
-            .style('fill', compartmentTitleColor);
+            .style('fill', compartmentTitleColor)
+            .style('cursor', collapsible ? 'pointer' : 'default');
+        if (collapsible && sectionKey && options.onSectionToggle) {
+            titleText.on('click', function(event: any) {
+                event.stopPropagation();
+                options.onSectionToggle!(sectionKey, 'collapse');
+            });
+        }
         contentY += COMPARTMENT_LABEL_HEIGHT;
         // Content lines
-        slice.forEach((line) => {
+        slice.forEach((item) => {
+            const line = item.displayText;
             const truncated = line.length > 28 ? line.substring(0, 26) + '..' : line;
             nodeG.append('text')
                 .attr('x', PADDING)
                 .attr('y', contentY + 9)
                 .text(truncated)
                 .style('font-size', '9px')
-                .style('fill', DIAGRAM_STYLE.textSecondary);
+                .style('fill', DIAGRAM_STYLE.textSecondary)
+                .append('title')
+                .text(item.declaredIn ? `${item.displayText} (from ${item.declaredIn})` : item.displayText);
             contentY += LINE_HEIGHT;
         });
+        if (!collapsed && cfg.maxLinesPerCompartment && items.length > cfg.maxLinesPerCompartment) {
+            const hiddenCount = items.length - cfg.maxLinesPerCompartment;
+            const toggleText = showAll ? 'Show less' : `+${hiddenCount} more`;
+            const moreText = nodeG.append('text')
+                .attr('x', PADDING)
+                .attr('y', contentY + 9)
+                .text(toggleText)
+                .style('font-size', '9px')
+                .style('font-weight', 'bold')
+                .style('fill', DIAGRAM_STYLE.edgePrimary)
+                .style('cursor', 'pointer');
+            if (sectionKey && options.onSectionToggle) {
+                moreText.on('click', function(event: any) {
+                    event.stopPropagation();
+                    options.onSectionToggle!(sectionKey, 'rows');
+                });
+            }
+            contentY += SHOW_MORE_LINE_HEIGHT;
+        }
         contentY += COMPARTMENT_PADDING;
         contentY += COMPARTMENT_GAP;
         // Only top line per compartment - no bottom line (avoids double lines between compartments)
     };
 
     if (cfg.showAttributes && compartments.attributes.length > 0) {
-        renderCompartment('Attributes', compartments.attributes);
+        renderCompartment('Attributes', compartments.attributes, options.sectionKeyPrefix ? options.sectionKeyPrefix + 'attributes' : undefined);
     }
     if (cfg.showParts && compartments.parts.length > 0) {
-        renderCompartment('Parts', compartments.parts);
+        renderCompartment('Parts', compartments.parts, options.sectionKeyPrefix ? options.sectionKeyPrefix + 'parts' : undefined);
     }
     if (cfg.showPorts && compartments.ports.length > 0) {
-        renderCompartment('Ports', compartments.ports);
+        renderCompartment('Ports', compartments.ports, options.sectionKeyPrefix ? options.sectionKeyPrefix + 'ports' : undefined);
+    }
+    if (compartments.collapsibleSections?.length) {
+        compartments.collapsibleSections.forEach((section) => {
+            if (section.items.length > 0) {
+                renderCompartment(section.title, section.items, section.key, true, Boolean(section.collapsed), Boolean(section.showAll));
+            }
+        });
     }
     if (cfg.showOther && compartments.other?.length) {
         compartments.other.forEach((sec) => {
-            if (sec.lines.length > 0) renderCompartment(sec.title, sec.lines);
+            if (sec.lines.length > 0) renderCompartment(sec.title, sec.lines.map((line) => lineToDetailItem(line)));
         });
     }
 

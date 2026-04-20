@@ -25,6 +25,8 @@ const NODE_WIDTH = 200;
 const NODE_HEIGHT_BASE = 70;
 const GENERAL_NEUTRAL_EDGE = 'var(--vscode-editor-foreground)';
 const GENERAL_NEUTRAL_BORDER = DIAGRAM_STYLE.nodeBorder;
+const collapsedGeneralViewSections = new Set<string>();
+const expandedGeneralViewSectionRows = new Set<string>();
 
 /** General view uses full SysML v2 compartments: Header, Attributes, Parts, Ports, Other */
 const GENERAL_VIEW_NODE_CONFIG: SysMLNodeConfig = {
@@ -196,8 +198,36 @@ function buildNodeDataMap(cyNodes: any[]): Map<string, { compartments: SysMLNode
                 attributes: [],
                 parts: [],
                 ports: [],
-                other: []
+                other: [],
+                collapsibleSections: []
             };
+        const sectionKeyPrefix = d.id + '::';
+        const maxLines = GENERAL_VIEW_NODE_CONFIG.maxLinesPerCompartment ?? Infinity;
+        const directSections: Array<[string, Array<unknown>]> = [
+            ['attributes', compartments.attributes],
+            ['parts', compartments.parts],
+            ['ports', compartments.ports]
+        ];
+        directSections.forEach(([name, items]) => {
+            if (items.length <= maxLines) {
+                expandedGeneralViewSectionRows.delete(sectionKeyPrefix + name);
+            }
+        });
+        compartments.collapsibleSections = (compartments.collapsibleSections || []).map((section) => {
+            const key = sectionKeyPrefix + section.key;
+            if (!collapsedGeneralViewSections.has(key)) {
+                collapsedGeneralViewSections.add(key);
+            }
+            if (section.items.length <= maxLines) {
+                expandedGeneralViewSectionRows.delete(key);
+            }
+            return {
+                ...section,
+                key,
+                collapsed: collapsedGeneralViewSections.has(key),
+                showAll: expandedGeneralViewSectionRows.has(key)
+            };
+        });
         const nodeHeight = computeNodeHeightFromCompartments(compartments, GENERAL_VIEW_NODE_CONFIG, NODE_WIDTH);
         nodeDataMap.set(d.id, { compartments, height: Math.max(NODE_HEIGHT_BASE, nodeHeight) });
     });
@@ -444,7 +474,8 @@ function renderGeneralNodes(
     nodePositions: Map<string, NodeRect>,
     nodeDataMap: Map<string, { compartments: SysMLNodeCompartments; height: number }>,
     clearVisualHighlights: () => void,
-    postMessage: (msg: unknown) => void
+    postMessage: (msg: unknown) => void,
+    rerenderGeneralView: () => void
 ): void {
     cyNodes.forEach((el: any) => {
         const pos = nodePositions.get(el.data.id);
@@ -457,7 +488,8 @@ function renderGeneralNodes(
             attributes: [],
             parts: [],
             ports: [],
-            other: []
+            other: [],
+            collapsibleSections: []
         };
         const isDefinition = d.isDefinition === true;
         const typeColor = d.color || getTypeColor(d.sysmlType);
@@ -471,7 +503,22 @@ function renderGeneralNodes(
             typeColor,
             formatStereotype: (t) => formatSysMLStereotype(t) || ('«' + t + '»'),
             nodeClass: 'general-node elk-node',
-            dataElementName: d.elementName || d.label
+            dataElementName: d.elementName || d.label,
+            sectionKeyPrefix: d.id + '::',
+            onSectionToggle: (sectionKey, action) => {
+                if (action === 'collapse') {
+                    if (collapsedGeneralViewSections.has(sectionKey)) {
+                        collapsedGeneralViewSections.delete(sectionKey);
+                    } else {
+                        collapsedGeneralViewSections.add(sectionKey);
+                    }
+                } else if (expandedGeneralViewSectionRows.has(sectionKey)) {
+                    expandedGeneralViewSectionRows.delete(sectionKey);
+                } else {
+                    expandedGeneralViewSectionRows.add(sectionKey);
+                }
+                rerenderGeneralView();
+            }
         });
         nodeG.select('.graph-node-background')
             .style('fill', 'var(--vscode-editor-background)')
@@ -670,5 +717,9 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
     const statusEl = document.getElementById('status-text');
     if (statusEl) statusEl.textContent = 'General View • Tap element to highlight, double-tap to jump';
 
-    renderGeneralNodes(nodeGroup, g, cyNodes, nodePositions, nodeDataMap, clearVisualHighlights, postMessage);
+    const rerenderGeneralView = () => {
+        g.selectAll('*').remove();
+        void renderGeneralViewD3(ctx, data);
+    };
+    renderGeneralNodes(nodeGroup, g, cyNodes, nodePositions, nodeDataMap, clearVisualHighlights, postMessage, rerenderGeneralView);
 }

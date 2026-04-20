@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
+use serde_json::{json, Value};
 use tower_lsp::lsp_types::Url;
 
 use crate::semantic_model;
@@ -60,12 +61,32 @@ fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) -> SysmlGra
         .iter()
         .map(|node| (node.id.as_str(), node))
         .collect();
+    let children_by_parent: HashMap<&str, Vec<&GraphNodeDto>> = {
+        let mut map: HashMap<&str, Vec<&GraphNodeDto>> = HashMap::new();
+        for node in &graph.nodes {
+            if let Some(parent_id) = node.parent_id.as_deref() {
+                map.entry(parent_id).or_default().push(node);
+            }
+        }
+        map
+    };
     let typing_targets: HashMap<&str, &str> = graph
         .edges
         .iter()
         .filter(|edge| edge.rel_type.eq_ignore_ascii_case("typing"))
         .map(|edge| (edge.source.as_str(), edge.target.as_str()))
         .collect();
+    let specialization_targets: HashMap<&str, Vec<&str>> = {
+        let mut map: HashMap<&str, Vec<&str>> = HashMap::new();
+        for edge in &graph.edges {
+            if edge.rel_type.eq_ignore_ascii_case("specializes") {
+                map.entry(edge.source.as_str())
+                    .or_default()
+                    .push(edge.target.as_str());
+            }
+        }
+        map
+    };
 
     let detail_ids: HashSet<&str> = graph
         .nodes
@@ -85,33 +106,6 @@ fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) -> SysmlGra
         return graph.clone();
     }
 
-    let mut owner_detail_lines: HashMap<String, (Vec<String>, Vec<String>)> = HashMap::new();
-    for detail in graph
-        .nodes
-        .iter()
-        .filter(|node| detail_ids.contains(node.id.as_str()))
-    {
-        let Some(owner_id) = detail.parent_id.as_ref() else {
-            continue;
-        };
-        if detail_ids.contains(owner_id.as_str()) {
-            continue;
-        }
-        if !node_by_id.contains_key(owner_id.as_str()) {
-            continue;
-        }
-
-        let detail_line = format_general_view_detail_line(detail, &node_by_id, &typing_targets);
-        let entry = owner_detail_lines
-            .entry(owner_id.clone())
-            .or_insert_with(|| (Vec::new(), Vec::new()));
-        if is_port_like(&detail.element_type) {
-            push_unique_line(&mut entry.1, detail_line);
-        } else if is_attribute_like(&detail.element_type) {
-            push_unique_line(&mut entry.0, detail_line);
-        }
-    }
-
     let mut out_nodes: Vec<GraphNodeDto> = graph
         .nodes
         .iter()
@@ -119,52 +113,49 @@ fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) -> SysmlGra
         .cloned()
         .collect();
     for node in &mut out_nodes {
-        if let Some(requirement_lines) = node
-            .attributes
-            .get("requirementConstraints")
-            .and_then(|value| value.as_array())
-            .cloned()
-        {
-            let merged_attributes = node
-                .attributes
-                .entry("generalViewAttributes".to_string())
-                .or_insert_with(|| serde_json::Value::Array(Vec::new()));
-            if let serde_json::Value::Array(attributes) = merged_attributes {
-                for line in &requirement_lines {
-                    if !attributes.iter().any(|existing| existing == line) {
-                        attributes.push(line.clone());
-                    }
-                }
-            }
-        }
-        if let Some((attributes, ports)) = owner_detail_lines.get(&node.id) {
-            if !attributes.is_empty() {
-                let merged_attributes = node
-                    .attributes
-                    .entry("generalViewAttributes".to_string())
-                    .or_insert_with(|| serde_json::Value::Array(Vec::new()));
-                if let serde_json::Value::Array(lines) = merged_attributes {
-                    for attribute in attributes {
-                        let value = serde_json::Value::String(attribute.clone());
-                        if !lines.iter().any(|existing| existing == &value) {
-                            lines.push(value);
-                        }
-                    }
-                }
-            }
-            if !ports.is_empty() {
-                node.attributes.insert(
-                    "generalViewPorts".to_string(),
-                    serde_json::Value::Array(
-                        ports
-                            .iter()
-                            .cloned()
-                            .map(serde_json::Value::String)
-                            .collect(),
-                    ),
-                );
-            }
-        }
+        let direct_details = collect_direct_general_view_details(
+            node.id.as_str(),
+            &children_by_parent,
+            &node_by_id,
+            &typing_targets,
+            node.attributes
+                .get("requirementConstraints")
+                .and_then(|value| value.as_array()),
+        );
+        let inherited_details = collect_inherited_general_view_details(
+            node.id.as_str(),
+            &children_by_parent,
+            &node_by_id,
+            &typing_targets,
+            &specialization_targets,
+            &direct_details,
+        );
+
+        insert_detail_items(
+            &mut node.attributes,
+            "generalViewDirectAttributes",
+            direct_details.attributes,
+        );
+        insert_detail_items(
+            &mut node.attributes,
+            "generalViewDirectParts",
+            direct_details.parts,
+        );
+        insert_detail_items(
+            &mut node.attributes,
+            "generalViewDirectPorts",
+            direct_details.ports,
+        );
+        insert_detail_items(
+            &mut node.attributes,
+            "generalViewInheritedAttributes",
+            inherited_details.attributes,
+        );
+        insert_detail_items(
+            &mut node.attributes,
+            "generalViewInheritedParts",
+            inherited_details.parts,
+        );
     }
 
     let out_edges: Vec<GraphEdgeDto> = graph
@@ -209,19 +200,185 @@ fn is_anonymous_redefinition_stub(node: &GraphNodeDto) -> bool {
     node.name.trim().is_empty() && node.attributes.contains_key("redefines")
 }
 
-fn push_unique_line(lines: &mut Vec<String>, line: String) {
-    if !lines.iter().any(|existing| existing == &line) {
-        lines.push(line);
-    }
+#[derive(Default)]
+struct GeneralViewDetails {
+    attributes: Vec<Value>,
+    parts: Vec<Value>,
+    ports: Vec<Value>,
+    attribute_names: HashSet<String>,
+    part_names: HashSet<String>,
 }
 
-fn format_general_view_detail_line(
+fn collect_direct_general_view_details(
+    owner_id: &str,
+    children_by_parent: &HashMap<&str, Vec<&GraphNodeDto>>,
+    node_by_id: &HashMap<&str, &GraphNodeDto>,
+    typing_targets: &HashMap<&str, &str>,
+    requirement_constraints: Option<&Vec<Value>>,
+) -> GeneralViewDetails {
+    let mut details = GeneralViewDetails::default();
+
+    if let Some(children) = children_by_parent.get(owner_id) {
+        for child in children {
+            if is_port_like(&child.element_type) {
+                if let Some(item) = build_general_view_detail_item(child, node_by_id, typing_targets, None) {
+                    details.ports.push(item);
+                }
+                continue;
+            }
+            if is_attribute_like(&child.element_type) {
+                if let Some(item) = build_general_view_detail_item(child, node_by_id, typing_targets, None) {
+                    if let Some(name) = item.get("name").and_then(|value| value.as_str()) {
+                        details.attribute_names.insert(name.to_lowercase());
+                    }
+                    details.attributes.push(item);
+                }
+                continue;
+            }
+            if is_part_compartment_item(child) {
+                if let Some(item) = build_general_view_detail_item(child, node_by_id, typing_targets, None) {
+                    if let Some(name) = item.get("name").and_then(|value| value.as_str()) {
+                        details.part_names.insert(name.to_lowercase());
+                    }
+                    details.parts.push(item);
+                }
+            }
+        }
+    }
+
+    if let Some(lines) = requirement_constraints {
+        for line in lines {
+            if let Some(display_text) = line.as_str().map(|value| value.trim().to_string()) {
+                if display_text.is_empty() {
+                    continue;
+                }
+                details.attributes.push(json!({
+                    "name": display_text,
+                    "displayText": display_text,
+                }));
+            }
+        }
+    }
+
+    details
+}
+
+fn collect_inherited_general_view_details(
+    owner_id: &str,
+    children_by_parent: &HashMap<&str, Vec<&GraphNodeDto>>,
+    node_by_id: &HashMap<&str, &GraphNodeDto>,
+    typing_targets: &HashMap<&str, &str>,
+    specialization_targets: &HashMap<&str, Vec<&str>>,
+    direct_details: &GeneralViewDetails,
+) -> GeneralViewDetails {
+    let mut details = GeneralViewDetails::default();
+    let mut seen_ancestors: HashSet<&str> = HashSet::new();
+    let mut queue: Vec<&str> = specialization_targets
+        .get(owner_id)
+        .cloned()
+        .unwrap_or_default();
+
+    while let Some(ancestor_id) = queue.first().copied() {
+        queue.remove(0);
+        if !seen_ancestors.insert(ancestor_id) {
+            continue;
+        }
+        if let Some(next_targets) = specialization_targets.get(ancestor_id) {
+            queue.extend(next_targets.iter().copied());
+        }
+        let declared_in = node_by_id
+            .get(ancestor_id)
+            .map(|node| node.name.clone())
+            .filter(|name| !name.trim().is_empty());
+        let Some(children) = children_by_parent.get(ancestor_id) else {
+            continue;
+        };
+        for child in children {
+            if is_attribute_like(&child.element_type) {
+                if let Some(item) =
+                    build_general_view_detail_item(child, node_by_id, typing_targets, declared_in.clone())
+                {
+                    let Some(name) = item.get("name").and_then(|value| value.as_str()) else {
+                        continue;
+                    };
+                    let normalized = name.to_lowercase();
+                    if direct_details.attribute_names.contains(&normalized)
+                        || !details.attribute_names.insert(normalized)
+                    {
+                        continue;
+                    }
+                    details.attributes.push(item);
+                }
+                continue;
+            }
+            if is_part_compartment_item(child) {
+                if let Some(item) =
+                    build_general_view_detail_item(child, node_by_id, typing_targets, declared_in.clone())
+                {
+                    let Some(name) = item.get("name").and_then(|value| value.as_str()) else {
+                        continue;
+                    };
+                    let normalized = name.to_lowercase();
+                    if direct_details.part_names.contains(&normalized)
+                        || !details.part_names.insert(normalized)
+                    {
+                        continue;
+                    }
+                    details.parts.push(item);
+                }
+            }
+        }
+    }
+
+    details
+}
+
+fn is_part_compartment_item(node: &GraphNodeDto) -> bool {
+    let lower = node.element_type.to_lowercase();
+    lower.contains("part") && !is_port_like(&lower) && !is_anonymous_redefinition_stub(node)
+}
+
+fn build_general_view_detail_item(
     detail: &GraphNodeDto,
     node_by_id: &HashMap<&str, &GraphNodeDto>,
     typing_targets: &HashMap<&str, &str>,
-) -> String {
-    let name = detail.name.trim();
-    let typed = typing_targets
+    declared_in: Option<String>,
+) -> Option<Value> {
+    let name = general_view_detail_name(detail)?;
+    let type_name = detail_type_name(detail, node_by_id, typing_targets);
+    let value_text = detail_value_text(detail);
+    let display_text = format_general_view_detail_display_text(&name, type_name.as_deref(), value_text.as_deref());
+
+    Some(json!({
+        "name": name,
+        "typeName": type_name,
+        "valueText": value_text,
+        "declaredIn": declared_in,
+        "displayText": display_text,
+    }))
+}
+
+fn general_view_detail_name(detail: &GraphNodeDto) -> Option<String> {
+    let explicit_name = detail.name.trim();
+    if !explicit_name.is_empty() {
+        return Some(explicit_name.to_string());
+    }
+    if is_attribute_like(&detail.element_type) {
+        return detail
+            .attributes
+            .get("redefines")
+            .and_then(|value| value.as_str())
+            .map(|value| value.split("::").last().unwrap_or(value).to_string());
+    }
+    None
+}
+
+fn detail_type_name(
+    detail: &GraphNodeDto,
+    node_by_id: &HashMap<&str, &GraphNodeDto>,
+    typing_targets: &HashMap<&str, &str>,
+) -> Option<String> {
+    typing_targets
         .get(detail.id.as_str())
         .and_then(|target_id| node_by_id.get(target_id))
         .map(|target| target.name.as_str())
@@ -231,6 +388,12 @@ fn format_general_view_detail_line(
                     .attributes
                     .get("portType")
                     .and_then(|value| value.as_str())
+            } else if is_part_compartment_item(detail) {
+                detail
+                    .attributes
+                    .get("partType")
+                    .and_then(|value| value.as_str())
+                    .or_else(|| detail.attributes.get("type").and_then(|value| value.as_str()))
             } else {
                 detail
                     .attributes
@@ -239,22 +402,62 @@ fn format_general_view_detail_line(
                     .or_else(|| {
                         detail
                             .attributes
-                            .get("type")
+                            .get("attributeType")
+                            .and_then(|value| value.as_str())
+                    })
+                    .or_else(|| detail.attributes.get("type").and_then(|value| value.as_str()))
+                    .or_else(|| {
+                        detail
+                            .attributes
+                            .get("parameterType")
                             .and_then(|value| value.as_str())
                     })
             }
         })
-        .map(|type_name| {
-            type_name
-                .split("::")
-                .last()
-                .unwrap_or(type_name)
-                .to_string()
-        });
+        .map(|type_name| type_name.split("::").last().unwrap_or(type_name).to_string())
+        .filter(|type_name| !type_name.trim().is_empty())
+}
 
-    match typed {
-        Some(type_name) if !type_name.is_empty() => format!("  {name} : {type_name}"),
-        _ => format!("  {name}"),
+fn detail_value_text(detail: &GraphNodeDto) -> Option<String> {
+    for key in ["value", "defaultValue", "valueText", "literal"] {
+        let Some(value) = detail.attributes.get(key) else {
+            continue;
+        };
+        if let Some(raw) = value.as_str() {
+            if !raw.trim().is_empty() {
+                return Some(raw.trim().to_string());
+            }
+        } else if value.is_number() || value.is_boolean() {
+            return Some(value.to_string());
+        }
+    }
+    None
+}
+
+fn format_general_view_detail_display_text(
+    name: &str,
+    type_name: Option<&str>,
+    value_text: Option<&str>,
+) -> String {
+    match (type_name, value_text) {
+        (Some(type_name), Some(value_text)) if !type_name.is_empty() && !value_text.is_empty() => {
+            format!("{name} : {type_name} = {value_text}")
+        }
+        (Some(type_name), _) if !type_name.is_empty() => format!("{name} : {type_name}"),
+        (_, Some(value_text)) if !value_text.is_empty() => format!("{name} = {value_text}"),
+        _ => name.to_string(),
+    }
+}
+
+fn insert_detail_items(
+    attributes: &mut HashMap<String, Value>,
+    key: &str,
+    items: Vec<Value>,
+) {
+    if items.is_empty() {
+        attributes.remove(key);
+    } else {
+        attributes.insert(key.to_string(), Value::Array(items));
     }
 }
 
@@ -366,9 +569,12 @@ mod tests {
             .find(|node| node.id == "Pkg::Req")
             .unwrap();
         assert_eq!(
-            owner.attributes.get("generalViewAttributes"),
-            Some(&serde_json::json!(["  flightTime >= 25 min."])),
-            "requirement constraints should be exposed through generalViewAttributes"
+            owner.attributes.get("generalViewDirectAttributes"),
+            Some(&serde_json::json!([{
+                "name": "flightTime >= 25 min.",
+                "displayText": "flightTime >= 25 min."
+            }])),
+            "requirement constraints should be exposed through generalViewDirectAttributes"
         );
     }
 
@@ -515,18 +721,163 @@ mod tests {
             .find(|node| node.id == "Pkg::Laptop")
             .expect("owner node");
         assert_eq!(
-            owner.attributes.get("generalViewAttributes"),
-            Some(&serde_json::json!(["  voltage : Volt"])),
+            owner.attributes.get("generalViewDirectAttributes"),
+            Some(&serde_json::json!([{
+                "name": "voltage",
+                "typeName": "Volt",
+                "valueText": null,
+                "declaredIn": null,
+                "displayText": "voltage : Volt"
+            }])),
             "attribute should be preserved in owner node compartments"
         );
         assert_eq!(
-            owner.attributes.get("generalViewPorts"),
-            Some(&serde_json::json!(["  powerIn : PowerPort"])),
+            owner.attributes.get("generalViewDirectPorts"),
+            Some(&serde_json::json!([{
+                "name": "powerIn",
+                "typeName": "PowerPort",
+                "valueText": null,
+                "declaredIn": null,
+                "displayText": "powerIn : PowerPort"
+            }])),
             "port should be preserved in owner node compartments"
         );
         assert!(
             canonical.edges.is_empty(),
             "contains edges to inlined details should be removed from General View"
+        );
+    }
+
+    #[test]
+    fn canonical_general_view_graph_groups_direct_and_inherited_member_details() {
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::Vehicle".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "Vehicle".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Vehicle::mass".to_string(),
+                    element_type: "attribute".to_string(),
+                    name: "mass".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::Vehicle".to_string()),
+                    range: range(),
+                    attributes: serde_json::json!({ "dataType": "ScalarValues::Kilogram", "value": "1200" })
+                        .as_object()
+                        .unwrap()
+                        .iter()
+                        .map(|(k, v)| (k.clone(), v.clone()))
+                        .collect(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Vehicle::engine".to_string(),
+                    element_type: "part".to_string(),
+                    name: "engine".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::Vehicle".to_string()),
+                    range: range(),
+                    attributes: serde_json::json!({ "type": "Engine" })
+                        .as_object()
+                        .unwrap()
+                        .iter()
+                        .map(|(k, v)| (k.clone(), v.clone()))
+                        .collect(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Car".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "Car".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Car::wheels".to_string(),
+                    element_type: "part".to_string(),
+                    name: "wheels".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::Car".to_string()),
+                    range: range(),
+                    attributes: serde_json::json!({ "type": "WheelSet" })
+                        .as_object()
+                        .unwrap()
+                        .iter()
+                        .map(|(k, v)| (k.clone(), v.clone()))
+                        .collect(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Car::mass".to_string(),
+                    element_type: "attribute".to_string(),
+                    name: "mass".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::Car".to_string()),
+                    range: range(),
+                    attributes: serde_json::json!({ "dataType": "ScalarValues::Kilogram", "value": "1300" })
+                        .as_object()
+                        .unwrap()
+                        .iter()
+                        .map(|(k, v)| (k.clone(), v.clone()))
+                        .collect(),
+                },
+            ],
+            edges: vec![GraphEdgeDto {
+                source: "Pkg::Car".to_string(),
+                target: "Pkg::Vehicle".to_string(),
+                rel_type: "specializes".to_string(),
+                name: None,
+            }],
+        };
+
+        let canonical = canonical_general_view_graph(&graph, false);
+        let owner = canonical
+            .nodes
+            .iter()
+            .find(|node| node.id == "Pkg::Car")
+            .expect("owner node");
+        assert_eq!(
+            owner.attributes.get("generalViewDirectAttributes"),
+            Some(&serde_json::json!([{
+                "name": "mass",
+                "typeName": "Kilogram",
+                "valueText": "1300",
+                "declaredIn": null,
+                "displayText": "mass : Kilogram = 1300"
+            }])),
+            "direct attributes should preserve type and value display text"
+        );
+        assert_eq!(
+            owner.attributes.get("generalViewDirectParts"),
+            Some(&serde_json::json!([{
+                "name": "wheels",
+                "typeName": "WheelSet",
+                "valueText": null,
+                "declaredIn": null,
+                "displayText": "wheels : WheelSet"
+            }])),
+            "direct parts should remain in the owner node payload"
+        );
+        assert_eq!(
+            owner.attributes.get("generalViewInheritedAttributes"),
+            None,
+            "redefined direct attributes should suppress inherited duplicates instead of emitting an empty compartment"
+        );
+        assert_eq!(
+            owner.attributes.get("generalViewInheritedParts"),
+            Some(&serde_json::json!([{
+                "name": "engine",
+                "typeName": "Engine",
+                "valueText": null,
+                "declaredIn": "Vehicle",
+                "displayText": "engine : Engine"
+            }])),
+            "inherited parts should be grouped separately with provenance"
         );
     }
 
