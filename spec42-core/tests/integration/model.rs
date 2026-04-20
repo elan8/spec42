@@ -979,22 +979,22 @@ fn lsp_sysml_model_general_view_graph_inlines_ports_and_attributes_into_owner_no
         .iter()
         .find(|node| node["name"].as_str() == Some("Laptop"))
         .expect("Laptop node in General View");
-    let attributes = laptop["attributes"]["generalViewAttributes"]
+    let attributes = laptop["attributes"]["generalViewDirectAttributes"]
         .as_array()
         .expect("inline attributes array");
-    let ports = laptop["attributes"]["generalViewPorts"]
+    let ports = laptop["attributes"]["generalViewDirectPorts"]
         .as_array()
         .expect("inline ports array");
     assert!(
         attributes
             .iter()
-            .any(|line| line.as_str() == Some("  voltage")),
+            .any(|line| line["displayText"].as_str() == Some("voltage")),
         "owner node should preserve inline attribute summaries: {attributes:#?}"
     );
     assert!(
         ports
             .iter()
-            .any(|line| line.as_str() == Some("  powerIn : PowerPort")),
+            .any(|line| line["displayText"].as_str() == Some("powerIn : PowerPort")),
         "owner node should preserve inline port summaries: {ports:#?}"
     );
     assert!(
@@ -1092,13 +1092,13 @@ fn lsp_sysml_model_general_view_graph_inlines_requirement_constraints_into_owner
         .iter()
         .find(|node| node["name"].as_str() == Some("EnduranceReq"))
         .expect("requirement node in General View");
-    let attributes = req["attributes"]["generalViewAttributes"]
+    let attributes = req["attributes"]["generalViewDirectAttributes"]
         .as_array()
         .expect("inline requirement body attributes");
     assert!(
         attributes
             .iter()
-            .any(|line| line.as_str() == Some("  flightTime >= 25 min.")),
+            .any(|line| line["displayText"].as_str() == Some("flightTime >= 25 min.")),
         "requirement node should preserve inline constraint summary: {attributes:#?}"
     );
 
