@@ -632,7 +632,7 @@ mod tests {
     }
 
     #[test]
-    fn store_document_text_persists_phase1_evaluated_attributes() {
+    fn store_document_text_persists_evaluated_attributes() {
         let uri = fixture_uri();
         let mut state = ServerState::default();
         let warning = store_document_text(
@@ -658,7 +658,7 @@ mod tests {
     }
 
     #[test]
-    fn rebuild_all_document_links_recomputes_phase1_evaluated_attributes() {
+    fn rebuild_all_document_links_recomputes_evaluated_attributes() {
         let uri = fixture_uri();
         let mut state = ServerState::default();
         store_document_text(
@@ -677,6 +677,53 @@ mod tests {
         assert_eq!(
             mass.attributes.get("evaluatedValue"),
             Some(&serde_json::json!(4))
+        );
+    }
+
+    #[test]
+    fn store_document_text_resolves_referenced_attributes() {
+        let uri = fixture_uri();
+        let mut state = ServerState::default();
+        let warning = store_document_text(
+            &mut state,
+            &uri,
+            "package Demo { part def Rocket { attribute base = 10; attribute mass = base + 5; } }"
+                .to_string(),
+        );
+        assert!(warning.is_none());
+
+        let mass = find_attribute_node(&state, &uri, "mass");
+        assert_eq!(
+            mass.attributes.get("evaluationStatus"),
+            Some(&serde_json::json!("ok"))
+        );
+        assert_eq!(
+            mass.attributes.get("evaluatedValue"),
+            Some(&serde_json::json!(15))
+        );
+    }
+
+    #[test]
+    fn rebuild_all_document_links_recomputes_referenced_attributes() {
+        let uri = fixture_uri();
+        let mut state = ServerState::default();
+        store_document_text(
+            &mut state,
+            &uri,
+            "package Demo { part def Rocket { attribute base = 20; attribute offset = base + 2; attribute mass = offset + 3; } }"
+                .to_string(),
+        );
+
+        rebuild_all_document_links(&mut state);
+
+        let mass = find_attribute_node(&state, &uri, "mass");
+        assert_eq!(
+            mass.attributes.get("evaluationStatus"),
+            Some(&serde_json::json!("ok"))
+        );
+        assert_eq!(
+            mass.attributes.get("evaluatedValue"),
+            Some(&serde_json::json!(25))
         );
     }
 }
