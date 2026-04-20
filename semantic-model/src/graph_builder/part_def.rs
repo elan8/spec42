@@ -261,6 +261,47 @@ pub(super) fn build_from_part_def_body_element(
                 }
             }
         }
+        PDBE::Connection(connection_usage) => {
+            let connection = &connection_usage.value;
+            let name = connection
+                .name
+                .as_deref()
+                .filter(|value| !value.trim().is_empty())
+                .unwrap_or("_connection");
+            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "connection");
+            let mut attrs = HashMap::new();
+            if let Some(ref subsets) = connection.subsets {
+                attrs.insert("subsetsFeature".to_string(), serde_json::json!(subsets));
+            }
+            if let Some(ref redefines) = connection.redefines {
+                attrs.insert("redefines".to_string(), serde_json::json!(redefines));
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "connection",
+                name.to_string(),
+                span_to_range(&connection_usage.span),
+                attrs,
+                Some(parent_id),
+            );
+            if let Some(ref type_name) = connection.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
+            }
+            let connection_node_id = NodeId::new(uri, &qualified);
+            if let sysml_v2_parser::ast::ConnectionDefBody::Brace { elements } = &connection.body {
+                for element in elements {
+                    super::interface_def::build_from_connection_def_body_element(
+                        element,
+                        uri,
+                        Some(&qualified),
+                        &connection_node_id,
+                        g,
+                    );
+                }
+            }
+        }
         PDBE::Perform(perform_node) => {
             let perform_qualified = expressions::add_perform_usage_node(
                 g,
@@ -293,6 +334,7 @@ pub(super) fn build_from_part_def_body_element(
         PDBE::Annotation(_)
         | PDBE::Error(_)
         | PDBE::Doc(_)
+        | PDBE::Comment(_)
         | PDBE::Other(_)
         | PDBE::Ref(_)
         | PDBE::OpaqueMember(_) => {}
