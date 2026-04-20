@@ -37,52 +37,30 @@ function parseFileUri(value: string, label: string): vscode.Uri | undefined {
     }
 }
 
-async function createCombinedDocumentProxy(fileUris: vscode.Uri[]): Promise<vscode.TextDocument> {
-    const openDocs: vscode.TextDocument[] = [];
-    let combinedContent = '';
-    let failedCount = 0;
-    for (const fileUri of fileUris) {
-        try {
-            const doc = await vscode.workspace.openTextDocument(fileUri);
-            openDocs.push(doc);
-            const fileName = fileUri.fsPath.split(/[/\\]/).pop() ?? '';
-            combinedContent += `// === ${fileName} ===\n`;
-            combinedContent += doc.getText();
-            combinedContent += '\n\n';
-        } catch (error) {
-            failedCount += 1;
-            logError(`createCombinedDocumentProxy: failed to open ${fileUri.toString()}`, error);
-        }
+async function findRepresentativeWorkspaceDocument(workspaceRootUri: vscode.Uri): Promise<vscode.TextDocument> {
+    const sysml = await vscode.workspace.findFiles(
+        new vscode.RelativePattern(workspaceRootUri, '**/*.sysml'),
+        '**/node_modules/**',
+        1
+    );
+    const kerml = sysml.length === 0
+        ? await vscode.workspace.findFiles(
+            new vscode.RelativePattern(workspaceRootUri, '**/*.kerml'),
+            '**/node_modules/**',
+            1
+        )
+        : [];
+    const target = sysml[0] ?? kerml[0];
+    if (!target) {
+        throw new Error(`No SysML/KerML documents found under ${workspaceRootUri.toString()}`);
     }
-    if (openDocs.length === 0) {
-        throw new Error(`No documents could be opened for combined visualization (${failedCount} failed).`);
-    }
-    const firstDoc = openDocs[0];
-    return {
-        getText: () => combinedContent,
-        uri: firstDoc.uri,
-        languageId: 'sysml' as const,
-        version: firstDoc.version,
-        lineCount: combinedContent.split('\n').length,
-        lineAt: (line: number) => firstDoc.lineAt(Math.min(line, firstDoc.lineCount - 1)),
-        offsetAt: (position: vscode.Position) => firstDoc.offsetAt(position),
-        positionAt: (offset: number) => firstDoc.positionAt(offset),
-        getWordRangeAtPosition: (position: vscode.Position) => firstDoc.getWordRangeAtPosition(position),
-        validateRange: (range: vscode.Range) => firstDoc.validateRange(range),
-        validatePosition: (position: vscode.Position) => firstDoc.validatePosition(position),
-        fileName: firstDoc.fileName,
-        isUntitled: false,
-        isDirty: false,
-        isClosed: false,
-        eol: firstDoc.eol,
-        save: () => Promise.resolve(false),
-    } as unknown as vscode.TextDocument;
+    return await vscode.workspace.openTextDocument(target);
 }
 
 export interface VisualizerRestoreState {
-    documentUri: string;
-    fileUris: string[];
+    workspaceRootUri: string;
     currentView: string;
+    selectedPackage?: string;
     title?: string;
 }
 
@@ -90,16 +68,15 @@ export class VisualizationPanel {
     public static currentPanel: VisualizationPanel | undefined;
     private readonly _panel: vscode.WebviewPanel;
     private _disposables: vscode.Disposable[] = [];
-    private _currentView: string = 'general-view'; // Store current view state - SysML v2 general-view
-    private _isNavigating: boolean = false; // Flag to prevent view reset during navigation
-    private _fileChangeDebounceTimer: ReturnType<typeof setTimeout> | undefined; // Debounce file change notifications
+    private _currentView = 'general-view';
+    private _isNavigating = false;
+    private _fileChangeDebounceTimer: ReturnType<typeof setTimeout> | undefined;
     private _requestCurrentViewTimer: ReturnType<typeof setTimeout> | undefined;
-    private _lastContentHash: string = ''; // Cache content hash to skip unchanged updates
-    private _needsUpdateWhenVisible: boolean = false; // Deferred update when panel is hidden
-    private _lastViewColumn: vscode.ViewColumn | undefined; // Track view column to detect panel moves
-    private _fileUris: vscode.Uri[] = []; // All source file URIs (for folder-level visualization)
-    private _extensionVersion: string = '';
-    private _pendingPackageName: string | undefined; // Package to select when data arrives
+    private _lastContentHash = '';
+    private _needsUpdateWhenVisible = false;
+    private _lastViewColumn: vscode.ViewColumn | undefined;
+    private _extensionVersion = '';
+    private _selectedPackage: string | undefined;
     private _updateFlow: ReturnType<typeof createUpdateVisualizationFlow>;
 
     private constructor(
@@ -107,33 +84,27 @@ export class VisualizationPanel {
         extensionUri: vscode.Uri,
         private _document: vscode.TextDocument,
         private _lspModelProvider: LspModelProvider,
-        fileUris?: vscode.Uri[],
+        private _workspaceRootUri: string,
         private _context?: vscode.ExtensionContext,
         initialCurrentView?: string,
+        initialSelectedPackage?: string,
     ) {
-        this._fileUris = fileUris ?? [];
         if (initialCurrentView && getEnabledVisualizationViewIds().has(initialCurrentView)) {
             this._currentView = initialCurrentView;
         }
+        this._selectedPackage = initialSelectedPackage;
         this._extensionVersion = vscode.extensions.getExtension('Elan8.spec42')?.packageJSON?.version ?? '0.0.0';
         this._panel = panel;
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-
         this._lastViewColumn = panel.viewColumn;
 
-        // When the panel becomes visible again or is moved (e.g. dragged to
-        // a floating window), force a re-render so the visualizer recovers.
         this._panel.onDidChangeViewState(() => {
             const columnChanged = this._panel.viewColumn !== this._lastViewColumn;
             this._lastViewColumn = this._panel.viewColumn;
-
-            if (this._panel.visible) {
-                if (this._needsUpdateWhenVisible || columnChanged) {
-                    this._needsUpdateWhenVisible = false;
-                    // Reset content hash so the update is not skipped
-                    this._lastContentHash = '';
-                    this.updateVisualization(true, 'panelReveal');
-                }
+            if (this._panel.visible && (this._needsUpdateWhenVisible || columnChanged)) {
+                this._needsUpdateWhenVisible = false;
+                this._lastContentHash = '';
+                this.updateVisualization(true, 'panelReveal');
             }
         }, null, this._disposables);
 
@@ -142,16 +113,15 @@ export class VisualizationPanel {
         this._updateFlow = createUpdateVisualizationFlow({
             panel: this._panel,
             getDocument: () => this._document,
-            getFileUris: () => this._fileUris,
+            getWorkspaceRootUri: () => this._workspaceRootUri,
             lspModelProvider: this._lspModelProvider,
             getCurrentView: () => this._currentView,
-            getPendingPackageName: () => this._pendingPackageName,
+            getSelectedPackage: () => this._selectedPackage,
             getIsNavigating: () => this._isNavigating,
             getNeedsUpdateWhenVisible: () => this._needsUpdateWhenVisible,
             getLastContentHash: () => this._lastContentHash,
-            setLastContentHash: (h) => { this._lastContentHash = h; },
-            setNeedsUpdateWhenVisible: (v) => { this._needsUpdateWhenVisible = v; },
-            clearPendingPackageName: () => { this._pendingPackageName = undefined; },
+            setLastContentHash: (hash) => { this._lastContentHash = hash; },
+            setNeedsUpdateWhenVisible: (value) => { this._needsUpdateWhenVisible = value; },
         });
 
         this._requestCurrentViewTimer = setTimeout(() => {
@@ -159,80 +129,77 @@ export class VisualizationPanel {
             try {
                 this._panel.webview.postMessage({ command: 'requestCurrentView' });
             } catch {
-                // Panel may be disposed during teardown in tests.
+                // ignore teardown races
             }
         }, 100);
 
         const dispatch = createMessageDispatcher({
             panel: this._panel,
             document: this._document,
+            workspaceRootUri: this._workspaceRootUri,
             lspModelProvider: this._lspModelProvider,
-            fileUris: this._fileUris,
             updateVisualization: (force, triggerSource) => this.updateVisualization(force, triggerSource),
-            setNavigating: (v) => { this._isNavigating = v; },
-            setCurrentView: (v) => {
-                this._currentView = v;
+            setNavigating: (value) => { this._isNavigating = value; },
+            setCurrentView: (value) => {
+                this._currentView = value;
                 this.persistRestoreState();
             },
-            setLastContentHash: (h) => { this._lastContentHash = h; },
+            setSelectedPackage: (value) => {
+                this._selectedPackage = value || undefined;
+                this.persistRestoreState();
+            },
+            setLastContentHash: (hash) => { this._lastContentHash = hash; },
         });
-
         this._panel.webview.onDidReceiveMessage(dispatch, null, this._disposables);
 
-        // Let the webview bootstrap drive the first forced render via the
-        // `webviewReady` message. Doing it here as well causes an immediate
-        // duplicate fetch/render cycle on startup.
         this.persistRestoreState();
     }
 
     private persistRestoreState(): void {
         if (!this._context) return;
         const state: VisualizerRestoreState = {
-            documentUri: this._document.uri.toString(),
-            fileUris: this._fileUris.map(u => u.toString()),
+            workspaceRootUri: this._workspaceRootUri,
             currentView: this._currentView,
+            selectedPackage: this._selectedPackage,
             title: this._panel.title !== 'SysML Model Visualizer' ? this._panel.title : undefined,
         };
         this._context.workspaceState.update(RESTORE_STATE_KEY, state);
     }
 
-    public static createOrShow(context: vscode.ExtensionContext, document: vscode.TextDocument, customTitle?: string, lspModelProvider?: LspModelProvider, fileUris?: vscode.Uri[]): void {
+    public static createOrShow(
+        context: vscode.ExtensionContext,
+        document: vscode.TextDocument,
+        customTitle?: string,
+        lspModelProvider?: LspModelProvider,
+        workspaceRootUri?: vscode.Uri,
+    ): void {
         const extensionUri = context.extensionUri;
-        // Determine the best column layout for side-by-side viewing
         const activeColumn = vscode.window.activeTextEditor?.viewColumn;
-        let visualizerColumn: vscode.ViewColumn;
-
-        if (activeColumn === vscode.ViewColumn.One) {
-            visualizerColumn = vscode.ViewColumn.Two;
-        } else if (activeColumn === vscode.ViewColumn.Two) {
-            visualizerColumn = vscode.ViewColumn.Three;
-        } else {
-            // Default: put visualizer on the right
-            visualizerColumn = vscode.ViewColumn.Beside;
+        const visualizerColumn = activeColumn === vscode.ViewColumn.One
+            ? vscode.ViewColumn.Two
+            : activeColumn === vscode.ViewColumn.Two
+                ? vscode.ViewColumn.Three
+                : vscode.ViewColumn.Beside;
+        const title = customTitle || 'SysML Model Visualizer';
+        const resolvedWorkspaceRootUri = workspaceRootUri
+            ?? vscode.workspace.getWorkspaceFolder(document.uri)?.uri
+            ?? vscode.workspace.workspaceFolders?.[0]?.uri;
+        if (!resolvedWorkspaceRootUri) {
+            throw new Error('Cannot open the visualizer without a workspace root URI.');
         }
 
-        const title = customTitle || 'SysML Model Visualizer';
-
         if (VisualizationPanel.currentPanel) {
-            // If panel exists, update title and reveal it
             VisualizationPanel.currentPanel._panel.title = title;
             VisualizationPanel.currentPanel._panel.reveal(visualizerColumn);
             if (lspModelProvider) {
                 VisualizationPanel.currentPanel._lspModelProvider = lspModelProvider;
             }
-            // Track whether file URIs changed (folder→folder or file→folder)
-            let fileUrisChanged = false;
-            if (fileUris) {
-                const oldSet = new Set(VisualizationPanel.currentPanel._fileUris.map(u => u.toString()));
-                const newSet = new Set(fileUris.map(u => u.toString()));
-                fileUrisChanged = oldSet.size !== newSet.size
-                    || [...newSet].some(u => !oldSet.has(u));
-                VisualizationPanel.currentPanel._fileUris = fileUris;
-            }
-            // Update if the document changed OR the set of file URIs changed
-            if (VisualizationPanel.currentPanel._document !== document || fileUrisChanged) {
+            const workspaceChanged =
+                VisualizationPanel.currentPanel._workspaceRootUri !== resolvedWorkspaceRootUri.toString();
+            if (VisualizationPanel.currentPanel._document !== document || workspaceChanged) {
                 VisualizationPanel.currentPanel._document = document;
-                VisualizationPanel.currentPanel._lastContentHash = ''; // force re-parse
+                VisualizationPanel.currentPanel._workspaceRootUri = resolvedWorkspaceRootUri.toString();
+                VisualizationPanel.currentPanel._lastContentHash = '';
                 VisualizationPanel.currentPanel.updateVisualization(true, 'createOrShow');
             }
             VisualizationPanel.currentPanel.persistRestoreState();
@@ -240,7 +207,7 @@ export class VisualizationPanel {
         }
 
         if (!lspModelProvider) {
-            return;  // Cannot create panel without an LSP model provider
+            return;
         }
 
         const panel = vscode.window.createWebviewPanel(
@@ -250,16 +217,20 @@ export class VisualizationPanel {
             {
                 enableScripts: true,
                 retainContextWhenHidden: true,
-                localResourceRoots: [
-                    vscode.Uri.joinPath(extensionUri, 'media')
-                ]
+                localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media')],
             }
         );
 
-        VisualizationPanel.currentPanel = new VisualizationPanel(panel, extensionUri, document, lspModelProvider, fileUris, context);
+        VisualizationPanel.currentPanel = new VisualizationPanel(
+            panel,
+            extensionUri,
+            document,
+            lspModelProvider,
+            resolvedWorkspaceRootUri.toString(),
+            context,
+        );
     }
 
-    /** Restore a webview panel from persisted state (e.g. after VS Code restart). */
     public static async restore(
         panel: vscode.WebviewPanel,
         context: vscode.ExtensionContext,
@@ -267,47 +238,34 @@ export class VisualizationPanel {
         savedState: VisualizerRestoreState,
     ): Promise<void> {
         const extensionUri = context.extensionUri;
-        let document: vscode.TextDocument;
-        let fileUris: vscode.Uri[];
-        const restoredFileUris = savedState.fileUris
-            .map((value, index) => parseFileUri(value, `fileUris[${index}]`))
-            .filter((uri): uri is vscode.Uri => Boolean(uri));
-
-        if (restoredFileUris.length > 1) {
-            fileUris = restoredFileUris;
-            document = await createCombinedDocumentProxy(fileUris);
-        } else {
-            const documentUri = parseFileUri(savedState.documentUri, 'documentUri');
-            if (!documentUri) {
-                throw new Error('Saved visualization state does not contain a valid file document URI.');
-            }
-            document = await vscode.workspace.openTextDocument(documentUri);
-            fileUris = restoredFileUris.length === 1
-                ? [restoredFileUris[0]]
-                : [];
+        const workspaceRootUri = parseFileUri(savedState.workspaceRootUri, 'workspaceRootUri');
+        if (!workspaceRootUri) {
+            throw new Error('Saved visualization state does not contain a valid workspace root URI.');
         }
-
+        const document = await findRepresentativeWorkspaceDocument(workspaceRootUri);
         if (savedState.title) {
             panel.title = savedState.title;
         }
-
-        const view = getEnabledVisualizationViewIds().has(savedState.currentView) ? savedState.currentView : 'general-view';
+        const view = getEnabledVisualizationViewIds().has(savedState.currentView)
+            ? savedState.currentView
+            : 'general-view';
         VisualizationPanel.currentPanel = new VisualizationPanel(
             panel,
             extensionUri,
             document,
             lspModelProvider,
-            fileUris,
+            workspaceRootUri.toString(),
             context,
             view,
+            savedState.selectedPackage,
         );
     }
 
-    public exportVisualization(format: string, scale: number = 2) {
+    public exportVisualization(format: string, scale = 2): void {
         this._panel.webview.postMessage({ command: 'export', format: format.toLowerCase(), scale });
     }
 
-    private updateVisualization(forceUpdate: boolean = false, triggerSource: string = 'unknown'): Promise<void> {
+    private updateVisualization(forceUpdate = false, triggerSource = 'unknown'): Promise<void> {
         return this._updateFlow.update(forceUpdate, triggerSource);
     }
 
@@ -320,41 +278,41 @@ export class VisualizationPanel {
     }
 
     public tracksUri(uri: vscode.Uri): boolean {
-        const target = uri.toString();
-        return this._document.uri.toString() === target
-            || this._fileUris.some((fileUri) => fileUri.toString() === target);
+        const workspaceRootUri = vscode.Uri.parse(this._workspaceRootUri);
+        const rootPath = workspaceRootUri.fsPath.toLowerCase();
+        return uri.fsPath.toLowerCase().startsWith(rootPath);
     }
 
-    /** Exposes webview for tests (e.g. postMessage exportDiagramForTest). */
     public getWebview(): vscode.Webview {
         return this._panel.webview;
     }
 
-    /** Update the LspModelProvider. */
     public setLspModelProvider(provider: LspModelProvider): void {
         this._lspModelProvider = provider;
     }
 
     public changeView(viewId: string): void {
-        this._panel.webview.postMessage({
-            command: 'changeView',
-            view: viewId
-        });
+        this._panel.webview.postMessage({ command: 'changeView', view: viewId });
         this._currentView = viewId;
+        this.persistRestoreState();
     }
 
     public selectPackage(packageName: string): void {
-        // Store as pending so the next data message carries it to the webview
-        this._pendingPackageName = packageName;
+        this._selectedPackage = packageName;
         this._currentView = 'general-view';
-        // Also post directly in case the webview already has data
-        this._panel.webview.postMessage({
-            command: 'selectPackage',
-            packageName: packageName
-        });
+        this._lastContentHash = '';
+        this.persistRestoreState();
+        this.updateVisualization(true, 'selectPackage');
     }
 
-    public highlightElementByName(elementName: string, skipCentering: boolean = true): void {
+    public clearPackageSelection(): void {
+        this._selectedPackage = undefined;
+        this._lastContentHash = '';
+        this.persistRestoreState();
+        this.updateVisualization(true, 'clearPackageSelection');
+    }
+
+    public highlightElementByName(elementName: string, skipCentering = true): void {
         this._panel.webview.postMessage({
             command: 'highlightElement',
             elementName,
@@ -364,41 +322,30 @@ export class VisualizationPanel {
 
     public revealSourceSelection(node: GraphNodeDTO): void {
         if (node.type === 'package') {
-            this.selectPackage(node.name);
+            this.selectPackage(node.id || node.name);
             return;
         }
         this.highlightElementByName(node.name, false);
     }
 
-    public notifyFileChanged(uri: vscode.Uri) {
-        // Always force — the LSP server parses asynchronously, so the
-        // model data may have changed even when the document text hasn't
-        // (e.g. after a sysml/status 'end' notification).
-        const uriStr = uri.toString();
-        const docUri = this._document.uri.toString();
-        const isTracked = docUri === uriStr
-            || this._fileUris.some(u => u.toString() === uriStr);
-
-        if (isTracked) {
-            // Debounce: coalesce multiple notifications from
-            // onDidChangeTextDocument, onDidSaveTextDocument, and the
-            // file-system watcher into a single visualizer refresh.
-            if (this._fileChangeDebounceTimer) {
-                clearTimeout(this._fileChangeDebounceTimer);
-            }
-            this._fileChangeDebounceTimer = setTimeout(() => {
-                this._fileChangeDebounceTimer = undefined;
-                this.updateVisualization(true, 'fileChanged');
-            }, 400);
+    public notifyFileChanged(uri: vscode.Uri): void {
+        if (!this.tracksUri(uri)) {
+            return;
         }
+        if (this._fileChangeDebounceTimer) {
+            clearTimeout(this._fileChangeDebounceTimer);
+        }
+        this._fileChangeDebounceTimer = setTimeout(() => {
+            this._fileChangeDebounceTimer = undefined;
+            this.updateVisualization(true, 'fileChanged');
+        }, 400);
     }
 
-    /** Force a visualizer refresh (e.g. after cache clear). */
     public refresh(): void {
         this.updateVisualization(true, 'manualRefresh');
     }
 
-    public dispose() {
+    public dispose(): void {
         VisualizationPanel.currentPanel = undefined;
         this._context?.workspaceState.update(RESTORE_STATE_KEY, undefined);
         if (this._requestCurrentViewTimer) {

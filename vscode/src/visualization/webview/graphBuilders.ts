@@ -326,6 +326,7 @@ export function graphToGeneralViewElements(
                 sysmlType: node.type || node.element_type,
                 elementName: node.name,
                 elementQualifiedName: node.id,
+                elementUri: node.uri || elementWithChildren?.uri || null,
                 color: borderColor,
                 isDefinition,
                 category,

@@ -261,6 +261,23 @@ pub(crate) async fn sysml_diagram_result(
     Ok(response)
 }
 
+pub(crate) fn sysml_visualization_result(
+    state: &ServerState,
+    params: serde_json::Value,
+) -> Result<dto::SysmlVisualizationResultDto> {
+    let (workspace_root_uri, view, package_filter) =
+        crate::views::parse_sysml_visualization_params(&params)?;
+    Ok(crate::views::build_sysml_visualization_response(
+        &state.semantic_graph,
+        &state.index,
+        &workspace_root_uri,
+        &state.library_paths,
+        &view,
+        &package_filter,
+        Instant::now(),
+    ))
+}
+
 pub(crate) fn sysml_server_stats_result(
     state: &ServerState,
     start_time: Instant,

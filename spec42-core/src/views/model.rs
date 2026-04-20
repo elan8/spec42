@@ -56,6 +56,7 @@ fn build_document_graph_dto(
             id: n.id.qualified_name.clone(),
             element_type: n.element_kind.clone(),
             name: n.name.clone(),
+            uri: Some(n.id.uri.as_str().to_string()),
             parent_id: n.parent_id.as_ref().map(|p| p.qualified_name.clone()),
             range: range_to_dto(n.range),
             attributes: n.attributes.clone(),

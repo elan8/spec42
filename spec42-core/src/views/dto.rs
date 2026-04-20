@@ -36,6 +36,8 @@ pub struct GraphNodeDto {
     #[serde(rename = "type")]
     pub element_type: String,
     pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", rename = "parentId")]
     pub parent_id: Option<String>,
     pub range: RangeDto,
@@ -367,6 +369,46 @@ pub struct SysmlDiagramResultDto {
     pub warnings: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stats: Option<SysmlDiagramStatsDto>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlVisualizationPackageFilterDto {
+    pub kind: String,
+    #[serde(default)]
+    pub package: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlVisualizationPackageCandidateDto {
+    pub id: String,
+    pub name: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlVisualizationResultDto {
+    pub version: u32,
+    pub view: String,
+    pub workspace_root_uri: String,
+    pub package_candidates: Vec<SysmlVisualizationPackageCandidateDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selected_package: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selected_package_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub graph: Option<SysmlGraphDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub general_view_graph: Option<SysmlGraphDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub workspace_model: Option<WorkspaceModelDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub activity_diagrams: Option<Vec<model::ActivityDiagramDto>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ibd: Option<ibd::IbdDataDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stats: Option<SysmlModelStatsDto>,
 }
 
 #[derive(Debug, Serialize)]

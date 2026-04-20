@@ -6,16 +6,15 @@ import { isVerboseLoggingEnabled, log, logError, logPerfEvent } from '../logger'
 export interface UpdateFlowDeps {
     panel: vscode.WebviewPanel;
     getDocument: () => vscode.TextDocument;
-    getFileUris: () => vscode.Uri[];
+    getWorkspaceRootUri: () => string;
     lspModelProvider: LspModelProvider;
     getCurrentView: () => string;
-    getPendingPackageName: () => string | undefined;
+    getSelectedPackage: () => string | undefined;
     getIsNavigating: () => boolean;
     getNeedsUpdateWhenVisible: () => boolean;
     getLastContentHash: () => string;
     setLastContentHash: (hash: string) => void;
     setNeedsUpdateWhenVisible: (value: boolean) => void;
-    clearPendingPackageName: () => void;
 }
 
 function logPerf(event: string, extra?: Record<string, unknown>): void {
@@ -26,16 +25,15 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
     const {
         panel,
         getDocument,
-        getFileUris,
+        getWorkspaceRootUri,
         lspModelProvider,
         getCurrentView,
-        getPendingPackageName,
+        getSelectedPackage,
         getIsNavigating,
         getNeedsUpdateWhenVisible,
         getLastContentHash,
         setLastContentHash,
         setNeedsUpdateWhenVisible,
-        clearPendingPackageName,
     } = deps;
     let bootstrapCompleted = false;
     let inFlightUpdate:
@@ -49,26 +47,25 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
 
     function currentUpdateKey(): string {
         const document = getDocument();
-        const fileUris = getFileUris();
         return JSON.stringify({
             documentUri: document.uri.toString(),
-            fileUris: fileUris.map((uri) => uri.toString()),
+            workspaceRootUri: getWorkspaceRootUri(),
             currentView: getCurrentView(),
-            pendingPackageName: getPendingPackageName() ?? null,
+            selectedPackage: getSelectedPackage() ?? null,
         });
     }
 
     async function doUpdateVisualization(): Promise<void> {
         const document = getDocument();
-        const fileUris = getFileUris();
+        const workspaceRootUri = getWorkspaceRootUri();
         const updateStartedAt = Date.now();
         try {
             log(
                 'updateFlow:fetch:start',
                 `doc=${document.uri.toString()}`,
-                `fileUris=${fileUris.length}`,
+                `workspaceRootUri=${workspaceRootUri}`,
                 `currentView=${getCurrentView()}`,
-                `pendingPackage=${getPendingPackageName() ?? '(none)'}`,
+                `selectedPackage=${getSelectedPackage() ?? '(all)'}`,
             );
             if (isVerboseLoggingEnabled()) {
                 try {
@@ -77,9 +74,9 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                         '[viz][updateFlow:fetch:start]',
                         JSON.stringify({
                             doc: document.uri.toString(),
-                            fileUris: fileUris.length,
+                            workspaceRootUri,
                             currentView: getCurrentView(),
-                            pendingPackage: getPendingPackageName() ?? null,
+                            selectedPackage: getSelectedPackage() ?? null,
                         })
                     );
                 } catch {
@@ -87,28 +84,25 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                 }
             }
             const msg = await fetchModelData({
-                documentUri: document.uri.toString(),
-                fileUris,
+                workspaceRootUri,
                 lspModelProvider,
                 currentView: getCurrentView(),
-                pendingPackageName: getPendingPackageName(),
+                selectedPackage: getSelectedPackage(),
             });
             logPerf('visualizer:fetchModelDataCompleted', {
                 currentView: getCurrentView(),
                 totalMs: Date.now() - updateStartedAt,
                 hasMessage: !!msg,
-                fileUriCount: fileUris.length,
+                workspaceRootUri,
             });
-            clearPendingPackageName();
             if (msg) {
                 log(
                     'updateFlow:post:update',
                     `graphNodes=${msg.graph?.nodes?.length || 0}`,
                     `graphEdges=${msg.graph?.edges?.length || 0}`,
-                    `generalNodes=${msg.diagramGeneral?.scene?.generalView?.nodes?.length || 0}`,
-                    `generalEdges=${msg.diagramGeneral?.scene?.generalView?.edges?.length || 0}`,
+                    `packageCandidates=${msg.packageCandidates?.length || 0}`,
                     `currentView=${msg.currentView}`,
-                    `pendingPackage=${msg.pendingPackageName ?? '(none)'}`,
+                    `selectedPackage=${msg.selectedPackageName ?? '(all)'}`,
                 );
                 if (isVerboseLoggingEnabled()) {
                     try {
@@ -118,10 +112,9 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                             JSON.stringify({
                                 graphNodes: msg.graph?.nodes?.length || 0,
                                 graphEdges: msg.graph?.edges?.length || 0,
-                                generalNodes: msg.diagramGeneral?.scene?.generalView?.nodes?.length || 0,
-                                generalEdges: msg.diagramGeneral?.scene?.generalView?.edges?.length || 0,
+                                packageCandidates: msg.packageCandidates?.length || 0,
                                 currentView: msg.currentView,
-                                pendingPackage: msg.pendingPackageName ?? null,
+                                selectedPackage: msg.selectedPackageName ?? null,
                             })
                         );
                     } catch {

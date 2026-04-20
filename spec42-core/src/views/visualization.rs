@@ -1,0 +1,725 @@
+use std::collections::{HashMap, HashSet};
+use std::time::Instant;
+
+use tower_lsp::jsonrpc::Result;
+use tower_lsp::lsp_types::Url;
+
+use crate::semantic_model;
+use crate::views::dto::{
+    range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlElementDto, SysmlGraphDto,
+    SysmlModelStatsDto, SysmlVisualizationPackageCandidateDto,
+    SysmlVisualizationPackageFilterDto, SysmlVisualizationResultDto, WorkspaceFileModelDto,
+    WorkspaceModelDto, WorkspaceModelSummaryDto,
+};
+use crate::views::ibd::{self, IbdDataDto};
+
+#[path = "model_projection.rs"]
+mod model_projection;
+
+pub(crate) fn parse_sysml_visualization_params(
+    v: &serde_json::Value,
+) -> Result<(Url, String, SysmlVisualizationPackageFilterDto)> {
+    let (workspace_root_uri, view, package_filter_value) = if let Some(arr) = v.as_array() {
+        let first = arr.first().ok_or_else(|| {
+            tower_lsp::jsonrpc::Error::invalid_params(
+                "sysml/visualization params array must have at least one element",
+            )
+        })?;
+
+        if let Some(obj) = first.as_object() {
+            let workspace_root_uri = obj
+                .get("workspaceRootUri")
+                .and_then(|value| value.as_str())
+                .map(String::from);
+            let view = obj
+                .get("view")
+                .and_then(|value| value.as_str())
+                .map(String::from)
+                .or_else(|| arr.get(1).and_then(|value| value.as_str()).map(String::from));
+            let package_filter_value = obj
+                .get("packageFilter")
+                .cloned()
+                .or_else(|| arr.get(2).cloned());
+            (workspace_root_uri, view, package_filter_value)
+        } else {
+            (
+                first.as_str().map(String::from),
+                arr.get(1).and_then(|value| value.as_str()).map(String::from),
+                arr.get(2).cloned(),
+            )
+        }
+    } else if let Some(obj) = v.as_object() {
+        (
+            obj.get("workspaceRootUri")
+                .and_then(|value| value.as_str())
+                .map(String::from),
+            obj.get("view")
+                .and_then(|value| value.as_str())
+                .map(String::from),
+            obj.get("packageFilter").cloned(),
+        )
+    } else {
+        return Err(tower_lsp::jsonrpc::Error::invalid_params(
+            "sysml/visualization params must be an object or array",
+        ));
+    };
+
+    let workspace_root_uri = workspace_root_uri.ok_or_else(|| {
+        tower_lsp::jsonrpc::Error::invalid_params(
+            "sysml/visualization requires 'workspaceRootUri'",
+        )
+    })?;
+    let view = view.ok_or_else(|| {
+        tower_lsp::jsonrpc::Error::invalid_params("sysml/visualization requires 'view'")
+    })?;
+    let package_filter = package_filter_value
+        .and_then(|value| serde_json::from_value::<SysmlVisualizationPackageFilterDto>(value).ok())
+        .unwrap_or(SysmlVisualizationPackageFilterDto {
+            kind: "all".to_string(),
+            package: None,
+        });
+
+    let workspace_root_uri = Url::parse(&workspace_root_uri).map_err(|_| {
+        tower_lsp::jsonrpc::Error::invalid_params("sysml/visualization: invalid workspaceRootUri")
+    })?;
+
+    Ok((
+        crate::common::util::normalize_file_uri(&workspace_root_uri),
+        view.to_string(),
+        package_filter,
+    ))
+}
+
+fn clone_element(element: &SysmlElementDto) -> SysmlElementDto {
+    SysmlElementDto {
+        id: element.id.clone(),
+        element_type: element.element_type.clone(),
+        name: element.name.clone(),
+        uri: element.uri.clone(),
+        range: element.range.clone(),
+        children: element.children.iter().map(clone_element).collect(),
+        attributes: element.attributes.clone(),
+        relationships: element.relationships.clone(),
+        errors: element.errors.clone(),
+    }
+}
+
+fn uri_under_root(uri: &Url, workspace_root_uri: &Url) -> bool {
+    match (uri.to_file_path(), workspace_root_uri.to_file_path()) {
+        (Ok(uri_path), Ok(root_path)) => uri_path.starts_with(root_path),
+        _ => {
+            let root = workspace_root_uri.as_str().trim_end_matches('/');
+            uri.as_str() == root || uri.as_str().starts_with(&format!("{root}/"))
+        }
+    }
+}
+
+fn workspace_uris_for_root(
+    semantic_graph: &semantic_model::SemanticGraph,
+    library_paths: &[Url],
+    workspace_root_uri: &Url,
+) -> Vec<Url> {
+    let mut uris: Vec<Url> = semantic_graph
+        .workspace_uris_excluding_libraries(library_paths)
+        .into_iter()
+        .filter(|uri| uri_under_root(uri, workspace_root_uri))
+        .collect();
+    uris.sort_by(|left, right| left.as_str().cmp(right.as_str()));
+    uris
+}
+
+fn build_workspace_graph_dto_for_uris(
+    semantic_graph: &semantic_model::SemanticGraph,
+    workspace_uris: &[Url],
+) -> SysmlGraphDto {
+    let workspace_uri_set: HashSet<Url> = workspace_uris.iter().cloned().collect();
+    let mut nodes = Vec::new();
+    let mut node_ids = HashSet::new();
+    for workspace_uri in workspace_uris {
+        for node in semantic_graph.nodes_for_uri(workspace_uri) {
+            node_ids.insert(node.id.qualified_name.clone());
+            nodes.push(GraphNodeDto {
+                id: node.id.qualified_name.clone(),
+                element_type: node.element_kind.clone(),
+                name: node.name.clone(),
+                uri: Some(node.id.uri.as_str().to_string()),
+                parent_id: node.parent_id.as_ref().map(|parent| parent.qualified_name.clone()),
+                range: range_to_dto(node.range),
+                attributes: node.attributes.clone(),
+            });
+        }
+    }
+
+    let mut edge_keys = HashSet::new();
+    let mut edges = Vec::new();
+    for workspace_uri in workspace_uris {
+        for (source, target, kind, name) in semantic_graph.edges_for_uri_as_strings(workspace_uri) {
+            let key = (source.clone(), target.clone(), kind.as_str().to_string(), name.clone());
+            if edge_keys.insert(key) {
+                edges.push(GraphEdgeDto {
+                    source,
+                    target,
+                    rel_type: kind.as_str().to_string(),
+                    name,
+                });
+            }
+        }
+    }
+
+    for workspace_uri in workspace_uris {
+        for node in semantic_graph.nodes_for_uri(workspace_uri) {
+            if let Some(parent_id) = &node.parent_id {
+                if workspace_uri_set.contains(&parent_id.uri)
+                    && node_ids.contains(&parent_id.qualified_name)
+                    && node_ids.contains(&node.id.qualified_name)
+                {
+                    let key = (
+                        parent_id.qualified_name.clone(),
+                        node.id.qualified_name.clone(),
+                        "contains".to_string(),
+                        None::<String>,
+                    );
+                    if edge_keys.insert(key) {
+                        edges.push(GraphEdgeDto {
+                            source: parent_id.qualified_name.clone(),
+                            target: node.id.qualified_name.clone(),
+                            rel_type: "contains".to_string(),
+                            name: None,
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    SysmlGraphDto { nodes, edges }
+}
+
+fn graph_to_element_tree(graph: &SysmlGraphDto, uri: &Url) -> Vec<SysmlElementDto> {
+    let contains_targets: HashSet<&str> = graph
+        .edges
+        .iter()
+        .filter(|edge| edge.rel_type.eq_ignore_ascii_case("contains"))
+        .map(|edge| edge.target.as_str())
+        .collect();
+
+    let nodes_by_id: HashMap<&str, &GraphNodeDto> = graph
+        .nodes
+        .iter()
+        .map(|node| (node.id.as_str(), node))
+        .collect();
+    let mut child_ids_by_parent: HashMap<&str, Vec<&str>> = HashMap::new();
+    let mut outgoing_relationships: HashMap<&str, Vec<crate::views::dto::RelationshipDto>> =
+        HashMap::new();
+
+    for edge in &graph.edges {
+        if edge.rel_type.eq_ignore_ascii_case("contains") {
+            child_ids_by_parent
+                .entry(edge.source.as_str())
+                .or_default()
+                .push(edge.target.as_str());
+        } else {
+            outgoing_relationships
+                .entry(edge.source.as_str())
+                .or_default()
+                .push(crate::views::dto::RelationshipDto {
+                    rel_type: edge.rel_type.clone(),
+                    source: edge.source.clone(),
+                    target: edge.target.clone(),
+                    name: edge.name.clone(),
+                });
+        }
+    }
+
+    fn build_element(
+        node_id: &str,
+        uri: &Url,
+        nodes_by_id: &HashMap<&str, &GraphNodeDto>,
+        child_ids_by_parent: &HashMap<&str, Vec<&str>>,
+        outgoing_relationships: &HashMap<&str, Vec<crate::views::dto::RelationshipDto>>,
+    ) -> Option<SysmlElementDto> {
+        let node = nodes_by_id.get(node_id)?;
+        let children = child_ids_by_parent
+            .get(node_id)
+            .into_iter()
+            .flatten()
+            .filter_map(|child_id| {
+                build_element(
+                    child_id,
+                    uri,
+                    nodes_by_id,
+                    child_ids_by_parent,
+                    outgoing_relationships,
+                )
+            })
+            .collect();
+        Some(SysmlElementDto {
+            id: Some(node.id.clone()),
+            element_type: node.element_type.clone(),
+            name: node.name.clone(),
+            uri: Some(
+                node.uri
+                    .clone()
+                    .unwrap_or_else(|| uri.as_str().to_string()),
+            ),
+            range: node.range.clone(),
+            children,
+            attributes: node.attributes.clone(),
+            relationships: outgoing_relationships
+                .get(node_id)
+                .cloned()
+                .unwrap_or_default(),
+            errors: None,
+        })
+    }
+
+    graph
+        .nodes
+        .iter()
+        .filter(|node| !contains_targets.contains(node.id.as_str()))
+        .filter_map(|node| {
+            build_element(
+                node.id.as_str(),
+                uri,
+                &nodes_by_id,
+                &child_ids_by_parent,
+                &outgoing_relationships,
+            )
+        })
+        .collect()
+}
+
+fn merge_namespace_elements(elements: &[SysmlElementDto]) -> Vec<SysmlElementDto> {
+    let namespace_types = ["package"];
+    let mut merged_by_key: HashMap<String, usize> = HashMap::new();
+    let mut merged = Vec::new();
+
+    for element in elements {
+        let key = format!("{}::{}", element.element_type, element.name);
+        if namespace_types.contains(&element.element_type.as_str()) {
+            if let Some(existing_index) = merged_by_key.get(&key).copied() {
+                let next = merge_two_elements(&merged[existing_index], element);
+                merged[existing_index] = next;
+            } else {
+                merged_by_key.insert(key, merged.len());
+                merged.push(clone_element(element));
+            }
+        } else {
+            merged.push(clone_element(element));
+        }
+    }
+
+    merged
+}
+
+fn merge_two_elements(a: &SysmlElementDto, b: &SysmlElementDto) -> SysmlElementDto {
+    let namespace_types = ["package"];
+    let mut child_by_key: HashMap<String, SysmlElementDto> = a
+        .children
+        .iter()
+        .map(|child| {
+            (
+                format!("{}::{}", child.element_type, child.name),
+                clone_element(child),
+            )
+        })
+        .collect();
+
+    for child in &b.children {
+        let key = format!("{}::{}", child.element_type, child.name);
+        if namespace_types.contains(&child.element_type.as_str()) {
+            if let Some(existing_child) = child_by_key.get(&key).cloned() {
+                child_by_key.insert(key, merge_two_elements(&existing_child, child));
+            } else {
+                child_by_key.insert(key, clone_element(child));
+            }
+        } else {
+            child_by_key
+                .entry(key)
+                .or_insert_with(|| clone_element(child));
+        }
+    }
+
+    let mut relationship_keys: HashSet<String> = a
+        .relationships
+        .iter()
+        .map(|rel| format!("{}::{}::{}", rel.rel_type, rel.source, rel.target))
+        .collect();
+    let mut relationships = a.relationships.clone();
+    for relationship in &b.relationships {
+        let key = format!(
+            "{}::{}::{}",
+            relationship.rel_type, relationship.source, relationship.target
+        );
+        if relationship_keys.insert(key) {
+            relationships.push(relationship.clone());
+        }
+    }
+
+    let mut attributes = a.attributes.clone();
+    attributes.extend(b.attributes.clone());
+
+    SysmlElementDto {
+        id: a.id.clone().or_else(|| b.id.clone()),
+        element_type: a.element_type.clone(),
+        name: a.name.clone(),
+        uri: a.uri.clone().or_else(|| b.uri.clone()),
+        range: a.range.clone(),
+        children: child_by_key.into_values().collect(),
+        attributes,
+        relationships,
+        errors: a.errors.clone().or_else(|| b.errors.clone()),
+    }
+}
+
+fn build_workspace_model_dto_for_uris(
+    semantic_graph: &semantic_model::SemanticGraph,
+    workspace_uris: &[Url],
+) -> WorkspaceModelDto {
+    let mut files = Vec::with_capacity(workspace_uris.len());
+    let mut all_elements = Vec::new();
+
+    for workspace_uri in workspace_uris {
+        let graph = model_projection::strip_synthetic_nodes(&build_workspace_graph_dto_for_uris(
+            semantic_graph,
+            std::slice::from_ref(workspace_uri),
+        ));
+        let elements = graph_to_element_tree(&graph, workspace_uri);
+        all_elements.extend(elements.iter().map(clone_element));
+        files.push(WorkspaceFileModelDto {
+            uri: workspace_uri.as_str().to_string(),
+            elements,
+        });
+    }
+
+    WorkspaceModelDto {
+        summary: WorkspaceModelSummaryDto {
+            scanned_files: files.len(),
+            loaded_files: files.len(),
+            failures: 0,
+            truncated: false,
+        },
+        semantic: merge_namespace_elements(&all_elements),
+        files,
+    }
+}
+
+fn collect_package_candidates(
+    elements: &[SysmlElementDto],
+    seen: &mut HashSet<String>,
+    out: &mut Vec<SysmlVisualizationPackageCandidateDto>,
+) {
+    for element in elements {
+        if element.element_type.to_lowercase().contains("package") {
+            let id = element
+                .id
+                .clone()
+                .unwrap_or_else(|| element.name.clone());
+            if seen.insert(id.clone()) {
+                out.push(SysmlVisualizationPackageCandidateDto {
+                    id,
+                    name: element.name.clone(),
+                });
+            }
+        }
+        collect_package_candidates(&element.children, seen, out);
+    }
+}
+
+fn find_package_element<'a>(
+    elements: &'a [SysmlElementDto],
+    package_ref: &str,
+) -> Option<&'a SysmlElementDto> {
+    for element in elements {
+        if element.element_type.to_lowercase().contains("package")
+            && (element.id.as_deref() == Some(package_ref) || element.name == package_ref)
+        {
+            return Some(element);
+        }
+        if let Some(found) = find_package_element(&element.children, package_ref) {
+            return Some(found);
+        }
+    }
+    None
+}
+
+fn collect_subtree_ids(element: &SysmlElementDto, ids: &mut HashSet<String>) {
+    if let Some(id) = &element.id {
+        ids.insert(id.clone());
+    }
+    for child in &element.children {
+        collect_subtree_ids(child, ids);
+    }
+}
+
+fn filter_workspace_model_files(
+    files: &[WorkspaceFileModelDto],
+    package_ref: &str,
+) -> Vec<WorkspaceFileModelDto> {
+    files.iter()
+        .filter_map(|file| {
+            let matched = find_package_element(&file.elements, package_ref)?;
+            Some(WorkspaceFileModelDto {
+                uri: file.uri.clone(),
+                elements: vec![clone_element(matched)],
+            })
+        })
+        .collect()
+}
+
+fn within_package_prefix(value: &str, package_prefix: &str, dot_prefix: &str) -> bool {
+    value == package_prefix
+        || value.starts_with(&format!("{package_prefix}::"))
+        || value == dot_prefix
+        || value.starts_with(&format!("{dot_prefix}."))
+}
+
+fn filter_ibd_by_package(ibd: &IbdDataDto, package_ref: &str) -> IbdDataDto {
+    let dot_prefix = package_ref.replace("::", ".");
+    let parts: Vec<_> = ibd
+        .parts
+        .iter()
+        .filter(|part| {
+            within_package_prefix(&part.id, package_ref, &dot_prefix)
+                || within_package_prefix(&part.qualified_name, package_ref, &dot_prefix)
+        })
+        .cloned()
+        .collect();
+    let part_ids: HashSet<String> = parts.iter().map(|part| part.qualified_name.clone()).collect();
+    let ports: Vec<_> = ibd
+        .ports
+        .iter()
+        .filter(|port| part_ids.contains(&port.parent_id))
+        .cloned()
+        .collect();
+    let connectors: Vec<_> = ibd
+        .connectors
+        .iter()
+        .filter(|connector| {
+            within_package_prefix(&connector.source_id, package_ref, &dot_prefix)
+                && within_package_prefix(&connector.target_id, package_ref, &dot_prefix)
+        })
+        .cloned()
+        .collect();
+
+    let mut root_views = HashMap::new();
+    for (name, view) in &ibd.root_views {
+        let filtered_parts: Vec<_> = view
+            .parts
+            .iter()
+            .filter(|part| {
+                within_package_prefix(&part.id, package_ref, &dot_prefix)
+                    || within_package_prefix(&part.qualified_name, package_ref, &dot_prefix)
+            })
+            .cloned()
+            .collect();
+        let filtered_part_ids: HashSet<String> =
+            filtered_parts.iter().map(|part| part.qualified_name.clone()).collect();
+        let filtered_ports: Vec<_> = view
+            .ports
+            .iter()
+            .filter(|port| filtered_part_ids.contains(&port.parent_id))
+            .cloned()
+            .collect();
+        let filtered_connectors: Vec<_> = view
+            .connectors
+            .iter()
+            .filter(|connector| {
+                within_package_prefix(&connector.source_id, package_ref, &dot_prefix)
+                    && within_package_prefix(&connector.target_id, package_ref, &dot_prefix)
+            })
+            .cloned()
+            .collect();
+        if !filtered_parts.is_empty() || !filtered_connectors.is_empty() {
+            root_views.insert(
+                name.clone(),
+                ibd::IbdRootViewDto {
+                    parts: filtered_parts,
+                    ports: filtered_ports,
+                    connectors: filtered_connectors,
+                },
+            );
+        }
+    }
+
+    let root_candidates: Vec<String> = ibd
+        .root_candidates
+        .iter()
+        .filter(|candidate| root_views.contains_key(*candidate))
+        .cloned()
+        .collect();
+    let default_root = root_candidates.first().cloned();
+
+    IbdDataDto {
+        parts,
+        ports,
+        connectors,
+        root_candidates,
+        default_root,
+        root_views,
+    }
+}
+
+pub(crate) fn build_sysml_visualization_response(
+    semantic_graph: &semantic_model::SemanticGraph,
+    index: &std::collections::HashMap<Url, crate::workspace::state::IndexEntry>,
+    workspace_root_uri: &Url,
+    library_paths: &[Url],
+    view: &str,
+    package_filter: &SysmlVisualizationPackageFilterDto,
+    build_start: Instant,
+) -> SysmlVisualizationResultDto {
+    let workspace_uris = workspace_uris_for_root(semantic_graph, library_paths, workspace_root_uri);
+    let raw_graph = build_workspace_graph_dto_for_uris(semantic_graph, &workspace_uris);
+    let graph = model_projection::strip_synthetic_nodes(&raw_graph);
+    let mut general_view_graph =
+        model_projection::canonical_general_view_graph(&graph, true);
+    let mut workspace_model = build_workspace_model_dto_for_uris(semantic_graph, &workspace_uris);
+    let mut package_candidates = Vec::new();
+    let mut seen_packages = HashSet::new();
+    collect_package_candidates(&workspace_model.semantic, &mut seen_packages, &mut package_candidates);
+    package_candidates.sort_by(|left, right| left.name.cmp(&right.name));
+
+    let mut ibd = Some(ibd::merge_ibd_payloads(
+        workspace_uris
+            .iter()
+            .map(|workspace_uri| ibd::build_ibd_for_uri(semantic_graph, workspace_uri))
+            .collect(),
+    ));
+    let mut selected_package = None;
+    let mut selected_package_name = None;
+
+    if package_filter.kind.eq_ignore_ascii_case("package") {
+        if let Some(package_ref) = package_filter.package.as_deref() {
+            if let Some(package_element) =
+                find_package_element(&workspace_model.semantic, package_ref).map(clone_element)
+            {
+                let mut selected_ids = HashSet::new();
+                collect_subtree_ids(&package_element, &mut selected_ids);
+
+                let filtered_graph_nodes: Vec<_> = graph
+                    .nodes
+                    .iter()
+                    .filter(|node| selected_ids.contains(&node.id))
+                    .cloned()
+                    .collect();
+                let filtered_graph_edges: Vec<_> = graph
+                    .edges
+                    .iter()
+                    .filter(|edge| {
+                        selected_ids.contains(&edge.source) && selected_ids.contains(&edge.target)
+                    })
+                    .cloned()
+                    .collect();
+                let filtered_graph = SysmlGraphDto {
+                    nodes: filtered_graph_nodes,
+                    edges: filtered_graph_edges,
+                };
+                general_view_graph =
+                    model_projection::canonical_general_view_graph(&filtered_graph, true);
+                workspace_model.semantic = vec![package_element.clone()];
+                workspace_model.files = filter_workspace_model_files(&workspace_model.files, package_ref);
+                workspace_model.summary.loaded_files = workspace_model.files.len();
+                workspace_model.summary.scanned_files = workspace_model.files.len();
+                ibd = ibd.as_ref().map(|payload| filter_ibd_by_package(payload, package_ref));
+                selected_package = package_element
+                    .id
+                    .clone()
+                    .or_else(|| Some(package_element.name.clone()));
+                selected_package_name = Some(package_element.name.clone());
+                return SysmlVisualizationResultDto {
+                    version: 0,
+                    view: view.to_string(),
+                    workspace_root_uri: workspace_root_uri.as_str().to_string(),
+                    package_candidates,
+                    selected_package,
+                    selected_package_name,
+                    graph: Some(filtered_graph.clone()),
+                    general_view_graph: Some(general_view_graph),
+                    workspace_model: Some(workspace_model),
+                    activity_diagrams: None,
+                    ibd,
+                    stats: Some(SysmlModelStatsDto {
+                        total_elements: filtered_graph.nodes.len() as u32,
+                        resolved_elements: 0,
+                        unresolved_elements: 0,
+                        parse_time_ms: 0,
+                        model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
+                        parse_cached: false,
+                    }),
+                };
+            }
+        }
+    }
+
+    let _parsed_count = workspace_uris
+        .iter()
+        .filter(|uri| index.get(*uri).and_then(|entry| entry.parsed.as_ref()).is_some())
+        .count();
+
+    SysmlVisualizationResultDto {
+        version: 0,
+        view: view.to_string(),
+        workspace_root_uri: workspace_root_uri.as_str().to_string(),
+        package_candidates,
+        selected_package,
+        selected_package_name,
+        graph: Some(graph.clone()),
+        general_view_graph: Some(general_view_graph),
+        workspace_model: Some(workspace_model),
+        activity_diagrams: None,
+        ibd,
+        stats: Some(SysmlModelStatsDto {
+            total_elements: graph.nodes.len() as u32,
+            resolved_elements: 0,
+            unresolved_elements: 0,
+            parse_time_ms: 0,
+            model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
+            parse_cached: false,
+        }),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parse_sysml_visualization_params;
+
+    #[test]
+    fn parse_visualization_params_accepts_workspace_root_and_package_filter() {
+        let params = serde_json::json!({
+            "workspaceRootUri": "file:///C:/demo",
+            "view": "general-view",
+            "packageFilter": {
+                "kind": "package",
+                "package": "Demo::Pkg"
+            }
+        });
+
+        let (workspace_root_uri, view, package_filter) =
+            parse_sysml_visualization_params(&params).expect("parse visualization params");
+        assert_eq!(workspace_root_uri.as_str(), "file:///c:/demo");
+        assert_eq!(view, "general-view");
+        assert_eq!(package_filter.kind, "package");
+        assert_eq!(package_filter.package.as_deref(), Some("Demo::Pkg"));
+    }
+
+    #[test]
+    fn parse_visualization_params_accepts_array_shape() {
+        let params = serde_json::json!([
+            {
+                "workspaceRootUri": "file:///C:/demo",
+                "view": "interconnection-view",
+                "packageFilter": {
+                    "kind": "all"
+                }
+            }
+        ]);
+
+        let (workspace_root_uri, view, package_filter) =
+            parse_sysml_visualization_params(&params).expect("parse visualization params");
+        assert_eq!(workspace_root_uri.as_str(), "file:///c:/demo");
+        assert_eq!(view, "interconnection-view");
+        assert_eq!(package_filter.kind, "all");
+        assert_eq!(package_filter.package, None);
+    }
+}

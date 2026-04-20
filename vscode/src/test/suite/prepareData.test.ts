@@ -414,7 +414,7 @@ describe("prepareDataForView", () => {
         assert.strictEqual(roots[0].children[0].name, "child");
     });
 
-    describe("interconnection-view with server IBD payload (no fallback)", () => {
+    describe("interconnection-view with backend IBD payload", () => {
         const mockIbdFromServer = {
             parts: [
                 { id: "SurveillanceDrone::SurveillanceQuadrotorDrone", name: "SurveillanceQuadrotorDrone", qualifiedName: "SurveillanceDrone.SurveillanceQuadrotorDrone", containerId: null, type: "part def", attributes: {} },
@@ -425,89 +425,33 @@ describe("prepareDataForView", () => {
             ],
             ports: [] as { id: string; name: string; parentId: string }[],
             connectors: [] as { sourceId: string; targetId: string }[],
-            rootCandidates: ["SurveillanceQuadrotorDrone", "Propulsion"],
-            defaultRoot: "SurveillanceQuadrotorDrone",
-            rootViews: {
-                SurveillanceQuadrotorDrone: {
-                    parts: [
-                        { id: "SurveillanceDrone::SurveillanceQuadrotorDrone", name: "SurveillanceQuadrotorDrone", qualifiedName: "SurveillanceDrone.SurveillanceQuadrotorDrone", containerId: null, type: "part def", attributes: {} },
-                        { id: "SurveillanceDrone::SurveillanceQuadrotorDrone::propulsion", name: "propulsion", qualifiedName: "SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion", containerId: "SurveillanceDrone.SurveillanceQuadrotorDrone", type: "part", attributes: {} },
-                        { id: "SurveillanceDrone::SurveillanceQuadrotorDrone::flightControl", name: "flightControl", qualifiedName: "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl", containerId: "SurveillanceDrone.SurveillanceQuadrotorDrone", type: "part", attributes: {} },
-                    ],
-                    ports: [],
-                    connectors: [],
-                },
-                Propulsion: {
-                    parts: [
-                        { id: "SurveillanceDrone::Propulsion", name: "Propulsion", qualifiedName: "SurveillanceDrone.Propulsion", containerId: null, type: "part def", attributes: {} },
-                        { id: "SurveillanceDrone::Propulsion::propulsionUnit1", name: "propulsionUnit1", qualifiedName: "SurveillanceDrone.Propulsion.propulsionUnit1", containerId: "SurveillanceDrone.Propulsion", type: "part", attributes: {} },
-                    ],
-                    ports: [],
-                    connectors: [],
-                },
-            },
         };
 
-        it("uses server defaultRoot to choose root-specific view payload", () => {
+        it("passes through backend parts without frontend root selection", () => {
             const data = { graph: { nodes: [], edges: [] }, ibd: mockIbdFromServer };
             const result = prepareDataForView(data, "interconnection-view");
-            assert.strictEqual(result.selectedIbdRoot, "SurveillanceQuadrotorDrone", "selectedIbdRoot must be server defaultRoot");
-            assert.strictEqual(result.parts.length, 3, "parts should come from selected server root view");
+            assert.strictEqual(result.parts.length, 5);
+            assert.strictEqual(result.parts[0].name, "SurveillanceQuadrotorDrone");
         });
 
-        it("uses frontend selectedIbdRoot to choose among server root views", () => {
-            const data = { graph: { nodes: [], edges: [] }, ibd: mockIbdFromServer, selectedIbdRoot: "Propulsion" };
-            const result = prepareDataForView(data, "interconnection-view");
-            assert.strictEqual(result.selectedIbdRoot, "Propulsion");
-            assert.strictEqual(result.parts.length, 2);
-        });
-
-        it("uses server rootViews payload for selected root", () => {
+        it("passes through backend connectors without frontend pruning", () => {
             const data = {
                 graph: { nodes: [], edges: [] },
                 ibd: {
                     ...mockIbdFromServer,
-                    ports: [
-                        { id: "p1", name: "motorOut", parentId: "SurveillanceDrone.Propulsion.propulsionUnit1" },
-                        { id: "p2", name: "flightIn", parentId: "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl" },
-                    ],
                     connectors: [
-                        {
-                            sourceId: "SurveillanceDrone.Propulsion.propulsionUnit1.motorOut",
-                            targetId: "SurveillanceDrone.Propulsion.propulsionUnit1.motorOut",
-                            type: "connection",
-                            name: "internalLoop",
-                        },
                         {
                             sourceId: "SurveillanceDrone.Propulsion.propulsionUnit1.motorOut",
                             targetId: "SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightIn",
                             type: "connection",
-                            name: "crossRootLink",
+                            name: "crossPackageLink",
                         },
                     ],
-                    rootViews: {
-                        ...mockIbdFromServer.rootViews,
-                        Propulsion: {
-                            parts: mockIbdFromServer.rootViews.Propulsion.parts,
-                            ports: [
-                                { id: "p1", name: "motorOut", parentId: "SurveillanceDrone.Propulsion.propulsionUnit1" },
-                            ],
-                            connectors: [
-                                {
-                                    sourceId: "SurveillanceDrone.Propulsion.propulsionUnit1.motorOut",
-                                    targetId: "SurveillanceDrone.Propulsion.propulsionUnit1.motorOut",
-                                    type: "connection",
-                                    name: "internalLoop",
-                                },
-                            ],
-                        },
-                    },
                 },
-                selectedIbdRoot: "Propulsion",
             };
             const result = prepareDataForView(data, "interconnection-view");
-            assert.strictEqual(result.connectors.length, 1, "selected root should use server-filtered connectors");
-            assert.strictEqual(result.connectors[0].name, "internalLoop");
+            assert.strictEqual(result.connectors.length, 1);
+            assert.strictEqual(result.connectors[0].name, "crossPackageLink");
         });
 
         it("returns empty IBD when no server ibd (no fallback)", () => {
@@ -516,66 +460,6 @@ describe("prepareDataForView", () => {
             assert.deepStrictEqual(result.parts, []);
             assert.deepStrictEqual(result.ports, []);
             assert.deepStrictEqual(result.connectors, []);
-            assert.strictEqual(result.selectedIbdRoot, null);
-        });
-
-        it("falls back to first available root view when defaultRoot is missing", () => {
-            const data = {
-                graph: { nodes: [], edges: [] },
-                ibd: {
-                    parts: [
-                        { id: "Drone", name: "Drone", qualifiedName: "Demo.Drone", containerId: null, type: "part def", attributes: {} },
-                        { id: "Drone::left", name: "left", qualifiedName: "Demo.Drone.left", containerId: "Demo.Drone", type: "part", attributes: {} },
-                        { id: "Drone::right", name: "right", qualifiedName: "Demo.Drone.right", containerId: "Demo.Drone", type: "part", attributes: {} },
-                        { id: "Power", name: "Power", qualifiedName: "Demo.Power", containerId: null, type: "part def", attributes: {} },
-                        { id: "Power::unit", name: "unit", qualifiedName: "Demo.Power.unit", containerId: "Demo.Power", type: "part", attributes: {} },
-                    ],
-                    ports: [
-                        { id: "p1", name: "leftOut", parentId: "Demo.Drone.left" },
-                        { id: "p2", name: "rightIn", parentId: "Demo.Drone.right" },
-                        { id: "p3", name: "powerOut", parentId: "Demo.Power.unit" },
-                    ],
-                    connectors: [
-                        {
-                            sourceId: "Demo.Drone.left.leftOut",
-                            targetId: "Demo.Drone.right.rightIn",
-                            type: "connection",
-                            name: "internalLink",
-                        },
-                    ],
-                    rootCandidates: ["Power", "Drone"],
-                    rootViews: {
-                        Power: {
-                            parts: [{ id: "Power", name: "Power", qualifiedName: "Demo.Power", containerId: null, type: "part def", attributes: {} }],
-                            ports: [],
-                            connectors: [],
-                        },
-                        Drone: {
-                            parts: [
-                                { id: "Drone", name: "Drone", qualifiedName: "Demo.Drone", containerId: null, type: "part def", attributes: {} },
-                                { id: "Drone::left", name: "left", qualifiedName: "Demo.Drone.left", containerId: "Demo.Drone", type: "part", attributes: {} },
-                                { id: "Drone::right", name: "right", qualifiedName: "Demo.Drone.right", containerId: "Demo.Drone", type: "part", attributes: {} },
-                            ],
-                            ports: [
-                                { id: "p1", name: "leftOut", parentId: "Demo.Drone.left" },
-                                { id: "p2", name: "rightIn", parentId: "Demo.Drone.right" },
-                            ],
-                            connectors: [
-                                {
-                                    sourceId: "Demo.Drone.left.leftOut",
-                                    targetId: "Demo.Drone.right.rightIn",
-                                    type: "connection",
-                                    name: "internalLink",
-                                },
-                            ],
-                        },
-                    },
-                },
-            };
-            const result = prepareDataForView(data, "interconnection-view");
-            assert.strictEqual(result.selectedIbdRoot, "Power");
-            assert.strictEqual(result.parts.length, 1);
-            assert.strictEqual(result.connectors.length, 0);
         });
     });
 });

@@ -167,7 +167,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                     clickedPart.select('rect')
                         .style('stroke', DIAGRAM_STYLE.highlight)
                         .style('stroke-width', '3px');
-                    postJumpToElement(postMessage, { name: part.name, id: part.qualifiedName || part.id }, { skipCentering: true });
+                    postJumpToElement(postMessage, { name: part.name, id: part.qualifiedName || part.id, uri: part.uri || undefined }, { skipCentering: true });
                 }).on('dblclick', function(event: any) {
                     event.stopPropagation();
                     onStartInlineEdit(d3.select(this), part.name, part.x, part.y, part.width);
@@ -2387,7 +2387,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 clickedPart.select('rect')
                 .style('stroke', DIAGRAM_STYLE.highlight)
                     .style('stroke-width', '3px');
-                postJumpToElement(postMessage, { name: part.name, id: part.qualifiedName || part.id }, { skipCentering: true });
+                postJumpToElement(postMessage, { name: part.name, id: part.qualifiedName || part.id, uri: part.uri || undefined }, { skipCentering: true });
             })
             .on('dblclick', function(event: any) {
                 event.stopPropagation();

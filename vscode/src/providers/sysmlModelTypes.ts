@@ -19,6 +19,7 @@ export interface GraphNodeDTO {
   id: string;
   type: string;
   name: string;
+  uri?: string;
   parentId?: string;
   range: RangeDTO;
   attributes: Record<string, unknown>;
@@ -97,6 +98,7 @@ export interface IbdPartDTO {
   id: string;
   name: string;
   qualifiedName: string;
+  uri?: string;
   containerId?: string;
   type: string;
   attributes?: Record<string, unknown>;
@@ -257,6 +259,37 @@ export interface SysMLDiagramResult {
   scene: DiagramSceneDTO;
   warnings?: string[];
   stats?: SysMLDiagramStatsDTO;
+}
+
+export interface VisualizationPackageFilterDTO {
+  kind: "all" | "package";
+  package?: string;
+}
+
+export interface VisualizationPackageCandidateDTO {
+  id: string;
+  name: string;
+}
+
+export interface SysMLVisualizationParams {
+  workspaceRootUri: string;
+  view: string;
+  packageFilter?: VisualizationPackageFilterDTO;
+}
+
+export interface SysMLVisualizationResult {
+  version: number;
+  view: string;
+  workspaceRootUri: string;
+  packageCandidates: VisualizationPackageCandidateDTO[];
+  selectedPackage?: string;
+  selectedPackageName?: string;
+  graph?: SysMLGraphDTO;
+  generalViewGraph?: SysMLGraphDTO;
+  workspaceModel?: WorkspaceModelDTO;
+  activityDiagrams?: ActivityDiagramDTO[];
+  ibd?: IbdDataDTO;
+  stats?: SysMLModelStatsDTO;
 }
 
 // ---------------------------------------------------------------------------

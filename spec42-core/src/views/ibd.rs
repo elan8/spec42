@@ -68,6 +68,8 @@ pub struct IbdPartDto {
     pub name: String,
     pub qualified_name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub container_id: Option<String>,
     #[serde(rename = "type")]
     pub element_type: String,
@@ -258,6 +260,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 id: qn.clone(),
                 name: node.name.clone(),
                 qualified_name: qualified_name_to_dot(&qn),
+                uri: Some(node.id.uri.as_str().to_string()),
                 container_id: container_id.map(|s| qualified_name_to_dot(&s)),
                 element_type: node.element_kind.clone(),
                 attributes: node.attributes.clone(),
@@ -410,6 +413,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 id: expanded_dot.clone(),
                 name: part_child.name.clone(),
                 qualified_name: expanded_dot.clone(),
+                uri: Some(part_child.id.uri.as_str().to_string()),
                 container_id: Some(parent_dot.to_string()),
                 element_type: part_child.element_kind.clone(),
                 attributes: part_child.attributes.clone(),

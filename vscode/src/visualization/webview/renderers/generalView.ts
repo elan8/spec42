@@ -491,7 +491,11 @@ function renderGeneralNodes(
             const elementName = d.elementName;
             const elementQualifiedName = d.elementQualifiedName || elementName;
             if (elementName) {
-                postJumpToElement(postMessage, { name: elementName, id: elementQualifiedName || undefined }, { skipCentering: true });
+                postJumpToElement(
+                    postMessage,
+                    { name: elementName, id: elementQualifiedName || undefined, uri: d.elementUri || undefined },
+                    { skipCentering: true }
+                );
             }
         });
     });

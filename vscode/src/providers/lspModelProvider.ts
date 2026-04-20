@@ -10,6 +10,9 @@ import type {
   SysMLElementDTO,
   SysMLModelParams,
   SysMLModelResult,
+  SysMLVisualizationParams,
+  SysMLVisualizationResult,
+  VisualizationPackageFilterDTO,
 } from "./sysmlModelTypes";
 
 function logPerf(event: string, extra?: Record<string, unknown>): void {
@@ -528,6 +531,34 @@ export class LspModelProvider {
       return result;
     } catch (error) {
       logError("getDiagram failed", error);
+      throw error;
+    }
+  }
+
+  async getVisualization(
+    workspaceRootUri: string,
+    view: string,
+    packageFilter?: VisualizationPackageFilterDTO,
+    token?: vscode.CancellationToken
+  ): Promise<SysMLVisualizationResult> {
+    const trimmed = (workspaceRootUri || "").trim();
+    if (!trimmed) {
+      throw new Error("getVisualization requires a non-empty workspaceRootUri");
+    }
+    await this.whenReady;
+    const params: SysMLVisualizationParams = {
+      workspaceRootUri: trimmed,
+      view,
+      packageFilter,
+    };
+    try {
+      return await this.client.sendRequest<SysMLVisualizationResult>(
+        "sysml/visualization",
+        params,
+        token
+      );
+    } catch (error) {
+      logError("getVisualization failed", error);
       throw error;
     }
   }

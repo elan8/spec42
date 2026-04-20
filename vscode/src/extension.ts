@@ -825,7 +825,7 @@ export function activate(context: vscode.ExtensionContext): void {
         const extVersion =
           vscode.extensions.getExtension(EXTENSION_ID)?.packageJSON?.version ??
           "0.0.0";
-        if (!saved?.documentUri) {
+        if (!saved?.workspaceRootUri) {
           panel.webview.html = getWebviewHtml(
             panel.webview,
             context.extensionUri,
@@ -1399,8 +1399,7 @@ export function activate(context: vscode.ExtensionContext): void {
             context,
             combinedDocumentProxy,
             title,
-            lspModelProvider,
-            workspaceUris
+            lspModelProvider
           );
           return;
         }
@@ -1517,7 +1516,9 @@ export function activate(context: vscode.ExtensionContext): void {
             combinedDocumentProxy,
             title,
             lspModelProvider,
-            uniqueFiles
+            uri && (await vscode.workspace.fs.stat(uri)).type === vscode.FileType.Directory
+              ? uri
+              : vscode.workspace.getWorkspaceFolder(firstDoc.uri)?.uri
           );
           VisualizationPanel.currentPanel?.refresh();
         } catch (error) {
@@ -1706,8 +1707,7 @@ export function activate(context: vscode.ExtensionContext): void {
               context,
               combinedDocumentProxy,
               title,
-              lspModelProvider,
-              workspaceUris
+              lspModelProvider
             );
             setTimeout(() => {
               VisualizationPanel.currentPanel?.selectPackage(packageName);
@@ -1806,12 +1806,8 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
       }
       const doc = VisualizationPanel.currentPanel.getDocument();
-      const workspaceUris =
-        modelExplorerProvider?.isWorkspaceBacked() && (modelExplorerProvider?.getWorkspaceFileUris()?.length ?? 0) > 1
-          ? modelExplorerProvider.getWorkspaceFileUris()
-          : undefined;
       VisualizationPanel.currentPanel.dispose();
-      VisualizationPanel.createOrShow(context, doc, undefined, lspModelProvider, workspaceUris);
+      VisualizationPanel.createOrShow(context, doc, undefined, lspModelProvider);
     })
   );
 
@@ -1956,13 +1952,8 @@ export function activate(context: vscode.ExtensionContext): void {
       // are regenerated without requiring a full VS Code reload.
       if ((visualizationConfigChanged || verboseLoggingChanged) && VisualizationPanel.currentPanel) {
         const panelDoc = VisualizationPanel.currentPanel.getDocument();
-        const workspaceUris =
-          modelExplorerProvider?.isWorkspaceBacked() &&
-          (modelExplorerProvider?.getWorkspaceFileUris()?.length ?? 0) > 1
-            ? modelExplorerProvider.getWorkspaceFileUris()
-            : undefined;
         VisualizationPanel.currentPanel.dispose();
-        VisualizationPanel.createOrShow(context, panelDoc, undefined, lspModelProvider, workspaceUris);
+        VisualizationPanel.createOrShow(context, panelDoc, undefined, lspModelProvider);
       }
 
       if (codeLensConfigChanged || performanceLoggingConfigChanged) {

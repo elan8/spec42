@@ -7,11 +7,12 @@ import type { SysMLElement } from '../types/sysmlTypes';
 export interface MessageHandlerContext {
     panel: vscode.WebviewPanel;
     document: vscode.TextDocument;
+    workspaceRootUri: string;
     lspModelProvider: LspModelProvider;
-    fileUris: vscode.Uri[];
     updateVisualization: (force: boolean, triggerSource?: string) => void;
     setNavigating: (value: boolean) => void;
     setCurrentView: (view: string) => void;
+    setSelectedPackage: (value?: string) => void;
     setLastContentHash: (hash: string) => void;
 }
 
@@ -20,7 +21,7 @@ type WebviewMessage = { command: string; [key: string]: any };
 
 export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: WebviewMessage) => void {
     const handlers = createMessageHandlers(ctx);
-    const { panel, document, fileUris, setCurrentView, setLastContentHash, updateVisualization } = ctx;
+    const { panel, document, setCurrentView, setSelectedPackage, setLastContentHash, updateVisualization } = ctx;
 
     return (message: WebviewMessage) => {
         switch (message.command) {
@@ -38,7 +39,7 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
                 }
                 break;
             case 'jumpToElement':
-                handlers.jumpToElement(message.elementName, message.skipCentering, message.parentContext, message.elementQualifiedName);
+                handlers.jumpToElement(message.elementName, message.skipCentering, message.parentContext, message.elementQualifiedName, message.elementUri);
                 break;
             case 'renameElement':
                 handlers.renameElement(message.oldName, message.newName);
@@ -56,7 +57,7 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
                         break;
                     }
                     if (cmd === 'sysml.showModelDashboard') {
-                        const dashboardUri = fileUris.length > 0 ? fileUris[0] : document.uri;
+                        const dashboardUri = document.uri;
                         setTimeout(() => vscode.commands.executeCommand(cmd, dashboardUri), 100);
                     } else {
                         const cmdArgs = message.args.slice(1);
@@ -68,6 +69,16 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
                 setCurrentView(message.view ?? '');
                 setLastContentHash('');
                 updateVisualization(true, 'viewChanged');
+                break;
+            case 'packageFilterChanged':
+                setSelectedPackage(message.packageRef || undefined);
+                setLastContentHash('');
+                updateVisualization(true, 'packageFilterChanged');
+                break;
+            case 'clearPackageFilter':
+                setSelectedPackage(undefined);
+                setLastContentHash('');
+                updateVisualization(true, 'clearPackageFilter');
                 break;
             case 'openExternal':
                 if (message.url) {
@@ -114,15 +125,13 @@ function getTestDiagramOutputDir(workspaceFolder: vscode.WorkspaceFolder): vscod
 }
 
 export function createMessageHandlers(context: MessageHandlerContext) {
-    const { panel, document, lspModelProvider, fileUris, updateVisualization, setNavigating } = context;
+    const { panel, document, workspaceRootUri, lspModelProvider, updateVisualization, setNavigating } = context;
     let activeHighlightDecoration: vscode.TextEditorDecorationType | undefined;
     let activeHighlightTimeout: ReturnType<typeof setTimeout> | undefined;
     let activeHighlightEditor: vscode.TextEditor | undefined;
 
     function clearActiveSourceHighlight(): void {
-        const trackedUris = new Set(
-            (fileUris.length > 0 ? fileUris : [document.uri]).map((uri) => uri.toString()),
-        );
+        const trackedUris = new Set([document.uri.toString()]);
 
         if (activeHighlightTimeout) {
             clearTimeout(activeHighlightTimeout);
@@ -176,28 +185,20 @@ export function createMessageHandlers(context: MessageHandlerContext) {
         }
     }
 
-    async function jumpToElement(elementName: string, skipCentering: boolean = false, parentContext?: string, elementQualifiedName?: string) {
+    async function jumpToElement(elementName: string, skipCentering: boolean = false, parentContext?: string, elementQualifiedName?: string, elementUri?: string) {
         setNavigating(true);
-        const candidateUris = (fileUris.length > 0 ? fileUris.map((u) => u.toString()) : [document.uri.toString()])
-            .filter((u, idx, arr) => arr.indexOf(u) === idx);
 
         let element: SysMLElement | undefined;
-        let resolvedUri = document.uri.toString();
+        let resolvedUri = elementUri || document.uri.toString();
 
-        let dto: Awaited<ReturnType<typeof lspModelProvider.findElement>> | undefined;
-        for (const uri of candidateUris) {
-            dto = await lspModelProvider.findElement(
-                uri,
-                elementName,
-                parentContext,
-                elementQualifiedName,
-            );
-            if (dto) {
-                resolvedUri = uri;
-                break;
-            }
-        }
+        const dto = await lspModelProvider.findElement(
+            resolvedUri || workspaceRootUri,
+            elementName,
+            parentContext,
+            elementQualifiedName,
+        );
         if (dto) {
+            resolvedUri = dto.uri || resolvedUri;
             element = {
                 type: dto.type,
                 name: dto.name,
@@ -335,9 +336,6 @@ export function createMessageHandlers(context: MessageHandlerContext) {
         let defaultFolder: vscode.Uri | undefined;
         if (document?.uri?.scheme === 'file' && document.uri.fsPath) {
             defaultFolder = vscode.Uri.file(path.dirname(document.uri.fsPath));
-        }
-        if (!defaultFolder && fileUris.length > 0) {
-            defaultFolder = vscode.Uri.file(path.dirname(fileUris[0].fsPath));
         }
         if (!defaultFolder) {
             const activeEditor = vscode.window.activeTextEditor;

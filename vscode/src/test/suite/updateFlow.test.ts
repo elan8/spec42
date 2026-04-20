@@ -27,15 +27,18 @@ function createMockPanel() {
 
 describe("createUpdateVisualizationFlow", () => {
   it("deduplicates repeated webviewReady startup updates", async () => {
-    let getModelCount = 0;
+    let getVisualizationCount = 0;
     const { panel } = createMockPanel();
     const document = createMockDocument("file:///drone.sysml");
     const provider = {
-      getModel: async () => {
-        getModelCount += 1;
+      getVisualization: async () => {
+        getVisualizationCount += 1;
         await new Promise((resolve) => setTimeout(resolve, 20));
         return {
           version: 1,
+          view: "general-view",
+          workspaceRootUri: "file:///workspace",
+          packageCandidates: [],
           graph: { nodes: [], edges: [] },
           stats: {
             totalElements: 0,
@@ -46,28 +49,21 @@ describe("createUpdateVisualizationFlow", () => {
             parseCached: true,
           },
         };
-      },
-      getDiagram: async () => ({
-        version: 1,
-        kind: "general-view",
-        sourceUri: document.uri.toString(),
-        scene: {},
-      }),
+      }
     } as any;
 
     const flow = createUpdateVisualizationFlow({
       panel,
       getDocument: () => document,
-      getFileUris: () => [],
+      getWorkspaceRootUri: () => "file:///workspace",
       lspModelProvider: provider,
       getCurrentView: () => "general-view",
-      getPendingPackageName: () => undefined,
+      getSelectedPackage: () => undefined,
       getIsNavigating: () => false,
       getNeedsUpdateWhenVisible: () => false,
       getLastContentHash: () => "",
       setLastContentHash: () => {},
       setNeedsUpdateWhenVisible: () => {},
-      clearPendingPackageName: () => {},
     });
 
     await Promise.all([
@@ -75,18 +71,21 @@ describe("createUpdateVisualizationFlow", () => {
       flow.update(true, "webviewReady"),
     ]);
 
-    assert.strictEqual(getModelCount, 1);
+    assert.strictEqual(getVisualizationCount, 1);
   });
 
   it("skips pre-bootstrap forced updates until webviewReady", async () => {
-    let getModelCount = 0;
+    let getVisualizationCount = 0;
     const { panel } = createMockPanel();
     const document = createMockDocument("file:///drone.sysml");
     const provider = {
-      getModel: async () => {
-        getModelCount += 1;
+      getVisualization: async () => {
+        getVisualizationCount += 1;
         return {
           version: 1,
+          view: "general-view",
+          workspaceRootUri: "file:///workspace",
+          packageCandidates: [],
           graph: { nodes: [], edges: [] },
           stats: {
             totalElements: 0,
@@ -97,49 +96,45 @@ describe("createUpdateVisualizationFlow", () => {
             parseCached: true,
           },
         };
-      },
-      getDiagram: async () => ({
-        version: 1,
-        kind: "general-view",
-        sourceUri: document.uri.toString(),
-        scene: {},
-      }),
+      }
     } as any;
 
     const flow = createUpdateVisualizationFlow({
       panel,
       getDocument: () => document,
-      getFileUris: () => [],
+      getWorkspaceRootUri: () => "file:///workspace",
       lspModelProvider: provider,
       getCurrentView: () => "general-view",
-      getPendingPackageName: () => undefined,
+      getSelectedPackage: () => undefined,
       getIsNavigating: () => false,
       getNeedsUpdateWhenVisible: () => false,
       getLastContentHash: () => "",
       setLastContentHash: () => {},
       setNeedsUpdateWhenVisible: () => {},
-      clearPendingPackageName: () => {},
     });
 
     await flow.update(true, "panelReveal");
-    assert.strictEqual(getModelCount, 0);
+    assert.strictEqual(getVisualizationCount, 0);
 
     await flow.update(true, "webviewReady");
-    assert.strictEqual(getModelCount, 1);
+    assert.strictEqual(getVisualizationCount, 1);
   });
 
   it("allows a later view change to trigger a new fetch after bootstrap", async () => {
-    let getModelCount = 0;
+    let getVisualizationCount = 0;
     let currentView = "general-view";
-    const requestedScopes: string[][] = [];
+    const requests: Array<{ workspaceRootUri: string; view: string; packageFilter?: { kind: string; package?: string } }> = [];
     const { panel } = createMockPanel();
     const document = createMockDocument("file:///drone.sysml");
     const provider = {
-      getModel: async (_uri: string, scopes?: string[]) => {
-        getModelCount += 1;
-        requestedScopes.push(scopes ?? []);
+      getVisualization: async (workspaceRootUri: string, view: string, packageFilter?: { kind: string; package?: string }) => {
+        getVisualizationCount += 1;
+        requests.push({ workspaceRootUri, view, packageFilter });
         return {
           version: 1,
+          view,
+          workspaceRootUri,
+          packageCandidates: [],
           graph: { nodes: [], edges: [] },
           stats: {
             totalElements: 0,
@@ -150,40 +145,39 @@ describe("createUpdateVisualizationFlow", () => {
             parseCached: true,
           },
         };
-      },
-      getDiagram: async () => ({
-        version: 1,
-        kind: "general-view",
-        sourceUri: document.uri.toString(),
-        scene: {},
-      }),
+      }
     } as any;
 
     const flow = createUpdateVisualizationFlow({
       panel,
       getDocument: () => document,
-      getFileUris: () => [],
+      getWorkspaceRootUri: () => "file:///workspace",
       lspModelProvider: provider,
       getCurrentView: () => currentView,
-      getPendingPackageName: () => undefined,
+      getSelectedPackage: () => undefined,
       getIsNavigating: () => false,
       getNeedsUpdateWhenVisible: () => false,
       getLastContentHash: () => "",
       setLastContentHash: () => {},
       setNeedsUpdateWhenVisible: () => {},
-      clearPendingPackageName: () => {},
     });
 
     await flow.update(true, "webviewReady");
     currentView = "action-flow-view";
     await flow.update(true, "viewChanged");
 
-    assert.strictEqual(getModelCount, 2);
-    assert.deepStrictEqual(requestedScopes[0], ["graph", "stats"]);
-    assert.deepStrictEqual(requestedScopes[1], [
-      "graph",
-      "activityDiagrams",
-      "stats",
+    assert.strictEqual(getVisualizationCount, 2);
+    assert.deepStrictEqual(requests, [
+      {
+        workspaceRootUri: "file:///workspace",
+        view: "general-view",
+        packageFilter: { kind: "all" },
+      },
+      {
+        workspaceRootUri: "file:///workspace",
+        view: "action-flow-view",
+        packageFilter: { kind: "all" },
+      },
     ]);
   });
 });

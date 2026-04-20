@@ -6,20 +6,24 @@ function createContext() {
   const calls: Array<{ force: boolean; triggerSource?: string }> = [];
   let currentView = "general-view";
   let lastContentHash = "seed";
+  let selectedPackage: string | undefined;
 
   const dispatcher = createMessageDispatcher({
     panel: {} as vscode.WebviewPanel,
     document: {
       uri: vscode.Uri.parse("file:///drone.sysml"),
     } as vscode.TextDocument,
+    workspaceRootUri: "file:///workspace",
     lspModelProvider: {} as any,
-    fileUris: [],
     updateVisualization: (force: boolean, triggerSource?: string) => {
       calls.push({ force, triggerSource });
     },
     setNavigating: () => {},
     setCurrentView: (view: string) => {
       currentView = view;
+    },
+    setSelectedPackage: (value?: string) => {
+      selectedPackage = value;
     },
     setLastContentHash: (hash: string) => {
       lastContentHash = hash;
@@ -31,6 +35,7 @@ function createContext() {
     calls,
     getCurrentView: () => currentView,
     getLastContentHash: () => lastContentHash,
+    getSelectedPackage: () => selectedPackage,
   };
 }
 
@@ -52,5 +57,15 @@ describe("createMessageDispatcher", () => {
 
     assert.strictEqual(ctx.getCurrentView(), "action-flow-view");
     assert.strictEqual(ctx.calls.length, 0);
+  });
+
+  it("refreshes visualization when the package filter changes", () => {
+    const ctx = createContext();
+
+    ctx.dispatcher({ command: "packageFilterChanged", packageRef: "AnalysisPackage" });
+
+    assert.strictEqual(ctx.getSelectedPackage(), "AnalysisPackage");
+    assert.strictEqual(ctx.getLastContentHash(), "");
+    assert.deepStrictEqual(ctx.calls, [{ force: true, triggerSource: "packageFilterChanged" }]);
   });
 });

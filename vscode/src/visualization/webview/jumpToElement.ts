@@ -6,6 +6,7 @@
 export interface JumpToElementPayload {
     name: string;
     id?: string;
+    uri?: string;
 }
 
 export interface JumpToElementOptions {
@@ -27,6 +28,9 @@ export function postJumpToElement(
     };
     if (element.id) {
         msg.elementQualifiedName = element.id;
+    }
+    if (element.uri) {
+        msg.elementUri = element.uri;
     }
     if (options?.skipCentering) {
         msg.skipCentering = true;

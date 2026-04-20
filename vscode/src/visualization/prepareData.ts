@@ -99,112 +99,17 @@ export function prepareDataForView(data: any, view: string): any {
             return data;
         case 'interconnection-view': {
             if (data.ibd && Array.isArray(data.ibd.parts)) {
-                const isLikelyInstanceRoot = (name: string): boolean => {
-                    const n = String(name || '');
-                    return /instance$/i.test(n) || /inst$/i.test(n);
-                };
                 const ibd = data.ibd as {
                     parts: any[];
                     ports?: any[];
                     connectors?: any[];
-                    rootCandidates?: string[];
-                    defaultRoot?: string;
-                    rootViews?: Record<string, { parts?: any[]; ports?: any[]; connectors?: any[] }>;
                 };
-                const ibdParts = Array.isArray(ibd.parts) ? ibd.parts : [];
-                const ibdPorts = Array.isArray(ibd.ports) ? ibd.ports : [];
-                const ibdConnectors = Array.isArray(ibd.connectors) ? ibd.connectors : [];
-                const ibdRootCandidates = Array.isArray(ibd.rootCandidates) ? ibd.rootCandidates : [];
-                const rootViews = (ibd.rootViews && typeof ibd.rootViews === 'object') ? ibd.rootViews : {};
-                const availableRootsRaw = ibdRootCandidates.filter((name) => rootViews[name]);
-                const hasAnyLikelyInstance = availableRootsRaw.some((name) => isLikelyInstanceRoot(name));
-                const availableRoots = hasAnyLikelyInstance
-                    ? availableRootsRaw
-                        .filter((name) => isLikelyInstanceRoot(name))
-                        .slice()
-                        .sort((a, b) => a.localeCompare(b))
-                    : availableRootsRaw;
-                const explicitSelection = (typeof data.selectedIbdRoot === 'string' && data.selectedIbdRoot.trim().length > 0)
-                    ? data.selectedIbdRoot
-                    : null;
-                const selectedRoot = explicitSelection && rootViews[explicitSelection]
-                    ? explicitSelection
-                    : (ibd.defaultRoot && availableRoots.includes(ibd.defaultRoot) && rootViews[ibd.defaultRoot]
-                        ? ibd.defaultRoot
-                        : (availableRoots[0] || null));
-                const selectedRootView = selectedRoot ? rootViews[selectedRoot] : null;
-                const selectedParts = Array.isArray(selectedRootView?.parts) ? selectedRootView.parts : ibdParts;
-                const selectedPorts = Array.isArray(selectedRootView?.ports) ? selectedRootView.ports : ibdPorts;
-                const selectedConnectors = Array.isArray(selectedRootView?.connectors) ? selectedRootView.connectors : ibdConnectors;
-                const ibdRootSummaries = availableRoots.map((name) => {
-                    const rootView = rootViews[name] || {};
-                    return {
-                        name,
-                        partCount: Array.isArray(rootView.parts) ? rootView.parts.length : 0,
-                        portCount: Array.isArray(rootView.ports) ? rootView.ports.length : 0,
-                        connectorCount: Array.isArray(rootView.connectors) ? rootView.connectors.length : 0,
-                    };
-                });
                 return {
                     ...data,
-                    elements: selectedParts,
-                    parts: selectedParts,
-                    ports: selectedPorts,
-                    connectors: selectedConnectors,
-                    ibdRootCandidates: availableRoots,
-                    ibdRootSummaries,
-                    selectedIbdRoot: selectedRoot,
-                };
-            }
-
-            const serverScene = data.diagramInterconnection?.scene?.interconnectionView;
-            if (serverScene && typeof serverScene === 'object') {
-                const rootCandidates = Array.isArray(serverScene.rootCandidates) ? serverScene.rootCandidates : [];
-                const explicitSelection = (typeof data.selectedIbdRoot === 'string' && data.selectedIbdRoot.trim().length > 0)
-                    ? data.selectedIbdRoot
-                    : null;
-                const selectedRoot = explicitSelection && serverScene.roots?.[explicitSelection]
-                    ? explicitSelection
-                    : (serverScene.selectedRoot && serverScene.roots?.[serverScene.selectedRoot]
-                        ? serverScene.selectedRoot
-                        : (serverScene.defaultRoot && serverScene.roots?.[serverScene.defaultRoot]
-                            ? serverScene.defaultRoot
-                            : (rootCandidates.find((name: string) => serverScene.roots?.[name]) || null)));
-                const selectedScene = selectedRoot ? serverScene.roots?.[selectedRoot] : null;
-                return {
-                    ...data,
-                    parts: (selectedScene?.parts || []).map((part: any) => ({
-                        id: part.id,
-                        name: part.name,
-                        qualifiedName: part.qualifiedName,
-                        containerId: part.containerId,
-                        type: part.type,
-                        attributes: part.attributes || {},
-                    })),
-                    ports: (selectedScene?.ports || []).map((port: any) => ({
-                        id: port.id,
-                        name: port.name,
-                        parentId: port.parentId,
-                        direction: port.direction,
-                        portType: port.portType,
-                        portSide: port.portSide,
-                    })),
-                    connectors: (selectedScene?.connectors || []).map((connector: any) => ({
-                        id: connector.id,
-                        source: connector.source,
-                        target: connector.target,
-                        sourceId: connector.sourceId,
-                        targetId: connector.targetId,
-                        type: connector.type,
-                    })),
-                    ibdRootCandidates: rootCandidates,
-                    ibdRootSummaries: rootCandidates.map((name: string) => ({
-                        name,
-                        partCount: serverScene.roots?.[name]?.parts?.length || 0,
-                        portCount: serverScene.roots?.[name]?.ports?.length || 0,
-                        connectorCount: serverScene.roots?.[name]?.connectors?.length || 0,
-                    })),
-                    selectedIbdRoot: selectedRoot,
+                    elements: Array.isArray(ibd.parts) ? ibd.parts : [],
+                    parts: Array.isArray(ibd.parts) ? ibd.parts : [],
+                    ports: Array.isArray(ibd.ports) ? ibd.ports : [],
+                    connectors: Array.isArray(ibd.connectors) ? ibd.connectors : [],
                 };
             }
 
@@ -215,8 +120,6 @@ export function prepareDataForView(data: any, view: string): any {
                 parts: [],
                 ports: [],
                 connectors: [],
-                ibdRootCandidates: [],
-                selectedIbdRoot: null,
             };
         }
 

@@ -128,35 +128,20 @@ function routesShareEndpoint(a: ParsedRoute, b: ParsedRoute): boolean {
 }
 
 describe("Interconnection Visualization", () => {
-    it("orders and filters interconnection roots with instance-first semantics", () => {
+    it("uses the backend-provided interconnection payload as-is", () => {
         const prepared = prepareDataForView(
             {
                 ibd: {
-                    parts: [],
-                    ports: [],
-                    connectors: [],
-                    rootCandidates: ["Laptop", "droneInstance", "CameraRig", "timerInstance"],
-                    defaultRoot: "Laptop",
-                    rootViews: {
-                        Laptop: { parts: [], ports: [], connectors: [] },
-                        droneInstance: { parts: [], ports: [], connectors: [] },
-                        CameraRig: { parts: [], ports: [], connectors: [] },
-                        timerInstance: { parts: [], ports: [], connectors: [] },
-                    },
+                    parts: [{ id: "Drone", name: "Drone" }],
+                    ports: [{ id: "telemetryOut", name: "telemetryOut", parentId: "Drone" }],
+                    connectors: [{ id: "conn1", sourceId: "telemetryOut", targetId: "telemetryIn", type: "connection" }],
                 },
             },
             "interconnection-view"
         );
-        assert.deepStrictEqual(
-            prepared.ibdRootCandidates,
-            ["droneInstance", "timerInstance"],
-            "when instance-like roots exist, non-instance roots should be filtered out"
-        );
-        assert.strictEqual(
-            prepared.selectedIbdRoot,
-            "droneInstance",
-            "selected root should resolve to deterministic first instance root"
-        );
+        assert.strictEqual(prepared.parts.length, 1);
+        assert.strictEqual(prepared.ports.length, 1);
+        assert.strictEqual(prepared.connectors.length, 1);
     });
 
     before(async function () {

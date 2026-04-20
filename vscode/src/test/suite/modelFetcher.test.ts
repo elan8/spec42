@@ -1,17 +1,23 @@
 import * as assert from "assert";
-import * as vscode from "vscode";
 import { fetchModelData } from "../../visualization/modelFetcher";
-import type { SysMLDiagramResult, SysMLModelResult } from "../../providers/sysmlModelTypes";
+import type { SysMLVisualizationResult } from "../../providers/sysmlModelTypes";
 
-function createModelResult(): SysMLModelResult {
+function createVisualizationResult(): SysMLVisualizationResult {
   return {
     version: 1,
+    view: "general-view",
+    workspaceRootUri: "file:///workspace",
+    packageCandidates: [
+      { id: "AnalysisPackage", name: "AnalysisPackage" },
+      { id: "FunctionsPackage", name: "FunctionsPackage" },
+    ],
     graph: {
       nodes: [
         {
-          id: "Drone",
+          id: "AnalysisPackage",
           type: "package",
-          name: "Drone",
+          name: "AnalysisPackage",
+          uri: "file:///workspace/Analysis/AnalysisPackage.sysml",
           range: {
             start: { line: 0, character: 0 },
             end: { line: 3, character: 0 },
@@ -25,200 +31,114 @@ function createModelResult(): SysMLModelResult {
       nodes: [],
       edges: [],
     },
-    activityDiagrams: [
-      {
-        name: "MissionFlow",
-        actions: [],
-        flows: [],
-        decisions: [],
-        states: [],
-        range: {
-          start: { line: 0, character: 0 },
-          end: { line: 0, character: 0 },
+    workspaceModel: {
+      semantic: [
+        {
+          id: "AnalysisPackage",
+          type: "package",
+          name: "AnalysisPackage",
+          uri: "file:///workspace/Analysis/AnalysisPackage.sysml",
+          range: {
+            start: { line: 0, character: 0 },
+            end: { line: 1, character: 0 },
+          },
+          children: [],
+          attributes: {},
+          relationships: [],
         },
+      ],
+      files: [],
+      summary: {
+        scannedFiles: 2,
+        loadedFiles: 2,
+        failures: 0,
+        truncated: false,
       },
-    ],
+    },
     stats: {
       totalElements: 1,
-      resolvedElements: 1,
+      resolvedElements: 0,
       unresolvedElements: 0,
-      parseTimeMs: 1,
+      parseTimeMs: 0,
       modelBuildTimeMs: 1,
-      parseCached: true,
+      parseCached: false,
     },
   };
 }
 
-function createDiagramResult(): SysMLDiagramResult {
-  return {
-    version: 1,
-    kind: "general-view",
-    sourceUri: "file:///drone.sysml",
-    scene: {
-      generalView: {
-        nodes: [],
-        edges: [],
-        bounds: { x: 0, y: 0, width: 1, height: 1 },
-      },
-    },
-  } as unknown as SysMLDiagramResult;
-}
-
 describe("fetchModelData", () => {
-  it("omits activityDiagrams scope for general view requests", async () => {
-    const requestedScopes: string[][] = [];
-    const requestedDiagrams: string[] = [];
+  it("uses the workspace-only visualization endpoint", async () => {
+    const requests: Array<{ workspaceRootUri: string; view: string; packageFilter?: { kind: string; package?: string } }> = [];
     const provider = {
-      getModel: async (_uri: string, scopes?: string[]) => {
-        requestedScopes.push(scopes ?? []);
-        return createModelResult();
-      },
-      getDiagram: async (_uri: string, kind: string) => {
-        requestedDiagrams.push(kind);
-        return createDiagramResult();
+      getVisualization: async (workspaceRootUri: string, view: string, packageFilter?: { kind: string; package?: string }) => {
+        requests.push({ workspaceRootUri, view, packageFilter });
+        return createVisualizationResult();
       },
     } as any;
 
     await fetchModelData({
-      documentUri: "file:///drone.sysml",
-      fileUris: [],
+      workspaceRootUri: "file:///workspace",
       lspModelProvider: provider,
       currentView: "general-view",
     });
 
-    assert.deepStrictEqual(requestedScopes, [["graph", "stats"]]);
-    assert.deepStrictEqual(requestedDiagrams, ["general-view"]);
+    assert.deepStrictEqual(requests, [
+      {
+        workspaceRootUri: "file:///workspace",
+        view: "general-view",
+        packageFilter: { kind: "all" },
+      },
+    ]);
   });
 
-  it("includes activityDiagrams scope for action flow view requests", async () => {
-    const requestedScopes: string[][] = [];
-    const requestedDiagrams: string[] = [];
+  it("passes a package filter when one package is selected", async () => {
+    const requests: Array<{ workspaceRootUri: string; view: string; packageFilter?: { kind: string; package?: string } }> = [];
     const provider = {
-      getModel: async (_uri: string, scopes?: string[]) => {
-        requestedScopes.push(scopes ?? []);
-        return createModelResult();
+      getVisualization: async (workspaceRootUri: string, view: string, packageFilter?: { kind: string; package?: string }) => {
+        requests.push({ workspaceRootUri, view, packageFilter });
+        return {
+          ...createVisualizationResult(),
+          selectedPackage: "AnalysisPackage",
+          selectedPackageName: "AnalysisPackage",
+        };
       },
-      getDiagram: async (_uri: string, kind: string) => {
-        requestedDiagrams.push(kind);
-        return createDiagramResult();
-      },
-    } as any;
-
-    await fetchModelData({
-      documentUri: "file:///drone.sysml",
-      fileUris: [],
-      lspModelProvider: provider,
-      currentView: "action-flow-view",
-    });
-
-    assert.deepStrictEqual(requestedScopes, [["graph", "activityDiagrams", "stats"]]);
-    assert.deepStrictEqual(requestedDiagrams, []);
-  });
-
-  it("includes ibd scope for interconnection view requests", async () => {
-    const requestedScopes: string[][] = [];
-    const requestedDiagrams: string[] = [];
-    const provider = {
-      getModel: async (_uri: string, scopes?: string[]) => {
-        requestedScopes.push(scopes ?? []);
-        return createModelResult();
-      },
-      getDiagram: async (_uri: string, kind: string) => {
-        requestedDiagrams.push(kind);
-        return createDiagramResult();
-      },
-    } as any;
-
-    await fetchModelData({
-      documentUri: "file:///drone.sysml",
-      fileUris: [],
-      lspModelProvider: provider,
-      currentView: "interconnection-view",
-    });
-
-    assert.deepStrictEqual(requestedScopes, [["graph", "ibd", "stats"]]);
-    assert.deepStrictEqual(requestedDiagrams, ["interconnection-view"]);
-  });
-
-  it("uses a workspace anchor URI for workspace visualization model requests", async () => {
-    const requestedUris: string[] = [];
-    const provider = {
-      getModel: async (uri: string, _scopes?: string[]) => {
-        requestedUris.push(uri);
-        return createModelResult();
-      },
-      getDiagram: async (_uri: string, _kind: string) => createDiagramResult(),
-    } as any;
-
-    await fetchModelData({
-      documentUri: "file:///c%3A/Git/apollo-11-sysml-v2/Analysis/AnalysisPackage.sysml",
-      fileUris: [
-        vscode.Uri.file("C:/Git/apollo-11-sysml-v2/Analysis/AnalysisPackage.sysml"),
-        vscode.Uri.file("C:/Git/apollo-11-sysml-v2/Function/FunctionsPackage.sysml"),
-      ],
-      lspModelProvider: provider,
-      currentView: "general-view",
-    });
-
-    assert.deepStrictEqual(requestedUris, ["file:///c%3A/Git/apollo-11-sysml-v2"]);
-  });
-
-  it("includes workspace semantic roots in the update message when available", async () => {
-    const provider = {
-      getModel: async (_uri: string, _scopes?: string[]) => ({
-        ...createModelResult(),
-        workspaceModel: {
-          semantic: [
-            {
-              id: "AnalysisPackage",
-              type: "package",
-              name: "AnalysisPackage",
-              range: {
-                start: { line: 0, character: 0 },
-                end: { line: 1, character: 0 },
-              },
-              children: [],
-              attributes: {},
-              relationships: [],
-            },
-            {
-              id: "FunctionsPackage",
-              type: "package",
-              name: "FunctionsPackage",
-              range: {
-                start: { line: 0, character: 0 },
-                end: { line: 1, character: 0 },
-              },
-              children: [],
-              attributes: {},
-              relationships: [],
-            },
-          ],
-          files: [],
-          summary: {
-            scannedFiles: 2,
-            loadedFiles: 2,
-            failures: 0,
-            truncated: false,
-          },
-        },
-      }),
-      getDiagram: async (_uri: string, _kind: string) => createDiagramResult(),
     } as any;
 
     const result = await fetchModelData({
-      documentUri: "file:///c%3A/Git/apollo-11-sysml-v2/Analysis/AnalysisPackage.sysml",
-      fileUris: [
-        vscode.Uri.file("C:/Git/apollo-11-sysml-v2/Analysis/AnalysisPackage.sysml"),
-        vscode.Uri.file("C:/Git/apollo-11-sysml-v2/Function/FunctionsPackage.sysml"),
-      ],
+      workspaceRootUri: "file:///workspace",
+      lspModelProvider: provider,
+      currentView: "interconnection-view",
+      selectedPackage: "AnalysisPackage",
+    });
+
+    assert.deepStrictEqual(requests, [
+      {
+        workspaceRootUri: "file:///workspace",
+        view: "interconnection-view",
+        packageFilter: { kind: "package", package: "AnalysisPackage" },
+      },
+    ]);
+    assert.strictEqual(result?.selectedPackageName, "AnalysisPackage");
+  });
+
+  it("includes backend package candidates and semantic roots in the update message", async () => {
+    const provider = {
+      getVisualization: async () => createVisualizationResult(),
+    } as any;
+
+    const result = await fetchModelData({
+      workspaceRootUri: "file:///workspace",
       lspModelProvider: provider,
       currentView: "general-view",
     });
 
     assert.deepStrictEqual(
-      result?.elements?.map((element) => element.name),
+      result?.packageCandidates?.map((candidate) => candidate.name),
       ["AnalysisPackage", "FunctionsPackage"]
+    );
+    assert.deepStrictEqual(
+      result?.elements?.map((element) => element.name),
+      ["AnalysisPackage"]
     );
   });
 });
