@@ -22,9 +22,8 @@ use crate::host::config::Spec42Config;
 use crate::views::dto;
 use crate::workspace::ServerState;
 use custom::{
-    mark_sysml_model_parse_cached, sysml_clear_cache_result, sysml_diagram_result,
-    sysml_feature_inspector_result, sysml_model_result, sysml_server_stats_result,
-    sysml_visualization_result,
+    mark_sysml_model_parse_cached, sysml_clear_cache_result, sysml_feature_inspector_result,
+    sysml_model_result, sysml_server_stats_result, sysml_visualization_result,
 };
 
 struct Backend {
@@ -383,11 +382,6 @@ impl Backend {
         Ok(response)
     }
 
-    async fn sysml_diagram(&self, params: serde_json::Value) -> Result<dto::SysmlDiagramResultDto> {
-        let state = self.state.read().await;
-        sysml_diagram_result(&self.client, &state, &self.config, params).await
-    }
-
     async fn sysml_visualization(
         &self,
         params: serde_json::Value,
@@ -519,7 +513,6 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
         server_name: server_name.clone(),
     })
     .custom_method("sysml/model", Backend::sysml_model)
-    .custom_method("sysml/diagram", Backend::sysml_diagram)
     .custom_method("sysml/visualization", Backend::sysml_visualization)
     .custom_method("sysml/featureInspector", Backend::sysml_feature_inspector)
     .custom_method("sysml/serverStats", Backend::sysml_server_stats)

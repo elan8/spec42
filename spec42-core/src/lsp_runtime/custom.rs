@@ -219,48 +219,6 @@ pub(crate) fn sysml_feature_inspector_result(
     ))
 }
 
-pub(crate) async fn sysml_diagram_result(
-    client: &Client,
-    state: &ServerState,
-    _config: &Spec42Config,
-    params: serde_json::Value,
-) -> Result<dto::SysmlDiagramResultDto> {
-    let (uri, kind, options) = crate::views::parse_sysml_diagram_params(&params)?;
-    let build_start = Instant::now();
-    let entry = match state.index.get(&uri) {
-        Some(e) => e,
-        None => {
-            client
-                .log_message(
-                    MessageType::WARNING,
-                    format!(
-                        "sysml/diagram: document not in index. request_uri={}",
-                        uri.as_str(),
-                    ),
-                )
-                .await;
-            return Ok(crate::views::empty_diagram_response(
-                &kind,
-                &uri,
-                build_start,
-            ));
-        }
-    };
-    let response = crate::build_sysml_diagram_response(
-        &entry.content,
-        entry.parsed.as_ref(),
-        &state.semantic_graph,
-        &uri,
-        &state.library_paths,
-        &kind,
-        &options,
-        build_start,
-        client,
-    )
-    .await;
-    Ok(response)
-}
-
 pub(crate) fn sysml_visualization_result(
     state: &ServerState,
     params: serde_json::Value,
