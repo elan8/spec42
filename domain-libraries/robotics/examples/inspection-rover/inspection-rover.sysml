@@ -4,6 +4,14 @@ package InspectionRoverExample {
     import RobotStructure::*;
     import Ros2Overlay::*;
 
+    // Runtime responsibility map:
+    // - operator_console_node: publishes mission GPS targets from user/operator intent.
+    // - mission_supervisor_node: translates GPS mission targets into map-frame navigation goals
+    //   and executes inspection workflow once goal arrival is confirmed.
+    // - localization_node: estimates current robot pose and publishes odometry.
+    // - navigation_node: plans/controls toward goal pose and emits velocity + goal reached events.
+    // - motion_controller_node: converts velocity commands into motor-level actuation.
+
     part def InspectionRover :> RobotPlatform {
         attribute :>> name = "inspection_rover";
         attribute :>> criticality = high;
@@ -16,12 +24,19 @@ package InspectionRoverExample {
     }
 
     part def RoverRuntimeArchitecture {
+        part operatorRuntime : OperatorConsoleNode;
+        part missionRuntime : MissionSupervisorNode;
         part lidarRuntime : LidarNode;
         part localizationRuntime : LocalizationNode;
+        part navigationRuntime : NavigationNode;
         part motionRuntime : MotionControllerNode;
 
+        connect operatorRuntime.gpsTargetPubPort to missionRuntime.gpsTargetSubPort;
+        connect missionRuntime.goalPubPort to navigationRuntime.goalSubPort;
         connect lidarRuntime.scanPubPort to localizationRuntime.scanSubPort;
-        connect localizationRuntime.cmdVelPubPort to motionRuntime.cmdVelSubPort;
+        connect localizationRuntime.odomPubPort to navigationRuntime.odomSubPort;
+        connect navigationRuntime.cmdVelPubPort to motionRuntime.cmdVelSubPort;
+        connect navigationRuntime.goalReachedPubPort to missionRuntime.inspectTriggerSubPort;
     }
 
     part def RoverRuntimeNode :> RosLifecycleNode {
@@ -61,11 +76,98 @@ package InspectionRoverExample {
             attribute :>> qosProfileRef = "sensor_data";
         }
 
+        port odomPubPort : RosPublishPort {
+            attribute :>> name = "odom_pub";
+            attribute :>> ownerNodeRef = "localization_node";
+            attribute :>> topicRef = "/odom";
+            attribute :>> messageTypeRef = "nav_msgs/Odometry";
+            attribute :>> qosProfileRef = "sensor_data";
+        }
+    }
+
+    part def MissionSupervisorNode :> RoverCoreRuntimeNode {
+        attribute :>> name = "mission_supervisor_node";
+        attribute :>> executableName = "mission_supervisor_node";
+
+        port gpsTargetSubPort : RosSubscribePort {
+            attribute :>> name = "gps_target_sub";
+            attribute :>> ownerNodeRef = "mission_supervisor_node";
+            attribute :>> topicRef = "/mission_target_gps";
+            attribute :>> messageTypeRef = "sensor_msgs/NavSatFix";
+            attribute :>> qosProfileRef = "control_reliable";
+        }
+
+        port goalPubPort : RosPublishPort {
+            attribute :>> name = "goal_pub";
+            attribute :>> ownerNodeRef = "mission_supervisor_node";
+            attribute :>> topicRef = "/goal_pose";
+            attribute :>> messageTypeRef = "geometry_msgs/PoseStamped";
+            attribute :>> qosProfileRef = "control_reliable";
+        }
+
+        port inspectTriggerSubPort : RosSubscribePort {
+            attribute :>> name = "inspect_trigger_sub";
+            attribute :>> ownerNodeRef = "mission_supervisor_node";
+            attribute :>> topicRef = "/goal_reached";
+            attribute :>> messageTypeRef = "std_msgs/Bool";
+            attribute :>> qosProfileRef = "control_reliable";
+        }
+
+        port inspectionCompletePubPort : RosPublishPort {
+            attribute :>> name = "inspection_complete_pub";
+            attribute :>> ownerNodeRef = "mission_supervisor_node";
+            attribute :>> topicRef = "/inspection_complete";
+            attribute :>> messageTypeRef = "std_msgs/Bool";
+            attribute :>> qosProfileRef = "control_reliable";
+        }
+    }
+
+    part def OperatorConsoleNode :> RoverCoreRuntimeNode {
+        attribute :>> name = "operator_console_node";
+        attribute :>> executableName = "operator_console_node";
+
+        port gpsTargetPubPort : RosPublishPort {
+            attribute :>> name = "gps_target_pub";
+            attribute :>> ownerNodeRef = "operator_console_node";
+            attribute :>> topicRef = "/mission_target_gps";
+            attribute :>> messageTypeRef = "sensor_msgs/NavSatFix";
+            attribute :>> qosProfileRef = "control_reliable";
+        }
+    }
+
+    part def NavigationNode :> RoverRuntimeNode {
+        attribute :>> name = "navigation_node";
+        attribute :>> executableName = "navigation_node";
+
+        port odomSubPort : RosSubscribePort {
+            attribute :>> name = "odom_sub";
+            attribute :>> ownerNodeRef = "navigation_node";
+            attribute :>> topicRef = "/odom";
+            attribute :>> messageTypeRef = "nav_msgs/Odometry";
+            attribute :>> qosProfileRef = "sensor_data";
+        }
+
+        port goalSubPort : RosSubscribePort {
+            attribute :>> name = "goal_sub";
+            attribute :>> ownerNodeRef = "navigation_node";
+            attribute :>> topicRef = "/goal_pose";
+            attribute :>> messageTypeRef = "geometry_msgs/PoseStamped";
+            attribute :>> qosProfileRef = "control_reliable";
+        }
+
         port cmdVelPubPort : RosPublishPort {
             attribute :>> name = "cmd_vel_pub";
-            attribute :>> ownerNodeRef = "localization_node";
+            attribute :>> ownerNodeRef = "navigation_node";
             attribute :>> topicRef = "/cmd_vel";
             attribute :>> messageTypeRef = "geometry_msgs/Twist";
+            attribute :>> qosProfileRef = "control_reliable";
+        }
+
+        port goalReachedPubPort : RosPublishPort {
+            attribute :>> name = "goal_reached_pub";
+            attribute :>> ownerNodeRef = "navigation_node";
+            attribute :>> topicRef = "/goal_reached";
+            attribute :>> messageTypeRef = "std_msgs/Bool";
             attribute :>> qosProfileRef = "control_reliable";
         }
     }
@@ -91,6 +193,22 @@ package InspectionRoverExample {
         attribute :>> name = "geometry_msgs/Twist";
     }
 
+    item def OdomMessage :> RosMessageType {
+        attribute :>> name = "nav_msgs/Odometry";
+    }
+
+    item def GoalPoseMessage :> RosMessageType {
+        attribute :>> name = "geometry_msgs/PoseStamped";
+    }
+
+    item def GpsTargetMessage :> RosMessageType {
+        attribute :>> name = "sensor_msgs/NavSatFix";
+    }
+
+    item def BoolMessage :> RosMessageType {
+        attribute :>> name = "std_msgs/Bool";
+    }
+
     item def SetRuntimeModeService :> RosServiceType {
         attribute :>> name = "inspection_msgs/SetRuntimeMode";
     }
@@ -107,6 +225,31 @@ package InspectionRoverExample {
     part def CmdVelTopic :> RosTopic {
         attribute :>> name = "/cmd_vel";
         attribute :>> messageTypeRef = "geometry_msgs/Twist";
+    }
+
+    part def OdomTopic :> RosTopic {
+        attribute :>> name = "/odom";
+        attribute :>> messageTypeRef = "nav_msgs/Odometry";
+    }
+
+    part def GoalPoseTopic :> RosTopic {
+        attribute :>> name = "/goal_pose";
+        attribute :>> messageTypeRef = "geometry_msgs/PoseStamped";
+    }
+
+    part def GpsTargetTopic :> RosTopic {
+        attribute :>> name = "/mission_target_gps";
+        attribute :>> messageTypeRef = "sensor_msgs/NavSatFix";
+    }
+
+    part def GoalReachedTopic :> RosTopic {
+        attribute :>> name = "/goal_reached";
+        attribute :>> messageTypeRef = "std_msgs/Bool";
+    }
+
+    part def InspectionCompleteTopic :> RosTopic {
+        attribute :>> name = "/inspection_complete";
+        attribute :>> messageTypeRef = "std_msgs/Bool";
     }
 
     part def SensorQos :> RosQosProfile {
@@ -137,9 +280,81 @@ package InspectionRoverExample {
 
     part def CmdVelPublisher :> RosPublisher {
         attribute :>> name = "navigation_cmd_vel_pub";
-        attribute :>> publisherNode = "localization_node";
+        attribute :>> publisherNode = "navigation_node";
         attribute :>> topicRef = "/cmd_vel";
         attribute :>> messageTypeRef = "geometry_msgs/Twist";
+        attribute :>> qosProfileRef = "control_reliable";
+    }
+
+    part def OdomPublisher :> RosPublisher {
+        attribute :>> name = "localization_odom_pub";
+        attribute :>> publisherNode = "localization_node";
+        attribute :>> topicRef = "/odom";
+        attribute :>> messageTypeRef = "nav_msgs/Odometry";
+        attribute :>> qosProfileRef = "sensor_data";
+    }
+
+    part def OdomSubscriber :> RosSubscriber {
+        attribute :>> name = "navigation_odom_sub";
+        attribute :>> subscriberNode = "navigation_node";
+        attribute :>> topicRef = "/odom";
+        attribute :>> messageTypeRef = "nav_msgs/Odometry";
+        attribute :>> qosProfileRef = "sensor_data";
+    }
+
+    part def GoalPoseSubscriber :> RosSubscriber {
+        attribute :>> name = "navigation_goal_sub";
+        attribute :>> subscriberNode = "navigation_node";
+        attribute :>> topicRef = "/goal_pose";
+        attribute :>> messageTypeRef = "geometry_msgs/PoseStamped";
+        attribute :>> qosProfileRef = "control_reliable";
+    }
+
+    part def GoalPosePublisher :> RosPublisher {
+        attribute :>> name = "mission_goal_pub";
+        attribute :>> publisherNode = "mission_supervisor_node";
+        attribute :>> topicRef = "/goal_pose";
+        attribute :>> messageTypeRef = "geometry_msgs/PoseStamped";
+        attribute :>> qosProfileRef = "control_reliable";
+    }
+
+    part def GpsTargetPublisher :> RosPublisher {
+        attribute :>> name = "operator_gps_target_pub";
+        attribute :>> publisherNode = "operator_console_node";
+        attribute :>> topicRef = "/mission_target_gps";
+        attribute :>> messageTypeRef = "sensor_msgs/NavSatFix";
+        attribute :>> qosProfileRef = "control_reliable";
+    }
+
+    part def GpsTargetSubscriber :> RosSubscriber {
+        attribute :>> name = "mission_gps_target_sub";
+        attribute :>> subscriberNode = "mission_supervisor_node";
+        attribute :>> topicRef = "/mission_target_gps";
+        attribute :>> messageTypeRef = "sensor_msgs/NavSatFix";
+        attribute :>> qosProfileRef = "control_reliable";
+    }
+
+    part def GoalReachedPublisher :> RosPublisher {
+        attribute :>> name = "navigation_goal_reached_pub";
+        attribute :>> publisherNode = "navigation_node";
+        attribute :>> topicRef = "/goal_reached";
+        attribute :>> messageTypeRef = "std_msgs/Bool";
+        attribute :>> qosProfileRef = "control_reliable";
+    }
+
+    part def GoalReachedSubscriber :> RosSubscriber {
+        attribute :>> name = "mission_goal_reached_sub";
+        attribute :>> subscriberNode = "mission_supervisor_node";
+        attribute :>> topicRef = "/goal_reached";
+        attribute :>> messageTypeRef = "std_msgs/Bool";
+        attribute :>> qosProfileRef = "control_reliable";
+    }
+
+    part def InspectionCompletePublisher :> RosPublisher {
+        attribute :>> name = "mission_inspection_complete_pub";
+        attribute :>> publisherNode = "mission_supervisor_node";
+        attribute :>> topicRef = "/inspection_complete";
+        attribute :>> messageTypeRef = "std_msgs/Bool";
         attribute :>> qosProfileRef = "control_reliable";
     }
 
@@ -167,6 +382,22 @@ package InspectionRoverExample {
         attribute :>> namespaceRef = "/inspection_rover";
         attribute :>> parameterType = bool;
         attribute :>> defaultBool = false;
+    }
+
+    part def GoalToleranceParam :> RosParameter {
+        attribute :>> name = "goal_tolerance_m";
+        attribute :>> ownerNodeRef = "navigation_node";
+        attribute :>> namespaceRef = "/inspection_rover/navigation";
+        attribute :>> parameterType = float;
+        attribute :>> defaultFloat = 0.25;
+    }
+
+    part def MissionGoalFrameParam :> RosParameter {
+        attribute :>> name = "goal_frame";
+        attribute :>> ownerNodeRef = "mission_supervisor_node";
+        attribute :>> namespaceRef = "/inspection_rover/mission";
+        attribute :>> parameterType = text;
+        attribute :>> defaultText = "map";
     }
 
     part def OdomFrame :> RosTransformFrame {
@@ -215,11 +446,32 @@ package InspectionRoverExample {
         attribute :>> nodeRef = "motion_controller_node";
     }
 
+    part def NavigationDeployment :> RoverDeploymentUnit {
+        attribute :>> name = "navigation_deployment";
+        attribute :>> executableName = "navigation_node";
+        attribute :>> nodeRef = "navigation_node";
+    }
+
+    part def MissionSupervisorDeployment :> RoverDeploymentUnit {
+        attribute :>> name = "mission_supervisor_deployment";
+        attribute :>> executableName = "mission_supervisor_node";
+        attribute :>> nodeRef = "mission_supervisor_node";
+    }
+
+    part def OperatorConsoleDeployment :> RoverDeploymentUnit {
+        attribute :>> name = "operator_console_deployment";
+        attribute :>> executableName = "operator_console_node";
+        attribute :>> nodeRef = "operator_console_node";
+    }
+
     part def RoverDeployment {
         part roverPackage : RoverPackage;
         part roverLaunch : RoverLaunch;
+        part operatorDeploy : OperatorConsoleDeployment;
+        part missionDeploy : MissionSupervisorDeployment;
         part lidarDeploy : LidarDeployment;
         part localizationDeploy : LocalizationDeployment;
+        part navigationDeploy : NavigationDeployment;
         part motionDeploy : MotionControllerDeployment;
     }
 
