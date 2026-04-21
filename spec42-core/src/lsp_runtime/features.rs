@@ -12,7 +12,7 @@ use crate::language::{
     suggest_manage_custom_libraries_quick_fix,
     suggest_wrap_in_package, sysml_keywords, word_at_position,
 };
-use crate::semantic_model;
+use crate::semantic_model::{self, ResolveResult};
 use crate::semantic_tokens::{ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range};
 use crate::workspace::ServerState;
 
@@ -40,6 +40,91 @@ const TYPE_LOOKUP_KINDS: &[&str] = &[
     "concern def",
     "kermlDecl",
 ];
+
+fn resolve_hover_type_reference_target<'a>(
+    state: &'a ServerState,
+    node: &crate::semantic_model::SemanticNode,
+    word: &str,
+    lookup_name: &str,
+) -> Option<&'a crate::semantic_model::SemanticNode> {
+    let mut candidates = Vec::<String>::new();
+    let mut push_candidate = |candidate: String| {
+        if !candidate.is_empty() && !candidates.iter().any(|existing| existing == &candidate) {
+            candidates.push(candidate);
+        }
+    };
+
+    push_candidate(word.to_string());
+    if lookup_name != word {
+        push_candidate(lookup_name.to_string());
+    }
+
+    if word.contains("::") {
+        for ancestor in state.semantic_graph.ancestors_of(node) {
+            push_candidate(format!("{}::{}", ancestor.id.qualified_name, word));
+        }
+    }
+
+    for candidate in candidates {
+        if let Some(target_id) = semantic_model::resolve_type_reference_targets(
+            &state.semantic_graph,
+            node,
+            &candidate,
+            TYPE_LOOKUP_KINDS,
+        )
+        .into_iter()
+        .next()
+        {
+            if let Some(target) = state.semantic_graph.get_node(&target_id) {
+                return Some(target);
+            }
+        }
+    }
+
+    None
+}
+
+fn resolve_hover_reference_target<'a>(
+    state: &'a ServerState,
+    uri: &Url,
+    pos: Position,
+    word: &str,
+) -> Option<&'a crate::semantic_model::SemanticNode> {
+    let context_node = state
+        .semantic_graph
+        .find_deepest_node_at_position(uri, pos)
+        .or_else(|| state.semantic_graph.nodes_for_uri(uri).into_iter().find(|n| n.name == word));
+
+    let Some(context_node) = context_node else {
+        return None;
+    };
+
+    let mut prefixes = Vec::<Option<String>>::new();
+    prefixes.push(Some(context_node.id.qualified_name.clone()));
+    if let Some(parent_id) = &context_node.parent_id {
+        prefixes.push(Some(parent_id.qualified_name.clone()));
+    }
+    for ancestor in state.semantic_graph.ancestors_of(context_node) {
+        prefixes.push(Some(ancestor.id.qualified_name.clone()));
+    }
+    prefixes.push(None);
+
+    for prefix in prefixes {
+        let resolved = semantic_model::resolve_expression_endpoint_strict(
+            &state.semantic_graph,
+            uri,
+            prefix.as_deref(),
+            word,
+        );
+        if let ResolveResult::Resolved(target_id) = resolved {
+            if let Some(target) = state.semantic_graph.get_node(&target_id) {
+                return Some(target);
+            }
+        }
+    }
+
+    None
+}
 
 pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Option<Hover>> {
     let started_at = Instant::now();
@@ -92,7 +177,7 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
         return Ok(response);
     }
 
-    if let Some(node) = state.semantic_graph.find_node_at_position(&uri_norm, pos) {
+    if let Some(node) = state.semantic_graph.find_deepest_node_at_position(&uri_norm, pos) {
         let target_match = state
             .semantic_graph
             .outgoing_typing_or_specializes_targets(node)
@@ -118,22 +203,15 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
             )
         };
         let markdown = if target_match.is_none() && word != node.name {
-            semantic_model::resolve_type_reference_targets(
-                &state.semantic_graph,
-                node,
-                &word,
-                TYPE_LOOKUP_KINDS,
-            )
-            .into_iter()
-            .find_map(|target_id| state.semantic_graph.get_node(&target_id))
-            .map(|target| {
-                semantic_model::hover_markdown_for_node(
-                    &state.semantic_graph,
-                    target,
-                    target.id.uri != uri_norm,
-                )
-            })
-            .unwrap_or(markdown)
+            resolve_hover_type_reference_target(state, node, &word, &lookup_name)
+                .map(|target| {
+                    semantic_model::hover_markdown_for_node(
+                        &state.semantic_graph,
+                        target,
+                        target.id.uri != uri_norm,
+                    )
+                })
+                .unwrap_or(markdown)
         } else {
             markdown
         };
@@ -155,6 +233,34 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
                 lookup_name = %lookup_name,
                 elapsed_ms,
                 "hover resolved via semantic graph"
+            );
+        }
+        return Ok(response);
+    }
+
+    if let Some(target) = resolve_hover_reference_target(state, &uri_norm, pos, &word) {
+        let response = Some(Hover {
+            contents: HoverContents::Markup(MarkupContent {
+                kind: MarkupKind::Markdown,
+                value: semantic_model::hover_markdown_for_node(
+                    &state.semantic_graph,
+                    target,
+                    target.id.uri != uri_norm,
+                ),
+            }),
+            range: Some(range),
+        });
+        let elapsed_ms = started_at.elapsed().as_millis();
+        if elapsed_ms >= 10 {
+            info!(
+                target: "spec42_core::lsp_runtime::features",
+                event = "feature:hover",
+                uri = %uri_norm,
+                line = pos.line,
+                character = pos.character,
+                lookup_name = %lookup_name,
+                elapsed_ms,
+                "hover resolved via context-aware reference lookup"
             );
         }
         return Ok(response);

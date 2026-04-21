@@ -11,7 +11,7 @@ use tower_lsp::lsp_types::Url;
 use crate::ast_util::span_to_range;
 use crate::graph::SemanticGraph;
 use crate::model::{NodeId, RelationshipKind};
-use crate::relationships::{add_edge_if_both_exist, type_ref_candidates};
+use crate::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists, type_ref_candidates};
 
 use super::expressions::expression_to_debug_string;
 use super::{add_node_and_recurse, qualified_name_for_node};
@@ -121,6 +121,36 @@ pub(super) fn walk_requirement_def_body(
     for element in elements {
         match &element.value {
             RequirementDefBodyElement::SubjectDecl(sd) => {
+                let name = sd.value.name.clone();
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    &name,
+                    "subject",
+                );
+                let mut attrs = HashMap::new();
+                attrs.insert(
+                    "subjectType".to_string(),
+                    serde_json::json!(sd.value.type_name.as_str()),
+                );
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "subject",
+                    name,
+                    span_to_range(&sd.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                add_typing_edge_if_exists(
+                    g,
+                    uri,
+                    &qualified,
+                    sd.value.type_name.as_str(),
+                    type_resolution_prefix,
+                );
                 let target = resolve_subject_type_target_qualified(
                     g,
                     uri,

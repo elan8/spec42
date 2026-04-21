@@ -48,6 +48,36 @@ pub(super) fn build_from_use_case_body(
                 );
             }
             UCBE::SubjectDecl(sd) => {
+                let name = sd.value.name.clone();
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    &name,
+                    "subject",
+                );
+                let mut attrs = HashMap::new();
+                attrs.insert(
+                    "subjectType".to_string(),
+                    serde_json::json!(sd.value.type_name.as_str()),
+                );
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "subject",
+                    name,
+                    span_to_range(&sd.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                add_typing_edge_if_exists(
+                    g,
+                    uri,
+                    &qualified,
+                    sd.value.type_name.as_str(),
+                    container_prefix,
+                );
                 let target = resolve_subject_type_target_qualified(
                     g,
                     uri,
