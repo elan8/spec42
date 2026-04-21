@@ -16,9 +16,9 @@ package SoftwareControlPlane {
         attribute key : Identifier;
     }
 
-    part def SecretItem specializes ConfigurationItem;
+    part def SecretItem :> ConfigurationItem;
 
-    part def ServiceDependencyLink specializes ServiceDependency;
+    part def ServiceDependencyLink :> ServiceDependency;
 
     part def RuntimeDependency {
         attribute dependencyName : Name;

@@ -14,9 +14,9 @@ package RobotControl {
         attribute controllerName : Name;
     }
 
-    part def TrajectoryController specializes Controller;
+    part def TrajectoryController :> Controller;
 
-    part def MotionCommand specializes ActuationCommand;
+    part def MotionCommand :> ActuationCommand;
 
     part def Setpoint {
         attribute setpointName : Name;

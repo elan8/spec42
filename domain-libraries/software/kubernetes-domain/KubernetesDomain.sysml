@@ -6,7 +6,7 @@ package KubernetesDomain {
     attribute def ReplicaCount;
     attribute def NamespaceName;
 
-    part def KubernetesCluster specializes DeploymentNode {
+    part def KubernetesCluster :> DeploymentNode {
         attribute clusterName : Name;
     }
 
@@ -14,11 +14,11 @@ package KubernetesDomain {
         attribute namespaceName : NamespaceName;
     }
 
-    part def KubernetesPod specializes ServiceInstance {
+    part def KubernetesPod :> ServiceInstance {
         attribute image : ImageName;
     }
 
-    part def KubernetesDeployment specializes DeployableComponent {
+    part def KubernetesDeployment :> DeployableComponent {
         attribute deploymentName : Name;
         attribute replicas : ReplicaCount;
         attribute image : ImageName;

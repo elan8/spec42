@@ -11,9 +11,9 @@ package OpenApiDomain {
         attribute specificationUri : UriString;
     }
 
-    part def OpenApiOperation specializes RestApiEndpoint {
+    part def OpenApiOperation :> RestApiEndpoint {
         attribute operationId : Identifier;
     }
 
-    item def OpenApiSchema specializes JsonPayload;
+    item def OpenApiSchema :> JsonPayload;
 }

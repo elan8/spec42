@@ -1,12 +1,12 @@
 package DistributedSystems {
     import SoftwareCore::*;
 
-    part def Service specializes DeployableComponent {
+    part def Service :> DeployableComponent {
         attribute serviceName : Name;
     }
 
-    part def ServiceInstance specializes Service;
-    part def Workload specializes DeployableComponent {
+    part def ServiceInstance :> Service;
+    part def Workload :> DeployableComponent {
         attribute workloadName : Name;
     }
     part def DomainBoundary {
@@ -16,9 +16,9 @@ package DistributedSystems {
         attribute dependencyName : Name;
     }
 
-    item def Event specializes MessageType;
-    item def Command specializes MessageType;
-    item def Query specializes MessageType;
+    item def Event :> MessageType;
+    item def Command :> MessageType;
+    item def Query :> MessageType;
 
     part def Topic {
         attribute topicName : Name;
@@ -29,9 +29,9 @@ package DistributedSystems {
         attribute channelName : Name;
     }
 
-    part def MessageBroker specializes DeployableComponent;
+    part def MessageBroker :> DeployableComponent;
 
-    part def DataStore specializes DeployableComponent {
+    part def DataStore :> DeployableComponent {
         attribute storeName : Name;
     }
 }

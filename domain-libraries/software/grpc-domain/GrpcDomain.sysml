@@ -5,17 +5,17 @@ package GrpcDomain {
 
     attribute def MethodName;
 
-    part def GrpcService specializes Service;
+    part def GrpcService :> Service;
 
     part def GrpcMethod {
         attribute methodName : MethodName;
     }
 
-    part def UnaryRpc specializes GrpcMethod;
-    part def ServerStreamingRpc specializes GrpcMethod;
-    part def ClientStreamingRpc specializes GrpcMethod;
-    part def BidirectionalStreamingRpc specializes GrpcMethod;
+    part def UnaryRpc :> GrpcMethod;
+    part def ServerStreamingRpc :> GrpcMethod;
+    part def ClientStreamingRpc :> GrpcMethod;
+    part def BidirectionalStreamingRpc :> GrpcMethod;
 
-    item def GrpcRequest specializes ProtobufMessage;
-    item def GrpcResponse specializes ProtobufMessage;
+    item def GrpcRequest :> ProtobufMessage;
+    item def GrpcResponse :> ProtobufMessage;
 }

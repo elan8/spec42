@@ -2,17 +2,17 @@ package MissingDeploymentExample {
     import SoftwareCore::*;
     import DistributedSystems::*;
 
-    interface def BillingApi specializes ApiInterface;
+    interface def BillingApi :> ApiInterface;
 
-    part def BillingService specializes Service {
+    part def BillingService :> Service {
         attribute serviceName = "billing";
     }
 
-    part def CustomerService specializes Service {
+    part def CustomerService :> Service {
         attribute serviceName = "customer";
     }
 
-    part def RuntimeNode specializes DeploymentNode {
+    part def RuntimeNode :> DeploymentNode {
         attribute nodeName = "runtime-a";
         attribute host = "runtime-a.internal";
     }

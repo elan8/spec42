@@ -3,20 +3,20 @@ package OrdersOpenApiExample {
     import SerializationDomain::*;
     import OpenApiDomain::*;
 
-    part def OrdersSpec specializes OpenApiSpecification {
+    part def OrdersSpec :> OpenApiSpecification {
         attribute specificationName = "orders-openapi";
         attribute specificationVersion = "3.1.0";
         attribute specificationUri = "https://api.example.com/orders/openapi.json";
     }
 
-    part def ListOrders specializes OpenApiOperation {
+    part def ListOrders :> OpenApiOperation {
         attribute protocol = "https";
         attribute path = "/orders";
         attribute port = "443";
         attribute operationId = "listOrders";
     }
 
-    item def OrderSchema specializes OpenApiSchema {
+    item def OrderSchema :> OpenApiSchema {
         attribute mediaType = "application/json";
         attribute schema = "#/components/schemas/Order";
     }

@@ -19,8 +19,8 @@ package RobotAutonomy {
         attribute plannerType : PlannerType;
     }
 
-    part def NavigationFunction specializes BehaviorModule;
-    part def LocalizationFunction specializes BehaviorModule;
+    part def NavigationFunction :> BehaviorModule;
+    part def LocalizationFunction :> BehaviorModule;
 
     part def DecisionPolicy {
         attribute policyName : Name;

@@ -18,7 +18,7 @@ package Ros2Overlay {
     attribute def DurabilityKind;
     attribute def HistoryDepth;
 
-    part def RosNode specializes RuntimeNode;
+    part def RosNode :> RuntimeNode;
 
     part def RosTopic {
         attribute topicName : TopicName;
@@ -61,7 +61,7 @@ package Ros2Overlay {
         attribute parameterName : ParameterName;
     }
 
-    part def RosLifecycleNode specializes RosNode;
+    part def RosLifecycleNode :> RosNode;
 
     item def RosMessageType {
         attribute messageName : Name;

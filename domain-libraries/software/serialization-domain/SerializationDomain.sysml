@@ -6,14 +6,14 @@ package SerializationDomain {
     attribute def SchemaReference;
     attribute def PackageName;
 
-    item def SerializedPayload specializes MessageType {
+    item def SerializedPayload :> MessageType {
         attribute mediaType : MediaType;
         attribute schema : SchemaReference;
     }
 
-    item def JsonPayload specializes SerializedPayload;
-    item def XmlPayload specializes SerializedPayload;
-    item def ProtobufMessage specializes SerializedPayload {
+    item def JsonPayload :> SerializedPayload;
+    item def XmlPayload :> SerializedPayload;
+    item def ProtobufMessage :> SerializedPayload {
         attribute packageName : PackageName;
     }
 }

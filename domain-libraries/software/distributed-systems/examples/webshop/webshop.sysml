@@ -4,42 +4,42 @@ package WebshopExample {
     import HttpDomain::*;
     import KubernetesDomain::*;
 
-    interface def OrdersApi specializes ApiInterface;
-    item def OrderCreated specializes Event;
+    interface def OrdersApi :> ApiInterface;
+    item def OrderCreated :> Event;
 
-    part def OrderService specializes HttpService {
+    part def OrderService :> HttpService {
         attribute serviceName = "orders";
     }
 
-    part def PaymentService specializes HttpService {
+    part def PaymentService :> HttpService {
         attribute serviceName = "payments";
     }
 
-    part def EventBus specializes MessageBroker;
+    part def EventBus :> MessageBroker;
 
-    part def Orders specializes Topic {
+    part def Orders :> Topic {
         attribute topicName = "orders.created";
     }
 
-    part def PublicOrdersApi specializes RestApiEndpoint {
+    part def PublicOrdersApi :> RestApiEndpoint {
         attribute protocol = "https";
         attribute path = "/orders";
         attribute port = "443";
     }
 
-    part def BackendCluster specializes KubernetesCluster {
+    part def BackendCluster :> KubernetesCluster {
         attribute clusterName = "webshop-cluster";
         attribute nodeName = "backend-a";
         attribute host = "backend-a.internal";
     }
 
-    part def OrdersDeployment specializes KubernetesDeployment {
+    part def OrdersDeployment :> KubernetesDeployment {
         attribute deploymentName = "orders";
         attribute replicas = "3";
         attribute image = "ghcr.io/example/orders:1.0.0";
     }
 
-    part def PaymentsDeployment specializes KubernetesDeployment {
+    part def PaymentsDeployment :> KubernetesDeployment {
         attribute deploymentName = "payments";
         attribute replicas = "2";
         attribute image = "ghcr.io/example/payments:1.0.0";

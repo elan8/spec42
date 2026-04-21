@@ -10,7 +10,7 @@ package EuCyberResilienceOverlay {
     attribute def MonitoringCadence;
     attribute def ProductLifetime;
 
-    part def ProductWithDigitalElements specializes SoftwarePackage {
+    part def ProductWithDigitalElements :> SoftwarePackage {
         attribute productName : Name;
     }
 
@@ -19,7 +19,7 @@ package EuCyberResilienceOverlay {
         attribute obligationType : ObligationType;
     }
 
-    part def EssentialRequirement specializes ControlRequirement {
+    part def EssentialRequirement :> ControlRequirement {
         attribute requirementClass : RequirementClass;
     }
 
@@ -28,11 +28,11 @@ package EuCyberResilienceOverlay {
         attribute assessmentPath : AssessmentPath;
     }
 
-    part def TechnicalDocumentation specializes EvidenceArtifact {
+    part def TechnicalDocumentation :> EvidenceArtifact {
         attribute documentName : Name;
     }
 
-    part def DeclarationOfConformity specializes EvidenceArtifact {
+    part def DeclarationOfConformity :> EvidenceArtifact {
         attribute declarationName : Name;
     }
 
@@ -41,9 +41,9 @@ package EuCyberResilienceOverlay {
         attribute cadence : MonitoringCadence;
     }
 
-    part def VulnerabilityDisclosureObligation specializes ReportingObligation;
+    part def VulnerabilityDisclosureObligation :> ReportingObligation;
 
-    part def IncidentReportingDeadline specializes ReportingObligation;
+    part def IncidentReportingDeadline :> ReportingObligation;
 
     part def SupportedProductLifetime {
         attribute lifetime : ProductLifetime;

@@ -12,22 +12,22 @@ package SoftwareCore {
     attribute def CriticalityLevel;
 
     part def SoftwareComponent;
-    part def DeployableComponent specializes SoftwareComponent;
-    part def SoftwareModule specializes SoftwareComponent {
+    part def DeployableComponent :> SoftwareComponent;
+    part def SoftwareModule :> SoftwareComponent {
         attribute moduleName : Name;
     }
-    part def ExternalSystem specializes SoftwareComponent {
+    part def ExternalSystem :> SoftwareComponent {
         attribute systemName : Name;
     }
 
     interface def SoftwareInterface;
-    interface def ApiInterface specializes SoftwareInterface;
-    interface def AsyncInterface specializes SoftwareInterface;
-    interface def CommandInterface specializes AsyncInterface;
-    interface def QueryInterface specializes ApiInterface;
+    interface def ApiInterface :> SoftwareInterface;
+    interface def AsyncInterface :> SoftwareInterface;
+    interface def CommandInterface :> AsyncInterface;
+    interface def QueryInterface :> ApiInterface;
 
     item def DataType;
-    item def MessageType specializes DataType;
+    item def MessageType :> DataType;
 
     part def ExecutionEnvironment {
         attribute runtimeName : Name;

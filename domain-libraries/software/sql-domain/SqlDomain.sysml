@@ -4,13 +4,13 @@ package SqlDomain {
 
     attribute def ConsistencyMode;
 
-    part def RelationalStore specializes DataStore {
+    part def RelationalStore :> DataStore {
         attribute consistencyMode : ConsistencyMode;
     }
 
-    part def SqlDatabase specializes RelationalStore {
+    part def SqlDatabase :> RelationalStore {
         attribute engineName : Name;
     }
 
-    part def ReadReplica specializes RelationalStore;
+    part def ReadReplica :> RelationalStore;
 }

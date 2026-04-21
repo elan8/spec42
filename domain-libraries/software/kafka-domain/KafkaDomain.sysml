@@ -5,7 +5,7 @@ package KafkaDomain {
 
     attribute def PartitionCount;
 
-    part def KafkaTopic specializes EventStream {
+    part def KafkaTopic :> EventStream {
         attribute partitions : PartitionCount;
     }
 
@@ -13,5 +13,5 @@ package KafkaDomain {
         attribute groupName : Name;
     }
 
-    part def KafkaBinding specializes MessageBinding;
+    part def KafkaBinding :> MessageBinding;
 }

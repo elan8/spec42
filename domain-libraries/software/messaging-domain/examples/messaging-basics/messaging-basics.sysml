@@ -1,20 +1,20 @@
 package MessagingBasicsExample {
     import MessagingDomain::*;
 
-    part def OrdersEvents specializes EventStream {
+    part def OrdersEvents :> EventStream {
         attribute channelName = "orders-events";
         attribute retention = "7d";
     }
 
-    part def OrdersPublisher specializes Publisher {
+    part def OrdersPublisher :> Publisher {
         attribute publisherName = "orders";
     }
 
-    part def InventoryConsumer specializes Consumer {
+    part def InventoryConsumer :> Consumer {
         attribute consumerName = "inventory";
     }
 
-    part def OrdersBinding specializes MessageBinding {
+    part def OrdersBinding :> MessageBinding {
         attribute bindingName = "orders-to-inventory";
         attribute deliveryGuarantee = "at-least-once";
     }

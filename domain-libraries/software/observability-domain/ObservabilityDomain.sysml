@@ -26,9 +26,9 @@ package ObservabilityDomain {
         attribute dashboardName : Name;
     }
 
-    part def ServiceLevelIndicator specializes SliDefinition {
+    part def ServiceLevelIndicator :> SliDefinition {
         attribute signalKind : SignalKind;
     }
 
-    part def ServiceLevelObjective specializes SloDefinition;
+    part def ServiceLevelObjective :> SloDefinition;
 }

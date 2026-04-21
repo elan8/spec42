@@ -29,7 +29,7 @@ package CyberAssuranceDomain {
         attribute status : AssuranceStatus;
     }
 
-    part def EvidenceArtifact specializes ArtifactReference {
+    part def EvidenceArtifact :> ArtifactReference {
         attribute evidenceName : Name;
     }
 
@@ -55,9 +55,9 @@ package CyberAssuranceDomain {
         attribute processName : Name;
     }
 
-    part def SbomArtifact specializes EvidenceArtifact;
+    part def SbomArtifact :> EvidenceArtifact;
 
-    part def ProvenanceArtifact specializes EvidenceArtifact;
+    part def ProvenanceArtifact :> EvidenceArtifact;
 
     part def SecurityIncident {
         attribute incidentId : Identifier;

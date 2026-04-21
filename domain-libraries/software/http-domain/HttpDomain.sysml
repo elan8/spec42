@@ -8,7 +8,7 @@ package HttpDomain {
         attribute port : PortNumber;
     }
 
-    part def RestApiEndpoint specializes HttpEndpoint;
-    part def HttpRoute specializes HttpEndpoint;
-    part def HttpService specializes Service;
+    part def RestApiEndpoint :> HttpEndpoint;
+    part def HttpRoute :> HttpEndpoint;
+    part def HttpService :> Service;
 }

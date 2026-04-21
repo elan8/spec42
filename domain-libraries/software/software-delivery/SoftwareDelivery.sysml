@@ -12,12 +12,12 @@ package SoftwareDelivery {
         attribute repositoryUrl : RepositoryUrl;
     }
 
-    part def SoftwarePackage specializes SoftwareModule {
+    part def SoftwarePackage :> SoftwareModule {
         attribute packageName : Name;
         attribute version : VersionString;
     }
 
-    part def BuildArtifact specializes ArtifactReference;
+    part def BuildArtifact :> ArtifactReference;
 
     part def TestSuite {
         attribute suiteName : Name;
@@ -40,7 +40,7 @@ package SoftwareDelivery {
         attribute pathName : Name;
     }
 
-    part def DeploymentEnvironment specializes Environment;
+    part def DeploymentEnvironment :> Environment;
 
     part def ChangeRequest {
         attribute requestId : Identifier;

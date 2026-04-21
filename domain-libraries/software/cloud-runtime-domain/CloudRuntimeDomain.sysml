@@ -19,7 +19,7 @@ package CloudRuntimeDomain {
         attribute resourceClass : ResourceClass;
     }
 
-    part def RuntimeWorkload specializes ArtifactReference;
+    part def RuntimeWorkload :> ArtifactReference;
 
     part def ManagedService {
         attribute serviceName : Name;

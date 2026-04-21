@@ -3,13 +3,13 @@ package NosqlDomain {
 
     attribute def DataModelType;
 
-    part def DocumentStore specializes DataStore {
+    part def DocumentStore :> DataStore {
         attribute dataModel : DataModelType;
     }
 
-    part def KeyValueStore specializes DataStore {
+    part def KeyValueStore :> DataStore {
         attribute dataModel : DataModelType;
     }
 
-    part def ObjectStore specializes DataStore;
+    part def ObjectStore :> DataStore;
 }

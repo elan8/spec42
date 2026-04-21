@@ -1,24 +1,24 @@
 package ObservabilityBasicsExample {
     import ObservabilityDomain::*;
 
-    part def OrdersMetrics specializes MetricSource {
+    part def OrdersMetrics :> MetricSource {
         attribute sourceName = "orders-metrics";
     }
 
-    part def OrdersLogs specializes LogSource {
+    part def OrdersLogs :> LogSource {
         attribute sourceName = "orders-logs";
     }
 
-    part def OrdersLatency specializes ServiceLevelIndicator {
+    part def OrdersLatency :> ServiceLevelIndicator {
         attribute sliName = "latency";
         attribute signalKind = "latency";
     }
 
-    part def OrdersAvailability specializes ServiceLevelObjective {
+    part def OrdersAvailability :> ServiceLevelObjective {
         attribute sloName = "availability";
     }
 
-    part def PagerDutyAlert specializes AlertPolicy {
+    part def PagerDutyAlert :> AlertPolicy {
         attribute policyName = "orders-p1";
         attribute severity = "critical";
     }

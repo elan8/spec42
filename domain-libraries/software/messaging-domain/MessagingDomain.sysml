@@ -6,9 +6,9 @@ package MessagingDomain {
     attribute def DeliveryGuarantee;
     attribute def RetentionPolicy;
 
-    part def MessageChannel specializes StreamChannel;
+    part def MessageChannel :> StreamChannel;
 
-    part def EventStream specializes MessageChannel {
+    part def EventStream :> MessageChannel {
         attribute retention : RetentionPolicy;
     }
 
@@ -29,5 +29,5 @@ package MessagingDomain {
         attribute deliveryGuarantee : DeliveryGuarantee;
     }
 
-    item def StreamEvent specializes Event;
+    item def StreamEvent :> Event;
 }

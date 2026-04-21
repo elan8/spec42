@@ -12,7 +12,7 @@ package RobotSimulation {
         attribute worldName : Name;
     }
 
-    part def SyntheticSensor specializes Sensor;
+    part def SyntheticSensor :> Sensor;
 
     part def ScenarioPlayback {
         attribute playbackName : Name;

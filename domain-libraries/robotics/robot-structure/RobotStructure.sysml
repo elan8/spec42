@@ -5,17 +5,17 @@ package RobotStructure {
     attribute def LinkLength;
     attribute def PayloadCapacity;
 
-    part def RobotPlatform specializes RobotSystem;
+    part def RobotPlatform :> RobotSystem;
 
-    part def Chassis specializes Subsystem {
+    part def Chassis :> Subsystem {
         attribute chassisName : Name;
     }
 
-    part def Manipulator specializes Subsystem {
+    part def Manipulator :> Subsystem {
         attribute manipulatorName : Name;
     }
 
-    part def EndEffector specializes Subsystem {
+    part def EndEffector :> Subsystem {
         attribute effectorName : Name;
     }
 

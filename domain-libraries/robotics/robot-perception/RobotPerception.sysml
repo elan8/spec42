@@ -4,19 +4,19 @@ package RobotPerception {
     attribute def SensorType;
     attribute def EstimateType;
 
-    part def Sensor specializes Subsystem {
+    part def Sensor :> Subsystem {
         attribute sensorName : Name;
         attribute sensorType : SensorType;
     }
 
-    part def SensorSuite specializes Subsystem {
+    part def SensorSuite :> Subsystem {
         attribute suiteName : Name;
     }
 
-    part def CameraSensor specializes Sensor;
-    part def LidarSensor specializes Sensor;
-    part def ImuSensor specializes Sensor;
-    part def EncoderSensor specializes Sensor;
+    part def CameraSensor :> Sensor;
+    part def LidarSensor :> Sensor;
+    part def ImuSensor :> Sensor;
+    part def EncoderSensor :> Sensor;
 
     part def PerceptionPipeline {
         attribute pipelineName : Name;

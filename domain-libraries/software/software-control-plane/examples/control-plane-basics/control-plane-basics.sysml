@@ -3,33 +3,33 @@ package ControlPlaneBasicsExample {
     import DistributedSystems::*;
     import SoftwareControlPlane::*;
 
-    part def OrdersService specializes Service {
+    part def OrdersService :> Service {
         attribute serviceName = "orders";
     }
 
-    part def OrdersWorkload specializes Workload {
+    part def OrdersWorkload :> Workload {
         attribute workloadName = "orders-runtime";
     }
 
-    part def OrdersConfig specializes ConfigurationSource {
+    part def OrdersConfig :> ConfigurationSource {
         attribute sourceName = "orders-config";
         attribute sourceUri = "vault://team/orders/config";
     }
 
-    part def OrdersSecret specializes SecretItem {
+    part def OrdersSecret :> SecretItem {
         attribute key = "DB_PASSWORD";
     }
 
-    part def OrdersHealth specializes HealthSignal {
+    part def OrdersHealth :> HealthSignal {
         attribute signalName = "readiness";
         attribute healthState = "ready";
     }
 
-    part def OrdersScaling specializes ScalingPolicy {
+    part def OrdersScaling :> ScalingPolicy {
         attribute target = "cpu";
     }
 
-    part def PaymentsApi specializes ExternalEndpoint {
+    part def PaymentsApi :> ExternalEndpoint {
         attribute endpointName = "payments";
         attribute endpointUri = "https://payments.internal";
     }
