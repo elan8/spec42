@@ -7,10 +7,16 @@ use std::process::ExitCode;
 use std::sync::Arc;
 
 use clap::Parser;
-use cli::{CheckArgs, Cli, Command, DoctorArgs, OutputFormat, StdlibCommand};
+use cli::{
+    CheckArgs, Cli, Command, DoctorArgs, GenerateArgs, GenerateRos2Args, GenerateTarget,
+    OutputFormat, StdlibCommand,
+};
 use environment::{build_doctor_report, resolve_environment};
 use spec42_core::host::logging::init_tracing;
-use spec42_core::{validate_paths, ValidationReport, ValidationRequest};
+use spec42_core::{
+    generate_ros2_project, validate_paths, Ros2GenerationRequest, ValidationReport,
+    ValidationRequest,
+};
 use stdlib::{load_managed_metadata, managed_status, remove_standard_library};
 
 #[tokio::main]
@@ -35,6 +41,7 @@ async fn run(cli: Cli) -> Result<ExitCode, String> {
         Some(Command::Lsp) => run_lsp(&cli).await,
         Some(Command::Check(args)) => run_check(&cli, args),
         Some(Command::Doctor(args)) => run_doctor(&cli, args),
+        Some(Command::Generate(args)) => run_generate(&cli, args),
         Some(Command::Stdlib { command }) => run_stdlib(&cli, command),
     }
 }
@@ -144,6 +151,50 @@ fn run_stdlib(cli: &Cli, command: &StdlibCommand) -> Result<ExitCode, String> {
             } else {
                 println!("No materialized standard library data was found.");
             }
+        }
+    }
+    Ok(ExitCode::SUCCESS)
+}
+
+fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> {
+    match &args.target {
+        GenerateTarget::Ros2(ros2_args) => run_generate_ros2(cli, ros2_args),
+    }
+}
+
+fn run_generate_ros2(cli: &Cli, args: &GenerateRos2Args) -> Result<ExitCode, String> {
+    let environment = resolve_environment(cli)?;
+    let report = generate_ros2_project(Ros2GenerationRequest {
+        input: args.input.clone(),
+        output: args.output.clone(),
+        package_name: args.package_name.clone(),
+        workspace_root: args.workspace_root.clone(),
+        library_paths: environment.library_paths.clone(),
+        force: args.force,
+        dry_run: args.dry_run,
+    })?;
+    println!(
+        "{} ROS2 project scaffold: {} file(s) for package `{}`",
+        if report.dry_run {
+            "Planned"
+        } else {
+            "Generated"
+        },
+        report.generated_files.len(),
+        report.package_name
+    );
+    println!(
+        "Validation preflight: {} document(s), {} error(s), {} warning(s)",
+        report.validation_summary.document_count,
+        report.validation_summary.error_count,
+        report.validation_summary.warning_count
+    );
+    if let Some(traceability_path) = report.traceability_path.as_ref() {
+        println!("Traceability: {traceability_path}");
+    }
+    if !report.warnings.is_empty() {
+        for warning in &report.warnings {
+            println!("Warning: {warning}");
         }
     }
     Ok(ExitCode::SUCCESS)

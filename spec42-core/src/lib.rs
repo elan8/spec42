@@ -4,6 +4,7 @@
 pub mod analysis;
 pub mod bench;
 pub mod common;
+pub mod generator;
 pub mod host;
 pub mod language;
 mod lsp_runtime;
@@ -24,6 +25,7 @@ pub use lsp_runtime::run as run_lsp;
 // Core data model exports.
 pub use syntax::ast_util::{identification_name, span_to_range, span_to_source_range, SourceRange};
 pub use validation::{validate_paths, ValidationReport, ValidationRequest, ValidationSummary};
+pub use generator::{generate_ros2_project, Ros2GenerationReport, Ros2GenerationRequest};
 pub use views::dto::{
     GraphEdgeDto, GraphNodeDto, SysmlClearCacheResultDto, SysmlFeatureInspectorElementDto,
     SysmlFeatureInspectorElementRefDto, SysmlFeatureInspectorParamsDto,

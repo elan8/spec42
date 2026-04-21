@@ -24,6 +24,7 @@ pub enum Command {
     Lsp,
     Check(CheckArgs),
     Doctor(DoctorArgs),
+    Generate(GenerateArgs),
     Stdlib {
         #[command(subcommand)]
         command: StdlibCommand,
@@ -43,6 +44,33 @@ pub struct CheckArgs {
 pub struct DoctorArgs {
     #[arg(long = "format", value_enum, default_value_t = OutputFormat::Text)]
     pub format: OutputFormat,
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct GenerateArgs {
+    #[command(subcommand)]
+    pub target: GenerateTarget,
+}
+
+#[derive(Debug, Clone, Subcommand)]
+pub enum GenerateTarget {
+    Ros2(GenerateRos2Args),
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct GenerateRos2Args {
+    #[arg(long = "input")]
+    pub input: PathBuf,
+    #[arg(long = "output")]
+    pub output: PathBuf,
+    #[arg(long = "package-name")]
+    pub package_name: Option<String>,
+    #[arg(long = "workspace-root")]
+    pub workspace_root: Option<PathBuf>,
+    #[arg(long = "force", default_value_t = false)]
+    pub force: bool,
+    #[arg(long = "dry-run", default_value_t = false)]
+    pub dry_run: bool,
 }
 
 #[derive(Debug, Clone, Args)]
@@ -106,6 +134,46 @@ mod tests {
                 assert_eq!(args.format, OutputFormat::Json);
             }
             other => panic!("expected check command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn generate_ros2_command_parses_all_args() {
+        let cli = Cli::parse_from([
+            "spec42",
+            "generate",
+            "ros2",
+            "--input",
+            "domain-libraries/robotics/examples/inspection-rover/inspection-rover.sysml",
+            "--output",
+            "out",
+            "--package-name",
+            "inspection_rover_bringup",
+            "--workspace-root",
+            ".",
+            "--force",
+            "--dry-run",
+        ]);
+        match cli.command {
+            Some(Command::Generate(GenerateArgs {
+                target: GenerateTarget::Ros2(args),
+            })) => {
+                assert_eq!(
+                    args.input,
+                    PathBuf::from(
+                        "domain-libraries/robotics/examples/inspection-rover/inspection-rover.sysml"
+                    )
+                );
+                assert_eq!(args.output, PathBuf::from("out"));
+                assert_eq!(
+                    args.package_name,
+                    Some("inspection_rover_bringup".to_string())
+                );
+                assert_eq!(args.workspace_root, Some(PathBuf::from(".")));
+                assert!(args.force);
+                assert!(args.dry_run);
+            }
+            other => panic!("expected generate ros2 command, got {other:?}"),
         }
     }
 }
