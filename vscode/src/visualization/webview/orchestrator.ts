@@ -363,6 +363,9 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
                 currentData = message;
                 filteredData = null; // Reset filter when new data arrives
+                if (message.currentView) {
+                    currentView = message.currentView;
+                }
                 webviewLog('info', '[GENERAL][update-message]', {
                     incomingView: message.currentView || null,
                     selectedPackageName: message.selectedPackageName || null,
@@ -380,9 +383,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
                     });
                 } else if (!message.selectedPackage && selectedDiagramName === 'All Packages') {
                     selectedDiagramIndex = 0;
-                } else if (message.currentView) {
-                    // Use the view state from the message if provided, otherwise keep current
-                    currentView = message.currentView;
                 }
 
                 updateActiveViewButton(currentView); // Highlight current view
@@ -1393,17 +1393,21 @@ import { buildGeneralViewGraph } from './graphBuilders';
         const finishRender = () => {
             if (didFinishRender) return;
             didFinishRender = true;
-            if (renderRequestId !== activeRenderRequestId) {
-                return;
-            }
             clearTimeout(renderSafetyTimeout);
+            const supersededByNewerRequest = renderRequestId !== activeRenderRequestId;
             isRendering = false;
+            if (activeRenderAbortController === renderAbortController) {
+                activeRenderAbortController = null;
+            }
             hideLoading();
-            webviewPerf('visualizer:webviewRenderCompleted', {
-                view,
-                prepareMs,
-                totalMs: Date.now() - renderStartedAt,
-            });
+            webviewPerf(
+                supersededByNewerRequest ? 'visualizer:webviewRenderSuperseded' : 'visualizer:webviewRenderCompleted',
+                {
+                    view,
+                    prepareMs,
+                    totalMs: Date.now() - renderStartedAt,
+                }
+            );
             if (pendingRenderRequest) {
                 const next = pendingRenderRequest;
                 pendingRenderRequest = null;
