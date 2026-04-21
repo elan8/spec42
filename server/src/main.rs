@@ -212,6 +212,13 @@ fn print_doctor_report(report: &environment::DoctorReport) {
         }
     );
     println!(
+        "resolved domain libraries: {}",
+        report
+            .resolved_domain_libraries_path
+            .as_deref()
+            .unwrap_or("(none)")
+    );
+    println!(
         "managed stdlib ready: {}",
         if report.standard_library_status.is_installed {
             "yes"

@@ -7,15 +7,15 @@ package RobotAutonomy {
     attribute def PolicyType;
 
     part def BehaviorModule {
-        attribute behaviorName : Name;
+        attribute name : Name;
     }
 
     part def TaskPlan {
-        attribute planName : Name;
+        attribute name : Name;
     }
 
     part def Planner {
-        attribute plannerName : Name;
+        attribute name : Name;
         attribute plannerType : PlannerType;
     }
 
@@ -23,7 +23,7 @@ package RobotAutonomy {
     part def LocalizationFunction :> BehaviorModule;
 
     part def DecisionPolicy {
-        attribute policyName : Name;
+        attribute name : Name;
         attribute policyType : PolicyType;
     }
 }

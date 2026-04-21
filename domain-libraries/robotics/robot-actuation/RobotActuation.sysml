@@ -5,23 +5,23 @@ package RobotActuation {
     attribute def CommandType;
 
     part def Actuator :> Subsystem {
-        attribute actuatorName : Name;
+        attribute name : Name;
         attribute actuatorType : ActuatorType;
     }
 
     part def DriveTrain :> Subsystem {
-        attribute driveName : Name;
+        attribute name : Name;
     }
 
     part def MotorController :> Subsystem {
-        attribute controllerName : Name;
+        attribute name : Name;
     }
 
     part def ServoActuator :> Actuator;
     part def BrakeActuator :> Actuator;
 
     part def ActuationCommand {
-        attribute commandName : Name;
+        attribute name : Name;
         attribute commandType : CommandType;
     }
 }

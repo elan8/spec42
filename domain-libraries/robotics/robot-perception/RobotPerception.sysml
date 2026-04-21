@@ -5,12 +5,12 @@ package RobotPerception {
     attribute def EstimateType;
 
     part def Sensor :> Subsystem {
-        attribute sensorName : Name;
+        attribute name : Name;
         attribute sensorType : SensorType;
     }
 
     part def SensorSuite :> Subsystem {
-        attribute suiteName : Name;
+        attribute name : Name;
     }
 
     part def CameraSensor :> Sensor;
@@ -19,11 +19,11 @@ package RobotPerception {
     part def EncoderSensor :> Sensor;
 
     part def PerceptionPipeline {
-        attribute pipelineName : Name;
+        attribute name : Name;
     }
 
     part def StateEstimate {
-        attribute estimateName : Name;
+        attribute name : Name;
         attribute estimateType : EstimateType;
     }
 }

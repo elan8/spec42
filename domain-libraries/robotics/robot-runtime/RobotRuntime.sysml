@@ -8,20 +8,20 @@ package RobotRuntime {
     attribute def HealthState;
 
     part def RuntimeNode {
-        attribute nodeName : Name;
+        attribute name : Name;
     }
 
     part def ExecutionGraph {
-        attribute graphName : Name;
+        attribute name : Name;
     }
 
     part def CommunicationChannel {
-        attribute channelName : Name;
+        attribute name : Name;
         attribute channelType : ChannelType;
     }
 
     part def ParameterSet {
-        attribute parameterSetName : Name;
+        attribute name : Name;
     }
 
     part def LifecycleState {
@@ -29,7 +29,7 @@ package RobotRuntime {
     }
 
     part def HealthMonitor {
-        attribute monitorName : Name;
+        attribute name : Name;
         attribute healthState : HealthState;
     }
 }

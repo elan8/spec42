@@ -28,13 +28,18 @@ It is organized as a self-contained workspace so it can evolve into:
 - `robot-runtime/rules/robot-runtime-rules.yaml` - runtime rule catalog
 - `robot-safety-assurance/rules/robot-safety-assurance-rules.yaml` - safety and assurance rule catalog
 - `ros2-overlay/rules/ros2-overlay-rules.yaml` - ROS 2 executable rule catalog (condition-based)
-- `examples/inspection-rover/` - unified inspection rover example combining neutral robotics and ROS 2 executable wiring
+- `examples/inspection-rover/` - generation-ready ROS 2 inspection rover example (hierarchy, ports, connectors, deploy mapping, traceability)
 
 ## Notes
 
 - The SysML files define reusable robotics concepts using ordinary package declarations and specialization.
+- Naming is normalized around a primary `name` attribute in base definitions; examples override values instead of redefining schemas.
 - Rule catalogs can be descriptive or executable. The ROS 2 catalog is maintained as an executable condition-based schema.
-- The executable ROS 2 example demonstrates explicit node/topic/message/QoS bindings for deterministic analysis.
+- The ROS 2 overlay now models generation-critical abstractions: runtime component mapping, endpoint ports, connections, deployment units, and traceability entries.
+- The inspection rover example encodes explicit part hierarchy (`RoverSystem -> RoverRuntimeArchitecture`), typed ports, and connector wiring for deterministic endpoint bindings.
+- Core generation targets are represented directly in-model: interface types (`msg/srv/action` refs), launch/config mapping, package/executable mapping, and artifact traceability.
+- ROS 2 value fields are typed where possible; string literals are used mainly for cross-element references and external ROS identifiers.
+- ROS 2 rules cover both semantic runtime checks and generation-readiness checks for mapping completeness and typed parameter defaults.
 - Neutral robotics concepts stay separate from ROS 2-specific concepts so robots can be modeled with or without middleware commitments.
 - Safety and assurance are explicit overlays rather than being folded into the robotics kernel.
 - Future overlays can add ecosystem-specific content such as Nav2, MoveIt, Gazebo, industrial cells, or safety-standard mappings without restructuring the core packages.

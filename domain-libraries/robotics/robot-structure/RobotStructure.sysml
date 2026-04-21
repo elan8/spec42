@@ -8,33 +8,33 @@ package RobotStructure {
     part def RobotPlatform :> RobotSystem;
 
     part def Chassis :> Subsystem {
-        attribute chassisName : Name;
+        attribute name : Name;
     }
 
     part def Manipulator :> Subsystem {
-        attribute manipulatorName : Name;
+        attribute name : Name;
     }
 
     part def EndEffector :> Subsystem {
-        attribute effectorName : Name;
+        attribute name : Name;
     }
 
     part def Joint {
-        attribute jointName : Name;
+        attribute name : Name;
         attribute jointType : JointType;
     }
 
     part def Link {
-        attribute linkName : Name;
+        attribute name : Name;
         attribute linkLength : LinkLength;
     }
 
     part def MountPoint {
-        attribute mountName : Name;
+        attribute name : Name;
     }
 
     part def Payload {
-        attribute payloadName : Name;
+        attribute name : Name;
         attribute capacity : PayloadCapacity;
     }
 }

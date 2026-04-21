@@ -30,6 +30,7 @@ pub struct ResolvedEnvironment {
     pub stdlib_path: Option<PathBuf>,
     pub stdlib_source: Option<String>,
     pub used_legacy_vscode_fallback: bool,
+    pub domain_libraries_path: Option<PathBuf>,
     pub standard_library: StandardLibraryConfig,
     pub standard_library_paths: StandardLibraryPaths,
 }
@@ -45,6 +46,7 @@ pub struct DoctorReport {
     pub stdlib_source: Option<String>,
     pub stdlib_source_kind: String,
     pub used_legacy_vscode_fallback: bool,
+    pub resolved_domain_libraries_path: Option<String>,
     pub standard_library_status: StandardLibraryStatus,
     pub library_paths: Vec<DoctorPathStatus>,
 }
@@ -107,11 +109,13 @@ fn resolve_environment_with_dirs(
         &standard_library_paths,
     )?;
 
+    let domain_libraries_path = discover_domain_libraries_path();
     let library_paths = resolve_library_paths(
         cli,
         &explicit_config,
         &default_config,
         stdlib_resolution.path.as_ref(),
+        domain_libraries_path.as_ref(),
     );
 
     Ok(ResolvedEnvironment {
@@ -122,6 +126,7 @@ fn resolve_environment_with_dirs(
         stdlib_path: stdlib_resolution.path,
         stdlib_source: stdlib_resolution.source,
         used_legacy_vscode_fallback: stdlib_resolution.used_legacy_vscode_fallback,
+        domain_libraries_path,
         standard_library,
         standard_library_paths,
     })
@@ -173,6 +178,10 @@ pub fn build_doctor_report(
             "none".to_string()
         },
         used_legacy_vscode_fallback: environment.used_legacy_vscode_fallback,
+        resolved_domain_libraries_path: environment
+            .domain_libraries_path
+            .as_ref()
+            .map(|path| path.display().to_string()),
         standard_library_status: status,
         library_paths: environment
             .library_paths
@@ -232,6 +241,7 @@ fn resolve_library_paths(
     explicit_config: &ConfigFile,
     default_config: &ConfigFile,
     stdlib_path: Option<&PathBuf>,
+    domain_libraries_path: Option<&PathBuf>,
 ) -> Vec<PathBuf> {
     let mut paths = if !cli.library_paths.is_empty() {
         cli.library_paths
@@ -259,12 +269,59 @@ fn resolve_library_paths(
     if let Some(stdlib_path) = stdlib_path {
         paths.push(stdlib_path.clone());
     }
+    if let Some(domain_libraries_path) = domain_libraries_path {
+        paths.push(domain_libraries_path.clone());
+    }
 
     let mut deduped = BTreeSet::new();
     paths
         .into_iter()
         .filter(|path| deduped.insert(path.display().to_string()))
         .collect()
+}
+
+fn discover_domain_libraries_path() -> Option<PathBuf> {
+    if let Ok(raw) = std::env::var("SPEC42_DOMAIN_LIBRARIES_PATH") {
+        let trimmed = raw.trim();
+        if !trimmed.is_empty() {
+            let configured = canonicalize_lossy(Path::new(trimmed));
+            if configured.is_dir() {
+                return Some(configured);
+            }
+            let nested = configured.join("domain-libraries");
+            if nested.is_dir() {
+                return Some(canonicalize_lossy(&nested));
+            }
+        }
+    }
+
+    let mut roots = Vec::new();
+    if let Ok(cwd) = std::env::current_dir() {
+        roots.push(cwd);
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(parent) = exe.parent() {
+            roots.push(parent.to_path_buf());
+        }
+    }
+    discover_domain_libraries_path_from_roots(&roots)
+}
+
+fn discover_domain_libraries_path_from_roots(roots: &[PathBuf]) -> Option<PathBuf> {
+    let mut seen = std::collections::BTreeSet::new();
+    for root in roots {
+        for ancestor in root.ancestors() {
+            let key = ancestor.display().to_string();
+            if !seen.insert(key) {
+                continue;
+            }
+            let candidate = ancestor.join("domain-libraries");
+            if candidate.is_dir() {
+                return Some(canonicalize_lossy(&candidate));
+            }
+        }
+    }
+    None
 }
 
 struct StdlibResolution {
@@ -416,9 +473,27 @@ mod tests {
             stdio: false,
             command: None,
         };
-        let paths =
-            resolve_library_paths(&cli, &ConfigFile::default(), &ConfigFile::default(), None);
+        let paths = resolve_library_paths(
+            &cli,
+            &ConfigFile::default(),
+            &ConfigFile::default(),
+            None,
+            None,
+        );
         assert_eq!(paths, vec![PathBuf::from("C:/models/lib")]);
+    }
+
+    #[test]
+    fn discover_domain_libraries_from_ancestor_root() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let repo = temp.path().join("repo");
+        let nested = repo.join("a").join("b");
+        let domain_libraries = repo.join("domain-libraries");
+        std::fs::create_dir_all(&nested).expect("create nested");
+        std::fs::create_dir_all(&domain_libraries).expect("create domain-libraries");
+
+        let discovered = discover_domain_libraries_path_from_roots(std::slice::from_ref(&nested));
+        assert_eq!(discovered, Some(canonicalize_lossy(&domain_libraries)));
     }
 
     #[test]

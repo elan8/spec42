@@ -9,12 +9,12 @@ package RoboticsCore {
     attribute def CriticalityLevel;
 
     part def RobotSystem {
-        attribute robotName : Name;
+        attribute name : Name;
         attribute criticality : CriticalityLevel;
     }
 
     part def Subsystem {
-        attribute subsystemName : Name;
+        attribute name : Name;
     }
 
     part def RobotMode {
@@ -22,22 +22,22 @@ package RoboticsCore {
     }
 
     part def MissionProfile {
-        attribute missionName : Name;
+        attribute name : Name;
         attribute missionType : MissionType;
     }
 
     part def OperatingEnvironment {
-        attribute environmentName : Name;
+        attribute name : Name;
         attribute environmentKind : EnvironmentKind;
     }
 
     part def PhysicalInterface {
-        attribute interfaceName : Name;
+        attribute name : Name;
         attribute interfaceType : InterfaceType;
     }
 
     part def PowerSource {
-        attribute sourceName : Name;
+        attribute name : Name;
         attribute powerKind : PowerKind;
     }
 }

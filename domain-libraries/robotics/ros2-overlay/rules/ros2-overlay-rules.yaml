@@ -22,9 +22,9 @@ rules:
       where: RosLifecycleNode, LifecycleState
     condition:
       kind: lifecycle_node_has_state
-      node_field: nodeName
+      node_field: name
       lifecycle_field: phase
-    message: "Lifecycle node {nodeName} has no explicit lifecycle state."
+    message: "Lifecycle node {name} has no explicit lifecycle state."
     remediation: "Model at least one LifecycleState for each RosLifecycleNode."
   - id: ROS203
     severity: warning
@@ -34,9 +34,9 @@ rules:
       where: RosTransformFrame
     condition:
       kind: frame_has_parent
-      frame_field: frameName
+      frame_field: name
       parent_field: parentFrameRef
-    message: "Frame {frameName} has no parent frame relationship."
+    message: "Frame {name} has no parent frame relationship."
     remediation: "Set parentFrameRef unless the frame is the declared transform root."
   - id: ROS204
     severity: error
@@ -50,3 +50,63 @@ rules:
       subscriber_qos_field: qosProfileRef
     message: "QoS mismatch on {topicRef}: publisher={publisherQos} subscriber={subscriberQos}"
     remediation: "Use compatible reliability, durability, and depth values."
+  - id: ROS301
+    severity: error
+    category: generation
+    title: Runtime component should define package and executable mapping
+    scope:
+      where: RosRuntimeComponent
+    condition:
+      kind: required_fields_present
+      required_fields: packageRef, executableName, launchGroupName
+    message: "Runtime component {name} is missing package/executable/launch mapping."
+    remediation: "Set packageRef, executableName, and launchGroupName on each RosRuntimeComponent."
+  - id: ROS302
+    severity: error
+    category: generation
+    title: Endpoint ports should bind topic and type metadata
+    scope:
+      where: RosEndpointPort
+    condition:
+      kind: endpoint_binding_complete
+      owner_field: ownerNodeRef
+      topic_field: topicRef
+      message_field: messageTypeRef
+      qos_field: qosProfileRef
+    message: "Endpoint port {name} has incomplete binding metadata."
+    remediation: "Set ownerNodeRef and endpoint binding fields needed for deterministic generation."
+  - id: ROS303
+    severity: error
+    category: generation
+    title: Deployment units should map nodes to package executables
+    scope:
+      where: RosDeploymentUnit
+    condition:
+      kind: required_fields_present
+      required_fields: packageRef, executableName, nodeRef
+    message: "Deployment unit {name} is missing package/executable/node mapping."
+    remediation: "Set packageRef, executableName, and nodeRef for each RosDeploymentUnit."
+  - id: ROS304
+    severity: warning
+    category: generation
+    title: Parameters should be typed and defaulted
+    scope:
+      where: RosParameter
+    condition:
+      kind: parameter_has_type_and_default
+      type_field: parameterType
+      default_fields: defaultInt, defaultFloat, defaultBool, defaultText
+    message: "Parameter {name} has no explicit type or default value."
+    remediation: "Set parameterType and one default value field to support config generation."
+  - id: ROS305
+    severity: warning
+    category: traceability
+    title: Generated artifacts should have model traceability records
+    scope:
+      where: RosGenerationArtifact, RosTraceabilityEntry
+    condition:
+      kind: artifact_traceability_present
+      artifact_field: artifactPath
+      model_field: modelElementId
+    message: "Generated artifact mapping is missing traceability coverage."
+    remediation: "Add RosTraceabilityEntry records for each generated artifact path."
