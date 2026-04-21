@@ -8,41 +8,41 @@ package WebshopExample {
     item def OrderCreated :> Event;
 
     part def OrderService :> HttpService {
-        attribute serviceName = "orders";
+        attribute :>> serviceName = "orders";
     }
 
     part def PaymentService :> HttpService {
-        attribute serviceName = "payments";
+        attribute :>> serviceName = "payments";
     }
 
     part def EventBus :> MessageBroker;
 
     part def Orders :> Topic {
-        attribute topicName = "orders.created";
+        attribute :>> topicName = "orders.created";
     }
 
     part def PublicOrdersApi :> RestApiEndpoint {
-        attribute protocol = "https";
-        attribute path = "/orders";
-        attribute port = "443";
+        attribute :>> protocol = "https";
+        attribute :>> path = "/orders";
+        attribute :>> port = "443";
     }
 
     part def BackendCluster :> KubernetesCluster {
-        attribute clusterName = "webshop-cluster";
-        attribute nodeName = "backend-a";
-        attribute host = "backend-a.internal";
+        attribute :>> clusterName = "webshop-cluster";
+        attribute :>> nodeName = "backend-a";
+        attribute :>> host = "backend-a.internal";
     }
 
     part def OrdersDeployment :> KubernetesDeployment {
-        attribute deploymentName = "orders";
-        attribute replicas = "3";
-        attribute image = "ghcr.io/example/orders:1.0.0";
+        attribute :>> deploymentName = "orders";
+        attribute :>> replicas = "3";
+        attribute :>> image = "ghcr.io/example/orders:1.0.0";
     }
 
     part def PaymentsDeployment :> KubernetesDeployment {
-        attribute deploymentName = "payments";
-        attribute replicas = "2";
-        attribute image = "ghcr.io/example/payments:1.0.0";
+        attribute :>> deploymentName = "payments";
+        attribute :>> replicas = "2";
+        attribute :>> image = "ghcr.io/example/payments:1.0.0";
     }
 
     allocate OrderService to BackendCluster;

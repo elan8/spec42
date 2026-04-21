@@ -17,117 +17,117 @@ package ModernSoftwareReference {
     import CloudRuntimeDomain::*;
 
     part def OrdersService :> HttpService {
-        attribute serviceName = "orders";
+        attribute :>> serviceName = "orders";
     }
 
     part def BillingService :> GrpcService {
-        attribute serviceName = "billing";
+        attribute :>> serviceName = "billing";
     }
 
     part def OrdersApi :> OpenApiOperation {
-        attribute protocol = "https";
-        attribute path = "/orders";
-        attribute port = "443";
-        attribute operationId = "listOrders";
+        attribute :>> protocol = "https";
+        attribute :>> path = "/orders";
+        attribute :>> port = "443";
+        attribute :>> operationId = "listOrders";
     }
 
     item def OrderJson :> OpenApiSchema {
-        attribute mediaType = "application/json";
-        attribute schema = "#/components/schemas/Order";
+        attribute :>> mediaType = "application/json";
+        attribute :>> schema = "#/components/schemas/Order";
     }
 
     item def BillRequest :> GrpcRequest {
-        attribute mediaType = "application/protobuf";
-        attribute schema = "billing.v1.BillRequest";
-        attribute packageName = "billing.v1";
+        attribute :>> mediaType = "application/protobuf";
+        attribute :>> schema = "billing.v1.BillRequest";
+        attribute :>> packageName = "billing.v1";
     }
 
     item def BillResponse :> GrpcResponse {
-        attribute mediaType = "application/protobuf";
-        attribute schema = "billing.v1.BillResponse";
-        attribute packageName = "billing.v1";
+        attribute :>> mediaType = "application/protobuf";
+        attribute :>> schema = "billing.v1.BillResponse";
+        attribute :>> packageName = "billing.v1";
     }
 
     part def BillOrder :> UnaryRpc {
-        attribute methodName = "BillOrder";
+        attribute :>> methodName = "BillOrder";
     }
 
     part def OrdersTopic :> KafkaTopic {
-        attribute channelName = "orders";
-        attribute retention = "14d";
-        attribute partitions = "6";
+        attribute :>> channelName = "orders";
+        attribute :>> retention = "14d";
+        attribute :>> partitions = "6";
     }
 
     part def OrdersDatabase :> SqlDatabase {
-        attribute storeName = "orders-db";
-        attribute engineName = "postgres";
-        attribute consistencyMode = "strong";
+        attribute :>> storeName = "orders-db";
+        attribute :>> engineName = "postgres";
+        attribute :>> consistencyMode = "strong";
     }
 
     part def OrdersCache :> KeyValueStore {
-        attribute storeName = "orders-cache";
-        attribute dataModel = "key-value";
+        attribute :>> storeName = "orders-cache";
+        attribute :>> dataModel = "key-value";
     }
 
     part def OrdersConfig :> ConfigurationSource {
-        attribute sourceName = "orders-config";
-        attribute sourceUri = "vault://orders/config";
+        attribute :>> sourceName = "orders-config";
+        attribute :>> sourceUri = "vault://orders/config";
     }
 
     part def OrdersSecret :> SecretItem {
-        attribute key = "JWT_SIGNING_KEY";
+        attribute :>> key = "JWT_SIGNING_KEY";
     }
 
     part def OrdersIdentity :> ServiceIdentity {
-        attribute identityName = "orders-service";
+        attribute :>> identityName = "orders-service";
     }
 
     part def OrdersIngress :> ExposureBoundary {
-        attribute exposureType = "public";
-        attribute trafficDirection = "north-south";
+        attribute :>> exposureType = "public";
+        attribute :>> trafficDirection = "north-south";
     }
 
     part def OrdersMetrics :> MetricSource {
-        attribute sourceName = "orders-metrics";
+        attribute :>> sourceName = "orders-metrics";
     }
 
     part def OrdersLatency :> ServiceLevelIndicator {
-        attribute sliName = "orders-latency";
-        attribute signalKind = "latency";
+        attribute :>> sliName = "orders-latency";
+        attribute :>> signalKind = "latency";
     }
 
     part def OrdersSlo :> ServiceLevelObjective {
-        attribute sloName = "orders-availability";
+        attribute :>> sloName = "orders-availability";
     }
 
     part def OrdersRepo :> SourceRepository {
-        attribute repositoryName = "orders-service";
-        attribute repositoryUrl = "https://git.example.com/orders-service";
+        attribute :>> repositoryName = "orders-service";
+        attribute :>> repositoryUrl = "https://git.example.com/orders-service";
     }
 
     part def OrdersPipeline :> DeliveryPipeline {
-        attribute pipelineName = "orders-ci";
+        attribute :>> pipelineName = "orders-ci";
     }
 
     part def OrdersRelease :> ReleaseUnit {
-        attribute releaseName = "orders-2026-04";
-        attribute version = "2.0.0";
+        attribute :>> releaseName = "orders-2026-04";
+        attribute :>> version = "2.0.0";
     }
 
     part def OrdersCluster :> KubernetesCluster {
-        attribute clusterName = "orders-prod";
-        attribute nodeName = "orders-cluster-a";
-        attribute host = "orders-cluster-a.internal";
+        attribute :>> clusterName = "orders-prod";
+        attribute :>> nodeName = "orders-cluster-a";
+        attribute :>> host = "orders-cluster-a.internal";
     }
 
     part def OrdersDeployment :> KubernetesDeployment {
-        attribute deploymentName = "orders";
-        attribute replicas = "3";
-        attribute image = "ghcr.io/example/orders:2.0.0";
+        attribute :>> deploymentName = "orders";
+        attribute :>> replicas = "3";
+        attribute :>> image = "ghcr.io/example/orders:2.0.0";
     }
 
     part def PrimaryRegion :> CloudRegion {
-        attribute regionName = "eu-west";
+        attribute :>> regionName = "eu-west";
     }
 
     allocate OrdersService to OrdersCluster;
