@@ -9,9 +9,9 @@ use tracing::{debug, info, warn};
 use crate::common::util;
 use crate::host::config::Spec42Config;
 use crate::workspace::{
-    clear_documents_under_roots, ingest_parsed_scan_entries, parse_scanned_entries,
-    rebuild_all_document_links, refresh_document, remove_document, scan_sysml_files,
-    store_document_text, ServerState,
+    clear_documents_under_roots, ingest_parsed_scan_entries, ingest_parsed_scan_entries_batch,
+    parse_scanned_entries, rebuild_all_document_links, rebuild_semantic_graph_staged,
+    refresh_document, remove_document, scan_sysml_files, store_document_text, ServerState,
 };
 
 use super::capabilities::server_capabilities;
@@ -147,8 +147,6 @@ pub(crate) async fn initialized(
         let parse_worker_ms = parse_worker_start.elapsed().as_millis() as u64;
         let merge_index_start = Instant::now();
         let mut st = state.write().await;
-        let mut uris_loaded = Vec::new();
-        let mut low_coverage_library_files = Vec::new();
         for parsed_entry in &parsed_entries {
             let uri_norm = util::normalize_file_uri(&parsed_entry.uri);
             if parsed_entry.parsed.is_none() {
@@ -160,38 +158,51 @@ pub(crate) async fn initialized(
                 );
             }
         }
-        for (uri_norm, warning) in ingest_parsed_scan_entries(&mut st, parsed_entries) {
+        let ingest_results = ingest_parsed_scan_entries_batch(&mut st, parsed_entries);
+        let ingest_ms = merge_index_start.elapsed().as_millis() as u64;
+        drop(st);
+
+        let relink_start = Instant::now();
+        let (new_graph, new_symbols, mut relink_metrics) = {
+            let st_read = state.read().await;
+            rebuild_semantic_graph_staged(&st_read.index, &st_read.library_paths)
+        };
+        relink_metrics.total_ms = relink_start.elapsed().as_millis() as u32;
+
+        let mut st = state.write().await;
+        st.semantic_graph = new_graph;
+        st.symbol_table = new_symbols;
+
+        let mut uris_loaded = Vec::new();
+        let mut low_coverage_library_files = Vec::new();
+        for (uri_norm, warning) in ingest_results {
             if let Some(message) = warning {
                 warn!("workspace scan ingest warning: {}", message);
             }
             uris_loaded.push(uri_norm.clone());
             if util::uri_under_any_library(&uri_norm, &st.library_paths) {
                 let graph_nodes_for_uri = st.semantic_graph.nodes_for_uri(&uri_norm).len();
-                let symbol_entries =
-                    crate::semantic_model::symbol_entries_for_uri(&st.semantic_graph, &uri_norm);
-                debug!(
-                    uri = %uri_norm,
-                    graph_nodes = graph_nodes_for_uri,
-                    symbol_entries = symbol_entries.len(),
-                    "library file indexed"
-                );
+                let symbol_entries_count = st
+                    .symbol_table
+                    .iter()
+                    .filter(|entry| entry.uri == uri_norm)
+                    .count();
+
                 if st
                     .index
                     .get(&uri_norm)
                     .and_then(|entry| entry.parsed.as_ref())
                     .is_some()
-                    && symbol_entries.len() <= 2
+                    && symbol_entries_count <= 2
                 {
                     low_coverage_library_files.push((
                         uri_norm.to_string(),
                         graph_nodes_for_uri,
-                        symbol_entries.len(),
+                        symbol_entries_count,
                     ));
                 }
             }
         }
-        let ingest_ms = merge_index_start.elapsed().as_millis() as u64;
-        let relink_metrics = rebuild_all_document_links(&mut st);
         let merge_index_ms = merge_index_start.elapsed().as_millis() as u64;
         if perf_logging_enabled {
             info!(

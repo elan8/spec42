@@ -65,11 +65,25 @@ pub(crate) async fn publish_workspace_diagnostics(
     let doc_count = docs.len();
     let mut published_count = 0usize;
     let mut diagnostic_count = 0usize;
+
+    let mut join_set = tokio::task::JoinSet::new();
     for (uri, text) in docs {
-        let diagnostics = collect_diagnostics_for_document(state, config, &uri, &text).await;
-        diagnostic_count += diagnostics.len();
-        published_count += 1;
-        client.publish_diagnostics(uri, diagnostics, None).await;
+        let state = Arc::clone(state);
+        let config = Arc::clone(config);
+        let client = client.clone();
+        join_set.spawn(async move {
+            let diagnostics = collect_diagnostics_for_document(&state, &config, &uri, &text).await;
+            let count = diagnostics.len();
+            client.publish_diagnostics(uri, diagnostics, None).await;
+            count
+        });
+    }
+
+    while let Some(res) = join_set.join_next().await {
+        if let Ok(count) = res {
+            diagnostic_count += count;
+            published_count += 1;
+        }
     }
     if perf_logging_enabled(state).await {
         info!(

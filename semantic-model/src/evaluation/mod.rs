@@ -91,20 +91,19 @@ impl Quantity {
 }
 
 pub fn evaluate_expressions(graph: &mut SemanticGraph) {
-    let node_ids: Vec<NodeId> = graph.node_index_by_id.keys().cloned().collect();
     let outcomes = {
         let mut engine = EvalEngine::new(graph);
-        node_ids
-            .iter()
-            .map(|node_id| {
-                let outcome = if engine.node_source_value(node_id).is_some() {
-                    Some(engine.evaluate_node(node_id))
+        graph
+            .node_index_by_id
+            .keys()
+            .filter_map(|node_id| {
+                if engine.node_source_value(node_id).is_some() {
+                    Some((node_id.clone(), engine.evaluate_node(node_id)))
                 } else {
                     None
-                };
-                (node_id.clone(), outcome)
+                }
             })
-            .collect::<Vec<(NodeId, Option<EvalOutcome>)>>()
+            .collect::<Vec<(NodeId, EvalOutcome)>>()
     };
     for (node_id, outcome) in outcomes {
         let Some(node) = graph.get_node_mut(&node_id) else {
@@ -114,9 +113,6 @@ pub fn evaluate_expressions(graph: &mut SemanticGraph) {
         node.attributes.remove(EVALUATED_UNIT_KEY);
         node.attributes.remove(EVALUATION_STATUS_KEY);
         node.attributes.remove(EVALUATION_ERROR_KEY);
-        let Some(outcome) = outcome else {
-            continue;
-        };
         node.attributes.insert(
             EVALUATION_STATUS_KEY.to_string(),
             Value::String(outcome.status.as_str().to_string()),

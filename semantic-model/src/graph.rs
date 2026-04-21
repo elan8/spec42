@@ -16,13 +16,27 @@ use crate::workspace_uri;
 /// Uses petgraph StableGraph for efficient add/remove and future algorithm support.
 #[derive(Debug, Default)]
 pub struct SemanticGraph {
-    pub(crate) graph: StableGraph<SemanticNode, RelationshipKind, Directed>,
-    pub(crate) node_index_by_id: HashMap<NodeId, NodeIndex>,
-    pub(crate) nodes_by_uri: HashMap<Url, Vec<NodeId>>,
-    pub(crate) node_ids_by_qualified_name: HashMap<String, Vec<NodeId>>,
-    pub(crate) connection_occurrences_by_uri: HashMap<Url, Vec<ConnectionOccurrence>>,
-    pub(crate) pending_relationships: Vec<PendingRelationship>,
-    pub(crate) import_lookup_cache: Mutex<HashMap<(NodeId, String, bool), Vec<NodeId>>>,
+    pub graph: StableGraph<SemanticNode, RelationshipKind, Directed>,
+    pub node_index_by_id: HashMap<NodeId, NodeIndex>,
+    pub nodes_by_uri: HashMap<Url, Vec<NodeId>>,
+    pub node_ids_by_qualified_name: HashMap<String, Vec<NodeId>>,
+    pub connection_occurrences_by_uri: HashMap<Url, Vec<ConnectionOccurrence>>,
+    pub pending_relationships: Vec<PendingRelationship>,
+    pub import_lookup_cache: Mutex<HashMap<(NodeId, String, bool), Vec<NodeId>>>,
+}
+
+impl Clone for SemanticGraph {
+    fn clone(&self) -> Self {
+        Self {
+            graph: self.graph.clone(),
+            node_index_by_id: self.node_index_by_id.clone(),
+            nodes_by_uri: self.nodes_by_uri.clone(),
+            node_ids_by_qualified_name: self.node_ids_by_qualified_name.clone(),
+            connection_occurrences_by_uri: self.connection_occurrences_by_uri.clone(),
+            pending_relationships: self.pending_relationships.clone(),
+            import_lookup_cache: Mutex::new(HashMap::new()),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -33,7 +47,7 @@ pub(crate) struct ConnectionOccurrence {
 }
 
 #[derive(Debug, Clone)]
-pub(crate) struct PendingRelationship {
+pub struct PendingRelationship {
     pub uri: Url,
     pub source_qualified: String,
     pub target_qualified: String,

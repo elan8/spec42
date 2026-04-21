@@ -545,10 +545,31 @@ pub async fn build_sysml_model_response(
     let ibd_start = Instant::now();
     let ibd = if want_ibd && want_graph && graph.is_some() && workspace_viz {
         let workspace_uris = semantic_graph.workspace_uris_excluding_libraries(library_paths);
-        let ibds = workspace_uris
-            .iter()
-            .map(|workspace_uri| ibd::build_ibd_for_uri(semantic_graph, workspace_uri))
-            .collect();
+        let worker_count = std::thread::available_parallelism()
+            .map(|count| count.get())
+            .unwrap_or(1)
+            .min(workspace_uris.len())
+            .max(1);
+
+        let ibds = std::thread::scope(|s| {
+            let mut buckets: Vec<Vec<Url>> = (0..worker_count).map(|_| Vec::new()).collect();
+            for (i, uri) in workspace_uris.into_iter().enumerate() {
+                buckets[i % worker_count].push(uri);
+            }
+            let mut handles = Vec::with_capacity(worker_count);
+            for bucket in buckets {
+                handles.push(s.spawn(move || {
+                    bucket
+                        .iter()
+                        .map(|uri| ibd::build_ibd_for_uri(semantic_graph, uri))
+                        .collect::<Vec<_>>()
+                }));
+            }
+            handles
+                .into_iter()
+                .flat_map(|h| h.join().unwrap())
+                .collect::<Vec<_>>()
+        });
         Some(ibd::merge_ibd_payloads(ibds))
     } else if want_ibd && want_graph && graph.is_some() {
         Some(ibd::build_ibd_for_uri(semantic_graph, uri))

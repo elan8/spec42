@@ -8,7 +8,7 @@ use tower_lsp::lsp_types::Url;
 use crate::ast_util::identification_name;
 use crate::graph::SemanticGraph;
 use crate::import_resolution::resolve_type_reference_targets;
-use crate::model::{NodeId, RelationshipKind};
+use crate::model::{NodeId, RelationshipKind, SemanticNode};
 use crate::root_element_body;
 
 const TYPING_TARGET_KINDS: &[&str] = &[
@@ -361,8 +361,27 @@ pub(crate) fn find_part_def_in_elements<'a>(
 /// Adds typing/specializes edges from nodes in the given URI to targets that may be in other files.
 /// Called after merge so the full graph contains nodes from all documents.
 pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
+    let edges = resolve_cross_document_edges_for_uri(g, uri);
+    for (src_id, tgt_id, kind) in edges {
+        if let (Some(&src_idx), Some(&tgt_idx)) = (
+            g.node_index_by_id.get(&src_id),
+            g.node_index_by_id.get(&tgt_id),
+        ) {
+            g.graph.add_edge(src_idx, tgt_idx, kind);
+        }
+    }
+}
+
+/// Resolves typing/specializes edges from nodes in the given URI to targets that may be in other files.
+/// Returns a list of (source NodeId, target NodeId, relationship kind) for resolved edges.
+/// This function is thread-safe and can be called in parallel across different URIs.
+pub fn resolve_cross_document_edges_for_uri(
+    g: &SemanticGraph,
+    uri: &Url,
+) -> Vec<(NodeId, NodeId, RelationshipKind)> {
     let node_ids: Vec<NodeId> = g.nodes_by_uri.get(uri).cloned().unwrap_or_default();
-    let mut work: Vec<(NodeId, String, Option<String>, RelationshipKind)> = Vec::new();
+    let mut resolved_edges = Vec::new();
+
     for node_id in &node_ids {
         let Some(node) = g.get_node(node_id) else {
             continue;
@@ -373,8 +392,7 @@ pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
             .and_then(|pid| g.get_node(pid))
             .map(|p| p.id.qualified_name.clone());
 
-        // Keep in sync with spec42-core semantic checks `declared_type_ref` keys.
-        // Cross-document typing is added after merge, so include all known *Type attributes.
+        // Typing relationships
         for key in [
             "partType",
             "attributeType",
@@ -391,59 +409,56 @@ pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
             "concernType",
         ] {
             if let Some(type_ref) = node.attributes.get(key).and_then(|v| v.as_str()) {
-                work.push((
-                    node_id.clone(),
-                    type_ref.to_string(),
-                    prefix.clone(),
+                if let Some(target_id) = resolve_typing_edge_cross_document_inner(
+                    g,
+                    node,
+                    type_ref,
+                    prefix.as_deref(),
                     RelationshipKind::Typing,
-                ));
+                ) {
+                    resolved_edges.push((node_id.clone(), target_id, RelationshipKind::Typing));
+                }
             }
         }
+
+        // Specializes relationships
         if let Some(v) = node.attributes.get("specializes") {
             if let Some(s) = v.as_str() {
-                work.push((
-                    node_id.clone(),
-                    s.to_string(),
-                    prefix.clone(),
+                if let Some(target_id) = resolve_typing_edge_cross_document_inner(
+                    g,
+                    node,
+                    s,
+                    prefix.as_deref(),
                     RelationshipKind::Specializes,
-                ));
+                ) {
+                    resolved_edges.push((node_id.clone(), target_id, RelationshipKind::Specializes));
+                }
             }
         }
     }
-    for (node_id, type_ref, prefix, kind) in work {
-        add_typing_edge_cross_document(g, &node_id, &type_ref, prefix.as_deref(), kind);
-    }
+    resolved_edges
 }
 
-/// Adds a typing or specializes edge when target may be in a different URI.
-/// Only matches targets that are actual types (part def, port def, interface, requirement def for typing;
-/// part def only for specializes).
-fn add_typing_edge_cross_document(
-    g: &mut SemanticGraph,
-    src_id: &NodeId,
+fn resolve_typing_edge_cross_document_inner(
+    g: &SemanticGraph,
+    src_node: &SemanticNode,
     type_ref: &str,
     container_prefix: Option<&str>,
     kind: RelationshipKind,
-) {
+) -> Option<NodeId> {
     let normalized_type_ref = normalize_declared_type_ref(type_ref);
     if normalized_type_ref.is_empty() {
-        return;
+        return None;
     }
     let target_element_kinds: &[&str] = match kind {
         RelationshipKind::Typing => TYPING_TARGET_KINDS,
         RelationshipKind::Specializes => SPECIALIZES_TARGET_KINDS,
-        _ => return,
-    };
-    let (Some(src_idx), Some(src_node)) =
-        (g.node_index_by_id.get(src_id).copied(), g.get_node(src_id))
-    else {
-        return;
+        _ => return None,
     };
 
     let mut targets =
         resolve_type_reference_targets(g, src_node, &normalized_type_ref, target_element_kinds);
     if let Some(prefix) = container_prefix {
-        // Preserve existing prefix-guided lookup behavior for callers that computed a more specific scope.
         for suffix_kind in DISAMBIGUATION_SUFFIX_KINDS {
             for candidate in
                 type_ref_candidates_with_kind(Some(prefix), &normalized_type_ref, suffix_kind)
@@ -464,10 +479,6 @@ fn add_typing_edge_cross_document(
             }
         }
     }
-    for tgt_id in targets {
-        if let Some(&tgt_idx) = g.node_index_by_id.get(&tgt_id) {
-            g.graph.add_edge(src_idx, tgt_idx, kind.clone());
-            return;
-        }
-    }
+
+    targets.into_iter().next()
 }

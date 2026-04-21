@@ -25,7 +25,7 @@ pub use model::{NodeId, RelationshipKind, SemanticNode};
 pub use reference_resolution::{
     resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult,
 };
-pub use relationships::add_cross_document_edges_for_uri;
+pub use relationships::{add_cross_document_edges_for_uri, resolve_cross_document_edges_for_uri};
 pub use workspace_uri::uri_under_any_library;
 
 pub(crate) use root_element::root_element_body;

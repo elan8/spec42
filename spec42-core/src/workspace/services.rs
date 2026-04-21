@@ -1,4 +1,5 @@
 use crate::common::util;
+use tracing::{debug, info, warn};
 use crate::semantic_model;
 use crate::workspace::library_search;
 use crate::workspace::state::{IndexEntry, ParseMetadata, ScanSummary, ServerState};
@@ -198,13 +199,20 @@ fn update_symbol_table_for_uri(
     }
 }
 
-fn update_semantic_graph_for_uri(state: &mut ServerState, uri: &Url, doc: Option<&RootNamespace>) {
+fn update_semantic_graph_for_uri(
+    state: &mut ServerState,
+    uri: &Url,
+    doc: Option<&RootNamespace>,
+    evaluate: bool,
+) {
     state.semantic_graph.remove_nodes_for_uri(uri);
     if let Some(doc) = doc {
         let new_graph = semantic_model::build_graph_from_doc(doc, uri);
         state.semantic_graph.merge(new_graph);
         semantic_model::add_cross_document_edges_for_uri(&mut state.semantic_graph, uri);
-        semantic_model::evaluate_expressions(&mut state.semantic_graph);
+        if evaluate {
+            semantic_model::evaluate_expressions(&mut state.semantic_graph);
+        }
     }
 }
 
@@ -225,8 +233,9 @@ pub(crate) fn store_parsed_document_text(
     parse_errors: &[String],
     diagnostic_count: usize,
     context: &str,
+    evaluate: bool,
 ) -> Option<String> {
-    update_semantic_graph_for_uri(state, uri_norm, parsed.as_ref());
+    update_semantic_graph_for_uri(state, uri_norm, parsed.as_ref(), evaluate);
     state.index.insert(
         uri_norm.clone(),
         IndexEntry {
@@ -265,6 +274,7 @@ pub(crate) fn store_document_text(
         &parse_errors,
         parsed_result.errors.len(),
         "store_document_text",
+        true,
     )
 }
 
@@ -292,6 +302,36 @@ pub(crate) fn ingest_parsed_scan_entries(
             &entry.parse_errors,
             entry.parse_errors.len(),
             "workspace_scan",
+            false,
+        );
+        loaded.push((uri_norm, warning));
+    }
+    semantic_model::evaluate_expressions(&mut state.semantic_graph);
+    loaded
+}
+
+/// A faster version of ingest_parsed_scan_entries that avoids per-document relinking/evaluation.
+/// Intended for use during startup when a full relink is performed immediately after.
+pub(crate) fn ingest_parsed_scan_entries_batch(
+    state: &mut ServerState,
+    entries: Vec<ParsedScanEntry>,
+) -> Vec<(Url, Option<String>)> {
+    let mut loaded = Vec::with_capacity(entries.len());
+    for entry in entries {
+        let uri_norm = util::normalize_file_uri(&entry.uri);
+        state.index.insert(
+            uri_norm.clone(),
+            IndexEntry {
+                content: entry.content,
+                parsed: entry.parsed,
+                parse_metadata: entry.parse_metadata,
+            },
+        );
+        let warning = warning_from_parse_errors(
+            &uri_norm,
+            &entry.parse_errors,
+            entry.parse_errors.len(),
+            "workspace_scan_batch",
         );
         loaded.push((uri_norm, warning));
     }
@@ -373,7 +413,7 @@ pub(crate) fn apply_document_changes(
             .get(uri_norm)
             .and_then(|entry| entry.parsed.as_ref())
             .cloned();
-        update_semantic_graph_for_uri(state, uri_norm, parsed.as_ref());
+        update_semantic_graph_for_uri(state, uri_norm, parsed.as_ref(), true);
         refresh_symbols_for_uri(state, uri_norm);
     }
 
@@ -410,34 +450,238 @@ pub(crate) fn rebuild_all_document_links(
     let remove_nodes_ms = elapsed_ms(remove_nodes_start);
 
     let rebuild_graphs_start = Instant::now();
-    for (uri, parsed) in &parsed_docs {
-        let new_graph = semantic_model::build_graph_from_doc(parsed, uri);
-        state.semantic_graph.merge(new_graph);
+    let worker_count = std::thread::available_parallelism()
+        .map(|count| count.get())
+        .unwrap_or(1)
+        .min(parsed_docs.len())
+        .max(1);
+
+    let mut buckets: Vec<Vec<(Url, RootNamespace)>> = (0..worker_count).map(|_| Vec::new()).collect();
+    for (i, item) in parsed_docs.into_iter().enumerate() {
+        buckets[i % worker_count].push(item);
+    }
+
+    let mut handles = Vec::with_capacity(worker_count);
+    for bucket in buckets {
+        handles.push(std::thread::spawn(move || {
+            bucket
+                .into_iter()
+                .map(|(uri, parsed)| (uri.clone(), semantic_model::build_graph_from_doc(&parsed, &uri)))
+                .collect::<Vec<_>>()
+        }));
+    }
+
+    for handle in handles {
+        let batch = handle.join().unwrap_or_default();
+        for (_uri, g) in batch {
+            state.semantic_graph.merge(g);
+        }
     }
     let rebuild_graphs_ms = elapsed_ms(rebuild_graphs_start);
 
     let cross_document_edges_start = Instant::now();
-    for uri in &uris {
-        semantic_model::add_cross_document_edges_for_uri(&mut state.semantic_graph, uri);
+    let worker_count = std::thread::available_parallelism()
+        .map(|count| count.get())
+        .unwrap_or(1)
+        .min(uris.len())
+        .max(1);
+
+    let mut uri_buckets: Vec<Vec<Url>> = (0..worker_count).map(|_| Vec::new()).collect();
+    for (i, uri) in uris.iter().enumerate() {
+        uri_buckets[i % worker_count].push(uri.clone());
+    }
+
+    let mut cross_handles = Vec::with_capacity(worker_count);
+    // Move the graph into an Arc for shared read access in workers
+    let graph_arc = std::sync::Arc::new(std::mem::take(&mut state.semantic_graph));
+
+    for bucket in uri_buckets {
+        let graph_ref = graph_arc.clone();
+        cross_handles.push(std::thread::spawn(move || {
+            let mut edges = Vec::new();
+            for uri in bucket {
+                edges.extend(semantic_model::resolve_cross_document_edges_for_uri(
+                    &graph_ref, &uri,
+                ));
+            }
+            edges
+        }));
+    }
+
+    // Move the graph back to state
+    state.semantic_graph = std::sync::Arc::try_unwrap(graph_arc).unwrap_or_else(|arc| {
+        // This shouldn't happen if all threads finished.
+        // If it does, we have to clone or return default.
+        warn!("Arc unwrap failed for semantic_graph, cloning instead.");
+        (*arc).clone()
+    });
+
+    for handle in cross_handles {
+        let edges = handle.join().unwrap_or_default();
+        for (src_id, tgt_id, kind) in edges {
+            if let (Some(&src_idx), Some(&tgt_idx)) = (
+                state.semantic_graph.node_index_by_id.get(&src_id),
+                state.semantic_graph.node_index_by_id.get(&tgt_id),
+            ) {
+                state.semantic_graph.graph.add_edge(src_idx, tgt_idx, kind);
+            }
+        }
     }
     semantic_model::evaluate_expressions(&mut state.semantic_graph);
     let cross_document_edges_ms = elapsed_ms(cross_document_edges_start);
 
     let refresh_symbols_start = Instant::now();
-    for uri in uris {
-        refresh_symbols_for_uri(state, &uri);
+    let mut all_symbols = Vec::new();
+    for uri in &uris {
+        let mut new_entries = semantic_model::symbol_entries_for_uri(&state.semantic_graph, uri);
+        if let Some(index_entry) = state.index.get(uri) {
+            library_search::add_short_name_symbol_entries(
+                &mut new_entries,
+                &index_entry.content,
+                uri,
+            );
+        }
+        all_symbols.extend(new_entries);
     }
+    state.symbol_table = all_symbols;
     let refresh_symbols_ms = elapsed_ms(refresh_symbols_start);
 
     RebuildAllDocumentLinksMetrics {
         uri_count: state.index.len(),
-        parsed_doc_count: parsed_docs.len(),
+        parsed_doc_count: uris.len(), // Use uris.len() as we processed all requested uris
         remove_nodes_ms,
         rebuild_graphs_ms,
         cross_document_edges_ms,
         refresh_symbols_ms,
         total_ms: elapsed_ms(total_start),
     }
+}
+
+/// A staged version of rebuild_all_document_links that operates on a consistent snapshot
+/// and returns the results to be committed. This allows the heavy lifting (parsing,
+/// graph building, relinking) to happen WITHOUT holding a write lock on ServerState.
+pub(crate) fn rebuild_semantic_graph_staged(
+    index: &std::collections::HashMap<Url, IndexEntry>,
+    library_paths: &[Url],
+) -> (
+    semantic_model::SemanticGraph,
+    Vec<crate::language::SymbolEntry>,
+    RebuildAllDocumentLinksMetrics,
+) {
+    let total_start = Instant::now();
+    let uris: Vec<Url> = index.keys().cloned().collect();
+    let parsed_docs: Vec<(Url, RootNamespace)> = uris
+        .iter()
+        .filter_map(|uri| {
+            index
+                .get(uri)
+                .and_then(|entry| entry.parsed.as_ref())
+                .cloned()
+                .map(|parsed| (uri.clone(), parsed))
+        })
+        .collect();
+
+    let mut semantic_graph = semantic_model::SemanticGraph::new();
+
+    let rebuild_graphs_start = Instant::now();
+    let worker_count = std::thread::available_parallelism()
+        .map(|count| count.get())
+        .unwrap_or(1)
+        .min(parsed_docs.len())
+        .max(1);
+
+    let mut buckets: Vec<Vec<(Url, RootNamespace)>> = (0..worker_count).map(|_| Vec::new()).collect();
+    for (i, item) in parsed_docs.into_iter().enumerate() {
+        buckets[i % worker_count].push(item);
+    }
+
+    let mut handles = Vec::with_capacity(worker_count);
+    for bucket in buckets {
+        handles.push(std::thread::spawn(move || {
+            bucket
+                .into_iter()
+                .map(|(uri, parsed)| {
+                    (
+                        uri.clone(),
+                        semantic_model::build_graph_from_doc(&parsed, &uri),
+                    )
+                })
+                .collect::<Vec<_>>()
+        }));
+    }
+
+    for handle in handles {
+        let batch = handle.join().unwrap_or_default();
+        for (_uri, g) in batch {
+            semantic_graph.merge(g);
+        }
+    }
+    let rebuild_graphs_ms = elapsed_ms(rebuild_graphs_start);
+
+    let cross_document_edges_start = Instant::now();
+    let mut uri_buckets: Vec<Vec<Url>> = (0..worker_count).map(|_| Vec::new()).collect();
+    for (i, uri) in uris.iter().enumerate() {
+        uri_buckets[i % worker_count].push(uri.clone());
+    }
+
+    let mut cross_handles = Vec::with_capacity(worker_count);
+    let graph_arc = std::sync::Arc::new(semantic_graph);
+
+    for bucket in uri_buckets {
+        let graph_ref = graph_arc.clone();
+        cross_handles.push(std::thread::spawn(move || {
+            let mut edges = Vec::new();
+            for uri in bucket {
+                edges.extend(semantic_model::resolve_cross_document_edges_for_uri(
+                    &graph_ref, &uri,
+                ));
+            }
+            edges
+        }));
+    }
+
+    semantic_graph = std::sync::Arc::try_unwrap(graph_arc).unwrap_or_else(|arc| (*arc).clone());
+
+    for handle in cross_handles {
+        let edges = handle.join().unwrap_or_default();
+        for (src_id, tgt_id, kind) in edges {
+            if let (Some(&src_idx), Some(&tgt_idx)) = (
+                semantic_graph.node_index_by_id.get(&src_id),
+                semantic_graph.node_index_by_id.get(&tgt_id),
+            ) {
+                semantic_graph.graph.add_edge(src_idx, tgt_idx, kind);
+            }
+        }
+    }
+    semantic_model::evaluate_expressions(&mut semantic_graph);
+    let cross_document_edges_ms = elapsed_ms(cross_document_edges_start);
+
+    let refresh_symbols_start = Instant::now();
+    let mut all_symbols = Vec::new();
+    for uri in &uris {
+        let mut new_entries = semantic_model::symbol_entries_for_uri(&semantic_graph, uri);
+        if let Some(index_entry) = index.get(uri) {
+            library_search::add_short_name_symbol_entries(
+                &mut new_entries,
+                &index_entry.content,
+                uri,
+            );
+        }
+        all_symbols.extend(new_entries);
+    }
+    let refresh_symbols_ms = elapsed_ms(refresh_symbols_start);
+
+    let metrics = RebuildAllDocumentLinksMetrics {
+        uri_count: index.len(),
+        parsed_doc_count: uris.len(),
+        remove_nodes_ms: 0, // No nodes to remove in a fresh graph
+        rebuild_graphs_ms,
+        cross_document_edges_ms,
+        refresh_symbols_ms,
+        total_ms: elapsed_ms(total_start),
+    };
+
+    (semantic_graph, all_symbols, metrics)
 }
 
 pub(crate) fn clear_documents_under_roots(state: &mut ServerState, roots: &[Url]) -> Vec<Url> {
