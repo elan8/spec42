@@ -1,0 +1,18 @@
+version: 1
+library: ObservabilityDomain
+rules:
+  - id: OBS001
+    severity: warning
+    category: telemetry
+    title: Service should expose at least one metric, log, or trace source
+    description: Important runtime elements should model observable telemetry sources.
+  - id: OBS002
+    severity: warning
+    category: slo
+    title: Service level indicator should define a signal kind
+    description: Every ServiceLevelIndicator should define whether it is based on latency, errors, throughput, or another signal.
+  - id: OBS101
+    severity: warning
+    category: alerting
+    title: Alert policy should define severity
+    description: AlertPolicy elements should define severity for operational response clarity.

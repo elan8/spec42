@@ -1,0 +1,23 @@
+version: 1
+library: GrpcDomain
+rules:
+  - id: GRPC001
+    severity: error
+    category: service
+    title: gRPC service should define at least one method
+    description: Every GrpcService should expose at least one method or explicitly be modeled as abstract.
+  - id: GRPC002
+    severity: error
+    category: method
+    title: gRPC method should define a method name
+    description: Every GrpcMethod should define a methodName so generated contracts and diagnostics remain stable.
+  - id: GRPC003
+    severity: warning
+    category: contract
+    title: Unary or streaming RPC should have explicit request and response message types
+    description: gRPC methods should be tied to explicit protobuf-based request and response contracts for compatibility checks.
+  - id: GRPC101
+    severity: warning
+    category: serialization
+    title: gRPC payloads should use protobuf contracts by default
+    description: GrpcRequest and GrpcResponse should normally specialize protobuf-oriented payload types unless a deliberate exception is modeled.

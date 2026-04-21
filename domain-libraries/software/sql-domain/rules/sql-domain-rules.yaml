@@ -1,0 +1,13 @@
+version: 1
+library: SqlDomain
+rules:
+  - id: SQL001
+    severity: error
+    category: datastore
+    title: SQL database should define an engine name
+    description: Every SqlDatabase should define an engineName for implementation mapping.
+  - id: SQL101
+    severity: warning
+    category: consistency
+    title: Relational store should define consistency mode
+    description: RelationalStore elements should describe their consistency behavior when architecturally relevant.

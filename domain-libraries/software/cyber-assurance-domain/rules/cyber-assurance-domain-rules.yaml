@@ -1,0 +1,23 @@
+version: 1
+library: CyberAssuranceDomain
+rules:
+  - id: CAD001
+    severity: warning
+    category: risk
+    title: Critical software should reference a risk assessment
+    description: SoftwarePackage or deployable software marked as business-critical should be accompanied by at least one RiskAssessment for assurance traceability.
+  - id: CAD002
+    severity: warning
+    category: evidence
+    title: Delivered software should provide SBOM or provenance evidence
+    description: SoftwarePackage and ReleaseUnit elements intended for delivery should reference an SbomArtifact or ProvenanceArtifact.
+  - id: CAD003
+    severity: warning
+    category: vulnerability
+    title: Vulnerability records should define handling or status
+    description: Every VulnerabilityRecord should define a status and should be linked to a VulnerabilityHandlingProcess for remediation traceability.
+  - id: CAD004
+    severity: warning
+    category: assurance
+    title: Externally exposed software should model assurance controls or claims
+    description: Publicly exposed or cross-boundary services should be associated with an AssuranceClaim or ControlRequirement.

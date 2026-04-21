@@ -1,0 +1,18 @@
+version: 1
+library: SerializationDomain
+rules:
+  - id: SER001
+    severity: error
+    category: payload
+    title: Serialized payload should define a media type
+    description: Every SerializedPayload should identify a media type so tooling can reason about compatibility and contract expectations.
+  - id: SER002
+    severity: warning
+    category: payload
+    title: Serialized payload should define a schema reference
+    description: A schema reference helps validation and change-impact analysis by linking a payload to an explicit contract.
+  - id: SER101
+    severity: error
+    category: protobuf
+    title: Protobuf message should define a package name
+    description: Every ProtobufMessage should define a package name to avoid ambiguous type ownership and naming collisions.

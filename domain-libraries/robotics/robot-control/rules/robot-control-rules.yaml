@@ -1,0 +1,13 @@
+version: 1
+library: RobotControl
+rules:
+  - id: CTRL001
+    severity: warning
+    category: control
+    title: Actuated robots should define a control path
+    description: Systems with modeled actuators should include at least one ControlLoop or Controller for safe and repeatable actuation.
+  - id: CTRL002
+    severity: warning
+    category: feedback
+    title: Control loops should define feedback
+    description: ControlLoop elements should use at least one FeedbackSignal or Setpoint to make the loop intent explicit.

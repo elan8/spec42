@@ -1,0 +1,13 @@
+version: 1
+library: RoboticsCore
+rules:
+  - id: ROB001
+    severity: warning
+    category: system
+    title: Robot system should define an operating mode and environment
+    description: Important RobotSystem elements should be associated with at least one RobotMode and one OperatingEnvironment.
+  - id: ROB002
+    severity: warning
+    category: power
+    title: Robot system should define a power source
+    description: Robots intended for operation should model at least one PowerSource for deployment and mission planning.

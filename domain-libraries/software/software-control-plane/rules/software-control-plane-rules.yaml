@@ -1,0 +1,28 @@
+version: 1
+library: SoftwareControlPlane
+rules:
+  - id: SWC001
+    severity: error
+    category: config
+    title: Configuration source should define a URI
+    description: Every ConfigurationSource should define a sourceUri so configuration provenance is explicit.
+  - id: SWC002
+    severity: warning
+    category: config
+    title: Secret item should be modeled separately from general config
+    description: Sensitive configuration should specialize SecretItem rather than being left as a generic ConfigurationItem.
+  - id: SWC101
+    severity: warning
+    category: operations
+    title: Deployable workload should have a health signal
+    description: Services and workloads should define at least one HealthSignal so runtime readiness and liveness can be reasoned about.
+  - id: SWC102
+    severity: warning
+    category: operations
+    title: Scaled workload should have a scaling policy
+    description: Workloads modeled for scalable deployment should define a ScalingPolicy or equivalent intent.
+  - id: SWC201
+    severity: warning
+    category: dependencies
+    title: External endpoint should be modeled explicitly
+    description: Dependencies on external runtime endpoints should be represented using ExternalEndpoint rather than remaining implicit.

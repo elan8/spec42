@@ -1,0 +1,33 @@
+version: 1
+library: DistributedSystems
+rules:
+  - id: DS001
+    severity: error
+    category: structure
+    title: No circular service dependencies
+    description: Services should not form circular dependency chains in the declared service dependency graph.
+  - id: DS002
+    severity: error
+    category: interface
+    title: Required interface must be satisfied
+    description: Every required service interface should resolve to a provider or an explicitly modeled external boundary.
+  - id: DS101
+    severity: error
+    category: interface
+    title: API interface must have a provider
+    description: Every ApiInterface should have at least one provider.
+  - id: DS201
+    severity: warning
+    category: eventing
+    title: Event should define an explicit payload
+    description: Event definitions should identify an explicit payload type for clearer contract validation.
+  - id: DS301
+    severity: error
+    category: deployment
+    title: Deployable component must be allocated
+    description: Each DeployableComponent should be allocated to at least one DeploymentNode unless modeled as external or abstract.
+  - id: DS401
+    severity: warning
+    category: policy
+    title: Prefer explicit interfaces over direct coupling
+    description: Direct service-to-service coupling without an explicit interface should be discouraged by policy checks.

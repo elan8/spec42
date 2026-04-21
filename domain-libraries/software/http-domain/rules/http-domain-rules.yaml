@@ -1,0 +1,23 @@
+version: 1
+library: HttpDomain
+rules:
+  - id: HTTP001
+    severity: error
+    category: endpoint
+    title: HTTP endpoint should define a path
+    description: Every HttpEndpoint should define a non-empty path so the exposed contract is explicit.
+  - id: HTTP002
+    severity: error
+    category: endpoint
+    title: HTTP endpoint should define a port
+    description: Every HttpEndpoint should define a port unless the deployment policy injects one from platform configuration.
+  - id: HTTP003
+    severity: warning
+    category: endpoint
+    title: HTTP endpoint should define a protocol
+    description: Every HttpEndpoint should identify its protocol explicitly, for example http or https.
+  - id: HTTP101
+    severity: warning
+    category: api
+    title: REST endpoint path should be stable and resource-oriented
+    description: RestApiEndpoint paths should prefer stable, resource-oriented naming rather than ad hoc action names.

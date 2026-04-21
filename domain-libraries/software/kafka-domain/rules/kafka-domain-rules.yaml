@@ -1,0 +1,18 @@
+version: 1
+library: KafkaDomain
+rules:
+  - id: KAFKA001
+    severity: error
+    category: topic
+    title: Kafka topic should define partitions
+    description: Every KafkaTopic should define a partition count for throughput and ordering expectations.
+  - id: KAFKA002
+    severity: warning
+    category: topic
+    title: Kafka topic should define retention
+    description: KafkaTopic elements should define retention through their EventStream base metadata.
+  - id: KAFKA101
+    severity: warning
+    category: consumer
+    title: Kafka consumer group should define a stable name
+    description: Every KafkaConsumerGroup should define a groupName for operational traceability.

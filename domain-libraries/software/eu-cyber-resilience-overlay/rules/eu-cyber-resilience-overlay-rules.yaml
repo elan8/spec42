@@ -1,0 +1,23 @@
+version: 1
+library: EuCyberResilienceOverlay
+rules:
+  - id: CRA001
+    severity: warning
+    category: lifecycle
+    title: Product should define supported lifetime
+    description: Every ProductWithDigitalElements should define a SupportedProductLifetime for support and vulnerability-management planning.
+  - id: CRA002
+    severity: warning
+    category: conformity
+    title: Conformity claims should reference technical documentation
+    description: Products modeled with ConformityAssessment or DeclarationOfConformity should reference TechnicalDocumentation as supporting evidence.
+  - id: CRA003
+    severity: warning
+    category: disclosure
+    title: Externally exposed products should model vulnerability disclosure obligations
+    description: Products connected to public or cross-boundary interfaces should explicitly model a VulnerabilityDisclosureObligation.
+  - id: CRA004
+    severity: warning
+    category: incident
+    title: Mission-relevant products should model incident reporting obligations
+    description: Products with elevated criticality or safety relevance should define an IncidentReportingDeadline or equivalent ReportingObligation.

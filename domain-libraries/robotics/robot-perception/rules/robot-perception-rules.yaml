@@ -1,0 +1,13 @@
+version: 1
+library: RobotPerception
+rules:
+  - id: PER001
+    severity: warning
+    category: sensing
+    title: Mobile or manipulator robots should model relevant sensors
+    description: Robot platforms that move through or interact with the environment should define at least one relevant Sensor or SensorSuite.
+  - id: PER002
+    severity: warning
+    category: estimation
+    title: Perception pipelines should define a state estimate
+    description: PerceptionPipeline elements should contribute to at least one StateEstimate for control or autonomy consumers.

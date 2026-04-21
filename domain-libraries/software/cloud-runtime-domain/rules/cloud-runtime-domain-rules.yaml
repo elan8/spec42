@@ -1,0 +1,18 @@
+version: 1
+library: CloudRuntimeDomain
+rules:
+  - id: CLOUD001
+    severity: warning
+    category: placement
+    title: Cloud workload should define a region or cluster
+    description: Cloud-hosted runtime elements should model placement explicitly using CloudRegion, CloudZone, or RuntimeCluster.
+  - id: CLOUD002
+    severity: warning
+    category: runtime
+    title: Managed service should define a URI
+    description: Every ManagedService should define a serviceUri for dependency and runtime visibility.
+  - id: CLOUD101
+    severity: warning
+    category: capacity
+    title: Runtime cluster should define a resource class
+    description: RuntimeCluster elements should define a resourceClass when capacity planning matters.

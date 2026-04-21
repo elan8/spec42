@@ -1,0 +1,18 @@
+version: 1
+library: MessagingDomain
+rules:
+  - id: MSG001
+    severity: error
+    category: channel
+    title: Message channel should define a name
+    description: Every MessageChannel should define a stable channel name for routing and governance.
+  - id: MSG002
+    severity: warning
+    category: stream
+    title: Event stream should define a retention policy
+    description: EventStream elements should define retention so storage and replay expectations are explicit.
+  - id: MSG101
+    severity: warning
+    category: binding
+    title: Message binding should define delivery guarantee
+    description: MessageBinding elements should identify delivery expectations such as at-most-once or at-least-once.

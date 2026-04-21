@@ -1,0 +1,18 @@
+version: 1
+library: OpenApiDomain
+rules:
+  - id: OPENAPI001
+    severity: error
+    category: specification
+    title: OpenAPI specification should define a URI
+    description: Every OpenApiSpecification should define a specificationUri so the external contract is traceable.
+  - id: OPENAPI002
+    severity: warning
+    category: operation
+    title: OpenAPI operation should define an operation id
+    description: Every OpenApiOperation should define an operationId for stable change-impact analysis and code generation hooks.
+  - id: OPENAPI101
+    severity: warning
+    category: schema
+    title: OpenAPI schema should define JSON media type and schema reference
+    description: OpenApiSchema elements should carry explicit serialized contract metadata.

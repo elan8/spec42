@@ -1,0 +1,23 @@
+version: 1
+library: KubernetesDomain
+rules:
+  - id: K8S001
+    severity: error
+    category: deployment
+    title: Kubernetes deployment should define an image
+    description: Every KubernetesDeployment should define an image to be useful for implementation mapping and deployment validation.
+  - id: K8S002
+    severity: warning
+    category: deployment
+    title: Kubernetes deployment should define replicas
+    description: A replica count should be explicit unless the scaling model is delegated to another layer.
+  - id: K8S003
+    severity: warning
+    category: service
+    title: Kubernetes service should define a port
+    description: Every KubernetesService should define a port so network exposure remains explicit.
+  - id: K8S101
+    severity: warning
+    category: cluster
+    title: Kubernetes cluster should define a cluster name
+    description: A KubernetesCluster should define a clusterName so diagnostics and deployment mappings are readable and stable.

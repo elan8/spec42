@@ -1,0 +1,13 @@
+version: 1
+library: NosqlDomain
+rules:
+  - id: NOSQL001
+    severity: warning
+    category: datastore
+    title: NoSQL store should define a data model
+    description: DocumentStore and KeyValueStore elements should define their dataModel to make the persistence role explicit.
+  - id: NOSQL101
+    severity: warning
+    category: datastore
+    title: Object store usage should be modeled explicitly
+    description: Large object persistence should prefer ObjectStore over generic DataStore modeling.

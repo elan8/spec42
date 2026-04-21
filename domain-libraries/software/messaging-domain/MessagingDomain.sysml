@@ -1,0 +1,33 @@
+package MessagingDomain {
+    import SoftwareCore::*;
+    import DistributedSystems::*;
+    import SerializationDomain::*;
+
+    attribute def DeliveryGuarantee;
+    attribute def RetentionPolicy;
+
+    part def MessageChannel specializes StreamChannel;
+
+    part def EventStream specializes MessageChannel {
+        attribute retention : RetentionPolicy;
+    }
+
+    part def Queue {
+        attribute queueName : Name;
+    }
+
+    part def Publisher {
+        attribute publisherName : Name;
+    }
+
+    part def Consumer {
+        attribute consumerName : Name;
+    }
+
+    part def MessageBinding {
+        attribute bindingName : Name;
+        attribute deliveryGuarantee : DeliveryGuarantee;
+    }
+
+    item def StreamEvent specializes Event;
+}

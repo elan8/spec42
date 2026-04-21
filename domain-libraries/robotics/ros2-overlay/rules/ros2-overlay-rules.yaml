@@ -1,0 +1,52 @@
+version: 2
+library: Ros2Overlay
+rules:
+  - id: ROS201
+    severity: error
+    category: messaging
+    title: Publisher and subscriber types must match topic type
+    scope:
+      where: RosPublisher, RosSubscriber, RosTopic
+    condition:
+      kind: topic_message_compatibility
+      publisher_field: messageTypeRef
+      subscriber_field: messageTypeRef
+      topic_field: messageTypeRef
+    message: "Type mismatch on {topicRef}: pub={publisherType} sub={subscriberType} topic={topicType}"
+    remediation: "Align endpoint types with the RosTopic.messageTypeRef value."
+  - id: ROS202
+    severity: warning
+    category: lifecycle
+    title: Lifecycle nodes should have explicit lifecycle state modeling
+    scope:
+      where: RosLifecycleNode, LifecycleState
+    condition:
+      kind: lifecycle_node_has_state
+      node_field: nodeName
+      lifecycle_field: phase
+    message: "Lifecycle node {nodeName} has no explicit lifecycle state."
+    remediation: "Model at least one LifecycleState for each RosLifecycleNode."
+  - id: ROS203
+    severity: warning
+    category: transforms
+    title: Transform frames should model parent relationship
+    scope:
+      where: RosTransformFrame
+    condition:
+      kind: frame_has_parent
+      frame_field: frameName
+      parent_field: parentFrameRef
+    message: "Frame {frameName} has no parent frame relationship."
+    remediation: "Set parentFrameRef unless the frame is the declared transform root."
+  - id: ROS204
+    severity: error
+    category: qos
+    title: Publisher and subscriber QoS should be compatible
+    scope:
+      where: RosPublisher, RosSubscriber, RosQosProfile
+    condition:
+      kind: qos_compatibility
+      publisher_qos_field: qosProfileRef
+      subscriber_qos_field: qosProfileRef
+    message: "QoS mismatch on {topicRef}: publisher={publisherQos} subscriber={subscriberQos}"
+    remediation: "Use compatible reliability, durability, and depth values."

@@ -1,0 +1,13 @@
+version: 1
+library: RobotRuntime
+rules:
+  - id: RUN001
+    severity: warning
+    category: health
+    title: Runtime nodes should expose health or lifecycle state
+    description: RuntimeNode elements should have an associated HealthMonitor or LifecycleState for runtime observability.
+  - id: RUN002
+    severity: warning
+    category: communication
+    title: Execution graphs should define communication channels
+    description: ExecutionGraph elements should model CommunicationChannel concepts for runtime coordination clarity.

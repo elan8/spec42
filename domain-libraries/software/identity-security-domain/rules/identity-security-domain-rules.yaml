@@ -1,0 +1,18 @@
+version: 1
+library: IdentitySecurityDomain
+rules:
+  - id: SEC001
+    severity: error
+    category: identity
+    title: Identity provider should define a URI
+    description: Every IdentityProvider should define a providerUri for integration and trust-boundary traceability.
+  - id: SEC002
+    severity: warning
+    category: policy
+    title: Service identity should be paired with authorization policy
+    description: ServiceIdentity elements should be governed by an AuthorizationPolicy in significant systems.
+  - id: SEC101
+    severity: warning
+    category: exposure
+    title: Public exposure should be modeled explicitly
+    description: Internet-facing or cross-boundary exposure should use an ExposureBoundary rather than remaining implicit.

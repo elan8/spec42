@@ -1,0 +1,23 @@
+version: 1
+library: SoftwareDelivery
+rules:
+  - id: SWD001
+    severity: error
+    category: repository
+    title: Source repository should define a URL
+    description: Every SourceRepository should define a repositoryUrl so ownership and delivery provenance are explicit.
+  - id: SWD101
+    severity: warning
+    category: pipeline
+    title: Delivery pipeline should define at least one stage
+    description: Every DeliveryPipeline should be backed by one or more PipelineStage concepts.
+  - id: SWD102
+    severity: warning
+    category: release
+    title: Release unit should define a version
+    description: Every ReleaseUnit should define a version for traceability and promotion control.
+  - id: SWD201
+    severity: warning
+    category: quality
+    title: Software package should be covered by a test suite
+    description: Important SoftwarePackage elements should have at least one associated TestSuite in the delivery model.

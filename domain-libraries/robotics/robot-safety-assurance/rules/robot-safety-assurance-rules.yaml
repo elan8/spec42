@@ -1,0 +1,13 @@
+version: 1
+library: RobotSafetyAssurance
+rules:
+  - id: SAF001
+    severity: warning
+    category: hazard
+    title: Safety-relevant robots should define hazards
+    description: Robots operating near people, infrastructure, or critical assets should model at least one Hazard.
+  - id: SAF002
+    severity: warning
+    category: mitigation
+    title: Hazards should define fail-safe behavior or risk controls
+    description: Each significant Hazard should be paired with a FailSafeMode, SafetyFunction, or RiskControl.
