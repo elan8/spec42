@@ -5,6 +5,8 @@ package GrpcOrdersExample {
     import GrpcDomain::*;
     import KubernetesDomain::*;
 
+    port def GrpcPort;
+
     item def GetOrderRequest :> GrpcRequest {
         attribute :>> mediaType = "application/protobuf";
         attribute :>> schema = "orders.v1.GetOrderRequest";
@@ -19,10 +21,14 @@ package GrpcOrdersExample {
 
     part def OrdersGrpc :> GrpcService {
         attribute :>> serviceName = "orders-grpc";
+        port requestIn : GrpcPort;
+        port responseOut : GrpcPort;
     }
 
     part def GetOrder :> UnaryRpc {
         attribute :>> methodName = "GetOrder";
+        port rpcIn : GrpcPort;
+        port rpcOut : GrpcPort;
     }
 
     part def OrdersCluster :> KubernetesCluster {
@@ -35,6 +41,16 @@ package GrpcOrdersExample {
         attribute :>> deploymentName = "orders-grpc";
         attribute :>> replicas = "2";
         attribute :>> image = "ghcr.io/example/orders-grpc:1.0.0";
+    }
+
+    part def GrpcOrdersSystem {
+        part ordersGrpc : OrdersGrpc;
+        part getOrder : GetOrder;
+        part ordersCluster : OrdersCluster;
+        part ordersDeployment : OrdersDeployment;
+
+        connect ordersGrpc.requestIn to getOrder.rpcIn;
+        connect getOrder.rpcOut to ordersGrpc.responseOut;
     }
 
     allocate OrdersGrpc to OrdersCluster;

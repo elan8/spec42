@@ -16,6 +16,16 @@ rules:
     category: endpoint
     title: HTTP endpoint should define a protocol
     description: Every HttpEndpoint should identify its protocol explicitly, for example http or https.
+  - id: HTTP004
+    severity: error
+    category: endpoint
+    title: HTTP endpoint should define encryption mode
+    description: Every HttpEndpoint should declare an explicit encryption mode using HttpEncryptionMode (none, tls, mtls).
+  - id: HTTP005
+    severity: warning
+    category: endpoint
+    title: HTTP protocol and encryption should align
+    description: Protocol and encryption should be consistent, for example https with tls/mtls and http with none.
   - id: HTTP101
     severity: warning
     category: api
