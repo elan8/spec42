@@ -15,38 +15,38 @@ It is organized as a self-contained workspace so it can evolve into:
 - `distributed-systems/DistributedSystems.sysml` - distributed-systems library built on `SoftwareCore`
 - `software-control-plane/SoftwareControlPlane.sysml` - neutral runtime control-plane concepts
 - `software-delivery/SoftwareDelivery.sysml` - neutral delivery and governance concepts
-- `http-domain/HttpDomain.sysml` - HTTP/API overlay built on `DistributedSystems`
-- `openapi-domain/OpenApiDomain.sysml` - HTTP contract overlay built on `HttpDomain` and `SerializationDomain`
-- `serialization-domain/SerializationDomain.sysml` - payload and encoding overlay reusable across protocols
-- `grpc-domain/GrpcDomain.sysml` - gRPC overlay built on `DistributedSystems` and `SerializationDomain`
-- `messaging-domain/MessagingDomain.sysml` - neutral asynchronous messaging overlay
-- `kafka-domain/KafkaDomain.sysml` - streaming/event platform overlay built on `MessagingDomain`
-- `sql-domain/SqlDomain.sysml` - relational data overlay
-- `nosql-domain/NosqlDomain.sysml` - non-relational data overlay
-- `identity-security-domain/IdentitySecurityDomain.sysml` - trust, identity, exposure, and policy overlay
-- `cyber-assurance-domain/CyberAssuranceDomain.sysml` - neutral assurance, evidence, risk, vulnerability, and conformity overlay
+- `http/HttpDomain.sysml` - HTTP/API overlay built on `DistributedSystems`
+- `openapi/OpenApiDomain.sysml` - HTTP contract overlay built on `HttpDomain` and `SerializationDomain`
+- `serialization/SerializationDomain.sysml` - payload and encoding overlay reusable across protocols
+- `grpc/GrpcDomain.sysml` - gRPC overlay built on `DistributedSystems` and `SerializationDomain`
+- `messaging/MessagingDomain.sysml` - neutral asynchronous messaging overlay
+- `kafka/KafkaDomain.sysml` - streaming/event platform overlay built on `MessagingDomain`
+- `sql/SqlDomain.sysml` - relational data overlay
+- `nosql/NosqlDomain.sysml` - non-relational data overlay
+- `identity-security/IdentitySecurityDomain.sysml` - trust, identity, exposure, and policy overlay
+- `cyber-assurance/CyberAssuranceDomain.sysml` - neutral assurance, evidence, risk, vulnerability, and conformity overlay
 - `eu-cyber-resilience-overlay/EuCyberResilienceOverlay.sysml` - EU Cyber Resilience Act-oriented product assurance overlay built on `CyberAssuranceDomain`
-- `observability-domain/ObservabilityDomain.sysml` - logs, metrics, traces, health, and SLO overlay
-- `kubernetes-domain/KubernetesDomain.sysml` - Kubernetes deployment overlay built on `DistributedSystems`
-- `cloud-runtime-domain/CloudRuntimeDomain.sysml` - neutral cloud/runtime deployment overlay
+- `observability/ObservabilityDomain.sysml` - logs, metrics, traces, health, and SLO overlay
+- `kubernetes/KubernetesDomain.sysml` - Kubernetes deployment overlay built on `DistributedSystems`
+- `cloud-runtime/CloudRuntimeDomain.sysml` - neutral cloud/runtime deployment overlay
 - `distributed-systems/rules/distributed-systems-rules.yaml` - external rule catalog for future tooling
 - `software-control-plane/rules/software-control-plane-rules.yaml` - runtime control-plane rule catalog
 - `software-delivery/rules/software-delivery-rules.yaml` - delivery and governance rule catalog
-- `http-domain/rules/http-domain-rules.yaml` - HTTP/API rule catalog
-- `openapi-domain/rules/openapi-domain-rules.yaml` - OpenAPI rule catalog
-- `serialization-domain/rules/serialization-domain-rules.yaml` - serialization rule catalog
-- `grpc-domain/rules/grpc-domain-rules.yaml` - gRPC rule catalog
-- `messaging-domain/rules/messaging-domain-rules.yaml` - messaging rule catalog
-- `kafka-domain/rules/kafka-domain-rules.yaml` - Kafka rule catalog
-- `sql-domain/rules/sql-domain-rules.yaml` - SQL data rule catalog
-- `nosql-domain/rules/nosql-domain-rules.yaml` - NoSQL data rule catalog
-- `identity-security-domain/rules/identity-security-domain-rules.yaml` - identity and security rule catalog
-- `cyber-assurance-domain/rules/cyber-assurance-domain-rules.yaml` - assurance, evidence, and vulnerability-management rule catalog
+- `http/rules/http-domain-rules.yaml` - HTTP/API rule catalog
+- `openapi/rules/openapi-domain-rules.yaml` - OpenAPI rule catalog
+- `serialization/rules/serialization-domain-rules.yaml` - serialization rule catalog
+- `grpc/rules/grpc-domain-rules.yaml` - gRPC rule catalog
+- `messaging/rules/messaging-domain-rules.yaml` - messaging rule catalog
+- `kafka/rules/kafka-domain-rules.yaml` - Kafka rule catalog
+- `sql/rules/sql-domain-rules.yaml` - SQL data rule catalog
+- `nosql/rules/nosql-domain-rules.yaml` - NoSQL data rule catalog
+- `identity-security/rules/identity-security-domain-rules.yaml` - identity and security rule catalog
+- `cyber-assurance/rules/cyber-assurance-domain-rules.yaml` - assurance, evidence, and vulnerability-management rule catalog
 - `eu-cyber-resilience-overlay/rules/eu-cyber-resilience-overlay-rules.yaml` - CRA-oriented product assurance and reporting rule catalog
-- `observability-domain/rules/observability-domain-rules.yaml` - observability rule catalog
-- `kubernetes-domain/rules/kubernetes-domain-rules.yaml` - Kubernetes rule catalog
-- `cloud-runtime-domain/rules/cloud-runtime-domain-rules.yaml` - cloud runtime rule catalog
-- `distributed-systems/examples/` - valid and intentionally invalid examples
+- `observability/rules/observability-domain-rules.yaml` - observability rule catalog
+- `kubernetes/rules/kubernetes-domain-rules.yaml` - Kubernetes rule catalog
+- `cloud-runtime/rules/cloud-runtime-domain-rules.yaml` - cloud runtime rule catalog
+- `examples/` - consolidated examples, grouped by library package
 - `reference-workspace/` - integrated end-to-end example workspace
 
 ## Notes
