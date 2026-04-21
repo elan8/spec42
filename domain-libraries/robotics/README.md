@@ -38,8 +38,11 @@ It is organized as a self-contained workspace so it can evolve into:
 - The ROS 2 overlay now models generation-critical abstractions: runtime component mapping, endpoint ports, connections, deployment units, and traceability entries.
 - The inspection rover example encodes explicit part hierarchy (`RoverSystem -> RoverRuntimeArchitecture`), typed ports, and connector wiring for deterministic endpoint bindings.
 - Core generation targets are represented directly in-model: interface types (`msg/srv/action` refs), launch/config mapping, package/executable mapping, and artifact traceability.
+- Full ROS2 config generation coverage now includes launch mode/include/group modeling, parameter profiles, remaps, TF authority declarations, lifecycle manager sequencing, manifest dependency declarations, and security enclave/policy mappings.
+- The inspection rover example models reusable platform package mappings for Nav2, robot_localization, and ros2_control, while keeping mission-specific logic in the bringup package.
+- Generation artifacts/traceability are expected for launch files, runtime/nav2/security parameter files, package manifests (`package.xml`, `CMakeLists.txt`), interface outputs, and security policy artifacts.
 - ROS 2 value fields are typed where possible; string literals are used mainly for cross-element references and external ROS identifiers.
-- ROS 2 rules cover both semantic runtime checks and generation-readiness checks for mapping completeness and typed parameter defaults.
+- ROS 2 rules cover semantic runtime checks and full-config generation-readiness checks for launch, params, manifests, interfaces, TF, lifecycle, remaps, and security completeness.
 - Neutral robotics concepts stay separate from ROS 2-specific concepts so robots can be modeled with or without middleware commitments.
 - Safety and assurance are explicit overlays rather than being folded into the robotics kernel.
 - Future overlays can add ecosystem-specific content such as Nav2, MoveIt, Gazebo, industrial cells, or safety-standard mappings without restructuring the core packages.

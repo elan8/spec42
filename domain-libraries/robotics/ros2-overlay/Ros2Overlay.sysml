@@ -29,6 +29,22 @@ package Ros2Overlay {
     attribute def ReliabilityPolicy;
     attribute def DurabilityPolicy;
     attribute def QueueDepth;
+    attribute def ProfileName;
+    attribute def LaunchModeKind;
+    attribute def IncludeRef;
+    attribute def ConditionExpr;
+    attribute def SourceName;
+    attribute def TargetName;
+    attribute def FrameRef;
+    attribute def FrameAuthorityKind;
+    attribute def ManagedNodeOrder;
+    attribute def TargetLifecycleState;
+    attribute def EnclaveRef;
+    attribute def SecurityPolicyRef;
+    attribute def KeystorePathRef;
+    attribute def DependencyKind;
+    attribute def DependencyPackageRef;
+    attribute def ParameterFileRef;
 
     part def RosNode :> RuntimeNode;
     part def RosRuntimeComponent :> RosNode {
@@ -137,6 +153,61 @@ package Ros2Overlay {
         attribute name : Name;
         attribute launchGroupName : LaunchGroupName;
         attribute packageRef : PackageRef;
+        attribute launchMode : LaunchModeKind;
+    }
+
+    part def RosLaunchInclude {
+        attribute name : Name;
+        attribute includeRef : IncludeRef;
+        attribute conditionExpr : ConditionExpr;
+    }
+
+    part def RosLaunchGroup {
+        attribute name : Name;
+        attribute conditionExpr : ConditionExpr;
+    }
+
+    part def RosRemapRule {
+        attribute name : Name;
+        attribute sourceName : SourceName;
+        attribute targetName : TargetName;
+        attribute ownerNodeRef : NodeRef;
+    }
+
+    part def RosParameterProfile {
+        attribute name : ProfileName;
+        attribute parameterFileRef : ParameterFileRef;
+        attribute ownerNodeRef : NodeRef;
+    }
+
+    part def RosTfProducer {
+        attribute name : Name;
+        attribute sourceFrameRef : FrameRef;
+        attribute targetFrameRef : FrameRef;
+        attribute authorityKind : FrameAuthorityKind;
+        attribute ownerNodeRef : NodeRef;
+    }
+
+    part def RosLifecycleManagerConfig {
+        attribute name : Name;
+        attribute managerNodeRef : NodeRef;
+        attribute managedNodeOrder : ManagedNodeOrder;
+        attribute targetState : TargetLifecycleState;
+    }
+
+    part def RosSecurityProfile {
+        attribute name : Name;
+        attribute ownerNodeRef : NodeRef;
+        attribute enclaveRef : EnclaveRef;
+        attribute securityPolicyRef : SecurityPolicyRef;
+        attribute keystorePathRef : KeystorePathRef;
+    }
+
+    part def RosManifestDependency {
+        attribute name : Name;
+        attribute ownerPackageRef : PackageRef;
+        attribute dependencyKind : DependencyKind;
+        attribute dependencyPackageRef : DependencyPackageRef;
     }
 
     part def RosDeploymentUnit {

@@ -110,3 +110,69 @@ rules:
       model_field: modelElementId
     message: "Generated artifact mapping is missing traceability coverage."
     remediation: "Add RosTraceabilityEntry records for each generated artifact path."
+  - id: ROS306
+    severity: error
+    category: generation
+    title: Launch descriptions should declare launch mode and package
+    scope:
+      where: RosLaunchDescription
+    condition:
+      kind: required_fields_present
+      required_fields: launchMode, packageRef, launchGroupName
+    message: "Launch description {name} is missing launch mode/group/package mapping."
+    remediation: "Set launchMode, launchGroupName, and packageRef on each RosLaunchDescription."
+  - id: ROS307
+    severity: error
+    category: generation
+    title: TF producers should define source, target, authority, and owner
+    scope:
+      where: RosTfProducer
+    condition:
+      kind: required_fields_present
+      required_fields: sourceFrameRef, targetFrameRef, authorityKind, ownerNodeRef
+    message: "TF producer {name} is missing frame authority mapping."
+    remediation: "Set sourceFrameRef, targetFrameRef, authorityKind, and ownerNodeRef."
+  - id: ROS308
+    severity: error
+    category: generation
+    title: Lifecycle manager configuration should declare manager, order, and target state
+    scope:
+      where: RosLifecycleManagerConfig
+    condition:
+      kind: required_fields_present
+      required_fields: managerNodeRef, managedNodeOrder, targetState
+    message: "Lifecycle manager config {name} is missing managed-node sequencing."
+    remediation: "Populate managerNodeRef, managedNodeOrder, and targetState."
+  - id: ROS309
+    severity: warning
+    category: generation
+    title: Security profiles should map nodes to enclave and policy
+    scope:
+      where: RosSecurityProfile
+    condition:
+      kind: required_fields_present
+      required_fields: ownerNodeRef, enclaveRef, securityPolicyRef
+    message: "Security profile {name} is missing enclave/policy mapping."
+    remediation: "Define ownerNodeRef, enclaveRef, and securityPolicyRef for each security profile."
+  - id: ROS310
+    severity: warning
+    category: generation
+    title: Manifest dependencies should declare package and dependency kind
+    scope:
+      where: RosManifestDependency
+    condition:
+      kind: required_fields_present
+      required_fields: ownerPackageRef, dependencyKind, dependencyPackageRef
+    message: "Manifest dependency {name} is incomplete."
+    remediation: "Set ownerPackageRef, dependencyKind, and dependencyPackageRef."
+  - id: ROS311
+    severity: warning
+    category: generation
+    title: Parameter profiles should bind nodes to parameter files
+    scope:
+      where: RosParameterProfile
+    condition:
+      kind: required_fields_present
+      required_fields: ownerNodeRef, parameterFileRef
+    message: "Parameter profile {name} is missing node/file binding."
+    remediation: "Set ownerNodeRef and parameterFileRef on each RosParameterProfile."
