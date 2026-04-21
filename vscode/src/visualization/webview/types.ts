@@ -15,6 +15,7 @@ export interface RenderContext {
     activityLayoutDirection: string;
     stateLayoutOrientation: string;
     selectedDiagramIndex: number;
+    selectedDiagramId?: string | null;
     postMessage: (msg: unknown) => void;
     onStartInlineEdit: (nodeG: any, elementName: string, x: number, y: number, width: number) => void;
     renderPlaceholder: (width: number, height: number, viewName: string, message: string, data: any) => void;

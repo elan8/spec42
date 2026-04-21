@@ -1244,6 +1244,24 @@ fn lsp_sysml_model_activity_diagrams_from_surveillance_drone_example_are_non_emp
         "expected ExecutePatrol or CaptureVideo activity diagram; got names: {:?}",
         diagram_names
     );
+    let execute_patrol = diagrams
+        .iter()
+        .find(|diagram| diagram["name"].as_str() == Some("ExecutePatrol"))
+        .expect("ExecutePatrol activity diagram");
+    assert!(
+        execute_patrol["flows"]
+            .as_array()
+            .map(|flows| !flows.is_empty())
+            .unwrap_or(false),
+        "expected ExecutePatrol activity diagram to include explicit flows"
+    );
+    assert!(
+        execute_patrol["actions"]
+            .as_array()
+            .map(|actions| !actions.is_empty())
+            .unwrap_or(false),
+        "expected ExecutePatrol activity diagram to include explicit action steps"
+    );
 
     let _ = child.kill();
 }

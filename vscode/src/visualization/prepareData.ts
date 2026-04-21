@@ -94,6 +94,66 @@ export function prepareDataForView(data: any, view: string): any {
 
     const allElements = collectAllElements(elements);
 
+    const normalizePath = (value: any): string => String(value || '').replace(/::/g, '.').trim();
+    const toPackagePath = (value: string): string => {
+        const normalized = normalizePath(value);
+        if (!normalized) return '';
+        const segments = normalized.split('.').filter(Boolean);
+        if (segments.length <= 1) return '';
+        return segments.slice(0, -1).join('::');
+    };
+    const countWithFallback = (values: any, fallback = 0): number =>
+        Array.isArray(values) ? values.length : fallback;
+    const elementIdentityMeta = new Map<string, { stableId: string; qualifiedPath: string; packagePath: string }>();
+    const registerElementMeta = (el: any, ancestry: string[]) => {
+        const name = String(el?.name || '').trim();
+        const explicitId = String(el?.id || '').trim();
+        const explicitQualified = normalizePath(el?.qualifiedName || el?.attributes?.qualifiedName || '');
+        const fallbackQualified = [...ancestry, name].filter(Boolean).join('.');
+        const qualifiedPath = explicitQualified || fallbackQualified || explicitId || name;
+        const stableId = explicitId || qualifiedPath || name;
+        const packagePath = toPackagePath(qualifiedPath) || ancestry.join('::');
+        [
+            explicitId,
+            name,
+            explicitQualified,
+            qualifiedPath,
+        ].filter(Boolean).forEach((key) => {
+            elementIdentityMeta.set(String(key), { stableId, qualifiedPath, packagePath });
+        });
+        if (Array.isArray(el?.children) && el.children.length > 0) {
+            const nextAncestry = name ? [...ancestry, name] : ancestry;
+            el.children.forEach((child: any) => registerElementMeta(child, nextAncestry));
+        }
+    };
+    elements.forEach((el: any) => registerElementMeta(el, []));
+    const lookupElementMeta = (candidate: any, fallbackName?: string) => {
+        const keys = [
+            candidate?.id,
+            candidate?.qualifiedName,
+            candidate?.attributes?.qualifiedName,
+            candidate?.name,
+            fallbackName,
+        ].filter(Boolean);
+        for (const key of keys) {
+            const direct = elementIdentityMeta.get(String(key));
+            if (direct) return direct;
+            const normalized = normalizePath(key);
+            if (normalized) {
+                const normalizedMatch = elementIdentityMeta.get(normalized);
+                if (normalizedMatch) return normalizedMatch;
+            }
+        }
+        const fallbackQualified = normalizePath(candidate?.qualifiedName || candidate?.id || fallbackName || candidate?.name || '');
+        return {
+            stableId: String(candidate?.id || fallbackQualified || fallbackName || candidate?.name || '').trim(),
+            qualifiedPath: fallbackQualified,
+            packagePath: toPackagePath(fallbackQualified),
+        };
+    };
+    const buildSelectorLabel = (name: string, packagePath: string): string =>
+        packagePath ? `${name} - ${packagePath}` : name;
+
     switch (view) {
         case 'general-view':
             return data;
@@ -127,64 +187,6 @@ export function prepareDataForView(data: any, view: string): any {
                         - (isInstance ? 5 : 0)
                     );
                 };
-                const pickCanonicalRootsForAllPackages = (): string[] => {
-                    const packageGroups = ibdPackageContainerGroups;
-                    if (!packageGroups.length || !ibdRootCandidates.length) {
-                        return ibdRootCandidates;
-                    }
-                    const selectedRoots = new Set<string>();
-                    packageGroups.forEach((pkg: any) => {
-                        const members = new Set(Array.isArray(pkg?.memberPartIds) ? pkg.memberPartIds : []);
-                        const candidates = ibdRootCandidates.filter((name) => {
-                            const rootView = rootViews[name] || {};
-                            return Array.isArray(rootView.parts)
-                                && rootView.parts.some((part: any) => members.has(part?.id));
-                        });
-                        if (!candidates.length) return;
-                        candidates.sort((a, b) => {
-                            const scoreDelta = rootDisplayScore(b) - rootDisplayScore(a);
-                            if (scoreDelta !== 0) return scoreDelta;
-                            return a.localeCompare(b);
-                        });
-                        selectedRoots.add(candidates[0]);
-                    });
-                    return selectedRoots.size > 0 ? Array.from(selectedRoots) : ibdRootCandidates;
-                };
-                const mergeRoots = (rootNames: string[]) => {
-                    const partsById = new Map<string, any>();
-                    const portsByKey = new Map<string, any>();
-                    const connectorsByKey = new Map<string, any>();
-                    const containerGroupsById = new Map<string, any>();
-                    rootNames.forEach((name) => {
-                        const rootView = rootViews[name] || {};
-                        (Array.isArray(rootView.parts) ? rootView.parts : []).forEach((part: any) => {
-                            const key = String(part?.id || part?.qualifiedName || part?.name || '');
-                            if (key && !partsById.has(key)) partsById.set(key, part);
-                        });
-                        (Array.isArray(rootView.ports) ? rootView.ports : []).forEach((port: any) => {
-                            const key = `${String(port?.parentId || '')}::${String(port?.name || port?.id || '')}`;
-                            if (key && !portsByKey.has(key)) portsByKey.set(key, port);
-                        });
-                        (Array.isArray(rootView.connectors) ? rootView.connectors : []).forEach((connector: any) => {
-                            const key = [
-                                String(connector?.sourceId || connector?.source || ''),
-                                String(connector?.targetId || connector?.target || ''),
-                                String(connector?.type || ''),
-                            ].join('::');
-                            if (key && !connectorsByKey.has(key)) connectorsByKey.set(key, connector);
-                        });
-                        (Array.isArray(rootView.containerGroups) ? rootView.containerGroups : []).forEach((group: any) => {
-                            const key = String(group?.id || '');
-                            if (key && !containerGroupsById.has(key)) containerGroupsById.set(key, group);
-                        });
-                    });
-                    return {
-                        parts: Array.from(partsById.values()),
-                        ports: Array.from(portsByKey.values()),
-                        connectors: Array.from(connectorsByKey.values()),
-                        containerGroups: Array.from(containerGroupsById.values()),
-                    };
-                };
                 const ibd = data.ibd as {
                     parts: any[];
                     ports?: any[];
@@ -208,50 +210,17 @@ export function prepareDataForView(data: any, view: string): any {
                 const ibdPackageContainerGroups = Array.isArray(ibd.packageContainerGroups) ? ibd.packageContainerGroups : [];
                 const ibdRootCandidates = Array.isArray(ibd.rootCandidates) ? ibd.rootCandidates : [];
                 const rootViews = (ibd.rootViews && typeof ibd.rootViews === 'object') ? ibd.rootViews : {};
-                const hasSpecificPackageSelection = Boolean(data.selectedPackage || data.selectedPackageName);
-                if (!hasSpecificPackageSelection) {
-                    if (ibdPackageContainerGroups.length === 0) {
-                        return {
-                            ...data,
-                            elements: ibdParts,
-                            parts: ibdParts,
-                            ports: ibdPorts,
-                            connectors: ibdConnectors,
-                            containerGroups: ibdContainerGroups,
-                            packageContainerGroups: [],
-                            ibdRootCandidates: ibdRootCandidates,
-                            ibdRootSummaries: ibdRootCandidates.map((name) => {
-                                const rootView = rootViews[name] || {};
-                                return {
-                                    name,
-                                    partCount: Array.isArray(rootView.parts) ? rootView.parts.length : 0,
-                                    portCount: Array.isArray(rootView.ports) ? rootView.ports.length : 0,
-                                    connectorCount: Array.isArray(rootView.connectors) ? rootView.connectors.length : 0,
-                                };
-                            }),
-                            selectedIbdRoot: null,
-                        };
-                    }
-                    const canonicalRoots = pickCanonicalRootsForAllPackages();
-                    const merged = mergeRoots(canonicalRoots);
+                if (ibdRootCandidates.length === 0 || Object.keys(rootViews).length === 0) {
                     return {
                         ...data,
-                        elements: merged.parts,
-                        parts: merged.parts,
-                        ports: merged.ports,
-                        connectors: merged.connectors,
-                        containerGroups: merged.containerGroups,
+                        elements: ibdParts,
+                        parts: ibdParts,
+                        ports: ibdPorts,
+                        connectors: ibdConnectors,
+                        containerGroups: ibdContainerGroups,
                         packageContainerGroups: ibdPackageContainerGroups,
-                        ibdRootCandidates: canonicalRoots,
-                        ibdRootSummaries: canonicalRoots.map((name) => {
-                            const rootView = rootViews[name] || {};
-                            return {
-                                name,
-                                partCount: Array.isArray(rootView.parts) ? rootView.parts.length : 0,
-                                portCount: Array.isArray(rootView.ports) ? rootView.ports.length : 0,
-                                connectorCount: Array.isArray(rootView.connectors) ? rootView.connectors.length : 0,
-                            };
-                        }),
+                        ibdRootCandidates: [],
+                        ibdRootSummaries: [],
                         selectedIbdRoot: null,
                     };
                 }
@@ -285,6 +254,23 @@ export function prepareDataForView(data: any, view: string): any {
                         if (scoreDelta !== 0) return scoreDelta;
                         return a.localeCompare(b);
                     });
+                const ibdRootSummaries = availableRoots.map((name) => {
+                    const rootView = rootViews[name] || {};
+                    const rootPart =
+                        topLevelRootPartByName.get(name)
+                        || (Array.isArray(rootView.parts) ? rootView.parts.find((part: any) => !part?.containerId) : null)
+                        || null;
+                    const meta = lookupElementMeta(rootPart, name);
+                    return {
+                        id: meta.stableId || name,
+                        name,
+                        label: buildSelectorLabel(name, meta.packagePath),
+                        packagePath: meta.packagePath,
+                        partCount: countWithFallback(rootView.parts),
+                        portCount: countWithFallback(rootView.ports),
+                        connectorCount: countWithFallback(rootView.connectors),
+                    };
+                });
                 const explicitSelection = (typeof data.selectedIbdRoot === 'string' && data.selectedIbdRoot.trim().length > 0)
                     ? data.selectedIbdRoot
                     : null;
@@ -297,21 +283,12 @@ export function prepareDataForView(data: any, view: string): any {
                 const selectedParts = Array.isArray(selectedRootView?.parts) ? selectedRootView.parts : ibdParts;
                 const selectedPorts = Array.isArray(selectedRootView?.ports) ? selectedRootView.ports : ibdPorts;
                 const selectedConnectors = Array.isArray(selectedRootView?.connectors) ? selectedRootView.connectors : ibdConnectors;
-                const selectedContainerGroups = Array.isArray(selectedRootView?.containerGroups)
+                const selectedContainerGroups = Array.isArray(selectedRootView?.containerGroups) && selectedRootView.containerGroups.length > 0
                     ? selectedRootView.containerGroups
                     : ibdContainerGroups;
-                const selectedPackageContainerGroups = Array.isArray(selectedRootView?.packageContainerGroups)
+                const selectedPackageContainerGroups = Array.isArray(selectedRootView?.packageContainerGroups) && selectedRootView.packageContainerGroups.length > 0
                     ? selectedRootView.packageContainerGroups
                     : ibdPackageContainerGroups;
-                const ibdRootSummaries = availableRoots.map((name) => {
-                    const rootView = rootViews[name] || {};
-                    return {
-                        name,
-                        partCount: Array.isArray(rootView.parts) ? rootView.parts.length : 0,
-                        portCount: Array.isArray(rootView.ports) ? rootView.ports.length : 0,
-                        connectorCount: Array.isArray(rootView.connectors) ? rootView.connectors.length : 0,
-                    };
-                });
                 return {
                     ...data,
                     elements: selectedParts,
@@ -320,7 +297,7 @@ export function prepareDataForView(data: any, view: string): any {
                     connectors: selectedConnectors,
                     containerGroups: selectedContainerGroups,
                     packageContainerGroups: selectedPackageContainerGroups,
-                    ibdRootCandidates: availableRoots,
+                    ibdRootCandidates: ibdRootSummaries,
                     ibdRootSummaries,
                     selectedIbdRoot: selectedRoot,
                 };
@@ -341,99 +318,138 @@ export function prepareDataForView(data: any, view: string): any {
         }
 
         case 'action-flow-view': {
+            const actionElementsByName = new Map<string, any[]>();
+            allElements.forEach((el: any) => {
+                const typeLower = String(el?.type || '').toLowerCase();
+                if (typeLower === 'action' || typeLower === 'action def' || typeLower === 'action definition') {
+                    const key = String(el?.name || '').trim();
+                    if (!actionElementsByName.has(key)) actionElementsByName.set(key, []);
+                    actionElementsByName.get(key)!.push(el);
+                }
+            });
+            const takeActionMeta = (diagram: any, fallbackIndex: number) => {
+                const matches = actionElementsByName.get(String(diagram?.name || '').trim()) || [];
+                const matchedElement = matches.shift() || null;
+                const meta = lookupElementMeta(matchedElement || diagram, `activity-diagram-${fallbackIndex + 1}`);
+                return {
+                    id: meta.stableId || String(diagram?.name || `activity-diagram-${fallbackIndex + 1}`),
+                    packagePath: meta.packagePath,
+                };
+            };
+            const rankActionDiagram = (diagram: any): number => {
+                const flowCount = countWithFallback(diagram?.flows);
+                const nodeCount = countWithFallback(diagram?.nodes) || countWithFallback(diagram?.actions);
+                return flowCount * 100 + nodeCount * 10;
+            };
             if (data.activityDiagrams && data.activityDiagrams.length > 0) {
+                const diagrams = data.activityDiagrams.map((diagram: any, index: number) => {
+                    const meta = takeActionMeta(diagram, index);
+                    const decisionsAsNodes = (diagram.decisions || []).map((d: any) => ({
+                        ...d,
+                        id: d.id || d.name,
+                        type: 'decision',
+                        kind: 'decision'
+                    }));
+
+                    const stateNodes = (diagram.states || [])
+                        .map((state: any, idx: number) => ({
+                            ...state,
+                            id: state.id || state.name || `state_${idx + 1}`,
+                            name: state.name || state.id || `State ${idx + 1}`,
+                            type: state.type || state.stateType || 'state',
+                            kind: state.type || state.stateType || 'state'
+                        }))
+                        .filter((state: any) => {
+                            const kind = String(state.kind || state.type || '').toLowerCase();
+                            return ['initial', 'final', 'decision', 'merge', 'fork', 'join'].some((allowed) => kind.includes(allowed));
+                        });
+
+                    const allNodes = [
+                        ...(diagram.actions || []).map((a: any) => ({
+                            ...a,
+                            id: a.id || a.name,
+                            inputs: Array.isArray(a.inputs) ? a.inputs : [],
+                            outputs: Array.isArray(a.outputs) ? a.outputs : [],
+                            parent: (a.parent === diagram.name) ? undefined : a.parent
+                        })),
+                        ...decisionsAsNodes,
+                        ...stateNodes
+                    ];
+
+                    const allowedKinds = new Set(['action', 'perform', 'decision', 'merge', 'fork', 'join', 'initial', 'final']);
+                    const nodes = allNodes.filter((node: any) => {
+                        const kind = String(node.kind || node.type || 'action').toLowerCase();
+                        return allowedKinds.has(kind);
+                    });
+
+                    const nodeIds = new Set(nodes.map((node: any) => node.id || node.name));
+                    const flows = (diagram.flows || []).map((flow: any, idx: number) => ({
+                        ...flow,
+                        id: flow.id || `${diagram.name}::flow::${idx + 1}`,
+                        flowKind: flow.flowKind || flow.type || 'control'
+                    }));
+                    const incomingFlowCount = new Map<string, number>();
+                    const outgoingFlowCount = new Map<string, number>();
+
+                    flows.forEach((f: any) => {
+                        if (f.from && nodeIds.has(f.from)) {
+                            outgoingFlowCount.set(f.from, (outgoingFlowCount.get(f.from) || 0) + 1);
+                        }
+                        if (f.to && nodeIds.has(f.to)) {
+                            incomingFlowCount.set(f.to, (incomingFlowCount.get(f.to) || 0) + 1);
+                        }
+                    });
+
+                    const cleanFlows = flows.filter((f: any) =>
+                        f.from !== f.to &&
+                        nodeIds.has(f.from) &&
+                        nodeIds.has(f.to)
+                    );
+
+                    return {
+                        id: meta.id,
+                        name: diagram.name,
+                        label: buildSelectorLabel(String(diagram.name || `Action ${index + 1}`), meta.packagePath),
+                        packagePath: meta.packagePath,
+                        nodes: nodes.map((node: any) => {
+                            const nodeId = node.id || node.name;
+                            const incoming = incomingFlowCount.get(nodeId) || 0;
+                            const outgoing = outgoingFlowCount.get(nodeId) || 0;
+                            const hasGuards = cleanFlows.some((flow: any) => flow.from === nodeId && (flow.guard || flow.condition));
+                            let normalizedKind = String(node.kind || node.type || 'action').toLowerCase();
+                            if (normalizedKind === 'action' && outgoing > 1 && hasGuards) normalizedKind = 'decision';
+                            else if (normalizedKind === 'action' && outgoing > 1) normalizedKind = 'fork';
+                            else if (normalizedKind === 'action' && incoming > 1) normalizedKind = 'merge';
+                            return {
+                                ...node,
+                                id: nodeId,
+                                name: node.name || nodeId || 'Action',
+                                kind: normalizedKind,
+                            };
+                        }),
+                        flows: cleanFlows,
+                        interface: {
+                            inputs: Array.isArray(diagram.interface?.inputs) ? diagram.interface.inputs : [],
+                            outputs: Array.isArray(diagram.interface?.outputs) ? diagram.interface.outputs : [],
+                        },
+                        hasBehavioralFlow: cleanFlows.length > 0,
+                    };
+                }).sort((a: any, b: any) => {
+                    const scoreDelta = rankActionDiagram(b) - rankActionDiagram(a);
+                    if (scoreDelta !== 0) return scoreDelta;
+                    return String(a.label || a.name).localeCompare(String(b.label || b.name));
+                });
                 return {
                     ...data,
-                    diagrams: data.activityDiagrams.map((diagram: any) => {
-                        const decisionsAsNodes = (diagram.decisions || []).map((d: any) => ({
-                            ...d,
-                            id: d.id || d.name,
-                            type: 'decision',
-                            kind: 'decision'
-                        }));
-
-                        const stateNodes = (diagram.states || [])
-                            .map((state: any, idx: number) => ({
-                                ...state,
-                                id: state.id || state.name || `state_${idx + 1}`,
-                                name: state.name || state.id || `State ${idx + 1}`,
-                                type: state.type || state.stateType || 'state',
-                                kind: state.type || state.stateType || 'state'
-                            }))
-                            .filter((state: any) => {
-                                const kind = String(state.kind || state.type || '').toLowerCase();
-                                return ['initial', 'final', 'decision', 'merge', 'fork', 'join'].some((allowed) => kind.includes(allowed));
-                            });
-
-                        const allNodes = [
-                            ...(diagram.actions || []).map((a: any) => ({
-                                ...a,
-                                id: a.id || a.name,
-                                inputs: Array.isArray(a.inputs) ? a.inputs : [],
-                                outputs: Array.isArray(a.outputs) ? a.outputs : [],
-                                parent: (a.parent === diagram.name) ? undefined : a.parent
-                            })),
-                            ...decisionsAsNodes,
-                            ...stateNodes
-                        ];
-
-                        const allowedKinds = new Set(['action', 'perform', 'decision', 'merge', 'fork', 'join', 'initial', 'final']);
-                        const nodes = allNodes.filter((node: any) => {
-                            const kind = String(node.kind || node.type || 'action').toLowerCase();
-                            return allowedKinds.has(kind);
-                        });
-
-                        const nodeIds = new Set(nodes.map((node: any) => node.id || node.name));
-                        const flows = (diagram.flows || []).map((flow: any, idx: number) => ({
-                            ...flow,
-                            id: flow.id || `${diagram.name}::flow::${idx + 1}`,
-                            flowKind: flow.flowKind || flow.type || 'control'
-                        }));
-                        const incomingFlowCount = new Map<string, number>();
-                        const outgoingFlowCount = new Map<string, number>();
-
-                        flows.forEach((f: any) => {
-                            if (f.from && nodeIds.has(f.from)) {
-                                outgoingFlowCount.set(f.from, (outgoingFlowCount.get(f.from) || 0) + 1);
-                            }
-                            if (f.to && nodeIds.has(f.to)) {
-                                incomingFlowCount.set(f.to, (incomingFlowCount.get(f.to) || 0) + 1);
-                            }
-                        });
-
-                        const cleanFlows = flows.filter((f: any) =>
-                            f.from !== f.to &&
-                            nodeIds.has(f.from) &&
-                            nodeIds.has(f.to)
-                        );
-
-                        return {
-                            name: diagram.name,
-                            nodes: nodes.map((node: any) => {
-                                const nodeId = node.id || node.name;
-                                const incoming = incomingFlowCount.get(nodeId) || 0;
-                                const outgoing = outgoingFlowCount.get(nodeId) || 0;
-                                const hasGuards = cleanFlows.some((flow: any) => flow.from === nodeId && (flow.guard || flow.condition));
-                                let normalizedKind = String(node.kind || node.type || 'action').toLowerCase();
-                                if (normalizedKind === 'action' && outgoing > 1 && hasGuards) normalizedKind = 'decision';
-                                else if (normalizedKind === 'action' && outgoing > 1) normalizedKind = 'fork';
-                                else if (normalizedKind === 'action' && incoming > 1) normalizedKind = 'merge';
-
-                                return {
-                                    ...node,
-                                    id: nodeId,
-                                    name: node.name || nodeId || 'Action',
-                                    kind: normalizedKind,
-                                };
-                            }),
-                            flows: cleanFlows,
-                            interface: {
-                                inputs: Array.isArray(diagram.interface?.inputs) ? diagram.interface.inputs : [],
-                                outputs: Array.isArray(diagram.interface?.outputs) ? diagram.interface.outputs : [],
-                            },
-                            hasBehavioralFlow: cleanFlows.length > 0,
-                        };
-                    })
+                    diagrams,
+                    activityDiagramCandidates: diagrams.map((diagram: any) => ({
+                        id: diagram.id,
+                        name: diagram.name,
+                        label: diagram.label,
+                        packagePath: diagram.packagePath,
+                        nodeCount: countWithFallback(diagram.nodes),
+                        flowCount: countWithFallback(diagram.flows),
+                    })),
                 };
             }
 
@@ -444,43 +460,61 @@ export function prepareDataForView(data: any, view: string): any {
             });
             const activityActionDefs = actionDefs.filter((a: any) => a.children && a.children.length > 0);
 
+            const diagrams = activityActionDefs.map((actionDef: any, index: number) => {
+                const meta = lookupElementMeta(actionDef, `activity-diagram-${index + 1}`);
+                const nodes = actionDef.children
+                    .filter((c: any) => {
+                        const type = String(c.type || '').toLowerCase();
+                        return type.includes('action') || type.includes('perform') || type.includes('decision') || type.includes('merge') || type.includes('fork') || type.includes('join');
+                    })
+                    .map((c: any) => ({
+                        name: c.name,
+                        type: c.type || 'action',
+                        kind: String(c.type || 'action').toLowerCase().includes('perform') ? 'perform' : 'action',
+                        id: c.id || c.name,
+                        inputs: [],
+                        outputs: [],
+                    }));
+
+                const interfaceInputs = actionDef.children
+                    .filter((c: any) => String(c.type || '').toLowerCase() === 'in out parameter' && String(c.attributes?.direction || '').toLowerCase() === 'in')
+                    .map((c: any) => c.name)
+                    .filter(Boolean);
+                const interfaceOutputs = actionDef.children
+                    .filter((c: any) => String(c.type || '').toLowerCase() === 'in out parameter' && String(c.attributes?.direction || '').toLowerCase() === 'out')
+                    .map((c: any) => c.name)
+                    .filter(Boolean);
+
+                return {
+                    id: meta.stableId,
+                    name: actionDef.name,
+                    label: buildSelectorLabel(String(actionDef.name || `Action ${index + 1}`), meta.packagePath),
+                    packagePath: meta.packagePath,
+                    nodes,
+                    flows: [],
+                    interface: {
+                        inputs: interfaceInputs,
+                        outputs: interfaceOutputs,
+                    },
+                    hasBehavioralFlow: false,
+                };
+            }).sort((a: any, b: any) => {
+                const scoreDelta = rankActionDiagram(b) - rankActionDiagram(a);
+                if (scoreDelta !== 0) return scoreDelta;
+                return String(a.label || a.name).localeCompare(String(b.label || b.name));
+            });
+
             return {
                 ...data,
-                diagrams: activityActionDefs.map((actionDef: any) => {
-                    const nodes = actionDef.children
-                        .filter((c: any) => {
-                            const type = String(c.type || '').toLowerCase();
-                            return type.includes('action') || type.includes('perform') || type.includes('decision') || type.includes('merge') || type.includes('fork') || type.includes('join');
-                        })
-                        .map((c: any) => ({
-                            name: c.name,
-                            type: c.type || 'action',
-                            kind: String(c.type || 'action').toLowerCase().includes('perform') ? 'perform' : 'action',
-                            id: c.id || c.name,
-                            inputs: [],
-                            outputs: [],
-                        }));
-
-                    const interfaceInputs = actionDef.children
-                        .filter((c: any) => String(c.type || '').toLowerCase() === 'in out parameter' && String(c.attributes?.direction || '').toLowerCase() === 'in')
-                        .map((c: any) => c.name)
-                        .filter(Boolean);
-                    const interfaceOutputs = actionDef.children
-                        .filter((c: any) => String(c.type || '').toLowerCase() === 'in out parameter' && String(c.attributes?.direction || '').toLowerCase() === 'out')
-                        .map((c: any) => c.name)
-                        .filter(Boolean);
-
-                    return {
-                        name: actionDef.name,
-                        nodes,
-                        flows: [],
-                        interface: {
-                            inputs: interfaceInputs,
-                            outputs: interfaceOutputs,
-                        },
-                        hasBehavioralFlow: false,
-                    };
-                })
+                diagrams,
+                activityDiagramCandidates: diagrams.map((diagram: any) => ({
+                    id: diagram.id,
+                    name: diagram.name,
+                    label: diagram.label,
+                    packagePath: diagram.packagePath,
+                    nodeCount: countWithFallback(diagram.nodes),
+                    flowCount: countWithFallback(diagram.flows),
+                })),
             };
         }
 
@@ -529,11 +563,12 @@ export function prepareDataForView(data: any, view: string): any {
                 if (!isStateElement(el)) return false;
                 const t = typeLower(el?.type);
                 const n = typeLower(el?.name);
-                return t.includes('exhibit')
-                    || n.endsWith('states')
+                const hasOwnedBehavior = hasTransitionChildren(el) || hasStateChildren(el);
+                return n.endsWith('states')
                     || n.includes('statemachine')
-                    || hasTransitionChildren(el)
-                    || hasStateChildren(el);
+                    || isStateDefinition(el)
+                    || hasOwnedBehavior
+                    || (t.includes('exhibit') && hasOwnedBehavior);
             };
 
             const machineRoots: any[] = [];
@@ -798,6 +833,11 @@ export function prepareDataForView(data: any, view: string): any {
                 return {
                     id: machineId,
                     name: String(root?.name || `State Machine ${machineIndex + 1}`),
+                    label: buildSelectorLabel(
+                        String(root?.name || `State Machine ${machineIndex + 1}`),
+                        lookupElementMeta(root, machineId).packagePath
+                    ),
+                    packagePath: lookupElementMeta(root, machineId).packagePath,
                     container: removeCircularRefs(root),
                     states: normalizedStates,
                     transitions,
@@ -819,12 +859,28 @@ export function prepareDataForView(data: any, view: string): any {
                 }
             }
 
+            stateMachines = stateMachines.sort((a: any, b: any) => {
+                const stateCountDelta = b.states.length - a.states.length;
+                if (stateCountDelta !== 0) return stateCountDelta;
+                const transitionCountDelta = b.transitions.length - a.transitions.length;
+                if (transitionCountDelta !== 0) return transitionCountDelta;
+                return String(a.label || a.name).localeCompare(String(b.label || b.name));
+            });
+
             const flatStates = stateMachines.flatMap((machine: any) => machine.states);
             const flatTransitions = stateMachines.flatMap((machine: any) => machine.transitions);
 
             return {
                 ...data,
                 stateMachines,
+                stateMachineCandidates: stateMachines.map((machine: any) => ({
+                    id: machine.id,
+                    name: machine.name,
+                    label: machine.label,
+                    packagePath: machine.packagePath,
+                    stateCount: countWithFallback(machine.states),
+                    transitionCount: countWithFallback(machine.transitions),
+                })),
                 states: flatStates,
                 transitions: flatTransitions,
             };

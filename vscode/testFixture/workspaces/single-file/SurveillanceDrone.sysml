@@ -335,6 +335,17 @@ package SurveillanceDrone {
 		in route : String;
 		out status : String;
 		doc /* Execute patrol/overwatch mission along route. */
+		action validateRoute { out routeReady : Boolean; }
+		action armForMission { out armed : Boolean; }
+		action takeOff { out airborne : Boolean; }
+		action flyPatrolRoute { out routeComplete : Boolean; }
+		action captureSurveyPass { out imageryCaptured : Boolean; }
+		action reportMissionStatus { out missionStatus : String; }
+		first validateRoute then armForMission;
+		first armForMission then takeOff;
+		first takeOff then flyPatrolRoute;
+		first flyPatrolRoute then captureSurveyPass;
+		first captureSurveyPass then reportMissionStatus;
 	}
 
 	action def ExecuteOrbit {
@@ -343,6 +354,15 @@ package SurveillanceDrone {
 		in altitude : Real;
 		out status : String;
 		doc /* Orbit around point of interest. */
+		action validateOrbitPoint { out orbitValid : Boolean; }
+		action climbToOrbitAltitude { out altitudeReached : Boolean; }
+		action enterOrbitPattern { out orbitEstablished : Boolean; }
+		action stabilizeOrbitTrack { out orbitStable : Boolean; }
+		action reportOrbitStatus { out orbitStatus : String; }
+		first validateOrbitPoint then climbToOrbitAltitude;
+		first climbToOrbitAltitude then enterOrbitPattern;
+		first enterOrbitPattern then stabilizeOrbitTrack;
+		first stabilizeOrbitTrack then reportOrbitStatus;
 	}
 
 	action def ControlGimbal {
@@ -350,11 +370,29 @@ package SurveillanceDrone {
 		in tiltAngle : Real;
 		in mode : String;
 		doc /* Command gimbal pointing and mode. */
+		action interpretModeCommand { out commandReady : Boolean; }
+		action slewPanAxis { out panSettled : Boolean; }
+		action slewTiltAxis { out tiltSettled : Boolean; }
+		action stabilizeLineOfSight { out sightStable : Boolean; }
+		action confirmGimbalAim { out aimConfirmed : Boolean; }
+		first interpretModeCommand then slewPanAxis;
+		first slewPanAxis then slewTiltAxis;
+		first slewTiltAxis then stabilizeLineOfSight;
+		first stabilizeLineOfSight then confirmGimbalAim;
 	}
 
 	action def CaptureVideo {
 		out videoStream : String;
 		doc /* Capture and output video stream. */
+		action powerImager { out imagerPowered : Boolean; }
+		action configureEncoder { out encoderReady : Boolean; }
+		action startCapture { out captureStarted : Boolean; }
+		action streamVideoFrames { out encodedFrames : String; }
+		action publishVideoStream { out streamPublished : String; }
+		first powerImager then configureEncoder;
+		first configureEncoder then startCapture;
+		first startCapture then streamVideoFrames;
+		first streamVideoFrames then publishVideoStream;
 	}
 
 	// Parts perform actions; allocations use named action usages (source/target must be usages per spec 7.15).

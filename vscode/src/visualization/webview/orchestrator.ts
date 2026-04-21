@@ -90,7 +90,9 @@ import { buildGeneralViewGraph } from './graphBuilders';
     let currentData = null;
     let currentView = 'general-view';  // SysML v2 general-view as default
     let selectedDiagramIndex = 0; // Track currently selected diagram for multi-diagram views
+    let selectedDiagramId = null; // Stable selector item id across refreshes
     let selectedDiagramName = null; // Track selected diagram by name to preserve across updates
+    let selectedDiagramPackagePath = null; // Track package/namespace path for duplicate names
     let lastView = currentView;
     let svg = null;
     let g = null;
@@ -374,14 +376,21 @@ import { buildGeneralViewGraph } from './graphBuilders';
                     packageCandidates: message.packageCandidates?.length || 0,
                 });
 
-                if (typeof message.selectedPackageName === 'string' && message.selectedPackageName.length > 0) {
+                const effectiveView = message.currentView || currentView;
+                if (
+                    effectiveView === 'general-view'
+                    && typeof message.selectedPackageName === 'string'
+                    && message.selectedPackageName.length > 0
+                ) {
                     const before = { name: selectedDiagramName, index: selectedDiagramIndex };
+                    selectedDiagramId = message.selectedPackage || message.selectedPackageName;
                     selectedDiagramName = message.selectedPackageName;
+                    selectedDiagramPackagePath = null;
                     selectedDiagramIndex = 0;
                     logSelectionTransition('message.update.selectedPackage', before, {
                         selectedPackageName: message.selectedPackageName,
                     });
-                } else if (!message.selectedPackage && selectedDiagramName === 'All Packages') {
+                } else if (effectiveView === 'general-view' && !message.selectedPackage && selectedDiagramName === 'All Packages') {
                     selectedDiagramIndex = 0;
                 }
 
@@ -402,7 +411,9 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 // Switch to General View and select a specific package in the dropdown
                 if (message.packageName) {
                     const before = { name: selectedDiagramName, index: selectedDiagramIndex };
+                    selectedDiagramId = message.packageName;
                     selectedDiagramName = message.packageName;
+                    selectedDiagramPackagePath = null;
                     selectedDiagramIndex = 0; // Will be corrected by updateDiagramSelector
                     logSelectionTransition('message.selectPackage', before, {
                         packageName: message.packageName,
@@ -1106,76 +1117,127 @@ import { buildGeneralViewGraph } from './graphBuilders';
             return;
         }
 
-        // Determine if this view supports multiple diagrams
-        let diagrams = [];
-        const labelText = 'Package';
-        const packageCandidates = Array.isArray(currentData?.packageCandidates)
-            ? currentData.packageCandidates
-            : [];
-        diagrams = [{ name: 'All Packages', label: 'All Packages', isAll: true }];
-        packageCandidates.forEach((candidate: any) => {
-            diagrams.push({
-                name: candidate.name,
-                label: candidate.name,
-                packageRef: candidate.id || candidate.name,
-            });
-        });
-        webviewLog('info', '[PACKAGE][selector]', {
-            selectedDiagramName,
-            selectedDiagramIndex,
-            packageCount: packageCandidates.length,
-            packageNames: packageCandidates.map((candidate: any) => candidate?.name).filter(Boolean),
-        });
+        const preparedData = prepareDataForView(currentData, activeView);
+        const buildCountSummary = (item: any, kind: string) => {
+            if (!item) return '';
+            const packageText = item.packagePath ? item.packagePath : '';
+            const metricParts =
+                kind === 'Package'
+                    ? []
+                    : kind === 'Root'
+                        ? [
+                            typeof item.partCount === 'number' ? `${item.partCount} parts` : '',
+                            typeof item.connectorCount === 'number' ? `${item.connectorCount} connectors` : '',
+                        ]
+                        : kind === 'State Machine'
+                            ? [
+                                typeof item.stateCount === 'number' ? `${item.stateCount} states` : '',
+                                typeof item.transitionCount === 'number' ? `${item.transitionCount} transitions` : '',
+                            ]
+                            : [
+                                typeof item.nodeCount === 'number' ? `${item.nodeCount} nodes` : '',
+                                typeof item.flowCount === 'number' ? `${item.flowCount} flows` : '',
+                            ];
+            return [packageText, ...metricParts.filter(Boolean)].filter(Boolean).join(' | ');
+        };
+        const normalizeSelectorItems = () => {
+            if (activeView === 'general-view') {
+                const packageCandidates = Array.isArray(currentData?.packageCandidates)
+                    ? currentData.packageCandidates
+                    : [];
+                return {
+                    labelText: 'Package',
+                    items: [
+                        { id: 'all-packages', name: 'All Packages', label: 'All Packages', isAll: true },
+                        ...packageCandidates.map((candidate: any) => ({
+                            id: candidate.id || candidate.name,
+                            name: candidate.name,
+                            label: candidate.name,
+                            packageRef: candidate.id || candidate.name,
+                            packagePath: '',
+                        })),
+                    ],
+                };
+            }
+            if (activeView === 'interconnection-view') {
+                const roots = Array.isArray(preparedData?.ibdRootCandidates)
+                    ? preparedData.ibdRootCandidates
+                    : [];
+                return { labelText: 'Root', items: roots };
+            }
+            if (activeView === 'state-transition-view') {
+                const machines = Array.isArray(preparedData?.stateMachineCandidates)
+                    ? preparedData.stateMachineCandidates
+                    : [];
+                return { labelText: 'State Machine', items: machines };
+            }
+            if (activeView === 'action-flow-view') {
+                const diagrams = Array.isArray(preparedData?.activityDiagramCandidates)
+                    ? preparedData.activityDiagramCandidates
+                    : [];
+                return { labelText: 'Action', items: diagrams };
+            }
+            return { labelText: 'Item', items: [] };
+        };
+        const { labelText, items } = normalizeSelectorItems();
+        const diagrams = items.map((item: any, index: number) => ({
+            ...item,
+            id: item?.id || item?.name || `${activeView}-item-${index + 1}`,
+            name: item?.name || `Item ${index + 1}`,
+            label: item?.label || item?.name || `Item ${index + 1}`,
+            packagePath: item?.packagePath || '',
+        }));
 
         // Show/hide selector based on number of diagrams
         if (diagrams.length <= 1) {
-            pkgDropdown.style.display = 'none';
+            pkgDropdown.style.display = diagrams.length === 1 ? 'flex' : 'none';
             const before = { name: selectedDiagramName, index: selectedDiagramIndex };
             selectedDiagramIndex = 0;
+            selectedDiagramId = diagrams.length === 1 ? diagrams[0].id : null;
             selectedDiagramName = diagrams.length === 1 ? diagrams[0].name : null;
+            selectedDiagramPackagePath = diagrams.length === 1 ? diagrams[0].packagePath || null : null;
             logSelectionTransition('selector.single-option-reset', before, {
                 activeView,
                 diagramsLength: diagrams.length,
             });
-            setSelectorSummary('');
+            if (pkgLabel && diagrams[0]) {
+                pkgLabel.textContent = `${labelText}: ${diagrams[0].name}`;
+            }
+            setSelectorSummary(buildCountSummary(diagrams[0], labelText));
+            pkgMenu.innerHTML = '';
             return;
         }
 
         pkgDropdown.style.display = 'flex';
-        if (pkgLabel) pkgLabel.textContent = labelText;
-
-        // Try to restore selection by name if we have a previously selected diagram
-        if (selectedDiagramName) {
-            const matchingIndex = diagrams.findIndex(d => d.name === selectedDiagramName);
-            if (matchingIndex >= 0) {
-                const before = { name: selectedDiagramName, index: selectedDiagramIndex };
-                selectedDiagramIndex = matchingIndex;
-                if (pkgLabel) pkgLabel.textContent = diagrams[matchingIndex]?.label || selectedDiagramName;
-                logSelectionTransition('selector.restore-hit', before, { matchingIndex, selectedDiagramName });
-                webviewLog('info', '[GENERAL][selector-restore-hit]', { selectedDiagramName, matchingIndex });
-            } else {
-                // Diagram no longer exists, reset to first
-                const previousSelection = selectedDiagramName;
-                const before = { name: selectedDiagramName, index: selectedDiagramIndex };
-                selectedDiagramIndex = 0;
-                selectedDiagramName = diagrams[0]?.name || null;
-                logSelectionTransition('selector.restore-miss-fallback', before, { previousSelection });
-                webviewLog('warn', '[GENERAL][selector-restore-miss]', { previousSelection, fallbackSelection: selectedDiagramName });
-            }
-        } else {
-            // No previous selection, initialize with first diagram
+        const matchingIndex = diagrams.findIndex((candidate: any) =>
+            (selectedDiagramId && candidate.id === selectedDiagramId)
+            || (
+                selectedDiagramName
+                && candidate.name === selectedDiagramName
+                && (!selectedDiagramPackagePath || candidate.packagePath === selectedDiagramPackagePath)
+            )
+        );
+        if (matchingIndex >= 0) {
             const before = { name: selectedDiagramName, index: selectedDiagramIndex };
+            selectedDiagramIndex = matchingIndex;
+            selectedDiagramId = diagrams[matchingIndex].id;
+            selectedDiagramName = diagrams[matchingIndex].name;
+            selectedDiagramPackagePath = diagrams[matchingIndex].packagePath || null;
+            logSelectionTransition('selector.restore-hit', before, { matchingIndex, selectedDiagramName });
+        } else {
+            const before = { name: selectedDiagramName, index: selectedDiagramIndex };
+            selectedDiagramIndex = 0;
+            selectedDiagramId = diagrams[0]?.id || null;
             selectedDiagramName = diagrams[0]?.name || null;
-            logSelectionTransition('selector.init-first', before);
-            webviewLog('info', '[GENERAL][selector-init]', { selectedDiagramName });
+            selectedDiagramPackagePath = diagrams[0]?.packagePath || null;
+            logSelectionTransition(selectedDiagramName ? 'selector.restore-miss-fallback' : 'selector.init-first', before);
         }
-
-        setSelectorSummary('');
 
         const selectedDiagram = diagrams[selectedDiagramIndex];
         if (pkgLabel && selectedDiagram) {
-            pkgLabel.textContent = selectedDiagram.label || selectedDiagram.name || labelText;
+            pkgLabel.textContent = `${labelText}: ${selectedDiagram.name || labelText}`;
         }
+        setSelectorSummary(buildCountSummary(selectedDiagram, labelText));
 
         // Populate dropdown menu
         pkgMenu.innerHTML = '';
@@ -1183,22 +1245,28 @@ import { buildGeneralViewGraph } from './graphBuilders';
             const item = document.createElement('button');
             item.className = 'view-dropdown-item';
             item.textContent = d.label || d.name || 'Diagram ' + (idx + 1);
+            const itemSummary = buildCountSummary(d, labelText);
+            if (itemSummary) item.title = itemSummary;
             if (idx === selectedDiagramIndex) item.classList.add('active');
             item.addEventListener('click', function() {
                 const before = { name: selectedDiagramName, index: selectedDiagramIndex };
                 selectedDiagramIndex = idx;
+                selectedDiagramId = d.id;
                 selectedDiagramName = d.name;
+                selectedDiagramPackagePath = d.packagePath || null;
                 logSelectionTransition('selector.user-click', before, { selectedName: d.name, selectedIdx: idx });
                 window.userHasManuallyZoomed = false;
                 pkgMenu.querySelectorAll('.view-dropdown-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
-                if (pkgLabel) pkgLabel.textContent = d.label || d.name;
-                setSelectorSummary('');
+                if (pkgLabel) pkgLabel.textContent = `${labelText}: ${d.name || labelText}`;
+                setSelectorSummary(buildCountSummary(d, labelText));
                 pkgMenu.classList.remove('show');
-                if (d.isAll) {
+                if (activeView === 'general-view' && d.isAll) {
                     vscode.postMessage({ command: 'clearPackageFilter' });
-                } else {
+                } else if (activeView === 'general-view') {
                     vscode.postMessage({ command: 'packageFilterChanged', packageRef: d.packageRef || d.name });
+                } else {
+                    renderVisualization(activeView, false);
                 }
             });
             pkgMenu.appendChild(item);
@@ -1208,11 +1276,14 @@ import { buildGeneralViewGraph } from './graphBuilders';
         if (selectedDiagramIndex >= diagrams.length) {
             const before = { name: selectedDiagramName, index: selectedDiagramIndex };
             selectedDiagramIndex = 0;
+            selectedDiagramId = diagrams[0]?.id || null;
             selectedDiagramName = diagrams[0]?.name || null;
+            selectedDiagramPackagePath = diagrams[0]?.packagePath || null;
             logSelectionTransition('selector.index-out-of-range-fallback', before, { diagramsLength: diagrams.length });
             if (pkgLabel && diagrams[0]) {
-                pkgLabel.textContent = diagrams[0].label || diagrams[0].name || labelText;
+                pkgLabel.textContent = `${labelText}: ${diagrams[0].name || labelText}`;
             }
+            setSelectorSummary(buildCountSummary(diagrams[0], labelText));
         }
     }
 
@@ -1357,7 +1428,9 @@ import { buildGeneralViewGraph } from './graphBuilders';
             });
         }
 
-        const dataForPrepare = baseData;
+        const dataForPrepare = view === 'interconnection-view' && selectedDiagramName
+            ? { ...baseData, selectedIbdRoot: selectedDiagramName }
+            : baseData;
         const prepareStartedAt = Date.now();
         const dataToRender = prepareDataForView(dataForPrepare, view);
         const prepareMs = Date.now() - prepareStartedAt;
@@ -1489,6 +1562,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 activityLayoutDirection,
                 stateLayoutOrientation,
                 selectedDiagramIndex,
+                selectedDiagramId,
                 postMessage: (msg) => vscode.postMessage(msg),
                 onStartInlineEdit: (nodeG, elementName, x, y, wd) => startInlineEdit(nodeG, elementName, x, y, wd),
                 renderPlaceholder: (wd, ht, viewName, message, d) => renderPlaceholderView(wd, ht, viewName, message, d),

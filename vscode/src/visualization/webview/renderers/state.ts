@@ -490,6 +490,7 @@ export async function renderStateView(ctx: StateRenderContext, data: any): Promi
         svg,
         g,
         selectedDiagramIndex,
+        selectedDiagramId,
         postMessage,
         onStartInlineEdit,
         renderPlaceholder,
@@ -508,7 +509,12 @@ export async function renderStateView(ctx: StateRenderContext, data: any): Promi
         return;
     }
 
-    const machineIndex = Math.min(selectedDiagramIndex, stateMachines.length - 1);
+    const machineIndex = selectedDiagramId
+        ? (() => {
+            const matchedIndex = stateMachines.findIndex((candidate: any) => candidate?.id === selectedDiagramId);
+            return matchedIndex >= 0 ? matchedIndex : Math.min(selectedDiagramIndex, stateMachines.length - 1);
+        })()
+        : Math.min(selectedDiagramIndex, stateMachines.length - 1);
     const machine = stateMachines[machineIndex];
     if (!machine || machine.states.length === 0) {
         renderPlaceholder(

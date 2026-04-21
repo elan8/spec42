@@ -459,6 +459,7 @@ export async function renderActivityView(ctx: ActivityRenderContext, data: any):
         svg,
         g,
         selectedDiagramIndex,
+        selectedDiagramId,
         postMessage,
         onStartInlineEdit,
         renderPlaceholder,
@@ -476,7 +477,10 @@ export async function renderActivityView(ctx: ActivityRenderContext, data: any):
         return;
     }
 
-    const diagram = data.diagrams[Math.min(selectedDiagramIndex, data.diagrams.length - 1)];
+    const resolvedIndex = selectedDiagramId
+        ? Math.max(0, data.diagrams.findIndex((candidate: any) => candidate?.id === selectedDiagramId))
+        : Math.min(selectedDiagramIndex, data.diagrams.length - 1);
+    const diagram = data.diagrams[Math.min(resolvedIndex, data.diagrams.length - 1)];
     if (!diagram?.nodes?.length) {
         renderPlaceholder(width, height, 'Action Flow View', 'No behavioral action nodes found in the selected activity diagram.', data);
         return;

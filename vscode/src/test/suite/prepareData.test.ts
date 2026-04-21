@@ -170,6 +170,8 @@ describe("prepareDataForView", () => {
         assert.deepStrictEqual(diagram.interface.outputs, ["displayText"]);
         assert.deepStrictEqual(diagram.flows, []);
         assert.strictEqual(diagram.hasBehavioralFlow, false);
+        assert.ok(Array.isArray(result.activityDiagramCandidates));
+        assert.strictEqual(result.activityDiagramCandidates[0].name, "UpdateDisplay");
     });
 
     it("action-flow-view preserves explicit behavioral flows without synthesizing control edges", () => {
@@ -206,6 +208,7 @@ describe("prepareDataForView", () => {
         assert.strictEqual(diagram.flows[0].to, "sendReport");
         assert.strictEqual(diagram.flows[0].guard, "whenReady");
         assert.strictEqual(diagram.hasBehavioralFlow, true);
+        assert.strictEqual(result.activityDiagramCandidates[0].flowCount, 1);
     });
 
     it("state-transition-view produces normalized state machines", () => {
@@ -239,6 +242,8 @@ describe("prepareDataForView", () => {
             result.stateMachines[0].transitions.length >= 1,
             "state machine should contain transitions",
         );
+        assert.ok(Array.isArray(result.stateMachineCandidates), "state-transition-view should expose selector candidates");
+        assert.strictEqual(result.stateMachineCandidates[0].name, "TimerStateMachine");
     });
 
     it("state-transition-view classifies initial/final states and self loops", () => {
@@ -398,6 +403,139 @@ describe("prepareDataForView", () => {
         assert.strictEqual(entryTransition.target, "manual");
     });
 
+    it("state-transition-view selector disambiguates same-name machines by package path", () => {
+        const data = createMockData({
+            elements: [
+                {
+                    name: "PkgA",
+                    type: "package",
+                    id: "PkgA",
+                    children: [
+                        {
+                            name: "FlightModeStateMachine",
+                            type: "state def",
+                            id: "PkgA::FlightModeStateMachine",
+                            children: [{ name: "manual", type: "state", id: "PkgA::manual", children: [], relationships: [] }],
+                            relationships: [],
+                        },
+                    ],
+                    relationships: [],
+                },
+                {
+                    name: "PkgB",
+                    type: "package",
+                    id: "PkgB",
+                    children: [
+                        {
+                            name: "FlightModeStateMachine",
+                            type: "state def",
+                            id: "PkgB::FlightModeStateMachine",
+                            children: [{ name: "auto", type: "state", id: "PkgB::auto", children: [], relationships: [] }],
+                            relationships: [],
+                        },
+                    ],
+                    relationships: [],
+                },
+            ],
+            relationships: [],
+        });
+
+        const result = prepareDataForView(data, "state-transition-view");
+        assert.strictEqual(result.stateMachineCandidates.length, 2);
+        assert.deepStrictEqual(
+            result.stateMachineCandidates.map((candidate: any) => candidate.packagePath).sort(),
+            ["PkgA", "PkgB"]
+        );
+    });
+
+    it("state-transition-view excludes typed exhibit-state usages from machine selector candidates", () => {
+        const data = createMockData({
+            elements: [
+                {
+                    name: "FlightController",
+                    type: "part def",
+                    id: "FlightController",
+                    children: [
+                        {
+                            name: "flightMode",
+                            type: "exhibit state",
+                            id: "FlightController::flightMode",
+                            attributes: { type: "FlightModeStateMachine" },
+                            children: [],
+                            relationships: [],
+                        },
+                    ],
+                    relationships: [],
+                },
+                {
+                    name: "FlightModeStateMachine",
+                    type: "state def",
+                    id: "FlightModeStateMachine",
+                    children: [
+                        { name: "manual", type: "state", id: "manual", children: [], relationships: [] },
+                        { name: "auto", type: "state", id: "auto", children: [], relationships: [] },
+                    ],
+                    relationships: [],
+                },
+            ],
+            relationships: [
+                { type: "transition", source: "manual", target: "auto", name: "engage_auto" },
+            ],
+        });
+
+        const result = prepareDataForView(data, "state-transition-view");
+        assert.deepStrictEqual(
+            result.stateMachineCandidates.map((candidate: any) => candidate.name),
+            ["FlightModeStateMachine"]
+        );
+    });
+
+    it("action-flow-view selector disambiguates same-name actions by package path", () => {
+        const data = createMockData({
+            elements: [
+                {
+                    name: "MissionA",
+                    type: "package",
+                    id: "MissionA",
+                    children: [
+                        {
+                            name: "ExecutePatrol",
+                            type: "action def",
+                            id: "MissionA::ExecutePatrol",
+                            children: [{ name: "stepA", type: "perform action", id: "MissionA::stepA", children: [], relationships: [] }],
+                            relationships: [],
+                        },
+                    ],
+                    relationships: [],
+                },
+                {
+                    name: "MissionB",
+                    type: "package",
+                    id: "MissionB",
+                    children: [
+                        {
+                            name: "ExecutePatrol",
+                            type: "action def",
+                            id: "MissionB::ExecutePatrol",
+                            children: [{ name: "stepB", type: "perform action", id: "MissionB::stepB", children: [], relationships: [] }],
+                            relationships: [],
+                        },
+                    ],
+                    relationships: [],
+                },
+            ],
+            activityDiagrams: [],
+            relationships: [],
+        });
+
+        const result = prepareDataForView(data, "action-flow-view");
+        assert.strictEqual(result.activityDiagramCandidates.length, 2);
+        assert.deepStrictEqual(
+            result.activityDiagramCandidates.map((candidate: any) => candidate.packagePath).sort(),
+            ["MissionA", "MissionB"]
+        );
+    });
+
     it("handles empty elements", () => {
         const data = createMockData({ elements: [], relationships: [] });
         const result = prepareDataForView(data, "general-view");
@@ -524,7 +662,7 @@ describe("prepareDataForView", () => {
             assert.strictEqual(result.packageContainerGroups[0].id, "package:SurveillanceDrone");
         });
 
-        it("uses the full IBD payload in All Packages mode instead of selecting one root", () => {
+        it("auto-selects the default root even without a package filter", () => {
             const data = {
                 graph: { nodes: [], edges: [] },
                 ibd: {
@@ -558,9 +696,11 @@ describe("prepareDataForView", () => {
                 },
             };
             const result = prepareDataForView(data, "interconnection-view");
-            assert.strictEqual(result.selectedIbdRoot, null);
-            assert.strictEqual(result.parts.length, 5);
+            assert.strictEqual(result.selectedIbdRoot, "SurveillanceQuadrotorDrone");
+            assert.strictEqual(result.parts.length, 3);
             assert.strictEqual(result.packageContainerGroups.length, 1);
+            assert.ok(Array.isArray(result.ibdRootCandidates));
+            assert.strictEqual(result.ibdRootCandidates[0].name, "SurveillanceQuadrotorDrone");
         });
 
         it("prefers the backend default root view when root views are present", () => {
@@ -628,7 +768,11 @@ describe("prepareDataForView", () => {
             assert.strictEqual(result.parts[0].name, "SurveillanceQuadrotorDrone");
             assert.strictEqual(result.containerGroups.length, 1);
             assert.strictEqual(result.packageContainerGroups.length, 1);
-            assert.deepStrictEqual(result.ibdRootCandidates, ["SurveillanceQuadrotorDrone", "Propulsion"]);
+            assert.deepStrictEqual(
+                result.ibdRootCandidates.map((candidate: any) => candidate.name),
+                ["SurveillanceQuadrotorDrone", "Propulsion"]
+            );
+            assert.strictEqual(result.ibdRootCandidates[0].packagePath, "SurveillanceDrone");
         });
 
         it("honors an explicit selected IBD root when provided", () => {
