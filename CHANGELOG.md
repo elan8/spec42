@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-04-21
+
+### Added
+
+- **Expression evaluation in semantic model** - Added a new evaluation module with unit-aware expression handling and integration coverage for referenced attributes and unit expression behavior.
+- **Inlay hints support** - Added inlay-hint capability wiring in the language server surface and related test coverage.
+- **Expanded visualization data surface** - Added a dedicated SysML visualization endpoint and richer DTO/model payload support for container groups and connector endpoint relationships.
+
+### Changed
+
+- **Parser and semantic alignment** - Upgraded `sysml-v2-parser` (through `0.6.0`) and updated semantic projection paths for part definitions/usages, activity flows, and state-machine extraction.
+- **Visualizer rendering/UX architecture** - Refined view state handling, text measurement/truncation, rendering flow, and loading behavior to improve responsiveness and diagram readability.
+- **Action/State view release defaults** - Promoted Action Flow and State Transition views to default-enabled visualizer views and removed experimental labeling/toggle configuration from the extension surface.
+- **Workspace and explorer interaction cleanup** - Simplified model-explorer/selection synchronization paths and tightened visualizer payload handling across workspace scenarios.
+
+### Fixed
+
+- **Hover/type resolution robustness** - Improved type resolution behavior in hover and related semantic lookup paths for more reliable editor feedback.
+
 ## [0.19.0] - 2026-04-16
 
 ### Changed
@@ -291,8 +310,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
-[0.18.1]: https://github.com/elan8/spec42/releases/tag/v0.18.1
+[0.20.0]: https://github.com/elan8/spec42/releases/tag/v0.20.0
 [0.19.0]: https://github.com/elan8/spec42/releases/tag/v0.19.0
+[0.18.1]: https://github.com/elan8/spec42/releases/tag/v0.18.1
 [0.18.0]: https://github.com/elan8/spec42/releases/tag/v0.18.0
 [0.17.0]: https://github.com/elan8/spec42/releases/tag/v0.17.0
 [0.15.1]: https://github.com/elan8/spec42/releases/tag/v0.15.1

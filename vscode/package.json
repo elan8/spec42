@@ -4,7 +4,7 @@
   "publisher": "Elan8",
   "icon": "logo/logo.png",
   "description": "Language support for SysML v2 including syntax validation, navigation and diagnostics.",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "license": "MIT",
   "keywords": [
     "sysml",
