@@ -1,8 +1,34 @@
 //! Diagnostics integration tests.
 
 use super::harness::{next_id, read_message, send_message, spawn_server};
+use spec42_core::{default_server_config, validate_paths, ValidationRequest};
 use spec42_core::common::util;
 use std::fs;
+use std::sync::Arc;
+
+fn validate_inline_sysml(filename: &str, content: &str) -> Vec<tower_lsp::lsp_types::Diagnostic> {
+    let temp_dir = tempfile::tempdir().expect("tempdir");
+    let file_path = temp_dir.path().join(filename);
+    fs::write(&file_path, content).expect("write sysml fixture");
+    let config = Arc::new(default_server_config());
+    let report = validate_paths(
+        &config,
+        ValidationRequest {
+            targets: vec![file_path.clone()],
+            workspace_root: Some(temp_dir.path().to_path_buf()),
+            library_paths: Vec::new(),
+            parallel_enabled: false,
+        },
+    )
+    .expect("validate paths");
+    report
+        .documents
+        .iter()
+        .find(|document| document.uri.ends_with(&filename.replace('\\', "/")))
+        .map(|document| document.diagnostics.clone())
+        .or_else(|| report.documents.first().map(|document| document.diagnostics.clone()))
+        .expect("validated document diagnostics")
+}
 
 #[test]
 fn lsp_diagnostics_on_invalid_sysml() {
@@ -1041,6 +1067,212 @@ fn missing_library_context_info_is_emitted_for_imported_unresolved_types_without
     );
 
     let _ = child.kill();
+}
+
+#[test]
+fn missing_library_context_info_is_emitted_for_unresolved_import_targets_without_library_paths() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///missing_import_target_context.sysml";
+    let content = r#"
+        package P {
+            import MissingLibrary::*;
+        }
+    "#;
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+            }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(400));
+
+    let mut found_missing_library_context = false;
+    let mut found_unresolved_import = false;
+    for _ in 0..25 {
+        let Some(msg) = read_message(&mut stdout) else {
+            break;
+        };
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() != Some("textDocument/publishDiagnostics") {
+            continue;
+        }
+        let diagnostics = json["params"]["diagnostics"]
+            .as_array()
+            .cloned()
+            .unwrap_or_default();
+        found_missing_library_context = diagnostics.iter().any(|d| {
+            d["source"].as_str() == Some("semantic")
+                && d["code"].as_str() == Some("missing_library_context")
+        });
+        found_unresolved_import = diagnostics.iter().any(|d| {
+            d["source"].as_str() == Some("semantic")
+                && d["code"].as_str() == Some("unresolved_import_target")
+        });
+        if found_missing_library_context && found_unresolved_import {
+            break;
+        }
+    }
+
+    assert!(
+        found_unresolved_import,
+        "expected unresolved_import_target semantic diagnostic"
+    );
+    assert!(
+        found_missing_library_context,
+        "expected missing_library_context informational diagnostic"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
+fn unresolved_specializes_reference_is_emitted_for_imported_missing_bases() {
+    let content = r#"
+        package P {
+            import RoboticsCore::*;
+            part def InspectionRover :> RobotPlatform {
+                attribute robotName = "inspection-rover";
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("missing_specializes_base.sysml", content);
+    let found_unresolved_specializes = diagnostics.iter().any(|diagnostic| {
+        diagnostic.source.as_deref() == Some("semantic")
+            && diagnostic.code.as_ref()
+                == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                    "unresolved_specializes_reference".to_string(),
+                ))
+    });
+
+    assert!(
+        found_unresolved_specializes,
+        "expected unresolved_specializes_reference semantic diagnostic"
+    );
+}
+
+#[test]
+fn unresolved_specializes_reference_is_not_emitted_when_base_resolves() {
+    let content = r#"
+        package P {
+            part def RobotPlatform {}
+            part def InspectionRover :> RobotPlatform {
+                attribute robotName = "inspection-rover";
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("resolved_specializes_base.sysml", content);
+    let found_unresolved_specializes = diagnostics.iter().any(|diagnostic| {
+        diagnostic.source.as_deref() == Some("semantic")
+            && diagnostic.code.as_ref()
+                == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                    "unresolved_specializes_reference".to_string(),
+                ))
+    });
+
+    assert!(
+        !found_unresolved_specializes,
+        "did not expect unresolved_specializes_reference when base resolves"
+    );
+}
+
+#[test]
+fn unresolved_specializes_reference_is_emitted_for_multi_base_with_missing_target() {
+    let content = r#"
+        package P {
+            part def RobotPlatform {}
+            part def MissionProfile {}
+            part def InspectionRover :> RobotPlatform {
+                attribute robotName = "inspection-rover";
+            }
+        }
+    "#;
+    let root = spec42_core::sysml_v2::parse(content).expect("parse");
+    let uri = tower_lsp::lsp_types::Url::parse("file:///multi_base_missing_specializes.sysml")
+        .expect("uri");
+    let mut graph = spec42_core::semantic_model::build_graph_from_doc(&root, &uri);
+    let child_id = graph
+        .nodes_for_uri(&uri)
+        .into_iter()
+        .find(|node| node.element_kind == "part def" && node.name == "InspectionRover")
+        .map(|node| node.id.clone())
+        .expect("inspection rover node");
+    graph
+        .get_node_mut(&child_id)
+        .expect("mutable inspection rover node")
+        .attributes
+        .insert(
+            "specializes".to_string(),
+            serde_json::json!(["RobotPlatform", "MissingBase", "MissionProfile"]),
+        );
+    spec42_core::semantic_model::add_cross_document_edges_for_uri(&mut graph, &uri);
+    let diagnostics = spec42_core::compute_semantic_diagnostics(&graph, &uri);
+    let found_unresolved_specializes = diagnostics.iter().any(|diagnostic| {
+        diagnostic.source.as_deref() == Some("semantic")
+            && diagnostic.code.as_ref()
+                == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                    "unresolved_specializes_reference".to_string(),
+                ))
+            && diagnostic.message.contains("MissingBase")
+    });
+
+    assert!(
+        found_unresolved_specializes,
+        "expected unresolved_specializes_reference semantic diagnostic for missing base in multi-base clause"
+    );
+}
+
+#[test]
+fn inspection_rover_example_emits_unresolved_specializes_without_library_context() {
+    let fixture_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("..")
+        .join("domain-libraries")
+        .join("robotics")
+        .join("examples")
+        .join("inspection-rover")
+        .join("inspection-rover.sysml");
+    let original = fs::read_to_string(&fixture_path).expect("read inspection rover fixture");
+    // The current parser/graph pipeline resolves specialization on symbolic `:>` syntax.
+    // Normalize the scenario content for deterministic semantic validation.
+    let normalized = original.replace(" specializes ", " :> ");
+    let diagnostics = validate_inline_sysml("inspection-rover-normalized.sysml", &normalized);
+    let has_unresolved_specializes = diagnostics.iter().any(|diagnostic| {
+        diagnostic.source.as_deref() == Some("semantic")
+            && diagnostic.code.as_ref()
+                == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                    "unresolved_specializes_reference".to_string(),
+                ))
+    });
+    assert!(
+        has_unresolved_specializes,
+        "expected unresolved_specializes_reference diagnostics for inspection-rover scenario without library paths"
+    );
 }
 
 #[test]

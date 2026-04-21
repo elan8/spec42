@@ -325,6 +325,32 @@ pub(super) fn declared_type_ref(node: &SemanticNode) -> Option<&str> {
     })
 }
 
+pub(super) fn declared_specializes_refs(node: &SemanticNode) -> Vec<String> {
+    let Some(raw) = node.attributes.get("specializes") else {
+        return Vec::new();
+    };
+    match raw {
+        serde_json::Value::String(value) => value
+            .split(',')
+            .map(str::trim)
+            .filter(|item| !item.is_empty())
+            .map(ToOwned::to_owned)
+            .collect(),
+        serde_json::Value::Array(items) => items
+            .iter()
+            .filter_map(|item| item.as_str())
+            .flat_map(|item| {
+                item.split(',')
+                    .map(str::trim)
+                    .filter(|entry| !entry.is_empty())
+                    .map(ToOwned::to_owned)
+                    .collect::<Vec<_>>()
+            })
+            .collect(),
+        _ => Vec::new(),
+    }
+}
+
 pub(super) fn multiplicity_issue_message(multiplicity: &str) -> Option<String> {
     let normalized = multiplicity
         .trim()

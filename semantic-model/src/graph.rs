@@ -1340,4 +1340,28 @@ mod tests {
             edges
         );
     }
+
+    #[test]
+    fn part_def_symbol_specialization_is_captured() {
+        let input = r#"
+            package Demo {
+                part def Child :> Base {
+                    attribute demoName = "x";
+                }
+            }
+        "#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///specializes_symbol.sysml").expect("uri");
+        let g = build_graph_from_doc(&root, &uri);
+        let child = g
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "part def" && node.name == "Child")
+            .expect("child part def node");
+        assert!(
+            child.attributes.get("specializes").is_some(),
+            "expected symbol form :> to set specializes attribute; attrs={:?}",
+            child.attributes
+        );
+    }
 }

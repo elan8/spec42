@@ -169,7 +169,27 @@ fn build_advice(documents: &[ValidatedDocument], no_library_paths: bool) -> Vec<
                 ))
         })
     });
-    if has_missing_library_context || has_unresolved_type_reference {
+    let has_unresolved_import_target = documents.iter().any(|document| {
+        document.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code.as_ref()
+                == Some(&NumberOrString::String(
+                    "unresolved_import_target".to_string(),
+                ))
+        })
+    });
+    let has_unresolved_specializes_reference = documents.iter().any(|document| {
+        document.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code.as_ref()
+                == Some(&NumberOrString::String(
+                    "unresolved_specializes_reference".to_string(),
+                ))
+        })
+    });
+    if has_missing_library_context
+        || has_unresolved_type_reference
+        || has_unresolved_import_target
+        || has_unresolved_specializes_reference
+    {
         vec![
             "Configure SysML library roots: ensure the standard library is available (bundled materialization, or pass `--stdlib-path` / `SPEC42_STDLIB_PATH` / `--library-path` explicitly)."
                 .to_string(),
@@ -314,7 +334,25 @@ fn collect_diagnostics_for_document(
                         "unresolved_type_reference".to_string(),
                     ))
         });
-        if has_unresolved_type_reference && state.library_paths.is_empty() {
+        let has_unresolved_import_target = diagnostics.iter().any(|diagnostic| {
+            diagnostic.source.as_deref() == Some("semantic")
+                && diagnostic.code.as_ref()
+                    == Some(&NumberOrString::String(
+                        "unresolved_import_target".to_string(),
+                    ))
+        });
+        let has_unresolved_specializes_reference = diagnostics.iter().any(|diagnostic| {
+            diagnostic.source.as_deref() == Some("semantic")
+                && diagnostic.code.as_ref()
+                    == Some(&NumberOrString::String(
+                        "unresolved_specializes_reference".to_string(),
+                    ))
+        });
+        if (has_unresolved_type_reference
+            || has_unresolved_import_target
+            || has_unresolved_specializes_reference)
+            && state.library_paths.is_empty()
+        {
             if let Some(import_range) = util::import_statement_ranges(text).into_iter().next() {
                 diagnostics.push(Diagnostic {
                     range: import_range,

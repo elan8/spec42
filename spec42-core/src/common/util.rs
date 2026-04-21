@@ -316,4 +316,5 @@ mod tests {
         let diagnostics = untyped_part_usage_diagnostics(text);
         assert!(diagnostics.is_empty());
     }
+
 }

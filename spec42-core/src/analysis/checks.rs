@@ -27,6 +27,104 @@ fn has_import_in_scope(graph: &SemanticGraph, node: &crate::semantic_model::Sema
     false
 }
 
+fn is_namespace_kind(kind: &str) -> bool {
+    matches!(
+        kind,
+        "package"
+            | "requirement def"
+            | "requirement"
+            | "use case def"
+            | "use case"
+            | "analysis def"
+            | "analysis"
+            | "verification def"
+            | "verification"
+            | "concern def"
+            | "concern"
+    )
+}
+
+fn import_target(node: &crate::semantic_model::SemanticNode) -> Option<&str> {
+    node.attributes
+        .get("importTarget")
+        .and_then(|value| value.as_str())
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+}
+
+fn import_is_all(node: &crate::semantic_model::SemanticNode) -> bool {
+    node.attributes
+        .get("importAll")
+        .and_then(|value| value.as_bool())
+        .unwrap_or(false)
+}
+
+fn normalized_namespace_target(target: &str) -> String {
+    target
+        .trim()
+        .trim_end_matches("::**")
+        .trim_end_matches("::*")
+        .trim()
+        .to_string()
+}
+
+fn normalized_membership_target(target: &str) -> String {
+    target.trim().trim_end_matches("::**").trim().to_string()
+}
+
+fn has_node_with_qualified_name_or_disambiguated_variant(graph: &SemanticGraph, base: &str) -> bool {
+    if graph
+        .nodes_by_uri
+        .values()
+        .flatten()
+        .any(|id| id.qualified_name == base)
+    {
+        return true;
+    }
+    let disambiguated_prefix = format!("{base}#");
+    graph
+        .nodes_by_uri
+        .values()
+        .flatten()
+        .any(|id| id.qualified_name.starts_with(&disambiguated_prefix))
+}
+
+fn import_target_resolves(graph: &SemanticGraph, import_node: &crate::semantic_model::SemanticNode) -> bool {
+    let Some(target) = import_target(import_node) else {
+        return false;
+    };
+
+    if import_is_all(import_node) {
+        let namespace_target = normalized_namespace_target(target);
+        return graph
+            .nodes_by_uri
+            .values()
+            .flatten()
+            .filter(|id| id.qualified_name == namespace_target)
+            .filter_map(|id| graph.get_node(id))
+            .any(|node| is_namespace_kind(&node.element_kind));
+    }
+
+    let membership_target = normalized_membership_target(target);
+    if has_node_with_qualified_name_or_disambiguated_variant(graph, &membership_target) {
+        return true;
+    }
+
+    if let Some((namespace_target, member_name)) = membership_target.rsplit_once("::") {
+        return graph
+            .nodes_by_uri
+            .values()
+            .flatten()
+            .filter(|id| id.qualified_name == namespace_target)
+            .filter_map(|id| graph.get_node(id))
+            .filter(|node| is_namespace_kind(&node.element_kind))
+            .flat_map(|namespace| graph.children_of(namespace))
+            .any(|child| child.element_kind != "import" && child.name == member_name);
+    }
+
+    false
+}
+
 /// Returns LSP diagnostics for semantic rules in the given document.
 /// Only runs when the document has been parsed and merged into the graph.
 pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Diagnostic> {
@@ -164,7 +262,27 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
         }
     }
 
-    // 5) Stronger typing checks: declarations that name a type should resolve via typing/specializes.
+    // 5) Import targets should resolve to known namespace/member declarations.
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "import" || import_target_resolves(graph, node) {
+            continue;
+        }
+        let Some(target) = import_target(node) else {
+            continue;
+        };
+        diagnostics.push(diag(
+            diagnostic_range(graph, node, None),
+            DiagnosticSeverity::WARNING,
+            "semantic",
+            "unresolved_import_target",
+            format!(
+                "Imported package/member '{}' could not be resolved in the semantic graph.",
+                target
+            ),
+        ));
+    }
+
+    // 6) Stronger typing checks: declarations that name a type should resolve via typing/specializes.
     let mut unresolved_seen: HashSet<String> = HashSet::new();
     for node in graph.nodes_for_uri(uri) {
         if is_synthetic(node) {
@@ -277,7 +395,102 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
         }
     }
 
-    // 6) Redefines consistency, when the parser/graph captures a `redefines` attribute.
+    // 7) Specialization references should resolve to known definitions.
+    let mut unresolved_specializes_seen: HashSet<String> = HashSet::new();
+    for node in graph.nodes_for_uri(uri) {
+        if is_synthetic(node) {
+            continue;
+        }
+        for specializes_ref in declared_specializes_refs(node) {
+            let normalized = normalize_declared_type_ref(&specializes_ref);
+            if normalized.is_empty() || is_builtin_type_ref(&normalized) {
+                continue;
+            }
+            let resolved_via_import_scope = !crate::semantic_model::resolve_type_reference_targets(
+                graph,
+                node,
+                &specializes_ref,
+                &[
+                    "part def",
+                    "port def",
+                    "action def",
+                    "state def",
+                    "flow def",
+                    "allocation def",
+                    "requirement def",
+                    "use case def",
+                    "attribute def",
+                    "enum def",
+                    "item def",
+                    "actor def",
+                    "occurrence def",
+                    "interface",
+                    "concern def",
+                    "alias",
+                    "kermlDecl",
+                ],
+            )
+            .is_empty();
+            let resolved_via_graph_name_fallback = graph.nodes_named(&normalized).iter().any(
+                |candidate| {
+                    matches!(
+                        candidate.element_kind.as_str(),
+                        "part def"
+                            | "port def"
+                            | "action def"
+                            | "state def"
+                            | "flow def"
+                            | "allocation def"
+                            | "requirement def"
+                            | "use case def"
+                            | "attribute def"
+                            | "enum def"
+                            | "item def"
+                            | "actor def"
+                            | "occurrence def"
+                            | "interface"
+                            | "concern def"
+                            | "alias"
+                            | "kermlDecl"
+                    )
+                },
+            );
+            let allow_graph_name_fallback = !has_import_in_scope(graph, node);
+            if resolved_via_import_scope
+                || (allow_graph_name_fallback && resolved_via_graph_name_fallback)
+            {
+                continue;
+            }
+            let Some(range) = unresolved_type_diagnostic_range(node) else {
+                continue;
+            };
+            let key = format!(
+                "{}|{}|{}:{}:{}:{}:{}",
+                node.id.qualified_name,
+                normalized,
+                range.start.line,
+                range.start.character,
+                range.end.line,
+                range.end.character,
+                node.name
+            );
+            if !unresolved_specializes_seen.insert(key) {
+                continue;
+            }
+            diagnostics.push(diag(
+                range,
+                DiagnosticSeverity::WARNING,
+                "semantic",
+                "unresolved_specializes_reference",
+                format!(
+                    "Specializes reference '{}' for '{}' could not be resolved in the semantic graph.",
+                    specializes_ref, node.name
+                ),
+            ));
+        }
+    }
+
+    // 8) Redefines consistency, when the parser/graph captures a `redefines` attribute.
     for node in graph.nodes_for_uri(uri) {
         let Some(redefines_raw) = node.attributes.get("redefines").and_then(|v| v.as_str()) else {
             continue;
@@ -597,6 +810,158 @@ mod tests {
         assert!(
             unresolved.is_empty(),
             "expected imported part defs to resolve: {unresolved:#?}"
+        );
+    }
+
+    #[test]
+    fn unresolved_import_target_emits_diagnostic() {
+        let input = r#"
+            package Demo {
+                import MissingLibrary::*;
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///unresolved_import.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diags = compute_semantic_diagnostics(&graph, &uri);
+        let unresolved_imports: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "unresolved_import_target".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            !unresolved_imports.is_empty(),
+            "expected unresolved import diagnostic for MissingLibrary::*"
+        );
+    }
+
+    #[test]
+    fn import_target_resolves_without_unresolved_diagnostic_when_package_exists() {
+        let input = r#"
+            package Shared {}
+            package Demo {
+                import Shared::*;
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///resolved_import.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diags = compute_semantic_diagnostics(&graph, &uri);
+        let unresolved_imports: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "unresolved_import_target".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            unresolved_imports.is_empty(),
+            "existing import target should not emit unresolved import diagnostic: {unresolved_imports:#?}"
+        );
+    }
+
+    #[test]
+    fn unresolved_specializes_reference_emits_diagnostic_for_symbol_form() {
+        let input = r#"
+            package P {
+                import MissingLibrary::*;
+                part def Child :> MissingBase {}
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///unresolved_specializes.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diags = compute_semantic_diagnostics(&graph, &uri);
+        let unresolved_specializes: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "unresolved_specializes_reference".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            !unresolved_specializes.is_empty(),
+            "expected unresolved_specializes_reference diagnostic for missing base"
+        );
+    }
+
+    #[test]
+    fn resolved_specializes_reference_does_not_emit_diagnostic() {
+        let input = r#"
+            package P {
+                part def Base {}
+                part def Child :> Base {}
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///resolved_specializes.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diags = compute_semantic_diagnostics(&graph, &uri);
+        let unresolved_specializes: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "unresolved_specializes_reference".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            unresolved_specializes.is_empty(),
+            "resolved base should not emit unresolved_specializes_reference: {unresolved_specializes:#?}"
+        );
+    }
+
+    #[test]
+    fn multi_base_specializes_emits_when_one_base_is_missing() {
+        let input = r#"
+            package P {
+                part def BaseA {}
+                part def Child :> BaseA {}
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///multi_base_specializes.sysml").expect("uri");
+        let mut graph = build_graph_from_doc(&root, &uri);
+        let child_id = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "part def" && node.name == "Child")
+            .map(|node| node.id.clone())
+            .expect("child node");
+        graph
+            .get_node_mut(&child_id)
+            .expect("child node mut")
+            .attributes
+            .insert(
+                "specializes".to_string(),
+                serde_json::json!(["BaseA", "MissingBase"]),
+            );
+        crate::semantic_model::add_cross_document_edges_for_uri(&mut graph, &uri);
+
+        let diags = compute_semantic_diagnostics(&graph, &uri);
+        let unresolved_specializes: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "unresolved_specializes_reference".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            unresolved_specializes.iter().any(|diag| diag
+                .message
+                .contains("MissingBase")),
+            "expected unresolved specializes diagnostic to mention missing base: {unresolved_specializes:#?}"
         );
     }
 

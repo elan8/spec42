@@ -70,6 +70,27 @@ fn normalize_declared_type_ref(type_ref: &str) -> String {
         .to_string()
 }
 
+fn split_specializes_refs(raw: &str) -> Vec<String> {
+    raw.split(',')
+        .map(str::trim)
+        .filter(|item| !item.is_empty())
+        .map(normalize_declared_type_ref)
+        .filter(|item| !item.is_empty())
+        .collect()
+}
+
+fn specializes_refs_from_value(value: &serde_json::Value) -> Vec<String> {
+    match value {
+        serde_json::Value::String(raw) => split_specializes_refs(raw),
+        serde_json::Value::Array(items) => items
+            .iter()
+            .filter_map(|item| item.as_str())
+            .flat_map(split_specializes_refs)
+            .collect(),
+        _ => Vec::new(),
+    }
+}
+
 /// Returns candidate qualified names for resolving an unqualified type reference.
 /// If type_ref already contains "::", returns it as-is. Otherwise tries package prefixes
 /// from container_prefix (e.g. "SurveillanceDrone::Propulsion" -> "SurveillanceDrone::PropulsionUnit").
@@ -278,26 +299,24 @@ pub(crate) fn add_specializes_edge_if_exists(
     specializes_ref: &str,
     container_prefix: Option<&str>,
 ) {
-    let normalized = normalize_declared_type_ref(specializes_ref);
-    if normalized.is_empty() {
-        return;
-    }
-    if let Some(target_id) = resolve_type_target_local(
-        g,
-        uri,
-        &normalized,
-        container_prefix,
-        SPECIALIZES_TARGET_KINDS,
-    ) {
-        let target_qualified = target_id.qualified_name.clone();
-        let _ = add_edge_if_both_exist_opt(
+    for normalized in split_specializes_refs(specializes_ref) {
+        if let Some(target_id) = resolve_type_target_local(
             g,
             uri,
-            source_qualified,
-            &target_qualified,
-            RelationshipKind::Specializes,
-            Some(SPECIALIZES_TARGET_KINDS),
-        );
+            &normalized,
+            container_prefix,
+            SPECIALIZES_TARGET_KINDS,
+        ) {
+            let target_qualified = target_id.qualified_name.clone();
+            let _ = add_edge_if_both_exist_opt(
+                g,
+                uri,
+                source_qualified,
+                &target_qualified,
+                RelationshipKind::Specializes,
+                Some(SPECIALIZES_TARGET_KINDS),
+            );
+        }
     }
 }
 
@@ -381,6 +400,7 @@ pub fn resolve_cross_document_edges_for_uri(
 ) -> Vec<(NodeId, NodeId, RelationshipKind)> {
     let node_ids: Vec<NodeId> = g.nodes_by_uri.get(uri).cloned().unwrap_or_default();
     let mut resolved_edges = Vec::new();
+    let mut seen_edges = std::collections::HashSet::new();
 
     for node_id in &node_ids {
         let Some(node) = g.get_node(node_id) else {
@@ -416,21 +436,30 @@ pub fn resolve_cross_document_edges_for_uri(
                     prefix.as_deref(),
                     RelationshipKind::Typing,
                 ) {
-                    resolved_edges.push((node_id.clone(), target_id, RelationshipKind::Typing));
+                    let dedupe_key = (node_id.clone(), target_id.clone(), "typing");
+                    if seen_edges.insert(dedupe_key) {
+                        resolved_edges.push((node_id.clone(), target_id, RelationshipKind::Typing));
+                    }
                 }
             }
         }
 
         // Specializes relationships
-        if let Some(v) = node.attributes.get("specializes") {
-            if let Some(s) = v.as_str() {
-                if let Some(target_id) = resolve_typing_edge_cross_document_inner(
-                    g,
-                    node,
-                    s,
-                    prefix.as_deref(),
-                    RelationshipKind::Specializes,
-                ) {
+        let specializes_refs = node
+            .attributes
+            .get("specializes")
+            .map(specializes_refs_from_value)
+            .unwrap_or_default();
+        for specializes_ref in specializes_refs {
+            if let Some(target_id) = resolve_typing_edge_cross_document_inner(
+                g,
+                node,
+                &specializes_ref,
+                prefix.as_deref(),
+                RelationshipKind::Specializes,
+            ) {
+                let dedupe_key = (node_id.clone(), target_id.clone(), "specializes");
+                if seen_edges.insert(dedupe_key) {
                     resolved_edges.push((node_id.clone(), target_id, RelationshipKind::Specializes));
                 }
             }
@@ -481,4 +510,82 @@ fn resolve_typing_edge_cross_document_inner(
     }
 
     targets.into_iter().next()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::graph_builder::build_graph_from_doc;
+    use sysml_v2_parser::parse;
+
+    #[test]
+    fn specializes_refs_from_value_supports_string_and_array() {
+        let from_string = specializes_refs_from_value(&serde_json::json!("BaseA, BaseB"));
+        assert_eq!(from_string, vec!["BaseA".to_string(), "BaseB".to_string()]);
+
+        let from_array = specializes_refs_from_value(&serde_json::json!(["BaseA", "BaseB, BaseC"]));
+        assert_eq!(
+            from_array,
+            vec![
+                "BaseA".to_string(),
+                "BaseB".to_string(),
+                "BaseC".to_string()
+            ]
+        );
+    }
+
+    #[test]
+    fn resolve_cross_document_specializes_handles_multi_base_array_and_dedupes() {
+        let lib_src = r#"
+            package Lib {
+                part def BaseA {}
+            }
+        "#;
+        let app_src = r#"
+            package App {
+                import Lib::*;
+                part def Child :> BaseA {}
+            }
+        "#;
+
+        let lib_uri = Url::parse("file:///lib.sysml").expect("lib uri");
+        let app_uri = Url::parse("file:///app.sysml").expect("app uri");
+        let lib_root = parse(lib_src).expect("parse lib");
+        let app_root = parse(app_src).expect("parse app");
+        let mut graph = build_graph_from_doc(&lib_root, &lib_uri);
+        graph.merge(build_graph_from_doc(&app_root, &app_uri));
+
+        let child_id = graph
+            .nodes_for_uri(&app_uri)
+            .into_iter()
+            .find(|node| node.element_kind == "part def" && node.name == "Child")
+            .map(|node| node.id.clone())
+            .expect("child node id");
+        graph
+            .get_node_mut(&child_id)
+            .expect("child node")
+            .attributes
+            .insert(
+                "specializes".to_string(),
+                serde_json::json!(["BaseA", "BaseA", "MissingBase"]),
+            );
+
+        let resolved_edges = resolve_cross_document_edges_for_uri(&graph, &app_uri);
+        let specialize_edges: Vec<_> = resolved_edges
+            .into_iter()
+            .filter(|(_, _, kind)| *kind == RelationshipKind::Specializes)
+            .collect();
+
+        assert_eq!(
+            specialize_edges.len(),
+            1,
+            "expected one deduped specializes edge to BaseA"
+        );
+        let (_, target_id, _) = &specialize_edges[0];
+        assert!(
+            target_id.qualified_name.ends_with("Lib::BaseA"),
+            "expected specializes edge to Lib::BaseA, got {:?}",
+            target_id
+        );
+    }
 }
