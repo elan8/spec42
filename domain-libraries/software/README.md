@@ -13,41 +13,20 @@ It is organized as a self-contained workspace so it can evolve into:
 - `spec42.toml` - minimal workspace marker for Spec42-style analysis
 - `software-core/SoftwareCore.sysml` - small software architecture kernel
 - `distributed-systems/DistributedSystems.sysml` - distributed-systems library built on `SoftwareCore`
-- `software-control-plane/SoftwareControlPlane.sysml` - neutral runtime control-plane concepts
-- `software-delivery/SoftwareDelivery.sysml` - neutral delivery and governance concepts
-- `http/HttpDomain.sysml` - HTTP/API overlay built on `DistributedSystems`
-- `openapi/OpenApiDomain.sysml` - HTTP contract overlay built on `HttpDomain` and `SerializationDomain`
-- `serialization/SerializationDomain.sysml` - payload and encoding overlay reusable across protocols
-- `grpc/GrpcDomain.sysml` - gRPC overlay built on `DistributedSystems` and `SerializationDomain`
-- `messaging/MessagingDomain.sysml` - neutral asynchronous messaging overlay
-- `kafka/KafkaDomain.sysml` - streaming/event platform overlay built on `MessagingDomain`
-- `sql/SqlDomain.sysml` - relational data overlay
-- `nosql/NosqlDomain.sysml` - non-relational data overlay
-- `identity-security/IdentitySecurityDomain.sysml` - trust, identity, exposure, and policy overlay
-- `cyber-assurance/CyberAssuranceDomain.sysml` - neutral assurance, evidence, risk, vulnerability, and conformity overlay
-- `eu-cyber-resilience-overlay/EuCyberResilienceOverlay.sysml` - EU Cyber Resilience Act-oriented product assurance overlay built on `CyberAssuranceDomain`
-- `observability/ObservabilityDomain.sysml` - logs, metrics, traces, health, and SLO overlay
-- `kubernetes/KubernetesDomain.sysml` - Kubernetes deployment overlay built on `DistributedSystems`
-- `cloud-runtime/CloudRuntimeDomain.sysml` - neutral cloud/runtime deployment overlay
+- `api/` - API and contract overlays (`HttpDomain`, `OpenApiDomain`, `SerializationDomain`, `GrpcDomain`)
+- `messaging/` - asynchronous and streaming overlays (`MessagingDomain`, `KafkaDomain`)
+- `data/` - relational and non-relational overlays (`SqlDomain`, `NosqlDomain`)
+- `security/` - architecture/security + assurance/regulatory overlays (`IdentitySecurityDomain`, `CyberAssuranceDomain`, `EuCyberResilienceOverlay`)
+- `platform/` - deployment/runtime platform overlays (`KubernetesDomain`, `CloudRuntimeDomain`)
+- `delivery-ops/` - runtime control, delivery governance, and observability overlays (`SoftwareControlPlane`, `SoftwareDelivery`, `ObservabilityDomain`)
 - `distributed-systems/rules/distributed-systems-rules.yaml` - external rule catalog for future tooling
-- `software-control-plane/rules/software-control-plane-rules.yaml` - runtime control-plane rule catalog
-- `software-delivery/rules/software-delivery-rules.yaml` - delivery and governance rule catalog
-- `http/rules/http-domain-rules.yaml` - HTTP/API rule catalog
-- `openapi/rules/openapi-domain-rules.yaml` - OpenAPI rule catalog
-- `serialization/rules/serialization-domain-rules.yaml` - serialization rule catalog
-- `grpc/rules/grpc-domain-rules.yaml` - gRPC rule catalog
-- `messaging/rules/messaging-domain-rules.yaml` - messaging rule catalog
-- `kafka/rules/kafka-domain-rules.yaml` - Kafka rule catalog
-- `sql/rules/sql-domain-rules.yaml` - SQL data rule catalog
-- `nosql/rules/nosql-domain-rules.yaml` - NoSQL data rule catalog
-- `identity-security/rules/identity-security-domain-rules.yaml` - identity and security rule catalog
-- `cyber-assurance/rules/cyber-assurance-domain-rules.yaml` - assurance, evidence, and vulnerability-management rule catalog
-- `eu-cyber-resilience-overlay/rules/eu-cyber-resilience-overlay-rules.yaml` - CRA-oriented product assurance and reporting rule catalog
-- `observability/rules/observability-domain-rules.yaml` - observability rule catalog
-- `kubernetes/rules/kubernetes-domain-rules.yaml` - Kubernetes rule catalog
-- `cloud-runtime/rules/cloud-runtime-domain-rules.yaml` - cloud runtime rule catalog
-- `examples/` - consolidated examples, grouped by library package
-- `reference-workspace/` - integrated end-to-end example workspace
+- `api/rules/*.yaml` - HTTP/OpenAPI/serialization/gRPC rule catalogs
+- `messaging/rules/*.yaml` - messaging and streaming rule catalogs
+- `data/rules/*.yaml` - relational/non-relational data rule catalogs
+- `security/rules/*.yaml` - identity/assurance/CRA rule catalogs
+- `platform/rules/*.yaml` - platform/deployment rule catalogs
+- `delivery-ops/rules/*.yaml` - delivery/control-plane/observability rule catalogs
+- `examples/` - consolidated examples grouped by concerns (`api`, `messaging`, `data`, `security`, `platform`, `delivery-ops`, `distributed-systems`) plus `reference-workspace/` for the integrated end-to-end example
 
 ## Notes
 
