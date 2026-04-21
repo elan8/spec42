@@ -1005,6 +1005,79 @@ fn inspection_rover_example_emits_unresolved_specializes_without_library_context
 }
 
 #[test]
+fn implicit_redefinition_without_operator_emits_error_for_inherited_features() {
+    let content = r#"
+        package P {
+            part def Engine {}
+            port def PowerPort {}
+            part def Base {
+                attribute mass : Real;
+                part engine : Engine;
+                port outlet : PowerPort;
+            }
+            part def Child :> Base {
+                attribute mass = 1200;
+                attribute engine = replacementEngine;
+                attribute outlet = replacementOutlet;
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("implicit_redefine_inherited.sysml", content);
+    let implicit_redefine: Vec<_> = diagnostics
+        .iter()
+        .filter(|diagnostic| {
+            diagnostic.source.as_deref() == Some("semantic")
+                && diagnostic.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "implicit_redefinition_without_operator".to_string(),
+                    ))
+        })
+        .collect();
+    assert!(
+        !implicit_redefine.is_empty(),
+        "expected implicit_redefinition_without_operator diagnostics for inherited assignments"
+    );
+    assert!(
+        implicit_redefine
+            .iter()
+            .all(|diagnostic| diagnostic.severity == Some(tower_lsp::lsp_types::DiagnosticSeverity::ERROR)),
+        "expected implicit redefinition diagnostics to be errors: {implicit_redefine:#?}"
+    );
+}
+
+#[test]
+fn explicit_redefinition_operator_avoids_implicit_redefinition_diagnostic() {
+    let content = r#"
+        package P {
+            part def Engine {}
+            port def PowerPort {}
+            part def Base {
+                attribute mass : Real;
+                part engine : Engine;
+                port outlet : PowerPort;
+            }
+            part def Child :> Base {
+                attribute :>> mass = 1200;
+                attribute :>> engine = replacementEngine;
+                attribute :>> outlet = replacementOutlet;
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("explicit_redefine_inherited.sysml", content);
+    let has_implicit_redefine = diagnostics.iter().any(|diagnostic| {
+        diagnostic.source.as_deref() == Some("semantic")
+            && diagnostic.code.as_ref()
+                == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                    "implicit_redefinition_without_operator".to_string(),
+                ))
+    });
+    assert!(
+        !has_implicit_redefine,
+        "did not expect implicit_redefinition_without_operator with explicit :>>"
+    );
+}
+
+#[test]
 fn unresolved_satisfy_reference_emits_semantic_diagnostic() {
     let fixture_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests")

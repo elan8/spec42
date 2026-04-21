@@ -258,6 +258,37 @@ fn rewrite_untyped_part_usage_line(raw_line: &str, usage_name: &str, type_name: 
     )
 }
 
+fn rewrite_implicit_redefinition_line(raw_line: &str) -> Option<String> {
+    let code_only = raw_line.split("//").next().unwrap_or("");
+    let comment_part = &raw_line[code_only.len()..];
+    if !code_only.contains('=') || code_only.contains(":>>") {
+        return None;
+    }
+    let leading_ws_len = code_only.len() - code_only.trim_start().len();
+    let leading = &code_only[..leading_ws_len];
+    let trimmed = code_only.trim_start();
+    let keywords = [
+        "attribute", "part", "port", "ref", "item", "actor", "perform", "in", "out", "inout",
+    ];
+    for keyword in keywords {
+        let prefix = format!("{keyword} ");
+        if trimmed.starts_with(&prefix) {
+            let remainder = &trimmed[prefix.len()..];
+            if remainder.starts_with(":>>") {
+                return None;
+            }
+            return Some(format!(
+                "{leading}{keyword} :>> {remainder}{comment_part}",
+                leading = leading,
+                keyword = keyword,
+                remainder = remainder,
+                comment_part = comment_part
+            ));
+        }
+    }
+    None
+}
+
 pub fn suggest_create_matching_part_def_quick_fix(
     source: &str,
     uri: &Url,
@@ -328,6 +359,46 @@ pub fn suggest_create_matching_part_def_quick_fix(
 
     Some(CodeAction {
         title: format!("Create matching `part def {}` and type usage", type_name),
+        kind: Some(CodeActionKind::QUICKFIX),
+        diagnostics: Some(vec![diagnostic.clone()]),
+        edit: Some(edit),
+        command: None,
+        is_preferred: Some(true),
+        disabled: None,
+        data: None,
+    })
+}
+
+pub fn suggest_explicit_redefinition_quick_fix(
+    source: &str,
+    uri: &Url,
+    diagnostic: &Diagnostic,
+) -> Option<CodeAction> {
+    let target_line = diagnostic.range.start.line as usize;
+    let lines: Vec<&str> = source.lines().collect();
+    let raw_line = *lines.get(target_line)?;
+    let rewritten = rewrite_implicit_redefinition_line(raw_line)?;
+    let edit = WorkspaceEdit {
+        changes: None,
+        document_changes: Some(tower_lsp::lsp_types::DocumentChanges::Edits(vec![
+            TextDocumentEdit {
+                text_document: OptionalVersionedTextDocumentIdentifier {
+                    uri: uri.clone(),
+                    version: None,
+                },
+                edits: vec![OneOf::Left(TextEdit {
+                    range: Range::new(
+                        Position::new(target_line as u32, 0),
+                        Position::new(target_line as u32, utf16_len(raw_line)),
+                    ),
+                    new_text: rewritten,
+                })],
+            },
+        ])),
+        change_annotations: None,
+    };
+    Some(CodeAction {
+        title: "Make redefinition explicit with `:>>`".to_string(),
         kind: Some(CodeActionKind::QUICKFIX),
         diagnostics: Some(vec![diagnostic.clone()]),
         edit: Some(edit),
@@ -767,6 +838,61 @@ mod tests {
             data: None,
         };
         let action = suggest_create_matching_part_def_quick_fix(source, &uri, &diagnostic);
+        assert!(action.is_none());
+    }
+
+    #[test]
+    fn test_suggest_explicit_redefinition_quick_fix_rewrites_line() {
+        let uri = Url::parse("file:///test.sysml").unwrap();
+        let source = "package P {\n  part def Child :> Base {\n    attribute mass = 1200;\n  }\n}\n";
+        let diagnostic = Diagnostic {
+            range: Range::new(Position::new(2, 4), Position::new(2, 25)),
+            severity: Some(DiagnosticSeverity::ERROR),
+            code: Some(NumberOrString::String(
+                "implicit_redefinition_without_operator".to_string(),
+            )),
+            code_description: None,
+            source: Some("semantic".to_string()),
+            message: "missing :>>".to_string(),
+            related_information: None,
+            tags: None,
+            data: None,
+        };
+        let action =
+            suggest_explicit_redefinition_quick_fix(source, &uri, &diagnostic).expect("action");
+        let edit = action.edit.expect("has edit");
+        let doc_edits = edit.document_changes.expect("document changes");
+        let edits = match doc_edits {
+            tower_lsp::lsp_types::DocumentChanges::Edits(v) => v,
+            _ => panic!("expected edits"),
+        };
+        assert_eq!(edits.len(), 1);
+        assert_eq!(edits[0].edits.len(), 1);
+        let rewritten = match &edits[0].edits[0] {
+            OneOf::Left(te) => te.new_text.clone(),
+            _ => panic!("expected text edit"),
+        };
+        assert_eq!(rewritten.trim(), "attribute :>> mass = 1200;");
+    }
+
+    #[test]
+    fn test_suggest_explicit_redefinition_quick_fix_noop_when_already_explicit() {
+        let uri = Url::parse("file:///test.sysml").unwrap();
+        let source = "package P {\n  part def Child :> Base {\n    attribute :>> mass = 1200;\n  }\n}\n";
+        let diagnostic = Diagnostic {
+            range: Range::new(Position::new(2, 4), Position::new(2, 29)),
+            severity: Some(DiagnosticSeverity::ERROR),
+            code: Some(NumberOrString::String(
+                "implicit_redefinition_without_operator".to_string(),
+            )),
+            code_description: None,
+            source: Some("semantic".to_string()),
+            message: "missing :>>".to_string(),
+            related_information: None,
+            tags: None,
+            data: None,
+        };
+        let action = suggest_explicit_redefinition_quick_fix(source, &uri, &diagnostic);
         assert!(action.is_none());
     }
 

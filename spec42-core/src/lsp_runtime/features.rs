@@ -9,6 +9,7 @@ use crate::language::{
     collect_document_symbols, collect_folding_ranges, completion_prefix, find_reference_ranges,
     format_document, is_reserved_keyword, keyword_doc, keyword_hover_markdown,
     line_prefix_at_position, suggest_create_matching_part_def_quick_fix,
+    suggest_explicit_redefinition_quick_fix,
     suggest_manage_custom_libraries_quick_fix,
     suggest_wrap_in_package, sysml_keywords, word_at_position,
 };
@@ -874,6 +875,16 @@ pub(crate) fn code_action(
         if is_untyped_part_usage {
             if let Some(action) =
                 suggest_create_matching_part_def_quick_fix(&text, &uri, diagnostic)
+            {
+                actions.push(CodeActionOrCommand::CodeAction(action));
+            }
+        }
+        let is_implicit_redefinition_without_operator = matches!(
+            diagnostic.code.as_ref(),
+            Some(NumberOrString::String(code)) if code == "implicit_redefinition_without_operator"
+        );
+        if is_implicit_redefinition_without_operator {
+            if let Some(action) = suggest_explicit_redefinition_quick_fix(&text, &uri, diagnostic)
             {
                 actions.push(CodeActionOrCommand::CodeAction(action));
             }

@@ -7,7 +7,10 @@ use std::collections::HashSet;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, Url};
 
 use crate::analysis::helpers::*;
-use crate::semantic_model::{resolve_expression_endpoint_strict, NodeId, ResolveResult, SemanticGraph};
+use crate::semantic_model::{
+    resolve_expression_endpoint_strict, resolve_member_via_type, NodeId, ResolveResult,
+    SemanticGraph,
+};
 
 fn has_import_in_scope(graph: &SemanticGraph, node: &crate::semantic_model::SemanticNode) -> bool {
     let mut current = Some(node.id.clone());
@@ -516,6 +519,45 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
         }
     }
 
+    // 9) Inherited feature value assignment must use explicit redefinition (`:>>`).
+    for node in graph.nodes_for_uri(uri) {
+        if !node.attributes.contains_key("value") || node.attributes.contains_key("redefines") {
+            continue;
+        }
+        let Some(owner_id) = node.parent_id.as_ref() else {
+            continue;
+        };
+        let Some(owner) = graph.get_node(owner_id) else {
+            continue;
+        };
+        let feature_name = node.name.trim();
+        if feature_name.is_empty() {
+            continue;
+        }
+        let ResolveResult::Resolved(target_id) = resolve_member_via_type(graph, owner, feature_name) else {
+            continue;
+        };
+        let Some(target) = graph.get_node(&target_id) else {
+            continue;
+        };
+        if target.id == node.id {
+            continue;
+        }
+        if target.name.trim() != feature_name {
+            continue;
+        }
+        diagnostics.push(diag(
+            diagnostic_range(graph, node, Some(target)),
+            DiagnosticSeverity::ERROR,
+            "semantic",
+            "implicit_redefinition_without_operator",
+            format!(
+                "Feature '{}' overrides inherited {} '{}' but is missing explicit redefinition ':>>'.",
+                feature_name, target.element_kind, target.name
+            ),
+        ));
+    }
+
     diagnostics
 }
 
@@ -995,6 +1037,137 @@ mod tests {
         assert!(
             invalid_redefines.is_empty(),
             "same-name redefines usage should be allowed: {invalid_redefines:#?}"
+        );
+    }
+
+    #[test]
+    fn inherited_attribute_value_assignment_without_explicit_redefines_emits_error() {
+        let input = r#"
+            package P {
+                part def Base {
+                    attribute mass : Real;
+                }
+                part def Child :> Base {
+                    attribute mass = 1200;
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///implicit_redefine_attribute.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let implicit_redefine: Vec<_> = compute_semantic_diagnostics(&graph, &uri)
+            .into_iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "implicit_redefinition_without_operator".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            !implicit_redefine.is_empty(),
+            "expected implicit redefinition diagnostic for inherited attribute assignment"
+        );
+        assert!(
+            implicit_redefine
+                .iter()
+                .all(|d| d.severity == Some(DiagnosticSeverity::ERROR)),
+            "expected implicit redefinition diagnostics to be errors: {implicit_redefine:#?}"
+        );
+    }
+
+    #[test]
+    fn explicit_redefines_operator_suppresses_implicit_redefinition_diagnostic() {
+        let input = r#"
+            package P {
+                part def Base {
+                    attribute mass : Real;
+                }
+                part def Child :> Base {
+                    attribute :>> mass = 1200;
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///explicit_redefine_attribute.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let implicit_redefine: Vec<_> = compute_semantic_diagnostics(&graph, &uri)
+            .into_iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "implicit_redefinition_without_operator".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            implicit_redefine.is_empty(),
+            "did not expect implicit redefinition diagnostic with explicit :>>: {implicit_redefine:#?}"
+        );
+    }
+
+    #[test]
+    fn local_value_assignment_without_inheritance_does_not_emit_implicit_redefinition() {
+        let input = r#"
+            package P {
+                part def Child {
+                    attribute mass = 1200;
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///local_assignment.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let implicit_redefine: Vec<_> = compute_semantic_diagnostics(&graph, &uri)
+            .into_iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "implicit_redefinition_without_operator".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            implicit_redefine.is_empty(),
+            "local value assignment should not be treated as implicit redefinition: {implicit_redefine:#?}"
+        );
+    }
+
+    #[test]
+    fn inherited_part_and_port_value_assignments_emit_implicit_redefinition_error() {
+        let input = r#"
+            package P {
+                part def Engine {}
+                port def PowerPort {}
+                part def Base {
+                    part engine : Engine;
+                    port outlet : PowerPort;
+                }
+                part def Child :> Base {
+                    attribute engine = replacementEngine;
+                    attribute outlet = replacementOutlet;
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///implicit_redefine_part_port.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let implicit_redefine: Vec<_> = compute_semantic_diagnostics(&graph, &uri)
+            .into_iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "implicit_redefinition_without_operator".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            implicit_redefine.iter().any(|d| d.message.contains("inherited part")),
+            "expected inherited part implicit redefinition diagnostic: {implicit_redefine:#?}"
+        );
+        assert!(
+            implicit_redefine.iter().any(|d| d.message.contains("inherited port")),
+            "expected inherited port implicit redefinition diagnostic: {implicit_redefine:#?}"
         );
     }
 
