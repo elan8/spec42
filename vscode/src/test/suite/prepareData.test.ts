@@ -142,7 +142,7 @@ describe("prepareDataForView", () => {
         assert.ok(Array.isArray(result.diagrams), "action-flow-view should have diagrams array");
     });
 
-    it("action-flow-view keeps interface metadata out of behavioral nodes", () => {
+    it("action-flow-view filters interface-only action definitions from the selector", () => {
         const data = createMockData({
             activityDiagrams: [
                 {
@@ -162,23 +162,19 @@ describe("prepareDataForView", () => {
         });
 
         const result = prepareDataForView(data, "action-flow-view");
-        const diagram = result.diagrams[0];
-        const nodeNames = diagram.nodes.map((node: any) => node.name);
-
-        assert.deepStrictEqual(nodeNames, ["renderDisplay"]);
-        assert.deepStrictEqual(diagram.interface.inputs, ["currentTime"]);
-        assert.deepStrictEqual(diagram.interface.outputs, ["displayText"]);
-        assert.deepStrictEqual(diagram.flows, []);
-        assert.strictEqual(diagram.hasBehavioralFlow, false);
+        assert.deepStrictEqual(result.diagrams, []);
         assert.ok(Array.isArray(result.activityDiagramCandidates));
-        assert.strictEqual(result.activityDiagramCandidates[0].name, "UpdateDisplay");
+        assert.deepStrictEqual(result.activityDiagramCandidates, []);
     });
 
     it("action-flow-view preserves explicit behavioral flows without synthesizing control edges", () => {
         const data = createMockData({
             activityDiagrams: [
                 {
+                    id: "ExecuteMission::actionDef",
                     name: "ExecuteMission",
+                    packagePath: "Mission::Control",
+                    sourceKind: "actionDef",
                     actions: [
                         { name: "captureVideo", type: "action", kind: "perform", id: "captureVideo" },
                         { name: "sendReport", type: "action", kind: "perform", id: "sendReport" },
@@ -209,6 +205,136 @@ describe("prepareDataForView", () => {
         assert.strictEqual(diagram.flows[0].guard, "whenReady");
         assert.strictEqual(diagram.hasBehavioralFlow, true);
         assert.strictEqual(result.activityDiagramCandidates[0].flowCount, 1);
+    });
+
+    it("action-flow-view filters empty backend action diagrams and keeps performer contexts", () => {
+        const data = createMockData({
+            activityDiagrams: [
+                {
+                    id: "Mission::CatalogAction::actionDef",
+                    name: "CatalogAction",
+                    packagePath: "Mission",
+                    sourceKind: "actionDef",
+                    actions: [],
+                    interface: {
+                        inputs: ["route"],
+                        outputs: ["status"],
+                    },
+                    flows: [],
+                    decisions: [],
+                    states: [],
+                },
+                {
+                    id: "Mission::FlightController::performer",
+                    name: "FlightController",
+                    packagePath: "Mission",
+                    sourceKind: "performer",
+                    actions: [
+                        { name: "assessVehicleState", type: "action", kind: "perform", id: "assessVehicleState" },
+                        { name: "manageMissionEvents", type: "action", kind: "perform", id: "manageMissionEvents" },
+                    ],
+                    flows: [
+                        { from: "assessVehicleState", to: "manageMissionEvents" },
+                    ],
+                    decisions: [],
+                    states: [],
+                }
+            ]
+        });
+
+        const result = prepareDataForView(data, "action-flow-view");
+
+        assert.deepStrictEqual(
+            result.activityDiagramCandidates.map((candidate: any) => candidate.name),
+            ["FlightController"]
+        );
+        assert.strictEqual(result.activityDiagramCandidates[0].sourceKind, "performer");
+        assert.strictEqual(result.diagrams[0].hasBehavioralFlow, true);
+    });
+
+    it("action-flow-view filters node-only diagrams that still lack behavioral flows", () => {
+        const data = createMockData({
+            activityDiagrams: [
+                {
+                    id: "Mission::ExecuteOutboundJourney::actionDef",
+                    name: "ExecuteOutboundJourney",
+                    packagePath: "Mission",
+                    sourceKind: "actionDef",
+                    actions: [
+                        { name: "prep", type: "action", kind: "action", id: "prep" },
+                        { name: "launch", type: "action", kind: "action", id: "launch" },
+                    ],
+                    flows: [],
+                    decisions: [],
+                    states: [],
+                },
+                {
+                    id: "Mission::LaunchSystem::performer",
+                    name: "LaunchSystem",
+                    packagePath: "Mission",
+                    sourceKind: "performer",
+                    actions: [
+                        { name: "provideStage1Thrust", type: "action", kind: "perform", id: "provideStage1Thrust" },
+                        { name: "provideStage2Thrust", type: "action", kind: "perform", id: "provideStage2Thrust" },
+                    ],
+                    flows: [
+                        { from: "provideStage1Thrust", to: "provideStage2Thrust" },
+                    ],
+                    decisions: [],
+                    states: [],
+                }
+            ]
+        });
+
+        const result = prepareDataForView(data, "action-flow-view");
+
+        assert.deepStrictEqual(
+            result.activityDiagramCandidates.map((candidate: any) => candidate.name),
+            ["LaunchSystem"]
+        );
+    });
+
+    it("action-flow-view ranks explicit action-def diagrams ahead of performer contexts", () => {
+        const data = createMockData({
+            activityDiagrams: [
+                {
+                    id: "Mission::FlightController::performer",
+                    name: "FlightController",
+                    packagePath: "Mission",
+                    sourceKind: "performer",
+                    actions: [
+                        { name: "assessVehicleState", type: "action", kind: "perform", id: "assessVehicleState" },
+                        { name: "manageMissionEvents", type: "action", kind: "perform", id: "manageMissionEvents" },
+                    ],
+                    flows: [
+                        { from: "assessVehicleState", to: "manageMissionEvents" },
+                    ],
+                    decisions: [],
+                    states: [],
+                },
+                {
+                    id: "Mission::ExecuteMission::actionDef",
+                    name: "ExecuteMission",
+                    packagePath: "Mission",
+                    sourceKind: "actionDef",
+                    actions: [
+                        { name: "captureVideo", type: "action", kind: "perform", id: "captureVideo" },
+                        { name: "sendReport", type: "action", kind: "perform", id: "sendReport" },
+                    ],
+                    flows: [
+                        { from: "captureVideo", to: "sendReport" },
+                    ],
+                    decisions: [],
+                    states: [],
+                }
+            ]
+        });
+
+        const result = prepareDataForView(data, "action-flow-view");
+
+        assert.strictEqual(result.activityDiagramCandidates[0].name, "ExecuteMission");
+        assert.strictEqual(result.activityDiagramCandidates[0].sourceKind, "actionDef");
+        assert.strictEqual(result.activityDiagramCandidates[1].name, "FlightController");
     });
 
     it("state-transition-view produces normalized state machines", () => {
@@ -484,6 +610,30 @@ describe("prepareDataForView", () => {
         });
 
         const result = prepareDataForView(data, "state-transition-view");
+        assert.deepStrictEqual(
+            result.stateMachineCandidates.map((candidate: any) => candidate.name),
+            ["FlightModeStateMachine"]
+        );
+    });
+
+    it("state-transition-view keeps real machines that have state content even without transitions", () => {
+        const data = createMockData({
+            elements: [
+                {
+                    name: "FlightModeStateMachine",
+                    type: "state def",
+                    id: "FlightModeStateMachine",
+                    children: [
+                        { name: "manual", type: "state", id: "manual", children: [], relationships: [] },
+                    ],
+                    relationships: [],
+                },
+            ],
+            relationships: [],
+        });
+
+        const result = prepareDataForView(data, "state-transition-view");
+
         assert.deepStrictEqual(
             result.stateMachineCandidates.map((candidate: any) => candidate.name),
             ["FlightModeStateMachine"]

@@ -192,7 +192,10 @@ export interface SysMLVisualizationResult {
 // ---------------------------------------------------------------------------
 
 export interface ActivityDiagramDTO {
+  id?: string;
   name: string;
+  packagePath?: string;
+  sourceKind?: "actionDef" | "performer" | string;
   actions: ActivityActionDTO[];
   interface?: ActivityInterfaceDTO;
   decisions: DecisionNodeDTO[];

@@ -5,6 +5,7 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::Url;
 
 use crate::semantic_model;
+use crate::views::extracted_model::{extract_activity_diagrams, ActivityDiagramDto};
 use crate::views::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlElementDto, SysmlGraphDto,
     SysmlModelStatsDto, SysmlVisualizationPackageCandidateDto,
@@ -16,6 +17,60 @@ use crate::views::ibd::{self, IbdDataDto, IbdPackageContainerGroupDto};
 
 #[path = "model_projection.rs"]
 mod model_projection;
+
+fn normalize_package_path(value: &str) -> String {
+    value.replace('.', "::").trim().to_string()
+}
+
+fn diagram_matches_package_filter(
+    diagram: &ActivityDiagramDto,
+    package_ref: &str,
+    package_name: Option<&str>,
+) -> bool {
+    let diagram_path = normalize_package_path(&diagram.package_path);
+    let normalized_ref = normalize_package_path(package_ref);
+    let normalized_name = package_name.map(normalize_package_path);
+
+    if !normalized_ref.is_empty()
+        && (diagram_path == normalized_ref
+            || diagram_path.starts_with(&format!("{normalized_ref}::")))
+    {
+        return true;
+    }
+
+    if let Some(name) = normalized_name {
+        if !name.is_empty()
+            && (diagram_path == name || diagram_path.starts_with(&format!("{name}::")))
+        {
+            return true;
+        }
+    }
+
+    false
+}
+
+fn build_workspace_activity_diagrams(
+    index: &std::collections::HashMap<Url, crate::workspace::state::IndexEntry>,
+    workspace_uris: &[Url],
+    package_filter: Option<(&str, Option<&str>)>,
+) -> Vec<ActivityDiagramDto> {
+    let mut diagrams = Vec::new();
+    for workspace_uri in workspace_uris {
+        let Some(entry) = index.get(workspace_uri) else {
+            continue;
+        };
+        let Some(parsed) = entry.parsed.as_ref() else {
+            continue;
+        };
+        diagrams.extend(extract_activity_diagrams(parsed));
+    }
+
+    if let Some((package_ref, package_name)) = package_filter {
+        diagrams.retain(|diagram| diagram_matches_package_filter(diagram, package_ref, package_name));
+    }
+
+    diagrams
+}
 
 pub(crate) fn parse_sysml_visualization_params(
     v: &serde_json::Value,
@@ -819,6 +874,7 @@ pub(crate) fn build_sysml_visualization_response(
             .map(|workspace_uri| ibd::build_ibd_for_uri(semantic_graph, workspace_uri))
             .collect(),
     ));
+    let mut activity_diagrams = build_workspace_activity_diagrams(index, &workspace_uris, None);
     let mut selected_package = None;
     let mut selected_package_name = None;
 
@@ -865,6 +921,11 @@ pub(crate) fn build_sysml_visualization_response(
                             Some((package_ref, Some(package_element.name.as_str()))),
                         )
                     });
+                activity_diagrams = build_workspace_activity_diagrams(
+                    index,
+                    &workspace_uris,
+                    Some((package_ref, Some(package_element.name.as_str()))),
+                );
                 selected_package = package_element
                     .id
                     .clone()
@@ -881,7 +942,7 @@ pub(crate) fn build_sysml_visualization_response(
                     graph: Some(filtered_graph.clone()),
                     general_view_graph: Some(general_view_graph),
                     workspace_model: Some(workspace_model),
-                    activity_diagrams: None,
+                    activity_diagrams: Some(activity_diagrams),
                     ibd,
                     stats: Some(SysmlModelStatsDto {
                         total_elements: filtered_graph.nodes.len() as u32,
@@ -922,7 +983,7 @@ pub(crate) fn build_sysml_visualization_response(
         graph: Some(graph.clone()),
         general_view_graph: Some(general_view_graph),
         workspace_model: Some(workspace_model),
-        activity_diagrams: None,
+        activity_diagrams: Some(activity_diagrams),
         ibd: attached_ibd,
         stats: Some(SysmlModelStatsDto {
             total_elements: graph.nodes.len() as u32,
@@ -941,10 +1002,14 @@ mod tests {
 
     use super::{
         attach_ibd_package_container_groups, build_package_groups_from_graph,
-        build_ibd_package_container_groups, parse_sysml_visualization_params,
+        build_ibd_package_container_groups, build_workspace_activity_diagrams,
+        parse_sysml_visualization_params,
     };
     use crate::views::dto::{GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, SysmlGraphDto};
     use crate::views::ibd::{IbdDataDto, IbdPartDto, IbdRootViewDto};
+    use crate::workspace::state::{IndexEntry, ParseMetadata};
+    use sysml_v2_parser::parse;
+    use tower_lsp::lsp_types::Url;
 
     fn zero_range() -> RangeDto {
         RangeDto {
@@ -996,6 +1061,77 @@ mod tests {
         assert_eq!(view, "interconnection-view");
         assert_eq!(package_filter.kind, "all");
         assert_eq!(package_filter.package, None);
+    }
+
+    #[test]
+    fn workspace_activity_diagrams_include_performer_contexts_and_support_package_filtering() {
+        let uri_a = Url::parse("file:///C:/demo/Logical.sysml").expect("uri a");
+        let uri_b = Url::parse("file:///C:/demo/Function.sysml").expect("uri b");
+        let parsed_a = parse(
+            r#"
+                package LogicalComponentsPackage {
+                    part def LaunchSystem {
+                        perform action provideStage1Thrust : ProvideStage1Thrust;
+                        perform action provideStage2Thrust : ProvideStage2Thrust;
+                    }
+                }
+            "#,
+        )
+        .expect("parse logical");
+        let parsed_b = parse(
+            r#"
+                package FunctionsPackage {
+                    action def LaunchToOrbit {
+                        action countdown: ExecuteTerminalCountdown;
+                        action provideThrust1: ProvideStage1Thrust;
+                    }
+                }
+            "#,
+        )
+        .expect("parse function");
+
+        let index = HashMap::from([
+            (
+                uri_a.clone(),
+                IndexEntry {
+                    content: String::new(),
+                    parsed: Some(parsed_a),
+                    parse_metadata: ParseMetadata::default(),
+                },
+            ),
+            (
+                uri_b.clone(),
+                IndexEntry {
+                    content: String::new(),
+                    parsed: Some(parsed_b),
+                    parse_metadata: ParseMetadata::default(),
+                },
+            ),
+        ]);
+
+        let all_diagrams =
+            build_workspace_activity_diagrams(&index, &[uri_a.clone(), uri_b.clone()], None);
+        assert!(
+            all_diagrams
+                .iter()
+                .any(|diagram| diagram.name == "LaunchSystem" && diagram.source_kind == "performer"),
+            "expected performer diagram to be aggregated from workspace files"
+        );
+        assert!(
+            all_diagrams
+                .iter()
+                .any(|diagram| diagram.name == "LaunchToOrbit" && diagram.source_kind == "actionDef"),
+            "expected action-def diagram to be aggregated from workspace files"
+        );
+
+        let filtered_diagrams = build_workspace_activity_diagrams(
+            &index,
+            &[uri_a, uri_b],
+            Some(("LogicalComponentsPackage", Some("LogicalComponentsPackage"))),
+        );
+        assert_eq!(filtered_diagrams.len(), 1);
+        assert_eq!(filtered_diagrams[0].name, "LaunchSystem");
+        assert_eq!(filtered_diagrams[0].source_kind, "performer");
     }
 
     #[test]

@@ -332,109 +332,122 @@ export function prepareDataForView(data: any, view: string): any {
                 const matchedElement = matches.shift() || null;
                 const meta = lookupElementMeta(matchedElement || diagram, `activity-diagram-${fallbackIndex + 1}`);
                 return {
-                    id: meta.stableId || String(diagram?.name || `activity-diagram-${fallbackIndex + 1}`),
-                    packagePath: meta.packagePath,
+                    id: String(diagram?.id || meta.stableId || `activity-diagram-${fallbackIndex + 1}`),
+                    packagePath: String(diagram?.packagePath || meta.packagePath || ''),
                 };
             };
             const rankActionDiagram = (diagram: any): number => {
                 const flowCount = countWithFallback(diagram?.flows);
                 const nodeCount = countWithFallback(diagram?.nodes) || countWithFallback(diagram?.actions);
-                return flowCount * 100 + nodeCount * 10;
+                const sourceKind = String(diagram?.sourceKind || '');
+                const sourceBonus = sourceKind === 'actionDef' ? 10000 : (sourceKind === 'performer' ? 5000 : 0);
+                return sourceBonus + flowCount * 100 + nodeCount * 10;
+            };
+            const normalizeActivityDiagram = (diagram: any, index: number) => {
+                const meta = takeActionMeta(diagram, index);
+                const decisionsAsNodes = (diagram.decisions || []).map((d: any) => ({
+                    ...d,
+                    id: d.id || d.name,
+                    type: 'decision',
+                    kind: 'decision'
+                }));
+
+                const stateNodes = (diagram.states || [])
+                    .map((state: any, idx: number) => ({
+                        ...state,
+                        id: state.id || state.name || `state_${idx + 1}`,
+                        name: state.name || state.id || `State ${idx + 1}`,
+                        type: state.type || state.stateType || 'state',
+                        kind: state.type || state.stateType || 'state'
+                    }))
+                    .filter((state: any) => {
+                        const kind = String(state.kind || state.type || '').toLowerCase();
+                        return ['initial', 'final', 'decision', 'merge', 'fork', 'join'].some((allowed) => kind.includes(allowed));
+                    });
+
+                const allNodes = [
+                    ...(diagram.actions || []).map((a: any) => ({
+                        ...a,
+                        id: a.id || a.name,
+                        inputs: Array.isArray(a.inputs) ? a.inputs : [],
+                        outputs: Array.isArray(a.outputs) ? a.outputs : [],
+                        parent: (a.parent === diagram.name) ? undefined : a.parent
+                    })),
+                    ...decisionsAsNodes,
+                    ...stateNodes
+                ];
+
+                const allowedKinds = new Set(['action', 'perform', 'decision', 'merge', 'fork', 'join', 'initial', 'final']);
+                const nodes = allNodes.filter((node: any) => {
+                    const kind = String(node.kind || node.type || 'action').toLowerCase();
+                    return allowedKinds.has(kind);
+                });
+
+                const nodeIds = new Set(nodes.map((node: any) => node.id || node.name));
+                const flows = (diagram.flows || []).map((flow: any, idx: number) => ({
+                    ...flow,
+                    id: flow.id || `${diagram.name}::flow::${idx + 1}`,
+                    flowKind: flow.flowKind || flow.type || 'control'
+                }));
+                const incomingFlowCount = new Map<string, number>();
+                const outgoingFlowCount = new Map<string, number>();
+
+                flows.forEach((f: any) => {
+                    if (f.from && nodeIds.has(f.from)) {
+                        outgoingFlowCount.set(f.from, (outgoingFlowCount.get(f.from) || 0) + 1);
+                    }
+                    if (f.to && nodeIds.has(f.to)) {
+                        incomingFlowCount.set(f.to, (incomingFlowCount.get(f.to) || 0) + 1);
+                    }
+                });
+
+                const cleanFlows = flows.filter((f: any) =>
+                    f.from !== f.to &&
+                    nodeIds.has(f.from) &&
+                    nodeIds.has(f.to)
+                );
+
+                const normalizedNodes = nodes.map((node: any) => {
+                    const nodeId = node.id || node.name;
+                    const incoming = incomingFlowCount.get(nodeId) || 0;
+                    const outgoing = outgoingFlowCount.get(nodeId) || 0;
+                    const hasGuards = cleanFlows.some((flow: any) => flow.from === nodeId && (flow.guard || flow.condition));
+                    let normalizedKind = String(node.kind || node.type || 'action').toLowerCase();
+                    if (normalizedKind === 'action' && outgoing > 1 && hasGuards) normalizedKind = 'decision';
+                    else if (normalizedKind === 'action' && outgoing > 1) normalizedKind = 'fork';
+                    else if (normalizedKind === 'action' && incoming > 1) normalizedKind = 'merge';
+                    return {
+                        ...node,
+                        id: nodeId,
+                        name: node.name || nodeId || 'Action',
+                        kind: normalizedKind,
+                    };
+                });
+
+                const sourceKind = String(diagram?.sourceKind || 'actionDef');
+                const hasRenderableContent = normalizedNodes.length > 0 && cleanFlows.length > 0;
+
+                return {
+                    id: meta.id,
+                    name: diagram.name,
+                    label: buildSelectorLabel(String(diagram.name || `Action ${index + 1}`), meta.packagePath),
+                    packagePath: meta.packagePath,
+                    sourceKind,
+                    nodes: normalizedNodes,
+                    flows: cleanFlows,
+                    interface: {
+                        inputs: Array.isArray(diagram.interface?.inputs) ? diagram.interface.inputs : [],
+                        outputs: Array.isArray(diagram.interface?.outputs) ? diagram.interface.outputs : [],
+                    },
+                    hasBehavioralFlow: cleanFlows.length > 0,
+                    hasRenderableContent,
+                };
             };
             if (data.activityDiagrams && data.activityDiagrams.length > 0) {
-                const diagrams = data.activityDiagrams.map((diagram: any, index: number) => {
-                    const meta = takeActionMeta(diagram, index);
-                    const decisionsAsNodes = (diagram.decisions || []).map((d: any) => ({
-                        ...d,
-                        id: d.id || d.name,
-                        type: 'decision',
-                        kind: 'decision'
-                    }));
-
-                    const stateNodes = (diagram.states || [])
-                        .map((state: any, idx: number) => ({
-                            ...state,
-                            id: state.id || state.name || `state_${idx + 1}`,
-                            name: state.name || state.id || `State ${idx + 1}`,
-                            type: state.type || state.stateType || 'state',
-                            kind: state.type || state.stateType || 'state'
-                        }))
-                        .filter((state: any) => {
-                            const kind = String(state.kind || state.type || '').toLowerCase();
-                            return ['initial', 'final', 'decision', 'merge', 'fork', 'join'].some((allowed) => kind.includes(allowed));
-                        });
-
-                    const allNodes = [
-                        ...(diagram.actions || []).map((a: any) => ({
-                            ...a,
-                            id: a.id || a.name,
-                            inputs: Array.isArray(a.inputs) ? a.inputs : [],
-                            outputs: Array.isArray(a.outputs) ? a.outputs : [],
-                            parent: (a.parent === diagram.name) ? undefined : a.parent
-                        })),
-                        ...decisionsAsNodes,
-                        ...stateNodes
-                    ];
-
-                    const allowedKinds = new Set(['action', 'perform', 'decision', 'merge', 'fork', 'join', 'initial', 'final']);
-                    const nodes = allNodes.filter((node: any) => {
-                        const kind = String(node.kind || node.type || 'action').toLowerCase();
-                        return allowedKinds.has(kind);
-                    });
-
-                    const nodeIds = new Set(nodes.map((node: any) => node.id || node.name));
-                    const flows = (diagram.flows || []).map((flow: any, idx: number) => ({
-                        ...flow,
-                        id: flow.id || `${diagram.name}::flow::${idx + 1}`,
-                        flowKind: flow.flowKind || flow.type || 'control'
-                    }));
-                    const incomingFlowCount = new Map<string, number>();
-                    const outgoingFlowCount = new Map<string, number>();
-
-                    flows.forEach((f: any) => {
-                        if (f.from && nodeIds.has(f.from)) {
-                            outgoingFlowCount.set(f.from, (outgoingFlowCount.get(f.from) || 0) + 1);
-                        }
-                        if (f.to && nodeIds.has(f.to)) {
-                            incomingFlowCount.set(f.to, (incomingFlowCount.get(f.to) || 0) + 1);
-                        }
-                    });
-
-                    const cleanFlows = flows.filter((f: any) =>
-                        f.from !== f.to &&
-                        nodeIds.has(f.from) &&
-                        nodeIds.has(f.to)
-                    );
-
-                    return {
-                        id: meta.id,
-                        name: diagram.name,
-                        label: buildSelectorLabel(String(diagram.name || `Action ${index + 1}`), meta.packagePath),
-                        packagePath: meta.packagePath,
-                        nodes: nodes.map((node: any) => {
-                            const nodeId = node.id || node.name;
-                            const incoming = incomingFlowCount.get(nodeId) || 0;
-                            const outgoing = outgoingFlowCount.get(nodeId) || 0;
-                            const hasGuards = cleanFlows.some((flow: any) => flow.from === nodeId && (flow.guard || flow.condition));
-                            let normalizedKind = String(node.kind || node.type || 'action').toLowerCase();
-                            if (normalizedKind === 'action' && outgoing > 1 && hasGuards) normalizedKind = 'decision';
-                            else if (normalizedKind === 'action' && outgoing > 1) normalizedKind = 'fork';
-                            else if (normalizedKind === 'action' && incoming > 1) normalizedKind = 'merge';
-                            return {
-                                ...node,
-                                id: nodeId,
-                                name: node.name || nodeId || 'Action',
-                                kind: normalizedKind,
-                            };
-                        }),
-                        flows: cleanFlows,
-                        interface: {
-                            inputs: Array.isArray(diagram.interface?.inputs) ? diagram.interface.inputs : [],
-                            outputs: Array.isArray(diagram.interface?.outputs) ? diagram.interface.outputs : [],
-                        },
-                        hasBehavioralFlow: cleanFlows.length > 0,
-                    };
-                }).sort((a: any, b: any) => {
+                const diagrams = data.activityDiagrams
+                    .map((diagram: any, index: number) => normalizeActivityDiagram(diagram, index))
+                    .filter((diagram: any) => diagram.hasRenderableContent)
+                    .sort((a: any, b: any) => {
                     const scoreDelta = rankActionDiagram(b) - rankActionDiagram(a);
                     if (scoreDelta !== 0) return scoreDelta;
                     return String(a.label || a.name).localeCompare(String(b.label || b.name));
@@ -447,6 +460,7 @@ export function prepareDataForView(data: any, view: string): any {
                         name: diagram.name,
                         label: diagram.label,
                         packagePath: diagram.packagePath,
+                        sourceKind: diagram.sourceKind,
                         nodeCount: countWithFallback(diagram.nodes),
                         flowCount: countWithFallback(diagram.flows),
                     })),
@@ -490,6 +504,7 @@ export function prepareDataForView(data: any, view: string): any {
                     name: actionDef.name,
                     label: buildSelectorLabel(String(actionDef.name || `Action ${index + 1}`), meta.packagePath),
                     packagePath: meta.packagePath,
+                    sourceKind: 'actionDef',
                     nodes,
                     flows: [],
                     interface: {
@@ -497,8 +512,9 @@ export function prepareDataForView(data: any, view: string): any {
                         outputs: interfaceOutputs,
                     },
                     hasBehavioralFlow: false,
+                    hasRenderableContent: nodes.length > 0,
                 };
-            }).sort((a: any, b: any) => {
+            }).filter((diagram: any) => diagram.hasRenderableContent).sort((a: any, b: any) => {
                 const scoreDelta = rankActionDiagram(b) - rankActionDiagram(a);
                 if (scoreDelta !== 0) return scoreDelta;
                 return String(a.label || a.name).localeCompare(String(b.label || b.name));
@@ -512,6 +528,7 @@ export function prepareDataForView(data: any, view: string): any {
                     name: diagram.name,
                     label: diagram.label,
                     packagePath: diagram.packagePath,
+                    sourceKind: diagram.sourceKind,
                     nodeCount: countWithFallback(diagram.nodes),
                     flowCount: countWithFallback(diagram.flows),
                 })),
@@ -844,7 +861,12 @@ export function prepareDataForView(data: any, view: string): any {
                 };
             }
 
-            let stateMachines = machineRoots.map((root: any, index: number) => buildMachine(root, index));
+            let stateMachines = machineRoots
+                .map((root: any, index: number) => buildMachine(root, index))
+                .filter((machine: any) => {
+                    const realStates = machine.states.filter((state: any) => state.kind !== 'initial' || state.name !== 'entry');
+                    return realStates.length > 0;
+                });
 
             if (stateMachines.length === 0) {
                 const fallbackStates = allElements.filter((el: any) => isStateElement(el) && !isStateDefinition(el));
