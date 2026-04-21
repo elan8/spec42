@@ -66,10 +66,6 @@ spec42 stdlib status
   - Discovery cap per workspace folder and file type.
   - Default: `500`
 
-- **`spec42.visualization.enableExperimentalViews`**
-  - Enable experimental visualization views.
-  - Default: `false`
-
 - **`spec42.visualization.exportScale`**
   - Scale factor used for PNG/SVG export.
   - Default: `2`

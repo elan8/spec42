@@ -418,11 +418,6 @@
           "default": false,
           "description": "Enable verbose runtime logging for troubleshooting in production installs (visualizer/webview/message flow)."
         },
-        "spec42.visualization.enableExperimentalViews": {
-          "type": "boolean",
-          "default": false,
-          "description": "Enable experimental diagram views in the visualizer UI, such as action flow, state transition, and sequence views."
-        },
         "spec42.visualization.exportScale": {
           "type": "number",
           "default": 2,

@@ -4,23 +4,13 @@ import type { GraphNodeDTO } from '../providers/sysmlModelTypes';
 import { createMessageDispatcher } from './messageHandlers';
 import { createUpdateVisualizationFlow } from './updateFlow';
 import { getWebviewHtml } from './htmlBuilder';
-import { DEFAULT_ENABLED_VIEWS, EXPERIMENTAL_VIEWS } from './webview/constants';
+import { DEFAULT_ENABLED_VIEWS } from './webview/constants';
 import { logError } from '../logger';
 
 export const RESTORE_STATE_KEY = 'sysmlVisualizerRestoreState';
 
 function getEnabledVisualizationViewIds(): Set<string> {
-    const enabled = new Set<string>(DEFAULT_ENABLED_VIEWS);
-    const includeExperimentalViews =
-        vscode.workspace.getConfiguration('spec42').get<boolean>('visualization.enableExperimentalViews') ??
-        vscode.workspace.getConfiguration('sysml-language-server').get<boolean>('visualization.enableExperimentalViews') ??
-        false;
-    if (includeExperimentalViews) {
-        for (const viewId of EXPERIMENTAL_VIEWS) {
-            enabled.add(viewId);
-        }
-    }
-    return enabled;
+    return new Set<string>(DEFAULT_ENABLED_VIEWS);
 }
 
 function parseFileUri(value: string, label: string): vscode.Uri | undefined {

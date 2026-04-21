@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { isVerboseLoggingEnabled } from '../logger';
 import { getVisualizerStyles } from './styles';
-import { DEFAULT_ENABLED_VIEWS, EXPERIMENTAL_VIEWS } from './webview/constants';
+import { DEFAULT_ENABLED_VIEWS } from './webview/constants';
 
 function getNonce(): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -20,14 +20,6 @@ export function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri
 
     const nonce = getNonce();
     const enabledViews = new Set<string>(DEFAULT_ENABLED_VIEWS);
-    const includeExperimentalViews =
-        vscode.workspace.getConfiguration('spec42').get<boolean>('visualization.enableExperimentalViews') ??
-        vscode.workspace.getConfiguration('sysml-language-server').get<boolean>('visualization.enableExperimentalViews') ??
-        false;
-    if (includeExperimentalViews) {
-        EXPERIMENTAL_VIEWS.forEach((viewId) => enabledViews.add(viewId));
-    }
-
     const vars: Record<string, string> = {
         NONCE: nonce,
         CSP_SOURCE: webview.cspSource,
@@ -39,7 +31,7 @@ export function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri
         STYLES: getVisualizerStyles(),
         EXTENSION_VERSION: extensionVersion ?? '0.0.0',
         ENABLED_VIEW_IDS_JSON: JSON.stringify(Array.from(enabledViews)),
-        EXPERIMENTAL_VIEW_IDS_JSON: JSON.stringify(EXPERIMENTAL_VIEWS),
+        EXPERIMENTAL_VIEW_IDS_JSON: '[]',
         VERBOSE_LOGGING_JSON: JSON.stringify(isVerboseLoggingEnabled()),
     };
 

@@ -28,7 +28,6 @@ import {
 } from "./visualization/visualizationPanel";
 import {
   DEFAULT_ENABLED_VIEWS,
-  EXPERIMENTAL_VIEWS,
 } from "./visualization/webview/constants";
 import { getWebviewHtml } from "./visualization/htmlBuilder";
 const CONFIG_SECTION = "spec42";
@@ -291,17 +290,7 @@ function shouldShowModelExplorerContext(
 }
 
 function getEnabledVisualizationViewIds(): Set<string> {
-  const enabled = new Set<string>(DEFAULT_ENABLED_VIEWS);
-  const includeExperimental = getConfigBoolean(
-    "visualization.enableExperimentalViews",
-    false
-  );
-  if (includeExperimental) {
-    for (const viewId of EXPERIMENTAL_VIEWS) {
-      enabled.add(viewId);
-    }
-  }
-  return enabled;
+  return new Set<string>(DEFAULT_ENABLED_VIEWS);
 }
 
 function getVisualizationViews(): Array<{ id: string; label: string; description: string }> {
@@ -309,8 +298,8 @@ function getVisualizationViews(): Array<{ id: string; label: string; description
   return [
     { id: "general-view", label: "General", description: "General view (SysML v2 general-view)" },
     { id: "interconnection-view", label: "Interconnection", description: "Interconnection view (internal block and connector routing)" },
-    { id: "action-flow-view", label: "Action Flow", description: "Experimental: behavior and flow rendering" },
-    { id: "state-transition-view", label: "State Transition", description: "Experimental: state-machine rendering" },
+    { id: "action-flow-view", label: "Action Flow", description: "Behavior and flow rendering" },
+    { id: "state-transition-view", label: "State Transition", description: "State-machine rendering" },
   ].filter((v) => enabledViews.has(v.id));
 }
 
@@ -1700,7 +1689,7 @@ export function activate(context: vscode.ExtensionContext): void {
         const view = enabledViews.has(selectedViewId) ? selectedViewId : 'general-view';
         if (view !== selectedViewId) {
           vscode.window.showWarningMessage(
-            "That visualizer view is not currently enabled. Turn on 'SysML > Visualization: Enable Experimental Views' to try experimental diagram types."
+            "That visualizer view is not currently enabled."
           );
         }
         VisualizationPanel.currentPanel.changeView(view);
@@ -1888,9 +1877,6 @@ export function activate(context: vscode.ExtensionContext): void {
         updateStatusBar(context);
       }
 
-      const visualizationConfigChanged =
-        event.affectsConfiguration("spec42.visualization.enableExperimentalViews") ||
-        event.affectsConfiguration("sysml-language-server.visualization.enableExperimentalViews");
       const verboseLoggingChanged =
         event.affectsConfiguration("spec42.logging.verbose") ||
         event.affectsConfiguration("spec42.debug") ||
@@ -1904,7 +1890,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
       // Recreate the panel so webview bootstrap flags (enabled views / verbose logging)
       // are regenerated without requiring a full VS Code reload.
-      if ((visualizationConfigChanged || verboseLoggingChanged) && VisualizationPanel.currentPanel) {
+      if (verboseLoggingChanged && VisualizationPanel.currentPanel) {
         const panelDoc = VisualizationPanel.currentPanel.getDocument();
         VisualizationPanel.currentPanel.dispose();
         VisualizationPanel.createOrShow(context, panelDoc, undefined, lspModelProvider);

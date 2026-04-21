@@ -17,12 +17,7 @@ export const DEFAULT_ENABLED_VIEWS = [
     'state-transition-view',
 ] as const;
 
-export const EXPERIMENTAL_VIEWS = [
-    'action-flow-view',
-    'state-transition-view',
-] as const;
-
-/** Default release-enabled views. Experimental views can be enabled from extension settings. */
+/** Default release-enabled views. */
 export const ENABLED_VIEWS = new Set(DEFAULT_ENABLED_VIEWS);
 
 export const ORIENTATION_LABELS: Record<string, string> = {

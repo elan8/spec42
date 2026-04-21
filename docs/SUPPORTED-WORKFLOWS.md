@@ -31,7 +31,7 @@ These workflows are available and useful, but still have known limits that shoul
   Usable for inspection and export, but still downstream of parser/model quality.
 - Interconnection visualization view
   Release-enabled for structural connection inspection, export, and root-based exploration, with known caveats mainly around very dense routing/layout.
-- Experimental diagram views via `spec42.visualization.enableExperimentalViews` (legacy `sysml-language-server.visualization.enableExperimentalViews` is still supported)
+- Action Flow and State Transition views are available by default in the visualizer.
   Useful for evaluation and iteration, but not yet release-gating for `1.0`.
 
 ## Experimental Areas

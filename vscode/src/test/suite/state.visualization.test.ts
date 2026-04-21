@@ -18,9 +18,6 @@ describe("State Transition Visualization", () => {
         this.timeout(30000);
         process.env.SPEC42_SERVER_PATH = path.resolve(__dirname, "../../../../target/debug/spec42.exe");
         await configureServerForTests();
-        await vscode.workspace
-            .getConfiguration("spec42")
-            .update("visualization.enableExperimentalViews", true, vscode.ConfigurationTarget.Workspace);
 
         const doc = await vscode.workspace.openTextDocument(STATE_FIXTURE);
         await waitForLanguageServerReady(doc);
