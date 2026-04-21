@@ -30,135 +30,42 @@ fn validate_inline_sysml(filename: &str, content: &str) -> Vec<tower_lsp::lsp_ty
         .expect("validated document diagnostics")
 }
 
+fn has_diag_code(
+    diagnostics: &[tower_lsp::lsp_types::Diagnostic],
+    source: &str,
+    code: &str,
+) -> bool {
+    diagnostics.iter().any(|diagnostic| {
+        diagnostic.source.as_deref() == Some(source)
+            && diagnostic.code.as_ref()
+                == Some(&tower_lsp::lsp_types::NumberOrString::String(code.to_string()))
+    })
+}
+
 #[test]
 fn lsp_diagnostics_on_invalid_sysml() {
-    let mut child = spawn_server();
-    let mut stdin = child.stdin.take().expect("stdin");
-    let mut stdout = child.stdout.take().expect("stdout");
-
-    let uri = "file:///bad.sysml";
-    // Use invalid input that sysml-v2-parser's parse_with_diagnostics reports (e.g. extra "}" or invalid keyword).
-    // "package P { part def X " does NOT produce diagnostics - parser recovers without error.
-    let content = "package P { } }"; // extra closing brace -> "expected end of input"
-
-    let init_id = next_id();
-    let init_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": init_id,
-        "method": "initialize",
-        "params": {
-            "processId": null,
-            "rootUri": null,
-            "capabilities": {},
-            "clientInfo": { "name": "test", "version": "0.1.0" }
-        }
-    });
-    send_message(&mut stdin, &init_req.to_string());
-    let _ = read_message(&mut stdout).expect("init response");
-
-    let initialized =
-        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
-    send_message(&mut stdin, &initialized.to_string());
-
-    let did_open = serde_json::json!({
-        "jsonrpc": "2.0",
-        "method": "textDocument/didOpen",
-        "params": {
-            "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
-        }
-    });
-    send_message(&mut stdin, &did_open.to_string());
-
-    // Server sends publishDiagnostics (notification); allow time for async processing
-    std::thread::sleep(std::time::Duration::from_millis(500));
-    // Drain notifications (no id); we expect at least one diagnostics notification
-    let mut got_diagnostics = false;
-    for _ in 0..20 {
-        if let Some(msg) = read_message(&mut stdout) {
-            let json: serde_json::Value = serde_json::from_str(&msg).ok().unwrap_or_default();
-            if json["method"].as_str() == Some("textDocument/publishDiagnostics") {
-                let diags = json["params"]["diagnostics"].as_array();
-                if diags.map(|a| !a.is_empty()).unwrap_or(false) {
-                    got_diagnostics = true;
-                    break;
-                }
-            }
-        } else {
-            break;
-        }
-    }
+    // Use invalid input that parse_with_diagnostics reports (extra closing brace).
+    let content = "package P { } }";
+    let diagnostics = validate_inline_sysml("bad.sysml", content);
+    let got_diagnostics = !diagnostics.is_empty();
     assert!(
         got_diagnostics,
         "invalid SysML should produce at least one diagnostic"
     );
-
-    let _ = child.kill();
 }
 
 #[test]
 fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
-    let mut child = spawn_server();
-    let mut stdin = child.stdin.take().expect("stdin");
-    let mut stdout = child.stdout.take().expect("stdout");
-
-    let uri = "file:///surveillance_drone_diag_test.sysml";
     let fixture_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests")
         .join("fixtures")
         .join("surveillance_drone_full.sysml");
     let content = fs::read_to_string(&fixture_path).expect("read drone fixture");
-
-    let init_id = next_id();
-    let init_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": init_id,
-        "method": "initialize",
-        "params": {
-            "processId": null,
-            "rootUri": null,
-            "capabilities": {},
-            "clientInfo": { "name": "test", "version": "0.1.0" }
-        }
-    });
-    send_message(&mut stdin, &init_req.to_string());
-    let _ = read_message(&mut stdout).expect("init response");
-
-    let initialized =
-        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
-    send_message(&mut stdin, &initialized.to_string());
-
-    let did_open = serde_json::json!({
-        "jsonrpc": "2.0",
-        "method": "textDocument/didOpen",
-        "params": {
-            "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
-        }
-    });
-    send_message(&mut stdin, &did_open.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(600));
-
-    let mut semantic_diags: Vec<serde_json::Value> = Vec::new();
-    for _ in 0..30 {
-        let Some(msg) = read_message(&mut stdout) else {
-            break;
-        };
-        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
-        if json["method"].as_str() != Some("textDocument/publishDiagnostics") {
-            continue;
-        }
-        let diags = json["params"]["diagnostics"]
-            .as_array()
-            .cloned()
-            .unwrap_or_default();
-        semantic_diags.extend(
-            diags
-                .into_iter()
-                .filter(|d| d["source"].as_str() == Some("semantic")),
-        );
-        // Stop after the first diagnostics publication to avoid blocking on
-        // additional messages that may never arrive.
-        break;
-    }
+    let diagnostics = validate_inline_sysml("surveillance_drone_diag_test.sysml", &content);
+    let semantic_diags: Vec<_> = diagnostics
+        .iter()
+        .filter(|diagnostic| diagnostic.source.as_deref() == Some("semantic"))
+        .collect();
 
     assert!(
         !semantic_diags.is_empty(),
@@ -166,11 +73,11 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
     );
     let at_1_1 = semantic_diags
         .iter()
-        .filter(|d| {
-            d["range"]["start"]["line"].as_u64() == Some(0)
-                && d["range"]["start"]["character"].as_u64() == Some(0)
-                && d["range"]["end"]["line"].as_u64() == Some(0)
-                && d["range"]["end"]["character"].as_u64() == Some(0)
+        .filter(|diagnostic| {
+            diagnostic.range.start.line == 0
+                && diagnostic.range.start.character == 0
+                && diagnostic.range.end.line == 0
+                && diagnostic.range.end.character == 0
         })
         .count();
     assert_eq!(
@@ -180,25 +87,32 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
 
     let unconnected_count = semantic_diags
         .iter()
-        .filter(|d| d["code"].as_str() == Some("unconnected_port"))
+        .filter(|diagnostic| {
+            diagnostic.code.as_ref()
+                == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                    "unconnected_port".to_string(),
+                ))
+        })
         .count();
     assert!(
         unconnected_count <= 25,
         "expected reduced unconnected_port noise, got {unconnected_count}"
     );
 
-    let unresolved: Vec<&serde_json::Value> = semantic_diags
+    let unresolved: Vec<_> = semantic_diags
         .iter()
-        .filter(|d| d["code"].as_str() == Some("unresolved_type_reference"))
+        .filter(|diagnostic| {
+            diagnostic.code.as_ref()
+                == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                    "unresolved_type_reference".to_string(),
+                ))
+        })
         .collect();
 
     let unresolved_string = unresolved
         .iter()
         .filter(|d| {
-            d["message"]
-                .as_str()
-                .unwrap_or_default()
-                .contains("Type reference 'String'")
+            d.message.contains("Type reference 'String'")
         })
         .count();
     assert_eq!(
@@ -209,10 +123,7 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
     let unresolved_conjugated = unresolved
         .iter()
         .filter(|d| {
-            d["message"]
-                .as_str()
-                .unwrap_or_default()
-                .contains("Type reference '~")
+            d.message.contains("Type reference '~")
         })
         .count();
     assert_eq!(
@@ -223,7 +134,7 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
     let unresolved_behavior_actions = unresolved
         .iter()
         .filter(|d| {
-            let msg = d["message"].as_str().unwrap_or_default();
+            let msg = d.message.as_str();
             msg.contains("Type reference 'ExecutePatrol'")
                 || msg.contains("Type reference 'ExecuteOrbit'")
                 || msg.contains("Type reference 'ControlGimbal'")
@@ -240,23 +151,19 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
         std::collections::HashSet<String>,
     > = std::collections::HashMap::new();
     for diag in &unresolved {
-        let Some(msg) = diag["message"].as_str() else {
-            continue;
-        };
+        let msg = diag.message.as_str();
         let type_ref = msg
             .split("Type reference '")
             .nth(1)
             .and_then(|rest| rest.split('\'').next())
             .unwrap_or_default()
             .to_string();
-        let start = &diag["range"]["start"];
-        let end = &diag["range"]["end"];
         let range_key = format!(
             "{}:{}:{}:{}",
-            start["line"].as_u64().unwrap_or_default(),
-            start["character"].as_u64().unwrap_or_default(),
-            end["line"].as_u64().unwrap_or_default(),
-            end["character"].as_u64().unwrap_or_default()
+            diag.range.start.line,
+            diag.range.start.character,
+            diag.range.end.line,
+            diag.range.end.character
         );
         unresolved_ranges_to_type_refs
             .entry(range_key)
@@ -273,7 +180,6 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
         unresolved_ranges_to_type_refs
     );
 
-    let _ = child.kill();
 }
 
 #[test]
@@ -909,11 +815,6 @@ fn lsp_diagnostics_clear_after_invalid_intermediate_edit_becomes_valid() {
 
 #[test]
 fn unresolved_type_reference_emits_semantic_diagnostic() {
-    let mut child = spawn_server();
-    let mut stdin = child.stdin.take().expect("stdin");
-    let mut stdout = child.stdout.take().expect("stdout");
-
-    let uri = "file:///missing_type.sysml";
     let content = r#"
         package P {
             part def Vehicle {
@@ -921,74 +822,16 @@ fn unresolved_type_reference_emits_semantic_diagnostic() {
             }
         }
     "#;
-
-    let init_id = next_id();
-    let init_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": init_id,
-        "method": "initialize",
-        "params": {
-            "processId": null,
-            "rootUri": null,
-            "capabilities": {},
-            "clientInfo": { "name": "test", "version": "0.1.0" }
-        }
-    });
-    send_message(&mut stdin, &init_req.to_string());
-    let _ = read_message(&mut stdout).expect("init response");
-    send_message(
-        &mut stdin,
-        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
-    );
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "method": "textDocument/didOpen",
-            "params": {
-                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
-            }
-        })
-        .to_string(),
-    );
-    std::thread::sleep(std::time::Duration::from_millis(400));
-
-    let mut found_unresolved = false;
-    for _ in 0..25 {
-        let Some(msg) = read_message(&mut stdout) else {
-            break;
-        };
-        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
-        if json["method"].as_str() != Some("textDocument/publishDiagnostics") {
-            continue;
-        }
-        let diagnostics = json["params"]["diagnostics"]
-            .as_array()
-            .cloned()
-            .unwrap_or_default();
-        found_unresolved = diagnostics.iter().any(|d| {
-            d["source"].as_str() == Some("semantic")
-                && d["code"].as_str() == Some("unresolved_type_reference")
-        });
-        if found_unresolved {
-            break;
-        }
-    }
+    let diagnostics = validate_inline_sysml("missing_type.sysml", content);
+    let found_unresolved = has_diag_code(&diagnostics, "semantic", "unresolved_type_reference");
     assert!(
         found_unresolved,
         "expected unresolved_type_reference semantic diagnostic"
     );
-
-    let _ = child.kill();
 }
 
 #[test]
 fn missing_library_context_info_is_emitted_for_imported_unresolved_types_without_library_paths() {
-    let mut child = spawn_server();
-    let mut stdin = child.stdin.take().expect("stdin");
-    let mut stdout = child.stdout.take().expect("stdout");
-
-    let uri = "file:///missing_library_context.sysml";
     let content = r#"
         package P {
             import ScalarValues::Real;
@@ -998,64 +841,10 @@ fn missing_library_context_info_is_emitted_for_imported_unresolved_types_without
             }
         }
     "#;
-
-    let init_id = next_id();
-    let init_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": init_id,
-        "method": "initialize",
-        "params": {
-            "processId": null,
-            "rootUri": null,
-            "capabilities": {},
-            "clientInfo": { "name": "test", "version": "0.1.0" }
-        }
-    });
-    send_message(&mut stdin, &init_req.to_string());
-    let _ = read_message(&mut stdout).expect("init response");
-    send_message(
-        &mut stdin,
-        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
-    );
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "method": "textDocument/didOpen",
-            "params": {
-                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
-            }
-        })
-        .to_string(),
-    );
-    std::thread::sleep(std::time::Duration::from_millis(400));
-
-    let mut found_missing_library_context = false;
-    let mut found_unresolved = false;
-    for _ in 0..25 {
-        let Some(msg) = read_message(&mut stdout) else {
-            break;
-        };
-        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
-        if json["method"].as_str() != Some("textDocument/publishDiagnostics") {
-            continue;
-        }
-        let diagnostics = json["params"]["diagnostics"]
-            .as_array()
-            .cloned()
-            .unwrap_or_default();
-        found_missing_library_context = diagnostics.iter().any(|d| {
-            d["source"].as_str() == Some("semantic")
-                && d["code"].as_str() == Some("missing_library_context")
-        });
-        found_unresolved = diagnostics.iter().any(|d| {
-            d["source"].as_str() == Some("semantic")
-                && d["code"].as_str() == Some("unresolved_type_reference")
-        });
-        if found_missing_library_context && found_unresolved {
-            break;
-        }
-    }
+    let diagnostics = validate_inline_sysml("missing_library_context.sysml", content);
+    let found_missing_library_context =
+        has_diag_code(&diagnostics, "semantic", "missing_library_context");
+    let found_unresolved = has_diag_code(&diagnostics, "semantic", "unresolved_type_reference");
 
     assert!(
         found_unresolved,
@@ -1066,79 +855,20 @@ fn missing_library_context_info_is_emitted_for_imported_unresolved_types_without
         "expected missing_library_context informational diagnostic"
     );
 
-    let _ = child.kill();
 }
 
 #[test]
 fn missing_library_context_info_is_emitted_for_unresolved_import_targets_without_library_paths() {
-    let mut child = spawn_server();
-    let mut stdin = child.stdin.take().expect("stdin");
-    let mut stdout = child.stdout.take().expect("stdout");
-
-    let uri = "file:///missing_import_target_context.sysml";
     let content = r#"
         package P {
             import MissingLibrary::*;
         }
     "#;
-
-    let init_id = next_id();
-    let init_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": init_id,
-        "method": "initialize",
-        "params": {
-            "processId": null,
-            "rootUri": null,
-            "capabilities": {},
-            "clientInfo": { "name": "test", "version": "0.1.0" }
-        }
-    });
-    send_message(&mut stdin, &init_req.to_string());
-    let _ = read_message(&mut stdout).expect("init response");
-    send_message(
-        &mut stdin,
-        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
-    );
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "method": "textDocument/didOpen",
-            "params": {
-                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
-            }
-        })
-        .to_string(),
-    );
-    std::thread::sleep(std::time::Duration::from_millis(400));
-
-    let mut found_missing_library_context = false;
-    let mut found_unresolved_import = false;
-    for _ in 0..25 {
-        let Some(msg) = read_message(&mut stdout) else {
-            break;
-        };
-        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
-        if json["method"].as_str() != Some("textDocument/publishDiagnostics") {
-            continue;
-        }
-        let diagnostics = json["params"]["diagnostics"]
-            .as_array()
-            .cloned()
-            .unwrap_or_default();
-        found_missing_library_context = diagnostics.iter().any(|d| {
-            d["source"].as_str() == Some("semantic")
-                && d["code"].as_str() == Some("missing_library_context")
-        });
-        found_unresolved_import = diagnostics.iter().any(|d| {
-            d["source"].as_str() == Some("semantic")
-                && d["code"].as_str() == Some("unresolved_import_target")
-        });
-        if found_missing_library_context && found_unresolved_import {
-            break;
-        }
-    }
+    let diagnostics = validate_inline_sysml("missing_import_target_context.sysml", content);
+    let found_missing_library_context =
+        has_diag_code(&diagnostics, "semantic", "missing_library_context");
+    let found_unresolved_import =
+        has_diag_code(&diagnostics, "semantic", "unresolved_import_target");
 
     assert!(
         found_unresolved_import,
@@ -1149,7 +879,6 @@ fn missing_library_context_info_is_emitted_for_unresolved_import_targets_without
         "expected missing_library_context informational diagnostic"
     );
 
-    let _ = child.kill();
 }
 
 #[test]
@@ -1277,108 +1006,23 @@ fn inspection_rover_example_emits_unresolved_specializes_without_library_context
 
 #[test]
 fn unresolved_satisfy_reference_emits_semantic_diagnostic() {
-    let mut child = spawn_server();
-    let mut stdin = child.stdin.take().expect("stdin");
-    let mut stdout = child.stdout.take().expect("stdout");
-
-    let uri = "file:///unresolved_satisfy.sysml";
     let fixture_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests")
         .join("fixtures")
         .join("requirements_unresolved_satisfy.sysml");
     let content = fs::read_to_string(&fixture_path).expect("read unresolved satisfy fixture");
-
-    let init_id = next_id();
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": init_id,
-            "method": "initialize",
-            "params": {
-                "processId": null,
-                "rootUri": null,
-                "capabilities": {},
-                "clientInfo": { "name": "test", "version": "0.1.0" }
-            }
-        })
-        .to_string(),
-    );
-    let _ = read_message(&mut stdout).expect("init response");
-    send_message(
-        &mut stdin,
-        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
-    );
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "method": "textDocument/didOpen",
-            "params": {
-                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
-            }
-        })
-        .to_string(),
-    );
-    std::thread::sleep(std::time::Duration::from_millis(250));
-
-    // Drive a guaranteed response so we can deterministically drain diagnostics messages.
-    let hover_id = next_id();
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": hover_id,
-            "method": "textDocument/hover",
-            "params": {
-                "textDocument": { "uri": uri },
-                "position": { "line": 0, "character": 0 }
-            }
-        })
-        .to_string(),
-    );
-
-    let mut found_unresolved_satisfy = false;
-    loop {
-        let msg =
-            read_message(&mut stdout).expect("expected message while waiting for hover response");
-        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
-        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
-            && json["params"]["uri"]
-                .as_str()
-                .map(|published_uri| published_uri.eq_ignore_ascii_case(uri))
-                .unwrap_or(false)
-        {
-            let diagnostics = json["params"]["diagnostics"]
-                .as_array()
-                .cloned()
-                .unwrap_or_default();
-            found_unresolved_satisfy = diagnostics.iter().any(|d| {
-                d["source"].as_str() == Some("semantic")
-                    && (d["code"].as_str() == Some("unresolved_satisfy_source")
-                        || d["code"].as_str() == Some("unresolved_satisfy_target"))
-            });
-        }
-        if json["id"].as_i64() == Some(hover_id) {
-            break;
-        }
-    }
+    let diagnostics = validate_inline_sysml("unresolved_satisfy.sysml", &content);
+    let found_unresolved_satisfy = has_diag_code(&diagnostics, "semantic", "unresolved_satisfy_source")
+        || has_diag_code(&diagnostics, "semantic", "unresolved_satisfy_target");
 
     assert!(
         found_unresolved_satisfy,
         "expected unresolved_satisfy_* semantic diagnostic for missing satisfy reference"
     );
-
-    let _ = child.kill();
 }
 
 #[test]
 fn compatible_different_port_def_connection_has_no_port_type_mismatch_diagnostic() {
-    let mut child = spawn_server();
-    let mut stdin = child.stdin.take().expect("stdin");
-    let mut stdout = child.stdout.take().expect("stdout");
-
-    let uri = "file:///compatible_ports_lsp.sysml";
     let content = r#"
         package P {
             item def Water;
@@ -1406,177 +1050,34 @@ fn compatible_different_port_def_connection_has_no_port_type_mismatch_diagnostic
             }
         }
     "#;
-
-    let init_id = next_id();
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": init_id,
-            "method": "initialize",
-            "params": {
-                "processId": null,
-                "rootUri": null,
-                "capabilities": {},
-                "clientInfo": { "name": "test", "version": "0.1.0" }
-            }
-        })
-        .to_string(),
-    );
-    let _ = read_message(&mut stdout).expect("init response");
-    send_message(
-        &mut stdin,
-        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
-    );
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "method": "textDocument/didOpen",
-            "params": {
-                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
-            }
-        })
-        .to_string(),
-    );
-    std::thread::sleep(std::time::Duration::from_millis(250));
-
-    let hover_id = next_id();
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": hover_id,
-            "method": "textDocument/hover",
-            "params": {
-                "textDocument": { "uri": uri },
-                "position": { "line": 0, "character": 0 }
-            }
-        })
-        .to_string(),
-    );
-
-    let mut found_port_type_mismatch = false;
-    loop {
-        let msg =
-            read_message(&mut stdout).expect("expected message while waiting for hover response");
-        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
-        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
-            && json["params"]["uri"]
-                .as_str()
-                .map(|published_uri| published_uri.eq_ignore_ascii_case(uri))
-                .unwrap_or(false)
-        {
-            let diagnostics = json["params"]["diagnostics"]
-                .as_array()
-                .cloned()
-                .unwrap_or_default();
-            found_port_type_mismatch = diagnostics.iter().any(|d| {
-                d["source"].as_str() == Some("semantic")
-                    && d["code"].as_str() == Some("port_type_mismatch")
-            });
-        }
-        if json["id"].as_i64() == Some(hover_id) {
-            break;
-        }
-    }
+    let diagnostics = validate_inline_sysml("compatible_ports_lsp.sysml", content);
+    let found_port_type_mismatch = has_diag_code(&diagnostics, "semantic", "port_type_mismatch");
 
     assert!(
         !found_port_type_mismatch,
         "feature-compatible port definitions should not emit port_type_mismatch diagnostics"
     );
 
-    let _ = child.kill();
 }
 
 #[test]
 fn top_level_part_def_emits_illegal_top_level_definition_diagnostic() {
-    let mut child = spawn_server();
-    let mut stdin = child.stdin.take().expect("stdin");
-    let mut stdout = child.stdout.take().expect("stdout");
-
-    let uri = "file:///top_level_part_def.sysml";
     let content = r#"
 part def Laptop {
     part motherboard;
 }
 "#;
-
-    let init_id = next_id();
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": init_id,
-            "method": "initialize",
-            "params": {
-                "processId": null,
-                "rootUri": null,
-                "capabilities": {},
-                "clientInfo": { "name": "test", "version": "0.1.0" }
-            }
+    let diagnostics = validate_inline_sysml("top_level_part_def.sysml", content);
+    let found = has_diag_code(&diagnostics, "sysml", "illegal_top_level_definition");
+    let seen_codes: Vec<String> = diagnostics
+        .iter()
+        .map(|diagnostic| match diagnostic.code.as_ref() {
+            Some(tower_lsp::lsp_types::NumberOrString::String(code)) => code.clone(),
+            Some(tower_lsp::lsp_types::NumberOrString::Number(code)) => code.to_string(),
+            None => String::new(),
         })
-        .to_string(),
-    );
-    let _ = read_message(&mut stdout).expect("init response");
-    send_message(
-        &mut stdin,
-        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
-    );
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "method": "textDocument/didOpen",
-            "params": {
-                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
-            }
-        })
-        .to_string(),
-    );
-    std::thread::sleep(std::time::Duration::from_millis(250));
-
-    // Force a deterministic server response so we can drain notifications without hanging.
-    let hover_id = next_id();
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": hover_id,
-            "method": "textDocument/hover",
-            "params": {
-                "textDocument": { "uri": uri },
-                "position": { "line": 0, "character": 0 }
-            }
-        })
-        .to_string(),
-    );
-
-    let mut found = false;
-    let mut seen_codes: Vec<String> = Vec::new();
-    loop {
-        let msg =
-            read_message(&mut stdout).expect("expected message while waiting for hover response");
-        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
-        if json["method"].as_str() == Some("textDocument/publishDiagnostics") {
-            let diagnostics = json["params"]["diagnostics"]
-                .as_array()
-                .cloned()
-                .unwrap_or_default();
-            for d in &diagnostics {
-                if let Some(code) = d["code"].as_str() {
-                    seen_codes.push(code.to_string());
-                }
-            }
-            found = diagnostics.iter().any(|d| {
-                d["source"].as_str() == Some("sysml")
-                    && d["code"].as_str() == Some("illegal_top_level_definition")
-            });
-        }
-        if json["id"].as_i64() == Some(hover_id) {
-            break;
-        }
-    }
+        .filter(|code| !code.is_empty())
+        .collect();
 
     assert!(
         found,
@@ -1584,7 +1085,6 @@ part def Laptop {
         seen_codes
     );
 
-    let _ = child.kill();
 }
 
 #[test]
