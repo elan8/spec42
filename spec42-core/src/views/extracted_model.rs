@@ -336,11 +336,8 @@ fn collect_activity_diagrams_from_part_def_body(
     out: &mut Vec<ActivityDiagramDto>,
 ) {
     for element in elements {
-        match &element.value {
-            PartDefBodyElement::PartUsage(part_usage) => {
-                collect_activity_diagrams_from_part_usage(part_usage, package_segments, parent_segments, out);
-            }
-            _ => {}
+        if let PartDefBodyElement::PartUsage(part_usage) = &element.value {
+            collect_activity_diagrams_from_part_usage(part_usage, package_segments, parent_segments, out);
         }
     }
 }
@@ -352,11 +349,8 @@ fn collect_activity_diagrams_from_part_usage_body(
     out: &mut Vec<ActivityDiagramDto>,
 ) {
     for element in elements {
-        match &element.value {
-            PartUsageBodyElement::PartUsage(part_usage) => {
-                collect_activity_diagrams_from_part_usage(part_usage, package_segments, parent_segments, out);
-            }
-            _ => {}
+        if let PartUsageBodyElement::PartUsage(part_usage) = &element.value {
+            collect_activity_diagrams_from_part_usage(part_usage, package_segments, parent_segments, out);
         }
     }
 }

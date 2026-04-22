@@ -164,13 +164,13 @@ pub(crate) async fn initialized(
         drop(st);
 
         let relink_start = Instant::now();
-        let mut relink_metrics_opt = None;
+        let relink_metrics;
         let mut stale_retries = 0u32;
         let mut relink_used_fallback = false;
         let mut uris_loaded = Vec::new();
         let mut low_coverage_library_files = Vec::new();
         loop {
-            let (snapshot_version, new_graph, new_symbols, relink_metrics) = {
+            let (snapshot_version, new_graph, new_symbols, staged_relink_metrics) = {
                 let st_read = state.read().await;
                 let snapshot_version = st_read.semantic_state_version;
                 let (new_graph, new_symbols, relink_metrics) =
@@ -187,15 +187,15 @@ pub(crate) async fn initialized(
                 }
                 let fallback_metrics = rebuild_all_document_links(&mut st);
                 st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
-                relink_metrics_opt = Some(fallback_metrics);
+                relink_metrics = fallback_metrics;
                 relink_used_fallback = true;
             } else {
-                let mut metrics = relink_metrics;
+                let mut metrics = staged_relink_metrics;
                 metrics.total_ms = relink_start.elapsed().as_millis() as u32;
                 st.semantic_graph = new_graph;
                 st.symbol_table = new_symbols;
                 st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
-                relink_metrics_opt = Some(metrics);
+                relink_metrics = metrics;
             }
 
             for (uri_norm, warning) in &ingest_results {
@@ -228,7 +228,6 @@ pub(crate) async fn initialized(
             }
             break;
         }
-        let relink_metrics = relink_metrics_opt.expect("relink metrics");
         let merge_index_ms = merge_index_start.elapsed().as_millis() as u64;
         if perf_logging_enabled {
             info!(

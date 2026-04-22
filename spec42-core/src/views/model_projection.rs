@@ -1,3 +1,5 @@
+#![allow(clippy::items_after_test_module)]
+
 use std::collections::{HashMap, HashSet};
 
 use serde_json::{json, Value};
@@ -1168,6 +1170,7 @@ mod tests {
     }
 }
 
+#[allow(dead_code)]
 pub fn build_workspace_graph_dto(
     semantic_graph: &semantic_model::SemanticGraph,
     library_paths: &[Url],

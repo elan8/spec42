@@ -324,9 +324,7 @@ fn extract_symbol(line: &str) -> Option<String> {
 fn extract_dimension(line: &str) -> Option<String> {
     let colon = line.find(':')?;
     let after = line[colon + 1..].trim_start();
-    let end = after
-        .find(|ch: char| ch == '{' || ch == '=' || ch == ';')
-        .unwrap_or(after.len());
+    let end = after.find(['{', '=', ';']).unwrap_or(after.len());
     let dim = after[..end].trim();
     if dim.is_empty() {
         None

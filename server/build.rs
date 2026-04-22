@@ -68,16 +68,14 @@ fn main() {
         }
     };
 
-    let digest = format!("{:x}", Sha256::digest(&full_zip_bytes));
-    println!("cargo:warning=embedded stdlib source zip sha256={digest}");
+    let _digest = format!("{:x}", Sha256::digest(&full_zip_bytes));
 
     repack_sysml_library(&full_zip_bytes, &out_zip).unwrap_or_else(|e| {
         eprintln!("spec42 build: failed to repack sysml.library: {e}");
         process::exit(1);
     });
 
-    let embedded_digest = format!("{:x}", Sha256::digest(fs::read(&out_zip).unwrap()));
-    println!("cargo:warning=embedded minimal zip sha256={embedded_digest}");
+    let _embedded_digest = format!("{:x}", Sha256::digest(fs::read(&out_zip).unwrap()));
 }
 
 fn repack_sysml_library(full_zip_bytes: &[u8], out_path: &Path) -> Result<(), String> {
@@ -127,6 +125,6 @@ fn repack_sysml_library(full_zip_bytes: &[u8], out_path: &Path) -> Result<(), St
             "no files found under prefix '{wanted_prefix}' in release zip"
         ));
     }
-    println!("cargo:warning=embedded sysml.library file count={count}");
+    let _count = count;
     Ok(())
 }

@@ -64,9 +64,11 @@ pub fn validate_paths(
         .map(|path| path_to_file_url(path.as_path()))
         .collect::<Result<Vec<_>, _>>()?;
 
-    let mut state = ServerState::default();
-    state.workspace_roots = workspace_root_url.iter().cloned().collect();
-    state.library_paths = library_root_urls.clone();
+    let mut state = ServerState {
+        workspace_roots: workspace_root_url.iter().cloned().collect(),
+        library_paths: library_root_urls.clone(),
+        ..ServerState::default()
+    };
 
     let mut entries = Vec::new();
     let scan_roots: Vec<Url> = workspace_root_url

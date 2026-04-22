@@ -19,6 +19,7 @@ pub enum FilterExpr {
 }
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct ViewDefinitionSpec {
     pub id: String,
     pub name: String,
@@ -32,6 +33,7 @@ pub struct ExposeSpec {
 }
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct ViewUsageSpec {
     pub id: String,
     pub name: String,
@@ -50,6 +52,7 @@ pub struct ViewCatalog {
 }
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct EvaluatedView {
     pub id: String,
     pub name: String,
@@ -423,6 +426,7 @@ fn collect_descendants<'a>(
     }
 }
 
+#[allow(dead_code)]
 fn expand_descendants(
     root_ids: &HashSet<String>,
     children_by_parent: &HashMap<&str, Vec<&str>>,
@@ -572,8 +576,7 @@ fn normalize_kind_name(value: &str) -> String {
         .split("::")
         .last()
         .unwrap_or(value)
-        .replace(' ', "")
-        .replace('_', "")
+        .replace([' ', '_'], "")
         .to_lowercase()
 }
 
@@ -785,9 +788,7 @@ pub fn build_view_candidates(
 }
 
 pub fn renderer_view_for_view_type(effective_view_type: Option<&str>) -> Option<&'static str> {
-    let Some(view_type) = effective_view_type else {
-        return None;
-    };
+    let view_type = effective_view_type?;
     let normalized = normalize_kind_name(view_type);
     match normalized.as_str() {
         "generalview" => Some("general-view"),

@@ -2,8 +2,6 @@
 
 #[path = "model_params.rs"]
 mod model_params;
-#[path = "model_projection.rs"]
-mod model_projection;
 
 use std::time::Instant;
 use tower_lsp::jsonrpc::Result;
@@ -14,6 +12,7 @@ use sysml_v2_parser::RootNamespace;
 
 use crate::common::util;
 use crate::semantic_model;
+use crate::views::model_projection;
 use crate::views::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, RelationshipDto, SysmlElementDto, SysmlGraphDto,
     SysmlModelResultDto, SysmlModelStatsDto, WorkspaceFileModelDto, WorkspaceModelDto,

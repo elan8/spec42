@@ -576,11 +576,6 @@ mod tests {
     fn embedded_stdlib_precedes_legacy_vscode_path() {
         let _guard = APPDATA_TEST_LOCK.lock().expect("env lock");
 
-        assert!(
-            !EMBEDDED_STDLIB_ARCHIVE.is_empty(),
-            "embedded stdlib archive must be non-empty for this test"
-        );
-
         let temp = tempfile::tempdir().expect("temp dir");
         let data_dir = temp.path().join("data");
         std::fs::create_dir_all(&data_dir).expect("create data dir");

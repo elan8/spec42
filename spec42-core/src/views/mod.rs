@@ -3,6 +3,7 @@ pub(crate) mod extracted_model;
 pub mod feature_inspector;
 pub(crate) mod ibd;
 pub mod model;
+pub(crate) mod model_projection;
 pub(crate) mod visualization;
 
 pub use feature_inspector::{

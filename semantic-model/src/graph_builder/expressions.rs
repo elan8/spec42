@@ -288,6 +288,30 @@ pub(super) fn resolve_expression_endpoint_legacy(
         .map(|node_id| node_id.qualified_name.clone())
 }
 
+pub(super) fn add_diagnostic_node(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    code: &str,
+    message: String,
+    range: Range,
+) {
+    let qualified = qualified_name_for_node(g, uri, container_prefix, code, "diagnostic");
+    let mut attrs = HashMap::new();
+    attrs.insert("code".to_string(), serde_json::json!(code));
+    attrs.insert("message".to_string(), serde_json::json!(message));
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "diagnostic",
+        code.to_string(),
+        range,
+        attrs,
+        None,
+    );
+}
+
 #[cfg(test)]
 mod expr_string_tests {
     use super::{expr_node_to_qualified_string, expression_to_debug_string};
@@ -343,28 +367,4 @@ mod expr_string_tests {
         });
         assert_eq!(expression_to_debug_string(&e), "1 [m]");
     }
-}
-
-pub(super) fn add_diagnostic_node(
-    g: &mut SemanticGraph,
-    uri: &Url,
-    container_prefix: Option<&str>,
-    code: &str,
-    message: String,
-    range: Range,
-) {
-    let qualified = qualified_name_for_node(g, uri, container_prefix, code, "diagnostic");
-    let mut attrs = HashMap::new();
-    attrs.insert("code".to_string(), serde_json::json!(code));
-    attrs.insert("message".to_string(), serde_json::json!(message));
-    add_node_and_recurse(
-        g,
-        uri,
-        &qualified,
-        "diagnostic",
-        code.to_string(),
-        range,
-        attrs,
-        None,
-    );
 }

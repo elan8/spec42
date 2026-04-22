@@ -20,7 +20,7 @@ pub struct SemanticGraph {
     pub node_index_by_id: HashMap<NodeId, NodeIndex>,
     pub nodes_by_uri: HashMap<Url, Vec<NodeId>>,
     pub node_ids_by_qualified_name: HashMap<String, Vec<NodeId>>,
-    pub connection_occurrences_by_uri: HashMap<Url, Vec<ConnectionOccurrence>>,
+    pub(crate) connection_occurrences_by_uri: HashMap<Url, Vec<ConnectionOccurrence>>,
     pub pending_relationships: Vec<PendingRelationship>,
     pub import_lookup_cache: Mutex<HashMap<(NodeId, String, bool), Vec<NodeId>>>,
 }
@@ -1035,7 +1035,7 @@ mod tests {
             .map(|n| n.element_kind.as_str())
             .collect();
         assert!(
-            kinds.iter().any(|k| *k == "interface end"),
+            kinds.contains(&"interface end"),
             "expected interface end node; kinds: {:?}",
             kinds
         );
@@ -1359,7 +1359,7 @@ mod tests {
             .find(|node| node.element_kind == "part def" && node.name == "Child")
             .expect("child part def node");
         assert!(
-            child.attributes.get("specializes").is_some(),
+            child.attributes.contains_key("specializes"),
             "expected symbol form :> to set specializes attribute; attrs={:?}",
             child.attributes
         );

@@ -6,6 +6,7 @@ use tower_lsp::lsp_types::Url;
 
 use crate::semantic_model;
 use crate::views::extracted_model::{extract_activity_diagrams, ActivityDiagramDto};
+use crate::views::model_projection;
 use crate::views::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlElementDto, SysmlGraphDto,
     SysmlModelStatsDto, SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto,
@@ -17,8 +18,6 @@ use crate::views::ibd::{self, IbdDataDto, IbdPackageContainerGroupDto};
 
 #[path = "explicit_views.rs"]
 mod explicit_views;
-#[path = "model_projection.rs"]
-mod model_projection;
 
 fn normalize_package_path(value: &str) -> String {
     value.replace('.', "::").trim().to_string()
@@ -620,6 +619,7 @@ fn merge_two_elements(a: &SysmlElementDto, b: &SysmlElementDto) -> SysmlElementD
     }
 }
 
+#[allow(dead_code)]
 fn build_workspace_model_dto_for_uris(
     semantic_graph: &semantic_model::SemanticGraph,
     workspace_uris: &[Url],
@@ -674,6 +674,7 @@ fn collect_package_candidates(
     }
 }
 
+#[allow(dead_code)]
 fn find_package_element<'a>(
     elements: &'a [SysmlElementDto],
     package_ref: &str,
@@ -691,6 +692,7 @@ fn find_package_element<'a>(
     None
 }
 
+#[allow(dead_code)]
 fn collect_subtree_ids(element: &SysmlElementDto, ids: &mut HashSet<String>) {
     if let Some(id) = &element.id {
         ids.insert(id.clone());
@@ -700,6 +702,7 @@ fn collect_subtree_ids(element: &SysmlElementDto, ids: &mut HashSet<String>) {
     }
 }
 
+#[allow(dead_code)]
 fn filter_workspace_model_files(
     files: &[WorkspaceFileModelDto],
     package_ref: &str,
@@ -722,6 +725,7 @@ fn within_package_prefix(value: &str, package_prefix: &str, dot_prefix: &str) ->
         || value.starts_with(&format!("{dot_prefix}."))
 }
 
+#[allow(dead_code)]
 fn filter_ibd_by_package(ibd: &IbdDataDto, package_ref: &str) -> IbdDataDto {
     let dot_prefix = package_ref.replace("::", ".");
     let parts: Vec<_> = ibd

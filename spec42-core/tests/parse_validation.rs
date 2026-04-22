@@ -69,7 +69,7 @@ fn parse_with_diagnostics_clean_fixture_has_no_errors() {
     }
 
     assert!(
-        result.root.elements.len() >= 1,
+        !result.root.elements.is_empty(),
         "expected at least one root element (package)"
     );
 }

@@ -809,8 +809,10 @@ mod tests {
         let system_uri =
             Url::from_file_path(root.join("SystemPackage.sysml")).expect("system");
 
-        let mut state = ServerState::default();
-        state.workspace_roots = vec![root_uri.clone()];
+        let mut state = ServerState {
+            workspace_roots: vec![root_uri.clone()],
+            ..ServerState::default()
+        };
 
         store_document_text(
             &mut state,

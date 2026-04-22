@@ -96,9 +96,7 @@ fn resolve_hover_reference_target<'a>(
         .find_deepest_node_at_position(uri, pos)
         .or_else(|| state.semantic_graph.nodes_for_uri(uri).into_iter().find(|n| n.name == word));
 
-    let Some(context_node) = context_node else {
-        return None;
-    };
+    let context_node = context_node?;
 
     let mut prefixes = Vec::<Option<String>>::new();
     prefixes.push(Some(context_node.id.qualified_name.clone()));

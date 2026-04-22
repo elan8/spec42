@@ -159,6 +159,7 @@ pub(crate) fn generate_interface_files(
     Ok(())
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn materialize_artifact_files(
     package_dir: &Path,
     package_name: &str,

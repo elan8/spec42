@@ -1,5 +1,5 @@
 use crate::common::util;
-use tracing::{debug, info, warn};
+use tracing::warn;
 use crate::semantic_model;
 use crate::workspace::library_search;
 use crate::workspace::state::{IndexEntry, ParseMetadata, ScanSummary, ServerState};
@@ -224,6 +224,7 @@ fn refresh_symbols_for_uri(state: &mut ServerState, uri: &Url) {
     update_symbol_table_for_uri(state, uri, Some(&new_entries));
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn store_parsed_document_text(
     state: &mut ServerState,
     uri_norm: &Url,
@@ -562,7 +563,7 @@ pub(crate) fn rebuild_all_document_links(
 /// graph building, relinking) to happen WITHOUT holding a write lock on ServerState.
 pub(crate) fn rebuild_semantic_graph_staged(
     index: &std::collections::HashMap<Url, IndexEntry>,
-    library_paths: &[Url],
+    _library_paths: &[Url],
 ) -> (
     semantic_model::SemanticGraph,
     Vec<crate::language::SymbolEntry>,
@@ -698,6 +699,7 @@ pub(crate) fn clear_documents_under_roots(state: &mut ServerState, roots: &[Url]
 }
 
 #[cfg(test)]
+#[allow(clippy::field_reassign_with_default)]
 mod tests {
     use std::fs;
 

@@ -26,10 +26,11 @@ pub(crate) fn extract_generation_model(blocks: &[ModelBlock]) -> GenerationModel
     let mut action_types = BTreeSet::new();
 
     for block in blocks {
-        if block.kind == BlockKind::PartDef && specializes_part_def(block, "RosPackage", &part_bases) {
-            if package_name.is_empty() {
-                package_name = attr(block, "name").unwrap_or_default();
-            }
+        if block.kind == BlockKind::PartDef
+            && specializes_part_def(block, "RosPackage", &part_bases)
+            && package_name.is_empty()
+        {
+            package_name = attr(block, "name").unwrap_or_default();
         }
         if block.kind == BlockKind::PartDef
             && specializes_part_def(block, "RosLaunchDescription", &part_bases)

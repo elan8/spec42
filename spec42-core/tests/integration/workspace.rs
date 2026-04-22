@@ -417,7 +417,7 @@ fn is_si_sysml_path(path: &str) -> bool {
         || path.ends_with("/Domain Libraries/Quantities and Units/SI.sysml")
 }
 
-fn flatten_library_tree_symbols<'a>(result: &'a serde_json::Value) -> Vec<&'a serde_json::Value> {
+fn flatten_library_tree_symbols(result: &serde_json::Value) -> Vec<&serde_json::Value> {
     let mut out = Vec::new();
     if let Some(sources) = result["sources"].as_array() {
         for source in sources {

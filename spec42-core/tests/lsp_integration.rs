@@ -2,4 +2,6 @@
 //!
 //! Run with: `cargo test -p spec42 --test lsp_integration`
 
+#![allow(clippy::zombie_processes)]
+
 mod integration;

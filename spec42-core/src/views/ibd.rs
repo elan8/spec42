@@ -375,11 +375,11 @@ fn attribute_text(part: &IbdPartDto, key: &str) -> Option<String> {
 
 fn last_type_segment(value: &str) -> String {
     value
-        .split("::")
-        .last()
+        .rsplit("::")
+        .next()
         .unwrap_or(value)
-        .split('.')
-        .last()
+        .rsplit('.')
+        .next()
         .unwrap_or(value)
         .to_string()
 }
