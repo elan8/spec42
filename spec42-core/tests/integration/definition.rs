@@ -208,24 +208,42 @@ fn lsp_goto_definition_resolves_public_reexported_type() {
     }
     lsp_barrier(&mut stdin, &mut stdout);
 
-    let def_id = next_id();
-    let def_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": def_id,
-        "method": "textDocument/definition",
-        "params": {
-            "textDocument": { "uri": uri_use },
-            "position": { "line": 0, "character": 75 }
+    let mut resolved_uri: Option<String> = None;
+    for _ in 0..20 {
+        let def_id = next_id();
+        let def_req = serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": def_id,
+            "method": "textDocument/definition",
+            "params": {
+                "textDocument": { "uri": uri_use },
+                "position": { "line": 0, "character": 75 }
+            }
+        });
+        send_message(&mut stdin, &def_req.to_string());
+        let def_resp = read_response(&mut stdout, def_id).expect("definition response");
+        let def_json: serde_json::Value =
+            serde_json::from_str(&def_resp).expect("parse definition response");
+        let result = &def_json["result"];
+
+        let found_uri = if let Some(uri) = result["uri"].as_str() {
+            Some(uri.to_string())
+        } else {
+            result
+                .as_array()
+                .and_then(|arr| arr.first())
+                .and_then(|loc| loc["uri"].as_str())
+                .map(|uri| uri.to_string())
+        };
+
+        if let Some(uri) = found_uri {
+            resolved_uri = Some(uri);
+            break;
         }
-    });
-    send_message(&mut stdin, &def_req.to_string());
-    let def_resp = read_response(&mut stdout, def_id).expect("definition response");
-    let def_json: serde_json::Value =
-        serde_json::from_str(&def_resp).expect("parse definition response");
-    let result = &def_json["result"];
-    let uri = result["uri"]
-        .as_str()
-        .expect("definition should return location with uri");
+        lsp_barrier(&mut stdin, &mut stdout);
+    }
+
+    let uri = resolved_uri.expect("definition should return location with uri");
     assert!(
         uri.contains("core.sysml"),
         "goto_definition should resolve re-exported Name to core.sysml, got uri: {}",

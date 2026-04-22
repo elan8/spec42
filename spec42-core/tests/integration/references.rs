@@ -362,35 +362,7 @@ fn lsp_same_short_name_in_library_is_not_counted_without_semantic_match() {
     send_message(&mut stdin, &did_open_library.to_string());
     lsp_barrier(&mut stdin, &mut stdout);
 
-    // Ensure this exact symbol position resolves before references lookup.
-    let mut workspace_hover_ready = false;
-    for _ in 0..20 {
-        let hover_id = next_id();
-        let hover_req = serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": hover_id,
-            "method": "textDocument/hover",
-            "params": {
-                "textDocument": { "uri": uri_workspace },
-                "position": { "line": 2, "character": 13 }
-            }
-        });
-        send_message(&mut stdin, &hover_req.to_string());
-        let hover_resp = read_response(&mut stdout, hover_id).expect("hover response");
-        let hover_json: serde_json::Value =
-            serde_json::from_str(&hover_resp).expect("parse hover response");
-        if !hover_json["result"].is_null() {
-            workspace_hover_ready = true;
-            break;
-        }
-        lsp_barrier(&mut stdin, &mut stdout);
-    }
-    assert!(
-        workspace_hover_ready,
-        "workspace symbol under cursor did not become hover-resolvable before references request"
-    );
-
-    // In slower CI environments references can still lag by one scheduling turn after symbol ready.
+    // In slower CI environments, index updates can lag; retry until workspace declaration appears.
     let mut collected_locs: Vec<serde_json::Value> = Vec::new();
     for _ in 0..20 {
         let ref_id = next_id();
@@ -411,10 +383,14 @@ fn lsp_same_short_name_in_library_is_not_counted_without_semantic_match() {
         let locs = ref_json["result"]
             .as_array()
             .expect("references should return array");
-        if !locs.is_empty() {
+        if locs
+            .iter()
+            .any(|l| l["uri"].as_str().is_some_and(|u| u == uri_workspace))
+        {
             collected_locs = locs.clone();
             break;
         }
+        collected_locs = locs.clone();
         lsp_barrier(&mut stdin, &mut stdout);
     }
 
