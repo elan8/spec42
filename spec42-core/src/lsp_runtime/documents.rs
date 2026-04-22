@@ -4,7 +4,7 @@ use std::time::Instant;
 use tokio::sync::RwLock;
 use tower_lsp::lsp_types::*;
 use tower_lsp::Client;
-use tracing::{debug, info, warn};
+use tracing::{info, warn};
 
 use crate::common::util;
 use crate::host::config::Spec42Config;
@@ -159,50 +159,76 @@ pub(crate) async fn initialized(
             }
         }
         let ingest_results = ingest_parsed_scan_entries_batch(&mut st, parsed_entries);
+        st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
         let ingest_ms = merge_index_start.elapsed().as_millis() as u64;
         drop(st);
 
         let relink_start = Instant::now();
-        let (new_graph, new_symbols, mut relink_metrics) = {
-            let st_read = state.read().await;
-            rebuild_semantic_graph_staged(&st_read.index, &st_read.library_paths)
-        };
-        relink_metrics.total_ms = relink_start.elapsed().as_millis() as u32;
-
-        let mut st = state.write().await;
-        st.semantic_graph = new_graph;
-        st.symbol_table = new_symbols;
-
+        let mut relink_metrics_opt = None;
+        let mut stale_retries = 0u32;
+        let mut relink_used_fallback = false;
         let mut uris_loaded = Vec::new();
         let mut low_coverage_library_files = Vec::new();
-        for (uri_norm, warning) in ingest_results {
-            if let Some(message) = warning {
-                warn!("workspace scan ingest warning: {}", message);
-            }
-            uris_loaded.push(uri_norm.clone());
-            if util::uri_under_any_library(&uri_norm, &st.library_paths) {
-                let graph_nodes_for_uri = st.semantic_graph.nodes_for_uri(&uri_norm).len();
-                let symbol_entries_count = st
-                    .symbol_table
-                    .iter()
-                    .filter(|entry| entry.uri == uri_norm)
-                    .count();
+        loop {
+            let (snapshot_version, new_graph, new_symbols, relink_metrics) = {
+                let st_read = state.read().await;
+                let snapshot_version = st_read.semantic_state_version;
+                let (new_graph, new_symbols, relink_metrics) =
+                    rebuild_semantic_graph_staged(&st_read.index, &st_read.library_paths);
+                (snapshot_version, new_graph, new_symbols, relink_metrics)
+            };
 
-                if st
-                    .index
-                    .get(&uri_norm)
-                    .and_then(|entry| entry.parsed.as_ref())
-                    .is_some()
-                    && symbol_entries_count <= 2
-                {
-                    low_coverage_library_files.push((
-                        uri_norm.to_string(),
-                        graph_nodes_for_uri,
-                        symbol_entries_count,
-                    ));
+            let mut st = state.write().await;
+            if st.semantic_state_version != snapshot_version {
+                stale_retries += 1;
+                if stale_retries < 3 {
+                    drop(st);
+                    continue;
+                }
+                let fallback_metrics = rebuild_all_document_links(&mut st);
+                st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
+                relink_metrics_opt = Some(fallback_metrics);
+                relink_used_fallback = true;
+            } else {
+                let mut metrics = relink_metrics;
+                metrics.total_ms = relink_start.elapsed().as_millis() as u32;
+                st.semantic_graph = new_graph;
+                st.symbol_table = new_symbols;
+                st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
+                relink_metrics_opt = Some(metrics);
+            }
+
+            for (uri_norm, warning) in &ingest_results {
+                if let Some(message) = warning {
+                    warn!("workspace scan ingest warning: {}", message);
+                }
+                uris_loaded.push(uri_norm.clone());
+                if util::uri_under_any_library(uri_norm, &st.library_paths) {
+                    let graph_nodes_for_uri = st.semantic_graph.nodes_for_uri(uri_norm).len();
+                    let symbol_entries_count = st
+                        .symbol_table
+                        .iter()
+                        .filter(|entry| entry.uri == *uri_norm)
+                        .count();
+
+                    if st
+                        .index
+                        .get(uri_norm)
+                        .and_then(|entry| entry.parsed.as_ref())
+                        .is_some()
+                        && symbol_entries_count <= 2
+                    {
+                        low_coverage_library_files.push((
+                            uri_norm.to_string(),
+                            graph_nodes_for_uri,
+                            symbol_entries_count,
+                        ));
+                    }
                 }
             }
+            break;
         }
+        let relink_metrics = relink_metrics_opt.expect("relink metrics");
         let merge_index_ms = merge_index_start.elapsed().as_millis() as u64;
         if perf_logging_enabled {
             info!(
@@ -214,6 +240,8 @@ pub(crate) async fn initialized(
                 parallel_parse_enabled = parallel_parse_enabled,
                 parallel_parse_min_files = parallel_parse_min_files,
                 parallel_parse_active = should_parallel_parse,
+                stale_retries = stale_retries,
+                relink_fallback = relink_used_fallback,
                 elapsed_ms = scan_total_start.elapsed().as_millis() as u64,
                 loaded = uris_loaded.len(),
                 candidate_files = summary.candidate_files,
@@ -231,7 +259,6 @@ pub(crate) async fn initialized(
                 "workspace scan low-coverage library files (showing up to 10)"
             );
         }
-        drop(st);
         let diagnostics_start = Instant::now();
         publish_workspace_diagnostics(&client, &state, &config, None).await;
         let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
@@ -248,6 +275,8 @@ pub(crate) async fn initialized(
                 ("parseWorkersMs", parse_worker_ms.to_string()),
                 ("ingestMs", ingest_ms.to_string()),
                 ("relinkTotalMs", relink_metrics.total_ms.to_string()),
+                ("relinkStaleRetries", stale_retries.to_string()),
+                ("relinkUsedFallback", relink_used_fallback.to_string()),
                 (
                     "relinkRemoveNodesMs",
                     relink_metrics.remove_nodes_ms.to_string(),
@@ -289,7 +318,9 @@ pub(crate) async fn did_open(
     let text = params.text_document.text;
     let warning = {
         let mut state = state.write().await;
-        store_document_text(&mut state, &uri_norm, text.clone())
+        let warning = store_document_text(&mut state, &uri_norm, text.clone());
+        state.semantic_state_version = state.semantic_state_version.wrapping_add(1);
+        warning
     };
     if let Some(message) = warning {
         client.log_message(MessageType::WARNING, message).await;
@@ -309,12 +340,14 @@ pub(crate) async fn did_change(
     let apply_start = Instant::now();
     let warnings = {
         let mut state = state.write().await;
-        crate::workspace::apply_document_changes(
+        let warnings = crate::workspace::apply_document_changes(
             &mut state,
             &uri_norm,
             version,
             params.content_changes,
-        )
+        );
+        state.semantic_state_version = state.semantic_state_version.wrapping_add(1);
+        warnings
     };
     let apply_ms = apply_start.elapsed().as_millis() as u64;
     let text = {
@@ -377,7 +410,10 @@ pub(crate) async fn did_change_watched_files(
                         let refresh_start = Instant::now();
                         let warning = {
                             let mut state = state.write().await;
-                            refresh_document(&mut state, &uri_norm, content)
+                            let warning = refresh_document(&mut state, &uri_norm, content);
+                            state.semantic_state_version =
+                                state.semantic_state_version.wrapping_add(1);
+                            warning
                         };
                         refresh_document_ms += refresh_start.elapsed().as_millis() as u64;
                         if let Some(message) = warning {
@@ -398,6 +434,7 @@ pub(crate) async fn did_change_watched_files(
         } else if event.typ == FileChangeType::DELETED {
             let mut state = state.write().await;
             remove_document(&mut state, &uri_norm);
+            state.semantic_state_version = state.semantic_state_version.wrapping_add(1);
             deleted_uris.push(uri_norm);
         }
     }
@@ -455,6 +492,7 @@ pub(crate) async fn did_change_configuration(
         } else {
             let _ = clear_documents_under_roots(&mut state, &old_library_paths);
             state.library_paths = new_library_paths.clone();
+            state.semantic_state_version = state.semantic_state_version.wrapping_add(1);
             true
         }
     };
@@ -498,6 +536,7 @@ pub(crate) async fn did_change_configuration(
         }
         let ingest_ms = ingest_start.elapsed().as_millis() as u64;
         let relink_metrics = rebuild_all_document_links(&mut st);
+        st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
         drop(st);
         if summary.roots_skipped_non_file > 0
             || summary.read_failures > 0
