@@ -328,26 +328,27 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
         .is_empty();
         let resolved_via_graph_name_fallback = graph.nodes_named(&normalized_type_ref).iter().any(
             |candidate| {
-                matches!(
-                    candidate.element_kind.as_str(),
-                    "part def"
-                        | "port def"
-                        | "interface"
-                        | "item def"
-                        | "attribute def"
-                        | "action def"
-                        | "actor def"
-                        | "occurrence def"
-                        | "flow def"
-                        | "allocation def"
-                        | "state def"
-                        | "requirement def"
-                        | "use case def"
-                        | "concern def"
-                        | "enum def"
-                        | "alias"
-                        | "kermlDecl"
-                )
+                candidate.id.uri == *uri
+                    && matches!(
+                        candidate.element_kind.as_str(),
+                        "part def"
+                            | "port def"
+                            | "interface"
+                            | "item def"
+                            | "attribute def"
+                            | "action def"
+                            | "actor def"
+                            | "occurrence def"
+                            | "flow def"
+                            | "allocation def"
+                            | "state def"
+                            | "requirement def"
+                            | "use case def"
+                            | "concern def"
+                            | "enum def"
+                            | "alias"
+                            | "kermlDecl"
+                    )
             },
         );
         let allow_graph_name_fallback = !has_import_in_scope(graph, node);
@@ -436,26 +437,27 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
             .is_empty();
             let resolved_via_graph_name_fallback = graph.nodes_named(&normalized).iter().any(
                 |candidate| {
-                    matches!(
-                        candidate.element_kind.as_str(),
-                        "part def"
-                            | "port def"
-                            | "action def"
-                            | "state def"
-                            | "flow def"
-                            | "allocation def"
-                            | "requirement def"
-                            | "use case def"
-                            | "attribute def"
-                            | "enum def"
-                            | "item def"
-                            | "actor def"
-                            | "occurrence def"
-                            | "interface"
-                            | "concern def"
-                            | "alias"
-                            | "kermlDecl"
-                    )
+                    candidate.id.uri == *uri
+                        && matches!(
+                            candidate.element_kind.as_str(),
+                            "part def"
+                                | "port def"
+                                | "action def"
+                                | "state def"
+                                | "flow def"
+                                | "allocation def"
+                                | "requirement def"
+                                | "use case def"
+                                | "attribute def"
+                                | "enum def"
+                                | "item def"
+                                | "actor def"
+                                | "occurrence def"
+                                | "interface"
+                                | "concern def"
+                                | "alias"
+                                | "kermlDecl"
+                        )
                 },
             );
             let allow_graph_name_fallback = !has_import_in_scope(graph, node);
@@ -615,7 +617,7 @@ impl crate::host::config::SemanticCheckProvider for DefaultSemanticChecks {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::semantic_model::{build_graph_from_doc, SemanticNode};
+    use crate::semantic_model::{add_cross_document_edges_for_uri, build_graph_from_doc, SemanticNode};
     use tower_lsp::lsp_types::{Position, Range};
 
     #[test]
@@ -1419,6 +1421,80 @@ mod tests {
         assert!(
             !mismatches.is_empty(),
             "incompatible port features should emit mismatch diagnostics"
+        );
+    }
+
+    #[test]
+    fn private_import_chain_emits_unresolved_type_reference() {
+        let core = sysml_v2_parser::parse("package Core { attribute def Name; }").expect("core");
+        let domain =
+            sysml_v2_parser::parse("package Domain { private import Core::*; }").expect("domain");
+        let usage = sysml_v2_parser::parse(
+            "package Demo { import Domain::*; part def Consumer { attribute groupName : Name; } }",
+        )
+        .expect("usage");
+
+        let core_uri = Url::parse("file:///workspace/core.sysml").expect("core uri");
+        let domain_uri = Url::parse("file:///workspace/domain.sysml").expect("domain uri");
+        let usage_uri = Url::parse("file:///workspace/use.sysml").expect("usage uri");
+
+        let mut graph = SemanticGraph::new();
+        graph.merge(build_graph_from_doc(&core, &core_uri));
+        graph.merge(build_graph_from_doc(&domain, &domain_uri));
+        graph.merge(build_graph_from_doc(&usage, &usage_uri));
+        add_cross_document_edges_for_uri(&mut graph, &usage_uri);
+
+        let diags = compute_semantic_diagnostics(&graph, &usage_uri);
+        let unresolved: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "unresolved_type_reference".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            !unresolved.is_empty(),
+            "private import chain should keep unresolved_type_reference: {diags:#?}"
+        );
+    }
+
+    #[test]
+    fn private_import_chain_emits_unresolved_type_reference_after_incremental_relink() {
+        let core = sysml_v2_parser::parse("package Core { attribute def Name; }").expect("core");
+        let domain =
+            sysml_v2_parser::parse("package Domain { private import Core::*; }").expect("domain");
+        let usage = sysml_v2_parser::parse(
+            "package Demo { import Domain::*; part def Consumer { attribute groupName : Name; } }",
+        )
+        .expect("usage");
+
+        let core_uri = Url::parse("file:///workspace/core.sysml").expect("core uri");
+        let domain_uri = Url::parse("file:///workspace/domain.sysml").expect("domain uri");
+        let usage_uri = Url::parse("file:///workspace/use.sysml").expect("usage uri");
+
+        let mut graph = SemanticGraph::new();
+        graph.merge(build_graph_from_doc(&core, &core_uri));
+        add_cross_document_edges_for_uri(&mut graph, &core_uri);
+        graph.merge(build_graph_from_doc(&domain, &domain_uri));
+        add_cross_document_edges_for_uri(&mut graph, &domain_uri);
+        graph.merge(build_graph_from_doc(&usage, &usage_uri));
+        add_cross_document_edges_for_uri(&mut graph, &usage_uri);
+
+        let diags = compute_semantic_diagnostics(&graph, &usage_uri);
+        let unresolved: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "unresolved_type_reference".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            !unresolved.is_empty(),
+            "incremental relink should keep unresolved_type_reference: {diags:#?}"
         );
     }
 }

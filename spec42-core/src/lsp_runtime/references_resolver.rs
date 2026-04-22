@@ -2,11 +2,19 @@ use crate::language::{find_reference_ranges, is_reserved_keyword, word_at_positi
 use crate::semantic_model::NodeId;
 use crate::semantic_model::ResolveResult;
 use crate::workspace::ServerState;
+use crate::common::util;
 use std::time::Instant;
 use tower_lsp::lsp_types::{Location, Position, Url};
 use tracing::info;
 
 type LocationKey = (String, u32, u32, u32, u32);
+
+fn position_in_range(pos: Position, range: tower_lsp::lsp_types::Range) -> bool {
+    (pos.line > range.start.line
+        || (pos.line == range.start.line && pos.character >= range.start.character))
+        && (pos.line < range.end.line
+            || (pos.line == range.end.line && pos.character <= range.end.character))
+}
 
 pub(crate) fn resolved_references_at_position(
     state: &ServerState,
@@ -29,9 +37,25 @@ pub(crate) fn resolved_references_at_position(
 
     let selected_defs =
         select_defs_for_position(state, uri_norm, &lookup_name, qualifier.as_deref(), pos);
+    let explicit_target_ids = {
+        let ids: std::collections::HashSet<NodeId> = state
+            .semantic_graph
+            .nodes_for_uri(uri_norm)
+            .into_iter()
+            .filter(|node| node.name == lookup_name && position_in_range(pos, node.range))
+            .map(|node| node.id.clone())
+            .collect();
+        if ids.is_empty() { None } else { Some(ids) }
+    };
 
-    let locations =
-        collect_references_for_lookup(state, &lookup_name, selected_defs, include_declaration);
+    let locations = collect_references_for_lookup(
+        state,
+        uri_norm,
+        &lookup_name,
+        selected_defs,
+        explicit_target_ids,
+        include_declaration,
+    );
     let elapsed_ms = started_at.elapsed().as_millis();
     if state.perf_logging_enabled && elapsed_ms >= 10 {
         info!(
@@ -52,15 +76,28 @@ pub(crate) fn resolved_references_at_position(
 
 fn collect_references_for_lookup(
     state: &ServerState,
+    query_uri: &Url,
     lookup_name: &str,
     selected_defs: Vec<&SymbolEntry>,
+    explicit_target_ids: Option<std::collections::HashSet<NodeId>>,
     include_declaration: bool,
 ) -> Vec<Location> {
     let started_at = Instant::now();
-    let target_ids: std::collections::HashSet<NodeId> = selected_defs
+    let mut target_ids: std::collections::HashSet<NodeId> =
+        explicit_target_ids.unwrap_or_else(|| {
+        selected_defs
+            .iter()
+            .filter_map(|entry| symbol_entry_node_id(state, entry))
+            .collect()
+    });
+    let same_uri_target_ids: std::collections::HashSet<NodeId> = target_ids
         .iter()
-        .filter_map(|entry| symbol_entry_node_id(state, entry))
+        .filter(|id| util::normalize_file_uri(&id.uri) == *query_uri)
+        .cloned()
         .collect();
+    if !same_uri_target_ids.is_empty() {
+        target_ids = same_uri_target_ids;
+    }
     // Strict mode: if target cannot resolve to FQN, we return no references.
     if target_ids.is_empty() {
         return Vec::new();
@@ -77,27 +114,39 @@ fn collect_references_for_lookup(
                 uri: uri.clone(),
                 range,
             };
+            let semantic_candidate_ids: std::collections::HashSet<NodeId> = state
+                .semantic_graph
+                .nodes_for_uri(uri)
+                .into_iter()
+                .filter(|node| node.name == lookup_name && position_in_range(location.range.start, node.range))
+                .map(|node| node.id.clone())
+                .collect();
             let (candidate_same, candidate_other) =
                 collect_symbol_matches_for_lookup(state, uri, lookup_name, None);
-            let candidate_defs = if candidate_same.len() <= 1 {
-                candidate_same
+            let candidate_ids: std::collections::HashSet<NodeId> = if !semantic_candidate_ids.is_empty()
+            {
+                semantic_candidate_ids
             } else {
-                select_defs_for_position(state, uri, lookup_name, None, location.range.start)
-            };
-            let candidate_ids: std::collections::HashSet<NodeId> = if !candidate_defs.is_empty() {
-                candidate_defs
-                    .iter()
-                    .filter_map(|entry| symbol_entry_node_id(state, entry))
-                    .collect()
-            } else {
-                let other_ids: std::collections::HashSet<NodeId> = candidate_other
-                    .iter()
-                    .filter_map(|entry| symbol_entry_node_id(state, entry))
-                    .collect();
-                if other_ids.len() == 1 {
-                    other_ids
+                let candidate_defs = if candidate_same.len() <= 1 {
+                    candidate_same
                 } else {
-                    std::collections::HashSet::new()
+                    select_defs_for_position(state, uri, lookup_name, None, location.range.start)
+                };
+                if !candidate_defs.is_empty() {
+                    candidate_defs
+                        .iter()
+                        .filter_map(|entry| symbol_entry_node_id(state, entry))
+                        .collect()
+                } else {
+                    let other_ids: std::collections::HashSet<NodeId> = candidate_other
+                        .iter()
+                        .filter_map(|entry| symbol_entry_node_id(state, entry))
+                        .collect();
+                    if other_ids.len() == 1 {
+                        other_ids
+                    } else {
+                        std::collections::HashSet::new()
+                    }
                 }
             };
             let candidate_ids: std::collections::HashSet<NodeId> =
@@ -319,7 +368,7 @@ fn collect_symbol_matches_for_lookup<'a>(
         ) {
             continue;
         }
-        if entry.uri == *uri_norm {
+        if util::normalize_file_uri(&entry.uri) == *uri_norm {
             same_file.push(entry);
         } else {
             other_files.push(entry);
@@ -359,9 +408,10 @@ fn symbol_matches_definition_lookup(
 }
 
 fn symbol_entry_node_id(state: &ServerState, entry: &SymbolEntry) -> Option<NodeId> {
+    let entry_uri = util::normalize_file_uri(&entry.uri);
     state
         .semantic_graph
-        .nodes_for_uri(&entry.uri)
+        .nodes_for_uri(&entry_uri)
         .into_iter()
         .find(|node| node.name == entry.name && node.range == entry.range)
         .map(|node| node.id.clone())

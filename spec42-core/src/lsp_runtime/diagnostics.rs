@@ -105,6 +105,12 @@ async fn collect_diagnostics_for_document(
 ) -> Vec<Diagnostic> {
     let mut diagnostics = Vec::new();
     let result = util::parse_for_editor(text);
+    let has_parse_error = result.errors.iter().any(|error| {
+        error
+            .severity
+            .unwrap_or(sysml_v2_parser::DiagnosticSeverity::Error)
+            == sysml_v2_parser::DiagnosticSeverity::Error
+    });
     for error in &result.errors {
         let range = error
             .to_lsp_range()
@@ -148,7 +154,7 @@ async fn collect_diagnostics_for_document(
             data: None,
         });
     }
-    if result.errors.is_empty() {
+    if !has_parse_error {
         let uri_norm = util::normalize_file_uri(uri);
         let locked = state.read().await;
         for provider in &config.check_providers {

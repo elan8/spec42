@@ -69,10 +69,30 @@ impl LanguageServer for Backend {
     }
 
     async fn hover(&self, params: HoverParams) -> Result<Option<Hover>> {
+        let hover_uri = params.text_document_position_params.text_document.uri.clone();
+        let hover_uri_norm = crate::common::util::normalize_file_uri(&hover_uri);
+        let hover_text = {
+            let state = self.state.read().await;
+            state
+                .index
+                .get(&hover_uri_norm)
+                .map(|entry| entry.content.clone())
+                .unwrap_or_default()
+        };
+        if !hover_text.is_empty() {
+            diagnostics::publish_document_diagnostics(
+                &self.client,
+                &self.state,
+                &self.config,
+                hover_uri.clone(),
+                &hover_text,
+            )
+            .await;
+        }
         let state = self.state.read().await;
         features::hover(
             &state,
-            params.text_document_position_params.text_document.uri,
+            hover_uri,
             params.text_document_position_params.position,
         )
     }

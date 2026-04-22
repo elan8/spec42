@@ -345,10 +345,27 @@ pub fn project_ids_for_renderer(
         }
         map
     };
+    let typing_targets: HashMap<&str, Vec<&str>> = {
+        let mut map = HashMap::new();
+        for edge in &graph.edges {
+            let rel_type = edge.rel_type.to_lowercase();
+            if rel_type == "typing" || rel_type == "specializes" {
+                map.entry(edge.source.as_str())
+                    .or_insert_with(Vec::new)
+                    .push(edge.target.as_str());
+            }
+        }
+        map
+    };
 
     let expanded_ids = match renderer_view {
         "general-view" | "interconnection-view" => {
-            expand_descendants(&evaluated.exposed_ids, &children_by_parent)
+            expand_structural_scope(
+                &evaluated.exposed_ids,
+                &children_by_parent,
+                &typing_targets,
+                &node_by_id,
+            )
         }
         _ => evaluated.exposed_ids.clone(),
     };
@@ -423,6 +440,46 @@ fn expand_descendants(
         }
     }
     expanded
+}
+
+fn expand_structural_scope(
+    root_ids: &HashSet<String>,
+    children_by_parent: &HashMap<&str, Vec<&str>>,
+    typing_targets: &HashMap<&str, Vec<&str>>,
+    node_by_id: &HashMap<&str, &crate::views::dto::GraphNodeDto>,
+) -> HashSet<String> {
+    let mut expanded = HashSet::new();
+    let mut stack: Vec<String> = root_ids.iter().cloned().collect();
+
+    while let Some(current) = stack.pop() {
+        if !expanded.insert(current.clone()) {
+            continue;
+        }
+
+        if let Some(children) = children_by_parent.get(current.as_str()) {
+            for child in children {
+                stack.push((*child).to_string());
+            }
+        }
+
+        let is_part_like = node_by_id
+            .get(current.as_str())
+            .is_some_and(|node| is_part_like(&node.element_type));
+        if is_part_like {
+            if let Some(targets) = typing_targets.get(current.as_str()) {
+                for target in targets {
+                    stack.push((*target).to_string());
+                }
+            }
+        }
+    }
+
+    expanded
+}
+
+fn is_part_like(element_type: &str) -> bool {
+    let lower = element_type.to_lowercase();
+    lower.contains("part")
 }
 
 fn with_ancestors(
@@ -881,5 +938,100 @@ mod tests {
         let projected = project_ids_for_renderer(&evaluated, &graph, "general-view");
         assert!(projected.contains("Office::OfficeDeskSetup"));
         assert!(projected.contains("Office::OfficeDeskSetup::laptop"));
+    }
+
+    #[test]
+    fn structural_projection_recursively_expands_typed_part_definitions() {
+        fn zero_range() -> RangeDto {
+            RangeDto {
+                start: PositionDto {
+                    line: 0,
+                    character: 0,
+                },
+                end: PositionDto {
+                    line: 0,
+                    character: 0,
+                },
+            }
+        }
+
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::System".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "System".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::System::engine".to_string(),
+                    element_type: "part".to_string(),
+                    name: "engine".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::System".to_string()),
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Engine".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "Engine".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Engine::pump".to_string(),
+                    element_type: "part".to_string(),
+                    name: "pump".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::Engine".to_string()),
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Pump".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "Pump".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+            ],
+            edges: vec![
+                crate::views::dto::GraphEdgeDto {
+                    source: "Pkg::System::engine".to_string(),
+                    target: "Pkg::Engine".to_string(),
+                    rel_type: "typing".to_string(),
+                    name: None,
+                },
+                crate::views::dto::GraphEdgeDto {
+                    source: "Pkg::Engine::pump".to_string(),
+                    target: "Pkg::Pump".to_string(),
+                    rel_type: "typing".to_string(),
+                    name: None,
+                },
+            ],
+        };
+        let evaluated = EvaluatedView {
+            id: "Pkg::view".to_string(),
+            name: "view".to_string(),
+            effective_view_type: Some("InterconnectionView".to_string()),
+            exposed_ids: HashSet::from(["Pkg::System".to_string()]),
+            filters: Vec::new(),
+            visible_ids: HashSet::new(),
+            issues: Vec::new(),
+        };
+
+        let projected = project_ids_for_renderer(&evaluated, &graph, "interconnection-view");
+        assert!(projected.contains("Pkg::System::engine"));
+        assert!(projected.contains("Pkg::Engine"));
+        assert!(projected.contains("Pkg::Engine::pump"));
+        assert!(projected.contains("Pkg::Pump"));
     }
 }
