@@ -8,13 +8,15 @@ use crate::semantic_model;
 use crate::views::extracted_model::{extract_activity_diagrams, ActivityDiagramDto};
 use crate::views::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlElementDto, SysmlGraphDto,
-    SysmlModelStatsDto, SysmlVisualizationPackageCandidateDto,
-    SysmlVisualizationGroupDto,
-    SysmlVisualizationPackageFilterDto, SysmlVisualizationResultDto, WorkspaceFileModelDto,
+    SysmlModelStatsDto, SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto,
+    SysmlVisualizationParamsDto,
+    SysmlVisualizationResultDto, WorkspaceFileModelDto,
     WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
 use crate::views::ibd::{self, IbdDataDto, IbdPackageContainerGroupDto};
 
+#[path = "explicit_views.rs"]
+mod explicit_views;
 #[path = "model_projection.rs"]
 mod model_projection;
 
@@ -74,75 +76,69 @@ fn build_workspace_activity_diagrams(
 
 pub(crate) fn parse_sysml_visualization_params(
     v: &serde_json::Value,
-) -> Result<(Url, String, SysmlVisualizationPackageFilterDto)> {
-    let (workspace_root_uri, view, package_filter_value) = if let Some(arr) = v.as_array() {
+) -> Result<(Url, String, Option<String>)> {
+    let params = if let Ok(params) = serde_json::from_value::<SysmlVisualizationParamsDto>(v.clone())
+    {
+        params
+    } else if let Some(arr) = v.as_array() {
         let first = arr.first().ok_or_else(|| {
             tower_lsp::jsonrpc::Error::invalid_params(
                 "sysml/visualization params array must have at least one element",
             )
         })?;
-
         if let Some(obj) = first.as_object() {
-            let workspace_root_uri = obj
-                .get("workspaceRootUri")
-                .and_then(|value| value.as_str())
-                .map(String::from);
-            let view = obj
-                .get("view")
-                .and_then(|value| value.as_str())
-                .map(String::from)
-                .or_else(|| arr.get(1).and_then(|value| value.as_str()).map(String::from));
-            let package_filter_value = obj
-                .get("packageFilter")
-                .cloned()
-                .or_else(|| arr.get(2).cloned());
-            (workspace_root_uri, view, package_filter_value)
+            SysmlVisualizationParamsDto {
+                workspace_root_uri: obj
+                    .get("workspaceRootUri")
+                    .and_then(|value| value.as_str())
+                    .unwrap_or_default()
+                    .to_string(),
+                view: obj
+                    .get("view")
+                    .and_then(|value| value.as_str())
+                    .or_else(|| arr.get(1).and_then(|value| value.as_str()))
+                    .unwrap_or_default()
+                    .to_string(),
+                selected_view: obj
+                    .get("selectedView")
+                    .and_then(|value| value.as_str())
+                    .or_else(|| arr.get(2).and_then(|value| value.as_str()))
+                    .map(ToString::to_string),
+            }
         } else {
-            (
-                first.as_str().map(String::from),
-                arr.get(1).and_then(|value| value.as_str()).map(String::from),
-                arr.get(2).cloned(),
-            )
+            SysmlVisualizationParamsDto {
+                workspace_root_uri: first.as_str().unwrap_or_default().to_string(),
+                view: arr
+                    .get(1)
+                    .and_then(|value| value.as_str())
+                    .unwrap_or_default()
+                    .to_string(),
+                selected_view: arr
+                    .get(2)
+                    .and_then(|value| value.as_str())
+                    .map(ToString::to_string),
+            }
         }
-    } else if let Some(obj) = v.as_object() {
-        (
-            obj.get("workspaceRootUri")
-                .and_then(|value| value.as_str())
-                .map(String::from),
-            obj.get("view")
-                .and_then(|value| value.as_str())
-                .map(String::from),
-            obj.get("packageFilter").cloned(),
-        )
     } else {
         return Err(tower_lsp::jsonrpc::Error::invalid_params(
-            "sysml/visualization params must be an object or array",
+            "sysml/visualization params must include workspaceRootUri and view",
         ));
     };
 
-    let workspace_root_uri = workspace_root_uri.ok_or_else(|| {
-        tower_lsp::jsonrpc::Error::invalid_params(
-            "sysml/visualization requires 'workspaceRootUri'",
-        )
-    })?;
-    let view = view.ok_or_else(|| {
-        tower_lsp::jsonrpc::Error::invalid_params("sysml/visualization requires 'view'")
-    })?;
-    let package_filter = package_filter_value
-        .and_then(|value| serde_json::from_value::<SysmlVisualizationPackageFilterDto>(value).ok())
-        .unwrap_or(SysmlVisualizationPackageFilterDto {
-            kind: "all".to_string(),
-            package: None,
-        });
+    if params.workspace_root_uri.trim().is_empty() || params.view.trim().is_empty() {
+        return Err(tower_lsp::jsonrpc::Error::invalid_params(
+            "sysml/visualization params must include workspaceRootUri and view",
+        ));
+    }
 
-    let workspace_root_uri = Url::parse(&workspace_root_uri).map_err(|_| {
+    let workspace_root_uri = Url::parse(&params.workspace_root_uri).map_err(|_| {
         tower_lsp::jsonrpc::Error::invalid_params("sysml/visualization: invalid workspaceRootUri")
     })?;
 
     Ok((
         crate::common::util::normalize_file_uri(&workspace_root_uri),
-        view.to_string(),
-        package_filter,
+        params.view,
+        params.selected_view,
     ))
 }
 
@@ -343,6 +339,101 @@ fn graph_to_element_tree(graph: &SysmlGraphDto, uri: &Url) -> Vec<SysmlElementDt
             )
         })
         .collect()
+}
+
+fn project_graph_by_ids(graph: &SysmlGraphDto, visible_ids: &HashSet<String>) -> SysmlGraphDto {
+    let nodes: Vec<_> = graph
+        .nodes
+        .iter()
+        .filter(|node| visible_ids.contains(&node.id))
+        .cloned()
+        .collect();
+    let edges: Vec<_> = graph
+        .edges
+        .iter()
+        .filter(|edge| visible_ids.contains(&edge.source) && visible_ids.contains(&edge.target))
+        .cloned()
+        .collect();
+    SysmlGraphDto { nodes, edges }
+}
+
+fn build_workspace_model_dto_from_graph(
+    graph: &SysmlGraphDto,
+    workspace_uris: &[Url],
+) -> WorkspaceModelDto {
+    let mut files = Vec::with_capacity(workspace_uris.len());
+    let mut all_elements = Vec::new();
+    for workspace_uri in workspace_uris {
+        let uri_graph = SysmlGraphDto {
+            nodes: graph
+                .nodes
+                .iter()
+                .filter(|node| node.uri.as_deref() == Some(workspace_uri.as_str()))
+                .cloned()
+                .collect(),
+            edges: graph
+                .edges
+                .iter()
+                .filter(|edge| {
+                    graph.nodes.iter().any(|node| node.id == edge.source && node.uri.as_deref() == Some(workspace_uri.as_str()))
+                        || graph.nodes.iter().any(|node| node.id == edge.target && node.uri.as_deref() == Some(workspace_uri.as_str()))
+                })
+                .cloned()
+                .collect(),
+        };
+        let elements = graph_to_element_tree(&uri_graph, workspace_uri);
+        all_elements.extend(elements.iter().map(clone_element));
+        if !elements.is_empty() {
+            files.push(WorkspaceFileModelDto {
+                uri: workspace_uri.as_str().to_string(),
+                elements,
+            });
+        }
+    }
+    WorkspaceModelDto {
+        summary: WorkspaceModelSummaryDto {
+            scanned_files: files.len(),
+            loaded_files: files.len(),
+            failures: 0,
+            truncated: false,
+        },
+        semantic: merge_namespace_elements(&all_elements),
+        files,
+    }
+}
+
+fn filter_activity_diagrams_by_graph(
+    diagrams: &[ActivityDiagramDto],
+    graph: &SysmlGraphDto,
+) -> Vec<ActivityDiagramDto> {
+    let mut action_keys = HashSet::new();
+    for node in &graph.nodes {
+        let kind = node.element_type.to_lowercase();
+        if kind.contains("action") || kind.contains("perform") {
+            action_keys.insert((node.name.clone(), top_level_package_for_node_id(&node.id)));
+        }
+    }
+
+    diagrams
+        .iter()
+        .filter(|diagram| {
+            let package = normalize_package_path(&diagram.package_path)
+                .split("::")
+                .next()
+                .unwrap_or("")
+                .to_string();
+            action_keys.contains(&(diagram.name.clone(), package))
+        })
+        .cloned()
+        .collect()
+}
+
+fn top_level_package_for_node_id(node_id: &str) -> String {
+    normalize_package_path(node_id)
+        .split("::")
+        .next()
+        .unwrap_or("")
+        .to_string()
 }
 
 fn build_package_groups_from_graph(graph: &SysmlGraphDto) -> Vec<SysmlVisualizationGroupDto> {
@@ -745,6 +836,154 @@ fn filter_ibd_by_package(ibd: &IbdDataDto, package_ref: &str) -> IbdDataDto {
     }
 }
 
+fn filter_ibd_by_visible_ids(ibd: &IbdDataDto, visible_ids: &HashSet<String>) -> IbdDataDto {
+    let parts: Vec<_> = ibd
+        .parts
+        .iter()
+        .filter(|part| visible_ids.contains(&part.id))
+        .cloned()
+        .collect();
+    let part_ids: HashSet<_> = parts.iter().map(|part| part.id.as_str()).collect();
+    let ports: Vec<_> = ibd
+        .ports
+        .iter()
+        .filter(|port| {
+            visible_ids.contains(&port.id) || part_ids.contains(port.parent_id.as_str())
+        })
+        .cloned()
+        .collect();
+    let port_ids: HashSet<_> = ports.iter().map(|port| port.id.as_str()).collect();
+    let connectors: Vec<_> = ibd
+        .connectors
+        .iter()
+        .filter(|connector| {
+            port_ids.contains(connector.source.as_str())
+                || port_ids.contains(connector.target.as_str())
+                || part_ids.contains(connector.source_id.as_str())
+                || part_ids.contains(connector.target_id.as_str())
+        })
+        .cloned()
+        .collect();
+    let container_groups: Vec<_> = ibd
+        .container_groups
+        .iter()
+        .filter(|group| {
+            group.member_part_ids
+                .iter()
+                .any(|member_id| part_ids.contains(member_id.as_str()))
+        })
+        .cloned()
+        .collect();
+    let mut root_views = HashMap::new();
+    for (name, view) in &ibd.root_views {
+        let filtered_parts: Vec<_> = view
+            .parts
+            .iter()
+            .filter(|part| visible_ids.contains(&part.id))
+            .cloned()
+            .collect();
+        let filtered_part_ids: HashSet<_> =
+            filtered_parts.iter().map(|part| part.id.as_str()).collect();
+        let filtered_ports: Vec<_> = view
+            .ports
+            .iter()
+            .filter(|port| {
+                visible_ids.contains(&port.id)
+                    || filtered_part_ids.contains(port.parent_id.as_str())
+            })
+            .cloned()
+            .collect();
+        let filtered_port_ids: HashSet<_> =
+            filtered_ports.iter().map(|port| port.id.as_str()).collect();
+        let filtered_connectors: Vec<_> = view
+            .connectors
+            .iter()
+            .filter(|connector| {
+                filtered_port_ids.contains(connector.source.as_str())
+                    || filtered_port_ids.contains(connector.target.as_str())
+                    || filtered_part_ids.contains(connector.source_id.as_str())
+                    || filtered_part_ids.contains(connector.target_id.as_str())
+            })
+            .cloned()
+            .collect();
+        let filtered_container_groups: Vec<_> = view
+            .container_groups
+            .iter()
+            .filter(|group| {
+                group.member_part_ids
+                    .iter()
+                    .any(|member_id| filtered_part_ids.contains(member_id.as_str()))
+            })
+            .cloned()
+            .collect();
+        if !filtered_parts.is_empty() || !filtered_connectors.is_empty() {
+            root_views.insert(
+                name.clone(),
+                ibd::IbdRootViewDto {
+                    parts: filtered_parts,
+                    ports: filtered_ports,
+                    connectors: filtered_connectors,
+                    container_groups: filtered_container_groups,
+                    package_container_groups: Vec::new(),
+                },
+            );
+        }
+    }
+    let root_candidates: Vec<_> = ibd
+        .root_candidates
+        .iter()
+        .filter(|candidate| root_views.contains_key(*candidate))
+        .cloned()
+        .collect();
+    let default_root = ibd
+        .default_root
+        .as_ref()
+        .filter(|root| root_views.contains_key(root.as_str()))
+        .cloned()
+        .or_else(|| root_candidates.first().cloned());
+    IbdDataDto {
+        parts,
+        ports,
+        connectors,
+        container_groups,
+        package_container_groups: Vec::new(),
+        root_candidates,
+        root_views,
+        default_root,
+    }
+}
+
+fn renderer_empty_state_message(view: &str) -> String {
+    match view {
+        "general-view" => {
+            "Define a SysML view typed by GeneralView to display something in this visualizer panel."
+                .to_string()
+        }
+        "interconnection-view" => {
+            "Define a SysML view typed by InterconnectionView to display something in this visualizer panel."
+                .to_string()
+        }
+        "action-flow-view" => {
+            "Define a SysML view typed by ActionFlowView to display something in this visualizer panel."
+                .to_string()
+        }
+        "state-transition-view" => {
+            "Define a SysML view typed by StateTransitionView to display something in this visualizer panel."
+                .to_string()
+        }
+        _ => "Define a SysML view to display something in this visualizer panel.".to_string(),
+    }
+}
+
+fn unsupported_view_type_message(view_type: Option<&str>) -> String {
+    match view_type.filter(|value| !value.trim().is_empty()) {
+        Some(view_type) => format!(
+            "This SysML view is typed by {view_type}, which Spec42 does not support yet."
+        ),
+        None => "This SysML view uses a view type that Spec42 does not support yet.".to_string(),
+    }
+}
+
 fn package_group_id(package_ref: &str) -> String {
     format!("package:{}", package_ref.replace("::", "."))
 }
@@ -853,140 +1092,186 @@ pub(crate) fn build_sysml_visualization_response(
     workspace_root_uri: &Url,
     library_paths: &[Url],
     view: &str,
-    package_filter: &SysmlVisualizationPackageFilterDto,
+    selected_view: Option<&str>,
     build_start: Instant,
 ) -> SysmlVisualizationResultDto {
     let workspace_uris = workspace_uris_for_root(semantic_graph, library_paths, workspace_root_uri);
-    let raw_graph = build_workspace_graph_dto_for_uris(semantic_graph, &workspace_uris);
-    let graph = model_projection::strip_synthetic_nodes(&raw_graph);
-    let mut general_view_graph =
-        model_projection::canonical_general_view_graph(&graph, true);
-    let mut package_groups = Some(build_package_groups_from_graph(&general_view_graph));
-    let mut workspace_model = build_workspace_model_dto_for_uris(semantic_graph, &workspace_uris);
-    let mut package_candidates = Vec::new();
-    let mut seen_packages = HashSet::new();
-    collect_package_candidates(&workspace_model.semantic, &mut seen_packages, &mut package_candidates);
-    package_candidates.sort_by(|left, right| left.name.cmp(&right.name));
-
-    let mut ibd = Some(ibd::merge_ibd_payloads(
+    let graph = model_projection::strip_synthetic_nodes(&build_workspace_graph_dto_for_uris(
+        semantic_graph,
+        &workspace_uris,
+    ));
+    let empty_graph = SysmlGraphDto {
+        nodes: Vec::new(),
+        edges: Vec::new(),
+    };
+    let full_ibd = ibd::merge_ibd_payloads(
         workspace_uris
             .iter()
             .map(|workspace_uri| ibd::build_ibd_for_uri(semantic_graph, workspace_uri))
             .collect(),
-    ));
-    let mut activity_diagrams = build_workspace_activity_diagrams(index, &workspace_uris, None);
-    let mut selected_package = None;
-    let mut selected_package_name = None;
+    );
+    let full_activity_diagrams = build_workspace_activity_diagrams(index, &workspace_uris, None);
+    let catalog = explicit_views::build_view_catalog(index, &workspace_uris);
 
-    if package_filter.kind.eq_ignore_ascii_case("package") {
-        if let Some(package_ref) = package_filter.package.as_deref() {
-            if let Some(package_element) =
-                find_package_element(&workspace_model.semantic, package_ref).map(clone_element)
-            {
-                let mut selected_ids = HashSet::new();
-                collect_subtree_ids(&package_element, &mut selected_ids);
-
-                let filtered_graph_nodes: Vec<_> = graph
-                    .nodes
-                    .iter()
-                    .filter(|node| selected_ids.contains(&node.id))
-                    .cloned()
-                    .collect();
-                let filtered_graph_edges: Vec<_> = graph
-                    .edges
-                    .iter()
-                    .filter(|edge| {
-                        selected_ids.contains(&edge.source) && selected_ids.contains(&edge.target)
-                    })
-                    .cloned()
-                    .collect();
-                let filtered_graph = SysmlGraphDto {
-                    nodes: filtered_graph_nodes,
-                    edges: filtered_graph_edges,
-                };
-                general_view_graph =
-                    model_projection::canonical_general_view_graph(&filtered_graph, true);
-                package_groups = Some(build_package_groups_from_graph(&general_view_graph));
-                workspace_model.semantic = vec![package_element.clone()];
-                workspace_model.files = filter_workspace_model_files(&workspace_model.files, package_ref);
-                workspace_model.summary.loaded_files = workspace_model.files.len();
-                workspace_model.summary.scanned_files = workspace_model.files.len();
-                ibd = ibd
-                    .as_ref()
-                    .map(|payload| filter_ibd_by_package(payload, package_ref))
-                    .map(|payload| {
-                        attach_ibd_package_container_groups(
-                            payload,
-                            &package_candidates,
-                            Some((package_ref, Some(package_element.name.as_str()))),
-                        )
-                    });
-                activity_diagrams = build_workspace_activity_diagrams(
-                    index,
-                    &workspace_uris,
-                    Some((package_ref, Some(package_element.name.as_str()))),
-                );
-                selected_package = package_element
-                    .id
-                    .clone()
-                    .or_else(|| Some(package_element.name.clone()));
-                selected_package_name = Some(package_element.name.clone());
-                return SysmlVisualizationResultDto {
-                    version: 0,
-                    view: view.to_string(),
-                    workspace_root_uri: workspace_root_uri.as_str().to_string(),
-                    package_candidates,
-                    selected_package,
-                    selected_package_name,
-                    package_groups,
-                    graph: Some(filtered_graph.clone()),
-                    general_view_graph: Some(general_view_graph),
-                    workspace_model: Some(workspace_model),
-                    activity_diagrams: Some(activity_diagrams),
-                    ibd,
-                    stats: Some(SysmlModelStatsDto {
-                        total_elements: filtered_graph.nodes.len() as u32,
-                        resolved_elements: 0,
-                        unresolved_elements: 0,
-                        parse_time_ms: 0,
-                        model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
-                        parse_cached: false,
-                    }),
-                };
-            }
-        }
+    if catalog.usages.is_empty() {
+        return SysmlVisualizationResultDto {
+            version: 0,
+            view: view.to_string(),
+            workspace_root_uri: workspace_root_uri.as_str().to_string(),
+            view_candidates: Vec::new(),
+            selected_view: None,
+            selected_view_name: None,
+            empty_state_message: Some(renderer_empty_state_message(view)),
+            package_groups: Some(Vec::new()),
+            graph: Some(empty_graph.clone()),
+            general_view_graph: Some(empty_graph.clone()),
+            workspace_model: Some(build_workspace_model_dto_from_graph(&empty_graph, &workspace_uris)),
+            activity_diagrams: Some(Vec::new()),
+            ibd: Some(filter_ibd_by_visible_ids(&full_ibd, &HashSet::new())),
+            stats: Some(SysmlModelStatsDto {
+                total_elements: 0,
+                resolved_elements: 0,
+                unresolved_elements: 0,
+                parse_time_ms: 0,
+                model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
+                parse_cached: false,
+            }),
+        };
     }
 
-    let _parsed_count = workspace_uris
-        .iter()
-        .filter(|uri| index.get(*uri).and_then(|entry| entry.parsed.as_ref()).is_some())
-        .count();
+    let evaluated_views = explicit_views::evaluate_views(&catalog, &graph);
+    let mut projected_graphs: HashMap<&str, SysmlGraphDto> = HashMap::new();
+    let mut projected_activity_diagrams: HashMap<&str, Vec<ActivityDiagramDto>> = HashMap::new();
+    for evaluated in &evaluated_views {
+        let projected_graph = project_graph_by_ids(&graph, &evaluated.visible_ids);
+        let diagrams = filter_activity_diagrams_by_graph(&full_activity_diagrams, &projected_graph);
+        projected_graphs.insert(evaluated.id.as_str(), projected_graph);
+        projected_activity_diagrams.insert(evaluated.id.as_str(), diagrams);
+    }
 
-    let attached_ibd = ibd.map(|payload| {
-        attach_ibd_package_container_groups(
-            payload,
-            &package_candidates,
-            selected_package
-                .as_deref()
-                .map(|package_ref| (package_ref, selected_package_name.as_deref())),
-        )
-    });
+    let view_candidates = explicit_views::build_view_candidates(
+        &evaluated_views,
+        &projected_activity_diagrams,
+        &projected_graphs,
+    );
+    let selected_candidate = selected_view
+        .and_then(|selected| view_candidates.iter().find(|candidate| candidate.id == selected))
+        .or_else(|| {
+            view_candidates
+                .iter()
+                .find(|candidate| candidate.supported && candidate.renderer_view.as_deref() == Some(view))
+        })
+        .or_else(|| view_candidates.iter().find(|candidate| candidate.supported))
+        .or_else(|| view_candidates.first());
+
+    let Some(selected_candidate) = selected_candidate else {
+        return SysmlVisualizationResultDto {
+            version: 0,
+            view: view.to_string(),
+            workspace_root_uri: workspace_root_uri.as_str().to_string(),
+            view_candidates,
+            selected_view: None,
+            selected_view_name: None,
+            empty_state_message: Some(renderer_empty_state_message(view)),
+            package_groups: Some(Vec::new()),
+            graph: Some(empty_graph.clone()),
+            general_view_graph: Some(empty_graph.clone()),
+            workspace_model: Some(build_workspace_model_dto_from_graph(&empty_graph, &workspace_uris)),
+            activity_diagrams: Some(Vec::new()),
+            ibd: Some(filter_ibd_by_visible_ids(&full_ibd, &HashSet::new())),
+            stats: Some(SysmlModelStatsDto {
+                total_elements: 0,
+                resolved_elements: 0,
+                unresolved_elements: 0,
+                parse_time_ms: 0,
+                model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
+                parse_cached: false,
+            }),
+        };
+    };
+    let selected_view_id = selected_candidate.id.clone();
+    let selected_view_name = Some(selected_candidate.name.clone());
+    let selected_view_type = selected_candidate.view_type.clone();
+
+    if !selected_candidate.supported {
+        return SysmlVisualizationResultDto {
+            version: 0,
+            view: view.to_string(),
+            workspace_root_uri: workspace_root_uri.as_str().to_string(),
+            view_candidates,
+            selected_view: Some(selected_view_id),
+            selected_view_name,
+            empty_state_message: Some(unsupported_view_type_message(
+                selected_view_type.as_deref(),
+            )),
+            package_groups: Some(Vec::new()),
+            graph: Some(empty_graph.clone()),
+            general_view_graph: Some(empty_graph.clone()),
+            workspace_model: Some(build_workspace_model_dto_from_graph(&empty_graph, &workspace_uris)),
+            activity_diagrams: Some(Vec::new()),
+            ibd: Some(filter_ibd_by_visible_ids(&full_ibd, &HashSet::new())),
+            stats: Some(SysmlModelStatsDto {
+                total_elements: 0,
+                resolved_elements: 0,
+                unresolved_elements: 0,
+                parse_time_ms: 0,
+                model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
+                parse_cached: false,
+            }),
+        };
+    }
+
+    let resolved_view = selected_candidate
+        .renderer_view
+        .clone()
+        .unwrap_or_else(|| view.to_string());
+
+    let selected_graph = projected_graphs
+        .get(selected_view_id.as_str())
+        .cloned()
+        .unwrap_or_else(|| empty_graph.clone());
+    let general_view_graph =
+        model_projection::canonical_general_view_graph(&selected_graph, true);
+    let package_groups = Some(build_package_groups_from_graph(&general_view_graph));
+    let workspace_model = build_workspace_model_dto_from_graph(&selected_graph, &workspace_uris);
+    let mut package_candidates = Vec::new();
+    let mut seen_packages = HashSet::new();
+    collect_package_candidates(
+        &workspace_model.semantic,
+        &mut seen_packages,
+        &mut package_candidates,
+    );
+    package_candidates.sort_by(|left, right| left.name.cmp(&right.name));
+    let selected_ids = evaluated_views
+        .iter()
+        .find(|evaluated| evaluated.id == selected_view_id)
+        .map(|evaluated| evaluated.visible_ids.clone())
+        .unwrap_or_default();
+    let filtered_ibd = attach_ibd_package_container_groups(
+        filter_ibd_by_visible_ids(&full_ibd, &selected_ids),
+        &package_candidates,
+        None,
+    );
+    let activity_diagrams = projected_activity_diagrams
+        .remove(selected_view_id.as_str())
+        .unwrap_or_default();
 
     SysmlVisualizationResultDto {
         version: 0,
-        view: view.to_string(),
+        view: resolved_view,
         workspace_root_uri: workspace_root_uri.as_str().to_string(),
-        package_candidates,
-        selected_package,
-        selected_package_name,
+        view_candidates,
+        selected_view: Some(selected_view_id),
+        selected_view_name,
+        empty_state_message: None,
         package_groups,
-        graph: Some(graph.clone()),
+        graph: Some(selected_graph.clone()),
         general_view_graph: Some(general_view_graph),
         workspace_model: Some(workspace_model),
         activity_diagrams: Some(activity_diagrams),
-        ibd: attached_ibd,
+        ibd: Some(filtered_ibd),
         stats: Some(SysmlModelStatsDto {
-            total_elements: graph.nodes.len() as u32,
+            total_elements: selected_graph.nodes.len() as u32,
             resolved_elements: 0,
             unresolved_elements: 0,
             parse_time_ms: 0,
@@ -1025,22 +1310,18 @@ mod tests {
     }
 
     #[test]
-    fn parse_visualization_params_accepts_workspace_root_and_package_filter() {
+    fn parse_visualization_params_accepts_workspace_root_and_selected_view() {
         let params = serde_json::json!({
             "workspaceRootUri": "file:///C:/demo",
             "view": "general-view",
-            "packageFilter": {
-                "kind": "package",
-                "package": "Demo::Pkg"
-            }
+            "selectedView": "Demo::Pkg::VehicleView"
         });
 
-        let (workspace_root_uri, view, package_filter) =
+        let (workspace_root_uri, view, selected_view) =
             parse_sysml_visualization_params(&params).expect("parse visualization params");
         assert_eq!(workspace_root_uri.as_str(), "file:///c:/demo");
         assert_eq!(view, "general-view");
-        assert_eq!(package_filter.kind, "package");
-        assert_eq!(package_filter.package.as_deref(), Some("Demo::Pkg"));
+        assert_eq!(selected_view.as_deref(), Some("Demo::Pkg::VehicleView"));
     }
 
     #[test]
@@ -1049,18 +1330,15 @@ mod tests {
             {
                 "workspaceRootUri": "file:///C:/demo",
                 "view": "interconnection-view",
-                "packageFilter": {
-                    "kind": "all"
-                }
+                "selectedView": "Demo::VehicleConnections"
             }
         ]);
 
-        let (workspace_root_uri, view, package_filter) =
+        let (workspace_root_uri, view, selected_view) =
             parse_sysml_visualization_params(&params).expect("parse visualization params");
         assert_eq!(workspace_root_uri.as_str(), "file:///c:/demo");
         assert_eq!(view, "interconnection-view");
-        assert_eq!(package_filter.kind, "all");
-        assert_eq!(package_filter.package, None);
+        assert_eq!(selected_view.as_deref(), Some("Demo::VehicleConnections"));
     }
 
     #[test]

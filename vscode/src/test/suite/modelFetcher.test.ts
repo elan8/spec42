@@ -7,9 +7,9 @@ function createVisualizationResult(): SysMLVisualizationResult {
     version: 1,
     view: "general-view",
     workspaceRootUri: "file:///workspace",
-    packageCandidates: [
-      { id: "AnalysisPackage", name: "AnalysisPackage" },
-      { id: "FunctionsPackage", name: "FunctionsPackage" },
+    viewCandidates: [
+      { id: "AnalysisView", name: "Analysis View", rendererView: "general-view", supported: true },
+      { id: "FunctionsView", name: "Functions View", rendererView: "action-flow-view", supported: true },
     ],
     graph: {
       nodes: [
@@ -68,10 +68,10 @@ function createVisualizationResult(): SysMLVisualizationResult {
 
 describe("fetchModelData", () => {
   it("uses the workspace-only visualization endpoint", async () => {
-    const requests: Array<{ workspaceRootUri: string; view: string; packageFilter?: { kind: string; package?: string } }> = [];
+    const requests: Array<{ workspaceRootUri: string; view: string; selectedView?: string }> = [];
     const provider = {
-      getVisualization: async (workspaceRootUri: string, view: string, packageFilter?: { kind: string; package?: string }) => {
-        requests.push({ workspaceRootUri, view, packageFilter });
+      getVisualization: async (workspaceRootUri: string, view: string, selectedView?: string) => {
+        requests.push({ workspaceRootUri, view, selectedView });
         return createVisualizationResult();
       },
     } as any;
@@ -86,20 +86,20 @@ describe("fetchModelData", () => {
       {
         workspaceRootUri: "file:///workspace",
         view: "general-view",
-        packageFilter: { kind: "all" },
+        selectedView: undefined,
       },
     ]);
   });
 
-  it("passes a package filter when one package is selected", async () => {
-    const requests: Array<{ workspaceRootUri: string; view: string; packageFilter?: { kind: string; package?: string } }> = [];
+  it("passes the selected SysML view when one is selected", async () => {
+    const requests: Array<{ workspaceRootUri: string; view: string; selectedView?: string }> = [];
     const provider = {
-      getVisualization: async (workspaceRootUri: string, view: string, packageFilter?: { kind: string; package?: string }) => {
-        requests.push({ workspaceRootUri, view, packageFilter });
+      getVisualization: async (workspaceRootUri: string, view: string, selectedView?: string) => {
+        requests.push({ workspaceRootUri, view, selectedView });
         return {
           ...createVisualizationResult(),
-          selectedPackage: "AnalysisPackage",
-          selectedPackageName: "AnalysisPackage",
+          selectedView: "AnalysisView",
+          selectedViewName: "Analysis View",
         };
       },
     } as any;
@@ -108,20 +108,20 @@ describe("fetchModelData", () => {
       workspaceRootUri: "file:///workspace",
       lspModelProvider: provider,
       currentView: "interconnection-view",
-      selectedPackage: "AnalysisPackage",
+      selectedView: "AnalysisView",
     });
 
     assert.deepStrictEqual(requests, [
       {
         workspaceRootUri: "file:///workspace",
         view: "interconnection-view",
-        packageFilter: { kind: "package", package: "AnalysisPackage" },
+        selectedView: "AnalysisView",
       },
     ]);
-    assert.strictEqual(result?.selectedPackageName, "AnalysisPackage");
+    assert.strictEqual(result?.selectedViewName, "Analysis View");
   });
 
-  it("includes backend package candidates and semantic roots in the update message", async () => {
+  it("includes backend view candidates and semantic roots in the update message", async () => {
     const provider = {
       getVisualization: async () => createVisualizationResult(),
     } as any;
@@ -133,8 +133,8 @@ describe("fetchModelData", () => {
     });
 
     assert.deepStrictEqual(
-      result?.packageCandidates?.map((candidate) => candidate.name),
-      ["AnalysisPackage", "FunctionsPackage"]
+      result?.viewCandidates?.map((candidate) => candidate.name),
+      ["Analysis View", "Functions View"]
     );
     assert.deepStrictEqual(
       result?.elements?.map((element) => element.name),

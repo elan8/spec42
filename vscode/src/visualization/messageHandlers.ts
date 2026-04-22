@@ -12,7 +12,7 @@ export interface MessageHandlerContext {
     updateVisualization: (force: boolean, triggerSource?: string) => void;
     setNavigating: (value: boolean) => void;
     setCurrentView: (view: string) => void;
-    setSelectedPackage: (value?: string) => void;
+    setSelectedView: (value?: string) => void;
     setLastContentHash: (hash: string) => void;
 }
 
@@ -21,7 +21,7 @@ type WebviewMessage = { command: string; [key: string]: any };
 
 export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: WebviewMessage) => void {
     const handlers = createMessageHandlers(ctx);
-    const { panel, document, setCurrentView, setSelectedPackage, setLastContentHash, updateVisualization } = ctx;
+    const { panel, document, setCurrentView, setSelectedView, setLastContentHash, updateVisualization } = ctx;
 
     return (message: WebviewMessage) => {
         switch (message.command) {
@@ -70,15 +70,18 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
                 setLastContentHash('');
                 updateVisualization(true, 'viewChanged');
                 break;
-            case 'packageFilterChanged':
-                setSelectedPackage(message.packageRef || undefined);
+            case 'viewSelectionChanged':
+                if (typeof message.rendererView === 'string' && message.rendererView.length > 0) {
+                    setCurrentView(message.rendererView);
+                }
+                setSelectedView(message.viewId || undefined);
                 setLastContentHash('');
-                updateVisualization(true, 'packageFilterChanged');
+                updateVisualization(true, 'viewSelectionChanged');
                 break;
-            case 'clearPackageFilter':
-                setSelectedPackage(undefined);
+            case 'clearSelectedView':
+                setSelectedView(undefined);
                 setLastContentHash('');
-                updateVisualization(true, 'clearPackageFilter');
+                updateVisualization(true, 'clearSelectedView');
                 break;
             case 'openExternal':
                 if (message.url) {

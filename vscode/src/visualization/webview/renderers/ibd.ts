@@ -202,7 +202,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
 
     if (!data || !data.parts || data.parts.length === 0) {
         renderPlaceholder(width, height, 'Interconnection View',
-            'No parts or internal structure found to display.\\n\\nThis view shows internal block diagrams with parts, ports, and connectors.',
+            data?.emptyStateMessage || 'No parts or internal structure found to display.\\n\\nThis view shows internal block diagrams with parts, ports, and connectors.',
             data);
         return;
     }

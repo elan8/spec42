@@ -156,29 +156,29 @@ export interface SysMLModelResult {
   stats?: SysMLModelStatsDTO;
 }
 
-export interface VisualizationPackageFilterDTO {
-  kind: "all" | "package";
-  package?: string;
-}
-
-export interface VisualizationPackageCandidateDTO {
+export interface VisualizationViewCandidateDTO {
   id: string;
   name: string;
+  rendererView?: string;
+  supported: boolean;
+  viewType?: string;
+  description?: string;
 }
 
 export interface SysMLVisualizationParams {
   workspaceRootUri: string;
   view: string;
-  packageFilter?: VisualizationPackageFilterDTO;
+  selectedView?: string;
 }
 
 export interface SysMLVisualizationResult {
   version: number;
   view: string;
   workspaceRootUri: string;
-  packageCandidates: VisualizationPackageCandidateDTO[];
-  selectedPackage?: string;
-  selectedPackageName?: string;
+  viewCandidates: VisualizationViewCandidateDTO[];
+  selectedView?: string;
+  selectedViewName?: string;
+  emptyStateMessage?: string;
   graph?: SysMLGraphDTO;
   generalViewGraph?: SysMLGraphDTO;
   workspaceModel?: WorkspaceModelDTO;

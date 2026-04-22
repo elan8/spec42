@@ -223,7 +223,7 @@ pub(crate) fn sysml_visualization_result(
     state: &ServerState,
     params: serde_json::Value,
 ) -> Result<dto::SysmlVisualizationResultDto> {
-    let (workspace_root_uri, view, package_filter) =
+    let (workspace_root_uri, view, selected_view) =
         crate::views::parse_sysml_visualization_params(&params)?;
     Ok(crate::views::build_sysml_visualization_response(
         &state.semantic_graph,
@@ -231,7 +231,7 @@ pub(crate) fn sysml_visualization_result(
         &workspace_root_uri,
         &state.library_paths,
         &view,
-        &package_filter,
+        selected_view.as_deref(),
         Instant::now(),
     ))
 }

@@ -4,14 +4,14 @@ import type {
     IbdDataDTO,
     SysMLElementDTO,
     SysMLGraphDTO,
-    VisualizationPackageCandidateDTO,
+    VisualizationViewCandidateDTO,
 } from '../providers/sysmlModelTypes';
 
 export interface FetchModelParams {
     workspaceRootUri: string;
     lspModelProvider: LspModelProvider;
     currentView: string;
-    selectedPackage?: string;
+    selectedView?: string;
 }
 
 export interface UpdateMessage {
@@ -22,9 +22,10 @@ export interface UpdateMessage {
     ibd?: IbdDataDTO;
     activityDiagrams: unknown[];
     currentView: string;
-    packageCandidates?: VisualizationPackageCandidateDTO[];
-    selectedPackage?: string;
-    selectedPackageName?: string;
+    viewCandidates?: VisualizationViewCandidateDTO[];
+    selectedView?: string;
+    selectedViewName?: string;
+    emptyStateMessage?: string;
 }
 
 export function hashContent(content: string): string {
@@ -39,13 +40,13 @@ export function hashContent(content: string): string {
 
 export async function fetchModelData(params: FetchModelParams): Promise<UpdateMessage | null> {
     const startedAt = Date.now();
-    const { workspaceRootUri, lspModelProvider, currentView, selectedPackage } = params;
+    const { workspaceRootUri, lspModelProvider, currentView, selectedView } = params;
 
     log(
         'fetchModelData:start',
         `workspaceRootUri=${workspaceRootUri}`,
         `currentView=${currentView}`,
-        `selectedPackage=${selectedPackage ?? '(all)'}`,
+        `selectedView=${selectedView ?? '(auto)'}`,
     );
     if (isVerboseLoggingEnabled()) {
         try {
@@ -55,7 +56,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
                 JSON.stringify({
                     workspaceRootUri,
                     currentView,
-                    selectedPackage: selectedPackage ?? null,
+                    selectedView: selectedView ?? null,
                 })
             );
         } catch {
@@ -68,9 +69,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         const result = await lspModelProvider.getVisualization(
             workspaceRootUri,
             currentView,
-            selectedPackage
-                ? { kind: 'package', package: selectedPackage }
-                : { kind: 'all' },
+            selectedView,
         );
         const requestMs = Date.now() - requestStartedAt;
 
@@ -81,28 +80,29 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
             generalViewGraph: result.generalViewGraph ?? result.graph,
             ibd: result.ibd,
             activityDiagrams: result.activityDiagrams ?? [],
-            currentView,
-            packageCandidates: result.packageCandidates ?? [],
-            selectedPackage: result.selectedPackage,
-            selectedPackageName: result.selectedPackageName,
+            currentView: result.view ?? currentView,
+            viewCandidates: result.viewCandidates ?? [],
+            selectedView: result.selectedView,
+            selectedViewName: result.selectedViewName,
+            emptyStateMessage: result.emptyStateMessage,
         };
 
         log(
             'fetchModelData:done',
             `graphNodes=${msg.graph?.nodes?.length || 0}`,
             `graphEdges=${msg.graph?.edges?.length || 0}`,
-            `packageCandidates=${msg.packageCandidates?.length || 0}`,
-            `selectedPackage=${msg.selectedPackageName ?? '(all)'}`,
+            `viewCandidates=${msg.viewCandidates?.length || 0}`,
+            `selectedView=${msg.selectedViewName ?? '(auto)'}`,
         );
         logPerfEvent('visualizer:fetchModelData', {
             currentView,
             workspaceRootUri,
-            selectedPackage: selectedPackage ?? null,
+            selectedView: selectedView ?? null,
             requestMs,
             totalMs: Date.now() - startedAt,
             graphNodes: msg.graph?.nodes?.length || 0,
             graphEdges: msg.graph?.edges?.length || 0,
-            packageCandidates: msg.packageCandidates?.length || 0,
+            viewCandidates: msg.viewCandidates?.length || 0,
         });
         return msg;
     } catch (error) {
@@ -110,7 +110,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         logPerfEvent('visualizer:fetchModelDataFailed', {
             currentView,
             workspaceRootUri,
-            selectedPackage: selectedPackage ?? null,
+            selectedView: selectedView ?? null,
             totalMs: Date.now() - startedAt,
             error: error instanceof Error ? error.message : String(error),
         });

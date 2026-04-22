@@ -10,7 +10,6 @@ import type {
   SysMLModelResult,
   SysMLVisualizationParams,
   SysMLVisualizationResult,
-  VisualizationPackageFilterDTO,
 } from "./sysmlModelTypes";
 
 function logPerf(event: string, extra?: Record<string, unknown>): void {
@@ -511,7 +510,7 @@ export class LspModelProvider {
   async getVisualization(
     workspaceRootUri: string,
     view: string,
-    packageFilter?: VisualizationPackageFilterDTO,
+    selectedView?: string,
     token?: vscode.CancellationToken
   ): Promise<SysMLVisualizationResult> {
     const trimmed = (workspaceRootUri || "").trim();
@@ -522,7 +521,7 @@ export class LspModelProvider {
     const params: SysMLVisualizationParams = {
       workspaceRootUri: trimmed,
       view,
-      packageFilter,
+      selectedView,
     };
     try {
       return await this.client.sendRequest<SysMLVisualizationResult>(

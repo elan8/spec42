@@ -50,7 +50,7 @@ async function findRepresentativeWorkspaceDocument(workspaceRootUri: vscode.Uri)
 export interface VisualizerRestoreState {
     workspaceRootUri: string;
     currentView: string;
-    selectedPackage?: string;
+    selectedView?: string;
     title?: string;
 }
 
@@ -66,7 +66,7 @@ export class VisualizationPanel {
     private _needsUpdateWhenVisible = false;
     private _lastViewColumn: vscode.ViewColumn | undefined;
     private _extensionVersion = '';
-    private _selectedPackage: string | undefined;
+    private _selectedView: string | undefined;
     private _updateFlow: ReturnType<typeof createUpdateVisualizationFlow>;
 
     private constructor(
@@ -77,12 +77,12 @@ export class VisualizationPanel {
         private _workspaceRootUri: string,
         private _context?: vscode.ExtensionContext,
         initialCurrentView?: string,
-        initialSelectedPackage?: string,
+        initialSelectedView?: string,
     ) {
         if (initialCurrentView && getEnabledVisualizationViewIds().has(initialCurrentView)) {
             this._currentView = initialCurrentView;
         }
-        this._selectedPackage = initialSelectedPackage;
+        this._selectedView = initialSelectedView;
         this._extensionVersion = vscode.extensions.getExtension('Elan8.spec42')?.packageJSON?.version ?? '0.0.0';
         this._panel = panel;
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
@@ -106,7 +106,11 @@ export class VisualizationPanel {
             getWorkspaceRootUri: () => this._workspaceRootUri,
             lspModelProvider: this._lspModelProvider,
             getCurrentView: () => this._currentView,
-            getSelectedPackage: () => this._selectedPackage,
+            getSelectedView: () => this._selectedView,
+            setCurrentView: (value) => {
+                this._currentView = value;
+                this.persistRestoreState();
+            },
             getIsNavigating: () => this._isNavigating,
             getNeedsUpdateWhenVisible: () => this._needsUpdateWhenVisible,
             getLastContentHash: () => this._lastContentHash,
@@ -134,8 +138,8 @@ export class VisualizationPanel {
                 this._currentView = value;
                 this.persistRestoreState();
             },
-            setSelectedPackage: (value) => {
-                this._selectedPackage = value || undefined;
+            setSelectedView: (value) => {
+                this._selectedView = value || undefined;
                 this.persistRestoreState();
             },
             setLastContentHash: (hash) => { this._lastContentHash = hash; },
@@ -150,7 +154,7 @@ export class VisualizationPanel {
         const state: VisualizerRestoreState = {
             workspaceRootUri: this._workspaceRootUri,
             currentView: this._currentView,
-            selectedPackage: this._selectedPackage,
+            selectedView: this._selectedView,
             title: this._panel.title !== 'SysML Model Visualizer' ? this._panel.title : undefined,
         };
         this._context.workspaceState.update(RESTORE_STATE_KEY, state);
@@ -247,7 +251,7 @@ export class VisualizationPanel {
             workspaceRootUri.toString(),
             context,
             view,
-            savedState.selectedPackage,
+            savedState.selectedView,
         );
     }
 
@@ -287,8 +291,7 @@ export class VisualizationPanel {
         this.persistRestoreState();
     }
 
-    public selectPackage(packageName: string): void {
-        this._selectedPackage = packageName;
+    public selectPackage(_packageName: string): void {
         this._currentView = 'general-view';
         this._lastContentHash = '';
         this.persistRestoreState();
@@ -296,7 +299,7 @@ export class VisualizationPanel {
     }
 
     public clearPackageSelection(): void {
-        this._selectedPackage = undefined;
+        this._selectedView = undefined;
         this._lastContentHash = '';
         this.persistRestoreState();
         this.updateVisualization(true, 'clearPackageSelection');

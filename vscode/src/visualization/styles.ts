@@ -35,64 +35,6 @@ export function getVisualizerStyles(): string {
         border: 1px solid var(--vscode-panel-border);
         border-radius: 4px;
     }
-    #general-chips {
-        display: none;
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-top: 10px;
-        padding-top: 8px;
-        border-top: 1px solid var(--vscode-panel-border);
-    }
-    .general-presets {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: wrap;
-    }
-    .general-preset-btn {
-        margin-right: 0;
-        padding: 5px 10px;
-        border-radius: 999px;
-        border: 1px solid var(--vscode-panel-border);
-        background: var(--vscode-button-secondaryBackground, var(--vscode-input-background));
-        color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
-        font-size: 11px;
-        font-weight: 600;
-        gap: 8px;
-        box-shadow: none;
-    }
-    .general-preset-btn:hover {
-        border-color: var(--general-chip-accent, var(--vscode-focusBorder));
-        box-shadow: none;
-    }
-    .general-preset-btn.active {
-        background: color-mix(in srgb, var(--general-chip-accent, var(--vscode-button-background)) 18%, var(--vscode-editor-background));
-        color: var(--vscode-editor-foreground);
-        border-color: var(--general-chip-accent, var(--vscode-button-background));
-    }
-    .general-preset-btn-secondary {
-        font-weight: 500;
-    }
-    .general-preset-btn-secondary.active {
-        background: var(--vscode-button-background);
-        color: var(--vscode-button-foreground);
-        border-color: var(--vscode-button-background);
-    }
-    .general-preset-count {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 18px;
-        height: 18px;
-        padding: 0 6px;
-        border-radius: 999px;
-        background: color-mix(in srgb, var(--general-chip-accent, var(--vscode-badge-background, var(--vscode-button-background))) 22%, transparent);
-        color: inherit;
-        font-size: 10px;
-        font-weight: 700;
-    }
     #view-status-banner {
         display: none;
         margin-bottom: 8px;
@@ -337,47 +279,6 @@ export function getVisualizerStyles(): string {
         min-height: 0;
         width: 100%;
         overflow: hidden;
-    }
-    #pkg-dropdown {
-        position: absolute;
-        top: 8px;
-        left: 12px;
-        z-index: 500;
-        display: none;
-        align-items: flex-start;
-        gap: 8px;
-    }
-    #pkg-dropdown .selector-stack {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
-    }
-    #pkg-dropdown .selector-summary {
-        display: none;
-        max-width: 360px;
-        padding: 5px 9px;
-        border-radius: 999px;
-        border: 1px solid var(--vscode-panel-border);
-        background: color-mix(in srgb, var(--vscode-editor-inactiveSelectionBackground) 72%, transparent);
-        color: var(--vscode-descriptionForeground);
-        font-size: 10px;
-        line-height: 1.3;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    #pkg-dropdown .selector-summary.visible {
-        display: block;
-    }
-    #pkg-dropdown .view-dropdown-menu {
-        position: absolute;
-        top: calc(100% + 4px);
-        left: 0;
-        max-height: min(60vh, 420px);
-        overflow-y: auto;
-        overscroll-behavior: contain;
-        scrollbar-gutter: stable;
     }
     #visualization {
         width: 100%;

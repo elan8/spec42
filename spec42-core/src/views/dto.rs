@@ -189,10 +189,25 @@ pub struct SysmlModelStatsDto {
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct SysmlVisualizationPackageFilterDto {
-    pub kind: String,
+pub struct SysmlVisualizationParamsDto {
+    pub workspace_root_uri: String,
+    pub view: String,
     #[serde(default)]
-    pub package: Option<String>,
+    pub selected_view: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlVisualizationViewCandidateDto {
+    pub id: String,
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub renderer_view: Option<String>,
+    pub supported: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub view_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -219,11 +234,13 @@ pub struct SysmlVisualizationResultDto {
     pub version: u32,
     pub view: String,
     pub workspace_root_uri: String,
-    pub package_candidates: Vec<SysmlVisualizationPackageCandidateDto>,
+    pub view_candidates: Vec<SysmlVisualizationViewCandidateDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub selected_package: Option<String>,
+    pub selected_view: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub selected_package_name: Option<String>,
+    pub selected_view_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub empty_state_message: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub package_groups: Option<Vec<SysmlVisualizationGroupDto>>,
     #[serde(skip_serializing_if = "Option::is_none")]

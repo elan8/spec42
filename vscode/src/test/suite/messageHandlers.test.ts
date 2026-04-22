@@ -6,7 +6,7 @@ function createContext() {
   const calls: Array<{ force: boolean; triggerSource?: string }> = [];
   let currentView = "general-view";
   let lastContentHash = "seed";
-  let selectedPackage: string | undefined;
+  let selectedView: string | undefined;
 
   const dispatcher = createMessageDispatcher({
     panel: {} as vscode.WebviewPanel,
@@ -22,8 +22,8 @@ function createContext() {
     setCurrentView: (view: string) => {
       currentView = view;
     },
-    setSelectedPackage: (value?: string) => {
-      selectedPackage = value;
+    setSelectedView: (value?: string) => {
+      selectedView = value;
     },
     setLastContentHash: (hash: string) => {
       lastContentHash = hash;
@@ -35,7 +35,7 @@ function createContext() {
     calls,
     getCurrentView: () => currentView,
     getLastContentHash: () => lastContentHash,
-    getSelectedPackage: () => selectedPackage,
+    getSelectedView: () => selectedView,
   };
 }
 
@@ -59,13 +59,13 @@ describe("createMessageDispatcher", () => {
     assert.strictEqual(ctx.calls.length, 0);
   });
 
-  it("refreshes visualization when the package filter changes", () => {
+  it("refreshes visualization when the selected SysML view changes", () => {
     const ctx = createContext();
 
-    ctx.dispatcher({ command: "packageFilterChanged", packageRef: "AnalysisPackage" });
+    ctx.dispatcher({ command: "viewSelectionChanged", viewId: "AnalysisView" });
 
-    assert.strictEqual(ctx.getSelectedPackage(), "AnalysisPackage");
+    assert.strictEqual(ctx.getSelectedView(), "AnalysisView");
     assert.strictEqual(ctx.getLastContentHash(), "");
-    assert.deepStrictEqual(ctx.calls, [{ force: true, triggerSource: "packageFilterChanged" }]);
+    assert.deepStrictEqual(ctx.calls, [{ force: true, triggerSource: "viewSelectionChanged" }]);
   });
 });

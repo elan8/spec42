@@ -9,7 +9,8 @@ export interface UpdateFlowDeps {
     getWorkspaceRootUri: () => string;
     lspModelProvider: LspModelProvider;
     getCurrentView: () => string;
-    getSelectedPackage: () => string | undefined;
+    getSelectedView: () => string | undefined;
+    setCurrentView: (view: string) => void;
     getIsNavigating: () => boolean;
     getNeedsUpdateWhenVisible: () => boolean;
     getLastContentHash: () => string;
@@ -28,7 +29,8 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
         getWorkspaceRootUri,
         lspModelProvider,
         getCurrentView,
-        getSelectedPackage,
+        getSelectedView,
+        setCurrentView,
         getIsNavigating,
         getNeedsUpdateWhenVisible,
         getLastContentHash,
@@ -51,7 +53,7 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
             documentUri: document.uri.toString(),
             workspaceRootUri: getWorkspaceRootUri(),
             currentView: getCurrentView(),
-            selectedPackage: getSelectedPackage() ?? null,
+            selectedView: getSelectedView() ?? null,
         });
     }
 
@@ -65,7 +67,7 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                 `doc=${document.uri.toString()}`,
                 `workspaceRootUri=${workspaceRootUri}`,
                 `currentView=${getCurrentView()}`,
-                `selectedPackage=${getSelectedPackage() ?? '(all)'}`,
+                `selectedView=${getSelectedView() ?? '(auto)'}`,
             );
             if (isVerboseLoggingEnabled()) {
                 try {
@@ -76,7 +78,7 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                             doc: document.uri.toString(),
                             workspaceRootUri,
                             currentView: getCurrentView(),
-                            selectedPackage: getSelectedPackage() ?? null,
+                            selectedView: getSelectedView() ?? null,
                         })
                     );
                 } catch {
@@ -87,7 +89,7 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                 workspaceRootUri,
                 lspModelProvider,
                 currentView: getCurrentView(),
-                selectedPackage: getSelectedPackage(),
+                selectedView: getSelectedView(),
             });
             logPerf('visualizer:fetchModelDataCompleted', {
                 currentView: getCurrentView(),
@@ -96,13 +98,16 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                 workspaceRootUri,
             });
             if (msg) {
+                if (msg.currentView && msg.currentView !== getCurrentView()) {
+                    setCurrentView(msg.currentView);
+                }
                 log(
                     'updateFlow:post:update',
                     `graphNodes=${msg.graph?.nodes?.length || 0}`,
                     `graphEdges=${msg.graph?.edges?.length || 0}`,
-                    `packageCandidates=${msg.packageCandidates?.length || 0}`,
+                    `viewCandidates=${msg.viewCandidates?.length || 0}`,
                     `currentView=${msg.currentView}`,
-                    `selectedPackage=${msg.selectedPackageName ?? '(all)'}`,
+                    `selectedView=${msg.selectedViewName ?? '(auto)'}`,
                 );
                 if (isVerboseLoggingEnabled()) {
                     try {
@@ -112,9 +117,9 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                             JSON.stringify({
                                 graphNodes: msg.graph?.nodes?.length || 0,
                                 graphEdges: msg.graph?.edges?.length || 0,
-                                packageCandidates: msg.packageCandidates?.length || 0,
+                                viewCandidates: msg.viewCandidates?.length || 0,
                                 currentView: msg.currentView,
-                                selectedPackage: msg.selectedPackageName ?? null,
+                                selectedView: msg.selectedViewName ?? null,
                             })
                         );
                     } catch {

@@ -31,9 +31,7 @@ import {
     STATE_LAYOUT_ICONS,
     VIEW_OPTIONS,
     GENERAL_VIEW_PALETTE,
-    GENERAL_VIEW_CATEGORIES,
-    GENERAL_VIEW_CONCERNS,
-    getGeneralViewEnabledCategoryIds
+    GENERAL_VIEW_CATEGORIES
 } from './constants';
 import {
     convertToHierarchy,
@@ -77,9 +75,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
 
     // ELK Worker URL (must be set before ELK is instantiated)
     const elkWorkerUrl = (typeof window !== 'undefined' && (window).__VIZ_INIT?.elkWorkerUrl) ?? '';
-    const enabledViews = Array.isArray((typeof window !== 'undefined' && (window).__VIZ_INIT?.enabledViews))
-        ? (window).__VIZ_INIT.enabledViews
-        : ['general-view'];
     const experimentalViews = new Set(
         Array.isArray((typeof window !== 'undefined' && (window).__VIZ_INIT?.experimentalViews))
             ? (window).__VIZ_INIT.experimentalViews
@@ -101,8 +96,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
     let activityLayoutDirection = 'vertical'; // Action-flow diagrams default to top-down
     let stateLayoutOrientation = 'force'; // State-transition layout: 'horizontal', 'vertical', or 'force'
     let filteredData = null; // Active filter state shared across views
-    const defaultGeneralConcernIds = new Set(GENERAL_VIEW_CONCERNS.map((concern) => concern.id));
-    let enabledGeneralConcerns = new Set(defaultGeneralConcernIds);
     let isRendering = false;
     let showMetadata = false;
     let showCategoryHeaders = true; // Show category headers in General View
@@ -270,24 +263,48 @@ import { buildGeneralViewGraph } from './graphBuilders';
         const viewDropdownMenu = document.getElementById('view-dropdown-menu');
         if (!viewDropdownMenu) return;
         viewDropdownMenu.innerHTML = '';
-        enabledViews.forEach((viewId) => {
-            const option = VIEW_OPTIONS[viewId];
-            if (!option) return;
+        const viewCandidates = Array.isArray(currentData?.viewCandidates)
+            ? currentData.viewCandidates
+            : [];
+        viewCandidates.forEach((candidate: any) => {
+            const option = candidate?.rendererView
+                ? (VIEW_OPTIONS[candidate.rendererView] || VIEW_OPTIONS['general-view'])
+                : { icon: 'question', label: 'Unsupported View', shortLabel: 'Unsupported' };
             const item = document.createElement('button');
             item.className = 'view-dropdown-item';
-            item.setAttribute('data-view', viewId);
-            const experimentalBadge = experimentalViews.has(viewId)
-                ? '<span class="view-badge">Experimental</span>'
-                : '';
+            item.setAttribute('data-view-id', candidate.id || candidate.name);
+            const statusBadge = !candidate?.supported
+                ? '<span class="view-badge">Unsupported</span>'
+                : experimentalViews.has(candidate?.rendererView)
+                    ? '<span class="view-badge">Experimental</span>'
+                    : '';
+            const label = candidate?.supported
+                ? (candidate.name || 'Unnamed view')
+                : `${candidate?.name || 'Unnamed view'} (Unsupported)`;
             item.innerHTML =
                 '<span class="codicon codicon-' + option.icon + ' icon"></span>' +
-                '<span class="view-text">' + option.shortLabel + '</span>' +
-                experimentalBadge;
+                '<span class="view-text">' + label + '</span>' +
+                statusBadge;
+            if (!candidate?.supported) {
+                const tooltipBits = [
+                    candidate?.viewType ? `Type: ${candidate.viewType}` : 'Unsupported SysML view type',
+                    candidate?.description || '',
+                ].filter(Boolean);
+                item.title = tooltipBits.join('\n');
+            }
+            if ((currentData?.selectedView || currentData?.selectedViewName) === (candidate.id || candidate.name)
+                || currentData?.selectedViewName === candidate.name) {
+                item.classList.add('active');
+            }
             item.addEventListener('click', (e) => {
-                const selectedView = e.currentTarget.getAttribute('data-view');
+                const selectedView = e.currentTarget.getAttribute('data-view-id');
                 viewDropdownMenu.classList.remove('show');
                 if (selectedView) {
-                    changeView(selectedView);
+                    vscode.postMessage({
+                        command: 'viewSelectionChanged',
+                        viewId: selectedView,
+                        rendererView: candidate?.supported ? candidate?.rendererView : undefined,
+                    });
                 }
             });
             viewDropdownMenu.appendChild(item);
@@ -301,7 +318,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
             const preparedData = prepareDataForView(currentData, 'interconnection-view');
             const partCount = Array.isArray(preparedData?.parts) ? preparedData.parts.length : 0;
             const connectorCount = Array.isArray(preparedData?.connectors) ? preparedData.connectors.length : 0;
-            const selectedRoot = currentData?.selectedPackageName || 'the selected package';
+            const selectedRoot = currentData?.selectedViewName || 'the selected view';
 
             if (partCount > 0 && connectorCount === 0) {
                 banner.className = 'experimental';
@@ -336,14 +353,14 @@ import { buildGeneralViewGraph } from './graphBuilders';
                     currentView: message.currentView || currentView,
                     graphNodes: message.graph?.nodes?.length || 0,
                     graphEdges: message.graph?.edges?.length || 0,
-                    packageCandidates: message.packageCandidates?.length || 0,
+                    viewCandidates: message.viewCandidates?.length || 0,
                 });
                 // Quick hash check - skip render if data unchanged
                 const newHash = quickHash({
                     graph: message.graph,
                     generalViewGraph: message.generalViewGraph,
                     ibd: message.ibd,
-                    selectedPackage: message.selectedPackage,
+                    selectedView: message.selectedView,
                 });
 
                 if (newHash === lastDataHash && currentData) {
@@ -370,30 +387,13 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 }
                 webviewLog('info', '[GENERAL][update-message]', {
                     incomingView: message.currentView || null,
-                    selectedPackageName: message.selectedPackageName || null,
+                    selectedViewName: message.selectedViewName || null,
                     graphNodes: message.graph?.nodes?.length || 0,
                     graphEdges: message.graph?.edges?.length || 0,
-                    packageCandidates: message.packageCandidates?.length || 0,
+                    viewCandidates: message.viewCandidates?.length || 0,
                 });
 
                 const effectiveView = message.currentView || currentView;
-                if (
-                    effectiveView === 'general-view'
-                    && typeof message.selectedPackageName === 'string'
-                    && message.selectedPackageName.length > 0
-                ) {
-                    const before = { name: selectedDiagramName, index: selectedDiagramIndex };
-                    selectedDiagramId = message.selectedPackage || message.selectedPackageName;
-                    selectedDiagramName = message.selectedPackageName;
-                    selectedDiagramPackagePath = null;
-                    selectedDiagramIndex = 0;
-                    logSelectionTransition('message.update.selectedPackage', before, {
-                        selectedPackageName: message.selectedPackageName,
-                    });
-                } else if (effectiveView === 'general-view' && !message.selectedPackage && selectedDiagramName === 'All Packages') {
-                    selectedDiagramIndex = 0;
-                }
-
                 updateActiveViewButton(currentView); // Highlight current view
                 try {
                     renderVisualization(currentView);
@@ -422,16 +422,8 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 }
                 break;
             case 'setRequirementsVisibleForTest':
-                if (typeof message.enabled === 'boolean') {
-                    if (message.enabled) {
-                        enabledGeneralConcerns.add('requirements');
-                    } else {
-                        enabledGeneralConcerns.delete('requirements');
-                    }
-                    renderGeneralChips();
-                    if (currentView === 'general-view') {
-                        renderVisualization('general-view', false);
-                    }
+                if (currentView === 'general-view') {
+                    renderVisualization('general-view', false);
                 }
                 break;
             case 'export':
@@ -778,107 +770,13 @@ import { buildGeneralViewGraph } from './graphBuilders';
         d3.selectAll('.hierarchy-cell').style('opacity', null);
     }
 
-    function renderGeneralChips(typeStats = {}) {
-        const container = document.getElementById('general-chips');
-        if (!container) return;
-        container.innerHTML = '';
-        if (currentView !== 'general-view') return;
-
-        const concernStats = new Map();
-        GENERAL_VIEW_CONCERNS.forEach((concern) => {
-            const count = concern.categories.reduce((total, categoryId) => total + (Number(typeStats?.[categoryId]) || 0), 0);
-            concernStats.set(concern.id, count);
-        });
-
-        const concernRow = document.createElement('div');
-        concernRow.className = 'general-presets';
-
-        GENERAL_VIEW_CONCERNS.forEach((concern) => {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'general-preset-btn';
-            if (enabledGeneralConcerns.has(concern.id)) {
-                button.classList.add('active');
-            }
-            button.style.setProperty('--general-chip-accent', concern.color);
-            button.setAttribute('data-concern-id', concern.id);
-            button.setAttribute(
-                'title',
-                enabledGeneralConcerns.has(concern.id)
-                    ? `Hide ${concern.label.toLowerCase()} elements`
-                    : `Show ${concern.label.toLowerCase()} elements`
-            );
-            const count = concernStats.get(concern.id);
-            button.innerHTML = `<span>${concern.label}</span><span class="general-preset-count">${count}</span>`;
-            button.addEventListener('click', async () => {
-                if (enabledGeneralConcerns.has(concern.id)) {
-                    enabledGeneralConcerns.delete(concern.id);
-                } else {
-                    enabledGeneralConcerns.add(concern.id);
-                }
-                renderGeneralChips(typeStats);
-                if (currentView === 'general-view') {
-                    await renderVisualization('general-view', false);
-                }
-            });
-            concernRow.appendChild(button);
-        });
-
-        const actionsRow = document.createElement('div');
-        actionsRow.className = 'general-presets';
-
-        const showAllButton = document.createElement('button');
-        showAllButton.type = 'button';
-        showAllButton.className = 'general-preset-btn general-preset-btn-secondary';
-        const allEnabled = enabledGeneralConcerns.size === defaultGeneralConcernIds.size;
-        if (allEnabled) {
-            showAllButton.classList.add('active');
-        }
-        showAllButton.textContent = 'Show all';
-        showAllButton.title = 'Enable all General View concerns';
-        showAllButton.addEventListener('click', async () => {
-            enabledGeneralConcerns = new Set(defaultGeneralConcernIds);
-            renderGeneralChips(typeStats);
-            if (currentView === 'general-view') {
-                await renderVisualization('general-view', false);
-            }
-        });
-        actionsRow.appendChild(showAllButton);
-
-        const hideAllButton = document.createElement('button');
-        hideAllButton.type = 'button';
-        hideAllButton.className = 'general-preset-btn general-preset-btn-secondary';
-        const allDisabled = enabledGeneralConcerns.size === 0;
-        if (allDisabled) {
-            hideAllButton.classList.add('active');
-        }
-        hideAllButton.textContent = 'Hide all';
-        hideAllButton.title = 'Disable all General View concerns';
-        hideAllButton.addEventListener('click', async () => {
-            enabledGeneralConcerns = new Set();
-            renderGeneralChips(typeStats);
-            if (currentView === 'general-view') {
-                await renderVisualization('general-view', false);
-            }
-        });
-        actionsRow.appendChild(hideAllButton);
-
-        container.appendChild(concernRow);
-        container.appendChild(actionsRow);
-    }
-
-    function getCategoryForType(typeLower) {
-        for (const cat of GENERAL_VIEW_CATEGORIES) {
-            if (cat.keywords.some(kw => typeLower.includes(kw))) {
-                return cat.id;
-            }
-        }
-        return 'other';
+    function renderGeneralChips(_typeStats = {}) {
+        // General View filtering is defined in SysML view code, not in the webview UI.
     }
 
     function buildGeneralViewGraphForView(dataOrElements, relationships = []) {
         return buildGeneralViewGraph(dataOrElements, relationships, {
-            enabledGeneralCategories: getGeneralViewEnabledCategoryIds(enabledGeneralConcerns),
+            enabledGeneralCategories: new Set(GENERAL_VIEW_CATEGORIES.map((category) => category.id)),
             webviewLog
         });
     }
@@ -1053,12 +951,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
     }
 
     function updateActiveViewButton(activeView) {
-        // Show/hide appropriate chip containers based on active view
-        const generalChips = document.getElementById('general-chips');
-        if (generalChips) {
-            generalChips.style.display = activeView === 'general-view' ? 'flex' : 'none';
-        }
-
         // Show/hide layout direction button for specific views
         const layoutDirBtn = document.getElementById('layout-direction-btn');
         if (layoutDirBtn) {
@@ -1067,27 +959,36 @@ import { buildGeneralViewGraph } from './graphBuilders';
         }
 
         const dropdownButton = document.getElementById('view-dropdown-btn');
-        const dropdownConfig = VIEW_OPTIONS[activeView];
+        const selectedViewName = currentData?.selectedViewName || null;
+        const selectedCandidate = Array.isArray(currentData?.viewCandidates)
+            ? currentData.viewCandidates.find((candidate: any) => candidate.id === currentData?.selectedView)
+            : null;
+        const dropdownConfig = VIEW_OPTIONS[selectedCandidate?.rendererView || activeView];
         if (dropdownButton) {
-            if (dropdownConfig) {
+            if (selectedViewName) {
                 dropdownButton.classList.add('view-btn-active');
-                dropdownButton.innerHTML = '<span class="codicon codicon-chevron-down" style="margin-right: 2px;"></span><span>' + dropdownConfig.label + '</span>';
+                dropdownButton.innerHTML =
+                    '<span class="codicon codicon-chevron-down" style="margin-right: 2px;"></span><span>' +
+                    selectedViewName +
+                    '</span>';
+                dropdownButton.title = dropdownConfig
+                    ? `${selectedViewName} (${dropdownConfig.label})`
+                    : selectedViewName;
             } else {
                 dropdownButton.classList.remove('view-btn-active');
-                dropdownButton.innerHTML = '<span class="codicon codicon-chevron-down" style="margin-right: 2px;"></span><span>Views</span>';
+                dropdownButton.innerHTML = '<span class="codicon codicon-chevron-down" style="margin-right: 2px;"></span><span>Select SysML View</span>';
+                dropdownButton.title = 'Select a defined SysML view';
             }
         }
 
         document.querySelectorAll('.view-dropdown-item').forEach(item => {
-            const isMatch = item.getAttribute('data-view') === activeView;
+            const isMatch = item.getAttribute('data-view-id') === currentData?.selectedView;
             item.classList.toggle('active', isMatch);
         });
 
         // Show/hide state layout button based on view
         updateLayoutDirectionButton(activeView);
-
-        // Update diagram selector visibility and content based on view
-        updateDiagramSelector(activeView);
+        populateViewDropdown();
         updateViewStatusBanner(activeView);
     }
 
@@ -1117,7 +1018,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
             return;
         }
 
-        const preparedData = prepareDataForView(currentData, activeView);
         const buildCountSummary = (item: any, kind: string) => {
             if (!item) return '';
             const packageText = item.packagePath ? item.packagePath : '';
@@ -1141,43 +1041,19 @@ import { buildGeneralViewGraph } from './graphBuilders';
             return [packageText, ...metricParts.filter(Boolean)].filter(Boolean).join(' | ');
         };
         const normalizeSelectorItems = () => {
-            if (activeView === 'general-view') {
-                const packageCandidates = Array.isArray(currentData?.packageCandidates)
-                    ? currentData.packageCandidates
-                    : [];
-                return {
-                    labelText: 'Package',
-                    items: [
-                        { id: 'all-packages', name: 'All Packages', label: 'All Packages', isAll: true },
-                        ...packageCandidates.map((candidate: any) => ({
-                            id: candidate.id || candidate.name,
-                            name: candidate.name,
-                            label: candidate.name,
-                            packageRef: candidate.id || candidate.name,
-                            packagePath: '',
-                        })),
-                    ],
-                };
-            }
-            if (activeView === 'interconnection-view') {
-                const roots = Array.isArray(preparedData?.ibdRootCandidates)
-                    ? preparedData.ibdRootCandidates
-                    : [];
-                return { labelText: 'Root', items: roots };
-            }
-            if (activeView === 'state-transition-view') {
-                const machines = Array.isArray(preparedData?.stateMachineCandidates)
-                    ? preparedData.stateMachineCandidates
-                    : [];
-                return { labelText: 'State Machine', items: machines };
-            }
-            if (activeView === 'action-flow-view') {
-                const diagrams = Array.isArray(preparedData?.activityDiagramCandidates)
-                    ? preparedData.activityDiagramCandidates
-                    : [];
-                return { labelText: 'Action', items: diagrams };
-            }
-            return { labelText: 'Item', items: [] };
+            const viewCandidates = Array.isArray(currentData?.viewCandidates)
+                ? currentData.viewCandidates
+                : [];
+            return {
+                labelText: 'View',
+                items: viewCandidates.map((candidate: any) => ({
+                    id: candidate.id || candidate.name,
+                    name: candidate.name,
+                    label: candidate.name,
+                    description: candidate.description || '',
+                    packagePath: '',
+                })),
+            };
         };
         const { labelText, items } = normalizeSelectorItems();
         const diagrams = items.map((item: any, index: number) => ({
@@ -1261,13 +1137,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 if (pkgLabel) pkgLabel.textContent = `${labelText}: ${d.name || labelText}`;
                 setSelectorSummary(buildCountSummary(d, labelText));
                 pkgMenu.classList.remove('show');
-                if (activeView === 'general-view' && d.isAll) {
-                    vscode.postMessage({ command: 'clearPackageFilter' });
-                } else if (activeView === 'general-view') {
-                    vscode.postMessage({ command: 'packageFilterChanged', packageRef: d.packageRef || d.name });
-                } else {
-                    renderVisualization(activeView, false);
-                }
+                vscode.postMessage({ command: 'viewSelectionChanged', viewId: d.id || d.name });
             });
             pkgMenu.appendChild(item);
         });
@@ -1428,9 +1298,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
             });
         }
 
-        const dataForPrepare = view === 'interconnection-view' && selectedDiagramName
-            ? { ...baseData, selectedIbdRoot: selectedDiagramName }
-            : baseData;
+        const dataForPrepare = baseData;
         const prepareStartedAt = Date.now();
         const dataToRender = prepareDataForView(dataForPrepare, view);
         const prepareMs = Date.now() - prepareStartedAt;
@@ -1448,7 +1316,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
                     hasIbd: !!ibd,
                     defaultRoot: ibd?.defaultRoot ?? null,
                     rootCandidates: Array.isArray(ibd?.rootCandidates) ? ibd.rootCandidates : null,
-                    selectedPackageName: currentData?.selectedPackageName ?? null,
+                    selectedViewName: currentData?.selectedViewName ?? null,
                     partsCount: Array.isArray((dataToRender as any)?.parts) ? (dataToRender as any).parts.length : null,
                     connectorsCount: Array.isArray((dataToRender as any)?.connectors) ? (dataToRender as any).connectors.length : null,
                     deepPropulsionCount: deepPropulsion.length,

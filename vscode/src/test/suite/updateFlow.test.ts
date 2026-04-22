@@ -38,7 +38,7 @@ describe("createUpdateVisualizationFlow", () => {
           version: 1,
           view: "general-view",
           workspaceRootUri: "file:///workspace",
-          packageCandidates: [],
+          viewCandidates: [],
           graph: { nodes: [], edges: [] },
           stats: {
             totalElements: 0,
@@ -58,7 +58,8 @@ describe("createUpdateVisualizationFlow", () => {
       getWorkspaceRootUri: () => "file:///workspace",
       lspModelProvider: provider,
       getCurrentView: () => "general-view",
-      getSelectedPackage: () => undefined,
+      getSelectedView: () => undefined,
+      setCurrentView: () => {},
       getIsNavigating: () => false,
       getNeedsUpdateWhenVisible: () => false,
       getLastContentHash: () => "",
@@ -85,7 +86,7 @@ describe("createUpdateVisualizationFlow", () => {
           version: 1,
           view: "general-view",
           workspaceRootUri: "file:///workspace",
-          packageCandidates: [],
+          viewCandidates: [],
           graph: { nodes: [], edges: [] },
           stats: {
             totalElements: 0,
@@ -105,7 +106,8 @@ describe("createUpdateVisualizationFlow", () => {
       getWorkspaceRootUri: () => "file:///workspace",
       lspModelProvider: provider,
       getCurrentView: () => "general-view",
-      getSelectedPackage: () => undefined,
+      getSelectedView: () => undefined,
+      setCurrentView: () => {},
       getIsNavigating: () => false,
       getNeedsUpdateWhenVisible: () => false,
       getLastContentHash: () => "",
@@ -123,18 +125,18 @@ describe("createUpdateVisualizationFlow", () => {
   it("allows a later view change to trigger a new fetch after bootstrap", async () => {
     let getVisualizationCount = 0;
     let currentView = "general-view";
-    const requests: Array<{ workspaceRootUri: string; view: string; packageFilter?: { kind: string; package?: string } }> = [];
+    const requests: Array<{ workspaceRootUri: string; view: string; selectedView?: string }> = [];
     const { panel } = createMockPanel();
     const document = createMockDocument("file:///drone.sysml");
     const provider = {
-      getVisualization: async (workspaceRootUri: string, view: string, packageFilter?: { kind: string; package?: string }) => {
+      getVisualization: async (workspaceRootUri: string, view: string, selectedView?: string) => {
         getVisualizationCount += 1;
-        requests.push({ workspaceRootUri, view, packageFilter });
+        requests.push({ workspaceRootUri, view, selectedView });
         return {
           version: 1,
           view,
           workspaceRootUri,
-          packageCandidates: [],
+          viewCandidates: [],
           graph: { nodes: [], edges: [] },
           stats: {
             totalElements: 0,
@@ -154,7 +156,8 @@ describe("createUpdateVisualizationFlow", () => {
       getWorkspaceRootUri: () => "file:///workspace",
       lspModelProvider: provider,
       getCurrentView: () => currentView,
-      getSelectedPackage: () => undefined,
+      getSelectedView: () => undefined,
+      setCurrentView: (view: string) => { currentView = view; },
       getIsNavigating: () => false,
       getNeedsUpdateWhenVisible: () => false,
       getLastContentHash: () => "",
@@ -171,12 +174,12 @@ describe("createUpdateVisualizationFlow", () => {
       {
         workspaceRootUri: "file:///workspace",
         view: "general-view",
-        packageFilter: { kind: "all" },
+        selectedView: undefined,
       },
       {
         workspaceRootUri: "file:///workspace",
         view: "action-flow-view",
-        packageFilter: { kind: "all" },
+        selectedView: undefined,
       },
     ]);
   });
