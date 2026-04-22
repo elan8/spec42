@@ -975,6 +975,10 @@ fn renderer_empty_state_message(view: &str) -> String {
     }
 }
 
+fn no_defined_views_message() -> String {
+    "Define a SysML view with expose (and optional filter) to use the visualizer.".to_string()
+}
+
 fn unsupported_view_type_message(view_type: Option<&str>) -> String {
     match view_type.filter(|value| !value.trim().is_empty()) {
         Some(view_type) => format!(
@@ -1121,7 +1125,7 @@ pub(crate) fn build_sysml_visualization_response(
             view_candidates: Vec::new(),
             selected_view: None,
             selected_view_name: None,
-            empty_state_message: Some(renderer_empty_state_message(view)),
+            empty_state_message: Some(no_defined_views_message()),
             package_groups: Some(Vec::new()),
             graph: Some(empty_graph.clone()),
             general_view_graph: Some(empty_graph.clone()),

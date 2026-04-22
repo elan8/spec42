@@ -563,7 +563,7 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
     const cyEdges = elements.filter((el: any) => el.group === 'edges');
 
     if (cyNodes.length === 0) {
-        renderPlaceholder(width, height, 'General View',
+        renderPlaceholder(width, height, data?.selectedViewName || 'SysML Visualizer',
             data?.emptyStateMessage || 'No matching elements to display.',
             data);
         return;
