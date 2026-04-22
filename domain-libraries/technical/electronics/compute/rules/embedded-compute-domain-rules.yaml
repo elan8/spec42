@@ -1,0 +1,13 @@
+version: 1
+library: EmbeddedComputeDomain
+rules:
+  - id: CMP001
+    severity: warning
+    category: compute
+    title: Embedded compute unit should define compute class
+    description: EmbeddedComputeUnit should define computeClass to indicate expected processing capability.
+  - id: CMP002
+    severity: error
+    category: firmware
+    title: Firmware image slot should define version
+    description: FirmwareImageSlot should define version for update orchestration and rollback tracking.

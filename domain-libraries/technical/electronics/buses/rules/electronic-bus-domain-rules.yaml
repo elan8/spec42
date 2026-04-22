@@ -1,0 +1,13 @@
+version: 1
+library: ElectronicBusDomain
+rules:
+  - id: BUS001
+    severity: error
+    category: bus
+    title: Electronic bus should define type and speed class
+    description: ElectronicBus should define busType and speedClass for electrical and protocol compatibility checks.
+  - id: BUS002
+    severity: warning
+    category: topology
+    title: Electronic bus should define topology class
+    description: ElectronicBus should define topologyClass to capture integration constraints such as point-to-point or multi-drop.

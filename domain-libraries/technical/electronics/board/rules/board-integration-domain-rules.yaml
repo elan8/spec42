@@ -1,0 +1,13 @@
+version: 1
+library: BoardIntegrationDomain
+rules:
+  - id: BRD001
+    severity: warning
+    category: board
+    title: Board assembly should define layer count
+    description: BoardAssembly should define layerCount to document routing and manufacturability assumptions.
+  - id: BRD002
+    severity: warning
+    category: connector
+    title: Board connector should define connector type
+    description: BoardConnector should define connectorType for harness compatibility and integration traceability.

@@ -1,0 +1,13 @@
+version: 1
+library: ElectricalPowerDomain
+rules:
+  - id: PWR001
+    severity: error
+    category: power-rail
+    title: Power rail should define voltage and current budget
+    description: PowerRail should define voltage and currentBudget so power integrity and capacity checks are possible.
+  - id: PWR002
+    severity: warning
+    category: conversion
+    title: Regulators and converters should define efficiency class
+    description: VoltageRegulator and DcDcConverter should define efficiencyClass for thermal and battery-life estimates.

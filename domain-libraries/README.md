@@ -25,6 +25,14 @@ This directory organizes reusable libraries by role so technical capability libr
   - `transport`
   - `device-bus`
   - `industrial`
+- `technical/electronics/`
+  - `electronics-core`
+  - `power`
+  - `compute`
+  - `io`
+  - `buses`
+  - `board`
+  - `examples`
 - `cross-cutting/software/`
   - `delivery-ops`
   - `security`

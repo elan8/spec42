@@ -1,0 +1,13 @@
+version: 1
+library: ElectronicIoDomain
+rules:
+  - id: IO001
+    severity: warning
+    category: io-channel
+    title: I/O channel should define direction and signal kind
+    description: IoChannel should define direction and signalKind for deterministic interface compatibility.
+  - id: IO002
+    severity: warning
+    category: analog
+    title: Analog I/O channel should define resolution and sampling classes
+    description: AnalogIoChannel should define resolutionClass and samplingClass for signal-quality expectations.

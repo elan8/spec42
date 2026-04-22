@@ -1,0 +1,13 @@
+version: 1
+library: ElectronicsCore
+rules:
+  - id: ELEC001
+    severity: warning
+    category: component
+    title: Electronics component should define a component name
+    description: ElectronicsComponent instances should define componentName for BOM and traceability workflows.
+  - id: ELEC002
+    severity: warning
+    category: interface
+    title: Electrical interface should define signal and voltage classes
+    description: ElectricalInterface should define signalKind and voltageClass for interoperability checks.

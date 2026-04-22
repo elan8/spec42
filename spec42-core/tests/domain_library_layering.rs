@@ -70,6 +70,27 @@ fn package_set_for(root: &Path) -> BTreeSet<String> {
     packages
 }
 
+fn collect_import_violations(root: &Path, forbidden_packages: &BTreeSet<String>) -> Vec<String> {
+    let mut files = Vec::new();
+    collect_sysml_files(root, &mut files);
+    let mut violations = Vec::new();
+    for file in files {
+        let Ok(content) = fs::read_to_string(&file) else {
+            continue;
+        };
+        for import_target in parse_import_targets(&content) {
+            if forbidden_packages.contains(&import_target) {
+                violations.push(format!(
+                    "{} imports forbidden package {}",
+                    file.display(),
+                    import_target
+                ));
+            }
+        }
+    }
+    violations
+}
+
 #[test]
 fn technical_and_cross_cutting_do_not_import_business_packages() {
     let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
@@ -87,27 +108,39 @@ fn technical_and_cross_cutting_do_not_import_business_packages() {
 
     let mut violating_imports = Vec::new();
     for layer_root in [&technical_root, &cross_cutting_root] {
-        let mut files = Vec::new();
-        collect_sysml_files(layer_root, &mut files);
-        for file in files {
-            let Ok(content) = fs::read_to_string(&file) else {
-                continue;
-            };
-            for import_target in parse_import_targets(&content) {
-                if business_packages.contains(&import_target) {
-                    violating_imports.push(format!(
-                        "{} imports business package {}",
-                        file.display(),
-                        import_target
-                    ));
-                }
-            }
-        }
+        violating_imports.extend(collect_import_violations(layer_root, &business_packages));
     }
 
     assert!(
         violating_imports.is_empty(),
         "Layering violations found:\n{}",
         violating_imports.join("\n")
+    );
+}
+
+#[test]
+fn technical_electronics_does_not_import_business_packages() {
+    let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
+    let domain_root = repo_root.join("domain-libraries");
+    let electronics_root = domain_root.join("technical").join("electronics");
+    let business_root = domain_root.join("business");
+
+    let business_packages = package_set_for(&business_root);
+    assert!(
+        !business_packages.is_empty(),
+        "expected at least one business package under {}",
+        business_root.display()
+    );
+    assert!(
+        electronics_root.is_dir(),
+        "expected electronics domain directory at {}",
+        electronics_root.display()
+    );
+
+    let violations = collect_import_violations(&electronics_root, &business_packages);
+    assert!(
+        violations.is_empty(),
+        "Electronics layering violations found:\n{}",
+        violations.join("\n")
     );
 }
