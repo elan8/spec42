@@ -978,34 +978,6 @@ fn unresolved_specializes_reference_is_emitted_for_multi_base_with_missing_targe
 }
 
 #[test]
-fn inspection_rover_example_emits_unresolved_specializes_without_library_context() {
-    let fixture_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("..")
-        .join("domain-libraries")
-        .join("business")
-        .join("robotics")
-        .join("examples")
-        .join("inspection-rover")
-        .join("inspection-rover.sysml");
-    let original = fs::read_to_string(&fixture_path).expect("read inspection rover fixture");
-    // The current parser/graph pipeline resolves specialization on symbolic `:>` syntax.
-    // Normalize the scenario content for deterministic semantic validation.
-    let normalized = original.replace(" specializes ", " :> ");
-    let diagnostics = validate_inline_sysml("inspection-rover-normalized.sysml", &normalized);
-    let has_unresolved_specializes = diagnostics.iter().any(|diagnostic| {
-        diagnostic.source.as_deref() == Some("semantic")
-            && diagnostic.code.as_ref()
-                == Some(&tower_lsp::lsp_types::NumberOrString::String(
-                    "unresolved_specializes_reference".to_string(),
-                ))
-    });
-    assert!(
-        has_unresolved_specializes,
-        "expected unresolved_specializes_reference diagnostics for inspection-rover scenario without library paths"
-    );
-}
-
-#[test]
 fn implicit_redefinition_without_operator_emits_error_for_inherited_features() {
     let content = r#"
         package P {

@@ -47,7 +47,6 @@ This directory organizes reusable libraries by role so technical capability libr
   - `simulation`
   - `operations`
   - `safety-assurance`
-  - `ros2-overlay`
   - `examples`
 
 ## Dependency Direction

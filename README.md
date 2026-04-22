@@ -18,7 +18,6 @@ Language tooling for [SysML v2](https://www.omg.org/sysml/sysmlv2/) and KerML. `
 - `spec42 lsp`: run the language server over stdio for editors
 - `spec42 check <path>`: validate a file or recursively validate a folder in CI or local automation
 - `spec42 doctor`: inspect resolved config, library paths, and standard-library state
-- `spec42 generate ros2 ...`: generate an `ament_python` ROS2 scaffold from SysML models
 - `spec42 stdlib ...`: inspect or print the resolved SysML standard library; `clear-cache` removes materialized files (they are re-created from the embedded copy on next use)
 
 Bare `spec42` still starts the LSP server for backward compatibility with existing editor integrations.
@@ -39,7 +38,6 @@ spec42 --version
 spec42 doctor
 spec42 check ./examples/timer/KitchenTimer.sysml
 spec42 check ./workspace --format json
-spec42 generate ros2 --input ./domain-libraries/business/robotics/examples/inspection-rover/inspection-rover.sysml --output ./generated
 spec42 stdlib status
 spec42 stdlib path
 ```
@@ -61,32 +59,6 @@ spec42 check ./models/timer/KitchenTimer.sysml
 spec42 check ./models/workspace --workspace-root ./models/workspace
 spec42 check ./models/workspace --format json
 ```
-
-### ROS2 Generation
-
-`spec42 generate ros2` runs validation preflight, extracts ROS2 generation data from typed SysML model elements, and emits a deterministic `ament_python` package scaffold.
-
-Examples:
-
-```bash
-spec42 generate ros2 --input ./domain-libraries/business/robotics/examples/inspection-rover/inspection-rover.sysml --output ./generated
-spec42 generate ros2 --input ./domain-libraries/business/robotics/examples/inspection-rover --output ./generated --package-name inspection_rover_bringup --force
-spec42 generate ros2 --input ./domain-libraries/business/robotics/examples/inspection-rover/inspection-rover.sysml --output ./generated --dry-run
-```
-
-Generated outputs include:
-
-- `package.xml`, `setup.py`, `setup.cfg`, and package/resource boilerplate
-- `launch/*.launch.py` from `RosLaunchDescription` models
-- `config/*.yaml` parameter files from `RosParameterProfile` + `RosParameter` models
-- interface placeholders when modeled (`msg/srv/action`)
-- `traceability.json` linking generated artifacts to model element references
-
-Failure modes:
-
-- validation errors stop generation and return a non-zero exit code
-- existing output directories require `--force` unless `--dry-run` is used
-- missing modeled fields produce placeholder artifacts when possible and warnings in command output
 
 ### Standard Library
 
@@ -151,11 +123,6 @@ cargo build --target wasm32-wasip2 --release
 ```
 
 For development details, see [DEVELOPMENT.md](DEVELOPMENT.md). For troubleshooting, see [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md). For extension usage and settings, see [vscode/README.md](vscode/README.md).
-
-Related ROS2 intent docs:
-
-- [ROS2 MVP Spec](internal_docs/ROS2_MVP_SPEC.md)
-- [ROS2 Executable Model Pattern](internal_docs/ROS2_EXECUTABLE_MODEL_PATTERN.md)
 
 ## License
 
