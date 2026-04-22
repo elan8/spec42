@@ -269,4 +269,12 @@ package KitchenTimer {
 		runtime >= capacity / loadCurrent
 	}
 
+	view structure : GeneralView{
+		expose KitchenTimer;
+	}
+
+	view connections : InterconnectionView{
+		expose KitchenTimer;
+	}
+
 }

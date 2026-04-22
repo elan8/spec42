@@ -169,4 +169,12 @@ package ProgressiveDeliveryExample {
 
     allocate CheckoutCanary to ProductionCluster;
     allocate CheckoutPrimary to ProductionCluster;
+
+    view structure : GeneralView {
+        expose ProgressiveDeliverySystem;
+    }
+
+    view connections : InterconnectionView {
+        expose ProgressiveDeliverySystem;
+    }
 }

@@ -199,4 +199,12 @@ package CommercePlatformExample {
     allocate PricingService to CommerceCluster;
     allocate OrdersDeployment to CommerceCluster;
     allocate PricingDeployment to CommerceCluster;
+
+    view structure : GeneralView {
+        expose CommercePlatformSystem;
+    }
+
+    view connections : InterconnectionView {
+        expose CommercePlatformSystem;
+    }
 }

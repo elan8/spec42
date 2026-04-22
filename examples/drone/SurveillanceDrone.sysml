@@ -546,6 +546,7 @@ package SurveillanceDrone {
 		return flightTime : Real;
 		capacity / currentDraw
 	}
+
 }
 
 

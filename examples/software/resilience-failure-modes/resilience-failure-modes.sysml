@@ -165,4 +165,12 @@ package ResilienceFailureModesExample {
     allocate RecoveryWorker to RuntimeCluster;
     allocate CheckoutDeployment to RuntimeCluster;
     allocate PaymentsDeployment to RuntimeCluster;
+
+    view structure : GeneralView {
+        expose ResilienceSystem;
+    }
+
+    view connections : InterconnectionView {
+        expose ResilienceSystem;
+    }
 }

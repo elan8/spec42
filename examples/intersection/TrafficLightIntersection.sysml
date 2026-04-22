@@ -236,4 +236,12 @@ package TrafficLightIntersection {
 		yellowTime >= clearanceDistance / approachSpeed
 	}
 
+	view structure : GeneralView{
+		expose TrafficLightIntersection;
+	}
+
+	view connections : InterconnectionView{
+		expose TrafficLightIntersection;
+	}
+
 }

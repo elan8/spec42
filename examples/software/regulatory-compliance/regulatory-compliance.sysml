@@ -181,4 +181,12 @@ package RegulatoryComplianceExample {
 
     allocate ProductPackage to AuditRegion;
     allocate DeliveryPipelineCra to AuditRegion;
+
+    view structure : GeneralView {
+        expose RegulatoryComplianceSystem;
+    }
+
+    view connections : InterconnectionView {
+        expose RegulatoryComplianceSystem;
+    }
 }

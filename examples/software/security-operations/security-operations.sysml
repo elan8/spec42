@@ -138,4 +138,12 @@ package SecurityOperationsExample {
 
     allocate PaymentsService to SecurityOpsCluster;
     allocate PaymentsDeployment to SecurityOpsCluster;
+
+    view structure : GeneralView {
+        expose SecurityOperationsSystem;
+    }
+
+    view connections : InterconnectionView {
+        expose SecurityOperationsSystem;
+    }
 }
