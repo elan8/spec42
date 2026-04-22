@@ -5,6 +5,7 @@ const os = require("os");
 const path = require("path");
 const {
   downloadAndUnzipVSCode,
+  resolveCliPathFromVSCodeExecutablePath,
   runTests,
 } = require("@vscode/test-electron");
 const vscodeTestVersion = process.env.VSCODE_TEST_VERSION || "1.85.0";
@@ -53,6 +54,15 @@ function resolveSingleFileGlob(input, cwd) {
 
 function runCodeCli(cliPath, args) {
   cp.execFileSync(cliPath, args, { stdio: "inherit" });
+}
+
+function resolveCodeCliPath(vscodeExecutablePath) {
+  // On Linux/macOS, use the dedicated CLI entrypoint to avoid launching Electron.
+  if (process.platform !== "win32") {
+    return resolveCliPathFromVSCodeExecutablePath(vscodeExecutablePath);
+  }
+  // On Windows, call Code.exe directly with CLI args.
+  return vscodeExecutablePath;
 }
 
 function resolveVsix(input, cwd) {
@@ -148,8 +158,9 @@ async function main() {
   writeSmokeTestHost(tempDir);
 
   const vscodeExecutablePath = await downloadAndUnzipVSCode(vscodeTestVersion);
+  const codeCliPath = resolveCodeCliPath(vscodeExecutablePath);
 
-  runCodeCli(vscodeExecutablePath, [
+  runCodeCli(codeCliPath, [
     "--user-data-dir",
     tempUserDataDir,
     "--extensions-dir",
@@ -158,7 +169,7 @@ async function main() {
     vsixPath,
     "--force",
   ]);
-  runCodeCli(vscodeExecutablePath, [
+  runCodeCli(codeCliPath, [
     "--user-data-dir",
     tempUserDataDir,
     "--extensions-dir",
