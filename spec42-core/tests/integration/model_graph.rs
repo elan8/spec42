@@ -1,6 +1,6 @@
 //! sysml/model graph-focused integration tests.
 
-use super::harness::{next_id, read_message, read_response, send_message, spawn_server};
+use super::harness::{lsp_barrier, next_id, read_message, read_response, send_message, spawn_server};
 
 /// sysml/model with scope ["graph"] returns nodes and edges after didOpen.
 /// Validates that the semantic graph is built and serialized correctly.
@@ -40,7 +40,7 @@ fn lsp_sysml_model_graph() {
         }
     });
     send_message(&mut stdin, &did_open.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(80));
+    lsp_barrier(&mut stdin, &mut stdout);
 
     let model_id = next_id();
     let model_req = serde_json::json!({
@@ -145,7 +145,7 @@ fn lsp_sysml_model_graph_includes_feature_and_classifier_decls() {
         }
     });
     send_message(&mut stdin, &did_open.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(80));
+    lsp_barrier(&mut stdin, &mut stdout);
 
     let model_id = next_id();
     let model_req = serde_json::json!({

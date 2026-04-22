@@ -87,6 +87,25 @@ pub fn next_id() -> i64 {
     NEXT_ID.fetch_add(1, Ordering::SeqCst)
 }
 
+/// Synchronization barrier for tests that use raw stdin/stdout helpers.
+///
+/// Sends a cheap request and waits for the response so prior notifications
+/// (such as didOpen/didChange) are processed before assertions.
+pub fn lsp_barrier(
+    stdin: &mut std::process::ChildStdin,
+    stdout: &mut std::process::ChildStdout,
+) {
+    let id = next_id();
+    let req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": id,
+        "method": "workspace/symbol",
+        "params": { "query": "" }
+    });
+    send_message(stdin, &req.to_string());
+    let _ = read_response(stdout, id).expect("workspace barrier response");
+}
+
 pub struct TestSession {
     child: Child,
     stdin: std::process::ChildStdin,

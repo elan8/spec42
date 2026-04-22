@@ -1,6 +1,6 @@
 //! Rename integration tests.
 
-use super::harness::{next_id, read_message, read_response, send_message, spawn_server};
+use super::harness::{lsp_barrier, next_id, read_message, read_response, send_message, spawn_server};
 
 /// Rename: prepareRename returns range; rename returns WorkspaceEdit updating all references.
 #[test]
@@ -49,7 +49,7 @@ fn lsp_rename() {
         }
     });
     send_message(&mut stdin, &did_open_use.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(80));
+    lsp_barrier(&mut stdin, &mut stdout);
 
     // prepareRename at "Foo" in def.sysml ("package P { part def Foo; }" -> Foo at line 0, char 21)
     let prep_id = next_id();

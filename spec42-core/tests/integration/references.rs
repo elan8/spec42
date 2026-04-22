@@ -1,6 +1,6 @@
 //! Find references integration tests.
 
-use super::harness::{next_id, read_message, read_response, send_message, spawn_server};
+use super::harness::{lsp_barrier, next_id, read_message, read_response, send_message, spawn_server};
 
 /// Cross-file references: find references to a symbol defined in one file and used in another.
 #[test]
@@ -49,7 +49,15 @@ fn lsp_cross_file_references() {
         }
     });
     send_message(&mut stdin, &did_open_use.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(80));
+    let barrier_id = next_id();
+    let barrier_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": barrier_id,
+        "method": "workspace/symbol",
+        "params": { "query": "" }
+    });
+    send_message(&mut stdin, &barrier_req.to_string());
+    let _ = read_response(&mut stdout, barrier_id).expect("workspace barrier response");
 
     // Find references at "Widget" in use.sysml (include_declaration = true -> def + use)
     let ref_id = next_id();
@@ -132,7 +140,7 @@ fn lsp_same_file_homonym_references_are_disambiguated_by_position() {
         }
     });
     send_message(&mut stdin, &did_open.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(80));
+    lsp_barrier(&mut stdin, &mut stdout);
 
     // Query references for Laptop::hdmi declaration (line 2).
     let ref_id = next_id();
@@ -220,7 +228,7 @@ fn lsp_dotted_usage_disambiguates_same_name_members() {
         }
     });
     send_message(&mut stdin, &did_open.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(80));
+    lsp_barrier(&mut stdin, &mut stdout);
 
     let ref_id = next_id();
     let ref_req = serde_json::json!({
@@ -315,7 +323,7 @@ fn lsp_same_short_name_in_library_is_not_counted_without_semantic_match() {
         }
     });
     send_message(&mut stdin, &did_open_library.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(80));
+    lsp_barrier(&mut stdin, &mut stdout);
 
     let ref_id = next_id();
     let ref_req = serde_json::json!({

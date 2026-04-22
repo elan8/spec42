@@ -1,6 +1,6 @@
 //! Hover integration tests.
 
-use super::harness::{next_id, read_message, read_response, send_message, spawn_server};
+use super::harness::{lsp_barrier, next_id, read_message, read_response, send_message, spawn_server};
 
 fn position_for(content: &str, needle: &str) -> (usize, usize) {
     for (line_index, line) in content.lines().enumerate() {
@@ -67,8 +67,7 @@ fn lsp_initialize_and_hover() {
         }
     });
     send_message(&mut stdin, &did_open.to_string());
-
-    std::thread::sleep(std::time::Duration::from_millis(50));
+    lsp_barrier(&mut stdin, &mut stdout);
 
     let hover_id = next_id();
     let hover_req = serde_json::json!({
@@ -157,7 +156,7 @@ fn lsp_hover_resolves_typed_usage_and_nested_symbols() {
         }
     });
     send_message(&mut stdin, &did_open.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(75));
+    lsp_barrier(&mut stdin, &mut stdout);
 
     let (usage_line, usage_char) = position_for(content, "frame :");
     let (type_line, type_char) = position_for(content, "PropulsionUnit;");
@@ -272,7 +271,7 @@ fn lsp_hover_uses_exact_symbol_under_cursor_within_typed_usage() {
         }
     });
     send_message(&mut stdin, &did_open.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(75));
+    lsp_barrier(&mut stdin, &mut stdout);
 
     let (usage_line, usage_char) = position_for_within(content, "part frame : DroneParts::Airframe;", "frame");
     let hover_usage_id = next_id();
@@ -393,7 +392,7 @@ fn lsp_hover_resolves_requirement_subject_in_context_instead_of_showing_ambiguou
         }
     });
     send_message(&mut stdin, &did_open.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(75));
+    lsp_barrier(&mut stdin, &mut stdout);
 
     let (line, character) = position_for_within(content, "subject communication;", "communication");
     let hover_id = next_id();
@@ -483,7 +482,7 @@ fn lsp_hover_returns_subject_declaration_hover_for_requirement_subject_name() {
         }
     });
     send_message(&mut stdin, &did_open.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(75));
+    lsp_barrier(&mut stdin, &mut stdout);
 
     let (line, character) =
         position_for_within(content, "subject drone : SurveillanceQuadrotorDrone;", "drone");
@@ -571,7 +570,7 @@ fn lsp_hover_resolves_port_and_attribute_type_references() {
         }
     });
     send_message(&mut stdin, &did_open.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(75));
+    lsp_barrier(&mut stdin, &mut stdout);
 
     let (port_line, port_char) = position_for(content, "CommandPort;");
     let hover_port_id = next_id();
@@ -678,7 +677,15 @@ fn lsp_hover_resolves_public_reexported_type_reference() {
             .to_string(),
         );
     }
-    std::thread::sleep(std::time::Duration::from_millis(100));
+    let barrier_id = next_id();
+    let barrier_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": barrier_id,
+        "method": "workspace/symbol",
+        "params": { "query": "" }
+    });
+    send_message(&mut stdin, &barrier_req.to_string());
+    let _ = read_response(&mut stdout, barrier_id).expect("workspace barrier response");
 
     let hover_id = next_id();
     let hover_req = serde_json::json!({

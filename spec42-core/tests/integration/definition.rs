@@ -1,6 +1,6 @@
 //! Goto definition integration tests.
 
-use super::harness::{next_id, read_message, read_response, send_message, spawn_server};
+use super::harness::{lsp_barrier, next_id, read_message, read_response, send_message, spawn_server};
 
 #[test]
 fn lsp_goto_definition() {
@@ -38,7 +38,7 @@ fn lsp_goto_definition() {
         }
     });
     send_message(&mut stdin, &did_open.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(50));
+    lsp_barrier(&mut stdin, &mut stdout);
 
     // Go to definition on "A" (usage "part a : A" -> def A). Line 0, character after "part a : "
     let def_id = next_id();
@@ -117,7 +117,15 @@ fn lsp_cross_file_goto_definition() {
         }
     });
     send_message(&mut stdin, &did_open_use.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(80));
+    let barrier_id = next_id();
+    let barrier_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": barrier_id,
+        "method": "workspace/symbol",
+        "params": { "query": "" }
+    });
+    send_message(&mut stdin, &barrier_req.to_string());
+    let _ = read_response(&mut stdout, barrier_id).expect("workspace barrier response");
 
     // Go to definition on "Engine" in use.sysml (position at "Engine" in "part e : Engine")
     let def_id = next_id();
@@ -198,7 +206,7 @@ fn lsp_goto_definition_resolves_public_reexported_type() {
             .to_string(),
         );
     }
-    std::thread::sleep(std::time::Duration::from_millis(100));
+    lsp_barrier(&mut stdin, &mut stdout);
 
     let def_id = next_id();
     let def_req = serde_json::json!({
