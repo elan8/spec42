@@ -1,0 +1,8 @@
+version: 1
+library: IndustrialCommunicationDomain
+rules:
+  - id: INDCOM001
+    severity: warning
+    category: industrial-network
+    title: Industrial networks should define real-time class
+    description: IndustrialNetwork should specify real-time intent to support deterministic control-system analysis.

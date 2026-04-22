@@ -1,13 +1,12 @@
 package GrpcDomain {
-    import SoftwareCore::*;
-    import DistributedSystems::*;
+    import CommunicationCore::*;
     import SerializationDomain::*;
 
     attribute def MethodName;
 
-    part def GrpcService :> Service;
+    part def GrpcService :> CommunicationService;
 
-    part def GrpcMethod {
+    part def GrpcMethod :> CommunicationOperation {
         attribute methodName : MethodName;
     }
 

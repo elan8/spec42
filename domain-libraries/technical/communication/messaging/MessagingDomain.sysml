@@ -1,4 +1,5 @@
 package MessagingDomain {
+    import CommunicationCore::*;
     import SoftwareCore::*;
     import DistributedSystems::*;
     import SerializationDomain::*;
@@ -6,7 +7,7 @@ package MessagingDomain {
     attribute def DeliveryGuarantee;
     attribute def RetentionPolicy;
 
-    part def MessageChannel :> StreamChannel;
+    part def MessageChannel :> CommunicationChannel;
 
     part def EventStream :> MessageChannel {
         attribute retention : RetentionPolicy;
@@ -24,8 +25,7 @@ package MessagingDomain {
         attribute consumerName : Name;
     }
 
-    part def MessageBinding {
-        attribute bindingName : Name;
+    part def MessageBinding :> CommunicationBinding {
         attribute deliveryGuarantee : DeliveryGuarantee;
     }
 

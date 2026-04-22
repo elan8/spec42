@@ -1,0 +1,8 @@
+version: 1
+library: DeviceBusDomain
+rules:
+  - id: DBUS001
+    severity: warning
+    category: bus
+    title: Device bus channels should define speed class
+    description: DeviceBusChannel should identify the expected speed class for integration and compatibility checks.

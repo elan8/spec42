@@ -14,10 +14,17 @@ This directory organizes reusable libraries by role so technical capability libr
 - `technical/software/`
   - `software-core`
   - `distributed-systems`
-  - `api`
-  - `messaging`
   - `data`
   - `platform`
+- `technical/communication/`
+  - `core`
+  - `http`
+  - `grpc`
+  - `messaging`
+  - `streaming`
+  - `transport`
+  - `device-bus`
+  - `industrial`
 - `cross-cutting/software/`
   - `delivery-ops`
   - `security`

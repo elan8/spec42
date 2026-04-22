@@ -1,0 +1,8 @@
+version: 1
+library: TransportDomain
+rules:
+  - id: TRN001
+    severity: warning
+    category: transport
+    title: Transport link should define reliability intent
+    description: TransportLink should model reliability expectations such as reliable or best-effort.
