@@ -142,25 +142,62 @@ fn lsp_same_file_homonym_references_are_disambiguated_by_position() {
     send_message(&mut stdin, &did_open.to_string());
     lsp_barrier(&mut stdin, &mut stdout);
 
-    // Query references for Laptop::hdmi declaration (line 2).
-    let ref_id = next_id();
-    let ref_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": ref_id,
-        "method": "textDocument/references",
-        "params": {
-            "textDocument": { "uri": uri },
-            "position": { "line": 2, "character": 13 },
-            "context": { "includeDeclaration": true }
+    // Ensure this exact symbol position resolves before references lookup.
+    let mut hover_ready = false;
+    for _ in 0..20 {
+        let hover_id = next_id();
+        let hover_req = serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": hover_id,
+            "method": "textDocument/hover",
+            "params": {
+                "textDocument": { "uri": uri },
+                "position": { "line": 2, "character": 13 }
+            }
+        });
+        send_message(&mut stdin, &hover_req.to_string());
+        let hover_resp = read_response(&mut stdout, hover_id).expect("hover response");
+        let hover_json: serde_json::Value =
+            serde_json::from_str(&hover_resp).expect("parse hover response");
+        if !hover_json["result"].is_null() {
+            hover_ready = true;
+            break;
         }
-    });
-    send_message(&mut stdin, &ref_req.to_string());
-    let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
-    let ref_json: serde_json::Value =
-        serde_json::from_str(&ref_resp).expect("parse references response");
-    let locs = ref_json["result"]
-        .as_array()
-        .expect("references should return array");
+        lsp_barrier(&mut stdin, &mut stdout);
+    }
+    assert!(
+        hover_ready,
+        "symbol under cursor did not become hover-resolvable before references request"
+    );
+
+    // Query references for Laptop::hdmi declaration (line 2).
+    let mut collected_locs: Vec<serde_json::Value> = Vec::new();
+    for _ in 0..20 {
+        let ref_id = next_id();
+        let ref_req = serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": ref_id,
+            "method": "textDocument/references",
+            "params": {
+                "textDocument": { "uri": uri },
+                "position": { "line": 2, "character": 13 },
+                "context": { "includeDeclaration": true }
+            }
+        });
+        send_message(&mut stdin, &ref_req.to_string());
+        let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
+        let ref_json: serde_json::Value =
+            serde_json::from_str(&ref_resp).expect("parse references response");
+        let locs = ref_json["result"]
+            .as_array()
+            .expect("references should return array");
+        if !locs.is_empty() {
+            collected_locs = locs.clone();
+            break;
+        }
+        lsp_barrier(&mut stdin, &mut stdout);
+    }
+    let locs = &collected_locs;
 
     // Must include Laptop declaration line.
     assert!(
@@ -325,24 +362,63 @@ fn lsp_same_short_name_in_library_is_not_counted_without_semantic_match() {
     send_message(&mut stdin, &did_open_library.to_string());
     lsp_barrier(&mut stdin, &mut stdout);
 
-    let ref_id = next_id();
-    let ref_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": ref_id,
-        "method": "textDocument/references",
-        "params": {
-            "textDocument": { "uri": uri_workspace },
-            "position": { "line": 2, "character": 13 },
-            "context": { "includeDeclaration": true }
+    // Ensure this exact symbol position resolves before references lookup.
+    let mut workspace_hover_ready = false;
+    for _ in 0..20 {
+        let hover_id = next_id();
+        let hover_req = serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": hover_id,
+            "method": "textDocument/hover",
+            "params": {
+                "textDocument": { "uri": uri_workspace },
+                "position": { "line": 2, "character": 13 }
+            }
+        });
+        send_message(&mut stdin, &hover_req.to_string());
+        let hover_resp = read_response(&mut stdout, hover_id).expect("hover response");
+        let hover_json: serde_json::Value =
+            serde_json::from_str(&hover_resp).expect("parse hover response");
+        if !hover_json["result"].is_null() {
+            workspace_hover_ready = true;
+            break;
         }
-    });
-    send_message(&mut stdin, &ref_req.to_string());
-    let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
-    let ref_json: serde_json::Value =
-        serde_json::from_str(&ref_resp).expect("parse references response");
-    let locs = ref_json["result"]
-        .as_array()
-        .expect("references should return array");
+        lsp_barrier(&mut stdin, &mut stdout);
+    }
+    assert!(
+        workspace_hover_ready,
+        "workspace symbol under cursor did not become hover-resolvable before references request"
+    );
+
+    // In slower CI environments references can still lag by one scheduling turn after symbol ready.
+    let mut collected_locs: Vec<serde_json::Value> = Vec::new();
+    for _ in 0..20 {
+        let ref_id = next_id();
+        let ref_req = serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": ref_id,
+            "method": "textDocument/references",
+            "params": {
+                "textDocument": { "uri": uri_workspace },
+                "position": { "line": 2, "character": 13 },
+                "context": { "includeDeclaration": true }
+            }
+        });
+        send_message(&mut stdin, &ref_req.to_string());
+        let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
+        let ref_json: serde_json::Value =
+            serde_json::from_str(&ref_resp).expect("parse references response");
+        let locs = ref_json["result"]
+            .as_array()
+            .expect("references should return array");
+        if !locs.is_empty() {
+            collected_locs = locs.clone();
+            break;
+        }
+        lsp_barrier(&mut stdin, &mut stdout);
+    }
+
+    let locs = &collected_locs;
     assert!(
         locs.iter()
             .any(|l| l["uri"].as_str().is_some_and(|u| u == uri_workspace)),
