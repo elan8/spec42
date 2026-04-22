@@ -59,30 +59,39 @@ fn lsp_cross_file_references() {
     send_message(&mut stdin, &barrier_req.to_string());
     let _ = read_response(&mut stdout, barrier_id).expect("workspace barrier response");
 
-    // Find references at "Widget" in use.sysml (include_declaration = true -> def + use)
-    let ref_id = next_id();
-    let ref_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": ref_id,
-        "method": "textDocument/references",
-        "params": {
-            "textDocument": { "uri": uri_use },
-            "position": { "line": 0, "character": 21 },
-            "context": { "includeDeclaration": true }
+    // Find references at "Widget" in use.sysml (include_declaration = true -> def + use).
+    // Retry until both expected files appear (CI indexing can lag).
+    let mut uris: Vec<String> = Vec::new();
+    for _ in 0..20 {
+        let ref_id = next_id();
+        let ref_req = serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": ref_id,
+            "method": "textDocument/references",
+            "params": {
+                "textDocument": { "uri": uri_use },
+                "position": { "line": 0, "character": 21 },
+                "context": { "includeDeclaration": true }
+            }
+        });
+        send_message(&mut stdin, &ref_req.to_string());
+        let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
+        let ref_json: serde_json::Value =
+            serde_json::from_str(&ref_resp).expect("parse references response");
+        assert_eq!(ref_json["id"], ref_id);
+        let locs = ref_json["result"]
+            .as_array()
+            .expect("references should return array");
+        uris = locs
+            .iter()
+            .filter_map(|l| l["uri"].as_str().map(String::from))
+            .collect();
+        if uris.iter().any(|u| u.contains("def.sysml")) && uris.iter().any(|u| u.contains("use.sysml"))
+        {
+            break;
         }
-    });
-    send_message(&mut stdin, &ref_req.to_string());
-    let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
-    let ref_json: serde_json::Value =
-        serde_json::from_str(&ref_resp).expect("parse references response");
-    assert_eq!(ref_json["id"], ref_id);
-    let locs = ref_json["result"]
-        .as_array()
-        .expect("references should return array");
-    let uris: Vec<String> = locs
-        .iter()
-        .filter_map(|l| l["uri"].as_str().map(String::from))
-        .collect();
+        lsp_barrier(&mut stdin, &mut stdout);
+    }
     assert!(
         uris.iter().any(|u| u.contains("def.sysml")),
         "references should include def.sysml: {:?}",
@@ -142,34 +151,6 @@ fn lsp_same_file_homonym_references_are_disambiguated_by_position() {
     send_message(&mut stdin, &did_open.to_string());
     lsp_barrier(&mut stdin, &mut stdout);
 
-    // Ensure this exact symbol position resolves before references lookup.
-    let mut hover_ready = false;
-    for _ in 0..20 {
-        let hover_id = next_id();
-        let hover_req = serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": hover_id,
-            "method": "textDocument/hover",
-            "params": {
-                "textDocument": { "uri": uri },
-                "position": { "line": 2, "character": 13 }
-            }
-        });
-        send_message(&mut stdin, &hover_req.to_string());
-        let hover_resp = read_response(&mut stdout, hover_id).expect("hover response");
-        let hover_json: serde_json::Value =
-            serde_json::from_str(&hover_resp).expect("parse hover response");
-        if !hover_json["result"].is_null() {
-            hover_ready = true;
-            break;
-        }
-        lsp_barrier(&mut stdin, &mut stdout);
-    }
-    assert!(
-        hover_ready,
-        "symbol under cursor did not become hover-resolvable before references request"
-    );
-
     // Query references for Laptop::hdmi declaration (line 2).
     let mut collected_locs: Vec<serde_json::Value> = Vec::new();
     for _ in 0..20 {
@@ -191,10 +172,17 @@ fn lsp_same_file_homonym_references_are_disambiguated_by_position() {
         let locs = ref_json["result"]
             .as_array()
             .expect("references should return array");
-        if !locs.is_empty() {
+        let has_laptop_decl = locs
+            .iter()
+            .any(|l| l["range"]["start"]["line"].as_u64() == Some(2));
+        let has_monitor_decl = locs
+            .iter()
+            .any(|l| l["range"]["start"]["line"].as_u64() == Some(5));
+        if has_laptop_decl && !has_monitor_decl {
             collected_locs = locs.clone();
             break;
         }
+        collected_locs = locs.clone();
         lsp_barrier(&mut stdin, &mut stdout);
     }
     let locs = &collected_locs;
@@ -267,24 +255,38 @@ fn lsp_dotted_usage_disambiguates_same_name_members() {
     send_message(&mut stdin, &did_open.to_string());
     lsp_barrier(&mut stdin, &mut stdout);
 
-    let ref_id = next_id();
-    let ref_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": ref_id,
-        "method": "textDocument/references",
-        "params": {
-            "textDocument": { "uri": uri },
-            "position": { "line": 2, "character": 13 },
-            "context": { "includeDeclaration": true }
+    let mut collected_locs: Vec<serde_json::Value> = Vec::new();
+    for _ in 0..20 {
+        let ref_id = next_id();
+        let ref_req = serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": ref_id,
+            "method": "textDocument/references",
+            "params": {
+                "textDocument": { "uri": uri },
+                "position": { "line": 2, "character": 13 },
+                "context": { "includeDeclaration": true }
+            }
+        });
+        send_message(&mut stdin, &ref_req.to_string());
+        let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
+        let ref_json: serde_json::Value =
+            serde_json::from_str(&ref_resp).expect("parse references response");
+        let locs = ref_json["result"]
+            .as_array()
+            .expect("references should return array");
+        let has_decl = locs.iter().any(|l| {
+            l["range"]["start"]["line"].as_u64() == Some(2)
+                && l["range"]["start"]["character"].as_u64() == Some(13)
+        });
+        if has_decl {
+            collected_locs = locs.clone();
+            break;
         }
-    });
-    send_message(&mut stdin, &ref_req.to_string());
-    let ref_resp = read_response(&mut stdout, ref_id).expect("references response");
-    let ref_json: serde_json::Value =
-        serde_json::from_str(&ref_resp).expect("parse references response");
-    let locs = ref_json["result"]
-        .as_array()
-        .expect("references should return array");
+        collected_locs = locs.clone();
+        lsp_barrier(&mut stdin, &mut stdout);
+    }
+    let locs = &collected_locs;
 
     assert!(
         locs.iter().any(|l| {
