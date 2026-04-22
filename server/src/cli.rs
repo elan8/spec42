@@ -144,7 +144,7 @@ mod tests {
             "generate",
             "ros2",
             "--input",
-            "domain-libraries/robotics/examples/inspection-rover/inspection-rover.sysml",
+            "domain-libraries/business/robotics/examples/inspection-rover/inspection-rover.sysml",
             "--output",
             "out",
             "--package-name",
@@ -161,7 +161,7 @@ mod tests {
                 assert_eq!(
                     args.input,
                     PathBuf::from(
-                        "domain-libraries/robotics/examples/inspection-rover/inspection-rover.sysml"
+                        "domain-libraries/business/robotics/examples/inspection-rover/inspection-rover.sysml"
                     )
                 );
                 assert_eq!(args.output, PathBuf::from("out"));

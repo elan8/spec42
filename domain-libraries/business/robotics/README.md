@@ -1,8 +1,8 @@
-# Modern Robotics Domain Libraries
+# Robotics Business Domain Libraries
 
-This directory contains a SysML v2 domain-library family for modern robotics engineering.
+This directory contains a SysML v2 business-domain library family for robotics, composed from reusable technical and cross-cutting capabilities.
 
-It is organized as a self-contained workspace so it can evolve into:
+It is organized so it can evolve into:
 
 - reusable library content
 - example material

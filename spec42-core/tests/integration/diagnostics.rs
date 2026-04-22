@@ -982,6 +982,7 @@ fn inspection_rover_example_emits_unresolved_specializes_without_library_context
     let fixture_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("..")
         .join("domain-libraries")
+        .join("business")
         .join("robotics")
         .join("examples")
         .join("inspection-rover")

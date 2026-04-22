@@ -122,14 +122,17 @@ mod tests {
     fn generate_ros2_project_dry_run_for_rover_fixture() {
         let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         let fixture = root
-            .join("../domain-libraries/robotics/examples/inspection-rover/inspection-rover.sysml");
+            .join("../domain-libraries/business/robotics/examples/inspection-rover/inspection-rover.sysml");
         let output = tempdir().expect("tempdir");
         let report = generate_ros2_project(Ros2GenerationRequest {
             input: fixture,
             output: output.path().to_path_buf(),
             package_name: Some("inspection_rover_bringup".to_string()),
             workspace_root: Some(root.join("..")),
-            library_paths: vec![root.join("../domain-libraries/robotics").canonicalize().unwrap()],
+            library_paths: vec![root
+                .join("../domain-libraries/business/robotics")
+                .canonicalize()
+                .unwrap()],
             force: false,
             dry_run: true,
         })
@@ -154,14 +157,17 @@ mod tests {
     fn generate_ros2_project_writes_scaffold_files() {
         let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         let fixture = root
-            .join("../domain-libraries/robotics/examples/inspection-rover/inspection-rover.sysml");
+            .join("../domain-libraries/business/robotics/examples/inspection-rover/inspection-rover.sysml");
         let output = tempdir().expect("tempdir");
         let report = generate_ros2_project(Ros2GenerationRequest {
             input: fixture,
             output: output.path().to_path_buf(),
             package_name: Some("inspection_rover_bringup".to_string()),
             workspace_root: Some(root.join("..")),
-            library_paths: vec![root.join("../domain-libraries/robotics").canonicalize().unwrap()],
+            library_paths: vec![root
+                .join("../domain-libraries/business/robotics")
+                .canonicalize()
+                .unwrap()],
             force: false,
             dry_run: false,
         })

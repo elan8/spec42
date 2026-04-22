@@ -39,7 +39,7 @@ spec42 --version
 spec42 doctor
 spec42 check ./examples/timer/KitchenTimer.sysml
 spec42 check ./workspace --format json
-spec42 generate ros2 --input ./domain-libraries/robotics/examples/inspection-rover/inspection-rover.sysml --output ./generated
+spec42 generate ros2 --input ./domain-libraries/business/robotics/examples/inspection-rover/inspection-rover.sysml --output ./generated
 spec42 stdlib status
 spec42 stdlib path
 ```
@@ -69,9 +69,9 @@ spec42 check ./models/workspace --format json
 Examples:
 
 ```bash
-spec42 generate ros2 --input ./domain-libraries/robotics/examples/inspection-rover/inspection-rover.sysml --output ./generated
-spec42 generate ros2 --input ./domain-libraries/robotics/examples/inspection-rover --output ./generated --package-name inspection_rover_bringup --force
-spec42 generate ros2 --input ./domain-libraries/robotics/examples/inspection-rover/inspection-rover.sysml --output ./generated --dry-run
+spec42 generate ros2 --input ./domain-libraries/business/robotics/examples/inspection-rover/inspection-rover.sysml --output ./generated
+spec42 generate ros2 --input ./domain-libraries/business/robotics/examples/inspection-rover --output ./generated --package-name inspection_rover_bringup --force
+spec42 generate ros2 --input ./domain-libraries/business/robotics/examples/inspection-rover/inspection-rover.sysml --output ./generated --dry-run
 ```
 
 Generated outputs include:
