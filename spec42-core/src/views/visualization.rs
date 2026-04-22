@@ -837,30 +837,48 @@ fn filter_ibd_by_package(ibd: &IbdDataDto, package_ref: &str) -> IbdDataDto {
 }
 
 fn filter_ibd_by_visible_ids(ibd: &IbdDataDto, visible_ids: &HashSet<String>) -> IbdDataDto {
+    let visible_dot_ids: HashSet<String> =
+        visible_ids.iter().map(|id| id.replace("::", ".")).collect();
     let parts: Vec<_> = ibd
         .parts
         .iter()
-        .filter(|part| visible_ids.contains(&part.id))
+        .filter(|part| {
+            visible_ids.contains(&part.id)
+                || visible_dot_ids.contains(&part.qualified_name)
+        })
         .cloned()
         .collect();
     let part_ids: HashSet<_> = parts.iter().map(|part| part.id.as_str()).collect();
+    let part_qualified_names: HashSet<_> =
+        parts.iter().map(|part| part.qualified_name.as_str()).collect();
     let ports: Vec<_> = ibd
         .ports
         .iter()
         .filter(|port| {
-            visible_ids.contains(&port.id) || part_ids.contains(port.parent_id.as_str())
+            visible_ids.contains(&port.id)
+                || visible_dot_ids.contains(&port.id.replace("::", "."))
+                || part_ids.contains(port.parent_id.as_str())
+                || part_qualified_names.contains(port.parent_id.as_str())
         })
         .cloned()
         .collect();
     let port_ids: HashSet<_> = ports.iter().map(|port| port.id.as_str()).collect();
+    let port_dot_ids: HashSet<String> = ports
+        .iter()
+        .map(|port| port.id.replace("::", "."))
+        .collect();
     let connectors: Vec<_> = ibd
         .connectors
         .iter()
         .filter(|connector| {
             port_ids.contains(connector.source.as_str())
                 || port_ids.contains(connector.target.as_str())
+                || port_dot_ids.contains(&connector.source_id)
+                || port_dot_ids.contains(&connector.target_id)
                 || part_ids.contains(connector.source_id.as_str())
                 || part_ids.contains(connector.target_id.as_str())
+                || part_qualified_names.contains(connector.source_id.as_str())
+                || part_qualified_names.contains(connector.target_id.as_str())
         })
         .cloned()
         .collect();
@@ -879,30 +897,47 @@ fn filter_ibd_by_visible_ids(ibd: &IbdDataDto, visible_ids: &HashSet<String>) ->
         let filtered_parts: Vec<_> = view
             .parts
             .iter()
-            .filter(|part| visible_ids.contains(&part.id))
+            .filter(|part| {
+                visible_ids.contains(&part.id)
+                    || visible_dot_ids.contains(&part.qualified_name)
+            })
             .cloned()
             .collect();
         let filtered_part_ids: HashSet<_> =
             filtered_parts.iter().map(|part| part.id.as_str()).collect();
+        let filtered_part_qualified_names: HashSet<_> = filtered_parts
+            .iter()
+            .map(|part| part.qualified_name.as_str())
+            .collect();
         let filtered_ports: Vec<_> = view
             .ports
             .iter()
             .filter(|port| {
                 visible_ids.contains(&port.id)
+                    || visible_dot_ids.contains(&port.id.replace("::", "."))
                     || filtered_part_ids.contains(port.parent_id.as_str())
+                    || filtered_part_qualified_names.contains(port.parent_id.as_str())
             })
             .cloned()
             .collect();
         let filtered_port_ids: HashSet<_> =
             filtered_ports.iter().map(|port| port.id.as_str()).collect();
+        let filtered_port_dot_ids: HashSet<String> = filtered_ports
+            .iter()
+            .map(|port| port.id.replace("::", "."))
+            .collect();
         let filtered_connectors: Vec<_> = view
             .connectors
             .iter()
             .filter(|connector| {
                 filtered_port_ids.contains(connector.source.as_str())
                     || filtered_port_ids.contains(connector.target.as_str())
+                    || filtered_port_dot_ids.contains(&connector.source_id)
+                    || filtered_port_dot_ids.contains(&connector.target_id)
                     || filtered_part_ids.contains(connector.source_id.as_str())
                     || filtered_part_ids.contains(connector.target_id.as_str())
+                    || filtered_part_qualified_names.contains(connector.source_id.as_str())
+                    || filtered_part_qualified_names.contains(connector.target_id.as_str())
             })
             .cloned()
             .collect();
@@ -1147,7 +1182,12 @@ pub(crate) fn build_sysml_visualization_response(
     let mut projected_graphs: HashMap<&str, SysmlGraphDto> = HashMap::new();
     let mut projected_activity_diagrams: HashMap<&str, Vec<ActivityDiagramDto>> = HashMap::new();
     for evaluated in &evaluated_views {
-        let projected_graph = project_graph_by_ids(&graph, &evaluated.visible_ids);
+        let projected_ids = explicit_views::renderer_view_for_view_type(
+            evaluated.effective_view_type.as_deref(),
+        )
+        .map(|renderer_view| explicit_views::project_ids_for_renderer(evaluated, &graph, renderer_view))
+        .unwrap_or_default();
+        let projected_graph = project_graph_by_ids(&graph, &projected_ids);
         let diagrams = filter_activity_diagrams_by_graph(&full_activity_diagrams, &projected_graph);
         projected_graphs.insert(evaluated.id.as_str(), projected_graph);
         projected_activity_diagrams.insert(evaluated.id.as_str(), diagrams);
@@ -1246,11 +1286,11 @@ pub(crate) fn build_sysml_visualization_response(
         &mut package_candidates,
     );
     package_candidates.sort_by(|left, right| left.name.cmp(&right.name));
-    let selected_ids = evaluated_views
+    let selected_ids: HashSet<String> = selected_graph
+        .nodes
         .iter()
-        .find(|evaluated| evaluated.id == selected_view_id)
-        .map(|evaluated| evaluated.visible_ids.clone())
-        .unwrap_or_default();
+        .map(|node| node.id.clone())
+        .collect();
     let filtered_ibd = attach_ibd_package_container_groups(
         filter_ibd_by_visible_ids(&full_ibd, &selected_ids),
         &package_candidates,

@@ -54,6 +54,8 @@ pub struct EvaluatedView {
     pub id: String,
     pub name: String,
     pub effective_view_type: Option<String>,
+    pub exposed_ids: HashSet<String>,
+    pub filters: Vec<FilterExpr>,
     pub visible_ids: HashSet<String>,
     pub issues: Vec<String>,
 }
@@ -284,14 +286,12 @@ pub fn evaluate_views(
                 }
             }
 
-            let mut visible_ids = HashSet::new();
+            let mut exposed_ids = HashSet::new();
             for expose in &usage.exposes {
                 let exposed = resolve_expose_targets(graph, expose, &children_by_parent);
                 for node_id in exposed {
-                    if node_matches_all_filters(node_id, &node_by_id, &filters)
-                        && node_matches_expose_filter(node_id, &node_by_id, expose.filter.as_ref())
-                    {
-                        visible_ids.insert(node_id.to_string());
+                    if node_matches_expose_filter(node_id, &node_by_id, expose.filter.as_ref()) {
+                        exposed_ids.insert(node_id.to_string());
                     }
                 }
             }
@@ -300,16 +300,64 @@ pub fn evaluate_views(
                 issues.push("View has no expose members.".to_string());
             }
 
-            let closure = with_ancestors(visible_ids, &parent_by_id);
+            let filtered_ids: HashSet<String> = exposed_ids
+                .iter()
+                .filter(|node_id| node_matches_all_filters(node_id, &node_by_id, &filters))
+                .cloned()
+                .collect();
+            let closure = with_ancestors(filtered_ids, &parent_by_id);
             EvaluatedView {
                 id: usage.id.clone(),
                 name: usage.name.clone(),
                 effective_view_type,
+                exposed_ids,
+                filters,
                 visible_ids: closure,
                 issues,
             }
         })
         .collect()
+}
+
+pub fn project_ids_for_renderer(
+    evaluated: &EvaluatedView,
+    graph: &crate::views::dto::SysmlGraphDto,
+    renderer_view: &str,
+) -> HashSet<String> {
+    let node_by_id: HashMap<&str, &crate::views::dto::GraphNodeDto> = graph
+        .nodes
+        .iter()
+        .map(|node| (node.id.as_str(), node))
+        .collect();
+    let parent_by_id: HashMap<&str, &str> = graph
+        .nodes
+        .iter()
+        .filter_map(|node| node.parent_id.as_deref().map(|parent| (node.id.as_str(), parent)))
+        .collect();
+    let children_by_parent: HashMap<&str, Vec<&str>> = {
+        let mut map = HashMap::new();
+        for node in &graph.nodes {
+            if let Some(parent_id) = node.parent_id.as_deref() {
+                map.entry(parent_id)
+                    .or_insert_with(Vec::new)
+                    .push(node.id.as_str());
+            }
+        }
+        map
+    };
+
+    let expanded_ids = match renderer_view {
+        "general-view" | "interconnection-view" => {
+            expand_descendants(&evaluated.exposed_ids, &children_by_parent)
+        }
+        _ => evaluated.exposed_ids.clone(),
+    };
+    let filtered_ids: HashSet<String> = expanded_ids
+        .iter()
+        .filter(|node_id| node_matches_all_filters(node_id, &node_by_id, &evaluated.filters))
+        .cloned()
+        .collect();
+    with_ancestors(filtered_ids, &parent_by_id)
 }
 
 fn resolve_expose_targets<'a>(
@@ -356,6 +404,25 @@ fn collect_descendants<'a>(
             }
         }
     }
+}
+
+fn expand_descendants(
+    root_ids: &HashSet<String>,
+    children_by_parent: &HashMap<&str, Vec<&str>>,
+) -> HashSet<String> {
+    let mut expanded = root_ids.clone();
+    let mut stack: Vec<String> = root_ids.iter().cloned().collect();
+    while let Some(current) = stack.pop() {
+        if let Some(children) = children_by_parent.get(current.as_str()) {
+            for child in children {
+                let child_string = (*child).to_string();
+                if expanded.insert(child_string.clone()) {
+                    stack.push(child_string);
+                }
+            }
+        }
+    }
+    expanded
 }
 
 fn with_ancestors(
@@ -676,7 +743,11 @@ pub fn renderer_view_for_view_type(effective_view_type: Option<&str>) -> Option<
 
 #[cfg(test)]
 mod tests {
-    use super::{build_view_candidates, build_view_catalog, parse_filter_text, EvaluatedView, FilterExpr};
+    use super::{
+        build_view_candidates, build_view_catalog, parse_filter_text, project_ids_for_renderer,
+        EvaluatedView, FilterExpr,
+    };
+    use crate::views::dto::{GraphNodeDto, PositionDto, RangeDto, SysmlGraphDto};
     use crate::workspace::state::{IndexEntry, ParseMetadata};
     use std::collections::{HashMap, HashSet};
     use sysml_v2_parser::parse;
@@ -733,6 +804,8 @@ mod tests {
                 id: "Demo::Supported".to_string(),
                 name: "Supported".to_string(),
                 effective_view_type: Some("GeneralView".to_string()),
+                exposed_ids: HashSet::new(),
+                filters: Vec::new(),
                 visible_ids: HashSet::new(),
                 issues: Vec::new(),
             },
@@ -740,6 +813,8 @@ mod tests {
                 id: "Demo::Safety".to_string(),
                 name: "Safety".to_string(),
                 effective_view_type: Some("SafetyView".to_string()),
+                exposed_ids: HashSet::new(),
+                filters: Vec::new(),
                 visible_ids: HashSet::new(),
                 issues: Vec::new(),
             },
@@ -753,5 +828,58 @@ mod tests {
         assert_eq!(candidates[1].name, "Supported");
         assert!(candidates[1].supported);
         assert_eq!(candidates[1].renderer_view.as_deref(), Some("general-view"));
+    }
+
+    #[test]
+    fn general_view_projection_expands_exposed_roots_to_owned_members() {
+        fn zero_range() -> RangeDto {
+            RangeDto {
+                start: PositionDto {
+                    line: 0,
+                    character: 0,
+                },
+                end: PositionDto {
+                    line: 0,
+                    character: 0,
+                },
+            }
+        }
+
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Office::OfficeDeskSetup".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "OfficeDeskSetup".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Office::OfficeDeskSetup::laptop".to_string(),
+                    element_type: "part".to_string(),
+                    name: "laptop".to_string(),
+                    uri: None,
+                    parent_id: Some("Office::OfficeDeskSetup".to_string()),
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+            ],
+            edges: Vec::new(),
+        };
+        let evaluated = EvaluatedView {
+            id: "Office::structure".to_string(),
+            name: "structure".to_string(),
+            effective_view_type: Some("GeneralView".to_string()),
+            exposed_ids: HashSet::from(["Office::OfficeDeskSetup".to_string()]),
+            filters: Vec::new(),
+            visible_ids: HashSet::new(),
+            issues: Vec::new(),
+        };
+
+        let projected = project_ids_for_renderer(&evaluated, &graph, "general-view");
+        assert!(projected.contains("Office::OfficeDeskSetup"));
+        assert!(projected.contains("Office::OfficeDeskSetup::laptop"));
     }
 }
