@@ -10,7 +10,6 @@ It is organized as a self-contained workspace so it can evolve into:
 
 ## Structure
 
-- `spec42.toml` - minimal workspace marker for Spec42-style analysis
 - `robotics-core/RoboticsCore.sysml` - small robotics kernel with base system and environment concepts
 - `structure/RobotStructure.sysml` - neutral robot composition and hardware structure overlay
 - `perception/RobotPerception.sysml` - sensing and state-estimation overlay
