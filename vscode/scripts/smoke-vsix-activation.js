@@ -5,7 +5,6 @@ const os = require("os");
 const path = require("path");
 const {
   downloadAndUnzipVSCode,
-  resolveCliPathFromVSCodeExecutablePath,
   runTests,
 } = require("@vscode/test-electron");
 const vscodeTestVersion = process.env.VSCODE_TEST_VERSION || "1.85.0";
@@ -53,10 +52,6 @@ function resolveSingleFileGlob(input, cwd) {
 }
 
 function runCodeCli(cliPath, args) {
-  if (process.platform === "win32") {
-    cp.execFileSync("cmd.exe", ["/c", cliPath, ...args], { stdio: "inherit" });
-    return;
-  }
   cp.execFileSync(cliPath, args, { stdio: "inherit" });
 }
 
@@ -153,9 +148,8 @@ async function main() {
   writeSmokeTestHost(tempDir);
 
   const vscodeExecutablePath = await downloadAndUnzipVSCode(vscodeTestVersion);
-  const cliPath = resolveCliPathFromVSCodeExecutablePath(vscodeExecutablePath);
 
-  runCodeCli(cliPath, [
+  runCodeCli(vscodeExecutablePath, [
     "--user-data-dir",
     tempUserDataDir,
     "--extensions-dir",
@@ -164,7 +158,7 @@ async function main() {
     vsixPath,
     "--force",
   ]);
-  runCodeCli(cliPath, [
+  runCodeCli(vscodeExecutablePath, [
     "--user-data-dir",
     tempUserDataDir,
     "--extensions-dir",

@@ -273,18 +273,22 @@ import { buildGeneralViewGraph } from './graphBuilders';
             const item = document.createElement('button');
             item.className = 'view-dropdown-item';
             item.setAttribute('data-view-id', candidate.id || candidate.name);
-            const statusBadge = !candidate?.supported
-                ? '<span class="view-badge">Unsupported</span>'
-                : experimentalViews.has(candidate?.rendererView)
-                    ? '<span class="view-badge">Experimental</span>'
-                    : '';
             const label = candidate?.supported
                 ? (candidate.name || 'Unnamed view')
                 : `${candidate?.name || 'Unnamed view'} (Unsupported)`;
-            item.innerHTML =
-                '<span class="codicon codicon-' + option.icon + ' icon"></span>' +
-                '<span class="view-text">' + label + '</span>' +
-                statusBadge;
+            const iconSpan = document.createElement('span');
+            iconSpan.className = `codicon codicon-${option.icon} icon`;
+            const textSpan = document.createElement('span');
+            textSpan.className = 'view-text';
+            textSpan.textContent = label;
+            item.appendChild(iconSpan);
+            item.appendChild(textSpan);
+            if (!candidate?.supported || experimentalViews.has(candidate?.rendererView)) {
+                const badge = document.createElement('span');
+                badge.className = 'view-badge';
+                badge.textContent = !candidate?.supported ? 'Unsupported' : 'Experimental';
+                item.appendChild(badge);
+            }
             if (!candidate?.supported) {
                 const tooltipBits = [
                     candidate?.viewType ? `Type: ${candidate.viewType}` : 'Unsupported SysML view type',
@@ -967,16 +971,27 @@ import { buildGeneralViewGraph } from './graphBuilders';
         if (dropdownButton) {
             if (selectedViewName) {
                 dropdownButton.classList.add('view-btn-active');
-                dropdownButton.innerHTML =
-                    '<span class="codicon codicon-chevron-down" style="margin-right: 2px;"></span><span>' +
-                    selectedViewName +
-                    '</span>';
+                dropdownButton.textContent = '';
+                const chevron = document.createElement('span');
+                chevron.className = 'codicon codicon-chevron-down';
+                chevron.style.marginRight = '2px';
+                const label = document.createElement('span');
+                label.textContent = selectedViewName;
+                dropdownButton.appendChild(chevron);
+                dropdownButton.appendChild(label);
                 dropdownButton.title = dropdownConfig
                     ? `${selectedViewName} (${dropdownConfig.label})`
                     : selectedViewName;
             } else {
                 dropdownButton.classList.remove('view-btn-active');
-                dropdownButton.innerHTML = '<span class="codicon codicon-chevron-down" style="margin-right: 2px;"></span><span>Select SysML View</span>';
+                dropdownButton.textContent = '';
+                const chevron = document.createElement('span');
+                chevron.className = 'codicon codicon-chevron-down';
+                chevron.style.marginRight = '2px';
+                const label = document.createElement('span');
+                label.textContent = 'Select SysML View';
+                dropdownButton.appendChild(chevron);
+                dropdownButton.appendChild(label);
                 dropdownButton.title = 'Select a defined SysML view';
             }
         }
