@@ -17,6 +17,7 @@ import {
   ModelExplorerProvider,
   ModelTreeItem,
 } from "./explorer/modelExplorerProvider";
+import { ExamplesViewProvider } from "./examples/examplesViewProvider";
 import { LibraryWebviewViewProvider } from "./library/libraryWebviewViewProvider";
 import type { GraphNodeDTO } from "./providers/sysmlModelTypes";
 import { getOutputChannel, log, logError, logPerfEvent, logStartupEvent, showChannel } from "./logger";
@@ -47,6 +48,7 @@ type StartupWorkspaceIndexingMode = "lazy" | "background" | "eager";
 let client: LanguageClient | undefined;
 let statusItem: vscode.StatusBarItem | undefined;
 let modelExplorerProvider: ModelExplorerProvider | undefined;
+let examplesViewProvider: ExamplesViewProvider | undefined;
 let libraryWebviewProvider: LibraryWebviewViewProvider | undefined;
 let lspModelProviderForStatus: LspModelProvider | undefined;
 let serverHealthState: ServerHealthState = "starting";
@@ -287,6 +289,28 @@ function shouldShowModelExplorerContext(
     (provider?.getAllElements().length ?? 0) > 0 ||
     (provider?.isWorkspaceBacked() ?? false);
   return hasWorkspace || activeIsSysml || hasModelData;
+}
+
+function resolveAdditionalExamplesRoots(
+  extensionPath: string
+): vscode.Uri[] {
+  const roots: vscode.Uri[] = [];
+  const seen = new Set<string>();
+  const addRoot = (rootPath: string): void => {
+    const normalized = path.resolve(rootPath);
+    const key = normalized.toLowerCase();
+    if (seen.has(key) || !fs.existsSync(normalized)) {
+      return;
+    }
+    seen.add(key);
+    roots.push(vscode.Uri.file(normalized));
+  };
+
+  // Extension-local examples roots only (no workspace-relative probing).
+  addRoot(path.join(extensionPath, "examples"));
+  addRoot(path.join(extensionPath, "..", "examples"));
+
+  return roots;
 }
 
 function getEnabledVisualizationViewIds(): Set<string> {
@@ -731,6 +755,9 @@ export function activate(context: vscode.ExtensionContext): void {
   const lspModelProvider = new LspModelProvider(client, clientReadyPromise);
   lspModelProviderForStatus = lspModelProvider;
   modelExplorerProvider = new ModelExplorerProvider(lspModelProvider);
+  examplesViewProvider = new ExamplesViewProvider(
+    resolveAdditionalExamplesRoots(context.extensionPath)
+  );
   libraryWebviewProvider = new LibraryWebviewViewProvider(
     context.extensionUri,
     lspModelProvider,
@@ -844,6 +871,10 @@ export function activate(context: vscode.ExtensionContext): void {
   });
   modelExplorerProvider.setTreeView(treeView);
   context.subscriptions.push(treeView);
+  const examplesTreeView = vscode.window.createTreeView("spec42Examples", {
+    treeDataProvider: examplesViewProvider,
+  });
+  context.subscriptions.push(examplesTreeView);
   context.subscriptions.push(
     treeView.onDidChangeVisibility((event) => {
       if (!event.visible) {
@@ -855,6 +886,21 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider("spec42Library", libraryWebviewProvider)
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("spec42.examples.openWorkspace", async (folderUri: vscode.Uri) => {
+      if (!folderUri) {
+        return;
+      }
+      await vscode.commands.executeCommand("vscode.openFolder", folderUri, false);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("spec42.examples.refresh", () => {
+      examplesViewProvider?.refresh();
+    })
   );
 
   context.subscriptions.push(
@@ -1966,6 +2012,12 @@ export function activate(context: vscode.ExtensionContext): void {
     scheduleModelExplorerRefresh("delete", uri);
   });
   context.subscriptions.push(sysmlFileWatcher);
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeWorkspaceFolders(() => {
+      examplesViewProvider?.refresh();
+    })
+  );
 
   context.subscriptions.push(
     vscode.workspace.onDidSaveTextDocument((doc) => {

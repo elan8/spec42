@@ -97,6 +97,12 @@
         "category": "SysML"
       },
       {
+        "command": "spec42.examples.refresh",
+        "title": "Refresh Examples View",
+        "icon": "$(refresh)",
+        "category": "Spec42"
+      },
+      {
         "command": "sysml.library.refresh",
         "title": "Refresh Library View",
         "icon": "$(refresh)",
@@ -222,6 +228,11 @@
           "command": "sysml.library.refresh",
           "when": "view == spec42Library",
           "group": "navigation"
+        },
+        {
+          "command": "spec42.examples.refresh",
+          "when": "view == spec42Examples",
+          "group": "navigation"
         }
       ],
       "editor/title": [
@@ -326,6 +337,10 @@
         {
           "id": "sysmlModelExplorer",
           "name": "Model Explorer"
+        },
+        {
+          "id": "spec42Examples",
+          "name": "Examples"
         },
         {
           "id": "spec42Library",
