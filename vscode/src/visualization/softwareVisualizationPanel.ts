@@ -97,6 +97,11 @@ export class SoftwareVisualizationPanel {
             context,
             createVariantConfig(this._runtimeState, this._analysisStore),
         );
+        panel.onDidDispose(() => {
+            if (SoftwareVisualizationPanel.currentPanel === this) {
+                SoftwareVisualizationPanel.currentPanel = undefined;
+            }
+        });
     }
 
     public static createOrShow(

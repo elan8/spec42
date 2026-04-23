@@ -108,6 +108,11 @@ export class VisualizationPanel {
             context,
             createVariantConfig(this._runtimeState),
         );
+        panel.onDidDispose(() => {
+            if (VisualizationPanel.currentPanel === this) {
+                VisualizationPanel.currentPanel = undefined;
+            }
+        });
     }
 
     public static createOrShow(
