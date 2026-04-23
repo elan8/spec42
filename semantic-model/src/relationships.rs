@@ -460,7 +460,11 @@ pub fn resolve_cross_document_edges_for_uri(
             ) {
                 let dedupe_key = (node_id.clone(), target_id.clone(), "specializes");
                 if seen_edges.insert(dedupe_key) {
-                    resolved_edges.push((node_id.clone(), target_id, RelationshipKind::Specializes));
+                    resolved_edges.push((
+                        node_id.clone(),
+                        target_id,
+                        RelationshipKind::Specializes,
+                    ));
                 }
             }
         }

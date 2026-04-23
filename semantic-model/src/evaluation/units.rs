@@ -516,7 +516,9 @@ mod tests {
         let mut registry = UnitRegistry::default();
         registry.ingest_file_contents("attribute <m> 'metre' : LengthUnit;");
         registry.ingest_file_contents("attribute <kg> 'kilogram' : MassUnit;");
-        let err = registry.convert_value(1.0, "m", "kg").expect_err("incompatible");
+        let err = registry
+            .convert_value(1.0, "m", "kg")
+            .expect_err("incompatible");
         assert_eq!(err, UnitError::IncompatibleDimension);
     }
 

@@ -157,7 +157,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
         const legendBtn = document.getElementById('legend-btn');
         const legendPopup = document.getElementById('legend-popup');
         if (legendBtn) {
-            const cytoscapeViews = ['general', 'general-view'];
+            const cytoscapeViews = ['general', 'general-view', 'software-module-view', 'software-dependency-view'];
             legendBtn.style.display = cytoscapeViews.includes(view) ? 'inline-block' : 'none';
             // Hide popup when switching away from cytoscape views
             if (!cytoscapeViews.includes(view) && legendPopup) {
@@ -801,7 +801,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
                     elementData = d.data;
                 }
             });
-        } else if (currentView === 'general-view') {
+        } else if (['general-view', 'software-module-view', 'software-dependency-view'].includes(currentView)) {
             // In General View (Cytoscape), find nodes by data-element-name attribute
             d3.selectAll('.general-node').each(function() {
                 const node = d3.select(this);
@@ -1303,7 +1303,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
         // Apply package filter for views that support it (excluding elk which handles it internally).
         // Use selected diagram NAME (not index) so filtering remains stable even if package order
         const hasSpecificPackageSelection = !!selectedDiagramName && selectedDiagramName !== 'All Packages';
-        if (view === 'general-view') {
+        if (view === 'general-view' || view === 'software-module-view' || view === 'software-dependency-view') {
             webviewLog('info', '[GENERAL][render-start]', {
                 selectedDiagramName,
                 selectedDiagramIndex,
@@ -1503,7 +1503,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
             }
         });
 
-        if (view === 'general-view') {
+        if (view === 'general-view' || view === 'software-module-view' || view === 'software-dependency-view') {
             const ctx = {
                 ...buildRenderContext(width, height),
                 buildGeneralViewGraph: (data: any) => buildGeneralViewGraphForView(data),
@@ -1577,7 +1577,13 @@ import { buildGeneralViewGraph } from './graphBuilders';
             }
 
             // General view and interconnection view handle zoom/hide in their async .then(); others run here
-            if (view !== 'general-view' && view !== 'interconnection-view' && view !== 'state-transition-view') {
+            if (
+                view !== 'general-view'
+                && view !== 'software-module-view'
+                && view !== 'software-dependency-view'
+                && view !== 'interconnection-view'
+                && view !== 'state-transition-view'
+            ) {
                 // If zoom was previously modified, restore it; otherwise zoom to fit
                 if (shouldPreserveZoom) {
                     restoreZoom();

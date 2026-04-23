@@ -7,8 +7,8 @@ use serde::{Deserialize, Serialize};
 use crate::cli::Cli;
 use crate::stdlib::{
     install_embedded_standard_library, legacy_vscode_stdlib_path, load_managed_metadata,
-    managed_status, project_dirs, standard_library_paths_from_data_dir, EMBEDDED_STDLIB_ARCHIVE,
-    EMBEDDED_STDLIB_REPO, StandardLibraryConfig, StandardLibraryPaths, StandardLibraryStatus,
+    managed_status, project_dirs, standard_library_paths_from_data_dir, StandardLibraryConfig,
+    StandardLibraryPaths, StandardLibraryStatus, EMBEDDED_STDLIB_ARCHIVE, EMBEDDED_STDLIB_REPO,
 };
 
 #[derive(Debug, Clone, Deserialize, Default)]

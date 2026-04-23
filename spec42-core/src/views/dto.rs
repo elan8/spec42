@@ -54,6 +54,45 @@ pub struct GraphEdgeDto {
     pub name: Option<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SourceAnchorDto {
+    pub file_path: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub range: Option<RangeDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SoftwareComponentDto {
+    pub id: String,
+    pub name: String,
+    pub kind: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parent_id: Option<String>,
+    pub crate_name: String,
+    pub module_path: String,
+    pub anchors: Vec<SourceAnchorDto>,
+    pub is_external: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SoftwareDependencyDto {
+    pub from: String,
+    pub to: String,
+    pub kind: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_anchor: Option<SourceAnchorDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SoftwareArchitectureModelDto {
+    pub components: Vec<SoftwareComponentDto>,
+    pub dependencies: Vec<SoftwareDependencyDto>,
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct SysmlGraphDto {
     pub nodes: Vec<GraphNodeDto>,
@@ -246,6 +285,8 @@ pub struct SysmlVisualizationResultDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub graph: Option<SysmlGraphDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub software_architecture: Option<SoftwareArchitectureModelDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub general_view_graph: Option<SysmlGraphDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub workspace_model: Option<WorkspaceModelDto>,
@@ -262,6 +303,8 @@ pub struct SysmlVisualizationResultDto {
 pub struct SysmlModelResultDto {
     pub version: u32,
     pub graph: Option<SysmlGraphDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub software_architecture: Option<SoftwareArchitectureModelDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub package_groups: Option<Vec<SysmlVisualizationGroupDto>>,
     #[serde(skip_serializing_if = "Option::is_none")]

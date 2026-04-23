@@ -11,7 +11,9 @@ use tower_lsp::lsp_types::Url;
 use crate::ast_util::span_to_range;
 use crate::graph::SemanticGraph;
 use crate::model::{NodeId, RelationshipKind};
-use crate::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists, type_ref_candidates};
+use crate::relationships::{
+    add_edge_if_both_exist, add_typing_edge_if_exists, type_ref_candidates,
+};
 
 use super::expressions::expression_to_debug_string;
 use super::{add_node_and_recurse, qualified_name_for_node};

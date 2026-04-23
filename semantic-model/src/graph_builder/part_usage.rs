@@ -332,14 +332,22 @@ fn infer_attribute_usage_kind(
     let Some(owner) = g.get_node(parent_id) else {
         return "attribute";
     };
-    let Some(redefined_name) = redefines.map(str::trim).filter(|candidate| !candidate.is_empty())
+    let Some(redefined_name) = redefines
+        .map(str::trim)
+        .filter(|candidate| !candidate.is_empty())
     else {
         return "attribute";
     };
     match resolve_member_via_type(g, owner, redefined_name) {
         ResolveResult::Resolved(target_id) => g
             .get_node(&target_id)
-            .map(|target| if target.element_kind == "port" { "port" } else { "attribute" })
+            .map(|target| {
+                if target.element_kind == "port" {
+                    "port"
+                } else {
+                    "attribute"
+                }
+            })
             .unwrap_or("attribute"),
         ResolveResult::Ambiguous | ResolveResult::Unresolved => "attribute",
     }

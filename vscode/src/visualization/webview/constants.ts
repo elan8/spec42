@@ -8,11 +8,18 @@ export const MAX_CANVAS_ZOOM = 20;
 export const MIN_SYSML_ZOOM = 0.04;
 export const MAX_SYSML_ZOOM = 20;
 
-export const STRUCTURAL_VIEWS = new Set(['general-view', 'interconnection-view']);
+export const STRUCTURAL_VIEWS = new Set([
+    'general-view',
+    'interconnection-view',
+    'software-module-view',
+    'software-dependency-view',
+]);
 
 export const DEFAULT_ENABLED_VIEWS = [
     'general-view',
     'interconnection-view',
+    'software-module-view',
+    'software-dependency-view',
     'action-flow-view',
     'state-transition-view',
 ] as const;
@@ -40,6 +47,8 @@ export const STATE_LAYOUT_ICONS: Record<string, string> = {
 export const VIEW_OPTIONS: Record<string, { label: string; shortLabel: string; icon: string }> = {
     'general-view': { label: 'General View', shortLabel: 'General', icon: 'symbol-structure' },
     'interconnection-view': { label: 'Interconnection View', shortLabel: 'Interconnection', icon: 'plug' },
+    'software-module-view': { label: 'Rust Module View', shortLabel: 'Rust Modules', icon: 'symbol-module' },
+    'software-dependency-view': { label: 'Rust Dependency View', shortLabel: 'Rust Dependencies', icon: 'git-pull-request' },
     'action-flow-view': { label: 'Action Flow View', shortLabel: 'Action Flow', icon: 'git-commit' },
     'state-transition-view': { label: 'State Transition View', shortLabel: 'State Transition', icon: 'git-compare' },
 };
@@ -48,6 +57,8 @@ export const VIEW_OPTIONS: Record<string, { label: string; shortLabel: string; i
 export const VIEW_RENDERER_TECH: Record<string, string> = {
     'general-view': 'D3+ELK',
     'interconnection-view': 'D3+ELK',
+    'software-module-view': 'D3+ELK',
+    'software-dependency-view': 'D3+ELK',
     'action-flow-view': 'D3+ELK',
     'state-transition-view': 'D3+ELK',
 };
@@ -214,6 +225,9 @@ export const GENERAL_VIEW_TYPE_COLORS: Record<string, string> = {
     metadata: '#8B7355',
     'occurrence def': GENERAL_VIEW_PALETTE.structural.item,
     occurrence: GENERAL_VIEW_PALETTE.structural.item,
+    crate: GENERAL_VIEW_PALETTE.structural.part,
+    module: GENERAL_VIEW_PALETTE.structural.interface,
+    externalCrate: GENERAL_VIEW_PALETTE.other.allocation,
     package: '#6B7280',
     default: GENERAL_VIEW_PALETTE.other.default,
 };

@@ -108,5 +108,4 @@ mod tests {
             other => panic!("expected check command, got {other:?}"),
         }
     }
-
 }

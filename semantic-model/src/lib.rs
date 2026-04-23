@@ -15,9 +15,9 @@ mod relationships;
 mod root_element;
 mod workspace_uri;
 
+pub use evaluation::evaluate_expressions;
 pub use graph::SemanticGraph;
 pub use graph_builder::build_graph_from_doc;
-pub use evaluation::evaluate_expressions;
 pub use import_resolution::{
     resolve_imported_node_ids_for_simple_name, resolve_type_reference_targets,
 };

@@ -126,10 +126,8 @@ fn unique_graph_wide_named_members(
         })
         .collect();
 
-    let qualified_names: HashSet<String> = matches
-        .iter()
-        .map(|id| id.qualified_name.clone())
-        .collect();
+    let qualified_names: HashSet<String> =
+        matches.iter().map(|id| id.qualified_name.clone()).collect();
     if qualified_names.len() == 1 {
         matches
     } else {

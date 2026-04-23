@@ -140,7 +140,9 @@ fn run_stdlib(cli: &Cli, command: &StdlibCommand) -> Result<ExitCode, String> {
         StdlibCommand::ClearCache => {
             let removed = remove_standard_library(&environment.standard_library_paths)?;
             if removed {
-                println!("Cleared materialized standard library data from the spec42 data directory.");
+                println!(
+                    "Cleared materialized standard library data from the spec42 data directory."
+                );
             } else {
                 println!("No materialized standard library data was found.");
             }

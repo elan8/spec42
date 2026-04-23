@@ -243,7 +243,8 @@ fn cross_document_attribute_typing_resolves_via_recursive_namespace_import() {
 }
 
 #[test]
-fn cross_document_attribute_typing_resolves_via_membership_import_from_public_reexported_library_package() {
+fn cross_document_attribute_typing_resolves_via_membership_import_from_public_reexported_library_package(
+) {
     let lib_base = r#"
         standard library package ISQBase {
             attribute def DurationValue;
@@ -278,7 +279,9 @@ fn cross_document_attribute_typing_resolves_via_membership_import_from_public_re
 
     let edges = g.edges_for_uri_as_strings(&uri_main);
     let has_typing = edges.iter().any(|(src, tgt, kind, _)| {
-        *kind == RelationshipKind::Typing && src.ends_with("duration") && tgt.ends_with("DurationValue")
+        *kind == RelationshipKind::Typing
+            && src.ends_with("duration")
+            && tgt.ends_with("DurationValue")
     });
     assert!(
         has_typing,
@@ -332,7 +335,9 @@ fn cross_document_attribute_typing_resolves_with_multiple_wildcard_import_siblin
 
     let edges = g.edges_for_uri_as_strings(&uri_main);
     let has_typing = edges.iter().any(|(src, tgt, kind, _)| {
-        *kind == RelationshipKind::Typing && src.ends_with("duration") && tgt.ends_with("DurationValue")
+        *kind == RelationshipKind::Typing
+            && src.ends_with("duration")
+            && tgt.ends_with("DurationValue")
     });
     assert!(
         has_typing,

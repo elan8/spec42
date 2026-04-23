@@ -9,6 +9,7 @@ pub mod language;
 mod lsp_runtime;
 pub mod semantic_model;
 pub mod semantic_tokens;
+pub mod software_architecture;
 pub mod syntax;
 pub mod validation;
 pub mod views;
@@ -25,12 +26,13 @@ pub use lsp_runtime::run as run_lsp;
 pub use syntax::ast_util::{identification_name, span_to_range, span_to_source_range, SourceRange};
 pub use validation::{validate_paths, ValidationReport, ValidationRequest, ValidationSummary};
 pub use views::dto::{
-    GraphEdgeDto, GraphNodeDto, SysmlClearCacheResultDto, SysmlFeatureInspectorElementDto,
-    SysmlFeatureInspectorElementRefDto, SysmlFeatureInspectorParamsDto,
-    SysmlFeatureInspectorRelationshipDto, SysmlFeatureInspectorResolutionDto,
-    SysmlFeatureInspectorResultDto, SysmlGraphDto, SysmlModelResultDto, SysmlModelStatsDto,
-    SysmlServerCachesDto, SysmlServerMemoryDto, SysmlServerStatsDto, WorkspaceFileModelDto,
-    WorkspaceModelDto, WorkspaceModelSummaryDto,
+    GraphEdgeDto, GraphNodeDto, SoftwareArchitectureModelDto, SoftwareComponentDto,
+    SoftwareDependencyDto, SourceAnchorDto, SysmlClearCacheResultDto,
+    SysmlFeatureInspectorElementDto, SysmlFeatureInspectorElementRefDto,
+    SysmlFeatureInspectorParamsDto, SysmlFeatureInspectorRelationshipDto,
+    SysmlFeatureInspectorResolutionDto, SysmlFeatureInspectorResultDto, SysmlGraphDto,
+    SysmlModelResultDto, SysmlModelStatsDto, SysmlServerCachesDto, SysmlServerMemoryDto,
+    SysmlServerStatsDto, WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
 pub use views::ibd::{build_ibd_for_uri, is_port_like, IbdDataDto};
 pub use views::{

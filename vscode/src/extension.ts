@@ -322,6 +322,8 @@ function getVisualizationViews(): Array<{ id: string; label: string; description
   return [
     { id: "general-view", label: "General", description: "General view (SysML v2 general-view)" },
     { id: "interconnection-view", label: "Interconnection", description: "Interconnection view (internal block and connector routing)" },
+    { id: "software-module-view", label: "Rust Modules", description: "Rust crate and module containment view" },
+    { id: "software-dependency-view", label: "Rust Dependencies", description: "Rust module dependency view from use statements and type references" },
     { id: "action-flow-view", label: "Action Flow", description: "Behavior and flow rendering" },
     { id: "state-transition-view", label: "State Transition", description: "State-machine rendering" },
   ].filter((v) => enabledViews.has(v.id));
@@ -2066,4 +2068,3 @@ export function deactivate(): Thenable<void> | undefined {
   cancelWorkspaceLoad(modelExplorerProvider, "deactivate");
   return client?.stop();
 }
-

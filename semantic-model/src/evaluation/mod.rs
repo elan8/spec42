@@ -163,13 +163,19 @@ impl<'a> EvalEngine<'a> {
         if self.active_stack.contains(node_id) {
             return EvalOutcome::error(
                 EvalStatus::Cycle,
-                format!("cyclic dependency detected while evaluating '{}'", node_id.qualified_name),
+                format!(
+                    "cyclic dependency detected while evaluating '{}'",
+                    node_id.qualified_name
+                ),
             );
         }
         let Some(raw_value) = self.node_source_value(node_id) else {
             return EvalOutcome::error(
                 EvalStatus::Unknown,
-                format!("no evaluable expression source found for '{}'", node_id.qualified_name),
+                format!(
+                    "no evaluable expression source found for '{}'",
+                    node_id.qualified_name
+                ),
             );
         };
         self.active_stack.insert(node_id.clone());
@@ -240,10 +246,9 @@ impl<'a> EvalEngine<'a> {
             Err(EvalStatus::Unknown) => {
                 EvalOutcome::error(EvalStatus::Unknown, "expression could not be resolved")
             }
-            Err(EvalStatus::Unsupported) | Err(EvalStatus::Ok) => EvalOutcome::error(
-                EvalStatus::Unsupported,
-                "expression form is not supported",
-            ),
+            Err(EvalStatus::Unsupported) | Err(EvalStatus::Ok) => {
+                EvalOutcome::error(EvalStatus::Unsupported, "expression form is not supported")
+            }
         }
     }
 
@@ -341,7 +346,6 @@ impl<'a> EvalEngine<'a> {
             .cloned()
             .collect()
     }
-
 }
 
 fn scope_prefixes(graph: &SemanticGraph, current: &SemanticNode) -> Vec<String> {
@@ -363,7 +367,9 @@ fn choose_candidate(candidates: Vec<NodeId>, identifier: &str) -> Result<NodeId,
     sorted.sort_by_key(|candidate| candidate.qualified_name.len());
     let best = sorted[0].clone();
     let best_len = best.qualified_name.len();
-    let second_len = sorted.get(1).map(|candidate| candidate.qualified_name.len());
+    let second_len = sorted
+        .get(1)
+        .map(|candidate| candidate.qualified_name.len());
     if second_len.is_none() || second_len.unwrap_or(best_len + 1) > best_len {
         return Ok(best);
     }
@@ -413,8 +419,7 @@ fn number_to_json(value: f64) -> Value {
         Value::Number(serde_json::Number::from(value as i64))
     } else {
         Value::Number(
-            serde_json::Number::from_f64(value)
-                .unwrap_or_else(|| serde_json::Number::from(0)),
+            serde_json::Number::from_f64(value).unwrap_or_else(|| serde_json::Number::from(0)),
         )
     }
 }
@@ -731,7 +736,11 @@ mod tests {
         };
         let idx = graph.graph.add_node(node);
         graph.node_index_by_id.insert(id.clone(), idx);
-        graph.nodes_by_uri.entry(uri.clone()).or_default().push(id.clone());
+        graph
+            .nodes_by_uri
+            .entry(uri.clone())
+            .or_default()
+            .push(id.clone());
         graph
             .node_ids_by_qualified_name
             .entry(qualified_name.to_string())
@@ -840,7 +849,10 @@ mod tests {
             "attribute",
             "value",
             None,
-            HashMap::from([("value".to_string(), Value::String("1 [m] + 50 [cm]".to_string()))]),
+            HashMap::from([(
+                "value".to_string(),
+                Value::String("1 [m] + 50 [cm]".to_string()),
+            )]),
         );
         evaluate_expressions(&mut graph);
         assert_eq!(
@@ -853,7 +865,9 @@ mod tests {
         );
         assert_eq!(
             node_attr(&graph, &node, EVALUATED_VALUE_KEY),
-            Some(&Value::Number(serde_json::Number::from_f64(1.5).expect("num")))
+            Some(&Value::Number(
+                serde_json::Number::from_f64(1.5).expect("num")
+            ))
         );
     }
 
@@ -869,7 +883,10 @@ mod tests {
             "attribute",
             "value",
             None,
-            HashMap::from([("value".to_string(), Value::String("1 [[m]] + 50 [[cm]]".to_string()))]),
+            HashMap::from([(
+                "value".to_string(),
+                Value::String("1 [[m]] + 50 [[cm]]".to_string()),
+            )]),
         );
         evaluate_expressions(&mut graph);
         assert_eq!(
@@ -894,7 +911,10 @@ mod tests {
             "attribute",
             "value",
             None,
-            HashMap::from([("value".to_string(), Value::String("1 [m] + 1 [ft]".to_string()))]),
+            HashMap::from([(
+                "value".to_string(),
+                Value::String("1 [m] + 1 [ft]".to_string()),
+            )]),
         );
         evaluate_expressions(&mut graph);
         assert_eq!(
@@ -915,7 +935,10 @@ mod tests {
             "attribute",
             "value",
             None,
-            HashMap::from([("value".to_string(), Value::String("1 [m] + 2 [kg]".to_string()))]),
+            HashMap::from([(
+                "value".to_string(),
+                Value::String("1 [m] + 2 [kg]".to_string()),
+            )]),
         );
         evaluate_expressions(&mut graph);
         assert_eq!(
@@ -968,7 +991,10 @@ mod tests {
             "attribute",
             "area",
             None,
-            HashMap::from([("value".to_string(), Value::String("2 [cm] * 3 [m]".to_string()))]),
+            HashMap::from([(
+                "value".to_string(),
+                Value::String("2 [cm] * 3 [m]".to_string()),
+            )]),
         );
         let speed = add_node(
             &mut graph,
@@ -977,7 +1003,10 @@ mod tests {
             "attribute",
             "speed",
             None,
-            HashMap::from([("value".to_string(), Value::String("10 [m] / 2 [s]".to_string()))]),
+            HashMap::from([(
+                "value".to_string(),
+                Value::String("10 [m] / 2 [s]".to_string()),
+            )]),
         );
         evaluate_expressions(&mut graph);
 

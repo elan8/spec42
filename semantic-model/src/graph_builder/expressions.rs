@@ -361,9 +361,9 @@ mod expr_string_tests {
     fn debug_string_literal_with_unit_avoids_double_brackets() {
         let e = node(Expression::LiteralWithUnit {
             value: Box::new(node(Expression::LiteralInteger(1))),
-            unit: Box::new(node(Expression::Bracket(Box::new(node(Expression::FeatureRef(
-                "m".into(),
-            )))))),
+            unit: Box::new(node(Expression::Bracket(Box::new(node(
+                Expression::FeatureRef("m".into()),
+            ))))),
         });
         assert_eq!(expression_to_debug_string(&e), "1 [m]");
     }

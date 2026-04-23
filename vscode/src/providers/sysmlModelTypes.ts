@@ -39,6 +39,34 @@ export interface SysMLGraphDTO {
   edges: GraphEdgeDTO[];
 }
 
+export interface SourceAnchorDTO {
+  filePath: string;
+  range?: RangeDTO;
+}
+
+export interface SoftwareComponentDTO {
+  id: string;
+  name: string;
+  kind: string;
+  parentId?: string;
+  crateName: string;
+  modulePath: string;
+  anchors: SourceAnchorDTO[];
+  isExternal: boolean;
+}
+
+export interface SoftwareDependencyDTO {
+  from: string;
+  to: string;
+  kind: string;
+  sourceAnchor?: SourceAnchorDTO;
+}
+
+export interface SoftwareArchitectureModelDTO {
+  components: SoftwareComponentDTO[];
+  dependencies: SoftwareDependencyDTO[];
+}
+
 export interface SysMLElementDTO {
   id?: string;
   type: string;
@@ -149,6 +177,7 @@ export interface IbdDataDTO {
 export interface SysMLModelResult {
   version: number;
   graph?: SysMLGraphDTO;
+  softwareArchitecture?: SoftwareArchitectureModelDTO;
   generalViewGraph?: SysMLGraphDTO;
   workspaceModel?: WorkspaceModelDTO;
   activityDiagrams?: ActivityDiagramDTO[];
@@ -180,6 +209,7 @@ export interface SysMLVisualizationResult {
   selectedViewName?: string;
   emptyStateMessage?: string;
   graph?: SysMLGraphDTO;
+  softwareArchitecture?: SoftwareArchitectureModelDTO;
   generalViewGraph?: SysMLGraphDTO;
   workspaceModel?: WorkspaceModelDTO;
   activityDiagrams?: ActivityDiagramDTO[];

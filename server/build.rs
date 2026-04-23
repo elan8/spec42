@@ -46,7 +46,9 @@ fn main() {
             process::exit(1);
         })
     } else {
-        eprintln!("spec42 build: downloading SysML v2 Release {DEFAULT_TAG} for embedded stdlib...");
+        eprintln!(
+            "spec42 build: downloading SysML v2 Release {DEFAULT_TAG} for embedded stdlib..."
+        );
         {
             let mut reader = ureq::get(DOWNLOAD_URL)
                 .set("User-Agent", "spec42-build")
@@ -97,13 +99,16 @@ fn repack_sysml_library(full_zip_bytes: &[u8], out_path: &Path) -> Result<(), St
     };
 
     let wanted_prefix = format!("{root}/sysml.library/");
-    let out_file = File::create(out_path).map_err(|e| format!("create {}: {e}", out_path.display()))?;
+    let out_file =
+        File::create(out_path).map_err(|e| format!("create {}: {e}", out_path.display()))?;
     let mut writer = ZipWriter::new(out_file);
     let options = SimpleFileOptions::default();
 
     let mut count = 0usize;
     for i in 0..archive.len() {
-        let mut entry = archive.by_index(i).map_err(|e| format!("zip entry {i}: {e}"))?;
+        let mut entry = archive
+            .by_index(i)
+            .map_err(|e| format!("zip entry {i}: {e}"))?;
         let name = entry.name().to_string();
         if !name.starts_with(&wanted_prefix) || name.ends_with('/') {
             continue;

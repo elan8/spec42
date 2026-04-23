@@ -73,6 +73,7 @@ pub fn empty_model_response(build_start: Instant) -> SysmlModelResultDto {
             nodes: vec![],
             edges: vec![],
         }),
+        software_architecture: None,
         package_groups: None,
         general_view_graph: Some(SysmlGraphDto {
             nodes: vec![],

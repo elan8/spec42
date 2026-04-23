@@ -97,13 +97,7 @@ pub(super) fn build_from_part_def_body_element(
             }
             let exhibit_state_id = NodeId::new(uri, &qualified);
             if let sysml_v2_parser::ast::StateDefBody::Brace { elements } = &es.body {
-                state::build_from_state_body(
-                    elements,
-                    uri,
-                    Some(&qualified),
-                    &exhibit_state_id,
-                    g,
-                );
+                state::build_from_state_body(elements, uri, Some(&qualified), &exhibit_state_id, g);
             }
         }
         PDBE::PortUsage(n) => {
