@@ -2,6 +2,7 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use glob::glob;
 use tower_lsp::lsp_types::{Position, Range};
 use tree_sitter::{Node, Parser, TreeCursor};
 use walkdir::WalkDir;
@@ -57,6 +58,7 @@ struct RustCrate {
     name: String,
     src_dir: PathBuf,
     root_file: PathBuf,
+    dependency_aliases: HashMap<String, String>,
 }
 
 #[derive(Debug, Clone)]
@@ -75,6 +77,33 @@ struct BuildContext {
     known_module_ids: HashSet<String>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum DependencySourceKind {
+    Use,
+    TypeRef,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum DependencyTarget {
+    InternalModule(String),
+    ExternalCrate(String),
+    Ignore,
+}
+
+#[derive(Debug, Clone, Default)]
+struct CargoWorkspaceContext {
+    packages: Vec<CargoPackageContext>,
+    workspace_crates_by_name: HashMap<String, String>,
+}
+
+#[derive(Debug, Clone)]
+struct CargoPackageContext {
+    crate_name: String,
+    src_dir: PathBuf,
+    root_file: PathBuf,
+    dependency_aliases: HashMap<String, String>,
+}
+
 pub fn workspace_contains_rust_code(workspace_root: &Path) -> bool {
     if workspace_root.join("Cargo.toml").exists() {
         return true;
@@ -89,7 +118,21 @@ pub fn workspace_contains_rust_code(workspace_root: &Path) -> bool {
 }
 
 pub fn extract_rust_workspace_architecture(workspace_root: &Path) -> SoftwareArchitectureModel {
-    let crates = discover_rust_crates(workspace_root);
+    let cargo_context = build_cargo_workspace_context(workspace_root);
+    let crates = if cargo_context.packages.is_empty() {
+        discover_rust_crates_fallback(workspace_root)
+    } else {
+        cargo_context
+            .packages
+            .iter()
+            .map(|package| RustCrate {
+                name: package.crate_name.clone(),
+                src_dir: package.src_dir.clone(),
+                root_file: package.root_file.clone(),
+                dependency_aliases: package.dependency_aliases.clone(),
+            })
+            .collect()
+    };
     if crates.is_empty() {
         return SoftwareArchitectureModel::default();
     }
@@ -137,11 +180,13 @@ pub fn extract_rust_workspace_architecture(workspace_root: &Path) -> SoftwareArc
             let import_aliases = build_import_alias_map(&file.use_paths);
             for (path, range) in &file.use_paths {
                 if let Some(target) = resolve_dependency_target(
-                    &krate.name,
+                    krate,
                     &file.module_segments,
                     path,
                     known_modules,
                     &import_aliases,
+                    &cargo_context,
+                    DependencySourceKind::Use,
                 ) {
                     register_dependency(
                         &mut context,
@@ -154,11 +199,13 @@ pub fn extract_rust_workspace_architecture(workspace_root: &Path) -> SoftwareArc
             }
             for (path, range) in &file.type_paths {
                 if let Some(target) = resolve_dependency_target(
-                    &krate.name,
+                    krate,
                     &file.module_segments,
                     path,
                     known_modules,
                     &import_aliases,
+                    &cargo_context,
+                    DependencySourceKind::TypeRef,
                 ) {
                     register_dependency(
                         &mut context,
@@ -201,7 +248,7 @@ pub fn analyze_rust_workspace(workspace_root: &Path) -> SoftwareWorkspaceModel {
     }
 }
 
-fn discover_rust_crates(workspace_root: &Path) -> Vec<RustCrate> {
+fn discover_rust_crates_fallback(workspace_root: &Path) -> Vec<RustCrate> {
     let mut crates = Vec::new();
     for entry in WalkDir::new(workspace_root)
         .follow_links(false)
@@ -229,17 +276,255 @@ fn discover_rust_crates(workspace_root: &Path) -> Vec<RustCrate> {
         let crate_name = extract_package_name(entry.path()).unwrap_or_else(|| {
             package_dir
                 .file_name()
-                .map(|name| name.to_string_lossy().replace('-', "_"))
+                .map(|name| normalize_crate_name(&name.to_string_lossy()))
                 .unwrap_or_else(|| "crate".to_string())
         });
         crates.push(RustCrate {
             name: crate_name,
             src_dir,
             root_file,
+            dependency_aliases: HashMap::new(),
         });
     }
     crates.sort_by(|left, right| left.name.cmp(&right.name));
     crates
+}
+
+fn build_cargo_workspace_context(workspace_root: &Path) -> CargoWorkspaceContext {
+    let root_manifest_path = workspace_root.join("Cargo.toml");
+    let root_manifest = parse_cargo_manifest(&root_manifest_path);
+    let workspace_dependency_aliases = root_manifest
+        .as_ref()
+        .map(parse_workspace_dependency_aliases)
+        .unwrap_or_default();
+    let member_manifest_paths =
+        discover_workspace_member_manifests(workspace_root, root_manifest.as_ref());
+
+    let mut packages = Vec::new();
+    let mut workspace_crates_by_name = HashMap::new();
+    for manifest_path in member_manifest_paths {
+        let Some(package) =
+            parse_cargo_package_context(&manifest_path, &workspace_dependency_aliases)
+        else {
+            continue;
+        };
+        workspace_crates_by_name.insert(package.crate_name.clone(), package.crate_name.clone());
+        packages.push(package);
+    }
+    packages.sort_by(|left, right| left.crate_name.cmp(&right.crate_name));
+
+    CargoWorkspaceContext {
+        packages,
+        workspace_crates_by_name,
+    }
+}
+
+fn discover_workspace_member_manifests(
+    workspace_root: &Path,
+    root_manifest: Option<&toml::Value>,
+) -> Vec<PathBuf> {
+    let root_manifest_path = workspace_root.join("Cargo.toml");
+    let mut manifests = BTreeSet::new();
+
+    let root_is_package = root_manifest
+        .and_then(|manifest| manifest.get("package"))
+        .and_then(toml::Value::as_table)
+        .is_some();
+    if root_is_package && root_manifest_path.is_file() {
+        manifests.insert(root_manifest_path.clone());
+    }
+
+    let workspace_table = root_manifest
+        .and_then(|manifest| manifest.get("workspace"))
+        .and_then(toml::Value::as_table);
+    let Some(workspace_table) = workspace_table else {
+        if manifests.is_empty() && root_manifest_path.is_file() {
+            manifests.insert(root_manifest_path);
+        }
+        return manifests.into_iter().collect();
+    };
+
+    let excludes = workspace_table
+        .get("exclude")
+        .and_then(toml::Value::as_array)
+        .map(|items| {
+            items.iter()
+                .filter_map(toml::Value::as_str)
+                .map(normalize_glob_pattern)
+                .collect::<Vec<_>>()
+        })
+        .unwrap_or_default();
+    let members = workspace_table
+        .get("members")
+        .and_then(toml::Value::as_array)
+        .map(|items| {
+            items.iter()
+                .filter_map(toml::Value::as_str)
+                .map(normalize_glob_pattern)
+                .collect::<Vec<_>>()
+        })
+        .unwrap_or_default();
+
+    for member in members {
+        let pattern = workspace_root.join(&member).to_string_lossy().replace('\\', "/");
+        let Ok(paths) = glob(&pattern) else {
+            continue;
+        };
+        for path in paths.filter_map(Result::ok) {
+            let manifest_path = if path.is_dir() {
+                path.join("Cargo.toml")
+            } else if path
+                .file_name()
+                .is_some_and(|file_name| file_name == "Cargo.toml")
+            {
+                path
+            } else {
+                path.join("Cargo.toml")
+            };
+            if !manifest_path.is_file() {
+                continue;
+            }
+            let relative = manifest_path
+                .strip_prefix(workspace_root)
+                .ok()
+                .map(|path| path.to_string_lossy().replace('\\', "/"))
+                .unwrap_or_default();
+            if excludes
+                .iter()
+                .any(|exclude| glob_pattern_matches(exclude, &relative))
+            {
+                continue;
+            }
+            manifests.insert(manifest_path);
+        }
+    }
+
+    if manifests.is_empty() && root_manifest_path.is_file() {
+        manifests.insert(root_manifest_path);
+    }
+
+    manifests.into_iter().collect()
+}
+
+fn normalize_glob_pattern(pattern: &str) -> String {
+    pattern.trim().replace('\\', "/")
+}
+
+fn glob_pattern_matches(pattern: &str, value: &str) -> bool {
+    glob::Pattern::new(pattern)
+        .map(|compiled| compiled.matches(value))
+        .unwrap_or(false)
+}
+
+fn parse_cargo_manifest(cargo_toml: &Path) -> Option<toml::Value> {
+    let content = fs::read_to_string(cargo_toml).ok()?;
+    toml::from_str(&content).ok()
+}
+
+fn parse_cargo_package_context(
+    cargo_toml: &Path,
+    workspace_dependency_aliases: &HashMap<String, String>,
+) -> Option<CargoPackageContext> {
+    let manifest = parse_cargo_manifest(cargo_toml)?;
+    let package_name = manifest
+        .get("package")
+        .and_then(toml::Value::as_table)
+        .and_then(|package| package.get("name"))
+        .and_then(toml::Value::as_str)?
+        .to_string();
+    let crate_name = normalize_crate_name(&package_name);
+    let package_dir = cargo_toml.parent()?.to_path_buf();
+    let src_dir = package_dir.join("src");
+    if !src_dir.is_dir() {
+        return None;
+    }
+    let root_file = if src_dir.join("lib.rs").is_file() {
+        src_dir.join("lib.rs")
+    } else if src_dir.join("main.rs").is_file() {
+        src_dir.join("main.rs")
+    } else {
+        return None;
+    };
+
+    Some(CargoPackageContext {
+        crate_name,
+        src_dir,
+        root_file,
+        dependency_aliases: parse_package_dependency_aliases(
+            &manifest,
+            workspace_dependency_aliases,
+        ),
+    })
+}
+
+fn parse_workspace_dependency_aliases(manifest: &toml::Value) -> HashMap<String, String> {
+    manifest
+        .get("workspace")
+        .and_then(toml::Value::as_table)
+        .and_then(|workspace| workspace.get("dependencies"))
+        .map(|value| parse_dependency_alias_map_from_value(value, &HashMap::new()))
+        .unwrap_or_default()
+}
+
+fn parse_package_dependency_aliases(
+    manifest: &toml::Value,
+    workspace_dependency_aliases: &HashMap<String, String>,
+) -> HashMap<String, String> {
+    let mut aliases = HashMap::new();
+    for key in ["dependencies", "dev-dependencies", "build-dependencies"] {
+        let Some(value) = manifest.get(key) else {
+            continue;
+        };
+        aliases.extend(parse_dependency_alias_map_from_value(
+            value,
+            workspace_dependency_aliases,
+        ));
+    }
+    aliases
+}
+
+fn parse_dependency_alias_map_from_value(
+    value: &toml::Value,
+    workspace_dependency_aliases: &HashMap<String, String>,
+) -> HashMap<String, String> {
+    let Some(table) = value.as_table() else {
+        return HashMap::new();
+    };
+    let mut aliases = HashMap::new();
+    for (alias, spec) in table {
+        let Some(canonical) =
+            dependency_canonical_name(alias, spec, workspace_dependency_aliases)
+        else {
+            continue;
+        };
+        aliases.insert(normalize_crate_name(alias), normalize_crate_name(&canonical));
+    }
+    aliases
+}
+
+fn dependency_canonical_name(
+    alias: &str,
+    spec: &toml::Value,
+    workspace_dependency_aliases: &HashMap<String, String>,
+) -> Option<String> {
+    if spec.is_str() {
+        return Some(alias.to_string());
+    }
+    let table = spec.as_table()?;
+    if let Some(package_name) = table.get("package").and_then(toml::Value::as_str) {
+        return Some(package_name.to_string());
+    }
+    if table
+        .get("workspace")
+        .and_then(toml::Value::as_bool)
+        .unwrap_or(false)
+    {
+        return workspace_dependency_aliases
+            .get(&normalize_crate_name(alias))
+            .cloned()
+            .or_else(|| Some(alias.to_string()));
+    }
+    Some(alias.to_string())
 }
 
 fn extract_package_name(cargo_toml: &Path) -> Option<String> {
@@ -257,7 +542,7 @@ fn extract_package_name(cargo_toml: &Path) -> Option<String> {
         let (_, value) = trimmed.split_once('=')?;
         let name = value.trim().trim_matches('"');
         if !name.is_empty() {
-            return Some(name.replace('-', "_"));
+            return Some(normalize_crate_name(name));
         }
     }
     None
@@ -374,9 +659,11 @@ fn collect_file_data(
                     }
                 }
             }
-            kind if is_type_context(kind) => {
-                collect_type_paths(node, source, type_paths, false);
+            "field_declaration" | "parameter" | "type_alias" | "const_item" | "static_item"
+            | "let_declaration" | "tuple_struct_pattern" | "tuple_struct_item" => {
+                collect_declared_type_paths(node, source, type_paths);
             }
+            "function_item" => collect_function_type_paths(node, source, type_paths),
             _ => {}
         }
 
@@ -390,27 +677,19 @@ fn collect_file_data(
     }
 }
 
-fn is_type_context(kind: &str) -> bool {
-    matches!(
-        kind,
-        "field_declaration"
-            | "parameter"
-            | "function_item"
-            | "type_alias"
-            | "const_item"
-            | "static_item"
-            | "let_declaration"
-            | "tuple_struct_pattern"
-            | "tuple_struct_item"
-    )
+fn collect_declared_type_paths(node: Node, source: &str, out: &mut Vec<(String, Range)>) {
+    if let Some(type_node) = node.child_by_field_name("type") {
+        collect_type_paths(type_node, source, out);
+    }
 }
 
-fn collect_type_paths(
-    node: Node,
-    source: &str,
-    out: &mut Vec<(String, Range)>,
-    nested_in_type: bool,
-) {
+fn collect_function_type_paths(node: Node, source: &str, out: &mut Vec<(String, Range)>) {
+    if let Some(return_type) = node.child_by_field_name("return_type") {
+        collect_type_paths(return_type, source, out);
+    }
+}
+
+fn collect_type_paths(node: Node, source: &str, out: &mut Vec<(String, Range)>) {
     let kind = node.kind();
     let is_path_like = matches!(kind, "scoped_type_identifier" | "type_identifier");
     if is_path_like {
@@ -420,18 +699,9 @@ fn collect_type_paths(
             return;
         }
     }
-    let next_nested = nested_in_type
-        || kind.contains("type")
-        || matches!(kind, "parameter" | "field_declaration" | "function_item");
     let mut cursor = node.walk();
     for child in node.named_children(&mut cursor) {
-        collect_type_paths(child, source, out, next_nested);
-    }
-    if kind == "identifier" && nested_in_type {
-        let text = utf8_text(node, source);
-        if is_meaningful_type_path(&text) {
-            out.push((text, node_range(node)));
-        }
+        collect_type_paths(child, source, out);
     }
 }
 
@@ -676,11 +946,13 @@ fn build_import_alias_map(use_paths: &[(String, Range)]) -> HashMap<String, Vec<
 }
 
 fn resolve_dependency_target(
-    crate_name: &str,
+    krate: &RustCrate,
     current_module: &[String],
     path: &str,
     known_modules: &BTreeSet<Vec<String>>,
     aliases: &HashMap<String, Vec<String>>,
+    cargo_context: &CargoWorkspaceContext,
+    source_kind: DependencySourceKind,
 ) -> Option<String> {
     let segments = split_path_segments(path);
     if segments.is_empty() {
@@ -715,27 +987,116 @@ fn resolve_dependency_target(
         segments
     };
 
+    match classify_dependency_target(
+        krate,
+        &resolved_segments,
+        known_modules,
+        cargo_context,
+        source_kind,
+    ) {
+        DependencyTarget::InternalModule(target_id) => Some(target_id),
+        DependencyTarget::ExternalCrate(crate_name) => Some(external_crate_id(&crate_name)),
+        DependencyTarget::Ignore => None,
+    }
+}
+
+fn classify_dependency_target(
+    krate: &RustCrate,
+    resolved_segments: &[String],
+    known_modules: &BTreeSet<Vec<String>>,
+    cargo_context: &CargoWorkspaceContext,
+    source_kind: DependencySourceKind,
+) -> DependencyTarget {
     if resolved_segments.is_empty() {
-        return None;
+        return DependencyTarget::Ignore;
     }
 
-    if resolved_segments[0] == "crate" || resolved_segments[0] == crate_name {
-        let internal_segments = resolved_segments.into_iter().skip(1).collect::<Vec<_>>();
+    let first = resolved_segments[0].as_str();
+    if is_ignored_external_segment(first) {
+        return DependencyTarget::Ignore;
+    }
+
+    if first == "crate" || first == krate.name {
+        let internal_segments = resolved_segments.iter().skip(1).cloned().collect::<Vec<_>>();
         let target_module_segments = deepest_known_module_prefix(&internal_segments, known_modules);
         let target_id = if target_module_segments.is_empty() {
-            crate_id(crate_name)
+            crate_id(&krate.name)
         } else {
-            module_id(crate_name, &target_module_segments)
+            module_id(&krate.name, &target_module_segments)
         };
-        return Some(target_id);
+        return DependencyTarget::InternalModule(target_id);
     }
 
-    let target_module_segments = deepest_known_module_prefix(&resolved_segments, known_modules);
+    let target_module_segments = deepest_known_module_prefix(resolved_segments, known_modules);
     if !target_module_segments.is_empty() {
-        return Some(module_id(crate_name, &target_module_segments));
+        return DependencyTarget::InternalModule(module_id(&krate.name, &target_module_segments));
     }
 
-    Some(external_crate_id(&resolved_segments[0]))
+    if let Some(canonical_dependency) = krate.dependency_aliases.get(first) {
+        if cargo_context
+            .workspace_crates_by_name
+            .contains_key(canonical_dependency)
+        {
+            return DependencyTarget::InternalModule(crate_id(canonical_dependency));
+        }
+        return DependencyTarget::ExternalCrate(canonical_dependency.clone());
+    }
+
+    if cargo_context.workspace_crates_by_name.contains_key(first) {
+        return DependencyTarget::InternalModule(crate_id(first));
+    }
+
+    if !krate.dependency_aliases.is_empty() || !cargo_context.packages.is_empty() {
+        return DependencyTarget::Ignore;
+    }
+
+    if !should_treat_as_external_crate(resolved_segments, source_kind) {
+        return DependencyTarget::Ignore;
+    }
+
+    DependencyTarget::ExternalCrate(resolved_segments[0].clone())
+}
+
+fn should_treat_as_external_crate(
+    resolved_segments: &[String],
+    source_kind: DependencySourceKind,
+) -> bool {
+    let Some(first) = resolved_segments.first() else {
+        return false;
+    };
+    if !is_crate_like_segment(first) {
+        return false;
+    }
+
+    match source_kind {
+        DependencySourceKind::Use => true,
+        DependencySourceKind::TypeRef => resolved_segments.len() > 1,
+    }
+}
+
+fn is_ignored_external_segment(segment: &str) -> bool {
+    matches!(
+        segment,
+        "Self"
+            | "self"
+            | "super"
+            | "crate"
+            | "default"
+            | "new"
+            | "from"
+            | "into"
+    )
+}
+
+fn is_crate_like_segment(segment: &str) -> bool {
+    let mut chars = segment.chars();
+    let Some(first) = chars.next() else {
+        return false;
+    };
+    if !first.is_ascii_lowercase() {
+        return false;
+    }
+    chars.all(|ch| ch.is_ascii_lowercase() || ch.is_ascii_digit() || ch == '_')
 }
 
 fn deepest_known_module_prefix(
@@ -790,15 +1151,16 @@ fn register_dependency(
 
 fn split_path_segments(path: &str) -> Vec<String> {
     path.split("::")
-        .flat_map(|segment| segment.split('.'))
         .map(str::trim)
         .filter(|segment| !segment.is_empty())
         .map(|segment| {
-            segment
+            normalize_crate_name(
+                &segment
                 .trim_start_matches('&')
                 .trim_start_matches("mut ")
                 .trim_matches(|ch: char| !ch.is_alphanumeric() && ch != '_')
-                .to_string()
+                .to_string(),
+            )
         })
         .filter(|segment| !segment.is_empty())
         .collect()
@@ -819,6 +1181,10 @@ impl RustFileInfo {
 
 fn normalize_file_path(path: &Path) -> String {
     path.to_string_lossy().replace('\\', "/")
+}
+
+fn normalize_crate_name(name: &str) -> String {
+    name.replace('-', "_")
 }
 
 fn crate_id(crate_name: &str) -> String {
@@ -884,7 +1250,7 @@ mod tests {
         let root = dir.path();
         fs::write(
             root.join("Cargo.toml"),
-            "[package]\nname = \"demo_app\"\nversion = \"0.1.0\"\n",
+            "[package]\nname = \"demo_app\"\nversion = \"0.1.0\"\n\n[dependencies]\nserde = \"1\"\n",
         )
         .expect("cargo");
         fs::create_dir_all(root.join("src/domain")).expect("mkdir");
@@ -931,14 +1297,169 @@ mod tests {
         assert!(model.components.iter().any(|component| component.id
             == module_id("demo_app", &["domain".to_string(), "model".to_string()])));
         assert!(model.dependencies.iter().any(|dependency| {
-            dependency.from == crate_id("demo_app")
-                && dependency.to
-                    == module_id("demo_app", &["domain".to_string(), "model".to_string()])
-                && dependency.kind == "use"
-        }));
-        assert!(model.dependencies.iter().any(|dependency| {
             dependency.from == module_id("demo_app", &["domain".to_string(), "model".to_string()])
                 && dependency.to == external_crate_id("serde")
+        }));
+        assert!(!model.components.iter().any(|component| {
+            component.is_external
+                && matches!(component.name.as_str(), "Self" | "default" | "new" | "Serialize")
+        }));
+    }
+
+    #[test]
+    fn filters_obvious_type_ref_noise_from_external_components() {
+        let dir = tempdir().expect("tempdir");
+        let root = dir.path();
+        fs::write(
+            root.join("Cargo.toml"),
+            "[package]\nname = \"noise_demo\"\nversion = \"0.1.0\"\n\n[dependencies]\nserde = \"1\"\n",
+        )
+        .expect("cargo");
+        fs::create_dir_all(root.join("src")).expect("mkdir");
+        fs::write(
+            root.join("src/lib.rs"),
+            r#"
+                use serde::Serialize;
+
+                pub enum Mode {
+                    After,
+                    All,
+                }
+
+                pub struct Config;
+
+                impl Default for Config {
+                    fn default() -> Self {
+                        Self::new()
+                    }
+                }
+
+                impl Config {
+                    pub fn new() -> Self {
+                        Config
+                    }
+
+                    pub fn encode(value: foo::Bar) -> impl Serialize {
+                        value.render()
+                    }
+                }
+            "#,
+        )
+        .expect("lib");
+
+        let model = extract_rust_workspace_architecture(root);
+        let external_names = model
+            .components
+            .iter()
+            .filter(|component| component.is_external)
+            .map(|component| component.name.as_str())
+            .collect::<Vec<_>>();
+
+        assert!(external_names.contains(&"serde"));
+        assert!(!external_names.contains(&"Self"));
+        assert!(!external_names.contains(&"default"));
+        assert!(!external_names.contains(&"new"));
+        assert!(!external_names.contains(&"After"));
+        assert!(!external_names.contains(&"All"));
+        assert!(!external_names.contains(&"Serialize"));
+    }
+
+    #[test]
+    fn resolves_workspace_crate_references_as_internal_crates() {
+        let dir = tempdir().expect("tempdir");
+        let root = dir.path();
+        fs::write(
+            root.join("Cargo.toml"),
+            "[workspace]\nmembers = [\"app\", \"shared\"]\n",
+        )
+        .expect("workspace cargo");
+
+        fs::create_dir_all(root.join("app/src")).expect("app src");
+        fs::write(
+            root.join("app/Cargo.toml"),
+            r#"[package]
+name = "app"
+version = "0.1.0"
+
+[dependencies]
+shared = { path = "../shared" }
+"#,
+        )
+        .expect("app cargo");
+        fs::write(
+            root.join("app/src/lib.rs"),
+            r#"
+                use shared::Api;
+
+                pub fn run(api: shared::Api) -> shared::Api {
+                    api
+                }
+            "#,
+        )
+        .expect("app lib");
+
+        fs::create_dir_all(root.join("shared/src")).expect("shared src");
+        fs::write(
+            root.join("shared/Cargo.toml"),
+            r#"[package]
+name = "shared"
+version = "0.1.0"
+"#,
+        )
+        .expect("shared cargo");
+        fs::write(
+            root.join("shared/src/lib.rs"),
+            "pub struct Api;\n",
+        )
+        .expect("shared lib");
+
+        let model = extract_rust_workspace_architecture(root);
+
+        assert!(model.dependencies.iter().any(|dependency| {
+            dependency.from == crate_id("app")
+                && dependency.to == crate_id("shared")
+        }));
+        assert!(!model.components.iter().any(|component| {
+            component.is_external && component.name == "shared"
+        }));
+    }
+
+    #[test]
+    fn resolves_renamed_dependencies_to_canonical_external_crates() {
+        let dir = tempdir().expect("tempdir");
+        let root = dir.path();
+        fs::write(
+            root.join("Cargo.toml"),
+            r#"[package]
+name = "rename_demo"
+version = "0.1.0"
+
+[dependencies]
+json = { package = "serde_json", version = "1" }
+"#,
+        )
+        .expect("cargo");
+        fs::create_dir_all(root.join("src")).expect("src");
+        fs::write(
+            root.join("src/lib.rs"),
+            r#"
+                pub fn parse(value: json::Value) -> json::Value {
+                    value
+                }
+            "#,
+        )
+        .expect("lib");
+
+        let model = extract_rust_workspace_architecture(root);
+
+        assert!(model.components.iter().any(|component| {
+            component.is_external && component.name == "serde_json"
+        }));
+        assert!(!model.components.iter().any(|component| {
+            component.is_external && component.name == "json"
+        }));
+        assert!(model.dependencies.iter().any(|dependency| {
+            dependency.to == external_crate_id("serde_json")
         }));
     }
 }
