@@ -75,7 +75,10 @@ fn normalized_membership_target(target: &str) -> String {
     target.trim().trim_end_matches("::**").trim().to_string()
 }
 
-fn has_node_with_qualified_name_or_disambiguated_variant(graph: &SemanticGraph, base: &str) -> bool {
+fn has_node_with_qualified_name_or_disambiguated_variant(
+    graph: &SemanticGraph,
+    base: &str,
+) -> bool {
     if graph
         .nodes_by_uri
         .values()
@@ -92,7 +95,10 @@ fn has_node_with_qualified_name_or_disambiguated_variant(graph: &SemanticGraph, 
         .any(|id| id.qualified_name.starts_with(&disambiguated_prefix))
 }
 
-fn import_target_resolves(graph: &SemanticGraph, import_node: &crate::semantic_model::SemanticNode) -> bool {
+fn import_target_resolves(
+    graph: &SemanticGraph,
+    import_node: &crate::semantic_model::SemanticNode,
+) -> bool {
     let Some(target) = import_target(import_node) else {
         return false;
     };
@@ -326,31 +332,33 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
             ],
         )
         .is_empty();
-        let resolved_via_graph_name_fallback = graph.nodes_named(&normalized_type_ref).iter().any(
-            |candidate| {
-                candidate.id.uri == *uri
-                    && matches!(
-                        candidate.element_kind.as_str(),
-                        "part def"
-                            | "port def"
-                            | "interface"
-                            | "item def"
-                            | "attribute def"
-                            | "action def"
-                            | "actor def"
-                            | "occurrence def"
-                            | "flow def"
-                            | "allocation def"
-                            | "state def"
-                            | "requirement def"
-                            | "use case def"
-                            | "concern def"
-                            | "enum def"
-                            | "alias"
-                            | "kermlDecl"
-                    )
-            },
-        );
+        let resolved_via_graph_name_fallback =
+            graph
+                .nodes_named(&normalized_type_ref)
+                .iter()
+                .any(|candidate| {
+                    candidate.id.uri == *uri
+                        && matches!(
+                            candidate.element_kind.as_str(),
+                            "part def"
+                                | "port def"
+                                | "interface"
+                                | "item def"
+                                | "attribute def"
+                                | "action def"
+                                | "actor def"
+                                | "occurrence def"
+                                | "flow def"
+                                | "allocation def"
+                                | "state def"
+                                | "requirement def"
+                                | "use case def"
+                                | "concern def"
+                                | "enum def"
+                                | "alias"
+                                | "kermlDecl"
+                        )
+                });
         let allow_graph_name_fallback = !has_import_in_scope(graph, node);
         if has_resolved_type
             || resolved_via_import_scope
@@ -435,8 +443,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
                 ],
             )
             .is_empty();
-            let resolved_via_graph_name_fallback = graph.nodes_named(&normalized).iter().any(
-                |candidate| {
+            let resolved_via_graph_name_fallback =
+                graph.nodes_named(&normalized).iter().any(|candidate| {
                     candidate.id.uri == *uri
                         && matches!(
                             candidate.element_kind.as_str(),
@@ -458,8 +466,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
                                 | "alias"
                                 | "kermlDecl"
                         )
-                },
-            );
+                });
             let allow_graph_name_fallback = !has_import_in_scope(graph, node);
             if resolved_via_import_scope
                 || (allow_graph_name_fallback && resolved_via_graph_name_fallback)
@@ -536,7 +543,9 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
         if feature_name.is_empty() {
             continue;
         }
-        let ResolveResult::Resolved(target_id) = resolve_member_via_type(graph, owner, feature_name) else {
+        let ResolveResult::Resolved(target_id) =
+            resolve_member_via_type(graph, owner, feature_name)
+        else {
             continue;
         };
         let Some(target) = graph.get_node(&target_id) else {
@@ -570,14 +579,22 @@ fn should_suppress_builder_diagnostic(
     code: &str,
     message: &str,
 ) -> bool {
-    if !matches!(code, "unresolved_satisfy_source" | "unresolved_satisfy_target") {
+    if !matches!(
+        code,
+        "unresolved_satisfy_source" | "unresolved_satisfy_target"
+    ) {
         return false;
     }
     let Some(reference_name) = extract_single_quoted_value(message) else {
         return false;
     };
     if matches!(
-        resolve_expression_endpoint_strict(graph, uri, Some(diagnostic_container_prefix(node)), &reference_name),
+        resolve_expression_endpoint_strict(
+            graph,
+            uri,
+            Some(diagnostic_container_prefix(node)),
+            &reference_name
+        ),
         ResolveResult::Resolved(_)
     ) {
         return true;
@@ -617,7 +634,9 @@ impl crate::host::config::SemanticCheckProvider for DefaultSemanticChecks {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::semantic_model::{add_cross_document_edges_for_uri, build_graph_from_doc, SemanticNode};
+    use crate::semantic_model::{
+        add_cross_document_edges_for_uri, build_graph_from_doc, SemanticNode,
+    };
     use tower_lsp::lsp_types::{Position, Range};
 
     #[test]
@@ -806,8 +825,7 @@ mod tests {
         let root_uri = Url::from_file_path(&root).expect("root uri");
         let components_uri =
             Url::from_file_path(root.join("TechnicalComponentsPackage.sysml")).expect("components");
-        let system_uri =
-            Url::from_file_path(root.join("SystemPackage.sysml")).expect("system");
+        let system_uri = Url::from_file_path(root.join("SystemPackage.sysml")).expect("system");
 
         let mut state = ServerState {
             workspace_roots: vec![root_uri.clone()],
@@ -1166,11 +1184,15 @@ mod tests {
             })
             .collect();
         assert!(
-            implicit_redefine.iter().any(|d| d.message.contains("inherited part")),
+            implicit_redefine
+                .iter()
+                .any(|d| d.message.contains("inherited part")),
             "expected inherited part implicit redefinition diagnostic: {implicit_redefine:#?}"
         );
         assert!(
-            implicit_redefine.iter().any(|d| d.message.contains("inherited port")),
+            implicit_redefine
+                .iter()
+                .any(|d| d.message.contains("inherited port")),
             "expected inherited port implicit redefinition diagnostic: {implicit_redefine:#?}"
         );
     }

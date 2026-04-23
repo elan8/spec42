@@ -23,6 +23,7 @@ pub(crate) struct ServerState {
     pub(crate) startup_trace_id: Option<String>,
     pub(crate) code_lens_enabled: bool,
     pub(crate) perf_logging_enabled: bool,
+    pub(crate) semantic_index_ready: bool,
     pub(crate) semantic_state_version: u64,
     pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
     pub(crate) symbol_table: Vec<SymbolEntry>,

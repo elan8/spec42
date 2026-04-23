@@ -88,7 +88,9 @@ fn lsp_code_lens_does_not_emit_inherited_attribute_lines_for_part_defs() {
         "textDocument/codeLens",
         serde_json::json!({"textDocument":{"uri":uri}}),
     );
-    let lenses = response["result"].as_array().expect("code lens result array");
+    let lenses = response["result"]
+        .as_array()
+        .expect("code lens result array");
     let labels = lenses
         .iter()
         .filter_map(|lens| lens["command"]["title"].as_str())
@@ -122,7 +124,9 @@ fn lsp_code_lens_does_not_anchor_inherited_attributes_in_part_body() {
         "textDocument/codeLens",
         serde_json::json!({"textDocument":{"uri":uri}}),
     );
-    let lenses = response["result"].as_array().expect("code lens result array");
+    let lenses = response["result"]
+        .as_array()
+        .expect("code lens result array");
     let labels = lenses
         .iter()
         .filter_map(|lens| lens["command"]["title"].as_str())

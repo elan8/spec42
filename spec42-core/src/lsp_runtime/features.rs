@@ -10,8 +10,7 @@ use crate::language::{
     collect_document_symbols, collect_folding_ranges, completion_prefix, find_reference_ranges,
     format_document, is_reserved_keyword, keyword_doc, keyword_hover_markdown,
     line_prefix_at_position, suggest_create_matching_part_def_quick_fix,
-    suggest_explicit_redefinition_quick_fix,
-    suggest_manage_custom_libraries_quick_fix,
+    suggest_explicit_redefinition_quick_fix, suggest_manage_custom_libraries_quick_fix,
     suggest_wrap_in_package, sysml_keywords, word_at_position,
 };
 use crate::semantic_model::{self, ResolveResult};
@@ -64,9 +63,19 @@ const BODY_CONTEXT_KEYWORDS: &[&str] = &[
 ];
 const DECLARATION_MODIFIER_KEYWORDS: &[&str] = &["def"];
 
+const TIER_CONTEXTUAL_SNIPPET: i32 = 7000;
+const TIER_EXACT_SEMANTIC: i32 = 6000;
+const TIER_CONTEXT_COMPATIBLE_SAME_SCOPE: i32 = 5000;
+const TIER_SAME_FILE_COMPATIBLE: i32 = 4000;
+const TIER_WORKSPACE_COMPATIBLE: i32 = 3000;
+const TIER_KEYWORD_FALLBACK: i32 = 2000;
+const TIER_GENERIC_SYMBOL: i32 = 1000;
+
+const COMPLETION_RESOLVE_DATA_KEY: &str = "spec42Completion";
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum CompletionContext {
-    General {
+    TopLevelKeyword {
         prefix: String,
     },
     TypeReference {
@@ -89,7 +98,10 @@ enum CompletionContext {
         prefix: String,
         keyword: String,
     },
-    BodyContext {
+    BodyStatement {
+        prefix: String,
+    },
+    General {
         prefix: String,
     },
 }
@@ -97,13 +109,14 @@ enum CompletionContext {
 impl CompletionContext {
     fn prefix(&self) -> &str {
         match self {
-            CompletionContext::General { prefix }
+            CompletionContext::TopLevelKeyword { prefix }
             | CompletionContext::TypeReference { prefix, .. }
             | CompletionContext::QualifiedReference { prefix, .. }
             | CompletionContext::MemberReference { prefix, .. }
             | CompletionContext::DeclarationName { prefix }
             | CompletionContext::DeclarationModifier { prefix, .. }
-            | CompletionContext::BodyContext { prefix } => prefix,
+            | CompletionContext::BodyStatement { prefix }
+            | CompletionContext::General { prefix } => prefix,
         }
     }
 }
@@ -112,6 +125,7 @@ impl CompletionContext {
 struct CompletionCandidate {
     label: String,
     item: CompletionItem,
+    tier: i32,
     score: i32,
 }
 
@@ -120,6 +134,17 @@ struct CompletionSemanticHints {
     same_file_uri: Option<Url>,
     preferred_names: HashSet<String>,
     container_names: HashSet<String>,
+}
+
+#[derive(Debug, Clone)]
+struct CompletionEditShape {
+    replace_range: Range,
+}
+
+#[derive(Debug, Clone)]
+struct CompletionResolveData {
+    detail: Option<String>,
+    documentation: Option<String>,
 }
 
 fn detect_completion_context(line_prefix: &str) -> CompletionContext {
@@ -132,7 +157,7 @@ fn detect_completion_context(line_prefix: &str) -> CompletionContext {
 
     let trimmed = line_prefix.trim_end();
     if trimmed.is_empty() {
-        return CompletionContext::BodyContext {
+        return CompletionContext::TopLevelKeyword {
             prefix: String::new(),
         };
     }
@@ -181,8 +206,14 @@ fn detect_completion_context(line_prefix: &str) -> CompletionContext {
         }
     }
 
+    if before_token.trim().is_empty() {
+        return CompletionContext::TopLevelKeyword {
+            prefix: raw_token.to_string(),
+        };
+    }
+
     if before_token.trim_end().ends_with('{') {
-        return CompletionContext::BodyContext {
+        return CompletionContext::BodyStatement {
             prefix: raw_token.to_string(),
         };
     }
@@ -337,12 +368,40 @@ fn completion_semantic_hints(
             }
         }
         CompletionContext::DeclarationModifier { .. } => {}
-        CompletionContext::General { .. }
+        CompletionContext::TopLevelKeyword { .. }
+        | CompletionContext::General { .. }
         | CompletionContext::DeclarationName { .. }
-        | CompletionContext::BodyContext { .. } => {}
+        | CompletionContext::BodyStatement { .. } => {}
     }
 
     hints
+}
+
+fn refine_completion_context(
+    state: &ServerState,
+    uri: &Url,
+    pos: Position,
+    context: CompletionContext,
+) -> CompletionContext {
+    let Some(node) = state.semantic_graph.find_deepest_node_at_position(uri, pos) else {
+        return context;
+    };
+
+    match context {
+        CompletionContext::TopLevelKeyword { prefix }
+            if body_like_context_node(&node.element_kind) =>
+        {
+            CompletionContext::BodyStatement { prefix }
+        }
+        other => other,
+    }
+}
+
+fn body_like_context_node(kind: &str) -> bool {
+    matches!(
+        kind,
+        "package" | "part def" | "part" | "port def" | "interface"
+    )
 }
 
 fn direct_child_names(
@@ -384,62 +443,291 @@ fn member_candidate_names(
     out
 }
 
+fn completion_edit_shape(pos: Position, prefix: &str) -> CompletionEditShape {
+    let prefix_len = prefix.chars().count() as u32;
+    let start_character = pos.character.saturating_sub(prefix_len);
+    CompletionEditShape {
+        replace_range: Range::new(
+            Position::new(pos.line, start_character),
+            Position::new(pos.line, pos.character),
+        ),
+    }
+}
+
+fn symbol_completion_kind(kind: SymbolKind) -> CompletionItemKind {
+    match kind {
+        SymbolKind::CLASS => CompletionItemKind::CLASS,
+        SymbolKind::INTERFACE => CompletionItemKind::INTERFACE,
+        SymbolKind::FUNCTION => CompletionItemKind::FUNCTION,
+        SymbolKind::PROPERTY => CompletionItemKind::PROPERTY,
+        SymbolKind::MODULE => CompletionItemKind::MODULE,
+        SymbolKind::OBJECT | SymbolKind::VARIABLE => CompletionItemKind::VARIABLE,
+        SymbolKind::CONSTANT => CompletionItemKind::CONSTANT,
+        SymbolKind::ENUM => CompletionItemKind::ENUM,
+        SymbolKind::EVENT => CompletionItemKind::EVENT,
+        _ => CompletionItemKind::REFERENCE,
+    }
+}
+
+fn completion_item_with_edit(
+    label: String,
+    kind: CompletionItemKind,
+    new_text: String,
+    edit_shape: &CompletionEditShape,
+) -> CompletionItem {
+    CompletionItem {
+        label,
+        kind: Some(kind),
+        text_edit: Some(CompletionTextEdit::Edit(TextEdit {
+            range: edit_shape.replace_range,
+            new_text,
+        })),
+        ..Default::default()
+    }
+}
+
+fn apply_completion_metadata(
+    item: &mut CompletionItem,
+    edit_shape: &CompletionEditShape,
+    filter_text: Option<String>,
+    resolve_data: CompletionResolveData,
+) {
+    item.filter_text = filter_text;
+    item.data = Some(serde_json::json!({
+        COMPLETION_RESOLVE_DATA_KEY: {
+            "detail": resolve_data.detail,
+            "documentation": resolve_data.documentation,
+        }
+    }));
+    if item.text_edit.is_none() {
+        item.text_edit = Some(CompletionTextEdit::Edit(TextEdit {
+            range: edit_shape.replace_range,
+            new_text: item
+                .insert_text
+                .clone()
+                .unwrap_or_else(|| item.label.to_string()),
+        }));
+    }
+}
+
+fn snippet_candidate(
+    label: &str,
+    detail: &str,
+    snippet: &str,
+    filter_text: &str,
+    edit_shape: &CompletionEditShape,
+    tier: i32,
+    score: i32,
+) -> CompletionCandidate {
+    let mut item = completion_item_with_edit(
+        label.to_string(),
+        CompletionItemKind::SNIPPET,
+        snippet.to_string(),
+        edit_shape,
+    );
+    item.insert_text_format = Some(InsertTextFormat::SNIPPET);
+    item.detail = Some(detail.to_string());
+    apply_completion_metadata(
+        &mut item,
+        edit_shape,
+        Some(filter_text.to_string()),
+        CompletionResolveData {
+            detail: Some(detail.to_string()),
+            documentation: Some(detail.to_string()),
+        },
+    );
+    CompletionCandidate {
+        label: label.to_string(),
+        item,
+        tier,
+        score,
+    }
+}
+
 fn completion_keywords_for_context(context: &CompletionContext) -> &'static [&'static str] {
     match context {
         CompletionContext::QualifiedReference { .. }
         | CompletionContext::MemberReference { .. } => &[],
         CompletionContext::DeclarationModifier { .. } => DECLARATION_MODIFIER_KEYWORDS,
-        CompletionContext::BodyContext { .. } => BODY_CONTEXT_KEYWORDS,
+        CompletionContext::BodyStatement { .. } => BODY_CONTEXT_KEYWORDS,
         _ => sysml_keywords(),
     }
+}
+
+fn snippet_candidates_for_context(
+    context: &CompletionContext,
+    prefix: &str,
+    edit_shape: &CompletionEditShape,
+) -> Vec<CompletionCandidate> {
+    let prefix_matches = |label: &str| prefix.is_empty() || label.starts_with(prefix);
+    let mut out = Vec::new();
+
+    match context {
+        CompletionContext::DeclarationModifier { keyword, .. } => {
+            if matches!(keyword.as_str(), "part" | "port" | "attribute" | "action")
+                && prefix_matches("def")
+            {
+                out.push(snippet_candidate(
+                    "def",
+                    "Complete a definition after the declaration keyword",
+                    "def ${1:Name} {\n    $0\n}",
+                    "def",
+                    edit_shape,
+                    TIER_CONTEXTUAL_SNIPPET,
+                    100,
+                ));
+            }
+        }
+        CompletionContext::TopLevelKeyword { .. } | CompletionContext::BodyStatement { .. } => {
+            if prefix_matches("part def") {
+                out.push(snippet_candidate(
+                    "part def",
+                    "Define a part",
+                    "part def ${1:Name} {\n    $0\n}",
+                    "part def",
+                    edit_shape,
+                    TIER_CONTEXTUAL_SNIPPET,
+                    100,
+                ));
+            }
+            if prefix_matches("part") {
+                out.push(snippet_candidate(
+                    "part usage",
+                    "Declare a typed part usage",
+                    "part ${1:name}: ${2:Type};",
+                    "part",
+                    edit_shape,
+                    TIER_CONTEXTUAL_SNIPPET,
+                    90,
+                ));
+            }
+            if prefix_matches("port") {
+                out.push(snippet_candidate(
+                    "port usage",
+                    "Declare a typed port usage",
+                    "port ${1:name}: ${2:Type};",
+                    "port",
+                    edit_shape,
+                    TIER_CONTEXTUAL_SNIPPET,
+                    80,
+                ));
+            }
+            if prefix_matches("attribute") {
+                out.push(snippet_candidate(
+                    "attribute",
+                    "Declare a typed attribute",
+                    "attribute ${1:name}: ${2:Type};",
+                    "attribute",
+                    edit_shape,
+                    TIER_CONTEXTUAL_SNIPPET,
+                    70,
+                ));
+            }
+            if matches!(context, CompletionContext::TopLevelKeyword { .. })
+                && prefix_matches("package")
+            {
+                out.push(snippet_candidate(
+                    "package",
+                    "Define a package",
+                    "package ${1:Name} {\n    $0\n}",
+                    "package",
+                    edit_shape,
+                    TIER_CONTEXTUAL_SNIPPET,
+                    60,
+                ));
+            }
+        }
+        _ => {}
+    }
+
+    out
 }
 
 fn collect_completion_candidates(
     state: &ServerState,
     context: &CompletionContext,
     hints: &CompletionSemanticHints,
+    edit_shape: &CompletionEditShape,
 ) -> Vec<CompletionCandidate> {
     let prefix = context.prefix();
     let mut candidates = Vec::new();
 
+    candidates.extend(snippet_candidates_for_context(context, prefix, edit_shape));
+
     for kw in completion_keywords_for_context(context) {
         if prefix.is_empty() || kw.starts_with(prefix) {
+            let mut item = completion_item_with_edit(
+                (*kw).to_string(),
+                CompletionItemKind::KEYWORD,
+                (*kw).to_string(),
+                edit_shape,
+            );
+            item.detail = keyword_doc(kw).map(String::from);
+            apply_completion_metadata(
+                &mut item,
+                edit_shape,
+                Some((*kw).to_string()),
+                CompletionResolveData {
+                    detail: keyword_doc(kw).map(String::from),
+                    documentation: keyword_doc(kw).map(String::from),
+                },
+            );
+            let (tier, score) = keyword_score(context, prefix, kw);
             candidates.push(CompletionCandidate {
                 label: (*kw).to_string(),
-                item: CompletionItem {
-                    label: (*kw).to_string(),
-                    kind: Some(CompletionItemKind::KEYWORD),
-                    detail: keyword_doc(kw).map(String::from),
-                    ..Default::default()
-                },
-                score: keyword_score(context, prefix, kw),
+                item,
+                tier,
+                score,
             });
         }
     }
 
     let mut seen = HashSet::<String>::new();
     for entry in &state.symbol_table {
-        if (!prefix.is_empty() && !entry.name.starts_with(prefix)) || !seen.insert(entry.name.clone())
+        if (!prefix.is_empty() && !entry.name.starts_with(prefix))
+            || !seen.insert(entry.name.clone())
         {
             continue;
         }
+        let mut item = completion_item_with_edit(
+            entry.name.clone(),
+            symbol_completion_kind(entry.kind),
+            entry.name.clone(),
+            edit_shape,
+        );
+        item.detail = entry.detail.clone();
+        let documentation = entry
+            .signature
+            .clone()
+            .or_else(|| entry.description.clone())
+            .map(Documentation::String);
+        apply_completion_metadata(
+            &mut item,
+            edit_shape,
+            Some(entry.name.clone()),
+            CompletionResolveData {
+                detail: entry.description.clone().or_else(|| entry.detail.clone()),
+                documentation: documentation.and_then(|doc| match doc {
+                    Documentation::String(text) => Some(text),
+                    _ => None,
+                }),
+            },
+        );
+        let (tier, score) = symbol_score(context, prefix, hints, entry);
         candidates.push(CompletionCandidate {
             label: entry.name.clone(),
-            item: CompletionItem {
-                label: entry.name.clone(),
-                kind: Some(CompletionItemKind::REFERENCE),
-                detail: entry.description.clone().or_else(|| entry.detail.clone()),
-                ..Default::default()
-            },
-            score: symbol_score(context, prefix, hints, entry),
+            item,
+            tier,
+            score,
         });
     }
 
     candidates
 }
 
-fn keyword_score(context: &CompletionContext, prefix: &str, keyword: &str) -> i32 {
+fn keyword_score(context: &CompletionContext, prefix: &str, keyword: &str) -> (i32, i32) {
     let mut score = 100;
+    let mut tier = TIER_KEYWORD_FALLBACK;
     if prefix.is_empty() {
         score += 10;
     } else if keyword == prefix {
@@ -452,12 +740,18 @@ fn keyword_score(context: &CompletionContext, prefix: &str, keyword: &str) -> i3
         CompletionContext::DeclarationName { .. } => score += 40,
         CompletionContext::DeclarationModifier { .. } => {
             if keyword == "def" {
+                tier = TIER_CONTEXTUAL_SNIPPET;
                 score += 220;
             }
         }
-        CompletionContext::BodyContext { .. } => {
+        CompletionContext::BodyStatement { .. } => {
             if BODY_CONTEXT_KEYWORDS.contains(&keyword) {
                 score += 120;
+            }
+        }
+        CompletionContext::TopLevelKeyword { .. } => {
+            if BODY_CONTEXT_KEYWORDS.contains(&keyword) || keyword == "package" {
+                score += 60;
             }
         }
         CompletionContext::General { .. } => {}
@@ -466,7 +760,7 @@ fn keyword_score(context: &CompletionContext, prefix: &str, keyword: &str) -> i3
         | CompletionContext::MemberReference { .. } => {}
     }
 
-    score
+    (tier, score)
 }
 
 fn symbol_score(
@@ -474,8 +768,16 @@ fn symbol_score(
     prefix: &str,
     hints: &CompletionSemanticHints,
     entry: &crate::language::SymbolEntry,
-) -> i32 {
+) -> (i32, i32) {
     let mut score = 100;
+    let mut tier = TIER_GENERIC_SYMBOL;
+    let kind_matches_context = matches!(
+        context,
+        CompletionContext::TypeReference {
+            expected_kinds,
+            ..
+        } if entry_kind_matches(entry.detail.as_deref(), expected_kinds)
+    );
     if prefix.is_empty() {
         score += 5;
     } else if entry.name == prefix {
@@ -496,6 +798,7 @@ fn symbol_score(
         score += 45;
     }
     if hints.preferred_names.contains(&entry.name) {
+        tier = TIER_EXACT_SEMANTIC;
         score += 220;
     }
 
@@ -506,6 +809,18 @@ fn symbol_score(
             ..
         } => {
             if entry_kind_matches(entry.detail.as_deref(), expected_kinds) {
+                tier = if entry
+                    .container_name
+                    .as_ref()
+                    .map(|name| hints.container_names.contains(name))
+                    .unwrap_or(false)
+                {
+                    TIER_CONTEXT_COMPATIBLE_SAME_SCOPE
+                } else if hints.same_file_uri.as_ref() == Some(&entry.uri) {
+                    TIER_SAME_FILE_COMPATIBLE
+                } else {
+                    TIER_WORKSPACE_COMPATIBLE
+                };
                 score += 260;
             }
             if qualifier.is_some() && hints.preferred_names.contains(&entry.name) {
@@ -514,11 +829,13 @@ fn symbol_score(
         }
         CompletionContext::QualifiedReference { .. } => {
             if hints.preferred_names.contains(&entry.name) {
+                tier = TIER_EXACT_SEMANTIC;
                 score += 80;
             }
         }
         CompletionContext::MemberReference { .. } => {
             if hints.preferred_names.contains(&entry.name) {
+                tier = TIER_EXACT_SEMANTIC;
                 score += 120;
             }
         }
@@ -528,13 +845,18 @@ fn symbol_score(
         CompletionContext::DeclarationName { .. } => {
             score -= 40;
         }
-        CompletionContext::BodyContext { .. } => {
+        CompletionContext::BodyStatement { .. } => {
             score -= 20;
         }
+        CompletionContext::TopLevelKeyword { .. } => {}
         CompletionContext::General { .. } => {}
     }
 
-    score
+    if kind_matches_context && tier == TIER_GENERIC_SYMBOL {
+        tier = TIER_WORKSPACE_COMPATIBLE;
+    }
+
+    (tier, score)
 }
 
 fn entry_kind_matches(detail: Option<&str>, expected_kinds: &[&str]) -> bool {
@@ -546,8 +868,9 @@ fn entry_kind_matches(detail: Option<&str>, expected_kinds: &[&str]) -> bool {
 fn rank_completion_candidates(mut candidates: Vec<CompletionCandidate>) -> Vec<CompletionItem> {
     candidates.sort_by(|left, right| {
         right
-            .score
-            .cmp(&left.score)
+            .tier
+            .cmp(&left.tier)
+            .then_with(|| right.score.cmp(&left.score))
             .then_with(|| left.label.cmp(&right.label))
     });
 
@@ -557,10 +880,41 @@ fn rank_completion_candidates(mut candidates: Vec<CompletionCandidate>) -> Vec<C
         .enumerate()
         .map(|(idx, candidate)| {
             let mut item = candidate.item;
-            item.sort_text = Some(format!("{:06}_{}", total.saturating_sub(idx), candidate.label));
+            item.sort_text = Some(format!(
+                "{:04}_{:06}_{}",
+                9999_i32.saturating_sub(candidate.tier),
+                total.saturating_sub(idx),
+                candidate.label
+            ));
+            item.preselect = Some(idx == 0);
             item
         })
         .collect()
+}
+
+pub(crate) fn completion_resolve(
+    _state: &ServerState,
+    mut item: CompletionItem,
+) -> Result<CompletionItem> {
+    let Some(data) = item.data.as_ref() else {
+        return Ok(item);
+    };
+    let Some(payload) = data.get(COMPLETION_RESOLVE_DATA_KEY) else {
+        return Ok(item);
+    };
+    item.detail = item.detail.or_else(|| {
+        payload
+            .get("detail")
+            .and_then(|value| value.as_str())
+            .map(str::to_string)
+    });
+    if item.documentation.is_none() {
+        item.documentation = payload
+            .get("documentation")
+            .and_then(|value| value.as_str())
+            .map(|value| Documentation::String(value.to_string()));
+    }
+    Ok(item)
 }
 
 fn resolve_hover_type_reference_target<'a>(
@@ -615,7 +969,13 @@ fn resolve_hover_reference_target<'a>(
     let context_node = state
         .semantic_graph
         .find_deepest_node_at_position(uri, pos)
-        .or_else(|| state.semantic_graph.nodes_for_uri(uri).into_iter().find(|n| n.name == word));
+        .or_else(|| {
+            state
+                .semantic_graph
+                .nodes_for_uri(uri)
+                .into_iter()
+                .find(|n| n.name == word)
+        });
 
     let context_node = context_node?;
 
@@ -697,7 +1057,10 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
         return Ok(response);
     }
 
-    if let Some(node) = state.semantic_graph.find_deepest_node_at_position(&uri_norm, pos) {
+    if let Some(node) = state
+        .semantic_graph
+        .find_deepest_node_at_position(&uri_norm, pos)
+    {
         let target_match = state
             .semantic_graph
             .outgoing_typing_or_specializes_targets(node)
@@ -867,19 +1230,34 @@ pub(crate) fn completion(
         None => return Ok(None),
     };
     let line_prefix = line_prefix_at_position(text, pos.line, pos.character);
-    let context = detect_completion_context(&line_prefix);
+    let context = refine_completion_context(
+        state,
+        &uri_norm,
+        pos,
+        detect_completion_context(&line_prefix),
+    );
     let hints = completion_semantic_hints(state, &uri_norm, pos, &context);
-    let items = rank_completion_candidates(collect_completion_candidates(state, &context, &hints));
+    let edit_shape = completion_edit_shape(pos, context.prefix());
+    let items = rank_completion_candidates(collect_completion_candidates(
+        state,
+        &context,
+        &hints,
+        &edit_shape,
+    ));
 
-    Ok(Some(CompletionResponse::Array(items)))
+    Ok(Some(CompletionResponse::List(CompletionList {
+        is_incomplete: false,
+        items,
+    })))
 }
 
 #[cfg(test)]
 mod tests {
     use super::{
-        detect_completion_context, CompletionContext, ATTRIBUTE_TYPE_LOOKUP_KINDS,
-        PART_TYPE_LOOKUP_KINDS, PORT_TYPE_LOOKUP_KINDS,
+        completion_edit_shape, detect_completion_context, CompletionContext,
+        ATTRIBUTE_TYPE_LOOKUP_KINDS, PART_TYPE_LOOKUP_KINDS, PORT_TYPE_LOOKUP_KINDS,
     };
+    use tower_lsp::lsp_types::Position;
 
     #[test]
     fn detects_part_type_reference_context() {
@@ -966,6 +1344,31 @@ mod tests {
                 prefix: "La".to_string(),
             }
         );
+    }
+
+    #[test]
+    fn detects_top_level_keyword_context() {
+        let context = detect_completion_context("    pa");
+        assert_eq!(
+            context,
+            CompletionContext::TopLevelKeyword {
+                prefix: "pa".to_string(),
+            }
+        );
+    }
+
+    #[test]
+    fn replacement_range_uses_only_member_prefix() {
+        let shape = completion_edit_shape(Position::new(0, 11), "eng");
+        assert_eq!(shape.replace_range.start, Position::new(0, 8));
+        assert_eq!(shape.replace_range.end, Position::new(0, 11));
+    }
+
+    #[test]
+    fn replacement_range_uses_only_qualified_suffix() {
+        let shape = completion_edit_shape(Position::new(0, 7), "Fo");
+        assert_eq!(shape.replace_range.start, Position::new(0, 5));
+        assert_eq!(shape.replace_range.end, Position::new(0, 7));
     }
 }
 
@@ -1475,8 +1878,7 @@ pub(crate) fn code_action(
             Some(NumberOrString::String(code)) if code == "implicit_redefinition_without_operator"
         );
         if is_implicit_redefinition_without_operator {
-            if let Some(action) = suggest_explicit_redefinition_quick_fix(&text, &uri, diagnostic)
-            {
+            if let Some(action) = suggest_explicit_redefinition_quick_fix(&text, &uri, diagnostic) {
                 actions.push(CodeActionOrCommand::CodeAction(action));
             }
         }

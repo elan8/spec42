@@ -183,11 +183,9 @@ pub(crate) fn signature_from_node(node: &SemanticNode) -> Option<String> {
             let target = attr_str(node, "importTarget").unwrap_or(node.name.as_str());
             format!("{visibility}import {recursive}{target};")
         }
-        "feature decl" | "classifier decl" => {
-            attr_str(node, "text").map(str::to_string).unwrap_or_else(|| {
-                format!("{} {};", kind, node.name)
-            })
-        }
+        "feature decl" | "classifier decl" => attr_str(node, "text")
+            .map(str::to_string)
+            .unwrap_or_else(|| format!("{} {};", kind, node.name)),
         _ => format!("{} {};", kind, node.name),
     };
 
@@ -218,7 +216,14 @@ pub fn hover_markdown_for_node(
     if let Some(target) = typed_targets.first() {
         let declared_type = first_attr_str(
             node,
-            &["partType", "subjectType", "attributeType", "portType", "actorType", "itemType"],
+            &[
+                "partType",
+                "subjectType",
+                "attributeType",
+                "portType",
+                "actorType",
+                "itemType",
+            ],
         );
         let should_show_target = match declared_type {
             Some(type_name) => type_name.trim() != target.name.trim(),

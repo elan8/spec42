@@ -1,11 +1,11 @@
 use crate::common::util;
-use tracing::warn;
 use crate::semantic_model;
 use crate::workspace::library_search;
 use crate::workspace::state::{IndexEntry, ParseMetadata, ScanSummary, ServerState};
 use std::time::Instant;
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
+use tracing::warn;
 use walkdir::WalkDir;
 
 fn elapsed_ms(start: Instant) -> u32 {
@@ -457,7 +457,8 @@ pub(crate) fn rebuild_all_document_links(
         .min(parsed_docs.len())
         .max(1);
 
-    let mut buckets: Vec<Vec<(Url, RootNamespace)>> = (0..worker_count).map(|_| Vec::new()).collect();
+    let mut buckets: Vec<Vec<(Url, RootNamespace)>> =
+        (0..worker_count).map(|_| Vec::new()).collect();
     for (i, item) in parsed_docs.into_iter().enumerate() {
         buckets[i % worker_count].push(item);
     }
@@ -467,7 +468,12 @@ pub(crate) fn rebuild_all_document_links(
         handles.push(std::thread::spawn(move || {
             bucket
                 .into_iter()
-                .map(|(uri, parsed)| (uri.clone(), semantic_model::build_graph_from_doc(&parsed, &uri)))
+                .map(|(uri, parsed)| {
+                    (
+                        uri.clone(),
+                        semantic_model::build_graph_from_doc(&parsed, &uri),
+                    )
+                })
                 .collect::<Vec<_>>()
         }));
     }
@@ -591,7 +597,8 @@ pub(crate) fn rebuild_semantic_graph_staged(
         .min(parsed_docs.len())
         .max(1);
 
-    let mut buckets: Vec<Vec<(Url, RootNamespace)>> = (0..worker_count).map(|_| Vec::new()).collect();
+    let mut buckets: Vec<Vec<(Url, RootNamespace)>> =
+        (0..worker_count).map(|_| Vec::new()).collect();
     for (i, item) in parsed_docs.into_iter().enumerate() {
         buckets[i % worker_count].push(item);
     }

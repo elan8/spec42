@@ -69,7 +69,11 @@ impl LanguageServer for Backend {
     }
 
     async fn hover(&self, params: HoverParams) -> Result<Option<Hover>> {
-        let hover_uri = params.text_document_position_params.text_document.uri.clone();
+        let hover_uri = params
+            .text_document_position_params
+            .text_document
+            .uri
+            .clone();
         let hover_uri_norm = crate::common::util::normalize_file_uri(&hover_uri);
         let hover_text = {
             let state = self.state.read().await;
@@ -104,6 +108,11 @@ impl LanguageServer for Backend {
             params.text_document_position.text_document.uri,
             params.text_document_position.position,
         )
+    }
+
+    async fn completion_resolve(&self, params: CompletionItem) -> Result<CompletionItem> {
+        let state = self.state.read().await;
+        features::completion_resolve(&state, params)
     }
 
     async fn signature_help(&self, params: SignatureHelpParams) -> Result<Option<SignatureHelp>> {

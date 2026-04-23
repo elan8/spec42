@@ -10,9 +10,46 @@ use crate::common::util;
 use crate::host::config::Spec42Config;
 use crate::workspace::ServerState;
 
+const TRANSIENT_STARTUP_SEMANTIC_DIAGNOSTIC_CODES: &[&str] = &[
+    "unresolved_type_reference",
+    "unresolved_import_target",
+    "unresolved_specializes_reference",
+    "missing_library_context",
+];
+
 async fn perf_logging_enabled(state: &Arc<RwLock<ServerState>>) -> bool {
     let locked = state.read().await;
     locked.perf_logging_enabled
+}
+
+fn semantic_diagnostic_code(diagnostic: &Diagnostic) -> Option<&str> {
+    if diagnostic.source.as_deref() != Some("semantic") {
+        return None;
+    }
+
+    match diagnostic.code.as_ref() {
+        Some(NumberOrString::String(code)) => Some(code.as_str()),
+        _ => None,
+    }
+}
+
+fn filter_transient_startup_semantic_diagnostics(
+    diagnostics: Vec<Diagnostic>,
+    semantic_index_ready: bool,
+) -> Vec<Diagnostic> {
+    if semantic_index_ready {
+        return diagnostics;
+    }
+
+    diagnostics
+        .into_iter()
+        .filter(|diagnostic| {
+            let Some(code) = semantic_diagnostic_code(diagnostic) else {
+                return true;
+            };
+            !TRANSIENT_STARTUP_SEMANTIC_DIAGNOSTIC_CODES.contains(&code)
+        })
+        .collect()
 }
 
 pub(crate) async fn publish_document_diagnostics(
@@ -202,6 +239,67 @@ async fn collect_diagnostics_for_document(
                 });
             }
         }
+        diagnostics =
+            filter_transient_startup_semantic_diagnostics(diagnostics, locked.semantic_index_ready);
     }
     diagnostics
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn diag(source: &str, code: &str) -> Diagnostic {
+        Diagnostic {
+            range: Range {
+                start: Position::new(0, 0),
+                end: Position::new(0, 1),
+            },
+            severity: Some(DiagnosticSeverity::WARNING),
+            code: Some(NumberOrString::String(code.to_string())),
+            code_description: None,
+            source: Some(source.to_string()),
+            message: format!("{source}:{code}"),
+            related_information: None,
+            tags: None,
+            data: None,
+        }
+    }
+
+    #[test]
+    fn startup_filter_removes_only_transient_semantic_diagnostics() {
+        let diagnostics = vec![
+            diag("semantic", "unresolved_type_reference"),
+            diag("semantic", "unresolved_import_target"),
+            diag("semantic", "unresolved_specializes_reference"),
+            diag("semantic", "missing_library_context"),
+            diag("semantic", "unconnected_port"),
+            diag("sysml", "parse_error"),
+        ];
+
+        let filtered = filter_transient_startup_semantic_diagnostics(diagnostics, false);
+        let remaining_codes: Vec<_> = filtered
+            .iter()
+            .filter_map(semantic_diagnostic_code)
+            .map(str::to_string)
+            .collect();
+
+        assert_eq!(remaining_codes, vec!["unconnected_port".to_string()]);
+        assert!(filtered
+            .iter()
+            .any(|diagnostic| diagnostic.source.as_deref() == Some("sysml")));
+    }
+
+    #[test]
+    fn startup_filter_keeps_all_diagnostics_after_semantic_index_is_ready() {
+        let diagnostics = vec![
+            diag("semantic", "unresolved_type_reference"),
+            diag("semantic", "unconnected_port"),
+            diag("sysml", "parse_error"),
+        ];
+
+        let filtered = filter_transient_startup_semantic_diagnostics(diagnostics.clone(), true);
+
+        assert_eq!(filtered.len(), diagnostics.len());
+    }
 }

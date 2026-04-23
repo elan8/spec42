@@ -12,7 +12,6 @@ use sysml_v2_parser::RootNamespace;
 
 use crate::common::util;
 use crate::semantic_model;
-use crate::views::model_projection;
 use crate::views::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, RelationshipDto, SysmlElementDto, SysmlGraphDto,
     SysmlModelResultDto, SysmlModelStatsDto, WorkspaceFileModelDto, WorkspaceModelDto,
@@ -20,6 +19,7 @@ use crate::views::dto::{
 };
 use crate::views::extracted_model as model;
 use crate::views::ibd;
+use crate::views::model_projection;
 
 pub fn parse_sysml_model_params(v: &serde_json::Value) -> Result<(Url, Vec<String>)> {
     model_params::parse_sysml_model_params(v)

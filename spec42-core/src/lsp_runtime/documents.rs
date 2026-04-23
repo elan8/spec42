@@ -73,6 +73,7 @@ pub(crate) async fn initialize(
         state.startup_trace_id = startup_trace_id;
         state.code_lens_enabled = code_lens_enabled;
         state.perf_logging_enabled = perf_logging_enabled;
+        state.semantic_index_ready = false;
     }
     Ok(InitializeResult {
         server_info: Some(ServerInfo {
@@ -103,7 +104,13 @@ pub(crate) async fn initialized(
     };
     let scan_roots = scan_roots(&workspace_roots, &library_paths);
     if scan_roots.is_empty() {
+        let mut st = state.write().await;
+        st.semantic_index_ready = true;
         return;
+    }
+    {
+        let mut st = state.write().await;
+        st.semantic_index_ready = false;
     }
     if perf_logging_enabled {
         info!(
@@ -259,6 +266,10 @@ pub(crate) async fn initialized(
             );
         }
         let diagnostics_start = Instant::now();
+        {
+            let mut st = state.write().await;
+            st.semantic_index_ready = true;
+        }
         publish_workspace_diagnostics(&client, &state, &config, None).await;
         let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
         log_perf(
@@ -491,6 +502,7 @@ pub(crate) async fn did_change_configuration(
         } else {
             let _ = clear_documents_under_roots(&mut state, &old_library_paths);
             state.library_paths = new_library_paths.clone();
+            state.semantic_index_ready = false;
             state.semantic_state_version = state.semantic_state_version.wrapping_add(1);
             true
         }
@@ -500,6 +512,7 @@ pub(crate) async fn did_change_configuration(
     }
 
     let state = Arc::clone(state);
+    let config = Arc::clone(config);
     let client = client.clone();
     tokio::spawn(async move {
         let perf_logging_enabled = {
@@ -554,6 +567,12 @@ pub(crate) async fn did_change_configuration(
         for warning in warnings {
             client.log_message(MessageType::WARNING, warning).await;
         }
+        {
+            let mut st = state.write().await;
+            st.semantic_index_ready = true;
+        }
+        let diagnostics_start = Instant::now();
+        publish_workspace_diagnostics(&client, &state, &config, None).await;
         log_perf(
             &client,
             perf_logging_enabled,
@@ -586,6 +605,10 @@ pub(crate) async fn did_change_configuration(
                 ),
                 ("loadedFiles", summary.files_loaded.to_string()),
                 ("candidateFiles", summary.candidate_files.to_string()),
+                (
+                    "diagnosticsMs",
+                    diagnostics_start.elapsed().as_millis().to_string(),
+                ),
                 ("totalMs", total_start.elapsed().as_millis().to_string()),
             ],
         )

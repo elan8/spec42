@@ -91,10 +91,7 @@ pub fn next_id() -> i64 {
 ///
 /// Sends a cheap request and waits for the response so prior notifications
 /// (such as didOpen/didChange) are processed before assertions.
-pub fn lsp_barrier(
-    stdin: &mut std::process::ChildStdin,
-    stdout: &mut std::process::ChildStdout,
-) {
+pub fn lsp_barrier(stdin: &mut std::process::ChildStdin, stdout: &mut std::process::ChildStdout) {
     let id = next_id();
     let req = serde_json::json!({
         "jsonrpc": "2.0",

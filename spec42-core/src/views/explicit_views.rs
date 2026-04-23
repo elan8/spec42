@@ -86,7 +86,10 @@ pub fn build_view_catalog(
             .and_then(|reference| resolve_definition_id(reference, &definitions));
     }
 
-    ViewCatalog { definitions, usages }
+    ViewCatalog {
+        definitions,
+        usages,
+    }
 }
 
 fn walk_root_namespace(
@@ -166,14 +169,7 @@ fn walk_package_body(
                         .collect(),
                     ViewDefBody::Semicolon => Vec::new(),
                 };
-                definitions.insert(
-                    id.clone(),
-                    ViewDefinitionSpec {
-                        id,
-                        name,
-                        filters,
-                    },
-                );
+                definitions.insert(id.clone(), ViewDefinitionSpec { id, name, filters });
             }
             PackageBodyElement::ViewUsage(view_usage) => {
                 let id = qualify_name(next_container.as_deref(), &view_usage.name);
@@ -257,7 +253,11 @@ pub fn evaluate_views(
     let parent_by_id: HashMap<&str, &str> = graph
         .nodes
         .iter()
-        .filter_map(|node| node.parent_id.as_deref().map(|parent| (node.id.as_str(), parent)))
+        .filter_map(|node| {
+            node.parent_id
+                .as_deref()
+                .map(|parent| (node.id.as_str(), parent))
+        })
         .collect();
     let children_by_parent: HashMap<&str, Vec<&str>> = {
         let mut map = HashMap::new();
@@ -335,7 +335,11 @@ pub fn project_ids_for_renderer(
     let parent_by_id: HashMap<&str, &str> = graph
         .nodes
         .iter()
-        .filter_map(|node| node.parent_id.as_deref().map(|parent| (node.id.as_str(), parent)))
+        .filter_map(|node| {
+            node.parent_id
+                .as_deref()
+                .map(|parent| (node.id.as_str(), parent))
+        })
         .collect();
     let children_by_parent: HashMap<&str, Vec<&str>> = {
         let mut map = HashMap::new();
@@ -362,14 +366,12 @@ pub fn project_ids_for_renderer(
     };
 
     let expanded_ids = match renderer_view {
-        "general-view" | "interconnection-view" => {
-            expand_structural_scope(
-                &evaluated.exposed_ids,
-                &children_by_parent,
-                &typing_targets,
-                &node_by_id,
-            )
-        }
+        "general-view" | "interconnection-view" => expand_structural_scope(
+            &evaluated.exposed_ids,
+            &children_by_parent,
+            &typing_targets,
+            &node_by_id,
+        ),
         _ => evaluated.exposed_ids.clone(),
     };
     let filtered_ids: HashSet<String> = expanded_ids
@@ -546,15 +548,13 @@ fn node_matches_kind(
     node_by_id: &HashMap<&str, &crate::views::dto::GraphNodeDto>,
 ) -> bool {
     let wanted = normalize_kind_name(qualified);
-    node_by_id
-        .get(node_id)
-        .is_some_and(|node| {
-            let actual = node.element_type.to_lowercase();
-            actual == wanted
-                || actual.contains(&wanted)
-                || wanted.contains(actual.as_str())
-                || actual == map_sysml_kind_alias(&wanted)
-        })
+    node_by_id.get(node_id).is_some_and(|node| {
+        let actual = node.element_type.to_lowercase();
+        actual == wanted
+            || actual.contains(&wanted)
+            || wanted.contains(actual.as_str())
+            || actual == map_sysml_kind_alias(&wanted)
+    })
 }
 
 fn map_sysml_kind_alias(wanted: &str) -> String {
@@ -581,7 +581,11 @@ fn normalize_kind_name(value: &str) -> String {
 }
 
 fn normalize_path(value: &str) -> String {
-    value.replace('.', "::").trim().trim_matches('\'').to_string()
+    value
+        .replace('.', "::")
+        .trim()
+        .trim_matches('\'')
+        .to_string()
 }
 
 fn parse_filter_span(content: &str, span: &Span) -> FilterExpr {
@@ -765,7 +769,8 @@ pub fn build_view_candidates(
     let mut candidates: Vec<_> = evaluated_views
         .iter()
         .map(|evaluated| {
-            let renderer_view = renderer_view_for_view_type(evaluated.effective_view_type.as_deref());
+            let renderer_view =
+                renderer_view_for_view_type(evaluated.effective_view_type.as_deref());
             let supported = renderer_view.is_some();
             SysmlVisualizationViewCandidateDto {
                 id: evaluated.id.clone(),
@@ -838,14 +843,19 @@ mod tests {
         let catalog = build_view_catalog(&index, &[uri]);
         assert_eq!(catalog.definitions.len(), 1);
         assert_eq!(catalog.usages.len(), 1);
-        assert_eq!(catalog.usages[0].definition_ref.as_deref(), Some("StructuralView"));
+        assert_eq!(
+            catalog.usages[0].definition_ref.as_deref(),
+            Some("StructuralView")
+        );
         assert_eq!(catalog.usages[0].exposes.len(), 1);
         assert!(catalog.usages[0].exposes[0].filter.is_some());
     }
 
     #[test]
     fn parses_supported_filter_subset() {
-        let parsed = parse_filter_text("@SysML::PartUsage and not (@SysML::ConnectionUsage or @SysML::PortUsage)");
+        let parsed = parse_filter_text(
+            "@SysML::PartUsage and not (@SysML::ConnectionUsage or @SysML::PortUsage)",
+        );
         match parsed {
             FilterExpr::And(_, right) => match *right {
                 FilterExpr::Not(_) => {}

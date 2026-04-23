@@ -1,6 +1,8 @@
 //! sysml/model graph-focused integration tests.
 
-use super::harness::{lsp_barrier, next_id, read_message, read_response, send_message, spawn_server};
+use super::harness::{
+    lsp_barrier, next_id, read_message, read_response, send_message, spawn_server,
+};
 
 /// sysml/model with scope ["graph"] returns nodes and edges after didOpen.
 /// Validates that the semantic graph is built and serialized correctly.

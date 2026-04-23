@@ -11,4 +11,6 @@ pub use feature_inspector::{
     parse_sysml_feature_inspector_params,
 };
 pub use model::{build_sysml_model_response, empty_model_response, parse_sysml_model_params};
-pub(crate) use visualization::{build_sysml_visualization_response, parse_sysml_visualization_params};
+pub(crate) use visualization::{
+    build_sysml_visualization_response, parse_sysml_visualization_params,
+};

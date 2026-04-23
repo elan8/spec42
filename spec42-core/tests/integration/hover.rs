@@ -1,6 +1,8 @@
 //! Hover integration tests.
 
-use super::harness::{lsp_barrier, next_id, read_message, read_response, send_message, spawn_server};
+use super::harness::{
+    lsp_barrier, next_id, read_message, read_response, send_message, spawn_server,
+};
 
 fn position_for(content: &str, needle: &str) -> (usize, usize) {
     for (line_index, line) in content.lines().enumerate() {
@@ -273,7 +275,8 @@ fn lsp_hover_uses_exact_symbol_under_cursor_within_typed_usage() {
     send_message(&mut stdin, &did_open.to_string());
     lsp_barrier(&mut stdin, &mut stdout);
 
-    let (usage_line, usage_char) = position_for_within(content, "part frame : DroneParts::Airframe;", "frame");
+    let (usage_line, usage_char) =
+        position_for_within(content, "part frame : DroneParts::Airframe;", "frame");
     let hover_usage_id = next_id();
     let hover_usage_req = serde_json::json!({
         "jsonrpc": "2.0",
@@ -285,7 +288,8 @@ fn lsp_hover_uses_exact_symbol_under_cursor_within_typed_usage() {
         }
     });
     send_message(&mut stdin, &hover_usage_req.to_string());
-    let hover_usage_resp = read_response(&mut stdout, hover_usage_id).expect("hover usage response");
+    let hover_usage_resp =
+        read_response(&mut stdout, hover_usage_id).expect("hover usage response");
     let hover_usage_json: serde_json::Value =
         serde_json::from_str(&hover_usage_resp).expect("parse hover usage response");
     let usage_contents = hover_usage_json["result"]["contents"]["value"]
@@ -419,7 +423,8 @@ fn lsp_hover_resolves_requirement_subject_in_context_instead_of_showing_ambiguou
         contents
     );
     assert!(
-        contents.contains("part communication : Communication;") && contents.contains("*In:* `Drone`"),
+        contents.contains("part communication : Communication;")
+            && contents.contains("*In:* `Drone`"),
         "hover should still point at the local communication part after simplifying the hover: {}",
         contents
     );
@@ -484,8 +489,11 @@ fn lsp_hover_returns_subject_declaration_hover_for_requirement_subject_name() {
     send_message(&mut stdin, &did_open.to_string());
     lsp_barrier(&mut stdin, &mut stdout);
 
-    let (line, character) =
-        position_for_within(content, "subject drone : SurveillanceQuadrotorDrone;", "drone");
+    let (line, character) = position_for_within(
+        content,
+        "subject drone : SurveillanceQuadrotorDrone;",
+        "drone",
+    );
     let hover_id = next_id();
     let hover_req = serde_json::json!({
         "jsonrpc": "2.0",

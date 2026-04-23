@@ -203,7 +203,10 @@ fn effective_port_features(
             else {
                 continue;
             };
-            let Some(parameter_type) = child.attributes.get("parameterType").and_then(|v| v.as_str())
+            let Some(parameter_type) = child
+                .attributes
+                .get("parameterType")
+                .and_then(|v| v.as_str())
             else {
                 continue;
             };
@@ -218,9 +221,9 @@ fn effective_port_features(
         }
     }
     features.sort_by(|a, b| {
-        a.normalized_type
-            .cmp(&b.normalized_type)
-            .then_with(|| feature_direction_rank(a.direction).cmp(&feature_direction_rank(b.direction)))
+        a.normalized_type.cmp(&b.normalized_type).then_with(|| {
+            feature_direction_rank(a.direction).cmp(&feature_direction_rank(b.direction))
+        })
     });
     features.dedup();
     features
@@ -245,9 +248,11 @@ fn conjugated_direction(direction: FeatureDirection) -> FeatureDirection {
 
 fn ports_feature_compatible(src: &[PortFeature], tgt: &[PortFeature]) -> bool {
     src.iter().all(|src_feature| {
-        tgt.iter().any(|tgt_feature| feature_pair_compatible(src_feature, tgt_feature))
+        tgt.iter()
+            .any(|tgt_feature| feature_pair_compatible(src_feature, tgt_feature))
     }) && tgt.iter().all(|tgt_feature| {
-        src.iter().any(|src_feature| feature_pair_compatible(src_feature, tgt_feature))
+        src.iter()
+            .any(|src_feature| feature_pair_compatible(src_feature, tgt_feature))
     })
 }
 

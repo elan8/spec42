@@ -118,7 +118,10 @@ pub(crate) fn inherited_attribute_hint_lines(
 }
 
 #[allow(dead_code)]
-fn direct_attribute_names(state: &ServerState, owner: &SemanticNode) -> std::collections::HashSet<String> {
+fn direct_attribute_names(
+    state: &ServerState,
+    owner: &SemanticNode,
+) -> std::collections::HashSet<String> {
     state
         .semantic_graph
         .children_of(owner)
@@ -225,7 +228,11 @@ fn format_inherited_attribute_hint(attr: &InheritedAttributeLens) -> String {
         text.push_str(type_name);
     }
     let declared = attr.declared_value.as_deref();
-    let effective = attr.effective_value.as_deref().or(declared).unwrap_or("n/a");
+    let effective = attr
+        .effective_value
+        .as_deref()
+        .or(declared)
+        .unwrap_or("n/a");
     let declared_in = attr.declared_in.as_deref().unwrap_or("ancestor");
     text.push_str(" = ");
     text.push_str(effective);

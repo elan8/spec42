@@ -223,13 +223,17 @@ fn collect_direct_general_view_details(
     if let Some(children) = children_by_parent.get(owner_id) {
         for child in children {
             if is_port_like(&child.element_type) {
-                if let Some(item) = build_general_view_detail_item(child, node_by_id, typing_targets, None) {
+                if let Some(item) =
+                    build_general_view_detail_item(child, node_by_id, typing_targets, None)
+                {
                     details.ports.push(item);
                 }
                 continue;
             }
             if is_attribute_like(&child.element_type) {
-                if let Some(item) = build_general_view_detail_item(child, node_by_id, typing_targets, None) {
+                if let Some(item) =
+                    build_general_view_detail_item(child, node_by_id, typing_targets, None)
+                {
                     if let Some(name) = item.get("name").and_then(|value| value.as_str()) {
                         details.attribute_names.insert(name.to_lowercase());
                     }
@@ -238,7 +242,9 @@ fn collect_direct_general_view_details(
                 continue;
             }
             if is_part_compartment_item(child) {
-                if let Some(item) = build_general_view_detail_item(child, node_by_id, typing_targets, None) {
+                if let Some(item) =
+                    build_general_view_detail_item(child, node_by_id, typing_targets, None)
+                {
                     if let Some(name) = item.get("name").and_then(|value| value.as_str()) {
                         details.part_names.insert(name.to_lowercase());
                     }
@@ -297,9 +303,12 @@ fn collect_inherited_general_view_details(
         };
         for child in children {
             if is_attribute_like(&child.element_type) {
-                if let Some(item) =
-                    build_general_view_detail_item(child, node_by_id, typing_targets, declared_in.clone())
-                {
+                if let Some(item) = build_general_view_detail_item(
+                    child,
+                    node_by_id,
+                    typing_targets,
+                    declared_in.clone(),
+                ) {
                     let Some(name) = item.get("name").and_then(|value| value.as_str()) else {
                         continue;
                     };
@@ -314,9 +323,12 @@ fn collect_inherited_general_view_details(
                 continue;
             }
             if is_part_compartment_item(child) {
-                if let Some(item) =
-                    build_general_view_detail_item(child, node_by_id, typing_targets, declared_in.clone())
-                {
+                if let Some(item) = build_general_view_detail_item(
+                    child,
+                    node_by_id,
+                    typing_targets,
+                    declared_in.clone(),
+                ) {
                     let Some(name) = item.get("name").and_then(|value| value.as_str()) else {
                         continue;
                     };
@@ -355,7 +367,8 @@ fn build_general_view_detail_item(
     let name = general_view_detail_name(detail)?;
     let type_name = detail_type_name(detail, node_by_id, typing_targets);
     let value_text = detail_value_text(detail);
-    let display_text = format_general_view_detail_display_text(&name, type_name.as_deref(), value_text.as_deref());
+    let display_text =
+        format_general_view_detail_display_text(&name, type_name.as_deref(), value_text.as_deref());
 
     Some(json!({
         "name": name,
@@ -401,7 +414,12 @@ fn detail_type_name(
                     .attributes
                     .get("partType")
                     .and_then(|value| value.as_str())
-                    .or_else(|| detail.attributes.get("type").and_then(|value| value.as_str()))
+                    .or_else(|| {
+                        detail
+                            .attributes
+                            .get("type")
+                            .and_then(|value| value.as_str())
+                    })
             } else {
                 detail
                     .attributes
@@ -413,7 +431,12 @@ fn detail_type_name(
                             .get("attributeType")
                             .and_then(|value| value.as_str())
                     })
-                    .or_else(|| detail.attributes.get("type").and_then(|value| value.as_str()))
+                    .or_else(|| {
+                        detail
+                            .attributes
+                            .get("type")
+                            .and_then(|value| value.as_str())
+                    })
                     .or_else(|| {
                         detail
                             .attributes
@@ -422,7 +445,13 @@ fn detail_type_name(
                     })
             }
         })
-        .map(|type_name| type_name.split("::").last().unwrap_or(type_name).to_string())
+        .map(|type_name| {
+            type_name
+                .split("::")
+                .last()
+                .unwrap_or(type_name)
+                .to_string()
+        })
         .filter(|type_name| !type_name.trim().is_empty())
 }
 
@@ -457,11 +486,7 @@ fn format_general_view_detail_display_text(
     }
 }
 
-fn insert_detail_items(
-    attributes: &mut HashMap<String, Value>,
-    key: &str,
-    items: Vec<Value>,
-) {
+fn insert_detail_items(attributes: &mut HashMap<String, Value>, key: &str, items: Vec<Value>) {
     if items.is_empty() {
         attributes.remove(key);
     } else {
@@ -776,12 +801,13 @@ mod tests {
                     uri: None,
                     parent_id: Some("Pkg::Vehicle".to_string()),
                     range: range(),
-                    attributes: serde_json::json!({ "dataType": "ScalarValues::Kilogram", "value": "1200" })
-                        .as_object()
-                        .unwrap()
-                        .iter()
-                        .map(|(k, v)| (k.clone(), v.clone()))
-                        .collect(),
+                    attributes:
+                        serde_json::json!({ "dataType": "ScalarValues::Kilogram", "value": "1200" })
+                            .as_object()
+                            .unwrap()
+                            .iter()
+                            .map(|(k, v)| (k.clone(), v.clone()))
+                            .collect(),
                 },
                 GraphNodeDto {
                     id: "Pkg::Vehicle::engine".to_string(),
@@ -827,12 +853,13 @@ mod tests {
                     uri: None,
                     parent_id: Some("Pkg::Car".to_string()),
                     range: range(),
-                    attributes: serde_json::json!({ "dataType": "ScalarValues::Kilogram", "value": "1300" })
-                        .as_object()
-                        .unwrap()
-                        .iter()
-                        .map(|(k, v)| (k.clone(), v.clone()))
-                        .collect(),
+                    attributes:
+                        serde_json::json!({ "dataType": "ScalarValues::Kilogram", "value": "1300" })
+                            .as_object()
+                            .unwrap()
+                            .iter()
+                            .map(|(k, v)| (k.clone(), v.clone()))
+                            .collect(),
                 },
             ],
             edges: vec![GraphEdgeDto {

@@ -1,8 +1,8 @@
 //! Diagnostics integration tests.
 
 use super::harness::{next_id, read_message, send_message, spawn_server};
-use spec42_core::{default_server_config, validate_paths, ValidationRequest};
 use spec42_core::common::util;
+use spec42_core::{default_server_config, validate_paths, ValidationRequest};
 use std::fs;
 use std::sync::Arc;
 
@@ -26,7 +26,12 @@ fn validate_inline_sysml(filename: &str, content: &str) -> Vec<tower_lsp::lsp_ty
         .iter()
         .find(|document| document.uri.ends_with(&filename.replace('\\', "/")))
         .map(|document| document.diagnostics.clone())
-        .or_else(|| report.documents.first().map(|document| document.diagnostics.clone()))
+        .or_else(|| {
+            report
+                .documents
+                .first()
+                .map(|document| document.diagnostics.clone())
+        })
         .expect("validated document diagnostics")
 }
 
@@ -38,7 +43,9 @@ fn has_diag_code(
     diagnostics.iter().any(|diagnostic| {
         diagnostic.source.as_deref() == Some(source)
             && diagnostic.code.as_ref()
-                == Some(&tower_lsp::lsp_types::NumberOrString::String(code.to_string()))
+                == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                    code.to_string(),
+                ))
     })
 }
 
@@ -111,9 +118,7 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
 
     let unresolved_string = unresolved
         .iter()
-        .filter(|d| {
-            d.message.contains("Type reference 'String'")
-        })
+        .filter(|d| d.message.contains("Type reference 'String'"))
         .count();
     assert_eq!(
         unresolved_string, 0,
@@ -122,9 +127,7 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
 
     let unresolved_conjugated = unresolved
         .iter()
-        .filter(|d| {
-            d.message.contains("Type reference '~")
-        })
+        .filter(|d| d.message.contains("Type reference '~"))
         .count();
     assert_eq!(
         unresolved_conjugated, 0,
@@ -179,7 +182,6 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
         "expected unresolved diagnostics to have stable anchors (no unrelated type refs sharing one range): {:?}",
         unresolved_ranges_to_type_refs
     );
-
 }
 
 #[test]
@@ -854,7 +856,6 @@ fn missing_library_context_info_is_emitted_for_imported_unresolved_types_without
         found_missing_library_context,
         "expected missing_library_context informational diagnostic"
     );
-
 }
 
 #[test]
@@ -878,7 +879,6 @@ fn missing_library_context_info_is_emitted_for_unresolved_import_targets_without
         found_missing_library_context,
         "expected missing_library_context informational diagnostic"
     );
-
 }
 
 #[test]
@@ -1013,7 +1013,8 @@ fn implicit_redefinition_without_operator_emits_error_for_inherited_features() {
     assert!(
         implicit_redefine
             .iter()
-            .all(|diagnostic| diagnostic.severity == Some(tower_lsp::lsp_types::DiagnosticSeverity::ERROR)),
+            .all(|diagnostic| diagnostic.severity
+                == Some(tower_lsp::lsp_types::DiagnosticSeverity::ERROR)),
         "expected implicit redefinition diagnostics to be errors: {implicit_redefine:#?}"
     );
 }
@@ -1058,8 +1059,9 @@ fn unresolved_satisfy_reference_emits_semantic_diagnostic() {
         .join("requirements_unresolved_satisfy.sysml");
     let content = fs::read_to_string(&fixture_path).expect("read unresolved satisfy fixture");
     let diagnostics = validate_inline_sysml("unresolved_satisfy.sysml", &content);
-    let found_unresolved_satisfy = has_diag_code(&diagnostics, "semantic", "unresolved_satisfy_source")
-        || has_diag_code(&diagnostics, "semantic", "unresolved_satisfy_target");
+    let found_unresolved_satisfy =
+        has_diag_code(&diagnostics, "semantic", "unresolved_satisfy_source")
+            || has_diag_code(&diagnostics, "semantic", "unresolved_satisfy_target");
 
     assert!(
         found_unresolved_satisfy,
@@ -1103,7 +1105,6 @@ fn compatible_different_port_def_connection_has_no_port_type_mismatch_diagnostic
         !found_port_type_mismatch,
         "feature-compatible port definitions should not emit port_type_mismatch diagnostics"
     );
-
 }
 
 #[test]
@@ -1130,7 +1131,6 @@ part def Laptop {
         "expected illegal_top_level_definition parser diagnostic for top-level part def; seen codes: {:?}",
         seen_codes
     );
-
 }
 
 #[test]
@@ -1506,28 +1506,26 @@ fn public_import_reexport_clears_unresolved_type_diagnostic() {
     );
 
     let mut found_unresolved = false;
-    let mut await_hover_response = |expected_id: i64, found_unresolved: &mut bool| {
-        loop {
-            let msg = read_message(&mut stdout)
-                .expect("expected message while waiting for hover response");
-            let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
-            if json["method"].as_str() == Some("textDocument/publishDiagnostics")
-                && json["params"]["uri"].as_str() == Some(uri_use)
-            {
-                let diagnostics = json["params"]["diagnostics"]
-                    .as_array()
-                    .cloned()
-                    .unwrap_or_default();
-                if diagnostics.iter().any(|d| {
-                    d["source"].as_str() == Some("semantic")
-                        && d["code"].as_str() == Some("unresolved_type_reference")
-                }) {
-                    *found_unresolved = true;
-                }
+    let mut await_hover_response = |expected_id: i64, found_unresolved: &mut bool| loop {
+        let msg =
+            read_message(&mut stdout).expect("expected message while waiting for hover response");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"].as_str() == Some(uri_use)
+        {
+            let diagnostics = json["params"]["diagnostics"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+            if diagnostics.iter().any(|d| {
+                d["source"].as_str() == Some("semantic")
+                    && d["code"].as_str() == Some("unresolved_type_reference")
+            }) {
+                *found_unresolved = true;
             }
-            if json["id"].as_i64() == Some(expected_id) {
-                break;
-            }
+        }
+        if json["id"].as_i64() == Some(expected_id) {
+            break;
         }
     };
     await_hover_response(hover_id, &mut found_unresolved);

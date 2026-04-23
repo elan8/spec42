@@ -1,6 +1,8 @@
 //! Goto definition integration tests.
 
-use super::harness::{lsp_barrier, next_id, read_message, read_response, send_message, spawn_server};
+use super::harness::{
+    lsp_barrier, next_id, read_message, read_response, send_message, spawn_server,
+};
 
 #[test]
 fn lsp_goto_definition() {

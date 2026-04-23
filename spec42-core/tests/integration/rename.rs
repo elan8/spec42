@@ -1,6 +1,8 @@
 //! Rename integration tests.
 
-use super::harness::{lsp_barrier, next_id, read_message, read_response, send_message, spawn_server};
+use super::harness::{
+    lsp_barrier, next_id, read_message, read_response, send_message, spawn_server,
+};
 
 /// Rename: prepareRename returns range; rename returns WorkspaceEdit updating all references.
 #[test]

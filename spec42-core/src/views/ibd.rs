@@ -265,8 +265,10 @@ fn prune_ibd_payload_to_connected_scope(
         .into_iter()
         .filter(|part| keep_part_qn.contains(&part.qualified_name))
         .collect();
-    let part_qn: std::collections::HashSet<String> =
-        parts.iter().map(|part| part.qualified_name.clone()).collect();
+    let part_qn: std::collections::HashSet<String> = parts
+        .iter()
+        .map(|part| part.qualified_name.clone())
+        .collect();
     let ports: Vec<IbdPortDto> = ports
         .into_iter()
         .filter(|port| part_qn.contains(&port.parent_id))
@@ -314,8 +316,10 @@ fn ensure_endpoint_parts_present(
     graph: &SemanticGraph,
     uri: &Url,
 ) {
-    let mut existing_part_qn: std::collections::HashSet<String> =
-        parts.iter().map(|part| part.qualified_name.clone()).collect();
+    let mut existing_part_qn: std::collections::HashSet<String> = parts
+        .iter()
+        .map(|part| part.qualified_name.clone())
+        .collect();
 
     for endpoint in connectors
         .iter()
@@ -328,7 +332,10 @@ fn ensure_endpoint_parts_present(
         if !existing_part_qn.insert(qualified_name.clone()) {
             continue;
         }
-        let container_id = node.parent_id.as_ref().map(|parent| qualified_name_to_dot(&parent.qualified_name));
+        let container_id = node
+            .parent_id
+            .as_ref()
+            .map(|parent| qualified_name_to_dot(&parent.qualified_name));
         parts.push(IbdPartDto {
             id: node.id.qualified_name.clone(),
             name: node.name.clone(),
@@ -463,7 +470,10 @@ fn prune_redundant_top_level_roots(
                 .iter()
                 .filter(|candidate| {
                     candidate.qualified_name != root.qualified_name
-                        && endpoint_matches_root(&candidate.qualified_name, &other_root.qualified_name)
+                        && endpoint_matches_root(
+                            &candidate.qualified_name,
+                            &other_root.qualified_name,
+                        )
                 })
                 .filter(|candidate| typed_by_name(candidate).as_deref() == Some(root.name.as_str()))
                 .any(|candidate| {
@@ -495,8 +505,10 @@ fn prune_redundant_top_level_roots(
                 .any(|root_prefix| endpoint_matches_root(&part.qualified_name, root_prefix))
         })
         .collect();
-    let remaining_part_ids: std::collections::HashSet<String> =
-        parts.iter().map(|part| part.qualified_name.clone()).collect();
+    let remaining_part_ids: std::collections::HashSet<String> = parts
+        .iter()
+        .map(|part| part.qualified_name.clone())
+        .collect();
     let ports: Vec<IbdPortDto> = ports
         .into_iter()
         .filter(|port| remaining_part_ids.contains(&port.parent_id))
@@ -504,12 +516,10 @@ fn prune_redundant_top_level_roots(
     let connectors: Vec<IbdConnectorDto> = connectors
         .into_iter()
         .filter(|connector| {
-            !redundant_roots
-                .iter()
-                .any(|root_prefix| {
-                    endpoint_matches_root(&connector.source_id, root_prefix)
-                        || endpoint_matches_root(&connector.target_id, root_prefix)
-                })
+            !redundant_roots.iter().any(|root_prefix| {
+                endpoint_matches_root(&connector.source_id, root_prefix)
+                    || endpoint_matches_root(&connector.target_id, root_prefix)
+            })
         })
         .collect();
 
@@ -519,7 +529,11 @@ fn prune_redundant_top_level_roots(
             eprintln!(
                 "[IBD] pruned redundant top-level roots for {}: {}",
                 uri,
-                redundant_roots.iter().cloned().collect::<Vec<_>>().join(", ")
+                redundant_roots
+                    .iter()
+                    .cloned()
+                    .collect::<Vec<_>>()
+                    .join(", ")
             );
         }
     }
@@ -553,14 +567,19 @@ fn map_definition_endpoint_to_usage(
 }
 
 fn build_container_groups(parts: &[IbdPartDto]) -> Vec<IbdContainerGroupDto> {
-    let part_qn: std::collections::HashSet<String> =
-        parts.iter().map(|part| part.qualified_name.clone()).collect();
+    let part_qn: std::collections::HashSet<String> = parts
+        .iter()
+        .map(|part| part.qualified_name.clone())
+        .collect();
     let mut groups_by_qn: std::collections::HashMap<String, IbdContainerGroupDto> =
         std::collections::HashMap::new();
 
     for part in parts {
         let qn = part.qualified_name.as_str();
-        let segments: Vec<&str> = qn.split('.').filter(|segment| !segment.is_empty()).collect();
+        let segments: Vec<&str> = qn
+            .split('.')
+            .filter(|segment| !segment.is_empty())
+            .collect();
         if segments.len() < 2 {
             continue;
         }
@@ -1408,10 +1427,18 @@ mod tests {
             &Url::parse("file:///test.sysml").expect("url"),
         );
 
-        assert!(parts.iter().any(|part| part.qualified_name == "Pkg.Vehicle"));
-        assert!(!parts.iter().any(|part| part.qualified_name == "Pkg.Controller"));
-        assert!(!parts.iter().any(|part| part.qualified_name == "Pkg.vehicleInst"));
-        assert!(ports.iter().all(|port| !port.parent_id.starts_with("Pkg.Controller")));
+        assert!(parts
+            .iter()
+            .any(|part| part.qualified_name == "Pkg.Vehicle"));
+        assert!(!parts
+            .iter()
+            .any(|part| part.qualified_name == "Pkg.Controller"));
+        assert!(!parts
+            .iter()
+            .any(|part| part.qualified_name == "Pkg.vehicleInst"));
+        assert!(ports
+            .iter()
+            .all(|port| !port.parent_id.starts_with("Pkg.Controller")));
         assert!(connectors
             .iter()
             .all(|connector| !connector.source_id.starts_with("Pkg.Controller")));

@@ -1,8 +1,8 @@
+use crate::common::util;
 use crate::language::{find_reference_ranges, is_reserved_keyword, word_at_position, SymbolEntry};
 use crate::semantic_model::NodeId;
 use crate::semantic_model::ResolveResult;
 use crate::workspace::ServerState;
-use crate::common::util;
 use std::time::Instant;
 use tower_lsp::lsp_types::{Location, Position, Url};
 use tracing::info;
@@ -45,7 +45,11 @@ pub(crate) fn resolved_references_at_position(
             .filter(|node| node.name == lookup_name && position_in_range(pos, node.range))
             .map(|node| node.id.clone())
             .collect();
-        if ids.is_empty() { None } else { Some(ids) }
+        if ids.is_empty() {
+            None
+        } else {
+            Some(ids)
+        }
     };
 
     let locations = collect_references_for_lookup(
@@ -85,11 +89,11 @@ fn collect_references_for_lookup(
     let started_at = Instant::now();
     let mut target_ids: std::collections::HashSet<NodeId> =
         explicit_target_ids.unwrap_or_else(|| {
-        selected_defs
-            .iter()
-            .filter_map(|entry| symbol_entry_node_id(state, entry))
-            .collect()
-    });
+            selected_defs
+                .iter()
+                .filter_map(|entry| symbol_entry_node_id(state, entry))
+                .collect()
+        });
     let same_uri_target_ids: std::collections::HashSet<NodeId> = target_ids
         .iter()
         .filter(|id| util::normalize_file_uri(&id.uri) == *query_uri)
@@ -118,12 +122,15 @@ fn collect_references_for_lookup(
                 .semantic_graph
                 .nodes_for_uri(uri)
                 .into_iter()
-                .filter(|node| node.name == lookup_name && position_in_range(location.range.start, node.range))
+                .filter(|node| {
+                    node.name == lookup_name && position_in_range(location.range.start, node.range)
+                })
                 .map(|node| node.id.clone())
                 .collect();
             let (candidate_same, candidate_other) =
                 collect_symbol_matches_for_lookup(state, uri, lookup_name, None);
-            let candidate_ids: std::collections::HashSet<NodeId> = if !semantic_candidate_ids.is_empty()
+            let candidate_ids: std::collections::HashSet<NodeId> = if !semantic_candidate_ids
+                .is_empty()
             {
                 semantic_candidate_ids
             } else {

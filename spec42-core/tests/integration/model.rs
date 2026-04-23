@@ -1405,9 +1405,9 @@ fn lsp_sysml_model_ibd_includes_connectors_for_connection_usage_end_references()
     assert!(
         edges.iter().any(|edge| {
             edge["type"].as_str() == Some("connection")
-                && edge["source"]
-                    .as_str()
-                    .is_some_and(|source| source.ends_with("capability") || source.ends_with("Capability"))
+                && edge["source"].as_str().is_some_and(|source| {
+                    source.ends_with("capability") || source.ends_with("Capability")
+                })
                 && edge["target"]
                     .as_str()
                     .is_some_and(|target| target.ends_with("goal") || target.ends_with("Goal"))
@@ -1416,12 +1416,11 @@ fn lsp_sysml_model_ibd_includes_connectors_for_connection_usage_end_references()
     );
     assert!(
         connectors.iter().any(|connector| {
-            connector["sourceId"]
+            connector["sourceId"].as_str().is_some_and(|source| {
+                source.ends_with(".capability") || source.ends_with(".Capability")
+            }) && connector["targetId"]
                 .as_str()
-                .is_some_and(|source| source.ends_with(".capability") || source.ends_with(".Capability"))
-                && connector["targetId"]
-                    .as_str()
-                    .is_some_and(|target| target.ends_with(".goal") || target.ends_with(".Goal"))
+                .is_some_and(|target| target.ends_with(".goal") || target.ends_with(".Goal"))
         }),
         "expected ibd connector for connection usage end refs, got: {connectors:#?}"
     );

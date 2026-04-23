@@ -281,7 +281,9 @@ pub fn symbol_hover_markdown(entry: &SymbolEntry, show_location: bool) -> String
 
 #[cfg(test)]
 mod tests {
-    use super::{apply_incremental_change, import_statement_ranges, untyped_part_usage_diagnostics};
+    use super::{
+        apply_incremental_change, import_statement_ranges, untyped_part_usage_diagnostics,
+    };
     use tower_lsp::lsp_types::{Position, Range};
 
     #[test]
@@ -316,5 +318,4 @@ mod tests {
         let diagnostics = untyped_part_usage_diagnostics(text);
         assert!(diagnostics.is_empty());
     }
-
 }

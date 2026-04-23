@@ -268,7 +268,16 @@ fn rewrite_implicit_redefinition_line(raw_line: &str) -> Option<String> {
     let leading = &code_only[..leading_ws_len];
     let trimmed = code_only.trim_start();
     let keywords = [
-        "attribute", "part", "port", "ref", "item", "actor", "perform", "in", "out", "inout",
+        "attribute",
+        "part",
+        "port",
+        "ref",
+        "item",
+        "actor",
+        "perform",
+        "in",
+        "out",
+        "inout",
     ];
     for keyword in keywords {
         let prefix = format!("{keyword} ");
@@ -844,7 +853,8 @@ mod tests {
     #[test]
     fn test_suggest_explicit_redefinition_quick_fix_rewrites_line() {
         let uri = Url::parse("file:///test.sysml").unwrap();
-        let source = "package P {\n  part def Child :> Base {\n    attribute mass = 1200;\n  }\n}\n";
+        let source =
+            "package P {\n  part def Child :> Base {\n    attribute mass = 1200;\n  }\n}\n";
         let diagnostic = Diagnostic {
             range: Range::new(Position::new(2, 4), Position::new(2, 25)),
             severity: Some(DiagnosticSeverity::ERROR),
@@ -878,7 +888,8 @@ mod tests {
     #[test]
     fn test_suggest_explicit_redefinition_quick_fix_noop_when_already_explicit() {
         let uri = Url::parse("file:///test.sysml").unwrap();
-        let source = "package P {\n  part def Child :> Base {\n    attribute :>> mass = 1200;\n  }\n}\n";
+        let source =
+            "package P {\n  part def Child :> Base {\n    attribute :>> mass = 1200;\n  }\n}\n";
         let diagnostic = Diagnostic {
             range: Range::new(Position::new(2, 4), Position::new(2, 29)),
             severity: Some(DiagnosticSeverity::ERROR),

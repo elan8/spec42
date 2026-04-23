@@ -337,7 +337,12 @@ fn collect_activity_diagrams_from_part_def_body(
 ) {
     for element in elements {
         if let PartDefBodyElement::PartUsage(part_usage) = &element.value {
-            collect_activity_diagrams_from_part_usage(part_usage, package_segments, parent_segments, out);
+            collect_activity_diagrams_from_part_usage(
+                part_usage,
+                package_segments,
+                parent_segments,
+                out,
+            );
         }
     }
 }
@@ -350,7 +355,12 @@ fn collect_activity_diagrams_from_part_usage_body(
 ) {
     for element in elements {
         if let PartUsageBodyElement::PartUsage(part_usage) = &element.value {
-            collect_activity_diagrams_from_part_usage(part_usage, package_segments, parent_segments, out);
+            collect_activity_diagrams_from_part_usage(
+                part_usage,
+                package_segments,
+                parent_segments,
+                out,
+            );
         }
     }
 }
@@ -364,7 +374,9 @@ fn collect_activity_diagrams_from_part_def(
     let name = identification_name(&node.identification);
     let qualified_segments = with_segment(parent_segments, name.clone());
 
-    if let Some(diagram) = extract_performer_diagram_from_part_def(node, package_segments, parent_segments) {
+    if let Some(diagram) =
+        extract_performer_diagram_from_part_def(node, package_segments, parent_segments)
+    {
         out.push(diagram);
     }
 
@@ -387,7 +399,9 @@ fn collect_activity_diagrams_from_part_usage(
     let name = node.value.name.clone();
     let qualified_segments = with_segment(parent_segments, name.clone());
 
-    if let Some(diagram) = extract_performer_diagram_from_part_usage(node, package_segments, parent_segments) {
+    if let Some(diagram) =
+        extract_performer_diagram_from_part_usage(node, package_segments, parent_segments)
+    {
         out.push(diagram);
     }
 
@@ -416,15 +430,26 @@ fn collect_activity_diagrams_from_package_elements(
                 parent_segments,
             )),
             PBE::PartDef(part_def) => {
-                collect_activity_diagrams_from_part_def(part_def, package_segments, parent_segments, out);
+                collect_activity_diagrams_from_part_def(
+                    part_def,
+                    package_segments,
+                    parent_segments,
+                    out,
+                );
             }
             PBE::PartUsage(part_usage) => {
-                collect_activity_diagrams_from_part_usage(part_usage, package_segments, parent_segments, out);
+                collect_activity_diagrams_from_part_usage(
+                    part_usage,
+                    package_segments,
+                    parent_segments,
+                    out,
+                );
             }
             PBE::Package(package) => {
                 if let PackageBody::Brace { elements: inner } = &package.body {
                     let package_name = identification_name(&package.identification);
-                    let next_package_segments = with_segment(package_segments, package_name.clone());
+                    let next_package_segments =
+                        with_segment(package_segments, package_name.clone());
                     let next_parent_segments = with_segment(parent_segments, package_name);
                     collect_activity_diagrams_from_package_elements(
                         inner,
@@ -437,7 +462,8 @@ fn collect_activity_diagrams_from_package_elements(
             PBE::LibraryPackage(package) => {
                 if let PackageBody::Brace { elements: inner } = &package.body {
                     let package_name = identification_name(&package.identification);
-                    let next_package_segments = with_segment(package_segments, package_name.clone());
+                    let next_package_segments =
+                        with_segment(package_segments, package_name.clone());
                     let next_parent_segments = with_segment(parent_segments, package_name);
                     collect_activity_diagrams_from_package_elements(
                         inner,

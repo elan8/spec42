@@ -1,6 +1,8 @@
 //! Find references integration tests.
 
-use super::harness::{lsp_barrier, next_id, read_message, read_response, send_message, spawn_server};
+use super::harness::{
+    lsp_barrier, next_id, read_message, read_response, send_message, spawn_server,
+};
 
 /// Cross-file references: find references to a symbol defined in one file and used in another.
 #[test]
@@ -86,7 +88,8 @@ fn lsp_cross_file_references() {
             .iter()
             .filter_map(|l| l["uri"].as_str().map(String::from))
             .collect();
-        if uris.iter().any(|u| u.contains("def.sysml")) && uris.iter().any(|u| u.contains("use.sysml"))
+        if uris.iter().any(|u| u.contains("def.sysml"))
+            && uris.iter().any(|u| u.contains("use.sysml"))
         {
             break;
         }
