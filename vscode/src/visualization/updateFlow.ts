@@ -1,21 +1,23 @@
 import * as vscode from 'vscode';
-import type { LspModelProvider } from '../providers/lspModelProvider';
-import { fetchModelData, hashContent } from './modelFetcher';
+import { hashContent, type UpdateMessage } from './modelFetcher';
 import { isVerboseLoggingEnabled, log, logError, logPerfEvent } from '../logger';
 
 export interface UpdateFlowDeps {
     panel: vscode.WebviewPanel;
-    getDocument: () => vscode.TextDocument;
+    getDocument?: () => vscode.TextDocument | undefined;
     getWorkspaceRootUri: () => string;
-    lspModelProvider: LspModelProvider;
+    lspModelProvider?: unknown;
     getCurrentView: () => string;
     getSelectedView: () => string | undefined;
     setCurrentView: (view: string) => void;
     getIsNavigating: () => boolean;
     getNeedsUpdateWhenVisible: () => boolean;
     getLastContentHash: () => string;
+    getContentHashSource?: () => string;
     setLastContentHash: (hash: string) => void;
     setNeedsUpdateWhenVisible: (value: boolean) => void;
+    fetchUpdateMessage?: () => Promise<UpdateMessage | null>;
+    loadingMessage?: string;
 }
 
 function logPerf(event: string, extra?: Record<string, unknown>): void {
@@ -27,15 +29,17 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
         panel,
         getDocument,
         getWorkspaceRootUri,
-        lspModelProvider,
         getCurrentView,
         getSelectedView,
         setCurrentView,
         getIsNavigating,
         getNeedsUpdateWhenVisible,
         getLastContentHash,
+        getContentHashSource,
         setLastContentHash,
         setNeedsUpdateWhenVisible,
+        fetchUpdateMessage,
+        loadingMessage,
     } = deps;
     let bootstrapCompleted = false;
     let inFlightUpdate:
@@ -48,9 +52,8 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
         | undefined;
 
     function currentUpdateKey(): string {
-        const document = getDocument();
         return JSON.stringify({
-            documentUri: document.uri.toString(),
+            documentUri: getDocument?.()?.uri.toString() ?? null,
             workspaceRootUri: getWorkspaceRootUri(),
             currentView: getCurrentView(),
             selectedView: getSelectedView() ?? null,
@@ -58,13 +61,13 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
     }
 
     async function doUpdateVisualization(): Promise<void> {
-        const document = getDocument();
+        const document = getDocument?.();
         const workspaceRootUri = getWorkspaceRootUri();
         const updateStartedAt = Date.now();
         try {
             log(
                 'updateFlow:fetch:start',
-                `doc=${document.uri.toString()}`,
+                `doc=${document?.uri.toString() ?? '(none)'}`,
                 `workspaceRootUri=${workspaceRootUri}`,
                 `currentView=${getCurrentView()}`,
                 `selectedView=${getSelectedView() ?? '(auto)'}`,
@@ -75,7 +78,7 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                     console.log(
                         '[viz][updateFlow:fetch:start]',
                         JSON.stringify({
-                            doc: document.uri.toString(),
+                            doc: document?.uri.toString() ?? null,
                             workspaceRootUri,
                             currentView: getCurrentView(),
                             selectedView: getSelectedView() ?? null,
@@ -85,12 +88,7 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                     // ignore
                 }
             }
-            const msg = await fetchModelData({
-                workspaceRootUri,
-                lspModelProvider,
-                currentView: getCurrentView(),
-                selectedView: getSelectedView(),
-            });
+            const msg = fetchUpdateMessage ? await fetchUpdateMessage() : null;
             logPerf('visualizer:fetchModelDataCompleted', {
                 currentView: getCurrentView(),
                 totalMs: Date.now() - updateStartedAt,
@@ -182,9 +180,16 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
             return;
         }
 
-        const document = getDocument();
-        const content = document.getText();
-        const contentHash = hashContent(content);
+        const contentHashSource = getContentHashSource
+            ? getContentHashSource()
+            : JSON.stringify({
+                documentUri: getDocument?.()?.uri.toString() ?? null,
+                documentVersion: getDocument?.()?.version ?? 0,
+                workspaceRootUri: getWorkspaceRootUri(),
+                currentView: getCurrentView(),
+                selectedView: getSelectedView() ?? null,
+            });
+        const contentHash = hashContent(contentHashSource);
 
         if (!forceUpdate && contentHash === getLastContentHash()) {
             return;
@@ -202,7 +207,7 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                 isBootstrap: !bootstrapCompleted,
                 currentView: getCurrentView(),
             });
-            panel.webview.postMessage({ command: 'showLoading', message: 'Parsing SysML model...' });
+            panel.webview.postMessage({ command: 'showLoading', message: loadingMessage ?? 'Loading visualization...' });
             await new Promise(resolve => setTimeout(resolve, 0));
             const startedAt = Date.now();
             try {

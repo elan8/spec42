@@ -15,14 +15,19 @@ export const STRUCTURAL_VIEWS = new Set([
     'software-dependency-view',
 ]);
 
-export const DEFAULT_ENABLED_VIEWS = [
+export const SYSML_ENABLED_VIEWS = [
     'general-view',
     'interconnection-view',
-    'software-module-view',
-    'software-dependency-view',
     'action-flow-view',
     'state-transition-view',
 ] as const;
+
+export const SOFTWARE_ENABLED_VIEWS = [
+    'software-module-view',
+    'software-dependency-view',
+] as const;
+
+export const DEFAULT_ENABLED_VIEWS = SYSML_ENABLED_VIEWS;
 
 /** Default release-enabled views. */
 export const ENABLED_VIEWS = new Set(DEFAULT_ENABLED_VIEWS);

@@ -2,10 +2,13 @@ import type { LspModelProvider } from '../providers/lspModelProvider';
 import { isVerboseLoggingEnabled, log, logError, logPerfEvent } from '../logger';
 import type {
     IbdDataDTO,
+    SoftwareWorkspaceModelDTO,
+    SoftwareVisualizationViewCandidateDTO,
     SysMLElementDTO,
     SysMLGraphDTO,
     VisualizationViewCandidateDTO,
 } from '../providers/sysmlModelTypes';
+import { projectSoftwareWorkspaceModel } from './softwareViewProjection';
 
 export interface FetchModelParams {
     workspaceRootUri: string;
@@ -26,6 +29,19 @@ export interface UpdateMessage {
     selectedView?: string;
     selectedViewName?: string;
     emptyStateMessage?: string;
+}
+
+function toVisualizationCandidates(
+    candidates: SoftwareVisualizationViewCandidateDTO[]
+): VisualizationViewCandidateDTO[] {
+    return candidates.map((candidate) => ({
+        id: candidate.id,
+        name: candidate.name,
+        supported: candidate.supported,
+        description: candidate.description,
+        rendererView: candidate.id,
+        viewType: 'SoftwareView',
+    }));
 }
 
 export function hashContent(content: string): string {
@@ -116,4 +132,104 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         });
         return null;
     }
+}
+
+export async function fetchSoftwareModelData(params: Omit<FetchModelParams, 'selectedView'>): Promise<UpdateMessage | null> {
+    const startedAt = Date.now();
+    const { workspaceRootUri, lspModelProvider, currentView } = params;
+
+    log(
+        'fetchSoftwareModelData:start',
+        `workspaceRootUri=${workspaceRootUri}`,
+        `currentView=${currentView}`,
+    );
+
+    try {
+        const requestStartedAt = Date.now();
+        const result = await lspModelProvider.getSoftwareVisualization(
+            workspaceRootUri,
+            currentView,
+        );
+        const requestMs = Date.now() - requestStartedAt;
+
+        const msg: UpdateMessage = {
+            command: 'update',
+            graph: result.graph ?? { nodes: [], edges: [] },
+            elements: result.workspaceModel?.semantic,
+            generalViewGraph: result.graph ?? { nodes: [], edges: [] },
+            ibd: undefined,
+            activityDiagrams: [],
+            currentView: result.view ?? currentView,
+            viewCandidates: toVisualizationCandidates(result.views ?? []),
+            selectedView: result.view,
+            selectedViewName: result.views?.find((candidate) => candidate.id === result.view)?.name,
+            emptyStateMessage: result.emptyStateMessage,
+        };
+
+        logPerfEvent('softwareVisualizer:fetchModelData', {
+            currentView,
+            workspaceRootUri,
+            requestMs,
+            totalMs: Date.now() - startedAt,
+            graphNodes: msg.graph?.nodes?.length || 0,
+            graphEdges: msg.graph?.edges?.length || 0,
+            viewCandidates: msg.viewCandidates?.length || 0,
+        });
+        return msg;
+    } catch (error) {
+        logError('fetchSoftwareModelData failed', error);
+        logPerfEvent('softwareVisualizer:fetchModelDataFailed', {
+            currentView,
+            workspaceRootUri,
+            totalMs: Date.now() - startedAt,
+            error: error instanceof Error ? error.message : String(error),
+        });
+        return null;
+    }
+}
+
+export function buildSoftwareUpdateMessage(
+    workspaceRootUri: string,
+    currentView: string,
+    model?: SoftwareWorkspaceModelDTO,
+): UpdateMessage {
+    if (!model) {
+        return {
+            command: 'update',
+            graph: { nodes: [], edges: [] },
+            elements: [],
+            generalViewGraph: { nodes: [], edges: [] },
+            ibd: undefined,
+            activityDiagrams: [],
+            currentView,
+            viewCandidates: toVisualizationCandidates([
+                { id: 'software-module-view', name: 'Rust Module View', supported: true, description: 'Shows crates and modules.' },
+                { id: 'software-dependency-view', name: 'Rust Dependency View', supported: true, description: 'Shows module dependencies.' },
+            ]),
+            selectedView: currentView,
+            selectedViewName: currentView === 'software-dependency-view' ? 'Rust Dependency View' : 'Rust Module View',
+            emptyStateMessage: 'Run analysis from the Spec42 Add-ons view before opening the software architecture visualizer.',
+        };
+    }
+
+    const projection = projectSoftwareWorkspaceModel(
+        model,
+        currentView === 'software-dependency-view' ? 'software-dependency-view' : 'software-module-view',
+    );
+    return {
+        command: 'update',
+        graph: projection.graph,
+        elements: projection.workspaceModel.semantic,
+        generalViewGraph: projection.graph,
+        ibd: undefined,
+        activityDiagrams: [],
+        currentView,
+        viewCandidates: toVisualizationCandidates([
+            { id: 'software-module-view', name: 'Rust Module View', supported: true, description: 'Shows crates and modules.' },
+            { id: 'software-dependency-view', name: 'Rust Dependency View', supported: true, description: 'Shows module dependencies.' },
+        ]),
+        selectedView: currentView,
+        selectedViewName: currentView === 'software-dependency-view' ? 'Rust Dependency View' : 'Rust Module View',
+        emptyStateMessage: undefined,
+    };
 }

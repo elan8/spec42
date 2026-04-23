@@ -14,12 +14,17 @@ function getNonce(): string {
     return nonce;
 }
 
-export function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri, extensionVersion?: string): string {
+export function getWebviewHtml(
+    webview: vscode.Webview,
+    extensionUri: vscode.Uri,
+    extensionVersion?: string,
+    enabledViews: readonly string[] = DEFAULT_ENABLED_VIEWS,
+): string {
     const templatePath = path.join(extensionUri.fsPath, 'media', 'webview', 'visualizer.html');
     let html = fs.readFileSync(templatePath, 'utf8');
 
     const nonce = getNonce();
-    const enabledViews = new Set<string>(DEFAULT_ENABLED_VIEWS);
+    const enabledViewSet = new Set<string>(enabledViews);
     const vars: Record<string, string> = {
         NONCE: nonce,
         CSP_SOURCE: webview.cspSource,
@@ -30,7 +35,7 @@ export function getWebviewHtml(webview: vscode.Webview, extensionUri: vscode.Uri
         CODICONS_CSS_URI: webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'media', 'codicons', 'codicon.css')).toString(),
         STYLES: getVisualizerStyles(),
         EXTENSION_VERSION: extensionVersion ?? '0.0.0',
-        ENABLED_VIEW_IDS_JSON: JSON.stringify(Array.from(enabledViews)),
+        ENABLED_VIEW_IDS_JSON: JSON.stringify(Array.from(enabledViewSet)),
         EXPERIMENTAL_VIEW_IDS_JSON: '[]',
         VERBOSE_LOGGING_JSON: JSON.stringify(isVerboseLoggingEnabled()),
     };

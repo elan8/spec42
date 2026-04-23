@@ -6,7 +6,7 @@ import type { SysMLElement } from '../types/sysmlTypes';
 
 export interface MessageHandlerContext {
     panel: vscode.WebviewPanel;
-    document: vscode.TextDocument;
+    document?: vscode.TextDocument;
     workspaceRootUri: string;
     lspModelProvider: LspModelProvider;
     updateVisualization: (force: boolean, triggerSource?: string) => void;
@@ -39,7 +39,7 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
                 }
                 break;
             case 'jumpToElement':
-                handlers.jumpToElement(message.elementName, message.skipCentering, message.parentContext, message.elementQualifiedName, message.elementUri);
+                handlers.jumpToElement(message.elementName, message.skipCentering, message.parentContext, message.elementQualifiedName, message.elementUri, message.elementRange);
                 break;
             case 'renameElement':
                 handlers.renameElement(message.oldName, message.newName);
@@ -57,6 +57,9 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
                         break;
                     }
                     if (cmd === 'sysml.showModelDashboard') {
+                        if (!document) {
+                            break;
+                        }
                         const dashboardUri = document.uri;
                         setTimeout(() => vscode.commands.executeCommand(cmd, dashboardUri), 100);
                     } else {
@@ -134,7 +137,7 @@ export function createMessageHandlers(context: MessageHandlerContext) {
     let activeHighlightEditor: vscode.TextEditor | undefined;
 
     function clearActiveSourceHighlight(): void {
-        const trackedUris = new Set([document.uri.toString()]);
+        const trackedUris = new Set(document ? [document.uri.toString()] : []);
 
         if (activeHighlightTimeout) {
             clearTimeout(activeHighlightTimeout);
@@ -188,31 +191,40 @@ export function createMessageHandlers(context: MessageHandlerContext) {
         }
     }
 
-    async function jumpToElement(elementName: string, skipCentering: boolean = false, parentContext?: string, elementQualifiedName?: string, elementUri?: string) {
+    async function jumpToElement(
+        elementName: string,
+        skipCentering: boolean = false,
+        parentContext?: string,
+        elementQualifiedName?: string,
+        elementUri?: string,
+        elementRange?: { start: { line: number; character: number }; end: { line: number; character: number } },
+    ) {
         setNavigating(true);
 
         let element: SysMLElement | undefined;
-        let resolvedUri = elementUri || document.uri.toString();
+        let resolvedUri = elementUri || document?.uri.toString() || workspaceRootUri;
 
-        const dto = await lspModelProvider.findElement(
-            resolvedUri || workspaceRootUri,
-            elementName,
-            parentContext,
-            elementQualifiedName,
-        );
-        if (dto) {
-            resolvedUri = dto.uri || resolvedUri;
-            element = {
-                type: dto.type,
-                name: dto.name,
-                range: toVscodeRange(dto.range),
-                children: [],
-                attributes: new Map(),
-                relationships: [],
-            };
+        if (document) {
+            const dto = await lspModelProvider.findElement(
+                resolvedUri || workspaceRootUri,
+                elementName,
+                parentContext,
+                elementQualifiedName,
+            );
+            if (dto) {
+                resolvedUri = dto.uri || resolvedUri;
+                element = {
+                    type: dto.type,
+                    name: dto.name,
+                    range: toVscodeRange(dto.range),
+                    children: [],
+                    attributes: new Map(),
+                    relationships: [],
+                };
+            }
         }
 
-        if (element) {
+        if (element || resolvedUri) {
             const visualizerColumn = panel.viewColumn || vscode.ViewColumn.Two;
             const targetColumn = visualizerColumn === vscode.ViewColumn.One
                 ? vscode.ViewColumn.Two
@@ -226,8 +238,12 @@ export function createMessageHandlers(context: MessageHandlerContext) {
             }).then(editor => {
                 clearActiveSourceHighlight();
 
-                editor.selection = new vscode.Selection(element!.range.start, element!.range.start);
-                editor.revealRange(element!.range, vscode.TextEditorRevealType.InCenter);
+                const targetRange =
+                    element?.range ??
+                    (elementRange ? toVscodeRange(elementRange) : undefined) ??
+                    new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0));
+                editor.selection = new vscode.Selection(targetRange.start, targetRange.start);
+                editor.revealRange(targetRange, vscode.TextEditorRevealType.InCenter);
 
                 activeHighlightDecoration = vscode.window.createTextEditorDecorationType({
                     backgroundColor: 'rgba(255, 215, 0, 0.4)',
@@ -238,7 +254,7 @@ export function createMessageHandlers(context: MessageHandlerContext) {
                 });
 
                 activeHighlightEditor = editor;
-                editor.setDecorations(activeHighlightDecoration, [element!.range]);
+                editor.setDecorations(activeHighlightDecoration, [targetRange]);
 
                 activeHighlightTimeout = setTimeout(() => {
                     clearActiveSourceHighlight();
@@ -265,6 +281,10 @@ export function createMessageHandlers(context: MessageHandlerContext) {
     }
 
     async function renameElement(oldName: string, newName: string) {
+        if (!document) {
+            vscode.window.showInformationMessage('Rename is only available in the SysML visualizer.');
+            return;
+        }
         if (!newName || newName === oldName) {
             return;
         }

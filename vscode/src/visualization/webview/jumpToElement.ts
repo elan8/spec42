@@ -7,6 +7,10 @@ export interface JumpToElementPayload {
     name: string;
     id?: string;
     uri?: string;
+    range?: {
+        start: { line: number; character: number };
+        end: { line: number; character: number };
+    };
 }
 
 export interface JumpToElementOptions {
@@ -31,6 +35,9 @@ export function postJumpToElement(
     }
     if (element.uri) {
         msg.elementUri = element.uri;
+    }
+    if (element.range) {
+        msg.elementRange = element.range;
     }
     if (options?.skipCentering) {
         msg.skipCentering = true;

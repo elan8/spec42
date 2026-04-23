@@ -236,6 +236,31 @@ pub(crate) fn sysml_visualization_result(
     ))
 }
 
+pub(crate) fn software_visualization_result(
+    params: serde_json::Value,
+) -> Result<dto::SoftwareVisualizationResultDto> {
+    let (workspace_root_uri, view) = crate::views::parse_software_visualization_params(&params)?;
+    Ok(crate::views::build_software_visualization_response(
+        &workspace_root_uri,
+        &view,
+        Instant::now(),
+    ))
+}
+
+pub(crate) fn software_analyze_workspace_result(
+    params: serde_json::Value,
+) -> Result<dto::SoftwareAnalyzeWorkspaceResultDto> {
+    let workspace_root_uri = crate::views::parse_software_analyze_workspace_params(&params)?;
+    let workspace_path = workspace_root_uri
+        .to_file_path()
+        .map_err(|_| tower_lsp::jsonrpc::Error::invalid_params("software/analyzeWorkspace: invalid workspaceRootUri"))?;
+    let model = crate::software_architecture::analyze_rust_workspace(&workspace_path);
+    Ok(dto::SoftwareAnalyzeWorkspaceResultDto {
+        version: 0,
+        workspace_model: crate::views::build_software_workspace_model_dto(&model),
+    })
+}
+
 pub(crate) fn sysml_server_stats_result(
     state: &ServerState,
     start_time: Instant,

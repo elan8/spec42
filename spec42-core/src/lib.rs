@@ -26,8 +26,9 @@ pub use lsp_runtime::run as run_lsp;
 pub use syntax::ast_util::{identification_name, span_to_range, span_to_source_range, SourceRange};
 pub use validation::{validate_paths, ValidationReport, ValidationRequest, ValidationSummary};
 pub use views::dto::{
-    GraphEdgeDto, GraphNodeDto, SoftwareArchitectureModelDto, SoftwareComponentDto,
-    SoftwareDependencyDto, SourceAnchorDto, SysmlClearCacheResultDto,
+    GraphEdgeDto, GraphNodeDto, SoftwareAnalysisSummaryDto, SoftwareArchitectureModelDto,
+    SoftwareComponentDto, SoftwareDependencyDto, SoftwareWorkspaceModelDto, SourceAnchorDto,
+    SysmlClearCacheResultDto,
     SysmlFeatureInspectorElementDto, SysmlFeatureInspectorElementRefDto,
     SysmlFeatureInspectorParamsDto, SysmlFeatureInspectorRelationshipDto,
     SysmlFeatureInspectorResolutionDto, SysmlFeatureInspectorResultDto, SysmlGraphDto,

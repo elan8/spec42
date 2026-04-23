@@ -38,6 +38,20 @@ pub struct SoftwareArchitectureModel {
     pub dependencies: Vec<SoftwareDependency>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct SoftwareAnalysisSummary {
+    pub crate_count: usize,
+    pub module_count: usize,
+    pub dependency_count: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct SoftwareWorkspaceModel {
+    pub workspace_root: String,
+    pub architecture: SoftwareArchitectureModel,
+    pub summary: SoftwareAnalysisSummary,
+}
+
 #[derive(Debug, Clone)]
 struct RustCrate {
     name: String,
@@ -161,6 +175,29 @@ pub fn extract_rust_workspace_architecture(workspace_root: &Path) -> SoftwareArc
     SoftwareArchitectureModel {
         components: context.components.into_values().collect(),
         dependencies: context.dependencies.into_values().collect(),
+    }
+}
+
+pub fn analyze_rust_workspace(workspace_root: &Path) -> SoftwareWorkspaceModel {
+    let architecture = extract_rust_workspace_architecture(workspace_root);
+    let summary = SoftwareAnalysisSummary {
+        crate_count: architecture
+            .components
+            .iter()
+            .filter(|component| component.kind == "crate")
+            .count(),
+        module_count: architecture
+            .components
+            .iter()
+            .filter(|component| component.kind == "module")
+            .count(),
+        dependency_count: architecture.dependencies.len(),
+    };
+
+    SoftwareWorkspaceModel {
+        workspace_root: normalize_file_path(workspace_root),
+        architecture,
+        summary,
     }
 }
 

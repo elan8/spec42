@@ -24,6 +24,10 @@ pub enum Command {
     Lsp,
     Check(CheckArgs),
     Doctor(DoctorArgs),
+    Software {
+        #[command(subcommand)]
+        command: SoftwareCommand,
+    },
     Stdlib {
         #[command(subcommand)]
         command: StdlibCommand,
@@ -43,6 +47,19 @@ pub struct CheckArgs {
 pub struct DoctorArgs {
     #[arg(long = "format", value_enum, default_value_t = OutputFormat::Text)]
     pub format: OutputFormat,
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct SoftwareAnalyzeArgs {
+    #[arg(long = "workspace")]
+    pub workspace: PathBuf,
+    #[arg(long = "output")]
+    pub output: Option<PathBuf>,
+}
+
+#[derive(Debug, Clone, Subcommand)]
+pub enum SoftwareCommand {
+    Analyze(SoftwareAnalyzeArgs),
 }
 
 #[derive(Debug, Clone, Args)]

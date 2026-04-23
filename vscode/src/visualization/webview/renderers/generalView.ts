@@ -542,7 +542,7 @@ function renderGeneralNodes(
             if (elementName) {
                 postJumpToElement(
                     postMessage,
-                    { name: elementName, id: elementQualifiedName || undefined, uri: d.elementUri || undefined },
+                    { name: elementName, id: elementQualifiedName || undefined, uri: d.elementUri || undefined, range: d.element?.range || undefined },
                     { skipCentering: true }
                 );
             }
