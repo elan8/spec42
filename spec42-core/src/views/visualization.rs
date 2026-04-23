@@ -1,145 +1,26 @@
 use std::collections::{HashMap, HashSet};
 use std::time::Instant;
 
-use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::Url;
 
 use crate::semantic_model;
 use crate::views::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlElementDto, SysmlGraphDto, SysmlModelStatsDto,
-    SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto, SysmlVisualizationParamsDto,
-    SysmlVisualizationResultDto, WorkspaceFileModelDto, WorkspaceModelDto,
-    WorkspaceModelSummaryDto,
+    SysmlVisualizationPackageCandidateDto, SysmlVisualizationResultDto, WorkspaceFileModelDto,
+    WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
-use crate::views::extracted_model::{extract_activity_diagrams, ActivityDiagramDto};
+use crate::views::extracted_model::ActivityDiagramDto;
 use crate::views::ibd::{self, IbdDataDto, IbdPackageContainerGroupDto};
 use crate::views::model_projection;
 
+mod activity_views;
 #[path = "explicit_views.rs"]
 mod explicit_views;
+mod package_groups;
 
-fn normalize_package_path(value: &str) -> String {
-    value.replace('.', "::").trim().to_string()
-}
-
-fn diagram_matches_package_filter(
-    diagram: &ActivityDiagramDto,
-    package_ref: &str,
-    package_name: Option<&str>,
-) -> bool {
-    let diagram_path = normalize_package_path(&diagram.package_path);
-    let normalized_ref = normalize_package_path(package_ref);
-    let normalized_name = package_name.map(normalize_package_path);
-
-    if !normalized_ref.is_empty()
-        && (diagram_path == normalized_ref
-            || diagram_path.starts_with(&format!("{normalized_ref}::")))
-    {
-        return true;
-    }
-
-    if let Some(name) = normalized_name {
-        if !name.is_empty()
-            && (diagram_path == name || diagram_path.starts_with(&format!("{name}::")))
-        {
-            return true;
-        }
-    }
-
-    false
-}
-
-fn build_workspace_activity_diagrams(
-    index: &std::collections::HashMap<Url, crate::workspace::state::IndexEntry>,
-    workspace_uris: &[Url],
-    package_filter: Option<(&str, Option<&str>)>,
-) -> Vec<ActivityDiagramDto> {
-    let mut diagrams = Vec::new();
-    for workspace_uri in workspace_uris {
-        let Some(entry) = index.get(workspace_uri) else {
-            continue;
-        };
-        let Some(parsed) = entry.parsed.as_ref() else {
-            continue;
-        };
-        diagrams.extend(extract_activity_diagrams(parsed));
-    }
-
-    if let Some((package_ref, package_name)) = package_filter {
-        diagrams
-            .retain(|diagram| diagram_matches_package_filter(diagram, package_ref, package_name));
-    }
-
-    diagrams
-}
-
-pub(crate) fn parse_sysml_visualization_params(
-    v: &serde_json::Value,
-) -> Result<(Url, String, Option<String>)> {
-    let params =
-        if let Ok(params) = serde_json::from_value::<SysmlVisualizationParamsDto>(v.clone()) {
-            params
-        } else if let Some(arr) = v.as_array() {
-            let first = arr.first().ok_or_else(|| {
-                tower_lsp::jsonrpc::Error::invalid_params(
-                    "sysml/visualization params array must have at least one element",
-                )
-            })?;
-            if let Some(obj) = first.as_object() {
-                SysmlVisualizationParamsDto {
-                    workspace_root_uri: obj
-                        .get("workspaceRootUri")
-                        .and_then(|value| value.as_str())
-                        .unwrap_or_default()
-                        .to_string(),
-                    view: obj
-                        .get("view")
-                        .and_then(|value| value.as_str())
-                        .or_else(|| arr.get(1).and_then(|value| value.as_str()))
-                        .unwrap_or_default()
-                        .to_string(),
-                    selected_view: obj
-                        .get("selectedView")
-                        .and_then(|value| value.as_str())
-                        .or_else(|| arr.get(2).and_then(|value| value.as_str()))
-                        .map(ToString::to_string),
-                }
-            } else {
-                SysmlVisualizationParamsDto {
-                    workspace_root_uri: first.as_str().unwrap_or_default().to_string(),
-                    view: arr
-                        .get(1)
-                        .and_then(|value| value.as_str())
-                        .unwrap_or_default()
-                        .to_string(),
-                    selected_view: arr
-                        .get(2)
-                        .and_then(|value| value.as_str())
-                        .map(ToString::to_string),
-                }
-            }
-        } else {
-            return Err(tower_lsp::jsonrpc::Error::invalid_params(
-                "sysml/visualization params must include workspaceRootUri and view",
-            ));
-        };
-
-    if params.workspace_root_uri.trim().is_empty() || params.view.trim().is_empty() {
-        return Err(tower_lsp::jsonrpc::Error::invalid_params(
-            "sysml/visualization params must include workspaceRootUri and view",
-        ));
-    }
-
-    let workspace_root_uri = Url::parse(&params.workspace_root_uri).map_err(|_| {
-        tower_lsp::jsonrpc::Error::invalid_params("sysml/visualization: invalid workspaceRootUri")
-    })?;
-
-    Ok((
-        crate::common::util::normalize_file_uri(&workspace_root_uri),
-        params.view,
-        params.selected_view,
-    ))
-}
+pub(crate) use activity_views::parse_sysml_visualization_params;
+use activity_views::{build_workspace_activity_diagrams, filter_activity_diagrams_by_graph};
+use package_groups::build_package_groups_from_graph;
 
 fn clone_element(element: &SysmlElementDto) -> SysmlElementDto {
     SysmlElementDto {
@@ -408,139 +289,6 @@ fn build_workspace_model_dto_from_graph(
         semantic: merge_namespace_elements(&all_elements),
         files,
     }
-}
-
-fn filter_activity_diagrams_by_graph(
-    diagrams: &[ActivityDiagramDto],
-    graph: &SysmlGraphDto,
-) -> Vec<ActivityDiagramDto> {
-    let mut action_keys = HashSet::new();
-    for node in &graph.nodes {
-        let kind = node.element_type.to_lowercase();
-        if kind.contains("action") || kind.contains("perform") {
-            action_keys.insert((node.name.clone(), top_level_package_for_node_id(&node.id)));
-        }
-    }
-
-    diagrams
-        .iter()
-        .filter(|diagram| {
-            let package = normalize_package_path(&diagram.package_path)
-                .split("::")
-                .next()
-                .unwrap_or("")
-                .to_string();
-            action_keys.contains(&(diagram.name.clone(), package))
-        })
-        .cloned()
-        .collect()
-}
-
-fn top_level_package_for_node_id(node_id: &str) -> String {
-    normalize_package_path(node_id)
-        .split("::")
-        .next()
-        .unwrap_or("")
-        .to_string()
-}
-
-fn build_package_groups_from_graph(graph: &SysmlGraphDto) -> Vec<SysmlVisualizationGroupDto> {
-    let contains_edges: Vec<_> = graph
-        .edges
-        .iter()
-        .filter(|edge| edge.rel_type.eq_ignore_ascii_case("contains"))
-        .collect();
-    if contains_edges.is_empty() {
-        return Vec::new();
-    }
-
-    let node_by_id: HashMap<&str, &GraphNodeDto> = graph
-        .nodes
-        .iter()
-        .map(|node| (node.id.as_str(), node))
-        .collect();
-    let package_ids: HashSet<&str> = graph
-        .nodes
-        .iter()
-        .filter(|node| node.element_type.to_lowercase().contains("package"))
-        .map(|node| node.id.as_str())
-        .collect();
-    let mut children_by_parent: HashMap<&str, Vec<&str>> = HashMap::new();
-    let mut package_parent: HashMap<&str, &str> = HashMap::new();
-    for edge in contains_edges {
-        children_by_parent
-            .entry(edge.source.as_str())
-            .or_default()
-            .push(edge.target.as_str());
-        if package_ids.contains(edge.source.as_str()) && package_ids.contains(edge.target.as_str())
-        {
-            package_parent.insert(edge.target.as_str(), edge.source.as_str());
-        }
-    }
-
-    fn collect_non_package_descendants<'a>(
-        package_id: &'a str,
-        package_ids: &HashSet<&'a str>,
-        children_by_parent: &HashMap<&'a str, Vec<&'a str>>,
-    ) -> Vec<&'a str> {
-        let mut out = Vec::new();
-        let mut stack: Vec<&str> = children_by_parent
-            .get(package_id)
-            .cloned()
-            .unwrap_or_default();
-        let mut visited: HashSet<&str> = HashSet::new();
-        while let Some(current) = stack.pop() {
-            if !visited.insert(current) {
-                continue;
-            }
-            if !package_ids.contains(current) {
-                out.push(current);
-            }
-            if let Some(children) = children_by_parent.get(current) {
-                stack.extend(children.iter().copied());
-            }
-        }
-        out.sort_unstable();
-        out.dedup();
-        out
-    }
-
-    let mut groups = Vec::new();
-    for package_id in &package_ids {
-        let Some(package_node) = node_by_id.get(package_id) else {
-            continue;
-        };
-        let node_ids: Vec<String> =
-            collect_non_package_descendants(package_id, &package_ids, &children_by_parent)
-                .into_iter()
-                .map(String::from)
-                .collect();
-        if node_ids.is_empty() {
-            continue;
-        }
-        let mut depth = 1usize;
-        let mut parent = package_parent.get(package_id).copied();
-        while let Some(parent_id) = parent {
-            depth += 1;
-            parent = package_parent.get(parent_id).copied();
-        }
-        groups.push(SysmlVisualizationGroupDto {
-            id: (*package_id).to_string(),
-            label: package_node.name.clone(),
-            depth,
-            parent_id: package_parent
-                .get(package_id)
-                .map(|value| value.to_string()),
-            node_ids,
-        });
-    }
-    groups.sort_by(|left, right| {
-        left.depth
-            .cmp(&right.depth)
-            .then_with(|| left.label.cmp(&right.label))
-            .then_with(|| left.id.cmp(&right.id))
-    });
-    groups
 }
 
 fn merge_namespace_elements(elements: &[SysmlElementDto]) -> Vec<SysmlElementDto> {

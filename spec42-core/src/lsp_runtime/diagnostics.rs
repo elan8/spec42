@@ -35,9 +35,9 @@ fn semantic_diagnostic_code(diagnostic: &Diagnostic) -> Option<&str> {
 
 fn filter_transient_startup_semantic_diagnostics(
     diagnostics: Vec<Diagnostic>,
-    semantic_index_ready: bool,
+    should_suppress_transient_diagnostics: bool,
 ) -> Vec<Diagnostic> {
-    if semantic_index_ready {
+    if !should_suppress_transient_diagnostics {
         return diagnostics;
     }
 
@@ -239,8 +239,12 @@ async fn collect_diagnostics_for_document(
                 });
             }
         }
-        diagnostics =
-            filter_transient_startup_semantic_diagnostics(diagnostics, locked.semantic_index_ready);
+        diagnostics = filter_transient_startup_semantic_diagnostics(
+            diagnostics,
+            locked
+                .semantic_lifecycle
+                .suppresses_transient_semantic_diagnostics(),
+        );
     }
     diagnostics
 }
@@ -277,7 +281,7 @@ mod tests {
             diag("sysml", "parse_error"),
         ];
 
-        let filtered = filter_transient_startup_semantic_diagnostics(diagnostics, false);
+        let filtered = filter_transient_startup_semantic_diagnostics(diagnostics, true);
         let remaining_codes: Vec<_> = filtered
             .iter()
             .filter_map(semantic_diagnostic_code)
@@ -298,7 +302,7 @@ mod tests {
             diag("sysml", "parse_error"),
         ];
 
-        let filtered = filter_transient_startup_semantic_diagnostics(diagnostics.clone(), true);
+        let filtered = filter_transient_startup_semantic_diagnostics(diagnostics.clone(), false);
 
         assert_eq!(filtered.len(), diagnostics.len());
     }

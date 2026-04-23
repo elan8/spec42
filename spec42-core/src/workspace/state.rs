@@ -23,11 +23,30 @@ pub(crate) struct ServerState {
     pub(crate) startup_trace_id: Option<String>,
     pub(crate) code_lens_enabled: bool,
     pub(crate) perf_logging_enabled: bool,
-    pub(crate) semantic_index_ready: bool,
+    pub(crate) semantic_lifecycle: SemanticLifecycle,
     pub(crate) semantic_state_version: u64,
     pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
     pub(crate) symbol_table: Vec<SymbolEntry>,
     pub(crate) semantic_graph: semantic_model::SemanticGraph,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub(crate) enum SemanticLifecycle {
+    #[default]
+    Cold,
+    Indexing,
+    Ready,
+    Reindexing,
+}
+
+impl SemanticLifecycle {
+    pub(crate) fn supports_semantic_queries(self) -> bool {
+        matches!(self, Self::Ready)
+    }
+
+    pub(crate) fn suppresses_transient_semantic_diagnostics(self) -> bool {
+        !matches!(self, Self::Ready)
+    }
 }
 
 #[derive(Debug, Default)]

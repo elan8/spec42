@@ -3,136 +3,16 @@
 //! These checks use the semantic graph (parts, ports, connections) to report
 //! diagnostics such as: unconnected ports, connection to non-port, port type mismatch.
 
+mod builder_diagnostics;
+mod import_resolution;
+
 use std::collections::HashSet;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, Url};
 
 use crate::analysis::helpers::*;
-use crate::semantic_model::{
-    resolve_expression_endpoint_strict, resolve_member_via_type, NodeId, ResolveResult,
-    SemanticGraph,
-};
-
-fn has_import_in_scope(graph: &SemanticGraph, node: &crate::semantic_model::SemanticNode) -> bool {
-    let mut current = Some(node.id.clone());
-    while let Some(node_id) = current {
-        let Some(scope_node) = graph.get_node(&node_id) else {
-            break;
-        };
-        if graph
-            .children_of(scope_node)
-            .into_iter()
-            .any(|child| child.element_kind == "import")
-        {
-            return true;
-        }
-        current = scope_node.parent_id.clone();
-    }
-    false
-}
-
-fn is_namespace_kind(kind: &str) -> bool {
-    matches!(
-        kind,
-        "package"
-            | "requirement def"
-            | "requirement"
-            | "use case def"
-            | "use case"
-            | "analysis def"
-            | "analysis"
-            | "verification def"
-            | "verification"
-            | "concern def"
-            | "concern"
-    )
-}
-
-fn import_target(node: &crate::semantic_model::SemanticNode) -> Option<&str> {
-    node.attributes
-        .get("importTarget")
-        .and_then(|value| value.as_str())
-        .map(str::trim)
-        .filter(|value| !value.is_empty())
-}
-
-fn import_is_all(node: &crate::semantic_model::SemanticNode) -> bool {
-    node.attributes
-        .get("importAll")
-        .and_then(|value| value.as_bool())
-        .unwrap_or(false)
-}
-
-fn normalized_namespace_target(target: &str) -> String {
-    target
-        .trim()
-        .trim_end_matches("::**")
-        .trim_end_matches("::*")
-        .trim()
-        .to_string()
-}
-
-fn normalized_membership_target(target: &str) -> String {
-    target.trim().trim_end_matches("::**").trim().to_string()
-}
-
-fn has_node_with_qualified_name_or_disambiguated_variant(
-    graph: &SemanticGraph,
-    base: &str,
-) -> bool {
-    if graph
-        .nodes_by_uri
-        .values()
-        .flatten()
-        .any(|id| id.qualified_name == base)
-    {
-        return true;
-    }
-    let disambiguated_prefix = format!("{base}#");
-    graph
-        .nodes_by_uri
-        .values()
-        .flatten()
-        .any(|id| id.qualified_name.starts_with(&disambiguated_prefix))
-}
-
-fn import_target_resolves(
-    graph: &SemanticGraph,
-    import_node: &crate::semantic_model::SemanticNode,
-) -> bool {
-    let Some(target) = import_target(import_node) else {
-        return false;
-    };
-
-    if import_is_all(import_node) {
-        let namespace_target = normalized_namespace_target(target);
-        return graph
-            .nodes_by_uri
-            .values()
-            .flatten()
-            .filter(|id| id.qualified_name == namespace_target)
-            .filter_map(|id| graph.get_node(id))
-            .any(|node| is_namespace_kind(&node.element_kind));
-    }
-
-    let membership_target = normalized_membership_target(target);
-    if has_node_with_qualified_name_or_disambiguated_variant(graph, &membership_target) {
-        return true;
-    }
-
-    if let Some((namespace_target, member_name)) = membership_target.rsplit_once("::") {
-        return graph
-            .nodes_by_uri
-            .values()
-            .flatten()
-            .filter(|id| id.qualified_name == namespace_target)
-            .filter_map(|id| graph.get_node(id))
-            .filter(|node| is_namespace_kind(&node.element_kind))
-            .flat_map(|namespace| graph.children_of(namespace))
-            .any(|child| child.element_kind != "import" && child.name == member_name);
-    }
-
-    false
-}
+use crate::semantic_model::{resolve_member_via_type, NodeId, ResolveResult, SemanticGraph};
+use builder_diagnostics::should_suppress_builder_diagnostic;
+use import_resolution::{has_import_in_scope, import_target, import_target_resolves};
 
 /// Returns LSP diagnostics for semantic rules in the given document.
 /// Only runs when the document has been parsed and merged into the graph.
@@ -570,54 +450,6 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
     }
 
     diagnostics
-}
-
-fn should_suppress_builder_diagnostic(
-    graph: &SemanticGraph,
-    uri: &Url,
-    node: &crate::semantic_model::SemanticNode,
-    code: &str,
-    message: &str,
-) -> bool {
-    if !matches!(
-        code,
-        "unresolved_satisfy_source" | "unresolved_satisfy_target"
-    ) {
-        return false;
-    }
-    let Some(reference_name) = extract_single_quoted_value(message) else {
-        return false;
-    };
-    if matches!(
-        resolve_expression_endpoint_strict(
-            graph,
-            uri,
-            Some(diagnostic_container_prefix(node)),
-            &reference_name
-        ),
-        ResolveResult::Resolved(_)
-    ) {
-        return true;
-    }
-    matches!(
-        resolve_expression_endpoint_strict(graph, uri, None, &reference_name),
-        ResolveResult::Resolved(_)
-    )
-}
-
-fn extract_single_quoted_value(message: &str) -> Option<String> {
-    let start = message.find('\'')?;
-    let rest = &message[start + 1..];
-    let end = rest.find('\'')?;
-    Some(rest[..end].to_string())
-}
-
-fn diagnostic_container_prefix(node: &crate::semantic_model::SemanticNode) -> &str {
-    node.id
-        .qualified_name
-        .rsplit_once("::")
-        .map(|(prefix, _)| prefix)
-        .unwrap_or("")
 }
 
 /// Default semantic checks (port connectivity, type compatibility, unconnected ports, duplicate connections).

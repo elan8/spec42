@@ -1,0 +1,17 @@
+pub(super) const TYPE_LOOKUP_KINDS: &[&str] = &[
+    "part def",
+    "port def",
+    "interface",
+    "item def",
+    "attribute def",
+    "action def",
+    "actor def",
+    "occurrence def",
+    "flow def",
+    "allocation def",
+    "state def",
+    "requirement def",
+    "use case def",
+    "concern def",
+    "kermlDecl",
+];

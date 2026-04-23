@@ -8,4 +8,4 @@ pub(crate) use services::{
     rebuild_all_document_links, rebuild_semantic_graph_staged, refresh_document, remove_document,
     scan_sysml_files, store_document_text,
 };
-pub(crate) use state::{IndexEntry, ServerState};
+pub(crate) use state::{IndexEntry, SemanticLifecycle, ServerState};
