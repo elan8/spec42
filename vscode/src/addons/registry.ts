@@ -38,7 +38,7 @@ const REGISTERED_ADDONS: AddonDescriptor[] = [
     },
     {
         id: 'software-architecture-pro',
-        name: 'Software Architecture Pro',
+        name: 'Babel42',
         description: 'Commercial add-on for conformance, drift, and deeper architecture diagnostics.',
         kind: 'teaser',
         badge: 'Pro',
@@ -137,7 +137,7 @@ export async function getAddonStates(
             ...descriptor,
             enabled: false,
             workspaceSupport: 'unsupported',
-            statusText: descriptor.badge ? `${descriptor.badge} add-on preview` : 'Preview',
+            statusText: 'Coming soon',
             openEnabled: false,
             canRunAnalysis: false,
             runAnalysisEnabled: false,

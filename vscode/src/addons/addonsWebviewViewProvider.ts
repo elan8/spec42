@@ -5,8 +5,7 @@ type AddonsMessage =
     | { type: 'initLoad' }
     | { type: 'toggleAddon'; addonId: string; enabled: boolean }
     | { type: 'runAnalysis'; addonId: string }
-    | { type: 'openAddon'; addonId: string }
-    | { type: 'learnMore'; addonId: string; url?: string };
+    | { type: 'openAddon'; addonId: string };
 
 export class AddonsWebviewViewProvider implements vscode.WebviewViewProvider {
     private view: vscode.WebviewView | undefined;
@@ -42,9 +41,6 @@ export class AddonsWebviewViewProvider implements vscode.WebviewViewProvider {
             if (message.type === 'openAddon') {
                 await this.onOpenAddon(message.addonId);
                 return;
-            }
-            if (message.type === 'learnMore' && message.url) {
-                await vscode.env.openExternal(vscode.Uri.parse(message.url));
             }
         });
     }
@@ -104,9 +100,6 @@ export class AddonsWebviewViewProvider implements vscode.WebviewViewProvider {
         const runAnalysisButton = addon.canRunAnalysis
           ? '<button class="secondary" data-role="runAnalysis" data-index="' + index + '"' + (addon.runAnalysisEnabled ? '' : ' disabled') + '>' + (addon.statusText === 'Analyzing...' ? 'Analyzing...' : 'Run Analysis') + '</button>'
           : '';
-        const learnMoreButton = addon.learnMoreUrl
-          ? '<button class="secondary" data-role="learnMore" data-index="' + index + '">Learn More</button>'
-          : '';
         return '<div class="addon-card">' +
           '<div class="addon-header"><div class="addon-title">' + escapeHtml(addon.name) + '</div>' + badge + '</div>' +
           '<div class="addon-description">' + escapeHtml(addon.description) + '</div>' +
@@ -115,7 +108,6 @@ export class AddonsWebviewViewProvider implements vscode.WebviewViewProvider {
             toggle +
             runAnalysisButton +
             (addon.canOpen ? '<button class="primary" data-role="open" data-index="' + index + '"' + (addon.openEnabled ? '' : ' disabled') + '>' + openLabel + '</button>' : '') +
-            learnMoreButton +
           '</div>' +
         '</div>';
       }).join('');
@@ -136,12 +128,6 @@ export class AddonsWebviewViewProvider implements vscode.WebviewViewProvider {
         el.addEventListener('click', () => {
           const addon = addons[Number(el.getAttribute('data-index'))];
           vscode.postMessage({ type: 'runAnalysis', addonId: addon.id });
-        });
-      });
-      addonsRoot.querySelectorAll('[data-role="learnMore"]').forEach((el) => {
-        el.addEventListener('click', () => {
-          const addon = addons[Number(el.getAttribute('data-index'))];
-          vscode.postMessage({ type: 'learnMore', addonId: addon.id, url: addon.learnMoreUrl });
         });
       });
     }
