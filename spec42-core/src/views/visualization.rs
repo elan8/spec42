@@ -8,7 +8,8 @@ use tower_lsp::lsp_types::Url;
 use crate::semantic_model;
 use crate::software_architecture::{
     analyze_rust_workspace, workspace_contains_rust_code,
-    SoftwareArchitectureModel, SoftwareWorkspaceModel,
+    SoftwareAnalysisSummary, SoftwareArchitectureModel, SoftwareComponent,
+    SoftwareDependency, SoftwareWorkspaceModel, SourceAnchor,
 };
 use crate::views::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, SoftwareAnalysisSummaryDto,
@@ -1101,7 +1102,7 @@ fn software_view_candidates() -> Vec<SysmlVisualizationViewCandidateDto> {
             supported: true,
             view_type: Some("SoftwareDependencyView".to_string()),
             description: Some(
-                "Shows best-effort Rust module dependencies from use statements and type references."
+                "Shows a hierarchical Rust dependency view with containment plus best-effort source-derived dependencies."
                     .to_string(),
             ),
         },
@@ -1164,6 +1165,51 @@ fn build_software_architecture_dto(
     }
 }
 
+fn source_anchor_from_dto(anchor: &SourceAnchorDto) -> SourceAnchor {
+    SourceAnchor {
+        file_path: anchor.file_path.clone(),
+        range: anchor.range.as_ref().map(|range| tower_lsp::lsp_types::Range {
+            start: tower_lsp::lsp_types::Position {
+                line: range.start.line,
+                character: range.start.character,
+            },
+            end: tower_lsp::lsp_types::Position {
+                line: range.end.line,
+                character: range.end.character,
+            },
+        }),
+    }
+}
+
+fn software_architecture_from_dto(model: &SoftwareArchitectureModelDto) -> SoftwareArchitectureModel {
+    SoftwareArchitectureModel {
+        components: model
+            .components
+            .iter()
+            .map(|component| SoftwareComponent {
+                id: component.id.clone(),
+                name: component.name.clone(),
+                kind: component.kind.clone(),
+                parent_id: component.parent_id.clone(),
+                crate_name: component.crate_name.clone(),
+                module_path: component.module_path.clone(),
+                anchors: component.anchors.iter().map(source_anchor_from_dto).collect(),
+                is_external: component.is_external,
+            })
+            .collect(),
+        dependencies: model
+            .dependencies
+            .iter()
+            .map(|dependency| SoftwareDependency {
+                from: dependency.from.clone(),
+                to: dependency.to.clone(),
+                kind: dependency.kind.clone(),
+                source_anchor: dependency.source_anchor.as_ref().map(source_anchor_from_dto),
+            })
+            .collect(),
+    }
+}
+
 pub fn build_software_workspace_model_dto(
     model: &SoftwareWorkspaceModel,
 ) -> SoftwareWorkspaceModelDto {
@@ -1171,6 +1217,18 @@ pub fn build_software_workspace_model_dto(
         workspace_root: model.workspace_root.clone(),
         architecture: build_software_architecture_dto(&model.architecture),
         summary: SoftwareAnalysisSummaryDto {
+            crate_count: model.summary.crate_count,
+            module_count: model.summary.module_count,
+            dependency_count: model.summary.dependency_count,
+        },
+    }
+}
+
+fn software_workspace_model_from_dto(model: &SoftwareWorkspaceModelDto) -> SoftwareWorkspaceModel {
+    SoftwareWorkspaceModel {
+        workspace_root: model.workspace_root.clone(),
+        architecture: software_architecture_from_dto(&model.architecture),
+        summary: SoftwareAnalysisSummary {
             crate_count: model.summary.crate_count,
             module_count: model.summary.module_count,
             dependency_count: model.summary.dependency_count,
@@ -1208,40 +1266,100 @@ fn component_range(
         })
 }
 
+fn software_component_to_graph_node(component: &SoftwareComponent, parent_id: Option<String>) -> GraphNodeDto {
+    GraphNodeDto {
+        id: component.id.clone(),
+        element_type: component.kind.clone(),
+        name: component.name.clone(),
+        uri: component_uri(component),
+        parent_id,
+        range: component_range(component),
+        attributes: HashMap::from([
+            ("crateName".to_string(), json!(component.crate_name)),
+            ("modulePath".to_string(), json!(component.module_path)),
+            ("isExternal".to_string(), json!(component.is_external)),
+            ("kind".to_string(), json!(component.kind)),
+        ]),
+    }
+}
+
+fn software_component_map<'a>(
+    architecture: &'a SoftwareArchitectureModel,
+) -> HashMap<&'a str, &'a SoftwareComponent> {
+    architecture
+        .components
+        .iter()
+        .map(|component| (component.id.as_str(), component))
+        .collect()
+}
+
+fn dependency_view_node_ids(architecture: &SoftwareArchitectureModel) -> HashSet<String> {
+    let component_map = software_component_map(architecture);
+    let mut included = HashSet::new();
+
+    for dependency in &architecture.dependencies {
+        for endpoint in [&dependency.from, &dependency.to] {
+            let mut current = component_map.get(endpoint.as_str()).copied();
+            while let Some(component) = current {
+                included.insert(component.id.clone());
+                current = component
+                    .parent_id
+                    .as_deref()
+                    .and_then(|parent_id| component_map.get(parent_id).copied());
+            }
+        }
+    }
+
+    included
+}
+
 fn build_software_graph(
-    model: &SoftwareArchitectureModel,
+    model: &SoftwareWorkspaceModel,
     view: &str,
 ) -> (
     SysmlGraphDto,
     Vec<crate::views::dto::SysmlVisualizationGroupDto>,
 ) {
-    let nodes = model
+    let architecture = &model.architecture;
+    let included_node_ids: HashSet<String> = if view == SOFTWARE_MODULE_VIEW {
+        architecture
+            .components
+            .iter()
+            .filter(|component| !component.is_external)
+            .map(|component| component.id.clone())
+            .collect()
+    } else {
+        dependency_view_node_ids(architecture)
+    };
+
+    let nodes = architecture
         .components
         .iter()
-        .map(|component| GraphNodeDto {
-            id: component.id.clone(),
-            element_type: component.kind.clone(),
-            name: component.name.clone(),
-            uri: component_uri(component),
-            parent_id: if view == SOFTWARE_MODULE_VIEW {
-                component.parent_id.clone()
-            } else {
-                None
-            },
-            range: component_range(component),
-            attributes: HashMap::from([
-                ("crateName".to_string(), json!(component.crate_name)),
-                ("modulePath".to_string(), json!(component.module_path)),
-                ("isExternal".to_string(), json!(component.is_external)),
-                ("kind".to_string(), json!(component.kind)),
-            ]),
+        .filter(|component| included_node_ids.contains(&component.id))
+        .map(|component| {
+            software_component_to_graph_node(
+                component,
+                if view == SOFTWARE_MODULE_VIEW || !component.is_external {
+                    component.parent_id.clone()
+                        .filter(|parent_id| included_node_ids.contains(parent_id))
+                } else {
+                    None
+                },
+            )
         })
         .collect::<Vec<_>>();
 
     let mut edges = Vec::new();
-    if view == SOFTWARE_MODULE_VIEW {
-        for component in &model.components {
+    if view == SOFTWARE_MODULE_VIEW || view == SOFTWARE_DEPENDENCY_VIEW {
+        for component in &architecture.components {
+            if component.is_external {
+                continue;
+            }
             if let Some(parent_id) = &component.parent_id {
+                if !included_node_ids.contains(parent_id) || !included_node_ids.contains(&component.id)
+                {
+                    continue;
+                }
                 edges.push(GraphEdgeDto {
                     source: parent_id.clone(),
                     target: component.id.clone(),
@@ -1250,15 +1368,20 @@ fn build_software_graph(
                 });
             }
         }
-    } else {
+    }
+
+    if view == SOFTWARE_DEPENDENCY_VIEW {
         let mut seen = HashSet::new();
-        for dependency in &model.dependencies {
+        for dependency in &architecture.dependencies {
             let key = (
                 dependency.from.clone(),
                 dependency.to.clone(),
                 dependency.kind.clone(),
             );
-            if seen.insert(key) {
+            if seen.insert(key)
+                && included_node_ids.contains(&dependency.from)
+                && included_node_ids.contains(&dependency.to)
+            {
                 edges.push(GraphEdgeDto {
                     source: dependency.from.clone(),
                     target: dependency.to.clone(),
@@ -1270,7 +1393,10 @@ fn build_software_graph(
     }
 
     let mut groups_by_crate: HashMap<String, Vec<String>> = HashMap::new();
-    for component in &model.components {
+    for component in &architecture.components {
+        if !included_node_ids.contains(&component.id) {
+            continue;
+        }
         groups_by_crate
             .entry(component.crate_name.clone())
             .or_default()
@@ -1305,49 +1431,49 @@ fn build_software_workspace_model(graph: &SysmlGraphDto) -> WorkspaceModelDto {
     build_workspace_model_dto_from_graph(graph, &file_uris)
 }
 
+fn coerce_workspace_root_uri(value: &serde_json::Value) -> Option<String> {
+    value
+        .as_str()
+        .map(ToString::to_string)
+        .or_else(|| {
+            value.as_object().and_then(|object| {
+                object
+                    .get("external")
+                    .and_then(|inner| inner.as_str())
+                    .or_else(|| object.get("uri").and_then(|inner| inner.as_str()))
+                    .or_else(|| object.get("workspaceRootUri").and_then(|inner| inner.as_str()))
+                    .map(ToString::to_string)
+                    .or_else(|| {
+                        object
+                            .get("fsPath")
+                            .and_then(|inner| inner.as_str())
+                            .and_then(|path| Url::from_file_path(path).ok())
+                            .map(|uri| uri.to_string())
+                    })
+            })
+        })
+}
+
+fn coerce_string(value: &serde_json::Value) -> Option<String> {
+    value
+        .as_str()
+        .map(ToString::to_string)
+        .or_else(|| {
+            value.as_object().and_then(|object| {
+                object
+                    .get("rendererView")
+                    .and_then(|inner| inner.as_str())
+                    .or_else(|| object.get("view").and_then(|inner| inner.as_str()))
+                    .or_else(|| object.get("viewId").and_then(|inner| inner.as_str()))
+                    .or_else(|| object.get("id").and_then(|inner| inner.as_str()))
+                    .map(ToString::to_string)
+            })
+        })
+}
+
 pub(crate) fn parse_software_visualization_params(
     params: &serde_json::Value,
 ) -> tower_lsp::jsonrpc::Result<(Url, String)> {
-    fn coerce_workspace_root_uri(value: &serde_json::Value) -> Option<String> {
-        value
-            .as_str()
-            .map(ToString::to_string)
-            .or_else(|| {
-                value.as_object().and_then(|object| {
-                    object
-                        .get("external")
-                        .and_then(|inner| inner.as_str())
-                        .or_else(|| object.get("uri").and_then(|inner| inner.as_str()))
-                        .or_else(|| object.get("workspaceRootUri").and_then(|inner| inner.as_str()))
-                        .map(ToString::to_string)
-                        .or_else(|| {
-                            object
-                                .get("fsPath")
-                                .and_then(|inner| inner.as_str())
-                                .and_then(|path| Url::from_file_path(path).ok())
-                                .map(|uri| uri.to_string())
-                        })
-                })
-            })
-    }
-
-    fn coerce_string(value: &serde_json::Value) -> Option<String> {
-        value
-            .as_str()
-            .map(ToString::to_string)
-            .or_else(|| {
-                value.as_object().and_then(|object| {
-                    object
-                        .get("rendererView")
-                        .and_then(|inner| inner.as_str())
-                        .or_else(|| object.get("view").and_then(|inner| inner.as_str()))
-                        .or_else(|| object.get("viewId").and_then(|inner| inner.as_str()))
-                        .or_else(|| object.get("id").and_then(|inner| inner.as_str()))
-                        .map(ToString::to_string)
-                })
-            })
-    }
-
     let params =
         if let Ok(params) =
             serde_json::from_value::<crate::views::dto::SoftwareVisualizationParamsDto>(
@@ -1418,29 +1544,6 @@ pub(crate) fn parse_software_visualization_params(
 pub(crate) fn parse_software_analyze_workspace_params(
     params: &serde_json::Value,
 ) -> tower_lsp::jsonrpc::Result<Url> {
-    fn coerce_workspace_root_uri(value: &serde_json::Value) -> Option<String> {
-        value
-            .as_str()
-            .map(ToString::to_string)
-            .or_else(|| {
-                value.as_object().and_then(|object| {
-                    object
-                        .get("external")
-                        .and_then(|inner| inner.as_str())
-                        .or_else(|| object.get("uri").and_then(|inner| inner.as_str()))
-                        .or_else(|| object.get("workspaceRootUri").and_then(|inner| inner.as_str()))
-                        .map(ToString::to_string)
-                        .or_else(|| {
-                            object
-                                .get("fsPath")
-                                .and_then(|inner| inner.as_str())
-                                .and_then(|path| Url::from_file_path(path).ok())
-                                .map(|uri| uri.to_string())
-                        })
-                })
-            })
-    }
-
     let workspace_root_uri = if let Ok(params) =
         serde_json::from_value::<crate::views::dto::SoftwareAnalyzeWorkspaceParamsDto>(
             params.clone(),
@@ -1479,6 +1582,129 @@ pub(crate) fn parse_software_analyze_workspace_params(
     let workspace_root_uri = Url::parse(&workspace_root_uri)
         .map_err(|error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()))?;
     Ok(crate::common::util::normalize_file_uri(&workspace_root_uri))
+}
+
+pub(crate) fn parse_software_project_view_params(
+    params: &serde_json::Value,
+) -> tower_lsp::jsonrpc::Result<(Url, String, SoftwareWorkspaceModel)> {
+    let params = if let Ok(params) =
+        serde_json::from_value::<crate::views::dto::SoftwareProjectViewParamsDto>(params.clone())
+    {
+        params
+    } else if let Some(arr) = params.as_array() {
+        let first = arr.first().ok_or_else(|| {
+            tower_lsp::jsonrpc::Error::invalid_params(
+                "software/projectView params array must have at least one element",
+            )
+        })?;
+        let obj = first.as_object().ok_or_else(|| {
+            tower_lsp::jsonrpc::Error::invalid_params(
+                "software/projectView params array item must be an object",
+            )
+        })?;
+        let workspace_model_value = obj
+            .get("workspaceModel")
+            .cloned()
+            .ok_or_else(|| {
+                tower_lsp::jsonrpc::Error::invalid_params(
+                    "software/projectView params must include workspaceModel",
+                )
+            })?;
+        crate::views::dto::SoftwareProjectViewParamsDto {
+            workspace_root_uri: obj
+                .get("workspaceRootUri")
+                .and_then(coerce_workspace_root_uri)
+                .unwrap_or_default(),
+            view: obj
+                .get("view")
+                .and_then(coerce_string)
+                .unwrap_or_else(|| SOFTWARE_MODULE_VIEW.to_string()),
+            workspace_model: serde_json::from_value(workspace_model_value).map_err(|error| {
+                tower_lsp::jsonrpc::Error::invalid_params(error.to_string())
+            })?,
+        }
+    } else if let Some(obj) = params.as_object() {
+        let workspace_model_value = obj
+            .get("workspaceModel")
+            .cloned()
+            .ok_or_else(|| {
+                tower_lsp::jsonrpc::Error::invalid_params(
+                    "software/projectView params must include workspaceModel",
+                )
+            })?;
+        crate::views::dto::SoftwareProjectViewParamsDto {
+            workspace_root_uri: obj
+                .get("workspaceRootUri")
+                .and_then(coerce_workspace_root_uri)
+                .unwrap_or_default(),
+            view: obj
+                .get("view")
+                .and_then(coerce_string)
+                .unwrap_or_else(|| SOFTWARE_MODULE_VIEW.to_string()),
+            workspace_model: serde_json::from_value(workspace_model_value).map_err(|error| {
+                tower_lsp::jsonrpc::Error::invalid_params(error.to_string())
+            })?,
+        }
+    } else {
+        return Err(tower_lsp::jsonrpc::Error::invalid_params(
+            "software/projectView params must include workspaceRootUri, view, and workspaceModel",
+        ));
+    };
+
+    if params.workspace_root_uri.trim().is_empty() {
+        return Err(tower_lsp::jsonrpc::Error::invalid_params(
+            "software/projectView params must include workspaceRootUri",
+        ));
+    }
+
+    let workspace_root_uri = Url::parse(&params.workspace_root_uri)
+        .map_err(|error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()))?;
+    let requested_view = if is_software_view(&params.view) {
+        params.view
+    } else {
+        SOFTWARE_MODULE_VIEW.to_string()
+    };
+
+    Ok((
+        crate::common::util::normalize_file_uri(&workspace_root_uri),
+        requested_view,
+        software_workspace_model_from_dto(&params.workspace_model),
+    ))
+}
+
+pub(crate) fn build_software_project_view_response(
+    workspace_root_uri: &Url,
+    view: &str,
+    model: &SoftwareWorkspaceModel,
+    build_start: Instant,
+) -> SoftwareVisualizationResultDto {
+    let selected_view_id = if view == SOFTWARE_DEPENDENCY_VIEW {
+        SOFTWARE_DEPENDENCY_VIEW
+    } else {
+        SOFTWARE_MODULE_VIEW
+    };
+    let software_architecture = build_software_architecture_dto(&model.architecture);
+    let (graph, _) = build_software_graph(model, selected_view_id);
+    let workspace_model = build_software_workspace_model(&graph);
+
+    SoftwareVisualizationResultDto {
+        version: 0,
+        view: selected_view_id.to_string(),
+        workspace_root_uri: workspace_root_uri.as_str().to_string(),
+        views: software_visualization_view_candidates(),
+        empty_state_message: None,
+        graph,
+        software_architecture,
+        workspace_model,
+        stats: SysmlModelStatsDto {
+            total_elements: model.architecture.components.len() as u32,
+            resolved_elements: 0,
+            unresolved_elements: 0,
+            parse_time_ms: 0,
+            model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
+            parse_cached: false,
+        },
+    }
 }
 
 pub(crate) fn build_software_visualization_response(
@@ -1547,28 +1773,7 @@ pub(crate) fn build_software_visualization_response(
     }
 
     let model = analyze_rust_workspace(&workspace_path);
-    let software_architecture = build_software_architecture_dto(&model.architecture);
-    let (graph, _) = build_software_graph(&model.architecture, selected_view_id);
-    let workspace_model = build_software_workspace_model(&graph);
-
-    SoftwareVisualizationResultDto {
-        version: 0,
-        view: selected_view_id.to_string(),
-        workspace_root_uri: workspace_root_uri.as_str().to_string(),
-        views: software_visualization_view_candidates(),
-        empty_state_message: None,
-        graph,
-        software_architecture,
-        workspace_model,
-        stats: SysmlModelStatsDto {
-            total_elements: model.architecture.components.len() as u32,
-            resolved_elements: 0,
-            unresolved_elements: 0,
-            parse_time_ms: 0,
-            model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
-            parse_cached: false,
-        },
-    }
+    build_software_project_view_response(workspace_root_uri, selected_view_id, &model, build_start)
 }
 
 pub(crate) fn build_sysml_visualization_response(
@@ -1813,9 +2018,10 @@ mod tests {
 
     use super::{
         attach_ibd_package_container_groups, build_ibd_package_container_groups,
-        build_package_groups_from_graph, build_software_visualization_response,
+        build_package_groups_from_graph, build_software_project_view_response,
+        build_software_visualization_response, build_software_workspace_model_dto,
         build_workspace_activity_diagrams, parse_software_analyze_workspace_params,
-        parse_software_visualization_params,
+        parse_software_project_view_params, parse_software_visualization_params,
         parse_sysml_visualization_params, SOFTWARE_DEPENDENCY_VIEW, SOFTWARE_MODULE_VIEW,
     };
     use crate::views::dto::{GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, SysmlGraphDto};
@@ -2228,5 +2434,260 @@ mod tests {
             parsed_workspace_root_uri,
             crate::common::util::normalize_file_uri(&workspace_root_uri)
         );
+    }
+
+    #[test]
+    fn parse_software_project_view_params_accepts_workspace_model_payload() {
+        let dir = tempdir().expect("tempdir");
+        let root = dir.path();
+        let workspace_root_uri =
+            Url::from_file_path(root).expect("workspace root URI should build");
+        let model = crate::software_architecture::SoftwareWorkspaceModel {
+            workspace_root: root.to_string_lossy().replace('\\', "/"),
+            architecture: crate::software_architecture::SoftwareArchitectureModel {
+                components: vec![crate::software_architecture::SoftwareComponent {
+                    id: "rust:crate:demo".to_string(),
+                    name: "demo".to_string(),
+                    kind: "crate".to_string(),
+                    parent_id: None,
+                    crate_name: "demo".to_string(),
+                    module_path: "demo".to_string(),
+                    anchors: Vec::new(),
+                    is_external: false,
+                }],
+                dependencies: Vec::new(),
+            },
+            summary: crate::software_architecture::SoftwareAnalysisSummary {
+                crate_count: 1,
+                module_count: 0,
+                dependency_count: 0,
+            },
+        };
+        let params = serde_json::json!({
+            "workspaceRootUri": {
+                "external": workspace_root_uri.as_str(),
+            },
+            "view": {
+                "rendererView": SOFTWARE_DEPENDENCY_VIEW,
+            },
+            "workspaceModel": build_software_workspace_model_dto(&model),
+        });
+
+        let (parsed_workspace_root_uri, parsed_view, parsed_model) =
+            parse_software_project_view_params(&params).expect("parse software project view params");
+
+        assert_eq!(
+            parsed_workspace_root_uri,
+            crate::common::util::normalize_file_uri(&workspace_root_uri)
+        );
+        assert_eq!(parsed_view, SOFTWARE_DEPENDENCY_VIEW);
+        assert_eq!(parsed_model.summary.crate_count, 1);
+        assert_eq!(parsed_model.architecture.components.len(), 1);
+    }
+
+    #[test]
+    fn software_project_module_view_hides_external_crates() {
+        let model = crate::software_architecture::SoftwareWorkspaceModel {
+            workspace_root: "C:/workspace".to_string(),
+            architecture: crate::software_architecture::SoftwareArchitectureModel {
+                components: vec![
+                    crate::software_architecture::SoftwareComponent {
+                        id: "rust:crate:demo".to_string(),
+                        name: "demo".to_string(),
+                        kind: "crate".to_string(),
+                        parent_id: None,
+                        crate_name: "demo".to_string(),
+                        module_path: "demo".to_string(),
+                        anchors: Vec::new(),
+                        is_external: false,
+                    },
+                    crate::software_architecture::SoftwareComponent {
+                        id: "rust:module:demo::services".to_string(),
+                        name: "services".to_string(),
+                        kind: "module".to_string(),
+                        parent_id: Some("rust:crate:demo".to_string()),
+                        crate_name: "demo".to_string(),
+                        module_path: "demo::services".to_string(),
+                        anchors: Vec::new(),
+                        is_external: false,
+                    },
+                    crate::software_architecture::SoftwareComponent {
+                        id: "rust:module:demo::api".to_string(),
+                        name: "api".to_string(),
+                        kind: "module".to_string(),
+                        parent_id: Some("rust:crate:demo".to_string()),
+                        crate_name: "demo".to_string(),
+                        module_path: "demo::api".to_string(),
+                        anchors: Vec::new(),
+                        is_external: false,
+                    },
+                    crate::software_architecture::SoftwareComponent {
+                        id: "rust:extern:serde".to_string(),
+                        name: "serde".to_string(),
+                        kind: "externalCrate".to_string(),
+                        parent_id: None,
+                        crate_name: "serde".to_string(),
+                        module_path: "serde".to_string(),
+                        anchors: Vec::new(),
+                        is_external: true,
+                    },
+                ],
+                dependencies: vec![crate::software_architecture::SoftwareDependency {
+                    from: "rust:module:demo::api".to_string(),
+                    to: "rust:extern:serde".to_string(),
+                    kind: "use".to_string(),
+                    source_anchor: None,
+                }],
+            },
+            summary: crate::software_architecture::SoftwareAnalysisSummary {
+                crate_count: 1,
+                module_count: 1,
+                dependency_count: 1,
+            },
+        };
+        let workspace_root_uri = Url::parse("file:///C:/workspace").expect("workspace uri");
+        let response = build_software_project_view_response(
+            &workspace_root_uri,
+            SOFTWARE_MODULE_VIEW,
+            &model,
+            Instant::now(),
+        );
+
+        assert_eq!(response.graph.nodes.len(), 3);
+        assert!(response.graph.nodes.iter().all(|node| node.name != "serde"));
+        assert!(response
+            .graph
+            .edges
+            .iter()
+            .all(|edge| edge.rel_type == "contains"));
+    }
+
+    #[test]
+    fn software_project_dependency_view_keeps_hierarchy_and_dependency_edges() {
+        let model = crate::software_architecture::SoftwareWorkspaceModel {
+            workspace_root: "C:/workspace".to_string(),
+            architecture: crate::software_architecture::SoftwareArchitectureModel {
+                components: vec![
+                    crate::software_architecture::SoftwareComponent {
+                        id: "rust:crate:demo".to_string(),
+                        name: "demo".to_string(),
+                        kind: "crate".to_string(),
+                        parent_id: None,
+                        crate_name: "demo".to_string(),
+                        module_path: "demo".to_string(),
+                        anchors: Vec::new(),
+                        is_external: false,
+                    },
+                    crate::software_architecture::SoftwareComponent {
+                        id: "rust:module:demo::services".to_string(),
+                        name: "services".to_string(),
+                        kind: "module".to_string(),
+                        parent_id: Some("rust:crate:demo".to_string()),
+                        crate_name: "demo".to_string(),
+                        module_path: "demo::services".to_string(),
+                        anchors: Vec::new(),
+                        is_external: false,
+                    },
+                    crate::software_architecture::SoftwareComponent {
+                        id: "rust:module:demo::api".to_string(),
+                        name: "api".to_string(),
+                        kind: "module".to_string(),
+                        parent_id: Some("rust:module:demo::services".to_string()),
+                        crate_name: "demo".to_string(),
+                        module_path: "demo::services::api".to_string(),
+                        anchors: Vec::new(),
+                        is_external: false,
+                    },
+                    crate::software_architecture::SoftwareComponent {
+                        id: "rust:module:demo::internal".to_string(),
+                        name: "internal".to_string(),
+                        kind: "module".to_string(),
+                        parent_id: Some("rust:crate:demo".to_string()),
+                        crate_name: "demo".to_string(),
+                        module_path: "demo::internal".to_string(),
+                        anchors: Vec::new(),
+                        is_external: false,
+                    },
+                    crate::software_architecture::SoftwareComponent {
+                        id: "rust:extern:serde".to_string(),
+                        name: "serde".to_string(),
+                        kind: "externalCrate".to_string(),
+                        parent_id: None,
+                        crate_name: "serde".to_string(),
+                        module_path: "serde".to_string(),
+                        anchors: Vec::new(),
+                        is_external: true,
+                    },
+                ],
+                dependencies: vec![
+                    crate::software_architecture::SoftwareDependency {
+                        from: "rust:crate:demo".to_string(),
+                        to: "rust:module:demo::api".to_string(),
+                        kind: "use".to_string(),
+                        source_anchor: None,
+                    },
+                    crate::software_architecture::SoftwareDependency {
+                        from: "rust:module:demo::api".to_string(),
+                        to: "rust:extern:serde".to_string(),
+                        kind: "use".to_string(),
+                        source_anchor: None,
+                    },
+                ],
+            },
+            summary: crate::software_architecture::SoftwareAnalysisSummary {
+                crate_count: 1,
+                module_count: 3,
+                dependency_count: 2,
+            },
+        };
+        let workspace_root_uri = Url::parse("file:///C:/workspace").expect("workspace uri");
+        let response = build_software_project_view_response(
+            &workspace_root_uri,
+            SOFTWARE_DEPENDENCY_VIEW,
+            &model,
+            Instant::now(),
+        );
+        let node_names = response
+            .graph
+            .nodes
+            .iter()
+            .map(|node| node.name.as_str())
+            .collect::<Vec<_>>();
+
+        assert!(node_names.contains(&"demo"));
+        assert!(node_names.contains(&"services"));
+        assert!(node_names.contains(&"api"));
+        assert!(node_names.contains(&"serde"));
+        assert!(!node_names.contains(&"internal"));
+        assert!(response
+            .graph
+            .nodes
+            .iter()
+            .find(|node| node.name == "api")
+            .and_then(|node| node.parent_id.as_deref())
+            == Some("rust:module:demo::services"));
+        assert!(response
+            .graph
+            .nodes
+            .iter()
+            .find(|node| node.name == "services")
+            .and_then(|node| node.parent_id.as_deref())
+            == Some("rust:crate:demo"));
+        assert!(response
+            .graph
+            .nodes
+            .iter()
+            .find(|node| node.name == "serde")
+            .is_some_and(|node| node.parent_id.is_none()));
+        assert!(response
+            .graph
+            .edges
+            .iter()
+            .any(|edge| edge.rel_type == "contains"));
+        assert!(response
+            .graph
+            .edges
+            .iter()
+            .any(|edge| edge.rel_type == "use"));
     }
 }

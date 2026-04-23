@@ -261,6 +261,18 @@ pub(crate) fn software_analyze_workspace_result(
     })
 }
 
+pub(crate) fn software_project_view_result(
+    params: serde_json::Value,
+) -> Result<dto::SoftwareVisualizationResultDto> {
+    let (workspace_root_uri, view, model) = crate::views::parse_software_project_view_params(&params)?;
+    Ok(crate::views::build_software_project_view_response(
+        &workspace_root_uri,
+        &view,
+        &model,
+        Instant::now(),
+    ))
+}
+
 pub(crate) fn sysml_server_stats_result(
     state: &ServerState,
     start_time: Instant,

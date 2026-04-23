@@ -58,7 +58,7 @@ struct RustCrate {
     name: String,
     src_dir: PathBuf,
     root_file: PathBuf,
-    dependency_aliases: HashMap<String, String>,
+    declared_dependencies: HashMap<String, CargoDependencySpec>,
 }
 
 #[derive(Debug, Clone)]
@@ -101,7 +101,21 @@ struct CargoPackageContext {
     crate_name: String,
     src_dir: PathBuf,
     root_file: PathBuf,
-    dependency_aliases: HashMap<String, String>,
+    declared_dependencies: HashMap<String, CargoDependencySpec>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct CargoDependencySpec {
+    canonical_name: String,
+    scope: CargoDependencyScope,
+    optional: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum CargoDependencyScope {
+    Dependencies,
+    DevDependencies,
+    BuildDependencies,
 }
 
 pub fn workspace_contains_rust_code(workspace_root: &Path) -> bool {
@@ -129,7 +143,7 @@ pub fn extract_rust_workspace_architecture(workspace_root: &Path) -> SoftwareArc
                 name: package.crate_name.clone(),
                 src_dir: package.src_dir.clone(),
                 root_file: package.root_file.clone(),
-                dependency_aliases: package.dependency_aliases.clone(),
+                declared_dependencies: package.declared_dependencies.clone(),
             })
             .collect()
     };
@@ -283,7 +297,7 @@ fn discover_rust_crates_fallback(workspace_root: &Path) -> Vec<RustCrate> {
             name: crate_name,
             src_dir,
             root_file,
-            dependency_aliases: HashMap::new(),
+            declared_dependencies: HashMap::new(),
         });
     }
     crates.sort_by(|left, right| left.name.cmp(&right.name));
@@ -450,7 +464,7 @@ fn parse_cargo_package_context(
         crate_name,
         src_dir,
         root_file,
-        dependency_aliases: parse_package_dependency_aliases(
+        declared_dependencies: parse_package_declared_dependencies(
             &manifest,
             workspace_dependency_aliases,
         ),
@@ -462,31 +476,46 @@ fn parse_workspace_dependency_aliases(manifest: &toml::Value) -> HashMap<String,
         .get("workspace")
         .and_then(toml::Value::as_table)
         .and_then(|workspace| workspace.get("dependencies"))
-        .map(|value| parse_dependency_alias_map_from_value(value, &HashMap::new()))
+        .map(|value| {
+            parse_dependency_specs_from_value(
+                value,
+                &HashMap::new(),
+                CargoDependencyScope::Dependencies,
+            )
+            .into_iter()
+            .map(|(alias, spec)| (alias, spec.canonical_name))
+            .collect()
+        })
         .unwrap_or_default()
 }
 
-fn parse_package_dependency_aliases(
+fn parse_package_declared_dependencies(
     manifest: &toml::Value,
     workspace_dependency_aliases: &HashMap<String, String>,
-) -> HashMap<String, String> {
+) -> HashMap<String, CargoDependencySpec> {
     let mut aliases = HashMap::new();
-    for key in ["dependencies", "dev-dependencies", "build-dependencies"] {
+    for (key, scope) in [
+        ("dependencies", CargoDependencyScope::Dependencies),
+        ("dev-dependencies", CargoDependencyScope::DevDependencies),
+        ("build-dependencies", CargoDependencyScope::BuildDependencies),
+    ] {
         let Some(value) = manifest.get(key) else {
             continue;
         };
-        aliases.extend(parse_dependency_alias_map_from_value(
+        aliases.extend(parse_dependency_specs_from_value(
             value,
             workspace_dependency_aliases,
+            scope,
         ));
     }
     aliases
 }
 
-fn parse_dependency_alias_map_from_value(
+fn parse_dependency_specs_from_value(
     value: &toml::Value,
     workspace_dependency_aliases: &HashMap<String, String>,
-) -> HashMap<String, String> {
+    scope: CargoDependencyScope,
+) -> HashMap<String, CargoDependencySpec> {
     let Some(table) = value.as_table() else {
         return HashMap::new();
     };
@@ -497,7 +526,18 @@ fn parse_dependency_alias_map_from_value(
         else {
             continue;
         };
-        aliases.insert(normalize_crate_name(alias), normalize_crate_name(&canonical));
+        aliases.insert(
+            normalize_crate_name(alias),
+            CargoDependencySpec {
+                canonical_name: normalize_crate_name(&canonical),
+                scope,
+                optional: spec
+                    .as_table()
+                    .and_then(|table| table.get("optional"))
+                    .and_then(toml::Value::as_bool)
+                    .unwrap_or(false),
+            },
+        );
     }
     aliases
 }
@@ -1032,7 +1072,8 @@ fn classify_dependency_target(
         return DependencyTarget::InternalModule(module_id(&krate.name, &target_module_segments));
     }
 
-    if let Some(canonical_dependency) = krate.dependency_aliases.get(first) {
+    if let Some(declared_dependency) = krate.declared_dependencies.get(first) {
+        let canonical_dependency = &declared_dependency.canonical_name;
         if cargo_context
             .workspace_crates_by_name
             .contains_key(canonical_dependency)
@@ -1046,7 +1087,7 @@ fn classify_dependency_target(
         return DependencyTarget::InternalModule(crate_id(first));
     }
 
-    if !krate.dependency_aliases.is_empty() || !cargo_context.packages.is_empty() {
+    if !krate.declared_dependencies.is_empty() || !cargo_context.packages.is_empty() {
         return DependencyTarget::Ignore;
     }
 
@@ -1206,9 +1247,12 @@ fn module_id(crate_name: &str, module_segments: &[String]) -> String {
 mod tests {
     use super::{
         crate_id, expand_use_tree, external_crate_id, extract_rust_workspace_architecture,
-        module_id, module_segments_for_file, parse_use_statement_paths,
+        module_id, module_segments_for_file, parse_cargo_manifest,
+        parse_package_declared_dependencies, parse_use_statement_paths,
+        CargoDependencyScope,
         workspace_contains_rust_code,
     };
+    use std::collections::HashMap;
     use std::fs;
     use std::path::PathBuf;
     use tempfile::tempdir;
@@ -1461,5 +1505,55 @@ json = { package = "serde_json", version = "1" }
         assert!(model.dependencies.iter().any(|dependency| {
             dependency.to == external_crate_id("serde_json")
         }));
+    }
+
+    #[test]
+    fn parses_declared_dependency_scopes_and_optional_flags() {
+        let dir = tempdir().expect("tempdir");
+        let root = dir.path();
+        fs::write(
+            root.join("Cargo.toml"),
+            r#"[package]
+name = "dep_scope_demo"
+version = "0.1.0"
+
+[dependencies]
+serde = "1"
+feature_dep = { package = "feature-dep", version = "1", optional = true }
+
+[dev-dependencies]
+pretty_assertions = "1"
+
+[build-dependencies]
+cc = "1"
+"#,
+        )
+        .expect("cargo");
+
+        let manifest = parse_cargo_manifest(&root.join("Cargo.toml")).expect("manifest");
+        let dependencies = parse_package_declared_dependencies(&manifest, &HashMap::new());
+
+        assert_eq!(
+            dependencies.get("serde").map(|spec| spec.scope),
+            Some(CargoDependencyScope::Dependencies)
+        );
+        assert_eq!(
+            dependencies.get("feature_dep").map(|spec| spec.optional),
+            Some(true)
+        );
+        assert_eq!(
+            dependencies
+                .get("feature_dep")
+                .map(|spec| spec.canonical_name.as_str()),
+            Some("feature_dep")
+        );
+        assert_eq!(
+            dependencies.get("pretty_assertions").map(|spec| spec.scope),
+            Some(CargoDependencyScope::DevDependencies)
+        );
+        assert_eq!(
+            dependencies.get("cc").map(|spec| spec.scope),
+            Some(CargoDependencyScope::BuildDependencies)
+        );
     }
 }

@@ -8,7 +8,6 @@ import type {
     SysMLGraphDTO,
     VisualizationViewCandidateDTO,
 } from '../providers/sysmlModelTypes';
-import { projectSoftwareWorkspaceModel } from './softwareViewProjection';
 
 export interface FetchModelParams {
     workspaceRootUri: string;
@@ -188,11 +187,12 @@ export async function fetchSoftwareModelData(params: Omit<FetchModelParams, 'sel
     }
 }
 
-export function buildSoftwareUpdateMessage(
+export async function buildSoftwareUpdateMessage(
     workspaceRootUri: string,
     currentView: string,
+    lspModelProvider: LspModelProvider,
     model?: SoftwareWorkspaceModelDTO,
-): UpdateMessage {
+): Promise<UpdateMessage> {
     if (!model) {
         return {
             command: 'update',
@@ -204,7 +204,7 @@ export function buildSoftwareUpdateMessage(
             currentView,
             viewCandidates: toVisualizationCandidates([
                 { id: 'software-module-view', name: 'Rust Module View', supported: true, description: 'Shows crates and modules.' },
-                { id: 'software-dependency-view', name: 'Rust Dependency View', supported: true, description: 'Shows module dependencies.' },
+                { id: 'software-dependency-view', name: 'Rust Dependency View', supported: true, description: 'Shows a hierarchical dependency view with containment and external crates.' },
             ]),
             selectedView: currentView,
             selectedViewName: currentView === 'software-dependency-view' ? 'Rust Dependency View' : 'Rust Module View',
@@ -212,24 +212,22 @@ export function buildSoftwareUpdateMessage(
         };
     }
 
-    const projection = projectSoftwareWorkspaceModel(
-        model,
+    const result = await lspModelProvider.projectSoftwareView(
+        workspaceRootUri,
         currentView === 'software-dependency-view' ? 'software-dependency-view' : 'software-module-view',
+        model,
     );
     return {
         command: 'update',
-        graph: projection.graph,
-        elements: projection.workspaceModel.semantic,
-        generalViewGraph: projection.graph,
+        graph: result.graph ?? { nodes: [], edges: [] },
+        elements: result.workspaceModel?.semantic ?? [],
+        generalViewGraph: result.graph ?? { nodes: [], edges: [] },
         ibd: undefined,
         activityDiagrams: [],
-        currentView,
-        viewCandidates: toVisualizationCandidates([
-            { id: 'software-module-view', name: 'Rust Module View', supported: true, description: 'Shows crates and modules.' },
-            { id: 'software-dependency-view', name: 'Rust Dependency View', supported: true, description: 'Shows module dependencies.' },
-        ]),
-        selectedView: currentView,
-        selectedViewName: currentView === 'software-dependency-view' ? 'Rust Dependency View' : 'Rust Module View',
-        emptyStateMessage: undefined,
+        currentView: result.view ?? currentView,
+        viewCandidates: toVisualizationCandidates(result.views ?? []),
+        selectedView: result.view ?? currentView,
+        selectedViewName: result.views?.find((candidate) => candidate.id === (result.view ?? currentView))?.name,
+        emptyStateMessage: result.emptyStateMessage,
     };
 }

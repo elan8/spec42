@@ -47,6 +47,7 @@ function createVariantConfig(
             return buildSoftwareUpdateMessage(
                 runtimeState.workspaceRootUri,
                 runtimeState.currentView,
+                runtimeState.lspModelProvider,
                 entry.status === 'ready' ? entry.model : undefined,
             );
         },

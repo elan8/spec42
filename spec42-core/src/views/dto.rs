@@ -278,6 +278,14 @@ pub struct SoftwareAnalyzeWorkspaceParamsDto {
     pub workspace_root_uri: String,
 }
 
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SoftwareProjectViewParamsDto {
+    pub workspace_root_uri: String,
+    pub view: String,
+    pub workspace_model: SoftwareWorkspaceModelDto,
+}
+
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SoftwareVisualizationViewCandidateDto {

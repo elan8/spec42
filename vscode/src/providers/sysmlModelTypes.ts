@@ -228,6 +228,12 @@ export interface SoftwareAnalyzeWorkspaceParams {
   workspaceRootUri: string;
 }
 
+export interface SoftwareProjectViewParams {
+  workspaceRootUri: string;
+  view: string;
+  workspaceModel: SoftwareWorkspaceModelDTO;
+}
+
 export interface SysMLVisualizationResult {
   version: number;
   view: string;

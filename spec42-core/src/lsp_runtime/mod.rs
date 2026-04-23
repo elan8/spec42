@@ -23,8 +23,9 @@ use crate::views::dto;
 use crate::workspace::ServerState;
 use custom::{
     mark_sysml_model_parse_cached, software_analyze_workspace_result,
-    software_visualization_result, sysml_clear_cache_result, sysml_feature_inspector_result,
-    sysml_model_result, sysml_server_stats_result, sysml_visualization_result,
+    software_project_view_result, software_visualization_result,
+    sysml_clear_cache_result, sysml_feature_inspector_result, sysml_model_result,
+    sysml_server_stats_result, sysml_visualization_result,
 };
 
 struct Backend {
@@ -439,6 +440,13 @@ impl Backend {
         software_analyze_workspace_result(params)
     }
 
+    async fn software_project_view(
+        &self,
+        params: serde_json::Value,
+    ) -> Result<dto::SoftwareVisualizationResultDto> {
+        software_project_view_result(params)
+    }
+
     async fn sysml_feature_inspector(
         &self,
         params: serde_json::Value,
@@ -565,6 +573,7 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     .custom_method("sysml/visualization", Backend::sysml_visualization)
     .custom_method("software/visualization", Backend::software_visualization)
     .custom_method("software/analyzeWorkspace", Backend::software_analyze_workspace)
+    .custom_method("software/projectView", Backend::software_project_view)
     .custom_method("sysml/featureInspector", Backend::sysml_feature_inspector)
     .custom_method("sysml/serverStats", Backend::sysml_server_stats)
     .custom_method("sysml/clearCache", Backend::sysml_clear_cache)

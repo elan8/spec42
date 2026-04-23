@@ -9,6 +9,7 @@ import type {
   SysMLModelParams,
   SysMLModelResult,
   SoftwareVisualizationParams,
+  SoftwareProjectViewParams,
   SoftwareAnalyzeWorkspaceParams,
   SoftwareAnalyzeWorkspaceResult,
   SoftwareVisualizationResult,
@@ -585,6 +586,34 @@ export class LspModelProvider {
       );
     } catch (error) {
       logError("analyzeSoftwareWorkspace failed", error);
+      throw error;
+    }
+  }
+
+  async projectSoftwareView(
+    workspaceRootUri: string,
+    view: string,
+    workspaceModel: SoftwareAnalyzeWorkspaceResult["workspaceModel"],
+    token?: vscode.CancellationToken
+  ): Promise<SoftwareVisualizationResult> {
+    const trimmed = (workspaceRootUri || "").trim();
+    if (!trimmed) {
+      throw new Error("projectSoftwareView requires a non-empty workspaceRootUri");
+    }
+    await this.whenReady;
+    const params: SoftwareProjectViewParams = {
+      workspaceRootUri: trimmed,
+      view,
+      workspaceModel,
+    };
+    try {
+      return await this.client.sendRequest<SoftwareVisualizationResult>(
+        "software/projectView",
+        params,
+        token
+      );
+    } catch (error) {
+      logError("projectSoftwareView failed", error);
       throw error;
     }
   }

@@ -39,7 +39,7 @@ const REGISTERED_ADDONS: AddonDescriptor[] = [
     {
         id: 'software-architecture-pro',
         name: 'Babel42',
-        description: 'Commercial add-on for conformance, drift, and deeper architecture diagnostics.',
+        description: 'Professional add-on for conformance, drift, and deeper architecture analysis. Coming soon.',
         kind: 'teaser',
         badge: 'Pro',
         canToggle: false,
