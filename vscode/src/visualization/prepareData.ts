@@ -371,6 +371,8 @@ export function prepareDataForView(data: any, view: string): any {
                         id: a.id || a.name,
                         inputs: Array.isArray(a.inputs) ? a.inputs : [],
                         outputs: Array.isArray(a.outputs) ? a.outputs : [],
+                        uri: a.uri || diagram.uri,
+                        range: a.range || diagram.range,
                         parent: (a.parent === diagram.name) ? undefined : a.parent
                     })),
                     ...decisionsAsNodes,
@@ -383,9 +385,40 @@ export function prepareDataForView(data: any, view: string): any {
                     return allowedKinds.has(kind);
                 });
 
-                const nodeIds = new Set(nodes.map((node: any) => node.id || node.name));
+                const nodeIds = new Set(nodes.map((node: any) => String(node.id || node.name)));
+                const nodeIdByAlias = new Map<string, string>();
+                const registerAlias = (alias: any, nodeId: string) => {
+                    const key = String(alias || '').trim();
+                    if (!key) return;
+                    if (!nodeIdByAlias.has(key)) nodeIdByAlias.set(key, nodeId);
+                    const normalized = key.replace(/::/g, '.');
+                    if (!nodeIdByAlias.has(normalized)) nodeIdByAlias.set(normalized, nodeId);
+                    const lastSegment = normalized.split('.').filter(Boolean).pop();
+                    if (lastSegment && !nodeIdByAlias.has(lastSegment)) nodeIdByAlias.set(lastSegment, nodeId);
+                };
+                nodes.forEach((node: any) => {
+                    const nodeId = String(node.id || node.name);
+                    registerAlias(node.id, nodeId);
+                    registerAlias(node.name, nodeId);
+                    registerAlias(node.qualifiedName, nodeId);
+                });
+                const resolveNodeId = (value: any): string => {
+                    const key = String(value || '').trim();
+                    if (!key) return '';
+                    const normalized = key.replace(/::/g, '.');
+                    const segments = normalized.split('.').filter(Boolean);
+                    const first = segments[0] || '';
+                    const last = segments[segments.length - 1] || '';
+                    return nodeIdByAlias.get(key)
+                        || nodeIdByAlias.get(normalized)
+                        || (last ? nodeIdByAlias.get(last) : undefined)
+                        || (first ? nodeIdByAlias.get(first) : undefined)
+                        || key;
+                };
                 const flows = (diagram.flows || []).map((flow: any, idx: number) => ({
                     ...flow,
+                    from: resolveNodeId(flow.from),
+                    to: resolveNodeId(flow.to),
                     id: flow.id || `${diagram.name}::flow::${idx + 1}`,
                     flowKind: flow.flowKind || flow.type || 'control'
                 }));

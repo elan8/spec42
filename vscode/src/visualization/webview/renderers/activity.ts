@@ -17,6 +17,11 @@ type ActivityActionNode = {
     type?: string;
     kind?: string;
     parent?: string;
+    uri?: string;
+    range?: {
+        start: { line: number; character: number };
+        end: { line: number; character: number };
+    };
     inputs?: string[];
     outputs?: string[];
 };
@@ -137,6 +142,11 @@ function edgeLabelPosition(sections: ElkSection[] | undefined): { x: number; y: 
 function flowDisplayLabel(flow: ActivityFlow): string {
     const guardLabel = String(flow.guard || flow.condition || '').trim();
     if (!guardLabel) return '';
+    const normalized = guardLabel.toLowerCase();
+    // These are structural parser markers, not user-authored branch/guard labels.
+    if (normalized === 'first' || normalized === 'flow' || normalized === 'bind' || normalized === 'perform-sequence') {
+        return '';
+    }
     return `[${normalizeEdgeLabel(guardLabel)}]`;
 }
 
@@ -194,7 +204,22 @@ function renderActionNode(
         selected.select('.node-background')
             .style('stroke', DIAGRAM_STYLE.highlight)
             .style('stroke-width', '3px');
-        postJumpToElement(postMessage, { name: action.name, id: action.id }, { parentContext, skipCentering: true });
+        const resolvedParentContext = String(action.parent || '').trim() || parentContext;
+        const looksLikeQualifiedId = String(action.id || '').includes('::');
+        postJumpToElement(
+            postMessage,
+            {
+                name: action.name,
+                // Avoid sending synthesized/non-qualified IDs that can block lookup.
+                id: looksLikeQualifiedId ? action.id : undefined,
+                uri: action.uri,
+                range: action.range,
+            },
+            {
+                parentContext: resolvedParentContext || undefined,
+                skipCentering: true,
+            },
+        );
     };
 
     if (isInitial(action) || isFinal(action)) {
@@ -619,7 +644,7 @@ export async function renderActivityView(ctx: ActivityRenderContext, data: any):
             postMessage,
             onStartInlineEdit,
             clearVisualHighlights,
-            diagram.name,
+            '',
         );
     });
 }

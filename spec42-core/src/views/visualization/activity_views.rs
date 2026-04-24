@@ -48,7 +48,19 @@ pub(crate) fn build_workspace_activity_diagrams(
         let Some(parsed) = entry.parsed.as_ref() else {
             continue;
         };
-        diagrams.extend(extract_activity_diagrams(parsed));
+        let source_uri = workspace_uri.as_str().to_string();
+        let mut extracted = extract_activity_diagrams(parsed);
+        for diagram in &mut extracted {
+            if diagram.uri.is_none() {
+                diagram.uri = Some(source_uri.clone());
+            }
+            for action in &mut diagram.actions {
+                if action.uri.is_none() {
+                    action.uri = Some(source_uri.clone());
+                }
+            }
+        }
+        diagrams.extend(extracted);
     }
 
     if let Some((package_ref, package_name)) = package_filter {

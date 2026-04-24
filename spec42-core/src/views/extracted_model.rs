@@ -117,6 +117,8 @@ pub struct ActivityDiagramDto {
     #[serde(skip_serializing_if = "String::is_empty")]
     pub package_path: String,
     pub source_kind: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
     pub actions: Vec<ActivityActionDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub interface: Option<ActivityInterfaceDto>,
@@ -129,6 +131,8 @@ pub struct ActivityDiagramDto {
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ActivityActionDto {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
     pub name: String,
     #[serde(rename = "type")]
     pub action_type: String,
@@ -140,6 +144,8 @@ pub struct ActivityActionDto {
     pub outputs: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub range: Option<RangeDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -405,12 +411,18 @@ fn extract_performer_diagram_from_performs(
                 perform.value.action_name.clone()
             };
             ActivityActionDto {
+                id: Some(format!(
+                    "{}::{}",
+                    activity_diagram_id(qualified_segments, "performer"),
+                    perform_name
+                )),
                 name: perform_name,
                 action_type: "action".to_string(),
                 kind: Some("perform".to_string()),
                 inputs: None,
                 outputs: None,
                 range: Some(span_to_range_dto(&perform.span)),
+                uri: None,
             }
         })
         .collect::<Vec<_>>();
@@ -439,6 +451,7 @@ fn extract_performer_diagram_from_performs(
         },
         package_path: package_path_from_segments(package_segments),
         source_kind: "performer".to_string(),
+        uri: None,
         actions,
         interface: None,
         decisions: vec![],
@@ -1267,12 +1280,14 @@ fn extract_activity_from_action(
                         perform.value.action_name.clone()
                     };
                     actions.push(ActivityActionDto {
+                        id: Some(format!("{}::{}", join_segments(&qualified_segments), perform_name)),
                         name: perform_name,
                         action_type: "action".to_string(),
                         kind: Some("perform".to_string()),
                         inputs: None,
                         outputs: None,
                         range: Some(span_to_range_dto(&perform.span)),
+                        uri: None,
                     });
                 }
                 ActionDefBodyElement::ActionUsage(usage) => {
@@ -1282,6 +1297,7 @@ fn extract_activity_from_action(
                         inputs.push(accept_name.clone());
                     }
                     actions.push(ActivityActionDto {
+                        id: Some(format!("{}::{}", join_segments(&qualified_segments), u.name)),
                         name: u.name.clone(),
                         action_type: "action".to_string(),
                         // VS Code Action Flow view filters allowed node kinds. Use a compatible kind
@@ -1294,6 +1310,7 @@ fn extract_activity_from_action(
                         },
                         outputs: None,
                         range: Some(span_to_range_dto(&u.span)),
+                        uri: None,
                     });
                 }
                 ActionDefBodyElement::Bind(bind) => {
@@ -1407,12 +1424,14 @@ fn extract_activity_from_action(
             continue;
         }
         actions.push(ActivityActionDto {
+            id: Some(format!("{}::{}", join_segments(&qualified_segments), step)),
             name: step,
             action_type: "action".to_string(),
             kind: Some("action".to_string()),
             inputs: None,
             outputs: None,
             range: None,
+            uri: None,
         });
     }
 
@@ -1433,6 +1452,7 @@ fn extract_activity_from_action(
         },
         package_path: package_path_from_segments(package_segments),
         source_kind: "actionDef".to_string(),
+        uri: None,
         actions,
         interface,
         decisions: vec![],

@@ -203,8 +203,9 @@ export function createMessageHandlers(context: MessageHandlerContext) {
 
         let element: SysMLElement | undefined;
         let resolvedUri = elementUri || document?.uri.toString() || workspaceRootUri;
+        const hasExplicitLocation = Boolean(elementUri && elementRange);
 
-        if (document) {
+        if (document && !hasExplicitLocation) {
             const dto = await lspModelProvider.findElement(
                 resolvedUri || workspaceRootUri,
                 elementName,
