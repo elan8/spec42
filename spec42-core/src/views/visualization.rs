@@ -21,9 +21,12 @@ use crate::views::dto::{
     SysmlVisualizationViewCandidateDto, WorkspaceFileModelDto, WorkspaceModelDto,
     WorkspaceModelSummaryDto,
 };
-use crate::views::extracted_model::ActivityDiagramDto;
+use crate::views::extracted_model::{ActivityDiagramDto, SequenceDiagramDto};
 use crate::views::ibd::{self, IbdDataDto, IbdPackageContainerGroupDto};
 use crate::views::model_projection;
+use crate::views::sequence_views::{
+    build_workspace_sequence_diagrams, filter_sequence_diagrams_by_exposed_ids,
+};
 
 mod activity_views;
 #[path = "explicit_views.rs"]
@@ -939,6 +942,10 @@ fn renderer_empty_state_message(view: &str) -> String {
             "Define a SysML view typed by ActionFlowView to display something in this visualizer panel."
                 .to_string()
         }
+        "sequence-view" => {
+            "Define a SysML view typed by SequenceView to display a software interaction sequence in this visualizer panel."
+                .to_string()
+        }
         "state-transition-view" => {
             "Define a SysML view typed by StateTransitionView to display something in this visualizer panel."
                 .to_string()
@@ -1801,6 +1808,7 @@ pub(crate) fn build_sysml_visualization_response(
             .collect(),
     );
     let full_activity_diagrams = build_workspace_activity_diagrams(index, &workspace_uris, None);
+    let full_sequence_diagrams = build_workspace_sequence_diagrams(index, &workspace_uris);
     let catalog = explicit_views::build_view_catalog(index, &workspace_uris);
 
     if catalog.usages.is_empty() {
@@ -1821,6 +1829,7 @@ pub(crate) fn build_sysml_visualization_response(
                 &workspace_uris,
             )),
             activity_diagrams: Some(Vec::new()),
+            sequence_diagrams: Some(Vec::new()),
             ibd: Some(filter_ibd_by_visible_ids(&full_ibd, &HashSet::new())),
             stats: Some(SysmlModelStatsDto {
                 total_elements: 0,
@@ -1836,6 +1845,7 @@ pub(crate) fn build_sysml_visualization_response(
     let evaluated_views = explicit_views::evaluate_views(&catalog, &graph);
     let mut projected_graphs: HashMap<&str, SysmlGraphDto> = HashMap::new();
     let mut projected_activity_diagrams: HashMap<&str, Vec<ActivityDiagramDto>> = HashMap::new();
+    let mut projected_sequence_diagrams: HashMap<&str, Vec<SequenceDiagramDto>> = HashMap::new();
     for evaluated in &evaluated_views {
         let projected_ids =
             explicit_views::renderer_view_for_view_type(evaluated.effective_view_type.as_deref())
@@ -1845,8 +1855,11 @@ pub(crate) fn build_sysml_visualization_response(
                 .unwrap_or_default();
         let projected_graph = project_graph_by_ids(&graph, &projected_ids);
         let diagrams = filter_activity_diagrams_by_graph(&full_activity_diagrams, &projected_graph);
+        let sequence_diagrams =
+            filter_sequence_diagrams_by_exposed_ids(&full_sequence_diagrams, &evaluated.exposed_ids);
         projected_graphs.insert(evaluated.id.as_str(), projected_graph);
         projected_activity_diagrams.insert(evaluated.id.as_str(), diagrams);
+        projected_sequence_diagrams.insert(evaluated.id.as_str(), sequence_diagrams);
     }
 
     let view_candidates = explicit_views::build_view_candidates(
@@ -1887,6 +1900,7 @@ pub(crate) fn build_sysml_visualization_response(
                 &workspace_uris,
             )),
             activity_diagrams: Some(Vec::new()),
+            sequence_diagrams: Some(Vec::new()),
             ibd: Some(filter_ibd_by_visible_ids(&full_ibd, &HashSet::new())),
             stats: Some(SysmlModelStatsDto {
                 total_elements: 0,
@@ -1920,6 +1934,7 @@ pub(crate) fn build_sysml_visualization_response(
                 &workspace_uris,
             )),
             activity_diagrams: Some(Vec::new()),
+            sequence_diagrams: Some(Vec::new()),
             ibd: Some(filter_ibd_by_visible_ids(&full_ibd, &HashSet::new())),
             stats: Some(SysmlModelStatsDto {
                 total_elements: 0,
@@ -1985,6 +2000,9 @@ pub(crate) fn build_sysml_visualization_response(
     let activity_diagrams = projected_activity_diagrams
         .remove(selected_view_id.as_str())
         .unwrap_or_default();
+    let sequence_diagrams = projected_sequence_diagrams
+        .remove(selected_view_id.as_str())
+        .unwrap_or_default();
 
     SysmlVisualizationResultDto {
         version: 0,
@@ -2000,6 +2018,7 @@ pub(crate) fn build_sysml_visualization_response(
         general_view_graph: Some(general_view_graph),
         workspace_model: Some(workspace_model),
         activity_diagrams: Some(activity_diagrams),
+        sequence_diagrams: Some(sequence_diagrams),
         ibd: Some(filtered_ibd),
         stats: Some(SysmlModelStatsDto {
             total_elements: selected_graph.nodes.len() as u32,

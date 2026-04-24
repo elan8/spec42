@@ -33,6 +33,8 @@ These workflows are available and useful, but still have known limits that shoul
   Release-enabled for structural connection inspection, export, and root-based exploration, with known caveats mainly around very dense routing/layout.
 - Action Flow and State Transition views are available by default in the visualizer.
   Useful for evaluation and iteration, but not yet release-gating for `1.0`.
+- Sequence View is available as an experimental software-interaction extension.
+  It is intended for Spec42-authored `SequenceView` + `SoftwareInteractions` models rather than full UML sequence-diagram parity.
 
 ## Experimental Areas
 

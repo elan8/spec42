@@ -15,6 +15,7 @@ This directory organizes reusable libraries by role so technical capability libr
   - `distributed-systems`
   - `data`
   - `platform`
+  - `interactions`
 - `technical/communication/`
   - `core`
   - `http`

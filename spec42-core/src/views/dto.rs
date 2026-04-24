@@ -340,6 +340,8 @@ pub struct SysmlVisualizationResultDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub activity_diagrams: Option<Vec<model::ActivityDiagramDto>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub sequence_diagrams: Option<Vec<model::SequenceDiagramDto>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ibd: Option<ibd::IbdDataDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stats: Option<SysmlModelStatsDto>,
@@ -382,6 +384,8 @@ pub struct SysmlModelResultDto {
     pub workspace_model: Option<WorkspaceModelDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub activity_diagrams: Option<Vec<model::ActivityDiagramDto>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sequence_diagrams: Option<Vec<model::SequenceDiagramDto>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ibd: Option<ibd::IbdDataDto>,
     pub stats: Option<SysmlModelStatsDto>,

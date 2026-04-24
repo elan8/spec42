@@ -79,6 +79,7 @@ describe("BaseVisualizationPanelController", () => {
           elements: [],
           generalViewGraph: { nodes: [], edges: [] },
           activityDiagrams: [],
+          sequenceDiagrams: [],
           currentView: runtimeState.currentView,
           viewCandidates: [],
         };

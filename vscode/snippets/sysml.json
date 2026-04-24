@@ -247,5 +247,158 @@
       "}"
     ],
     "description": "Create a cross-file usage scaffold"
+  },
+  "SysML: SequenceView": {
+    "prefix": "sequenceview",
+    "body": [
+      "view ${1:interactionView} : SequenceView {",
+      "\texpose ${2:Package}::${3:InteractionScenario};",
+      "}$0"
+    ],
+    "description": "Create a Spec42 sequence view"
+  },
+  "SysML: software interaction library": {
+    "prefix": "interactionlib",
+    "body": [
+      "library package ${1:SoftwareInteractions} {",
+      "\tpart def InteractionScenario;",
+      "\tpart def Lifeline;",
+      "\tpart def Message {",
+      "\t\tref from : Lifeline;",
+      "\t\tref to : Lifeline;",
+      "\t\tattribute label : String;",
+      "\t}",
+      "\tpart def SynchronousCall :> Message;",
+      "\tpart def AsynchronousMessage :> Message;",
+      "\tpart def ReturnMessage :> Message;",
+      "\tpart def CreationMessage :> Message;",
+      "\tpart def Activation {",
+      "\t\tref on : Lifeline;",
+      "\t\tref startMessage : Message;",
+      "\t\tref finishMessage : Message;",
+      "\t}",
+      "\tpart def CombinedFragment;",
+      "\tpart def AltFragment :> CombinedFragment;",
+      "\tpart def OptFragment :> CombinedFragment;",
+      "\tpart def LoopFragment :> CombinedFragment;",
+      "\tpart def InteractionOperand {",
+      "\t\tattribute guard : String;",
+      "\t}",
+      "\tpart def InteractionRef :> CombinedFragment {",
+      "\t\tref target : InteractionScenario;",
+      "\t}",
+      "}$0"
+    ],
+    "description": "Create a Spec42 software interaction library scaffold"
+  },
+  "SysML: sequence lifeline": {
+    "prefix": "lifeline",
+    "body": [
+      "part ${1:name} : Lifeline;$0"
+    ],
+    "description": "Create a sequence lifeline usage"
+  },
+  "SysML: sync message": {
+    "prefix": "syncmsg",
+    "body": [
+      "part ${1:request} : SynchronousCall {",
+      "\tref from : Lifeline = ${2:caller};",
+      "\tref to : Lifeline = ${3:callee};",
+      "\tattribute :>> label = \"${4:operation}\";",
+      "}$0"
+    ],
+    "description": "Create a synchronous interaction message"
+  },
+  "SysML: async message": {
+    "prefix": "asyncmsg",
+    "body": [
+      "part ${1:event} : AsynchronousMessage {",
+      "\tref from : Lifeline = ${2:publisher};",
+      "\tref to : Lifeline = ${3:subscriber};",
+      "\tattribute :>> label = \"${4:eventName}\";",
+      "}$0"
+    ],
+    "description": "Create an asynchronous interaction message"
+  },
+  "SysML: return message": {
+    "prefix": "returnmsg",
+    "body": [
+      "part ${1:response} : ReturnMessage {",
+      "\tref from : Lifeline = ${2:responder};",
+      "\tref to : Lifeline = ${3:caller};",
+      "\tattribute :>> label = \"${4:result}\";",
+      "}$0"
+    ],
+    "description": "Create a return interaction message"
+  },
+  "SysML: creation message": {
+    "prefix": "createmsg",
+    "body": [
+      "part ${1:createTarget} : CreationMessage {",
+      "\tref from : Lifeline = ${2:creator};",
+      "\tref to : Lifeline = ${3:created};",
+      "\tattribute :>> label = \"${4:create}\";",
+      "}$0"
+    ],
+    "description": "Create a creation interaction message"
+  },
+  "SysML: activation": {
+    "prefix": "activation",
+    "body": [
+      "part ${1:processing} : Activation {",
+      "\tref on : Lifeline = ${2:lifeline};",
+      "\tref startMessage : Message = ${3:startMessage};",
+      "\tref finishMessage : Message = ${4:finishMessage};",
+      "}$0"
+    ],
+    "description": "Create an activation span for a sequence lifeline"
+  },
+  "SysML: interaction operand": {
+    "prefix": "operand",
+    "body": [
+      "part ${1:branch} : InteractionOperand {",
+      "\tattribute :>> guard = \"${2:condition}\";",
+      "\t$0",
+      "}"
+    ],
+    "description": "Create an interaction operand"
+  },
+  "SysML: alt fragment": {
+    "prefix": "altfragment",
+    "body": [
+      "part ${1:alternatives} : AltFragment {",
+      "\tpart ${2:primary} : InteractionOperand {",
+      "\t\tattribute :>> guard = \"${3:condition}\";",
+      "\t}",
+      "\tpart ${4:secondary} : InteractionOperand {",
+      "\t\tattribute :>> guard = \"${5:elseCondition}\";",
+      "\t}",
+      "}$0"
+    ],
+    "description": "Create an alt interaction fragment"
+  },
+  "SysML: opt fragment": {
+    "prefix": "optfragment",
+    "body": [
+      "part ${1:optionalPath} : OptFragment {",
+      "\tpart ${2:whenTrue} : InteractionOperand {",
+      "\t\tattribute :>> guard = \"${3:condition}\";",
+      "\t\t$0",
+      "\t}",
+      "}"
+    ],
+    "description": "Create an opt interaction fragment"
+  },
+  "SysML: loop fragment": {
+    "prefix": "loopfragment",
+    "body": [
+      "part ${1:retries} : LoopFragment {",
+      "\tpart ${2:repeat} : InteractionOperand {",
+      "\t\tattribute :>> guard = \"${3:whileCondition}\";",
+      "\t\t$0",
+      "\t}",
+      "}"
+    ],
+    "description": "Create a loop interaction fragment"
   }
 }

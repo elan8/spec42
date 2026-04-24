@@ -81,6 +81,7 @@ pub fn empty_model_response(build_start: Instant) -> SysmlModelResultDto {
         }),
         workspace_model: None,
         activity_diagrams: None,
+        sequence_diagrams: None,
         ibd: None,
         stats: Some(SysmlModelStatsDto {
             total_elements: 0,

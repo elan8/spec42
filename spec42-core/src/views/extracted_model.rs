@@ -91,6 +91,20 @@ fn span_to_range_dto(span: &Span) -> RangeDto {
     }
 }
 
+fn normalized_last_segment(value: &str) -> String {
+    let normalized = value.replace('.', "::");
+    normalized
+        .rsplit("::")
+        .find(|segment| !segment.trim().is_empty())
+        .unwrap_or("")
+        .trim()
+        .to_string()
+}
+
+fn is_sequence_type_name(value: &str, expected: &str) -> bool {
+    normalized_last_segment(value).eq_ignore_ascii_case(expected)
+}
+
 // ---------------------------------------------------------------------------
 // Activity diagrams
 // ---------------------------------------------------------------------------
@@ -169,6 +183,165 @@ pub struct ActivityStateDto {
     #[serde(rename = "type")]
     pub state_type: String,
     pub range: RangeDto,
+}
+
+// ---------------------------------------------------------------------------
+// Sequence diagrams
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SequenceDiagramDto {
+    pub id: String,
+    pub name: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub package_path: String,
+    pub source_kind: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
+    pub lifelines: Vec<SequenceLifelineDto>,
+    pub messages: Vec<SequenceMessageDto>,
+    pub activations: Vec<SequenceActivationDto>,
+    pub fragments: Vec<SequenceFragmentDto>,
+    pub range: RangeDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SequenceLifelineDto {
+    pub id: String,
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
+    pub range: RangeDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SequenceMessageDto {
+    pub id: String,
+    pub name: String,
+    pub kind: String,
+    pub from: String,
+    pub to: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+    pub order: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
+    pub range: RangeDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SequenceActivationDto {
+    pub id: String,
+    pub name: String,
+    pub on_lifeline: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub start_message: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub finish_message: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
+    pub range: RangeDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SequenceOperandDto {
+    pub id: String,
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub guard: Option<String>,
+    pub message_ids: Vec<String>,
+    pub fragments: Vec<SequenceFragmentDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
+    pub range: RangeDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SequenceFragmentDto {
+    pub id: String,
+    pub name: String,
+    pub kind: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub guard: Option<String>,
+    pub message_ids: Vec<String>,
+    pub operands: Vec<SequenceOperandDto>,
+    pub fragments: Vec<SequenceFragmentDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target_ref: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
+    pub range: RangeDto,
+}
+
+#[derive(Debug, Default)]
+struct SequenceBuildState {
+    messages: Vec<SequenceMessageDto>,
+    activations: Vec<SequenceActivationDto>,
+    next_order: usize,
+}
+
+fn normalize_sequence_reference(value: &str, local_ids: &std::collections::HashMap<String, String>) -> String {
+    let trimmed = value.trim();
+    if trimmed.is_empty() {
+        return String::new();
+    }
+    if let Some(resolved) = local_ids.get(trimmed) {
+        return resolved.clone();
+    }
+    normalized_last_segment(trimmed)
+}
+
+fn normalize_sequence_fragment_references(
+    fragment: &mut SequenceFragmentDto,
+    local_ids: &std::collections::HashMap<String, String>,
+) {
+    if let Some(target_ref) = fragment.target_ref.as_mut() {
+        *target_ref = normalize_sequence_reference(target_ref, local_ids);
+    }
+    for operand in &mut fragment.operands {
+        for nested in &mut operand.fragments {
+            normalize_sequence_fragment_references(nested, local_ids);
+        }
+    }
+    for nested in &mut fragment.fragments {
+        normalize_sequence_fragment_references(nested, local_ids);
+    }
+}
+
+fn normalize_sequence_diagram_references(diagram: &mut SequenceDiagramDto) {
+    let mut local_ids = std::collections::HashMap::new();
+
+    for lifeline in &diagram.lifelines {
+        local_ids.insert(lifeline.name.clone(), lifeline.id.clone());
+        local_ids.insert(normalized_last_segment(&lifeline.id), lifeline.id.clone());
+    }
+    for message in &diagram.messages {
+        local_ids.insert(message.name.clone(), message.id.clone());
+        local_ids.insert(normalized_last_segment(&message.id), message.id.clone());
+    }
+
+    for message in &mut diagram.messages {
+        message.from = normalize_sequence_reference(&message.from, &local_ids);
+        message.to = normalize_sequence_reference(&message.to, &local_ids);
+    }
+    for activation in &mut diagram.activations {
+        activation.on_lifeline = normalize_sequence_reference(&activation.on_lifeline, &local_ids);
+        if let Some(start_message) = activation.start_message.as_mut() {
+            *start_message = normalize_sequence_reference(start_message, &local_ids);
+        }
+        if let Some(finish_message) = activation.finish_message.as_mut() {
+            *finish_message = normalize_sequence_reference(finish_message, &local_ids);
+        }
+    }
+    for fragment in &mut diagram.fragments {
+        normalize_sequence_fragment_references(fragment, &local_ids);
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -538,6 +711,520 @@ pub fn extract_activity_diagrams(root: &RootNamespace) -> Vec<ActivityDiagramDto
     out
 }
 
+fn sequence_diagram_id(qualified_segments: &[String], source_kind: &str) -> String {
+    let qualified = join_segments(qualified_segments);
+    if qualified.is_empty() {
+        source_kind.to_string()
+    } else {
+        format!("{qualified}::{source_kind}")
+    }
+}
+
+fn extract_attribute_value_from_part_usage(
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>,
+    wanted_name: &str,
+) -> Option<String> {
+    let PartUsageBody::Brace { elements } = &node.body else {
+        return None;
+    };
+    elements.iter().find_map(|element| match &element.value {
+        PartUsageBodyElement::AttributeUsage(attribute)
+            if attribute.value.name.eq_ignore_ascii_case(wanted_name) =>
+        {
+            attribute
+                .value
+                .value
+                .as_ref()
+                .map(expr_to_string)
+                .map(|value| value.trim_matches('"').to_string())
+        }
+        _ => None,
+    })
+}
+
+fn extract_ref_value_from_part_usage(
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>,
+    wanted_name: &str,
+) -> Option<String> {
+    let PartUsageBody::Brace { elements } = &node.body else {
+        return None;
+    };
+    elements.iter().find_map(|element| match &element.value {
+        PartUsageBodyElement::Ref(reference) if reference.value.name.eq_ignore_ascii_case(wanted_name) => {
+            reference
+                .value
+                .value
+                .as_ref()
+                .map(expr_to_string)
+                .map(|value| value.trim_matches('"').to_string())
+        }
+        _ => None,
+    })
+}
+
+fn part_usage_message_kind(node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>) -> Option<&'static str> {
+    match normalized_last_segment(&node.value.type_name).to_ascii_lowercase().as_str() {
+        "synchronouscall" => Some("sync"),
+        "asynchronousmessage" => Some("async"),
+        "returnmessage" => Some("return"),
+        "creationmessage" => Some("create"),
+        _ => None,
+    }
+}
+
+fn part_usage_fragment_kind(
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>,
+) -> Option<&'static str> {
+    match normalized_last_segment(&node.value.type_name).to_ascii_lowercase().as_str() {
+        "altfragment" => Some("alt"),
+        "optfragment" => Some("opt"),
+        "loopfragment" => Some("loop"),
+        "interactionref" => Some("ref"),
+        "combinedfragment" => Some("group"),
+        _ => None,
+    }
+}
+
+fn part_usage_is_lifeline(node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>) -> bool {
+    is_sequence_type_name(&node.value.type_name, "Lifeline")
+}
+
+fn part_usage_is_activation(node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>) -> bool {
+    is_sequence_type_name(&node.value.type_name, "Activation")
+}
+
+fn part_usage_is_operand(node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>) -> bool {
+    is_sequence_type_name(&node.value.type_name, "InteractionOperand")
+}
+
+fn part_def_is_sequence_scenario(
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartDef>,
+) -> bool {
+    node.value
+        .specializes
+        .as_deref()
+        .is_some_and(|value| is_sequence_type_name(value, "InteractionScenario"))
+}
+
+fn part_usage_is_sequence_scenario(
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>,
+) -> bool {
+    is_sequence_type_name(&node.value.type_name, "InteractionScenario")
+}
+
+fn collect_sequence_items_from_part_usage_body(
+    elements: &[sysml_v2_parser::Node<PartUsageBodyElement>],
+    qualified_segments: &[String],
+    state: &mut SequenceBuildState,
+) -> (
+    Vec<String>,
+    Vec<SequenceFragmentDto>,
+    Vec<SequenceActivationDto>,
+) {
+    let mut message_ids = Vec::new();
+    let mut fragments = Vec::new();
+    let mut activations = Vec::new();
+
+    for element in elements {
+        let PartUsageBodyElement::PartUsage(part_usage) = &element.value else {
+            continue;
+        };
+        if let Some(message) = extract_sequence_message(part_usage, qualified_segments, state) {
+            message_ids.push(message.id.clone());
+            state.messages.push(message);
+            continue;
+        }
+        if let Some(activation) = extract_sequence_activation(part_usage, qualified_segments) {
+            activations.push(activation.clone());
+            state.activations.push(activation);
+            continue;
+        }
+        if let Some(fragment) = extract_sequence_fragment(part_usage, qualified_segments, state) {
+            fragments.push(fragment);
+        }
+    }
+
+    (message_ids, fragments, activations)
+}
+
+fn extract_sequence_message(
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>,
+    parent_segments: &[String],
+    state: &mut SequenceBuildState,
+) -> Option<SequenceMessageDto> {
+    let kind = part_usage_message_kind(node)?;
+    let name = node.value.name.clone();
+    let qualified_segments = with_segment(parent_segments, name.clone());
+    let from = extract_ref_value_from_part_usage(node, "from")
+        .or_else(|| extract_ref_value_from_part_usage(node, "source"))?;
+    let to = extract_ref_value_from_part_usage(node, "to")
+        .or_else(|| extract_ref_value_from_part_usage(node, "target"))?;
+    let label = extract_attribute_value_from_part_usage(node, "label")
+        .or_else(|| extract_attribute_value_from_part_usage(node, "message"))
+        .or_else(|| (!name.trim().is_empty()).then_some(name.clone()));
+    state.next_order += 1;
+    Some(SequenceMessageDto {
+        id: join_segments(&qualified_segments),
+        name,
+        kind: kind.to_string(),
+        from,
+        to,
+        label,
+        order: state.next_order,
+        uri: None,
+        range: span_to_range_dto(&node.span),
+    })
+}
+
+fn extract_sequence_activation(
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>,
+    parent_segments: &[String],
+) -> Option<SequenceActivationDto> {
+    if !part_usage_is_activation(node) {
+        return None;
+    }
+    let name = node.value.name.clone();
+    let qualified_segments = with_segment(parent_segments, name.clone());
+    let on_lifeline = extract_ref_value_from_part_usage(node, "on")
+        .or_else(|| extract_ref_value_from_part_usage(node, "lifeline"))?;
+    Some(SequenceActivationDto {
+        id: join_segments(&qualified_segments),
+        name,
+        on_lifeline,
+        start_message: extract_ref_value_from_part_usage(node, "startMessage")
+            .or_else(|| extract_ref_value_from_part_usage(node, "start")),
+        finish_message: extract_ref_value_from_part_usage(node, "finishMessage")
+            .or_else(|| extract_ref_value_from_part_usage(node, "finish")),
+        uri: None,
+        range: span_to_range_dto(&node.span),
+    })
+}
+
+fn extract_sequence_operand(
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>,
+    parent_segments: &[String],
+    state: &mut SequenceBuildState,
+) -> Option<SequenceOperandDto> {
+    if !part_usage_is_operand(node) {
+        return None;
+    }
+    let name = node.value.name.clone();
+    let qualified_segments = with_segment(parent_segments, name.clone());
+    let PartUsageBody::Brace { elements } = &node.body else {
+        return None;
+    };
+    let (message_ids, fragments, _activations) =
+        collect_sequence_items_from_part_usage_body(elements, &qualified_segments, state);
+    Some(SequenceOperandDto {
+        id: join_segments(&qualified_segments),
+        name,
+        guard: extract_attribute_value_from_part_usage(node, "guard")
+            .or_else(|| extract_attribute_value_from_part_usage(node, "condition")),
+        message_ids,
+        fragments,
+        uri: None,
+        range: span_to_range_dto(&node.span),
+    })
+}
+
+fn extract_sequence_fragment(
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>,
+    parent_segments: &[String],
+    state: &mut SequenceBuildState,
+) -> Option<SequenceFragmentDto> {
+    let kind = part_usage_fragment_kind(node)?;
+    let name = node.value.name.clone();
+    let qualified_segments = with_segment(parent_segments, name.clone());
+    let guard = extract_attribute_value_from_part_usage(node, "guard")
+        .or_else(|| extract_attribute_value_from_part_usage(node, "condition"));
+    let target_ref = if kind == "ref" {
+        extract_ref_value_from_part_usage(node, "target")
+            .or_else(|| extract_ref_value_from_part_usage(node, "interaction"))
+    } else {
+        None
+    };
+
+    let mut message_ids = Vec::new();
+    let mut fragments = Vec::new();
+    let mut operands = Vec::new();
+
+    if let PartUsageBody::Brace { elements } = &node.body {
+        for element in elements {
+            let PartUsageBodyElement::PartUsage(part_usage) = &element.value else {
+                continue;
+            };
+            if let Some(operand) = extract_sequence_operand(part_usage, &qualified_segments, state) {
+                operands.push(operand);
+                continue;
+            }
+            if let Some(message) = extract_sequence_message(part_usage, &qualified_segments, state) {
+                message_ids.push(message.id.clone());
+                state.messages.push(message);
+                continue;
+            }
+            if let Some(fragment) = extract_sequence_fragment(part_usage, &qualified_segments, state)
+            {
+                fragments.push(fragment);
+                continue;
+            }
+            if let Some(activation) = extract_sequence_activation(part_usage, &qualified_segments) {
+                state.activations.push(activation);
+            }
+        }
+    }
+
+    Some(SequenceFragmentDto {
+        id: join_segments(&qualified_segments),
+        name,
+        kind: kind.to_string(),
+        guard,
+        message_ids,
+        operands,
+        fragments,
+        target_ref,
+        uri: None,
+        range: span_to_range_dto(&node.span),
+    })
+}
+
+fn extract_sequence_diagram_from_part_def(
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartDef>,
+    package_segments: &[String],
+    parent_segments: &[String],
+) -> Option<SequenceDiagramDto> {
+    if !part_def_is_sequence_scenario(node) {
+        return None;
+    }
+    let name = identification_name(&node.identification);
+    let qualified_segments = with_segment(parent_segments, name.clone());
+    let PartDefBody::Brace { elements } = &node.body else {
+        return None;
+    };
+    let mut lifelines = Vec::new();
+    let mut fragments = Vec::new();
+    let mut state = SequenceBuildState::default();
+
+    for element in elements {
+        let PartDefBodyElement::PartUsage(part_usage) = &element.value else {
+            continue;
+        };
+        if part_usage_is_lifeline(part_usage) {
+            lifelines.push(SequenceLifelineDto {
+                id: join_segments(&with_segment(&qualified_segments, part_usage.value.name.clone())),
+                name: part_usage.value.name.clone(),
+                uri: None,
+                range: span_to_range_dto(&part_usage.span),
+            });
+            continue;
+        }
+        if let Some(message) = extract_sequence_message(part_usage, &qualified_segments, &mut state)
+        {
+            state.messages.push(message);
+            continue;
+        }
+        if let Some(activation) = extract_sequence_activation(part_usage, &qualified_segments) {
+            state.activations.push(activation);
+            continue;
+        }
+        if let Some(fragment) = extract_sequence_fragment(part_usage, &qualified_segments, &mut state)
+        {
+            fragments.push(fragment);
+        }
+    }
+
+    let mut diagram = SequenceDiagramDto {
+        id: sequence_diagram_id(&qualified_segments, "sequence"),
+        name,
+        package_path: package_path_from_segments(package_segments),
+        source_kind: "partDef".to_string(),
+        uri: None,
+        lifelines,
+        messages: state.messages,
+        activations: state.activations,
+        fragments,
+        range: span_to_range_dto(&node.span),
+    };
+    normalize_sequence_diagram_references(&mut diagram);
+    Some(diagram)
+}
+
+fn extract_sequence_diagram_from_part_usage(
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>,
+    package_segments: &[String],
+    parent_segments: &[String],
+) -> Option<SequenceDiagramDto> {
+    if !part_usage_is_sequence_scenario(node) {
+        return None;
+    }
+    let name = node.value.name.clone();
+    let qualified_segments = with_segment(parent_segments, name.clone());
+    let PartUsageBody::Brace { elements } = &node.body else {
+        return None;
+    };
+    let mut lifelines = Vec::new();
+    let mut fragments = Vec::new();
+    let mut state = SequenceBuildState::default();
+
+    for element in elements {
+        let PartUsageBodyElement::PartUsage(part_usage) = &element.value else {
+            continue;
+        };
+        if part_usage_is_lifeline(part_usage) {
+            lifelines.push(SequenceLifelineDto {
+                id: join_segments(&with_segment(&qualified_segments, part_usage.value.name.clone())),
+                name: part_usage.value.name.clone(),
+                uri: None,
+                range: span_to_range_dto(&part_usage.span),
+            });
+            continue;
+        }
+        if let Some(message) = extract_sequence_message(part_usage, &qualified_segments, &mut state)
+        {
+            state.messages.push(message);
+            continue;
+        }
+        if let Some(activation) = extract_sequence_activation(part_usage, &qualified_segments) {
+            state.activations.push(activation);
+            continue;
+        }
+        if let Some(fragment) = extract_sequence_fragment(part_usage, &qualified_segments, &mut state)
+        {
+            fragments.push(fragment);
+        }
+    }
+
+    let mut diagram = SequenceDiagramDto {
+        id: sequence_diagram_id(&qualified_segments, "sequence"),
+        name,
+        package_path: package_path_from_segments(package_segments),
+        source_kind: "partUsage".to_string(),
+        uri: None,
+        lifelines,
+        messages: state.messages,
+        activations: state.activations,
+        fragments,
+        range: span_to_range_dto(&node.span),
+    };
+    normalize_sequence_diagram_references(&mut diagram);
+    Some(diagram)
+}
+
+fn collect_sequence_diagrams_from_package_elements(
+    elements: &[sysml_v2_parser::Node<PackageBodyElement>],
+    package_segments: &[String],
+    parent_segments: &[String],
+    out: &mut Vec<SequenceDiagramDto>,
+) {
+    use sysml_v2_parser::ast::PackageBodyElement as PBE;
+    for node in elements {
+        match &node.value {
+            PBE::PartDef(part_def) => {
+                if let Some(diagram) =
+                    extract_sequence_diagram_from_part_def(part_def, package_segments, parent_segments)
+                {
+                    out.push(diagram);
+                }
+            }
+            PBE::PartUsage(part_usage) => {
+                if let Some(diagram) = extract_sequence_diagram_from_part_usage(
+                    part_usage,
+                    package_segments,
+                    parent_segments,
+                ) {
+                    out.push(diagram);
+                }
+            }
+            PBE::Package(package) => {
+                if let PackageBody::Brace { elements: inner } = &package.body {
+                    let package_name = identification_name(&package.identification);
+                    let next_package_segments =
+                        with_segment(package_segments, package_name.clone());
+                    let next_parent_segments = with_segment(parent_segments, package_name);
+                    collect_sequence_diagrams_from_package_elements(
+                        inner,
+                        &next_package_segments,
+                        &next_parent_segments,
+                        out,
+                    );
+                }
+            }
+            PBE::LibraryPackage(package) => {
+                if let PackageBody::Brace { elements: inner } = &package.body {
+                    let package_name = identification_name(&package.identification);
+                    let next_package_segments =
+                        with_segment(package_segments, package_name.clone());
+                    let next_parent_segments = with_segment(parent_segments, package_name);
+                    collect_sequence_diagrams_from_package_elements(
+                        inner,
+                        &next_package_segments,
+                        &next_parent_segments,
+                        out,
+                    );
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+pub fn extract_sequence_diagrams(root: &RootNamespace) -> Vec<SequenceDiagramDto> {
+    let mut out = Vec::new();
+    for node in &root.elements {
+        match &node.value {
+            RootElement::Package(package) => {
+                if let PackageBody::Brace { elements } = &package.body {
+                    let package_name = identification_name(&package.identification);
+                    let package_segments = if package_name.is_empty() {
+                        vec![]
+                    } else {
+                        vec![package_name]
+                    };
+                    collect_sequence_diagrams_from_package_elements(
+                        elements,
+                        &package_segments,
+                        &package_segments,
+                        &mut out,
+                    );
+                }
+            }
+            RootElement::Namespace(namespace) => {
+                if let PackageBody::Brace { elements } = &namespace.body {
+                    let namespace_name = identification_name(&namespace.identification);
+                    let package_segments = if namespace_name.is_empty() {
+                        vec![]
+                    } else {
+                        vec![namespace_name]
+                    };
+                    collect_sequence_diagrams_from_package_elements(
+                        elements,
+                        &package_segments,
+                        &package_segments,
+                        &mut out,
+                    );
+                }
+            }
+            RootElement::LibraryPackage(package) => {
+                if let PackageBody::Brace { elements } = &package.body {
+                    let package_name = identification_name(&package.identification);
+                    let package_segments = if package_name.is_empty() {
+                        vec![]
+                    } else {
+                        vec![package_name]
+                    };
+                    collect_sequence_diagrams_from_package_elements(
+                        elements,
+                        &package_segments,
+                        &package_segments,
+                        &mut out,
+                    );
+                }
+            }
+            RootElement::Import(_) => {}
+        }
+    }
+    out
+}
+
 fn extract_activity_from_action(
     node: &sysml_v2_parser::Node<sysml_v2_parser::ast::ActionDef>,
     package_segments: &[String],
@@ -757,7 +1444,7 @@ fn extract_activity_from_action(
 
 #[cfg(test)]
 mod tests {
-    use super::extract_activity_diagrams;
+    use super::{extract_activity_diagrams, extract_sequence_diagrams};
     use sysml_v2_parser::parse;
 
     #[test]
@@ -1067,5 +1754,114 @@ mod tests {
         assert_eq!(diagram.source_kind, "actionDef");
         assert_eq!(diagram.package_path, "Mission::Control");
         assert_eq!(diagram.id, "Mission::Control::ExecuteMission::actionDef");
+    }
+
+    #[test]
+    fn extract_sequence_diagrams_emits_messages_activations_and_fragments() {
+        let input = r#"
+            package Demo {
+                part def CheckoutFlow :> InteractionScenario {
+                    part client : Lifeline;
+                    part api : Lifeline;
+
+                    part createOrder : SynchronousCall {
+                        ref from : Lifeline = client;
+                        ref to : Lifeline = api;
+                        attribute label = "POST /orders";
+                    }
+
+                    part processing : Activation {
+                        ref on : Lifeline = api;
+                        ref startMessage : Message = createOrder;
+                        ref finishMessage : Message = orderAccepted;
+                    }
+
+                    part validation : OptFragment {
+                        part happyPath : InteractionOperand {
+                            attribute guard = "valid order";
+                            part orderAccepted : ReturnMessage {
+                                ref from : Lifeline = api;
+                                ref to : Lifeline = client;
+                                attribute label = "202 Accepted";
+                            }
+                        }
+                    }
+                }
+            }
+        "#;
+
+        let root = parse(input).expect("parse");
+        let diagrams = extract_sequence_diagrams(&root);
+        let diagram = diagrams.iter().find(|d| d.name == "CheckoutFlow").expect("sequence diagram");
+
+        assert_eq!(diagram.package_path, "Demo");
+        assert_eq!(diagram.lifelines.len(), 2);
+        assert_eq!(diagram.messages.len(), 2);
+        assert_eq!(diagram.messages[0].kind, "sync");
+        assert_eq!(diagram.messages[1].kind, "return");
+        assert_eq!(diagram.activations.len(), 1);
+        assert_eq!(diagram.activations[0].on_lifeline, "Demo::CheckoutFlow::api");
+        assert_eq!(diagram.fragments.len(), 1);
+        assert_eq!(diagram.fragments[0].kind, "opt");
+        assert_eq!(diagram.fragments[0].operands[0].guard.as_deref(), Some("valid order"));
+    }
+
+    #[test]
+    fn extract_sequence_diagrams_supports_ref_fragments_and_nested_alternatives() {
+        let input = r#"
+            library package Demo {
+                part def RetryFlow :> InteractionScenario {
+                    part worker : Lifeline;
+                    part queue : Lifeline;
+
+                    part redeliver : AsynchronousMessage {
+                        ref from : Lifeline = queue;
+                        ref to : Lifeline = worker;
+                        attribute label = "retry";
+                    }
+                }
+
+                part def PaymentFlow :> InteractionScenario {
+                    part customer : Lifeline;
+                    part gateway : Lifeline;
+
+                    part authorize : SynchronousCall {
+                        ref from : Lifeline = customer;
+                        ref to : Lifeline = gateway;
+                    }
+
+                    part outcomes : AltFragment {
+                        part approved : InteractionOperand {
+                            attribute guard = "approved";
+                            part complete : ReturnMessage {
+                                ref from : Lifeline = gateway;
+                                ref to : Lifeline = customer;
+                            }
+                        }
+
+                        part declined : InteractionOperand {
+                            attribute guard = "declined";
+                            part retryFlow : InteractionRef {
+                                ref target : InteractionScenario = RetryFlow;
+                            }
+                        }
+                    }
+                }
+            }
+        "#;
+
+        let root = parse(input).expect("parse");
+        let diagrams = extract_sequence_diagrams(&root);
+        let payment = diagrams.iter().find(|d| d.name == "PaymentFlow").expect("payment flow");
+
+        assert_eq!(payment.fragments.len(), 1);
+        assert_eq!(payment.fragments[0].kind, "alt");
+        assert_eq!(payment.fragments[0].operands.len(), 2);
+        assert_eq!(payment.fragments[0].operands[1].fragments.len(), 1);
+        assert_eq!(payment.fragments[0].operands[1].fragments[0].kind, "ref");
+        assert_eq!(
+            payment.fragments[0].operands[1].fragments[0].target_ref.as_deref(),
+            Some("RetryFlow")
+        );
     }
 }

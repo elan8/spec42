@@ -9,6 +9,7 @@ const createMockData = (overrides: Partial<{
     elements: unknown[];
     relationships: unknown[];
     activityDiagrams: unknown[];
+    sequenceDiagrams: unknown[];
 }> = {}) => ({
     elements: [
         {
@@ -78,6 +79,7 @@ const createMockData = (overrides: Partial<{
             decisions: []
         }
     ],
+    sequenceDiagrams: [],
     ...overrides
 });
 
@@ -335,6 +337,47 @@ describe("prepareDataForView", () => {
         assert.strictEqual(result.activityDiagramCandidates[0].name, "ExecuteMission");
         assert.strictEqual(result.activityDiagramCandidates[0].sourceKind, "actionDef");
         assert.strictEqual(result.activityDiagramCandidates[1].name, "FlightController");
+    });
+
+    it("sequence-view normalizes lifelines, messages, activations, and fragments", () => {
+        const data = createMockData({
+            sequenceDiagrams: [
+                {
+                    id: "OrderFlow",
+                    name: "OrderFlow",
+                    packagePath: "Examples::Software",
+                    lifelines: [
+                        { id: "client", name: "Client", type: "APIClient" },
+                        { id: "service", name: "Service", type: "OrderService" },
+                    ],
+                    messages: [
+                        { id: "m1", from: "client", to: "service", kind: "sync", order: 1, label: "placeOrder" },
+                        { id: "m2", from: "service", to: "client", kind: "return", order: 2, label: "accepted" },
+                    ],
+                    activations: [
+                        { id: "a1", lifeline: "service", startMessage: "m1", finishMessage: "m2", order: 1 },
+                    ],
+                    fragments: [
+                        {
+                            id: "f1",
+                            kind: "opt",
+                            messageIds: ["m1", "m2"],
+                            operands: [{ id: "op1", guard: "orderValid", messageIds: ["m1", "m2"] }],
+                            order: 1,
+                        },
+                    ],
+                },
+            ],
+        });
+
+        const result = prepareDataForView(data, "sequence-view");
+        assert.ok(Array.isArray(result.diagrams));
+        assert.strictEqual(result.diagrams.length, 1);
+        assert.strictEqual(result.diagrams[0].lifelines.length, 2);
+        assert.strictEqual(result.diagrams[0].messages[1].kind, "return");
+        assert.strictEqual(result.diagrams[0].activations[0].lifeline, "service");
+        assert.strictEqual(result.diagrams[0].fragments[0].operands[0].guard, "orderValid");
+        assert.strictEqual(result.sequenceDiagramCandidates[0].messageCount, 2);
     });
 
     it("state-transition-view produces normalized state machines", () => {

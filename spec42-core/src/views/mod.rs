@@ -4,6 +4,7 @@ pub mod feature_inspector;
 pub(crate) mod ibd;
 pub mod model;
 pub(crate) mod model_projection;
+pub(crate) mod sequence_views;
 pub(crate) mod visualization;
 
 pub use feature_inspector::{

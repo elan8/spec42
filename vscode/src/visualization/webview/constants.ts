@@ -19,6 +19,7 @@ export const SYSML_ENABLED_VIEWS = [
     'general-view',
     'interconnection-view',
     'action-flow-view',
+    'sequence-view',
     'state-transition-view',
 ] as const;
 
@@ -55,6 +56,7 @@ export const VIEW_OPTIONS: Record<string, { label: string; shortLabel: string; i
     'software-module-view': { label: 'Rust Module View', shortLabel: 'Rust Modules', icon: 'symbol-module' },
     'software-dependency-view': { label: 'Rust Dependency View', shortLabel: 'Rust Dependencies', icon: 'git-pull-request' },
     'action-flow-view': { label: 'Action Flow View', shortLabel: 'Action Flow', icon: 'git-commit' },
+    'sequence-view': { label: 'Sequence View', shortLabel: 'Sequence', icon: 'symbol-event' },
     'state-transition-view': { label: 'State Transition View', shortLabel: 'State Transition', icon: 'git-compare' },
 };
 
@@ -65,6 +67,7 @@ export const VIEW_RENDERER_TECH: Record<string, string> = {
     'software-module-view': 'D3+ELK',
     'software-dependency-view': 'D3+ELK',
     'action-flow-view': 'D3+ELK',
+    'sequence-view': 'D3',
     'state-transition-view': 'D3+ELK',
 };
 

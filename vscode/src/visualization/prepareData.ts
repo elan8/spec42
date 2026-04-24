@@ -535,6 +535,125 @@ export function prepareDataForView(data: any, view: string): any {
             };
         }
 
+        case 'sequence-view': {
+            const sequenceElementsByName = new Map<string, any[]>();
+            allElements.forEach((el: any) => {
+                const typeLower = String(el?.type || '').toLowerCase();
+                if (typeLower.includes('interaction') || typeLower.includes('sequence')) {
+                    const key = String(el?.name || '').trim();
+                    if (!sequenceElementsByName.has(key)) sequenceElementsByName.set(key, []);
+                    sequenceElementsByName.get(key)!.push(el);
+                }
+            });
+            const normalizeMessageKind = (value: any): string => {
+                const normalized = String(value || '').toLowerCase();
+                if (normalized.includes('create')) return 'create';
+                if (normalized.includes('return')) return 'return';
+                if (normalized.includes('async')) return 'async';
+                return 'sync';
+            };
+            const normalizeFragmentKind = (value: any): string => {
+                const normalized = String(value || '').toLowerCase();
+                if (normalized.includes('loop')) return 'loop';
+                if (normalized.includes('alt')) return 'alt';
+                if (normalized.includes('ref')) return 'ref';
+                return 'opt';
+            };
+                const normalizeSequenceFragment = (fragment: any, fragmentIndex: number, messageIds: Set<string>) => ({
+                    id: String(fragment?.id || `fragment_${fragmentIndex + 1}`),
+                    kind: normalizeFragmentKind(fragment?.kind),
+                    label: String(fragment?.label || fragment?.guard || ''),
+                    target: String(fragment?.target || fragment?.targetRef || fragment?.target_ref || ''),
+                messageIds: (fragment?.messageIds || fragment?.message_ids || []).filter((id: any) => messageIds.has(String(id))).map((id: any) => String(id)),
+                operands: (fragment?.operands || []).map((operand: any, operandIndex: number) => ({
+                    id: String(operand?.id || `${fragment?.id || `fragment_${fragmentIndex + 1}`}::operand_${operandIndex + 1}`),
+                        guard: String(operand?.guard || ''),
+                        messageIds: (operand?.messageIds || operand?.message_ids || []).filter((id: any) => messageIds.has(String(id))).map((id: any) => String(id)),
+                        fragments: (operand?.fragments || []).map((nested: any, nestedIndex: number) => normalizeSequenceFragment(nested, nestedIndex, messageIds)),
+                        uri: operand?.uri,
+                        range: operand?.range,
+                    })),
+                    fragments: (fragment?.fragments || []).map((nested: any, nestedIndex: number) => normalizeSequenceFragment(nested, nestedIndex, messageIds)),
+                    order: Number(fragment?.order ?? (fragmentIndex + 1)),
+                    uri: fragment?.uri,
+                    range: fragment?.range,
+                });
+            const normalizeSequenceDiagram = (diagram: any, index: number) => {
+                const matches = sequenceElementsByName.get(String(diagram?.name || '').trim()) || [];
+                const matchedElement = matches.shift() || null;
+                const meta = lookupElementMeta(matchedElement || diagram, `sequence-diagram-${index + 1}`);
+                const lifelines = (diagram?.lifelines || []).map((lifeline: any, lifelineIndex: number) => ({
+                    id: String(lifeline?.id || lifeline?.name || `lifeline_${lifelineIndex + 1}`),
+                    name: String(lifeline?.name || lifeline?.id || `Lifeline ${lifelineIndex + 1}`),
+                    type: String(lifeline?.type || ''),
+                    uri: lifeline?.uri,
+                    range: lifeline?.range,
+                }));
+                const lifelineIds = new Set(lifelines.map((lifeline: any) => lifeline.id));
+                const messages = (diagram?.messages || []).map((message: any, messageIndex: number) => ({
+                    id: String(message?.id || `message_${messageIndex + 1}`),
+                    name: String(message?.name || message?.label || `Message ${messageIndex + 1}`),
+                    from: String(message?.from || ''),
+                    to: String(message?.to || ''),
+                    kind: normalizeMessageKind(message?.kind),
+                    order: Number(message?.order ?? (messageIndex + 1)),
+                    label: String(message?.label || message?.name || ''),
+                    uri: message?.uri,
+                    range: message?.range,
+                })).filter((message: any) => lifelineIds.has(message.from) && lifelineIds.has(message.to))
+                    .sort((a: any, b: any) => a.order - b.order || String(a.id).localeCompare(String(b.id)));
+                const messageIds = new Set<string>(messages.map((message: any) => String(message.id)));
+                const activations = (diagram?.activations || []).map((activation: any, activationIndex: number) => ({
+                    id: String(activation?.id || `activation_${activationIndex + 1}`),
+                    lifeline: String(activation?.lifeline || activation?.on || ''),
+                    startMessage: String(activation?.startMessage || activation?.start_message || ''),
+                    finishMessage: String(activation?.finishMessage || activation?.finish_message || ''),
+                    order: Number(activation?.order ?? (activationIndex + 1)),
+                    uri: activation?.uri,
+                    range: activation?.range,
+                })).filter((activation: any) => lifelineIds.has(activation.lifeline));
+                const fragments = (diagram?.fragments || [])
+                    .map((fragment: any, fragmentIndex: number) => normalizeSequenceFragment(fragment, fragmentIndex, messageIds))
+                    .sort((a: any, b: any) => a.order - b.order || String(a.id).localeCompare(String(b.id)));
+
+                return {
+                    id: String(diagram?.id || meta.stableId || `sequence-diagram-${index + 1}`),
+                    name: String(diagram?.name || `Sequence ${index + 1}`),
+                    label: buildSelectorLabel(String(diagram?.name || `Sequence ${index + 1}`), String(diagram?.packagePath || meta.packagePath || '')),
+                    packagePath: String(diagram?.packagePath || meta.packagePath || ''),
+                    uri: diagram?.uri,
+                    lifelines,
+                    messages,
+                    activations,
+                    fragments,
+                    range: diagram?.range,
+                    hasRenderableContent: lifelines.length > 0 && messages.length > 0,
+                };
+            };
+            const diagrams = (data.sequenceDiagrams || [])
+                .map((diagram: any, index: number) => normalizeSequenceDiagram(diagram, index))
+                .filter((diagram: any) => diagram.hasRenderableContent)
+                .sort((a: any, b: any) => {
+                    const scoreDelta = (countWithFallback(b.messages) * 100 + countWithFallback(b.fragments) * 10 + countWithFallback(b.lifelines))
+                        - (countWithFallback(a.messages) * 100 + countWithFallback(a.fragments) * 10 + countWithFallback(a.lifelines));
+                    if (scoreDelta !== 0) return scoreDelta;
+                    return String(a.label || a.name).localeCompare(String(b.label || b.name));
+                });
+            return {
+                ...data,
+                diagrams,
+                sequenceDiagramCandidates: diagrams.map((diagram: any) => ({
+                    id: diagram.id,
+                    name: diagram.name,
+                    label: diagram.label,
+                    packagePath: diagram.packagePath,
+                    lifelineCount: countWithFallback(diagram.lifelines),
+                    messageCount: countWithFallback(diagram.messages),
+                    fragmentCount: countWithFallback(diagram.fragments),
+                })),
+            };
+        }
+
         case 'state-transition-view': {
             const typeLower = (value: any) => String(value || '').toLowerCase();
             const normalizeKey = (value: any) => String(value || '').replace(/::/g, '.').trim();

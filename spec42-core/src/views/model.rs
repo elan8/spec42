@@ -413,6 +413,7 @@ pub async fn build_sysml_model_response(
         scope.is_empty() || scope.iter().any(|s| s == "generalViewGraph") || want_graph;
     let want_stats = scope.is_empty() || scope.iter().any(|s| s == "stats");
     let want_activity_diagrams = scope.is_empty() || scope.iter().any(|s| s == "activityDiagrams");
+    let want_sequence_diagrams = scope.is_empty() || scope.iter().any(|s| s == "sequenceDiagrams");
     let want_ibd = ibd_requested(scope);
     let scope_eval_ms = request_phase_start.elapsed().as_millis().max(1);
 
@@ -498,6 +499,17 @@ pub async fn build_sysml_model_response(
         None
     };
     let activity_diagrams_ms = activity_diagrams_start.elapsed().as_millis().max(1);
+
+    let sequence_diagrams_start = Instant::now();
+    let sequence_diagrams = if want_sequence_diagrams {
+        Some(
+            doc.map(model::extract_sequence_diagrams)
+                .unwrap_or_default(),
+        )
+    } else {
+        None
+    };
+    let sequence_diagrams_ms = sequence_diagrams_start.elapsed().as_millis().max(1);
 
     let stats_start = Instant::now();
     let stats = if want_stats {
@@ -591,6 +603,7 @@ pub async fn build_sysml_model_response(
             ("stripSyntheticMs", strip_ms.to_string()),
             ("generalViewMs", general_view_ms.to_string()),
             ("activityDiagramsMs", activity_diagrams_ms.to_string()),
+            ("sequenceDiagramsMs", sequence_diagrams_ms.to_string()),
             ("statsMs", stats_ms.to_string()),
             ("ibdMs", ibd_ms.to_string()),
             ("graphNodes", node_count.to_string()),
@@ -611,6 +624,7 @@ pub async fn build_sysml_model_response(
         workspace_model,
         stats,
         activity_diagrams,
+        sequence_diagrams,
         ibd,
     }
 }

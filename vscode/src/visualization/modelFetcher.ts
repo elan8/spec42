@@ -23,6 +23,7 @@ export interface UpdateMessage {
     generalViewGraph?: SysMLGraphDTO;
     ibd?: IbdDataDTO;
     activityDiagrams: unknown[];
+    sequenceDiagrams: unknown[];
     currentView: string;
     viewCandidates?: VisualizationViewCandidateDTO[];
     selectedView?: string;
@@ -95,6 +96,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
             generalViewGraph: result.generalViewGraph ?? result.graph,
             ibd: result.ibd,
             activityDiagrams: result.activityDiagrams ?? [],
+            sequenceDiagrams: result.sequenceDiagrams ?? [],
             currentView: result.view ?? currentView,
             viewCandidates: result.viewCandidates ?? [],
             selectedView: result.selectedView,
@@ -158,6 +160,7 @@ export async function fetchSoftwareModelData(params: Omit<FetchModelParams, 'sel
             generalViewGraph: result.graph ?? { nodes: [], edges: [] },
             ibd: undefined,
             activityDiagrams: [],
+            sequenceDiagrams: [],
             currentView: result.view ?? currentView,
             viewCandidates: toVisualizationCandidates(result.views ?? []),
             selectedView: result.view,
@@ -201,6 +204,7 @@ export async function buildSoftwareUpdateMessage(
             generalViewGraph: { nodes: [], edges: [] },
             ibd: undefined,
             activityDiagrams: [],
+            sequenceDiagrams: [],
             currentView,
             viewCandidates: toVisualizationCandidates([
                 { id: 'software-module-view', name: 'Rust Module View', supported: true, description: 'Shows crates and modules.' },
@@ -224,6 +228,7 @@ export async function buildSoftwareUpdateMessage(
         generalViewGraph: result.graph ?? { nodes: [], edges: [] },
         ibd: undefined,
         activityDiagrams: [],
+        sequenceDiagrams: [],
         currentView: result.view ?? currentView,
         viewCandidates: toVisualizationCandidates(result.views ?? []),
         selectedView: result.view ?? currentView,

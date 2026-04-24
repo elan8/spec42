@@ -127,7 +127,7 @@ export interface WorkspaceModelDTO {
 
 export interface SysMLModelParams {
   textDocument: { uri: string };
-  scope?: Array<"graph" | "ibd" | "stats" | "activityDiagrams" | "workspaceVisualization">;
+  scope?: Array<"graph" | "ibd" | "stats" | "activityDiagrams" | "sequenceDiagrams" | "workspaceVisualization">;
 }
 
 export interface IbdPartDTO {
@@ -200,6 +200,7 @@ export interface SysMLModelResult {
   generalViewGraph?: SysMLGraphDTO;
   workspaceModel?: WorkspaceModelDTO;
   activityDiagrams?: ActivityDiagramDTO[];
+  sequenceDiagrams?: SequenceDiagramDTO[];
   ibd?: IbdDataDTO;
   stats?: SysMLModelStatsDTO;
 }
@@ -247,6 +248,7 @@ export interface SysMLVisualizationResult {
   generalViewGraph?: SysMLGraphDTO;
   workspaceModel?: WorkspaceModelDTO;
   activityDiagrams?: ActivityDiagramDTO[];
+  sequenceDiagrams?: SequenceDiagramDTO[];
   ibd?: IbdDataDTO;
   stats?: SysMLModelStatsDTO;
 }
@@ -326,4 +328,68 @@ export interface ActivityStateDTO {
   exitActions?: string[];
   doActivity?: string;
   range: RangeDTO;
+}
+
+export interface SequenceDiagramDTO {
+  id: string;
+  name: string;
+  packagePath?: string;
+  uri?: string;
+  lifelines: SequenceLifelineDTO[];
+  messages: SequenceMessageDTO[];
+  activations: SequenceActivationDTO[];
+  fragments: SequenceFragmentDTO[];
+  range?: RangeDTO;
+}
+
+export interface SequenceLifelineDTO {
+  id: string;
+  name: string;
+  type?: string;
+  uri?: string;
+  range?: RangeDTO;
+}
+
+export interface SequenceMessageDTO {
+  id: string;
+  name: string;
+  from: string;
+  to: string;
+  kind: "sync" | "async" | "return" | "create" | string;
+  order: number;
+  label?: string;
+  uri?: string;
+  range?: RangeDTO;
+}
+
+export interface SequenceActivationDTO {
+  id: string;
+  lifeline: string;
+  startMessage?: string;
+  finishMessage?: string;
+  order: number;
+  uri?: string;
+  range?: RangeDTO;
+}
+
+export interface SequenceOperandDTO {
+  id: string;
+  guard?: string;
+  messageIds: string[];
+  fragments?: SequenceFragmentDTO[];
+  uri?: string;
+  range?: RangeDTO;
+}
+
+export interface SequenceFragmentDTO {
+  id: string;
+  kind: "opt" | "alt" | "loop" | "ref" | string;
+  label?: string;
+  target?: string;
+  messageIds: string[];
+  operands: SequenceOperandDTO[];
+  fragments?: SequenceFragmentDTO[];
+  order: number;
+  uri?: string;
+  range?: RangeDTO;
 }

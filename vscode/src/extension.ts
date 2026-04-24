@@ -1751,7 +1751,7 @@ export function activate(context: vscode.ExtensionContext): void {
       "sysml.debug.getModelForTests",
       async (
         uri: string,
-        scope?: Array<"graph" | "ibd" | "activityDiagrams" | "stats">
+        scope?: Array<"graph" | "ibd" | "activityDiagrams" | "sequenceDiagrams" | "stats">
       ) => {
         return await lspModelProvider.getModel(
           uri,

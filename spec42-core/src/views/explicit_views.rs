@@ -799,6 +799,7 @@ pub fn renderer_view_for_view_type(effective_view_type: Option<&str>) -> Option<
         "generalview" => Some("general-view"),
         "interconnectionview" => Some("interconnection-view"),
         "actionflowview" | "actionview" => Some("action-flow-view"),
+        "sequenceview" => Some("sequence-view"),
         "statetransitionview" | "stateview" => Some("state-transition-view"),
         _ => None,
     }
@@ -896,6 +897,24 @@ mod tests {
         assert_eq!(candidates[1].name, "Supported");
         assert!(candidates[1].supported);
         assert_eq!(candidates[1].renderer_view.as_deref(), Some("general-view"));
+    }
+
+    #[test]
+    fn sequence_view_type_maps_to_sequence_renderer() {
+        let evaluated_views = vec![EvaluatedView {
+            id: "Demo::CheckoutSequence".to_string(),
+            name: "Checkout Sequence".to_string(),
+            effective_view_type: Some("SequenceView".to_string()),
+            exposed_ids: HashSet::new(),
+            filters: Vec::new(),
+            visible_ids: HashSet::new(),
+            issues: Vec::new(),
+        }];
+
+        let candidates = build_view_candidates(&evaluated_views, &HashMap::new(), &HashMap::new());
+        assert_eq!(candidates.len(), 1);
+        assert!(candidates[0].supported);
+        assert_eq!(candidates[0].renderer_view.as_deref(), Some("sequence-view"));
     }
 
     #[test]

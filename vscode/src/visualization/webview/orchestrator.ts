@@ -48,6 +48,7 @@ import {
     slugify
 } from './helpers';
 import { renderActivityView as renderActivityViewModule } from './renderers/activity';
+import { renderSequenceView as renderSequenceViewModule } from './renderers/sequence';
 import { renderStateView as renderStateViewModule } from './renderers/state';
 import { renderGeneralViewD3 } from './renderers/generalView';
 import { renderIbdView } from './renderers/ibd';
@@ -1553,6 +1554,8 @@ import { buildGeneralViewGraph } from './graphBuilders';
             }, 100);
             } else if (view === 'action-flow-view') {
                 await renderActivityViewModule(buildRenderContext(width, height), dataToRender);
+            } else if (view === 'sequence-view') {
+                await renderSequenceViewModule(buildRenderContext(width, height), dataToRender);
             } else if (view === 'state-transition-view') {
                 await renderStateViewModule(buildRenderContext(width, height), dataToRender);
                 if (isStaleRender()) {
