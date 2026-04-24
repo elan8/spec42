@@ -75,7 +75,7 @@ describe("createUpdateVisualizationFlow", () => {
     assert.strictEqual(getVisualizationCount, 1);
   });
 
-  it("skips pre-bootstrap forced updates until webviewReady", async () => {
+  it("allows non-webviewReady forced updates before bootstrap", async () => {
     let getVisualizationCount = 0;
     const { panel } = createMockPanel();
     const document = createMockDocument("file:///drone.sysml");
@@ -116,10 +116,10 @@ describe("createUpdateVisualizationFlow", () => {
     });
 
     await flow.update(true, "panelReveal");
-    assert.strictEqual(getVisualizationCount, 0);
+    assert.strictEqual(getVisualizationCount, 1);
 
     await flow.update(true, "webviewReady");
-    assert.strictEqual(getVisualizationCount, 1);
+    assert.strictEqual(getVisualizationCount, 2);
   });
 
   it("allows a later view change to trigger a new fetch after bootstrap", async () => {

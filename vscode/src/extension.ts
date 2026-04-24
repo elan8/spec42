@@ -752,6 +752,9 @@ export function activate(context: vscode.ExtensionContext): void {
       log("Language client ready, scheduling Model Explorer refresh");
       logStartupPhase("languageClient:ready");
       scheduleModelExplorerRefreshForCurrentMode("languageClient:ready");
+      // If the visualizer panel was restored/open before LSP became ready,
+      // force a refresh now so it doesn't remain empty until manual reopen.
+      VisualizationPanel.currentPanel?.refresh();
     })
     .catch((error) => {
       const detail = error instanceof Error ? error.message : String(error ?? "unknown startup failure");

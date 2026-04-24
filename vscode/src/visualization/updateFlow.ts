@@ -154,13 +154,6 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
         }
 
         const isBootstrapTrigger = triggerSource === 'webviewReady';
-        if (!bootstrapCompleted && forceUpdate && !isBootstrapTrigger) {
-            logPerf('visualizer:updateSkippedDuplicateStartup', {
-                triggerSource,
-                reason: 'bootstrapPending',
-            });
-            return;
-        }
 
         const key = currentUpdateKey();
         if (inFlightUpdate && inFlightUpdate.key === key) {

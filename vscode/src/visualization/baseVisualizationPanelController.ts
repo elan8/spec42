@@ -67,6 +67,7 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
     private _isNavigating = false;
     private _fileChangeDebounceTimer: ReturnType<typeof setTimeout> | undefined;
     private _requestCurrentViewTimer: ReturnType<typeof setTimeout> | undefined;
+    private _startupRetryTimers: Array<ReturnType<typeof setTimeout>> = [];
     private _lastContentHash = '';
     private _needsUpdateWhenVisible = false;
     private _lastViewColumn: vscode.ViewColumn | undefined;
@@ -137,6 +138,16 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
                 // ignore teardown races
             }
         }, 100);
+        // Startup/restore race guard: if initial updates arrive before webview/LSP is
+        // fully ready, schedule a couple of forced retries so the panel doesn't stay empty.
+        [1200, 3500].forEach((delayMs) => {
+            const timer = setTimeout(() => {
+                if (this._disposed) return;
+                this._lastContentHash = '';
+                void this.updateVisualization(true, 'startupRetry');
+            }, delayMs);
+            this._startupRetryTimers.push(timer);
+        });
 
         const dispatch = createMessageDispatcher({
             panel: this._panel,
@@ -256,6 +267,10 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
         if (this._requestCurrentViewTimer) {
             clearTimeout(this._requestCurrentViewTimer);
             this._requestCurrentViewTimer = undefined;
+        }
+        while (this._startupRetryTimers.length > 0) {
+            const timer = this._startupRetryTimers.pop();
+            if (timer) clearTimeout(timer);
         }
         if (this._fileChangeDebounceTimer) {
             clearTimeout(this._fileChangeDebounceTimer);
