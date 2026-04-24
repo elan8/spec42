@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-04-24
+
+### Added
+
+- **Sequence View rendering pipeline** - Added end-to-end sequence-diagram extraction/projection/rendering support in the backend and VS Code visualizer, including lifelines, messages, activations, and fragment handling.
+- **Software Architecture add-on workflows** - Added software workspace analysis/project-view APIs plus VS Code add-on UX for running analysis and opening dedicated software architecture visualizations.
+- **Expanded domain library coverage** - Added broad new domain-library content across software, electronics, communication, and robotics layers with structured rule sets and updated documentation.
+- **Webshop end-to-end examples** - Added a richer webshop sample set (`architecture`, `behavior`, `requirements`, `views`) to validate explicit-view projections and cross-file visualization behavior.
+
+### Changed
+
+- **Parser/runtime alignment to `sysml-v2-parser` 0.7.0** - Updated parser dependency and adapted semantic-model/view extraction paths to newer AST behavior.
+- **Visualizer panel/update lifecycle hardening** - Refined panel restore/update timing, content hashing, and refresh flow across startup, restore, and workspace contexts.
+- **Workspace visualization model shaping** - Improved explicit-view projection, model parameter parsing, and package/container grouping behavior for more consistent rendered diagrams.
+
+### Fixed
+
+- **Webshop visualization regressions** - Fixed empty/missing structure/interconnection/state/action results in cross-file explicit-view scenarios (including projection and IBD scope fallback behavior).
+- **`satisfy` diagnostic false positives** - Fixed typed-member-chain resolution and diagnostic suppression for references like `instance.member` across documents.
+- **Action Flow UX issues** - Fixed edge-label behavior for structural flow markers and improved click-to-source reliability/disambiguation.
+- **Startup empty visualizer race** - Fixed restore/startup timing cases where the visualizer pane could stay empty with no listed views until manual reopen.
+
 ## [0.20.0] - 2026-04-21
 
 ### Added
@@ -310,6 +332,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.21.0]: https://github.com/elan8/spec42/releases/tag/v0.21.0
 [0.20.0]: https://github.com/elan8/spec42/releases/tag/v0.20.0
 [0.19.0]: https://github.com/elan8/spec42/releases/tag/v0.19.0
 [0.18.1]: https://github.com/elan8/spec42/releases/tag/v0.18.1
