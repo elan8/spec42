@@ -21,6 +21,8 @@ function verifyStagedLayout() {
     ["ELK worker", path.join(rootDir, "media", "webview", "elkWorker.js")],
     ["D3 vendor bundle", path.join(rootDir, "media", "vendor", "d3.min.js")],
     ["ELK vendor bundle", path.join(rootDir, "media", "vendor", "elk.bundled.js")],
+    ["bundled examples folder", path.join(rootDir, "examples")],
+    ["bundled domain-libraries folder", path.join(rootDir, "domain-libraries")],
   ];
 
   for (const [label, targetPath] of requiredPaths) {
@@ -78,6 +80,17 @@ function verifyVsixContents(vsixPath) {
   const missing = requiredEntries.filter((entry) => !entries.has(entry));
   if (missing.length > 0) {
     throw new Error(`VSIX is missing expected entries: ${missing.join(", ")}`);
+  }
+
+  const hasExamples = [...entries].some((entry) => entry.startsWith("extension/examples/"));
+  if (!hasExamples) {
+    throw new Error("VSIX is missing expected entries under extension/examples/.");
+  }
+  const hasDomainLibraries = [...entries].some((entry) =>
+    entry.startsWith("extension/domain-libraries/")
+  );
+  if (!hasDomainLibraries) {
+    throw new Error("VSIX is missing expected entries under extension/domain-libraries/.");
   }
 }
 

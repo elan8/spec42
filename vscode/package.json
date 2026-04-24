@@ -517,11 +517,12 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run build:webview-assets && npm run build:webview && npm run compile",
+    "vscode:prepublish": "npm run stage:package-content && npm run build:webview-assets && npm run build:webview && npm run compile",
+    "stage:package-content": "node scripts/stage-package-content.js",
     "build:webview-assets": "node scripts/copy-webview-assets.js",
     "build:webview": "node scripts/build-webview.js",
     "build:extension": "node scripts/build-extension.js",
-    "verify:package-layout": "node scripts/verify-package-layout.js",
+    "verify:package-layout": "npm run stage:package-content && node scripts/verify-package-layout.js",
     "extract-styles": "node scripts/extract-styles.js",
     "compile": "npm run typecheck && npm run build:extension",
     "typecheck": "tsc -p ./ --noEmit",
