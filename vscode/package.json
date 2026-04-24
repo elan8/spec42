@@ -264,7 +264,7 @@
       "editor/title": [
         {
           "command": "sysml.showVisualizer",
-          "when": "resourceLangId == sysml || resourceLangId == kerml",
+          "when": "(resourceLangId == sysml || resourceLangId == kerml) && !sysml.visualizerOpen",
           "group": "navigation@-10"
         }
       ],

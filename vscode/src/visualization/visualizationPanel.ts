@@ -14,6 +14,11 @@ import {
 } from './baseVisualizationPanelController';
 
 export const RESTORE_STATE_KEY = 'sysmlVisualizerRestoreState';
+const VISUALIZER_OPEN_CONTEXT_KEY = 'sysml.visualizerOpen';
+
+function setVisualizerOpenContext(isOpen: boolean): void {
+    void vscode.commands.executeCommand('setContext', VISUALIZER_OPEN_CONTEXT_KEY, isOpen);
+}
 
 function getVisualizerTabIcon(extensionUri: vscode.Uri): { light: vscode.Uri; dark: vscode.Uri } {
     return {
@@ -115,10 +120,12 @@ export class VisualizationPanel {
             context,
             createVariantConfig(this._runtimeState),
         );
+        setVisualizerOpenContext(true);
         panel.onDidDispose(() => {
             if (VisualizationPanel.currentPanel === this) {
                 VisualizationPanel.currentPanel = undefined;
             }
+            setVisualizerOpenContext(false);
         });
     }
 
@@ -272,6 +279,7 @@ export class VisualizationPanel {
 
     public dispose(): void {
         VisualizationPanel.currentPanel = undefined;
+        setVisualizerOpenContext(false);
         this._controller.dispose();
     }
 }

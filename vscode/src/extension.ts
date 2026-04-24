@@ -2285,6 +2285,11 @@ export function activate(context: vscode.ExtensionContext): void {
     "sysml.hasWorkspace",
     hasWorkspaceFolders
   );
+  vscode.commands.executeCommand(
+    "setContext",
+    "sysml.visualizerOpen",
+    !!VisualizationPanel.currentPanel
+  );
   if (hasWorkspaceFolders && modelExplorerProvider) {
     const provider = modelExplorerProvider;
     if (startupWorkspaceIndexingMode === "background") {
