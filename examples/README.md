@@ -4,9 +4,8 @@ This directory contains integrated, realistic scenarios that compose technical, 
 
 ## Structure
 
-- `software/commerce-platform/commerce-platform.sysml`
+- `software/webshop/webshop.sysml`
 - `software/progressive-delivery/progressive-delivery.sysml`
 - `software/security-operations/security-operations.sysml`
 - `software/resilience-failure-modes/resilience-failure-modes.sysml`
 - `software/regulatory-compliance/regulatory-compliance.sysml`
-- `software/software-interactions/WebShopArchitecture.sysml`

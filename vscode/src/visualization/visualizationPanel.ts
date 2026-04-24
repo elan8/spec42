@@ -15,6 +15,13 @@ import {
 
 export const RESTORE_STATE_KEY = 'sysmlVisualizerRestoreState';
 
+function getVisualizerTabIcon(extensionUri: vscode.Uri): { light: vscode.Uri; dark: vscode.Uri } {
+    return {
+        light: vscode.Uri.joinPath(extensionUri, 'media', 'icons', 'sysml-visualizer-logo.light.svg'),
+        dark: vscode.Uri.joinPath(extensionUri, 'media', 'icons', 'sysml-visualizer-logo.dark.svg'),
+    };
+}
+
 async function findRepresentativeWorkspaceDocument(workspaceRootUri: vscode.Uri): Promise<vscode.TextDocument> {
     const sysml = await vscode.workspace.findFiles(
         new vscode.RelativePattern(workspaceRootUri, '**/*.sysml'),
@@ -157,6 +164,7 @@ export class VisualizationPanel {
                 localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media')],
             }
         );
+        panel.iconPath = getVisualizerTabIcon(extensionUri);
 
         VisualizationPanel.currentPanel = new VisualizationPanel(
             panel,
@@ -183,6 +191,7 @@ export class VisualizationPanel {
         if (savedState.title) {
             panel.title = savedState.title;
         }
+        panel.iconPath = getVisualizerTabIcon(extensionUri);
         VisualizationPanel.currentPanel = new VisualizationPanel(
             panel,
             extensionUri,

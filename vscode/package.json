@@ -134,8 +134,11 @@
       },
       {
         "command": "sysml.showVisualizer",
-        "title": "Show SysML Visualizer",
-        "icon": "$(open-preview)",
+        "title": "Open SysML Visualizer",
+        "icon": {
+          "light": "media/icons/sysml-visualizer-logo.light.svg",
+          "dark": "media/icons/sysml-visualizer-logo.dark.svg"
+        },
         "category": "SysML"
       },
       {
@@ -262,7 +265,7 @@
         {
           "command": "sysml.showVisualizer",
           "when": "resourceLangId == sysml || resourceLangId == kerml",
-          "group": "navigation"
+          "group": "navigation@-10"
         }
       ],
       "explorer/context": [
