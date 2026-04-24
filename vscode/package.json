@@ -37,8 +37,7 @@
     "onView:spec42Addons",
     "onCommand:spec42.addons.runSoftwareArchitectureAnalysis",
     "onCommand:spec42.addons.openSoftwareArchitecture",
-    "onCommand:spec42.addons.toggle",
-    "onCommand:spec42.showAddons"
+    "onCommand:spec42.addons.toggle"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -229,11 +228,6 @@
         "command": "spec42.addons.toggle",
         "title": "Toggle Add-on",
         "category": "Spec42"
-      },
-      {
-        "command": "spec42.showAddons",
-        "title": "Show Add-ons",
-        "category": "Spec42"
       }
     ],
     "menus": {
@@ -261,11 +255,6 @@
         {
           "command": "spec42.examples.refresh",
           "when": "view == spec42Examples",
-          "group": "navigation"
-        },
-        {
-          "command": "spec42.showAddons",
-          "when": "view == spec42Addons",
           "group": "navigation"
         }
       ],
@@ -360,9 +349,6 @@
         },
         {
           "command": "spec42.addons.openSoftwareArchitecture"
-        },
-        {
-          "command": "spec42.showAddons"
         }
       ]
     },
@@ -493,9 +479,14 @@
           "maximum": 4,
           "description": "Scale factor for PNG/SVG export of the visualization."
         },
+        "spec42.experimentalFeatures.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable experimental Spec42 features that are still under active development."
+        },
         "spec42.addons.softwareArchitecture.enabled": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "scope": "resource",
           "description": "Enable the Software Architecture add-on and its dedicated Rust visualizer."
         }

@@ -21,6 +21,7 @@ import { ExamplesViewProvider } from "./examples/examplesViewProvider";
 import { LibraryWebviewViewProvider } from "./library/libraryWebviewViewProvider";
 import { AddonsWebviewViewProvider } from "./addons/addonsWebviewViewProvider";
 import {
+  areExperimentalFeaturesEnabled,
   getAddonStates,
   isAddonEnabled,
   setAddonEnabled,
@@ -1039,16 +1040,14 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("spec42.showAddons", async () => {
-      await vscode.commands.executeCommand("workbench.view.extension.spec42");
-      await vscode.commands.executeCommand("spec42Addons.focus");
-      await addonsWebviewProvider?.refresh();
-    })
-  );
-
-  context.subscriptions.push(
     vscode.commands.registerCommand("spec42.addons.toggle", async (addonId?: string, enabled?: boolean) => {
       const targetAddonId = addonId || "software-architecture";
+      if (targetAddonId === "software-architecture" && !areExperimentalFeaturesEnabled()) {
+        vscode.window.showInformationMessage(
+          "The Software Architecture add-on is experimental. Enable Spec42 experimental features in settings first."
+        );
+        return;
+      }
       const nextEnabled = typeof enabled === "boolean"
         ? enabled
         : !isAddonEnabled(targetAddonId);
@@ -1066,6 +1065,12 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("spec42.addons.runSoftwareArchitectureAnalysis", async () => {
+      if (!areExperimentalFeaturesEnabled()) {
+        vscode.window.showInformationMessage(
+          "The Software Architecture add-on is experimental. Enable Spec42 experimental features in settings first."
+        );
+        return;
+      }
       if (!isAddonEnabled("software-architecture")) {
         vscode.window.showInformationMessage(
           "The Software Architecture add-on is currently disabled. Enable it in the Spec42 Add-ons view first."
@@ -1095,6 +1100,12 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("spec42.addons.openSoftwareArchitecture", async () => {
+      if (!areExperimentalFeaturesEnabled()) {
+        vscode.window.showInformationMessage(
+          "The Software Architecture add-on is experimental. Enable Spec42 experimental features in settings first."
+        );
+        return;
+      }
       if (!isAddonEnabled("software-architecture")) {
         vscode.window.showInformationMessage(
           "The Software Architecture add-on is currently disabled. Enable it in the Spec42 Add-ons view first."
@@ -2144,6 +2155,17 @@ export function activate(context: vscode.ExtensionContext): void {
 
       if (event.affectsConfiguration("spec42.addons.softwareArchitecture.enabled")) {
         if (!isAddonEnabled("software-architecture")) {
+          SoftwareVisualizationPanel.currentPanel?.dispose();
+          const workspaceRootUri = vscode.workspace.workspaceFolders?.[0]?.uri?.toString();
+          if (workspaceRootUri) {
+            softwareAnalysisStore.clear(workspaceRootUri);
+          }
+        }
+        void addonsWebviewProvider?.refresh();
+      }
+
+      if (event.affectsConfiguration("spec42.experimentalFeatures.enabled")) {
+        if (!areExperimentalFeaturesEnabled()) {
           SoftwareVisualizationPanel.currentPanel?.dispose();
           const workspaceRootUri = vscode.workspace.workspaceFolders?.[0]?.uri?.toString();
           if (workspaceRootUri) {

@@ -26,6 +26,7 @@ export interface AddonState extends AddonDescriptor {
 
 const SOFTWARE_ARCHITECTURE_ADDON_ID = 'software-architecture';
 const SOFTWARE_ARCHITECTURE_SETTING = 'addons.softwareArchitecture.enabled';
+const EXPERIMENTAL_FEATURES_SETTING = 'experimentalFeatures.enabled';
 
 const REGISTERED_ADDONS: AddonDescriptor[] = [
     {
@@ -37,19 +38,30 @@ const REGISTERED_ADDONS: AddonDescriptor[] = [
         canOpen: true,
     },
     {
-        id: 'software-architecture-pro',
-        name: 'Babel42',
-        description: 'Professional add-on for conformance, drift, and deeper architecture analysis. Coming soon.',
+        id: 'spec42-pro',
+        name: 'Spec42 Pro',
+        description: 'Professional add-on for more advanced analysis. Coming soon.',
         kind: 'teaser',
         badge: 'Pro',
         canToggle: false,
         canOpen: false,
-        learnMoreUrl: 'https://github.com/elan8/spec42',
+        learnMoreUrl: 'https://www.elan8.com',
     },
 ];
 
 export function getRegisteredAddons(): AddonDescriptor[] {
+    if (!areExperimentalFeaturesEnabled()) {
+        return REGISTERED_ADDONS.filter((addon) => addon.id !== SOFTWARE_ARCHITECTURE_ADDON_ID);
+    }
     return REGISTERED_ADDONS.slice();
+}
+
+export function areExperimentalFeaturesEnabled(
+    scope?: vscode.ConfigurationScope,
+): boolean {
+    return vscode.workspace
+        .getConfiguration('spec42', scope)
+        .get<boolean>(EXPERIMENTAL_FEATURES_SETTING, false);
 }
 
 export function isAddonEnabled(
@@ -59,9 +71,12 @@ export function isAddonEnabled(
     if (addonId !== SOFTWARE_ARCHITECTURE_ADDON_ID) {
         return false;
     }
+    if (!areExperimentalFeaturesEnabled(scope)) {
+        return false;
+    }
     return vscode.workspace
         .getConfiguration('spec42', scope)
-        .get<boolean>(SOFTWARE_ARCHITECTURE_SETTING, true);
+        .get<boolean>(SOFTWARE_ARCHITECTURE_SETTING, false);
 }
 
 export async function setAddonEnabled(
