@@ -9,4 +9,4 @@ This directory contains integrated, realistic scenarios that compose technical, 
 - `software/security-operations/security-operations.sysml`
 - `software/resilience-failure-modes/resilience-failure-modes.sysml`
 - `software/regulatory-compliance/regulatory-compliance.sysml`
-- `software/software-interactions/SoftwareInteractionSequence.sysml`
+- `software/software-interactions/WebShopArchitecture.sysml`

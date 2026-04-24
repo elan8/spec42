@@ -1,11 +1,19 @@
 package Views {
-    import SoftwareInteractionSequence::*;
+    import WebShopArchitecture::*;
 
-    view checkoutAuthorization : SequenceView {
-        expose SoftwareInteractionSequence::CheckoutAuthorization;
+    view structure : GeneralView {
+        expose WebShopArchitecture::SmallWebShopPlatform;
     }
 
-    view retryAuthorization : SequenceView {
-        expose SoftwareInteractionSequence::RetryAuthorization;
+    view connections : InterconnectionView {
+        expose WebShopArchitecture::SmallWebShopPlatform;
+    }
+
+    view checkoutFlow : SequenceView {
+        expose WebShopArchitecture::CheckoutFlow;
+    }
+
+    view orderEventFanout : SequenceView {
+        expose WebShopArchitecture::OrderEventFanout;
     }
 }

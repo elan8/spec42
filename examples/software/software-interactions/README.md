@@ -1,11 +1,15 @@
-# Software Interaction Sequence Example
+# Webshop Software Architecture Example
 
-This example demonstrates the Spec42 `SoftwareInteractions` library together with `SequenceView`.
+This example shows how Spec42 can be used to model a small webshop as a software architecture rather than only as an interaction sketch.
 
 It includes:
 
-- a service/API choreography with synchronous calls and return messages
-- a creation message for a newly created payment record
-- an activation span on the payment service lifeline
-- an `alt` fragment for approved vs declined outcomes
-- a nested `loop` fragment plus `InteractionRef` for retry handling
+- a structural architecture for a microservice-based webshop
+- explicit ports and connections for API, event, database, payment-provider, and email-provider integration
+- a `GeneralView` for architecture structure
+- an `InterconnectionView` for service and infrastructure wiring
+- two `SequenceView` scenarios:
+  - checkout request orchestration
+  - asynchronous order-event fan-out
+
+The goal is to give a compact but realistic starting point for software-architecture modeling in Spec42.
