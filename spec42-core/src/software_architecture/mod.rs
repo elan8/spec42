@@ -207,7 +207,7 @@ pub fn extract_rust_workspace_architecture(workspace_root: &Path) -> SoftwareArc
                         &from_id,
                         target,
                         "use",
-                        &file_anchor(file, Some(range.clone())),
+                        &file_anchor(file, Some(*range)),
                     );
                 }
             }
@@ -226,7 +226,7 @@ pub fn extract_rust_workspace_architecture(workspace_root: &Path) -> SoftwareArc
                         &from_id,
                         target,
                         "typeRef",
-                        &file_anchor(file, Some(range.clone())),
+                        &file_anchor(file, Some(*range)),
                     );
                 }
             }
@@ -600,7 +600,7 @@ fn collect_rust_files(krate: &RustCrate) -> Vec<RustFileInfo> {
         .into_iter()
         .filter_map(Result::ok)
     {
-        if !entry.file_type().is_file() || !entry.path().extension().is_some_and(|ext| ext == "rs")
+        if !entry.file_type().is_file() || entry.path().extension().is_none_or(|ext| ext != "rs")
         {
             continue;
         }
@@ -1196,11 +1196,10 @@ fn split_path_segments(path: &str) -> Vec<String> {
         .filter(|segment| !segment.is_empty())
         .map(|segment| {
             normalize_crate_name(
-                &segment
-                .trim_start_matches('&')
-                .trim_start_matches("mut ")
-                .trim_matches(|ch: char| !ch.is_alphanumeric() && ch != '_')
-                .to_string(),
+                segment
+                    .trim_start_matches('&')
+                    .trim_start_matches("mut ")
+                    .trim_matches(|ch: char| !ch.is_alphanumeric() && ch != '_'),
             )
         })
         .filter(|segment| !segment.is_empty())

@@ -1168,7 +1168,7 @@ fn build_software_architecture_dto(
                     .iter()
                     .map(|anchor| SourceAnchorDto {
                         file_path: anchor.file_path.clone(),
-                        range: anchor.range.clone().map(range_to_dto),
+                        range: anchor.range.map(range_to_dto),
                     })
                     .collect(),
                 is_external: component.is_external,
@@ -1186,7 +1186,7 @@ fn build_software_architecture_dto(
                     .as_ref()
                     .map(|anchor| SourceAnchorDto {
                         file_path: anchor.file_path.clone(),
-                        range: anchor.range.clone().map(range_to_dto),
+                        range: anchor.range.map(range_to_dto),
                     }),
             })
             .collect(),
@@ -1278,7 +1278,7 @@ fn component_range(
     component
         .anchors
         .first()
-        .and_then(|anchor| anchor.range.clone())
+        .and_then(|anchor| anchor.range)
         .map(range_to_dto)
         .unwrap_or_else(|| {
             range_to_dto(tower_lsp::lsp_types::Range {
@@ -1311,9 +1311,9 @@ fn software_component_to_graph_node(component: &SoftwareComponent, parent_id: Op
     }
 }
 
-fn software_component_map<'a>(
-    architecture: &'a SoftwareArchitectureModel,
-) -> HashMap<&'a str, &'a SoftwareComponent> {
+fn software_component_map(
+    architecture: &SoftwareArchitectureModel,
+) -> HashMap<&str, &SoftwareComponent> {
     architecture
         .components
         .iter()
@@ -1888,7 +1888,6 @@ pub(crate) fn build_sysml_visualization_response(
         &projected_activity_diagrams,
         &projected_graphs,
     );
-    let view_candidates = view_candidates;
     let selected_candidate = selected_view
         .and_then(|selected| {
             view_candidates
