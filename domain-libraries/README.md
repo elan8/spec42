@@ -7,7 +7,6 @@ This directory organizes reusable libraries by role so technical capability libr
 - `technical/` - engineering capability libraries that are reusable across industries.
 - `cross-cutting/` - overlays such as delivery, observability, security, and assurance that apply across technical/business domains.
 - `business/` - business-domain libraries built by composing technical and cross-cutting capabilities.
-- `examples/` - integrated scenarios demonstrating how to compose multiple layers.
 
 ## Initial Mapping
 
@@ -32,7 +31,6 @@ This directory organizes reusable libraries by role so technical capability libr
   - `io`
   - `buses`
   - `board`
-  - `examples`
 - `cross-cutting/software/`
   - `delivery-ops`
   - `security`
@@ -47,7 +45,6 @@ This directory organizes reusable libraries by role so technical capability libr
   - `simulation`
   - `operations`
   - `safety-assurance`
-  - `examples`
 
 ## Dependency Direction
 

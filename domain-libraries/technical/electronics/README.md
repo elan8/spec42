@@ -10,7 +10,6 @@ This directory contains technical electronics capability libraries intended for 
 - `io/` - digital/analog I/O and interface overlays (`ElectronicIoDomain`).
 - `buses/` - board-level bus and link overlays (`ElectronicBusDomain`).
 - `board/` - board assembly and integration overlays (`BoardIntegrationDomain`).
-- `examples/` - realistic electronics scenarios demonstrating domain composition.
 
 ## Related Layers
 
