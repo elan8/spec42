@@ -15,7 +15,8 @@ The corresponding views in `Views.sysml` are:
 - `connections` (`InterconnectionView`)
 - `checkoutFlow` (`SequenceView`)
 - `orderEventFanout` (`SequenceView`)
-- `behavior` (`GeneralView`)
+- `orderLifecycle` (`StateTransitionView`)
+- `checkoutPipeline` (`ActionFlowView`)
 - `requirements` (`GeneralView`)
 
 This model intentionally omits the full e-commerce-platform operational depth (BFF/mobile edge split, gRPC pricing service, retry/DLQ topic set, and broader platform observability/delivery surface) to stay compact and easy to learn.

@@ -20,8 +20,11 @@ package Views {
         expose WebShopArchitecture::OrderEventFanout;
     }
 
-    view behavior : GeneralView {
+    view orderLifecycle : StateTransitionView {
         expose WebShopBehavior::OrderLifecycleStateMachine;
+    }
+
+    view checkoutPipeline : ActionFlowView {
         expose WebShopBehavior::CheckoutPipeline;
     }
 
