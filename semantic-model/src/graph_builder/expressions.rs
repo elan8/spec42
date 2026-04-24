@@ -5,7 +5,9 @@ use tower_lsp::lsp_types::{Range, Url};
 use crate::ast_util::span_to_range;
 use crate::graph::SemanticGraph;
 use crate::model::{NodeId, RelationshipKind};
-use crate::reference_resolution::{resolve_expression_endpoint_strict, ResolveResult};
+use crate::reference_resolution::{
+    resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult,
+};
 use crate::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
 use super::{add_node_and_recurse, qualified_name_for_node};
@@ -276,6 +278,44 @@ pub(super) fn resolve_expression_endpoint_legacy(
         }
     }
 
+    // Prefer strict endpoint resolution when available.
+    if let ResolveResult::Resolved(resolved) =
+        resolve_expression_endpoint_strict(g, uri, container_prefix, expression)
+    {
+        return Some(resolved.qualified_name);
+    }
+
+    // Fallback for member chains that only exist via typing (e.g. `instance.member` where
+    // `member` is declared on the typed definition and not materialized as a concrete node).
+    let normalized = expression.replace('.', "::");
+    let segments: Vec<&str> = normalized.split("::").filter(|segment| !segment.is_empty()).collect();
+    if segments.len() > 1 {
+        let owner_expr = segments[0];
+        if let ResolveResult::Resolved(mut current_id) =
+            resolve_expression_endpoint_strict(g, uri, container_prefix, owner_expr)
+        {
+            let mut resolved_all = true;
+            for member in segments.iter().skip(1) {
+                let Some(owner) = g.get_node(&current_id) else {
+                    resolved_all = false;
+                    break;
+                };
+                match resolve_member_via_type(g, owner, member) {
+                    ResolveResult::Resolved(next_id) => {
+                        current_id = next_id;
+                    }
+                    ResolveResult::Ambiguous | ResolveResult::Unresolved => {
+                        resolved_all = false;
+                        break;
+                    }
+                }
+            }
+            if resolved_all {
+                return Some(current_id.qualified_name);
+            }
+        }
+    }
+
     let suffix = format!("::{}", expression);
     g.nodes_by_uri
         .get(uri)
@@ -314,9 +354,13 @@ pub(super) fn add_diagnostic_node(
 
 #[cfg(test)]
 mod expr_string_tests {
-    use super::{expr_node_to_qualified_string, expression_to_debug_string};
+    use super::{
+        expr_node_to_qualified_string, expression_to_debug_string, resolve_expression_endpoint_legacy,
+    };
+    use crate::{add_cross_document_edges_for_uri, build_graph_from_doc};
     use sysml_v2_parser::ast::{Expression, Node};
     use sysml_v2_parser::Span;
+    use tower_lsp::lsp_types::Url;
 
     fn node(expr: Expression) -> Node<Expression> {
         Node::new(Span::dummy(), expr)
@@ -366,5 +410,44 @@ mod expr_string_tests {
             ))))),
         });
         assert_eq!(expression_to_debug_string(&e), "1 [m]");
+    }
+
+    #[test]
+    fn legacy_endpoint_resolution_follows_typed_member_chain_across_documents() {
+        let architecture = r#"
+            package WebShopArchitecture {
+                part def CheckoutService {}
+                part def WebShopSystem {
+                    part checkoutService : CheckoutService;
+                }
+            }
+        "#;
+        let instance = r#"
+            package WebShopExample {
+                import WebShopArchitecture::*;
+                part webshopSystem : WebShopSystem;
+            }
+        "#;
+
+        let architecture_uri = Url::parse("file:///WebShopArchitecture.sysml").expect("arch uri");
+        let instance_uri = Url::parse("file:///webshop.sysml").expect("instance uri");
+        let architecture_root = sysml_v2_parser::parse(architecture).expect("parse architecture");
+        let instance_root = sysml_v2_parser::parse(instance).expect("parse instance");
+
+        let mut graph = build_graph_from_doc(&architecture_root, &architecture_uri);
+        graph.merge(build_graph_from_doc(&instance_root, &instance_uri));
+        add_cross_document_edges_for_uri(&mut graph, &instance_uri);
+
+        let resolved = resolve_expression_endpoint_legacy(
+            &graph,
+            &instance_uri,
+            Some("WebShopExample"),
+            "webshopSystem::checkoutService",
+        );
+
+        assert_eq!(
+            resolved.as_deref(),
+            Some("WebShopArchitecture::WebShopSystem::checkoutService")
+        );
     }
 }

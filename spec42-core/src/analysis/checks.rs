@@ -1067,6 +1067,55 @@ mod tests {
     }
 
     #[test]
+    fn typed_member_chain_satisfy_reference_does_not_emit_unresolved_diagnostic() {
+        let architecture = r#"
+            package WebShopArchitecture {
+                part def CheckoutService {}
+                part def WebShopSystem {
+                    part checkoutService : CheckoutService;
+                }
+            }
+        "#;
+        let instance = r#"
+            package WebShopExample {
+                import WebShopArchitecture::*;
+                part webshopSystem : WebShopSystem;
+                requirement checkoutLatency;
+                satisfy checkoutLatency by webshopSystem.checkoutService;
+            }
+        "#;
+
+        let architecture_uri =
+            Url::parse("file:///typed_member_satisfy_architecture.sysml").expect("arch uri");
+        let instance_uri = Url::parse("file:///typed_member_satisfy_instance.sysml").expect("instance uri");
+        let architecture_root = sysml_v2_parser::parse(architecture).expect("parse architecture");
+        let instance_root = sysml_v2_parser::parse(instance).expect("parse instance");
+
+        let mut graph = build_graph_from_doc(&architecture_root, &architecture_uri);
+        graph.merge(build_graph_from_doc(&instance_root, &instance_uri));
+        add_cross_document_edges_for_uri(&mut graph, &instance_uri);
+
+        let diags = compute_semantic_diagnostics(&graph, &instance_uri);
+        let unresolved_satisfy: Vec<_> = diags
+            .iter()
+            .filter(|d| {
+                d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "unresolved_satisfy_source".to_string(),
+                    ))
+                    || d.code.as_ref()
+                        == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                            "unresolved_satisfy_target".to_string(),
+                        ))
+            })
+            .collect();
+        assert!(
+            unresolved_satisfy.is_empty(),
+            "typed-member satisfy references should be resolved/suppressed after full graph build: {unresolved_satisfy:#?}"
+        );
+    }
+
+    #[test]
     fn redefined_port_usage_keeps_connection_endpoints_port_typed() {
         let input = r#"
             package House {

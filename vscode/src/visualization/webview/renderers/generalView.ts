@@ -585,25 +585,17 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
 
     const nodeDataMap = buildNodeDataMap(cyNodes);
 
-    const topPackageOf = (node: any): string =>
-        (Array.isArray(node?.data?.packagePath) && node.data.packagePath.length > 0
-            ? String(node.data.packagePath[0])
-            : 'Unscoped');
-
+    // Do not split the structure view by package. Render one unified semantic graph.
     const packageNodeMap = new Map<string, any[]>();
-    cyNodes.forEach((node: any) => {
-        const pkg = topPackageOf(node);
-        if (!packageNodeMap.has(pkg)) packageNodeMap.set(pkg, []);
-        packageNodeMap.get(pkg)!.push(node);
-    });
-    const packageOrder = [...packageNodeMap.keys()].sort((a, b) => a.localeCompare(b));
+    packageNodeMap.set('__all__', cyNodes);
+    const packageOrder = ['__all__'];
 
     const nodePositions = new Map<string, { x: number; y: number; width: number; height: number }>();
     const topPackageBounds = new Map<string, { x: number; y: number; width: number; height: number }>();
     const internalEdgesToRender: any[] = [];
     const edgeSectionsById = new Map<string, ElkSection[]>();
 
-    // Place each top-level package as an independent container, with its own layout.
+    // Place all nodes in one layout scope (single semantic hierarchy/graph).
     const packageGapY = 220;
     let cursorX = 80;
     let cursorY = 80;
@@ -644,12 +636,14 @@ export async function renderGeneralViewD3(ctx: GeneralViewContext, data: any): P
         laidOut.edgeSectionsById.forEach((sections, edgeId) => {
             edgeSectionsById.set(edgeId, offsetSections(sections, offsetX, offsetY));
         });
-        topPackageBounds.set(pkg, {
-            x: cursorX,
-            y: cursorY,
-            width: pkgWidth,
-            height: pkgHeight
-        });
+        if (pkg !== '__all__') {
+            topPackageBounds.set(pkg, {
+                x: cursorX,
+                y: cursorY,
+                width: pkgWidth,
+                height: pkgHeight
+            });
+        }
         cursorX = fixedPackageLaneX;
         cursorY += pkgHeight + packageGapY;
     }

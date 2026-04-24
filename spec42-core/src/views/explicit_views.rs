@@ -372,6 +372,9 @@ pub fn project_ids_for_renderer(
             &typing_targets,
             &node_by_id,
         ),
+        "state-transition-view" | "action-flow-view" => {
+            expand_descendants(&evaluated.exposed_ids, &children_by_parent)
+        }
         _ => evaluated.exposed_ids.clone(),
     };
     let filtered_ids: HashSet<String> = expanded_ids
@@ -1063,5 +1066,73 @@ mod tests {
         assert!(projected.contains("Pkg::Engine"));
         assert!(projected.contains("Pkg::Engine::pump"));
         assert!(projected.contains("Pkg::Pump"));
+    }
+
+    #[test]
+    fn state_transition_projection_expands_exposed_machine_descendants() {
+        fn zero_range() -> RangeDto {
+            RangeDto {
+                start: PositionDto {
+                    line: 0,
+                    character: 0,
+                },
+                end: PositionDto {
+                    line: 0,
+                    character: 0,
+                },
+            }
+        }
+
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::OrderLifecycle".to_string(),
+                    element_type: "state def".to_string(),
+                    name: "OrderLifecycle".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::OrderLifecycle::created".to_string(),
+                    element_type: "state".to_string(),
+                    name: "created".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::OrderLifecycle".to_string()),
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::OrderLifecycle::paid".to_string(),
+                    element_type: "state".to_string(),
+                    name: "paid".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::OrderLifecycle".to_string()),
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+            ],
+            edges: vec![crate::views::dto::GraphEdgeDto {
+                source: "Pkg::OrderLifecycle::created".to_string(),
+                target: "Pkg::OrderLifecycle::paid".to_string(),
+                rel_type: "transition".to_string(),
+                name: Some("to_paid".to_string()),
+            }],
+        };
+        let evaluated = EvaluatedView {
+            id: "Pkg::orderLifecycle".to_string(),
+            name: "orderLifecycle".to_string(),
+            effective_view_type: Some("StateTransitionView".to_string()),
+            exposed_ids: HashSet::from(["Pkg::OrderLifecycle".to_string()]),
+            filters: Vec::new(),
+            visible_ids: HashSet::new(),
+            issues: Vec::new(),
+        };
+
+        let projected = project_ids_for_renderer(&evaluated, &graph, "state-transition-view");
+        assert!(projected.contains("Pkg::OrderLifecycle"));
+        assert!(projected.contains("Pkg::OrderLifecycle::created"));
+        assert!(projected.contains("Pkg::OrderLifecycle::paid"));
     }
 }

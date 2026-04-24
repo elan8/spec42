@@ -928,6 +928,27 @@ fn filter_ibd_by_root_prefixes(ibd: &IbdDataDto, root_prefixes: &HashSet<String>
     }
 }
 
+fn select_interconnection_ibd_scope(
+    full_ibd: &IbdDataDto,
+    selected_ids: &HashSet<String>,
+    selected_exposed_ids: Option<&HashSet<String>>,
+) -> IbdDataDto {
+    let visible_scope_ibd = filter_ibd_by_visible_ids(full_ibd, selected_ids);
+    let root_prefixes: HashSet<String> = selected_exposed_ids
+        .map(|exposed_ids| exposed_ids.iter().map(|id| id.replace("::", ".")).collect())
+        .unwrap_or_default();
+    if root_prefixes.is_empty() {
+        return visible_scope_ibd;
+    }
+    let root_scoped_ibd = filter_ibd_by_root_prefixes(full_ibd, &root_prefixes);
+    if root_scoped_ibd.parts.is_empty() && root_scoped_ibd.connectors.is_empty() {
+        // Cross-file instance roots (usage in one file, connections in another)
+        // can miss direct root-prefix matches; keep the selected visible scope instead.
+        return visible_scope_ibd;
+    }
+    root_scoped_ibd
+}
+
 fn renderer_empty_state_message(view: &str) -> String {
     match view {
         "general-view" => {
@@ -1977,20 +1998,11 @@ pub(crate) fn build_sysml_visualization_response(
         .find(|evaluated| evaluated.id == selected_view_id);
     let filtered_ibd = attach_ibd_package_container_groups(
         if resolved_view == "interconnection-view" {
-            let root_prefixes: HashSet<String> = selected_evaluated
-                .map(|evaluated| {
-                    evaluated
-                        .exposed_ids
-                        .iter()
-                        .map(|id| id.replace("::", "."))
-                        .collect()
-                })
-                .unwrap_or_default();
-            if root_prefixes.is_empty() {
-                filter_ibd_by_visible_ids(&full_ibd, &selected_ids)
-            } else {
-                filter_ibd_by_root_prefixes(&full_ibd, &root_prefixes)
-            }
+            select_interconnection_ibd_scope(
+                &full_ibd,
+                &selected_ids,
+                selected_evaluated.map(|evaluated| &evaluated.exposed_ids),
+            )
         } else {
             filter_ibd_by_visible_ids(&full_ibd, &selected_ids)
         },
@@ -2033,7 +2045,7 @@ pub(crate) fn build_sysml_visualization_response(
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
+    use std::collections::{HashMap, HashSet};
 
     use super::{
         attach_ibd_package_container_groups, build_ibd_package_container_groups,
@@ -2041,7 +2053,8 @@ mod tests {
         build_software_visualization_response, build_software_workspace_model_dto,
         build_workspace_activity_diagrams, parse_software_analyze_workspace_params,
         parse_software_project_view_params, parse_software_visualization_params,
-        parse_sysml_visualization_params, SOFTWARE_DEPENDENCY_VIEW, SOFTWARE_MODULE_VIEW,
+        parse_sysml_visualization_params, select_interconnection_ibd_scope,
+        SOFTWARE_DEPENDENCY_VIEW, SOFTWARE_MODULE_VIEW,
     };
     use crate::views::dto::{GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, SysmlGraphDto};
     use crate::views::ibd::{IbdDataDto, IbdPartDto, IbdRootViewDto};
@@ -2063,6 +2076,73 @@ mod tests {
                 character: 0,
             },
         }
+    }
+
+    #[test]
+    fn interconnection_scope_falls_back_to_visible_ids_when_root_prefix_misses() {
+        let full_ibd = IbdDataDto {
+            parts: vec![IbdPartDto {
+                id: "WebShopArchitecture::WebShopSystem::checkoutService".to_string(),
+                name: "checkoutService".to_string(),
+                qualified_name: "WebShopArchitecture.WebShopSystem.checkoutService".to_string(),
+                uri: None,
+                container_id: Some("WebShopArchitecture.WebShopSystem".to_string()),
+                element_type: "part".to_string(),
+                attributes: HashMap::new(),
+            }],
+            ports: vec![
+                crate::views::ibd::IbdPortDto {
+                    id: "WebShopArchitecture::WebShopSystem::checkoutService::apiIn".to_string(),
+                    name: "apiIn".to_string(),
+                    parent_id: "WebShopArchitecture.WebShopSystem.checkoutService".to_string(),
+                    direction: None,
+                    port_type: None,
+                    port_side: None,
+                },
+                crate::views::ibd::IbdPortDto {
+                    id: "WebShopArchitecture::WebShopSystem::apiGateway::checkoutApiOut"
+                        .to_string(),
+                    name: "checkoutApiOut".to_string(),
+                    parent_id: "WebShopArchitecture.WebShopSystem.apiGateway".to_string(),
+                    direction: None,
+                    port_type: None,
+                    port_side: None,
+                },
+            ],
+            connectors: vec![crate::views::ibd::IbdConnectorDto {
+                source: "WebShopArchitecture::WebShopSystem::checkoutService::apiIn".to_string(),
+                target:
+                    "WebShopArchitecture::WebShopSystem::apiGateway::checkoutApiOut".to_string(),
+                source_id: "WebShopArchitecture.WebShopSystem.checkoutService.apiIn".to_string(),
+                target_id: "WebShopArchitecture.WebShopSystem.apiGateway.checkoutApiOut".to_string(),
+                rel_type: "connection".to_string(),
+            }],
+            container_groups: Vec::new(),
+            package_container_groups: Vec::new(),
+            root_candidates: Vec::new(),
+            default_root: None,
+            root_views: HashMap::new(),
+        };
+        let selected_ids: HashSet<String> =
+            HashSet::from([
+                "WebShopArchitecture::WebShopSystem::checkoutService".to_string(),
+                "WebShopArchitecture::WebShopSystem::checkoutService::apiIn".to_string(),
+                "WebShopArchitecture::WebShopSystem::apiGateway::checkoutApiOut".to_string(),
+            ]);
+        let selected_exposed_ids: HashSet<String> =
+            HashSet::from(["WebShopExample::webshopSystem".to_string()]);
+
+        let scoped =
+            select_interconnection_ibd_scope(&full_ibd, &selected_ids, Some(&selected_exposed_ids));
+
+        assert!(
+            !scoped.parts.is_empty(),
+            "expected visible-id fallback to keep part payload when root-prefix scoping misses"
+        );
+        assert!(
+            !scoped.connectors.is_empty(),
+            "expected visible-id fallback to keep connectors when root-prefix scoping misses"
+        );
     }
 
     #[test]
