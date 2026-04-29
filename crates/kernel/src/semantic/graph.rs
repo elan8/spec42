@@ -793,7 +793,7 @@ mod tests {
     }
 
     #[test]
-    #[ignore] // input uses port def CmdPort {} which sysml-v2-parser may not accept (expected end of input)
+    #[ignore] // parser limitation: sysml-v2-parser currently rejects this port-def shape in this fixture
     fn typed_part_usage_expansion_adds_nested_port_nodes() {
         // Typed PartUsages expand so connection endpoints (e.g. flightControl.flightController.motorCmd) exist.
         let input = r#"
@@ -828,7 +828,7 @@ mod tests {
     }
 
     #[test]
-    #[ignore] // input uses syntax (e.g. port def with {}) that sysml-v2-parser may not accept
+    #[ignore] // parser limitation: fixture depends on syntax currently not accepted by sysml-v2-parser
     fn connection_edges_added_when_port_nodes_exist() {
         // Connection "connect flightControl.flightController.motorCmd to propulsion.propulsionUnit1.cmd"
         // requires port nodes from expand_typed_part_usage. Verifies connection edges are added.

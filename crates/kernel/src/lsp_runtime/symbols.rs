@@ -1,10 +1,11 @@
+#![allow(dead_code)] // staged inherited-attribute lens helpers; wired fully in follow-up work
+
 use crate::semantic::{RelationshipKind, SemanticNode};
 use crate::workspace::ServerState;
 use std::time::Instant;
 use tower_lsp::lsp_types::{CodeLens, Url};
 use tracing::info;
 
-#[allow(dead_code)]
 const MAX_INHERITED_ATTRIBUTE_LENSES: usize = 5;
 
 pub(crate) fn build_code_lens(state: &ServerState, uri_norm: &Url) -> Vec<CodeLens> {
@@ -29,7 +30,6 @@ pub(crate) fn build_code_lens(state: &ServerState, uri_norm: &Url) -> Vec<CodeLe
     Vec::new()
 }
 
-#[allow(dead_code)]
 pub(crate) fn inherited_attributes_for_part_def<'a>(
     state: &'a ServerState,
     owner: &'a SemanticNode,
@@ -94,7 +94,6 @@ pub(crate) fn inherited_attributes_for_part_def<'a>(
     inherited
 }
 
-#[allow(dead_code)]
 pub(crate) fn inherited_attribute_hint_lines(
     state: &ServerState,
     owner: &SemanticNode,
@@ -117,7 +116,6 @@ pub(crate) fn inherited_attribute_hint_lines(
     lines
 }
 
-#[allow(dead_code)]
 fn direct_attribute_names(
     state: &ServerState,
     owner: &SemanticNode,
@@ -131,13 +129,11 @@ fn direct_attribute_names(
         .collect()
 }
 
-#[allow(dead_code)]
 fn is_attribute_like_kind(kind: &str) -> bool {
     let lower = kind.to_lowercase();
     lower.contains("attribute") || lower.contains("property")
 }
 
-#[allow(dead_code)]
 fn attribute_type_name(state: &ServerState, node: &SemanticNode) -> Option<String> {
     state
         .semantic_graph
@@ -154,7 +150,6 @@ fn attribute_type_name(state: &ServerState, node: &SemanticNode) -> Option<Strin
         })
 }
 
-#[allow(dead_code)]
 fn declared_value_text(node: &SemanticNode) -> Option<String> {
     for key in ["value", "defaultValue", "literal"] {
         let Some(value) = node.attributes.get(key) else {
@@ -168,7 +163,6 @@ fn declared_value_text(node: &SemanticNode) -> Option<String> {
     None
 }
 
-#[allow(dead_code)]
 fn effective_value_text(node: &SemanticNode) -> Option<String> {
     let mut value = node
         .attributes
@@ -191,7 +185,6 @@ fn effective_value_text(node: &SemanticNode) -> Option<String> {
     Some(value)
 }
 
-#[allow(dead_code)]
 fn value_to_display_text(value: &serde_json::Value) -> String {
     match value {
         serde_json::Value::String(v) => v.clone(),
@@ -203,7 +196,6 @@ fn value_to_display_text(value: &serde_json::Value) -> String {
 }
 
 #[derive(Debug, Clone)]
-#[allow(dead_code)]
 pub(crate) struct InheritedAttributeLens {
     name: String,
     type_name: Option<String>,
@@ -212,7 +204,6 @@ pub(crate) struct InheritedAttributeLens {
     declared_in: Option<String>,
 }
 
-#[allow(dead_code)]
 fn format_inherited_attribute_hint(attr: &InheritedAttributeLens) -> String {
     let mut text = format!("inherited {}", attr.name);
     let inferred_type = attr
@@ -247,7 +238,6 @@ fn format_inherited_attribute_hint(attr: &InheritedAttributeLens) -> String {
     truncate_hint_line(&text, 110)
 }
 
-#[allow(dead_code)]
 fn infer_type_from_value(value: Option<&str>) -> Option<String> {
     let raw = value?;
     let start = raw.find('[')?;
@@ -259,7 +249,6 @@ fn infer_type_from_value(value: Option<&str>) -> Option<String> {
     Some(symbol.to_string())
 }
 
-#[allow(dead_code)]
 fn truncate_hint_line(text: &str, max_chars: usize) -> String {
     if text.chars().count() <= max_chars {
         return text.to_string();
