@@ -3,7 +3,7 @@
 use std::path::PathBuf;
 
 use super::harness::{next_id, read_message, read_response, send_message, spawn_server};
-use spec42_core::common::util;
+use kernel::common::util;
 
 /// Workspace scan: definition file exists only on disk; we never didOpen it.
 /// Proves the server indexes files from the workspace root and goto_definition resolves across them.

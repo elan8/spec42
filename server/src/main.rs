@@ -12,9 +12,9 @@ use cli::{
     StdlibCommand,
 };
 use environment::{build_doctor_report, resolve_environment};
-use spec42_core::host::logging::init_tracing;
-use spec42_core::software_architecture::analyze_rust_workspace;
-use spec42_core::{validate_paths, ValidationReport, ValidationRequest};
+use kernel::host::logging::init_tracing;
+use kernel::software_architecture::analyze_rust_workspace;
+use kernel::{validate_paths, ValidationReport, ValidationRequest};
 use stdlib::{load_managed_metadata, managed_status, remove_standard_library};
 
 #[tokio::main]
@@ -47,16 +47,16 @@ async fn run(cli: Cli) -> Result<ExitCode, String> {
 async fn run_lsp(cli: &Cli) -> Result<ExitCode, String> {
     let environment = resolve_environment(cli)?;
     let config = Arc::new(
-        spec42_core::default_server_config()
+        kernel::default_server_config()
             .with_default_library_paths(environment.library_paths.clone()),
     );
-    spec42_core::run_lsp(config, "spec42").await;
+    kernel::run_lsp(config, "spec42").await;
     Ok(ExitCode::SUCCESS)
 }
 
 fn run_check(cli: &Cli, args: &CheckArgs) -> Result<ExitCode, String> {
     let environment = resolve_environment(cli)?;
-    let config = Arc::new(spec42_core::default_server_config());
+    let config = Arc::new(kernel::default_server_config());
     let report = validate_paths(
         &config,
         ValidationRequest {
@@ -110,7 +110,7 @@ fn run_software(cli: &Cli, command: &SoftwareCommand) -> Result<ExitCode, String
 
 fn run_software_analyze(args: &SoftwareAnalyzeArgs) -> Result<ExitCode, String> {
     let model = analyze_rust_workspace(&args.workspace);
-    let json = serde_json::to_string_pretty(&spec42_core::views::build_software_workspace_model_dto(
+    let json = serde_json::to_string_pretty(&kernel::views::build_software_workspace_model_dto(
         &model,
     ))
     .map_err(|err| format!("Failed to serialize software workspace model as JSON: {err}"))?;

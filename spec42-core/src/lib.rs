@@ -2,7 +2,6 @@
 //! Used by the spec42 and spec42-pro binaries.
 
 pub mod analysis;
-pub mod bench;
 pub mod common;
 pub mod host;
 pub mod language;
@@ -28,8 +27,7 @@ pub use validation::{validate_paths, ValidationReport, ValidationRequest, Valida
 pub use views::dto::{
     GraphEdgeDto, GraphNodeDto, SoftwareAnalysisSummaryDto, SoftwareArchitectureModelDto,
     SoftwareComponentDto, SoftwareDependencyDto, SoftwareWorkspaceModelDto, SourceAnchorDto,
-    SysmlClearCacheResultDto,
-    SysmlFeatureInspectorElementDto, SysmlFeatureInspectorElementRefDto,
+    SysmlClearCacheResultDto, SysmlFeatureInspectorElementDto, SysmlFeatureInspectorElementRefDto,
     SysmlFeatureInspectorParamsDto, SysmlFeatureInspectorRelationshipDto,
     SysmlFeatureInspectorResolutionDto, SysmlFeatureInspectorResultDto, SysmlGraphDto,
     SysmlModelResultDto, SysmlModelStatsDto, SysmlServerCachesDto, SysmlServerMemoryDto,

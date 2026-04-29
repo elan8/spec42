@@ -1,5 +1,5 @@
 [package]
-name = "spec42-core"
+name = "kernel"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
@@ -7,7 +7,7 @@ license.workspace = true
 description = "Core library for Spec42 LSP server: semantic model, DTOs, extension traits"
 
 [lib]
-name = "spec42_core"
+name = "kernel"
 
 [dependencies]
 sysml-v2-parser = { workspace = true }
@@ -28,11 +28,7 @@ toml = "0.8"
 glob = "0.3"
 
 [dev-dependencies]
-# Benchmarks
-criterion = { version = "0.5", features = ["html_reports"] }
 # Used by LSP integration tests when constructing `file://` URIs.
 url = "2"
 
-[[bench]]
-name = "parse_scan"
-harness = false
+

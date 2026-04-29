@@ -19,7 +19,7 @@ ureq = { version = "2", default-features = true }
 zip = { version = "2", default-features = false, features = ["deflate"] }
 
 [dependencies]
-spec42-core = { path = "../spec42-core" }
+kernel = { path = "../spec42-core" }
 tokio = { version = "1", features = ["full"] }
 serde_json = { workspace = true }
 clap = { workspace = true }

@@ -63,7 +63,7 @@ pub(crate) fn resolved_references_at_position(
     let elapsed_ms = started_at.elapsed().as_millis();
     if state.perf_logging_enabled && elapsed_ms >= 10 {
         info!(
-            target: "spec42_core::lsp_runtime::references_resolver",
+            target: "kernel::lsp_runtime::references_resolver",
             event = "referencesResolver:resolvedAtPosition",
             uri = %uri_norm,
             line = pos.line,
@@ -177,7 +177,7 @@ fn collect_references_for_lookup(
     let elapsed_ms = started_at.elapsed().as_millis();
     if state.perf_logging_enabled && elapsed_ms >= 10 {
         info!(
-            target: "spec42_core::lsp_runtime::references_resolver",
+            target: "kernel::lsp_runtime::references_resolver",
             event = "referencesResolver:collect",
             lookup_name = %lookup_name,
             selected_defs = target_ids.len(),

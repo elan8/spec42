@@ -266,7 +266,7 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
         let elapsed_ms = started_at.elapsed().as_millis();
         if elapsed_ms >= 10 {
             info!(
-                target: "spec42_core::lsp_runtime::features",
+                target: "kernel::lsp_runtime::features",
                 event = "feature:hover",
                 uri = %uri_norm,
                 line = pos.line,
@@ -301,7 +301,7 @@ fn log_hover_result(
     let elapsed_ms = started_at.elapsed().as_millis();
     if elapsed_ms >= 10 {
         info!(
-            target: "spec42_core::lsp_runtime::features",
+            target: "kernel::lsp_runtime::features",
             event = "feature:hover",
             uri = %uri,
             line = pos.line,
@@ -429,7 +429,7 @@ pub(crate) fn goto_definition(
         let elapsed_ms = started_at.elapsed().as_millis();
         if elapsed_ms >= 10 {
             info!(
-                target: "spec42_core::lsp_runtime::features",
+                target: "kernel::lsp_runtime::features",
                 event = "feature:gotoDefinition",
                 uri = %uri_norm,
                 line = pos.line,
@@ -450,7 +450,7 @@ pub(crate) fn goto_definition(
         let elapsed_ms = started_at.elapsed().as_millis();
         if elapsed_ms >= 10 {
             info!(
-                target: "spec42_core::lsp_runtime::features",
+                target: "kernel::lsp_runtime::features",
                 event = "feature:gotoDefinition",
                 uri = %uri_norm,
                 line = pos.line,
@@ -471,7 +471,7 @@ pub(crate) fn goto_definition(
     let elapsed_ms = started_at.elapsed().as_millis();
     if elapsed_ms >= 10 {
         info!(
-            target: "spec42_core::lsp_runtime::features",
+            target: "kernel::lsp_runtime::features",
             event = "feature:gotoDefinition",
             uri = %uri_norm,
             line = pos.line,
@@ -497,7 +497,7 @@ fn goto_definition_response(
     let elapsed_ms = started_at.elapsed().as_millis();
     if elapsed_ms >= 10 {
         info!(
-            target: "spec42_core::lsp_runtime::features",
+            target: "kernel::lsp_runtime::features",
             event = "feature:gotoDefinition",
             uri = %uri,
             line = pos.line,
@@ -527,7 +527,7 @@ pub(crate) fn references(
     let elapsed_ms = started_at.elapsed().as_millis();
     if elapsed_ms >= 10 {
         info!(
-            target: "spec42_core::lsp_runtime::features",
+            target: "kernel::lsp_runtime::features",
             event = "feature:references",
             uri = %uri_norm,
             line = pos.line,

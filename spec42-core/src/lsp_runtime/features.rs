@@ -41,7 +41,7 @@ pub(crate) fn code_lens(state: &ServerState, uri: Url) -> Result<Option<Vec<Code
     let request_count = CODE_LENS_REQUEST_COUNT.fetch_add(1, Ordering::Relaxed) + 1;
     if state.perf_logging_enabled {
         info!(
-            target: "spec42_core::lsp_runtime::features",
+            target: "kernel::lsp_runtime::features",
             event = "feature:codeLens",
             uri = %uri_norm,
             lenses = lenses.len(),
@@ -79,7 +79,7 @@ pub(crate) fn semantic_tokens_full_request(
     let elapsed_ms = started_at.elapsed().as_millis();
     let request_count = SEMANTIC_TOKENS_FULL_REQUEST_COUNT.fetch_add(1, Ordering::Relaxed) + 1;
     info!(
-        target: "spec42_core::lsp_runtime::features",
+        target: "kernel::lsp_runtime::features",
         event = "feature:semanticTokensFull",
         uri = %uri_norm,
         token_count = tokens.data.len(),
@@ -116,7 +116,7 @@ pub(crate) fn semantic_tokens_range_request(
     let elapsed_ms = started_at.elapsed().as_millis();
     let request_count = SEMANTIC_TOKENS_RANGE_REQUEST_COUNT.fetch_add(1, Ordering::Relaxed) + 1;
     info!(
-        target: "spec42_core::lsp_runtime::features",
+        target: "kernel::lsp_runtime::features",
         event = "feature:semanticTokensRange",
         uri = %uri_norm,
         start_line = range.start.line,

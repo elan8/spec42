@@ -30,9 +30,9 @@ jobs:
 
       - name: requirements slice integration checks
         run: |
-          cargo test -p spec42-core --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file
-          cargo test -p spec42-core --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_cross_file
-          cargo test -p spec42-core --test lsp_integration integration::diagnostics::unresolved_satisfy_reference_emits_semantic_diagnostic
+          cargo test -p kernel --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file
+          cargo test -p kernel --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_cross_file
+          cargo test -p kernel --test lsp_integration integration::diagnostics::unresolved_satisfy_reference_emits_semantic_diagnostic
 
       - name: cargo clippy (required fast path)
         run: cargo clippy --workspace --all-targets -- -W clippy::all

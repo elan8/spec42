@@ -17,7 +17,7 @@ pub(crate) fn build_code_lens(state: &ServerState, uri_norm: &Url) -> Vec<CodeLe
     let elapsed_ms = started_at.elapsed().as_millis();
     if state.perf_logging_enabled && elapsed_ms >= 10 {
         info!(
-            target: "spec42_core::lsp_runtime::symbols",
+            target: "kernel::lsp_runtime::symbols",
             event = "symbols:buildCodeLens",
             uri = %uri_norm,
             indexed_symbols,

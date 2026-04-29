@@ -30,4 +30,4 @@ jobs:
       - name: Run workspace scan test with SysML release
         env:
           SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
-        run: cargo test -p spec42-core lsp_workspace_scan_sysml_release -- --nocapture
+        run: cargo test -p kernel lsp_workspace_scan_sysml_release -- --nocapture
