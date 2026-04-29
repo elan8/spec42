@@ -1,18 +1,13 @@
-use std::collections::{BTreeSet, HashSet};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use serde::Serialize;
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Url};
-use walkdir::WalkDir;
-
-use crate::analysis::diagnostics_core;
-use crate::common::util;
+use tower_lsp::lsp_types::Diagnostic;
 use crate::host::config::Spec42Config;
-use crate::workspace::{
-    indexed_text_or_empty, ingest_parsed_scan_entries, parse_scanned_entries,
-    rebuild_all_document_links, scan_sysml_files, ServerState,
-};
+
+mod discovery;
+mod pipeline;
+mod report;
 
 #[derive(Debug, Clone)]
 pub struct ValidationRequest {
@@ -49,251 +44,13 @@ pub fn validate_paths(
     config: &Arc<Spec42Config>,
     request: ValidationRequest,
 ) -> Result<ValidationReport, String> {
-    let workspace_root = resolve_workspace_root(&request)?;
-    let target_files = discover_target_files(&request.targets)?;
-    if target_files.is_empty() {
-        return Err("No .sysml or .kerml files were found under the requested path.".to_string());
-    }
-
-    let workspace_root_url = workspace_root
-        .as_ref()
-        .map(|path| path_to_file_url(path.as_path()))
-        .transpose()?;
-    let library_root_urls = request
-        .library_paths
-        .iter()
-        .map(|path| path_to_file_url(path.as_path()))
-        .collect::<Result<Vec<_>, _>>()?;
-
-    let mut state = ServerState {
-        workspace_roots: workspace_root_url.iter().cloned().collect(),
-        library_paths: library_root_urls.clone(),
-        ..ServerState::default()
-    };
-
-    let mut entries = Vec::new();
-    let scan_roots: Vec<Url> = workspace_root_url
-        .iter()
-        .cloned()
-        .chain(library_root_urls.iter().cloned())
-        .collect();
-    if !scan_roots.is_empty() {
-        let (scanned_entries, _) = scan_sysml_files(scan_roots);
-        entries.extend(scanned_entries);
-    }
-
-    let mut seen = HashSet::new();
-    for (uri, _) in &entries {
-        seen.insert(uri.as_str().to_string());
-    }
-    for path in &target_files {
-        let uri = path_to_file_url(path)?;
-        if seen.insert(uri.as_str().to_string()) {
-            let content = std::fs::read_to_string(path)
-                .map_err(|err| format!("Failed to read {}: {err}", path.display()))?;
-            entries.push((uri, content));
-        }
-    }
-
-    let parsed_entries = parse_scanned_entries(entries, request.parallel_enabled);
-    ingest_parsed_scan_entries(&mut state, parsed_entries);
-    rebuild_all_document_links(&mut state);
-
-    let target_urls = target_files
-        .iter()
-        .map(|path| path_to_file_url(path.as_path()))
-        .collect::<Result<BTreeSet<_>, _>>()?;
-
-    let documents = target_urls
-        .into_iter()
-        .map(|uri| {
-            let text = indexed_text_or_empty(&state, &uri);
-            let diagnostics = collect_diagnostics_for_document(&state, config, &uri, &text);
-            ValidatedDocument {
-                uri: uri.to_string(),
-                diagnostics,
-            }
-        })
-        .collect::<Vec<_>>();
-
-    let summary = summarize(&documents);
-    let advice = build_advice(&documents, request.library_paths.is_empty());
-
-    Ok(ValidationReport {
-        workspace_root: workspace_root.map(|path| path.display().to_string()),
-        resolved_library_paths: request
-            .library_paths
-            .iter()
-            .map(|path| path.display().to_string())
-            .collect(),
-        documents,
-        summary,
-        advice,
-    })
-}
-
-fn summarize(documents: &[ValidatedDocument]) -> ValidationSummary {
-    let mut summary = ValidationSummary {
-        document_count: documents.len(),
-        ..ValidationSummary::default()
-    };
-    for document in documents {
-        for diagnostic in &document.diagnostics {
-            match diagnostic.severity.unwrap_or(DiagnosticSeverity::ERROR) {
-                DiagnosticSeverity::ERROR => summary.error_count += 1,
-                DiagnosticSeverity::WARNING => summary.warning_count += 1,
-                DiagnosticSeverity::INFORMATION | DiagnosticSeverity::HINT => {
-                    summary.information_count += 1
-                }
-                _ => {}
-            }
-        }
-    }
-    summary
-}
-
-fn build_advice(documents: &[ValidatedDocument], no_library_paths: bool) -> Vec<String> {
-    if !no_library_paths {
-        return Vec::new();
-    }
-    let has_missing_library_context = documents.iter().any(|document| {
-        document.diagnostics.iter().any(|diagnostic| {
-            diagnostic.code.as_ref()
-                == Some(&NumberOrString::String(
-                    "missing_library_context".to_string(),
-                ))
-        })
-    });
-    let has_unresolved_type_reference = documents.iter().any(|document| {
-        document.diagnostics.iter().any(|diagnostic| {
-            diagnostic.code.as_ref()
-                == Some(&NumberOrString::String(
-                    "unresolved_type_reference".to_string(),
-                ))
-        })
-    });
-    let has_unresolved_import_target = documents.iter().any(|document| {
-        document.diagnostics.iter().any(|diagnostic| {
-            diagnostic.code.as_ref()
-                == Some(&NumberOrString::String(
-                    "unresolved_import_target".to_string(),
-                ))
-        })
-    });
-    let has_unresolved_specializes_reference = documents.iter().any(|document| {
-        document.diagnostics.iter().any(|diagnostic| {
-            diagnostic.code.as_ref()
-                == Some(&NumberOrString::String(
-                    "unresolved_specializes_reference".to_string(),
-                ))
-        })
-    });
-    if has_missing_library_context
-        || has_unresolved_type_reference
-        || has_unresolved_import_target
-        || has_unresolved_specializes_reference
-    {
-        vec![
-            "Configure SysML library roots: ensure the standard library is available (bundled materialization, or pass `--stdlib-path` / `SPEC42_STDLIB_PATH` / `--library-path` explicitly)."
-                .to_string(),
-        ]
-    } else {
-        Vec::new()
-    }
-}
-
-fn resolve_workspace_root(request: &ValidationRequest) -> Result<Option<PathBuf>, String> {
-    if let Some(root) = &request.workspace_root {
-        return normalize_existing_path(root).map(Some);
-    }
-    let first = request
-        .targets
-        .first()
-        .ok_or_else(|| "No target path was provided.".to_string())?;
-    if first.is_dir() {
-        return normalize_existing_path(first).map(Some);
-    }
-    normalize_existing_path(first)?
-        .parent()
-        .map(Path::to_path_buf)
-        .ok_or_else(|| {
-            format!(
-                "Could not infer a workspace root from target file {}.",
-                first.display()
-            )
-        })
-        .map(Some)
-}
-
-fn discover_target_files(targets: &[PathBuf]) -> Result<Vec<PathBuf>, String> {
-    let mut files = BTreeSet::new();
-    for target in targets {
-        let path = normalize_existing_path(target)?;
-        if path.is_file() {
-            if is_sysml_like(&path) {
-                files.insert(path);
-            }
-            continue;
-        }
-        for entry in WalkDir::new(&path)
-            .follow_links(false)
-            .into_iter()
-            .filter_map(Result::ok)
-        {
-            if !entry.file_type().is_file() {
-                continue;
-            }
-            let entry_path = entry.path().to_path_buf();
-            if is_sysml_like(&entry_path) {
-                files.insert(entry_path);
-            }
-        }
-    }
-    Ok(files.into_iter().collect())
-}
-
-fn normalize_existing_path(path: &Path) -> Result<PathBuf, String> {
-    let path = path
-        .canonicalize()
-        .map_err(|err| format!("Failed to resolve {}: {err}", path.display()))?;
-    if !path.exists() {
-        return Err(format!("Path does not exist: {}", path.display()));
-    }
-    Ok(path)
-}
-
-fn is_sysml_like(path: &Path) -> bool {
-    matches!(
-        path.extension().and_then(|ext| ext.to_str()),
-        Some("sysml") | Some("kerml")
-    )
-}
-
-fn path_to_file_url(path: &Path) -> Result<Url, String> {
-    Url::from_file_path(path)
-        .map(|uri| util::normalize_file_uri(&uri))
-        .map_err(|_| format!("Could not convert {} to file:// URL.", path.display()))
-}
-
-fn collect_diagnostics_for_document(
-    state: &ServerState,
-    config: &Arc<Spec42Config>,
-    uri: &Url,
-    text: &str,
-) -> Vec<Diagnostic> {
-    diagnostics_core::collect_document_diagnostics(
-        &state.semantic_graph,
-        &state.library_paths,
-        &config.check_providers,
-        uri,
-        text,
-        true,
-    )
+    pipeline::validate_paths(config, request)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use tower_lsp::lsp_types::NumberOrString;
 
     fn timer_like_model() -> &'static str {
         r#"
