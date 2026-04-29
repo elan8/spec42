@@ -945,7 +945,7 @@ fn unresolved_specializes_reference_is_emitted_for_multi_base_with_missing_targe
     let root = kernel::sysml_v2::parse(content).expect("parse");
     let uri = tower_lsp::lsp_types::Url::parse("file:///multi_base_missing_specializes.sysml")
         .expect("uri");
-    let mut graph = kernel::semantic_model::build_graph_from_doc(&root, &uri);
+    let mut graph = kernel::semantic::build_graph_from_doc(&root, &uri);
     let child_id = graph
         .nodes_for_uri(&uri)
         .into_iter()
@@ -960,7 +960,7 @@ fn unresolved_specializes_reference_is_emitted_for_multi_base_with_missing_targe
             "specializes".to_string(),
             serde_json::json!(["RobotPlatform", "MissingBase", "MissionProfile"]),
         );
-    kernel::semantic_model::add_cross_document_edges_for_uri(&mut graph, &uri);
+    kernel::semantic::add_cross_document_edges_for_uri(&mut graph, &uri);
     let diagnostics = kernel::compute_semantic_diagnostics(&graph, &uri);
     let found_unresolved_specializes = diagnostics.iter().any(|diagnostic| {
         diagnostic.source.as_deref() == Some("semantic")
