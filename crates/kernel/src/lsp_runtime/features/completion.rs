@@ -365,18 +365,19 @@ fn collect_snippet_candidates(
     out: &mut Vec<CompletionCandidate>,
 ) {
     match context {
-        CompletionContext::DeclarationModifier { keyword, .. } => {
-            if DECLARATION_MODIFIER_KEYWORDS.contains(&"def") {
-                out.push(snippet_candidate(
-                    "def",
-                    format!("{keyword} definition"),
-                    "Declare a reusable definition",
-                    "def ${1:Name} {\n\t$0\n}",
-                    CompletionItemKind::SNIPPET,
-                    edit_shape,
-                ));
-            }
+        CompletionContext::DeclarationModifier { keyword, .. }
+            if DECLARATION_MODIFIER_KEYWORDS.contains(&"def") =>
+        {
+            out.push(snippet_candidate(
+                "def",
+                format!("{keyword} definition"),
+                "Declare a reusable definition",
+                "def ${1:Name} {\n\t$0\n}",
+                CompletionItemKind::SNIPPET,
+                edit_shape,
+            ));
         }
+        CompletionContext::DeclarationModifier { .. } => {}
         CompletionContext::TopLevelKeyword { .. } | CompletionContext::BodyStatement { .. } => {
             let mut part_def_candidate = snippet_candidate(
                 "part def",

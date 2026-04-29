@@ -201,12 +201,10 @@ fn find_block_end(lines: &[&str], start_line: usize) -> Option<usize> {
                     depth += 1;
                     seen_open = true;
                 }
-                '}' => {
-                    if seen_open {
-                        depth -= 1;
-                        if depth == 0 {
-                            return Some(idx);
-                        }
+                '}' if seen_open => {
+                    depth -= 1;
+                    if depth == 0 {
+                        return Some(idx);
                     }
                 }
                 _ => {}

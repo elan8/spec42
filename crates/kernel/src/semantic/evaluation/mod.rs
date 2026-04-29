@@ -575,10 +575,7 @@ where
             return None;
         }
         self.eat_char();
-        loop {
-            let Some(ch) = self.peek_char() else {
-                break;
-            };
+        while let Some(ch) = self.peek_char() {
             if ch.is_ascii_alphanumeric() || ch == '_' {
                 self.eat_char();
                 continue;
