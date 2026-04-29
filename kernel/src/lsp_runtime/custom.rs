@@ -273,6 +273,83 @@ pub(crate) fn software_project_view_result(
     ))
 }
 
+pub(crate) fn sysml_library_search_result(
+    state: &ServerState,
+    params: serde_json::Value,
+) -> Result<dto::SysmlLibrarySearchResultDto> {
+    let params: dto::SysmlLibrarySearchParamsDto = serde_json::from_value(params)
+        .map_err(|error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()))?;
+    let query = params.query.trim().to_lowercase();
+    let limit = params.limit.unwrap_or(100).clamp(1, 500);
+
+    let mut ranked: Vec<(i64, &crate::language::SymbolEntry)> = state
+        .symbol_table
+        .iter()
+        .filter(|entry| crate::common::util::uri_under_any_library(&entry.uri, &state.library_paths))
+        .filter_map(|entry| {
+            let normalized_name = crate::workspace::library_search::normalized_library_symbol_name(
+                entry,
+                state.index.get(&entry.uri),
+            );
+            let score = if query.is_empty() {
+                1_000
+            } else {
+                crate::workspace::library_search::library_search_score(&normalized_name, &query)?
+            };
+            Some((score, entry))
+        })
+        .collect();
+
+    if query.is_empty() {
+        ranked.sort_by(|(_, entry_a), (_, entry_b)| {
+            entry_a
+                .uri
+                .path()
+                .cmp(entry_b.uri.path())
+                .then(entry_a.name.cmp(&entry_b.name))
+        });
+    } else {
+        ranked.sort_by(|(score_a, entry_a), (score_b, entry_b)| {
+            score_b
+                .cmp(score_a)
+                .then(entry_a.name.len().cmp(&entry_b.name.len()))
+                .then(entry_a.name.cmp(&entry_b.name))
+        });
+    }
+
+    let total = ranked.len();
+    let effective_limit = if query.is_empty() { total } else { limit };
+    let items: Vec<crate::workspace::library_search::LibrarySearchItem> = ranked
+        .into_iter()
+        .take(effective_limit)
+        .map(|(score, entry)| crate::workspace::library_search::LibrarySearchItem {
+            name: crate::workspace::library_search::normalized_library_symbol_name(
+                entry,
+                state.index.get(&entry.uri),
+            ),
+            kind: crate::workspace::library_search::symbol_kind_label(entry.kind).to_string(),
+            container: entry.container_name.clone(),
+            uri: entry.uri.to_string(),
+            range: entry.range,
+            score,
+            source: crate::workspace::library_search::library_source_label(&entry.uri).to_string(),
+            path: entry.uri.path().to_string(),
+        })
+        .collect();
+
+    let domain_sources = crate::workspace::library_search::build_library_tree(items);
+    let sources = crate::views::library_search_adapter::to_dto_sources(domain_sources);
+    let symbol_total = sources
+        .iter()
+        .map(|src| src.packages.iter().map(|pkg| pkg.symbols.len()).sum::<usize>())
+        .sum();
+    Ok(dto::SysmlLibrarySearchResultDto {
+        sources,
+        symbol_total,
+        total,
+    })
+}
+
 pub(crate) fn sysml_server_stats_result(
     state: &ServerState,
     start_time: Instant,

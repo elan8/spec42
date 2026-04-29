@@ -5,9 +5,18 @@ mod keywords;
 mod position;
 mod symbols;
 
-pub use keywords::*;
-pub use position::*;
-pub use symbols::*;
+pub use keywords::{
+    RESERVED_KEYWORDS, is_reserved_keyword, keyword_doc, keyword_hover_markdown, sysml_keywords,
+};
+pub use position::{
+    SourcePosition, SourceRange, completion_prefix, line_prefix_at_position, position_to_byte_offset,
+    source_position_to_range, source_range_to_range, word_at_position,
+};
+pub use symbols::{
+    SymbolEntry, collect_definition_ranges, collect_document_symbols, collect_folding_ranges,
+    collect_named_elements, collect_symbol_entries, document_symbols_to_workspace_symbols,
+    find_reference_ranges,
+};
 
 use crate::syntax::ast_util::identification_name;
 use sysml_v2_parser::ast::{PackageBody, RootElement};

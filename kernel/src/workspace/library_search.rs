@@ -2,8 +2,33 @@ use std::collections::BTreeMap;
 
 use tower_lsp::lsp_types::{Range, SymbolKind, Url};
 
-use crate::views::dto;
 use crate::workspace::IndexEntry;
+
+#[derive(Debug, Clone)]
+pub(crate) struct LibrarySearchItem {
+    pub(crate) name: String,
+    pub(crate) kind: String,
+    pub(crate) container: Option<String>,
+    pub(crate) uri: String,
+    pub(crate) range: Range,
+    pub(crate) score: i64,
+    pub(crate) source: String,
+    pub(crate) path: String,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct LibrarySearchPackage {
+    pub(crate) name: String,
+    pub(crate) path: String,
+    pub(crate) source: String,
+    pub(crate) symbols: Vec<LibrarySearchItem>,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct LibrarySearchSource {
+    pub(crate) source: String,
+    pub(crate) packages: Vec<LibrarySearchPackage>,
+}
 
 pub(crate) fn symbol_kind_label(kind: SymbolKind) -> &'static str {
     match kind {
@@ -100,9 +125,9 @@ fn is_valid_decl_name(token: &str) -> bool {
 }
 
 pub(crate) fn build_library_tree(
-    items: Vec<dto::SysmlLibrarySearchItemDto>,
-) -> Vec<dto::SysmlLibrarySearchSourceDto> {
-    let mut by_source: BTreeMap<String, BTreeMap<String, Vec<dto::SysmlLibrarySearchItemDto>>> =
+    items: Vec<LibrarySearchItem>,
+) -> Vec<LibrarySearchSource> {
+    let mut by_source: BTreeMap<String, BTreeMap<String, Vec<LibrarySearchItem>>> =
         BTreeMap::new();
     let mut package_name_by_source_path: BTreeMap<(String, String), String> = BTreeMap::new();
 
@@ -147,7 +172,7 @@ pub(crate) fn build_library_tree(
                 .first()
                 .map(|s| s.path.clone())
                 .unwrap_or_else(|| package_name.clone());
-            packages.push(dto::SysmlLibrarySearchPackageDto {
+            packages.push(LibrarySearchPackage {
                 name: package_name,
                 path,
                 source: source.clone(),
@@ -156,7 +181,7 @@ pub(crate) fn build_library_tree(
         }
 
         packages.sort_by(|a, b| a.name.cmp(&b.name));
-        out.push(dto::SysmlLibrarySearchSourceDto { source, packages });
+        out.push(LibrarySearchSource { source, packages });
     }
 
     out

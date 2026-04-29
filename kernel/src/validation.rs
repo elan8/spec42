@@ -3,9 +3,10 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use serde::Serialize;
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Position, Range, Url};
+use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Url};
 use walkdir::WalkDir;
 
+use crate::analysis::diagnostics_core;
 use crate::common::util;
 use crate::host::config::Spec42Config;
 use crate::workspace::{
@@ -280,99 +281,14 @@ fn collect_diagnostics_for_document(
     uri: &Url,
     text: &str,
 ) -> Vec<Diagnostic> {
-    let mut diagnostics = Vec::new();
-    let result = util::parse_for_editor(text);
-    for error in &result.errors {
-        let range = error
-            .to_lsp_range()
-            .map(|(sl, sc, el, ec)| Range {
-                start: Position::new(sl, sc),
-                end: Position::new(el, ec),
-            })
-            .unwrap_or_else(|| Range {
-                start: Position::new(0, 0),
-                end: Position::new(0, 0),
-            });
-        let severity = error
-            .severity
-            .map(|severity| match severity {
-                sysml_v2_parser::DiagnosticSeverity::Error => DiagnosticSeverity::ERROR,
-                sysml_v2_parser::DiagnosticSeverity::Warning => DiagnosticSeverity::WARNING,
-            })
-            .unwrap_or(DiagnosticSeverity::ERROR);
-        diagnostics.push(Diagnostic {
-            range,
-            severity: Some(severity),
-            code: error.code.clone().map(NumberOrString::String),
-            code_description: None,
-            source: Some("sysml".to_string()),
-            message: error.message.clone(),
-            related_information: None,
-            tags: None,
-            data: None,
-        });
-    }
-    for usage in util::untyped_part_usage_diagnostics(text) {
-        diagnostics.push(Diagnostic {
-            range: usage.range,
-            severity: Some(DiagnosticSeverity::WARNING),
-            code: Some(NumberOrString::String("untyped_part_usage".to_string())),
-            code_description: None,
-            source: Some("sysml".to_string()),
-            message: format!("Part '{}' has no declared type.", usage.name),
-            related_information: None,
-            tags: None,
-            data: None,
-        });
-    }
-    if result.errors.is_empty() {
-        for provider in &config.check_providers {
-            diagnostics.extend(provider.compute_diagnostics(&state.semantic_graph, uri));
-        }
-        let has_unresolved_type_reference = diagnostics.iter().any(|diagnostic| {
-            diagnostic.source.as_deref() == Some("semantic")
-                && diagnostic.code.as_ref()
-                    == Some(&NumberOrString::String(
-                        "unresolved_type_reference".to_string(),
-                    ))
-        });
-        let has_unresolved_import_target = diagnostics.iter().any(|diagnostic| {
-            diagnostic.source.as_deref() == Some("semantic")
-                && diagnostic.code.as_ref()
-                    == Some(&NumberOrString::String(
-                        "unresolved_import_target".to_string(),
-                    ))
-        });
-        let has_unresolved_specializes_reference = diagnostics.iter().any(|diagnostic| {
-            diagnostic.source.as_deref() == Some("semantic")
-                && diagnostic.code.as_ref()
-                    == Some(&NumberOrString::String(
-                        "unresolved_specializes_reference".to_string(),
-                    ))
-        });
-        if (has_unresolved_type_reference
-            || has_unresolved_import_target
-            || has_unresolved_specializes_reference)
-            && state.library_paths.is_empty()
-        {
-            if let Some(import_range) = util::import_statement_ranges(text).into_iter().next() {
-                diagnostics.push(Diagnostic {
-                    range: import_range,
-                    severity: Some(DiagnosticSeverity::INFORMATION),
-                    code: Some(NumberOrString::String(
-                        "missing_library_context".to_string(),
-                    )),
-                    code_description: None,
-                    source: Some("semantic".to_string()),
-                    message: "This document imports external library symbols, but no SysML library paths are configured or indexed. Install or configure a library if these references should resolve.".to_string(),
-                    related_information: None,
-                    tags: None,
-                    data: None,
-                });
-            }
-        }
-    }
-    diagnostics
+    diagnostics_core::collect_document_diagnostics(
+        &state.semantic_graph,
+        &state.library_paths,
+        &config.check_providers,
+        uri,
+        text,
+        true,
+    )
 }
 
 #[cfg(test)]

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
-    ActionDefBody, ActionDefBodyElement, ConnectionDefBody, InOut, InterfaceDefBody, PackageBody,
+    ActionDefBody, ActionDefBodyElement, ConnectionDefBody, InOut, InterfaceDefBody,
     PackageBodyElement, PartDefBody, PartUsageBody, PortDefBody, StateDefBody, UseCaseDefBody,
 };
 use sysml_v2_parser::RootNamespace;
@@ -19,6 +19,7 @@ use crate::semantic::relationships::{
 use super::expressions;
 use super::modeled_kerml_name::extract_modeled_decl_name;
 use super::{add_node_and_recurse, qualified_name_for_node};
+use super::package_packages;
 use super::{interface_def, part_def, part_usage, port_def, state, stubs, use_case};
 
 pub(super) fn build_from_package_body_element(
@@ -32,85 +33,26 @@ pub(super) fn build_from_package_body_element(
     use sysml_v2_parser::ast::PackageBodyElement as PBE;
     match &node.value {
         PBE::Package(pkg_node) => {
-            let name = identification_name(&pkg_node.identification);
-            let name_display = if name.is_empty() {
-                "(top level)"
-            } else {
-                name.as_str()
-            };
-            let qualified =
-                qualified_name_for_node(g, uri, container_prefix, name_display, "package");
-            let node_id = NodeId::new(uri, &qualified);
-            add_node_and_recurse(
-                g,
+            package_packages::build_nested_package(
+                pkg_node,
                 uri,
-                &qualified,
-                "package",
-                name_display.to_string(),
-                span_to_range(&pkg_node.span),
-                HashMap::new(),
+                container_prefix,
                 parent_id,
+                root,
+                g,
+                build_from_package_body_element,
             );
-            let prefix = if name.is_empty() {
-                container_prefix.map(str::to_string)
-            } else {
-                Some(qualified.clone())
-            };
-            if let PackageBody::Brace { elements } = &pkg_node.body {
-                for child in elements {
-                    build_from_package_body_element(
-                        child,
-                        uri,
-                        prefix.as_deref(),
-                        Some(&node_id),
-                        root,
-                        g,
-                    );
-                }
-            }
         }
         PBE::LibraryPackage(pkg_node) => {
-            let name = identification_name(&pkg_node.identification);
-            let name_display = if name.is_empty() {
-                "(top level)"
-            } else {
-                name.as_str()
-            };
-            let qualified =
-                qualified_name_for_node(g, uri, container_prefix, name_display, "package");
-            let node_id = NodeId::new(uri, &qualified);
-            let mut attrs = HashMap::new();
-            attrs.insert(
-                "isStandardLibrary".to_string(),
-                serde_json::json!(pkg_node.is_standard),
-            );
-            add_node_and_recurse(
-                g,
+            package_packages::build_nested_library_package(
+                pkg_node,
                 uri,
-                &qualified,
-                "package",
-                name_display.to_string(),
-                span_to_range(&pkg_node.span),
-                attrs,
+                container_prefix,
                 parent_id,
+                root,
+                g,
+                build_from_package_body_element,
             );
-            let prefix = if name.is_empty() {
-                container_prefix.map(str::to_string)
-            } else {
-                Some(qualified.clone())
-            };
-            if let PackageBody::Brace { elements } = &pkg_node.body {
-                for child in elements {
-                    build_from_package_body_element(
-                        child,
-                        uri,
-                        prefix.as_deref(),
-                        Some(&node_id),
-                        root,
-                        g,
-                    );
-                }
-            }
         }
         PBE::PartDef(pd_node) => {
             let name = identification_name(&pd_node.identification);

@@ -2,6 +2,7 @@ pub(crate) mod dto;
 pub(crate) mod extracted_model;
 pub mod feature_inspector;
 pub(crate) mod ibd;
+pub(crate) mod library_search_adapter;
 pub mod model;
 pub(crate) mod model_projection;
 pub(crate) mod sequence_views;

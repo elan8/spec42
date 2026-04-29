@@ -6,6 +6,7 @@ pub(crate) mod import_resolution;
 pub(crate) mod model;
 pub mod presentation;
 pub(crate) mod reference_resolution;
+pub(crate) mod resolution;
 pub(crate) mod relationships;
 pub(crate) mod root_element;
 pub(crate) mod workspace_uri;

@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, SemanticNode};
-use crate::semantic::relationships::{normalize_for_lookup, type_ref_candidates_with_kind};
+use crate::semantic::resolution::naming::{normalize_for_lookup, type_ref_candidates_with_kind};
 
 const TYPE_DISAMBIGUATION_SUFFIX_KINDS: &[&str] = &[
     "part_def",
