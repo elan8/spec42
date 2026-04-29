@@ -1,9 +1,9 @@
 [workspace]
 resolver = "2"
 members = [
-  "kernel",
-  "plugins",
-  "server",
+  "crates/kernel",
+  "crates/plugins",
+  "crates/server",
 ]
 
 [workspace.package]

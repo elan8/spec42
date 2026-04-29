@@ -93,7 +93,7 @@ fn collect_import_violations(root: &Path, forbidden_packages: &BTreeSet<String>)
 
 #[test]
 fn technical_and_cross_cutting_do_not_import_business_packages() {
-    let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
+    let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..");
     let domain_root = repo_root.join("domain-libraries");
     let technical_root = domain_root.join("technical");
     let cross_cutting_root = domain_root.join("cross-cutting");
@@ -120,7 +120,7 @@ fn technical_and_cross_cutting_do_not_import_business_packages() {
 
 #[test]
 fn technical_electronics_does_not_import_business_packages() {
-    let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
+    let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..");
     let domain_root = repo_root.join("domain-libraries");
     let electronics_root = domain_root.join("technical").join("electronics");
     let business_root = domain_root.join("business");

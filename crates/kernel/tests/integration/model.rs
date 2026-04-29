@@ -838,7 +838,7 @@ fn lsp_sysml_model_connected_blocks_fixture_exposes_interconnection_view_source_
     let uri = "file:///connected_blocks_fixture_test.sysml";
     let content = std::fs::read_to_string(
         std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("..")
+            .join("../..")
             .join("vscode")
             .join("testFixture")
             .join("workspaces")
@@ -1437,7 +1437,7 @@ fn lsp_sysml_model_ibd_kitchen_timer_interface_connects_produce_connectors() {
     let uri = "file:///kitchen_timer_interface_connect_test.sysml";
     let content = std::fs::read_to_string(
         std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("..")
+            .join("../..")
             .join("vscode")
             .join("testFixture")
             .join("workspaces")

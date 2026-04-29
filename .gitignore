@@ -14,3 +14,4 @@ internal_docs/
 scripts/code-scanning-export/
 code-scanning-export/
 tmp/
+crates/kernel/tests/output/*
