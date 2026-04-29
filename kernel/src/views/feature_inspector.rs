@@ -4,7 +4,7 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::{Position, Url};
 
 use crate::common::util;
-use crate::semantic_model::{RelationshipKind, SemanticGraph, SemanticNode};
+use crate::semantic::{RelationshipKind, SemanticGraph, SemanticNode};
 use crate::views::dto::{
     range_to_dto, PositionDto, SysmlFeatureInspectorElementDto, SysmlFeatureInspectorElementRefDto,
     SysmlFeatureInspectorParamsDto, SysmlFeatureInspectorRelationshipDto,

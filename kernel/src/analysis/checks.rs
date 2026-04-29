@@ -10,7 +10,7 @@ use std::collections::HashSet;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, Url};
 
 use crate::analysis::helpers::*;
-use crate::semantic_model::{resolve_member_via_type, NodeId, ResolveResult, SemanticGraph};
+use crate::semantic::{resolve_member_via_type, NodeId, ResolveResult, SemanticGraph};
 use builder_diagnostics::should_suppress_builder_diagnostic;
 use import_resolution::{has_import_in_scope, import_target, import_target_resolves};
 
@@ -187,7 +187,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
         let has_resolved_type = !graph
             .outgoing_typing_or_specializes_targets(node)
             .is_empty();
-        let resolved_via_import_scope = !crate::semantic_model::resolve_type_reference_targets(
+        let resolved_via_import_scope = !crate::semantic::resolve_type_reference_targets(
             graph,
             node,
             type_ref,
@@ -298,7 +298,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
             if normalized.is_empty() || is_builtin_type_ref(&normalized) {
                 continue;
             }
-            let resolved_via_import_scope = !crate::semantic_model::resolve_type_reference_targets(
+            let resolved_via_import_scope = !crate::semantic::resolve_type_reference_targets(
                 graph,
                 node,
                 &specializes_ref,
@@ -466,7 +466,7 @@ impl crate::host::config::SemanticCheckProvider for DefaultSemanticChecks {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::semantic_model::{
+    use crate::semantic::{
         add_cross_document_edges_for_uri, build_graph_from_doc, SemanticNode,
     };
     use tower_lsp::lsp_types::{Position, Range};
@@ -841,7 +841,7 @@ mod tests {
                 "specializes".to_string(),
                 serde_json::json!(["BaseA", "MissingBase"]),
             );
-        crate::semantic_model::add_cross_document_edges_for_uri(&mut graph, &uri);
+        crate::semantic::add_cross_document_edges_for_uri(&mut graph, &uri);
 
         let diags = compute_semantic_diagnostics(&graph, &uri);
         let unresolved_specializes: Vec<_> = diags

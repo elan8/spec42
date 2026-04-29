@@ -1,8 +1,8 @@
-use crate::semantic_model::SemanticGraph;
+use crate::semantic::SemanticGraph;
 
 pub(super) fn has_import_in_scope(
     graph: &SemanticGraph,
-    node: &crate::semantic_model::SemanticNode,
+    node: &crate::semantic::SemanticNode,
 ) -> bool {
     let mut current = Some(node.id.clone());
     while let Some(node_id) = current {
@@ -38,7 +38,7 @@ fn is_namespace_kind(kind: &str) -> bool {
     )
 }
 
-pub(super) fn import_target(node: &crate::semantic_model::SemanticNode) -> Option<&str> {
+pub(super) fn import_target(node: &crate::semantic::SemanticNode) -> Option<&str> {
     node.attributes
         .get("importTarget")
         .and_then(|value| value.as_str())
@@ -46,7 +46,7 @@ pub(super) fn import_target(node: &crate::semantic_model::SemanticNode) -> Optio
         .filter(|value| !value.is_empty())
 }
 
-fn import_is_all(node: &crate::semantic_model::SemanticNode) -> bool {
+fn import_is_all(node: &crate::semantic::SemanticNode) -> bool {
     node.attributes
         .get("importAll")
         .and_then(|value| value.as_bool())
@@ -88,7 +88,7 @@ fn has_node_with_qualified_name_or_disambiguated_variant(
 
 pub(super) fn import_target_resolves(
     graph: &SemanticGraph,
-    import_node: &crate::semantic_model::SemanticNode,
+    import_node: &crate::semantic::SemanticNode,
 ) -> bool {
     let Some(target) = import_target(import_node) else {
         return false;

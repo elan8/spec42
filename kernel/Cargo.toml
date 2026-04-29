@@ -12,7 +12,7 @@ name = "kernel"
 [dependencies]
 plugins = { path = "../plugins" }
 sysml-v2-parser = { workspace = true }
-semantic-model-crate = { package = "semantic-model", path = "../semantic-model" }
+petgraph = { workspace = true }
 tower-lsp = "0.20"
 tokio = { version = "1", features = ["full"] }
 walkdir = "2"

@@ -455,7 +455,7 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
 
         let uri_norm =
             util::normalize_file_uri(&url::Url::from_file_path(&drone_path).expect("drone uri"));
-        let g = semantic_model_crate::build_graph_from_doc(&root, &uri_norm);
+        let g = kernel::semantic::build_graph_from_doc(&root, &uri_norm);
         let action_def_count = g
             .nodes_for_uri(&uri_norm)
             .iter()

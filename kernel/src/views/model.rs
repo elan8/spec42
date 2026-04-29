@@ -11,7 +11,7 @@ use tower_lsp::Client;
 use sysml_v2_parser::RootNamespace;
 
 use crate::common::util;
-use crate::semantic_model;
+use crate::semantic;
 use crate::views::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, RelationshipDto, SysmlElementDto, SysmlGraphDto,
     SysmlModelResultDto, SysmlModelStatsDto, WorkspaceFileModelDto, WorkspaceModelDto,
@@ -34,7 +34,7 @@ fn canonical_general_view_graph(graph: &SysmlGraphDto, include_all_roots: bool) 
 }
 
 fn build_workspace_graph_dto(
-    semantic_graph: &semantic_model::SemanticGraph,
+    semantic_graph: &semantic::SemanticGraph,
     library_paths: &[Url],
 ) -> SysmlGraphDto {
     model_projection::build_workspace_graph_dto(semantic_graph, library_paths)
@@ -45,7 +45,7 @@ fn strip_synthetic_nodes(graph: &SysmlGraphDto) -> SysmlGraphDto {
 }
 
 fn build_document_graph_dto(
-    semantic_graph: &semantic_model::SemanticGraph,
+    semantic_graph: &semantic::SemanticGraph,
     uri: &Url,
 ) -> SysmlGraphDto {
     let nodes: Vec<GraphNodeDto> = semantic_graph
@@ -277,7 +277,7 @@ fn merge_two_elements(a: &SysmlElementDto, b: &SysmlElementDto) -> SysmlElementD
 }
 
 fn build_workspace_model_dto(
-    semantic_graph: &semantic_model::SemanticGraph,
+    semantic_graph: &semantic::SemanticGraph,
     library_paths: &[Url],
 ) -> WorkspaceModelDto {
     let workspace_uris = semantic_graph.workspace_uris_excluding_libraries(library_paths);
@@ -357,7 +357,7 @@ const TYPING_ATTRIBUTE_KEYS: &[&str] = &[
     "parameterType",
 ];
 
-fn node_expects_resolution(node: &semantic_model::SemanticNode) -> bool {
+fn node_expects_resolution(node: &semantic::SemanticNode) -> bool {
     TYPING_ATTRIBUTE_KEYS
         .iter()
         .any(|key| node.attributes.get(*key).and_then(|v| v.as_str()).is_some())
@@ -368,7 +368,7 @@ fn node_expects_resolution(node: &semantic_model::SemanticNode) -> bool {
             .is_some()
 }
 
-fn count_resolution_stats(semantic_graph: &semantic_model::SemanticGraph, uri: &Url) -> (u32, u32) {
+fn count_resolution_stats(semantic_graph: &semantic::SemanticGraph, uri: &Url) -> (u32, u32) {
     let mut resolved = 0_u32;
     let mut unresolved = 0_u32;
 
@@ -396,7 +396,7 @@ pub async fn build_sysml_model_response(
     parsed: Option<&RootNamespace>,
     parse_time_ms: u32,
     parse_cached: bool,
-    semantic_graph: &semantic_model::SemanticGraph,
+    semantic_graph: &semantic::SemanticGraph,
     uri: &Url,
     library_paths: &[Url],
     scope: &[String],

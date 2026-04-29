@@ -1,6 +1,6 @@
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Position, Range};
 
-use crate::semantic_model::{NodeId, SemanticGraph, SemanticNode};
+use crate::semantic::{NodeId, SemanticGraph, SemanticNode};
 use crate::views::ibd;
 
 pub(super) fn is_port_like(kind: &str) -> bool {

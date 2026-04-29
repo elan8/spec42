@@ -4,7 +4,7 @@
 use serde::Serialize;
 use tower_lsp::lsp_types::Url;
 
-use crate::semantic_model::{NodeId, RelationshipKind, SemanticGraph, SemanticNode};
+use crate::semantic::{NodeId, RelationshipKind, SemanticGraph, SemanticNode};
 
 fn is_part_like(kind: &str) -> bool {
     let k = kind.to_lowercase();

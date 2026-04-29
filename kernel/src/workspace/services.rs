@@ -1,5 +1,5 @@
 use crate::common::util;
-use crate::semantic_model;
+use crate::semantic;
 use crate::workspace::library_search;
 use crate::workspace::state::{IndexEntry, ParseMetadata, ScanSummary, ServerState};
 use std::time::Instant;
@@ -207,17 +207,17 @@ fn update_semantic_graph_for_uri(
 ) {
     state.semantic_graph.remove_nodes_for_uri(uri);
     if let Some(doc) = doc {
-        let new_graph = semantic_model::build_graph_from_doc(doc, uri);
+        let new_graph = semantic::build_graph_from_doc(doc, uri);
         state.semantic_graph.merge(new_graph);
-        semantic_model::add_cross_document_edges_for_uri(&mut state.semantic_graph, uri);
+        semantic::add_cross_document_edges_for_uri(&mut state.semantic_graph, uri);
         if evaluate {
-            semantic_model::evaluate_expressions(&mut state.semantic_graph);
+            semantic::evaluate_expressions(&mut state.semantic_graph);
         }
     }
 }
 
 fn refresh_symbols_for_uri(state: &mut ServerState, uri: &Url) {
-    let mut new_entries = semantic_model::symbol_entries_for_uri(&state.semantic_graph, uri);
+    let mut new_entries = semantic::symbol_entries_for_uri(&state.semantic_graph, uri);
     if let Some(index_entry) = state.index.get(uri) {
         library_search::add_short_name_symbol_entries(&mut new_entries, &index_entry.content, uri);
     }
@@ -307,7 +307,7 @@ pub(crate) fn ingest_parsed_scan_entries(
         );
         loaded.push((uri_norm, warning));
     }
-    semantic_model::evaluate_expressions(&mut state.semantic_graph);
+    semantic::evaluate_expressions(&mut state.semantic_graph);
     loaded
 }
 
@@ -471,7 +471,7 @@ pub(crate) fn rebuild_all_document_links(
                 .map(|(uri, parsed)| {
                     (
                         uri.clone(),
-                        semantic_model::build_graph_from_doc(&parsed, &uri),
+                        semantic::build_graph_from_doc(&parsed, &uri),
                     )
                 })
                 .collect::<Vec<_>>()
@@ -507,7 +507,7 @@ pub(crate) fn rebuild_all_document_links(
         cross_handles.push(std::thread::spawn(move || {
             let mut edges = Vec::new();
             for uri in bucket {
-                edges.extend(semantic_model::resolve_cross_document_edges_for_uri(
+                edges.extend(semantic::resolve_cross_document_edges_for_uri(
                     &graph_ref, &uri,
                 ));
             }
@@ -534,13 +534,13 @@ pub(crate) fn rebuild_all_document_links(
             }
         }
     }
-    semantic_model::evaluate_expressions(&mut state.semantic_graph);
+    semantic::evaluate_expressions(&mut state.semantic_graph);
     let cross_document_edges_ms = elapsed_ms(cross_document_edges_start);
 
     let refresh_symbols_start = Instant::now();
     let mut all_symbols = Vec::new();
     for uri in &uris {
-        let mut new_entries = semantic_model::symbol_entries_for_uri(&state.semantic_graph, uri);
+        let mut new_entries = semantic::symbol_entries_for_uri(&state.semantic_graph, uri);
         if let Some(index_entry) = state.index.get(uri) {
             library_search::add_short_name_symbol_entries(
                 &mut new_entries,
@@ -571,7 +571,7 @@ pub(crate) fn rebuild_semantic_graph_staged(
     index: &std::collections::HashMap<Url, IndexEntry>,
     _library_paths: &[Url],
 ) -> (
-    semantic_model::SemanticGraph,
+    semantic::SemanticGraph,
     Vec<crate::language::SymbolEntry>,
     RebuildAllDocumentLinksMetrics,
 ) {
@@ -588,7 +588,7 @@ pub(crate) fn rebuild_semantic_graph_staged(
         })
         .collect();
 
-    let mut semantic_graph = semantic_model::SemanticGraph::new();
+    let mut semantic_graph = semantic::SemanticGraph::new();
 
     let rebuild_graphs_start = Instant::now();
     let worker_count = std::thread::available_parallelism()
@@ -611,7 +611,7 @@ pub(crate) fn rebuild_semantic_graph_staged(
                 .map(|(uri, parsed)| {
                     (
                         uri.clone(),
-                        semantic_model::build_graph_from_doc(&parsed, &uri),
+                        semantic::build_graph_from_doc(&parsed, &uri),
                     )
                 })
                 .collect::<Vec<_>>()
@@ -640,7 +640,7 @@ pub(crate) fn rebuild_semantic_graph_staged(
         cross_handles.push(std::thread::spawn(move || {
             let mut edges = Vec::new();
             for uri in bucket {
-                edges.extend(semantic_model::resolve_cross_document_edges_for_uri(
+                edges.extend(semantic::resolve_cross_document_edges_for_uri(
                     &graph_ref, &uri,
                 ));
             }
@@ -661,13 +661,13 @@ pub(crate) fn rebuild_semantic_graph_staged(
             }
         }
     }
-    semantic_model::evaluate_expressions(&mut semantic_graph);
+    semantic::evaluate_expressions(&mut semantic_graph);
     let cross_document_edges_ms = elapsed_ms(cross_document_edges_start);
 
     let refresh_symbols_start = Instant::now();
     let mut all_symbols = Vec::new();
     for uri in &uris {
-        let mut new_entries = semantic_model::symbol_entries_for_uri(&semantic_graph, uri);
+        let mut new_entries = semantic::symbol_entries_for_uri(&semantic_graph, uri);
         if let Some(index_entry) = index.get(uri) {
             library_search::add_short_name_symbol_entries(
                 &mut new_entries,
@@ -727,7 +727,7 @@ mod tests {
         state: &'a ServerState,
         uri: &Url,
         name: &str,
-    ) -> &'a crate::semantic_model::SemanticNode {
+    ) -> &'a crate::semantic::SemanticNode {
         state
             .semantic_graph
             .nodes_for_uri(uri)

@@ -1,5 +1,5 @@
 use crate::language::SymbolEntry;
-use crate::semantic_model;
+use crate::semantic;
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
 
@@ -27,7 +27,7 @@ pub(crate) struct ServerState {
     pub(crate) semantic_state_version: u64,
     pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
     pub(crate) symbol_table: Vec<SymbolEntry>,
-    pub(crate) semantic_graph: semantic_model::SemanticGraph,
+    pub(crate) semantic_graph: semantic::SemanticGraph,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

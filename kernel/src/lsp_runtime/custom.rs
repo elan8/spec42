@@ -293,7 +293,7 @@ pub(crate) fn sysml_clear_cache_result(state: &mut ServerState) -> dto::SysmlCle
     let syms = state.symbol_table.len();
     state.index.clear();
     state.symbol_table.clear();
-    state.semantic_graph = crate::semantic_model::SemanticGraph::default();
+    state.semantic_graph = crate::semantic::SemanticGraph::default();
     dto::SysmlClearCacheResultDto {
         documents: docs,
         symbol_tables: syms,

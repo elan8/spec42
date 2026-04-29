@@ -1,7 +1,7 @@
 use crate::common::util;
 use crate::language::{find_reference_ranges, is_reserved_keyword, word_at_position, SymbolEntry};
-use crate::semantic_model::NodeId;
-use crate::semantic_model::ResolveResult;
+use crate::semantic::NodeId;
+use crate::semantic::ResolveResult;
 use crate::workspace::ServerState;
 use std::time::Instant;
 use tower_lsp::lsp_types::{Location, Position, Url};
@@ -315,7 +315,7 @@ fn resolve_owner_member_defs<'a>(
                 .into_iter()
                 .find(|n| n.name == owner_ident)
         })?;
-    let resolved = crate::semantic_model::resolve_member_via_type(
+    let resolved = crate::semantic::resolve_member_via_type(
         &state.semantic_graph,
         owner_node,
         lookup_name,

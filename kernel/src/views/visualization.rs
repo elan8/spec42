@@ -5,7 +5,7 @@ use std::time::Instant;
 use serde_json::json;
 use tower_lsp::lsp_types::Url;
 
-use crate::semantic_model;
+use crate::semantic;
 use crate::software_architecture::{
     analyze_rust_workspace, workspace_contains_rust_code,
     SoftwareAnalysisSummary, SoftwareArchitectureModel, SoftwareComponent,
@@ -65,7 +65,7 @@ fn uri_under_root(uri: &Url, workspace_root_uri: &Url) -> bool {
 }
 
 fn workspace_uris_for_root(
-    semantic_graph: &semantic_model::SemanticGraph,
+    semantic_graph: &semantic::SemanticGraph,
     library_paths: &[Url],
     workspace_root_uri: &Url,
 ) -> Vec<Url> {
@@ -79,7 +79,7 @@ fn workspace_uris_for_root(
 }
 
 fn build_workspace_graph_dto_for_uris(
-    semantic_graph: &semantic_model::SemanticGraph,
+    semantic_graph: &semantic::SemanticGraph,
     workspace_uris: &[Url],
 ) -> SysmlGraphDto {
     let workspace_uri_set: HashSet<Url> = workspace_uris.iter().cloned().collect();
@@ -394,7 +394,7 @@ fn merge_two_elements(a: &SysmlElementDto, b: &SysmlElementDto) -> SysmlElementD
 
 #[allow(dead_code)]
 fn build_workspace_model_dto_for_uris(
-    semantic_graph: &semantic_model::SemanticGraph,
+    semantic_graph: &semantic::SemanticGraph,
     workspace_uris: &[Url],
 ) -> WorkspaceModelDto {
     let mut files = Vec::with_capacity(workspace_uris.len());
@@ -1805,7 +1805,7 @@ pub(crate) fn build_software_visualization_response(
 }
 
 pub(crate) fn build_sysml_visualization_response(
-    semantic_graph: &semantic_model::SemanticGraph,
+    semantic_graph: &semantic::SemanticGraph,
     index: &std::collections::HashMap<Url, crate::workspace::state::IndexEntry>,
     workspace_root_uri: &Url,
     library_paths: &[Url],

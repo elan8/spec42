@@ -1,4 +1,4 @@
-use semantic_model_crate::{SemanticGraph, SemanticNode};
+use crate::semantic::{SemanticGraph, SemanticNode};
 
 fn attr_str<'a>(node: &'a SemanticNode, key: &str) -> Option<&'a str> {
     node.attributes.get(key).and_then(|value| value.as_str())

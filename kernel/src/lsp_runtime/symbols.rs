@@ -1,4 +1,4 @@
-use crate::semantic_model::{RelationshipKind, SemanticNode};
+use crate::semantic::{RelationshipKind, SemanticNode};
 use crate::workspace::ServerState;
 use std::time::Instant;
 use tower_lsp::lsp_types::{CodeLens, Url};

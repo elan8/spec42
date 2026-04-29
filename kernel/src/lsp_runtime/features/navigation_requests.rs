@@ -8,7 +8,7 @@ use crate::common::util;
 use crate::language::{
     find_reference_ranges, is_reserved_keyword, keyword_hover_markdown, word_at_position,
 };
-use crate::semantic_model::{self, ResolveResult};
+use crate::semantic::{self, ResolveResult};
 use crate::workspace::ServerState;
 
 use super::super::lookup_helpers::{
@@ -19,10 +19,10 @@ use super::shared::TYPE_LOOKUP_KINDS;
 
 fn resolve_hover_type_reference_target<'a>(
     state: &'a ServerState,
-    node: &crate::semantic_model::SemanticNode,
+    node: &crate::semantic::SemanticNode,
     word: &str,
     lookup_name: &str,
-) -> Option<&'a crate::semantic_model::SemanticNode> {
+) -> Option<&'a crate::semantic::SemanticNode> {
     let mut candidates = Vec::<String>::new();
     let mut push_candidate = |candidate: String| {
         if !candidate.is_empty() && !candidates.iter().any(|existing| existing == &candidate) {
@@ -42,7 +42,7 @@ fn resolve_hover_type_reference_target<'a>(
     }
 
     for candidate in candidates {
-        if let Some(target_id) = semantic_model::resolve_type_reference_targets(
+        if let Some(target_id) = semantic::resolve_type_reference_targets(
             &state.semantic_graph,
             node,
             &candidate,
@@ -65,7 +65,7 @@ fn resolve_hover_reference_target<'a>(
     uri: &Url,
     pos: Position,
     word: &str,
-) -> Option<&'a crate::semantic_model::SemanticNode> {
+) -> Option<&'a crate::semantic::SemanticNode> {
     let context_node = state
         .semantic_graph
         .find_deepest_node_at_position(uri, pos)
@@ -90,7 +90,7 @@ fn resolve_hover_reference_target<'a>(
     prefixes.push(None);
 
     for prefix in prefixes {
-        let resolved = semantic_model::resolve_expression_endpoint_strict(
+        let resolved = semantic::resolve_expression_endpoint_strict(
             &state.semantic_graph,
             uri,
             prefix.as_deref(),
@@ -167,13 +167,13 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
                         .ends_with(&format!("::{}", lookup_name))
             });
         let markdown = if let Some(target) = target_match.as_ref() {
-            semantic_model::hover_markdown_for_node(
+            semantic::hover_markdown_for_node(
                 &state.semantic_graph,
                 target,
                 target.id.uri != uri_norm,
             )
         } else {
-            semantic_model::hover_markdown_for_node(
+            semantic::hover_markdown_for_node(
                 &state.semantic_graph,
                 node,
                 node.id.uri != uri_norm,
@@ -182,7 +182,7 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
         let markdown = if target_match.is_none() && word != node.name {
             resolve_hover_type_reference_target(state, node, &word, &lookup_name)
                 .map(|target| {
-                    semantic_model::hover_markdown_for_node(
+                    semantic::hover_markdown_for_node(
                         &state.semantic_graph,
                         target,
                         target.id.uri != uri_norm,
@@ -213,7 +213,7 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
         let response = Some(Hover {
             contents: HoverContents::Markup(MarkupContent {
                 kind: MarkupKind::Markdown,
-                value: semantic_model::hover_markdown_for_node(
+                value: semantic::hover_markdown_for_node(
                     &state.semantic_graph,
                     target,
                     target.id.uri != uri_norm,
@@ -377,7 +377,7 @@ pub(crate) fn goto_definition(
             }
         }
         if word != node.name {
-            if let Some(target) = semantic_model::resolve_type_reference_targets(
+            if let Some(target) = semantic::resolve_type_reference_targets(
                 &state.semantic_graph,
                 node,
                 &word,

@@ -1,4 +1,4 @@
-use crate::semantic_model::SemanticNode;
+use crate::semantic::SemanticNode;
 use tower_lsp::lsp_types::{
     CallHierarchyItem, Moniker, MonikerKind, SymbolKind, TypeHierarchyItem, UniquenessLevel,
 };

@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use tower_lsp::lsp_types::{Diagnostic, ServerCapabilities, Url};
 
-use crate::semantic_model::SemanticGraph;
+use crate::semantic::SemanticGraph;
 
 /// Provider of semantic/quality diagnostics. Implement this to add custom checks (e.g. naming rules, complexity).
 pub trait SemanticCheckProvider: Send + Sync {

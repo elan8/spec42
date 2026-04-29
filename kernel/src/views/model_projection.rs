@@ -5,7 +5,7 @@ use std::collections::{HashMap, HashSet};
 use serde_json::{json, Value};
 use tower_lsp::lsp_types::Url;
 
-use crate::semantic_model;
+use crate::semantic;
 use crate::views::dto::{range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlGraphDto};
 
 pub fn canonical_general_view_graph(
@@ -1199,7 +1199,7 @@ mod tests {
 
 #[allow(dead_code)]
 pub fn build_workspace_graph_dto(
-    semantic_graph: &semantic_model::SemanticGraph,
+    semantic_graph: &semantic::SemanticGraph,
     library_paths: &[Url],
 ) -> SysmlGraphDto {
     let sg_nodes = semantic_graph.workspace_nodes_excluding_libraries(library_paths);

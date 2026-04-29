@@ -2,7 +2,7 @@ use tower_lsp::lsp_types::{SymbolKind, Url};
 
 use crate::language::SymbolEntry;
 
-use semantic_model_crate::SemanticGraph;
+use crate::semantic::SemanticGraph;
 
 use super::signature_from_node;
 
@@ -83,7 +83,7 @@ mod tests {
 
     use sysml_v2_parser::parse;
 
-    use crate::semantic_model::build_graph_from_doc;
+    use crate::semantic::build_graph_from_doc;
 
     use super::symbol_entries_for_uri;
 

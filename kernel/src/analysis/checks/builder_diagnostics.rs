@@ -1,13 +1,13 @@
 use tower_lsp::lsp_types::Url;
 
-use crate::semantic_model::{
+use crate::semantic::{
     resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult, SemanticGraph,
 };
 
 pub(super) fn should_suppress_builder_diagnostic(
     graph: &SemanticGraph,
     uri: &Url,
-    node: &crate::semantic_model::SemanticNode,
+    node: &crate::semantic::SemanticNode,
     code: &str,
     message: &str,
 ) -> bool {
@@ -38,7 +38,7 @@ fn extract_single_quoted_value(message: &str) -> Option<String> {
     Some(rest[..end].to_string())
 }
 
-fn diagnostic_container_prefix(node: &crate::semantic_model::SemanticNode) -> &str {
+fn diagnostic_container_prefix(node: &crate::semantic::SemanticNode) -> &str {
     node.id
         .qualified_name
         .rsplit_once("::")
