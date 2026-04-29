@@ -9,8 +9,8 @@ use petgraph::Directed;
 use petgraph::Direction;
 use tower_lsp::lsp_types::{Position, Range, Url};
 
-use crate::model::{NodeId, RelationshipKind, SemanticNode};
-use crate::workspace_uri;
+use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
+use crate::semantic::workspace_uri;
 
 /// Semantic graph: nodes (model elements) and edges (relationships).
 /// Uses petgraph StableGraph for efficient add/remove and future algorithm support.
@@ -679,8 +679,8 @@ mod tests {
     use sysml_v2_parser::parse;
     use tower_lsp::lsp_types::Url;
 
-    use crate::graph_builder::build_graph_from_doc;
-    use crate::model::{NodeId, RelationshipKind};
+    use crate::semantic::graph_builder::build_graph_from_doc;
+    use crate::semantic::model::{NodeId, RelationshipKind};
 
     #[test]
     fn state_machine_graph_builds_from_root() {

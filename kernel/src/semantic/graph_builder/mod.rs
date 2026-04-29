@@ -5,9 +5,9 @@ use std::collections::HashMap;
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::{Range, Url};
 
-use crate::ast_util::span_to_range;
-use crate::graph::SemanticGraph;
-use crate::model::{NodeId, SemanticNode};
+use crate::semantic::ast_util::span_to_range;
+use crate::semantic::graph::SemanticGraph;
+use crate::semantic::model::{NodeId, SemanticNode};
 
 mod expressions;
 mod interface_def;
@@ -75,7 +75,7 @@ pub fn build_graph_from_doc(root: &RootNamespace, uri: &Url) -> SemanticGraph {
             );
         }
     }
-    crate::relationships::resolve_pending_relationships_for_uri(&mut g, uri);
+    crate::semantic::relationships::resolve_pending_relationships_for_uri(&mut g, uri);
     g
 }
 

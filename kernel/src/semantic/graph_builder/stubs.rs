@@ -1,6 +1,6 @@
 use tower_lsp::lsp_types::Url;
 
-use crate::graph::SemanticGraph;
+use crate::semantic::graph::SemanticGraph;
 
 pub(super) fn relationships_from_part_def(
     _pd_node: &sysml_v2_parser::PartDef,

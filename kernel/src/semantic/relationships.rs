@@ -5,10 +5,10 @@ use sysml_v2_parser::RootNamespace;
 
 use tower_lsp::lsp_types::Url;
 
-use crate::ast_util::identification_name;
-use crate::graph::SemanticGraph;
-use crate::import_resolution::resolve_type_reference_targets;
-use crate::model::{NodeId, RelationshipKind, SemanticNode};
+use crate::semantic::ast_util::identification_name;
+use crate::semantic::graph::SemanticGraph;
+use crate::semantic::import_resolution::resolve_type_reference_targets;
+use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
 use crate::root_element_body;
 
 const TYPING_TARGET_KINDS: &[&str] = &[
@@ -202,7 +202,7 @@ fn add_edge_if_both_exist_opt(
     let (Some(&src_idx), Some(tgt_node)) = (g.node_index_by_id.get(&src_id), g.get_node(&tgt_id))
     else {
         g.pending_relationships
-            .push(crate::graph::PendingRelationship {
+            .push(crate::semantic::graph::PendingRelationship {
                 uri: uri.clone(),
                 source_qualified: src_key,
                 target_qualified: tgt_key,
@@ -519,7 +519,7 @@ fn resolve_typing_edge_cross_document_inner(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::graph_builder::build_graph_from_doc;
+    use crate::semantic::graph_builder::build_graph_from_doc;
     use sysml_v2_parser::parse;
 
     #[test]

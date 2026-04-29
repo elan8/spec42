@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 use tower_lsp::lsp_types::Url;
 
-use crate::graph::SemanticGraph;
+use crate::semantic::graph::SemanticGraph;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct UnitDef {

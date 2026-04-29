@@ -8,10 +8,10 @@ use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
 
 use super::requirement_body::{import_member_label, walk_requirement_def_body};
-use crate::ast_util::{identification_name, span_to_range};
-use crate::graph::SemanticGraph;
-use crate::model::{NodeId, RelationshipKind};
-use crate::relationships::{
+use crate::semantic::ast_util::{identification_name, span_to_range};
+use crate::semantic::graph::SemanticGraph;
+use crate::semantic::model::{NodeId, RelationshipKind};
+use crate::semantic::relationships::{
     add_edge_if_both_exist, add_specializes_edge_if_exists, add_typing_edge_if_exists,
     normalize_for_lookup,
 };

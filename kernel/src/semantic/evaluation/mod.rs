@@ -2,8 +2,8 @@ use std::collections::{HashMap, HashSet};
 
 use serde_json::Value;
 
-use crate::graph::SemanticGraph;
-use crate::model::{NodeId, SemanticNode};
+use crate::semantic::graph::SemanticGraph;
+use crate::semantic::model::{NodeId, SemanticNode};
 
 mod units;
 
@@ -710,7 +710,7 @@ mod tests {
     use super::*;
     use tower_lsp::lsp_types::{Position, Range, Url};
 
-    use crate::model::SemanticNode;
+    use crate::semantic::model::SemanticNode;
 
     fn range() -> Range {
         Range::new(Position::new(0, 0), Position::new(0, 1))

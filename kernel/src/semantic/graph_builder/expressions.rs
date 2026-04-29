@@ -2,13 +2,13 @@ use std::collections::HashMap;
 
 use tower_lsp::lsp_types::{Range, Url};
 
-use crate::ast_util::span_to_range;
-use crate::graph::SemanticGraph;
-use crate::model::{NodeId, RelationshipKind};
-use crate::reference_resolution::{
+use crate::semantic::ast_util::span_to_range;
+use crate::semantic::graph::SemanticGraph;
+use crate::semantic::model::{NodeId, RelationshipKind};
+use crate::semantic::reference_resolution::{
     resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult,
 };
-use crate::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
+use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
 use super::{add_node_and_recurse, qualified_name_for_node};
 

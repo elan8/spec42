@@ -4,11 +4,11 @@ use sysml_v2_parser::ast::{PartDefBody, PartUsageBody, StateDefBody};
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
 
-use crate::ast_util::span_to_range;
-use crate::graph::SemanticGraph;
-use crate::model::{NodeId, RelationshipKind};
-use crate::reference_resolution::{resolve_member_via_type, ResolveResult};
-use crate::relationships::{
+use crate::semantic::ast_util::span_to_range;
+use crate::semantic::graph::SemanticGraph;
+use crate::semantic::model::{NodeId, RelationshipKind};
+use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
+use crate::semantic::relationships::{
     add_edge_if_both_exist, add_typing_edge_if_exists, find_part_def_in_root, type_ref_candidates,
 };
 

@@ -2,7 +2,7 @@
 
 use sysml_v2_parser::ast::{PackageBody, PackageBodyElement, RootElement};
 
-use crate::ast_util::identification_name;
+use crate::semantic::ast_util::identification_name;
 
 /// Extracts (elements, qualified, name_display, span) from Package or Namespace RootElement.
 /// Returns None if body is not Brace.

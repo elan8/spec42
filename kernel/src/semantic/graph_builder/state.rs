@@ -3,10 +3,10 @@ use std::collections::HashMap;
 use sysml_v2_parser::ast::{StateDefBody, StateDefBodyElement};
 use tower_lsp::lsp_types::Url;
 
-use crate::ast_util::span_to_range;
-use crate::graph::SemanticGraph;
-use crate::model::{NodeId, RelationshipKind};
-use crate::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
+use crate::semantic::ast_util::span_to_range;
+use crate::semantic::graph::SemanticGraph;
+use crate::semantic::model::{NodeId, RelationshipKind};
+use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
 use super::expressions;
 use super::requirement_body::walk_requirement_def_body;
