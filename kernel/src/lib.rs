@@ -2,20 +2,20 @@
 //! Used by the spec42 and spec42-pro binaries.
 
 pub mod analysis;
-pub mod common;
-pub mod host;
-pub mod language;
-mod lsp_runtime;
 #[path = "semantic/ast_util.rs"]
 mod ast_util;
+pub mod common;
 #[path = "semantic/evaluation/mod.rs"]
 mod evaluation;
 #[path = "semantic/graph.rs"]
 mod graph;
 #[path = "semantic/graph_builder/mod.rs"]
 mod graph_builder;
+pub mod host;
 #[path = "semantic/import_resolution.rs"]
 mod import_resolution;
+pub mod language;
+mod lsp_runtime;
 #[path = "semantic/model.rs"]
 mod model;
 #[path = "semantic/reference_resolution.rs"]
@@ -27,7 +27,7 @@ mod root_element;
 #[path = "semantic/workspace_uri.rs"]
 mod workspace_uri;
 pub(crate) use root_element::root_element_body;
-pub mod semantic_model;
+
 pub mod semantic_tokens;
 pub mod software_architecture {
     pub use plugins::software_architecture::*;
