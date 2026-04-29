@@ -10,6 +10,7 @@ description = "Core library for Spec42 LSP server: semantic model, DTOs, extensi
 name = "kernel"
 
 [dependencies]
+plugins = { path = "../plugins" }
 sysml-v2-parser = { workspace = true }
 semantic-model-crate = { package = "semantic-model", path = "../semantic-model" }
 tower-lsp = "0.20"

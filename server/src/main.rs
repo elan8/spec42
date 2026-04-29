@@ -13,8 +13,8 @@ use cli::{
 };
 use environment::{build_doctor_report, resolve_environment};
 use kernel::host::logging::init_tracing;
-use kernel::software_architecture::analyze_rust_workspace;
 use kernel::{validate_paths, ValidationReport, ValidationRequest};
+use plugins::software_architecture::analyze_rust_workspace;
 use stdlib::{load_managed_metadata, managed_status, remove_standard_library};
 
 #[tokio::main]

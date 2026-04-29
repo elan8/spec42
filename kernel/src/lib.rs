@@ -8,7 +8,9 @@ pub mod language;
 mod lsp_runtime;
 pub mod semantic_model;
 pub mod semantic_tokens;
-pub mod software_architecture;
+pub mod software_architecture {
+    pub use plugins::software_architecture::*;
+}
 pub mod syntax;
 pub mod validation;
 pub mod views;
