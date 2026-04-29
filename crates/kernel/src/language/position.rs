@@ -1,5 +1,6 @@
 //! Position and word resolution for LSP (line/character to byte offset, word at cursor, etc.).
 
+#[cfg(test)]
 use tower_lsp::lsp_types::{Position, Range};
 
 /// Converts an LSP (line, character) position to a byte offset in `text`.
@@ -99,8 +100,8 @@ pub fn completion_prefix(line_prefix: &str) -> &str {
     trimmed.get(byte_start..).unwrap_or("")
 }
 
-/// Simple position (for tests and compatibility). 0-based line and character.
-#[allow(dead_code)] // used by tests and reserved for future range helpers
+/// Simple position for tests. 0-based line and character.
+#[cfg(test)]
 #[derive(Debug, Clone)]
 pub struct SourcePosition {
     pub line: u32,
@@ -109,7 +110,7 @@ pub struct SourcePosition {
 }
 
 /// Converts AST source position to an LSP Range.
-#[allow(dead_code)] // used by tests and reserved for future range helpers
+#[cfg(test)]
 pub fn source_position_to_range(pos: &SourcePosition) -> Range {
     Range::new(
         Position::new(pos.line, pos.character),
@@ -117,8 +118,8 @@ pub fn source_position_to_range(pos: &SourcePosition) -> Range {
     )
 }
 
-/// Simple range (for tests and compatibility). 0-based.
-#[allow(dead_code)] // used by tests and reserved for future range helpers
+/// Simple range for tests. 0-based.
+#[cfg(test)]
 #[derive(Debug, Clone)]
 pub struct SourceRange {
     pub start_line: u32,
@@ -128,7 +129,7 @@ pub struct SourceRange {
 }
 
 /// Converts AST source range to an LSP Range.
-#[allow(dead_code)] // reserved for future range helpers
+#[cfg(test)]
 pub fn source_range_to_range(r: &SourceRange) -> Range {
     Range::new(
         Position::new(r.start_line, r.start_character),
@@ -136,24 +137,3 @@ pub fn source_range_to_range(r: &SourceRange) -> Range {
     )
 }
 
-/// Ensures selection_range is contained in full range (LSP requirement).
-/// If selection is outside or partially outside full_range, returns a clamped selection or full_range.
-#[allow(dead_code)] // reserved for future LSP features
-pub(crate) fn selection_contained_in(mut selection: Range, full: Range) -> Range {
-    fn pos_lt(a: &Position, b: &Position) -> bool {
-        a.line < b.line || (a.line == b.line && a.character < b.character)
-    }
-    fn pos_gt(a: &Position, b: &Position) -> bool {
-        a.line > b.line || (a.line == b.line && a.character > b.character)
-    }
-    if pos_lt(&selection.start, &full.start) {
-        selection.start = full.start;
-    }
-    if pos_gt(&selection.end, &full.end) {
-        selection.end = full.end;
-    }
-    if pos_lt(&selection.end, &selection.start) {
-        return full;
-    }
-    selection
-}

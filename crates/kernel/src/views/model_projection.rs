@@ -1197,7 +1197,6 @@ mod tests {
     }
 }
 
-#[allow(dead_code)]
 pub fn build_workspace_graph_dto(
     semantic_graph: &semantic::SemanticGraph,
     library_paths: &[Url],
@@ -1276,7 +1275,6 @@ pub fn strip_synthetic_nodes(graph: &SysmlGraphDto) -> SysmlGraphDto {
     }
 }
 
-#[allow(dead_code)]
 pub fn workspace_visualization_enabled(scope: &[String]) -> bool {
     scope.iter().any(|s| s == "workspaceVisualization")
 }

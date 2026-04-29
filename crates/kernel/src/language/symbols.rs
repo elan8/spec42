@@ -8,8 +8,7 @@ use sysml_v2_parser::ast::{
 };
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::{
-    DocumentSymbol, FoldingRange, FoldingRangeKind, Location, Position, Range, SymbolInformation,
-    SymbolKind, Url,
+    DocumentSymbol, FoldingRange, FoldingRangeKind, Position, Range, SymbolKind, Url,
 };
 
 /// Collects for each defined name in the document the LSP range of its definition.
@@ -381,46 +380,6 @@ pub fn collect_folding_ranges(root: &RootNamespace) -> Vec<FoldingRange> {
     out
 }
 
-/// Flattens document symbols into workspace symbol list with the given file URI.
-#[allow(dead_code)]
-pub fn document_symbols_to_workspace_symbols(
-    uri: &Url,
-    symbols: &[DocumentSymbol],
-) -> Vec<SymbolInformation> {
-    let mut out = Vec::new();
-    fn flatten(
-        uri: &Url,
-        symbols: &[DocumentSymbol],
-        container: Option<&str>,
-        out: &mut Vec<SymbolInformation>,
-    ) {
-        for s in symbols {
-            out.push(SymbolInformation {
-                name: s.name.clone(),
-                kind: s.kind,
-                tags: s.tags.clone(),
-                deprecated: s.deprecated,
-                location: Location {
-                    uri: uri.clone(),
-                    range: s.range,
-                },
-                container_name: container.map(String::from),
-            });
-            if let Some(ref children) = s.children {
-                flatten(uri, children, Some(&s.name), out);
-            }
-        }
-    }
-    flatten(uri, symbols, None, &mut out);
-    out
-}
-
-/// Formats multiplicity for display (e.g. "[1..*]", "[*]", "[3]").
-#[allow(dead_code)]
-pub(crate) fn format_multiplicity(s: Option<&str>) -> String {
-    s.unwrap_or("[*]").to_string()
-}
-
 fn modeled_decl_name(keyword: &str, text: &str, fallback: &str) -> String {
     let t = text.trim().trim_end_matches(';').trim();
     let tokens: Vec<String> = t
@@ -472,21 +431,9 @@ pub struct SymbolEntry {
 }
 
 /// Collects a flat list of symbol entries from a parsed document for the symbol table.
-#[allow(dead_code)]
+#[cfg(test)]
 pub fn collect_symbol_entries(_root: &RootNamespace, _uri: &Url) -> Vec<SymbolEntry> {
     vec![]
-}
-
-#[allow(dead_code)]
-fn _symbol_entries_stub() {}
-
-#[allow(dead_code)]
-fn _symbol_entries_from_member_removed(
-    _member: &std::marker::PhantomData<()>,
-    _uri: &Url,
-    _container: Option<&str>,
-    _out: &mut Vec<SymbolEntry>,
-) {
 }
 
 fn document_symbol_from_element(
@@ -875,7 +822,7 @@ fn document_symbols_from_port_def_body(
 }
 
 /// Collects all named elements from the document for hover/completion: (name, short_description).
-#[allow(dead_code)]
+#[cfg(test)]
 pub fn collect_named_elements(root: &RootNamespace) -> Vec<(String, String)> {
     let mut out = Vec::new();
     for node in &root.elements {
@@ -916,6 +863,7 @@ pub fn collect_named_elements(root: &RootNamespace) -> Vec<(String, String)> {
     out
 }
 
+#[cfg(test)]
 fn collect_named_from_element(
     node: &sysml_v2_parser::Node<PackageBodyElement>,
     out: &mut Vec<(String, String)>,
@@ -1014,6 +962,7 @@ fn collect_named_from_element(
     }
 }
 
+#[cfg(test)]
 fn collect_named_from_part_def_body(
     node: &sysml_v2_parser::Node<PartDefBodyElement>,
     out: &mut Vec<(String, String)>,
@@ -1026,6 +975,7 @@ fn collect_named_from_part_def_body(
     }
 }
 
+#[cfg(test)]
 fn collect_named_from_part_usage_body(
     node: &sysml_v2_parser::Node<PartUsageBodyElement>,
     out: &mut Vec<(String, String)>,

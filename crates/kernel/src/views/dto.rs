@@ -6,21 +6,18 @@ use tower_lsp::lsp_types::Range;
 use crate::views::extracted_model as model;
 use crate::views::ibd;
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PositionDto {
     pub line: u32,
     pub character: u32,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RangeDto {
     pub start: PositionDto,
     pub end: PositionDto,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize)]
 pub struct RelationshipDto {
     #[serde(rename = "type")]
@@ -185,7 +182,6 @@ pub struct SysmlFeatureInspectorResultDto {
     pub element: Option<SysmlFeatureInspectorElementDto>,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize)]
 pub struct SysmlElementDto {
     #[serde(skip_serializing_if = "Option::is_none")]

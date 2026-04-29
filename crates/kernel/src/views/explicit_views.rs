@@ -19,8 +19,8 @@ pub enum FilterExpr {
 }
 
 #[derive(Debug, Clone)]
-#[allow(dead_code)]
 pub struct ViewDefinitionSpec {
+    #[allow(dead_code)]
     pub id: String,
     pub name: String,
     pub filters: Vec<FilterExpr>,
@@ -33,7 +33,6 @@ pub struct ExposeSpec {
 }
 
 #[derive(Debug, Clone)]
-#[allow(dead_code)]
 pub struct ViewUsageSpec {
     pub id: String,
     pub name: String,
@@ -41,6 +40,7 @@ pub struct ViewUsageSpec {
     pub definition_id: Option<String>,
     pub filters: Vec<FilterExpr>,
     pub exposes: Vec<ExposeSpec>,
+    #[allow(dead_code)]
     pub range: RangeDto,
     pub issues: Vec<String>,
 }
@@ -52,13 +52,13 @@ pub struct ViewCatalog {
 }
 
 #[derive(Debug, Clone)]
-#[allow(dead_code)]
 pub struct EvaluatedView {
     pub id: String,
     pub name: String,
     pub effective_view_type: Option<String>,
     pub exposed_ids: HashSet<String>,
     pub filters: Vec<FilterExpr>,
+    #[allow(dead_code)]
     pub visible_ids: HashSet<String>,
     pub issues: Vec<String>,
 }
@@ -431,7 +431,6 @@ fn collect_descendants<'a>(
     }
 }
 
-#[allow(dead_code)]
 fn expand_descendants(
     root_ids: &HashSet<String>,
     children_by_parent: &HashMap<&str, Vec<&str>>,

@@ -161,7 +161,6 @@ impl TestSession {
         );
     }
 
-    #[allow(dead_code)]
     pub fn did_change_full(&mut self, uri: &str, text: &str, version: i32) {
         send_message(
             &mut self.stdin,

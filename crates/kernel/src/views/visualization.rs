@@ -374,39 +374,6 @@ fn merge_two_elements(a: &SysmlElementDto, b: &SysmlElementDto) -> SysmlElementD
     }
 }
 
-#[allow(dead_code)]
-fn build_workspace_model_dto_for_uris(
-    semantic_graph: &semantic::SemanticGraph,
-    workspace_uris: &[Url],
-) -> WorkspaceModelDto {
-    let mut files = Vec::with_capacity(workspace_uris.len());
-    let mut all_elements = Vec::new();
-
-    for workspace_uri in workspace_uris {
-        let graph = model_projection::strip_synthetic_nodes(&build_workspace_graph_dto_for_uris(
-            semantic_graph,
-            std::slice::from_ref(workspace_uri),
-        ));
-        let elements = graph_to_element_tree(&graph, workspace_uri);
-        all_elements.extend(elements.iter().map(clone_element));
-        files.push(WorkspaceFileModelDto {
-            uri: workspace_uri.as_str().to_string(),
-            elements,
-        });
-    }
-
-    WorkspaceModelDto {
-        summary: WorkspaceModelSummaryDto {
-            scanned_files: files.len(),
-            loaded_files: files.len(),
-            failures: 0,
-            truncated: false,
-        },
-        semantic: merge_namespace_elements(&all_elements),
-        files,
-    }
-}
-
 fn collect_package_candidates(
     elements: &[SysmlElementDto],
     seen: &mut HashSet<String>,
