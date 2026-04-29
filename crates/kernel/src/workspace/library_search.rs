@@ -124,11 +124,8 @@ fn is_valid_decl_name(token: &str) -> bool {
     chars.all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '\'' || c == '-')
 }
 
-pub(crate) fn build_library_tree(
-    items: Vec<LibrarySearchItem>,
-) -> Vec<LibrarySearchSource> {
-    let mut by_source: BTreeMap<String, BTreeMap<String, Vec<LibrarySearchItem>>> =
-        BTreeMap::new();
+pub(crate) fn build_library_tree(items: Vec<LibrarySearchItem>) -> Vec<LibrarySearchSource> {
+    let mut by_source: BTreeMap<String, BTreeMap<String, Vec<LibrarySearchItem>>> = BTreeMap::new();
     let mut package_name_by_source_path: BTreeMap<(String, String), String> = BTreeMap::new();
 
     for item in &items {

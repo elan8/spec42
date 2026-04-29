@@ -288,7 +288,10 @@ pub(super) fn resolve_expression_endpoint_legacy(
     // Fallback for member chains that only exist via typing (e.g. `instance.member` where
     // `member` is declared on the typed definition and not materialized as a concrete node).
     let normalized = expression.replace('.', "::");
-    let segments: Vec<&str> = normalized.split("::").filter(|segment| !segment.is_empty()).collect();
+    let segments: Vec<&str> = normalized
+        .split("::")
+        .filter(|segment| !segment.is_empty())
+        .collect();
     if segments.len() > 1 {
         let owner_expr = segments[0];
         if let ResolveResult::Resolved(mut current_id) =
@@ -355,7 +358,8 @@ pub(super) fn add_diagnostic_node(
 #[cfg(test)]
 mod expr_string_tests {
     use super::{
-        expr_node_to_qualified_string, expression_to_debug_string, resolve_expression_endpoint_legacy,
+        expr_node_to_qualified_string, expression_to_debug_string,
+        resolve_expression_endpoint_legacy,
     };
     use crate::{add_cross_document_edges_for_uri, build_graph_from_doc};
     use sysml_v2_parser::ast::{Expression, Node};

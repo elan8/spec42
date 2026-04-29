@@ -18,8 +18,8 @@ use crate::semantic::relationships::{
 
 use super::expressions;
 use super::modeled_kerml_name::extract_modeled_decl_name;
-use super::{add_node_and_recurse, qualified_name_for_node};
 use super::package_packages;
+use super::{add_node_and_recurse, qualified_name_for_node};
 use super::{interface_def, part_def, part_usage, port_def, state, stubs, use_case};
 
 pub(super) fn build_from_package_body_element(

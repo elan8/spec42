@@ -8,7 +8,9 @@ use crate::common::util;
 
 use super::ValidationRequest;
 
-pub(super) fn resolve_workspace_root(request: &ValidationRequest) -> Result<Option<PathBuf>, String> {
+pub(super) fn resolve_workspace_root(
+    request: &ValidationRequest,
+) -> Result<Option<PathBuf>, String> {
     if let Some(root) = &request.workspace_root {
         return normalize_existing_path(root).map(Some);
     }

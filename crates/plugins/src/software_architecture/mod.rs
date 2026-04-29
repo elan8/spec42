@@ -362,7 +362,8 @@ fn discover_workspace_member_manifests(
         .get("exclude")
         .and_then(toml::Value::as_array)
         .map(|items| {
-            items.iter()
+            items
+                .iter()
                 .filter_map(toml::Value::as_str)
                 .map(normalize_glob_pattern)
                 .collect::<Vec<_>>()
@@ -372,7 +373,8 @@ fn discover_workspace_member_manifests(
         .get("members")
         .and_then(toml::Value::as_array)
         .map(|items| {
-            items.iter()
+            items
+                .iter()
                 .filter_map(toml::Value::as_str)
                 .map(normalize_glob_pattern)
                 .collect::<Vec<_>>()
@@ -380,7 +382,10 @@ fn discover_workspace_member_manifests(
         .unwrap_or_default();
 
     for member in members {
-        let pattern = workspace_root.join(&member).to_string_lossy().replace('\\', "/");
+        let pattern = workspace_root
+            .join(&member)
+            .to_string_lossy()
+            .replace('\\', "/");
         let Ok(paths) = glob(&pattern) else {
             continue;
         };
@@ -497,7 +502,10 @@ fn parse_package_declared_dependencies(
     for (key, scope) in [
         ("dependencies", CargoDependencyScope::Dependencies),
         ("dev-dependencies", CargoDependencyScope::DevDependencies),
-        ("build-dependencies", CargoDependencyScope::BuildDependencies),
+        (
+            "build-dependencies",
+            CargoDependencyScope::BuildDependencies,
+        ),
     ] {
         let Some(value) = manifest.get(key) else {
             continue;
@@ -521,8 +529,7 @@ fn parse_dependency_specs_from_value(
     };
     let mut aliases = HashMap::new();
     for (alias, spec) in table {
-        let Some(canonical) =
-            dependency_canonical_name(alias, spec, workspace_dependency_aliases)
+        let Some(canonical) = dependency_canonical_name(alias, spec, workspace_dependency_aliases)
         else {
             continue;
         };
@@ -600,8 +607,7 @@ fn collect_rust_files(krate: &RustCrate) -> Vec<RustFileInfo> {
         .into_iter()
         .filter_map(Result::ok)
     {
-        if !entry.file_type().is_file() || entry.path().extension().is_none_or(|ext| ext != "rs")
-        {
+        if !entry.file_type().is_file() || entry.path().extension().is_none_or(|ext| ext != "rs") {
             continue;
         }
         let Ok(source) = fs::read_to_string(entry.path()) else {
@@ -699,8 +705,14 @@ fn collect_file_data(
                     }
                 }
             }
-            "field_declaration" | "parameter" | "type_alias" | "const_item" | "static_item"
-            | "let_declaration" | "tuple_struct_pattern" | "tuple_struct_item" => {
+            "field_declaration"
+            | "parameter"
+            | "type_alias"
+            | "const_item"
+            | "static_item"
+            | "let_declaration"
+            | "tuple_struct_pattern"
+            | "tuple_struct_item" => {
                 collect_declared_type_paths(node, source, type_paths);
             }
             "function_item" => collect_function_type_paths(node, source, type_paths),
@@ -1057,7 +1069,11 @@ fn classify_dependency_target(
     }
 
     if first == "crate" || first == krate.name {
-        let internal_segments = resolved_segments.iter().skip(1).cloned().collect::<Vec<_>>();
+        let internal_segments = resolved_segments
+            .iter()
+            .skip(1)
+            .cloned()
+            .collect::<Vec<_>>();
         let target_module_segments = deepest_known_module_prefix(&internal_segments, known_modules);
         let target_id = if target_module_segments.is_empty() {
             crate_id(&krate.name)
@@ -1118,14 +1134,7 @@ fn should_treat_as_external_crate(
 fn is_ignored_external_segment(segment: &str) -> bool {
     matches!(
         segment,
-        "Self"
-            | "self"
-            | "super"
-            | "crate"
-            | "default"
-            | "new"
-            | "from"
-            | "into"
+        "Self" | "self" | "super" | "crate" | "default" | "new" | "from" | "into"
     )
 }
 

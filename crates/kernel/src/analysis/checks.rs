@@ -466,9 +466,7 @@ impl crate::host::config::SemanticCheckProvider for DefaultSemanticChecks {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::semantic::{
-        add_cross_document_edges_for_uri, build_graph_from_doc, SemanticNode,
-    };
+    use crate::semantic::{add_cross_document_edges_for_uri, build_graph_from_doc, SemanticNode};
     use tower_lsp::lsp_types::{Position, Range};
 
     #[test]
@@ -1087,7 +1085,8 @@ mod tests {
 
         let architecture_uri =
             Url::parse("file:///typed_member_satisfy_architecture.sysml").expect("arch uri");
-        let instance_uri = Url::parse("file:///typed_member_satisfy_instance.sysml").expect("instance uri");
+        let instance_uri =
+            Url::parse("file:///typed_member_satisfy_instance.sysml").expect("instance uri");
         let architecture_root = sysml_v2_parser::parse(architecture).expect("parse architecture");
         let instance_root = sysml_v2_parser::parse(instance).expect("parse instance");
 

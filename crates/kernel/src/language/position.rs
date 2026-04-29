@@ -136,4 +136,3 @@ pub fn source_range_to_range(r: &SourceRange) -> Range {
         Position::new(r.end_line, r.end_character),
     )
 }
-

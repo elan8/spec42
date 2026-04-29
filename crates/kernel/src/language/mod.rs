@@ -6,16 +6,16 @@ mod position;
 mod symbols;
 
 pub use keywords::{
-    RESERVED_KEYWORDS, is_reserved_keyword, keyword_doc, keyword_hover_markdown, sysml_keywords,
+    is_reserved_keyword, keyword_doc, keyword_hover_markdown, sysml_keywords, RESERVED_KEYWORDS,
 };
 pub use position::{
     completion_prefix, line_prefix_at_position, position_to_byte_offset, word_at_position,
 };
 #[cfg(test)]
-pub use position::{SourcePosition, SourceRange, source_position_to_range, source_range_to_range};
+pub use position::{source_position_to_range, source_range_to_range, SourcePosition, SourceRange};
 pub use symbols::{
-    SymbolEntry, collect_definition_ranges, collect_document_symbols, collect_folding_ranges,
-    find_reference_ranges,
+    collect_definition_ranges, collect_document_symbols, collect_folding_ranges,
+    find_reference_ranges, SymbolEntry,
 };
 #[cfg(test)]
 pub use symbols::{collect_named_elements, collect_symbol_entries};

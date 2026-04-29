@@ -18,6 +18,9 @@ pub(super) fn validate_paths(
     config: &Arc<Spec42Config>,
     request: ValidationRequest,
 ) -> Result<ValidationReport, String> {
+    for hook in &config.pipeline_hooks {
+        hook.before_validate(&request)?;
+    }
     let workspace_root = resolve_workspace_root(&request)?;
     let target_files = discover_target_files(&request.targets)?;
     if target_files.is_empty() {
@@ -41,14 +44,17 @@ pub(super) fn validate_paths(
         &target_files,
         request.parallel_enabled,
     )?;
-    ingest_parsed_scan_entries(&mut state, parse_scanned_entries(entries, request.parallel_enabled));
+    ingest_parsed_scan_entries(
+        &mut state,
+        parse_scanned_entries(entries, request.parallel_enabled),
+    );
     rebuild_all_document_links(&mut state);
 
     let documents = collect_target_documents(&state, config, &target_files)?;
     let summary = summarize(&documents);
     let advice = build_advice(&documents, request.library_paths.is_empty());
 
-    Ok(ValidationReport {
+    let mut report = ValidationReport {
         workspace_root: workspace_root.map(|path| path.display().to_string()),
         resolved_library_paths: request
             .library_paths
@@ -58,7 +64,11 @@ pub(super) fn validate_paths(
         documents,
         summary,
         advice,
-    })
+    };
+    for hook in &config.pipeline_hooks {
+        hook.after_validate(&mut report)?;
+    }
+    Ok(report)
 }
 
 fn initialize_state(workspace_root_url: Option<Url>, library_root_urls: Vec<Url>) -> ServerState {

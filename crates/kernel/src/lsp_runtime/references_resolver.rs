@@ -315,11 +315,8 @@ fn resolve_owner_member_defs<'a>(
                 .into_iter()
                 .find(|n| n.name == owner_ident)
         })?;
-    let resolved = crate::semantic::resolve_member_via_type(
-        &state.semantic_graph,
-        owner_node,
-        lookup_name,
-    );
+    let resolved =
+        crate::semantic::resolve_member_via_type(&state.semantic_graph, owner_node, lookup_name);
     let resolved_id = match resolved {
         ResolveResult::Resolved(id) => id,
         ResolveResult::Ambiguous => return None,

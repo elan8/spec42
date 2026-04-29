@@ -2,7 +2,10 @@ use std::collections::{HashMap, HashSet};
 
 use crate::views::ibd::{self, IbdDataDto};
 
-pub(super) fn filter_ibd_by_visible_ids(ibd: &IbdDataDto, visible_ids: &HashSet<String>) -> IbdDataDto {
+pub(super) fn filter_ibd_by_visible_ids(
+    ibd: &IbdDataDto,
+    visible_ids: &HashSet<String>,
+) -> IbdDataDto {
     let visible_dot_ids: HashSet<String> =
         visible_ids.iter().map(|id| id.replace("::", ".")).collect();
     let parts: Vec<_> = ibd
@@ -160,7 +163,10 @@ fn endpoint_matches_root_prefix(endpoint: &str, root_prefix: &str) -> bool {
     endpoint == root_prefix || endpoint.starts_with(&format!("{root_prefix}."))
 }
 
-pub(super) fn filter_ibd_by_root_prefixes(ibd: &IbdDataDto, root_prefixes: &HashSet<String>) -> IbdDataDto {
+pub(super) fn filter_ibd_by_root_prefixes(
+    ibd: &IbdDataDto,
+    root_prefixes: &HashSet<String>,
+) -> IbdDataDto {
     let matches_any_root = |endpoint: &str| {
         root_prefixes
             .iter()

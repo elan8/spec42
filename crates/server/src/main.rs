@@ -110,14 +110,19 @@ fn run_software(cli: &Cli, command: &SoftwareCommand) -> Result<ExitCode, String
 
 fn run_software_analyze(args: &SoftwareAnalyzeArgs) -> Result<ExitCode, String> {
     let model = analyze_rust_workspace(&args.workspace);
-    let json = serde_json::to_string_pretty(&kernel::views::build_software_workspace_model_dto(
-        &model,
-    ))
-    .map_err(|err| format!("Failed to serialize software workspace model as JSON: {err}"))?;
+    let json =
+        serde_json::to_string_pretty(&kernel::views::build_software_workspace_model_dto(&model))
+            .map_err(|err| {
+                format!("Failed to serialize software workspace model as JSON: {err}")
+            })?;
 
     if let Some(output) = &args.output {
-        std::fs::write(output, format!("{json}\n"))
-            .map_err(|err| format!("Failed to write software analysis JSON to {}: {err}", output.display()))?;
+        std::fs::write(output, format!("{json}\n")).map_err(|err| {
+            format!(
+                "Failed to write software analysis JSON to {}: {err}",
+                output.display()
+            )
+        })?;
     } else {
         println!("{json}");
     }

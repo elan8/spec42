@@ -70,7 +70,8 @@ pub(crate) fn filter_sequence_diagrams_by_exposed_ids(
             exposed_ids.iter().any(|exposed_id| {
                 diagram.id == *exposed_id
                     || diagram.id.starts_with(&format!("{exposed_id}::"))
-                    || format!("{}::{}", diagram.package_path, diagram.name).trim_matches(':') == exposed_id
+                    || format!("{}::{}", diagram.package_path, diagram.name).trim_matches(':')
+                        == exposed_id
             })
         })
         .cloned()

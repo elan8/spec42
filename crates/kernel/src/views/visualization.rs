@@ -7,16 +7,15 @@ use tower_lsp::lsp_types::Url;
 
 use crate::semantic;
 use crate::software_architecture::{
-    analyze_rust_workspace, workspace_contains_rust_code,
-    SoftwareAnalysisSummary, SoftwareArchitectureModel, SoftwareComponent,
-    SoftwareDependency, SoftwareWorkspaceModel, SourceAnchor,
+    analyze_rust_workspace, workspace_contains_rust_code, SoftwareAnalysisSummary,
+    SoftwareArchitectureModel, SoftwareComponent, SoftwareDependency, SoftwareWorkspaceModel,
+    SourceAnchor,
 };
 use crate::views::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, SoftwareAnalysisSummaryDto,
     SoftwareArchitectureModelDto, SoftwareComponentDto, SoftwareDependencyDto,
     SoftwareVisualizationResultDto, SoftwareVisualizationViewCandidateDto,
-    SoftwareWorkspaceModelDto, SourceAnchorDto, SysmlElementDto, SysmlGraphDto,
-    SysmlModelStatsDto,
+    SoftwareWorkspaceModelDto, SourceAnchorDto, SysmlElementDto, SysmlGraphDto, SysmlModelStatsDto,
     SysmlVisualizationPackageCandidateDto, SysmlVisualizationResultDto,
     SysmlVisualizationViewCandidateDto, WorkspaceFileModelDto, WorkspaceModelDto,
     WorkspaceModelSummaryDto,
@@ -39,9 +38,7 @@ pub(crate) use activity_views::parse_sysml_visualization_params;
 use activity_views::{build_workspace_activity_diagrams, filter_activity_diagrams_by_graph};
 use helpers::workspace_uris_for_root;
 use package_groups::build_package_groups_from_graph;
-use scope_filters::{
-    filter_ibd_by_visible_ids, select_interconnection_ibd_scope,
-};
+use scope_filters::{filter_ibd_by_visible_ids, select_interconnection_ibd_scope};
 
 const SOFTWARE_MODULE_VIEW: &str = "software-module-view";
 const SOFTWARE_DEPENDENCY_VIEW: &str = "software-dependency-view";
@@ -393,7 +390,6 @@ fn collect_package_candidates(
     }
 }
 
-
 fn renderer_empty_state_message(view: &str) -> String {
     match view {
         "general-view" => {
@@ -648,20 +644,25 @@ fn build_software_architecture_dto(
 fn source_anchor_from_dto(anchor: &SourceAnchorDto) -> SourceAnchor {
     SourceAnchor {
         file_path: anchor.file_path.clone(),
-        range: anchor.range.as_ref().map(|range| tower_lsp::lsp_types::Range {
-            start: tower_lsp::lsp_types::Position {
-                line: range.start.line,
-                character: range.start.character,
-            },
-            end: tower_lsp::lsp_types::Position {
-                line: range.end.line,
-                character: range.end.character,
-            },
-        }),
+        range: anchor
+            .range
+            .as_ref()
+            .map(|range| tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position {
+                    line: range.start.line,
+                    character: range.start.character,
+                },
+                end: tower_lsp::lsp_types::Position {
+                    line: range.end.line,
+                    character: range.end.character,
+                },
+            }),
     }
 }
 
-fn software_architecture_from_dto(model: &SoftwareArchitectureModelDto) -> SoftwareArchitectureModel {
+fn software_architecture_from_dto(
+    model: &SoftwareArchitectureModelDto,
+) -> SoftwareArchitectureModel {
     SoftwareArchitectureModel {
         components: model
             .components
@@ -673,7 +674,11 @@ fn software_architecture_from_dto(model: &SoftwareArchitectureModelDto) -> Softw
                 parent_id: component.parent_id.clone(),
                 crate_name: component.crate_name.clone(),
                 module_path: component.module_path.clone(),
-                anchors: component.anchors.iter().map(source_anchor_from_dto).collect(),
+                anchors: component
+                    .anchors
+                    .iter()
+                    .map(source_anchor_from_dto)
+                    .collect(),
                 is_external: component.is_external,
             })
             .collect(),
@@ -684,7 +689,10 @@ fn software_architecture_from_dto(model: &SoftwareArchitectureModelDto) -> Softw
                 from: dependency.from.clone(),
                 to: dependency.to.clone(),
                 kind: dependency.kind.clone(),
-                source_anchor: dependency.source_anchor.as_ref().map(source_anchor_from_dto),
+                source_anchor: dependency
+                    .source_anchor
+                    .as_ref()
+                    .map(source_anchor_from_dto),
             })
             .collect(),
     }
@@ -746,7 +754,10 @@ fn component_range(
         })
 }
 
-fn software_component_to_graph_node(component: &SoftwareComponent, parent_id: Option<String>) -> GraphNodeDto {
+fn software_component_to_graph_node(
+    component: &SoftwareComponent,
+    parent_id: Option<String>,
+) -> GraphNodeDto {
     GraphNodeDto {
         id: component.id.clone(),
         element_type: component.kind.clone(),
@@ -820,7 +831,9 @@ fn build_software_graph(
             software_component_to_graph_node(
                 component,
                 if view == SOFTWARE_MODULE_VIEW || !component.is_external {
-                    component.parent_id.clone()
+                    component
+                        .parent_id
+                        .clone()
                         .filter(|parent_id| included_node_ids.contains(parent_id))
                 } else {
                     None
@@ -836,7 +849,8 @@ fn build_software_graph(
                 continue;
             }
             if let Some(parent_id) = &component.parent_id {
-                if !included_node_ids.contains(parent_id) || !included_node_ids.contains(&component.id)
+                if !included_node_ids.contains(parent_id)
+                    || !included_node_ids.contains(&component.id)
                 {
                     continue;
                 }
@@ -912,98 +926,93 @@ fn build_software_workspace_model(graph: &SysmlGraphDto) -> WorkspaceModelDto {
 }
 
 fn coerce_workspace_root_uri(value: &serde_json::Value) -> Option<String> {
-    value
-        .as_str()
-        .map(ToString::to_string)
-        .or_else(|| {
-            value.as_object().and_then(|object| {
-                object
-                    .get("external")
-                    .and_then(|inner| inner.as_str())
-                    .or_else(|| object.get("uri").and_then(|inner| inner.as_str()))
-                    .or_else(|| object.get("workspaceRootUri").and_then(|inner| inner.as_str()))
-                    .map(ToString::to_string)
-                    .or_else(|| {
-                        object
-                            .get("fsPath")
-                            .and_then(|inner| inner.as_str())
-                            .and_then(|path| Url::from_file_path(path).ok())
-                            .map(|uri| uri.to_string())
-                    })
-            })
+    value.as_str().map(ToString::to_string).or_else(|| {
+        value.as_object().and_then(|object| {
+            object
+                .get("external")
+                .and_then(|inner| inner.as_str())
+                .or_else(|| object.get("uri").and_then(|inner| inner.as_str()))
+                .or_else(|| {
+                    object
+                        .get("workspaceRootUri")
+                        .and_then(|inner| inner.as_str())
+                })
+                .map(ToString::to_string)
+                .or_else(|| {
+                    object
+                        .get("fsPath")
+                        .and_then(|inner| inner.as_str())
+                        .and_then(|path| Url::from_file_path(path).ok())
+                        .map(|uri| uri.to_string())
+                })
         })
+    })
 }
 
 fn coerce_string(value: &serde_json::Value) -> Option<String> {
-    value
-        .as_str()
-        .map(ToString::to_string)
-        .or_else(|| {
-            value.as_object().and_then(|object| {
-                object
-                    .get("rendererView")
-                    .and_then(|inner| inner.as_str())
-                    .or_else(|| object.get("view").and_then(|inner| inner.as_str()))
-                    .or_else(|| object.get("viewId").and_then(|inner| inner.as_str()))
-                    .or_else(|| object.get("id").and_then(|inner| inner.as_str()))
-                    .map(ToString::to_string)
-            })
+    value.as_str().map(ToString::to_string).or_else(|| {
+        value.as_object().and_then(|object| {
+            object
+                .get("rendererView")
+                .and_then(|inner| inner.as_str())
+                .or_else(|| object.get("view").and_then(|inner| inner.as_str()))
+                .or_else(|| object.get("viewId").and_then(|inner| inner.as_str()))
+                .or_else(|| object.get("id").and_then(|inner| inner.as_str()))
+                .map(ToString::to_string)
         })
+    })
 }
 
 pub(crate) fn parse_software_visualization_params(
     params: &serde_json::Value,
 ) -> tower_lsp::jsonrpc::Result<(Url, String)> {
-    let params =
-        if let Ok(params) =
-            serde_json::from_value::<crate::views::dto::SoftwareVisualizationParamsDto>(
-                params.clone(),
+    let params = if let Ok(params) =
+        serde_json::from_value::<crate::views::dto::SoftwareVisualizationParamsDto>(params.clone())
+    {
+        params
+    } else if let Some(arr) = params.as_array() {
+        let first = arr.first().ok_or_else(|| {
+            tower_lsp::jsonrpc::Error::invalid_params(
+                "software/visualization params array must have at least one element",
             )
-        {
-            params
-        } else if let Some(arr) = params.as_array() {
-            let first = arr.first().ok_or_else(|| {
-                tower_lsp::jsonrpc::Error::invalid_params(
-                    "software/visualization params array must have at least one element",
-                )
-            })?;
-            if let Some(obj) = first.as_object() {
-                crate::views::dto::SoftwareVisualizationParamsDto {
-                    workspace_root_uri: obj
-                        .get("workspaceRootUri")
-                        .and_then(coerce_workspace_root_uri)
-                        .unwrap_or_default(),
-                    view: obj.get("view").and_then(coerce_string).unwrap_or_else(|| {
-                        arr.get(1)
-                            .and_then(coerce_string)
-                            .unwrap_or_else(|| SOFTWARE_MODULE_VIEW.to_string())
-                    }),
-                }
-            } else {
-                crate::views::dto::SoftwareVisualizationParamsDto {
-                    workspace_root_uri: coerce_string(first).unwrap_or_default(),
-                    view: arr
-                        .get(1)
-                        .and_then(coerce_string)
-                        .unwrap_or_else(|| SOFTWARE_MODULE_VIEW.to_string()),
-                }
-            }
-        } else if let Some(obj) = params.as_object() {
+        })?;
+        if let Some(obj) = first.as_object() {
             crate::views::dto::SoftwareVisualizationParamsDto {
                 workspace_root_uri: obj
                     .get("workspaceRootUri")
                     .and_then(coerce_workspace_root_uri)
                     .unwrap_or_default(),
-                view: obj
-                    .get("view")
+                view: obj.get("view").and_then(coerce_string).unwrap_or_else(|| {
+                    arr.get(1)
+                        .and_then(coerce_string)
+                        .unwrap_or_else(|| SOFTWARE_MODULE_VIEW.to_string())
+                }),
+            }
+        } else {
+            crate::views::dto::SoftwareVisualizationParamsDto {
+                workspace_root_uri: coerce_string(first).unwrap_or_default(),
+                view: arr
+                    .get(1)
                     .and_then(coerce_string)
                     .unwrap_or_else(|| SOFTWARE_MODULE_VIEW.to_string()),
             }
-        } else {
-            return Err(tower_lsp::jsonrpc::Error::invalid_params(
-                "software/visualization params must include workspaceRootUri and view",
-            ));
-        };
+        }
+    } else if let Some(obj) = params.as_object() {
+        crate::views::dto::SoftwareVisualizationParamsDto {
+            workspace_root_uri: obj
+                .get("workspaceRootUri")
+                .and_then(coerce_workspace_root_uri)
+                .unwrap_or_default(),
+            view: obj
+                .get("view")
+                .and_then(coerce_string)
+                .unwrap_or_else(|| SOFTWARE_MODULE_VIEW.to_string()),
+        }
+    } else {
+        return Err(tower_lsp::jsonrpc::Error::invalid_params(
+            "software/visualization params must include workspaceRootUri and view",
+        ));
+    };
 
     if params.workspace_root_uri.trim().is_empty() {
         return Err(tower_lsp::jsonrpc::Error::invalid_params(
@@ -1024,10 +1033,9 @@ pub(crate) fn parse_software_visualization_params(
 pub(crate) fn parse_software_analyze_workspace_params(
     params: &serde_json::Value,
 ) -> tower_lsp::jsonrpc::Result<Url> {
-    let workspace_root_uri = if let Ok(params) =
-        serde_json::from_value::<crate::views::dto::SoftwareAnalyzeWorkspaceParamsDto>(
-            params.clone(),
-        )
+    let workspace_root_uri = if let Ok(params) = serde_json::from_value::<
+        crate::views::dto::SoftwareAnalyzeWorkspaceParamsDto,
+    >(params.clone())
     {
         params.workspace_root_uri
     } else if let Some(arr) = params.as_array() {
@@ -1082,14 +1090,11 @@ pub(crate) fn parse_software_project_view_params(
                 "software/projectView params array item must be an object",
             )
         })?;
-        let workspace_model_value = obj
-            .get("workspaceModel")
-            .cloned()
-            .ok_or_else(|| {
-                tower_lsp::jsonrpc::Error::invalid_params(
-                    "software/projectView params must include workspaceModel",
-                )
-            })?;
+        let workspace_model_value = obj.get("workspaceModel").cloned().ok_or_else(|| {
+            tower_lsp::jsonrpc::Error::invalid_params(
+                "software/projectView params must include workspaceModel",
+            )
+        })?;
         crate::views::dto::SoftwareProjectViewParamsDto {
             workspace_root_uri: obj
                 .get("workspaceRootUri")
@@ -1099,19 +1104,15 @@ pub(crate) fn parse_software_project_view_params(
                 .get("view")
                 .and_then(coerce_string)
                 .unwrap_or_else(|| SOFTWARE_MODULE_VIEW.to_string()),
-            workspace_model: serde_json::from_value(workspace_model_value).map_err(|error| {
-                tower_lsp::jsonrpc::Error::invalid_params(error.to_string())
-            })?,
+            workspace_model: serde_json::from_value(workspace_model_value)
+                .map_err(|error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()))?,
         }
     } else if let Some(obj) = params.as_object() {
-        let workspace_model_value = obj
-            .get("workspaceModel")
-            .cloned()
-            .ok_or_else(|| {
-                tower_lsp::jsonrpc::Error::invalid_params(
-                    "software/projectView params must include workspaceModel",
-                )
-            })?;
+        let workspace_model_value = obj.get("workspaceModel").cloned().ok_or_else(|| {
+            tower_lsp::jsonrpc::Error::invalid_params(
+                "software/projectView params must include workspaceModel",
+            )
+        })?;
         crate::views::dto::SoftwareProjectViewParamsDto {
             workspace_root_uri: obj
                 .get("workspaceRootUri")
@@ -1121,9 +1122,8 @@ pub(crate) fn parse_software_project_view_params(
                 .get("view")
                 .and_then(coerce_string)
                 .unwrap_or_else(|| SOFTWARE_MODULE_VIEW.to_string()),
-            workspace_model: serde_json::from_value(workspace_model_value).map_err(|error| {
-                tower_lsp::jsonrpc::Error::invalid_params(error.to_string())
-            })?,
+            workspace_model: serde_json::from_value(workspace_model_value)
+                .map_err(|error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()))?,
         }
     } else {
         return Err(tower_lsp::jsonrpc::Error::invalid_params(
@@ -1328,8 +1328,10 @@ pub(crate) fn build_sysml_visualization_response(
                 .unwrap_or_default();
         let projected_graph = project_graph_by_ids(&graph, &projected_ids);
         let diagrams = filter_activity_diagrams_by_graph(&full_activity_diagrams, &projected_graph);
-        let sequence_diagrams =
-            filter_sequence_diagrams_by_exposed_ids(&full_sequence_diagrams, &evaluated.exposed_ids);
+        let sequence_diagrams = filter_sequence_diagrams_by_exposed_ids(
+            &full_sequence_diagrams,
+            &evaluated.exposed_ids,
+        );
         projected_graphs.insert(evaluated.id.as_str(), projected_graph);
         projected_activity_diagrams.insert(evaluated.id.as_str(), diagrams);
         projected_sequence_diagrams.insert(evaluated.id.as_str(), sequence_diagrams);
@@ -1562,10 +1564,11 @@ mod tests {
             ],
             connectors: vec![crate::views::ibd::IbdConnectorDto {
                 source: "WebShopArchitecture::WebShopSystem::checkoutService::apiIn".to_string(),
-                target:
-                    "WebShopArchitecture::WebShopSystem::apiGateway::checkoutApiOut".to_string(),
+                target: "WebShopArchitecture::WebShopSystem::apiGateway::checkoutApiOut"
+                    .to_string(),
                 source_id: "WebShopArchitecture.WebShopSystem.checkoutService.apiIn".to_string(),
-                target_id: "WebShopArchitecture.WebShopSystem.apiGateway.checkoutApiOut".to_string(),
+                target_id: "WebShopArchitecture.WebShopSystem.apiGateway.checkoutApiOut"
+                    .to_string(),
                 rel_type: "connection".to_string(),
             }],
             container_groups: Vec::new(),
@@ -1574,12 +1577,11 @@ mod tests {
             default_root: None,
             root_views: HashMap::new(),
         };
-        let selected_ids: HashSet<String> =
-            HashSet::from([
-                "WebShopArchitecture::WebShopSystem::checkoutService".to_string(),
-                "WebShopArchitecture::WebShopSystem::checkoutService::apiIn".to_string(),
-                "WebShopArchitecture::WebShopSystem::apiGateway::checkoutApiOut".to_string(),
-            ]);
+        let selected_ids: HashSet<String> = HashSet::from([
+            "WebShopArchitecture::WebShopSystem::checkoutService".to_string(),
+            "WebShopArchitecture::WebShopSystem::checkoutService::apiIn".to_string(),
+            "WebShopArchitecture::WebShopSystem::apiGateway::checkoutApiOut".to_string(),
+        ]);
         let selected_exposed_ids: HashSet<String> =
             HashSet::from(["WebShopExample::webshopSystem".to_string()]);
 
@@ -1938,8 +1940,8 @@ mod tests {
             }
         });
 
-        let (parsed_workspace_root_uri, parsed_view) =
-            parse_software_visualization_params(&params).expect("parse software visualization params");
+        let (parsed_workspace_root_uri, parsed_view) = parse_software_visualization_params(&params)
+            .expect("parse software visualization params");
 
         assert_eq!(parsed_workspace_root_uri, workspace_root_uri);
         assert_eq!(parsed_view, SOFTWARE_DEPENDENCY_VIEW);
@@ -2024,7 +2026,8 @@ mod tests {
         });
 
         let (parsed_workspace_root_uri, parsed_view, parsed_model) =
-            parse_software_project_view_params(&params).expect("parse software project view params");
+            parse_software_project_view_params(&params)
+                .expect("parse software project view params");
 
         assert_eq!(
             parsed_workspace_root_uri,
@@ -2209,20 +2212,24 @@ mod tests {
         assert!(node_names.contains(&"api"));
         assert!(node_names.contains(&"serde"));
         assert!(!node_names.contains(&"internal"));
-        assert!(response
-            .graph
-            .nodes
-            .iter()
-            .find(|node| node.name == "api")
-            .and_then(|node| node.parent_id.as_deref())
-            == Some("rust:module:demo::services"));
-        assert!(response
-            .graph
-            .nodes
-            .iter()
-            .find(|node| node.name == "services")
-            .and_then(|node| node.parent_id.as_deref())
-            == Some("rust:crate:demo"));
+        assert!(
+            response
+                .graph
+                .nodes
+                .iter()
+                .find(|node| node.name == "api")
+                .and_then(|node| node.parent_id.as_deref())
+                == Some("rust:module:demo::services")
+        );
+        assert!(
+            response
+                .graph
+                .nodes
+                .iter()
+                .find(|node| node.name == "services")
+                .and_then(|node| node.parent_id.as_deref())
+                == Some("rust:crate:demo")
+        );
         assert!(response
             .graph
             .nodes

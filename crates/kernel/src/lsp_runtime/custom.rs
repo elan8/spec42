@@ -251,9 +251,11 @@ pub(crate) fn software_analyze_workspace_result(
     params: serde_json::Value,
 ) -> Result<dto::SoftwareAnalyzeWorkspaceResultDto> {
     let workspace_root_uri = crate::views::parse_software_analyze_workspace_params(&params)?;
-    let workspace_path = workspace_root_uri
-        .to_file_path()
-        .map_err(|_| tower_lsp::jsonrpc::Error::invalid_params("software/analyzeWorkspace: invalid workspaceRootUri"))?;
+    let workspace_path = workspace_root_uri.to_file_path().map_err(|_| {
+        tower_lsp::jsonrpc::Error::invalid_params(
+            "software/analyzeWorkspace: invalid workspaceRootUri",
+        )
+    })?;
     let model = crate::software_architecture::analyze_rust_workspace(&workspace_path);
     Ok(dto::SoftwareAnalyzeWorkspaceResultDto {
         version: 0,
@@ -264,7 +266,8 @@ pub(crate) fn software_analyze_workspace_result(
 pub(crate) fn software_project_view_result(
     params: serde_json::Value,
 ) -> Result<dto::SoftwareVisualizationResultDto> {
-    let (workspace_root_uri, view, model) = crate::views::parse_software_project_view_params(&params)?;
+    let (workspace_root_uri, view, model) =
+        crate::views::parse_software_project_view_params(&params)?;
     Ok(crate::views::build_software_project_view_response(
         &workspace_root_uri,
         &view,
@@ -285,7 +288,9 @@ pub(crate) fn sysml_library_search_result(
     let mut ranked: Vec<(i64, &crate::language::SymbolEntry)> = state
         .symbol_table
         .iter()
-        .filter(|entry| crate::common::util::uri_under_any_library(&entry.uri, &state.library_paths))
+        .filter(|entry| {
+            crate::common::util::uri_under_any_library(&entry.uri, &state.library_paths)
+        })
         .filter_map(|entry| {
             let normalized_name = crate::workspace::library_search::normalized_library_symbol_name(
                 entry,
@@ -322,26 +327,34 @@ pub(crate) fn sysml_library_search_result(
     let items: Vec<crate::workspace::library_search::LibrarySearchItem> = ranked
         .into_iter()
         .take(effective_limit)
-        .map(|(score, entry)| crate::workspace::library_search::LibrarySearchItem {
-            name: crate::workspace::library_search::normalized_library_symbol_name(
-                entry,
-                state.index.get(&entry.uri),
-            ),
-            kind: crate::workspace::library_search::symbol_kind_label(entry.kind).to_string(),
-            container: entry.container_name.clone(),
-            uri: entry.uri.to_string(),
-            range: entry.range,
-            score,
-            source: crate::workspace::library_search::library_source_label(&entry.uri).to_string(),
-            path: entry.uri.path().to_string(),
-        })
+        .map(
+            |(score, entry)| crate::workspace::library_search::LibrarySearchItem {
+                name: crate::workspace::library_search::normalized_library_symbol_name(
+                    entry,
+                    state.index.get(&entry.uri),
+                ),
+                kind: crate::workspace::library_search::symbol_kind_label(entry.kind).to_string(),
+                container: entry.container_name.clone(),
+                uri: entry.uri.to_string(),
+                range: entry.range,
+                score,
+                source: crate::workspace::library_search::library_source_label(&entry.uri)
+                    .to_string(),
+                path: entry.uri.path().to_string(),
+            },
+        )
         .collect();
 
     let domain_sources = crate::workspace::library_search::build_library_tree(items);
     let sources = crate::views::library_search_adapter::to_dto_sources(domain_sources);
     let symbol_total = sources
         .iter()
-        .map(|src| src.packages.iter().map(|pkg| pkg.symbols.len()).sum::<usize>())
+        .map(|src| {
+            src.packages
+                .iter()
+                .map(|pkg| pkg.symbols.len())
+                .sum::<usize>()
+        })
         .sum();
     Ok(dto::SysmlLibrarySearchResultDto {
         sources,

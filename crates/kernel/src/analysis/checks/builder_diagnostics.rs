@@ -59,7 +59,10 @@ fn endpoint_reference_resolves(
     }
 
     let normalized = reference_name.replace('.', "::");
-    let segments: Vec<&str> = normalized.split("::").filter(|segment| !segment.is_empty()).collect();
+    let segments: Vec<&str> = normalized
+        .split("::")
+        .filter(|segment| !segment.is_empty())
+        .collect();
     if segments.len() <= 1 {
         return false;
     }

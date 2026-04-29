@@ -173,11 +173,7 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
                 target.id.uri != uri_norm,
             )
         } else {
-            semantic::hover_markdown_for_node(
-                &state.semantic_graph,
-                node,
-                node.id.uri != uri_norm,
-            )
+            semantic::hover_markdown_for_node(&state.semantic_graph, node, node.id.uri != uri_norm)
         };
         let markdown = if target_match.is_none() && word != node.name {
             resolve_hover_type_reference_target(state, node, &word, &lookup_name)

@@ -5,6 +5,7 @@ use sysml_v2_parser::RootNamespace;
 
 use tower_lsp::lsp_types::Url;
 
+use crate::root_element_body;
 use crate::semantic::ast_util::identification_name;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::import_resolution::resolve_type_reference_targets;
@@ -12,7 +13,6 @@ use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
 pub(crate) use crate::semantic::resolution::naming::{
     normalize_for_lookup, type_ref_candidates, type_ref_candidates_with_kind,
 };
-use crate::root_element_body;
 
 const TYPING_TARGET_KINDS: &[&str] = &[
     "part def",

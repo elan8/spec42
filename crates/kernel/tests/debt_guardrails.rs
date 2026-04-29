@@ -7,7 +7,8 @@ const MAX_ALLOW_ATTRIBUTES_IN_SRC: usize = 38;
 #[test]
 fn ignored_test_count_does_not_increase() {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let count = count_pattern(&root.join("src"), "#[ignore]") + count_pattern(&root.join("tests"), "#[ignore]");
+    let count = count_pattern(&root.join("src"), "#[ignore]")
+        + count_pattern(&root.join("tests"), "#[ignore]");
     assert!(
         count <= MAX_IGNORE_ATTRIBUTES,
         "ignored test count regressed: {count} > {MAX_IGNORE_ATTRIBUTES}"

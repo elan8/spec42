@@ -916,7 +916,10 @@ mod tests {
         let candidates = build_view_candidates(&evaluated_views, &HashMap::new(), &HashMap::new());
         assert_eq!(candidates.len(), 1);
         assert!(candidates[0].supported);
-        assert_eq!(candidates[0].renderer_view.as_deref(), Some("sequence-view"));
+        assert_eq!(
+            candidates[0].renderer_view.as_deref(),
+            Some("sequence-view")
+        );
     }
 
     #[test]

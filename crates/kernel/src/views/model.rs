@@ -44,10 +44,7 @@ fn strip_synthetic_nodes(graph: &SysmlGraphDto) -> SysmlGraphDto {
     model_projection::strip_synthetic_nodes(graph)
 }
 
-fn build_document_graph_dto(
-    semantic_graph: &semantic::SemanticGraph,
-    uri: &Url,
-) -> SysmlGraphDto {
+fn build_document_graph_dto(semantic_graph: &semantic::SemanticGraph, uri: &Url) -> SysmlGraphDto {
     let nodes: Vec<GraphNodeDto> = semantic_graph
         .nodes_for_uri(uri)
         .into_iter()

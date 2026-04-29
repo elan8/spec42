@@ -34,10 +34,13 @@ pub(super) fn build_advice(documents: &[ValidatedDocument], no_library_paths: bo
         return Vec::new();
     }
     let should_suggest_library_roots = documents.iter().any(|document| {
-        document.diagnostics.iter().any(|diagnostic| match diagnostic.code.as_ref() {
-            Some(NumberOrString::String(code)) => LIBRARY_ADVICE_CODES.contains(&code.as_str()),
-            _ => false,
-        })
+        document
+            .diagnostics
+            .iter()
+            .any(|diagnostic| match diagnostic.code.as_ref() {
+                Some(NumberOrString::String(code)) => LIBRARY_ADVICE_CODES.contains(&code.as_str()),
+                _ => false,
+            })
     });
     if should_suggest_library_roots {
         vec![
@@ -71,9 +74,7 @@ mod tests {
 
     fn make_document(diagnostics: Vec<Diagnostic>) -> ValidatedDocument {
         ValidatedDocument {
-            uri: Url::parse("file:///demo.sysml")
-                .expect("uri")
-                .to_string(),
+            uri: Url::parse("file:///demo.sysml").expect("uri").to_string(),
             diagnostics,
         }
     }

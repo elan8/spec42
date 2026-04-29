@@ -5,6 +5,12 @@ use std::sync::Arc;
 use tower_lsp::lsp_types::{Diagnostic, ServerCapabilities, Url};
 
 use crate::semantic::SemanticGraph;
+use crate::validation::{ValidationReport, ValidationRequest};
+
+pub const KERNEL_INTERFACE_VERSION: u32 = 1;
+
+pub type CheckProvider = Arc<dyn SemanticCheckProvider>;
+pub type PipelineHook = Arc<dyn ValidationPipelineHook>;
 
 /// Provider of semantic/quality diagnostics. Implement this to add custom checks (e.g. naming rules, complexity).
 pub trait SemanticCheckProvider: Send + Sync {
@@ -30,6 +36,54 @@ pub trait CustomMethodProvider: Send + Sync {
     fn custom_method_names(&self) -> Vec<String>;
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CapabilityMetadata {
+    pub capability_id: String,
+    pub version: String,
+    pub min_kernel_version: u32,
+    pub feature_flags: Vec<String>,
+}
+
+impl CapabilityMetadata {
+    pub fn new(capability_id: impl Into<String>, version: impl Into<String>) -> Self {
+        Self {
+            capability_id: capability_id.into(),
+            version: version.into(),
+            min_kernel_version: KERNEL_INTERFACE_VERSION,
+            feature_flags: Vec::new(),
+        }
+    }
+
+    pub fn with_min_kernel_version(mut self, min_kernel_version: u32) -> Self {
+        self.min_kernel_version = min_kernel_version;
+        self
+    }
+
+    pub fn with_feature_flags(mut self, feature_flags: Vec<String>) -> Self {
+        self.feature_flags = feature_flags;
+        self
+    }
+}
+
+pub trait CapabilityProvider: Send + Sync {
+    fn metadata(&self) -> CapabilityMetadata;
+    fn check_providers(&self) -> Vec<CheckProvider> {
+        Vec::new()
+    }
+    fn pipeline_hooks(&self) -> Vec<PipelineHook> {
+        Vec::new()
+    }
+}
+
+pub trait ValidationPipelineHook: Send + Sync {
+    fn before_validate(&self, _request: &ValidationRequest) -> Result<(), String> {
+        Ok(())
+    }
+    fn after_validate(&self, _report: &mut ValidationReport) -> Result<(), String> {
+        Ok(())
+    }
+}
+
 /// Server configuration built by the binary and passed to the core server.
 #[derive(Default, Clone)]
 pub struct Spec42Config {
@@ -42,6 +96,8 @@ pub struct Spec42Config {
     pub capability_augmenters: Vec<Arc<dyn CapabilityAugmenter>>,
     /// Optional custom-method declaration providers for additive host composition.
     pub custom_method_providers: Vec<Arc<dyn CustomMethodProvider>>,
+    /// Optional validation pipeline hooks for host-side behavior.
+    pub pipeline_hooks: Vec<PipelineHook>,
 }
 
 impl std::fmt::Debug for Spec42Config {
@@ -54,6 +110,7 @@ impl std::fmt::Debug for Spec42Config {
                 "custom_method_providers",
                 &self.custom_method_providers.len(),
             )
+            .field("pipeline_hooks", &self.pipeline_hooks.len())
             .finish()
     }
 }
@@ -78,6 +135,12 @@ impl Spec42Config {
     /// Add a custom method provider.
     pub fn with_custom_method_provider(mut self, p: Arc<dyn CustomMethodProvider>) -> Self {
         self.custom_method_providers.push(p);
+        self
+    }
+
+    /// Add a validation pipeline hook.
+    pub fn with_pipeline_hook(mut self, hook: PipelineHook) -> Self {
+        self.pipeline_hooks.push(hook);
         self
     }
 
@@ -132,5 +195,14 @@ mod tests {
                 "sysml/shared".to_string()
             ]
         );
+    }
+
+    #[test]
+    fn capability_metadata_defaults_to_current_kernel_interface() {
+        let metadata = CapabilityMetadata::new("pro.example", "0.1.0");
+        assert_eq!(metadata.min_kernel_version, KERNEL_INTERFACE_VERSION);
+        assert_eq!(metadata.capability_id, "pro.example");
+        assert_eq!(metadata.version, "0.1.0");
+        assert!(metadata.feature_flags.is_empty());
     }
 }

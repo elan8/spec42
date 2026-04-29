@@ -427,12 +427,7 @@ pub(crate) fn rebuild_all_document_links(
         handles.push(std::thread::spawn(move || {
             bucket
                 .into_iter()
-                .map(|(uri, parsed)| {
-                    (
-                        uri.clone(),
-                        semantic::build_graph_from_doc(&parsed, &uri),
-                    )
-                })
+                .map(|(uri, parsed)| (uri.clone(), semantic::build_graph_from_doc(&parsed, &uri)))
                 .collect::<Vec<_>>()
         }));
     }
@@ -567,12 +562,7 @@ pub(crate) fn rebuild_semantic_graph_staged(
         handles.push(std::thread::spawn(move || {
             bucket
                 .into_iter()
-                .map(|(uri, parsed)| {
-                    (
-                        uri.clone(),
-                        semantic::build_graph_from_doc(&parsed, &uri),
-                    )
-                })
+                .map(|(uri, parsed)| (uri.clone(), semantic::build_graph_from_doc(&parsed, &uri)))
                 .collect::<Vec<_>>()
         }));
     }

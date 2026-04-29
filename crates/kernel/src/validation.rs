@@ -1,9 +1,9 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use crate::host::config::Spec42Config;
 use serde::Serialize;
 use tower_lsp::lsp_types::Diagnostic;
-use crate::host::config::Spec42Config;
 
 mod discovery;
 mod pipeline;

@@ -292,7 +292,10 @@ struct SequenceBuildState {
     next_order: usize,
 }
 
-fn normalize_sequence_reference(value: &str, local_ids: &std::collections::HashMap<String, String>) -> String {
+fn normalize_sequence_reference(
+    value: &str,
+    local_ids: &std::collections::HashMap<String, String>,
+) -> String {
     let trimmed = value.trim();
     if trimmed.is_empty() {
         return String::new();
@@ -763,7 +766,9 @@ fn extract_ref_value_from_part_usage(
         return None;
     };
     elements.iter().find_map(|element| match &element.value {
-        PartUsageBodyElement::Ref(reference) if reference.value.name.eq_ignore_ascii_case(wanted_name) => {
+        PartUsageBodyElement::Ref(reference)
+            if reference.value.name.eq_ignore_ascii_case(wanted_name) =>
+        {
             reference
                 .value
                 .value
@@ -775,8 +780,13 @@ fn extract_ref_value_from_part_usage(
     })
 }
 
-fn part_usage_message_kind(node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>) -> Option<&'static str> {
-    match normalized_last_segment(&node.value.type_name).to_ascii_lowercase().as_str() {
+fn part_usage_message_kind(
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>,
+) -> Option<&'static str> {
+    match normalized_last_segment(&node.value.type_name)
+        .to_ascii_lowercase()
+        .as_str()
+    {
         "synchronouscall" => Some("sync"),
         "asynchronousmessage" => Some("async"),
         "returnmessage" => Some("return"),
@@ -788,7 +798,10 @@ fn part_usage_message_kind(node: &sysml_v2_parser::Node<sysml_v2_parser::ast::Pa
 fn part_usage_fragment_kind(
     node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsage>,
 ) -> Option<&'static str> {
-    match normalized_last_segment(&node.value.type_name).to_ascii_lowercase().as_str() {
+    match normalized_last_segment(&node.value.type_name)
+        .to_ascii_lowercase()
+        .as_str()
+    {
         "altfragment" => Some("alt"),
         "optfragment" => Some("opt"),
         "loopfragment" => Some("loop"),
@@ -966,16 +979,19 @@ fn extract_sequence_fragment(
             let PartUsageBodyElement::PartUsage(part_usage) = &element.value else {
                 continue;
             };
-            if let Some(operand) = extract_sequence_operand(part_usage, &qualified_segments, state) {
+            if let Some(operand) = extract_sequence_operand(part_usage, &qualified_segments, state)
+            {
                 operands.push(operand);
                 continue;
             }
-            if let Some(message) = extract_sequence_message(part_usage, &qualified_segments, state) {
+            if let Some(message) = extract_sequence_message(part_usage, &qualified_segments, state)
+            {
                 message_ids.push(message.id.clone());
                 state.messages.push(message);
                 continue;
             }
-            if let Some(fragment) = extract_sequence_fragment(part_usage, &qualified_segments, state)
+            if let Some(fragment) =
+                extract_sequence_fragment(part_usage, &qualified_segments, state)
             {
                 fragments.push(fragment);
                 continue;
@@ -1023,7 +1039,10 @@ fn extract_sequence_diagram_from_part_def(
         };
         if part_usage_is_lifeline(part_usage) {
             lifelines.push(SequenceLifelineDto {
-                id: join_segments(&with_segment(&qualified_segments, part_usage.value.name.clone())),
+                id: join_segments(&with_segment(
+                    &qualified_segments,
+                    part_usage.value.name.clone(),
+                )),
                 name: part_usage.value.name.clone(),
                 uri: None,
                 range: span_to_range_dto(&part_usage.span),
@@ -1039,7 +1058,8 @@ fn extract_sequence_diagram_from_part_def(
             state.activations.push(activation);
             continue;
         }
-        if let Some(fragment) = extract_sequence_fragment(part_usage, &qualified_segments, &mut state)
+        if let Some(fragment) =
+            extract_sequence_fragment(part_usage, &qualified_segments, &mut state)
         {
             fragments.push(fragment);
         }
@@ -1084,7 +1104,10 @@ fn extract_sequence_diagram_from_part_usage(
         };
         if part_usage_is_lifeline(part_usage) {
             lifelines.push(SequenceLifelineDto {
-                id: join_segments(&with_segment(&qualified_segments, part_usage.value.name.clone())),
+                id: join_segments(&with_segment(
+                    &qualified_segments,
+                    part_usage.value.name.clone(),
+                )),
                 name: part_usage.value.name.clone(),
                 uri: None,
                 range: span_to_range_dto(&part_usage.span),
@@ -1100,7 +1123,8 @@ fn extract_sequence_diagram_from_part_usage(
             state.activations.push(activation);
             continue;
         }
-        if let Some(fragment) = extract_sequence_fragment(part_usage, &qualified_segments, &mut state)
+        if let Some(fragment) =
+            extract_sequence_fragment(part_usage, &qualified_segments, &mut state)
         {
             fragments.push(fragment);
         }
@@ -1132,9 +1156,11 @@ fn collect_sequence_diagrams_from_package_elements(
     for node in elements {
         match &node.value {
             PBE::PartDef(part_def) => {
-                if let Some(diagram) =
-                    extract_sequence_diagram_from_part_def(part_def, package_segments, parent_segments)
-                {
+                if let Some(diagram) = extract_sequence_diagram_from_part_def(
+                    part_def,
+                    package_segments,
+                    parent_segments,
+                ) {
                     out.push(diagram);
                 }
             }
@@ -1280,7 +1306,11 @@ fn extract_activity_from_action(
                         perform.value.action_name.clone()
                     };
                     actions.push(ActivityActionDto {
-                        id: Some(format!("{}::{}", join_segments(&qualified_segments), perform_name)),
+                        id: Some(format!(
+                            "{}::{}",
+                            join_segments(&qualified_segments),
+                            perform_name
+                        )),
                         name: perform_name,
                         action_type: "action".to_string(),
                         kind: Some("perform".to_string()),
@@ -1297,7 +1327,11 @@ fn extract_activity_from_action(
                         inputs.push(accept_name.clone());
                     }
                     actions.push(ActivityActionDto {
-                        id: Some(format!("{}::{}", join_segments(&qualified_segments), u.name)),
+                        id: Some(format!(
+                            "{}::{}",
+                            join_segments(&qualified_segments),
+                            u.name
+                        )),
                         name: u.name.clone(),
                         action_type: "action".to_string(),
                         // VS Code Action Flow view filters allowed node kinds. Use a compatible kind
@@ -1812,7 +1846,10 @@ mod tests {
 
         let root = parse(input).expect("parse");
         let diagrams = extract_sequence_diagrams(&root);
-        let diagram = diagrams.iter().find(|d| d.name == "CheckoutFlow").expect("sequence diagram");
+        let diagram = diagrams
+            .iter()
+            .find(|d| d.name == "CheckoutFlow")
+            .expect("sequence diagram");
 
         assert_eq!(diagram.package_path, "Demo");
         assert_eq!(diagram.lifelines.len(), 2);
@@ -1820,10 +1857,16 @@ mod tests {
         assert_eq!(diagram.messages[0].kind, "sync");
         assert_eq!(diagram.messages[1].kind, "return");
         assert_eq!(diagram.activations.len(), 1);
-        assert_eq!(diagram.activations[0].on_lifeline, "Demo::CheckoutFlow::api");
+        assert_eq!(
+            diagram.activations[0].on_lifeline,
+            "Demo::CheckoutFlow::api"
+        );
         assert_eq!(diagram.fragments.len(), 1);
         assert_eq!(diagram.fragments[0].kind, "opt");
-        assert_eq!(diagram.fragments[0].operands[0].guard.as_deref(), Some("valid order"));
+        assert_eq!(
+            diagram.fragments[0].operands[0].guard.as_deref(),
+            Some("valid order")
+        );
     }
 
     #[test]
@@ -1872,7 +1915,10 @@ mod tests {
 
         let root = parse(input).expect("parse");
         let diagrams = extract_sequence_diagrams(&root);
-        let payment = diagrams.iter().find(|d| d.name == "PaymentFlow").expect("payment flow");
+        let payment = diagrams
+            .iter()
+            .find(|d| d.name == "PaymentFlow")
+            .expect("payment flow");
 
         assert_eq!(payment.fragments.len(), 1);
         assert_eq!(payment.fragments[0].kind, "alt");
@@ -1880,7 +1926,9 @@ mod tests {
         assert_eq!(payment.fragments[0].operands[1].fragments.len(), 1);
         assert_eq!(payment.fragments[0].operands[1].fragments[0].kind, "ref");
         assert_eq!(
-            payment.fragments[0].operands[1].fragments[0].target_ref.as_deref(),
+            payment.fragments[0].operands[1].fragments[0]
+                .target_ref
+                .as_deref(),
             Some("RetryFlow")
         );
     }

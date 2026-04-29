@@ -80,8 +80,10 @@ pub(crate) fn collect_document_diagnostics(
             diagnostics.extend(provider.compute_diagnostics(semantic_graph, uri));
         }
 
-        let has_unresolved_type_reference = has_semantic_code(&diagnostics, "unresolved_type_reference");
-        let has_unresolved_import_target = has_semantic_code(&diagnostics, "unresolved_import_target");
+        let has_unresolved_type_reference =
+            has_semantic_code(&diagnostics, "unresolved_type_reference");
+        let has_unresolved_import_target =
+            has_semantic_code(&diagnostics, "unresolved_import_target");
         let has_unresolved_specializes_reference =
             has_semantic_code(&diagnostics, "unresolved_specializes_reference");
 
