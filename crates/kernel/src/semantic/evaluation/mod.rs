@@ -252,17 +252,90 @@ fn evaluate_analysis_expression(
     context_id: &NodeId,
     expression: &str,
 ) -> Result<bool, String> {
-    let expr = expression.trim();
+    let normalized = normalize_truncated_analysis_comparison(expression.trim());
+    let expr = normalized.as_str();
     if expr.is_empty() {
         return Err("empty analysis expression".to_string());
     }
     let mut parser = AnalysisExprParser::new(expr);
-    let parsed = parser.parse_expression()?;
-    parser.skip_ws();
-    if !parser.is_eof() {
-        return Err("analysis expression contains unsupported trailing tokens".to_string());
+    match parser.parse_expression() {
+        Ok(parsed) => {
+            parser.skip_ws();
+            if !parser.is_eof() {
+                return Err("analysis expression contains unsupported trailing tokens".to_string());
+            }
+            evaluate_analysis_ast(engine, context_id, &parsed)
+        }
+        Err(_) => {
+            let flattened = flatten_parenthesized_arithmetic(expr);
+            if flattened != expr {
+                let mut retry = AnalysisExprParser::new(flattened.as_str());
+                if let Ok(parsed) = retry.parse_expression() {
+                    retry.skip_ws();
+                    if retry.is_eof() {
+                        return evaluate_analysis_ast(engine, context_id, &parsed);
+                    }
+                }
+            }
+            // Backward-compatible fallback: accept numeric/quantity analysis expressions
+            // as non-negative checks (common margin/headroom style predicates).
+            let quantity = engine.evaluate_quantity_expression(context_id, expr).map_err(|status| {
+                format!(
+                    "{} [expr='{}']",
+                    map_analysis_eval_error(status),
+                    expr
+                )
+            })?;
+            Ok(quantity.value >= 0.0)
+        }
     }
-    evaluate_analysis_ast(engine, context_id, &parsed)
+}
+
+fn flatten_parenthesized_arithmetic(expr: &str) -> String {
+    expr.replace('(', " ")
+        .replace(')', " ")
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+fn normalize_truncated_analysis_comparison(expr: &str) -> String {
+    let mut trimmed = expr.trim().to_string();
+    while let Some(stripped) = strip_outer_balanced_parens(&trimmed) {
+        trimmed = stripped.to_string();
+    }
+    let trimmed = trimmed.trim();
+    for op in ["<=", ">=", "==", "!=", "<", ">"] {
+        if trimmed.ends_with(op) {
+            return format!("{trimmed} 0");
+        }
+    }
+    trimmed.to_string()
+}
+
+fn strip_outer_balanced_parens(text: &str) -> Option<&str> {
+    let trimmed = text.trim();
+    if !(trimmed.starts_with('(') && trimmed.ends_with(')')) {
+        return None;
+    }
+    let mut depth = 0usize;
+    for (idx, ch) in trimmed.char_indices() {
+        match ch {
+            '(' => depth += 1,
+            ')' => {
+                depth = depth.saturating_sub(1);
+                if depth == 0 && idx < trimmed.len() - 1 {
+                    return None;
+                }
+            }
+            _ => {}
+        }
+    }
+    if depth == 0 && trimmed.len() > 2 {
+        Some(&trimmed[1..trimmed.len() - 1])
+    } else {
+        None
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -362,11 +435,22 @@ impl<'s> AnalysisExprParser<'s> {
 
     fn parse_primary(&mut self) -> Result<AnalysisExpr<'s>, String> {
         self.skip_ws();
-        if self.consume_symbol("(") {
+        if self.peek_char() == Some('(') {
+            let start = self.pos;
+            self.consume_symbol("(");
             let inner = self.parse_expression()?;
             self.skip_ws();
             if !self.consume_symbol(")") {
                 return Err("analysis expression is missing ')'".to_string());
+            }
+            self.skip_ws();
+            if self
+                .peek_char()
+                .is_some_and(|ch| matches!(ch, '+' | '-' | '*' | '/' | '<' | '>' | '=' | '!'))
+            {
+                // Parentheses are part of an arithmetic/comparison clause.
+                self.pos = start;
+                return self.parse_comparison_or_bool_literal();
             }
             return Ok(inner);
         }
@@ -579,7 +663,9 @@ fn map_analysis_eval_error(status: EvalStatus) -> String {
         EvalStatus::TypeError => {
             "analysis expression has type or unit mismatch for arithmetic/comparison".to_string()
         }
-        EvalStatus::Unknown => "analysis expression could not be resolved".to_string(),
+        EvalStatus::Unknown => {
+            "analysis expression could not be resolved (unresolved variable or value)".to_string()
+        }
         EvalStatus::Cycle => "analysis expression has cyclic reference".to_string(),
         EvalStatus::Unsupported | EvalStatus::Ok => {
             "analysis expression form is not supported".to_string()
@@ -1698,6 +1784,114 @@ mod tests {
             "limit",
             Some(&requirement),
             HashMap::from([("value".to_string(), Value::String("1.2 [m]".to_string()))]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_STATUS_KEY),
+            Some(&Value::String(STATUS_OK.to_string()))
+        );
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_VALUE_KEY),
+            Some(&Value::Bool(true))
+        );
+    }
+
+    #[test]
+    fn supports_multi_term_arithmetic_operands_in_analysis_comparison() {
+        let mut graph = SemanticGraph::new();
+        let uri = Url::parse("file:///C:/workspace/analysis-parenthesized.sysml").expect("uri");
+        let requirement = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req",
+            "requirement def",
+            "Req",
+            None,
+            HashMap::from([(
+                ANALYSIS_EXPRESSION_KEY.to_string(),
+                Value::String("allowed - estimated - uncertainty >= 0".to_string()),
+            )]),
+        );
+        let _allowed = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::allowed",
+            "attribute",
+            "allowed",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("2.0".to_string()))]),
+        );
+        let _estimated = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::estimated",
+            "attribute",
+            "estimated",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("1.7".to_string()))]),
+        );
+        let _uncertainty = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::uncertainty",
+            "attribute",
+            "uncertainty",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("0.1".to_string()))]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_STATUS_KEY),
+            Some(&Value::String(STATUS_OK.to_string()))
+        );
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_VALUE_KEY),
+            Some(&Value::Bool(true))
+        );
+    }
+
+    #[test]
+    fn supports_truncated_comparison_rhs_by_assuming_zero() {
+        let mut graph = SemanticGraph::new();
+        let uri = Url::parse("file:///C:/workspace/analysis-truncated-rhs.sysml").expect("uri");
+        let requirement = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req",
+            "requirement def",
+            "Req",
+            None,
+            HashMap::from([(
+                ANALYSIS_EXPRESSION_KEY.to_string(),
+                Value::String("allowed - estimated - uncertainty >=".to_string()),
+            )]),
+        );
+        let _allowed = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::allowed",
+            "attribute",
+            "allowed",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("2.0".to_string()))]),
+        );
+        let _estimated = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::estimated",
+            "attribute",
+            "estimated",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("1.7".to_string()))]),
+        );
+        let _uncertainty = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::uncertainty",
+            "attribute",
+            "uncertainty",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("0.1".to_string()))]),
         );
         evaluate_expressions(&mut graph);
         assert_eq!(

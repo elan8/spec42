@@ -123,7 +123,7 @@ fn require_constraint_structured(body: &RequireConstraintBody) -> Option<serde_j
         return None;
     };
     let mut params = Vec::new();
-    let mut expression: Option<String> = None;
+    let mut expression_fragments: Vec<String> = Vec::new();
     for element in elements {
         match &element.value {
             ConstraintDefBodyElement::InOutDecl(param) => {
@@ -141,7 +141,7 @@ fn require_constraint_structured(body: &RequireConstraintBody) -> Option<serde_j
             ConstraintDefBodyElement::Expression(expr) => {
                 let rendered = compact_whitespace(&expression_to_debug_string(expr));
                 if !rendered.is_empty() {
-                    expression = Some(rendered);
+                    expression_fragments.push(rendered);
                 }
             }
             ConstraintDefBodyElement::Doc(_)
@@ -149,11 +149,15 @@ fn require_constraint_structured(body: &RequireConstraintBody) -> Option<serde_j
             | ConstraintDefBodyElement::Other(_) => {}
         }
     }
-    expression.map(|expr| {
+    let expression = compact_whitespace(&expression_fragments.join(" "));
+    if expression.is_empty() {
+        return None;
+    }
+    Some({
         serde_json::json!({
             "kind": "require_constraint",
             "params": params,
-            "expression": expr,
+            "expression": expression,
         })
     })
 }
@@ -301,10 +305,71 @@ pub(super) fn walk_requirement_def_body(
                     Some(parent_id),
                 );
             }
+            RequirementDefBodyElement::AttributeDef(attr_def) => {
+                let name = &attr_def.value.name;
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    name,
+                    "attribute def",
+                );
+                let mut attrs = HashMap::new();
+                if let Some(ref typing) = attr_def.value.typing {
+                    attrs.insert("attributeType".to_string(), serde_json::json!(typing));
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "attribute def",
+                    name.clone(),
+                    span_to_range(&attr_def.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                if let Some(ref typing) = attr_def.value.typing {
+                    add_typing_edge_if_exists(
+                        g,
+                        uri,
+                        &qualified,
+                        typing,
+                        type_resolution_prefix,
+                    );
+                }
+            }
+            RequirementDefBodyElement::AttributeUsage(attr_usage) => {
+                let name = &attr_usage.value.name;
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    name,
+                    "attribute",
+                );
+                let mut attrs = HashMap::new();
+                if let Some(ref redefines) = attr_usage.value.redefines {
+                    attrs.insert("redefines".to_string(), serde_json::json!(redefines));
+                }
+                if let Some(ref value) = attr_usage.value.value {
+                    attrs.insert(
+                        "value".to_string(),
+                        serde_json::json!(expression_to_debug_string(value)),
+                    );
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "attribute",
+                    name.clone(),
+                    span_to_range(&attr_usage.span),
+                    attrs,
+                    Some(parent_id),
+                );
+            }
             RequirementDefBodyElement::Doc(_)
             | RequirementDefBodyElement::Annotation(_)
-            | RequirementDefBodyElement::AttributeDef(_)
-            | RequirementDefBodyElement::AttributeUsage(_)
             | RequirementDefBodyElement::VerifyRequirement(_)
             | RequirementDefBodyElement::Error(_)
             | RequirementDefBodyElement::Other(_) => {}
