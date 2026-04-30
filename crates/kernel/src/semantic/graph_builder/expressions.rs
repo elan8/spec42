@@ -82,15 +82,25 @@ pub(super) fn add_expression_edge_if_both_exist(
     } else {
         let Some(id) = resolve_expression_endpoint_legacy(g, uri, container_prefix, &left_str)
         else {
-            if kind == RelationshipKind::Satisfy {
+            if kind == RelationshipKind::Satisfy || kind == RelationshipKind::Allocate {
+                let code = if kind == RelationshipKind::Allocate {
+                    "unresolved_allocate_source"
+                } else {
+                    "unresolved_satisfy_source"
+                };
+                let relation = if kind == RelationshipKind::Allocate {
+                    "allocate"
+                } else {
+                    "satisfy"
+                };
                 add_diagnostic_node(
                     g,
                     uri,
                     container_prefix,
-                    "unresolved_satisfy_source",
+                    code,
                     format!(
-                        "Could not resolve satisfy source '{}'. Use a valid in-scope element name.",
-                        left_str
+                        "Could not resolve {} source '{}'. Use a valid in-scope element name.",
+                        relation, left_str
                     ),
                     span_to_range(&left.span),
                 );
@@ -121,15 +131,25 @@ pub(super) fn add_expression_edge_if_both_exist(
     } else {
         let Some(id) = resolve_expression_endpoint_legacy(g, uri, container_prefix, &right_str)
         else {
-            if kind == RelationshipKind::Satisfy {
+            if kind == RelationshipKind::Satisfy || kind == RelationshipKind::Allocate {
+                let code = if kind == RelationshipKind::Allocate {
+                    "unresolved_allocate_target"
+                } else {
+                    "unresolved_satisfy_target"
+                };
+                let relation = if kind == RelationshipKind::Allocate {
+                    "allocate"
+                } else {
+                    "satisfy"
+                };
                 add_diagnostic_node(
                     g,
                     uri,
                     container_prefix,
-                    "unresolved_satisfy_target",
+                    code,
                     format!(
-                        "Could not resolve satisfy target '{}'. Use a valid in-scope element name.",
-                        right_str
+                        "Could not resolve {} target '{}'. Use a valid in-scope element name.",
+                        relation, right_str
                     ),
                     span_to_range(&right.span),
                 );

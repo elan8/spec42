@@ -21,6 +21,7 @@ use super::modeled_kerml_name::extract_modeled_decl_name;
 use super::package_packages;
 use super::{add_node_and_recurse, qualified_name_for_node};
 use super::{interface_def, part_def, part_usage, port_def, state, stubs, use_case};
+use super::verification;
 
 pub(super) fn build_from_package_body_element(
     node: &sysml_v2_parser::Node<PackageBodyElement>,
@@ -594,6 +595,38 @@ pub(super) fn build_from_package_body_element(
                 RelationshipKind::Satisfy,
             );
         }
+        PBE::AllocationUsage(alloc_node) => {
+            let name = &alloc_node.name;
+            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "allocation");
+            let range = span_to_range(&alloc_node.span);
+            let mut attrs = HashMap::new();
+            if let Some(ref t) = alloc_node.type_name {
+                attrs.insert("allocationType".to_string(), serde_json::json!(t));
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "allocation",
+                name.clone(),
+                range,
+                attrs,
+                parent_id,
+            );
+            if let Some(ref t) = alloc_node.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
+            if let (Some(source), Some(target)) = (&alloc_node.source, &alloc_node.target) {
+                expressions::add_expression_edge_if_both_exist(
+                    g,
+                    uri,
+                    container_prefix,
+                    source,
+                    target,
+                    RelationshipKind::Allocate,
+                );
+            }
+        }
         PBE::ConcernUsage(cu_node) => {
             let name = &cu_node.name;
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "concern");
@@ -926,27 +959,6 @@ pub(super) fn build_from_package_body_element(
                 );
             }
         }
-        PBE::AllocationUsage(alloc_node) => {
-            let qualified =
-                qualified_name_for_node(g, uri, container_prefix, &alloc_node.name, "allocation");
-            let mut attrs = HashMap::new();
-            if let Some(ref t) = alloc_node.type_name {
-                attrs.insert("allocationType".to_string(), serde_json::json!(t.clone()));
-            }
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "allocation",
-                alloc_node.name.clone(),
-                span_to_range(&alloc_node.span),
-                attrs,
-                parent_id,
-            );
-            if let Some(ref t) = alloc_node.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
-        }
         PBE::Dependency(dep_node) => {
             let name = dep_node
                 .identification
@@ -1076,11 +1088,23 @@ pub(super) fn build_from_package_body_element(
                     HashMap::new(),
                     parent_id,
                 );
+                let node_id = NodeId::new(uri, &qualified);
+                verification::build_from_verification_body(
+                    &c_node.body,
+                    uri,
+                    Some(&qualified),
+                    &node_id,
+                    g,
+                );
             }
         }
         PBE::VerificationCaseUsage(c_node) => {
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, &c_node.name, "verification");
+            let mut attrs = HashMap::new();
+            if let Some(ref t) = c_node.type_name {
+                attrs.insert("verificationType".to_string(), serde_json::json!(t));
+            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -1088,8 +1112,19 @@ pub(super) fn build_from_package_body_element(
                 "verification",
                 c_node.name.clone(),
                 span_to_range(&c_node.span),
-                HashMap::new(),
+                attrs,
                 parent_id,
+            );
+            if let Some(ref t) = c_node.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
+            let node_id = NodeId::new(uri, &qualified);
+            verification::build_from_verification_body(
+                &c_node.body,
+                uri,
+                Some(&qualified),
+                &node_id,
+                g,
             );
         }
         PBE::Actor(actor_node) => {

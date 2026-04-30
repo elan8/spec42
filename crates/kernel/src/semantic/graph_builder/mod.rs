@@ -21,6 +21,7 @@ mod requirement_body;
 mod state;
 mod stubs;
 mod use_case;
+mod verification;
 
 /// Builds a semantic graph from a parsed RootNamespace (sysml-v2-parser AST).
 /// Adds the root package/namespace as a node and sets parent_id on its direct children

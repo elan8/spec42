@@ -1070,6 +1070,26 @@ fn unresolved_satisfy_reference_emits_semantic_diagnostic() {
 }
 
 #[test]
+fn unresolved_allocate_reference_emits_semantic_diagnostic() {
+    let content = r#"
+        package P {
+            part def Host {
+                allocate missingAction to missingPart;
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("unresolved_allocate.sysml", content);
+    let found_unresolved_allocate =
+        has_diag_code(&diagnostics, "semantic", "unresolved_allocate_source")
+            || has_diag_code(&diagnostics, "semantic", "unresolved_allocate_target");
+
+    assert!(
+        found_unresolved_allocate,
+        "expected unresolved_allocate_* semantic diagnostic for missing allocate reference"
+    );
+}
+
+#[test]
 fn compatible_different_port_def_connection_has_no_port_type_mismatch_diagnostic() {
     let content = r#"
         package P {

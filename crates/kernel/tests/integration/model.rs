@@ -1671,6 +1671,196 @@ fn lsp_sysml_model_ibd_surveillance_drone_is_complete_enough_for_interconnection
     let _ = child.kill();
 }
 
+#[test]
+fn lsp_sysml_model_graph_includes_verification_semantics() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///verification_graph_test.sysml";
+    let content = r#"
+        package V {
+            part def System;
+            action def ValidateSensors;
+            action def PublishVerdict;
+
+            verification def VerifyStartup {
+                subject system : System;
+                objective { doc /* Verify startup sequencing. */ }
+                then action validateSensors : ValidateSensors;
+                then action publishVerdict : PublishVerdict;
+                then done;
+            }
+        }
+    "#;
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+    let did_open = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+        }
+    });
+    send_message(&mut stdin, &did_open.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(140));
+
+    let model_id = next_id();
+    let model_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": model_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": uri },
+            "scope": ["graph"]
+        }
+    });
+    send_message(&mut stdin, &model_req.to_string());
+    let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+    let graph = &model_json["result"]["graph"];
+    let nodes = graph["nodes"].as_array().expect("graph nodes array");
+    let edges = graph["edges"].as_array().expect("graph edges array");
+
+    assert!(
+        nodes.iter().any(|node| {
+            node["type"].as_str() == Some("verification def")
+                && node["name"].as_str() == Some("VerifyStartup")
+        }),
+        "expected verification def node in graph"
+    );
+    assert!(
+        nodes.iter().any(|node| node["type"].as_str() == Some("objective")),
+        "expected objective node in graph"
+    );
+    assert!(
+        nodes.iter().any(|node| node["type"].as_str() == Some("verdict")),
+        "expected verdict node in graph"
+    );
+    assert!(
+        edges.iter().any(|edge| {
+            edge["type"].as_str() == Some("subject")
+                && edge["source"]
+                    .as_str()
+                    .is_some_and(|source| source.ends_with("VerifyStartup"))
+                && edge["target"]
+                    .as_str()
+                    .is_some_and(|target| target.ends_with("System"))
+        }),
+        "expected verification subject edge VerifyStartup -> System"
+    );
+    assert!(
+        edges.iter().any(|edge| {
+            edge["type"].as_str() == Some("flow")
+                && edge["source"]
+                    .as_str()
+                    .is_some_and(|source| source.ends_with("validateSensors"))
+                && edge["target"]
+                    .as_str()
+                    .is_some_and(|target| target.ends_with("publishVerdict"))
+        }),
+        "expected flow edge validateSensors -> publishVerdict"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
+fn lsp_sysml_model_graph_includes_allocate_edges_for_resolvable_endpoints() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///allocate_graph_test.sysml";
+    let content = r#"
+        package A {
+            action def RunCheck;
+            part def Host {
+                perform action runCheck : RunCheck;
+                part subsystem;
+                allocate runCheck to subsystem;
+            }
+        }
+    "#;
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+    let did_open = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+        }
+    });
+    send_message(&mut stdin, &did_open.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(120));
+
+    let model_id = next_id();
+    let model_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": model_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": uri },
+            "scope": ["graph"]
+        }
+    });
+    send_message(&mut stdin, &model_req.to_string());
+    let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+    let edges = model_json["result"]["graph"]["edges"]
+        .as_array()
+        .expect("graph edges array");
+
+    assert!(
+        edges.iter().any(|edge| {
+            edge["type"].as_str() == Some("allocate")
+                && edge["source"]
+                    .as_str()
+                    .is_some_and(|source| source.ends_with("runCheck"))
+                && edge["target"]
+                    .as_str()
+                    .is_some_and(|target| target.ends_with("subsystem"))
+        }),
+        "expected allocate edge runCheck -> subsystem in model graph"
+    );
+
+    let _ = child.kill();
+}
+
 /// sysml/model with scope ["graph"] returns ibd with defaultRoot = SurveillanceQuadrotorDrone
 /// (largest top-level part tree), not Propulsion. Validates IBD backend for interconnection-view.
 #[test]

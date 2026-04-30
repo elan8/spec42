@@ -1401,4 +1401,122 @@ mod tests {
             "incremental relink should keep unresolved_type_reference: {diags:#?}"
         );
     }
+
+    #[test]
+    fn verification_case_body_builds_subject_objective_actions_flow_and_verdict_nodes() {
+        let input = r#"
+            package V {
+                part def System;
+                action def ValidateSensors;
+                action def PublishVerdict;
+
+                verification def VerifyStartup {
+                    subject system : System;
+                    objective { doc /* Verify startup sequencing. */ }
+                    then action validateSensors : ValidateSensors;
+                    then action publishVerdict : PublishVerdict;
+                    then done;
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///verification_semantics.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+
+        let nodes = graph.nodes_for_uri(&uri);
+        assert!(
+            nodes
+                .iter()
+                .any(|node| node.element_kind == "objective" && node.id.qualified_name.contains("VerifyStartup")),
+            "expected objective node under verification def"
+        );
+        assert!(
+            nodes
+                .iter()
+                .any(|node| node.element_kind == "verdict" && node.id.qualified_name.contains("VerifyStartup")),
+            "expected verdict node under verification def"
+        );
+        assert!(
+            nodes
+                .iter()
+                .any(|node| node.element_kind == "action" && node.name == "validateSensors"),
+            "expected then action node validateSensors"
+        );
+        assert!(
+            nodes
+                .iter()
+                .any(|node| node.element_kind == "action" && node.name == "publishVerdict"),
+            "expected then action node publishVerdict"
+        );
+
+        let edges = graph.edges_for_uri_as_strings(&uri);
+        assert!(
+            edges.iter().any(|(src, tgt, kind, _)| {
+                kind.as_str() == "subject"
+                    && src.ends_with("VerifyStartup")
+                    && tgt.ends_with("System")
+            }),
+            "expected verification subject edge VerifyStartup -> System"
+        );
+        assert!(
+            edges.iter().any(|(src, tgt, kind, _)| {
+                kind.as_str() == "perform"
+                    && src.ends_with("VerifyStartup")
+                    && tgt.ends_with("validateSensors")
+            }),
+            "expected perform edge VerifyStartup -> validateSensors"
+        );
+        assert!(
+            edges.iter().any(|(src, tgt, kind, _)| {
+                kind.as_str() == "flow"
+                    && src.ends_with("validateSensors")
+                    && tgt.ends_with("publishVerdict")
+            }),
+            "expected flow edge validateSensors -> publishVerdict"
+        );
+    }
+
+    #[test]
+    fn verification_case_imported_action_types_do_not_emit_unresolved_type_reference() {
+        let library = r#"
+            package VerificationLibrary {
+                action def ValidateSensors;
+                action def PublishVerdict;
+                part def System;
+            }
+        "#;
+        let usage = r#"
+            package VerificationExample {
+                import VerificationLibrary::*;
+                verification def VerifyStartup {
+                    subject system : System;
+                    then action validateSensors : ValidateSensors;
+                    then action publishVerdict : PublishVerdict;
+                }
+            }
+        "#;
+
+        let library_uri = Url::parse("file:///verification_library.sysml").expect("library uri");
+        let usage_uri = Url::parse("file:///verification_example.sysml").expect("usage uri");
+        let library_root = sysml_v2_parser::parse(library).expect("parse library");
+        let usage_root = sysml_v2_parser::parse(usage).expect("parse usage");
+
+        let mut graph = build_graph_from_doc(&library_root, &library_uri);
+        graph.merge(build_graph_from_doc(&usage_root, &usage_uri));
+        add_cross_document_edges_for_uri(&mut graph, &usage_uri);
+
+        let unresolved: Vec<_> = compute_semantic_diagnostics(&graph, &usage_uri)
+            .into_iter()
+            .filter(|diagnostic| {
+                diagnostic.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "unresolved_type_reference".to_string(),
+                    ))
+            })
+            .collect();
+        assert!(
+            unresolved.is_empty(),
+            "imported verification action types should resolve cleanly: {unresolved:#?}"
+        );
+    }
 }
