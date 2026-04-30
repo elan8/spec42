@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use crate::host::config::Spec42Config;
 use serde::Serialize;
-use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::{Diagnostic, Range};
 
 mod discovery;
 mod pipeline;
@@ -27,6 +27,35 @@ pub struct ValidationReport {
 }
 
 #[derive(Debug, Clone, Serialize)]
+pub struct SemanticValidationReport {
+    pub validation: ValidationReport,
+    pub semantic_model: SemanticModelProjection,
+}
+
+#[derive(Debug, Clone, Serialize, Default)]
+pub struct SemanticModelProjection {
+    pub nodes: Vec<SemanticModelNode>,
+    pub relationships: Vec<SemanticModelRelationship>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+pub struct SemanticModelNode {
+    pub uri: String,
+    pub qualified_name: String,
+    pub name: String,
+    pub element_kind: String,
+    pub range: Range,
+    pub parent: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+pub struct SemanticModelRelationship {
+    pub source: String,
+    pub target: String,
+    pub kind: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
 pub struct ValidatedDocument {
     pub uri: String,
     pub diagnostics: Vec<Diagnostic>,
@@ -45,6 +74,13 @@ pub fn validate_paths(
     request: ValidationRequest,
 ) -> Result<ValidationReport, String> {
     pipeline::validate_paths(config, request)
+}
+
+pub fn validate_paths_with_semantics(
+    config: &Arc<Spec42Config>,
+    request: ValidationRequest,
+) -> Result<SemanticValidationReport, String> {
+    pipeline::validate_paths_with_semantics(config, request)
 }
 
 #[cfg(test)]
@@ -86,6 +122,97 @@ package KitchenTimer {
         )
         .expect("write ISQ");
         stdlib_root
+    }
+
+    #[test]
+    fn validate_paths_with_semantics_projects_target_nodes_and_relationships() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let model_path = temp.path().join("RiskTrace.sysml");
+        std::fs::write(
+            &model_path,
+            r#"
+package RiskTrace {
+    part def RiskControlMeasure;
+    part control : RiskControlMeasure;
+    requirement verifiedControl;
+    satisfy verifiedControl by control;
+}
+"#,
+        )
+        .expect("write model");
+        let config = Arc::new(crate::default_server_config());
+
+        let report = validate_paths_with_semantics(
+            &config,
+            ValidationRequest {
+                targets: vec![model_path],
+                workspace_root: None,
+                library_paths: Vec::new(),
+                parallel_enabled: false,
+            },
+        )
+        .expect("semantic validation report");
+
+        assert_eq!(report.validation.summary.error_count, 0);
+        assert!(report
+            .semantic_model
+            .nodes
+            .iter()
+            .any(|node| { node.name == "RiskControlMeasure" && node.element_kind == "part def" }));
+        assert!(report.semantic_model.nodes.iter().all(|node| {
+            node.uri.ends_with("RiskTrace.sysml") && node.range.start.line <= node.range.end.line
+        }));
+        assert!(report.semantic_model.relationships.iter().any(|rel| {
+            rel.kind == "satisfy"
+                && rel.source.ends_with("verifiedControl")
+                && rel.target.ends_with("control")
+        }));
+    }
+
+    #[test]
+    fn validate_paths_with_semantics_excludes_non_target_library_nodes() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let model_path = temp.path().join("UseLibrary.sysml");
+        std::fs::write(
+            &model_path,
+            r#"
+package UseLibrary {
+    private import LibraryTypes::*;
+    part device : LibraryComponent;
+}
+"#,
+        )
+        .expect("write model");
+        let library_root = temp.path().join("library");
+        std::fs::create_dir_all(&library_root).expect("library root");
+        std::fs::write(
+            library_root.join("LibraryTypes.sysml"),
+            "package LibraryTypes { part def LibraryComponent; }",
+        )
+        .expect("write library");
+        let config = Arc::new(crate::default_server_config());
+
+        let report = validate_paths_with_semantics(
+            &config,
+            ValidationRequest {
+                targets: vec![model_path],
+                workspace_root: None,
+                library_paths: vec![library_root],
+                parallel_enabled: false,
+            },
+        )
+        .expect("semantic validation report");
+
+        assert!(report
+            .semantic_model
+            .nodes
+            .iter()
+            .any(|node| node.name == "device"));
+        assert!(!report
+            .semantic_model
+            .nodes
+            .iter()
+            .any(|node| node.name == "LibraryComponent"));
     }
 
     #[test]

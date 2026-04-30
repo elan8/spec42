@@ -210,6 +210,27 @@ fn exact_named_members(graph: &SemanticGraph, qualified_name: &str) -> Vec<NodeI
         .collect()
 }
 
+fn exact_named_members_or_disambiguated(graph: &SemanticGraph, qualified_name: &str) -> Vec<NodeId> {
+    let mut out = exact_named_members(graph, qualified_name);
+    let normalized = normalize_for_lookup(qualified_name);
+    let disambiguated_prefix = format!("{normalized}#");
+    out.extend(
+        graph
+            .nodes_by_uri
+            .values()
+            .flatten()
+            .filter(|id| normalize_for_lookup(&id.qualified_name).starts_with(&disambiguated_prefix))
+            .filter(|id| {
+                graph
+                    .get_node(id)
+                    .map(|node| node.element_kind != "import")
+                    .unwrap_or(false)
+            })
+            .cloned(),
+    );
+    dedupe_node_ids(out)
+}
+
 fn allowed_exact_named_members(
     graph: &SemanticGraph,
     qualified_name: &str,
@@ -310,7 +331,10 @@ fn resolve_membership_import_named(
 
     if let Some((parent_qualified, member_name)) = normalized_target.rsplit_once("::") {
         if member_name == simple_name {
-            out.extend(exact_named_members(graph, &normalized_target));
+            out.extend(exact_named_members_or_disambiguated(
+                graph,
+                &normalized_target,
+            ));
             for namespace_id in namespace_node_ids_for_qualified_name(graph, parent_qualified) {
                 out.extend(exported_members_named_from_namespace(
                     graph,
@@ -322,7 +346,10 @@ fn resolve_membership_import_named(
             }
         }
     } else if normalized_target == simple_name {
-        out.extend(exact_named_members(graph, &normalized_target));
+        out.extend(exact_named_members_or_disambiguated(
+            graph,
+            &normalized_target,
+        ));
     }
 
     if recursive {

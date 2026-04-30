@@ -358,7 +358,7 @@ pub(super) fn add_diagnostic_node(
 #[cfg(test)]
 mod expr_string_tests {
     use super::{
-        expr_node_to_qualified_string, expression_to_debug_string,
+        expr_node_to_qualified_string, expression_to_debug_string, resolve_expression_endpoint_strict,
         resolve_expression_endpoint_legacy,
     };
     use crate::{add_cross_document_edges_for_uri, build_graph_from_doc};
@@ -445,6 +445,53 @@ mod expr_string_tests {
         let resolved = resolve_expression_endpoint_legacy(
             &graph,
             &instance_uri,
+            Some("WebShopExample"),
+            "webshopSystem::checkoutService",
+        );
+
+        assert_eq!(
+            resolved.as_deref(),
+            Some("WebShopArchitecture::WebShopSystem::checkoutService")
+        );
+    }
+
+    #[test]
+    fn legacy_endpoint_resolution_follows_member_imported_instance_name() {
+        let architecture = r#"
+            package WebShopArchitecture {
+                part def CheckoutService {}
+                part def WebShopSystem {
+                    part checkoutService : CheckoutService;
+                }
+                part webshopSystem : WebShopSystem;
+            }
+        "#;
+        let usage = r#"
+            package WebShopExample {
+                import WebShopArchitecture::webshopSystem;
+            }
+        "#;
+
+        let architecture_uri = Url::parse("file:///WebShopArchitecture.sysml").expect("arch uri");
+        let usage_uri = Url::parse("file:///webshop.sysml").expect("usage uri");
+        let architecture_root = sysml_v2_parser::parse(architecture).expect("parse architecture");
+        let usage_root = sysml_v2_parser::parse(usage).expect("parse usage");
+
+        let mut graph = build_graph_from_doc(&architecture_root, &architecture_uri);
+        graph.merge(build_graph_from_doc(&usage_root, &usage_uri));
+        add_cross_document_edges_for_uri(&mut graph, &usage_uri);
+
+        let owner = resolve_expression_endpoint_strict(
+            &graph,
+            &usage_uri,
+            Some("WebShopExample"),
+            "webshopSystem",
+        );
+        assert!(matches!(owner, crate::semantic::ResolveResult::Resolved(_)));
+
+        let resolved = resolve_expression_endpoint_legacy(
+            &graph,
+            &usage_uri,
             Some("WebShopExample"),
             "webshopSystem::checkoutService",
         );

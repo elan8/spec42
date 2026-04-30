@@ -12,12 +12,22 @@ use crate::workspace::{
 
 use super::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 use super::report::{build_advice, summarize};
-use super::{ValidatedDocument, ValidationReport, ValidationRequest};
+use super::{
+    SemanticModelNode, SemanticModelProjection, SemanticModelRelationship,
+    SemanticValidationReport, ValidatedDocument, ValidationReport, ValidationRequest,
+};
 
 pub(super) fn validate_paths(
     config: &Arc<Spec42Config>,
     request: ValidationRequest,
 ) -> Result<ValidationReport, String> {
+    Ok(validate_paths_with_semantics(config, request)?.validation)
+}
+
+pub(super) fn validate_paths_with_semantics(
+    config: &Arc<Spec42Config>,
+    request: ValidationRequest,
+) -> Result<SemanticValidationReport, String> {
     for hook in &config.pipeline_hooks {
         hook.before_validate(&request)?;
     }
@@ -53,6 +63,8 @@ pub(super) fn validate_paths(
     let documents = collect_target_documents(&state, config, &target_files)?;
     let summary = summarize(&documents);
     let advice = build_advice(&documents, request.library_paths.is_empty());
+    let target_urls = target_file_urls(&target_files)?;
+    let semantic_model = project_semantic_model(&state, &target_urls);
 
     let mut report = ValidationReport {
         workspace_root: workspace_root.map(|path| path.display().to_string()),
@@ -68,7 +80,10 @@ pub(super) fn validate_paths(
     for hook in &config.pipeline_hooks {
         hook.after_validate(&mut report)?;
     }
-    Ok(report)
+    Ok(SemanticValidationReport {
+        validation: report,
+        semantic_model,
+    })
 }
 
 fn initialize_state(workspace_root_url: Option<Url>, library_root_urls: Vec<Url>) -> ServerState {
@@ -116,10 +131,7 @@ fn collect_target_documents(
     config: &Arc<Spec42Config>,
     target_files: &[std::path::PathBuf],
 ) -> Result<Vec<ValidatedDocument>, String> {
-    let target_urls = target_files
-        .iter()
-        .map(|path| path_to_file_url(path.as_path()))
-        .collect::<Result<BTreeSet<_>, _>>()?;
+    let target_urls = target_file_urls(target_files)?;
 
     Ok(target_urls
         .into_iter()
@@ -132,6 +144,64 @@ fn collect_target_documents(
             }
         })
         .collect::<Vec<_>>())
+}
+
+fn target_file_urls(target_files: &[std::path::PathBuf]) -> Result<BTreeSet<Url>, String> {
+    target_files
+        .iter()
+        .map(|path| path_to_file_url(path.as_path()))
+        .collect::<Result<BTreeSet<_>, _>>()
+}
+
+fn project_semantic_model(
+    state: &ServerState,
+    target_urls: &BTreeSet<Url>,
+) -> SemanticModelProjection {
+    let mut nodes = Vec::new();
+    for uri in target_urls {
+        for node in state.semantic_graph.nodes_for_uri(uri) {
+            nodes.push(SemanticModelNode {
+                uri: node.id.uri.to_string(),
+                qualified_name: node.id.qualified_name.clone(),
+                name: node.name.clone(),
+                element_kind: node.element_kind.clone(),
+                range: node.range,
+                parent: node
+                    .parent_id
+                    .as_ref()
+                    .map(|parent| parent.qualified_name.clone()),
+            });
+        }
+    }
+    nodes.sort_by(|a, b| {
+        a.uri
+            .cmp(&b.uri)
+            .then_with(|| a.qualified_name.cmp(&b.qualified_name))
+            .then_with(|| a.element_kind.cmp(&b.element_kind))
+    });
+
+    let mut relationships = Vec::new();
+    for uri in target_urls {
+        for (source, target, kind, _name) in state.semantic_graph.edges_for_uri_as_strings(uri) {
+            relationships.push(SemanticModelRelationship {
+                source,
+                target,
+                kind: kind.as_str().to_string(),
+            });
+        }
+    }
+    relationships.sort_by(|a, b| {
+        a.source
+            .cmp(&b.source)
+            .then_with(|| a.target.cmp(&b.target))
+            .then_with(|| a.kind.cmp(&b.kind))
+    });
+    relationships.dedup_by(|a, b| a.source == b.source && a.target == b.target && a.kind == b.kind);
+
+    SemanticModelProjection {
+        nodes,
+        relationships,
+    }
 }
 
 fn collect_diagnostics_for_document(

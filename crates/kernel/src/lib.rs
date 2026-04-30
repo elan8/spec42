@@ -35,7 +35,11 @@ pub use analysis::{
 };
 pub use common::util::{merge_host_and_client_library_paths, parse_library_paths_from_value};
 pub use syntax::ast_util::{identification_name, span_to_range, span_to_source_range, SourceRange};
-pub use validation::{validate_paths, ValidationReport, ValidationRequest, ValidationSummary};
+pub use validation::{
+    validate_paths, validate_paths_with_semantics, SemanticModelNode, SemanticModelProjection,
+    SemanticModelRelationship, SemanticValidationReport, ValidationReport, ValidationRequest,
+    ValidationSummary,
+};
 pub use views::dto::{
     GraphEdgeDto, GraphNodeDto, SoftwareAnalysisSummaryDto, SoftwareArchitectureModelDto,
     SoftwareComponentDto, SoftwareDependencyDto, SoftwareWorkspaceModelDto, SourceAnchorDto,
