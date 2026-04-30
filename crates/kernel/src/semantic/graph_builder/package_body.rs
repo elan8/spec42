@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fs;
 
 use sysml_v2_parser::ast::{
     ActionDefBody, ActionDefBodyElement, CalcDefBody, CalcDefBodyElement, ConnectionDefBody,
@@ -33,7 +34,35 @@ fn direction_to_str(direction: &InOut) -> &'static str {
     }
 }
 
-fn extract_constraint_metadata(body: &ConstraintDefBody) -> (Vec<serde_json::Value>, Option<String>) {
+fn compact_whitespace(text: &str) -> String {
+    text.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+fn expression_text_from_span(
+    uri: &Url,
+    span: &sysml_v2_parser::Span,
+    fallback: &str,
+) -> String {
+    let Some(path) = uri.to_file_path().ok() else {
+        return fallback.to_string();
+    };
+    let Ok(content) = fs::read_to_string(path) else {
+        return fallback.to_string();
+    };
+    let range = span_to_range(span);
+    let start = range.start.line as usize;
+    let end = range.end.line as usize;
+    let lines: Vec<&str> = content.lines().collect();
+    if start >= lines.len() || end >= lines.len() || start > end {
+        return fallback.to_string();
+    }
+    compact_whitespace(&lines[start..=end].join(" "))
+}
+
+fn extract_constraint_metadata(
+    uri: &Url,
+    body: &ConstraintDefBody,
+) -> (Vec<serde_json::Value>, Option<String>) {
     let mut params = Vec::new();
     let mut expression: Option<String> = None;
     if let ConstraintDefBody::Brace { elements } = body {
@@ -45,7 +74,11 @@ fn extract_constraint_metadata(body: &ConstraintDefBody) -> (Vec<serde_json::Val
                     "type": param.value.type_name,
                 })),
                 ConstraintDefBodyElement::Expression(expr) => {
-                    let rendered = expressions::expression_to_debug_string(expr);
+                    let rendered = expression_text_from_span(
+                        uri,
+                        &expr.span,
+                        &expressions::expression_to_debug_string(expr),
+                    );
                     if !rendered.trim().is_empty() {
                         expression = Some(rendered);
                     }
@@ -60,6 +93,7 @@ fn extract_constraint_metadata(body: &ConstraintDefBody) -> (Vec<serde_json::Val
 }
 
 fn extract_calc_metadata(
+    uri: &Url,
     body: &CalcDefBody,
 ) -> (Vec<serde_json::Value>, Option<serde_json::Value>, Option<String>) {
     let mut params = Vec::new();
@@ -80,7 +114,11 @@ fn extract_calc_metadata(
                     }));
                 }
                 CalcDefBodyElement::Expression(expr) => {
-                    let rendered = expressions::expression_to_debug_string(expr);
+                    let rendered = expression_text_from_span(
+                        uri,
+                        &expr.span,
+                        &expressions::expression_to_debug_string(expr),
+                    );
                     if !rendered.trim().is_empty() {
                         expression = Some(rendered);
                     }
@@ -1066,7 +1104,7 @@ pub(super) fn build_from_package_body_element(
             if !name.is_empty() {
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "constraint def");
-                let (params, expression) = extract_constraint_metadata(&c_node.body);
+                let (params, expression) = extract_constraint_metadata(uri, &c_node.body);
                 let mut attrs = HashMap::new();
                 attrs.insert("analysisKind".to_string(), serde_json::json!("constraint_def"));
                 attrs.insert("analysisParams".to_string(), serde_json::Value::Array(params));
@@ -1090,7 +1128,7 @@ pub(super) fn build_from_package_body_element(
             if !name.is_empty() {
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "calc def");
-                let (params, return_decl, expression) = extract_calc_metadata(&c_node.body);
+                let (params, return_decl, expression) = extract_calc_metadata(uri, &c_node.body);
                 let mut attrs = HashMap::new();
                 attrs.insert("analysisKind".to_string(), serde_json::json!("calc_def"));
                 attrs.insert("analysisParams".to_string(), serde_json::Value::Array(params));

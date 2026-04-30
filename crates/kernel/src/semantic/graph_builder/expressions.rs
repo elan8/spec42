@@ -213,6 +213,14 @@ pub(super) fn expression_to_debug_string(
         Expression::UnaryOp { op, operand } => {
             format!("({}{})", op, expression_to_debug_string(operand))
         }
+        Expression::Invocation { callee, args } => {
+            let rendered = args
+                .iter()
+                .map(expression_to_debug_string)
+                .collect::<Vec<_>>()
+                .join(", ");
+            format!("{}({rendered})", expression_to_debug_string(callee))
+        }
         Expression::Tuple(items) => {
             let rendered = items
                 .iter()
@@ -276,6 +284,7 @@ pub(super) fn expr_node_to_qualified_string(
         | Expression::LiteralBoolean(_)
         | Expression::BinaryOp { .. }
         | Expression::UnaryOp { .. }
+        | Expression::Invocation { .. }
         | Expression::Tuple(_)
         | Expression::Null => String::new(),
     }

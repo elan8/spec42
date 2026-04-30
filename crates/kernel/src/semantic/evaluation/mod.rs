@@ -252,7 +252,8 @@ fn evaluate_analysis_expression(
     context_id: &NodeId,
     expression: &str,
 ) -> Result<bool, String> {
-    let normalized = normalize_truncated_analysis_comparison(expression.trim());
+    let repaired = normalize_broken_invocation_syntax(expression.trim());
+    let normalized = normalize_truncated_analysis_comparison(repaired.as_str());
     let expr = normalized.as_str();
     if expr.is_empty() {
         return Err("empty analysis expression".to_string());
@@ -289,6 +290,27 @@ fn evaluate_analysis_expression(
             Ok(quantity.value >= 0.0)
         }
     }
+}
+
+fn normalize_broken_invocation_syntax(text: &str) -> String {
+    let chars: Vec<char> = text.chars().collect();
+    let mut out = String::with_capacity(text.len());
+    let mut i = 0usize;
+    while i < chars.len() {
+        if chars[i] == ')' {
+            let mut j = i + 1;
+            while j < chars.len() && chars[j].is_whitespace() {
+                j += 1;
+            }
+            if j < chars.len() && chars[j] == '(' {
+                i = j;
+                continue;
+            }
+        }
+        out.push(chars[i]);
+        i += 1;
+    }
+    out
 }
 
 fn flatten_parenthesized_arithmetic(expr: &str) -> String {
@@ -351,6 +373,7 @@ enum AnalysisComparisonOp {
 #[derive(Debug, Clone, PartialEq)]
 enum AnalysisExpr<'s> {
     BoolLiteral(bool),
+    Predicate(&'s str),
     Comparison {
         lhs: &'s str,
         op: AnalysisComparisonOp,
@@ -504,9 +527,7 @@ impl<'s> AnalysisExprParser<'s> {
             return Ok(AnalysisExpr::BoolLiteral(false));
         }
         let Some((index, op, op_len)) = find_comparison_operator(clause) else {
-            return Err(format!(
-                "analysis expression '{clause}' is unsupported; expected comparison or boolean literal"
-            ));
+            return Ok(AnalysisExpr::Predicate(clause));
         };
         let lhs = clause[..index].trim();
         let rhs = clause[index + op_len..].trim();
@@ -593,6 +614,9 @@ fn evaluate_analysis_ast(
 ) -> Result<bool, String> {
     match expression {
         AnalysisExpr::BoolLiteral(value) => Ok(*value),
+        AnalysisExpr::Predicate(predicate) => {
+            evaluate_analysis_predicate(engine, context_id, predicate)
+        }
         AnalysisExpr::Not(inner) => Ok(!evaluate_analysis_ast(engine, context_id, inner)?),
         AnalysisExpr::And(left, right) => {
             let left_value = evaluate_analysis_ast(engine, context_id, left)?;
@@ -615,9 +639,36 @@ fn evaluate_analysis_ast(
             let right = engine
                 .evaluate_quantity_expression(context_id, rhs)
                 .map_err(map_analysis_eval_error)?;
-            compare_quantities(engine, left, *op, right).map_err(map_analysis_eval_error)
+            compare_quantities(engine, left, *op, right)
         }
     }
+}
+
+fn evaluate_analysis_predicate(
+    engine: &mut EvalEngine<'_>,
+    context_id: &NodeId,
+    predicate: &str,
+) -> Result<bool, String> {
+    if let Some((name, args)) = parse_invocation(predicate) {
+        return engine.evaluate_invocation_bool(context_id, name, &args);
+    }
+    if let Some(identifier) = parse_standalone_identifier(predicate) {
+        let outcome = engine.resolve_identifier_value(context_id, identifier);
+        if outcome.status != EvalStatus::Ok {
+            return Err(map_analysis_eval_error(outcome.status));
+        }
+        if let Some(boolean) = outcome.value.as_ref().and_then(Value::as_bool) {
+            return Ok(boolean);
+        }
+        if let Some(number) = outcome.value.as_ref().and_then(json_value_to_f64) {
+            return Ok(number >= 0.0);
+        }
+        return Err("analysis expression predicate is not boolean".to_string());
+    }
+    let quantity = engine
+        .evaluate_quantity_expression(context_id, predicate)
+        .map_err(map_analysis_eval_error)?;
+    Ok(quantity.value >= 0.0)
 }
 
 fn compare_quantities(
@@ -625,24 +676,35 @@ fn compare_quantities(
     left: Quantity,
     op: AnalysisComparisonOp,
     right: Quantity,
-) -> Result<bool, EvalStatus> {
+) -> Result<bool, String> {
     let right_value = match (&left.unit, &right.unit) {
         (None, None) => right.value,
-        (Some(left_unit), Some(right_unit)) => engine
-            .units
-            .convert_value(right.value, right_unit, left_unit)
-            .map_err(map_unit_error)?,
+        (Some(left_unit), Some(right_unit)) => {
+            match engine.units.convert_value(right.value, right_unit, left_unit) {
+                Ok(converted) => converted,
+                Err(UnitError::IncompatibleDimension) => {
+                    return Err(format!(
+                        "analysis comparison has incompatible units: left='{left_unit}', right='{right_unit}'"
+                    ))
+                }
+                Err(other) => return Err(map_analysis_eval_error(map_unit_error(other))),
+            }
+        }
         (Some(left_unit), None) => {
             if engine.units.has_symbol(left_unit) {
-                return Err(EvalStatus::TypeError);
+                return Err(format!(
+                    "analysis comparison mixes dimensioned and unitless values: left='{left_unit}', right='<unitless>'"
+                ));
             }
-            return Err(EvalStatus::Unknown);
+            return Err(map_analysis_eval_error(EvalStatus::Unknown));
         }
         (None, Some(right_unit)) => {
             if engine.units.has_symbol(right_unit) {
-                return Err(EvalStatus::TypeError);
+                return Err(format!(
+                    "analysis comparison mixes unitless and dimensioned values: left='<unitless>', right='{right_unit}'"
+                ));
             }
-            return Err(EvalStatus::Unknown);
+            return Err(map_analysis_eval_error(EvalStatus::Unknown));
         }
     };
     let epsilon = 1e-9;
@@ -682,6 +744,7 @@ struct EvalEngine<'a> {
     units: UnitRegistry,
     memoized: HashMap<NodeId, EvalOutcome>,
     active_stack: HashSet<NodeId>,
+    parameter_bindings: Vec<HashMap<String, Quantity>>,
 }
 
 impl<'a> EvalEngine<'a> {
@@ -691,6 +754,7 @@ impl<'a> EvalEngine<'a> {
             units: UnitRegistry::from_semantic_graph(graph),
             memoized: HashMap::new(),
             active_stack: HashSet::new(),
+            parameter_bindings: Vec::new(),
         }
     }
 
@@ -789,9 +853,17 @@ impl<'a> EvalEngine<'a> {
         expression: &str,
     ) -> Result<Quantity, EvalStatus> {
         let units = self.units.clone();
-        let mut parser = QuantityParser::new(expression, &units, |identifier| {
-            self.resolve_identifier_quantity(node_id, identifier)
-        });
+        let mut parser = QuantityParser::new(
+            expression,
+            &units,
+            |name, args| {
+                if let Some(arg_list) = args {
+                    self.evaluate_invocation_quantity(node_id, name, arg_list)
+                } else {
+                    self.resolve_identifier_quantity(node_id, name)
+                }
+            },
+        );
         let quantity = parser.parse_expression()?;
         parser.skip_ws();
         if !parser.is_eof() {
@@ -813,6 +885,14 @@ impl<'a> EvalEngine<'a> {
         node_id: &NodeId,
         identifier: &str,
     ) -> Result<Quantity, EvalStatus> {
+        if let Some(bound) = self.parameter_bindings.iter().rev().find_map(|scope| {
+            scope
+                .get(identifier)
+                .cloned()
+                .or_else(|| identifier.rsplit("::").next().and_then(|tail| scope.get(tail).cloned()))
+        }) {
+            return Ok(bound);
+        }
         let referenced_id = self
             .resolve_identifier_node(node_id, identifier)
             .map_err(|outcome| outcome.status)?;
@@ -894,6 +974,138 @@ impl<'a> EvalEngine<'a> {
             .cloned()
             .collect()
     }
+
+    fn evaluate_invocation_quantity(
+        &mut self,
+        context_id: &NodeId,
+        callable_name: &str,
+        args: &[&str],
+    ) -> Result<Quantity, EvalStatus> {
+        let normalized_args = normalize_invocation_args(args);
+        let callable_id = self
+            .resolve_callable_node(context_id, callable_name)
+            .ok_or(EvalStatus::Unknown)?;
+        let callable = self.graph.get_node(&callable_id).ok_or(EvalStatus::Unknown)?;
+        if callable.element_kind != "calc def" {
+            return Err(EvalStatus::TypeError);
+        }
+        let expression = callable
+            .attributes
+            .get(ANALYSIS_EXPRESSION_KEY)
+            .and_then(Value::as_str)
+            .ok_or(EvalStatus::Unknown)?
+            .to_string();
+        let mut param_names = in_parameter_names(callable);
+        if param_names.is_empty() && !normalized_args.is_empty() {
+            let inferred = infer_parameter_names_from_expression(&expression);
+            if inferred.len() == normalized_args.len() {
+                param_names = inferred;
+            }
+        }
+        if param_names.len() != normalized_args.len() {
+            return Err(EvalStatus::Unsupported);
+        }
+        let mut bindings = HashMap::new();
+        for (name, arg_expr) in param_names.iter().zip(normalized_args.iter()) {
+            let evaluated = self.evaluate_quantity_expression(context_id, arg_expr)?;
+            bindings.insert(name.clone(), evaluated);
+        }
+        self.parameter_bindings.push(bindings);
+        let result = self.evaluate_quantity_expression(&callable_id, &expression);
+        self.parameter_bindings.pop();
+        result
+    }
+
+    fn evaluate_invocation_bool(
+        &mut self,
+        context_id: &NodeId,
+        callable_name: &str,
+        args: &[&str],
+    ) -> Result<bool, String> {
+        let normalized_args = normalize_invocation_args(args);
+        let callable_id = self
+            .resolve_callable_node(context_id, callable_name)
+            .ok_or_else(|| format!("unresolved callable '{callable_name}'"))?;
+        let callable = self
+            .graph
+            .get_node(&callable_id)
+            .ok_or_else(|| format!("unresolved callable '{callable_name}'"))?;
+        let expression = callable
+            .attributes
+            .get(ANALYSIS_EXPRESSION_KEY)
+            .and_then(Value::as_str)
+            .ok_or_else(|| format!("callable '{callable_name}' has no analysis expression"))?
+            .to_string();
+        let mut param_names = in_parameter_names(callable);
+        if param_names.is_empty() && !normalized_args.is_empty() {
+            let inferred = infer_parameter_names_from_expression(&expression);
+            if inferred.len() == normalized_args.len() {
+                param_names = inferred;
+            }
+        }
+        if param_names.len() != normalized_args.len() {
+            let arg_preview = normalized_args
+                .first()
+                .map(|arg| format!("; first arg='{arg}'"))
+                .unwrap_or_default();
+            return Err(format!(
+                "callable '{callable_name}' expects {} arguments but got {}{}",
+                param_names.len(),
+                normalized_args.len(),
+                arg_preview
+            ));
+        }
+        let mut bindings = HashMap::new();
+        for (name, arg_expr) in param_names.iter().zip(normalized_args.iter()) {
+            let evaluated = self
+                .evaluate_quantity_expression(context_id, arg_expr)
+                .map_err(map_analysis_eval_error)?;
+            bindings.insert(name.clone(), evaluated);
+        }
+        self.parameter_bindings.push(bindings);
+        let result = evaluate_analysis_expression(self, &callable_id, &expression);
+        self.parameter_bindings.pop();
+        result
+    }
+
+    fn resolve_callable_node(&self, context_id: &NodeId, callable_name: &str) -> Option<NodeId> {
+        let current = self.graph.get_node(context_id)?;
+        let mut candidates = Vec::new();
+        for scope_prefix in scope_prefixes(self.graph, current) {
+            let qualified = format!("{scope_prefix}::{callable_name}");
+            candidates.extend(self.lookup_callable_candidates(&qualified));
+        }
+        if callable_name.contains("::") {
+            candidates.extend(self.lookup_callable_candidates(callable_name));
+        } else {
+            candidates.extend(
+                self.graph
+                    .nodes_for_uri(&current.id.uri)
+                    .into_iter()
+                    .filter(|node| {
+                        node.name == callable_name
+                            && matches!(node.element_kind.as_str(), "calc def" | "constraint def")
+                    })
+                    .map(|node| node.id.clone()),
+            );
+            candidates.extend(self.lookup_callable_candidates(callable_name));
+        }
+        dedupe_node_ids(candidates).into_iter().next()
+    }
+
+    fn lookup_callable_candidates(&self, qualified_name: &str) -> Vec<NodeId> {
+        self.graph
+            .node_ids_by_qualified_name
+            .get(qualified_name)
+            .into_iter()
+            .flatten()
+            .filter_map(|node_id| {
+                let node = self.graph.get_node(node_id)?;
+                matches!(node.element_kind.as_str(), "calc def" | "constraint def")
+                    .then_some(node_id.clone())
+            })
+            .collect()
+    }
 }
 
 fn scope_prefixes(graph: &SemanticGraph, current: &SemanticNode) -> Vec<String> {
@@ -938,14 +1150,127 @@ fn dedupe_node_ids(ids: Vec<NodeId>) -> Vec<NodeId> {
     out
 }
 
+fn in_parameter_names(node: &SemanticNode) -> Vec<String> {
+    node.attributes
+        .get("parameters")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .filter_map(|entry| {
+            let direction = entry.get("direction").and_then(Value::as_str)?;
+            let name = entry.get("name").and_then(Value::as_str)?;
+            matches!(direction, "in" | "inout").then_some(name.to_string())
+        })
+        .collect()
+}
+
+fn infer_parameter_names_from_expression(expression: &str) -> Vec<String> {
+    let mut names = Vec::new();
+    let mut seen = HashSet::new();
+    let chars: Vec<char> = expression.chars().collect();
+    let mut i = 0usize;
+    while i < chars.len() {
+        let ch = chars[i];
+        if ch.is_ascii_alphabetic() || ch == '_' {
+            let start = i;
+            i += 1;
+            while i < chars.len() {
+                let c = chars[i];
+                if c.is_ascii_alphanumeric() || c == '_' {
+                    i += 1;
+                    continue;
+                }
+                if i + 1 < chars.len() && c == ':' && chars[i + 1] == ':' {
+                    i += 2;
+                    continue;
+                }
+                break;
+            }
+            let token: String = chars[start..i].iter().collect();
+            if token.eq_ignore_ascii_case("true") || token.eq_ignore_ascii_case("false") {
+                continue;
+            }
+            if seen.insert(token.clone()) {
+                names.push(token);
+            }
+            continue;
+        }
+        i += 1;
+    }
+    names
+}
+
+fn normalize_invocation_args<'a>(args: &'a [&'a str]) -> Vec<&'a str> {
+    if args.len() != 1 {
+        return args.to_vec();
+    }
+    let only = args[0].trim();
+    if only.is_empty() {
+        return args.to_vec();
+    }
+    if only
+        .chars()
+        .any(|ch| matches!(ch, '+' | '-' | '*' | '/' | '<' | '>' | '=' | '!' | '[' | ']' | '(' | ')'))
+    {
+        return args.to_vec();
+    }
+    let comma_split: Vec<&str> = only
+        .split(',')
+        .map(str::trim)
+        .filter(|token| !token.is_empty())
+        .collect();
+    if comma_split.len() > 1 && comma_split.iter().all(|token| is_identifier_like(token)) {
+        return comma_split;
+    }
+    let split: Vec<&str> = only
+        .split_whitespace()
+        .filter(|token| !token.is_empty())
+        .collect();
+    if split.len() > 1 && split.iter().all(|token| is_identifier_like(token)) {
+        split
+    } else {
+        args.to_vec()
+    }
+}
+
+fn is_identifier_like(token: &str) -> bool {
+    let mut chars = token.chars();
+    let Some(first) = chars.next() else {
+        return false;
+    };
+    if !(first.is_ascii_alphabetic() || first == '_') {
+        return false;
+    }
+    let mut prev_colon = false;
+    for ch in chars {
+        if ch.is_ascii_alphanumeric() || ch == '_' {
+            prev_colon = false;
+            continue;
+        }
+        if ch == ':' {
+            if prev_colon {
+                prev_colon = false;
+                continue;
+            }
+            prev_colon = true;
+            continue;
+        }
+        return false;
+    }
+    !prev_colon
+}
+
 fn parse_standalone_identifier(text: &str) -> Option<&str> {
     let trimmed = text.trim();
     if trimmed.is_empty() {
         return None;
     }
     let units = UnitRegistry::default();
-    let mut parser =
-        QuantityParser::new(trimmed, &units, |_identifier| Err(EvalStatus::Unsupported));
+    let mut parser = QuantityParser::new(
+        trimmed,
+        &units,
+        |_name, _args| Err(EvalStatus::Unsupported),
+    );
     let identifier = parser.parse_identifier()?;
     parser.skip_ws();
     if parser.is_eof() {
@@ -972,26 +1297,67 @@ fn number_to_json(value: f64) -> Value {
     }
 }
 
+fn parse_invocation(text: &str) -> Option<(&str, Vec<&str>)> {
+    let trimmed = text.trim();
+    let open_idx = trimmed.find('(')?;
+    if !trimmed.ends_with(')') || open_idx == 0 {
+        return None;
+    }
+    let name = trimmed[..open_idx].trim();
+    if parse_standalone_identifier(name).is_none() {
+        return None;
+    }
+    let args_body = &trimmed[open_idx + 1..trimmed.len() - 1];
+    let mut args = Vec::new();
+    let mut start = 0usize;
+    let mut paren_depth = 0usize;
+    let mut bracket_depth = 0usize;
+    for (idx, ch) in args_body.char_indices() {
+        match ch {
+            '(' => paren_depth += 1,
+            ')' => paren_depth = paren_depth.saturating_sub(1),
+            '[' => bracket_depth += 1,
+            ']' => bracket_depth = bracket_depth.saturating_sub(1),
+            ',' if paren_depth == 0 && bracket_depth == 0 => {
+                let arg = args_body[start..idx].trim();
+                if arg.is_empty() {
+                    return None;
+                }
+                args.push(arg);
+                start = idx + 1;
+            }
+            _ => {}
+        }
+    }
+    let tail = args_body[start..].trim();
+    if !tail.is_empty() {
+        args.push(tail);
+    } else if !args_body.trim().is_empty() {
+        return None;
+    }
+    Some((name, args))
+}
+
 struct QuantityParser<'s, 'u, F>
 where
-    F: FnMut(&str) -> Result<Quantity, EvalStatus>,
+    F: FnMut(&str, Option<&[&str]>) -> Result<Quantity, EvalStatus>,
 {
     src: &'s str,
     units: &'u UnitRegistry,
     pos: usize,
-    resolve_identifier: F,
+    resolve_symbol: F,
 }
 
 impl<'s, 'u, F> QuantityParser<'s, 'u, F>
 where
-    F: FnMut(&str) -> Result<Quantity, EvalStatus>,
+    F: FnMut(&str, Option<&[&str]>) -> Result<Quantity, EvalStatus>,
 {
-    fn new(src: &'s str, units: &'u UnitRegistry, resolve_identifier: F) -> Self {
+    fn new(src: &'s str, units: &'u UnitRegistry, resolve_symbol: F) -> Self {
         Self {
             src,
             units,
             pos: 0,
-            resolve_identifier,
+            resolve_symbol,
         }
     }
 
@@ -1108,7 +1474,12 @@ where
             return Ok(value);
         }
         if let Some(identifier) = self.parse_identifier() {
-            return (self.resolve_identifier)(identifier);
+            self.skip_ws();
+            if self.peek_char() == Some('(') {
+                let args = self.parse_argument_slices()?;
+                return (self.resolve_symbol)(identifier, Some(&args));
+            }
+            return (self.resolve_symbol)(identifier, None);
         }
         let value = self.parse_numeric_literal()?;
         let unit = self.parse_unit_suffix();
@@ -1167,6 +1538,64 @@ where
             .ok()
             .filter(|v| v.is_finite())
             .ok_or(EvalStatus::Unsupported)
+    }
+
+    fn parse_argument_slices(&mut self) -> Result<Vec<&'s str>, EvalStatus> {
+        if self.eat_char() != Some('(') {
+            return Err(EvalStatus::Unsupported);
+        }
+        let mut args = Vec::new();
+        loop {
+            self.skip_ws();
+            if self.peek_char() == Some(')') {
+                self.eat_char();
+                return Ok(args);
+            }
+            let start = self.pos;
+            let mut paren_depth = 0usize;
+            let mut bracket_depth = 0usize;
+            while let Some(ch) = self.peek_char() {
+                match ch {
+                    '(' => {
+                        paren_depth += 1;
+                        self.eat_char();
+                    }
+                    ')' if paren_depth == 0 && bracket_depth == 0 => break,
+                    ')' => {
+                        paren_depth = paren_depth.saturating_sub(1);
+                        self.eat_char();
+                    }
+                    '[' => {
+                        bracket_depth += 1;
+                        self.eat_char();
+                    }
+                    ']' => {
+                        bracket_depth = bracket_depth.saturating_sub(1);
+                        self.eat_char();
+                    }
+                    ',' if paren_depth == 0 && bracket_depth == 0 => break,
+                    _ => {
+                        self.eat_char();
+                    }
+                }
+            }
+            let arg = self.src[start..self.pos].trim();
+            if arg.is_empty() {
+                return Err(EvalStatus::Unsupported);
+            }
+            args.push(arg);
+            self.skip_ws();
+            match self.peek_char() {
+                Some(',') => {
+                    self.eat_char();
+                }
+                Some(')') => {
+                    self.eat_char();
+                    return Ok(args);
+                }
+                _ => return Err(EvalStatus::Unsupported),
+            }
+        }
     }
 
     fn parse_unit_suffix(&mut self) -> Option<String> {
@@ -1947,7 +2376,11 @@ mod tests {
         let message = node_attr(&graph, &requirement, ANALYSIS_EVAL_ERROR_KEY)
             .and_then(Value::as_str)
             .unwrap_or_default();
-        assert!(message.contains("type or unit mismatch"));
+        assert!(
+            message.contains("type or unit mismatch")
+                || message.contains("incompatible units")
+                || message.contains("dimensioned and unitless")
+        );
     }
 
     #[test]
@@ -1984,6 +2417,140 @@ mod tests {
             .and_then(Value::as_str)
             .unwrap_or_default();
         assert!(message.contains("could not be resolved"));
+    }
+
+    #[test]
+    fn evaluates_calc_invocation_in_analysis_comparison() {
+        let mut graph = SemanticGraph::new();
+        let uri = Url::parse("file:///C:/workspace/analysis-calc-call.sysml").expect("uri");
+        let _calc = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Margin",
+            "calc def",
+            "Margin",
+            None,
+            HashMap::from([
+                (
+                    "parameters".to_string(),
+                    serde_json::json!([
+                        {"direction":"in","name":"limit","type":"Real"},
+                        {"direction":"in","name":"measured","type":"Real"},
+                        {"direction":"in","name":"allowance","type":"Real"}
+                    ]),
+                ),
+                (
+                    ANALYSIS_EXPRESSION_KEY.to_string(),
+                    Value::String("limit - measured - allowance".to_string()),
+                ),
+            ]),
+        );
+        let requirement = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req",
+            "requirement def",
+            "Req",
+            None,
+            HashMap::from([(
+                ANALYSIS_EXPRESSION_KEY.to_string(),
+                Value::String("Margin(limit, measured, allowance) >= 0".to_string()),
+            )]),
+        );
+        let _limit = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::limit",
+            "attribute",
+            "limit",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("2.0".to_string()))]),
+        );
+        let _measured = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::measured",
+            "attribute",
+            "measured",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("1.7".to_string()))]),
+        );
+        let _allowance = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::allowance",
+            "attribute",
+            "allowance",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("0.1".to_string()))]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_VALUE_KEY),
+            Some(&Value::Bool(true))
+        );
+    }
+
+    #[test]
+    fn evaluates_constraint_invocation_as_boolean_predicate() {
+        let mut graph = SemanticGraph::new();
+        let uri = Url::parse("file:///C:/workspace/analysis-constraint-call.sysml").expect("uri");
+        let _constraint = add_node(
+            &mut graph,
+            &uri,
+            "Demo::WithinLimit",
+            "constraint def",
+            "WithinLimit",
+            None,
+            HashMap::from([
+                (
+                    "parameters".to_string(),
+                    serde_json::json!([
+                        {"direction":"in","name":"measured","type":"Real"},
+                        {"direction":"in","name":"limit","type":"Real"}
+                    ]),
+                ),
+                (
+                    ANALYSIS_EXPRESSION_KEY.to_string(),
+                    Value::String("measured <= limit".to_string()),
+                ),
+            ]),
+        );
+        let requirement = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req",
+            "requirement def",
+            "Req",
+            None,
+            HashMap::from([(
+                ANALYSIS_EXPRESSION_KEY.to_string(),
+                Value::String("WithinLimit(measured, limit)".to_string()),
+            )]),
+        );
+        let _measured = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::measured",
+            "attribute",
+            "measured",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("4".to_string()))]),
+        );
+        let _limit = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::limit",
+            "attribute",
+            "limit",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("5".to_string()))]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_VALUE_KEY),
+            Some(&Value::Bool(true))
+        );
     }
 
     #[test]

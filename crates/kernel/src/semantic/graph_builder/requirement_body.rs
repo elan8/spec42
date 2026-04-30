@@ -1,6 +1,7 @@
 //! Requirement (and concern) bodies: subject edges, frames, constraints, imports.
 
 use std::collections::HashMap;
+use std::fs;
 
 use sysml_v2_parser::ast::{
     ConstraintDefBodyElement, InOut, InOutDecl, RequireConstraintBody, RequirementDefBody,
@@ -69,6 +70,19 @@ fn compact_whitespace(text: &str) -> String {
     text.split_whitespace().collect::<Vec<_>>().join(" ")
 }
 
+fn text_from_span(uri: &Url, span: &sysml_v2_parser::Span) -> Option<String> {
+    let path = uri.to_file_path().ok()?;
+    let content = fs::read_to_string(path).ok()?;
+    let range = span_to_range(span);
+    let start = range.start.line as usize;
+    let end = range.end.line as usize;
+    let lines: Vec<&str> = content.lines().collect();
+    if start >= lines.len() || end >= lines.len() || start > end {
+        return None;
+    }
+    Some(compact_whitespace(&lines[start..=end].join(" ")))
+}
+
 fn format_constraint_parameter_line(param: &InOutDecl) -> String {
     let direction = match param.direction {
         InOut::In => "in",
@@ -118,7 +132,7 @@ fn require_constraint_display_lines(body: &RequireConstraintBody) -> Vec<String>
     }
 }
 
-fn require_constraint_structured(body: &RequireConstraintBody) -> Option<serde_json::Value> {
+fn require_constraint_structured(uri: &Url, body: &RequireConstraintBody) -> Option<serde_json::Value> {
     let RequireConstraintBody::Brace { elements } = body else {
         return None;
     };
@@ -139,7 +153,8 @@ fn require_constraint_structured(body: &RequireConstraintBody) -> Option<serde_j
                 }));
             }
             ConstraintDefBodyElement::Expression(expr) => {
-                let rendered = compact_whitespace(&expression_to_debug_string(expr));
+                let rendered = text_from_span(uri, &expr.span)
+                    .unwrap_or_else(|| compact_whitespace(&expression_to_debug_string(expr)));
                 if !rendered.is_empty() {
                     expression_fragments.push(rendered);
                 }
@@ -241,7 +256,7 @@ pub(super) fn walk_requirement_def_body(
                 for line in require_constraint_display_lines(&rc.value.body) {
                     append_string_list_attribute(g, parent_id, REQUIREMENT_CONSTRAINTS_ATTR, line);
                 }
-                if let Some(constraint) = require_constraint_structured(&rc.value.body) {
+                if let Some(constraint) = require_constraint_structured(uri, &rc.value.body) {
                     append_json_list_attribute(g, parent_id, ANALYSIS_CONSTRAINTS_ATTR, constraint);
                 }
             }
@@ -318,6 +333,10 @@ pub(super) fn walk_requirement_def_body(
                 if let Some(ref typing) = attr_def.value.typing {
                     attrs.insert("attributeType".to_string(), serde_json::json!(typing));
                 }
+                if let Some(initializer) = extract_attribute_initializer_from_span(uri, &attr_def.span)
+                {
+                    attrs.insert("defaultValue".to_string(), serde_json::json!(initializer));
+                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -375,6 +394,23 @@ pub(super) fn walk_requirement_def_body(
             | RequirementDefBodyElement::Other(_) => {}
         }
     }
+}
+
+fn extract_attribute_initializer_from_span(uri: &Url, span: &sysml_v2_parser::Span) -> Option<String> {
+    let path = uri.to_file_path().ok()?;
+    let content = fs::read_to_string(path).ok()?;
+    let range = span_to_range(span);
+    let start = range.start.line as usize;
+    let end = range.end.line as usize;
+    let lines: Vec<&str> = content.lines().collect();
+    if start >= lines.len() || end >= lines.len() || start > end {
+        return None;
+    }
+    let snippet = lines[start..=end].join("\n");
+    let equals_idx = snippet.find('=')?;
+    let semicolon_idx = snippet[equals_idx + 1..].rfind(';')? + equals_idx + 1;
+    let initializer = snippet[equals_idx + 1..semicolon_idx].trim();
+    (!initializer.is_empty()).then_some(initializer.to_string())
 }
 
 pub(super) fn resolve_subject_type_target_qualified(

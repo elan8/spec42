@@ -1148,6 +1148,27 @@ fn requirement_local_attributes_resolve_in_arithmetic_constraint() {
 }
 
 #[test]
+fn typed_requirement_local_attributes_resolve_in_arithmetic_constraint() {
+    let content = r#"
+        package P {
+            requirement def SarEvaluation {
+                attribute allowedSar: Real = 2.0;
+                attribute estimatedSar: Real = 1.7;
+                attribute uncertaintyAllowance: Real = 0.1;
+                require constraint {
+                    allowedSar - estimatedSar - uncertaintyAllowance >= 0
+                }
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("analysis_requirement_locals_typed.sysml", content);
+    assert!(
+        !has_diag_code(&diagnostics, "semantic", "analysis_evaluation_unresolved"),
+        "did not expect analysis_evaluation_unresolved diagnostic when typed requirement-local attributes are declared: {diagnostics:#?}"
+    );
+}
+
+#[test]
 fn invalid_verdict_value_emits_semantic_diagnostic() {
     let content = r#"
         package P {

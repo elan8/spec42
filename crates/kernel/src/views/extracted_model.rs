@@ -54,6 +54,14 @@ fn expr_to_string(n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>) -> Str
             )
         }
         Expression::UnaryOp { op, operand } => format!("({}{})", op, expr_to_string(operand)),
+        Expression::Invocation { callee, args } => {
+            let rendered = args
+                .iter()
+                .map(expr_to_string)
+                .collect::<Vec<_>>()
+                .join(", ");
+            format!("{}({rendered})", expr_to_string(callee))
+        }
         Expression::Tuple(items) => items
             .iter()
             .map(expr_to_string)
