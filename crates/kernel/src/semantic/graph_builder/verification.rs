@@ -99,6 +99,8 @@ pub(super) fn build_from_verification_body(
     };
 
     let mut previous_then_action: Option<String> = None;
+    let mut case_subject_qualified: Option<String> = None;
+    let mut objective_node_ids: Vec<NodeId> = Vec::new();
 
     for node in elements {
         match &node.value {
@@ -126,6 +128,9 @@ pub(super) fn build_from_verification_body(
                     attrs,
                     Some(parent_id),
                 );
+                if case_subject_qualified.is_none() {
+                    case_subject_qualified = Some(qualified.clone());
+                }
                 add_typing_edge_if_exists(
                     g,
                     uri,
@@ -158,6 +163,16 @@ pub(super) fn build_from_verification_body(
                     "objective",
                 );
                 let mut objective_attrs = HashMap::new();
+                objective_attrs.insert(
+                    "objectiveBindingKind".to_string(),
+                    serde_json::json!("verification_subject"),
+                );
+                if let Some(bound_to) = case_subject_qualified.as_ref() {
+                    objective_attrs.insert(
+                        "objectiveBoundTo".to_string(),
+                        serde_json::json!(bound_to),
+                    );
+                }
                 if let Some(type_name) = objective.value.requirement.value.type_name.as_ref() {
                     objective_attrs.insert("objectiveType".to_string(), serde_json::json!(type_name));
                 }
@@ -171,6 +186,7 @@ pub(super) fn build_from_verification_body(
                     objective_attrs,
                     Some(parent_id),
                 );
+                objective_node_ids.push(NodeId::new(uri, &qualified));
                 if let Some(type_name) = objective.value.requirement.value.type_name.as_ref() {
                     add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
                 }
@@ -334,6 +350,17 @@ pub(super) fn build_from_verification_body(
             | UseCaseDefBodyElement::IncludeUseCase(_)
             | UseCaseDefBodyElement::RefRedefinition(_)
             | UseCaseDefBodyElement::ForLoop(_) => {}
+        }
+    }
+
+    if let Some(bound_to) = case_subject_qualified.as_ref() {
+        for objective_id in objective_node_ids {
+            if let Some(objective_node) = g.get_node_mut(&objective_id) {
+                objective_node.attributes.insert(
+                    "objectiveBoundTo".to_string(),
+                    serde_json::json!(bound_to),
+                );
+            }
         }
     }
 }

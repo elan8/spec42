@@ -17,6 +17,7 @@ use crate::semantic::relationships::{
 };
 
 use super::expressions;
+use super::analysis_case;
 use super::modeled_kerml_name::extract_modeled_decl_name;
 use super::package_packages;
 use super::{add_node_and_recurse, qualified_name_for_node};
@@ -1069,11 +1070,23 @@ pub(super) fn build_from_package_body_element(
                     HashMap::new(),
                     parent_id,
                 );
+                let node_id = NodeId::new(uri, &qualified);
+                analysis_case::build_from_analysis_body(
+                    &c_node.body,
+                    uri,
+                    Some(&qualified),
+                    &node_id,
+                    g,
+                );
             }
         }
         PBE::AnalysisCaseUsage(c_node) => {
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, &c_node.name, "analysis");
+            let mut attrs = HashMap::new();
+            if let Some(ref t) = c_node.type_name {
+                attrs.insert("analysisType".to_string(), serde_json::json!(t));
+            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -1081,8 +1094,19 @@ pub(super) fn build_from_package_body_element(
                 "analysis",
                 c_node.name.clone(),
                 span_to_range(&c_node.span),
-                HashMap::new(),
+                attrs,
                 parent_id,
+            );
+            if let Some(ref t) = c_node.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
+            let node_id = NodeId::new(uri, &qualified);
+            analysis_case::build_from_analysis_body(
+                &c_node.body,
+                uri,
+                Some(&qualified),
+                &node_id,
+                g,
             );
         }
         PBE::VerificationCaseDef(c_node) => {

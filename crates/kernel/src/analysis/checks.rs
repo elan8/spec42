@@ -521,6 +521,36 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
         }
     }
 
+    // 12) Case-kind objective binding diagnostics.
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "objective" {
+            continue;
+        }
+        let Some(binding_kind) = node
+            .attributes
+            .get("objectiveBindingKind")
+            .and_then(|v| v.as_str())
+        else {
+            continue;
+        };
+        if node.attributes.get("objectiveBoundTo").is_some() {
+            continue;
+        }
+        if binding_kind == "case_result_default" {
+            continue;
+        }
+        diagnostics.push(diag(
+            diagnostic_range(graph, node, None),
+            DiagnosticSeverity::WARNING,
+            "semantic",
+            "objective_binding_unresolved",
+            format!(
+                "Objective '{}' could not be bound according to '{}' semantics.",
+                node.name, binding_kind
+            ),
+        ));
+    }
+
     diagnostics
 }
 
@@ -1666,6 +1696,114 @@ mod tests {
                     ))
             }),
             "expected invalid_verdict_value diagnostic"
+        );
+    }
+
+    #[test]
+    fn verification_objective_binding_points_to_case_subject() {
+        let input = r#"
+            package V {
+                requirement def StartupRequirement;
+                part def System;
+                verification def VerifyStartup {
+                    subject testSystem : System;
+                    objective startupObjective {
+                        verify requirement startupCheck : StartupRequirement;
+                    }
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///verification_objective_binding.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+
+        let objective = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "objective" && node.name == "startupObjective")
+            .expect("objective node");
+        assert_eq!(
+            objective
+                .attributes
+                .get("objectiveBindingKind")
+                .and_then(|value| value.as_str()),
+            Some("verification_subject")
+        );
+        assert!(
+            objective
+                .attributes
+                .get("objectiveBoundTo")
+                .and_then(|value| value.as_str())
+                .is_some_and(|bound_to| bound_to.ends_with("testSystem")),
+            "expected objective bound to verification subject: {objective:#?}"
+        );
+    }
+
+    #[test]
+    fn analysis_objective_binding_points_to_analysis_result() {
+        let input = r#"
+            package V {
+                part def System;
+                analysis def AnalyzeStartup {
+                    subject testSystem : System;
+                    return ref analysisResult { return 1; }
+                    objective startupObjective {
+                        doc /* Analyze startup behavior. */
+                    }
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///analysis_objective_binding.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+
+        let objective = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "objective" && node.name == "startupObjective")
+            .expect("objective node");
+        assert_eq!(
+            objective
+                .attributes
+                .get("objectiveBindingKind")
+                .and_then(|value| value.as_str()),
+            Some("analysis_result")
+        );
+        assert!(
+            objective
+                .attributes
+                .get("objectiveBoundTo")
+                .and_then(|value| value.as_str())
+                .is_some_and(|bound_to| bound_to.ends_with("analysisResult")),
+            "expected objective bound to analysis result: {objective:#?}"
+        );
+    }
+
+    #[test]
+    fn analysis_objective_without_result_emits_binding_diagnostic() {
+        let input = r#"
+            package V {
+                part def System;
+                analysis def AnalyzeStartup {
+                    subject testSystem : System;
+                    objective startupObjective {
+                        doc /* Analyze startup behavior. */
+                    }
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///analysis_binding_diagnostic.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diagnostics = compute_semantic_diagnostics(&graph, &uri);
+        assert!(
+            diagnostics.iter().any(|diagnostic| {
+                diagnostic.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "objective_binding_unresolved".to_string(),
+                    ))
+            }),
+            "expected objective_binding_unresolved diagnostic"
         );
     }
 }

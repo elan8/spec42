@@ -1125,6 +1125,26 @@ fn invalid_verdict_value_emits_semantic_diagnostic() {
 }
 
 #[test]
+fn analysis_objective_without_result_emits_binding_diagnostic() {
+    let content = r#"
+        package P {
+            part def System;
+            analysis def AnalyzeRuntime {
+                subject runtimeSystem : System;
+                objective runtimeObjective {
+                    doc /* Analyze runtime behavior. */
+                }
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("analysis_binding_unresolved.sysml", content);
+    assert!(
+        has_diag_code(&diagnostics, "semantic", "objective_binding_unresolved"),
+        "expected objective_binding_unresolved semantic diagnostic"
+    );
+}
+
+#[test]
 fn compatible_different_port_def_connection_has_no_port_type_mismatch_diagnostic() {
     let content = r#"
         package P {

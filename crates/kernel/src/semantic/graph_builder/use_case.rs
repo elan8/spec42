@@ -95,23 +95,35 @@ pub(super) fn build_from_use_case_body(
                 }
             }
             UCBE::Objective(obj) => {
+                let objective_name = &obj.value.requirement.value.name;
                 let qualified = qualified_name_for_node(
                     g,
                     uri,
                     Some(parent_id.qualified_name.as_str()),
-                    "_objective",
+                    objective_name,
                     "objective",
                 );
+                let mut attrs = HashMap::new();
+                attrs.insert(
+                    "objectiveBindingKind".to_string(),
+                    serde_json::json!("case_result_default"),
+                );
+                if let Some(type_name) = obj.value.requirement.value.type_name.as_ref() {
+                    attrs.insert("objectiveType".to_string(), serde_json::json!(type_name));
+                }
                 add_node_and_recurse(
                     g,
                     uri,
                     &qualified,
                     "objective",
-                    "objective".to_string(),
+                    objective_name.clone(),
                     span_to_range(&obj.span),
-                    HashMap::new(),
+                    attrs,
                     Some(parent_id),
                 );
+                if let Some(type_name) = obj.value.requirement.value.type_name.as_ref() {
+                    add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
+                }
             }
             UCBE::Error(_) | UCBE::Doc(_) => {}
             _ => {}
