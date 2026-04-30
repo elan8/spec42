@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use sysml_v2_parser::ast::{UseCaseDefBody, UseCaseDefBodyElement};
+use sysml_v2_parser::ast::{
+    RequirementDefBody, RequirementDefBodyElement, UseCaseDefBody, UseCaseDefBodyElement,
+    VerifyRequirementMember,
+};
 use tower_lsp::lsp_types::Url;
 
 use crate::semantic::ast_util::span_to_range;
@@ -10,6 +13,79 @@ use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_
 
 use super::requirement_body::resolve_subject_type_target_qualified;
 use super::{add_node_and_recurse, qualified_name_for_node};
+
+fn verify_requirement_target(member: &VerifyRequirementMember) -> Option<String> {
+    if let Some(requirement) = member.requirement.as_ref() {
+        return Some(requirement.value.name.clone());
+    }
+    member.target.clone().and_then(|target| {
+        let normalized = target.trim();
+        if normalized.is_empty() {
+            None
+        } else {
+            Some(normalized.to_string())
+        }
+    })
+}
+
+fn add_verified_requirement_node(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    requirement_ref: &str,
+    explicit_requirement_keyword: bool,
+    span: tower_lsp::lsp_types::Range,
+) {
+    let qualified = qualified_name_for_node(
+        g,
+        uri,
+        Some(parent_id.qualified_name.as_str()),
+        requirement_ref,
+        "verified requirement",
+    );
+    let mut attrs = HashMap::new();
+    attrs.insert(
+        "verifiedRequirement".to_string(),
+        serde_json::json!(requirement_ref),
+    );
+    attrs.insert(
+        "explicitRequirementKeyword".to_string(),
+        serde_json::json!(explicit_requirement_keyword),
+    );
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "verified requirement",
+        requirement_ref.to_string(),
+        span,
+        attrs,
+        Some(parent_id),
+    );
+    add_typing_edge_if_exists(
+        g,
+        uri,
+        &qualified,
+        requirement_ref,
+        container_prefix,
+    );
+}
+
+fn extract_verdict_kind_token(body_text: &str) -> Option<String> {
+    let marker = "VerdictKind::";
+    let start = body_text.find(marker)?;
+    let token = body_text[start + marker.len()..]
+        .split(|ch: char| !ch.is_ascii_alphanumeric() && ch != '_')
+        .next()
+        .unwrap_or_default()
+        .trim();
+    if token.is_empty() {
+        None
+    } else {
+        Some(token.to_ascii_lowercase())
+    }
+}
 
 pub(super) fn build_from_verification_body(
     body: &UseCaseDefBody,
@@ -73,23 +149,55 @@ pub(super) fn build_from_verification_body(
                 }
             }
             UseCaseDefBodyElement::Objective(objective) => {
+                let objective_name = &objective.value.requirement.value.name;
                 let qualified = qualified_name_for_node(
                     g,
                     uri,
                     Some(parent_id.qualified_name.as_str()),
-                    "_objective",
+                    objective_name,
                     "objective",
                 );
+                let mut objective_attrs = HashMap::new();
+                if let Some(type_name) = objective.value.requirement.value.type_name.as_ref() {
+                    objective_attrs.insert("objectiveType".to_string(), serde_json::json!(type_name));
+                }
                 add_node_and_recurse(
                     g,
                     uri,
                     &qualified,
                     "objective",
-                    "objective".to_string(),
+                    objective_name.clone(),
                     span_to_range(&objective.span),
-                    HashMap::new(),
+                    objective_attrs,
                     Some(parent_id),
                 );
+                if let Some(type_name) = objective.value.requirement.value.type_name.as_ref() {
+                    add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
+                }
+                let RequirementDefBody::Brace { elements } =
+                    &objective.value.requirement.value.body
+                else {
+                    continue;
+                };
+                for body_element in elements {
+                    if let RequirementDefBodyElement::VerifyRequirement(verify_node) =
+                        &body_element.value
+                    {
+                        if let Some(requirement_ref) =
+                            verify_requirement_target(&verify_node.value)
+                        {
+                            add_verified_requirement_node(
+                                g,
+                                uri,
+                                container_prefix,
+                                parent_id,
+                                &requirement_ref,
+                                verify_node.value.explicit_requirement_keyword,
+                                span_to_range(&verify_node.span),
+                            );
+                        }
+                    }
+                }
             }
             UseCaseDefBodyElement::ThenAction(then_action) => {
                 let action = &then_action.value.action.value;
@@ -196,6 +304,12 @@ pub(super) fn build_from_verification_body(
                 attrs.insert("returnBody".to_string(), serde_json::json!(value.body.as_str()));
                 if let Some(multiplicity) = value.multiplicity.as_deref() {
                     attrs.insert("multiplicity".to_string(), serde_json::json!(multiplicity));
+                }
+                if let Some(verdict_token) = extract_verdict_kind_token(value.body.as_str()) {
+                    attrs.insert(
+                        "rawVerdictToken".to_string(),
+                        serde_json::json!(verdict_token),
+                    );
                 }
                 add_node_and_recurse(
                     g,

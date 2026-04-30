@@ -10,7 +10,7 @@ use std::collections::HashSet;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, Url};
 
 use crate::analysis::helpers::*;
-use crate::semantic::{resolve_member_via_type, NodeId, ResolveResult, SemanticGraph};
+use crate::semantic::{resolve_member_via_type, NodeId, RelationshipKind, ResolveResult, SemanticGraph};
 use builder_diagnostics::should_suppress_builder_diagnostic;
 use import_resolution::{has_import_in_scope, import_target, import_target_resolves};
 
@@ -447,6 +447,78 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
                 feature_name, target.element_kind, target.name
             ),
         ));
+    }
+
+    // 10) Allocation usage conformance checks.
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "allocation" {
+            continue;
+        }
+        if node.attributes.contains_key("allocationType")
+            && graph
+                .outgoing_targets_by_kind(node, RelationshipKind::Typing)
+                .iter()
+                .any(|target| target.element_kind != "allocation def")
+        {
+            diagnostics.push(diag(
+                diagnostic_range(graph, node, None),
+                DiagnosticSeverity::WARNING,
+                "semantic",
+                "allocation_type_not_allocation_def",
+                format!(
+                    "Allocation '{}' has a type that does not resolve to an allocation definition.",
+                    node.name
+                ),
+            ));
+        }
+        let has_source = node
+            .attributes
+            .get("allocationSource")
+            .and_then(|v| v.as_str())
+            .is_some_and(|value| !value.trim().is_empty());
+        let has_target = node
+            .attributes
+            .get("allocationTarget")
+            .and_then(|v| v.as_str())
+            .is_some_and(|value| !value.trim().is_empty());
+        if has_source ^ has_target {
+            diagnostics.push(diag(
+                diagnostic_range(graph, node, None),
+                DiagnosticSeverity::WARNING,
+                "semantic",
+                "invalid_allocation_endpoints",
+                format!(
+                    "Allocation '{}' must declare both source and target endpoints when using 'allocate ... to ...'.",
+                    node.name
+                ),
+            ));
+        }
+    }
+
+    // 11) Verdict normalization and domain validation.
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "verdict" {
+            continue;
+        }
+        let Some(raw_token) = node.attributes.get("rawVerdictToken").and_then(|v| v.as_str()) else {
+            continue;
+        };
+        let normalized = raw_token.trim().to_ascii_lowercase();
+        if normalized.is_empty() {
+            continue;
+        }
+        if !matches!(normalized.as_str(), "pass" | "fail" | "inconclusive" | "error") {
+            diagnostics.push(diag(
+                diagnostic_range(graph, node, None),
+                DiagnosticSeverity::WARNING,
+                "semantic",
+                "invalid_verdict_value",
+                format!(
+                    "Verdict '{}' is not in the SysML verdict domain (pass, fail, inconclusive, error).",
+                    raw_token
+                ),
+            ));
+        }
     }
 
     diagnostics
@@ -1517,6 +1589,83 @@ mod tests {
         assert!(
             unresolved.is_empty(),
             "imported verification action types should resolve cleanly: {unresolved:#?}"
+        );
+    }
+
+    #[test]
+    fn verification_objective_verify_requirement_creates_verified_requirement_node() {
+        let input = r#"
+            package V {
+                requirement def VehicleMassRequirement;
+                verification def VerifyMass {
+                    objective O {
+                        verify requirement massCheck : VehicleMassRequirement;
+                    }
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///verification_verify_requirement.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+
+        let nodes = graph.nodes_for_uri(&uri);
+        assert!(
+            nodes.iter().any(|node| {
+                node.element_kind == "verified requirement"
+                    && node
+                        .attributes
+                        .get("verifiedRequirement")
+                        .and_then(|value| value.as_str())
+                        == Some("massCheck")
+            }),
+            "expected explicit verified requirement node for objective verify usage"
+        );
+    }
+
+    #[test]
+    fn allocation_type_must_resolve_to_allocation_def() {
+        let input = r#"
+            package V {
+                part def NotAnAllocation;
+                allocation usageBad : NotAnAllocation;
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///allocation_conformance.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diagnostics = compute_semantic_diagnostics(&graph, &uri);
+        assert!(
+            diagnostics.iter().any(|diagnostic| {
+                diagnostic.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "allocation_type_not_allocation_def".to_string(),
+                    ))
+            }),
+            "expected allocation type conformance diagnostic"
+        );
+    }
+
+    #[test]
+    fn invalid_verdict_value_emits_semantic_diagnostic() {
+        let input = r#"
+            package V {
+                verification def VerifyStartup {
+                    return ref verdictResult { return VerdictKind::maybe; }
+                }
+            }
+        "#;
+        let root = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///invalid_verdict.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let diagnostics = compute_semantic_diagnostics(&graph, &uri);
+        assert!(
+            diagnostics.iter().any(|diagnostic| {
+                diagnostic.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "invalid_verdict_value".to_string(),
+                    ))
+            }),
+            "expected invalid_verdict_value diagnostic"
         );
     }
 }

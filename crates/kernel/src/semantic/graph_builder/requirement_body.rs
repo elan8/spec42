@@ -238,6 +238,7 @@ pub(super) fn walk_requirement_def_body(
             | RequirementDefBodyElement::Annotation(_)
             | RequirementDefBodyElement::AttributeDef(_)
             | RequirementDefBodyElement::AttributeUsage(_)
+            | RequirementDefBodyElement::VerifyRequirement(_)
             | RequirementDefBodyElement::Error(_)
             | RequirementDefBodyElement::Other(_) => {}
         }

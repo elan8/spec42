@@ -603,6 +603,18 @@ pub(super) fn build_from_package_body_element(
             if let Some(ref t) = alloc_node.type_name {
                 attrs.insert("allocationType".to_string(), serde_json::json!(t));
             }
+            if let Some(source) = alloc_node.source.as_ref() {
+                attrs.insert(
+                    "allocationSource".to_string(),
+                    serde_json::json!(expressions::expression_to_debug_string(source)),
+                );
+            }
+            if let Some(target) = alloc_node.target.as_ref() {
+                attrs.insert(
+                    "allocationTarget".to_string(),
+                    serde_json::json!(expressions::expression_to_debug_string(target)),
+                );
+            }
             add_node_and_recurse(
                 g,
                 uri,

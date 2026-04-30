@@ -1680,13 +1680,16 @@ fn lsp_sysml_model_graph_includes_verification_semantics() {
     let uri = "file:///verification_graph_test.sysml";
     let content = r#"
         package V {
+            requirement def StartupRequirement;
             part def System;
             action def ValidateSensors;
             action def PublishVerdict;
 
             verification def VerifyStartup {
                 subject system : System;
-                objective { doc /* Verify startup sequencing. */ }
+                objective startupObjective {
+                    verify requirement startupCheck : StartupRequirement;
+                }
                 then action validateSensors : ValidateSensors;
                 then action publishVerdict : PublishVerdict;
                 then done;
@@ -1749,6 +1752,12 @@ fn lsp_sysml_model_graph_includes_verification_semantics() {
     assert!(
         nodes.iter().any(|node| node["type"].as_str() == Some("objective")),
         "expected objective node in graph"
+    );
+    assert!(
+        nodes
+            .iter()
+            .any(|node| node["type"].as_str() == Some("verified requirement")),
+        "expected verified requirement node in graph"
     );
     assert!(
         nodes.iter().any(|node| node["type"].as_str() == Some("verdict")),

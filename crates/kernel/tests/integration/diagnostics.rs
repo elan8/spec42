@@ -1090,6 +1090,41 @@ fn unresolved_allocate_reference_emits_semantic_diagnostic() {
 }
 
 #[test]
+fn allocation_type_not_allocation_def_emits_semantic_diagnostic() {
+    let content = r#"
+        package P {
+            part def NotAllocation;
+            allocation usageBad : NotAllocation;
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("allocation_type_conformance.sysml", content);
+    assert!(
+        has_diag_code(
+            &diagnostics,
+            "semantic",
+            "allocation_type_not_allocation_def"
+        ),
+        "expected allocation_type_not_allocation_def semantic diagnostic"
+    );
+}
+
+#[test]
+fn invalid_verdict_value_emits_semantic_diagnostic() {
+    let content = r#"
+        package P {
+            verification def VerifyRuntime {
+                return ref verdictResult { return VerdictKind::unknown; }
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("invalid_verdict_value.sysml", content);
+    assert!(
+        has_diag_code(&diagnostics, "semantic", "invalid_verdict_value"),
+        "expected invalid_verdict_value semantic diagnostic"
+    );
+}
+
+#[test]
 fn compatible_different_port_def_connection_has_no_port_type_mismatch_diagnostic() {
     let content = r#"
         package P {

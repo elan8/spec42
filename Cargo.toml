@@ -18,4 +18,4 @@ serde_json = "1"
 thiserror = "2"
 clap = { version = "4", features = ["derive"] }
 petgraph = "0.8"
-sysml-v2-parser = "0.8.0"
+sysml-v2-parser = { path = "../sysml-v2-parser" }
