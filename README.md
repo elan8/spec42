@@ -13,91 +13,41 @@ Language tooling for [SysML v2](https://www.omg.org/sysml/sysmlv2/) and KerML. `
 [![Install from Marketplace](https://img.shields.io/badge/Install-VS%20Code%20Marketplace-007ACC?logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42)
 [![Download Releases](https://img.shields.io/badge/Download-GitHub%20Releases-24292F?logo=github)](https://github.com/elan8/spec42/releases)
 
-## What You Use It For
+## What It Is
 
-- `spec42 lsp`: run the language server over stdio for editors
-- `spec42 check <path>`: validate a file or recursively validate a folder in CI or local automation
-- `spec42 doctor`: inspect resolved config, library paths, and standard-library state
-- `spec42 stdlib ...`: inspect or print the resolved SysML standard library; `clear-cache` removes materialized files (they are re-created from the embedded copy on next use)
+`spec42` is a language tooling stack for teams working with SysML v2 and KerML.
+It provides:
 
-Bare `spec42` still starts the LSP server for backward compatibility with existing editor integrations.
+- a production LSP server for editor experiences
+- a validation and diagnostics runtime for local checks and CI
+- standard-library management that works reliably across environments
 
-## Features
+In short, `spec42` helps you edit, understand, and validate models with consistent behavior from developer workstation to automation pipeline.
 
-- **LSP**: text sync, diagnostics, hover, completion, go to definition, find references, rename, document symbols, workspace symbol search, code actions, formatting, folding ranges, selection ranges, document links, linked editing, call hierarchy, and type hierarchy.
-- **Workspace-aware**: features operate across `.sysml` and `.kerml` files in your workspace and configured library roots.
-- **CLI validation**: deterministic file/folder validation without needing to speak JSON-RPC.
-- **Bundled standard library**: the official `sysml.library` release is embedded in the `spec42` binary and materialized to your data directory when needed, with compatibility fallback to a legacy VS Code-managed install location.
-- **VS Code extension**: snippets, semantic tokens, Model Explorer, Model Visualizer, and standard editor workflows.
+## What It Can Do
 
-## CLI Quick Start
+- **Build trust in model quality early** with live diagnostics while editing and deterministic validation in CI.
+- **Understand large systems faster** with navigation and cross-reference workflows (definitions, references, symbols, and hierarchies).
+- **Work in multiple SysML v2 views** by combining textual modeling with structural exploration in Model Explorer and graphical views in Model Visualizer.
+- **Stay productive across real workspaces** with analysis across `.sysml` and `.kerml` files plus configured library roots.
+- **Onboard reliably across environments** with embedded standard-library support and robust resolution behavior.
+- **Troubleshoot environment issues quickly** with resolved runtime, config, and library diagnostics when setups differ.
 
-```bash
-spec42 --help
-spec42 --version
-spec42 doctor
-spec42 check ./examples/timer/KitchenTimer.sysml
-spec42 check ./workspace --format json
-spec42 stdlib status
-spec42 stdlib path
-```
+### Supported SysML v2 Views (Current)
 
-### Validation
+- **General View**: a high-level structural view to quickly understand the main elements in a model and how they relate.
+- **Interconnection View**: a connection-focused view for inspecting parts, ports, and connectors across the system architecture.
+- **Action Flow View**: a behavior-oriented view for following control and data flow through actions in a process.
+- **State Transition View**: a lifecycle view that shows states and transitions so you can reason about system behavior over time.
 
-`spec42 check` is the supported automation interface.
+## Usage Model
 
-- It accepts either a single file or a folder.
-- Folder input recursively discovers `.sysml` and `.kerml` files.
-- It prints human-readable diagnostics by default.
-- `--format json` returns machine-readable output.
-- It exits nonzero when error-severity diagnostics are found or when CLI setup fails.
+Most users interact with `spec42` in one of two ways:
 
-Examples:
+- **Inside an editor** through the language server and extension features.
+- **Inside automation** through validation-oriented CLI workflows for CI and scripted quality gates.
 
-```bash
-spec42 check ./models/timer/KitchenTimer.sysml
-spec42 check ./models/workspace --workspace-root ./models/workspace
-spec42 check ./models/workspace --format json
-```
-
-### Standard Library
-
-`spec42` resolves libraries in this order:
-
-1. CLI flags such as `--library-path`, `--stdlib-path`, or `--no-stdlib`
-2. environment variables such as `SPEC42_LIBRARY_PATHS` and `SPEC42_STDLIB_PATH`
-3. an explicit `--config` file
-4. the default user config file
-5. materialized data from a previous run (including the embedded standard library)
-6. **embedded** standard library (materialized from the binary on first use)
-7. the legacy VS Code standard-library install location
-
-Typical workflow:
-
-```bash
-spec42 doctor
-spec42 check ./models/timer/KitchenTimer.sysml
-```
-
-Useful commands:
-
-```bash
-spec42 stdlib status
-spec42 stdlib path
-spec42 stdlib clear-cache
-```
-
-### Doctor
-
-`spec42 doctor` prints the resolved runtime environment for CLI and editor troubleshooting:
-
-- current binary version
-- config file in use
-- config/data directories
-- resolved standard-library path and source (including **bundled** when materialized from the embedded copy)
-- whether the source is the canonical on-disk install or a compatibility fallback
-- whether legacy VS Code fallback was used
-- resolved library paths and whether each one exists
+You can still run `spec42 --help` to see command-level details, but the core value is the shared analysis engine behind both interactive editing and automated validation.
 
 ## Installing
 
@@ -127,3 +77,5 @@ For development details, see [DEVELOPMENT.md](DEVELOPMENT.md). For troubleshooti
 ## License
 
 MIT. See [LICENSE](LICENSE). The embedded SysML standard library is subject to separate licensing; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+

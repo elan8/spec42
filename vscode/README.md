@@ -4,38 +4,33 @@
 
 ## Spec42 VS Code Extension
 
-This extension adds SysML v2 and KerML language support to VS Code, powered by the `spec42` language server.
-
-The extension is for editor workflows. For automation, validation in CI, and environment inspection, use the `spec42` CLI directly:
-
-```bash
-spec42 check path/to/model-or-workspace
-spec42 doctor
-spec42 stdlib status
-```
+This extension brings a complete SysML v2 and KerML editing experience to VS Code, powered by the `spec42` language server.
+It is designed for day-to-day modeling work: writing models faster, navigating large workspaces, and catching issues early while you edit.
 
 ## Highlights
 
-- LSP support for `.sysml` and `.kerml`
-- workspace-aware navigation and diagnostics
+- rich language support for `.sysml` and `.kerml`
+- workspace-aware diagnostics, navigation, and symbols
 - configurable library indexing with `spec42.libraryPaths`
-- bundled SysML standard library (via the `spec42` server)
+- bundled SysML standard library support via the `spec42` server
 - snippets, semantic tokens, Model Explorer, and Model Visualizer
-- bundled server binary in published builds
+- bundled server binary in published builds for simpler onboarding
 
-## Features
+## What You Can Do With It
 
-- diagnostics
-- hover
-- completion
-- go to definition, references, rename
-- document symbols and workspace symbols
-- type hierarchy and call hierarchy
-- folding ranges, selection ranges, document links, linked editing, semantic highlighting
-- CodeLens where supported by editor/theme configuration
-- code actions and formatting where supported by the server
-- SysML/KerML snippets
-- Model Explorer and Model Visualizer
+- **Author models efficiently** with completion, snippets, hover details, semantic highlighting, and editing assists.
+- **Catch quality issues early** with live diagnostics while you work.
+- **Move confidently through large models** with definitions, references, rename, symbols, call hierarchy, and type hierarchy.
+- **Use multiple SysML v2 views**: text editing for precision, Model Explorer for structure, and Model Visualizer for graphical understanding.
+- **Scale to real projects** by analyzing workspace files and configured libraries together.
+- **Keep familiar editor ergonomics** with formatting, code actions, linked editing, folding, and selection ranges where supported.
+
+### Supported SysML v2 Views (Current)
+
+- **General View**: a high-level structural view to quickly understand the main elements in a model and how they relate.
+- **Interconnection View**: a connection-focused view for inspecting parts, ports, and connectors across the system architecture.
+- **Action Flow View**: a behavior-oriented view for following control and data flow through actions in a process.
+- **State Transition View**: a lifecycle view that shows states and transitions so you can reason about system behavior over time.
 
 ## Getting Started
 
@@ -82,15 +77,11 @@ Example `settings.json`:
 }
 ```
 
-## CLI + Extension
+## Editor + CLI
 
-The extension still manages editor startup and editor-facing commands, but the CLI is now the preferred path for:
-
-- validating files and workspaces outside VS Code
-- checking library and stdlib resolution with `spec42 doctor`
-- inspecting the resolved standard library with `spec42 stdlib status` / `spec42 stdlib path` and clearing materialized cache with `spec42 stdlib clear-cache`
-
-This keeps VS Code focused on the editing experience while making `spec42` usable in terminals and automation too.
+The extension focuses on interactive editor workflows.
+For terminal workflows (automation, CI validation, and environment diagnostics), use the `spec42` CLI.
+Both experiences share the same core analysis engine, so behavior stays consistent between local editing and automated checks.
 
 ## Troubleshooting
 
@@ -105,3 +96,5 @@ This keeps VS Code focused on the editing experience while making `spec42` usabl
 - Issues: `https://github.com/elan8/spec42/issues`
 - SysML v2: `https://www.omg.org/sysml/sysmlv2/`
 - SysML v2 reference libraries: `https://github.com/Systems-Modeling/SysML-v2-Release`
+
+
