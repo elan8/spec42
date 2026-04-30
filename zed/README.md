@@ -1,6 +1,7 @@
 # Spec42 for Zed
 
-This directory contains a minimal Zed extension for `spec42`, focused on SysML v2 LSP support only.
+This directory contains the Zed extension for `spec42`, focused on fast SysML v2 LSP support in Zed.
+It is useful if you want lightweight editing, diagnostics, and navigation backed by the same `spec42` language server used by the VS Code extension and CLI.
 
 ## Current scope
 
@@ -10,7 +11,17 @@ This directory contains a minimal Zed extension for `spec42`, focused on SysML v
 - Automatic download of the matching `spec42` release binary when Zed cannot find one locally
 - Forwarding Zed `lsp.spec42` settings to the server
 
-KerML support, snippets, custom queries, and non-LSP UI features from the VS Code extension are intentionally out of scope for this first pass.
+KerML support, snippets, custom queries, Model Explorer, and Model Visualizer features from the VS Code extension are intentionally out of scope for this first pass.
+
+## Best fit
+
+Use the Zed extension when you want:
+
+- a lightweight SysML v2 editing loop in Zed
+- LSP-backed diagnostics and navigation
+- automatic server-binary discovery or download
+
+Use the VS Code extension when you want the fuller `spec42` experience, including snippets, Model Explorer, Model Visualizer, and richer command integration.
 
 ## Develop locally
 

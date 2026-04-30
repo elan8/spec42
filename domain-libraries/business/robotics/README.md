@@ -2,11 +2,19 @@
 
 This directory contains a SysML v2 business-domain library family for robotics, composed from reusable technical and cross-cutting capabilities.
 
+Use these packages when a model needs robotics vocabulary for robot structure, sensing, actuation, control, autonomy, runtime execution, simulation, operations, and safety assurance.
+
 It is organized so it can evolve into:
 
 - reusable library content
 - example material
 - a future Spec42 analysis fixture
+
+## Best Starting Points
+
+- Start with `robotics-core/RoboticsCore.sysml` for the base robot, environment, mission, and operating-context concepts.
+- Add `structure/`, `perception/`, `actuation/`, and `control/` for core robot architecture.
+- Add `autonomy/`, `runtime/`, `simulation/`, `operations/`, and `safety-assurance/` when the model needs richer lifecycle, operational, or assurance detail.
 
 ## Structure
 

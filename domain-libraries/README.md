@@ -2,6 +2,21 @@
 
 This directory organizes reusable libraries by role so technical capability libraries and business-domain libraries can evolve independently.
 
+These libraries are intended to help `spec42` users move beyond isolated examples and start building shared modeling vocabulary: common software, communication, electronics, robotics, operations, security, and assurance concepts that can be imported into project models.
+
+## How To Use This Directory
+
+- Browse `technical/` when you need reusable engineering concepts that should stay business-domain neutral.
+- Browse `cross-cutting/` when you need governance, security, observability, delivery, or assurance overlays.
+- Browse `business/` when you need domain-specific libraries composed from technical and cross-cutting capabilities.
+- Use these libraries as starting points for project-specific packages rather than as closed standards.
+
+To validate a model that imports these packages, include the relevant directory as a library root:
+
+```bash
+spec42 --library-path domain-libraries check path/to/model.sysml
+```
+
 ## Layers
 
 - `technical/` - engineering capability libraries that are reusable across industries.

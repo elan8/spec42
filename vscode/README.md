@@ -2,10 +2,13 @@
   <img src="https://raw.githubusercontent.com/elan8/spec42/HEAD/vscode/media/screenshot.png" alt="Spec42 SysML v2 Editor Screenshot" />
 </p>
 
-## Spec42 VS Code Extension
+# Spec42 VS Code Extension
 
 This extension brings a complete SysML v2 and KerML editing experience to VS Code, powered by the `spec42` language server.
 It is designed for day-to-day modeling work: writing models faster, navigating large workspaces, and catching issues early while you edit.
+
+If you are new to `spec42`, this is the recommended starting point.
+Published extension builds include the language server binary, so most users can install the extension and begin modeling without separate CLI setup.
 
 ## Highlights
 
@@ -14,6 +17,7 @@ It is designed for day-to-day modeling work: writing models faster, navigating l
 - configurable library indexing with `spec42.libraryPaths`
 - bundled SysML standard library support via the `spec42` server
 - snippets, semantic tokens, Model Explorer, and Model Visualizer
+- graphical views for structure, interconnections, actions, and state transitions
 - bundled server binary in published builds for simpler onboarding
 
 ## What You Can Do With It
@@ -36,8 +40,17 @@ It is designed for day-to-day modeling work: writing models faster, navigating l
 
 1. Install the extension.
 2. Open any `.sysml` or `.kerml` file.
-3. Optionally configure `spec42.libraryPaths` for custom library roots.
-4. Use the command palette to open the Model Explorer or Visualizer when needed.
+3. Try [`examples/timer/KitchenTimer.sysml`](../examples/timer/KitchenTimer.sysml) if you want a compact first model.
+4. Optionally configure `spec42.libraryPaths` for custom library roots.
+5. Use the command palette to open the Model Explorer or Visualizer when needed.
+
+Useful commands:
+
+- `SysML: Show SysML Model Explorer`
+- `SysML: Open SysML Visualizer`
+- `SysML: Refresh SysML Model Explorer`
+- `SysML: Refresh Visualization`
+- `SysML: Show SysML Output (Logs)`
 
 ## Extension Settings
 
@@ -83,6 +96,13 @@ The extension focuses on interactive editor workflows.
 For terminal workflows (automation, CI validation, and environment diagnostics), use the `spec42` CLI.
 Both experiences share the same core analysis engine, so behavior stays consistent between local editing and automated checks.
 
+Common CLI checks:
+
+```bash
+spec42 doctor
+spec42 check path/to/model-or-workspace
+```
+
 ## Troubleshooting
 
 - If the server cannot start, check `spec42.serverPath` and open `SysML: Show SysML Output (Logs)`.
@@ -96,5 +116,3 @@ Both experiences share the same core analysis engine, so behavior stays consiste
 - Issues: `https://github.com/elan8/spec42/issues`
 - SysML v2: `https://www.omg.org/sysml/sysmlv2/`
 - SysML v2 reference libraries: `https://github.com/Systems-Modeling/SysML-v2-Release`
-
-

@@ -2,6 +2,14 @@
 
 This directory contains technical electronics capability libraries intended for reuse across multiple business domains.
 
+Use these packages when a model needs electronics vocabulary for power, compute, I/O, board integration, and bus-level interfaces while keeping business-domain semantics outside the electronics layer.
+
+## Best Starting Points
+
+- Start with `electronics-core/` for common electronics concepts.
+- Add `power/` for power sources, loads, conversion, and distribution.
+- Add `compute/`, `io/`, `buses/`, and `board/` as the model moves from logical electronics into implementation structure.
+
 ## Structure
 
 - `electronics-core/` - base electronics concepts (`ElectronicsCore`).

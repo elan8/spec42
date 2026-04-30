@@ -1,28 +1,51 @@
 # Spec42
 
-Language tooling for [SysML v2](https://www.omg.org/sysml/sysmlv2/) and KerML. `spec42` now ships as both:
+Modern language tooling for [SysML v2](https://www.omg.org/sysml/sysmlv2/) and KerML.
+`spec42` gives systems engineers a smoother path from model authoring to validation by shipping the same analysis engine as:
 
 - an LSP server for editors
 - a CLI for validation, troubleshooting, and standard-library diagnostics
 
 ![SysML v2](https://img.shields.io/badge/SysML-v2.0-blue)
 ![VS Code Extension](https://img.shields.io/badge/VS%20Code-Extension-007ACC?logo=visual-studio-code)
-[![GitHub Release](https://img.shields.io/github/v/release/elan8/spec42?label=GitHub%20Release)](https://github.com/elan8/spec42/releases)
 [![License](https://img.shields.io/github/license/elan8/spec42)](LICENSE)
 
 [![Install from Marketplace](https://img.shields.io/badge/Install-VS%20Code%20Marketplace-007ACC?logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42)
 [![Download Releases](https://img.shields.io/badge/Download-GitHub%20Releases-24292F?logo=github)](https://github.com/elan8/spec42/releases)
 
-## What It Is
+## Why Spec42
 
-`spec42` is a language tooling stack for teams working with SysML v2 and KerML.
-It provides:
+SysML v2 is powerful, but practical modeling work depends on fast feedback, reliable library resolution, and editor workflows that make large models navigable.
+`spec42` focuses on that day-to-day experience:
 
-- a production LSP server for editor experiences
-- a validation and diagnostics runtime for local checks and CI
-- standard-library management that works reliably across environments
+- **Write with confidence** using live diagnostics, semantic highlighting, completion, hover, and navigation.
+- **Understand model structure quickly** with symbols, references, hierarchy features, Model Explorer, and Model Visualizer.
+- **Validate the same way locally and in CI** with the `spec42 check` command.
+- **Avoid standard-library setup friction** with bundled SysML library support and `spec42 doctor` diagnostics.
+- **Learn by example** with compact SysML v2 models that progress from workstation and timer examples to richer software and drone systems.
 
 In short, `spec42` helps you edit, understand, and validate models with consistent behavior from developer workstation to automation pipeline.
+
+## Quick Start
+
+### VS Code
+
+1. Install [SysML v2 Editor (Elan8.spec42)](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42).
+2. Open a `.sysml` or `.kerml` file.
+3. Use the command palette to open **SysML: Show SysML Model Explorer** or **SysML: Open SysML Visualizer**.
+
+Published extension builds include the `spec42` server binary for simpler onboarding.
+
+### CLI
+
+Download a release from [GitHub Releases](https://github.com/elan8/spec42/releases), put `spec42` on your `PATH`, then run:
+
+```bash
+spec42 doctor
+spec42 check examples/timer/KitchenTimer.sysml
+```
+
+Use `spec42 doctor` first when library paths, editor setup, or CI behavior differ from what you expect.
 
 ## What It Can Do
 
@@ -49,6 +72,20 @@ Most users interact with `spec42` in one of two ways:
 
 You can still run `spec42 --help` to see command-level details, but the core value is the shared analysis engine behind both interactive editing and automated validation.
 
+## Learn With Examples
+
+Start with the examples if you are evaluating `spec42` or learning SysML v2:
+
+| Example | Best For |
+| --- | --- |
+| [`examples/office`](examples/office/README.md) | Smallest first read: parts, ports, connections, simple behavior. |
+| [`examples/timer`](examples/timer/README.md) | Recommended first substantial model and flagship validation example. |
+| [`examples/intersection`](examples/intersection/README.md) | Controller and state-machine behavior in a familiar system. |
+| [`examples/webshop`](examples/webshop/README.md) | Software architecture, interactions, requirements, and views. |
+| [`examples/drone`](examples/drone/README.md) | Broader system decomposition with mission behavior and requirements. |
+
+The [`domain-libraries`](domain-libraries/README.md) directory contains reusable SysML v2 library content for software, communication, electronics, robotics, and cross-cutting concerns.
+
 ## Installing
 
 Install the VS Code extension from the Marketplace:
@@ -59,6 +96,12 @@ Download binaries from [Releases](https://github.com/elan8/spec42/releases):
 
 1. **VS Code**: install the `.vsix` from the Extensions view.
 2. **Server / CLI**: download the archive for your OS, extract it, and put `spec42` on your PATH.
+
+After installing a binary, verify the environment with:
+
+```bash
+spec42 doctor
+```
 
 ## Building
 
@@ -77,5 +120,3 @@ For development details, see [DEVELOPMENT.md](DEVELOPMENT.md). For troubleshooti
 ## License
 
 MIT. See [LICENSE](LICENSE). The embedded SysML standard library is subject to separate licensing; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-
-

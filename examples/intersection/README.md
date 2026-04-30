@@ -2,9 +2,21 @@
 
 This example is centered on controller behavior. It is useful for learners who want to study a phase-oriented state machine in a domain that is easy to reason about at system level.
 
+Choose this example after the timer if you want a slightly richer control problem with operator input, detector input, signal heads, and mode-oriented behavior.
+
 ## Purpose
 
 Model a signalized intersection with a compact controller, signal heads, detector input, and an operator command path.
+
+## Try It With Spec42
+
+From the repository root:
+
+```bash
+spec42 check examples/intersection/TrafficLightIntersection.sysml
+```
+
+In VS Code, open the model and use the state-transition view to inspect the controller phases.
 
 ## What This Example Demonstrates
 

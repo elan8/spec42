@@ -2,9 +2,21 @@
 
 This is the smallest example in the repository. It is designed as a quick first read for learners who want to see a compact SysML v2 text model with typed ports, simple structural connections, a small state machine, and basic `satisfy` relationships.
 
+Start here if you are new to SysML v2 text models or want a quick smoke test for editor features before opening the larger examples.
+
 ## Purpose
 
 Model a realistic office workstation used for engineering and analysis tasks: laptop, monitor, keyboard, mouse, and wall power.
+
+## Try It With Spec42
+
+From the repository root:
+
+```bash
+spec42 check examples/office/office.sysml
+```
+
+In VS Code, open `office.sysml` and use hover, go-to-definition, and Model Explorer to follow the ports, parts, and `satisfy` relationships.
 
 ## What This Example Demonstrates
 

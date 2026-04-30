@@ -2,9 +2,21 @@
 
 This is the broadest example in the repository. It is meant as a worked example for learners who already understand the smaller models and want to see how the same patterns scale to a more complex system description.
 
+Use this example when you want to evaluate how `spec42` helps navigate a larger model with multiple subsystems, interfaces, requirements, and behavior views.
+
 ## Purpose
 
 Model a surveillance quadrotor UAV with flight control, sensors, gimbal, camera payload, communication links, and onboard power distribution.
+
+## Try It With Spec42
+
+From the repository root:
+
+```bash
+spec42 check examples/drone/SurveillanceDrone.sysml
+```
+
+In VS Code, open `SurveillanceDrone.sysml` and `Views.sysml`; the Model Explorer and Visualizer are especially useful for moving through the subsystem structure.
 
 ## What This Example Demonstrates
 

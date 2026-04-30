@@ -2,9 +2,21 @@
 
 This example is the recommended first substantial model in the repository. It stays compact enough for learners to read in one sitting while still combining structure, state behavior, interfaces, requirements, use cases, and a small implementation view.
 
+Start here after the tiny office example if you want to see the core `spec42` workflow on a model that is still easy to keep in your head.
+
 ## Purpose
 
 Model a countdown timer for cooking, workouts, and other timed tasks with a clear link between structure, behavior, requirements, and a compact implementation view.
+
+## Try It With Spec42
+
+From the repository root:
+
+```bash
+spec42 check examples/timer/KitchenTimer.sysml
+```
+
+In VS Code, open `KitchenTimer.sysml`, then use the Model Explorer for structure and the Model Visualizer for the state-transition and action-flow views.
 
 ## Why Start Here
 

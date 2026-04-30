@@ -2,6 +2,15 @@
 
 This directory contains technical software capability libraries intended for reuse across multiple business domains.
 
+Use these packages when a SysML v2 model needs software architecture vocabulary such as services, databases, topics, deployment platforms, runtime components, and interaction scenarios without tying the model to one business domain.
+
+## Best Starting Points
+
+- Start with `software-core/SoftwareCore.sysml` for basic software component concepts.
+- Add `distributed-systems/DistributedSystems.sysml` for service-oriented and distributed architecture patterns.
+- Add `data/`, `platform/`, and communication libraries only when the model needs those details.
+- Use `interactions/SoftwareInteractions.sysml` together with Spec42 sequence views for software-oriented scenarios.
+
 ## Structure
 
 - `software-core/SoftwareCore.sysml` - small software architecture kernel
@@ -17,7 +26,7 @@ This directory contains technical software capability libraries intended for reu
 
 - Cross-cutting overlays for software reside in `../../cross-cutting/software/`.
 - Communication-specific protocol libraries reside in `../../technical/communication/`.
-- Integrated software scenarios reside in `../../../examples/software/`.
+- Integrated software scenarios reside in `../../../examples/webshop/`.
 
 ## Notes
 
