@@ -1109,6 +1109,24 @@ fn allocation_type_not_allocation_def_emits_semantic_diagnostic() {
 }
 
 #[test]
+fn unbound_constraint_def_expression_emits_analysis_evaluation_unresolved_diagnostic() {
+    let content = r#"
+        package P {
+            constraint def EnduranceMargin {
+                in measured : Real;
+                in limit : Real;
+                measured <= limit
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("analysis_constraint_unbound.sysml", content);
+    assert!(
+        has_diag_code(&diagnostics, "semantic", "analysis_evaluation_unresolved"),
+        "expected analysis_evaluation_unresolved semantic diagnostic"
+    );
+}
+
+#[test]
 fn invalid_verdict_value_emits_semantic_diagnostic() {
     let content = r#"
         package P {

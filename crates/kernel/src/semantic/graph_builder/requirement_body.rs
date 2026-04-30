@@ -19,6 +19,7 @@ use super::expressions::expression_to_debug_string;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
 const REQUIREMENT_CONSTRAINTS_ATTR: &str = "requirementConstraints";
+const ANALYSIS_CONSTRAINTS_ATTR: &str = "analysisConstraints";
 
 fn append_string_list_attribute(g: &mut SemanticGraph, node_id: &NodeId, key: &str, line: String) {
     let Some(node) = g.get_node_mut(node_id) else {
@@ -37,6 +38,29 @@ fn append_string_list_attribute(g: &mut SemanticGraph, node_id: &NodeId, key: &s
             .any(|existing| existing.as_str() == Some(line.as_str()))
         {
             lines.push(serde_json::Value::String(line));
+        }
+    }
+}
+
+fn append_json_list_attribute(
+    g: &mut SemanticGraph,
+    node_id: &NodeId,
+    key: &str,
+    value: serde_json::Value,
+) {
+    let Some(node) = g.get_node_mut(node_id) else {
+        return;
+    };
+    let entry = node
+        .attributes
+        .entry(key.to_string())
+        .or_insert_with(|| serde_json::Value::Array(Vec::new()));
+    if !entry.is_array() {
+        *entry = serde_json::Value::Array(Vec::new());
+    }
+    if let serde_json::Value::Array(values) = entry {
+        if !values.iter().any(|existing| existing == &value) {
+            values.push(value);
         }
     }
 }
@@ -92,6 +116,46 @@ fn require_constraint_display_lines(body: &RequireConstraintBody) -> Vec<String>
             }
         }
     }
+}
+
+fn require_constraint_structured(body: &RequireConstraintBody) -> Option<serde_json::Value> {
+    let RequireConstraintBody::Brace { elements } = body else {
+        return None;
+    };
+    let mut params = Vec::new();
+    let mut expression: Option<String> = None;
+    for element in elements {
+        match &element.value {
+            ConstraintDefBodyElement::InOutDecl(param) => {
+                let direction = match param.value.direction {
+                    InOut::In => "in",
+                    InOut::Out => "out",
+                    InOut::InOut => "inout",
+                };
+                params.push(serde_json::json!({
+                    "direction": direction,
+                    "name": param.value.name,
+                    "type": param.value.type_name,
+                }));
+            }
+            ConstraintDefBodyElement::Expression(expr) => {
+                let rendered = compact_whitespace(&expression_to_debug_string(expr));
+                if !rendered.is_empty() {
+                    expression = Some(rendered);
+                }
+            }
+            ConstraintDefBodyElement::Doc(_)
+            | ConstraintDefBodyElement::Error(_)
+            | ConstraintDefBodyElement::Other(_) => {}
+        }
+    }
+    expression.map(|expr| {
+        serde_json::json!({
+            "kind": "require_constraint",
+            "params": params,
+            "expression": expr,
+        })
+    })
 }
 
 pub(super) fn import_member_label(target: &str) -> String {
@@ -172,6 +236,9 @@ pub(super) fn walk_requirement_def_body(
             RequirementDefBodyElement::RequireConstraint(rc) => {
                 for line in require_constraint_display_lines(&rc.value.body) {
                     append_string_list_attribute(g, parent_id, REQUIREMENT_CONSTRAINTS_ATTR, line);
+                }
+                if let Some(constraint) = require_constraint_structured(&rc.value.body) {
+                    append_json_list_attribute(g, parent_id, ANALYSIS_CONSTRAINTS_ATTR, constraint);
                 }
             }
             RequirementDefBodyElement::Frame(f) => {

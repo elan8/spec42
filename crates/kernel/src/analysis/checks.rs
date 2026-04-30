@@ -497,6 +497,47 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
 
     // 11) Verdict normalization and domain validation.
     for node in graph.nodes_for_uri(uri) {
+        if let Some(status) = node
+            .attributes
+            .get("analysisEvaluationStatus")
+            .and_then(|value| value.as_str())
+        {
+            if status == "failed_constraint"
+                || node
+                    .attributes
+                    .get("analysisConstraintPassed")
+                    .and_then(|value| value.as_bool())
+                    == Some(false)
+            {
+                diagnostics.push(diag(
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::WARNING,
+                    "semantic",
+                    "analysis_constraint_failed",
+                    format!(
+                        "Analysis constraint(s) on '{}' evaluated to false.",
+                        node.name
+                    ),
+                ));
+            } else if status != "ok" {
+                let detail = node
+                    .attributes
+                    .get("analysisEvaluationError")
+                    .and_then(|value| value.as_str())
+                    .unwrap_or("analysis expression could not be evaluated");
+                diagnostics.push(diag(
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::WARNING,
+                    "semantic",
+                    "analysis_evaluation_unresolved",
+                    format!("Could not evaluate analysis expression(s) on '{}': {detail}", node.name),
+                ));
+            }
+        }
+    }
+
+    // 12) Verdict normalization and domain validation.
+    for node in graph.nodes_for_uri(uri) {
         if node.element_kind != "verdict" {
             continue;
         }
@@ -521,7 +562,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
         }
     }
 
-    // 12) Case-kind objective binding diagnostics.
+    // 13) Case-kind objective binding diagnostics.
     for node in graph.nodes_for_uri(uri) {
         if node.element_kind != "objective" {
             continue;

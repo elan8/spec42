@@ -22,6 +22,12 @@ const STATUS_UNSUPPORTED: &str = "unsupported";
 const STATUS_CYCLE: &str = "cycle";
 
 const EVALUATION_SOURCE_KEYS: [&str; 3] = ["value", "defaultValue", "literal"];
+const ANALYSIS_CONSTRAINTS_KEY: &str = "analysisConstraints";
+const ANALYSIS_EXPRESSION_KEY: &str = "analysisExpression";
+const ANALYSIS_EVAL_STATUS_KEY: &str = "analysisEvaluationStatus";
+const ANALYSIS_EVAL_VALUE_KEY: &str = "analysisEvaluationValue";
+const ANALYSIS_EVAL_ERROR_KEY: &str = "analysisEvaluationError";
+const ANALYSIS_CONSTRAINT_PASSED_KEY: &str = "analysisConstraintPassed";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum EvalStatus {
@@ -130,6 +136,177 @@ pub fn evaluate_expressions(graph: &mut SemanticGraph) {
                 .insert(EVALUATION_ERROR_KEY.to_string(), Value::String(error));
         }
     }
+    evaluate_analysis_constraints(graph);
+}
+
+fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
+    let node_ids: Vec<NodeId> = graph.node_index_by_id.keys().cloned().collect();
+    for node_id in node_ids {
+        let Some(node) = graph.get_node(&node_id) else {
+            continue;
+        };
+        let mut evaluated = false;
+        let mut status = STATUS_UNKNOWN.to_string();
+        let mut value: Option<Value> = None;
+        let mut error: Option<String> = None;
+        let mut passed: Option<bool> = None;
+
+        let inline_constraints = node
+            .attributes
+            .get(ANALYSIS_CONSTRAINTS_KEY)
+            .and_then(|value| value.as_array())
+            .cloned()
+            .unwrap_or_default();
+        if !inline_constraints.is_empty() {
+            evaluated = true;
+            for constraint in inline_constraints {
+                let Some(expr) = constraint
+                    .as_object()
+                    .and_then(|obj| obj.get("expression"))
+                    .and_then(Value::as_str)
+                else {
+                    continue;
+                };
+                match evaluate_analysis_expression(graph, node, expr) {
+                    Ok(bool_value) => {
+                        let all_pass = passed.unwrap_or(true) && bool_value;
+                        passed = Some(all_pass);
+                        status = if bool_value {
+                            STATUS_OK.to_string()
+                        } else {
+                            "failed_constraint".to_string()
+                        };
+                        value = Some(Value::Bool(bool_value));
+                    }
+                    Err(err) => {
+                        status = STATUS_UNKNOWN.to_string();
+                        error = Some(err);
+                    }
+                }
+            }
+        } else if let Some(expr) = node
+            .attributes
+            .get(ANALYSIS_EXPRESSION_KEY)
+            .and_then(Value::as_str)
+        {
+            evaluated = true;
+            match evaluate_analysis_expression(graph, node, expr) {
+                Ok(bool_value) => {
+                    status = STATUS_OK.to_string();
+                    value = Some(Value::Bool(bool_value));
+                    passed = Some(bool_value);
+                }
+                Err(err) => {
+                    status = STATUS_UNKNOWN.to_string();
+                    error = Some(err);
+                }
+            }
+        }
+
+        if !evaluated {
+            continue;
+        }
+        let Some(node_mut) = graph.get_node_mut(&node_id) else {
+            continue;
+        };
+        node_mut.attributes.insert(
+            ANALYSIS_EVAL_STATUS_KEY.to_string(),
+            Value::String(status.clone()),
+        );
+        if let Some(v) = value {
+            node_mut
+                .attributes
+                .insert(ANALYSIS_EVAL_VALUE_KEY.to_string(), v);
+        }
+        if let Some(err) = error {
+            node_mut
+                .attributes
+                .insert(ANALYSIS_EVAL_ERROR_KEY.to_string(), Value::String(err));
+        }
+        if let Some(p) = passed {
+            node_mut
+                .attributes
+                .insert(ANALYSIS_CONSTRAINT_PASSED_KEY.to_string(), Value::Bool(p));
+        }
+    }
+}
+
+fn evaluate_analysis_expression(
+    graph: &SemanticGraph,
+    context: &SemanticNode,
+    expression: &str,
+) -> Result<bool, String> {
+    let expr = expression.trim();
+    if expr.is_empty() {
+        return Err("empty analysis expression".to_string());
+    }
+    for op in ["<=", ">=", "==", "!=", "<", ">"] {
+        if let Some(index) = expr.find(op) {
+            let lhs = expr[..index].trim();
+            let rhs = expr[index + op.len()..].trim();
+            let left = evaluate_numeric_term(graph, context, lhs)?;
+            let right = evaluate_numeric_term(graph, context, rhs)?;
+            let result = match op {
+                "<=" => left <= right,
+                ">=" => left >= right,
+                "==" => (left - right).abs() < 1e-9,
+                "!=" => (left - right).abs() >= 1e-9,
+                "<" => left < right,
+                ">" => left > right,
+                _ => false,
+            };
+            return Ok(result);
+        }
+    }
+    if expr.eq_ignore_ascii_case("true") {
+        return Ok(true);
+    }
+    if expr.eq_ignore_ascii_case("false") {
+        return Ok(false);
+    }
+    Err(format!(
+        "analysis expression '{expr}' is unsupported; expected comparison"
+    ))
+}
+
+fn evaluate_numeric_term(
+    graph: &SemanticGraph,
+    context: &SemanticNode,
+    term: &str,
+) -> Result<f64, String> {
+    if let Ok(number) = term.parse::<f64>() {
+        return Ok(number);
+    }
+    resolve_identifier_numeric(graph, context, term).ok_or_else(|| format!("unresolved '{term}'"))
+}
+
+fn resolve_identifier_numeric(graph: &SemanticGraph, context: &SemanticNode, identifier: &str) -> Option<f64> {
+    let parent = graph
+        .parent_of(context)
+        .map(|node| node.id.clone())
+        .unwrap_or_else(|| context.id.clone());
+    let candidates = graph.child_named(&parent, identifier);
+    for candidate in candidates {
+        if let Some(number) = candidate
+            .attributes
+            .get(EVALUATED_VALUE_KEY)
+            .and_then(json_value_to_f64)
+            .or_else(|| {
+                EVALUATION_SOURCE_KEYS.iter().find_map(|key| {
+                    candidate
+                        .attributes
+                        .get(*key)
+                        .and_then(json_value_to_f64)
+                })
+            })
+        {
+            return Some(number);
+        }
+    }
+    context
+        .attributes
+        .get(identifier)
+        .and_then(json_value_to_f64)
 }
 
 struct EvalEngine<'a> {
@@ -1047,6 +1224,104 @@ mod tests {
         assert_eq!(
             node_attr(&graph, &node, EVALUATION_STATUS_KEY),
             Some(&Value::String(STATUS_UNSUPPORTED.to_string()))
+        );
+    }
+
+    #[test]
+    fn evaluates_inline_analysis_constraint_from_owner_attributes() {
+        let mut graph = SemanticGraph::new();
+        let uri = Url::parse("file:///C:/workspace/analysis-inline.sysml").expect("uri");
+        let requirement = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req",
+            "requirement def",
+            "Req",
+            None,
+            HashMap::from([(
+                ANALYSIS_CONSTRAINTS_KEY.to_string(),
+                serde_json::json!([{
+                    "kind": "require_constraint",
+                    "expression": "measured <= limit",
+                    "params": [],
+                }]),
+            )]),
+        );
+        let _measured = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::measured",
+            "attribute",
+            "measured",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("4".to_string()))]),
+        );
+        let _limit = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::limit",
+            "attribute",
+            "limit",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("5".to_string()))]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_STATUS_KEY),
+            Some(&Value::String(STATUS_OK.to_string()))
+        );
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_CONSTRAINT_PASSED_KEY),
+            Some(&Value::Bool(true))
+        );
+    }
+
+    #[test]
+    fn marks_analysis_constraint_as_failed_when_comparison_fails() {
+        let mut graph = SemanticGraph::new();
+        let uri = Url::parse("file:///C:/workspace/analysis-inline-fail.sysml").expect("uri");
+        let requirement = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req",
+            "requirement def",
+            "Req",
+            None,
+            HashMap::from([(
+                ANALYSIS_CONSTRAINTS_KEY.to_string(),
+                serde_json::json!([{
+                    "kind": "require_constraint",
+                    "expression": "measured <= limit",
+                    "params": [],
+                }]),
+            )]),
+        );
+        let _measured = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::measured",
+            "attribute",
+            "measured",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("8".to_string()))]),
+        );
+        let _limit = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::limit",
+            "attribute",
+            "limit",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("5".to_string()))]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_STATUS_KEY),
+            Some(&Value::String("failed_constraint".to_string()))
+        );
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_CONSTRAINT_PASSED_KEY),
+            Some(&Value::Bool(false))
         );
     }
 }

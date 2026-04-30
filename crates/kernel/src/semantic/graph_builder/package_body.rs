@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
-    ActionDefBody, ActionDefBodyElement, ConnectionDefBody, InOut, InterfaceDefBody,
-    PackageBodyElement, PartDefBody, PartUsageBody, PortDefBody, StateDefBody, UseCaseDefBody,
+    ActionDefBody, ActionDefBodyElement, CalcDefBody, CalcDefBodyElement, ConnectionDefBody,
+    ConstraintDefBody, ConstraintDefBodyElement, InOut, InterfaceDefBody, PackageBodyElement,
+    PartDefBody, PartUsageBody, PortDefBody, StateDefBody, UseCaseDefBody,
 };
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
@@ -23,6 +24,75 @@ use super::package_packages;
 use super::{add_node_and_recurse, qualified_name_for_node};
 use super::{interface_def, part_def, part_usage, port_def, state, stubs, use_case};
 use super::verification;
+
+fn direction_to_str(direction: &InOut) -> &'static str {
+    match direction {
+        InOut::In => "in",
+        InOut::Out => "out",
+        InOut::InOut => "inout",
+    }
+}
+
+fn extract_constraint_metadata(body: &ConstraintDefBody) -> (Vec<serde_json::Value>, Option<String>) {
+    let mut params = Vec::new();
+    let mut expression: Option<String> = None;
+    if let ConstraintDefBody::Brace { elements } = body {
+        for element in elements {
+            match &element.value {
+                ConstraintDefBodyElement::InOutDecl(param) => params.push(serde_json::json!({
+                    "direction": direction_to_str(&param.value.direction),
+                    "name": param.value.name,
+                    "type": param.value.type_name,
+                })),
+                ConstraintDefBodyElement::Expression(expr) => {
+                    let rendered = expressions::expression_to_debug_string(expr);
+                    if !rendered.trim().is_empty() {
+                        expression = Some(rendered);
+                    }
+                }
+                ConstraintDefBodyElement::Error(_)
+                | ConstraintDefBodyElement::Doc(_)
+                | ConstraintDefBodyElement::Other(_) => {}
+            }
+        }
+    }
+    (params, expression)
+}
+
+fn extract_calc_metadata(
+    body: &CalcDefBody,
+) -> (Vec<serde_json::Value>, Option<serde_json::Value>, Option<String>) {
+    let mut params = Vec::new();
+    let mut return_decl: Option<serde_json::Value> = None;
+    let mut expression: Option<String> = None;
+    if let CalcDefBody::Brace { elements } = body {
+        for element in elements {
+            match &element.value {
+                CalcDefBodyElement::InOutDecl(param) => params.push(serde_json::json!({
+                    "direction": direction_to_str(&param.value.direction),
+                    "name": param.value.name,
+                    "type": param.value.type_name,
+                })),
+                CalcDefBodyElement::ReturnDecl(ret) => {
+                    return_decl = Some(serde_json::json!({
+                        "name": ret.value.name,
+                        "type": ret.value.type_name,
+                    }));
+                }
+                CalcDefBodyElement::Expression(expr) => {
+                    let rendered = expressions::expression_to_debug_string(expr);
+                    if !rendered.trim().is_empty() {
+                        expression = Some(rendered);
+                    }
+                }
+                CalcDefBodyElement::Error(_)
+                | CalcDefBodyElement::Doc(_)
+                | CalcDefBodyElement::Other(_) => {}
+            }
+        }
+    }
+    (params, return_decl, expression)
+}
 
 pub(super) fn build_from_package_body_element(
     node: &sysml_v2_parser::Node<PackageBodyElement>,
@@ -996,6 +1066,13 @@ pub(super) fn build_from_package_body_element(
             if !name.is_empty() {
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "constraint def");
+                let (params, expression) = extract_constraint_metadata(&c_node.body);
+                let mut attrs = HashMap::new();
+                attrs.insert("analysisKind".to_string(), serde_json::json!("constraint_def"));
+                attrs.insert("analysisParams".to_string(), serde_json::Value::Array(params));
+                if let Some(expr) = expression {
+                    attrs.insert("analysisExpression".to_string(), serde_json::json!(expr));
+                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -1003,7 +1080,7 @@ pub(super) fn build_from_package_body_element(
                     "constraint def",
                     name,
                     span_to_range(&c_node.span),
-                    HashMap::new(),
+                    attrs,
                     parent_id,
                 );
             }
@@ -1013,6 +1090,16 @@ pub(super) fn build_from_package_body_element(
             if !name.is_empty() {
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "calc def");
+                let (params, return_decl, expression) = extract_calc_metadata(&c_node.body);
+                let mut attrs = HashMap::new();
+                attrs.insert("analysisKind".to_string(), serde_json::json!("calc_def"));
+                attrs.insert("analysisParams".to_string(), serde_json::Value::Array(params));
+                if let Some(ret) = return_decl {
+                    attrs.insert("analysisReturn".to_string(), ret);
+                }
+                if let Some(expr) = expression {
+                    attrs.insert("analysisExpression".to_string(), serde_json::json!(expr));
+                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -1020,7 +1107,7 @@ pub(super) fn build_from_package_body_element(
                     "calc def",
                     name,
                     span_to_range(&c_node.span),
-                    HashMap::new(),
+                    attrs,
                     parent_id,
                 );
             }
