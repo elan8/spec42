@@ -644,7 +644,7 @@ checksum = "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682"
 
 [[package]]
 name = "kernel"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "clap",
  "glob",
@@ -885,7 +885,7 @@ checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 
 [[package]]
 name = "plugins"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "glob",
  "serde_json",
@@ -1195,7 +1195,7 @@ dependencies = [
 
 [[package]]
 name = "spec42"
-version = "0.21.0"
+version = "0.22.0"
 dependencies = [
  "clap",
  "directories",

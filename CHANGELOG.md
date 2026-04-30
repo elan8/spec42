@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.22.0] - 2026-04-30
+
+### Added
+
+- **Semantic validation expansion** - Added deeper analysis diagnostics for verification semantics, allocation conformance, objective bindings, invalid verdict values, and analysis-constraint expressions.
+- **Expression evaluation improvements** - Expanded semantic expression evaluation for qualified references, local attributes, unit-aware values, requirement bodies, and analysis cases.
+
+### Changed
+
+- **Kernel crate and validation architecture** - Reorganized the former core package into the `crates/kernel` workspace layout, split validation and visualization internals into smaller modules, and removed the deprecated `semantic_model` compatibility layer.
+- **Parser/dependency alignment** - Updated the SysML v2 parser integration and dependency setup to track the newer parser surface used by current semantic and visualization paths.
+- **Release/package staging** - Added VS Code package staging support and strengthened package-layout verification for release artifacts.
+- **Documentation and onboarding** - Refreshed the root, VS Code, Zed, example, and domain-library READMEs to better explain `spec42`, guide first-time users, and promote example-driven evaluation.
+
+### Fixed
+
+- **Analysis diagnostic accuracy** - Improved semantic graph construction around verification, package bodies, requirement bodies, analysis cases, and expression references so diagnostics are more precise and less dependent on incidental graph shape.
+- **Visualization model shaping** - Hardened visualization extraction/projection behavior for semantic analysis data and current view rendering paths.
+
 ## [0.21.0] - 2026-04-24
 
 ### Added
@@ -332,6 +351,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.22.0]: https://github.com/elan8/spec42/releases/tag/v0.22.0
 [0.21.0]: https://github.com/elan8/spec42/releases/tag/v0.21.0
 [0.20.0]: https://github.com/elan8/spec42/releases/tag/v0.20.0
 [0.19.0]: https://github.com/elan8/spec42/releases/tag/v0.19.0
