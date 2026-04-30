@@ -63,13 +63,7 @@ fn add_verified_requirement_node(
         attrs,
         Some(parent_id),
     );
-    add_typing_edge_if_exists(
-        g,
-        uri,
-        &qualified,
-        requirement_ref,
-        container_prefix,
-    );
+    add_typing_edge_if_exists(g, uri, &qualified, requirement_ref, container_prefix);
 }
 
 fn extract_verdict_kind_token(body_text: &str) -> Option<String> {
@@ -168,13 +162,12 @@ pub(super) fn build_from_verification_body(
                     serde_json::json!("verification_subject"),
                 );
                 if let Some(bound_to) = case_subject_qualified.as_ref() {
-                    objective_attrs.insert(
-                        "objectiveBoundTo".to_string(),
-                        serde_json::json!(bound_to),
-                    );
+                    objective_attrs
+                        .insert("objectiveBoundTo".to_string(), serde_json::json!(bound_to));
                 }
                 if let Some(type_name) = objective.value.requirement.value.type_name.as_ref() {
-                    objective_attrs.insert("objectiveType".to_string(), serde_json::json!(type_name));
+                    objective_attrs
+                        .insert("objectiveType".to_string(), serde_json::json!(type_name));
                 }
                 add_node_and_recurse(
                     g,
@@ -199,8 +192,7 @@ pub(super) fn build_from_verification_body(
                     if let RequirementDefBodyElement::VerifyRequirement(verify_node) =
                         &body_element.value
                     {
-                        if let Some(requirement_ref) =
-                            verify_requirement_target(&verify_node.value)
+                        if let Some(requirement_ref) = verify_requirement_target(&verify_node.value)
                         {
                             add_verified_requirement_node(
                                 g,
@@ -317,7 +309,10 @@ pub(super) fn build_from_verification_body(
                     "verdict",
                 );
                 let mut attrs = HashMap::new();
-                attrs.insert("returnBody".to_string(), serde_json::json!(value.body.as_str()));
+                attrs.insert(
+                    "returnBody".to_string(),
+                    serde_json::json!(value.body.as_str()),
+                );
                 if let Some(multiplicity) = value.multiplicity.as_deref() {
                     attrs.insert("multiplicity".to_string(), serde_json::json!(multiplicity));
                 }
@@ -356,10 +351,9 @@ pub(super) fn build_from_verification_body(
     if let Some(bound_to) = case_subject_qualified.as_ref() {
         for objective_id in objective_node_ids {
             if let Some(objective_node) = g.get_node_mut(&objective_id) {
-                objective_node.attributes.insert(
-                    "objectiveBoundTo".to_string(),
-                    serde_json::json!(bound_to),
-                );
+                objective_node
+                    .attributes
+                    .insert("objectiveBoundTo".to_string(), serde_json::json!(bound_to));
             }
         }
     }

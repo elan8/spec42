@@ -10,7 +10,9 @@ use std::collections::HashSet;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, Url};
 
 use crate::analysis::helpers::*;
-use crate::semantic::{resolve_member_via_type, NodeId, RelationshipKind, ResolveResult, SemanticGraph};
+use crate::semantic::{
+    resolve_member_via_type, NodeId, RelationshipKind, ResolveResult, SemanticGraph,
+};
 use builder_diagnostics::should_suppress_builder_diagnostic;
 use import_resolution::{has_import_in_scope, import_target, import_target_resolves};
 
@@ -535,7 +537,10 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
                     DiagnosticSeverity::WARNING,
                     "semantic",
                     "analysis_evaluation_unresolved",
-                    format!("Could not evaluate analysis expression(s) on '{}': {detail}", node.name),
+                    format!(
+                        "Could not evaluate analysis expression(s) on '{}': {detail}",
+                        node.name
+                    ),
                 ));
             }
         }
@@ -546,14 +551,21 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
         if node.element_kind != "verdict" {
             continue;
         }
-        let Some(raw_token) = node.attributes.get("rawVerdictToken").and_then(|v| v.as_str()) else {
+        let Some(raw_token) = node
+            .attributes
+            .get("rawVerdictToken")
+            .and_then(|v| v.as_str())
+        else {
             continue;
         };
         let normalized = raw_token.trim().to_ascii_lowercase();
         if normalized.is_empty() {
             continue;
         }
-        if !matches!(normalized.as_str(), "pass" | "fail" | "inconclusive" | "error") {
+        if !matches!(
+            normalized.as_str(),
+            "pass" | "fail" | "inconclusive" | "error"
+        ) {
             diagnostics.push(diag(
                 diagnostic_range(graph, node, None),
                 DiagnosticSeverity::WARNING,
@@ -1573,15 +1585,13 @@ mod tests {
 
         let nodes = graph.nodes_for_uri(&uri);
         assert!(
-            nodes
-                .iter()
-                .any(|node| node.element_kind == "objective" && node.id.qualified_name.contains("VerifyStartup")),
+            nodes.iter().any(|node| node.element_kind == "objective"
+                && node.id.qualified_name.contains("VerifyStartup")),
             "expected objective node under verification def"
         );
         assert!(
-            nodes
-                .iter()
-                .any(|node| node.element_kind == "verdict" && node.id.qualified_name.contains("VerifyStartup")),
+            nodes.iter().any(|node| node.element_kind == "verdict"
+                && node.id.qualified_name.contains("VerifyStartup")),
             "expected verdict node under verification def"
         );
         assert!(

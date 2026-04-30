@@ -132,7 +132,10 @@ fn require_constraint_display_lines(body: &RequireConstraintBody) -> Vec<String>
     }
 }
 
-fn require_constraint_structured(uri: &Url, body: &RequireConstraintBody) -> Option<serde_json::Value> {
+fn require_constraint_structured(
+    uri: &Url,
+    body: &RequireConstraintBody,
+) -> Option<serde_json::Value> {
     let RequireConstraintBody::Brace { elements } = body else {
         return None;
     };
@@ -333,7 +336,8 @@ pub(super) fn walk_requirement_def_body(
                 if let Some(ref typing) = attr_def.value.typing {
                     attrs.insert("attributeType".to_string(), serde_json::json!(typing));
                 }
-                if let Some(initializer) = extract_attribute_initializer_from_span(uri, &attr_def.span)
+                if let Some(initializer) =
+                    extract_attribute_initializer_from_span(uri, &attr_def.span)
                 {
                     attrs.insert("defaultValue".to_string(), serde_json::json!(initializer));
                 }
@@ -348,13 +352,7 @@ pub(super) fn walk_requirement_def_body(
                     Some(parent_id),
                 );
                 if let Some(ref typing) = attr_def.value.typing {
-                    add_typing_edge_if_exists(
-                        g,
-                        uri,
-                        &qualified,
-                        typing,
-                        type_resolution_prefix,
-                    );
+                    add_typing_edge_if_exists(g, uri, &qualified, typing, type_resolution_prefix);
                 }
             }
             RequirementDefBodyElement::AttributeUsage(attr_usage) => {
@@ -396,7 +394,10 @@ pub(super) fn walk_requirement_def_body(
     }
 }
 
-fn extract_attribute_initializer_from_span(uri: &Url, span: &sysml_v2_parser::Span) -> Option<String> {
+fn extract_attribute_initializer_from_span(
+    uri: &Url,
+    span: &sysml_v2_parser::Span,
+) -> Option<String> {
     let path = uri.to_file_path().ok()?;
     let content = fs::read_to_string(path).ok()?;
     let range = span_to_range(span);

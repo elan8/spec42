@@ -1,4 +1,4 @@
-pub(crate) mod dto;
+pub mod dto;
 pub(crate) mod extracted_model;
 pub mod feature_inspector;
 pub(crate) mod ibd;
@@ -14,6 +14,7 @@ pub use feature_inspector::{
 };
 pub use model::{build_sysml_model_response, empty_model_response, parse_sysml_model_params};
 pub use visualization::build_software_workspace_model_dto;
+pub use visualization::build_sysml_visualization_for_paths;
 pub(crate) use visualization::{
     build_software_project_view_response, build_software_visualization_response,
     build_sysml_visualization_response, parse_software_analyze_workspace_params,

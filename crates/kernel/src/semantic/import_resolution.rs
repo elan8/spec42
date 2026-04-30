@@ -210,7 +210,10 @@ fn exact_named_members(graph: &SemanticGraph, qualified_name: &str) -> Vec<NodeI
         .collect()
 }
 
-fn exact_named_members_or_disambiguated(graph: &SemanticGraph, qualified_name: &str) -> Vec<NodeId> {
+fn exact_named_members_or_disambiguated(
+    graph: &SemanticGraph,
+    qualified_name: &str,
+) -> Vec<NodeId> {
     let mut out = exact_named_members(graph, qualified_name);
     let normalized = normalize_for_lookup(qualified_name);
     let disambiguated_prefix = format!("{normalized}#");
@@ -219,7 +222,9 @@ fn exact_named_members_or_disambiguated(graph: &SemanticGraph, qualified_name: &
             .nodes_by_uri
             .values()
             .flatten()
-            .filter(|id| normalize_for_lookup(&id.qualified_name).starts_with(&disambiguated_prefix))
+            .filter(|id| {
+                normalize_for_lookup(&id.qualified_name).starts_with(&disambiguated_prefix)
+            })
             .filter(|id| {
                 graph
                     .get_node(id)

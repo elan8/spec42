@@ -83,7 +83,10 @@ pub(super) fn build_from_analysis_body(
                     "analysis result",
                 );
                 let mut attrs = HashMap::new();
-                attrs.insert("returnBody".to_string(), serde_json::json!(value.body.as_str()));
+                attrs.insert(
+                    "returnBody".to_string(),
+                    serde_json::json!(value.body.as_str()),
+                );
                 if let Some(multiplicity) = value.multiplicity.as_deref() {
                     attrs.insert("multiplicity".to_string(), serde_json::json!(multiplicity));
                 }
@@ -180,10 +183,9 @@ pub(super) fn build_from_analysis_body(
     if let Some(bound_to) = analysis_result_qualified.as_ref() {
         for objective_id in objective_node_ids {
             if let Some(objective_node) = g.get_node_mut(&objective_id) {
-                objective_node.attributes.insert(
-                    "objectiveBoundTo".to_string(),
-                    serde_json::json!(bound_to),
-                );
+                objective_node
+                    .attributes
+                    .insert("objectiveBoundTo".to_string(), serde_json::json!(bound_to));
             }
         }
     }

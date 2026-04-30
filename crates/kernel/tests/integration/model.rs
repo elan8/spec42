@@ -1750,7 +1750,9 @@ fn lsp_sysml_model_graph_includes_verification_semantics() {
         "expected verification def node in graph"
     );
     assert!(
-        nodes.iter().any(|node| node["type"].as_str() == Some("objective")),
+        nodes
+            .iter()
+            .any(|node| node["type"].as_str() == Some("objective")),
         "expected objective node in graph"
     );
     assert!(
@@ -1771,7 +1773,9 @@ fn lsp_sysml_model_graph_includes_verification_semantics() {
         "expected verified requirement node in graph"
     );
     assert!(
-        nodes.iter().any(|node| node["type"].as_str() == Some("verdict")),
+        nodes
+            .iter()
+            .any(|node| node["type"].as_str() == Some("verdict")),
         "expected verdict node in graph"
     );
     assert!(

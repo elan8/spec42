@@ -280,13 +280,11 @@ fn evaluate_analysis_expression(
             }
             // Backward-compatible fallback: accept numeric/quantity analysis expressions
             // as non-negative checks (common margin/headroom style predicates).
-            let quantity = engine.evaluate_quantity_expression(context_id, expr).map_err(|status| {
-                format!(
-                    "{} [expr='{}']",
-                    map_analysis_eval_error(status),
-                    expr
-                )
-            })?;
+            let quantity = engine
+                .evaluate_quantity_expression(context_id, expr)
+                .map_err(|status| {
+                    format!("{} [expr='{}']", map_analysis_eval_error(status), expr)
+                })?;
             Ok(quantity.value >= 0.0)
         }
     }
@@ -853,17 +851,13 @@ impl<'a> EvalEngine<'a> {
         expression: &str,
     ) -> Result<Quantity, EvalStatus> {
         let units = self.units.clone();
-        let mut parser = QuantityParser::new(
-            expression,
-            &units,
-            |name, args| {
-                if let Some(arg_list) = args {
-                    self.evaluate_invocation_quantity(node_id, name, arg_list)
-                } else {
-                    self.resolve_identifier_quantity(node_id, name)
-                }
-            },
-        );
+        let mut parser = QuantityParser::new(expression, &units, |name, args| {
+            if let Some(arg_list) = args {
+                self.evaluate_invocation_quantity(node_id, name, arg_list)
+            } else {
+                self.resolve_identifier_quantity(node_id, name)
+            }
+        });
         let quantity = parser.parse_expression()?;
         parser.skip_ws();
         if !parser.is_eof() {
@@ -886,10 +880,12 @@ impl<'a> EvalEngine<'a> {
         identifier: &str,
     ) -> Result<Quantity, EvalStatus> {
         if let Some(bound) = self.parameter_bindings.iter().rev().find_map(|scope| {
-            scope
-                .get(identifier)
-                .cloned()
-                .or_else(|| identifier.rsplit("::").next().and_then(|tail| scope.get(tail).cloned()))
+            scope.get(identifier).cloned().or_else(|| {
+                identifier
+                    .rsplit("::")
+                    .next()
+                    .and_then(|tail| scope.get(tail).cloned())
+            })
         }) {
             return Ok(bound);
         }
@@ -985,7 +981,10 @@ impl<'a> EvalEngine<'a> {
         let callable_id = self
             .resolve_callable_node(context_id, callable_name)
             .ok_or(EvalStatus::Unknown)?;
-        let callable = self.graph.get_node(&callable_id).ok_or(EvalStatus::Unknown)?;
+        let callable = self
+            .graph
+            .get_node(&callable_id)
+            .ok_or(EvalStatus::Unknown)?;
         if callable.element_kind != "calc def" {
             return Err(EvalStatus::TypeError);
         }
@@ -1208,10 +1207,12 @@ fn normalize_invocation_args<'a>(args: &'a [&'a str]) -> Vec<&'a str> {
     if only.is_empty() {
         return args.to_vec();
     }
-    if only
-        .chars()
-        .any(|ch| matches!(ch, '+' | '-' | '*' | '/' | '<' | '>' | '=' | '!' | '[' | ']' | '(' | ')'))
-    {
+    if only.chars().any(|ch| {
+        matches!(
+            ch,
+            '+' | '-' | '*' | '/' | '<' | '>' | '=' | '!' | '[' | ']' | '(' | ')'
+        )
+    }) {
         return args.to_vec();
     }
     let comma_split: Vec<&str> = only
@@ -1266,11 +1267,8 @@ fn parse_standalone_identifier(text: &str) -> Option<&str> {
         return None;
     }
     let units = UnitRegistry::default();
-    let mut parser = QuantityParser::new(
-        trimmed,
-        &units,
-        |_name, _args| Err(EvalStatus::Unsupported),
-    );
+    let mut parser =
+        QuantityParser::new(trimmed, &units, |_name, _args| Err(EvalStatus::Unsupported));
     let identifier = parser.parse_identifier()?;
     parser.skip_ws();
     if parser.is_eof() {
@@ -2570,8 +2568,14 @@ mod tests {
             )]),
         );
         evaluate_expressions(&mut graph);
-        assert_eq!(node_attr(&graph, &constraint_def, ANALYSIS_EVAL_STATUS_KEY), None);
-        assert_eq!(node_attr(&graph, &constraint_def, ANALYSIS_EVAL_ERROR_KEY), None);
+        assert_eq!(
+            node_attr(&graph, &constraint_def, ANALYSIS_EVAL_STATUS_KEY),
+            None
+        );
+        assert_eq!(
+            node_attr(&graph, &constraint_def, ANALYSIS_EVAL_ERROR_KEY),
+            None
+        );
     }
 
     #[test]

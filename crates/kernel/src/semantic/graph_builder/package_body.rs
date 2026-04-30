@@ -18,13 +18,13 @@ use crate::semantic::relationships::{
     normalize_for_lookup,
 };
 
-use super::expressions;
 use super::analysis_case;
+use super::expressions;
 use super::modeled_kerml_name::extract_modeled_decl_name;
 use super::package_packages;
+use super::verification;
 use super::{add_node_and_recurse, qualified_name_for_node};
 use super::{interface_def, part_def, part_usage, port_def, state, stubs, use_case};
-use super::verification;
 
 fn direction_to_str(direction: &InOut) -> &'static str {
     match direction {
@@ -38,11 +38,7 @@ fn compact_whitespace(text: &str) -> String {
     text.split_whitespace().collect::<Vec<_>>().join(" ")
 }
 
-fn expression_text_from_span(
-    uri: &Url,
-    span: &sysml_v2_parser::Span,
-    fallback: &str,
-) -> String {
+fn expression_text_from_span(uri: &Url, span: &sysml_v2_parser::Span, fallback: &str) -> String {
     let Some(path) = uri.to_file_path().ok() else {
         return fallback.to_string();
     };
@@ -95,7 +91,11 @@ fn extract_constraint_metadata(
 fn extract_calc_metadata(
     uri: &Url,
     body: &CalcDefBody,
-) -> (Vec<serde_json::Value>, Option<serde_json::Value>, Option<String>) {
+) -> (
+    Vec<serde_json::Value>,
+    Option<serde_json::Value>,
+    Option<String>,
+) {
     let mut params = Vec::new();
     let mut return_decl: Option<serde_json::Value> = None;
     let mut expression: Option<String> = None;
@@ -1106,8 +1106,14 @@ pub(super) fn build_from_package_body_element(
                     qualified_name_for_node(g, uri, container_prefix, &name, "constraint def");
                 let (params, expression) = extract_constraint_metadata(uri, &c_node.body);
                 let mut attrs = HashMap::new();
-                attrs.insert("analysisKind".to_string(), serde_json::json!("constraint_def"));
-                attrs.insert("analysisParams".to_string(), serde_json::Value::Array(params));
+                attrs.insert(
+                    "analysisKind".to_string(),
+                    serde_json::json!("constraint_def"),
+                );
+                attrs.insert(
+                    "analysisParams".to_string(),
+                    serde_json::Value::Array(params),
+                );
                 if let Some(expr) = expression {
                     attrs.insert("analysisExpression".to_string(), serde_json::json!(expr));
                 }
@@ -1131,7 +1137,10 @@ pub(super) fn build_from_package_body_element(
                 let (params, return_decl, expression) = extract_calc_metadata(uri, &c_node.body);
                 let mut attrs = HashMap::new();
                 attrs.insert("analysisKind".to_string(), serde_json::json!("calc_def"));
-                attrs.insert("analysisParams".to_string(), serde_json::Value::Array(params));
+                attrs.insert(
+                    "analysisParams".to_string(),
+                    serde_json::Value::Array(params),
+                );
                 if let Some(ret) = return_decl {
                     attrs.insert("analysisReturn".to_string(), ret);
                 }

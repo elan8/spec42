@@ -117,7 +117,8 @@ pub fn resolve_expression_endpoint_strict(
                 || suffixes
                     .iter()
                     .any(|suffix| node_id.qualified_name.ends_with(suffix)))
-                && g.get_node(node_id).is_some_and(|node| node.element_kind != "import")
+                && g.get_node(node_id)
+                    .is_some_and(|node| node.element_kind != "import")
         })
         .collect();
     matches.sort_by_key(|node_id| node_id.qualified_name.len());

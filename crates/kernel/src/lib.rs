@@ -47,12 +47,14 @@ pub use views::dto::{
     SysmlFeatureInspectorParamsDto, SysmlFeatureInspectorRelationshipDto,
     SysmlFeatureInspectorResolutionDto, SysmlFeatureInspectorResultDto, SysmlGraphDto,
     SysmlModelResultDto, SysmlModelStatsDto, SysmlServerCachesDto, SysmlServerMemoryDto,
-    SysmlServerStatsDto, WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
+    SysmlServerStatsDto, SysmlVisualizationResultDto, SysmlVisualizationViewCandidateDto,
+    WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
 pub use views::ibd::{build_ibd_for_uri, is_port_like, IbdDataDto};
 pub use views::{
-    build_sysml_model_response, empty_feature_inspector_response, empty_model_response,
-    parse_sysml_feature_inspector_params, parse_sysml_model_params,
+    build_sysml_model_response, build_sysml_visualization_for_paths,
+    empty_feature_inspector_response, empty_model_response, parse_sysml_feature_inspector_params,
+    parse_sysml_model_params,
 };
 
 /// SysML v2 textual parser (`sysml-v2-parser`). Version is pinned in the Spec42 workspace;

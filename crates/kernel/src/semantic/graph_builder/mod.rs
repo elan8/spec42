@@ -9,10 +9,10 @@ use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, SemanticNode};
 
+mod analysis_case;
 mod expressions;
 mod interface_def;
 mod modeled_kerml_name;
-mod analysis_case;
 mod package_body;
 mod package_packages;
 mod part_def;

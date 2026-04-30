@@ -1,5 +1,5 @@
 use std::collections::{HashMap, HashSet};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::time::Instant;
 
 use serde_json::json;
@@ -26,6 +26,10 @@ use crate::views::model_projection;
 use crate::views::sequence_views::{
     build_workspace_sequence_diagrams, filter_sequence_diagrams_by_exposed_ids,
 };
+use crate::workspace::{
+    ingest_parsed_scan_entries, parse_scanned_entries, rebuild_all_document_links,
+    scan_sysml_files, ServerState,
+};
 
 mod activity_views;
 #[path = "explicit_views.rs"]
@@ -42,6 +46,73 @@ use scope_filters::{filter_ibd_by_visible_ids, select_interconnection_ibd_scope}
 
 const SOFTWARE_MODULE_VIEW: &str = "software-module-view";
 const SOFTWARE_DEPENDENCY_VIEW: &str = "software-dependency-view";
+
+pub fn build_sysml_visualization_for_paths(
+    target: &Path,
+    workspace_root: Option<&Path>,
+    library_paths: &[PathBuf],
+    view: &str,
+    selected_view: Option<&str>,
+) -> Result<SysmlVisualizationResultDto, String> {
+    let build_start = Instant::now();
+    let workspace_root = workspace_root.map(Path::to_path_buf).unwrap_or_else(|| {
+        if target.is_dir() {
+            target.to_path_buf()
+        } else {
+            target
+                .parent()
+                .map(Path::to_path_buf)
+                .unwrap_or_else(|| PathBuf::from("."))
+        }
+    });
+    let workspace_root_uri = path_to_url(&workspace_root)?;
+    let library_root_urls = library_paths
+        .iter()
+        .map(|path| path_to_url(path))
+        .collect::<Result<Vec<_>, _>>()?;
+    let scan_roots = std::iter::once(workspace_root_uri.clone())
+        .chain(library_root_urls.iter().cloned())
+        .collect::<Vec<_>>();
+    let (entries, _) = scan_sysml_files(scan_roots);
+    let mut state = ServerState {
+        workspace_roots: vec![workspace_root_uri.clone()],
+        library_paths: library_root_urls.clone(),
+        ..ServerState::default()
+    };
+    ingest_parsed_scan_entries(&mut state, parse_scanned_entries(entries, true));
+    rebuild_all_document_links(&mut state);
+    Ok(build_sysml_visualization_response(
+        &state.semantic_graph,
+        &state.index,
+        &workspace_root_uri,
+        &library_root_urls,
+        view,
+        selected_view,
+        build_start,
+    ))
+}
+
+fn path_to_url(path: &Path) -> Result<Url, String> {
+    let absolute = if path.is_absolute() {
+        path.to_path_buf()
+    } else {
+        std::env::current_dir()
+            .map_err(|err| format!("Failed to resolve current directory: {err}"))?
+            .join(path)
+    };
+    let canonical = std::fs::canonicalize(&absolute).unwrap_or(absolute);
+    if canonical.is_dir() {
+        Url::from_directory_path(&canonical)
+    } else {
+        Url::from_file_path(&canonical)
+    }
+    .map_err(|_| {
+        format!(
+            "Failed to convert path to file URI: {}",
+            canonical.display()
+        )
+    })
+}
 
 fn clone_element(element: &SysmlElementDto) -> SysmlElementDto {
     SysmlElementDto {
@@ -1344,9 +1415,11 @@ pub(crate) fn build_sysml_visualization_response(
     );
     let selected_candidate = selected_view
         .and_then(|selected| {
-            view_candidates
-                .iter()
-                .find(|candidate| candidate.id == selected)
+            view_candidates.iter().find(|candidate| {
+                candidate.id == selected
+                    || candidate.name == selected
+                    || candidate.id.rsplit("::").next() == Some(selected)
+            })
         })
         .or_else(|| {
             view_candidates.iter().find(|candidate| {
