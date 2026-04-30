@@ -8,7 +8,9 @@ use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::reference_resolution::{
     resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult,
 };
-use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
+use crate::semantic::relationships::{
+    add_edge_if_both_exist, add_typing_edge_if_exists, normalize_for_lookup,
+};
 
 use super::{add_node_and_recurse, qualified_name_for_node};
 
@@ -305,6 +307,23 @@ pub(super) fn resolve_expression_endpoint_legacy(
         return Some(resolved.qualified_name);
     }
 
+    if expression.contains("::") || expression.contains('.') {
+        let normalized = normalize_for_lookup(expression);
+        if let Some(node_ids) = g.node_ids_for_qualified_name(&normalized) {
+            if let Some(best_match) = node_ids
+                .iter()
+                .filter_map(|node_id| {
+                    g.get_node(node_id).and_then(|node| {
+                        (node.element_kind != "import").then_some(node_id.qualified_name.clone())
+                    })
+                })
+                .min_by_key(|qualified_name| qualified_name.len())
+            {
+                return Some(best_match);
+            }
+        }
+    }
+
     // Fallback for member chains that only exist via typing (e.g. `instance.member` where
     // `member` is declared on the typed definition and not materialized as a concrete node).
     let normalized = expression.replace('.', "::");
@@ -519,6 +538,42 @@ mod expr_string_tests {
         assert_eq!(
             resolved.as_deref(),
             Some("WebShopArchitecture::WebShopSystem::checkoutService")
+        );
+    }
+
+    #[test]
+    fn legacy_endpoint_resolution_supports_qualified_package_path_across_documents() {
+        let architecture = r#"
+            package WebShopArchitecture {
+                part def WebShopSystem {}
+                part webshopSystem : WebShopSystem;
+            }
+        "#;
+        let usage = r#"
+            package WebShopExample {
+                import WebShopArchitecture::*;
+            }
+        "#;
+
+        let architecture_uri = Url::parse("file:///WebShopArchitecture.sysml").expect("arch uri");
+        let usage_uri = Url::parse("file:///webshop.sysml").expect("usage uri");
+        let architecture_root = sysml_v2_parser::parse(architecture).expect("parse architecture");
+        let usage_root = sysml_v2_parser::parse(usage).expect("parse usage");
+
+        let mut graph = build_graph_from_doc(&architecture_root, &architecture_uri);
+        graph.merge(build_graph_from_doc(&usage_root, &usage_uri));
+        add_cross_document_edges_for_uri(&mut graph, &usage_uri);
+
+        let resolved = resolve_expression_endpoint_legacy(
+            &graph,
+            &usage_uri,
+            Some("WebShopExample"),
+            "WebShopArchitecture::webshopSystem",
+        );
+
+        assert_eq!(
+            resolved.as_deref(),
+            Some("WebShopArchitecture::webshopSystem")
         );
     }
 }
