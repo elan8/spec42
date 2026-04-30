@@ -140,43 +140,65 @@ pub fn evaluate_expressions(graph: &mut SemanticGraph) {
 }
 
 fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
-    let node_ids: Vec<NodeId> = graph.node_index_by_id.keys().cloned().collect();
-    for node_id in node_ids {
-        let Some(node) = graph.get_node(&node_id) else {
-            continue;
-        };
-        let mut evaluated = false;
-        let mut status = STATUS_UNKNOWN.to_string();
-        let mut value: Option<Value> = None;
-        let mut error: Option<String> = None;
-        let mut passed: Option<bool> = None;
+    let outcomes = {
+        let mut engine = EvalEngine::new(graph);
+        let node_ids: Vec<NodeId> = graph.node_index_by_id.keys().cloned().collect();
+        let mut outcomes = Vec::new();
+        for node_id in node_ids {
+            let Some(node) = graph.get_node(&node_id) else {
+                continue;
+            };
+            let inline_constraints = node
+                .attributes
+                .get(ANALYSIS_CONSTRAINTS_KEY)
+                .and_then(|value| value.as_array())
+                .cloned()
+                .unwrap_or_default();
+            let single_expression = node
+                .attributes
+                .get(ANALYSIS_EXPRESSION_KEY)
+                .and_then(Value::as_str)
+                .map(str::to_string);
 
-        let inline_constraints = node
-            .attributes
-            .get(ANALYSIS_CONSTRAINTS_KEY)
-            .and_then(|value| value.as_array())
-            .cloned()
-            .unwrap_or_default();
-        if !inline_constraints.is_empty() {
-            evaluated = true;
-            for constraint in inline_constraints {
-                let Some(expr) = constraint
-                    .as_object()
-                    .and_then(|obj| obj.get("expression"))
-                    .and_then(Value::as_str)
-                else {
-                    continue;
-                };
-                match evaluate_analysis_expression(graph, node, expr) {
+            let mut evaluated = false;
+            let mut status = STATUS_UNKNOWN.to_string();
+            let mut value: Option<Value> = None;
+            let mut error: Option<String> = None;
+            let mut passed: Option<bool> = None;
+            if !inline_constraints.is_empty() {
+                evaluated = true;
+                for constraint in inline_constraints {
+                    let Some(expr) = constraint
+                        .as_object()
+                        .and_then(|obj| obj.get("expression"))
+                        .and_then(Value::as_str)
+                    else {
+                        continue;
+                    };
+                    match evaluate_analysis_expression(&mut engine, &node_id, expr) {
+                        Ok(bool_value) => {
+                            let all_pass = passed.unwrap_or(true) && bool_value;
+                            passed = Some(all_pass);
+                            status = if bool_value {
+                                STATUS_OK.to_string()
+                            } else {
+                                "failed_constraint".to_string()
+                            };
+                            value = Some(Value::Bool(bool_value));
+                        }
+                        Err(err) => {
+                            status = STATUS_UNKNOWN.to_string();
+                            error = Some(err);
+                        }
+                    }
+                }
+            } else if let Some(expr) = single_expression.as_deref() {
+                evaluated = true;
+                match evaluate_analysis_expression(&mut engine, &node_id, expr) {
                     Ok(bool_value) => {
-                        let all_pass = passed.unwrap_or(true) && bool_value;
-                        passed = Some(all_pass);
-                        status = if bool_value {
-                            STATUS_OK.to_string()
-                        } else {
-                            "failed_constraint".to_string()
-                        };
+                        status = STATUS_OK.to_string();
                         value = Some(Value::Bool(bool_value));
+                        passed = Some(bool_value);
                     }
                     Err(err) => {
                         status = STATUS_UNKNOWN.to_string();
@@ -184,28 +206,15 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
                     }
                 }
             }
-        } else if let Some(expr) = node
-            .attributes
-            .get(ANALYSIS_EXPRESSION_KEY)
-            .and_then(Value::as_str)
-        {
-            evaluated = true;
-            match evaluate_analysis_expression(graph, node, expr) {
-                Ok(bool_value) => {
-                    status = STATUS_OK.to_string();
-                    value = Some(Value::Bool(bool_value));
-                    passed = Some(bool_value);
-                }
-                Err(err) => {
-                    status = STATUS_UNKNOWN.to_string();
-                    error = Some(err);
-                }
+
+            if evaluated {
+                outcomes.push((node_id, status, value, error, passed));
             }
         }
+        outcomes
+    };
 
-        if !evaluated {
-            continue;
-        }
+    for (node_id, status, value, error, passed) in outcomes {
         let Some(node_mut) = graph.get_node_mut(&node_id) else {
             continue;
         };
@@ -232,81 +241,347 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
 }
 
 fn evaluate_analysis_expression(
-    graph: &SemanticGraph,
-    context: &SemanticNode,
+    engine: &mut EvalEngine<'_>,
+    context_id: &NodeId,
     expression: &str,
 ) -> Result<bool, String> {
     let expr = expression.trim();
     if expr.is_empty() {
         return Err("empty analysis expression".to_string());
     }
-    for op in ["<=", ">=", "==", "!=", "<", ">"] {
-        if let Some(index) = expr.find(op) {
-            let lhs = expr[..index].trim();
-            let rhs = expr[index + op.len()..].trim();
-            let left = evaluate_numeric_term(graph, context, lhs)?;
-            let right = evaluate_numeric_term(graph, context, rhs)?;
-            let result = match op {
-                "<=" => left <= right,
-                ">=" => left >= right,
-                "==" => (left - right).abs() < 1e-9,
-                "!=" => (left - right).abs() >= 1e-9,
-                "<" => left < right,
-                ">" => left > right,
-                _ => false,
+    let mut parser = AnalysisExprParser::new(expr);
+    let parsed = parser.parse_expression()?;
+    parser.skip_ws();
+    if !parser.is_eof() {
+        return Err("analysis expression contains unsupported trailing tokens".to_string());
+    }
+    evaluate_analysis_ast(engine, context_id, &parsed)
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum AnalysisComparisonOp {
+    Lt,
+    Le,
+    Gt,
+    Ge,
+    Eq,
+    Ne,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+enum AnalysisExpr<'s> {
+    BoolLiteral(bool),
+    Comparison {
+        lhs: &'s str,
+        op: AnalysisComparisonOp,
+        rhs: &'s str,
+    },
+    Not(Box<AnalysisExpr<'s>>),
+    And(Box<AnalysisExpr<'s>>, Box<AnalysisExpr<'s>>),
+    Or(Box<AnalysisExpr<'s>>, Box<AnalysisExpr<'s>>),
+}
+
+struct AnalysisExprParser<'s> {
+    src: &'s str,
+    pos: usize,
+}
+
+impl<'s> AnalysisExprParser<'s> {
+    fn new(src: &'s str) -> Self {
+        Self { src, pos: 0 }
+    }
+
+    fn is_eof(&self) -> bool {
+        self.pos >= self.src.len()
+    }
+
+    fn skip_ws(&mut self) {
+        while let Some(ch) = self.peek_char() {
+            if ch.is_whitespace() {
+                self.pos += ch.len_utf8();
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn peek_char(&self) -> Option<char> {
+        self.src[self.pos..].chars().next()
+    }
+
+    fn eat_char(&mut self) -> Option<char> {
+        let ch = self.peek_char()?;
+        self.pos += ch.len_utf8();
+        Some(ch)
+    }
+
+    fn parse_expression(&mut self) -> Result<AnalysisExpr<'s>, String> {
+        self.parse_or()
+    }
+
+    fn parse_or(&mut self) -> Result<AnalysisExpr<'s>, String> {
+        let mut left = self.parse_and()?;
+        loop {
+            self.skip_ws();
+            if self.consume_symbol("||") || self.consume_keyword("or") {
+                let right = self.parse_and()?;
+                left = AnalysisExpr::Or(Box::new(left), Box::new(right));
+            } else {
+                return Ok(left);
+            }
+        }
+    }
+
+    fn parse_and(&mut self) -> Result<AnalysisExpr<'s>, String> {
+        let mut left = self.parse_not()?;
+        loop {
+            self.skip_ws();
+            if self.consume_symbol("&&") || self.consume_keyword("and") {
+                let right = self.parse_not()?;
+                left = AnalysisExpr::And(Box::new(left), Box::new(right));
+            } else {
+                return Ok(left);
+            }
+        }
+    }
+
+    fn parse_not(&mut self) -> Result<AnalysisExpr<'s>, String> {
+        self.skip_ws();
+        if self.consume_symbol("!") || self.consume_keyword("not") {
+            return Ok(AnalysisExpr::Not(Box::new(self.parse_not()?)));
+        }
+        self.parse_primary()
+    }
+
+    fn parse_primary(&mut self) -> Result<AnalysisExpr<'s>, String> {
+        self.skip_ws();
+        if self.consume_symbol("(") {
+            let inner = self.parse_expression()?;
+            self.skip_ws();
+            if !self.consume_symbol(")") {
+                return Err("analysis expression is missing ')'".to_string());
+            }
+            return Ok(inner);
+        }
+        self.parse_comparison_or_bool_literal()
+    }
+
+    fn parse_comparison_or_bool_literal(&mut self) -> Result<AnalysisExpr<'s>, String> {
+        let start = self.pos;
+        let mut paren_depth = 0usize;
+        let mut bracket_depth = 0usize;
+        while !self.is_eof() {
+            if paren_depth == 0 && bracket_depth == 0 {
+                if self.src[self.pos..].starts_with(')') {
+                    break;
+                }
+                if self.src[self.pos..].starts_with("&&")
+                    || self.src[self.pos..].starts_with("||")
+                    || self.is_keyword_at_pos("and")
+                    || self.is_keyword_at_pos("or")
+                {
+                    break;
+                }
+            }
+            let Some(ch) = self.eat_char() else {
+                break;
             };
-            return Ok(result);
+            match ch {
+                '(' => paren_depth += 1,
+                ')' => {
+                    if paren_depth == 0 {
+                        self.pos -= 1;
+                        break;
+                    }
+                    paren_depth -= 1;
+                }
+                '[' => bracket_depth += 1,
+                ']' => {
+                    bracket_depth = bracket_depth.saturating_sub(1);
+                }
+                _ => {}
+            }
+        }
+        let clause = self.src[start..self.pos].trim();
+        if clause.is_empty() {
+            return Err("analysis expression is missing operand".to_string());
+        }
+        if clause.eq_ignore_ascii_case("true") {
+            return Ok(AnalysisExpr::BoolLiteral(true));
+        }
+        if clause.eq_ignore_ascii_case("false") {
+            return Ok(AnalysisExpr::BoolLiteral(false));
+        }
+        let Some((index, op, op_len)) = find_comparison_operator(clause) else {
+            return Err(format!(
+                "analysis expression '{clause}' is unsupported; expected comparison or boolean literal"
+            ));
+        };
+        let lhs = clause[..index].trim();
+        let rhs = clause[index + op_len..].trim();
+        if lhs.is_empty() || rhs.is_empty() {
+            return Err(format!(
+                "analysis expression '{clause}' is malformed; expected both comparison operands"
+            ));
+        }
+        Ok(AnalysisExpr::Comparison { lhs, op, rhs })
+    }
+
+    fn consume_symbol(&mut self, symbol: &str) -> bool {
+        if self.src[self.pos..].starts_with(symbol) {
+            self.pos += symbol.len();
+            true
+        } else {
+            false
         }
     }
-    if expr.eq_ignore_ascii_case("true") {
-        return Ok(true);
+
+    fn consume_keyword(&mut self, keyword: &str) -> bool {
+        if !self.is_keyword_at_pos(keyword) {
+            return false;
+        }
+        self.pos += keyword.len();
+        true
     }
-    if expr.eq_ignore_ascii_case("false") {
-        return Ok(false);
+
+    fn is_keyword_at_pos(&self, keyword: &str) -> bool {
+        if !self.src[self.pos..].starts_with(keyword) {
+            return false;
+        }
+        let before = if self.pos == 0 {
+            None
+        } else {
+            self.src[..self.pos].chars().next_back()
+        };
+        if before.is_some_and(is_identifier_char) {
+            return false;
+        }
+        let end = self.pos + keyword.len();
+        let after = if end >= self.src.len() {
+            None
+        } else {
+            self.src[end..].chars().next()
+        };
+        !after.is_some_and(is_identifier_char)
     }
-    Err(format!(
-        "analysis expression '{expr}' is unsupported; expected comparison"
-    ))
 }
 
-fn evaluate_numeric_term(
-    graph: &SemanticGraph,
-    context: &SemanticNode,
-    term: &str,
-) -> Result<f64, String> {
-    if let Ok(number) = term.parse::<f64>() {
-        return Ok(number);
-    }
-    resolve_identifier_numeric(graph, context, term).ok_or_else(|| format!("unresolved '{term}'"))
-}
-
-fn resolve_identifier_numeric(graph: &SemanticGraph, context: &SemanticNode, identifier: &str) -> Option<f64> {
-    let parent = graph
-        .parent_of(context)
-        .map(|node| node.id.clone())
-        .unwrap_or_else(|| context.id.clone());
-    let candidates = graph.child_named(&parent, identifier);
-    for candidate in candidates {
-        if let Some(number) = candidate
-            .attributes
-            .get(EVALUATED_VALUE_KEY)
-            .and_then(json_value_to_f64)
-            .or_else(|| {
-                EVALUATION_SOURCE_KEYS.iter().find_map(|key| {
-                    candidate
-                        .attributes
-                        .get(*key)
-                        .and_then(json_value_to_f64)
-                })
-            })
-        {
-            return Some(number);
+fn find_comparison_operator(text: &str) -> Option<(usize, AnalysisComparisonOp, usize)> {
+    let mut paren_depth = 0usize;
+    let mut bracket_depth = 0usize;
+    let mut iter = text.char_indices().peekable();
+    while let Some((index, ch)) = iter.next() {
+        match ch {
+            '(' => paren_depth += 1,
+            ')' => paren_depth = paren_depth.saturating_sub(1),
+            '[' => bracket_depth += 1,
+            ']' => bracket_depth = bracket_depth.saturating_sub(1),
+            _ => {}
+        }
+        if paren_depth != 0 || bracket_depth != 0 {
+            continue;
+        }
+        let next = iter.peek().map(|(_, c)| *c);
+        match (ch, next) {
+            ('<', Some('=')) => return Some((index, AnalysisComparisonOp::Le, 2)),
+            ('>', Some('=')) => return Some((index, AnalysisComparisonOp::Ge, 2)),
+            ('=', Some('=')) => return Some((index, AnalysisComparisonOp::Eq, 2)),
+            ('!', Some('=')) => return Some((index, AnalysisComparisonOp::Ne, 2)),
+            ('<', _) => return Some((index, AnalysisComparisonOp::Lt, 1)),
+            ('>', _) => return Some((index, AnalysisComparisonOp::Gt, 1)),
+            _ => {}
         }
     }
-    context
-        .attributes
-        .get(identifier)
-        .and_then(json_value_to_f64)
+    None
+}
+
+fn evaluate_analysis_ast(
+    engine: &mut EvalEngine<'_>,
+    context_id: &NodeId,
+    expression: &AnalysisExpr<'_>,
+) -> Result<bool, String> {
+    match expression {
+        AnalysisExpr::BoolLiteral(value) => Ok(*value),
+        AnalysisExpr::Not(inner) => Ok(!evaluate_analysis_ast(engine, context_id, inner)?),
+        AnalysisExpr::And(left, right) => {
+            let left_value = evaluate_analysis_ast(engine, context_id, left)?;
+            if !left_value {
+                return Ok(false);
+            }
+            evaluate_analysis_ast(engine, context_id, right)
+        }
+        AnalysisExpr::Or(left, right) => {
+            let left_value = evaluate_analysis_ast(engine, context_id, left)?;
+            if left_value {
+                return Ok(true);
+            }
+            evaluate_analysis_ast(engine, context_id, right)
+        }
+        AnalysisExpr::Comparison { lhs, op, rhs } => {
+            let left = engine
+                .evaluate_quantity_expression(context_id, lhs)
+                .map_err(map_analysis_eval_error)?;
+            let right = engine
+                .evaluate_quantity_expression(context_id, rhs)
+                .map_err(map_analysis_eval_error)?;
+            compare_quantities(engine, left, *op, right).map_err(map_analysis_eval_error)
+        }
+    }
+}
+
+fn compare_quantities(
+    engine: &EvalEngine<'_>,
+    left: Quantity,
+    op: AnalysisComparisonOp,
+    right: Quantity,
+) -> Result<bool, EvalStatus> {
+    let right_value = match (&left.unit, &right.unit) {
+        (None, None) => right.value,
+        (Some(left_unit), Some(right_unit)) => engine
+            .units
+            .convert_value(right.value, right_unit, left_unit)
+            .map_err(map_unit_error)?,
+        (Some(left_unit), None) => {
+            if engine.units.has_symbol(left_unit) {
+                return Err(EvalStatus::TypeError);
+            }
+            return Err(EvalStatus::Unknown);
+        }
+        (None, Some(right_unit)) => {
+            if engine.units.has_symbol(right_unit) {
+                return Err(EvalStatus::TypeError);
+            }
+            return Err(EvalStatus::Unknown);
+        }
+    };
+    let epsilon = 1e-9;
+    let result = match op {
+        AnalysisComparisonOp::Lt => left.value < right_value,
+        AnalysisComparisonOp::Le => left.value <= right_value,
+        AnalysisComparisonOp::Gt => left.value > right_value,
+        AnalysisComparisonOp::Ge => left.value >= right_value,
+        AnalysisComparisonOp::Eq => (left.value - right_value).abs() < epsilon,
+        AnalysisComparisonOp::Ne => (left.value - right_value).abs() >= epsilon,
+    };
+    Ok(result)
+}
+
+fn map_analysis_eval_error(status: EvalStatus) -> String {
+    match status {
+        EvalStatus::DivByZero => "analysis expression includes division by zero".to_string(),
+        EvalStatus::TypeError => {
+            "analysis expression has type or unit mismatch for arithmetic/comparison".to_string()
+        }
+        EvalStatus::Unknown => "analysis expression could not be resolved".to_string(),
+        EvalStatus::Cycle => "analysis expression has cyclic reference".to_string(),
+        EvalStatus::Unsupported | EvalStatus::Ok => {
+            "analysis expression form is not supported".to_string()
+        }
+    }
+}
+
+fn is_identifier_char(ch: char) -> bool {
+    ch.is_ascii_alphanumeric() || ch == '_'
 }
 
 struct EvalEngine<'a> {
@@ -394,22 +669,8 @@ impl<'a> EvalEngine<'a> {
             return self.resolve_identifier_value(node_id, identifier);
         }
 
-        let units = self.units.clone();
-        let mut parser = QuantityParser::new(text, &units, |identifier| {
-            self.resolve_identifier_quantity(node_id, identifier)
-        });
-        match parser.parse_expression() {
-            Ok(quantity) => {
-                parser.skip_ws();
-                if parser.is_eof() {
-                    EvalOutcome::from_quantity(quantity)
-                } else {
-                    EvalOutcome::error(
-                        EvalStatus::Unsupported,
-                        "expression contains unsupported trailing tokens",
-                    )
-                }
-            }
+        match self.evaluate_quantity_expression(node_id, text) {
+            Ok(quantity) => EvalOutcome::from_quantity(quantity),
             Err(EvalStatus::DivByZero) => {
                 EvalOutcome::error(EvalStatus::DivByZero, "division by zero")
             }
@@ -427,6 +688,23 @@ impl<'a> EvalEngine<'a> {
                 EvalOutcome::error(EvalStatus::Unsupported, "expression form is not supported")
             }
         }
+    }
+
+    fn evaluate_quantity_expression(
+        &mut self,
+        node_id: &NodeId,
+        expression: &str,
+    ) -> Result<Quantity, EvalStatus> {
+        let units = self.units.clone();
+        let mut parser = QuantityParser::new(expression, &units, |identifier| {
+            self.resolve_identifier_quantity(node_id, identifier)
+        });
+        let quantity = parser.parse_expression()?;
+        parser.skip_ws();
+        if !parser.is_eof() {
+            return Err(EvalStatus::Unsupported);
+        }
+        Ok(quantity)
     }
 
     fn resolve_identifier_value(&mut self, node_id: &NodeId, identifier: &str) -> EvalOutcome {
@@ -1323,5 +1601,187 @@ mod tests {
             node_attr(&graph, &requirement, ANALYSIS_CONSTRAINT_PASSED_KEY),
             Some(&Value::Bool(false))
         );
+    }
+
+    #[test]
+    fn evaluates_boolean_precedence_and_parentheses_in_analysis_expression() {
+        let mut graph = SemanticGraph::new();
+        let uri = Url::parse("file:///C:/workspace/analysis-precedence.sysml").expect("uri");
+        let requirement = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req",
+            "requirement def",
+            "Req",
+            None,
+            HashMap::from([(
+                ANALYSIS_EXPRESSION_KEY.to_string(),
+                Value::String("not measured > limit and limit == 5 or false".to_string()),
+            )]),
+        );
+        let _measured = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::measured",
+            "attribute",
+            "measured",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("4".to_string()))]),
+        );
+        let _limit = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::limit",
+            "attribute",
+            "limit",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("5".to_string()))]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_STATUS_KEY),
+            Some(&Value::String(STATUS_OK.to_string()))
+        );
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_VALUE_KEY),
+            Some(&Value::Bool(true))
+        );
+    }
+
+    #[test]
+    fn supports_arithmetic_and_unit_conversion_in_analysis_comparison() {
+        let mut graph = SemanticGraph::new();
+        register_units_fixture(&mut graph);
+        let uri = Url::parse("file:///C:/workspace/analysis-units.sysml").expect("uri");
+        let requirement = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req",
+            "requirement def",
+            "Req",
+            None,
+            HashMap::from([(
+                ANALYSIS_EXPRESSION_KEY.to_string(),
+                Value::String("measured + margin <= limit".to_string()),
+            )]),
+        );
+        let _measured = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::measured",
+            "attribute",
+            "measured",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("90 [cm]".to_string()))]),
+        );
+        let _margin = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::margin",
+            "attribute",
+            "margin",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("0.2 [m]".to_string()))]),
+        );
+        let _limit = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::limit",
+            "attribute",
+            "limit",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("1.2 [m]".to_string()))]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_STATUS_KEY),
+            Some(&Value::String(STATUS_OK.to_string()))
+        );
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_VALUE_KEY),
+            Some(&Value::Bool(true))
+        );
+    }
+
+    #[test]
+    fn reports_type_mismatch_for_incompatible_analysis_units() {
+        let mut graph = SemanticGraph::new();
+        register_units_fixture(&mut graph);
+        let uri = Url::parse("file:///C:/workspace/analysis-unit-type-error.sysml").expect("uri");
+        let requirement = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req",
+            "requirement def",
+            "Req",
+            None,
+            HashMap::from([(
+                ANALYSIS_EXPRESSION_KEY.to_string(),
+                Value::String("measured < limit".to_string()),
+            )]),
+        );
+        let _measured = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::measured",
+            "attribute",
+            "measured",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("1 [m]".to_string()))]),
+        );
+        let _limit = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::limit",
+            "attribute",
+            "limit",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("2 [kg]".to_string()))]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_STATUS_KEY),
+            Some(&Value::String(STATUS_UNKNOWN.to_string()))
+        );
+        let message = node_attr(&graph, &requirement, ANALYSIS_EVAL_ERROR_KEY)
+            .and_then(Value::as_str)
+            .unwrap_or_default();
+        assert!(message.contains("type or unit mismatch"));
+    }
+
+    #[test]
+    fn reports_unresolved_reference_for_analysis_expression() {
+        let mut graph = SemanticGraph::new();
+        let uri = Url::parse("file:///C:/workspace/analysis-unresolved.sysml").expect("uri");
+        let requirement = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req",
+            "requirement def",
+            "Req",
+            None,
+            HashMap::from([(
+                ANALYSIS_EXPRESSION_KEY.to_string(),
+                Value::String("measured <= missingLimit".to_string()),
+            )]),
+        );
+        let _measured = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::measured",
+            "attribute",
+            "measured",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("4".to_string()))]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_STATUS_KEY),
+            Some(&Value::String(STATUS_UNKNOWN.to_string()))
+        );
+        let message = node_attr(&graph, &requirement, ANALYSIS_EVAL_ERROR_KEY)
+            .and_then(Value::as_str)
+            .unwrap_or_default();
+        assert!(message.contains("could not be resolved"));
     }
 }
