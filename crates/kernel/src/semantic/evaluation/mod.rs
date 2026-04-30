@@ -148,6 +148,9 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
             let Some(node) = graph.get_node(&node_id) else {
                 continue;
             };
+            if is_definition_only_analysis_node(node) {
+                continue;
+            }
             let inline_constraints = node
                 .attributes
                 .get(ANALYSIS_CONSTRAINTS_KEY)
@@ -238,6 +241,10 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
                 .insert(ANALYSIS_CONSTRAINT_PASSED_KEY.to_string(), Value::Bool(p));
         }
     }
+}
+
+fn is_definition_only_analysis_node(node: &SemanticNode) -> bool {
+    matches!(node.element_kind.as_str(), "constraint def" | "calc def")
 }
 
 fn evaluate_analysis_expression(
@@ -1783,5 +1790,47 @@ mod tests {
             .and_then(Value::as_str)
             .unwrap_or_default();
         assert!(message.contains("could not be resolved"));
+    }
+
+    #[test]
+    fn skips_unbound_constraint_def_analysis_evaluation() {
+        let mut graph = SemanticGraph::new();
+        let uri = Url::parse("file:///C:/workspace/analysis-def-skip.sysml").expect("uri");
+        let constraint_def = add_node(
+            &mut graph,
+            &uri,
+            "Demo::EnduranceMargin",
+            "constraint def",
+            "EnduranceMargin",
+            None,
+            HashMap::from([(
+                ANALYSIS_EXPRESSION_KEY.to_string(),
+                Value::String("measured <= limit".to_string()),
+            )]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(node_attr(&graph, &constraint_def, ANALYSIS_EVAL_STATUS_KEY), None);
+        assert_eq!(node_attr(&graph, &constraint_def, ANALYSIS_EVAL_ERROR_KEY), None);
+    }
+
+    #[test]
+    fn skips_calc_def_analysis_evaluation() {
+        let mut graph = SemanticGraph::new();
+        let uri = Url::parse("file:///C:/workspace/calc-def-skip.sysml").expect("uri");
+        let calc_def = add_node(
+            &mut graph,
+            &uri,
+            "Demo::MarginEstimate",
+            "calc def",
+            "MarginEstimate",
+            None,
+            HashMap::from([(
+                ANALYSIS_EXPRESSION_KEY.to_string(),
+                Value::String("limit - measured".to_string()),
+            )]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(node_attr(&graph, &calc_def, ANALYSIS_EVAL_STATUS_KEY), None);
+        assert_eq!(node_attr(&graph, &calc_def, ANALYSIS_EVAL_ERROR_KEY), None);
     }
 }

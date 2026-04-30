@@ -1109,7 +1109,7 @@ fn allocation_type_not_allocation_def_emits_semantic_diagnostic() {
 }
 
 #[test]
-fn unbound_constraint_def_expression_emits_analysis_evaluation_unresolved_diagnostic() {
+fn unbound_constraint_def_expression_does_not_emit_analysis_evaluation_unresolved_diagnostic() {
     let content = r#"
         package P {
             constraint def EnduranceMargin {
@@ -1121,8 +1121,8 @@ fn unbound_constraint_def_expression_emits_analysis_evaluation_unresolved_diagno
     "#;
     let diagnostics = validate_inline_sysml("analysis_constraint_unbound.sysml", content);
     assert!(
-        has_diag_code(&diagnostics, "semantic", "analysis_evaluation_unresolved"),
-        "expected analysis_evaluation_unresolved semantic diagnostic"
+        !has_diag_code(&diagnostics, "semantic", "analysis_evaluation_unresolved"),
+        "did not expect analysis_evaluation_unresolved semantic diagnostic for definition-only constraint"
     );
 }
 

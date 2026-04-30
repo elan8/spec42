@@ -497,11 +497,16 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
 
     // 11) Verdict normalization and domain validation.
     for node in graph.nodes_for_uri(uri) {
+        let is_definition_only_analysis =
+            matches!(node.element_kind.as_str(), "constraint def" | "calc def");
         if let Some(status) = node
             .attributes
             .get("analysisEvaluationStatus")
             .and_then(|value| value.as_str())
         {
+            if is_definition_only_analysis {
+                continue;
+            }
             if status == "failed_constraint"
                 || node
                     .attributes
