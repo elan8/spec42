@@ -425,7 +425,7 @@
         },
         "spec42.standardLibrary.version": {
           "type": "string",
-          "default": "2026-02",
+          "default": "2026-03",
           "description": "Display-only: SysML v2 release tag that matches the bundled standard library in this extension."
         },
         "spec42.standardLibrary.repo": {

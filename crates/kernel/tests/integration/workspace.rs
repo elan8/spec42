@@ -410,7 +410,7 @@ fn lsp_workspace_scan_clears_unresolved_for_wildcard_imported_workspace_types() 
 const SYSML_V2_RELEASE_DIR_ENV: &str = "SYSML_V2_RELEASE_DIR";
 const SYSML_STD_LIB_DIR_ENV: &str = "SYSML_STD_LIB_DIR";
 const DEFAULT_STD_LIB_DIR: &str =
-    "C:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-02/sysml.library";
+    "C:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-03/sysml.library";
 
 fn is_si_sysml_path(path: &str) -> bool {
     path.ends_with("/Domain%20Libraries/Quantities%20and%20Units/SI.sysml")

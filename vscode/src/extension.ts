@@ -123,7 +123,7 @@ function getStartupWorkspaceIndexingMode(): StartupWorkspaceIndexingMode {
 function getStandardLibraryConfig(): StandardLibraryConfig {
   return {
     enabled: getConfigBoolean("standardLibrary.enabled", true),
-    version: getConfigString("standardLibrary.version") ?? "2026-02",
+    version: getConfigString("standardLibrary.version") ?? "2026-03",
     repo: getConfigString("standardLibrary.repo") ?? "Systems-Modeling/SysML-v2-Release",
     contentPath: getConfigString("standardLibrary.contentPath") ?? "sysml.library",
   };
@@ -782,7 +782,7 @@ export function activate(context: vscode.ExtensionContext): void {
     context.extensionUri,
     lspModelProvider,
     () => ({
-      pinnedVersion: getConfigString("standardLibrary.version") ?? "2026-02",
+      pinnedVersion: getConfigString("standardLibrary.version") ?? "2026-03",
     })
   );
   addonsWebviewProvider = new AddonsWebviewViewProvider(

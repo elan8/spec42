@@ -14,9 +14,7 @@ use sha2::{Digest, Sha256};
 use zip::read::ZipArchive;
 use zip::write::{SimpleFileOptions, ZipWriter};
 
-const DEFAULT_TAG: &str = "2026-02";
-const DOWNLOAD_URL: &str =
-    "https://codeload.github.com/Systems-Modeling/SysML-v2-Release/zip/refs/tags/2026-02";
+const DEFAULT_TAG: &str = "2026-03";
 /// Single top-level folder prefix inside the embedded zip (must match `extract_archive_subset` in stdlib.rs).
 const EMBED_ROOT: &str = "bundled-sysml-release";
 
@@ -49,8 +47,11 @@ fn main() {
         eprintln!(
             "spec42 build: downloading SysML v2 Release {DEFAULT_TAG} for embedded stdlib..."
         );
+        let download_url = format!(
+            "https://github.com/Systems-Modeling/SysML-v2-Release/archive/refs/tags/{DEFAULT_TAG}.zip"
+        );
         {
-            let mut reader = ureq::get(DOWNLOAD_URL)
+            let mut reader = ureq::get(&download_url)
                 .set("User-Agent", "spec42-build")
                 .call()
                 .unwrap_or_else(|e| {

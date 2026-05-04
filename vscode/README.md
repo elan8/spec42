@@ -68,7 +68,7 @@ Useful commands:
 
 - **`spec42.standardLibrary.version`**
   - Display-only hint for the bundled release; matches the embedded `sysml.library` in the server.
-  - Default: `"2026-02"`
+  - Default: `"2026-03"`
 
 - **`spec42.workspace.maxFilesPerPattern`**
   - Discovery cap per workspace folder and file type.
