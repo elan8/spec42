@@ -59,11 +59,15 @@ pub struct DoctorPathStatus {
 
 pub fn resolve_environment(cli: &Cli) -> Result<ResolvedEnvironment, String> {
     let project_dirs = project_dirs()?;
-    resolve_environment_with_dirs(
-        cli,
-        project_dirs.config_dir().to_path_buf(),
-        project_dirs.data_local_dir().to_path_buf(),
-    )
+    let config_dir = std::env::var_os("SPEC42_CONFIG_DIR")
+        .map(PathBuf::from)
+        .map(|path| canonicalize_lossy(path.as_path()))
+        .unwrap_or_else(|| project_dirs.config_dir().to_path_buf());
+    let data_dir = std::env::var_os("SPEC42_DATA_DIR")
+        .map(PathBuf::from)
+        .map(|path| canonicalize_lossy(path.as_path()))
+        .unwrap_or_else(|| project_dirs.data_local_dir().to_path_buf());
+    resolve_environment_with_dirs(cli, config_dir, data_dir)
 }
 
 fn resolve_environment_with_dirs(
@@ -516,6 +520,48 @@ mod tests {
         .expect("resolve stdlib");
         assert!(resolution.path.is_none());
         assert_eq!(resolution.source.as_deref(), Some("disabled"));
+    }
+
+    #[test]
+    fn resolve_environment_uses_env_config_and_data_dirs() {
+        let _guard = APPDATA_TEST_LOCK.lock().expect("env lock");
+
+        let temp = tempfile::tempdir().expect("temp dir");
+        let config_dir = temp.path().join("config");
+        let data_dir = temp.path().join("data");
+        std::fs::create_dir_all(&config_dir).expect("create config dir");
+        std::fs::create_dir_all(&data_dir).expect("create data dir");
+
+        let old_config_dir = std::env::var_os("SPEC42_CONFIG_DIR");
+        let old_data_dir = std::env::var_os("SPEC42_DATA_DIR");
+        std::env::set_var("SPEC42_CONFIG_DIR", &config_dir);
+        std::env::set_var("SPEC42_DATA_DIR", &data_dir);
+
+        let cli = Cli {
+            config_path: None,
+            library_paths: Vec::new(),
+            stdlib_path: None,
+            no_stdlib: true,
+            stdio: false,
+            command: None,
+        };
+        let environment = resolve_environment(&cli).expect("environment");
+
+        match old_config_dir {
+            Some(value) => std::env::set_var("SPEC42_CONFIG_DIR", value),
+            None => std::env::remove_var("SPEC42_CONFIG_DIR"),
+        }
+        match old_data_dir {
+            Some(value) => std::env::set_var("SPEC42_DATA_DIR", value),
+            None => std::env::remove_var("SPEC42_DATA_DIR"),
+        }
+
+        assert_eq!(environment.config_dir, canonicalize_lossy(&config_dir));
+        assert_eq!(environment.data_dir, canonicalize_lossy(&data_dir));
+        assert_eq!(
+            environment.standard_library_paths.managed_root,
+            canonicalize_lossy(&data_dir).join("standard-library")
+        );
     }
 
     #[test]

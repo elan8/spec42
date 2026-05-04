@@ -47,6 +47,12 @@ What to do:
 4. Run `spec42 doctor` and confirm `stdlib source` is **bundled** (or an explicit override you expect).
 5. Re-run `spec42 check ...`; validation advice points at `--stdlib-path` / `SPEC42_STDLIB_PATH` if library roots are still missing.
 
+For restricted development environments, point Spec42's user directories at writable locations:
+
+```bash
+SPEC42_CONFIG_DIR=/tmp/spec42/config SPEC42_DATA_DIR=/tmp/spec42/data spec42 check path/to/model-or-workspace
+```
+
 ## No Standard Library Is Found
 
 Check:
@@ -70,8 +76,9 @@ What to do:
 
 1. Run `spec42 doctor` and check `resolved stdlib` / `stdlib source`.
 2. If you use a custom checkout, pass `--stdlib-path /path/to/sysml.library`.
-3. Use `spec42 stdlib clear-cache` only to delete materialized files (they are re-extracted on next run).
-4. Use `--no-stdlib` only when you intentionally want to validate without it.
+3. If the data directory is not writable, set `SPEC42_DATA_DIR` to a writable cache directory.
+4. Use `spec42 stdlib clear-cache` only to delete materialized files (they are re-extracted on next run).
+5. Use `--no-stdlib` only when you intentionally want to validate without it.
 
 ## Server Does Not Start In VS Code
 
