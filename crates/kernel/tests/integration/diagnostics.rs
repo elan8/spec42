@@ -1169,6 +1169,162 @@ fn typed_requirement_local_attributes_resolve_in_arithmetic_constraint() {
 }
 
 #[test]
+fn requirement_placeholder_attribute_emits_incomplete_analysis_info() {
+    let content = r#"
+        package P {
+            requirement def PlaceholderEvaluation {
+                attribute actual: Real;
+                attribute limit: Real = 1.0;
+                require constraint { actual <= limit }
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("analysis_requirement_placeholder.sysml", content);
+    let incomplete: Vec<_> = diagnostics
+        .iter()
+        .filter(|diagnostic| {
+            diagnostic.source.as_deref() == Some("semantic")
+                && diagnostic.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "analysis_evaluation_incomplete".to_string(),
+                    ))
+        })
+        .collect();
+    assert_eq!(
+        incomplete.len(),
+        1,
+        "expected one analysis_evaluation_incomplete diagnostic: {diagnostics:#?}"
+    );
+    assert_eq!(
+        incomplete[0].severity,
+        Some(tower_lsp::lsp_types::DiagnosticSeverity::INFORMATION)
+    );
+    assert!(
+        !has_diag_code(&diagnostics, "semantic", "analysis_evaluation_unresolved"),
+        "placeholder should not be reported as unresolved: {diagnostics:#?}"
+    );
+}
+
+#[test]
+fn missing_analysis_identifier_still_emits_unresolved_warning() {
+    let content = r#"
+        package P {
+            requirement def MissingReferenceEvaluation {
+                attribute limit: Real = 1.0;
+                require constraint { missingActual <= limit }
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("analysis_requirement_missing_ref.sysml", content);
+    let unresolved: Vec<_> = diagnostics
+        .iter()
+        .filter(|diagnostic| {
+            diagnostic.source.as_deref() == Some("semantic")
+                && diagnostic.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "analysis_evaluation_unresolved".to_string(),
+                    ))
+        })
+        .collect();
+    assert_eq!(
+        unresolved.len(),
+        1,
+        "expected one analysis_evaluation_unresolved diagnostic: {diagnostics:#?}"
+    );
+    assert_eq!(
+        unresolved[0].severity,
+        Some(tower_lsp::lsp_types::DiagnosticSeverity::WARNING)
+    );
+}
+
+#[test]
+fn false_analysis_constraint_still_emits_failed_warning() {
+    let content = r#"
+        package P {
+            requirement def FailedEvaluation {
+                attribute actual: Real = 2.0;
+                attribute limit: Real = 1.0;
+                require constraint { actual <= limit }
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("analysis_requirement_failed.sysml", content);
+    let failed: Vec<_> = diagnostics
+        .iter()
+        .filter(|diagnostic| {
+            diagnostic.source.as_deref() == Some("semantic")
+                && diagnostic.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "analysis_constraint_failed".to_string(),
+                    ))
+        })
+        .collect();
+    assert_eq!(
+        failed.len(),
+        1,
+        "expected one analysis_constraint_failed diagnostic: {diagnostics:#?}"
+    );
+    assert_eq!(
+        failed[0].severity,
+        Some(tower_lsp::lsp_types::DiagnosticSeverity::WARNING)
+    );
+}
+
+#[test]
+fn valid_analysis_constraint_emits_no_analysis_diagnostic() {
+    let content = r#"
+        package P {
+            requirement def PassingEvaluation {
+                attribute actual: Real = 0.5;
+                attribute limit: Real = 1.0;
+                require constraint { actual <= limit }
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("analysis_requirement_passing.sysml", content);
+    assert!(
+        !diagnostics.iter().any(|diagnostic| {
+            diagnostic.source.as_deref() == Some("semantic")
+                && diagnostic
+                    .code
+                    .as_ref()
+                    .and_then(|code| match code {
+                        tower_lsp::lsp_types::NumberOrString::String(code) => Some(code.as_str()),
+                        tower_lsp::lsp_types::NumberOrString::Number(_) => None,
+                    })
+                    .is_some_and(|code| code.starts_with("analysis_"))
+        }),
+        "expected no analysis diagnostic for passing constraint: {diagnostics:#?}"
+    );
+}
+
+#[test]
+fn multi_line_and_requirement_constraint_uses_full_expression_span() {
+    let content = r#"
+        package P {
+            requirement def LandingEvaluation {
+                attribute actualVerticalVelocity: Real = 0.9;
+                attribute maxVerticalVelocity: Real = 2.0;
+                attribute actualHorizontalVelocity: Real = 0.2;
+                attribute maxHorizontalVelocity: Real = 0.5;
+                attribute actualLandingZoneDeviation: Real = 600.0;
+                attribute maxLandingZoneDeviation: Real = 1000.0;
+                require constraint {
+                    (actualVerticalVelocity <= maxVerticalVelocity) and
+                    (actualHorizontalVelocity <= maxHorizontalVelocity) and
+                    (actualLandingZoneDeviation <= maxLandingZoneDeviation)
+                }
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("analysis_requirement_multiline_and.sysml", content);
+    assert!(
+        !has_diag_code(&diagnostics, "semantic", "analysis_evaluation_unresolved"),
+        "did not expect analysis_evaluation_unresolved diagnostic for multi-line boolean constraint: {diagnostics:#?}"
+    );
+}
+
+#[test]
 fn invalid_verdict_value_emits_semantic_diagnostic() {
     let content = r#"
         package P {

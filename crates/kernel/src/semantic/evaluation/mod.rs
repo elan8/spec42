@@ -16,6 +16,7 @@ const EVALUATION_ERROR_KEY: &str = "evaluationError";
 
 const STATUS_OK: &str = "ok";
 const STATUS_UNKNOWN: &str = "unknown";
+const STATUS_INCOMPLETE: &str = "incomplete";
 const STATUS_TYPE_ERROR: &str = "type_error";
 const STATUS_DIV_BY_ZERO: &str = "div_by_zero";
 const STATUS_UNSUPPORTED: &str = "unsupported";
@@ -33,6 +34,7 @@ const ANALYSIS_CONSTRAINT_PASSED_KEY: &str = "analysisConstraintPassed";
 enum EvalStatus {
     Ok,
     Unknown,
+    Incomplete,
     TypeError,
     DivByZero,
     Unsupported,
@@ -44,11 +46,39 @@ impl EvalStatus {
         match self {
             EvalStatus::Ok => STATUS_OK,
             EvalStatus::Unknown => STATUS_UNKNOWN,
+            EvalStatus::Incomplete => STATUS_INCOMPLETE,
             EvalStatus::TypeError => STATUS_TYPE_ERROR,
             EvalStatus::DivByZero => STATUS_DIV_BY_ZERO,
             EvalStatus::Unsupported => STATUS_UNSUPPORTED,
             EvalStatus::Cycle => STATUS_CYCLE,
         }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct AnalysisEvalError {
+    status: EvalStatus,
+    message: String,
+}
+
+impl AnalysisEvalError {
+    fn from_status(status: EvalStatus) -> Self {
+        Self {
+            status,
+            message: map_analysis_eval_error(status),
+        }
+    }
+
+    fn with_message(status: EvalStatus, message: impl Into<String>) -> Self {
+        Self {
+            status,
+            message: message.into(),
+        }
+    }
+
+    fn with_expression(mut self, expression: &str) -> Self {
+        self.message = format!("{} [expr='{}']", self.message, expression);
+        self
     }
 }
 
@@ -190,8 +220,8 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
                             value = Some(Value::Bool(bool_value));
                         }
                         Err(err) => {
-                            status = STATUS_UNKNOWN.to_string();
-                            error = Some(err);
+                            status = err.status.as_str().to_string();
+                            error = Some(err.message);
                         }
                     }
                 }
@@ -204,8 +234,8 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
                         passed = Some(bool_value);
                     }
                     Err(err) => {
-                        status = STATUS_UNKNOWN.to_string();
-                        error = Some(err);
+                        status = err.status.as_str().to_string();
+                        error = Some(err.message);
                     }
                 }
             }
@@ -251,19 +281,25 @@ fn evaluate_analysis_expression(
     engine: &mut EvalEngine<'_>,
     context_id: &NodeId,
     expression: &str,
-) -> Result<bool, String> {
+) -> Result<bool, AnalysisEvalError> {
     let repaired = normalize_broken_invocation_syntax(expression.trim());
     let normalized = normalize_truncated_analysis_comparison(repaired.as_str());
     let expr = normalized.as_str();
     if expr.is_empty() {
-        return Err("empty analysis expression".to_string());
+        return Err(AnalysisEvalError::with_message(
+            EvalStatus::Unsupported,
+            "empty analysis expression",
+        ));
     }
     let mut parser = AnalysisExprParser::new(expr);
     match parser.parse_expression() {
         Ok(parsed) => {
             parser.skip_ws();
             if !parser.is_eof() {
-                return Err("analysis expression contains unsupported trailing tokens".to_string());
+                return Err(AnalysisEvalError::with_message(
+                    EvalStatus::Unsupported,
+                    "analysis expression contains unsupported trailing tokens",
+                ));
             }
             evaluate_analysis_ast(engine, context_id, &parsed)
         }
@@ -282,9 +318,7 @@ fn evaluate_analysis_expression(
             // as non-negative checks (common margin/headroom style predicates).
             let quantity = engine
                 .evaluate_quantity_expression(context_id, expr)
-                .map_err(|status| {
-                    format!("{} [expr='{}']", map_analysis_eval_error(status), expr)
-                })?;
+                .map_err(|status| AnalysisEvalError::from_status(status).with_expression(expr))?;
             Ok(quantity.value >= 0.0)
         }
     }
@@ -609,7 +643,7 @@ fn evaluate_analysis_ast(
     engine: &mut EvalEngine<'_>,
     context_id: &NodeId,
     expression: &AnalysisExpr<'_>,
-) -> Result<bool, String> {
+) -> Result<bool, AnalysisEvalError> {
     match expression {
         AnalysisExpr::BoolLiteral(value) => Ok(*value),
         AnalysisExpr::Predicate(predicate) => {
@@ -617,26 +651,46 @@ fn evaluate_analysis_ast(
         }
         AnalysisExpr::Not(inner) => Ok(!evaluate_analysis_ast(engine, context_id, inner)?),
         AnalysisExpr::And(left, right) => {
-            let left_value = evaluate_analysis_ast(engine, context_id, left)?;
-            if !left_value {
+            let left_result = evaluate_analysis_ast(engine, context_id, left);
+            if matches!(left_result, Ok(false)) {
                 return Ok(false);
             }
-            evaluate_analysis_ast(engine, context_id, right)
+            let right_result = evaluate_analysis_ast(engine, context_id, right);
+            if matches!(right_result, Ok(false)) {
+                return Ok(false);
+            }
+            match (left_result, right_result) {
+                (Ok(true), Ok(true)) => Ok(true),
+                (Ok(false), Err(_)) | (Err(_), Ok(false)) => Ok(false),
+                (Err(err), Ok(true)) | (Ok(true), Err(err)) => Err(err),
+                (Err(left_err), Err(right_err)) => Err(prefer_analysis_error(left_err, right_err)),
+                (Ok(_), Ok(_)) => Ok(false),
+            }
         }
         AnalysisExpr::Or(left, right) => {
-            let left_value = evaluate_analysis_ast(engine, context_id, left)?;
-            if left_value {
+            let left_result = evaluate_analysis_ast(engine, context_id, left);
+            if matches!(left_result, Ok(true)) {
                 return Ok(true);
             }
-            evaluate_analysis_ast(engine, context_id, right)
+            let right_result = evaluate_analysis_ast(engine, context_id, right);
+            if matches!(right_result, Ok(true)) {
+                return Ok(true);
+            }
+            match (left_result, right_result) {
+                (Ok(false), Ok(false)) => Ok(false),
+                (Ok(true), Err(_)) | (Err(_), Ok(true)) => Ok(true),
+                (Err(err), Ok(false)) | (Ok(false), Err(err)) => Err(err),
+                (Err(left_err), Err(right_err)) => Err(prefer_analysis_error(left_err, right_err)),
+                (Ok(_), Ok(_)) => Ok(true),
+            }
         }
         AnalysisExpr::Comparison { lhs, op, rhs } => {
             let left = engine
                 .evaluate_quantity_expression(context_id, lhs)
-                .map_err(map_analysis_eval_error)?;
+                .map_err(AnalysisEvalError::from_status)?;
             let right = engine
                 .evaluate_quantity_expression(context_id, rhs)
-                .map_err(map_analysis_eval_error)?;
+                .map_err(AnalysisEvalError::from_status)?;
             compare_quantities(engine, left, *op, right)
         }
     }
@@ -646,14 +700,14 @@ fn evaluate_analysis_predicate(
     engine: &mut EvalEngine<'_>,
     context_id: &NodeId,
     predicate: &str,
-) -> Result<bool, String> {
+) -> Result<bool, AnalysisEvalError> {
     if let Some((name, args)) = parse_invocation(predicate) {
         return engine.evaluate_invocation_bool(context_id, name, &args);
     }
     if let Some(identifier) = parse_standalone_identifier(predicate) {
         let outcome = engine.resolve_identifier_value(context_id, identifier);
         if outcome.status != EvalStatus::Ok {
-            return Err(map_analysis_eval_error(outcome.status));
+            return Err(AnalysisEvalError::from_status(outcome.status));
         }
         if let Some(boolean) = outcome.value.as_ref().and_then(Value::as_bool) {
             return Ok(boolean);
@@ -661,11 +715,14 @@ fn evaluate_analysis_predicate(
         if let Some(number) = outcome.value.as_ref().and_then(json_value_to_f64) {
             return Ok(number >= 0.0);
         }
-        return Err("analysis expression predicate is not boolean".to_string());
+        return Err(AnalysisEvalError::with_message(
+            EvalStatus::Unsupported,
+            "analysis expression predicate is not boolean",
+        ));
     }
     let quantity = engine
         .evaluate_quantity_expression(context_id, predicate)
-        .map_err(map_analysis_eval_error)?;
+        .map_err(AnalysisEvalError::from_status)?;
     Ok(quantity.value >= 0.0)
 }
 
@@ -674,35 +731,44 @@ fn compare_quantities(
     left: Quantity,
     op: AnalysisComparisonOp,
     right: Quantity,
-) -> Result<bool, String> {
+) -> Result<bool, AnalysisEvalError> {
     let right_value = match (&left.unit, &right.unit) {
         (None, None) => right.value,
         (Some(left_unit), Some(right_unit)) => {
             match engine.units.convert_value(right.value, right_unit, left_unit) {
                 Ok(converted) => converted,
                 Err(UnitError::IncompatibleDimension) => {
-                    return Err(format!(
+                    return Err(AnalysisEvalError::with_message(
+                        EvalStatus::TypeError,
+                        format!(
                         "analysis comparison has incompatible units: left='{left_unit}', right='{right_unit}'"
+                        ),
                     ))
                 }
-                Err(other) => return Err(map_analysis_eval_error(map_unit_error(other))),
+                Err(other) => return Err(AnalysisEvalError::from_status(map_unit_error(other))),
             }
         }
         (Some(left_unit), None) => {
             if engine.units.has_symbol(left_unit) {
-                return Err(format!(
-                    "analysis comparison mixes dimensioned and unitless values: left='{left_unit}', right='<unitless>'"
+                return Err(AnalysisEvalError::with_message(
+                    EvalStatus::TypeError,
+                    format!(
+                        "analysis comparison mixes dimensioned and unitless values: left='{left_unit}', right='<unitless>'"
+                    ),
                 ));
             }
-            return Err(map_analysis_eval_error(EvalStatus::Unknown));
+            return Err(AnalysisEvalError::from_status(EvalStatus::Unknown));
         }
         (None, Some(right_unit)) => {
             if engine.units.has_symbol(right_unit) {
-                return Err(format!(
-                    "analysis comparison mixes unitless and dimensioned values: left='<unitless>', right='{right_unit}'"
+                return Err(AnalysisEvalError::with_message(
+                    EvalStatus::TypeError,
+                    format!(
+                        "analysis comparison mixes unitless and dimensioned values: left='<unitless>', right='{right_unit}'"
+                    ),
                 ));
             }
-            return Err(map_analysis_eval_error(EvalStatus::Unknown));
+            return Err(AnalysisEvalError::from_status(EvalStatus::Unknown));
         }
     };
     let epsilon = 1e-9;
@@ -723,6 +789,10 @@ fn map_analysis_eval_error(status: EvalStatus) -> String {
         EvalStatus::TypeError => {
             "analysis expression has type or unit mismatch for arithmetic/comparison".to_string()
         }
+        EvalStatus::Incomplete => {
+            "analysis expression depends on declared value(s) that have not been assigned"
+                .to_string()
+        }
         EvalStatus::Unknown => {
             "analysis expression could not be resolved (unresolved variable or value)".to_string()
         }
@@ -730,6 +800,14 @@ fn map_analysis_eval_error(status: EvalStatus) -> String {
         EvalStatus::Unsupported | EvalStatus::Ok => {
             "analysis expression form is not supported".to_string()
         }
+    }
+}
+
+fn prefer_analysis_error(left: AnalysisEvalError, right: AnalysisEvalError) -> AnalysisEvalError {
+    if left.status == EvalStatus::Incomplete || right.status != EvalStatus::Incomplete {
+        left
+    } else {
+        right
     }
 }
 
@@ -778,7 +856,7 @@ impl<'a> EvalEngine<'a> {
         }
         let Some(raw_value) = self.node_source_value(node_id) else {
             return EvalOutcome::error(
-                EvalStatus::Unknown,
+                EvalStatus::Incomplete,
                 format!(
                     "no evaluable expression source found for '{}'",
                     node_id.qualified_name
@@ -839,6 +917,10 @@ impl<'a> EvalEngine<'a> {
             Err(EvalStatus::Unknown) => {
                 EvalOutcome::error(EvalStatus::Unknown, "expression could not be resolved")
             }
+            Err(EvalStatus::Incomplete) => EvalOutcome::error(
+                EvalStatus::Incomplete,
+                "expression depends on unevaluated value",
+            ),
             Err(EvalStatus::Unsupported) | Err(EvalStatus::Ok) => {
                 EvalOutcome::error(EvalStatus::Unsupported, "expression form is not supported")
             }
@@ -966,7 +1048,6 @@ impl<'a> EvalEngine<'a> {
             .get(qualified_name)
             .into_iter()
             .flatten()
-            .filter(|node_id| self.node_source_value(node_id).is_some())
             .cloned()
             .collect()
     }
@@ -1020,20 +1101,32 @@ impl<'a> EvalEngine<'a> {
         context_id: &NodeId,
         callable_name: &str,
         args: &[&str],
-    ) -> Result<bool, String> {
+    ) -> Result<bool, AnalysisEvalError> {
         let normalized_args = normalize_invocation_args(args);
         let callable_id = self
             .resolve_callable_node(context_id, callable_name)
-            .ok_or_else(|| format!("unresolved callable '{callable_name}'"))?;
-        let callable = self
-            .graph
-            .get_node(&callable_id)
-            .ok_or_else(|| format!("unresolved callable '{callable_name}'"))?;
+            .ok_or_else(|| {
+                AnalysisEvalError::with_message(
+                    EvalStatus::Unknown,
+                    format!("unresolved callable '{callable_name}'"),
+                )
+            })?;
+        let callable = self.graph.get_node(&callable_id).ok_or_else(|| {
+            AnalysisEvalError::with_message(
+                EvalStatus::Unknown,
+                format!("unresolved callable '{callable_name}'"),
+            )
+        })?;
         let expression = callable
             .attributes
             .get(ANALYSIS_EXPRESSION_KEY)
             .and_then(Value::as_str)
-            .ok_or_else(|| format!("callable '{callable_name}' has no analysis expression"))?
+            .ok_or_else(|| {
+                AnalysisEvalError::with_message(
+                    EvalStatus::Incomplete,
+                    format!("callable '{callable_name}' has no analysis expression"),
+                )
+            })?
             .to_string();
         let mut param_names = in_parameter_names(callable);
         if param_names.is_empty() && !normalized_args.is_empty() {
@@ -1047,18 +1140,21 @@ impl<'a> EvalEngine<'a> {
                 .first()
                 .map(|arg| format!("; first arg='{arg}'"))
                 .unwrap_or_default();
-            return Err(format!(
-                "callable '{callable_name}' expects {} arguments but got {}{}",
-                param_names.len(),
-                normalized_args.len(),
-                arg_preview
+            return Err(AnalysisEvalError::with_message(
+                EvalStatus::Unsupported,
+                format!(
+                    "callable '{callable_name}' expects {} arguments but got {}{}",
+                    param_names.len(),
+                    normalized_args.len(),
+                    arg_preview
+                ),
             ));
         }
         let mut bindings = HashMap::new();
         for (name, arg_expr) in param_names.iter().zip(normalized_args.iter()) {
             let evaluated = self
                 .evaluate_quantity_expression(context_id, arg_expr)
-                .map_err(map_analysis_eval_error)?;
+                .map_err(AnalysisEvalError::from_status)?;
             bindings.insert(name.clone(), evaluated);
         }
         self.parameter_bindings.push(bindings);

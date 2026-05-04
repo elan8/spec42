@@ -73,6 +73,11 @@ fn compact_whitespace(text: &str) -> String {
 fn text_from_span(uri: &Url, span: &sysml_v2_parser::Span) -> Option<String> {
     let path = uri.to_file_path().ok()?;
     let content = fs::read_to_string(path).ok()?;
+    let end = span.offset.checked_add(span.len)?;
+    if let Some(snippet) = content.get(span.offset..end) {
+        return Some(compact_whitespace(snippet));
+    }
+
     let range = span_to_range(span);
     let start = range.start.line as usize;
     let end = range.end.line as usize;

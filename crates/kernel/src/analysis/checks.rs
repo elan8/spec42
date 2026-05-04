@@ -526,6 +526,17 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
                         node.name
                     ),
                 ));
+            } else if status == "incomplete" {
+                diagnostics.push(diag(
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::INFORMATION,
+                    "semantic",
+                    "analysis_evaluation_incomplete",
+                    format!(
+                        "Analysis constraint(s) on '{}' depend on declared value(s) that have not been assigned.",
+                        node.name
+                    ),
+                ));
             } else if status != "ok" {
                 let detail = node
                     .attributes
