@@ -2465,7 +2465,7 @@ mod tests {
         evaluate_expressions(&mut graph);
         assert_eq!(
             node_attr(&graph, &requirement, ANALYSIS_EVAL_STATUS_KEY),
-            Some(&Value::String(STATUS_UNKNOWN.to_string()))
+            Some(&Value::String(STATUS_TYPE_ERROR.to_string()))
         );
         let message = node_attr(&graph, &requirement, ANALYSIS_EVAL_ERROR_KEY)
             .and_then(Value::as_str)
