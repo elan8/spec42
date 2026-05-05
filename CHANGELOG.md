@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.23.0] - 2026-05-05
+
+### Added
+
+- **Domain libraries as submodules** - Added `domain-libraries` and `examples` as tracked submodules to keep large model content versioned independently while preserving repository reproducibility.
+- **Brace-based folding fallback** - Added LSP folding support that can derive foldable regions from brace structure when AST-driven folding ranges are unavailable.
+- **Incomplete analysis diagnostics** - Added semantic-diagnostic support for incomplete analysis expressions so partially authored models surface clearer feedback during edit loops.
+
+### Changed
+
+- **SysML release alignment** - Updated bundled SysML release references from `2026-02` to `2026-03`.
+- **Parser dependency upgrade** - Updated `sysml-v2-parser` integration to `v0.9.0` and aligned dependent surfaces.
+- **Environment resolution behavior** - Enhanced environment/config/data-directory resolution to better support custom installation layouts.
+- **Submodule/content tracking** - Replaced committed in-repo domain-library/example snapshots with submodule pointers to current upstream content.
+
+### Fixed
+
+- **Semantic evaluation status accuracy** - Corrected semantic evaluation status reporting so type errors are reflected accurately in analysis results.
+
 ## [0.22.0] - 2026-04-30
 
 ### Added
@@ -351,6 +370,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.23.0]: https://github.com/elan8/spec42/releases/tag/v0.23.0
 [0.22.0]: https://github.com/elan8/spec42/releases/tag/v0.22.0
 [0.21.0]: https://github.com/elan8/spec42/releases/tag/v0.21.0
 [0.20.0]: https://github.com/elan8/spec42/releases/tag/v0.20.0
