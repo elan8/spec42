@@ -19,6 +19,12 @@
     "increaseIndentPattern": "^\\s*.*\\{\\s*$",
     "decreaseIndentPattern": "^\\s*\\}"
   },
+  "folding": {
+    "markers": {
+      "start": "^\\s*(abstract\\s+)?(action|analysis|attribute|calc|case|comment|concern|connection|constraint|enumeration|event|feature|interface|item|metadata|namespace|objective|package|part|port|rendering|requirement|stakeholder|state|subject|transition|use|verification|view|viewpoint)(\\s+def)?\\b[^\\n]*\\{\\s*$",
+      "end": "^\\s*\\}\\s*$"
+    }
+  },
   "onEnterRules": [
     {
       "beforeText": "^\\s*.*\\{\\s*$",
