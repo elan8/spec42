@@ -9,6 +9,14 @@ build = "build.rs"
 name = "spec42"
 path = "src/main.rs"
 
+[[bin]]
+name = "spec42-mcp"
+path = "src/bin/spec42_mcp.rs"
+
+[lib]
+name = "spec42"
+path = "src/lib.rs"
+
 [features]
 default = ["embed-stdlib"]
 embed-stdlib = []
@@ -29,6 +37,8 @@ directories = "5"
 toml = "0.8"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 tower-lsp = "0.20"
+rmcp = { workspace = true }
+schemars = { workspace = true }
 
 [dev-dependencies]
 sysml-v2-parser = { workspace = true }

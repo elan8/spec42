@@ -1,0 +1,35 @@
+//! Smoke test: `perform_check` on a bundled example (same engine as `spec42 check` / MCP `spec42_check`).
+
+use std::path::PathBuf;
+
+use spec42::cli::{CheckArgs, Cli, OutputFormat};
+use spec42::perform_check;
+
+#[test]
+fn kitchen_timer_example_validates() {
+    let example = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../examples/timer/KitchenTimer.sysml");
+    let example = example
+        .canonicalize()
+        .unwrap_or_else(|_| panic!("missing example file at {}", example.display()));
+
+    let cli = Cli {
+        config_path: None,
+        library_paths: vec![],
+        stdlib_path: None,
+        no_stdlib: false,
+        stdio: false,
+        command: None,
+    };
+    let args = CheckArgs {
+        path: example,
+        workspace_root: None,
+        format: OutputFormat::Json,
+    };
+
+    let report = perform_check(&cli, &args).expect("validation should run");
+    assert_eq!(
+        report.summary.error_count, 0,
+        "expected no errors in KitchenTimer example"
+    );
+}

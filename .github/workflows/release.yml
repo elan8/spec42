@@ -16,6 +16,7 @@ permissions:
 
 env:
   BINARY_NAME: spec42
+  MCP_BINARY_NAME: spec42-mcp
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
@@ -102,10 +103,12 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           BIN="${{ env.BINARY_NAME }}${{ matrix.binary_ext }}"
+          MCP_BIN="${{ env.MCP_BINARY_NAME }}${{ matrix.binary_ext }}"
           ARCHIVE="${{ env.BINARY_NAME }}-${VERSION}-${{ matrix.package_dir }}.${{ matrix.archive_ext }}"
           mkdir -p staging
           cp "target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}" "staging/$BIN"
-          tar czf "$ARCHIVE" -C staging "$BIN"
+          cp "target/${{ matrix.target }}/release/${{ env.MCP_BINARY_NAME }}" "staging/$MCP_BIN"
+          tar czf "$ARCHIVE" -C staging "$BIN" "$MCP_BIN"
           echo "ARCHIVE_NAME=$ARCHIVE" >> $GITHUB_ENV
 
       - name: Prepare archive (Windows)
@@ -113,7 +116,8 @@ jobs:
         run: |
           $version = "${{ steps.version.outputs.version }}"
           $archive = "${{ env.BINARY_NAME }}-$version-${{ matrix.package_dir }}.zip"
-          Compress-Archive -Path "target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}.exe" -DestinationPath $archive
+          $releaseDir = "target/${{ matrix.target }}/release"
+          Compress-Archive -Path "$releaseDir/${{ env.BINARY_NAME }}.exe", "$releaseDir/${{ env.MCP_BINARY_NAME }}.exe" -DestinationPath $archive
           echo "ARCHIVE_NAME=$archive" >> $env:GITHUB_ENV
         shell: pwsh
 
@@ -306,7 +310,9 @@ jobs:
           cat > RELEASE_NOTES.txt <<EOF
           Release ${TAG}.
           The VS Code extension (.vsix) includes the language server. The Zed extension downloads the matching spec42 server binary automatically, and its source bundle is attached here for convenience.
-          
+
+          Each platform archive includes `spec42` and `spec42-mcp`: the MCP binary is a stdio server exposing `spec42_check`, matching `spec42 check`.
+
           Zed install notes:
           - Download and extract the attached spec42-zed bundle.
           - In Zed, use "Install Dev Extension" and select the extracted zed directory.
