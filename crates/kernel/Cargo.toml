@@ -11,6 +11,7 @@ name = "kernel"
 
 [dependencies]
 plugins = { path = "../plugins" }
+semantic_core = { path = "../semantic_core" }
 sysml-v2-parser = { workspace = true }
 petgraph = { workspace = true }
 tower-lsp = "0.20"

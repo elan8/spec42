@@ -2,6 +2,14 @@
 
 Guidance for building, testing, and contributing to Spec42.
 
+## Semantic Core Reuse
+
+The reusable semantic-model logic is now available in `crates/semantic_core`.
+
+- `semantic_core` contains reusable semantic graph primitives and resolver/evaluation modules.
+- `kernel` remains the runtime integration layer (LSP handlers, workspace orchestration, DTO/view assembly, parser-to-graph build flow).
+- Keep new reusable semantic logic in `semantic_core`; keep protocol/runtime-specific logic in `kernel`.
+
 ## LSP Server Structure
 
 The LSP implementation is progressively being split by concern to reduce `lsp_server.rs` churn and make feature work easier to isolate.

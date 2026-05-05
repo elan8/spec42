@@ -1,0 +1,13 @@
+[package]
+name = "semantic_core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Reusable semantic model core for Spec42"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+petgraph = { workspace = true }
+tower-lsp = "0.20"
