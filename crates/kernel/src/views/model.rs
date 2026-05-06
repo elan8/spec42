@@ -499,10 +499,10 @@ pub async fn build_sysml_model_response(
 
     let sequence_diagrams_start = Instant::now();
     let sequence_diagrams = if want_sequence_diagrams {
-        Some(
-            doc.map(model::extract_sequence_diagrams)
-                .unwrap_or_default(),
-        )
+        Some(crate::views::sequence_views::build_workspace_sequence_diagrams(
+            semantic_graph,
+            std::slice::from_ref(uri),
+        ))
     } else {
         None
     };

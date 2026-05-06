@@ -1352,7 +1352,7 @@ pub(crate) fn build_sysml_visualization_response(
             .collect(),
     );
     let full_activity_diagrams = build_workspace_activity_diagrams(index, &workspace_uris, None);
-    let full_sequence_diagrams = build_workspace_sequence_diagrams(index, &workspace_uris);
+    let full_sequence_diagrams = build_workspace_sequence_diagrams(semantic_graph, &workspace_uris);
     let catalog = explicit_views::build_view_catalog(index, &workspace_uris);
 
     if catalog.usages.is_empty() {
@@ -1572,11 +1572,13 @@ pub(crate) fn build_sysml_visualization_response(
 #[cfg(test)]
 mod tests {
     use std::collections::{HashMap, HashSet};
+    use std::path::PathBuf;
 
     use super::{
         attach_ibd_package_container_groups, build_ibd_package_container_groups,
         build_package_groups_from_graph, build_software_project_view_response,
         build_software_visualization_response, build_software_workspace_model_dto,
+        build_sysml_visualization_for_paths,
         build_workspace_activity_diagrams, parse_software_analyze_workspace_params,
         parse_software_project_view_params, parse_software_visualization_params,
         parse_sysml_visualization_params, select_interconnection_ibd_scope,
@@ -2319,5 +2321,28 @@ mod tests {
             .edges
             .iter()
             .any(|edge| edge.rel_type == "use"));
+    }
+
+    #[test]
+    fn webshop_sequence_view_includes_sequence_diagrams() {
+        let workspace_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../domain-libraries/technical/software/examples/webshop");
+        let response = build_sysml_visualization_for_paths(
+            &workspace_path,
+            Some(&workspace_path),
+            &[],
+            "sequence-view",
+            Some("checkoutFlow"),
+        )
+        .expect("build visualization response");
+
+        assert_eq!(response.view, "sequence-view");
+        let diagrams = response
+            .sequence_diagrams
+            .expect("sequence diagrams payload should be present");
+        assert!(
+            !diagrams.is_empty(),
+            "expected webshop SequenceView to produce at least one sequence diagram"
+        );
     }
 }
