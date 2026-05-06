@@ -5,6 +5,7 @@
 //! subtypes, and reference resolution all participate.
 
 use std::collections::HashSet;
+use std::env;
 
 use tower_lsp::lsp_types::Url;
 
@@ -14,8 +15,8 @@ use crate::workspace::{rebuild_all_document_links, store_document_text, ServerSt
 use super::build_workspace_sequence_diagrams;
 
 fn fake_uri(name: &str) -> Url {
-    let path = format!("c:/test-spec42/{name}");
-    Url::from_file_path(path).expect("file uri")
+    let path = env::temp_dir().join("spec42-tests").join(name);
+    Url::from_file_path(&path).expect("file uri")
 }
 
 fn build_state(files: &[(&str, &str)]) -> (ServerState, Vec<Url>) {
