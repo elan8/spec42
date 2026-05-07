@@ -9,8 +9,72 @@ mod lsp_runtime;
 pub(crate) use semantic::root_element::root_element_body;
 
 pub mod semantic_tokens;
+#[cfg(feature = "software-architecture")]
 pub mod software_architecture {
     pub use plugins::software_architecture::*;
+}
+#[cfg(not(feature = "software-architecture"))]
+pub mod software_architecture {
+    use std::path::Path;
+    use tower_lsp::lsp_types::Range;
+
+    #[derive(Debug, Clone, PartialEq, Eq)]
+    pub struct SourceAnchor {
+        pub file_path: String,
+        pub range: Option<Range>,
+    }
+
+    #[derive(Debug, Clone, PartialEq, Eq, Default)]
+    pub struct SoftwareComponent {
+        pub id: String,
+        pub name: String,
+        pub kind: String,
+        pub parent_id: Option<String>,
+        pub crate_name: String,
+        pub module_path: String,
+        pub anchors: Vec<SourceAnchor>,
+        pub is_external: bool,
+    }
+
+    #[derive(Debug, Clone, PartialEq, Eq, Default)]
+    pub struct SoftwareDependency {
+        pub from: String,
+        pub to: String,
+        pub kind: String,
+        pub source_anchor: Option<SourceAnchor>,
+    }
+
+    #[derive(Debug, Clone, PartialEq, Eq, Default)]
+    pub struct SoftwareArchitectureModel {
+        pub components: Vec<SoftwareComponent>,
+        pub dependencies: Vec<SoftwareDependency>,
+    }
+
+    #[derive(Debug, Clone, PartialEq, Eq, Default)]
+    pub struct SoftwareAnalysisSummary {
+        pub crate_count: usize,
+        pub module_count: usize,
+        pub dependency_count: usize,
+    }
+
+    #[derive(Debug, Clone, PartialEq, Eq, Default)]
+    pub struct SoftwareWorkspaceModel {
+        pub workspace_root: String,
+        pub architecture: SoftwareArchitectureModel,
+        pub summary: SoftwareAnalysisSummary,
+    }
+
+    pub fn workspace_contains_rust_code(_workspace_root: &Path) -> bool {
+        false
+    }
+
+    pub fn analyze_rust_workspace(workspace_root: &Path) -> SoftwareWorkspaceModel {
+        SoftwareWorkspaceModel {
+            workspace_root: workspace_root.display().to_string(),
+            architecture: SoftwareArchitectureModel::default(),
+            summary: SoftwareAnalysisSummary::default(),
+        }
+    }
 }
 pub mod semantic;
 pub mod syntax;

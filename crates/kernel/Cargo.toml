@@ -9,8 +9,12 @@ description = "Core library for Spec42 LSP server: semantic model, DTOs, extensi
 [lib]
 name = "kernel"
 
+[features]
+default = ["software-architecture"]
+software-architecture = ["dep:plugins", "dep:tree-sitter", "dep:tree-sitter-rust"]
+
 [dependencies]
-plugins = { path = "../plugins" }
+plugins = { path = "../plugins", optional = true }
 semantic_core = { path = "../semantic_core" }
 sysml-v2-parser = { workspace = true }
 petgraph = { workspace = true }
@@ -24,8 +28,8 @@ clap = { workspace = true }
 tempfile = "3.27.0"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
-tree-sitter = "0.20"
-tree-sitter-rust = "0.20"
+tree-sitter = { version = "0.20", optional = true }
+tree-sitter-rust = { version = "0.20", optional = true }
 toml = "0.8"
 glob = "0.3"
 
