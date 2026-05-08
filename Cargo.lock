@@ -797,8 +797,6 @@ dependencies = [
  "tower-lsp",
  "tracing",
  "tracing-subscriber",
- "tree-sitter",
- "tree-sitter-rust",
  "url",
  "walkdir",
 ]
@@ -1460,7 +1458,6 @@ dependencies = [
  "clap",
  "directories",
  "kernel",
- "plugins",
  "rmcp",
  "schemars",
  "serde",

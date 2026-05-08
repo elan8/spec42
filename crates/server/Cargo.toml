@@ -28,7 +28,6 @@ zip = { version = "2", default-features = false, features = ["deflate"] }
 
 [dependencies]
 kernel = { path = "../kernel" }
-plugins = { path = "../plugins" }
 tokio = { version = "1", features = ["full"] }
 serde_json = { workspace = true }
 clap = { workspace = true }

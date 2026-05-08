@@ -1973,16 +1973,21 @@ mod tests {
             .views
             .iter()
             .any(|candidate| candidate.id == SOFTWARE_DEPENDENCY_VIEW));
-        assert!(response
-            .graph
-            .nodes
-            .iter()
-            .any(|node| node.name == "demo_app"));
-        assert!(response
-            .software_architecture
-            .components
-            .iter()
-            .any(|component| component.name == "demo_app"));
+        if cfg!(feature = "software-architecture") {
+            assert!(response
+                .graph
+                .nodes
+                .iter()
+                .any(|node| node.name == "demo_app"));
+            assert!(response
+                .software_architecture
+                .components
+                .iter()
+                .any(|component| component.name == "demo_app"));
+        } else {
+            assert!(response.graph.nodes.is_empty());
+            assert!(response.software_architecture.components.is_empty());
+        }
     }
 
     #[test]
