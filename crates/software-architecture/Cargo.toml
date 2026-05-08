@@ -10,7 +10,9 @@ description = "Plugin crate for optional Spec42 add-ons"
 name = "software_architecture"
 
 [dependencies]
+kernel = { path = "../kernel" }
 glob = "0.3"
+serde = { workspace = true }
 serde_json = { workspace = true }
 tempfile = "3.27.0"
 toml = "0.8"

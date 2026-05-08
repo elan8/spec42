@@ -788,7 +788,6 @@ dependencies = [
  "semantic_core",
  "serde",
  "serde_json",
- "software-architecture",
  "sysml-v2-parser",
  "tempfile",
  "thiserror 2.0.18",
@@ -1442,6 +1441,8 @@ name = "software-architecture"
 version = "0.23.0"
 dependencies = [
  "glob",
+ "kernel",
+ "serde",
  "serde_json",
  "tempfile",
  "toml",
@@ -1463,6 +1464,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
+ "software-architecture",
  "sysml-v2-parser",
  "tempfile",
  "tokio",

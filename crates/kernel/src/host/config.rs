@@ -2,6 +2,7 @@
 
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::time::Instant;
 use tower_lsp::lsp_types::{Diagnostic, ServerCapabilities, Url};
 
 use crate::semantic::SemanticGraph;
@@ -34,6 +35,35 @@ pub trait CapabilityAugmenter: Send + Sync {
 pub trait CustomMethodProvider: Send + Sync {
     /// Returns custom JSON-RPC method names introduced by this provider.
     fn custom_method_names(&self) -> Vec<String>;
+}
+
+#[derive(Clone, Copy)]
+pub struct CustomRpcContext<'a> {
+    pub config: &'a Spec42Config,
+    pub server_name: &'a str,
+    pub server_start_time: Instant,
+}
+
+/// Generic custom JSON-RPC provider contract.
+///
+/// Hosts can register one or more providers from composition crates.
+/// Kernel stays plugin-agnostic and only dispatches by method name.
+pub trait CustomRpcProvider: Send + Sync {
+    /// Returns custom JSON-RPC method names introduced by this provider.
+    fn custom_method_names(&self) -> Vec<String>;
+
+    /// Attempt handling a custom RPC method.
+    ///
+    /// Returns:
+    /// - `Ok(Some(value))` when method was handled successfully
+    /// - `Ok(None)` when method is not handled by this provider
+    /// - `Err(...)` when method matches but handling fails
+    fn try_handle(
+        &self,
+        method: &str,
+        params: serde_json::Value,
+        context: CustomRpcContext<'_>,
+    ) -> tower_lsp::jsonrpc::Result<Option<serde_json::Value>>;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -96,6 +126,8 @@ pub struct Spec42Config {
     pub capability_augmenters: Vec<Arc<dyn CapabilityAugmenter>>,
     /// Optional custom-method declaration providers for additive host composition.
     pub custom_method_providers: Vec<Arc<dyn CustomMethodProvider>>,
+    /// Optional custom JSON-RPC method handlers for plugin composition.
+    pub custom_rpc_providers: Vec<Arc<dyn CustomRpcProvider>>,
     /// Optional validation pipeline hooks for host-side behavior.
     pub pipeline_hooks: Vec<PipelineHook>,
 }
@@ -110,6 +142,7 @@ impl std::fmt::Debug for Spec42Config {
                 "custom_method_providers",
                 &self.custom_method_providers.len(),
             )
+            .field("custom_rpc_providers", &self.custom_rpc_providers.len())
             .field("pipeline_hooks", &self.pipeline_hooks.len())
             .finish()
     }
@@ -138,6 +171,12 @@ impl Spec42Config {
         self
     }
 
+    /// Add a custom RPC provider.
+    pub fn with_custom_rpc_provider(mut self, p: Arc<dyn CustomRpcProvider>) -> Self {
+        self.custom_rpc_providers.push(p);
+        self
+    }
+
     /// Add a validation pipeline hook.
     pub fn with_pipeline_hook(mut self, hook: PipelineHook) -> Self {
         self.pipeline_hooks.push(hook);
@@ -154,6 +193,17 @@ impl Spec42Config {
     pub fn extra_custom_method_names(&self) -> Vec<String> {
         let mut names = Vec::new();
         for provider in &self.custom_method_providers {
+            names.extend(provider.custom_method_names());
+        }
+        names.sort();
+        names.dedup();
+        names
+    }
+
+    /// Returns custom method names contributed by RPC providers.
+    pub fn custom_rpc_method_names(&self) -> Vec<String> {
+        let mut names = Vec::new();
+        for provider in &self.custom_rpc_providers {
             names.extend(provider.custom_method_names());
         }
         names.sort();

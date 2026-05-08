@@ -12,6 +12,7 @@ mod symbols;
 
 use std::sync::Arc;
 use std::time::Instant;
+use std::{future::Future, pin::Pin};
 
 use tokio::sync::RwLock;
 use tower_lsp::jsonrpc::Result;
@@ -449,6 +450,37 @@ impl Backend {
         let state = self.state.read().await;
         sysml_library_search_result(&state, params)
     }
+
+    async fn custom_rpc_method(
+        &self,
+        method: &'static str,
+        params: serde_json::Value,
+    ) -> Result<serde_json::Value> {
+        let context = crate::CustomRpcContext {
+            config: self.config.as_ref(),
+            server_name: &self.server_name,
+            server_start_time: self.start_time,
+        };
+        for provider in &self.config.custom_rpc_providers {
+            if let Some(result) = provider.try_handle(method, params.clone(), context)? {
+                return Ok(result);
+            }
+        }
+        Err(tower_lsp::jsonrpc::Error::method_not_found())
+    }
+}
+
+fn make_custom_rpc_handler(
+    method_name: &'static str,
+) -> impl for<'a> Fn(
+    &'a Backend,
+    serde_json::Value,
+) -> Pin<Box<dyn Future<Output = Result<serde_json::Value>> + Send + 'a>>
+    + Clone
+    + Send
+    + Sync
+    + 'static {
+    move |backend: &Backend, params| Box::pin(backend.custom_rpc_method(method_name, params))
 }
 
 pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
@@ -457,11 +489,13 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     let state = Arc::new(RwLock::new(ServerState::default()));
     let start_time = Instant::now();
     let server_name = server_name.to_string();
+    let custom_rpc_methods = config.custom_rpc_method_names();
+    let runtime_config = Arc::clone(&config);
 
-    let (service, socket) = LspService::build(move |client| Backend {
+    let mut builder = LspService::build(move |client| Backend {
         client,
         state: Arc::clone(&state),
-        config: Arc::clone(&config),
+        config: Arc::clone(&runtime_config),
         start_time,
         server_name: server_name.clone(),
     })
@@ -470,8 +504,14 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     .custom_method("sysml/featureInspector", Backend::sysml_feature_inspector)
     .custom_method("sysml/serverStats", Backend::sysml_server_stats)
     .custom_method("sysml/clearCache", Backend::sysml_clear_cache)
-    .custom_method("sysml/librarySearch", Backend::sysml_library_search)
-    .finish();
+    .custom_method("sysml/librarySearch", Backend::sysml_library_search);
+
+    for method in custom_rpc_methods {
+        let method_name: &'static str = Box::leak(method.into_boxed_str());
+        builder = builder.custom_method(method_name, make_custom_rpc_handler(method_name));
+    }
+
+    let (service, socket) = builder.finish();
 
     Server::new(stdin, stdout, socket).serve(service).await;
 }

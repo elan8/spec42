@@ -18,7 +18,7 @@ pub(crate) mod workspace;
 // Host contract exports (intended stable composition surface for edition hosts).
 pub use host::config::{
     CapabilityAugmenter, CapabilityMetadata, CapabilityProvider, CheckProvider,
-    CustomMethodProvider, PipelineHook, SemanticCheckProvider, Spec42Config,
+    CustomMethodProvider, CustomRpcContext, CustomRpcProvider, PipelineHook, SemanticCheckProvider, Spec42Config,
     ValidationPipelineHook, KERNEL_INTERFACE_VERSION,
 };
 pub use host::default_config::default_config as default_server_config;
