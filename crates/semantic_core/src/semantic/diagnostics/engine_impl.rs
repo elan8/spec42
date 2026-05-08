@@ -3,7 +3,7 @@
 //! These checks use the semantic graph (parts, ports, connections) to report
 //! diagnostics such as: unconnected ports, connection to non-port, port type mismatch.
 
-use std::collections::HashSet;
+use std::{collections::{HashMap, HashSet}, time::Instant};
 use url::Url;
 
 use crate::semantic::diagnostics::helpers::*;
@@ -12,12 +12,61 @@ use crate::{resolve_member_via_type, NodeId, RelationshipKind, ResolveResult, Se
 use crate::semantic::diagnostics::checks::builder_diagnostics::should_suppress_builder_diagnostic;
 use crate::semantic::diagnostics::checks::import_resolution::{has_import_in_scope, import_target, import_target_resolves};
 
+const RULE6_ALLOWED_KINDS: &[&str] = &[
+    "part def",
+    "port def",
+    "interface",
+    "item def",
+    "attribute def",
+    "action def",
+    "actor def",
+    "occurrence def",
+    "flow def",
+    "allocation def",
+    "state def",
+    "requirement def",
+    "use case def",
+    "concern def",
+    "enum def",
+    "alias",
+    "kermlDecl",
+];
+
+const RULE7_ALLOWED_KINDS: &[&str] = &[
+    "part def",
+    "port def",
+    "action def",
+    "state def",
+    "flow def",
+    "allocation def",
+    "requirement def",
+    "use case def",
+    "attribute def",
+    "enum def",
+    "item def",
+    "actor def",
+    "occurrence def",
+    "interface",
+    "concern def",
+    "alias",
+    "kermlDecl",
+];
+
 /// Returns LSP diagnostics for semantic rules in the given document.
 /// Only runs when the document has been parsed and merged into the graph.
 pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<SemanticDiagnostic> {
     let mut diagnostics = Vec::new();
+    let total_start = Instant::now();
+    let mut section_timings = Vec::<(String, u128, usize)>::new();
+    let mut import_scope_cache = HashMap::<String, bool>::new();
+    let mut rule6_resolution_cache = HashMap::<(String, String), bool>::new();
+    let mut rule7_resolution_cache = HashMap::<(String, String), bool>::new();
+    let mut rule6_graph_name_fallback_cache = HashMap::<String, bool>::new();
+    let mut rule7_graph_name_fallback_cache = HashMap::<String, bool>::new();
 
     // 0) Explicit builder diagnostics (e.g. ambiguous endpoint resolution).
+    let t0 = Instant::now();
+    let d0 = diagnostics.len();
     for node in graph.nodes_for_uri(uri) {
         if node.element_kind != "diagnostic" {
             continue;
@@ -44,8 +93,15 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             message,
         ));
     }
+    section_timings.push((
+        "0_builder_diagnostics".to_string(),
+        t0.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d0),
+    ));
 
     // 1) Connection endpoints must be ports; port types must be compatible
+    let t1 = Instant::now();
+    let d1 = diagnostics.len();
     let connection_occurrences = graph.connection_edge_occurrences_for_uri(uri);
     for (src_id, tgt_id, connection_range) in connection_occurrences {
         if let (Some(src), Some(tgt)) = (graph.get_node(&src_id), graph.get_node(&tgt_id)) {
@@ -86,8 +142,15 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             }
         }
     }
+    section_timings.push((
+        "1_connection_endpoints_and_port_compatibility".to_string(),
+        t1.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d1),
+    ));
 
     // 2) Unconnected ports (ports in this URI that are not an endpoint of any connection)
+    let t2 = Instant::now();
+    let d2 = diagnostics.len();
     let connected_port_keys: HashSet<String> = graph
         .connection_edge_node_pairs_for_uri(uri)
         .into_iter()
@@ -116,8 +179,15 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             ));
         }
     }
+    section_timings.push((
+        "2_unconnected_ports".to_string(),
+        t2.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d2),
+    ));
 
     // 3) Duplicate connections (same pair of endpoints connected more than once)
+    let t3 = Instant::now();
+    let d3 = diagnostics.len();
     let mut seen_pairs: HashSet<(NodeId, NodeId)> = HashSet::new();
     for (src_id, tgt_id) in graph.connection_edge_node_pairs_for_uri(uri) {
         let pair = normalize_edge_pair(&src_id, &tgt_id);
@@ -133,8 +203,15 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             }
         }
     }
+    section_timings.push((
+        "3_duplicate_connections".to_string(),
+        t3.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d3),
+    ));
 
     // 4) Multiplicity validation (syntax and interval sanity)
+    let t4 = Instant::now();
+    let d4 = diagnostics.len();
     for node in graph.nodes_for_uri(uri) {
         if let Some(multiplicity) = node.attributes.get("multiplicity").and_then(|v| v.as_str()) {
             if let Some(message) = multiplicity_issue_message(multiplicity) {
@@ -148,8 +225,15 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             }
         }
     }
+    section_timings.push((
+        "4_multiplicity_validation".to_string(),
+        t4.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d4),
+    ));
 
     // 5) Import targets should resolve to known namespace/member declarations.
+    let t5 = Instant::now();
+    let d5 = diagnostics.len();
     for node in graph.nodes_for_uri(uri) {
         if node.element_kind != "import" || import_target_resolves(graph, node) {
             continue;
@@ -168,8 +252,15 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             ),
         ));
     }
+    section_timings.push((
+        "5_unresolved_import_targets".to_string(),
+        t5.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d5),
+    ));
 
     // 6) Stronger typing checks: declarations that name a type should resolve via typing/specializes.
+    let t6 = Instant::now();
+    let d6 = diagnostics.len();
     let mut unresolved_seen: HashSet<String> = HashSet::new();
     for node in graph.nodes_for_uri(uri) {
         if is_synthetic(node) {
@@ -185,59 +276,51 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         let has_resolved_type = !graph
             .outgoing_typing_or_specializes_targets(node)
             .is_empty();
-        let resolved_via_import_scope = !crate::resolve_type_reference_targets(
-            graph,
-            node,
-            type_ref,
-            &[
-                "part def",
-                "port def",
-                "interface",
-                "item def",
-                "attribute def",
-                "action def",
-                "actor def",
-                "occurrence def",
-                "flow def",
-                "allocation def",
-                "state def",
-                "requirement def",
-                "use case def",
-                "concern def",
-                "enum def",
-                "alias",
-                "kermlDecl",
-            ],
-        )
-        .is_empty();
-        let resolved_via_graph_name_fallback =
-            graph
-                .nodes_named(&normalized_type_ref)
-                .iter()
-                .any(|candidate| {
-                    candidate.id.uri == *uri
-                        && matches!(
-                            candidate.element_kind.as_str(),
-                            "part def"
-                                | "port def"
-                                | "interface"
-                                | "item def"
-                                | "attribute def"
-                                | "action def"
-                                | "actor def"
-                                | "occurrence def"
-                                | "flow def"
-                                | "allocation def"
-                                | "state def"
-                                | "requirement def"
-                                | "use case def"
-                                | "concern def"
-                                | "enum def"
-                                | "alias"
-                                | "kermlDecl"
-                        )
-                });
-        let allow_graph_name_fallback = !has_import_in_scope(graph, node);
+        let resolved_via_import_scope = *rule6_resolution_cache
+            .entry((node.id.qualified_name.clone(), normalized_type_ref.clone()))
+            .or_insert_with(|| {
+                !crate::resolve_type_reference_targets(
+                    graph,
+                    node,
+                    type_ref,
+                    RULE6_ALLOWED_KINDS,
+                )
+                .is_empty()
+            });
+        let allow_graph_name_fallback = !*import_scope_cache
+            .entry(node.id.qualified_name.clone())
+            .or_insert_with(|| has_import_in_scope(graph, node));
+        let resolved_via_graph_name_fallback = if allow_graph_name_fallback {
+            *rule6_graph_name_fallback_cache
+                .entry(normalized_type_ref.clone())
+                .or_insert_with(|| {
+                    graph.nodes_named(&normalized_type_ref).iter().any(|candidate| {
+                        candidate.id.uri == *uri
+                            && matches!(
+                                candidate.element_kind.as_str(),
+                                "part def"
+                                    | "port def"
+                                    | "interface"
+                                    | "item def"
+                                    | "attribute def"
+                                    | "action def"
+                                    | "actor def"
+                                    | "occurrence def"
+                                    | "flow def"
+                                    | "allocation def"
+                                    | "state def"
+                                    | "requirement def"
+                                    | "use case def"
+                                    | "concern def"
+                                    | "enum def"
+                                    | "alias"
+                                    | "kermlDecl"
+                            )
+                    })
+                })
+        } else {
+            false
+        };
         if has_resolved_type
             || resolved_via_import_scope
             || (allow_graph_name_fallback && resolved_via_graph_name_fallback)
@@ -272,8 +355,15 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         ));
 
     }
+    section_timings.push((
+        "6_unresolved_type_references".to_string(),
+        t6.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d6),
+    ));
 
     // 7) Specialization references should resolve to known definitions.
+    let t7 = Instant::now();
+    let d7 = diagnostics.len();
     let mut unresolved_specializes_seen: HashSet<String> = HashSet::new();
     for node in graph.nodes_for_uri(uri) {
         if is_synthetic(node) {
@@ -284,56 +374,51 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             if normalized.is_empty() || is_builtin_type_ref(&normalized) {
                 continue;
             }
-            let resolved_via_import_scope = !crate::resolve_type_reference_targets(
-                graph,
-                node,
-                &specializes_ref,
-                &[
-                    "part def",
-                    "port def",
-                    "action def",
-                    "state def",
-                    "flow def",
-                    "allocation def",
-                    "requirement def",
-                    "use case def",
-                    "attribute def",
-                    "enum def",
-                    "item def",
-                    "actor def",
-                    "occurrence def",
-                    "interface",
-                    "concern def",
-                    "alias",
-                    "kermlDecl",
-                ],
-            )
-            .is_empty();
-            let resolved_via_graph_name_fallback =
-                graph.nodes_named(&normalized).iter().any(|candidate| {
-                    candidate.id.uri == *uri
-                        && matches!(
-                            candidate.element_kind.as_str(),
-                            "part def"
-                                | "port def"
-                                | "action def"
-                                | "state def"
-                                | "flow def"
-                                | "allocation def"
-                                | "requirement def"
-                                | "use case def"
-                                | "attribute def"
-                                | "enum def"
-                                | "item def"
-                                | "actor def"
-                                | "occurrence def"
-                                | "interface"
-                                | "concern def"
-                                | "alias"
-                                | "kermlDecl"
-                        )
+            let resolved_via_import_scope = *rule7_resolution_cache
+                .entry((node.id.qualified_name.clone(), normalized.clone()))
+                .or_insert_with(|| {
+                    !crate::resolve_type_reference_targets(
+                        graph,
+                        node,
+                        &specializes_ref,
+                        RULE7_ALLOWED_KINDS,
+                    )
+                    .is_empty()
                 });
-            let allow_graph_name_fallback = !has_import_in_scope(graph, node);
+            let allow_graph_name_fallback = !*import_scope_cache
+                .entry(node.id.qualified_name.clone())
+                .or_insert_with(|| has_import_in_scope(graph, node));
+            let resolved_via_graph_name_fallback = if allow_graph_name_fallback {
+                *rule7_graph_name_fallback_cache
+                    .entry(normalized.clone())
+                    .or_insert_with(|| {
+                        graph.nodes_named(&normalized).iter().any(|candidate| {
+                            candidate.id.uri == *uri
+                                && matches!(
+                                    candidate.element_kind.as_str(),
+                                    "part def"
+                                        | "port def"
+                                        | "action def"
+                                        | "state def"
+                                        | "flow def"
+                                        | "allocation def"
+                                        | "requirement def"
+                                        | "use case def"
+                                        | "attribute def"
+                                        | "enum def"
+                                        | "item def"
+                                        | "actor def"
+                                        | "occurrence def"
+                                        | "interface"
+                                        | "concern def"
+                                        | "alias"
+                                        | "kermlDecl"
+                                )
+                        })
+                    })
+            } else {
+                false
+            };
             if resolved_via_import_scope
                 || (allow_graph_name_fallback && resolved_via_graph_name_fallback)
             {
@@ -367,8 +452,15 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             ));
         }
     }
+    section_timings.push((
+        "7_unresolved_specializes_references".to_string(),
+        t7.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d7),
+    ));
 
     // 8) Redefines consistency, when the parser/graph captures a `redefines` attribute.
+    let t8 = Instant::now();
+    let d8 = diagnostics.len();
     for node in graph.nodes_for_uri(uri) {
         let Some(redefines_raw) = node.attributes.get("redefines").and_then(|v| v.as_str()) else {
             continue;
@@ -393,8 +485,15 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             ));
         }
     }
+    section_timings.push((
+        "8_redefines_consistency".to_string(),
+        t8.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d8),
+    ));
 
     // 9) Inherited feature value assignment must use explicit redefinition (`:>>`).
+    let t9 = Instant::now();
+    let d9 = diagnostics.len();
     for node in graph.nodes_for_uri(uri) {
         if !node.attributes.contains_key("value") || node.attributes.contains_key("redefines") {
             continue;
@@ -434,8 +533,15 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             ),
         ));
     }
+    section_timings.push((
+        "9_implicit_redefinition_without_operator".to_string(),
+        t9.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d9),
+    ));
 
     // 10) Allocation usage conformance checks.
+    let t10 = Instant::now();
+    let d10 = diagnostics.len();
     for node in graph.nodes_for_uri(uri) {
         if node.element_kind != "allocation" {
             continue;
@@ -480,8 +586,15 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             ));
         }
     }
+    section_timings.push((
+        "10_allocation_conformance".to_string(),
+        t10.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d10),
+    ));
 
     // 11) Verdict normalization and domain validation.
+    let t11 = Instant::now();
+    let d11 = diagnostics.len();
     for node in graph.nodes_for_uri(uri) {
         let is_definition_only_analysis =
             matches!(node.element_kind.as_str(), "constraint def" | "calc def");
@@ -540,8 +653,15 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             }
         }
     }
+    section_timings.push((
+        "11_analysis_evaluation_status".to_string(),
+        t11.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d11),
+    ));
 
     // 12) Verdict normalization and domain validation.
+    let t12 = Instant::now();
+    let d12 = diagnostics.len();
     for node in graph.nodes_for_uri(uri) {
         if node.element_kind != "verdict" {
             continue;
@@ -573,8 +693,15 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             ));
         }
     }
+    section_timings.push((
+        "12_verdict_domain_validation".to_string(),
+        t12.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d12),
+    ));
 
     // 13) Case-kind objective binding diagnostics.
+    let t13 = Instant::now();
+    let d13 = diagnostics.len();
     for node in graph.nodes_for_uri(uri) {
         if node.element_kind != "objective" {
             continue;
@@ -603,6 +730,26 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             ),
         ));
     }
+    section_timings.push((
+        "13_objective_binding".to_string(),
+        t13.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d13),
+    ));
+
+    section_timings.sort_by(|a, b| b.1.cmp(&a.1));
+    let top_sections = section_timings
+        .iter()
+        .take(6)
+        .map(|(name, ms, count)| format!("{name}:{ms}ms:{count}diag"))
+        .collect::<Vec<_>>()
+        .join(" | ");
+    println!(
+        "TIMING semantic_diag_rule_breakdown uri={} total_ms={} total_diags={} top6={}",
+        uri,
+        total_start.elapsed().as_millis(),
+        diagnostics.len(),
+        top_sections
+    );
 
     diagnostics
 }
