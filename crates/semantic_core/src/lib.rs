@@ -19,4 +19,7 @@ pub use semantic::relationships::{
     add_cross_document_edges_for_uri, resolve_cross_document_edges_for_uri,
 };
 pub use semantic::root_element::root_element_body;
+pub use semantic::visualization_entry::{
+    build_sysml_visualization_for_paths, SysmlVisualizationResultLite,
+};
 pub use semantic::workspace_graph::{build_semantic_graph_for_paths, WorkspaceParsedDocument};
