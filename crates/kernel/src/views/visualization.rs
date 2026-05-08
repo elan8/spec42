@@ -1287,12 +1287,18 @@ mod tests {
             !semantic_core_response.view_candidates.is_empty(),
             "semantic_core should surface at least one candidate"
         );
-        assert!(
+        assert_eq!(
+            kernel_response
+                .view_candidates
+                .iter()
+                .map(|candidate| candidate.id.clone())
+                .collect::<Vec<_>>(),
             semantic_core_response
                 .view_candidates
                 .iter()
-                .any(|candidate| candidate.name == "General View"),
-            "semantic_core graph-first API should include baseline General View candidate"
+                .map(|candidate| candidate.id.clone())
+                .collect::<Vec<_>>(),
+            "semantic_core graph-first API should align with kernel view candidates"
         );
     }
 }
