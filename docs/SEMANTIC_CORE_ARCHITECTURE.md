@@ -145,6 +145,9 @@ Core boundary notes:
 
 - `semantic_core` now uses neutral core span types (`TextPosition`, `TextRange`) and `url::Url`.
 - LSP-specific mappings happen in `kernel` boundary adapters only.
+- Semantic diagnostics rule evaluation is owned by `semantic_core::semantic::diagnostics`.
+- `kernel` diagnostics code is limited to parser/runtime orchestration plus mapping
+  `SemanticDiagnostic` to `tower_lsp::lsp_types::Diagnostic`.
 
 ## Extension Guidance
 

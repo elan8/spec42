@@ -1,5 +1,26 @@
 use crate::{SemanticGraph, SemanticNode};
 
+pub(crate) fn has_import_in_scope(
+    graph: &SemanticGraph,
+    node: &SemanticNode,
+) -> bool {
+    let mut current = Some(node.id.clone());
+    while let Some(node_id) = current {
+        let Some(scope_node) = graph.get_node(&node_id) else {
+            break;
+        };
+        if graph
+            .children_of(scope_node)
+            .into_iter()
+            .any(|child| child.element_kind == "import")
+        {
+            return true;
+        }
+        current = scope_node.parent_id.clone();
+    }
+    false
+}
+
 fn is_namespace_kind(kind: &str) -> bool {
     matches!(
         kind,

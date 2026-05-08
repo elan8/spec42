@@ -1,32 +1,23 @@
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString};
+use crate::semantic::diagnostics::types::{DiagnosticSeverity, SemanticDiagnostic};
 
-use crate::common::text_span::to_lsp_range;
-use crate::semantic::{NodeId, SemanticGraph, SemanticNode};
-use semantic_core::{TextPosition, TextRange};
-use crate::views::ibd;
+
+use crate::{NodeId, SemanticGraph, SemanticNode, TextPosition, TextRange};
+
+use crate::semantic::ibd;
 
 pub(super) fn is_port_like(kind: &str) -> bool {
     ibd::is_port_like(kind)
 }
 
 pub(super) fn diag(
+    uri: &url::Url,
     range: TextRange,
     severity: DiagnosticSeverity,
     source: &str,
     code: &str,
     message: String,
-) -> Diagnostic {
-    Diagnostic {
-        range: to_lsp_range(range),
-        severity: Some(severity),
-        code: Some(NumberOrString::String(code.to_string())),
-        code_description: None,
-        source: Some(source.to_string()),
-        message,
-        related_information: None,
-        tags: None,
-        data: None,
-    }
+ ) -> SemanticDiagnostic {
+    SemanticDiagnostic { uri: uri.clone(), range, severity, source: source.to_string(), code: code.to_string(), message, related_information: Vec::new() }
 }
 
 pub(super) fn is_unknown_range(range: TextRange) -> bool {
