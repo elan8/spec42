@@ -638,7 +638,6 @@ impl crate::host::config::SemanticCheckProvider for DefaultSemanticChecks {
 mod tests {
     use super::*;
     use crate::semantic::{add_cross_document_edges_for_uri, build_graph_from_doc, SemanticNode};
-    use tower_lsp::lsp_types::{Position, Range};
 
     #[test]
     fn parse_port_type_conjugated() {
@@ -701,7 +700,10 @@ mod tests {
             },
             element_kind: "port".to_string(),
             name: "p".to_string(),
-            range: Range::new(Position::new(0, 0), Position::new(0, 0)),
+            range: semantic_core::TextRange::new(
+                semantic_core::TextPosition::new(0, 0),
+                semantic_core::TextPosition::new(0, 0),
+            ),
             attributes: attrs,
             parent_id: None,
         }
@@ -719,7 +721,10 @@ mod tests {
             },
             element_kind: "part".to_string(),
             name: "display".to_string(),
-            range: Range::new(Position::new(0, 0), Position::new(0, 0)),
+            range: semantic_core::TextRange::new(
+                semantic_core::TextPosition::new(0, 0),
+                semantic_core::TextPosition::new(0, 0),
+            ),
             attributes: attrs,
             parent_id: None,
         };

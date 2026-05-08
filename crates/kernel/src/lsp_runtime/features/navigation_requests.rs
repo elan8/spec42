@@ -4,6 +4,7 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tracing::{debug, info};
 
+use crate::common::text_span::{to_core_position, to_lsp_range};
 use crate::common::util;
 use crate::language::{
     find_reference_ranges, is_reserved_keyword, keyword_hover_markdown, word_at_position,
@@ -68,7 +69,7 @@ fn resolve_hover_reference_target<'a>(
 ) -> Option<&'a crate::semantic::SemanticNode> {
     let context_node = state
         .semantic_graph
-        .find_deepest_node_at_position(uri, pos)
+        .find_deepest_node_at_position(uri, to_core_position(pos))
         .or_else(|| {
             state
                 .semantic_graph
@@ -153,7 +154,7 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
 
     if let Some(node) = state
         .semantic_graph
-        .find_deepest_node_at_position(&uri_norm, pos)
+        .find_deepest_node_at_position(&uri_norm, to_core_position(pos))
     {
         let target_match = state
             .semantic_graph
@@ -348,7 +349,10 @@ pub(crate) fn goto_definition(
         return Ok(None);
     }
 
-    if let Some(node) = state.semantic_graph.find_node_at_position(&uri_norm, pos) {
+    if let Some(node) = state
+        .semantic_graph
+        .find_node_at_position(&uri_norm, to_core_position(pos))
+    {
         for target in state
             .semantic_graph
             .outgoing_typing_or_specializes_targets(node)
@@ -366,7 +370,7 @@ pub(crate) fn goto_definition(
                     started_at,
                     Some(GotoDefinitionResponse::Scalar(Location {
                         uri: target.id.uri.clone(),
-                        range: target.range,
+                        range: to_lsp_range(target.range),
                     })),
                     "goto definition resolved via semantic graph",
                 );
@@ -389,7 +393,7 @@ pub(crate) fn goto_definition(
                     started_at,
                     Some(GotoDefinitionResponse::Scalar(Location {
                         uri: target.id.uri.clone(),
-                        range: target.range,
+                        range: to_lsp_range(target.range),
                     })),
                     "goto definition resolved via import-aware semantic graph",
                 );

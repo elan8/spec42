@@ -1776,12 +1776,13 @@ mod tests {
     use std::time::{SystemTime, UNIX_EPOCH};
 
     use super::*;
-    use tower_lsp::lsp_types::{Position, Range, Url};
+    use crate::semantic::text_span::{TextPosition, TextRange};
+    use url::Url;
 
     use crate::semantic::model::SemanticNode;
 
-    fn range() -> Range {
-        Range::new(Position::new(0, 0), Position::new(0, 1))
+    fn range() -> TextRange {
+        TextRange::new(TextPosition::new(0, 0), TextPosition::new(0, 1))
     }
 
     fn add_node(

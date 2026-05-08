@@ -1,4 +1,5 @@
-use tower_lsp::lsp_types::{Position, Range, Url};
+use crate::semantic::text_span::{TextPosition, TextRange};
+use url::Url;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DiagnosticSeverity {
@@ -11,14 +12,14 @@ pub enum DiagnosticSeverity {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DiagnosticRelatedInfo {
     pub uri: Url,
-    pub range: Range,
+    pub range: TextRange,
     pub message: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SemanticDiagnostic {
     pub uri: Url,
-    pub range: Range,
+    pub range: TextRange,
     pub severity: DiagnosticSeverity,
     pub source: String,
     pub code: String,
@@ -35,10 +36,7 @@ impl SemanticDiagnostic {
     pub fn unknown(uri: Url, message: impl Into<String>) -> Self {
         Self {
             uri,
-            range: Range {
-                start: Position::new(0, 0),
-                end: Position::new(0, 0),
-            },
+            range: TextRange::new(TextPosition::new(0, 0), TextPosition::new(0, 0)),
             severity: DiagnosticSeverity::Warning,
             source: "semantic".to_string(),
             code: "semantic_diagnostic".to_string(),

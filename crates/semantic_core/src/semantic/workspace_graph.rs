@@ -1,7 +1,7 @@
 use std::time::Instant;
 
 use sysml_v2_parser::RootNamespace;
-use tower_lsp::lsp_types::Url;
+use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::build_graph_from_doc;

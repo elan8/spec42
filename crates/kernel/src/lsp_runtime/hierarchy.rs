@@ -1,4 +1,5 @@
 use crate::semantic::SemanticNode;
+use crate::common::text_span::to_lsp_range;
 use tower_lsp::lsp_types::{
     CallHierarchyItem, Moniker, MonikerKind, SymbolKind, TypeHierarchyItem, UniquenessLevel,
 };
@@ -19,8 +20,8 @@ pub(crate) fn type_hierarchy_item_for_node(node: &SemanticNode) -> TypeHierarchy
         tags: None,
         detail: Some(node.element_kind.clone()),
         uri: node.id.uri.clone(),
-        range: node.range,
-        selection_range: node.range,
+        range: to_lsp_range(node.range),
+        selection_range: to_lsp_range(node.range),
         data: None,
     }
 }
@@ -32,8 +33,8 @@ pub(crate) fn call_hierarchy_item_for_node(node: &SemanticNode) -> CallHierarchy
         tags: None,
         detail: Some(node.element_kind.clone()),
         uri: node.id.uri.clone(),
-        range: node.range,
-        selection_range: node.range,
+        range: to_lsp_range(node.range),
+        selection_range: to_lsp_range(node.range),
         data: None,
     }
 }

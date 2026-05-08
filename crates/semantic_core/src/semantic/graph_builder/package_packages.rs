@@ -3,11 +3,12 @@ use std::collections::HashMap;
 use sysml_v2_parser::ast::{PackageBody, PackageBodyElement};
 use sysml_v2_parser::Node;
 use sysml_v2_parser::RootNamespace;
-use tower_lsp::lsp_types::Url;
+use url::Url;
 
 use crate::semantic::ast_util::{identification_name, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
+use crate::semantic::text_span::TextRange;
 
 use super::{add_node_and_recurse, qualified_name_for_node};
 
@@ -89,7 +90,7 @@ fn build_package_like(
         &RootNamespace,
         &mut SemanticGraph,
     ),
-    range: tower_lsp::lsp_types::Range,
+    range: TextRange,
 ) {
     let name_display = if name.is_empty() {
         "(top level)"

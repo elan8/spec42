@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{PartDefBody, PartUsageBody, StateDefBody};
 use sysml_v2_parser::RootNamespace;
-use tower_lsp::lsp_types::Url;
+use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;

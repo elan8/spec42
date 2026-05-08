@@ -1,19 +1,25 @@
 use crate::common::util;
+use crate::common::text_span::to_core_position;
 use crate::language::{find_reference_ranges, is_reserved_keyword, word_at_position, SymbolEntry};
 use crate::semantic::NodeId;
 use crate::semantic::ResolveResult;
 use crate::workspace::ServerState;
+use semantic_core::TextRange;
 use std::time::Instant;
-use tower_lsp::lsp_types::{Location, Position, Url};
+use tower_lsp::lsp_types::{Location, Position, Range, Url};
 use tracing::info;
 
 type LocationKey = (String, u32, u32, u32, u32);
 
-fn position_in_range(pos: Position, range: tower_lsp::lsp_types::Range) -> bool {
+fn position_in_range(pos: Position, range: TextRange) -> bool {
     (pos.line > range.start.line
         || (pos.line == range.start.line && pos.character >= range.start.character))
         && (pos.line < range.end.line
             || (pos.line == range.end.line && pos.character <= range.end.character))
+}
+
+fn to_core_range(range: Range) -> TextRange {
+    TextRange::new(to_core_position(range.start), to_core_position(range.end))
 }
 
 pub(crate) fn resolved_references_at_position(
@@ -307,7 +313,7 @@ fn resolve_owner_member_defs<'a>(
     let owner_ident = dotted_owner_at_position(state, uri, lookup_name, pos)?;
     let owner_node = state
         .semantic_graph
-        .find_deepest_node_at_position(uri, pos)
+        .find_deepest_node_at_position(uri, to_core_position(pos))
         .or_else(|| {
             state
                 .semantic_graph
@@ -417,6 +423,6 @@ fn symbol_entry_node_id(state: &ServerState, entry: &SymbolEntry) -> Option<Node
         .semantic_graph
         .nodes_for_uri(&entry_uri)
         .into_iter()
-        .find(|node| node.name == entry.name && node.range == entry.range)
+        .find(|node| node.name == entry.name && node.range == to_core_range(entry.range))
         .map(|node| node.id.clone())
 }

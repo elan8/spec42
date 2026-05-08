@@ -3,7 +3,7 @@
 use std::collections::{HashMap, HashSet};
 
 use serde_json::{json, Value};
-use tower_lsp::lsp_types::Url;
+use url::Url;
 
 use crate::semantic::dto::{range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlGraphDto};
 use crate::semantic::graph::SemanticGraph;

@@ -1,9 +1,9 @@
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity as LspSeverity, NumberOrString, Url};
+use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
 
 use super::engine_impl::compute_semantic_diagnostics;
-use super::types::{DiagnosticSeverity, DiagnosticsOptions, SemanticDiagnostic};
+use super::types::{DiagnosticsOptions, SemanticDiagnostic};
 
 /// Collects semantic diagnostics from an already-built semantic graph.
 ///
@@ -15,33 +15,6 @@ pub fn collect_diagnostics_from_graph(
     _options: DiagnosticsOptions,
 ) -> Vec<SemanticDiagnostic> {
     compute_semantic_diagnostics(graph, uri)
-        .into_iter()
-        .map(|diagnostic| to_semantic(uri, diagnostic))
-        .collect()
-}
-
-fn to_semantic(uri: &Url, diagnostic: Diagnostic) -> SemanticDiagnostic {
-    let severity = match diagnostic.severity.unwrap_or(LspSeverity::WARNING) {
-        LspSeverity::ERROR => DiagnosticSeverity::Error,
-        LspSeverity::WARNING => DiagnosticSeverity::Warning,
-        LspSeverity::INFORMATION => DiagnosticSeverity::Information,
-        LspSeverity::HINT => DiagnosticSeverity::Hint,
-        _ => DiagnosticSeverity::Warning,
-    };
-    let code = match diagnostic.code {
-        Some(NumberOrString::String(code)) => code,
-        Some(NumberOrString::Number(code)) => code.to_string(),
-        None => "semantic_diagnostic".to_string(),
-    };
-    SemanticDiagnostic {
-        uri: uri.clone(),
-        range: diagnostic.range,
-        severity,
-        source: diagnostic.source.unwrap_or_else(|| "semantic".to_string()),
-        code,
-        message: diagnostic.message,
-        related_information: Vec::new(),
-    }
 }
 
 #[cfg(test)]

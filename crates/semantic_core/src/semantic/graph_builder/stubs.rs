@@ -1,4 +1,4 @@
-use tower_lsp::lsp_types::Url;
+use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
 

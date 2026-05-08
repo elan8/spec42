@@ -1,4 +1,5 @@
 use crate::views::dto;
+use crate::common::text_span::to_core_range;
 use crate::workspace::library_search::{
     LibrarySearchItem, LibrarySearchPackage, LibrarySearchSource,
 };
@@ -9,7 +10,7 @@ fn to_dto_item(item: LibrarySearchItem) -> dto::SysmlLibrarySearchItemDto {
         kind: item.kind,
         container: item.container,
         uri: item.uri,
-        range: dto::range_to_dto(item.range),
+        range: dto::range_to_dto(to_core_range(item.range)),
         score: item.score,
         source: item.source,
         path: item.path,

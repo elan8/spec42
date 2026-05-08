@@ -3,6 +3,7 @@
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::{Position, Url};
 
+use crate::common::text_span::to_core_position;
 use crate::common::util;
 use crate::semantic::{RelationshipKind, SemanticGraph, SemanticNode};
 use crate::views::dto::{
@@ -137,7 +138,7 @@ pub fn build_sysml_feature_inspector_response(
         character: position.character,
     };
     let element = semantic_graph
-        .find_deepest_node_at_position(uri, position)
+        .find_deepest_node_at_position(uri, to_core_position(position))
         .filter(|node| node.id.uri == *uri)
         .map(|node| {
             let parent = node

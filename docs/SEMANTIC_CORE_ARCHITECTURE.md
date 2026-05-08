@@ -141,6 +141,11 @@ Shared DTOs in `semantic_core::semantic::dto` provide:
 
 This keeps host responses aligned around a common semantic contract.
 
+Core boundary notes:
+
+- `semantic_core` now uses neutral core span types (`TextPosition`, `TextRange`) and `url::Url`.
+- LSP-specific mappings happen in `kernel` boundary adapters only.
+
 ## Extension Guidance
 
 When adding new functionality:

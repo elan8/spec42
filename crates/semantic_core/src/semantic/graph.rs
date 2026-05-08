@@ -7,7 +7,8 @@ use petgraph::stable_graph::{NodeIndex, StableGraph};
 use petgraph::visit::{EdgeRef, IntoEdgeReferences};
 use petgraph::Directed;
 use petgraph::Direction;
-use tower_lsp::lsp_types::{Position, Range, Url};
+use crate::semantic::text_span::{TextPosition, TextRange};
+use url::Url;
 
 use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
 use crate::semantic::workspace_uri;
@@ -43,7 +44,7 @@ impl Clone for SemanticGraph {
 pub(crate) struct ConnectionOccurrence {
     pub source: NodeId,
     pub target: NodeId,
-    pub range: Range,
+    pub range: TextRange,
 }
 
 #[derive(Debug, Clone)]
@@ -228,7 +229,7 @@ impl SemanticGraph {
     }
 
     /// Returns the node whose range contains the given position (first match).
-    pub fn find_node_at_position(&self, uri: &Url, pos: Position) -> Option<&SemanticNode> {
+    pub fn find_node_at_position(&self, uri: &Url, pos: TextPosition) -> Option<&SemanticNode> {
         self.nodes_for_uri(uri).into_iter().find(|n| {
             let r = &n.range;
             (pos.line > r.start.line
@@ -239,7 +240,11 @@ impl SemanticGraph {
     }
 
     /// Returns the smallest-range node whose range contains the given position.
-    pub fn find_deepest_node_at_position(&self, uri: &Url, pos: Position) -> Option<&SemanticNode> {
+    pub fn find_deepest_node_at_position(
+        &self,
+        uri: &Url,
+        pos: TextPosition,
+    ) -> Option<&SemanticNode> {
         self.nodes_for_uri(uri)
             .into_iter()
             .filter(|n| {
@@ -543,7 +548,10 @@ impl SemanticGraph {
 
     /// Returns connection edge occurrences anchored to source ranges from parsed connect statements.
     /// Multiple entries can exist for the same endpoint pair.
-    pub fn connection_edge_occurrences_for_uri(&self, uri: &Url) -> Vec<(NodeId, NodeId, Range)> {
+    pub fn connection_edge_occurrences_for_uri(
+        &self,
+        uri: &Url,
+    ) -> Vec<(NodeId, NodeId, TextRange)> {
         self.connection_occurrences_by_uri
             .get(uri)
             .into_iter()
@@ -558,7 +566,7 @@ impl SemanticGraph {
         uri: &Url,
         source: NodeId,
         target: NodeId,
-        range: Range,
+        range: TextRange,
     ) {
         self.connection_occurrences_by_uri
             .entry(uri.clone())

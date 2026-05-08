@@ -1,4 +1,4 @@
-﻿//! Activity and sequence diagram extraction for sysml/model response.
+//! Activity and sequence diagram extraction for sysml/model response.
 
 use crate::semantic::ast_util::identification_name;
 use serde::Serialize;

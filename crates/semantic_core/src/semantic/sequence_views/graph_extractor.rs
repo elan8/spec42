@@ -10,7 +10,8 @@
 
 use std::collections::{HashMap, HashSet};
 
-use tower_lsp::lsp_types::Url;
+use url::Url;
+use crate::semantic::text_span::TextRange;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
@@ -655,7 +656,7 @@ fn split_specializes_string(value: &str) -> Vec<String> {
         .collect()
 }
 
-fn range_to_dto(range: &tower_lsp::lsp_types::Range) -> RangeDto {
+fn range_to_dto(range: &TextRange) -> RangeDto {
     RangeDto {
         start: PositionDto {
             line: range.start.line,
@@ -678,8 +679,8 @@ fn compare_range(a: &RangeDto, b: &RangeDto) -> std::cmp::Ordering {
 }
 
 fn compare_range_lsp(
-    a: &tower_lsp::lsp_types::Range,
-    b: &tower_lsp::lsp_types::Range,
+    a: &TextRange,
+    b: &TextRange,
 ) -> std::cmp::Ordering {
     (
         a.start.line,

@@ -1,6 +1,6 @@
 pub mod providers;
 
-use tower_lsp::lsp_types::Url;
+use url::Url;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SysmlDocumentSourceKind {

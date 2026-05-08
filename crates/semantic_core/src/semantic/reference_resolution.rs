@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use tower_lsp::lsp_types::Url;
+use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::import_resolution::resolve_imported_node_ids_for_simple_name;

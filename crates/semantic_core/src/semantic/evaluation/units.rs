@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::path::PathBuf;
 
-use tower_lsp::lsp_types::Url;
+use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
 

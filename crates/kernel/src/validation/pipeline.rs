@@ -4,6 +4,7 @@ use std::sync::Arc;
 use tower_lsp::lsp_types::{Diagnostic, Url};
 
 use crate::analysis::diagnostics_core;
+use crate::common::text_span::to_lsp_range;
 use crate::host::config::Spec42Config;
 use crate::workspace::{
     indexed_text_or_empty, ingest_parsed_scan_entries, parse_scanned_entries,
@@ -165,7 +166,7 @@ fn project_semantic_model(
                 qualified_name: node.id.qualified_name.clone(),
                 name: node.name.clone(),
                 element_kind: node.element_kind.clone(),
-                range: node.range,
+                range: to_lsp_range(node.range),
                 parent: node
                     .parent_id
                     .as_ref()

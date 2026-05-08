@@ -1,6 +1,6 @@
 //! Workspace vs library URI classification.
 
-use tower_lsp::lsp_types::Url;
+use url::Url;
 
 /// Returns true if `uri` is under any of the library path roots (path prefix check).
 pub fn uri_under_any_library(uri: &Url, library_paths: &[Url]) -> bool {

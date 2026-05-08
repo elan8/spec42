@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
-use tower_lsp::lsp_types::{Range, Url};
+use crate::semantic::text_span::TextRange;
+use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
@@ -21,7 +22,7 @@ pub(super) fn add_perform_usage_node(
     parent_id: &NodeId,
     action_name: &str,
     action_type: Option<&str>,
-    range: Range,
+    range: TextRange,
 ) -> String {
     let qualified = qualified_name_for_node(g, uri, container_prefix, action_name, "action");
     if !g
@@ -385,7 +386,7 @@ pub(super) fn add_diagnostic_node(
     container_prefix: Option<&str>,
     code: &str,
     message: String,
-    range: Range,
+    range: TextRange,
 ) {
     let qualified = qualified_name_for_node(g, uri, container_prefix, code, "diagnostic");
     let mut attrs = HashMap::new();
@@ -413,7 +414,7 @@ mod expr_string_tests {
     use crate::{build_graph_from_doc, ResolveResult};
     use sysml_v2_parser::ast::{Expression, Node};
     use sysml_v2_parser::Span;
-    use tower_lsp::lsp_types::Url;
+    use url::Url;
 
     fn node(expr: Expression) -> Node<Expression> {
         Node::new(Span::dummy(), expr)

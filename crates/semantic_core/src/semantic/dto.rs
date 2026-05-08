@@ -1,7 +1,7 @@
 //! Shared DTO primitives for semantic/model and visualization payloads.
 
 use serde::{Deserialize, Serialize};
-use tower_lsp::lsp_types::Range;
+use crate::semantic::text_span::TextRange;
 
 use crate::semantic::extracted_model::{ActivityDiagramDto, SequenceDiagramDto};
 use crate::semantic::ibd::IbdDataDto;
@@ -176,7 +176,7 @@ pub struct SysmlVisualizationResultDto {
     pub stats: Option<SysmlModelStatsDto>,
 }
 
-pub fn range_to_dto(r: Range) -> RangeDto {
+pub fn range_to_dto(r: TextRange) -> RangeDto {
     RangeDto {
         start: PositionDto {
             line: r.start.line,

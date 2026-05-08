@@ -3,6 +3,7 @@ use std::collections::HashSet;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 
+use crate::common::text_span::to_core_position;
 use crate::common::util;
 use crate::language::{completion_prefix, keyword_doc, line_prefix_at_position};
 use crate::workspace::ServerState;
@@ -287,7 +288,10 @@ fn refine_completion_context(
         | CompletionContext::BodyStatement { prefix }
             if prefix.is_empty() =>
         {
-            if let Some(node) = state.semantic_graph.find_deepest_node_at_position(uri, pos) {
+            if let Some(node) = state
+                .semantic_graph
+                .find_deepest_node_at_position(uri, to_core_position(pos))
+            {
                 if node.element_kind == "package" || node.element_kind.ends_with(" def") {
                     return CompletionContext::BodyStatement { prefix };
                 }
@@ -313,7 +317,9 @@ fn completion_semantic_hints(
         ..CompletionSemanticHints::default()
     };
 
-    let context_node = state.semantic_graph.find_deepest_node_at_position(uri, pos);
+    let context_node = state
+        .semantic_graph
+        .find_deepest_node_at_position(uri, to_core_position(pos));
     if let Some(node) = context_node {
         hints.preferred_names.insert(node.name.clone());
         if let Some(parent_id) = &node.parent_id {

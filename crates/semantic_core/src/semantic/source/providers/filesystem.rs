@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use tower_lsp::lsp_types::Url;
+use url::Url;
 use walkdir::WalkDir;
 
 use crate::semantic::source::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};

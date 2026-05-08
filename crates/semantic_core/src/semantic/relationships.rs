@@ -3,7 +3,7 @@
 use sysml_v2_parser::ast::{PackageBody, PackageBodyElement};
 use sysml_v2_parser::RootNamespace;
 
-use tower_lsp::lsp_types::Url;
+use url::Url;
 
 use crate::semantic::ast_util::identification_name;
 use crate::semantic::graph::SemanticGraph;

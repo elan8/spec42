@@ -3,7 +3,8 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::RootNamespace;
-use tower_lsp::lsp_types::{Range, Url};
+use crate::semantic::text_span::TextRange;
+use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
@@ -124,7 +125,7 @@ pub(super) fn add_node_and_recurse(
     qualified: &str,
     kind: &str,
     name: String,
-    range: Range,
+    range: TextRange,
     attrs: HashMap<String, serde_json::Value>,
     parent_id: Option<&NodeId>,
 ) {
@@ -154,7 +155,7 @@ pub(super) fn add_node_if_not_exists(
     kind: &str,
     name: String,
     parent_id: &NodeId,
-    source_range: Range,
+    source_range: TextRange,
     attrs: HashMap<String, serde_json::Value>,
 ) {
     let node_id = NodeId::new(uri, qualified);

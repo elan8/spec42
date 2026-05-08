@@ -6,7 +6,7 @@
 //! cross-file specialization (e.g. `CheckoutFlow :> CommerceInteractionScenario
 //! :> InteractionScenario`) is recognized correctly.
 
-use tower_lsp::lsp_types::Url;
+use url::Url;
 
 use crate::SemanticGraph;
 use crate::semantic::extracted_model::SequenceDiagramDto;

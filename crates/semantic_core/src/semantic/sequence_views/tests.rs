@@ -7,7 +7,7 @@
 use std::collections::HashSet;
 use std::env;
 
-use tower_lsp::lsp_types::Url;
+use url::Url;
 
 use crate::semantic::extracted_model::SequenceDiagramDto;
 use crate::workspace::{rebuild_all_document_links, store_document_text, ServerState};

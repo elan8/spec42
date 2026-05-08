@@ -7,7 +7,7 @@ use sysml_v2_parser::ast::{
     PartDefBody, PartUsageBody, PortDefBody, StateDefBody, UseCaseDefBody,
 };
 use sysml_v2_parser::RootNamespace;
-use tower_lsp::lsp_types::Url;
+use url::Url;
 
 use super::requirement_body::{import_member_label, walk_requirement_def_body};
 use crate::semantic::ast_util::{identification_name, span_to_range};

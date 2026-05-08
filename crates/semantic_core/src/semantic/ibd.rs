@@ -2,7 +2,7 @@
 //! Used by sysml/model to return a ready-to-render structure for the client.
 
 use serde::Serialize;
-use tower_lsp::lsp_types::Url;
+use url::Url;
 
 use crate::{NodeId, RelationshipKind, SemanticGraph, SemanticNode};
 
@@ -1219,7 +1219,7 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
 mod tests {
     use std::collections::HashMap;
 
-    use tower_lsp::lsp_types::Url;
+    use url::Url;
 
     use super::{
         build_container_groups, infer_port_side, prune_redundant_top_level_roots, IbdConnectorDto,

@@ -1,6 +1,8 @@
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Position, Range};
+use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString};
 
+use crate::common::text_span::to_lsp_range;
 use crate::semantic::{NodeId, SemanticGraph, SemanticNode};
+use semantic_core::{TextPosition, TextRange};
 use crate::views::ibd;
 
 pub(super) fn is_port_like(kind: &str) -> bool {
@@ -8,14 +10,14 @@ pub(super) fn is_port_like(kind: &str) -> bool {
 }
 
 pub(super) fn diag(
-    range: Range,
+    range: TextRange,
     severity: DiagnosticSeverity,
     source: &str,
     code: &str,
     message: String,
 ) -> Diagnostic {
     Diagnostic {
-        range,
+        range: to_lsp_range(range),
         severity: Some(severity),
         code: Some(NumberOrString::String(code.to_string())),
         code_description: None,
@@ -27,7 +29,7 @@ pub(super) fn diag(
     }
 }
 
-pub(super) fn is_unknown_range(range: Range) -> bool {
+pub(super) fn is_unknown_range(range: TextRange) -> bool {
     range.start.line == 0
         && range.start.character == 0
         && range.end.line == 0
@@ -51,23 +53,23 @@ pub(super) fn is_synthetic(node: &SemanticNode) -> bool {
         .unwrap_or(false)
 }
 
-pub(super) fn parse_origin_range(node: &SemanticNode) -> Option<Range> {
+pub(super) fn parse_origin_range(node: &SemanticNode) -> Option<TextRange> {
     let origin = node.attributes.get("originRange")?;
     let start = origin.get("start")?;
     let end = origin.get("end")?;
-    Some(Range {
-        start: Position {
+    Some(TextRange {
+        start: TextPosition {
             line: start.get("line")?.as_u64()? as u32,
             character: start.get("character")?.as_u64()? as u32,
         },
-        end: Position {
+        end: TextPosition {
             line: end.get("line")?.as_u64()? as u32,
             character: end.get("character")?.as_u64()? as u32,
         },
     })
 }
 
-fn preferred_port_anchor_range(node: &SemanticNode) -> Option<Range> {
+fn preferred_port_anchor_range(node: &SemanticNode) -> Option<TextRange> {
     if is_synthetic(node) {
         if let Some(origin) = parse_origin_range(node) {
             if !is_unknown_range(origin) {
@@ -98,7 +100,7 @@ pub(super) fn diagnostic_range(
     graph: &SemanticGraph,
     node: &SemanticNode,
     peer: Option<&SemanticNode>,
-) -> Range {
+) -> TextRange {
     if node.element_kind == "port" {
         if let Some(range) = preferred_port_anchor_range(node) {
             return range;
@@ -297,7 +299,7 @@ pub(super) fn is_builtin_type_ref(type_ref: &str) -> bool {
     matches!(type_ref, "String")
 }
 
-pub(super) fn unresolved_type_diagnostic_range(node: &SemanticNode) -> Option<Range> {
+pub(super) fn unresolved_type_diagnostic_range(node: &SemanticNode) -> Option<TextRange> {
     if !is_unknown_range(node.range) {
         return Some(node.range);
     }

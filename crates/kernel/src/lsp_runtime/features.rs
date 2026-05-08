@@ -10,6 +10,7 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tracing::info;
 
+use crate::common::text_span::to_core_position;
 use crate::common::util;
 use crate::language::{is_reserved_keyword, word_at_position};
 use crate::semantic_tokens::{ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range};
@@ -179,7 +180,10 @@ pub(crate) fn moniker(
     pos: Position,
 ) -> Result<Option<Vec<Moniker>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let node = match state.semantic_graph.find_node_at_position(&uri_norm, pos) {
+    let node = match state
+        .semantic_graph
+        .find_node_at_position(&uri_norm, to_core_position(pos))
+    {
         Some(node) => node,
         None => return Ok(None),
     };
@@ -192,7 +196,10 @@ pub(crate) fn prepare_type_hierarchy(
     pos: Position,
 ) -> Result<Option<Vec<TypeHierarchyItem>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let node = match state.semantic_graph.find_node_at_position(&uri_norm, pos) {
+    let node = match state
+        .semantic_graph
+        .find_node_at_position(&uri_norm, to_core_position(pos))
+    {
         Some(node) => node,
         None => return Ok(None),
     };
@@ -206,7 +213,7 @@ pub(crate) fn supertypes(
 ) -> Result<Option<Vec<TypeHierarchyItem>>> {
     let node = match state
         .semantic_graph
-        .find_node_at_position(&uri, range.start)
+        .find_node_at_position(&uri, to_core_position(range.start))
     {
         Some(node) => node,
         None => return Ok(None),
@@ -227,7 +234,7 @@ pub(crate) fn subtypes(
 ) -> Result<Option<Vec<TypeHierarchyItem>>> {
     let node = match state
         .semantic_graph
-        .find_node_at_position(&uri, range.start)
+        .find_node_at_position(&uri, to_core_position(range.start))
     {
         Some(node) => node,
         None => return Ok(None),
@@ -247,7 +254,10 @@ pub(crate) fn prepare_call_hierarchy(
     pos: Position,
 ) -> Result<Option<Vec<CallHierarchyItem>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let node = match state.semantic_graph.find_node_at_position(&uri_norm, pos) {
+    let node = match state
+        .semantic_graph
+        .find_node_at_position(&uri_norm, to_core_position(pos))
+    {
         Some(node) => node,
         None => return Ok(None),
     };
@@ -261,7 +271,7 @@ pub(crate) fn incoming_calls(
 ) -> Result<Option<Vec<CallHierarchyIncomingCall>>> {
     let node = match state
         .semantic_graph
-        .find_node_at_position(&uri, range.start)
+        .find_node_at_position(&uri, to_core_position(range.start))
     {
         Some(node) => node,
         None => return Ok(None),
@@ -286,7 +296,7 @@ pub(crate) fn outgoing_calls(
 ) -> Result<Option<Vec<CallHierarchyOutgoingCall>>> {
     let node = match state
         .semantic_graph
-        .find_node_at_position(&uri, range.start)
+        .find_node_at_position(&uri, to_core_position(range.start))
     {
         Some(node) => node,
         None => return Ok(None),

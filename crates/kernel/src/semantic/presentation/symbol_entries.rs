@@ -1,5 +1,6 @@
 use tower_lsp::lsp_types::{SymbolKind, Url};
 
+use crate::common::text_span::to_lsp_range;
 use crate::language::SymbolEntry;
 
 use crate::semantic::SemanticGraph;
@@ -66,7 +67,7 @@ pub fn symbol_entries_for_uri(graph: &SemanticGraph, uri: &Url) -> Vec<SymbolEnt
         out.push(SymbolEntry {
             name: node.name.clone(),
             uri: node.id.uri.clone(),
-            range: node.range,
+            range: to_lsp_range(node.range),
             kind: element_kind_to_symbol_kind(&node.element_kind),
             container_name,
             detail: Some(node.element_kind.clone()),

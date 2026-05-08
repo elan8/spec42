@@ -2,14 +2,14 @@
 
 use sysml_v2_parser::ast::Identification;
 use sysml_v2_parser::Span;
-use tower_lsp::lsp_types::{Position, Range};
+use crate::semantic::text_span::{TextPosition, TextRange};
 
-/// Converts sysml-v2-parser Span (1-based line/column) to LSP Range (0-based).
-pub fn span_to_range(span: &Span) -> Range {
+/// Converts sysml-v2-parser Span (1-based line/column) to 0-based TextRange.
+pub fn span_to_range(span: &Span) -> TextRange {
     let (start_line, start_char, end_line, end_char) = span.to_lsp_range();
-    Range::new(
-        Position::new(start_line, start_char),
-        Position::new(end_line, end_char),
+    TextRange::new(
+        TextPosition::new(start_line, start_char),
+        TextPosition::new(end_line, end_char),
     )
 }
 

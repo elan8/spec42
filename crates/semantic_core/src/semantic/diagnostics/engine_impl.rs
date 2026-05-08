@@ -1,12 +1,17 @@
 use std::collections::HashSet;
 
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Url};
+use crate::semantic::text_span::TextRange;
+use url::Url;
 
 use crate::{resolve_type_reference_targets, NodeId, SemanticGraph};
+use crate::semantic::diagnostics::types::{DiagnosticSeverity, SemanticDiagnostic};
 
 use crate::semantic::diagnostics::checks::import_resolution::{import_target, import_target_resolves};
 
-pub(crate) fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Diagnostic> {
+pub(crate) fn compute_semantic_diagnostics(
+    graph: &SemanticGraph,
+    uri: &Url,
+) -> Vec<SemanticDiagnostic> {
     let mut diagnostics = Vec::new();
 
     // Explicit semantic diagnostics emitted by graph-builder passes.
@@ -26,8 +31,9 @@ pub(crate) fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> 
             .unwrap_or("semantic diagnostic")
             .to_string();
         diagnostics.push(diag(
+            uri,
             node.range,
-            DiagnosticSeverity::WARNING,
+            DiagnosticSeverity::Warning,
             "semantic",
             code,
             message,
@@ -43,8 +49,9 @@ pub(crate) fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> 
             continue;
         };
         diagnostics.push(diag(
+            uri,
             node.range,
-            DiagnosticSeverity::WARNING,
+            DiagnosticSeverity::Warning,
             "semantic",
             "unresolved_import_target",
             format!(
@@ -61,8 +68,9 @@ pub(crate) fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> 
         if !seen_pairs.insert(pair) {
             if let Some(tgt) = graph.get_node(&tgt_id) {
                 diagnostics.push(diag(
+                    uri,
                     tgt.range,
-                    DiagnosticSeverity::INFORMATION,
+                    DiagnosticSeverity::Information,
                     "semantic",
                     "duplicate_connection",
                     "Duplicate connection between the same two endpoints.".to_string(),
@@ -112,8 +120,9 @@ pub(crate) fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> 
             continue;
         }
         diagnostics.push(diag(
+            uri,
             node.range,
-            DiagnosticSeverity::WARNING,
+            DiagnosticSeverity::Warning,
             "semantic",
             "unresolved_type_reference",
             format!(
@@ -135,22 +144,21 @@ fn normalize_edge_pair(a: &NodeId, b: &NodeId) -> (NodeId, NodeId) {
 }
 
 fn diag(
-    range: tower_lsp::lsp_types::Range,
+    uri: &Url,
+    range: TextRange,
     severity: DiagnosticSeverity,
     source: &str,
     code: &str,
     message: String,
-) -> Diagnostic {
-    Diagnostic {
+) -> SemanticDiagnostic {
+    SemanticDiagnostic {
+        uri: uri.clone(),
         range,
-        severity: Some(severity),
-        code: Some(NumberOrString::String(code.to_string())),
-        code_description: None,
-        source: Some(source.to_string()),
+        severity,
+        code: code.to_string(),
+        source: source.to_string(),
         message,
-        related_information: None,
-        tags: None,
-        data: None,
+        related_information: Vec::new(),
     }
 }
 

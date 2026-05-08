@@ -2,7 +2,8 @@
 
 use std::collections::HashMap;
 
-use tower_lsp::lsp_types::{Range, Url};
+use crate::semantic::text_span::TextRange;
+use url::Url;
 
 /// Unique identifier for a node in the semantic graph.
 /// Combines document URI and qualified name for workspace-wide uniqueness.
@@ -66,7 +67,7 @@ pub struct SemanticNode {
     pub id: NodeId,
     pub element_kind: String,
     pub name: String,
-    pub range: Range,
+    pub range: TextRange,
     pub attributes: HashMap<String, serde_json::Value>,
     pub parent_id: Option<NodeId>,
 }
