@@ -3,6 +3,9 @@
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::Range;
 
+use crate::semantic::extracted_model::{ActivityDiagramDto, SequenceDiagramDto};
+use crate::semantic::ibd::IbdDataDto;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PositionDto {
     pub line: u32,
@@ -140,6 +143,37 @@ pub struct SysmlVisualizationGroupDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub parent_id: Option<String>,
     pub node_ids: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlVisualizationResultDto {
+    pub version: u32,
+    pub view: String,
+    pub workspace_root_uri: String,
+    pub view_candidates: Vec<SysmlVisualizationViewCandidateDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selected_view: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selected_view_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub empty_state_message: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub package_groups: Option<Vec<SysmlVisualizationGroupDto>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub graph: Option<SysmlGraphDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub general_view_graph: Option<SysmlGraphDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub workspace_model: Option<WorkspaceModelDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub activity_diagrams: Option<Vec<ActivityDiagramDto>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sequence_diagrams: Option<Vec<SequenceDiagramDto>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ibd: Option<IbdDataDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stats: Option<SysmlModelStatsDto>,
 }
 
 pub fn range_to_dto(r: Range) -> RangeDto {

@@ -1231,4 +1231,63 @@ mod tests {
             "expected webshop SequenceView to produce at least one sequence diagram"
         );
     }
+
+    #[test]
+    fn semantic_core_graph_first_output_matches_kernel_on_core_view_metadata() {
+        let workspace_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../domain-libraries/technical/software/examples/webshop");
+        let requested_view = "general-view";
+        let requested_selected_view = Some("GeneralView");
+
+        let kernel_response = build_sysml_visualization_for_paths(
+            &workspace_path,
+            Some(&workspace_path),
+            &[],
+            requested_view,
+            requested_selected_view,
+        )
+        .expect("kernel visualization response");
+
+        let (graph, _docs) = semantic_core::build_semantic_graph_for_paths(
+            &workspace_path,
+            Some(&workspace_path),
+            &[],
+        )
+        .expect("semantic graph for workspace");
+        let semantic_core_response = semantic_core::build_sysml_visualization_from_graph(
+            &graph,
+            requested_view,
+            requested_selected_view,
+        )
+        .expect("semantic_core graph-first visualization response");
+
+        assert_eq!(kernel_response.view, semantic_core_response.view);
+        assert!(
+            kernel_response.selected_view.is_some(),
+            "kernel should resolve a selected view"
+        );
+        assert!(
+            kernel_response.selected_view_name.is_some(),
+            "kernel should resolve a selected view name"
+        );
+        assert_eq!(
+            semantic_core_response.selected_view.as_deref(),
+            requested_selected_view
+        );
+        assert!(
+            !kernel_response.view_candidates.is_empty(),
+            "kernel should surface at least one candidate"
+        );
+        assert!(
+            !semantic_core_response.view_candidates.is_empty(),
+            "semantic_core should surface at least one candidate"
+        );
+        assert!(
+            semantic_core_response
+                .view_candidates
+                .iter()
+                .any(|candidate| candidate.name == "General View"),
+            "semantic_core graph-first API should include baseline General View candidate"
+        );
+    }
 }

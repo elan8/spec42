@@ -3,7 +3,8 @@ pub mod semantic;
 pub use semantic::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, RelationshipDto, SysmlElementDto,
     SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto,
-    SysmlVisualizationViewCandidateDto, WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
+    SysmlVisualizationResultDto, SysmlVisualizationViewCandidateDto, WorkspaceFileModelDto,
+    WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
 pub use semantic::evaluation::evaluate_expressions;
 pub use semantic::graph::SemanticGraph;
@@ -19,7 +20,5 @@ pub use semantic::relationships::{
     add_cross_document_edges_for_uri, resolve_cross_document_edges_for_uri,
 };
 pub use semantic::root_element::root_element_body;
-pub use semantic::visualization_entry::{
-    build_sysml_visualization_for_paths, SysmlVisualizationResultLite,
-};
+pub use semantic::visualization_entry::build_sysml_visualization_from_graph;
 pub use semantic::workspace_graph::{build_semantic_graph_for_paths, WorkspaceParsedDocument};

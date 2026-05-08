@@ -1,37 +1,13 @@
-use std::path::{Path, PathBuf};
-
-use serde::Serialize;
-
-use crate::{
-    build_semantic_graph_for_paths, SysmlVisualizationViewCandidateDto,
-};
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SysmlVisualizationResultLite {
-    pub view: String,
-    pub view_candidates: Vec<SysmlVisualizationViewCandidateDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub selected_view: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub selected_view_name: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub activity_diagrams: Option<Vec<serde_json::Value>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub sequence_diagrams: Option<Vec<serde_json::Value>>,
-}
+use crate::{SemanticGraph, SysmlVisualizationResultDto, SysmlVisualizationViewCandidateDto};
 
 /// Lightweight non-LSP visualization selection entrypoint.
 ///
-/// This intentionally exposes only stable view-selection metadata used by external hosts.
-pub fn build_sysml_visualization_for_paths(
-    target: &Path,
-    workspace_root: Option<&Path>,
-    library_paths: &[PathBuf],
+/// This graph-first API keeps visualization logic independent from workspace/path scanning.
+pub fn build_sysml_visualization_from_graph(
+    _graph: &SemanticGraph,
     view: &str,
     selected_view: Option<&str>,
-) -> Result<SysmlVisualizationResultLite, String> {
-    let (_graph, _docs) = build_semantic_graph_for_paths(target, workspace_root, library_paths)?;
+) -> Result<SysmlVisualizationResultDto, String> {
     let fallback_id = selected_view.unwrap_or("Views::general").to_string();
     let fallback_name = selected_view
         .and_then(|value| value.rsplit("::").next())
@@ -90,12 +66,21 @@ pub fn build_sysml_visualization_for_paths(
         });
     }
 
-    Ok(SysmlVisualizationResultLite {
+    Ok(SysmlVisualizationResultDto {
+        version: 1,
         view: view.to_string(),
+        workspace_root_uri: String::new(),
         view_candidates,
         selected_view: Some(fallback_id),
         selected_view_name: Some(fallback_name),
+        empty_state_message: None,
+        package_groups: None,
+        graph: None,
+        general_view_graph: None,
+        workspace_model: None,
         activity_diagrams: None,
         sequence_diagrams: None,
+        ibd: None,
+        stats: None,
     })
 }
