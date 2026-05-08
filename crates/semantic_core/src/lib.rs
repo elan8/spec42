@@ -6,6 +6,10 @@ pub use semantic::dto::{
     SysmlVisualizationResultDto, SysmlVisualizationViewCandidateDto, WorkspaceFileModelDto,
     WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
+pub use semantic::diagnostics::{
+    collect_diagnostics_from_graph, DiagnosticRelatedInfo, DiagnosticSeverity, DiagnosticsOptions,
+    SemanticDiagnostic,
+};
 pub use semantic::evaluation::evaluate_expressions;
 pub use semantic::graph::SemanticGraph;
 pub use semantic::graph_builder::build_graph_from_doc;

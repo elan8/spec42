@@ -1,4 +1,5 @@
 pub mod ast_util;
+pub mod diagnostics;
 pub mod dto;
 pub mod evaluation;
 pub mod extracted_model;

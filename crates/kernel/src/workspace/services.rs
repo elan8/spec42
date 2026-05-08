@@ -662,7 +662,7 @@ mod tests {
     use super::{
         apply_document_changes, rebuild_all_document_links, remove_document, store_document_text,
     };
-    use crate::analysis::checks::compute_semantic_diagnostics;
+    use crate::analysis::compute_semantic_diagnostics;
     use crate::workspace::state::ServerState;
     use tower_lsp::lsp_types::{
         NumberOrString, Position, Range, TextDocumentContentChangeEvent, Url,
