@@ -3,6 +3,7 @@ use std::sync::Arc;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Position, Range, Url};
 
 use crate::common::util;
+use crate::analysis::diagnostics_adapter::semantic_to_lsp_diagnostic;
 use crate::host::config::SemanticCheckProvider;
 use crate::semantic::SemanticGraph;
 
@@ -55,19 +56,11 @@ pub(crate) fn collect_document_diagnostics(
         });
     }
 
-    for usage in util::untyped_part_usage_diagnostics(text) {
-        diagnostics.push(Diagnostic {
-            range: usage.range,
-            severity: Some(DiagnosticSeverity::WARNING),
-            code: Some(NumberOrString::String("untyped_part_usage".to_string())),
-            code_description: None,
-            source: Some("sysml".to_string()),
-            message: format!("Part '{}' has no declared type.", usage.name),
-            related_information: None,
-            tags: None,
-            data: None,
-        });
-    }
+    diagnostics.extend(
+        semantic_core::collect_untyped_part_usage_diagnostics(uri, text)
+            .into_iter()
+            .map(semantic_to_lsp_diagnostic),
+    );
 
     let allow_semantic_checks = if block_on_any_parse_issue {
         result.errors.is_empty()
@@ -87,24 +80,15 @@ pub(crate) fn collect_document_diagnostics(
         let has_unresolved_specializes_reference =
             has_semantic_code(&diagnostics, "unresolved_specializes_reference");
 
-        if (has_unresolved_type_reference
-            || has_unresolved_import_target
-            || has_unresolved_specializes_reference)
-            && library_paths.is_empty()
-        {
-            if let Some(import_range) = util::import_statement_ranges(text).into_iter().next() {
-                diagnostics.push(Diagnostic {
-                    range: import_range,
-                    severity: Some(DiagnosticSeverity::INFORMATION),
-                    code: Some(NumberOrString::String("missing_library_context".to_string())),
-                    code_description: None,
-                    source: Some("semantic".to_string()),
-                    message: "This document imports external library symbols, but no SysML library paths are configured or indexed. Install or configure a library if these references should resolve.".to_string(),
-                    related_information: None,
-                    tags: None,
-                    data: None,
-                });
-            }
+        if let Some(diagnostic) = semantic_core::missing_library_context_diagnostic(
+            uri,
+            text,
+            has_unresolved_type_reference
+                || has_unresolved_import_target
+                || has_unresolved_specializes_reference,
+            !library_paths.is_empty(),
+        ) {
+            diagnostics.push(semantic_to_lsp_diagnostic(diagnostic));
         }
     }
 

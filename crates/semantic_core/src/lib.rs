@@ -7,8 +7,9 @@ pub use semantic::dto::{
     WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
 pub use semantic::diagnostics::{
-    collect_diagnostics_from_graph, DiagnosticRelatedInfo, DiagnosticSeverity, DiagnosticsOptions,
-    SemanticDiagnostic,
+    collect_diagnostics_from_graph, collect_untyped_part_usage_diagnostics,
+    missing_library_context_diagnostic, DiagnosticRelatedInfo, DiagnosticSeverity,
+    DiagnosticsOptions, SemanticDiagnostic,
 };
 pub use semantic::evaluation::evaluate_expressions;
 pub use semantic::graph::SemanticGraph;
