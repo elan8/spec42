@@ -13,6 +13,7 @@ pub mod relationships;
 pub mod resolution;
 pub mod root_element;
 pub mod sequence_views;
+pub mod source;
 pub mod visualization_entry;
 pub mod workspace_graph;
 pub mod workspace_uri;

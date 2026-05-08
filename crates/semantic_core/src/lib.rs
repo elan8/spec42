@@ -20,5 +20,11 @@ pub use semantic::relationships::{
     add_cross_document_edges_for_uri, resolve_cross_document_edges_for_uri,
 };
 pub use semantic::root_element::root_element_body;
+pub use semantic::source::{
+    InMemoryDocumentProvider, SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind,
+};
+pub use semantic::source::providers::filesystem::FileSystemDocumentProvider;
 pub use semantic::visualization_entry::build_sysml_visualization_from_graph;
-pub use semantic::workspace_graph::{build_semantic_graph_for_paths, WorkspaceParsedDocument};
+pub use semantic::workspace_graph::{
+    build_semantic_graph_from_documents, build_semantic_graph_with_provider, WorkspaceParsedDocument,
+};

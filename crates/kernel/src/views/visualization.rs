@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
-use semantic_core::build_semantic_graph_for_paths;
+use semantic_core::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
 use tower_lsp::lsp_types::Url;
 
 use crate::semantic;
@@ -55,8 +55,12 @@ pub fn build_sysml_visualization_for_paths(
         .iter()
         .map(|path| path_to_url(path))
         .collect::<Result<Vec<_>, _>>()?;
-    let (semantic_graph, parsed_docs) =
-        build_semantic_graph_for_paths(target, Some(&workspace_root), library_paths)?;
+    let provider = FileSystemDocumentProvider::new(
+        target.to_path_buf(),
+        Some(workspace_root.clone()),
+        library_paths.to_vec(),
+    );
+    let (semantic_graph, parsed_docs) = build_semantic_graph_with_provider(&provider)?;
     let index = parsed_docs
         .into_iter()
         .map(|doc| {
@@ -1248,12 +1252,13 @@ mod tests {
         )
         .expect("kernel visualization response");
 
-        let (graph, _docs) = semantic_core::build_semantic_graph_for_paths(
-            &workspace_path,
-            Some(&workspace_path),
-            &[],
-        )
-        .expect("semantic graph for workspace");
+        let provider = semantic_core::FileSystemDocumentProvider::new(
+            workspace_path.clone(),
+            Some(workspace_path.clone()),
+            Vec::new(),
+        );
+        let (graph, _docs) = semantic_core::build_semantic_graph_with_provider(&provider)
+            .expect("semantic graph for workspace");
         let semantic_core_response = semantic_core::build_sysml_visualization_from_graph(
             &graph,
             requested_view,
