@@ -1,7 +1,9 @@
 pub mod semantic;
 
 pub use semantic::dto::{
-    range_to_dto, GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, RelationshipDto, SysmlGraphDto,
+    range_to_dto, GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, RelationshipDto, SysmlElementDto,
+    SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto,
+    SysmlVisualizationViewCandidateDto, WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
 pub use semantic::evaluation::evaluate_expressions;
 pub use semantic::graph::SemanticGraph;

@@ -54,6 +54,94 @@ pub struct SysmlGraphDto {
     pub edges: Vec<GraphEdgeDto>,
 }
 
+#[derive(Debug, Clone, Serialize)]
+pub struct SysmlElementDto {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
+    #[serde(rename = "type")]
+    pub element_type: String,
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
+    pub range: RangeDto,
+    pub children: Vec<SysmlElementDto>,
+    pub attributes: std::collections::HashMap<String, serde_json::Value>,
+    pub relationships: Vec<RelationshipDto>,
+    pub errors: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WorkspaceFileModelDto {
+    pub uri: String,
+    pub elements: Vec<SysmlElementDto>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WorkspaceModelSummaryDto {
+    pub scanned_files: usize,
+    pub loaded_files: usize,
+    pub failures: usize,
+    pub truncated: bool,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WorkspaceModelDto {
+    pub files: Vec<WorkspaceFileModelDto>,
+    pub semantic: Vec<SysmlElementDto>,
+    pub summary: WorkspaceModelSummaryDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct SysmlModelStatsDto {
+    #[serde(rename = "totalElements")]
+    pub total_elements: u32,
+    #[serde(rename = "resolvedElements")]
+    pub resolved_elements: u32,
+    #[serde(rename = "unresolvedElements")]
+    pub unresolved_elements: u32,
+    #[serde(rename = "parseTimeMs")]
+    pub parse_time_ms: u32,
+    #[serde(rename = "modelBuildTimeMs")]
+    pub model_build_time_ms: u32,
+    #[serde(rename = "parseCached")]
+    pub parse_cached: bool,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlVisualizationViewCandidateDto {
+    pub id: String,
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub renderer_view: Option<String>,
+    pub supported: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub view_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlVisualizationPackageCandidateDto {
+    pub id: String,
+    pub name: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlVisualizationGroupDto {
+    pub id: String,
+    pub label: String,
+    pub depth: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parent_id: Option<String>,
+    pub node_ids: Vec<String>,
+}
+
 pub fn range_to_dto(r: Range) -> RangeDto {
     RangeDto {
         start: PositionDto {
