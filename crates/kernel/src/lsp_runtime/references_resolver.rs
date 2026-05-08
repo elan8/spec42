@@ -1,12 +1,12 @@
 use crate::common::util;
-use crate::common::text_span::to_core_position;
+use crate::common::text_span::{to_core_position, to_core_range};
 use crate::language::{find_reference_ranges, is_reserved_keyword, word_at_position, SymbolEntry};
 use crate::semantic::NodeId;
 use crate::semantic::ResolveResult;
 use crate::workspace::ServerState;
 use semantic_core::TextRange;
 use std::time::Instant;
-use tower_lsp::lsp_types::{Location, Position, Range, Url};
+use tower_lsp::lsp_types::{Location, Position, Url};
 use tracing::info;
 
 type LocationKey = (String, u32, u32, u32, u32);
@@ -16,10 +16,6 @@ fn position_in_range(pos: Position, range: TextRange) -> bool {
         || (pos.line == range.start.line && pos.character >= range.start.character))
         && (pos.line < range.end.line
             || (pos.line == range.end.line && pos.character <= range.end.character))
-}
-
-fn to_core_range(range: Range) -> TextRange {
-    TextRange::new(to_core_position(range.start), to_core_position(range.end))
 }
 
 pub(crate) fn resolved_references_at_position(

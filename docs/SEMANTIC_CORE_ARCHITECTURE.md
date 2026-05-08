@@ -148,6 +148,8 @@ Core boundary notes:
 - Semantic diagnostics rule evaluation is owned by `semantic_core::semantic::diagnostics`.
 - `kernel` diagnostics code is limited to parser/runtime orchestration plus mapping
   `SemanticDiagnostic` to `tower_lsp::lsp_types::Diagnostic`.
+- Kernel core↔LSP span conversions are centralized in `kernel::common::text_span` as
+  the single conversion entrypoint for runtime/view modules.
 
 ## Extension Guidance
 
