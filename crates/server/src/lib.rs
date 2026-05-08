@@ -10,12 +10,10 @@ use std::process::ExitCode;
 use std::sync::Arc;
 
 use cli::{
-    CheckArgs, Cli, Command, DoctorArgs, OutputFormat, SoftwareAnalyzeArgs, SoftwareCommand,
-    StdlibCommand,
+    CheckArgs, Cli, Command, DoctorArgs, OutputFormat, StdlibCommand,
 };
 use environment::{build_doctor_report, resolve_environment};
 use kernel::{validate_paths, ValidationReport, ValidationRequest};
-use kernel::software_architecture::analyze_rust_workspace;
 use stdlib::{load_managed_metadata, managed_status, remove_standard_library};
 
 /// Run validation for the given CLI environment and [`CheckArgs`] (same logic as `spec42 check`).
@@ -43,7 +41,6 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
         Some(Command::Lsp) => run_lsp(&cli).await,
         Some(Command::Check(args)) => run_check(&cli, args),
         Some(Command::Doctor(args)) => run_doctor(&cli, args),
-        Some(Command::Software { command }) => run_software(&cli, command),
         Some(Command::Stdlib { command }) => run_stdlib(&cli, command),
     }
 }
@@ -92,35 +89,6 @@ fn run_doctor(cli: &Cli, args: &DoctorArgs) -> Result<ExitCode, String> {
         }
         OutputFormat::Text => print_doctor_report(&report),
     }
-    Ok(ExitCode::SUCCESS)
-}
-
-fn run_software(cli: &Cli, command: &SoftwareCommand) -> Result<ExitCode, String> {
-    let _environment = resolve_environment(cli)?;
-    match command {
-        SoftwareCommand::Analyze(args) => run_software_analyze(args),
-    }
-}
-
-fn run_software_analyze(args: &SoftwareAnalyzeArgs) -> Result<ExitCode, String> {
-    let model = analyze_rust_workspace(&args.workspace);
-    let json =
-        serde_json::to_string_pretty(&kernel::views::build_software_workspace_model_dto(&model))
-            .map_err(|err| {
-                format!("Failed to serialize software workspace model as JSON: {err}")
-            })?;
-
-    if let Some(output) = &args.output {
-        std::fs::write(output, format!("{json}\n")).map_err(|err| {
-            format!(
-                "Failed to write software analysis JSON to {}: {err}",
-                output.display()
-            )
-        })?;
-    } else {
-        println!("{json}");
-    }
-
     Ok(ExitCode::SUCCESS)
 }
 

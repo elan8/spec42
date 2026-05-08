@@ -51,61 +51,6 @@ pub struct GraphEdgeDto {
     pub name: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SourceAnchorDto {
-    pub file_path: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub range: Option<RangeDto>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SoftwareComponentDto {
-    pub id: String,
-    pub name: String,
-    pub kind: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub parent_id: Option<String>,
-    pub crate_name: String,
-    pub module_path: String,
-    pub anchors: Vec<SourceAnchorDto>,
-    pub is_external: bool,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SoftwareDependencyDto {
-    pub from: String,
-    pub to: String,
-    pub kind: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub source_anchor: Option<SourceAnchorDto>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SoftwareArchitectureModelDto {
-    pub components: Vec<SoftwareComponentDto>,
-    pub dependencies: Vec<SoftwareDependencyDto>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SoftwareAnalysisSummaryDto {
-    pub crate_count: usize,
-    pub module_count: usize,
-    pub dependency_count: usize,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SoftwareWorkspaceModelDto {
-    pub workspace_root: String,
-    pub architecture: SoftwareArchitectureModelDto,
-    pub summary: SoftwareAnalysisSummaryDto,
-}
-
 #[derive(Debug, Clone, Serialize)]
 pub struct SysmlGraphDto {
     pub nodes: Vec<GraphNodeDto>,
@@ -261,37 +206,6 @@ pub struct SysmlVisualizationViewCandidateDto {
     pub description: Option<String>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SoftwareVisualizationParamsDto {
-    pub workspace_root_uri: String,
-    pub view: String,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SoftwareAnalyzeWorkspaceParamsDto {
-    pub workspace_root_uri: String,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SoftwareProjectViewParamsDto {
-    pub workspace_root_uri: String,
-    pub view: String,
-    pub workspace_model: SoftwareWorkspaceModelDto,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SoftwareVisualizationViewCandidateDto {
-    pub id: String,
-    pub name: String,
-    pub supported: bool,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<String>,
-}
-
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SysmlVisualizationPackageCandidateDto {
@@ -328,8 +242,6 @@ pub struct SysmlVisualizationResultDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub graph: Option<SysmlGraphDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub software_architecture: Option<SoftwareArchitectureModelDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub general_view_graph: Option<SysmlGraphDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub workspace_model: Option<WorkspaceModelDto>,
@@ -343,35 +255,11 @@ pub struct SysmlVisualizationResultDto {
     pub stats: Option<SysmlModelStatsDto>,
 }
 
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SoftwareVisualizationResultDto {
-    pub version: u32,
-    pub view: String,
-    pub workspace_root_uri: String,
-    pub views: Vec<SoftwareVisualizationViewCandidateDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub empty_state_message: Option<String>,
-    pub graph: SysmlGraphDto,
-    pub software_architecture: SoftwareArchitectureModelDto,
-    pub workspace_model: WorkspaceModelDto,
-    pub stats: SysmlModelStatsDto,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SoftwareAnalyzeWorkspaceResultDto {
-    pub version: u32,
-    pub workspace_model: SoftwareWorkspaceModelDto,
-}
-
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SysmlModelResultDto {
     pub version: u32,
     pub graph: Option<SysmlGraphDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub software_architecture: Option<SoftwareArchitectureModelDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub package_groups: Option<Vec<SysmlVisualizationGroupDto>>,
     #[serde(skip_serializing_if = "Option::is_none")]
