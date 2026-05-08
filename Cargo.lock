@@ -1295,6 +1295,7 @@ dependencies = [
  "petgraph",
  "serde",
  "serde_json",
+ "sysml-v2-parser",
  "tower-lsp",
 ]
 
