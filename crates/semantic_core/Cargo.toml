@@ -12,3 +12,4 @@ serde_json = { workspace = true }
 petgraph = { workspace = true }
 sysml-v2-parser = { workspace = true }
 tower-lsp = "0.20"
+walkdir = "2"

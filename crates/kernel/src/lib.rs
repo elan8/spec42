@@ -6,7 +6,6 @@ pub mod common;
 pub mod host;
 pub mod language;
 mod lsp_runtime;
-pub(crate) use semantic::root_element::root_element_body;
 
 pub mod semantic_tokens;
 pub mod semantic;

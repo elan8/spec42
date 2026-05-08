@@ -2,6 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
+use semantic_core::build_semantic_graph_for_paths;
 use tower_lsp::lsp_types::Url;
 
 use crate::semantic;
@@ -16,10 +17,7 @@ use crate::views::model_projection;
 use crate::views::sequence_views::{
     build_workspace_sequence_diagrams, filter_sequence_diagrams_by_exposed_ids,
 };
-use crate::workspace::{
-    ingest_parsed_scan_entries, parse_scanned_entries, rebuild_all_document_links,
-    scan_sysml_files, ServerState,
-};
+use crate::workspace::state::{IndexEntry, ParseMetadata};
 
 mod activity_views;
 #[path = "explicit_views.rs"]
@@ -57,20 +55,27 @@ pub fn build_sysml_visualization_for_paths(
         .iter()
         .map(|path| path_to_url(path))
         .collect::<Result<Vec<_>, _>>()?;
-    let scan_roots = std::iter::once(workspace_root_uri.clone())
-        .chain(library_root_urls.iter().cloned())
-        .collect::<Vec<_>>();
-    let (entries, _) = scan_sysml_files(scan_roots);
-    let mut state = ServerState {
-        workspace_roots: vec![workspace_root_uri.clone()],
-        library_paths: library_root_urls.clone(),
-        ..ServerState::default()
-    };
-    ingest_parsed_scan_entries(&mut state, parse_scanned_entries(entries, true));
-    rebuild_all_document_links(&mut state);
+    let (semantic_graph, parsed_docs) =
+        build_semantic_graph_for_paths(target, Some(&workspace_root), library_paths)?;
+    let index = parsed_docs
+        .into_iter()
+        .map(|doc| {
+            (
+                doc.uri,
+                IndexEntry {
+                    content: doc.content,
+                    parsed: Some(doc.parsed),
+                    parse_metadata: ParseMetadata {
+                        parse_time_ms: doc.parse_time_ms,
+                        parse_cached: doc.parse_cached,
+                    },
+                },
+            )
+        })
+        .collect::<HashMap<Url, IndexEntry>>();
     Ok(build_sysml_visualization_response(
-        &state.semantic_graph,
-        &state.index,
+        &semantic_graph,
+        &index,
         &workspace_root_uri,
         &library_root_urls,
         view,
