@@ -785,10 +785,10 @@ dependencies = [
  "clap",
  "glob",
  "petgraph",
- "plugins",
  "semantic_core",
  "serde",
  "serde_json",
+ "software-architecture",
  "sysml-v2-parser",
  "tempfile",
  "thiserror 2.0.18",
@@ -1032,20 +1032,6 @@ name = "pin-project-lite"
 version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
-
-[[package]]
-name = "plugins"
-version = "0.23.0"
-dependencies = [
- "glob",
- "serde_json",
- "tempfile",
- "toml",
- "tower-lsp",
- "tree-sitter",
- "tree-sitter-rust",
- "walkdir",
-]
 
 [[package]]
 name = "potential_utf"
@@ -1449,6 +1435,20 @@ checksum = "3a766e1110788c36f4fa1c2b71b387a7815aa65f88ce0229841826633d93723e"
 dependencies = [
  "libc",
  "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "software-architecture"
+version = "0.23.0"
+dependencies = [
+ "glob",
+ "serde_json",
+ "tempfile",
+ "toml",
+ "tower-lsp",
+ "tree-sitter",
+ "tree-sitter-rust",
+ "walkdir",
 ]
 
 [[package]]

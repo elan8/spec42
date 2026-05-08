@@ -1,5 +1,5 @@
 [package]
-name = "plugins"
+name = "software-architecture"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
@@ -7,7 +7,7 @@ license.workspace = true
 description = "Plugin crate for optional Spec42 add-ons"
 
 [lib]
-name = "plugins"
+name = "software_architecture"
 
 [dependencies]
 glob = "0.3"

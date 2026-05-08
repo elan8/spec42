@@ -2,7 +2,7 @@
 resolver = "2"
 members = [
   "crates/kernel",
-  "crates/plugins",
+  "crates/software-architecture",
   "crates/server",
   "crates/semantic_core",
 ]

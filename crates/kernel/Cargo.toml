@@ -11,10 +11,10 @@ name = "kernel"
 
 [features]
 default = []
-software-architecture = ["dep:plugins"]
+software-architecture = ["dep:software_architecture"]
 
 [dependencies]
-plugins = { path = "../plugins", optional = true }
+software_architecture = { package = "software-architecture", path = "../software-architecture", optional = true }
 semantic_core = { path = "../semantic_core" }
 sysml-v2-parser = { workspace = true }
 petgraph = { workspace = true }
