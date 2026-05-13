@@ -6,10 +6,7 @@ pub fn to_core_position(position: Position) -> TextPosition {
 }
 
 pub fn to_core_range(range: Range) -> TextRange {
-    TextRange::new(
-        to_core_position(range.start),
-        to_core_position(range.end),
-    )
+    TextRange::new(to_core_position(range.start), to_core_position(range.end))
 }
 
 pub fn to_lsp_range(range: TextRange) -> Range {

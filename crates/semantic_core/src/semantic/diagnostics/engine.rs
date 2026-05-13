@@ -32,7 +32,8 @@ mod tests {
         let parsed = sysml_v2_parser::parse(input).expect("parse");
         let uri = Url::parse("file:///test.sysml").expect("uri");
         let graph = build_graph_from_doc(&parsed, &uri);
-        let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+        let diagnostics =
+            collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
         assert!(diagnostics
             .iter()
             .any(|diagnostic| diagnostic.code == "unresolved_import_target"));

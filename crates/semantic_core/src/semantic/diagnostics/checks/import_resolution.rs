@@ -1,9 +1,6 @@
 use crate::{SemanticGraph, SemanticNode};
 
-pub(crate) fn has_import_in_scope(
-    graph: &SemanticGraph,
-    node: &SemanticNode,
-) -> bool {
+pub(crate) fn has_import_in_scope(graph: &SemanticGraph, node: &SemanticNode) -> bool {
     let mut current = Some(node.id.clone());
     while let Some(node_id) = current {
         let Some(scope_node) = graph.get_node(&node_id) else {
@@ -86,10 +83,7 @@ fn has_node_with_qualified_name_or_disambiguated_variant(
         .any(|id| id.qualified_name.starts_with(&disambiguated_prefix))
 }
 
-pub(crate) fn import_target_resolves(
-    graph: &SemanticGraph,
-    import_node: &SemanticNode,
-) -> bool {
+pub(crate) fn import_target_resolves(graph: &SemanticGraph, import_node: &SemanticNode) -> bool {
     let Some(target) = import_target(import_node) else {
         return false;
     };

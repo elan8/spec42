@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Position, Range, Url};
 
-use crate::common::util;
 use crate::analysis::diagnostics_adapter::semantic_to_lsp_diagnostic;
+use crate::common::util;
 use crate::host::config::SemanticCheckProvider;
 use crate::semantic::SemanticGraph;
 

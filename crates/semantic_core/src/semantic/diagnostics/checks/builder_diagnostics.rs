@@ -1,6 +1,9 @@
 use url::Url;
 
-use crate::{resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult, SemanticGraph, SemanticNode};
+use crate::{
+    resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult, SemanticGraph,
+    SemanticNode,
+};
 
 pub(crate) fn should_suppress_builder_diagnostic(
     graph: &SemanticGraph,

@@ -90,4 +90,3 @@ fn collect_import_violations(root: &Path, forbidden_packages: &BTreeSet<String>)
     }
     violations
 }
-

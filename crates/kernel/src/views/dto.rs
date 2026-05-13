@@ -5,9 +5,10 @@ use serde::{Deserialize, Serialize};
 use crate::views::extracted_model as model;
 use crate::views::ibd;
 pub use semantic_core::{
-    range_to_dto, GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, RelationshipDto, SysmlElementDto,
-    SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto,
-    SysmlVisualizationViewCandidateDto, WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
+    range_to_dto, GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, RelationshipDto,
+    SysmlElementDto, SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationGroupDto,
+    SysmlVisualizationPackageCandidateDto, SysmlVisualizationViewCandidateDto,
+    WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -80,7 +81,6 @@ pub struct SysmlFeatureInspectorResultDto {
     pub element: Option<SysmlFeatureInspectorElementDto>,
 }
 
-
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SysmlVisualizationParamsDto {
@@ -89,7 +89,6 @@ pub struct SysmlVisualizationParamsDto {
     #[serde(default)]
     pub selected_view: Option<String>,
 }
-
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -216,4 +215,3 @@ pub struct SysmlLibrarySearchResultDto {
     pub symbol_total: usize,
     pub total: usize,
 }
-

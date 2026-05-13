@@ -187,14 +187,15 @@ struct SoftwareAnalyzeWorkspaceResultDto {
 fn parse_object_or_singleton_array<T: for<'de> Deserialize<'de>>(
     params: &serde_json::Value,
 ) -> Result<T> {
-    serde_json::from_value::<T>(params.clone()).or_else(|_| {
-        if let Some(first) = params.as_array().and_then(|items| items.first()) {
-            serde_json::from_value(first.clone())
-        } else {
-            serde_json::from_value(serde_json::Value::Null)
-        }
-    })
-    .map_err(|err| Error::invalid_params(err.to_string()))
+    serde_json::from_value::<T>(params.clone())
+        .or_else(|_| {
+            if let Some(first) = params.as_array().and_then(|items| items.first()) {
+                serde_json::from_value(first.clone())
+            } else {
+                serde_json::from_value(serde_json::Value::Null)
+            }
+        })
+        .map_err(|err| Error::invalid_params(err.to_string()))
 }
 
 fn parse_workspace_root_uri(uri: &str, method: &str) -> Result<(Url, PathBuf)> {
@@ -202,12 +203,16 @@ fn parse_workspace_root_uri(uri: &str, method: &str) -> Result<(Url, PathBuf)> {
         Error::invalid_params(format!("{method}: invalid workspaceRootUri (not a URI)"))
     })?;
     let path = uri.to_file_path().map_err(|_| {
-        Error::invalid_params(format!("{method}: invalid workspaceRootUri (not a file URI)"))
+        Error::invalid_params(format!(
+            "{method}: invalid workspaceRootUri (not a file URI)"
+        ))
     })?;
     Ok((uri, path))
 }
 
-fn software_visualization_result(params: serde_json::Value) -> Result<SoftwareVisualizationResultDto> {
+fn software_visualization_result(
+    params: serde_json::Value,
+) -> Result<SoftwareVisualizationResultDto> {
     let parsed: SoftwareVisualizationParamsDto = parse_object_or_singleton_array(&params)?;
     let (workspace_root_uri, workspace_path) =
         parse_workspace_root_uri(&parsed.workspace_root_uri, SOFTWARE_VISUALIZATION)?;
@@ -234,7 +239,9 @@ fn software_analyze_workspace_result(
     })
 }
 
-fn software_project_view_result(params: serde_json::Value) -> Result<SoftwareVisualizationResultDto> {
+fn software_project_view_result(
+    params: serde_json::Value,
+) -> Result<SoftwareVisualizationResultDto> {
     let parsed: SoftwareProjectViewParamsDto = parse_object_or_singleton_array(&params)?;
     let (workspace_root_uri, _workspace_path) =
         parse_workspace_root_uri(&parsed.workspace_root_uri, SOFTWARE_PROJECT_VIEW)?;
@@ -282,7 +289,10 @@ fn build_graph(model: &SoftwareArchitectureModel) -> GraphDto {
                         "modulePath".to_string(),
                         serde_json::Value::String(component.module_path.clone()),
                     ),
-                    ("isExternal".to_string(), serde_json::Value::Bool(component.is_external)),
+                    (
+                        "isExternal".to_string(),
+                        serde_json::Value::Bool(component.is_external),
+                    ),
                 ]),
             })
             .collect(),
@@ -341,18 +351,20 @@ fn workspace_model_to_dto(model: &SoftwareWorkspaceModel) -> SoftwareWorkspaceMo
                     from: dependency.from.clone(),
                     to: dependency.to.clone(),
                     kind: dependency.kind.clone(),
-                    source_anchor: dependency.source_anchor.as_ref().map(|anchor| SourceAnchorDto {
-                        file_path: anchor.file_path.clone(),
-                        range: anchor.range.map(|range| RangeDto {
-                            start: PositionDto {
-                                line: range.start.line,
-                                character: range.start.character,
-                            },
-                            end: PositionDto {
-                                line: range.end.line,
-                                character: range.end.character,
-                            },
-                        }),
+                    source_anchor: dependency.source_anchor.as_ref().map(|anchor| {
+                        SourceAnchorDto {
+                            file_path: anchor.file_path.clone(),
+                            range: anchor.range.map(|range| RangeDto {
+                                start: PositionDto {
+                                    line: range.start.line,
+                                    character: range.start.character,
+                                },
+                                end: PositionDto {
+                                    line: range.end.line,
+                                    character: range.end.character,
+                                },
+                            }),
+                        }
                     }),
                 })
                 .collect(),
@@ -390,16 +402,19 @@ fn workspace_model_from_dto(model: &SoftwareWorkspaceModelDto) -> SoftwareWorksp
                         .iter()
                         .map(|anchor| SourceAnchor {
                             file_path: anchor.file_path.clone(),
-                            range: anchor.range.as_ref().map(|range| tower_lsp::lsp_types::Range {
-                                start: tower_lsp::lsp_types::Position {
-                                    line: range.start.line,
-                                    character: range.start.character,
-                                },
-                                end: tower_lsp::lsp_types::Position {
-                                    line: range.end.line,
-                                    character: range.end.character,
-                                },
-                            }),
+                            range: anchor
+                                .range
+                                .as_ref()
+                                .map(|range| tower_lsp::lsp_types::Range {
+                                    start: tower_lsp::lsp_types::Position {
+                                        line: range.start.line,
+                                        character: range.start.character,
+                                    },
+                                    end: tower_lsp::lsp_types::Position {
+                                        line: range.end.line,
+                                        character: range.end.character,
+                                    },
+                                }),
                         })
                         .collect(),
                     is_external: component.is_external,
@@ -413,19 +428,25 @@ fn workspace_model_from_dto(model: &SoftwareWorkspaceModelDto) -> SoftwareWorksp
                     from: dependency.from.clone(),
                     to: dependency.to.clone(),
                     kind: dependency.kind.clone(),
-                    source_anchor: dependency.source_anchor.as_ref().map(|anchor| SourceAnchor {
-                        file_path: anchor.file_path.clone(),
-                        range: anchor.range.as_ref().map(|range| tower_lsp::lsp_types::Range {
-                            start: tower_lsp::lsp_types::Position {
-                                line: range.start.line,
-                                character: range.start.character,
-                            },
-                            end: tower_lsp::lsp_types::Position {
-                                line: range.end.line,
-                                character: range.end.character,
-                            },
+                    source_anchor: dependency
+                        .source_anchor
+                        .as_ref()
+                        .map(|anchor| SourceAnchor {
+                            file_path: anchor.file_path.clone(),
+                            range: anchor
+                                .range
+                                .as_ref()
+                                .map(|range| tower_lsp::lsp_types::Range {
+                                    start: tower_lsp::lsp_types::Position {
+                                        line: range.start.line,
+                                        character: range.start.character,
+                                    },
+                                    end: tower_lsp::lsp_types::Position {
+                                        line: range.end.line,
+                                        character: range.end.character,
+                                    },
+                                }),
                         }),
-                    }),
                 })
                 .collect(),
         },
@@ -478,7 +499,10 @@ mod tests {
             )
             .expect("rpc result");
         let payload = result.expect("method handled");
-        assert_eq!(payload.get("version"), Some(&serde_json::Value::from(0_u32)));
+        assert_eq!(
+            payload.get("version"),
+            Some(&serde_json::Value::from(0_u32))
+        );
         assert!(
             payload.get("workspaceModel").is_some(),
             "expected workspaceModel in analyze response"

@@ -14,7 +14,11 @@ pub struct FileSystemDocumentProvider {
 }
 
 impl FileSystemDocumentProvider {
-    pub fn new(target: PathBuf, workspace_root: Option<PathBuf>, library_paths: Vec<PathBuf>) -> Self {
+    pub fn new(
+        target: PathBuf,
+        workspace_root: Option<PathBuf>,
+        library_paths: Vec<PathBuf>,
+    ) -> Self {
         Self {
             target,
             workspace_root,
@@ -93,8 +97,12 @@ fn path_to_url(path: &Path) -> Result<Url, String> {
             .join(path)
     };
     let canonical = canonicalize_or_self(&absolute);
-    Url::from_file_path(&canonical)
-        .map_err(|_| format!("failed to convert path to file URI: {}", canonical.display()))
+    Url::from_file_path(&canonical).map_err(|_| {
+        format!(
+            "failed to convert path to file URI: {}",
+            canonical.display()
+        )
+    })
 }
 
 fn resolve_workspace_root(target: &Path, workspace_root: Option<&Path>) -> PathBuf {

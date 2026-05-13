@@ -1,5 +1,5 @@
-use crate::common::util;
 use crate::common::text_span::{to_core_position, to_core_range};
+use crate::common::util;
 use crate::language::{find_reference_ranges, is_reserved_keyword, word_at_position, SymbolEntry};
 use crate::semantic::NodeId;
 use crate::semantic::ResolveResult;

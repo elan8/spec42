@@ -3,14 +3,22 @@
 //! These checks use the semantic graph (parts, ports, connections) to report
 //! diagnostics such as: unconnected ports, connection to non-port, port type mismatch.
 
-use std::{collections::{HashMap, HashSet}, time::Instant};
+use std::{
+    collections::{HashMap, HashSet},
+    time::Instant,
+};
 use url::Url;
 
+use crate::semantic::diagnostics::checks::builder_diagnostics::should_suppress_builder_diagnostic;
+use crate::semantic::diagnostics::checks::import_resolution::{
+    has_import_in_scope, import_target, import_target_resolves,
+};
 use crate::semantic::diagnostics::helpers::*;
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
-use crate::{resolve_member_via_type, NodeId, RelationshipKind, ResolveResult, SemanticGraph, SemanticDiagnostic};
-use crate::semantic::diagnostics::checks::builder_diagnostics::should_suppress_builder_diagnostic;
-use crate::semantic::diagnostics::checks::import_resolution::{has_import_in_scope, import_target, import_target_resolves};
+use crate::{
+    resolve_member_via_type, NodeId, RelationshipKind, ResolveResult, SemanticDiagnostic,
+    SemanticGraph,
+};
 
 const RULE6_ALLOWED_KINDS: &[&str] = &[
     "part def",
@@ -85,7 +93,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         if should_suppress_builder_diagnostic(graph, uri, node, code, &message) {
             continue;
         }
-        diagnostics.push(diag(uri, 
+        diagnostics.push(diag(
+            uri,
             diagnostic_range(graph, node, None),
             DiagnosticSeverity::Warning,
             "semantic",
@@ -106,7 +115,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     for (src_id, tgt_id, connection_range) in connection_occurrences {
         if let (Some(src), Some(tgt)) = (graph.get_node(&src_id), graph.get_node(&tgt_id)) {
             if !is_port_like(&src.element_kind) {
-                diagnostics.push(diag(uri, 
+                diagnostics.push(diag(
+                    uri,
                     diagnostic_range(graph, src, Some(tgt)),
                     DiagnosticSeverity::Warning,
                     "semantic",
@@ -118,7 +128,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
                 ));
             }
             if !is_port_like(&tgt.element_kind) {
-                diagnostics.push(diag(uri, 
+                diagnostics.push(diag(
+                    uri,
                     diagnostic_range(graph, tgt, Some(src)),
                     DiagnosticSeverity::Warning,
                     "semantic",
@@ -131,7 +142,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             }
             if is_port_like(&src.element_kind) && is_port_like(&tgt.element_kind) {
                 if let Some(msg) = port_compatibility_mismatch(graph, src, tgt) {
-                    diagnostics.push(diag(uri, 
+                    diagnostics.push(diag(
+                        uri,
                         connection_range,
                         DiagnosticSeverity::Warning,
                         "semantic",
@@ -170,7 +182,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
                 .as_ref()
                 .is_some_and(|key| !connected_port_keys.contains(key))
         {
-            diagnostics.push(diag(uri, 
+            diagnostics.push(diag(
+                uri,
                 diagnostic_range(graph, node, None),
                 DiagnosticSeverity::Information,
                 "semantic",
@@ -193,7 +206,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         let pair = normalize_edge_pair(&src_id, &tgt_id);
         if !seen_pairs.insert(pair) {
             if let Some(tgt) = graph.get_node(&tgt_id) {
-                diagnostics.push(diag(uri, 
+                diagnostics.push(diag(
+                    uri,
                     diagnostic_range(graph, tgt, None),
                     DiagnosticSeverity::Information,
                     "semantic",
@@ -215,7 +229,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     for node in graph.nodes_for_uri(uri) {
         if let Some(multiplicity) = node.attributes.get("multiplicity").and_then(|v| v.as_str()) {
             if let Some(message) = multiplicity_issue_message(multiplicity) {
-                diagnostics.push(diag(uri, 
+                diagnostics.push(diag(
+                    uri,
                     diagnostic_range(graph, node, None),
                     DiagnosticSeverity::Warning,
                     "semantic",
@@ -241,7 +256,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         let Some(target) = import_target(node) else {
             continue;
         };
-        diagnostics.push(diag(uri, 
+        diagnostics.push(diag(
+            uri,
             diagnostic_range(graph, node, None),
             DiagnosticSeverity::Warning,
             "semantic",
@@ -279,13 +295,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         let resolved_via_import_scope = *rule6_resolution_cache
             .entry((node.id.qualified_name.clone(), normalized_type_ref.clone()))
             .or_insert_with(|| {
-                !crate::resolve_type_reference_targets(
-                    graph,
-                    node,
-                    type_ref,
-                    RULE6_ALLOWED_KINDS,
-                )
-                .is_empty()
+                !crate::resolve_type_reference_targets(graph, node, type_ref, RULE6_ALLOWED_KINDS)
+                    .is_empty()
             });
         let allow_graph_name_fallback = !*import_scope_cache
             .entry(node.id.qualified_name.clone())
@@ -294,29 +305,32 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             *rule6_graph_name_fallback_cache
                 .entry(normalized_type_ref.clone())
                 .or_insert_with(|| {
-                    graph.nodes_named(&normalized_type_ref).iter().any(|candidate| {
-                        candidate.id.uri == *uri
-                            && matches!(
-                                candidate.element_kind.as_str(),
-                                "part def"
-                                    | "port def"
-                                    | "interface"
-                                    | "item def"
-                                    | "attribute def"
-                                    | "action def"
-                                    | "actor def"
-                                    | "occurrence def"
-                                    | "flow def"
-                                    | "allocation def"
-                                    | "state def"
-                                    | "requirement def"
-                                    | "use case def"
-                                    | "concern def"
-                                    | "enum def"
-                                    | "alias"
-                                    | "kermlDecl"
-                            )
-                    })
+                    graph
+                        .nodes_named(&normalized_type_ref)
+                        .iter()
+                        .any(|candidate| {
+                            candidate.id.uri == *uri
+                                && matches!(
+                                    candidate.element_kind.as_str(),
+                                    "part def"
+                                        | "port def"
+                                        | "interface"
+                                        | "item def"
+                                        | "attribute def"
+                                        | "action def"
+                                        | "actor def"
+                                        | "occurrence def"
+                                        | "flow def"
+                                        | "allocation def"
+                                        | "state def"
+                                        | "requirement def"
+                                        | "use case def"
+                                        | "concern def"
+                                        | "enum def"
+                                        | "alias"
+                                        | "kermlDecl"
+                                )
+                        })
                 })
         } else {
             false
@@ -343,7 +357,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         if !unresolved_seen.insert(key) {
             continue;
         }
-        diagnostics.push(diag(uri, 
+        diagnostics.push(diag(
+            uri,
             range,
             DiagnosticSeverity::Warning,
             "semantic",
@@ -353,7 +368,6 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
                 type_ref, node.name
             ),
         ));
-
     }
     section_timings.push((
         "6_unresolved_type_references".to_string(),
@@ -440,7 +454,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             if !unresolved_specializes_seen.insert(key) {
                 continue;
             }
-            diagnostics.push(diag(uri, 
+            diagnostics.push(diag(uri,
                 range,
                 DiagnosticSeverity::Warning,
                 "semantic",
@@ -466,7 +480,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             continue;
         };
         if redefines_raw.trim().is_empty() {
-            diagnostics.push(diag(uri, 
+            diagnostics.push(diag(
+                uri,
                 diagnostic_range(graph, node, None),
                 DiagnosticSeverity::Warning,
                 "semantic",
@@ -476,7 +491,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             continue;
         }
         if redefines_raw.trim() == node.id.qualified_name {
-            diagnostics.push(diag(uri, 
+            diagnostics.push(diag(
+                uri,
                 diagnostic_range(graph, node, None),
                 DiagnosticSeverity::Warning,
                 "semantic",
@@ -522,7 +538,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         if target.name.trim() != feature_name {
             continue;
         }
-        diagnostics.push(diag(uri, 
+        diagnostics.push(diag(uri,
             diagnostic_range(graph, node, Some(target)),
             DiagnosticSeverity::Error,
             "semantic",
@@ -552,7 +568,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
                 .iter()
                 .any(|target| target.element_kind != "allocation def")
         {
-            diagnostics.push(diag(uri, 
+            diagnostics.push(diag(
+                uri,
                 diagnostic_range(graph, node, None),
                 DiagnosticSeverity::Warning,
                 "semantic",
@@ -574,7 +591,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             .and_then(|v| v.as_str())
             .is_some_and(|value| !value.trim().is_empty());
         if has_source ^ has_target {
-            diagnostics.push(diag(uri, 
+            diagnostics.push(diag(uri,
                 diagnostic_range(graph, node, None),
                 DiagnosticSeverity::Warning,
                 "semantic",
@@ -613,7 +630,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
                     .and_then(|value| value.as_bool())
                     == Some(false)
             {
-                diagnostics.push(diag(uri, 
+                diagnostics.push(diag(
+                    uri,
                     diagnostic_range(graph, node, None),
                     DiagnosticSeverity::Warning,
                     "semantic",
@@ -624,7 +642,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
                     ),
                 ));
             } else if status == "incomplete" {
-                diagnostics.push(diag(uri, 
+                diagnostics.push(diag(uri,
                     diagnostic_range(graph, node, None),
                     DiagnosticSeverity::Information,
                     "semantic",
@@ -640,7 +658,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
                     .get("analysisEvaluationError")
                     .and_then(|value| value.as_str())
                     .unwrap_or("analysis expression could not be evaluated");
-                diagnostics.push(diag(uri, 
+                diagnostics.push(diag(
+                    uri,
                     diagnostic_range(graph, node, None),
                     DiagnosticSeverity::Warning,
                     "semantic",
@@ -681,7 +700,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             normalized.as_str(),
             "pass" | "fail" | "inconclusive" | "error"
         ) {
-            diagnostics.push(diag(uri, 
+            diagnostics.push(diag(uri,
                 diagnostic_range(graph, node, None),
                 DiagnosticSeverity::Warning,
                 "semantic",
@@ -719,7 +738,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         if binding_kind == "case_result_default" {
             continue;
         }
-        diagnostics.push(diag(uri, 
+        diagnostics.push(diag(
+            uri,
             diagnostic_range(graph, node, None),
             DiagnosticSeverity::Warning,
             "semantic",
@@ -736,21 +756,28 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         diagnostics.len().saturating_sub(d13),
     ));
 
-    section_timings.sort_by(|a, b| b.1.cmp(&a.1));
-    let top_sections = section_timings
-        .iter()
-        .take(6)
-        .map(|(name, ms, count)| format!("{name}:{ms}ms:{count}diag"))
-        .collect::<Vec<_>>()
-        .join(" | ");
-    println!(
-        "TIMING semantic_diag_rule_breakdown uri={} total_ms={} total_diags={} top6={}",
-        uri,
-        total_start.elapsed().as_millis(),
-        diagnostics.len(),
-        top_sections
-    );
+    if std::env::var("SEMANTIC_CORE_TIMING")
+        .map(|value| {
+            let value = value.trim().to_ascii_lowercase();
+            value == "1" || value == "true" || value == "yes" || value == "on"
+        })
+        .unwrap_or(false)
+    {
+        section_timings.sort_by(|a, b| b.1.cmp(&a.1));
+        let top_sections = section_timings
+            .iter()
+            .take(6)
+            .map(|(name, ms, count)| format!("{name}:{ms}ms:{count}diag"))
+            .collect::<Vec<_>>()
+            .join(" | ");
+        println!(
+            "TIMING semantic_diag_rule_breakdown uri={} total_ms={} total_diags={} top6={}",
+            uri,
+            total_start.elapsed().as_millis(),
+            diagnostics.len(),
+            top_sections
+        );
+    }
 
     diagnostics
 }
-

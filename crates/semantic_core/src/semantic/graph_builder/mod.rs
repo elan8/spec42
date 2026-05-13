@@ -2,8 +2,8 @@
 
 use std::collections::HashMap;
 
-use sysml_v2_parser::RootNamespace;
 use crate::semantic::text_span::TextRange;
+use sysml_v2_parser::RootNamespace;
 use url::Url;
 
 use crate::semantic::ast_util::span_to_range;

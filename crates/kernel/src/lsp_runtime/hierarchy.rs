@@ -1,5 +1,5 @@
-use crate::semantic::SemanticNode;
 use crate::common::text_span::to_lsp_range;
+use crate::semantic::SemanticNode;
 use tower_lsp::lsp_types::{
     CallHierarchyItem, Moniker, MonikerKind, SymbolKind, TypeHierarchyItem, UniquenessLevel,
 };

@@ -9,8 +9,8 @@ use url::Url;
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
-use crate::semantic::text_span::TextRange;
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
+use crate::semantic::text_span::TextRange;
 
 use super::requirement_body::resolve_subject_type_target_qualified;
 use super::{add_node_and_recurse, qualified_name_for_node};

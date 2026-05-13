@@ -1,8 +1,8 @@
-mod engine_impl;
 mod checks;
+pub mod engine;
+mod engine_impl;
 mod helpers;
 mod shared_rules;
-pub mod engine;
 pub mod types;
 
 pub use engine::collect_diagnostics_from_graph;

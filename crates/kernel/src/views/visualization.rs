@@ -8,8 +8,8 @@ use tower_lsp::lsp_types::Url;
 use crate::semantic;
 use crate::views::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlElementDto, SysmlGraphDto, SysmlModelStatsDto,
-    SysmlVisualizationPackageCandidateDto, SysmlVisualizationResultDto,
-    WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
+    SysmlVisualizationPackageCandidateDto, SysmlVisualizationResultDto, WorkspaceFileModelDto,
+    WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
 use crate::views::extracted_model::{ActivityDiagramDto, SequenceDiagramDto};
 use crate::views::ibd::{self, IbdDataDto, IbdPackageContainerGroupDto};

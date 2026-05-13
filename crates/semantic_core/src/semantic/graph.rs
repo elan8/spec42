@@ -3,11 +3,11 @@
 use std::collections::HashMap;
 use std::sync::Mutex;
 
+use crate::semantic::text_span::{TextPosition, TextRange};
 use petgraph::stable_graph::{NodeIndex, StableGraph};
 use petgraph::visit::{EdgeRef, IntoEdgeReferences};
 use petgraph::Directed;
 use petgraph::Direction;
-use crate::semantic::text_span::{TextPosition, TextRange};
 use url::Url;
 
 use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};

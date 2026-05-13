@@ -7,8 +7,8 @@ use spec42::perform_check;
 
 #[test]
 fn kitchen_timer_example_validates() {
-    let example = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../examples/timer/KitchenTimer.sysml");
+    let example =
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/timer/KitchenTimer.sysml");
     let example = example
         .canonicalize()
         .unwrap_or_else(|_| panic!("missing example file at {}", example.display()));

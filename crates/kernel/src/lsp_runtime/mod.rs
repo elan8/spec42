@@ -24,7 +24,8 @@ use crate::views::dto;
 use crate::workspace::ServerState;
 use custom::{
     mark_sysml_model_parse_cached, sysml_clear_cache_result, sysml_feature_inspector_result,
-    sysml_library_search_result, sysml_model_result, sysml_server_stats_result, sysml_visualization_result,
+    sysml_library_search_result, sysml_model_result, sysml_server_stats_result,
+    sysml_visualization_result,
 };
 
 struct Backend {
@@ -476,10 +477,10 @@ fn make_custom_rpc_handler(
     &'a Backend,
     serde_json::Value,
 ) -> Pin<Box<dyn Future<Output = Result<serde_json::Value>> + Send + 'a>>
-    + Clone
-    + Send
-    + Sync
-    + 'static {
+       + Clone
+       + Send
+       + Sync
+       + 'static {
     move |backend: &Backend, params| Box::pin(backend.custom_rpc_method(method_name, params))
 }
 

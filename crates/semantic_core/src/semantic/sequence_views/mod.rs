@@ -8,8 +8,8 @@
 
 use url::Url;
 
-use crate::SemanticGraph;
 use crate::semantic::extracted_model::SequenceDiagramDto;
+use crate::SemanticGraph;
 
 mod graph_extractor;
 

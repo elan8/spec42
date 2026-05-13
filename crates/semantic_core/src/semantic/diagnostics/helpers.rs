@@ -1,6 +1,5 @@
 use crate::semantic::diagnostics::types::{DiagnosticSeverity, SemanticDiagnostic};
 
-
 use crate::{NodeId, SemanticGraph, SemanticNode, TextPosition, TextRange};
 
 use crate::semantic::ibd;
@@ -16,8 +15,16 @@ pub(super) fn diag(
     source: &str,
     code: &str,
     message: String,
- ) -> SemanticDiagnostic {
-    SemanticDiagnostic { uri: uri.clone(), range, severity, source: source.to_string(), code: code.to_string(), message, related_information: Vec::new() }
+) -> SemanticDiagnostic {
+    SemanticDiagnostic {
+        uri: uri.clone(),
+        range,
+        severity,
+        source: source.to_string(),
+        code: code.to_string(),
+        message,
+        related_information: Vec::new(),
+    }
 }
 
 pub(super) fn is_unknown_range(range: TextRange) -> bool {

@@ -25,7 +25,9 @@ pub fn semantic_to_lsp_diagnostic(diagnostic: SemanticDiagnostic) -> Diagnostic 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use semantic_core::{DiagnosticSeverity as CoreSeverity, SemanticDiagnostic, TextPosition, TextRange};
+    use semantic_core::{
+        DiagnosticSeverity as CoreSeverity, SemanticDiagnostic, TextPosition, TextRange,
+    };
     use tower_lsp::lsp_types::DiagnosticSeverity as LspSeverity;
     use url::Url;
 
@@ -46,7 +48,9 @@ mod tests {
         assert_eq!(lsp.severity, Some(LspSeverity::WARNING));
         assert_eq!(
             lsp.code,
-            Some(NumberOrString::String("unresolved_type_reference".to_string()))
+            Some(NumberOrString::String(
+                "unresolved_type_reference".to_string()
+            ))
         );
     }
 }

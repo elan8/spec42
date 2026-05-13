@@ -10,15 +10,15 @@
 
 use std::collections::{HashMap, HashSet};
 
-use url::Url;
 use crate::semantic::text_span::TextRange;
+use url::Url;
 
-use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
 use crate::semantic::extracted_model::{
     PositionDto, RangeDto, SequenceActivationDto, SequenceDiagramDto, SequenceFragmentDto,
     SequenceLifelineDto, SequenceMessageDto, SequenceOperandDto,
 };
+use crate::semantic::graph::SemanticGraph;
+use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
 
 const SCENARIO_ANCHOR: &str = "InteractionScenario";
 const LIFELINE_ANCHOR: &str = "Lifeline";
@@ -158,11 +158,7 @@ fn collect_part_def_specializes(graph: &SemanticGraph) -> HashMap<String, Vec<St
 
         // Original (string) `specializes` reference — works even when the base
         // type cannot be resolved into a concrete graph node.
-        if let Some(spec) = node
-            .attributes
-            .get("specializes")
-            .and_then(|v| v.as_str())
-        {
+        if let Some(spec) = node.attributes.get("specializes").and_then(|v| v.as_str()) {
             for segment in split_specializes_string(spec) {
                 bases.push(segment);
             }
@@ -190,10 +186,7 @@ fn collect_part_def_specializes(graph: &SemanticGraph) -> HashMap<String, Vec<St
 
 /// Build the transitive closure of part-def names that specialize the anchor
 /// name (inclusive). Operates purely on the simple-name graph.
-fn build_name_closure(
-    specializes: &HashMap<String, Vec<String>>,
-    anchor: &str,
-) -> HashSet<String> {
+fn build_name_closure(specializes: &HashMap<String, Vec<String>>, anchor: &str) -> HashSet<String> {
     let mut closure: HashSet<String> = HashSet::new();
     closure.insert(anchor.to_string());
     let mut changed = true;
@@ -341,11 +334,7 @@ impl<'a> ExtractionState<'a> {
                 self.messages.push(message);
                 continue;
             }
-            if self
-                .closures
-                .activation
-                .contains(&simple_name(&part_type))
-            {
+            if self.closures.activation.contains(&simple_name(&part_type)) {
                 let activation = self.build_activation(child);
                 self.activations.push(activation);
                 continue;
@@ -434,11 +423,7 @@ impl<'a> ExtractionState<'a> {
                 fragments.push(self.build_fragment(child, child_kind));
                 continue;
             }
-            if self
-                .closures
-                .activation
-                .contains(&simple_name(&part_type))
-            {
+            if self.closures.activation.contains(&simple_name(&part_type)) {
                 let activation = self.build_activation(child);
                 self.activations.push(activation);
                 continue;
@@ -486,11 +471,7 @@ impl<'a> ExtractionState<'a> {
                 fragments.push(self.build_fragment(child, child_kind));
                 continue;
             }
-            if self
-                .closures
-                .activation
-                .contains(&simple_name(&child_type))
-            {
+            if self.closures.activation.contains(&simple_name(&child_type)) {
                 let activation = self.build_activation(child);
                 self.activations.push(activation);
                 continue;
@@ -678,28 +659,22 @@ fn compare_range(a: &RangeDto, b: &RangeDto) -> std::cmp::Ordering {
     ))
 }
 
-fn compare_range_lsp(
-    a: &TextRange,
-    b: &TextRange,
-) -> std::cmp::Ordering {
-    (
-        a.start.line,
-        a.start.character,
-        a.end.line,
-        a.end.character,
-    )
-        .cmp(&(
-            b.start.line,
-            b.start.character,
-            b.end.line,
-            b.end.character,
-        ))
+fn compare_range_lsp(a: &TextRange, b: &TextRange) -> std::cmp::Ordering {
+    (a.start.line, a.start.character, a.end.line, a.end.character).cmp(&(
+        b.start.line,
+        b.start.character,
+        b.end.line,
+        b.end.character,
+    ))
 }
 
 fn package_path_for(graph: &SemanticGraph, scenario: &SemanticNode) -> String {
     let mut segments = Vec::new();
     for ancestor in graph.ancestors_of(scenario) {
-        if matches!(ancestor.element_kind.as_str(), "package" | "library package") {
+        if matches!(
+            ancestor.element_kind.as_str(),
+            "package" | "library package"
+        ) {
             segments.push(ancestor.name.clone());
         }
     }

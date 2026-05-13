@@ -1,8 +1,8 @@
 //! Helpers for working with sysml-v2-parser AST: span/range conversion and name extraction.
 
+use crate::semantic::text_span::{TextPosition, TextRange};
 use sysml_v2_parser::ast::Identification;
 use sysml_v2_parser::Span;
-use crate::semantic::text_span::{TextPosition, TextRange};
 
 /// Converts sysml-v2-parser Span (1-based line/column) to 0-based TextRange.
 pub fn span_to_range(span: &Span) -> TextRange {

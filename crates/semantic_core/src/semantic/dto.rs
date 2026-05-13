@@ -1,7 +1,7 @@
 //! Shared DTO primitives for semantic/model and visualization payloads.
 
-use serde::{Deserialize, Serialize};
 use crate::semantic::text_span::TextRange;
+use serde::{Deserialize, Serialize};
 
 use crate::semantic::extracted_model::{ActivityDiagramDto, SequenceDiagramDto};
 use crate::semantic::ibd::IbdDataDto;

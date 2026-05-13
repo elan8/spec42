@@ -9,9 +9,7 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 use std::sync::Arc;
 
-use cli::{
-    CheckArgs, Cli, Command, DoctorArgs, OutputFormat, StdlibCommand,
-};
+use cli::{CheckArgs, Cli, Command, DoctorArgs, OutputFormat, StdlibCommand};
 use environment::{build_doctor_report, resolve_environment};
 use kernel::{validate_paths, ValidationReport, ValidationRequest};
 use stdlib::{load_managed_metadata, managed_status, remove_standard_library};

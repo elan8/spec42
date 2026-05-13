@@ -7,8 +7,8 @@ pub mod host;
 pub mod language;
 mod lsp_runtime;
 
-pub mod semantic_tokens;
 pub mod semantic;
+pub mod semantic_tokens;
 pub mod syntax;
 pub mod validation;
 pub mod views;
@@ -17,8 +17,8 @@ pub(crate) mod workspace;
 // Host contract exports (intended stable composition surface for edition hosts).
 pub use host::config::{
     CapabilityAugmenter, CapabilityMetadata, CapabilityProvider, CheckProvider,
-    CustomMethodProvider, CustomRpcContext, CustomRpcProvider, PipelineHook, SemanticCheckProvider, Spec42Config,
-    ValidationPipelineHook, KERNEL_INTERFACE_VERSION,
+    CustomMethodProvider, CustomRpcContext, CustomRpcProvider, PipelineHook, SemanticCheckProvider,
+    Spec42Config, ValidationPipelineHook, KERNEL_INTERFACE_VERSION,
 };
 pub use host::default_config::default_config as default_server_config;
 pub use lsp_runtime::run as run_lsp;

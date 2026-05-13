@@ -1,5 +1,5 @@
-use crate::views::dto;
 use crate::common::text_span::to_core_range;
+use crate::views::dto;
 use crate::workspace::library_search::{
     LibrarySearchItem, LibrarySearchPackage, LibrarySearchSource,
 };
