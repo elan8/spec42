@@ -23,7 +23,6 @@ embed-stdlib = []
 
 [build-dependencies]
 sha2 = "0.10"
-ureq = { version = "2", default-features = true }
 zip = { version = "2", default-features = false, features = ["deflate"] }
 
 [dependencies]

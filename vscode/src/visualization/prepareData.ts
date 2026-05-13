@@ -5,12 +5,13 @@
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { GraphPayloadDto, VisualizationDataDto } from './visualizationTypes';
 
 /**
  * Build a tree of elements from graph (nodes + edges).
  * Used when data has graph instead of elements for views that need tree structure.
  */
-export function graphToElementTree(graph: any): any[] {
+export function graphToElementTree(graph: GraphPayloadDto | null | undefined): any[] {
     if (!graph?.nodes?.length) return [];
     const nodes = graph.nodes;
     const edges = graph.edges || [];
@@ -51,16 +52,17 @@ export function graphToElementTree(graph: any): any[] {
     return roots;
 }
 
-export function prepareDataForView(data: any, view: string): any {
+export function prepareDataForView(data: VisualizationDataDto | Record<string, any> | null, view: string): any {
     if (!data) {
         return data;
     }
 
-    const hasGraph = data.graph?.nodes;
-    const elements = hasGraph ? graphToElementTree(data.graph) : (data.elements || []);
+    const graph = data.graph as GraphPayloadDto | undefined;
+    const hasGraph = graph?.nodes;
+    const elements = hasGraph ? graphToElementTree(graph) : (data.elements || []);
     const edgeType = (e: any) => (e.type || e.rel_type || '');
     const relationships = hasGraph
-        ? (data.graph.edges || []).filter((e: any) => edgeType(e) !== 'contains').map((e: any) => ({
+        ? (graph?.edges || []).filter((e: any) => edgeType(e) !== 'contains').map((e: any) => ({
             source: e.source,
             target: e.target,
             type: edgeType(e),

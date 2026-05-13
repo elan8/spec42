@@ -732,7 +732,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         else {
             continue;
         };
-        if node.attributes.get("objectiveBoundTo").is_some() {
+        if node.attributes.contains_key("objectiveBoundTo") {
             continue;
         }
         if binding_kind == "case_result_default" {
@@ -763,7 +763,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         })
         .unwrap_or(false)
     {
-        section_timings.sort_by(|a, b| b.1.cmp(&a.1));
+        section_timings.sort_by_key(|(_, ms, _)| std::cmp::Reverse(*ms));
         let top_sections = section_timings
             .iter()
             .take(6)

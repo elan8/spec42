@@ -138,7 +138,7 @@ describe("prepareDataForView", () => {
         assert.strictEqual(result.connectors[0].target, "P::goal");
     });
 
-    it.skip("action-flow-view produces diagrams (disabled for release)", () => {
+    it("action-flow-view produces diagrams", () => {
         const data = createMockData();
         const result = prepareDataForView(data, "action-flow-view");
         assert.ok(Array.isArray(result.diagrams), "action-flow-view should have diagrams array");

@@ -90,3 +90,39 @@ fn collect_import_violations(root: &Path, forbidden_packages: &BTreeSet<String>)
     }
     violations
 }
+
+#[test]
+fn domain_libraries_do_not_import_technical_libraries() {
+    let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(Path::parent)
+        .expect("repo root")
+        .to_path_buf();
+    let domain_root = repo_root.join("domain-libraries/domain");
+    let technical_root = repo_root.join("domain-libraries/technical");
+
+    let technical_packages = package_set_for(&technical_root);
+    assert!(
+        !technical_packages.is_empty(),
+        "expected technical domain-library packages to be discovered"
+    );
+
+    let violations = collect_import_violations(&domain_root, &technical_packages);
+    assert!(
+        violations.is_empty(),
+        "domain libraries must not import technical packages:\n{}",
+        violations.join("\n")
+    );
+}
+
+#[test]
+fn package_name_parser_handles_standard_domain_library_declarations() {
+    assert_eq!(
+        parse_package_name("package RoboticsCore {\n}").as_deref(),
+        Some("RoboticsCore")
+    );
+    assert_eq!(
+        parse_import_targets("    import RoboticsCore::*;\n    import RobotControl::*;"),
+        vec!["RoboticsCore", "RobotControl"]
+    );
+}

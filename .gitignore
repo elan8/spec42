@@ -15,3 +15,4 @@ scripts/code-scanning-export/
 code-scanning-export/
 tmp/
 crates/kernel/tests/output/*
+crates/server/cache/*.zip

@@ -31,7 +31,6 @@
   "activationEvents": [
     "workspaceContains:**/*.sysml",
     "workspaceContains:**/*.kerml",
-    "workspaceContains:**/Cargo.toml",
     "onWebviewPanel:sysmlVisualizer",
     "onWebviewPanel:spec42SoftwareVisualizer",
     "onView:spec42Addons",

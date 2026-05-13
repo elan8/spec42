@@ -41,6 +41,35 @@ cargo build --release
 
 The binary is at `target/release/spec42`. Put it on your PATH or set the extension setting `spec42.serverPath` to its path (legacy `sysml-language-server.serverPath` is still supported).
 
+### Embedded standard library bundle
+
+The `spec42` crate embeds the SysML v2 standard library by default. Builds are deterministic and do not download this archive implicitly.
+
+For normal embedded builds, provide the full SysML v2 Release `2026-03` zip in one of these ways:
+
+```powershell
+$env:SPEC42_STDLIB_BUNDLE_ZIP = 'C:\path\to\SysML-v2-Release-2026-03.zip'
+cargo build -p spec42
+```
+
+or place the zip at:
+
+```text
+crates/server/cache/sysml-v2-release-2026-03.zip
+```
+
+Maintainers can refresh that cache from:
+
+```text
+https://github.com/Systems-Modeling/SysML-v2-Release/archive/refs/tags/2026-03.zip
+```
+
+For development checks that do not need the embedded library, build the server crate without default features:
+
+```bash
+cargo test -p spec42 --no-default-features
+```
+
 ### VS Code extension
 
 ```bash

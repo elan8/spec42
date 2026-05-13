@@ -83,52 +83,70 @@ export class AddonsWebviewViewProvider implements vscode.WebviewViewProvider {
     const vscode = acquireVsCodeApi();
     const addonsRoot = document.getElementById('addons');
 
-    function escapeHtml(value) {
-      return String(value || '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;');
+    function appendText(parent, className, value) {
+      const el = document.createElement('div');
+      el.className = className;
+      el.textContent = String(value || '');
+      parent.appendChild(el);
+      return el;
     }
 
     function render(addons) {
-      addonsRoot.innerHTML = (addons || []).map((addon, index) => {
-        const toggle = addon.canToggle
-          ? '<label class="toggle"><input type="checkbox" data-role="toggle" data-index="' + index + '"' + (addon.enabled ? ' checked' : '') + '> Enabled</label>'
-          : '';
-        const badge = addon.badge ? '<span class="badge">' + escapeHtml(addon.badge) + '</span>' : '';
-        const openLabel = addon.id === 'software-architecture' ? 'Open Visualizer' : 'Open';
-        const runAnalysisButton = addon.canRunAnalysis
-          ? '<button class="secondary" data-role="runAnalysis" data-index="' + index + '"' + (addon.runAnalysisEnabled ? '' : ' disabled') + '>' + (addon.statusText === 'Analyzing...' ? 'Analyzing...' : 'Run Analysis') + '</button>'
-          : '';
-        return '<div class="addon-card">' +
-          '<div class="addon-header"><div class="addon-title">' + escapeHtml(addon.name) + '</div>' + badge + '</div>' +
-          '<div class="addon-description">' + escapeHtml(addon.description) + '</div>' +
-          '<div class="addon-status">' + escapeHtml(addon.statusText) + '</div>' +
-          '<div class="addon-actions">' +
-            toggle +
-            runAnalysisButton +
-            (addon.canOpen ? '<button class="primary" data-role="open" data-index="' + index + '"' + (addon.openEnabled ? '' : ' disabled') + '>' + openLabel + '</button>' : '') +
-          '</div>' +
-        '</div>';
-      }).join('');
+      addonsRoot.replaceChildren();
+      (addons || []).forEach((addon) => {
+        const card = document.createElement('div');
+        card.className = 'addon-card';
 
-      addonsRoot.querySelectorAll('[data-role="toggle"]').forEach((el) => {
-        el.addEventListener('change', () => {
-          const addon = addons[Number(el.getAttribute('data-index'))];
-          vscode.postMessage({ type: 'toggleAddon', addonId: addon.id, enabled: !!el.checked });
-        });
-      });
-      addonsRoot.querySelectorAll('[data-role="open"]').forEach((el) => {
-        el.addEventListener('click', () => {
-          const addon = addons[Number(el.getAttribute('data-index'))];
-          vscode.postMessage({ type: 'openAddon', addonId: addon.id });
-        });
-      });
-      addonsRoot.querySelectorAll('[data-role="runAnalysis"]').forEach((el) => {
-        el.addEventListener('click', () => {
-          const addon = addons[Number(el.getAttribute('data-index'))];
-          vscode.postMessage({ type: 'runAnalysis', addonId: addon.id });
-        });
+        const header = document.createElement('div');
+        header.className = 'addon-header';
+        appendText(header, 'addon-title', addon.name);
+        if (addon.badge) {
+          const badge = document.createElement('span');
+          badge.className = 'badge';
+          badge.textContent = String(addon.badge);
+          header.appendChild(badge);
+        }
+        card.appendChild(header);
+        appendText(card, 'addon-description', addon.description);
+        appendText(card, 'addon-status', addon.statusText);
+
+        const actions = document.createElement('div');
+        actions.className = 'addon-actions';
+        if (addon.canToggle) {
+          const label = document.createElement('label');
+          label.className = 'toggle';
+          const input = document.createElement('input');
+          input.type = 'checkbox';
+          input.checked = !!addon.enabled;
+          input.addEventListener('change', () => {
+            vscode.postMessage({ type: 'toggleAddon', addonId: addon.id, enabled: !!input.checked });
+          });
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(' Enabled'));
+          actions.appendChild(label);
+        }
+        if (addon.canRunAnalysis) {
+          const button = document.createElement('button');
+          button.className = 'secondary';
+          button.disabled = !addon.runAnalysisEnabled;
+          button.textContent = addon.statusText === 'Analyzing...' ? 'Analyzing...' : 'Run Analysis';
+          button.addEventListener('click', () => {
+            vscode.postMessage({ type: 'runAnalysis', addonId: addon.id });
+          });
+          actions.appendChild(button);
+        }
+        if (addon.canOpen) {
+          const button = document.createElement('button');
+          button.className = 'primary';
+          button.disabled = !addon.openEnabled;
+          button.textContent = addon.id === 'software-architecture' ? 'Open Visualizer' : 'Open';
+          button.addEventListener('click', () => {
+            vscode.postMessage({ type: 'openAddon', addonId: addon.id });
+          });
+          actions.appendChild(button);
+        }
+        card.appendChild(actions);
+        addonsRoot.appendChild(card);
       });
     }
 

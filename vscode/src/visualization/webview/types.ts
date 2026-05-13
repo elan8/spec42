@@ -1,24 +1,28 @@
+import type { VisualizationDataDto } from '../visualizationTypes';
+
 /**
  * Types for the visualizer webview. RenderContext is passed to renderers.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+type D3SelectionLike = unknown;
+type D3ZoomLike = unknown;
+type CytoscapeLike = unknown;
 
 export interface RenderContext {
     width: number;
     height: number;
-    svg: any;
-    g: any;
-    zoom: any;
-    getCy: () => any;
+    svg: D3SelectionLike;
+    g: D3SelectionLike;
+    zoom: D3ZoomLike;
+    getCy: () => CytoscapeLike;
     layoutDirection: string;
     activityLayoutDirection: string;
     stateLayoutOrientation: string;
     selectedDiagramIndex: number;
     selectedDiagramId?: string | null;
     postMessage: (msg: unknown) => void;
-    onStartInlineEdit: (nodeG: any, elementName: string, x: number, y: number, width: number) => void;
-    renderPlaceholder: (width: number, height: number, viewName: string, message: string, data: any) => void;
+    onStartInlineEdit: (nodeG: D3SelectionLike, elementName: string, x: number, y: number, width: number) => void;
+    renderPlaceholder: (width: number, height: number, viewName: string, message: string, data: VisualizationDataDto | null) => void;
     clearVisualHighlights: () => void;
     abortSignal?: AbortSignal;
 }

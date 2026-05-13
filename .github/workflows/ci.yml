@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+env:
+  SPEC42_STDLIB_BUNDLE_ZIP: ${{ github.workspace }}/.cache/sysml-v2-release-2026-03.zip
+  SPEC42_STDLIB_BUNDLE_URL: https://github.com/Systems-Modeling/SysML-v2-Release/archive/refs/tags/2026-03.zip
+
 jobs:
   rust-fast:
     name: Rust fast checks
@@ -26,6 +30,11 @@ jobs:
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
+
+      - name: Fetch SysML stdlib bundle
+        run: |
+          mkdir -p "$(dirname "$SPEC42_STDLIB_BUNDLE_ZIP")"
+          curl --fail --location --retry 3 --output "$SPEC42_STDLIB_BUNDLE_ZIP" "$SPEC42_STDLIB_BUNDLE_URL"
 
       - name: cargo test (required fast path)
         run: cargo test --workspace
@@ -58,6 +67,11 @@ jobs:
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Fetch SysML stdlib bundle
+        run: |
+          mkdir -p "$(dirname "$SPEC42_STDLIB_BUNDLE_ZIP")"
+          curl --fail --location --retry 3 --output "$SPEC42_STDLIB_BUNDLE_ZIP" "$SPEC42_STDLIB_BUNDLE_URL"
 
       - name: Build server (debug for extension test host)
         run: cargo build -p spec42

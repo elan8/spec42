@@ -346,8 +346,7 @@ fn normalize_broken_invocation_syntax(text: &str) -> String {
 }
 
 fn flatten_parenthesized_arithmetic(expr: &str) -> String {
-    expr.replace('(', " ")
-        .replace(')', " ")
+    expr.replace(['(', ')'], " ")
         .split_whitespace()
         .collect::<Vec<_>>()
         .join(" ")
@@ -1398,9 +1397,7 @@ fn parse_invocation(text: &str) -> Option<(&str, Vec<&str>)> {
         return None;
     }
     let name = trimmed[..open_idx].trim();
-    if parse_standalone_identifier(name).is_none() {
-        return None;
-    }
+    parse_standalone_identifier(name)?;
     let args_body = &trimmed[open_idx + 1..trimmed.len() - 1];
     let mut args = Vec::new();
     let mut start = 0usize;

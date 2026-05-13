@@ -102,7 +102,7 @@ mod tests {
             Some(DiagnosticSeverity::ERROR),
             Some("unresolved_import_target"),
         )]);
-        let advice = build_advice(&[document.clone()], true);
+        let advice = build_advice(std::slice::from_ref(&document), true);
         assert_eq!(advice.len(), 1);
         assert!(advice[0].contains("Configure SysML library roots"));
 

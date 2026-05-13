@@ -202,7 +202,7 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
         state.textContent = queryText
           ? 'No results for "' + queryText + '".'
           : 'No library symbols indexed yet. Restart the SysML server or add library paths under spec42.libraryPaths.';
-        results.innerHTML = '';
+        results.replaceChildren();
         return;
       }
       state.textContent = queryText
@@ -211,29 +211,47 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
 
       let idx = 0;
       renderedItems = [];
-      const blocks = [];
+      const resultNodes = [];
       for (const sourceNode of filteredSources) {
         const source = sourceNode.source || 'custom';
         const sourceLabel = source === 'standard' ? 'Standard Library' : 'Custom Libraries';
-        let sourceHtml = '<details><summary class="title">' + escapeHtml(sourceLabel) + '</summary>';
+        const sourceDetails = document.createElement('details');
+        const sourceSummary = document.createElement('summary');
+        sourceSummary.className = 'title';
+        sourceSummary.textContent = sourceLabel;
+        sourceDetails.appendChild(sourceSummary);
         const packages = Array.isArray(sourceNode.packages) ? sourceNode.packages : [];
         for (const pkg of packages) {
           const symbols = Array.isArray(pkg.symbols) ? pkg.symbols : [];
-          sourceHtml += '<details style="margin-left:8px"><summary class="muted">' + escapeHtml(pkg.name || '(unknown package)') + ' (' + symbols.length + ')</summary>';
+          const packageDetails = document.createElement('details');
+          packageDetails.style.marginLeft = '8px';
+          const packageSummary = document.createElement('summary');
+          packageSummary.className = 'muted';
+          packageSummary.textContent = String(pkg.name || '(unknown package)') + ' (' + symbols.length + ')';
+          packageDetails.appendChild(packageSummary);
           for (const item of symbols) {
             renderedItems.push(item);
-            sourceHtml += '<div class="result" data-index="' + idx + '">' +
-              '<div class="title">' + escapeHtml(item.name) + '</div>' +
-              '<div class="meta"><span>' + escapeHtml(item.kind) + '</span></div>' +
-            '</div>';
+            const result = document.createElement('div');
+            result.className = 'result';
+            result.dataset.index = String(idx);
+            const title = document.createElement('div');
+            title.className = 'title';
+            title.textContent = String(item.name || '');
+            const meta = document.createElement('div');
+            meta.className = 'meta';
+            const kind = document.createElement('span');
+            kind.textContent = String(item.kind || '');
+            meta.appendChild(kind);
+            result.appendChild(title);
+            result.appendChild(meta);
+            packageDetails.appendChild(result);
             idx += 1;
           }
-          sourceHtml += '</details>';
+          sourceDetails.appendChild(packageDetails);
         }
-        sourceHtml += '</details>';
-        blocks.push(sourceHtml);
+        resultNodes.push(sourceDetails);
       }
-      results.innerHTML = blocks.join('');
+      results.replaceChildren(...resultNodes);
 
       results.querySelectorAll('.result').forEach((el) => {
         el.addEventListener('click', () => {
@@ -243,13 +261,6 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
           vscode.postMessage({ type: 'openResult', payload: { uri: item.uri, range: item.range } });
         });
       });
-    }
-
-    function escapeHtml(str) {
-      return String(str || '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;');
     }
 
     function renderStdlibHeading(heading) {
@@ -271,48 +282,58 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
         return;
       }
       if (packages.length === 0) {
-        customPackages.innerHTML = '<div class="muted">No custom library packages loaded.</div>';
+        const empty = document.createElement('div');
+        empty.className = 'muted';
+        empty.textContent = 'No custom library packages loaded.';
+        customPackages.replaceChildren(empty);
         return;
       }
 
-      const packageItems = packages
-        .map((pkg, index) => {
-          const packageName = escapeHtml(pkg?.name || '(unknown package)');
-          const symbolCount = Array.isArray(pkg?.symbols) ? pkg.symbols.length : 0;
-          return '<li><button class="custom-package-btn" data-package-index="' + index + '">' + packageName + ' (' + symbolCount + ')</button></li>';
-        })
-        .join('');
+      const details = document.createElement('details');
+      const summary = document.createElement('summary');
+      summary.textContent = 'Loaded packages (' + packages.length + ')';
+      details.appendChild(summary);
 
-      const selectedFilterHtml = selectedCustomPackage
-        ? '<div class="custom-filter-row">Filtered package: <strong>' + escapeHtml(selectedCustomPackage) + '</strong> <button id="btnClearCustomFilter" class="custom-filter-clear">Clear</button></div>'
-        : '';
-
-      customPackages.innerHTML =
-        '<details>' +
-        '<summary>Loaded packages (' + packages.length + ')</summary>' +
-        '<ul class="custom-packages-list">' + packageItems + '</ul>' +
-        selectedFilterHtml +
-        '</details>';
-
-      const packageButtons = customPackages.querySelectorAll('.custom-package-btn');
-      packageButtons.forEach((buttonEl) => {
-        buttonEl.addEventListener('click', () => {
-          const rawIndex = Number(buttonEl.getAttribute('data-package-index'));
-          const selectedPkg = packages[rawIndex];
+      const list = document.createElement('ul');
+      list.className = 'custom-packages-list';
+      packages.forEach((pkg, index) => {
+        const item = document.createElement('li');
+        const button = document.createElement('button');
+        button.className = 'custom-package-btn';
+        button.textContent = String(pkg?.name || '(unknown package)') + ' (' + (Array.isArray(pkg?.symbols) ? pkg.symbols.length : 0) + ')';
+        button.addEventListener('click', () => {
+          const selectedPkg = packages[index];
           selectedCustomPackage = String(selectedPkg?.name || '');
           renderCustomPackages(latestTree);
           renderTree(latestTree, query.value.trim());
         });
+        item.appendChild(button);
+        list.appendChild(item);
       });
+      details.appendChild(list);
 
-      const clearBtn = document.getElementById('btnClearCustomFilter');
-      if (clearBtn) {
+      if (selectedCustomPackage) {
+        const filterRow = document.createElement('div');
+        filterRow.className = 'custom-filter-row';
+        filterRow.appendChild(document.createTextNode('Filtered package: '));
+        const selected = document.createElement('strong');
+        selected.textContent = selectedCustomPackage;
+        filterRow.appendChild(selected);
+        filterRow.appendChild(document.createTextNode(' '));
+
+        const clearBtn = document.createElement('button');
+        clearBtn.className = 'custom-filter-clear';
+        clearBtn.textContent = 'Clear';
         clearBtn.addEventListener('click', () => {
           selectedCustomPackage = '';
           renderCustomPackages(latestTree);
           renderTree(latestTree, query.value.trim());
         });
+        filterRow.appendChild(clearBtn);
+        details.appendChild(filterRow);
       }
+
+      customPackages.replaceChildren(details);
     }
 
     window.addEventListener('message', (event) => {
@@ -327,7 +348,7 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       }
       if (msg?.type === 'error') {
         state.textContent = 'Error: ' + (msg.payload || 'unknown');
-        results.innerHTML = '';
+        results.replaceChildren();
         return;
       }
       if (msg?.type === 'allItems' || msg?.type === 'results') {

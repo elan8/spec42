@@ -1333,8 +1333,6 @@ pub fn build_sysml_visualization_workspace(
         &package_candidates,
         None,
     );
-    let mut projected_activity_diagrams = projected_activity_diagrams;
-    let mut projected_sequence_diagrams = projected_sequence_diagrams;
     let activity_diagrams = projected_activity_diagrams
         .remove(selected_view_id.as_str())
         .unwrap_or_default();

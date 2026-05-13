@@ -3,6 +3,7 @@ use std::path::{Path, PathBuf};
 
 const MAX_IGNORE_ATTRIBUTES: usize = 6;
 const MAX_ALLOW_ATTRIBUTES_IN_SRC: usize = 38;
+const MAX_FRONTEND_SKIPPED_TESTS: usize = 0;
 
 #[test]
 fn ignored_test_count_does_not_increase() {
@@ -22,6 +23,44 @@ fn allow_attribute_count_in_src_does_not_increase() {
     assert!(
         count <= MAX_ALLOW_ATTRIBUTES_IN_SRC,
         "allow attribute count regressed in src: {count} > {MAX_ALLOW_ATTRIBUTES_IN_SRC}"
+    );
+}
+
+#[test]
+fn kernel_semantic_layer_contains_only_shims_and_runtime_modules() {
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src/semantic");
+    let forbidden = [
+        root.join("graph_builder"),
+        root.join("evaluation/units.rs"),
+    ];
+
+    let existing = forbidden
+        .iter()
+        .filter(|path| path.exists())
+        .map(|path| path.display().to_string())
+        .collect::<Vec<_>>();
+
+    assert!(
+        existing.is_empty(),
+        "reusable semantic implementations belong in semantic_core, not kernel:\n{}",
+        existing.join("\n")
+    );
+}
+
+#[test]
+fn frontend_skipped_test_count_does_not_increase() {
+    let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(Path::parent)
+        .expect("repo root")
+        .to_path_buf();
+    let test_root = repo_root.join("vscode/src/test");
+    let count = count_pattern(&test_root, "it.skip(")
+        + count_pattern(&test_root, "describe.skip(");
+
+    assert_eq!(
+        count, MAX_FRONTEND_SKIPPED_TESTS,
+        "frontend skipped test count regressed: expected {MAX_FRONTEND_SKIPPED_TESTS}, got {count}"
     );
 }
 

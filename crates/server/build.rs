@@ -1,8 +1,8 @@
-//! Build script: download SysML v2 Release tag zip, repack only `sysml.library/` into a minimal
+//! Build script: repack a local SysML v2 Release zip into a minimal `sysml.library/`
 //! archive for `include_bytes!` (see `stdlib.rs`).
 //!
 //! Override inputs:
-//! - `SPEC42_STDLIB_BUNDLE_ZIP`: path to a local copy of the **full** GitHub release zip (skips download).
+//! - `SPEC42_STDLIB_BUNDLE_ZIP`: path to a local copy of the **full** GitHub release zip.
 //! - `CARGO_FEATURE_EMBED_STDLIB`: unset when `embed-stdlib` feature is disabled — writes an empty file.
 
 use std::fs::{self, File};
@@ -17,10 +17,12 @@ use zip::write::{SimpleFileOptions, ZipWriter};
 const DEFAULT_TAG: &str = "2026-03";
 /// Single top-level folder prefix inside the embedded zip (must match `extract_archive_subset` in stdlib.rs).
 const EMBED_ROOT: &str = "bundled-sysml-release";
+const LOCAL_CACHE_RELATIVE_PATH: &str = "cache/sysml-v2-release-2026-03.zip";
 
 fn main() {
     println!("cargo:rerun-if-env-changed=SPEC42_STDLIB_BUNDLE_ZIP");
     println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed={LOCAL_CACHE_RELATIVE_PATH}");
 
     let out_dir = std::env::var("OUT_DIR").expect("OUT_DIR");
     let out_zip = Path::new(&out_dir).join("sysml.library.embedded.zip");
@@ -34,42 +36,47 @@ fn main() {
         return;
     }
 
-    let full_zip_bytes: Vec<u8> = if let Ok(path) = std::env::var("SPEC42_STDLIB_BUNDLE_ZIP") {
-        let p = PathBuf::from(path.trim());
-        fs::read(&p).unwrap_or_else(|e| {
+    let Some(local_zip) = resolve_local_stdlib_zip() else {
+        if out_zip.exists() {
             eprintln!(
-                "spec42 build: failed to read SPEC42_STDLIB_BUNDLE_ZIP {}: {e}",
-                p.display()
+                "spec42 build: reusing cached embedded stdlib archive at {}",
+                out_zip.display()
             );
-            process::exit(1);
-        })
-    } else {
-        eprintln!(
-            "spec42 build: downloading SysML v2 Release {DEFAULT_TAG} for embedded stdlib..."
-        );
-        let download_url = format!(
-            "https://github.com/Systems-Modeling/SysML-v2-Release/archive/refs/tags/{DEFAULT_TAG}.zip"
-        );
-        {
-            let mut reader = ureq::get(&download_url)
-                .set("User-Agent", "spec42-build")
-                .call()
-                .unwrap_or_else(|e| {
-                    eprintln!("spec42 build: failed to download release zip: {e}");
-                    eprintln!(
-                        "spec42 build: set SPEC42_STDLIB_BUNDLE_ZIP to a local zip to build offline."
-                    );
-                    process::exit(1);
-                })
-                .into_reader();
-            let mut out = Vec::new();
-            std::io::Read::read_to_end(&mut reader, &mut out).unwrap_or_else(|e| {
-                eprintln!("spec42 build: failed to read release zip body: {e}");
+            let _embedded_digest = format!("{:x}", Sha256::digest(fs::read(&out_zip).unwrap()));
+            return;
+        }
+        if let Some(cached_embedded_zip) = find_cached_embedded_zip(&out_zip) {
+            fs::copy(&cached_embedded_zip, &out_zip).unwrap_or_else(|e| {
+                eprintln!(
+                    "spec42 build: failed to reuse cached embedded stdlib archive {}: {e}",
+                    cached_embedded_zip.display()
+                );
                 process::exit(1);
             });
-            out
+            eprintln!(
+                "spec42 build: reused cached embedded stdlib archive from {}",
+                cached_embedded_zip.display()
+            );
+            let _embedded_digest = format!("{:x}", Sha256::digest(fs::read(&out_zip).unwrap()));
+            return;
         }
+
+        eprintln!(
+            "spec42 build: embedded stdlib requires a local SysML v2 Release {DEFAULT_TAG} zip."
+        );
+        eprintln!("spec42 build: set SPEC42_STDLIB_BUNDLE_ZIP to the full release zip path, or place it at crates/server/{LOCAL_CACHE_RELATIVE_PATH}.");
+        eprintln!("spec42 build: download URL: https://github.com/Systems-Modeling/SysML-v2-Release/archive/refs/tags/{DEFAULT_TAG}.zip");
+        eprintln!("spec42 build: for development without embedded stdlib, run `cargo test -p spec42 --no-default-features`.");
+        process::exit(1);
     };
+
+    let full_zip_bytes = fs::read(&local_zip).unwrap_or_else(|e| {
+        eprintln!(
+            "spec42 build: failed to read stdlib release zip {}: {e}",
+            local_zip.display()
+        );
+        process::exit(1);
+    });
 
     let _digest = format!("{:x}", Sha256::digest(&full_zip_bytes));
 
@@ -79,6 +86,32 @@ fn main() {
     });
 
     let _embedded_digest = format!("{:x}", Sha256::digest(fs::read(&out_zip).unwrap()));
+}
+
+fn resolve_local_stdlib_zip() -> Option<PathBuf> {
+    if let Ok(path) = std::env::var("SPEC42_STDLIB_BUNDLE_ZIP") {
+        let trimmed = path.trim();
+        if !trimmed.is_empty() {
+            return Some(PathBuf::from(trimmed));
+        }
+    }
+
+    let manifest_dir =
+        PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"));
+    let cached = manifest_dir.join(LOCAL_CACHE_RELATIVE_PATH);
+    cached.exists().then_some(cached)
+}
+
+fn find_cached_embedded_zip(out_zip: &Path) -> Option<PathBuf> {
+    let build_root = out_zip.parent()?.parent()?.parent()?;
+    let entries = fs::read_dir(build_root).ok()?;
+    for entry in entries.flatten() {
+        let candidate = entry.path().join("out/sysml.library.embedded.zip");
+        if candidate != out_zip && candidate.is_file() {
+            return Some(candidate);
+        }
+    }
+    None
 }
 
 fn repack_sysml_library(full_zip_bytes: &[u8], out_path: &Path) -> Result<(), String> {
