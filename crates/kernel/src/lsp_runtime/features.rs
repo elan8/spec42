@@ -79,16 +79,18 @@ pub(crate) fn semantic_tokens_full_request(
     let (tokens, logs) = semantic_tokens_full(&text, ast_ranges.as_deref());
     let elapsed_ms = started_at.elapsed().as_millis();
     let request_count = SEMANTIC_TOKENS_FULL_REQUEST_COUNT.fetch_add(1, Ordering::Relaxed) + 1;
-    info!(
-        target: "kernel::lsp_runtime::features",
-        event = "feature:semanticTokensFull",
-        uri = %uri_norm,
-        token_count = tokens.data.len(),
-        log_count = logs.len(),
-        elapsed_ms,
-        request_count,
-        "semantic tokens full request completed"
-    );
+    if state.perf_logging_enabled {
+        info!(
+            target: "kernel::lsp_runtime::features",
+            event = "feature:semanticTokensFull",
+            uri = %uri_norm,
+            token_count = tokens.data.len(),
+            log_count = logs.len(),
+            elapsed_ms,
+            request_count,
+            "semantic tokens full request completed"
+        );
+    }
     Ok(Some((tokens, logs)))
 }
 
@@ -116,18 +118,20 @@ pub(crate) fn semantic_tokens_range_request(
     );
     let elapsed_ms = started_at.elapsed().as_millis();
     let request_count = SEMANTIC_TOKENS_RANGE_REQUEST_COUNT.fetch_add(1, Ordering::Relaxed) + 1;
-    info!(
-        target: "kernel::lsp_runtime::features",
-        event = "feature:semanticTokensRange",
-        uri = %uri_norm,
-        start_line = range.start.line,
-        end_line = range.end.line,
-        token_count = tokens.data.len(),
-        log_count = logs.len(),
-        elapsed_ms,
-        request_count,
-        "semantic tokens range request completed"
-    );
+    if state.perf_logging_enabled {
+        info!(
+            target: "kernel::lsp_runtime::features",
+            event = "feature:semanticTokensRange",
+            uri = %uri_norm,
+            start_line = range.start.line,
+            end_line = range.end.line,
+            token_count = tokens.data.len(),
+            log_count = logs.len(),
+            elapsed_ms,
+            request_count,
+            "semantic tokens range request completed"
+        );
+    }
     Ok(Some((tokens, logs)))
 }
 

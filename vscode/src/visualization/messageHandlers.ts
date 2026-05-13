@@ -26,7 +26,7 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
     return (message: WebviewMessage) => {
         switch (message.command) {
             case 'webviewLog':
-                if (message.level === 'error' || message.level === 'warn' || isVerboseLoggingEnabled()) {
+                if (message.level === 'error' || isVerboseLoggingEnabled()) {
                     handlers.logWebviewMessage(message.level, message.args ?? []);
                 }
                 break;

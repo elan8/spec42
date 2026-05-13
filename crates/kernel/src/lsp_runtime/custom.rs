@@ -53,16 +53,18 @@ pub(crate) async fn sysml_model_result(
                     .map(|entry| (fallback_uri, entry))
             }) {
                 Some((fallback_uri, entry)) => {
-                    client
-                        .log_message(
-                            MessageType::INFO,
-                            format!(
-                                "sysml/model: request_uri={} not indexed; using workspaceVisualization fallback uri={}",
-                                uri.as_str(),
-                                fallback_uri.as_str()
-                            ),
-                        )
-                        .await;
+                    if state.perf_logging_enabled {
+                        client
+                            .log_message(
+                                MessageType::INFO,
+                                format!(
+                                    "sysml/model: request_uri={} not indexed; using workspaceVisualization fallback uri={}",
+                                    uri.as_str(),
+                                    fallback_uri.as_str()
+                                ),
+                            )
+                            .await;
+                    }
                     (fallback_uri, entry)
                 }
                 None => {

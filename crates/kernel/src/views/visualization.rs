@@ -122,11 +122,8 @@ pub(crate) fn build_sysml_visualization_response(
     selected_view: Option<&str>,
     build_start: Instant,
 ) -> SysmlVisualizationResultDto {
-    let workspace_uris = semantic_core::workspace_uris_for_root(
-        semantic_graph,
-        library_paths,
-        workspace_root_uri,
-    );
+    let workspace_uris =
+        semantic_core::workspace_uris_for_root(semantic_graph, library_paths, workspace_root_uri);
     let viz_docs = workspace_parsed_documents_for_visualization(index, &workspace_uris);
     let empty_graph = SysmlGraphDto {
         nodes: Vec::new(),
@@ -173,14 +170,14 @@ mod tests {
     use std::path::PathBuf;
     use std::time::Instant;
 
+    use super::{build_sysml_visualization_for_paths, parse_sysml_visualization_params};
+    use semantic_core::semantic::ibd::{IbdDataDto, IbdPartDto, IbdRootViewDto};
     use semantic_core::{
         attach_ibd_package_container_groups, build_ibd_package_container_groups,
         build_package_groups_from_graph, build_workspace_activity_diagrams,
         select_interconnection_ibd_scope, GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto,
         SysmlGraphDto, SysmlVisualizationPackageCandidateDto, WorkspaceParsedDocument,
     };
-    use super::{build_sysml_visualization_for_paths, parse_sysml_visualization_params};
-    use semantic_core::semantic::ibd::{IbdDataDto, IbdPartDto, IbdRootViewDto};
     use sysml_v2_parser::parse;
     use tower_lsp::lsp_types::Url;
 

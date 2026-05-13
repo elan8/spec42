@@ -176,15 +176,17 @@ export function buildSyntheticTreeEdgesForGeneralView(
             out.push({ source: e.source, target: e.target, type: 'typing' });
         }
     });
-    console.log(
-        '[GV] buildSyntheticTreeEdges',
-        'containsList',
-        containsList.length,
-        'candidateRoots',
-        candidateRoots.length,
-        'syntheticEdges',
-        out.length
-    );
+    if (verboseWebviewLogging) {
+        console.log(
+            '[GV] buildSyntheticTreeEdges',
+            'containsList',
+            containsList.length,
+            'candidateRoots',
+            candidateRoots.length,
+            'syntheticEdges',
+            out.length
+        );
+    }
     return { edges: out, rootId, rootIds: orderedRoots };
 }
 

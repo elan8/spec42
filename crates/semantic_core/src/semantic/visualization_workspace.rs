@@ -11,11 +11,16 @@ use url::Url;
 use crate::semantic::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, RelationshipDto, SysmlElementDto, SysmlGraphDto,
     SysmlModelStatsDto, SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto,
-    SysmlVisualizationResultDto, WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
+    SysmlVisualizationResultDto, WorkspaceFileModelDto, WorkspaceModelDto,
+    WorkspaceModelSummaryDto,
 };
 use crate::semantic::explicit_views;
-use crate::semantic::extracted_model::{extract_activity_diagrams, ActivityDiagramDto, SequenceDiagramDto};
-use crate::semantic::ibd::{self, IbdDataDto, IbdPackageContainerGroupDto, IbdPartDto, IbdRootViewDto};
+use crate::semantic::extracted_model::{
+    extract_activity_diagrams, ActivityDiagramDto, SequenceDiagramDto,
+};
+use crate::semantic::ibd::{
+    self, IbdDataDto, IbdPackageContainerGroupDto, IbdPartDto, IbdRootViewDto,
+};
 use crate::semantic::model_projection::{self, canonical_general_view_graph};
 use crate::semantic::sequence_views::{
     build_workspace_sequence_diagrams, filter_sequence_diagrams_by_exposed_ids,
@@ -62,10 +67,7 @@ fn infer_workspace_root_uri(documents: &[WorkspaceParsedDocument]) -> Result<Url
         return Url::parse("file:///").map_err(|e| e.to_string());
     }
     uris.sort();
-    let first = uris
-        .into_iter()
-        .next()
-        .expect("non-empty after sort");
+    let first = uris.into_iter().next().expect("non-empty after sort");
     let path = first.path().to_string();
     if let Some(pos) = path.rfind('/') {
         let parent = if pos == 0 { "/" } else { &path[..=pos] };
@@ -107,8 +109,7 @@ pub fn build_workspace_graph_dto_for_uris(
     let mut edge_keys = HashSet::new();
     let mut edges = Vec::new();
     for workspace_uri in workspace_uris {
-        for (source, target, kind, name) in semantic_graph.edges_for_uri_as_strings(workspace_uri)
-        {
+        for (source, target, kind, name) in semantic_graph.edges_for_uri_as_strings(workspace_uri) {
             let key = (
                 source.clone(),
                 target.clone(),
@@ -230,7 +231,8 @@ pub fn build_workspace_activity_diagrams(
     }
 
     if let Some((package_ref, package_name)) = package_filter {
-        diagrams.retain(|diagram| diagram_matches_package_filter(diagram, package_ref, package_name));
+        diagrams
+            .retain(|diagram| diagram_matches_package_filter(diagram, package_ref, package_name));
     }
 
     diagrams
@@ -1152,8 +1154,7 @@ pub fn build_sysml_visualization_workspace(
     let viz_docs = workspace_parsed_documents_for_uris(documents, &workspace_uris);
     let full_activity_diagrams =
         build_workspace_activity_diagrams(&viz_docs, &workspace_uris, None);
-    let full_sequence_diagrams =
-        build_workspace_sequence_diagrams(semantic_graph, &workspace_uris);
+    let full_sequence_diagrams = build_workspace_sequence_diagrams(semantic_graph, &workspace_uris);
     let catalog = explicit_views::build_view_catalog(&workspace_uris, &viz_docs);
 
     if catalog.usages.is_empty() {

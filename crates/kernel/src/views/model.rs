@@ -418,18 +418,20 @@ pub async fn build_sysml_model_response(
     let graph_start = Instant::now();
     let raw_graph = if want_graph && workspace_viz {
         let graph = build_workspace_graph_dto(semantic_graph, library_paths);
-        client
-            .log_message(
-                MessageType::INFO,
-                format!(
-                    "sysml/model: workspaceVisualization=true uri={} scope={:?} -> graph nodes={} edges={}",
-                    uri.as_str(),
-                    scope,
-                    graph.nodes.len(),
-                    graph.edges.len(),
-                ),
-            )
-            .await;
+        if perf_logging_enabled {
+            client
+                .log_message(
+                    MessageType::INFO,
+                    format!(
+                        "sysml/model: workspaceVisualization=true uri={} scope={:?} -> graph nodes={} edges={}",
+                        uri.as_str(),
+                        scope,
+                        graph.nodes.len(),
+                        graph.edges.len(),
+                    ),
+                )
+                .await;
+        }
         Some(graph)
     } else if want_graph {
         let sg_nodes = semantic_graph.nodes_for_uri(uri);
@@ -449,19 +451,21 @@ pub async fn build_sysml_model_response(
                 )
                 .await;
         }
-        client
-            .log_message(
-                MessageType::INFO,
-                format!(
-                    "sysml/model: req_uri={} index_ok=true parsed_ok={} semantic_nodes={} graph_uris_count={} graph_uris_sample={:?}",
-                    uri.as_str(),
-                    parsed_ok,
-                    node_count,
-                    graph_uris.len(),
-                    graph_uris.iter().take(3).collect::<Vec<_>>(),
-                ),
-            )
-            .await;
+        if perf_logging_enabled {
+            client
+                .log_message(
+                    MessageType::INFO,
+                    format!(
+                        "sysml/model: req_uri={} index_ok=true parsed_ok={} semantic_nodes={} graph_uris_count={} graph_uris_sample={:?}",
+                        uri.as_str(),
+                        parsed_ok,
+                        node_count,
+                        graph_uris.len(),
+                        graph_uris.iter().take(3).collect::<Vec<_>>(),
+                    ),
+                )
+                .await;
+        }
         Some(build_document_graph_dto(semantic_graph, uri))
     } else {
         None
@@ -537,20 +541,22 @@ pub async fn build_sysml_model_response(
         .as_ref()
         .map(|g| g.edges.len())
         .unwrap_or(0);
-    client
-        .log_message(
-            MessageType::INFO,
-            format!(
-                "sysml/model: uri={} scope={:?} -> graph nodes={} edges={} generalViewGraph nodes={} edges={}",
-                uri.as_str(),
-                scope,
-                node_count,
-                edge_count,
-                gv_node_count,
-                gv_edge_count,
-            ),
-        )
-        .await;
+    if perf_logging_enabled {
+        client
+            .log_message(
+                MessageType::INFO,
+                format!(
+                    "sysml/model: uri={} scope={:?} -> graph nodes={} edges={} generalViewGraph nodes={} edges={}",
+                    uri.as_str(),
+                    scope,
+                    node_count,
+                    edge_count,
+                    gv_node_count,
+                    gv_edge_count,
+                ),
+            )
+            .await;
+    }
 
     let ibd_start = Instant::now();
     let ibd = if want_ibd && want_graph && graph.is_some() && workspace_viz {

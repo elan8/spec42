@@ -29,10 +29,7 @@ fn allow_attribute_count_in_src_does_not_increase() {
 #[test]
 fn kernel_semantic_layer_contains_only_shims_and_runtime_modules() {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src/semantic");
-    let forbidden = [
-        root.join("graph_builder"),
-        root.join("evaluation/units.rs"),
-    ];
+    let forbidden = [root.join("graph_builder"), root.join("evaluation/units.rs")];
 
     let existing = forbidden
         .iter()
@@ -55,8 +52,7 @@ fn frontend_skipped_test_count_does_not_increase() {
         .expect("repo root")
         .to_path_buf();
     let test_root = repo_root.join("vscode/src/test");
-    let count = count_pattern(&test_root, "it.skip(")
-        + count_pattern(&test_root, "describe.skip(");
+    let count = count_pattern(&test_root, "it.skip(") + count_pattern(&test_root, "describe.skip(");
 
     assert_eq!(
         count, MAX_FRONTEND_SKIPPED_TESTS,

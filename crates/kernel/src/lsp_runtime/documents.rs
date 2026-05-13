@@ -99,9 +99,6 @@ pub(crate) async fn initialized(
     config: &Arc<Spec42Config>,
     server_name: &str,
 ) {
-    client
-        .log_message(MessageType::INFO, format!("{} initialized", server_name))
-        .await;
     let (workspace_roots, library_paths, startup_trace_id, perf_logging_enabled) = {
         let st = state.read().await;
         (
@@ -111,6 +108,11 @@ pub(crate) async fn initialized(
             st.perf_logging_enabled,
         )
     };
+    if perf_logging_enabled {
+        client
+            .log_message(MessageType::INFO, format!("{} initialized", server_name))
+            .await;
+    }
     let scan_roots = scan_roots(&workspace_roots, &library_paths);
     if scan_roots.is_empty() {
         set_semantic_lifecycle(state, SemanticLifecycle::Ready).await;
@@ -366,16 +368,19 @@ pub(crate) async fn did_change(
         let state = state.read().await;
         crate::workspace::indexed_text_or_empty(&state, &uri_norm)
     };
+    let perf_logging_enabled = {
+        let state = state.read().await;
+        state.perf_logging_enabled
+    };
     for (ty, message) in warnings {
+        if ty == MessageType::LOG && !perf_logging_enabled {
+            continue;
+        }
         client.log_message(ty, message).await;
     }
     let diagnostics_start = Instant::now();
     publish_document_diagnostics(client, state, config, uri, &text).await;
     let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
-    let perf_logging_enabled = {
-        let state = state.read().await;
-        state.perf_logging_enabled
-    };
     log_perf(
         client,
         perf_logging_enabled,

@@ -22,12 +22,12 @@ use tower_lsp::{Client, LanguageServer, LspService, Server};
 use crate::host::config::Spec42Config;
 use crate::views::dto;
 use crate::workspace::ServerState;
-use semantic_core::SysmlVisualizationResultDto;
 use custom::{
     mark_sysml_model_parse_cached, sysml_clear_cache_result, sysml_feature_inspector_result,
     sysml_library_search_result, sysml_model_result, sysml_server_stats_result,
     sysml_visualization_result,
 };
+use semantic_core::SysmlVisualizationResultDto;
 
 struct Backend {
     client: Client,
@@ -248,9 +248,12 @@ impl LanguageServer for Backend {
         else {
             return Ok(None);
         };
+        let perf_logging_enabled = state.perf_logging_enabled;
         drop(state);
-        for line in &log_lines {
-            self.client.log_message(MessageType::LOG, line).await;
+        if perf_logging_enabled {
+            for line in &log_lines {
+                self.client.log_message(MessageType::LOG, line).await;
+            }
         }
         Ok(Some(SemanticTokensResult::Tokens(tokens)))
     }
@@ -268,9 +271,12 @@ impl LanguageServer for Backend {
         else {
             return Ok(None);
         };
+        let perf_logging_enabled = state.perf_logging_enabled;
         drop(state);
-        for line in &log_lines {
-            self.client.log_message(MessageType::LOG, line).await;
+        if perf_logging_enabled {
+            for line in &log_lines {
+                self.client.log_message(MessageType::LOG, line).await;
+            }
         }
         Ok(Some(SemanticTokensRangeResult::Tokens(tokens)))
     }

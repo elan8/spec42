@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 use semantic_core::semantic::extracted_model as model;
-use semantic_core::semantic::ibd as ibd;
+use semantic_core::semantic::ibd;
 use semantic_core::{
     PositionDto, RangeDto, SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationGroupDto,
     WorkspaceModelDto,

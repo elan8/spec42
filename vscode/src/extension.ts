@@ -618,12 +618,13 @@ export function activate(context: vscode.ExtensionContext): void {
     );
   }
   log("Server command:", serverCommand, "args:", serverArgs, "libraryPaths:", libraryPaths);
-  // Also log to console so CI captures the resolved command.
-  try {
-    // eslint-disable-next-line no-console
-    console.log("[SysML] Server command:", serverCommand, "args:", serverArgs);
-  } catch {
-    // ignore
+  if (getConfigBoolean("debug", false) || process.env.SPEC42_LOG_SERVER_COMMAND === "1") {
+    try {
+      // eslint-disable-next-line no-console
+      console.log("[SysML] Server command:", serverCommand, "args:", serverArgs);
+    } catch {
+      // ignore
+    }
   }
 
   let restartCount = 0;

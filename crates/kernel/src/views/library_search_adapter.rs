@@ -2,10 +2,10 @@ use crate::common::text_span::to_core_range;
 use crate::views::dto::{
     SysmlLibrarySearchItemDto, SysmlLibrarySearchPackageDto, SysmlLibrarySearchSourceDto,
 };
-use semantic_core::range_to_dto;
 use crate::workspace::library_search::{
     LibrarySearchItem, LibrarySearchPackage, LibrarySearchSource,
 };
+use semantic_core::range_to_dto;
 
 fn to_dto_item(item: LibrarySearchItem) -> SysmlLibrarySearchItemDto {
     SysmlLibrarySearchItemDto {

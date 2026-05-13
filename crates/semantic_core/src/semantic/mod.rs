@@ -1,8 +1,8 @@
 pub mod ast_util;
 pub mod diagnostics;
 pub mod dto;
-pub mod explicit_views;
 pub mod evaluation;
+pub mod explicit_views;
 pub mod extracted_model;
 pub mod graph;
 pub mod graph_builder;

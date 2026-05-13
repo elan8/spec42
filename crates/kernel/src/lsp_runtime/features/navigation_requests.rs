@@ -143,6 +143,7 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
             range: Some(range),
         });
         log_hover_result(
+            state.perf_logging_enabled,
             &uri_norm,
             pos,
             &lookup_name,
@@ -197,6 +198,7 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
             range: Some(range),
         });
         log_hover_result(
+            state.perf_logging_enabled,
             &uri_norm,
             pos,
             &lookup_name,
@@ -219,6 +221,7 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
             range: Some(range),
         });
         log_hover_result(
+            state.perf_logging_enabled,
             &uri_norm,
             pos,
             &lookup_name,
@@ -261,7 +264,7 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
             range: Some(range),
         });
         let elapsed_ms = started_at.elapsed().as_millis();
-        if elapsed_ms >= 10 {
+        if state.perf_logging_enabled && elapsed_ms >= 10 {
             info!(
                 target: "kernel::lsp_runtime::features",
                 event = "feature:hover",
@@ -279,6 +282,7 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
     }
 
     log_hover_result(
+        state.perf_logging_enabled,
         &uri_norm,
         pos,
         &lookup_name,
@@ -289,6 +293,7 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
 }
 
 fn log_hover_result(
+    perf_logging_enabled: bool,
     uri: &Url,
     pos: Position,
     lookup_name: &str,
@@ -296,7 +301,7 @@ fn log_hover_result(
     message: &str,
 ) {
     let elapsed_ms = started_at.elapsed().as_millis();
-    if elapsed_ms >= 10 {
+    if perf_logging_enabled && elapsed_ms >= 10 {
         info!(
             target: "kernel::lsp_runtime::features",
             event = "feature:hover",
@@ -364,6 +369,7 @@ pub(crate) fn goto_definition(
                     .ends_with(&format!("::{}", lookup_name))
             {
                 return goto_definition_response(
+                    state.perf_logging_enabled,
                     &uri_norm,
                     pos,
                     &lookup_name,
@@ -387,6 +393,7 @@ pub(crate) fn goto_definition(
             .find_map(|target_id| state.semantic_graph.get_node(&target_id))
             {
                 return goto_definition_response(
+                    state.perf_logging_enabled,
                     &uri_norm,
                     pos,
                     &lookup_name,
@@ -427,7 +434,7 @@ pub(crate) fn goto_definition(
     if let [location] = locations.as_slice() {
         let response = Some(GotoDefinitionResponse::Scalar(location.clone()));
         let elapsed_ms = started_at.elapsed().as_millis();
-        if elapsed_ms >= 10 {
+        if state.perf_logging_enabled && elapsed_ms >= 10 {
             info!(
                 target: "kernel::lsp_runtime::features",
                 event = "feature:gotoDefinition",
@@ -448,7 +455,7 @@ pub(crate) fn goto_definition(
         let location_count = locations.len();
         let response = Some(GotoDefinitionResponse::Array(locations));
         let elapsed_ms = started_at.elapsed().as_millis();
-        if elapsed_ms >= 10 {
+        if state.perf_logging_enabled && elapsed_ms >= 10 {
             info!(
                 target: "kernel::lsp_runtime::features",
                 event = "feature:gotoDefinition",
@@ -469,7 +476,7 @@ pub(crate) fn goto_definition(
         debug_qualified_lookup_context(state, &lookup_name, qualifier, &uri_norm);
     }
     let elapsed_ms = started_at.elapsed().as_millis();
-    if elapsed_ms >= 10 {
+    if state.perf_logging_enabled && elapsed_ms >= 10 {
         info!(
             target: "kernel::lsp_runtime::features",
             event = "feature:gotoDefinition",
@@ -487,6 +494,7 @@ pub(crate) fn goto_definition(
 }
 
 fn goto_definition_response(
+    perf_logging_enabled: bool,
     uri: &Url,
     pos: Position,
     lookup_name: &str,
@@ -495,7 +503,7 @@ fn goto_definition_response(
     message: &str,
 ) -> Result<Option<GotoDefinitionResponse>> {
     let elapsed_ms = started_at.elapsed().as_millis();
-    if elapsed_ms >= 10 {
+    if perf_logging_enabled && elapsed_ms >= 10 {
         info!(
             target: "kernel::lsp_runtime::features",
             event = "feature:gotoDefinition",
@@ -525,7 +533,7 @@ pub(crate) fn references(
         include_declaration,
     );
     let elapsed_ms = started_at.elapsed().as_millis();
-    if elapsed_ms >= 10 {
+    if state.perf_logging_enabled && elapsed_ms >= 10 {
         info!(
             target: "kernel::lsp_runtime::features",
             event = "feature:references",
