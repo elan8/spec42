@@ -2,14 +2,11 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::views::extracted_model as model;
-use crate::views::ibd;
-pub use semantic_core::{
-    range_to_dto, GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, RelationshipDto,
-    SysmlElementDto, SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationGroupDto,
-    SysmlVisualizationPackageCandidateDto, SysmlVisualizationResultDto,
-    SysmlVisualizationViewCandidateDto, WorkspaceFileModelDto, WorkspaceModelDto,
-    WorkspaceModelSummaryDto,
+use semantic_core::semantic::extracted_model as model;
+use semantic_core::semantic::ibd as ibd;
+use semantic_core::{
+    PositionDto, RangeDto, SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationGroupDto,
+    WorkspaceModelDto,
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

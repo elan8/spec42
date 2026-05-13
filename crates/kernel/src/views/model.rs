@@ -12,14 +12,14 @@ use sysml_v2_parser::RootNamespace;
 
 use crate::common::util;
 use crate::semantic;
-use crate::views::dto::{
+use crate::views::dto::SysmlModelResultDto;
+use semantic_core::semantic::extracted_model as model;
+use semantic_core::semantic::ibd;
+use semantic_core::semantic::model_projection;
+use semantic_core::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, RelationshipDto, SysmlElementDto, SysmlGraphDto,
-    SysmlModelResultDto, SysmlModelStatsDto, WorkspaceFileModelDto, WorkspaceModelDto,
-    WorkspaceModelSummaryDto,
+    SysmlModelStatsDto, WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
-use crate::views::extracted_model as model;
-use crate::views::ibd;
-use crate::views::model_projection;
 
 pub fn parse_sysml_model_params(v: &serde_json::Value) -> Result<(Url, Vec<String>)> {
     model_params::parse_sysml_model_params(v)
@@ -500,7 +500,7 @@ pub async fn build_sysml_model_response(
     let sequence_diagrams_start = Instant::now();
     let sequence_diagrams = if want_sequence_diagrams {
         Some(
-            crate::views::sequence_views::build_workspace_sequence_diagrams(
+            semantic_core::semantic::sequence_views::build_workspace_sequence_diagrams(
                 semantic_graph,
                 std::slice::from_ref(uri),
             ),

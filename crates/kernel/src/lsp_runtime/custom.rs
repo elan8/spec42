@@ -1,6 +1,7 @@
 use crate::host::config::Spec42Config;
 use crate::views::dto;
 use crate::workspace::ServerState;
+use semantic_core::SysmlVisualizationResultDto;
 use std::time::Instant;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::{MessageType, Url};
@@ -222,7 +223,7 @@ pub(crate) fn sysml_feature_inspector_result(
 pub(crate) fn sysml_visualization_result(
     state: &ServerState,
     params: serde_json::Value,
-) -> Result<dto::SysmlVisualizationResultDto> {
+) -> Result<SysmlVisualizationResultDto> {
     let (workspace_root_uri, view, selected_view) =
         crate::views::parse_sysml_visualization_params(&params)?;
     Ok(crate::views::build_sysml_visualization_response(

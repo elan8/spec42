@@ -22,6 +22,7 @@ use tower_lsp::{Client, LanguageServer, LspService, Server};
 use crate::host::config::Spec42Config;
 use crate::views::dto;
 use crate::workspace::ServerState;
+use semantic_core::SysmlVisualizationResultDto;
 use custom::{
     mark_sysml_model_parse_cached, sysml_clear_cache_result, sysml_feature_inspector_result,
     sysml_library_search_result, sysml_model_result, sysml_server_stats_result,
@@ -421,7 +422,7 @@ impl Backend {
     async fn sysml_visualization(
         &self,
         params: serde_json::Value,
-    ) -> Result<dto::SysmlVisualizationResultDto> {
+    ) -> Result<SysmlVisualizationResultDto> {
         let state = self.state.read().await;
         sysml_visualization_result(&state, params)
     }

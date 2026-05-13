@@ -7,10 +7,11 @@ use crate::common::text_span::to_core_position;
 use crate::common::util;
 use crate::semantic::{RelationshipKind, SemanticGraph, SemanticNode};
 use crate::views::dto::{
-    range_to_dto, PositionDto, SysmlFeatureInspectorElementDto, SysmlFeatureInspectorElementRefDto,
+    SysmlFeatureInspectorElementDto, SysmlFeatureInspectorElementRefDto,
     SysmlFeatureInspectorParamsDto, SysmlFeatureInspectorRelationshipDto,
     SysmlFeatureInspectorResolutionDto, SysmlFeatureInspectorResultDto,
 };
+use semantic_core::{range_to_dto, PositionDto};
 
 const TYPING_ATTRIBUTE_KEYS: &[&str] = &[
     "partType",

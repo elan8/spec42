@@ -37,15 +37,13 @@ pub use validation::{
     ValidationSummary,
 };
 pub use views::dto::{
-    GraphEdgeDto, GraphNodeDto, SysmlClearCacheResultDto, SysmlFeatureInspectorElementDto,
-    SysmlFeatureInspectorElementRefDto, SysmlFeatureInspectorParamsDto,
-    SysmlFeatureInspectorRelationshipDto, SysmlFeatureInspectorResolutionDto,
-    SysmlFeatureInspectorResultDto, SysmlGraphDto, SysmlModelResultDto, SysmlModelStatsDto,
-    SysmlServerCachesDto, SysmlServerMemoryDto, SysmlServerStatsDto, SysmlVisualizationResultDto,
-    SysmlVisualizationViewCandidateDto, WorkspaceFileModelDto, WorkspaceModelDto,
-    WorkspaceModelSummaryDto,
+    SysmlClearCacheResultDto, SysmlFeatureInspectorElementDto, SysmlFeatureInspectorElementRefDto,
+    SysmlFeatureInspectorParamsDto, SysmlFeatureInspectorRelationshipDto,
+    SysmlFeatureInspectorResolutionDto, SysmlFeatureInspectorResultDto, SysmlLibrarySearchItemDto,
+    SysmlLibrarySearchPackageDto, SysmlLibrarySearchParamsDto, SysmlLibrarySearchResultDto,
+    SysmlLibrarySearchSourceDto, SysmlModelResultDto, SysmlServerCachesDto, SysmlServerMemoryDto,
+    SysmlServerStatsDto, SysmlVisualizationParamsDto, TextDocumentIdentifierDto,
 };
-pub use views::ibd::{build_ibd_for_uri, is_port_like, IbdDataDto};
 pub use views::{
     build_sysml_model_response, build_sysml_visualization_for_paths,
     empty_feature_inspector_response, empty_model_response, parse_sysml_feature_inspector_params,

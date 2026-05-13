@@ -1,24 +1,27 @@
 use crate::common::text_span::to_core_range;
-use crate::views::dto;
+use crate::views::dto::{
+    SysmlLibrarySearchItemDto, SysmlLibrarySearchPackageDto, SysmlLibrarySearchSourceDto,
+};
+use semantic_core::range_to_dto;
 use crate::workspace::library_search::{
     LibrarySearchItem, LibrarySearchPackage, LibrarySearchSource,
 };
 
-fn to_dto_item(item: LibrarySearchItem) -> dto::SysmlLibrarySearchItemDto {
-    dto::SysmlLibrarySearchItemDto {
+fn to_dto_item(item: LibrarySearchItem) -> SysmlLibrarySearchItemDto {
+    SysmlLibrarySearchItemDto {
         name: item.name,
         kind: item.kind,
         container: item.container,
         uri: item.uri,
-        range: dto::range_to_dto(to_core_range(item.range)),
+        range: range_to_dto(to_core_range(item.range)),
         score: item.score,
         source: item.source,
         path: item.path,
     }
 }
 
-fn to_dto_package(package: LibrarySearchPackage) -> dto::SysmlLibrarySearchPackageDto {
-    dto::SysmlLibrarySearchPackageDto {
+fn to_dto_package(package: LibrarySearchPackage) -> SysmlLibrarySearchPackageDto {
+    SysmlLibrarySearchPackageDto {
         name: package.name,
         path: package.path,
         source: package.source,
@@ -28,10 +31,10 @@ fn to_dto_package(package: LibrarySearchPackage) -> dto::SysmlLibrarySearchPacka
 
 pub(crate) fn to_dto_sources(
     sources: Vec<LibrarySearchSource>,
-) -> Vec<dto::SysmlLibrarySearchSourceDto> {
+) -> Vec<SysmlLibrarySearchSourceDto> {
     sources
         .into_iter()
-        .map(|source| dto::SysmlLibrarySearchSourceDto {
+        .map(|source| SysmlLibrarySearchSourceDto {
             source: source.source,
             packages: source.packages.into_iter().map(to_dto_package).collect(),
         })

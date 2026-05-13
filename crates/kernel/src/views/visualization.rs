@@ -4,14 +4,12 @@ use std::time::Instant;
 
 use semantic_core::{
     build_semantic_graph_with_provider, build_sysml_visualization_workspace,
-    FileSystemDocumentProvider, WorkspaceParsedDocument,
+    FileSystemDocumentProvider, SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationResultDto,
+    WorkspaceParsedDocument,
 };
 use tower_lsp::lsp_types::Url;
 
 use crate::semantic;
-use crate::views::dto::{
-    SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationResultDto,
-};
 use crate::workspace::state::{IndexEntry, ParseMetadata};
 
 mod activity_views;
@@ -178,11 +176,11 @@ mod tests {
     use semantic_core::{
         attach_ibd_package_container_groups, build_ibd_package_container_groups,
         build_package_groups_from_graph, build_workspace_activity_diagrams,
-        select_interconnection_ibd_scope, WorkspaceParsedDocument,
+        select_interconnection_ibd_scope, GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto,
+        SysmlGraphDto, SysmlVisualizationPackageCandidateDto, WorkspaceParsedDocument,
     };
     use super::{build_sysml_visualization_for_paths, parse_sysml_visualization_params};
-    use crate::views::dto::{GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, SysmlGraphDto};
-    use crate::views::ibd::{IbdDataDto, IbdPartDto, IbdRootViewDto};
+    use semantic_core::semantic::ibd::{IbdDataDto, IbdPartDto, IbdRootViewDto};
     use sysml_v2_parser::parse;
     use tower_lsp::lsp_types::Url;
 
@@ -212,7 +210,7 @@ mod tests {
                 attributes: HashMap::new(),
             }],
             ports: vec![
-                crate::views::ibd::IbdPortDto {
+                semantic_core::semantic::ibd::IbdPortDto {
                     id: "WebShopArchitecture::WebShopSystem::checkoutService::apiIn".to_string(),
                     name: "apiIn".to_string(),
                     parent_id: "WebShopArchitecture.WebShopSystem.checkoutService".to_string(),
@@ -220,7 +218,7 @@ mod tests {
                     port_type: None,
                     port_side: None,
                 },
-                crate::views::ibd::IbdPortDto {
+                semantic_core::semantic::ibd::IbdPortDto {
                     id: "WebShopArchitecture::WebShopSystem::apiGateway::checkoutApiOut"
                         .to_string(),
                     name: "checkoutApiOut".to_string(),
@@ -230,7 +228,7 @@ mod tests {
                     port_side: None,
                 },
             ],
-            connectors: vec![crate::views::ibd::IbdConnectorDto {
+            connectors: vec![semantic_core::semantic::ibd::IbdConnectorDto {
                 source: "WebShopArchitecture::WebShopSystem::checkoutService::apiIn".to_string(),
                 target: "WebShopArchitecture::WebShopSystem::apiGateway::checkoutApiOut"
                     .to_string(),
@@ -452,11 +450,11 @@ mod tests {
         let groups = build_ibd_package_container_groups(
             &parts,
             &[
-                crate::views::dto::SysmlVisualizationPackageCandidateDto {
+                SysmlVisualizationPackageCandidateDto {
                     id: "Drone".to_string(),
                     name: "Drone".to_string(),
                 },
-                crate::views::dto::SysmlVisualizationPackageCandidateDto {
+                SysmlVisualizationPackageCandidateDto {
                     id: "Timer".to_string(),
                     name: "Timer".to_string(),
                 },
@@ -514,7 +512,7 @@ mod tests {
 
         let attached = attach_ibd_package_container_groups(
             payload,
-            &[crate::views::dto::SysmlVisualizationPackageCandidateDto {
+            &[SysmlVisualizationPackageCandidateDto {
                 id: "Drone".to_string(),
                 name: "Drone".to_string(),
             }],
