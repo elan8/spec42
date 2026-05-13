@@ -1,15 +1,16 @@
 use std::collections::HashMap;
 
-use sysml_v2_parser::ast::{PartDefBodyElement, PartUsageBody};
+use sysml_v2_parser::ast::{InterfaceDefBody, PartDefBodyElement, PartUsageBody};
 use sysml_v2_parser::RootNamespace;
 use url::Url;
 
-use crate::semantic::ast_util::span_to_range;
+use crate::semantic::ast_util::{identification_name, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
 use super::expressions;
+use super::interface_def;
 use super::part_usage;
 use super::requirement_body::walk_requirement_def_body;
 use super::state;
@@ -262,6 +263,33 @@ pub(super) fn build_from_part_def_body_element(
                         from,
                         to,
                         RelationshipKind::Connection,
+                    );
+                }
+            }
+        }
+        PDBE::InterfaceDef(id_node) => {
+            let name = identification_name(&id_node.identification);
+            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "interface");
+            let range = span_to_range(&id_node.span);
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "interface",
+                name.clone(),
+                range,
+                HashMap::new(),
+                Some(parent_id),
+            );
+            let iface_id = NodeId::new(uri, &qualified);
+            if let InterfaceDefBody::Brace { elements } = &id_node.body {
+                for el in elements {
+                    interface_def::build_from_interface_def_body_element(
+                        el,
+                        uri,
+                        Some(&qualified),
+                        &iface_id,
+                        g,
                     );
                 }
             }
