@@ -1,31 +1,40 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
+use crate::semantic::dto::{GraphEdgeDto, GraphNodeDto, SysmlGraphDto};
+use crate::semantic::explicit_views;
+use crate::semantic::extracted_model::ActivityDiagramDto;
 use crate::semantic::ibd::{build_ibd_for_uri, merge_ibd_payloads};
-use crate::semantic::model_projection::{build_workspace_graph_dto, canonical_general_view_graph};
+use crate::semantic::model_projection::{
+    build_workspace_graph_dto, canonical_general_view_graph, strip_synthetic_nodes,
+};
 use crate::semantic::sequence_views::build_workspace_sequence_diagrams;
-use crate::{SemanticGraph, SysmlVisualizationResultDto, SysmlVisualizationViewCandidateDto};
+use crate::semantic::workspace_graph::WorkspaceParsedDocument;
+use crate::{SemanticGraph, SysmlVisualizationResultDto};
 use url::Url;
 
-/// Lightweight non-LSP visualization selection entrypoint.
+/// Graph-first visualization entrypoint aligned with the LSP kernel’s view catalog and selection.
 ///
-/// This graph-first API keeps visualization logic independent from workspace/path scanning.
+/// Pass the same [`WorkspaceParsedDocument`] slice returned from
+/// [`crate::semantic::workspace_graph::build_semantic_graph_with_provider`] (or
+/// [`crate::semantic::workspace_graph::build_semantic_graph_from_documents`]) so view definitions
+/// and usages are discovered from the AST, not from name heuristics.
 pub fn build_sysml_visualization_from_graph(
     graph: &SemanticGraph,
+    documents: &[WorkspaceParsedDocument],
     view: &str,
     selected_view: Option<&str>,
 ) -> Result<SysmlVisualizationResultDto, String> {
     let library_paths = vec![Url::parse("file:///library/").map_err(|err| err.to_string())?];
-    let workspace_uris = graph
-        .workspace_uris_excluding_libraries(&library_paths)
-        .into_iter()
-        .filter(|uri| is_workspace_uri(uri))
-        .collect::<Vec<_>>();
+    let mut workspace_uris: Vec<Url> = documents.iter().map(|doc| doc.uri.clone()).collect();
+    workspace_uris.sort_by(|left, right| left.as_str().cmp(right.as_str()));
+    workspace_uris.retain(|uri| is_workspace_uri(uri));
+
     let workspace_root_uri = workspace_uris
         .first()
         .map(|uri| uri.to_string())
         .unwrap_or_default();
 
-    let workspace_graph = build_workspace_graph_dto(graph, &library_paths);
+    let workspace_graph = strip_synthetic_nodes(&build_workspace_graph_dto(graph, &library_paths));
     let general_graph = canonical_general_view_graph(&workspace_graph, false);
     let sequence_diagrams = build_workspace_sequence_diagrams(graph, &workspace_uris);
     let ibd_payloads = workspace_uris
@@ -38,62 +47,82 @@ pub fn build_sysml_visualization_from_graph(
         Some(merge_ibd_payloads(ibd_payloads))
     };
 
-    let mut seen = HashSet::<String>::new();
-    let mut view_candidates = workspace_uris
-        .iter()
-        .flat_map(|uri| graph.nodes_for_uri(uri))
-        .filter(|node| node.element_kind == "view")
-        .filter_map(|node| {
-            if !seen.insert(node.id.qualified_name.clone()) {
-                return None;
-            }
-            let lowercase_name = node.name.to_ascii_lowercase();
-            let (renderer_view, view_type) = if lowercase_name.contains("sequence") {
-                ("sequence-view", "sequence")
-            } else if lowercase_name.contains("state") {
-                ("state-transition-view", "state-transition")
-            } else if lowercase_name.contains("interconnection") {
-                ("interconnection-view", "interconnection")
-            } else if lowercase_name.contains("action") || lowercase_name.contains("activity") {
-                ("action-flow-view", "action-flow")
-            } else {
-                ("general-view", "general")
-            };
-            Some(SysmlVisualizationViewCandidateDto {
-                id: node.id.qualified_name.clone(),
-                name: node.name.clone(),
-                renderer_view: Some(renderer_view.to_string()),
-                supported: true,
-                view_type: Some(view_type.to_string()),
-                description: Some("model-defined view usage".to_string()),
-            })
+    let catalog = explicit_views::build_view_catalog(&workspace_uris, documents);
+    if catalog.usages.is_empty() {
+        return Ok(SysmlVisualizationResultDto {
+            version: 0,
+            view: view.to_string(),
+            workspace_root_uri,
+            view_candidates: Vec::new(),
+            selected_view: None,
+            selected_view_name: None,
+            empty_state_message: Some(
+                "No model-defined views were found in this workspace.".to_string(),
+            ),
+            package_groups: None,
+            graph: Some(SysmlGraphDto {
+                nodes: Vec::new(),
+                edges: Vec::new(),
+            }),
+            general_view_graph: Some(SysmlGraphDto {
+                nodes: Vec::new(),
+                edges: Vec::new(),
+            }),
+            workspace_model: None,
+            activity_diagrams: None,
+            sequence_diagrams: Some(Vec::new()),
+            ibd: merged_ibd,
+            stats: None,
+        });
+    }
+
+    let evaluated_views = explicit_views::evaluate_views(&catalog, &workspace_graph);
+    let mut projected_graphs: HashMap<&str, SysmlGraphDto> = HashMap::new();
+    let empty_activity: HashMap<&str, Vec<ActivityDiagramDto>> = HashMap::new();
+    for evaluated in &evaluated_views {
+        let projected_ids = explicit_views::renderer_view_for_view_type(
+            evaluated.effective_view_type.as_deref(),
+        )
+        .map(|renderer_view| {
+            explicit_views::project_ids_for_renderer(evaluated, &workspace_graph, renderer_view)
         })
-        .collect::<Vec<_>>();
-    view_candidates.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+        .unwrap_or_default();
+        let projected_graph = project_graph_by_ids(&workspace_graph, &projected_ids);
+        projected_graphs.insert(evaluated.id.as_str(), projected_graph);
+    }
+
+    let view_candidates = explicit_views::build_view_candidates(
+        &evaluated_views,
+        &empty_activity,
+        &projected_graphs,
+    );
 
     let selected = selected_view
-        .and_then(|value| {
+        .and_then(|selected| {
             view_candidates.iter().find(|candidate| {
-                candidate.id.eq_ignore_ascii_case(value)
-                    || candidate.name.eq_ignore_ascii_case(value)
-                    || candidate
-                        .id
-                        .rsplit("::")
-                        .next()
-                        .is_some_and(|suffix| suffix.eq_ignore_ascii_case(value))
+                candidate.id == selected
+                    || candidate.name == selected
+                    || candidate.id.rsplit("::").next() == Some(selected)
             })
         })
+        .or_else(|| {
+            view_candidates.iter().find(|candidate| {
+                candidate.supported && candidate.renderer_view.as_deref() == Some(view)
+            })
+        })
+        .or_else(|| view_candidates.iter().find(|candidate| candidate.supported))
         .or_else(|| view_candidates.first());
+
     let selected_view = selected.map(|candidate| candidate.id.clone());
     let selected_view_name = selected.map(|candidate| candidate.name.clone());
     let selected_renderer = selected
         .and_then(|candidate| candidate.renderer_view.clone())
         .unwrap_or_else(|| view.to_string());
-    let selected_graph = if selected.is_some() {
-        Some(general_graph.clone())
-    } else {
-        None
-    };
+
+    let selected_graph = selected
+        .and_then(|candidate| projected_graphs.get(candidate.id.as_str()).cloned())
+        .or_else(|| Some(general_graph.clone()));
+
     let empty_state_message = if view_candidates.is_empty() {
         Some("No model-defined views were found in this commit".to_string())
     } else {
@@ -101,7 +130,7 @@ pub fn build_sysml_visualization_from_graph(
     };
 
     Ok(SysmlVisualizationResultDto {
-        version: 1,
+        version: 0,
         view: selected_renderer,
         workspace_root_uri,
         view_candidates,
@@ -117,6 +146,24 @@ pub fn build_sysml_visualization_from_graph(
         ibd: merged_ibd,
         stats: None,
     })
+}
+
+fn project_graph_by_ids(graph: &SysmlGraphDto, ids: &HashSet<String>) -> SysmlGraphDto {
+    let id_set: HashSet<&str> = ids.iter().map(String::as_str).collect();
+    let nodes: Vec<GraphNodeDto> = graph
+        .nodes
+        .iter()
+        .filter(|node| id_set.contains(node.id.as_str()))
+        .cloned()
+        .collect();
+    let node_ids: HashSet<String> = nodes.iter().map(|node| node.id.clone()).collect();
+    let edges: Vec<GraphEdgeDto> = graph
+        .edges
+        .iter()
+        .filter(|edge| node_ids.contains(&edge.source) && node_ids.contains(&edge.target))
+        .cloned()
+        .collect();
+    SysmlGraphDto { nodes, edges }
 }
 
 fn is_workspace_uri(uri: &Url) -> bool {

@@ -2,7 +2,9 @@ use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
-use semantic_core::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
+use semantic_core::{
+    build_semantic_graph_with_provider, FileSystemDocumentProvider, WorkspaceParsedDocument,
+};
 use tower_lsp::lsp_types::Url;
 
 use crate::semantic;
@@ -108,6 +110,25 @@ fn path_to_url(path: &Path) -> Result<Url, String> {
             canonical.display()
         )
     })
+}
+
+fn workspace_parsed_documents_for_visualization(
+    index: &HashMap<Url, IndexEntry>,
+    workspace_uris: &[Url],
+) -> Vec<WorkspaceParsedDocument> {
+    workspace_uris
+        .iter()
+        .filter_map(|uri| {
+            let entry = index.get(uri)?;
+            Some(WorkspaceParsedDocument {
+                uri: uri.clone(),
+                content: entry.content.clone(),
+                parsed: entry.parsed.as_ref()?.clone(),
+                parse_time_ms: entry.parse_metadata.parse_time_ms,
+                parse_cached: entry.parse_metadata.parse_cached,
+            })
+        })
+        .collect()
 }
 
 fn clone_element(element: &SysmlElementDto) -> SysmlElementDto {
@@ -634,7 +655,8 @@ pub(crate) fn build_sysml_visualization_response(
     );
     let full_activity_diagrams = build_workspace_activity_diagrams(index, &workspace_uris, None);
     let full_sequence_diagrams = build_workspace_sequence_diagrams(semantic_graph, &workspace_uris);
-    let catalog = explicit_views::build_view_catalog(index, &workspace_uris);
+    let viz_docs = workspace_parsed_documents_for_visualization(index, &workspace_uris);
+    let catalog = explicit_views::build_view_catalog(&workspace_uris, &viz_docs);
 
     if catalog.usages.is_empty() {
         return SysmlVisualizationResultDto {
@@ -1257,10 +1279,11 @@ mod tests {
             Some(workspace_path.clone()),
             Vec::new(),
         );
-        let (graph, _docs) = semantic_core::build_semantic_graph_with_provider(&provider)
+        let (graph, docs) = semantic_core::build_semantic_graph_with_provider(&provider)
             .expect("semantic graph for workspace");
         let semantic_core_response = semantic_core::build_sysml_visualization_from_graph(
             &graph,
+            &docs,
             requested_view,
             requested_selected_view,
         )
@@ -1276,8 +1299,12 @@ mod tests {
             "kernel should resolve a selected view name"
         );
         assert_eq!(
-            semantic_core_response.selected_view.as_deref(),
-            requested_selected_view
+            semantic_core_response.selected_view,
+            kernel_response.selected_view
+        );
+        assert_eq!(
+            semantic_core_response.selected_view_name,
+            kernel_response.selected_view_name
         );
         assert!(
             !kernel_response.view_candidates.is_empty(),

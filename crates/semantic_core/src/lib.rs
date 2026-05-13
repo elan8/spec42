@@ -13,6 +13,11 @@ pub use semantic::dto::{
     WorkspaceModelSummaryDto,
 };
 pub use semantic::evaluation::evaluate_expressions;
+pub use semantic::explicit_views::{
+    build_view_catalog, build_view_candidates, evaluate_views, project_ids_for_renderer,
+    renderer_view_for_view_type, EvaluatedView, ExposeSpec, FilterExpr, ViewCatalog,
+    ViewDefinitionSpec, ViewUsageSpec,
+};
 pub use semantic::graph::SemanticGraph;
 pub use semantic::graph_builder::build_graph_from_doc;
 pub use semantic::import_resolution::{
