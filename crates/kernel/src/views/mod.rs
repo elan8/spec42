@@ -1,4 +1,5 @@
 pub mod dto;
+pub mod explicit_views;
 pub(crate) mod extracted_model;
 pub mod feature_inspector;
 pub(crate) mod ibd;

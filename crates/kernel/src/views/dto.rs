@@ -7,8 +7,9 @@ use crate::views::ibd;
 pub use semantic_core::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, RelationshipDto,
     SysmlElementDto, SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationGroupDto,
-    SysmlVisualizationPackageCandidateDto, SysmlVisualizationViewCandidateDto,
-    WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
+    SysmlVisualizationPackageCandidateDto, SysmlVisualizationResultDto,
+    SysmlVisualizationViewCandidateDto, WorkspaceFileModelDto, WorkspaceModelDto,
+    WorkspaceModelSummaryDto,
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -88,37 +89,6 @@ pub struct SysmlVisualizationParamsDto {
     pub view: String,
     #[serde(default)]
     pub selected_view: Option<String>,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SysmlVisualizationResultDto {
-    pub version: u32,
-    pub view: String,
-    pub workspace_root_uri: String,
-    pub view_candidates: Vec<SysmlVisualizationViewCandidateDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub selected_view: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub selected_view_name: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub empty_state_message: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub package_groups: Option<Vec<SysmlVisualizationGroupDto>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub graph: Option<SysmlGraphDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub general_view_graph: Option<SysmlGraphDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub workspace_model: Option<WorkspaceModelDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub activity_diagrams: Option<Vec<model::ActivityDiagramDto>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub sequence_diagrams: Option<Vec<model::SequenceDiagramDto>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ibd: Option<ibd::IbdDataDto>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub stats: Option<SysmlModelStatsDto>,
 }
 
 #[derive(Debug, Serialize)]

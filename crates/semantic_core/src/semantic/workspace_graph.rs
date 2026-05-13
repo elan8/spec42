@@ -8,7 +8,7 @@ use crate::semantic::graph_builder::build_graph_from_doc;
 use crate::semantic::relationships::add_cross_document_edges_for_uri;
 use crate::semantic::source::{SysmlDocument, SysmlDocumentProvider};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct WorkspaceParsedDocument {
     pub uri: Url,
     pub content: String,
