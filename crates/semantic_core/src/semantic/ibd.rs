@@ -221,14 +221,15 @@ fn resolve_owner_part_qn_for_endpoint(endpoint: &str, parts: &[IbdPartDto]) -> O
         .map(|part| part.qualified_name.clone())
 }
 
+/// Drops unrelated assemblies, but keeps every part nested under a composite that
+/// already contains a connector endpoint (including unconnected siblings).
 fn prune_ibd_payload_to_connected_scope(
     parts: Vec<IbdPartDto>,
     ports: Vec<IbdPortDto>,
     connectors: Vec<IbdConnectorDto>,
 ) -> (Vec<IbdPartDto>, Vec<IbdPortDto>, Vec<IbdConnectorDto>) {
     if connectors.is_empty() || parts.is_empty() {
-        // Interconnection view should only include connector-relevant structure.
-        // If there are no connectors in this scope, keep the payload empty.
+        // No connectors in this scope: keep the payload empty for interconnection view.
         return (Vec::new(), Vec::new(), Vec::new());
     }
 
@@ -253,6 +254,24 @@ fn prune_ibd_payload_to_connected_scope(
                     .get(&qn)
                     .and_then(|part| part.container_id.clone())
                     .filter(|container| !container.is_empty());
+            }
+        }
+    }
+
+    // Parts that sit under the same composite as a connector-attached part (siblings,
+    // or nested parts under those siblings) should still appear in the diagram.
+    let mut subtree_expanded = true;
+    while subtree_expanded {
+        subtree_expanded = false;
+        for part in &parts {
+            if keep_part_qn.contains(&part.qualified_name) {
+                continue;
+            }
+            let Some(parent) = part.container_id.as_ref().filter(|p| !p.is_empty()) else {
+                continue;
+            };
+            if keep_part_qn.contains(parent) && keep_part_qn.insert(part.qualified_name.clone()) {
+                subtree_expanded = true;
             }
         }
     }
@@ -1222,8 +1241,8 @@ mod tests {
     use url::Url;
 
     use super::{
-        build_container_groups, infer_port_side, prune_redundant_top_level_roots, IbdConnectorDto,
-        IbdPartDto, IbdPortDto,
+        build_container_groups, infer_port_side, prune_ibd_payload_to_connected_scope,
+        prune_redundant_top_level_roots, IbdConnectorDto, IbdPartDto, IbdPortDto,
     };
 
     #[test]
@@ -1264,6 +1283,88 @@ mod tests {
         assert_eq!(
             infer_port_side("status", None, Some("~TelemetryPort")),
             None
+        );
+    }
+
+    #[test]
+    fn prune_ibd_keeps_unconnected_parts_under_same_composite() {
+        let parts = vec![
+            IbdPartDto {
+                id: "O::Desk".to_string(),
+                name: "desk".to_string(),
+                qualified_name: "O.Desk".to_string(),
+                uri: None,
+                container_id: None,
+                element_type: "part".to_string(),
+                attributes: HashMap::new(),
+            },
+            IbdPartDto {
+                id: "O::Desk::connected".to_string(),
+                name: "connected".to_string(),
+                qualified_name: "O.Desk.connected".to_string(),
+                uri: None,
+                container_id: Some("O.Desk".to_string()),
+                element_type: "part".to_string(),
+                attributes: HashMap::new(),
+            },
+            IbdPartDto {
+                id: "O::Desk::orphan".to_string(),
+                name: "orphan".to_string(),
+                qualified_name: "O.Desk.orphan".to_string(),
+                uri: None,
+                container_id: Some("O.Desk".to_string()),
+                element_type: "part".to_string(),
+                attributes: HashMap::new(),
+            },
+            IbdPartDto {
+                id: "O::Desk::orphan::nested".to_string(),
+                name: "nested".to_string(),
+                qualified_name: "O.Desk.orphan.nested".to_string(),
+                uri: None,
+                container_id: Some("O.Desk.orphan".to_string()),
+                element_type: "part".to_string(),
+                attributes: HashMap::new(),
+            },
+        ];
+        let ports = vec![
+            IbdPortDto {
+                id: "O.Desk.connected.p1".to_string(),
+                name: "p1".to_string(),
+                parent_id: "O.Desk.connected".to_string(),
+                direction: None,
+                port_type: None,
+                port_side: None,
+            },
+            IbdPortDto {
+                id: "O.Desk.connected.p2".to_string(),
+                name: "p2".to_string(),
+                parent_id: "O.Desk.connected".to_string(),
+                direction: None,
+                port_type: None,
+                port_side: None,
+            },
+        ];
+        let connectors = vec![IbdConnectorDto {
+            source: "O::Desk::connected::p1".to_string(),
+            target: "O::Desk::connected::p2".to_string(),
+            source_id: "O.Desk.connected.p1".to_string(),
+            target_id: "O.Desk.connected.p2".to_string(),
+            rel_type: "connection".to_string(),
+        }];
+
+        let (parts, _ports, _connectors) =
+            prune_ibd_payload_to_connected_scope(parts, ports, connectors);
+
+        let qns: Vec<&str> = parts.iter().map(|p| p.qualified_name.as_str()).collect();
+        assert!(qns.contains(&"O.Desk"));
+        assert!(qns.contains(&"O.Desk.connected"));
+        assert!(
+            qns.contains(&"O.Desk.orphan"),
+            "sibling part with no connectors should remain in IBD payload"
+        );
+        assert!(
+            qns.contains(&"O.Desk.orphan.nested"),
+            "nested parts under an unconnected sibling should remain"
         );
     }
 
