@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-05-15
+
+### Added
+
+- **`semantic_core` crate** - Extracted reusable semantic engine (graph building, resolution, evaluation, diagnostics, and graph-first visualization) for use by `kernel`, future hosts, and services without LSP coupling.
+- **MCP server** - Added `spec42-mcp` stdio server with `spec42_check` tool exposing the same validation pipeline as the CLI for AI assistant workflows.
+- **`software-architecture` crate** - Promoted software-architecture support from an in-tree plugin to a dedicated crate with custom RPC provider wiring.
+- **Graph-first diagnostics engine** - Added neutral diagnostics collection in `semantic_core` with kernel/LSP adapter integration.
+- **Semantic core architecture guide** - Added `docs/SEMANTIC_CORE_ARCHITECTURE.md` documenting module layout and graph-first visualization/diagnostics flows.
+- **Content submodule helper** - Added `scripts/update-content-submodules.ps1` for updating `domain-libraries` and `examples` submodules.
+
+### Changed
+
+- **Parser dependency upgrade** - Updated `sysml-v2-parser` integration to `v0.10.0` and aligned graph-builder paths.
+- **Visualization and DTO architecture** - Moved graph-first visualization, sequence extraction, IBD/interconnection projection, and shared DTOs into `semantic_core`; slimmed `kernel` to host/runtime concerns.
+- **Sequence view extraction** - Reworked sequence-diagram extraction to operate on the semantic graph rather than legacy view-layer paths.
+- **Release and CI packaging** - Extended release workflow and validation pipelines for `spec42-mcp`, recursive submodule checkout, and updated binary staging.
+- **Default logging** - Reduced default runtime logging noise for quieter editor sessions.
+
+### Fixed
+
+- **IBD composite scope** - Pruned IBD payloads to retain unconnected parts that belong under the same composite structure.
+- **Build and duplication guardrails** - Removed duplicate semantic implementations and added dependency/debt guardrail tests to keep crate boundaries stable.
+
 ## [0.23.0] - 2026-05-05
 
 ### Added
@@ -370,6 +394,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.24.0]: https://github.com/elan8/spec42/releases/tag/v0.24.0
 [0.23.0]: https://github.com/elan8/spec42/releases/tag/v0.23.0
 [0.22.0]: https://github.com/elan8/spec42/releases/tag/v0.22.0
 [0.21.0]: https://github.com/elan8/spec42/releases/tag/v0.21.0
