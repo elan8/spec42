@@ -38,12 +38,18 @@ fn main() {
 
     let Some(local_zip) = resolve_local_stdlib_zip() else {
         if out_zip.exists() {
+            if embedded_archive_is_usable(&out_zip) {
+                eprintln!(
+                    "spec42 build: reusing cached embedded stdlib archive at {}",
+                    out_zip.display()
+                );
+                let _embedded_digest = format!("{:x}", Sha256::digest(fs::read(&out_zip).unwrap()));
+                return;
+            }
             eprintln!(
-                "spec42 build: reusing cached embedded stdlib archive at {}",
+                "spec42 build: ignoring unusable cached embedded stdlib archive at {}",
                 out_zip.display()
             );
-            let _embedded_digest = format!("{:x}", Sha256::digest(fs::read(&out_zip).unwrap()));
-            return;
         }
         if let Some(cached_embedded_zip) = find_cached_embedded_zip(&out_zip) {
             fs::copy(&cached_embedded_zip, &out_zip).unwrap_or_else(|e| {
@@ -107,11 +113,30 @@ fn find_cached_embedded_zip(out_zip: &Path) -> Option<PathBuf> {
     let entries = fs::read_dir(build_root).ok()?;
     for entry in entries.flatten() {
         let candidate = entry.path().join("out/sysml.library.embedded.zip");
-        if candidate != out_zip && candidate.is_file() {
+        if candidate != out_zip && candidate.is_file() && embedded_archive_is_usable(&candidate) {
             return Some(candidate);
         }
     }
     None
+}
+
+fn embedded_archive_is_usable(path: &Path) -> bool {
+    let Ok(bytes) = fs::read(path) else {
+        return false;
+    };
+    let Ok(mut archive) = ZipArchive::new(Cursor::new(bytes)) else {
+        return false;
+    };
+    for i in 0..archive.len() {
+        let Ok(entry) = archive.by_index(i) else {
+            return false;
+        };
+        let name = entry.name();
+        if name.starts_with(&format!("{EMBED_ROOT}/sysml.library/")) && !name.ends_with('/') {
+            return true;
+        }
+    }
+    false
 }
 
 fn repack_sysml_library(full_zip_bytes: &[u8], out_path: &Path) -> Result<(), String> {

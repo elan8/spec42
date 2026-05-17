@@ -55,6 +55,8 @@ import { renderIbdView } from './renderers/ibd';
 import { createExportHandler } from './export';
 import { postJumpToElement } from './jumpToElement';
 import { buildGeneralViewGraph } from './graphBuilders';
+import { RenderScheduler } from './renderScheduler';
+import { setupVisualizerControls } from './uiControls';
 
     let vscode: { postMessage: (msg: unknown) => void };
 
@@ -97,7 +99,6 @@ import { buildGeneralViewGraph } from './graphBuilders';
     let activityLayoutDirection = 'vertical'; // Action-flow diagrams default to top-down
     let stateLayoutOrientation = 'force'; // State-transition layout: 'horizontal', 'vertical', or 'force'
     let filteredData = null; // Active filter state shared across views
-    let isRendering = false;
     let showMetadata = false;
     let showCategoryHeaders = true; // Show category headers in General View
     // Export handler - uses getCurrentData/getViewState for lazy evaluation
@@ -180,30 +181,10 @@ import { buildGeneralViewGraph } from './graphBuilders';
         console.error('JavaScript Error:', e.error?.message || e.message);
     });
 
-    // Track last rendered data to avoid unnecessary re-renders
-    let lastDataHash = '';
-    let pendingRenderRequest: { view: string; preserveZoomOverride: any; allowDuringResize: boolean } | null = null;
-    let pendingViewRenderTimeout: ReturnType<typeof setTimeout> | null = null;
-    let activeRenderAbortController: AbortController | null = null;
-    let activeRenderRequestId = 0;
+    const renderScheduler = new RenderScheduler(webviewPerf);
 
     function cancelOutstandingRenderRequests(reason = 'view-switch') {
-        pendingRenderRequest = null;
-        if (pendingViewRenderTimeout) {
-            clearTimeout(pendingViewRenderTimeout);
-            pendingViewRenderTimeout = null;
-        }
-        if (activeRenderAbortController) {
-            try {
-                activeRenderAbortController.abort();
-            } catch {
-                // Ignore abort races.
-            }
-            activeRenderAbortController = null;
-        }
-        // Release render lock so the next view render can start immediately.
-        isRendering = false;
-        webviewPerf('visualizer:webviewRenderCancelled', { reason });
+        renderScheduler.cancelOutstandingRenderRequests(reason);
     }
 
     function ensureVisualizationCanvas(width: number, height: number): void {
@@ -368,7 +349,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
                     selectedView: message.selectedView,
                 });
 
-                if (newHash === lastDataHash && currentData) {
+                if (newHash === renderScheduler.dataHash && currentData) {
                     // Data unchanged, skip expensive re-render
                     webviewPerf('visualizer:webviewUpdateSkippedUnchanged', {
                         currentView,
@@ -376,7 +357,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
                     hideLoading();
                     return;
                 }
-                lastDataHash = newHash;
+                renderScheduler.dataHash = newHash;
 
                 // Update loading message - parsing is done, now rendering
                 showLoading('Rendering diagram...');
@@ -460,12 +441,12 @@ import { buildGeneralViewGraph } from './graphBuilders';
                             const groupElement = svgElement?.querySelector('g');
                             return !!(svgElement && groupElement && groupElement.childElementCount > 0);
                         })();
-                        if (!isRendering && !hasContent && currentData) {
+                        if (!renderScheduler.isRendering && !hasContent && currentData) {
                             // Root cause: export can race before the requested view finished drawing.
                             // Trigger an explicit re-render once before giving up.
                             renderVisualization(currentView);
                         }
-                        if ((isRendering || !hasContent) && attempts < maxAttempts) {
+                        if ((renderScheduler.isRendering || !hasContent) && attempts < maxAttempts) {
                             attempts += 1;
                             setTimeout(tryExportWhenReady, 150);
                             return;
@@ -527,7 +508,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
                 lastRenderedWidth = currentWidth;
                 lastRenderedHeight = currentHeight;
 
-                if (currentData && !isRendering) {
+                if (currentData && !renderScheduler.isRendering) {
                     renderVisualization(currentView, null, true);
                 }
             }
@@ -909,10 +890,10 @@ import { buildGeneralViewGraph } from './graphBuilders';
             updateActivityDebugButtonVisibility(view);
 
             // Small delay to allow UI to update before rendering
-            pendingViewRenderTimeout = setTimeout(() => {
-                pendingViewRenderTimeout = null;
+            renderScheduler.setPendingViewRenderTimeout(setTimeout(() => {
+                renderScheduler.clearPendingViewRenderTimeout();
                 renderVisualization(view);
-            }, 50);
+            }, 50));
 
             lastView = view;
         };
@@ -1262,28 +1243,21 @@ import { buildGeneralViewGraph } from './graphBuilders';
             return;
         }
 
-        const renderRequestId = ++activeRenderRequestId;
-        const renderAbortController = new AbortController();
-        if (activeRenderAbortController) {
-            try {
-                activeRenderAbortController.abort();
-            } catch {
-                // ignore abort races
-            }
-        }
-        activeRenderAbortController = renderAbortController;
-        const isStaleRender = () =>
-            renderAbortController.signal.aborted || renderRequestId !== activeRenderRequestId;
+        const {
+            requestId: renderRequestId,
+            abortController: renderAbortController,
+            isStale: isStaleRender,
+        } = renderScheduler.beginRender();
 
         const renderStartedAt = Date.now();
 
-        if (isRendering) {
+        if (renderScheduler.isRendering) {
             // A render is in-flight; queue the latest request so we don't lose updates
             // when switching folders/projects quickly.
             if (isStaleRender()) {
                 return;
             }
-            pendingRenderRequest = { view, preserveZoomOverride, allowDuringResize };
+            renderScheduler.queueRenderRequest({ view, preserveZoomOverride, allowDuringResize });
             webviewPerf('visualizer:webviewRenderQueued', {
                 view,
                 allowDuringResize,
@@ -1341,7 +1315,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
             );
         }
 
-        isRendering = true;
+        renderScheduler.markRendering();
 
         // Show loading indicator
         showLoading('Rendering ' + (VIEW_OPTIONS[view]?.label || view) + '...');
@@ -1351,11 +1325,7 @@ import { buildGeneralViewGraph } from './graphBuilders';
             if (didFinishRender) return;
             didFinishRender = true;
             clearTimeout(renderSafetyTimeout);
-            const supersededByNewerRequest = renderRequestId !== activeRenderRequestId;
-            isRendering = false;
-            if (activeRenderAbortController === renderAbortController) {
-                activeRenderAbortController = null;
-            }
+            const { supersededByNewerRequest, nextRequest } = renderScheduler.finishRender(renderAbortController, renderRequestId);
             hideLoading();
             webviewPerf(
                 supersededByNewerRequest ? 'visualizer:webviewRenderSuperseded' : 'visualizer:webviewRenderCompleted',
@@ -1365,11 +1335,9 @@ import { buildGeneralViewGraph } from './graphBuilders';
                     totalMs: Date.now() - renderStartedAt,
                 }
             );
-            if (pendingRenderRequest) {
-                const next = pendingRenderRequest;
-                pendingRenderRequest = null;
+            if (nextRequest) {
                 setTimeout(() => {
-                    renderVisualization(next.view, next.preserveZoomOverride, next.allowDuringResize);
+                    renderVisualization(nextRequest.view, nextRequest.preserveZoomOverride, nextRequest.allowDuringResize);
                 }, 0);
             }
         };
@@ -2337,260 +2305,15 @@ import { buildGeneralViewGraph } from './graphBuilders';
         }
     }
 
-    // Add event listeners for view buttons (DOM should be ready since script is at end)
-    const viewDropdownBtn = document.getElementById('view-dropdown-btn');
-    const viewDropdownMenu = document.getElementById('view-dropdown-menu');
-
-    if (viewDropdownBtn && viewDropdownMenu) {
-        viewDropdownBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isVisible = viewDropdownMenu.classList.contains('show');
-            viewDropdownMenu.classList.toggle('show', !isVisible);
-        });
-    }
-
-    populateViewDropdown();
-
-    // Set initial active view button
-    updateActiveViewButton(currentView);
-
-    // Add event listeners for action buttons
-    document.getElementById('reset-btn').addEventListener('click', resetZoom);
-    document.getElementById('layout-direction-btn').addEventListener('click', toggleLayoutDirection);
-
-    // Legend popup toggle
-    (function setupLegend() {
-        const legendBtn = document.getElementById('legend-btn');
-        const legendPopup = document.getElementById('legend-popup');
-        const legendCloseBtn = document.getElementById('legend-close-btn');
-        if (!legendBtn || !legendPopup) return;
-
-        function showLegend() {
-            legendPopup.style.display = 'block';
-            legendPopup.style.top = '12px';
-            legendPopup.style.right = '12px';
-            legendPopup.style.left = '';
-            legendPopup.style.bottom = '';
-            legendBtn.classList.add('active');
-            legendBtn.style.background = 'var(--vscode-button-background)';
-            legendBtn.style.color = 'var(--vscode-button-foreground)';
-        }
-
-        function hideLegend() {
-            legendPopup.style.display = 'none';
-            legendBtn.classList.remove('active');
-            legendBtn.style.background = '';
-            legendBtn.style.color = '';
-        }
-
-        legendBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const showing = legendPopup.style.display === 'block';
-            if (showing) { hideLegend(); } else { showLegend(); }
-        });
-
-        if (legendCloseBtn) {
-            legendCloseBtn.addEventListener('click', () => { hideLegend(); });
-        }
-
-        // Hide legend when clicking outside
-        document.addEventListener('click', (e) => {
-            if (legendPopup.style.display === 'block' &&
-                !legendPopup.contains(e.target) &&
-                !legendBtn.contains(e.target)) {
-                hideLegend();
-            }
-        });
-    })();
-
-    // Legend drag support
-    (function setupLegendDrag() {
-        const legendPopup = document.getElementById('legend-popup');
-        const legendHeader = document.getElementById('legend-header');
-        if (!legendPopup || !legendHeader) return;
-
-        let isDragging = false;
-        let dragStartX = 0;
-        let dragStartY = 0;
-        let popupStartLeft = 0;
-        let popupStartTop = 0;
-
-        legendHeader.addEventListener('mousedown', (e) => {
-            if (e.target.id === 'legend-close-btn') return;
-            isDragging = true;
-            dragStartX = e.clientX;
-            dragStartY = e.clientY;
-            const rect = legendPopup.getBoundingClientRect();
-            const wrapperRect = legendPopup.parentElement.getBoundingClientRect();
-            popupStartLeft = rect.left - wrapperRect.left;
-            popupStartTop = rect.top - wrapperRect.top;
-            legendPopup.style.right = '';
-            legendPopup.style.left = popupStartLeft + 'px';
-            legendPopup.style.top = popupStartTop + 'px';
-            legendHeader.style.cursor = 'grabbing';
-            e.preventDefault();
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            const dx = e.clientX - dragStartX;
-            const dy = e.clientY - dragStartY;
-            legendPopup.style.left = (popupStartLeft + dx) + 'px';
-            legendPopup.style.top = (popupStartTop + dy) + 'px';
-        });
-
-        document.addEventListener('mouseup', () => {
-            if (isDragging) {
-                isDragging = false;
-                legendHeader.style.cursor = 'grab';
-            }
-        });
-    })();
-
-    // Package dropdown toggle handler
-    (function setupPkgDropdown() {
-        const pkgBtn = document.getElementById('pkg-dropdown-btn');
-        const pkgMenu = document.getElementById('pkg-dropdown-menu');
-        if (!pkgBtn || !pkgMenu) return;
-
-        const repositionPackageMenu = () => {
-            const buttonRect = pkgBtn.getBoundingClientRect();
-            const diagramCanvas = document.getElementById('visualization');
-            const panel = document.getElementById('visualization-wrapper');
-            const boundaryRect = diagramCanvas?.getBoundingClientRect() ?? panel?.getBoundingClientRect();
-            const viewportPadding = 8;
-            const menuGap = 4;
-            const preferredMenuHeight = 420;
-            const boundaryLeft = boundaryRect ? boundaryRect.left + viewportPadding : viewportPadding;
-            const boundaryRight = boundaryRect ? boundaryRect.right - viewportPadding : window.innerWidth - viewportPadding;
-            const boundaryTop = boundaryRect ? boundaryRect.top + viewportPadding : viewportPadding;
-            const boundaryBottom = boundaryRect ? boundaryRect.bottom - viewportPadding : window.innerHeight - viewportPadding;
-            const measuredWidth = Math.max(
-                pkgBtn.getBoundingClientRect().width,
-                pkgMenu.scrollWidth,
-                220,
-            );
-            const maxLeft = boundaryRight - measuredWidth;
-            const left = Math.max(boundaryLeft, Math.min(buttonRect.left, maxLeft));
-            const spaceBelow = boundaryBottom - buttonRect.bottom;
-            const spaceAbove = buttonRect.top - boundaryTop;
-            const shouldOpenUpward = spaceBelow < 220 && spaceAbove > spaceBelow;
-            const availableSpace = shouldOpenUpward ? spaceAbove : spaceBelow;
-            const maxHeight = Math.max(0, Math.min(preferredMenuHeight, availableSpace - menuGap));
-            const top = shouldOpenUpward
-                ? Math.max(boundaryTop, buttonRect.top - maxHeight - menuGap)
-                : Math.min(boundaryBottom - maxHeight, buttonRect.bottom + menuGap);
-
-            pkgMenu.style.position = 'fixed';
-            pkgMenu.style.left = left + 'px';
-            pkgMenu.style.top = top + 'px';
-            pkgMenu.style.bottom = 'auto';
-            pkgMenu.style.minWidth = Math.round(Math.max(buttonRect.width, 180)) + 'px';
-            pkgMenu.style.maxHeight = Math.round(maxHeight) + 'px';
-        };
-
-        pkgBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const shouldShow = !pkgMenu.classList.contains('show');
-            pkgMenu.classList.toggle('show', shouldShow);
-            // Close view dropdown if open
-            if (viewDropdownMenu) viewDropdownMenu.classList.remove('show');
-            if (shouldShow) {
-                repositionPackageMenu();
-                requestAnimationFrame(() => {
-                    const activeItem = pkgMenu.querySelector('.view-dropdown-item.active') as HTMLElement | null;
-                    activeItem?.scrollIntoView({ block: 'nearest' });
-                });
-            }
-        });
-
-        window.addEventListener('resize', () => {
-            if (!pkgMenu.classList.contains('show')) {
-                return;
-            }
-            repositionPackageMenu();
-        });
-    })();
-
-    // Add export dropdown functionality
-const exportBtn = document.getElementById('export-btn');
-const exportMenu = document.getElementById('export-menu');
-
-    exportBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isVisible = exportMenu.classList.contains('show');
-
-        if (!isVisible) {
-            // Position dropdown using fixed positioning for better visibility
-            const btnRect = exportBtn.getBoundingClientRect();
-            const menuWidth = 160;
-            const menuHeight = 200; // Approximate height
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-
-            // Calculate optimal position
-            let left = btnRect.right - menuWidth;
-            let top = btnRect.bottom + 4;
-
-            // Adjust if would overflow viewport
-            if (left < 8) left = btnRect.left;
-            if (left + menuWidth > viewportWidth - 8) left = viewportWidth - menuWidth - 8;
-            if (top + menuHeight > viewportHeight - 8) top = btnRect.top - menuHeight - 4;
-
-            exportMenu.style.left = left + 'px';
-            exportMenu.style.top = top + 'px';
-        }
-
-        exportMenu.classList.toggle('show', !isVisible);
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!exportBtn.contains(e.target) && !exportMenu.contains(e.target)) {
-            exportMenu.classList.remove('show');
-        }
-        if (viewDropdownBtn && viewDropdownMenu &&
-            !viewDropdownBtn.contains(e.target) &&
-            !viewDropdownMenu.contains(e.target)) {
-            viewDropdownMenu.classList.remove('show');
-        }
-        // Close pkg dropdown
-        const pkgBtn = document.getElementById('pkg-dropdown-btn');
-        const pkgMenu = document.getElementById('pkg-dropdown-menu');
-        if (pkgBtn && pkgMenu && !pkgBtn.contains(e.target) && !pkgMenu.contains(e.target)) {
-            pkgMenu.classList.remove('show');
-        }
-    });
-
-    // Handle export menu item clicks
-    document.querySelectorAll('.export-menu-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-            const format = e.target.getAttribute('data-format');
-            const scale = parseInt(e.target.getAttribute('data-scale')) || 2;
-
-            // Don't close menu or export for parent PNG item (has submenu)
-            if (format === 'png-parent') {
-                e.stopPropagation();
-                return;
-            }
-
-            exportMenu.classList.remove('show');
-
-            switch(format) {
-                case 'png':
-                    exportHandler.exportPNG(scale);
-                    break;
-                case 'svg':
-                    exportHandler.exportSVG();
-                    break;
-                case 'pdf':
-                    console.warn('PDF export not implemented');
-                    break;
-                case 'json':
-                    exportHandler.exportJSON();
-                    break;
-            }
-        });
+    setupVisualizerControls({
+        getCurrentView: () => currentView,
+        resetZoom,
+        toggleLayoutDirection,
+        populateViewDropdown,
+        updateActiveViewButton,
+        exportPNG: (scale) => exportHandler.exportPNG(scale),
+        exportSVG: () => exportHandler.exportSVG(),
+        exportJSON: () => exportHandler.exportJSON(),
     });
 
     // webviewReady is sent from initializeLegacyBundle after vscode is set
