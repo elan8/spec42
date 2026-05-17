@@ -54,6 +54,9 @@ pub struct StandardLibraryStatus {
     pub is_installed: bool,
     pub source: Option<String>,
     pub is_canonical_managed: bool,
+    pub version_matches: bool,
+    pub path_matches: bool,
+    pub status_message: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -142,9 +145,38 @@ pub fn managed_status(
     config: &StandardLibraryConfig,
 ) -> Result<StandardLibraryStatus, String> {
     let metadata = load_managed_metadata(paths)?;
-    let is_installed = metadata
+    let expected_path = managed_install_path(paths, config);
+    let version_matches = metadata
+        .as_ref()
+        .is_some_and(|metadata| metadata.installed_version == config.version);
+    let path_matches = metadata.as_ref().is_some_and(|metadata| {
+        canonicalize_lossy(Path::new(&metadata.install_path)) == canonicalize_lossy(&expected_path)
+    });
+    let path_ready = metadata
         .as_ref()
         .is_some_and(|metadata| install_path_is_ready(Path::new(&metadata.install_path)));
+    let is_installed = version_matches && path_matches && path_ready;
+    let status_message = metadata.as_ref().and_then(|metadata| {
+        if !path_ready {
+            Some(format!(
+                "Managed standard library path is not readable: {}",
+                metadata.install_path
+            ))
+        } else if !version_matches {
+            Some(format!(
+                "Managed standard library version {} is stale; pinned version is {}.",
+                metadata.installed_version, config.version
+            ))
+        } else if !path_matches {
+            Some(format!(
+                "Managed standard library path {} does not match pinned path {}.",
+                metadata.install_path,
+                expected_path.display()
+            ))
+        } else {
+            None
+        }
+    });
     Ok(StandardLibraryStatus {
         pinned_version: config.version.clone(),
         installed_version: metadata
@@ -162,6 +194,9 @@ pub fn managed_status(
             }
         }),
         is_canonical_managed: is_installed,
+        version_matches,
+        path_matches,
+        status_message,
     })
 }
 
@@ -363,6 +398,10 @@ fn install_path_is_ready(path: &Path) -> bool {
     path.is_dir() && fs::read_dir(path).is_ok()
 }
 
+fn canonicalize_lossy(path: &Path) -> PathBuf {
+    path.canonicalize().unwrap_or_else(|_| path.to_path_buf())
+}
+
 fn extract_archive_subset(
     archive_bytes: &[u8],
     content_path: &str,
@@ -490,7 +529,45 @@ mod tests {
         let status = managed_status(&paths, &config).expect("status");
         assert!(status.is_installed);
         assert!(status.is_canonical_managed);
+        assert!(status.version_matches);
+        assert!(status.path_matches);
+        assert!(status.status_message.is_none());
         assert_eq!(status.source.as_deref(), Some("managed"));
+    }
+
+    #[test]
+    fn managed_status_marks_stale_version_as_not_ready() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let paths = standard_library_paths_from_data_dir(temp.path().to_path_buf());
+        let stale_install_path = paths
+            .managed_root
+            .join("versions")
+            .join("2026-02")
+            .join(DEFAULT_STDLIB_CONTENT_PATH);
+        fs::create_dir_all(&stale_install_path).expect("create stale install path");
+        save_managed_metadata(
+            &paths,
+            &StandardLibraryMetadata {
+                installed_version: "2026-02".to_string(),
+                install_path: stale_install_path.display().to_string(),
+                installed_at: "0".to_string(),
+                repo: EMBEDDED_STDLIB_REPO.to_string(),
+                content_path: DEFAULT_STDLIB_CONTENT_PATH.to_string(),
+            },
+        )
+        .expect("save stale metadata");
+
+        let status = managed_status(&paths, &StandardLibraryConfig::default()).expect("status");
+
+        assert!(!status.is_installed);
+        assert!(!status.is_canonical_managed);
+        assert!(!status.version_matches);
+        assert!(!status.path_matches);
+        assert_eq!(status.installed_version.as_deref(), Some("2026-02"));
+        assert!(status
+            .status_message
+            .as_deref()
+            .is_some_and(|message| message.contains("stale")));
     }
 
     #[test]

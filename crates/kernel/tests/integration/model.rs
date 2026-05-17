@@ -141,10 +141,8 @@ fn lsp_sysml_model_empty_response_keeps_stats_honest() {
 }
 
 /// sysml/model with scope ["graph"] returns state machine nodes and transition edges.
-/// Validates semantic graph for state-transition-view: state def container, state usages (type "state"),
-/// contains edges, and transition edges.
+/// Validates semantic graph for the stable state-transition-view path.
 #[test]
-#[ignore] // parser capability gap: state def/transition nodes are not surfaced yet by sysml-v2-parser
 fn lsp_sysml_model_state_transition_view() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");

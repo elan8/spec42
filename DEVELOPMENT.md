@@ -2,32 +2,31 @@
 
 Guidance for building, testing, and contributing to Spec42.
 
-## Semantic Core Reuse
+## Architecture
 
-The reusable semantic-model logic is now available in `crates/semantic_core`.
+Spec42 is a Rust workspace plus a VS Code extension.
 
-- `semantic_core` contains reusable semantic graph primitives and resolver/evaluation modules.
-- `kernel` remains the runtime integration layer (LSP handlers, workspace orchestration, DTO/view assembly, parser-to-graph build flow).
-- Keep new reusable semantic logic in `semantic_core`; keep protocol/runtime-specific logic in `kernel`.
+- `crates/server` (`spec42`) owns the CLI, LSP binary, MCP binary, environment resolution, and standard-library materialization.
+- `crates/kernel` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP handlers, validation wiring, DTO assembly, and host adapters.
+- `crates/semantic_core` owns reusable semantic logic: graph construction, cross-document linking, resolution, evaluation, diagnostics, and graph-first visualization helpers.
+- `crates/software-architecture` owns the optional software-architecture analysis/RPC provider.
+- `vscode` owns the VS Code client, webviews, tests, packaging, and bundled asset staging.
+
+Keep reusable semantic/model behavior in `semantic_core`; keep protocol, filesystem runtime, and editor behavior in `kernel` or the host crate that owns it.
 
 ## LSP Server Structure
 
-The LSP implementation is progressively being split by concern to reduce `lsp_server.rs` churn and make feature work easier to isolate.
+The LSP implementation lives under `crates/kernel/src/lsp_runtime`.
 
-- `spec42-core/src/lsp/types.rs`: shared server/index state types
-- `spec42-core/src/lsp/indexing.rs`: workspace/library scan and index update helpers
-- `spec42-core/src/lsp/capabilities.rs`: capability payload construction
-- `spec42-core/src/lsp/lifecycle.rs`: initialize/scan root helpers
-- `spec42-core/src/lsp/navigation.rs`: document-link and selection-range helpers
-- `spec42-core/src/lsp/symbols.rs`: inlay/code-lens helpers
-- `spec42-core/src/lsp/hierarchy.rs`: moniker/type/call hierarchy item builders
-- `spec42-core/src/lsp/custom.rs`: `sysml/*` custom method logic
+- `capabilities.rs`: capability payload construction
+- `documents.rs`: initialize, document lifecycle, workspace/library indexing, and configuration changes
+- `diagnostics.rs`: parser/runtime orchestration plus mapping semantic diagnostics into LSP diagnostics
+- `features/*`: completion, editing, navigation, symbols, formatting, and related LSP requests
+- `custom.rs`: `sysml/*` custom method request logic
+- `hierarchy.rs`, `navigation.rs`, `references_resolver.rs`, `symbols.rs`: feature helpers
+- `mod.rs`: `tower-lsp` trait entrypoint that delegates to the modules above
 
-`spec42-core/src/lsp_server.rs` remains the trait entrypoint and delegates to the modules above.
-
-Note on capability compatibility:
-- Type hierarchy handlers are implemented and exercised by integration tests.
-- With the current `tower-lsp` surface, type hierarchy capability is advertised via `ServerCapabilities.experimental.typeHierarchyProvider`.
+Semantic diagnostics rule evaluation is owned by `semantic_core::semantic::diagnostics`; kernel code maps neutral diagnostics at the LSP boundary.
 
 ## Building
 
@@ -39,7 +38,7 @@ From the repository root:
 cargo build --release
 ```
 
-The binary is at `target/release/spec42`. Put it on your PATH or set the extension setting `spec42.serverPath` to its path (legacy `sysml-language-server.serverPath` is still supported).
+The binary is at `target/release/spec42`. Put it on your `PATH` or set the extension setting `spec42.serverPath` to its path. Legacy `sysml-language-server.*` settings are still read for compatibility.
 
 ### Embedded standard library bundle
 
@@ -64,10 +63,10 @@ Maintainers can refresh that cache from:
 https://github.com/Systems-Modeling/SysML-v2-Release/archive/refs/tags/2026-03.zip
 ```
 
-For development checks that do not need the embedded library, build the server crate without default features:
+For development checks that do not need the embedded library:
 
 ```bash
-cargo test -p spec42 --no-default-features
+cargo test --workspace --no-default-features
 ```
 
 ### VS Code extension
@@ -78,128 +77,54 @@ npm install
 npm run compile
 ```
 
-## Validation tests (SysML v2 suite)
+## Parser Dependency Policy
 
-The parser runs a full validation suite over all `.sysml` files in the official [SysML v2 Release](https://github.com/Systems-Modeling/SysML-v2-Release) `sysml/src/validation` directory. The test expects zero parser errors.
+The workspace pins `sysml-v2-parser` in the root `Cargo.toml` as a git dependency with an explicit tag. When updating parser behavior:
 
-- **Standard `cargo test`**: The full validation suite is `#[ignore]`d (slow). It does not run by default.
-- **CI fast path (required)**: `.github/workflows/ci.yml` runs `cargo test --workspace` and `cargo clippy --workspace --all-targets -- -W clippy::all`.
-- **CI full validation (informational)**: `.github/workflows/full-validation.yml` runs on PR, schedule, and manual dispatch with `continue-on-error: true`, cloning SysML-v2-Release and executing `lsp_workspace_scan_sysml_release`.
-- **Locally**: Clone SysML-v2-Release and point Spec42 validation at it:
+1. Update the `sysml-v2-parser` tag in root `Cargo.toml`.
+2. Run `cargo test --workspace` with the embedded stdlib bundle available.
+3. Run `cargo test --workspace --no-default-features`.
+4. Run targeted workspace/indexing checks in `crates/kernel/tests/integration/workspace.rs`.
+5. Update docs if parser compatibility or supported workflow expectations changed.
 
-  ```bash
-  git clone --depth 1 https://github.com/Systems-Modeling/SysML-v2-Release.git sysml-v2-release
-  SYSML_V2_RELEASE_DIR=$PWD/sysml-v2-release cargo test -p spec42-core lsp_workspace_scan_sysml_release -- --nocapture
-  ```
+## Running Tests
 
-  If `SYSML_V2_RELEASE_DIR` is not set (or points to a missing validation directory), the validation test returns early without failing.
-
-## Parser dependency policy
-
-`spec42-core` consumes the published `sysml-v2-parser` crate from crates.io and pins an explicit version in `spec42-core/Cargo.toml` for reproducible CI and release behavior.
-
-When updating parser behavior:
-
-1. Update the `sysml-v2-parser` version in `spec42-core/Cargo.toml`.
-2. Run `cargo test --workspace`.
-3. Run targeted indexing/search checks in `spec42-core/tests/integration/workspace.rs`.
-4. Update `docs/SYSML-PARSER-UPDATE.md` if parser compatibility expectations changed.
-
-## Running tests
-
-### Rust (parser + server)
+### Rust
 
 ```bash
-cargo test
+cargo test --workspace
+cargo test --workspace --no-default-features
+cargo clippy --workspace --all-targets -- -D warnings
 ```
 
-This runs workspace tests for Spec42 crates, including LSP integration tests.
-
-## Benchmarks (parse performance)
-
-Spec42's "editor parse" path uses `sysml_v2_parser::parse_with_diagnostics` via `spec42-core`'s `parse_for_editor`. Criterion benchmarks are provided in `spec42-core/benches/parse_scan.rs`.
-
-### Run (PowerShell)
-
-```powershell
-# Drone workspace scan (default root matches the sysml-examples layout)
-cargo bench -p spec42-core --bench parse_scan
-
-# Override the drone root (bench scans for .sysml/.kerml files under this directory)
-$env:SPEC42_BENCH_DRONE_ROOT = 'C:\Git\sysml-examples\drone\sysml'
-cargo bench -p spec42-core --bench parse_scan
-
-# Benchmark SysML v2 Release "stdlib" (set to the repo root of SysML-v2-Release)
-$env:SYSML_V2_RELEASE_DIR = 'C:\Git\SysML-v2-Release-2026-01'
-cargo bench -p spec42-core --bench parse_scan
-
-# Match Spec42's parallel startup parsing toggles (optional)
-$env:SPEC42_PARALLEL_STARTUP_PARSE = 'true'
-$env:SPEC42_PARALLEL_STARTUP_PARSE_MIN_FILES = '10'
-cargo bench -p spec42-core --bench parse_scan
-```
-
-## Semantic diagnostics pipeline
-
-`spec42-core/src/lsp_server.rs` publishes diagnostics in two stages:
-
-1. Parser diagnostics from `sysml_v2_parser::parse_with_diagnostics` (source `sysml`)
-2. Semantic diagnostics from configured providers (source `semantic`) only when parse diagnostics are empty
-
-Default semantic checks are implemented in `spec42-core/src/semantic_checks.rs`.
-
-Current built-in semantic diagnostic codes include:
-
-- `connection_endpoint_not_port`
-- `port_type_mismatch`
-- `unconnected_port`
-- `duplicate_connection`
-- `invalid_multiplicity`
-- `unresolved_type_reference`
-- `invalid_redefines_reference` (emitted when `redefines` metadata is available in the semantic graph)
-- `unresolved_satisfy_source`
-- `unresolved_satisfy_target`
-
-## Requirements slice checks
-
-Requirements slice regression checks are covered by focused integration tests in `spec42-core/tests/integration/lsp_integration.rs`:
-
-- `integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file`
-- `integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_cross_file`
-- `integration::diagnostics::unresolved_satisfy_reference_emits_semantic_diagnostic`
-
-Fixtures used by these checks:
-
-- `spec42-core/tests/fixtures/requirements_typing_defs.sysml`
-- `spec42-core/tests/fixtures/requirements_typing_usage.sysml`
-- `spec42-core/tests/fixtures/requirements_unresolved_satisfy.sysml`
-
-### LSP integration test organization
-
-Integration tests live under `spec42-core/tests/integration/` and are now split by domain:
-
-- Core feature files (`hover`, `completion`, `definition`, `references`, `rename`, etc.)
-- Experimental feature surface checks (`experimental_capabilities.rs`, `experimental_requests.rs`)
-- Reliability gates for newer handlers (`quality_gates.rs`)
-- SysML model graph-focused tests (`model_graph.rs`) plus broader model coverage in `model.rs`
-
-Use `harness::TestSession` for new integration tests to reduce duplicated initialize/open/request boilerplate.
-
-To run only LSP integration tests:
+Focused LSP integration tests:
 
 ```bash
-cargo test -p spec42 --test lsp_integration
+cargo test -p kernel --test lsp_integration
 ```
 
-Optional: set `SYSML_V2_RELEASE_DIR` to run `lsp_workspace_scan_sysml_release`, which indexes the SysML-v2-Release clone and asserts workspace/symbol returns results.
+The LSP integration test modules live under `crates/kernel/tests/integration/`. Use `harness::TestSession` for new tests to avoid duplicated initialize/open/request boilerplate.
 
-### Layout SVG checks
+Requirements slice checks:
 
-Diagram SVG export checks now validate frontend-rendered output from the VS Code webview test suites (`vscode/src/test/suite`), with snapshots written under `spec42-core/tests/output/`.
+```bash
+cargo test -p kernel --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file
+cargo test -p kernel --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_cross_file
+cargo test -p kernel --test lsp_integration integration::diagnostics::unresolved_satisfy_reference_emits_semantic_diagnostic
+```
 
-The tests validate semantic/layout expectations instead of exact SVG byte-for-byte equality. Use observed SVG output for manual layout review while iterating on frontend ELK layout/render behavior.
+### SysML v2 validation suite
 
-### VS Code extension tests
+The full validation suite over the official SysML v2 Release is ignored by default and informational in CI. To run it locally:
+
+```bash
+git clone --depth 1 https://github.com/Systems-Modeling/SysML-v2-Release.git sysml-v2-release
+SYSML_V2_RELEASE_DIR=$PWD/sysml-v2-release cargo test -p kernel --test lsp_integration lsp_workspace_scan_sysml_release -- --nocapture
+```
+
+If `SYSML_V2_RELEASE_DIR` is not set or does not contain the expected validation directory, the test returns early without failing.
+
+### VS Code
 
 ```bash
 cd vscode
@@ -208,11 +133,56 @@ npm run compile
 npm test
 ```
 
-Extension tests run inside a downloaded VS Code instance. Running them from the CLI is only supported when no other VS Code instance is running. Tests that require the language server (hover, go-to-definition) only assert when `spec42` is on PATH. In CI, the server is built and added to PATH before `npm test`.
+Extension tests run inside a downloaded VS Code instance. Tests that require the language server only assert fully when `spec42` is on `PATH` or `SPEC42_SERVER_PATH` points to the in-repo binary. In CI, the server is built and added to the environment before `npm test`.
 
-## Testing the extension (F5)
+Useful focused suites:
 
-1. Build the Rust server: `cargo build` (debug) or `cargo build --release`.
+```bash
+npm run test:state-view
+npm run test:interconnection
+npm run test:multi-file
+npm run test:workspace-smoke
+```
+
+### Packaging Checks
+
+```bash
+cd vscode
+npm run verify:package-layout
+npm run package
+```
+
+Package staging copies the example and domain-library content into the extension package layout before validation.
+
+## Performance Checks
+
+Spec42 emits structured performance logs when `spec42.performanceLogging.enabled` is true. CI also runs a report-only large-workspace performance step so changes can be tracked before budgets become hard gates.
+
+Current report-only budgets are documented in `docs/PERFORMANCE-GUARDRAILS.md`. Treat regressions there as release-risk signals even while the CI step remains non-blocking.
+
+## Validation Pipeline
+
+`spec42 check` and MCP `spec42_check` use the same validation engine as the editor host.
+
+Diagnostics are published in two stages:
+
+1. Parser diagnostics from `sysml_v2_parser::parse_with_diagnostics`
+2. Semantic diagnostics from `semantic_core` only when parse diagnostics are empty
+
+Semantic diagnostic codes and mapping behavior are covered by focused tests in `crates/kernel/tests/integration/diagnostics.rs`.
+
+## Visualization Checks
+
+Backend visualization payloads are covered by Rust integration tests in `crates/kernel/tests/integration/model.rs` and workspace tests in `workspace.rs`.
+
+Frontend rendering and SVG export checks live under `vscode/src/test/suite`. SVG artifacts are written under the relevant `vscode/testFixture/workspaces/*/test-output/diagrams/` directory and are validated by semantic/layout expectations rather than exact byte-for-byte snapshots.
+
+Action Flow and State Transition views are stable-facing and should remain release-gating. Sequence View remains experimental.
+
+## Testing the Extension Manually
+
+1. Build the Rust server: `cargo build` or `cargo build --release`.
 2. Open the `vscode/` folder in VS Code.
 3. Press F5 to launch the Extension Development Host.
-4. In the new window, open a folder and create a `.sysml` or `.kerml` file. The language server should activate and show diagnostics.
+4. Open a folder containing `.sysml` or `.kerml` files.
+5. Use the Model Explorer, Visualizer, hover, definition, references, and `spec42 check` to compare editor and CLI behavior.

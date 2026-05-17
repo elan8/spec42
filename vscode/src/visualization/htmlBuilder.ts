@@ -5,6 +5,8 @@ import { isVerboseLoggingEnabled } from '../logger';
 import { getVisualizerStyles } from './styles';
 import { DEFAULT_ENABLED_VIEWS } from './webview/constants';
 
+const EXPERIMENTAL_VIEW_IDS = ['sequence-view'];
+
 function getNonce(): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let nonce = '';
@@ -36,7 +38,7 @@ export function getWebviewHtml(
         STYLES: getVisualizerStyles(),
         EXTENSION_VERSION: extensionVersion ?? '0.0.0',
         ENABLED_VIEW_IDS_JSON: JSON.stringify(Array.from(enabledViewSet)),
-        EXPERIMENTAL_VIEW_IDS_JSON: '[]',
+        EXPERIMENTAL_VIEW_IDS_JSON: JSON.stringify(EXPERIMENTAL_VIEW_IDS),
         VERBOSE_LOGGING_JSON: JSON.stringify(isVerboseLoggingEnabled()),
     };
 

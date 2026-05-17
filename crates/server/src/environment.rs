@@ -154,7 +154,13 @@ pub fn build_doctor_report(
         status.source = environment.stdlib_source.clone();
     }
     if let Some(stdlib_path) = &environment.stdlib_path {
-        status.is_installed = stdlib_path.is_dir();
+        if environment.stdlib_source.as_deref() != Some("flag")
+            && environment.stdlib_source.as_deref() != Some("env")
+            && environment.stdlib_source.as_deref() != Some("config")
+            && environment.stdlib_source.as_deref() != Some("user-config")
+        {
+            status.is_installed = status.is_installed && stdlib_path.is_dir();
+        }
     }
     Ok(DoctorReport {
         version: env!("CARGO_PKG_VERSION").to_string(),
@@ -386,7 +392,11 @@ fn resolve_stdlib_path(
 
     if let Some(metadata) = load_managed_metadata(standard_library_paths)? {
         let managed_path = PathBuf::from(metadata.install_path);
-        if managed_path.is_dir() {
+        let expected_path =
+            crate::stdlib::managed_install_path(standard_library_paths, standard_library);
+        let metadata_is_current = metadata.installed_version == standard_library.version
+            && canonicalize_lossy(&managed_path) == canonicalize_lossy(&expected_path);
+        if metadata_is_current && managed_path.is_dir() {
             let source = if metadata.repo == EMBEDDED_STDLIB_REPO {
                 "bundled".to_string()
             } else {
@@ -461,7 +471,7 @@ mod tests {
     use super::*;
     use crate::stdlib::{
         save_managed_metadata, standard_library_paths_from_data_dir, DEFAULT_STDLIB_CONTENT_PATH,
-        DEFAULT_STDLIB_VERSION,
+        EMBEDDED_STDLIB_REPO,
     };
 
     /// Serializes tests that mutate `APPDATA` (global process environment).
@@ -615,6 +625,105 @@ mod tests {
         assert!(doctor.standard_library_status.is_canonical_managed);
     }
 
+    #[cfg(not(feature = "embed-stdlib"))]
+    #[test]
+    fn stale_managed_stdlib_metadata_is_not_used_without_embedded_repair() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let config_dir = temp.path().join("config");
+        let data_dir = temp.path().join("data");
+        std::fs::create_dir_all(&config_dir).expect("create config dir");
+        std::fs::create_dir_all(&data_dir).expect("create data dir");
+        let paths = standard_library_paths_from_data_dir(data_dir.clone());
+        let stale_install_path = paths
+            .managed_root
+            .join("versions")
+            .join("2026-02")
+            .join(DEFAULT_STDLIB_CONTENT_PATH);
+        std::fs::create_dir_all(&stale_install_path).expect("create stale install path");
+        save_managed_metadata(
+            &paths,
+            &crate::stdlib::StandardLibraryMetadata {
+                installed_version: "2026-02".to_string(),
+                install_path: stale_install_path.display().to_string(),
+                installed_at: "0".to_string(),
+                repo: EMBEDDED_STDLIB_REPO.to_string(),
+                content_path: DEFAULT_STDLIB_CONTENT_PATH.to_string(),
+            },
+        )
+        .expect("save metadata");
+
+        let cli = Cli {
+            config_path: None,
+            library_paths: Vec::new(),
+            stdlib_path: None,
+            no_stdlib: false,
+            stdio: false,
+            command: None,
+        };
+        let environment =
+            resolve_environment_with_dirs(&cli, config_dir, data_dir).expect("environment");
+        assert_ne!(environment.stdlib_path.as_ref(), Some(&stale_install_path));
+        assert!(!environment
+            .library_paths
+            .iter()
+            .any(|path| path == &stale_install_path));
+        let doctor = build_doctor_report("doctor", &environment).expect("doctor");
+        assert!(!doctor.standard_library_status.is_installed);
+        assert!(!doctor.standard_library_status.version_matches);
+    }
+
+    #[cfg(feature = "embed-stdlib")]
+    #[test]
+    fn stale_managed_stdlib_metadata_is_repaired_from_embedded_bundle() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let config_dir = temp.path().join("config");
+        let data_dir = temp.path().join("data");
+        std::fs::create_dir_all(&config_dir).expect("create config dir");
+        std::fs::create_dir_all(&data_dir).expect("create data dir");
+        let paths = standard_library_paths_from_data_dir(data_dir.clone());
+        let stale_install_path = paths
+            .managed_root
+            .join("versions")
+            .join("2026-02")
+            .join(DEFAULT_STDLIB_CONTENT_PATH);
+        std::fs::create_dir_all(&stale_install_path).expect("create stale install path");
+        save_managed_metadata(
+            &paths,
+            &crate::stdlib::StandardLibraryMetadata {
+                installed_version: "2026-02".to_string(),
+                install_path: stale_install_path.display().to_string(),
+                installed_at: "0".to_string(),
+                repo: EMBEDDED_STDLIB_REPO.to_string(),
+                content_path: DEFAULT_STDLIB_CONTENT_PATH.to_string(),
+            },
+        )
+        .expect("save metadata");
+
+        let cli = Cli {
+            config_path: None,
+            library_paths: Vec::new(),
+            stdlib_path: None,
+            no_stdlib: false,
+            stdio: false,
+            command: None,
+        };
+        let environment =
+            resolve_environment_with_dirs(&cli, config_dir, data_dir).expect("environment");
+        let expected_path = crate::stdlib::managed_install_path(
+            &environment.standard_library_paths,
+            &environment.standard_library,
+        );
+
+        assert_eq!(environment.stdlib_path.as_ref(), Some(&expected_path));
+        assert_eq!(environment.stdlib_source.as_deref(), Some("bundled"));
+        let doctor = build_doctor_report("doctor", &environment).expect("doctor");
+        assert!(doctor.standard_library_status.is_installed);
+        assert_eq!(
+            doctor.standard_library_status.installed_version.as_deref(),
+            Some(crate::stdlib::DEFAULT_STDLIB_VERSION)
+        );
+    }
+
     /// When both an embedded archive and a legacy VS Code install exist, resolution must use the
     /// bundled materialization first (not `legacy-vscode`).
     #[cfg(feature = "embed-stdlib")]
@@ -634,7 +743,7 @@ mod tests {
                 .join("globalStorage")
                 .join("elan8.spec42")
                 .join("standard-library")
-                .join(DEFAULT_STDLIB_VERSION)
+                .join(crate::stdlib::DEFAULT_STDLIB_VERSION)
                 .join(DEFAULT_STDLIB_CONTENT_PATH),
         )
         .expect("create legacy vscode path");

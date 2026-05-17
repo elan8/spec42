@@ -5,14 +5,13 @@ pub mod environment;
 pub mod mcp;
 pub mod stdlib;
 
-use std::path::PathBuf;
 use std::process::ExitCode;
 use std::sync::Arc;
 
 use cli::{CheckArgs, Cli, Command, DoctorArgs, OutputFormat, StdlibCommand};
 use environment::{build_doctor_report, resolve_environment};
 use kernel::{validate_paths, ValidationReport, ValidationRequest};
-use stdlib::{load_managed_metadata, managed_status, remove_standard_library};
+use stdlib::{managed_status, remove_standard_library};
 
 /// Run validation for the given CLI environment and [`CheckArgs`] (same logic as `spec42 check`).
 pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, String> {
@@ -120,15 +119,16 @@ fn run_stdlib(cli: &Cli, command: &StdlibCommand) -> Result<ExitCode, String> {
             if let Some(content_path) = &args.content_path {
                 config.content_path = content_path.clone();
             }
-            let resolved_path = environment.stdlib_path.clone().or_else(|| {
-                load_managed_metadata(&environment.standard_library_paths)
-                    .ok()
-                    .flatten()
-                    .map(|metadata| PathBuf::from(metadata.install_path))
-            });
-            if let Some(path) = resolved_path {
+            if let Some(path) = environment.stdlib_path.clone() {
                 println!("{}", path.display());
                 return Ok(ExitCode::SUCCESS);
+            }
+            let status = managed_status(&environment.standard_library_paths, &config)?;
+            if status.is_installed {
+                if let Some(path) = status.install_path {
+                    println!("{path}");
+                    return Ok(ExitCode::SUCCESS);
+                }
             }
             return Err(
                 "No standard library path is currently configured or installed.".to_string(),
@@ -225,6 +225,9 @@ fn print_doctor_report(report: &environment::DoctorReport) {
             "no"
         }
     );
+    if let Some(message) = &report.standard_library_status.status_message {
+        println!("managed stdlib status: {message}");
+    }
     println!("library paths:");
     for path in &report.library_paths {
         println!(
@@ -255,6 +258,9 @@ fn print_stdlib_status(status: &stdlib::StandardLibraryStatus) {
             "no"
         }
     );
+    if let Some(message) = &status.status_message {
+        println!("status: {message}");
+    }
 }
 
 fn severity_label(severity: tower_lsp::lsp_types::DiagnosticSeverity) -> &'static str {

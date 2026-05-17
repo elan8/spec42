@@ -1,9 +1,18 @@
 //! Workspace scan integration tests.
 
 use std::path::PathBuf;
+use std::time::{Duration, Instant};
 
 use super::harness::{next_id, read_message, read_response, send_message, spawn_server};
 use kernel::common::util;
+
+fn repo_root() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(std::path::Path::parent)
+        .expect("repo root")
+        .to_path_buf()
+}
 
 /// Workspace scan: definition file exists only on disk; we never didOpen it.
 /// Proves the server indexes files from the workspace root and goto_definition resolves across them.
@@ -923,6 +932,157 @@ fn lsp_workspace_visualization_model_includes_all_workspace_systems() {
         "workspace graph should include ComputerDemo package: {:?}",
         node_names
     );
+
+    let _ = child.kill();
+}
+
+#[test]
+#[ignore = "report-only performance guardrail; CI records metrics without enforcing budgets yet"]
+fn lsp_large_workspace_performance_report() {
+    let root = repo_root()
+        .join("vscode")
+        .join("testFixture")
+        .join("workspaces")
+        .join("large-workspace");
+    if !root.is_dir() {
+        eprintln!(
+            "Skipping lsp_large_workspace_performance_report: {} is not a directory",
+            root.display()
+        );
+        return;
+    }
+
+    let root_uri = url::Url::from_file_path(&root).expect("large workspace root uri");
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": root_uri.as_str(),
+            "capabilities": {},
+            "initializationOptions": {
+                "spec42": {
+                    "performanceLogging": { "enabled": true },
+                    "workspace": { "maxFilesPerPattern": 1000 }
+                }
+            },
+            "clientInfo": { "name": "perf-report", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    std::thread::sleep(Duration::from_millis(1200));
+
+    let workspace_index_start = Instant::now();
+    let workspace_model_id = next_id();
+    let workspace_model_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": workspace_model_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": root_uri.as_str() },
+            "scope": ["graph", "workspaceVisualization"]
+        }
+    });
+    send_message(&mut stdin, &workspace_model_req.to_string());
+    let workspace_model_resp =
+        read_response(&mut stdout, workspace_model_id).expect("workspace sysml/model response");
+    let workspace_index_ms = workspace_index_start.elapsed().as_millis();
+    let workspace_model_json: serde_json::Value =
+        serde_json::from_str(&workspace_model_resp).expect("parse workspace sysml/model response");
+    let indexed_documents = workspace_model_json["result"]["workspaceModel"]["summary"]
+        ["loadedFiles"]
+        .as_u64()
+        .unwrap_or(0) as usize;
+    let workspace_graph_nodes = workspace_model_json["result"]["graph"]["nodes"]
+        .as_array()
+        .map(Vec::len)
+        .unwrap_or(0);
+
+    let alpha_uri = url::Url::from_file_path(root.join("Alpha.sysml")).expect("alpha uri");
+    let model_start = Instant::now();
+    let model_id = next_id();
+    let model_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": model_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": alpha_uri.as_str() },
+            "scope": ["graph", "stats"]
+        }
+    });
+    send_message(&mut stdin, &model_req.to_string());
+    let model_resp = read_response(&mut stdout, model_id).expect("document sysml/model response");
+    let model_ms = model_start.elapsed().as_millis();
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+    let graph_nodes = model_json["result"]["graph"]["nodes"]
+        .as_array()
+        .map(Vec::len)
+        .unwrap_or(0);
+    let graph_edges = model_json["result"]["graph"]["edges"]
+        .as_array()
+        .map(Vec::len)
+        .unwrap_or(0);
+
+    let visualization_start = Instant::now();
+    let visualization_id = next_id();
+    let visualization_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": visualization_id,
+        "method": "sysml/visualization",
+        "params": {
+            "workspaceRootUri": root_uri.as_str(),
+            "view": "general-view"
+        }
+    });
+    send_message(&mut stdin, &visualization_req.to_string());
+    let visualization_resp =
+        read_response(&mut stdout, visualization_id).expect("sysml/visualization response");
+    let visualization_ms = visualization_start.elapsed().as_millis();
+    let visualization_json: serde_json::Value =
+        serde_json::from_str(&visualization_resp).expect("parse visualization response");
+    let view_candidates = visualization_json["result"]["views"]
+        .as_array()
+        .map(Vec::len)
+        .unwrap_or(0);
+
+    eprintln!(
+        "SPEC42_PERF_REPORT {}",
+        serde_json::json!({
+            "fixture": "vscode/testFixture/workspaces/large-workspace",
+            "workspaceIndexMs": workspace_index_ms,
+            "sysmlModelMs": model_ms,
+            "visualizationMs": visualization_ms,
+            "indexedDocuments": indexed_documents,
+            "workspaceGraphNodes": workspace_graph_nodes,
+            "graphNodes": graph_nodes,
+            "graphEdges": graph_edges,
+            "viewCandidates": view_candidates,
+            "budgets": {
+                "mode": "report-only",
+                "workspaceIndexMs": 5000,
+                "sysmlModelMs": 2500,
+                "visualizationMs": 1500
+            }
+        })
+    );
+
+    assert!(
+        indexed_documents > 0 || workspace_graph_nodes > 0,
+        "expected indexed workspace documents or workspace graph nodes"
+    );
+    assert!(graph_nodes > 0, "expected non-empty sysml/model graph");
 
     let _ = child.kill();
 }
