@@ -9,10 +9,14 @@ import { normalizeAttributes } from './shared';
 import { buildElementDisplayLabel } from './shared';
 
 export function isMetadataElement(type: string | null | undefined): boolean {
-    return type === 'doc' ||
-           type === 'comment' ||
-           type === 'metadata' ||
-           type === 'metadata def';
+    const t = (type || '').toLowerCase().trim();
+    return t === 'doc' ||
+           t === 'comment' ||
+           t === 'metadata' ||
+           t === 'metadata def' ||
+           t === 'import' ||
+           t === 'diagnostic' ||
+           t.includes('diagnostic');
 }
 
 export function extractDocumentation(element: any): string | null {

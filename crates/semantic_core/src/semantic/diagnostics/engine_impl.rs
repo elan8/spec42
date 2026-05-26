@@ -744,10 +744,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             DiagnosticSeverity::Warning,
             "semantic",
             "objective_binding_unresolved",
-            format!(
-                "Objective '{}' could not be bound according to '{}' semantics.",
-                node.name, binding_kind
-            ),
+            objective_binding_unresolved_message(&node.name, binding_kind),
         ));
     }
     section_timings.push((

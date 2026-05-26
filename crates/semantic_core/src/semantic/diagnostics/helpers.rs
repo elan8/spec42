@@ -403,3 +403,48 @@ pub(super) fn parse_non_negative_bound(raw: &str) -> Result<i64, String> {
         Err(_) => Err(format!("bound '{raw}' is not an integer or '*'")),
     }
 }
+
+/// User-facing text for [`objective_binding_unresolved`](super::engine_impl) diagnostics.
+pub(super) fn objective_binding_unresolved_message(
+    objective_name: &str,
+    binding_kind: &str,
+) -> String {
+    match binding_kind {
+        "verification_subject" => format!(
+            "Verification objective '{objective_name}' is not bound to a case subject. \
+Add a `subject` clause to the verification def before this objective \
+(for example: `subject systemUnderTest : MyPartDef;`)."
+        ),
+        "analysis_result" => format!(
+            "Analysis objective '{objective_name}' is not bound to a case result. \
+Add a `return ref` clause to the analysis def before this objective \
+(for example: `return ref analysisResult {{ return true; }}`)."
+        ),
+        other => format!(
+            "Objective '{objective_name}' could not be bound (expected binding: {other}). \
+Check the case definition body: required clauses must appear before the objective."
+        ),
+    }
+}
+
+#[cfg(test)]
+mod objective_binding_message_tests {
+    use super::objective_binding_unresolved_message;
+
+    #[test]
+    fn verification_subject_message_mentions_subject_clause() {
+        let message =
+            objective_binding_unresolved_message("coverageObjective", "verification_subject");
+        assert!(message.contains("subject"));
+        assert!(message.contains("verification"));
+        assert!(!message.contains("verification_subject"));
+    }
+
+    #[test]
+    fn analysis_result_message_mentions_return_ref() {
+        let message =
+            objective_binding_unresolved_message("runtimeObjective", "analysis_result");
+        assert!(message.contains("return ref"));
+        assert!(!message.contains("analysis_result"));
+    }
+}
