@@ -17,6 +17,12 @@ use super::{add_node_and_recurse, qualified_name_for_node};
 
 fn verify_requirement_target(member: &VerifyRequirementMember) -> Option<String> {
     if let Some(requirement) = member.requirement.as_ref() {
+        if let Some(type_name) = requirement.value.type_name.as_deref() {
+            let normalized = type_name.trim();
+            if !normalized.is_empty() {
+                return Some(normalized.to_string());
+            }
+        }
         return Some(requirement.value.name.clone());
     }
     member.target.clone().and_then(|target| {
