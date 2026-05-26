@@ -71,6 +71,17 @@ fn add_verified_requirement_node(
         Some(parent_id),
     );
     add_typing_edge_if_exists(g, uri, &qualified, requirement_ref, container_prefix);
+    if let Some(target_qualified) =
+        resolve_subject_type_target_qualified(g, uri, container_prefix, requirement_ref)
+    {
+        add_edge_if_both_exist(
+            g,
+            uri,
+            &parent_id.qualified_name,
+            &target_qualified,
+            RelationshipKind::Subject,
+        );
+    }
 }
 
 fn extract_verdict_kind_token(body_text: &str) -> Option<String> {

@@ -10,7 +10,8 @@ use crate::semantic::reference_resolution::{
     resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult,
 };
 use crate::semantic::relationships::{
-    add_edge_if_both_exist, add_typing_edge_if_exists, normalize_for_lookup,
+    add_edge_if_both_exist, add_pending_expression_relationship, add_typing_edge_if_exists,
+    normalize_for_lookup,
 };
 
 use super::{add_node_and_recurse, qualified_name_for_node};
@@ -62,6 +63,67 @@ pub(super) fn add_expression_edge_if_both_exist(
     let right_str = expr_node_to_qualified_string(right);
     if left_str.is_empty() || right_str.is_empty() {
         return;
+    }
+    if kind == RelationshipKind::Connection {
+        let left_resolved = resolve_expression_endpoint_strict(g, uri, container_prefix, &left_str);
+        let right_resolved =
+            resolve_expression_endpoint_strict(g, uri, container_prefix, &right_str);
+        match (left_resolved, right_resolved) {
+            (ResolveResult::Resolved(src_id), ResolveResult::Resolved(tgt_id)) => {
+                let src = src_id.qualified_name.clone();
+                let tgt = tgt_id.qualified_name.clone();
+                add_edge_if_both_exist(g, uri, &src, &tgt, kind.clone());
+                g.record_connection_occurrence_with_endpoints(
+                    uri,
+                    src_id,
+                    tgt_id,
+                    span_to_range(&left.span),
+                    left_str,
+                    right_str,
+                );
+                return;
+            }
+            (ResolveResult::Ambiguous, _) => {
+                add_diagnostic_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    "ambiguous_connection_endpoint",
+                    format!(
+                        "Ambiguous connection endpoint '{}'. Use a fully qualified endpoint path.",
+                        left_str
+                    ),
+                    span_to_range(&left.span),
+                );
+                return;
+            }
+            (_, ResolveResult::Ambiguous) => {
+                add_diagnostic_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    "ambiguous_connection_endpoint",
+                    format!(
+                        "Ambiguous connection endpoint '{}'. Use a fully qualified endpoint path.",
+                        right_str
+                    ),
+                    span_to_range(&right.span),
+                );
+                return;
+            }
+            (ResolveResult::Unresolved, _) | (_, ResolveResult::Unresolved) => {
+                add_pending_expression_relationship(
+                    g,
+                    uri,
+                    container_prefix,
+                    &left_str,
+                    &right_str,
+                    RelationshipKind::Connection,
+                    span_to_range(&left.span),
+                );
+                return;
+            }
+        }
     }
     let src = if kind == RelationshipKind::Connection {
         match resolve_expression_endpoint_strict(g, uri, container_prefix, &left_str) {

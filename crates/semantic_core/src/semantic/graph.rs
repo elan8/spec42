@@ -22,6 +22,7 @@ pub struct SemanticGraph {
     pub nodes_by_uri: HashMap<Url, Vec<NodeId>>,
     pub node_ids_by_qualified_name: HashMap<String, Vec<NodeId>>,
     pub(crate) connection_occurrences_by_uri: HashMap<Url, Vec<ConnectionOccurrence>>,
+    pub(crate) pending_expression_relationships: Vec<PendingExpressionRelationship>,
     pub pending_relationships: Vec<PendingRelationship>,
     pub import_lookup_cache: Mutex<HashMap<(NodeId, String, bool), Vec<NodeId>>>,
 }
@@ -34,6 +35,7 @@ impl Clone for SemanticGraph {
             nodes_by_uri: self.nodes_by_uri.clone(),
             node_ids_by_qualified_name: self.node_ids_by_qualified_name.clone(),
             connection_occurrences_by_uri: self.connection_occurrences_by_uri.clone(),
+            pending_expression_relationships: self.pending_expression_relationships.clone(),
             pending_relationships: self.pending_relationships.clone(),
             import_lookup_cache: Mutex::new(HashMap::new()),
         }
@@ -45,6 +47,18 @@ pub(crate) struct ConnectionOccurrence {
     pub source: NodeId,
     pub target: NodeId,
     pub range: TextRange,
+    pub source_endpoint: Option<String>,
+    pub target_endpoint: Option<String>,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct PendingExpressionRelationship {
+    pub uri: Url,
+    pub source_expression: String,
+    pub target_expression: String,
+    pub kind: RelationshipKind,
+    pub container_prefix: Option<String>,
+    pub source_range: TextRange,
 }
 
 #[derive(Debug, Clone)]
@@ -64,6 +78,7 @@ impl SemanticGraph {
             nodes_by_uri: HashMap::new(),
             node_ids_by_qualified_name: HashMap::new(),
             connection_occurrences_by_uri: HashMap::new(),
+            pending_expression_relationships: Vec::new(),
             pending_relationships: Vec::new(),
             import_lookup_cache: Mutex::new(HashMap::new()),
         }
@@ -103,6 +118,8 @@ impl SemanticGraph {
         }
         self.pending_relationships
             .extend(other.pending_relationships.iter().cloned());
+        self.pending_expression_relationships
+            .extend(other.pending_expression_relationships.iter().cloned());
         for (id, node) in other.iter_nodes() {
             let idx = self.graph.add_node(node.clone());
             self.node_index_by_id.insert(id.clone(), idx);
@@ -575,7 +592,52 @@ impl SemanticGraph {
                 source,
                 target,
                 range,
+                source_endpoint: None,
+                target_endpoint: None,
             });
+    }
+
+    pub fn record_connection_occurrence_with_endpoints(
+        &mut self,
+        uri: &Url,
+        source: NodeId,
+        target: NodeId,
+        range: TextRange,
+        source_endpoint: String,
+        target_endpoint: String,
+    ) {
+        self.connection_occurrences_by_uri
+            .entry(uri.clone())
+            .or_default()
+            .push(ConnectionOccurrence {
+                source,
+                target,
+                range,
+                source_endpoint: Some(source_endpoint),
+                target_endpoint: Some(target_endpoint),
+            });
+    }
+
+    /// Returns connection occurrences with the source text endpoint names preserved.
+    pub fn connection_edge_occurrence_details_for_uri(
+        &self,
+        uri: &Url,
+    ) -> Vec<(NodeId, NodeId, TextRange, Option<String>, Option<String>)> {
+        self.connection_occurrences_by_uri
+            .get(uri)
+            .into_iter()
+            .flatten()
+            .cloned()
+            .map(|occ| {
+                (
+                    occ.source,
+                    occ.target,
+                    occ.range,
+                    occ.source_endpoint,
+                    occ.target_endpoint,
+                )
+            })
+            .collect()
     }
 
     /// Returns edges incident to nodes in the given URI as (source, target, kind, optional edge name).

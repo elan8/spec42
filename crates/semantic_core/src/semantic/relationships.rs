@@ -6,9 +6,10 @@ use sysml_v2_parser::RootNamespace;
 use url::Url;
 
 use crate::semantic::ast_util::identification_name;
-use crate::semantic::graph::SemanticGraph;
+use crate::semantic::graph::{PendingExpressionRelationship, SemanticGraph};
 use crate::semantic::import_resolution::resolve_type_reference_targets;
 use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
+use crate::semantic::reference_resolution::{resolve_expression_endpoint_strict, ResolveResult};
 pub use crate::semantic::resolution::naming::{
     normalize_for_lookup, type_ref_candidates, type_ref_candidates_with_kind,
 };
@@ -187,7 +188,29 @@ fn add_edge_if_both_exist_opt(
     true
 }
 
+pub(crate) fn add_pending_expression_relationship(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    source_expression: &str,
+    target_expression: &str,
+    kind: RelationshipKind,
+    source_range: crate::semantic::text_span::TextRange,
+) {
+    g.pending_expression_relationships
+        .push(PendingExpressionRelationship {
+            uri: uri.clone(),
+            source_expression: source_expression.to_string(),
+            target_expression: target_expression.to_string(),
+            kind,
+            container_prefix: container_prefix.map(ToString::to_string),
+            source_range,
+        });
+}
+
 pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
+    resolve_pending_expression_relationships_for_uri(g, uri);
+
     let pending = std::mem::take(&mut g.pending_relationships);
     for pending_edge in pending {
         if &pending_edge.uri != uri {
@@ -212,7 +235,79 @@ pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
                 continue;
             }
         }
-        g.graph.add_edge(src_idx, tgt_idx, pending_edge.kind);
+        if !g
+            .graph
+            .edges_connecting(src_idx, tgt_idx)
+            .any(|edge| edge.weight() == &pending_edge.kind)
+        {
+            g.graph.add_edge(src_idx, tgt_idx, pending_edge.kind);
+        }
+    }
+}
+
+fn resolve_pending_expression_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
+    let pending = std::mem::take(&mut g.pending_expression_relationships);
+    for pending_edge in pending {
+        if &pending_edge.uri != uri {
+            g.pending_expression_relationships.push(pending_edge);
+            continue;
+        }
+        let source_id = match resolve_expression_endpoint_strict(
+            g,
+            uri,
+            pending_edge.container_prefix.as_deref(),
+            &pending_edge.source_expression,
+        ) {
+            ResolveResult::Resolved(id) => id,
+            ResolveResult::Ambiguous | ResolveResult::Unresolved => {
+                g.pending_expression_relationships.push(pending_edge);
+                continue;
+            }
+        };
+        let target_id = match resolve_expression_endpoint_strict(
+            g,
+            uri,
+            pending_edge.container_prefix.as_deref(),
+            &pending_edge.target_expression,
+        ) {
+            ResolveResult::Resolved(id) => id,
+            ResolveResult::Ambiguous | ResolveResult::Unresolved => {
+                g.pending_expression_relationships.push(pending_edge);
+                continue;
+            }
+        };
+        add_resolved_edge_once(g, &source_id, &target_id, pending_edge.kind.clone());
+        if pending_edge.kind == RelationshipKind::Connection {
+            g.record_connection_occurrence_with_endpoints(
+                uri,
+                source_id,
+                target_id,
+                pending_edge.source_range,
+                pending_edge.source_expression,
+                pending_edge.target_expression,
+            );
+        }
+    }
+}
+
+fn add_resolved_edge_once(
+    g: &mut SemanticGraph,
+    source_id: &NodeId,
+    target_id: &NodeId,
+    kind: RelationshipKind,
+) {
+    let (Some(&src_idx), Some(&tgt_idx)) = (
+        g.node_index_by_id.get(source_id),
+        g.node_index_by_id.get(target_id),
+    ) else {
+        return;
+    };
+    if !g
+        .graph
+        .edges_connecting(src_idx, tgt_idx)
+        .any(|edge| edge.weight() == &kind)
+    {
+        g.graph.add_edge(src_idx, tgt_idx, kind);
     }
 }
 
