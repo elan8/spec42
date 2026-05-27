@@ -61,4 +61,46 @@ impl SysmlDocument {
             byte_size,
         })
     }
+
+    pub fn from_uri(
+        uri: &str,
+        content: String,
+        path_hint: Option<String>,
+        source_kind: SysmlDocumentSourceKind,
+        sha256: Option<String>,
+        byte_size: Option<i64>,
+    ) -> Result<Self, String> {
+        let uri =
+            Url::parse(uri).map_err(|err| format!("failed to parse source URI '{uri}': {err}"))?;
+        Ok(Self {
+            uri,
+            content,
+            path_hint,
+            source_kind,
+            sha256,
+            byte_size,
+        })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn from_uri_supports_custom_schemes_for_db_roundtrip() {
+        let doc = SysmlDocument::from_uri(
+            "surreal://org-1/project-1/doc-42/Architecture.sysml",
+            "package Architecture {}".to_string(),
+            Some("Architecture.sysml".to_string()),
+            SysmlDocumentSourceKind::External,
+            Some("abc123".to_string()),
+            Some(42),
+        )
+        .expect("custom URI should parse");
+
+        assert_eq!(doc.uri.scheme(), "surreal");
+        assert_eq!(doc.path_hint.as_deref(), Some("Architecture.sysml"));
+        assert_eq!(doc.source_kind, SysmlDocumentSourceKind::External);
+    }
 }

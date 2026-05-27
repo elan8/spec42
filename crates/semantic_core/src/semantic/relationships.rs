@@ -1,4 +1,4 @@
-//! Relationship edge logic: typing, specializes, connection, bind, cross-document resolution.
+//! Relationship edge logic: typing, specializes, connection, bind, workspace relationship linking.
 
 use sysml_v2_parser::ast::{PackageBody, PackageBodyElement};
 use sysml_v2_parser::RootNamespace;
@@ -448,8 +448,9 @@ pub fn find_part_def_in_elements<'a>(
     None
 }
 
-/// Adds typing/specializes edges from nodes in the given URI to targets that may be in other files.
-/// Called after merge so the full graph contains nodes from all documents.
+/// Legacy URI-scoped wrapper for workspace relationship linking.
+/// Adds typing/specializes edges from nodes in the given URI.
+/// Kept for compatibility with incremental kernel update paths.
 pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
     let edges = resolve_cross_document_edges_for_uri(g, uri);
     for (src_id, tgt_id, kind) in edges {
@@ -462,7 +463,7 @@ pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
     }
 }
 
-/// Resolves typing/specializes edges from nodes in the given URI to targets that may be in other files.
+/// Legacy URI-scoped resolver for workspace relationship linking.
 /// Returns a list of (source NodeId, target NodeId, relationship kind) for resolved edges.
 /// This function is thread-safe and can be called in parallel across different URIs.
 pub fn resolve_cross_document_edges_for_uri(

@@ -17,7 +17,7 @@ The crate is designed to be consumed by multiple hosts (`kernel`, `babel42`, and
 
 - Source-agnostic SysML ingestion through provider abstractions
 - Graph construction from parsed AST (`build_graph_from_doc`)
-- Cross-document relationship linking
+- Workspace-wide relationship linking
 - Semantic resolution (imports, references, names, typing/specialization)
 - Expression evaluation and unit-aware calculations
 - Shared DTOs for model/graph/visualization payloads
@@ -36,7 +36,7 @@ The crate is designed to be consumed by multiple hosts (`kernel`, `babel42`, and
 - `semantic/graph_builder/*`
   - AST-to-graph construction
 - `semantic/relationships.rs`
-  - cross-document edges and relationship resolution
+  - workspace relationship linking and resolution
 - `semantic/import_resolution.rs`, `semantic/reference_resolution.rs`, `semantic/resolution/*`
   - symbol and type/reference resolution
 - `semantic/evaluation/*`
@@ -92,7 +92,7 @@ flowchart TD
 
 Graph assembly returns:
 
-- `SemanticGraph`: linked semantic model across documents
+- `SemanticGraph`: linked semantic model across the workspace
 - parsed document metadata (content, parse timings, cache flags) for callers that need richer context
 
 ## Visualization Architecture (Graph-First)
