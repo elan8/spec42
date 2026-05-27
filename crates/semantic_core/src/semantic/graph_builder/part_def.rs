@@ -35,6 +35,11 @@ pub(super) fn build_from_part_def_body_element(
             if let Some(ref t) = n.typing {
                 attrs.insert("attributeType".to_string(), serde_json::json!(t));
             }
+            if let Some(ref v) = n.value.value {
+                let rendered = expressions::expression_to_debug_string(v);
+                attrs.insert("value".to_string(), serde_json::json!(rendered));
+                attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
+            }
             add_node_and_recurse(
                 g,
                 uri,

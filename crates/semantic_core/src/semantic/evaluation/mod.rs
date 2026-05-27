@@ -1058,6 +1058,9 @@ impl<'a> EvalEngine<'a> {
         args: &[&str],
     ) -> Result<Quantity, EvalStatus> {
         let normalized_args = normalize_invocation_args(args);
+        if callable_name == "sum" {
+            return self.evaluate_builtin_sum(context_id, &normalized_args);
+        }
         let callable_id = self
             .resolve_callable_node(context_id, callable_name)
             .ok_or(EvalStatus::Unknown)?;
@@ -1093,6 +1096,27 @@ impl<'a> EvalEngine<'a> {
         let result = self.evaluate_quantity_expression(&callable_id, &expression);
         self.parameter_bindings.pop();
         result
+    }
+
+    fn evaluate_builtin_sum(
+        &mut self,
+        context_id: &NodeId,
+        normalized_args: &[&str],
+    ) -> Result<Quantity, EvalStatus> {
+        if normalized_args.is_empty() {
+            return Err(EvalStatus::Unsupported);
+        }
+        let mut it = normalized_args.iter();
+        let first = it
+            .next()
+            .expect("non-empty args")
+            .to_string();
+        let mut acc = self.evaluate_quantity_expression(context_id, &first)?;
+        for arg in it {
+            let evaluated = self.evaluate_quantity_expression(context_id, arg)?;
+            acc = add_quantities_with_units(&self.units, acc, evaluated)?;
+        }
+        Ok(acc)
     }
 
     fn evaluate_invocation_bool(
@@ -1763,6 +1787,32 @@ fn map_unit_error(err: UnitError) -> EvalStatus {
         UnitError::UnknownUnit => EvalStatus::Unknown,
         UnitError::IncompatibleDimension => EvalStatus::TypeError,
         UnitError::UnsupportedConversion | UnitError::AmbiguousMetadata => EvalStatus::Unsupported,
+    }
+}
+
+fn add_quantities_with_units(
+    units: &UnitRegistry,
+    left: Quantity,
+    right: Quantity,
+) -> Result<Quantity, EvalStatus> {
+    match (&left.unit, &right.unit) {
+        (None, None) => Ok(Quantity::scalar(left.value + right.value)),
+        (Some(unit), None) | (None, Some(unit)) => {
+            if !units.has_symbol(unit) {
+                return Err(EvalStatus::Unknown);
+            }
+            Err(EvalStatus::TypeError)
+        }
+        (Some(left_unit), Some(right_unit)) => {
+            let converted = units.convert_value(right.value, right_unit, left_unit);
+            match converted {
+                Ok(v) => Ok(Quantity {
+                    value: left.value + v,
+                    unit: Some(left_unit.clone()),
+                }),
+                Err(err) => Err(map_unit_error(err)),
+            }
+        }
     }
 }
 
@@ -2691,5 +2741,61 @@ mod tests {
         evaluate_expressions(&mut graph);
         assert_eq!(node_attr(&graph, &calc_def, ANALYSIS_EVAL_STATUS_KEY), None);
         assert_eq!(node_attr(&graph, &calc_def, ANALYSIS_EVAL_ERROR_KEY), None);
+    }
+
+    #[test]
+    fn evaluates_builtin_sum_over_quantities() {
+        let mut graph = SemanticGraph::new();
+        register_units_fixture(&mut graph);
+        let uri = Url::parse("file:///C:/workspace/sum.sysml").expect("uri");
+
+        // Workspace values.
+        let owner = add_node(
+            &mut graph,
+            &uri,
+            "P",
+            "package",
+            "P",
+            None,
+            HashMap::new(),
+        );
+        let _a = add_node(
+            &mut graph,
+            &uri,
+            "P::a",
+            "attribute",
+            "a",
+            Some(&owner),
+            HashMap::from([("value".to_string(), Value::String("2 [kg]".to_string()))]),
+        );
+        let _b = add_node(
+            &mut graph,
+            &uri,
+            "P::b",
+            "attribute",
+            "b",
+            Some(&owner),
+            HashMap::from([("value".to_string(), Value::String("3 [kg]".to_string()))]),
+        );
+
+        let expr_id = add_node(
+            &mut graph,
+            &uri,
+            "P::total",
+            "attribute",
+            "total",
+            Some(&owner),
+            HashMap::from([("value".to_string(), Value::String("sum(a, b)".to_string()))]),
+        );
+
+        evaluate_expressions(&mut graph);
+        let evaluated = node_attr(&graph, &expr_id, EVALUATED_VALUE_KEY)
+            .cloned()
+            .expect("evaluated value");
+        assert_eq!(evaluated, Value::Number(serde_json::Number::from(5)));
+        let unit = node_attr(&graph, &expr_id, EVALUATED_UNIT_KEY)
+            .and_then(Value::as_str)
+            .expect("evaluated unit");
+        assert_eq!(unit, "kg");
     }
 }
