@@ -25,6 +25,12 @@ mod stubs;
 mod use_case;
 mod verification;
 
+pub struct MaterializeContext<'a> {
+    pub uri: &'a Url,
+    pub ast: &'a RootNamespace,
+    pub graph: &'a mut SemanticGraph,
+}
+
 /// Builds a semantic graph from a parsed RootNamespace (sysml-v2-parser AST).
 /// Adds the root package/namespace as a node and sets parent_id on its direct children
 /// so that contains edges are emitted for the General View.
@@ -147,47 +153,3 @@ pub(super) fn add_node_and_recurse(
         .push(NodeId::new(uri, qualified));
 }
 
-#[allow(clippy::too_many_arguments)]
-pub(super) fn add_node_if_not_exists(
-    g: &mut SemanticGraph,
-    uri: &Url,
-    qualified: &str,
-    kind: &str,
-    name: String,
-    parent_id: &NodeId,
-    source_range: TextRange,
-    attrs: HashMap<String, serde_json::Value>,
-) {
-    let node_id = NodeId::new(uri, qualified);
-    if g.node_index_by_id.contains_key(&node_id) {
-        return;
-    }
-    let mut attrs = attrs;
-    attrs.insert("synthetic".to_string(), serde_json::json!(true));
-    attrs.insert(
-        "originRange".to_string(),
-        serde_json::json!({
-            "start": {"line": source_range.start.line, "character": source_range.start.character},
-            "end": {"line": source_range.end.line, "character": source_range.end.character}
-        }),
-    );
-    let parent_range = g
-        .get_node(parent_id)
-        .map(|node| node.range)
-        .unwrap_or(source_range);
-    let node = SemanticNode {
-        id: node_id.clone(),
-        element_kind: kind.to_string(),
-        name,
-        range: parent_range,
-        attributes: attrs,
-        parent_id: Some(parent_id.clone()),
-    };
-    let idx = g.graph.add_node(node);
-    g.node_index_by_id.insert(node_id.clone(), idx);
-    g.nodes_by_uri.entry(uri.clone()).or_default().push(node_id);
-    g.node_ids_by_qualified_name
-        .entry(qualified.to_string())
-        .or_default()
-        .push(NodeId::new(uri, qualified));
-}

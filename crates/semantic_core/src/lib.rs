@@ -28,7 +28,8 @@ pub use semantic::reference_resolution::{
     resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult,
 };
 pub use semantic::relationships::{
-    add_cross_document_edges_for_uri, resolve_cross_document_edges_for_uri,
+    add_cross_document_edges_for_uri, link_workspace_relationships,
+    resolve_cross_document_edges_for_uri, TYPE_REFERENCE_ATTR_KEYS,
 };
 pub use semantic::root_element::root_element_body;
 pub use semantic::source::providers::filesystem::FileSystemDocumentProvider;

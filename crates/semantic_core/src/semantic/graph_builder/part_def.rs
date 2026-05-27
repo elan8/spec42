@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{InterfaceDefBody, PartDefBodyElement, PartUsageBody};
-use sysml_v2_parser::RootNamespace;
 use url::Url;
 
 use crate::semantic::ast_util::{identification_name, span_to_range};
@@ -21,7 +20,6 @@ pub(super) fn build_from_part_def_body_element(
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: &NodeId,
-    root: &RootNamespace,
     g: &mut SemanticGraph,
 ) {
     use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
@@ -175,20 +173,10 @@ pub(super) fn build_from_part_def_body_element(
                         uri,
                         Some(&qualified),
                         &node_id,
-                        root,
                         g,
                     );
                 }
             }
-            part_usage::expand_typed_part_usage(
-                root,
-                uri,
-                &qualified,
-                &n.type_name,
-                container_prefix,
-                &node_id,
-                g,
-            );
         }
         PDBE::OccurrenceUsage(occ_node) => {
             let qualified =

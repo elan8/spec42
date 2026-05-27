@@ -4,6 +4,7 @@ use serde_json::Value;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, SemanticNode};
+use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
 
 mod units;
 
@@ -1057,13 +1058,31 @@ impl<'a> EvalEngine<'a> {
             for seg in rest.split('.') {
                 let qualified = format!("{}::{seg}", current.qualified_name);
                 let candidates = self.lookup_qualified_candidates(&qualified);
-                if candidates.is_empty() {
+                if !candidates.is_empty() {
+                    current = choose_candidate(self.graph, candidates, seg)?;
+                    continue;
+                }
+                let Some(owner) = self.graph.get_node(&current) else {
                     return Err(EvalOutcome::error(
                         EvalStatus::Unknown,
                         format!("unresolved reference '{identifier}'"),
                     ));
+                };
+                match resolve_member_via_type(self.graph, owner, seg) {
+                    ResolveResult::Resolved(member_id) => current = member_id,
+                    ResolveResult::Ambiguous => {
+                        return Err(EvalOutcome::error(
+                            EvalStatus::Unknown,
+                            format!("ambiguous reference '{seg}'"),
+                        ));
+                    }
+                    ResolveResult::Unresolved => {
+                        return Err(EvalOutcome::error(
+                            EvalStatus::Unknown,
+                            format!("unresolved reference '{identifier}'"),
+                        ));
+                    }
                 }
-                current = choose_candidate(candidates, seg)?;
             }
             return Ok(current);
         }
@@ -1075,11 +1094,11 @@ impl<'a> EvalEngine<'a> {
         };
         let scoped_candidates = self.scoped_candidates(current, identifier);
         if !scoped_candidates.is_empty() {
-            return choose_candidate(scoped_candidates, identifier);
+            return choose_candidate(self.graph, scoped_candidates, identifier);
         }
         let fallback_candidates = self.fallback_candidates(current, identifier);
         if !fallback_candidates.is_empty() {
-            return choose_candidate(fallback_candidates, identifier);
+            return choose_candidate(self.graph, fallback_candidates, identifier);
         }
         Err(EvalOutcome::error(
             EvalStatus::Unknown,
@@ -1428,24 +1447,66 @@ fn scope_prefixes(graph: &SemanticGraph, current: &SemanticNode) -> Vec<String> 
     prefixes
 }
 
-fn choose_candidate(candidates: Vec<NodeId>, identifier: &str) -> Result<NodeId, EvalOutcome> {
+fn choose_candidate(
+    graph: &SemanticGraph,
+    candidates: Vec<NodeId>,
+    identifier: &str,
+) -> Result<NodeId, EvalOutcome> {
     if candidates.len() == 1 {
         return Ok(candidates[0].clone());
     }
     let mut sorted = candidates;
-    sorted.sort_by_key(|candidate| candidate.qualified_name.len());
+    sorted.sort_by(|left, right| {
+        candidate_preference_score(graph, left)
+            .cmp(&candidate_preference_score(graph, right))
+            .reverse()
+            .then_with(|| {
+                left.qualified_name
+                    .len()
+                    .cmp(&right.qualified_name.len())
+            })
+    });
     let best = sorted[0].clone();
+    let best_score = candidate_preference_score(graph, &best);
     let best_len = best.qualified_name.len();
-    let second_len = sorted
-        .get(1)
-        .map(|candidate| candidate.qualified_name.len());
-    if second_len.is_none() || second_len.unwrap_or(best_len + 1) > best_len {
+    let ambiguous = sorted.iter().skip(1).any(|candidate| {
+        let score = candidate_preference_score(graph, candidate);
+        if score < best_score {
+            return false;
+        }
+        score == best_score && candidate.qualified_name.len() == best_len
+    });
+    if !ambiguous {
         return Ok(best);
     }
     Err(EvalOutcome::error(
         EvalStatus::Unknown,
         format!("ambiguous reference '{identifier}'"),
     ))
+}
+
+fn candidate_preference_score(graph: &SemanticGraph, candidate: &NodeId) -> u8 {
+    let Some(node) = graph.get_node(candidate) else {
+        return 0;
+    };
+    let has_evaluable_source = EVALUATION_SOURCE_KEYS.iter().any(|key| {
+        node.attributes
+            .get(*key)
+            .is_some_and(|value| value_has_evaluable_content(value))
+    });
+    if has_evaluable_source {
+        2
+    } else {
+        0
+    }
+}
+
+fn value_has_evaluable_content(value: &Value) -> bool {
+    match value {
+        Value::Null => false,
+        Value::String(text) => !text.trim().is_empty(),
+        _ => true,
+    }
 }
 
 fn dedupe_node_ids(ids: Vec<NodeId>) -> Vec<NodeId> {
@@ -3223,6 +3284,98 @@ mod tests {
         assert_eq!(
             node_attr(&graph, &analysis, ANALYSIS_COMPUTED_VALUE_KEY),
             Some(&serde_json::json!(28))
+        );
+    }
+
+    #[test]
+    fn resolves_analysis_subject_member_path_via_typing_without_expansion() {
+        use crate::semantic::relationships::add_typing_edge_if_exists;
+
+        let mut graph = SemanticGraph::new();
+        let uri = Url::parse("file:///C:/workspace/analysis-subject-typing.sysml").expect("uri");
+        let robot_def = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Robot",
+            "part def",
+            "Robot",
+            None,
+            HashMap::new(),
+        );
+        let mobility_part = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Robot::mobility",
+            "part",
+            "mobility",
+            Some(&robot_def),
+            HashMap::new(),
+        );
+        let mobility_def = add_node(
+            &mut graph,
+            &uri,
+            "Demo::MobilitySubsystem",
+            "part def",
+            "MobilitySubsystem",
+            None,
+            HashMap::new(),
+        );
+        let _drive = add_node(
+            &mut graph,
+            &uri,
+            "Demo::MobilitySubsystem::drivePowerW",
+            "attribute",
+            "drivePowerW",
+            Some(&mobility_def),
+            HashMap::from([("value".to_string(), Value::String("28".to_string()))]),
+        );
+        let analysis = add_node(
+            &mut graph,
+            &uri,
+            "Demo::PowerAnalysis",
+            "analysis def",
+            "PowerAnalysis",
+            None,
+            HashMap::from([(
+                ANALYSIS_EXPRESSION_KEY.to_string(),
+                Value::String("sum(robot.mobility.drivePowerW) <= powerBudgetW".to_string()),
+            )]),
+        );
+        let _budget = add_node(
+            &mut graph,
+            &uri,
+            "Demo::PowerAnalysis::powerBudgetW",
+            "attribute",
+            "powerBudgetW",
+            Some(&analysis),
+            HashMap::from([("value".to_string(), Value::String("55".to_string()))]),
+        );
+        let _robot = add_node(
+            &mut graph,
+            &uri,
+            "Demo::PowerAnalysis::robot",
+            "subject",
+            "robot",
+            Some(&analysis),
+            HashMap::new(),
+        );
+        add_typing_edge_if_exists(&mut graph, &uri, "Demo::PowerAnalysis::robot", "Demo::Robot", None);
+        add_typing_edge_if_exists(
+            &mut graph,
+            &uri,
+            &mobility_part.qualified_name,
+            "Demo::MobilitySubsystem",
+            None,
+        );
+
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &analysis, ANALYSIS_EVAL_STATUS_KEY),
+            Some(&Value::String(STATUS_OK.to_string()))
+        );
+        assert_eq!(
+            node_attr(&graph, &analysis, ANALYSIS_EVAL_VALUE_KEY),
+            Some(&Value::Bool(true))
         );
     }
 

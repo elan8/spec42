@@ -59,8 +59,8 @@ flowchart TD
   parseStage --> astDocs["Parsed RootNamespace docs"]
   astDocs --> graphBuild["build_graph_from_doc per document"]
   graphBuild --> mergedGraph["SemanticGraph merge"]
-  mergedGraph --> crossDoc["add_cross_document_edges_for_uri"]
-  crossDoc --> finalGraph["SemanticGraph ready for consumers"]
+  mergedGraph --> linker["link_workspace_relationships"]
+  linker --> finalGraph["SemanticGraph ready for consumers"]
 ```
 
 ### Providers
@@ -84,7 +84,7 @@ flowchart TD
   parse --> ast["RootNamespace AST"]
   ast --> graphDoc["build_graph_from_doc(ast, uri)"]
   graphDoc --> merge["graph.merge(...)"]
-  merge --> link["add_cross_document_edges_for_uri"]
+  merge --> link["link_workspace_relationships(...)"]
   link --> semanticGraph["SemanticGraph"]
 ```
 

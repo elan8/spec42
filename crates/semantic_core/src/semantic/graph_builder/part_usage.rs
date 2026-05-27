@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
-use sysml_v2_parser::ast::{PartDefBody, PartUsageBody, StateDefBody};
-use sysml_v2_parser::RootNamespace;
+use sysml_v2_parser::ast::{PartUsageBody, StateDefBody};
 use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
@@ -9,7 +8,7 @@ use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
 use crate::semantic::relationships::{
-    add_edge_if_both_exist, add_typing_edge_if_exists, find_part_def_in_root, type_ref_candidates,
+    add_edge_if_both_exist, add_typing_edge_if_exists,
 };
 
 use super::expressions;
@@ -20,7 +19,6 @@ pub(super) fn build_from_part_usage_body_element(
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: &NodeId,
-    root: &RootNamespace,
     g: &mut SemanticGraph,
 ) {
     use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
@@ -98,20 +96,10 @@ pub(super) fn build_from_part_usage_body_element(
                         uri,
                         Some(&qualified),
                         &node_id,
-                        root,
                         g,
                     );
                 }
             }
-            expand_typed_part_usage(
-                root,
-                uri,
-                &qualified,
-                &n.type_name,
-                container_prefix,
-                &node_id,
-                g,
-            );
         }
         PUBE::PortUsage(n) => {
             let name = &n.name;
@@ -350,172 +338,5 @@ fn infer_attribute_usage_kind(
             })
             .unwrap_or("attribute"),
         ResolveResult::Ambiguous | ResolveResult::Unresolved => "attribute",
-    }
-}
-
-/// Expands a typed PartUsage by adding nodes for the type's nested parts and ports.
-pub(super) fn expand_typed_part_usage(
-    root: &RootNamespace,
-    uri: &Url,
-    usage_qualified: &str,
-    type_ref: &str,
-    _container_prefix: Option<&str>,
-    parent_id: &NodeId,
-    g: &mut SemanticGraph,
-) {
-    let pkg_prefix = usage_qualified
-        .split("::")
-        .next()
-        .filter(|s| !s.is_empty())
-        .unwrap_or("");
-    let candidates = type_ref_candidates(Some(pkg_prefix), type_ref);
-    if let Some((part_def_node, part_def_qualified)) = candidates
-        .iter()
-        .find_map(|c| find_part_def_in_root(root, c))
-    {
-        let mut expansion_stack = vec![part_def_qualified];
-        expand_part_def_members(
-            root,
-            uri,
-            usage_qualified,
-            part_def_node,
-            parent_id,
-            g,
-            pkg_prefix,
-            &mut expansion_stack,
-        );
-    }
-}
-
-#[allow(clippy::too_many_arguments)]
-pub(super) fn expand_part_def_members(
-    root: &RootNamespace,
-    uri: &Url,
-    container_qualified: &str,
-    part_def: &sysml_v2_parser::Node<sysml_v2_parser::PartDef>,
-    parent_id: &NodeId,
-    g: &mut SemanticGraph,
-    pkg_prefix: &str,
-    expansion_stack: &mut Vec<String>,
-) {
-    if let PartDefBody::Brace { elements } = &part_def.body {
-        for node in elements {
-            use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
-            match &node.value {
-                PDBE::AttributeDef(n) => {
-                    let qualified = qualified_name_for_node(
-                        g,
-                        uri,
-                        Some(container_qualified),
-                        &n.name,
-                        "attribute def",
-                    );
-                    let mut attrs = HashMap::new();
-                    if let Some(ref t) = n.typing {
-                        attrs.insert("attributeType".to_string(), serde_json::json!(t));
-                    }
-                    super::add_node_if_not_exists(
-                        g,
-                        uri,
-                        &qualified,
-                        "attribute def",
-                        n.name.clone(),
-                        parent_id,
-                        span_to_range(&n.span),
-                        attrs,
-                    );
-                    if let Some(ref t) = n.typing {
-                        add_typing_edge_if_exists(g, uri, &qualified, t, Some(container_qualified));
-                    }
-                }
-                PDBE::PortUsage(n) => {
-                    let qualified =
-                        qualified_name_for_node(g, uri, Some(container_qualified), &n.name, "port");
-                    let mut attrs = HashMap::new();
-                    if let Some(ref t) = n.type_name {
-                        attrs.insert("portType".to_string(), serde_json::json!(t));
-                    }
-                    super::add_node_if_not_exists(
-                        g,
-                        uri,
-                        &qualified,
-                        "port",
-                        n.name.clone(),
-                        parent_id,
-                        span_to_range(&n.span),
-                        attrs,
-                    );
-                    if let Some(ref t) = n.type_name {
-                        add_typing_edge_if_exists(g, uri, &qualified, t, Some(container_qualified));
-                    }
-                }
-                PDBE::PartUsage(n) => {
-                    let qualified =
-                        qualified_name_for_node(g, uri, Some(container_qualified), &n.name, "part");
-                    let mut attrs = HashMap::new();
-                    attrs.insert("partType".to_string(), serde_json::json!(&n.type_name));
-                    if let Some(ref m) = n.multiplicity {
-                        attrs.insert("multiplicity".to_string(), serde_json::json!(m));
-                    }
-                    super::add_node_if_not_exists(
-                        g,
-                        uri,
-                        &qualified,
-                        "part",
-                        n.name.clone(),
-                        parent_id,
-                        span_to_range(&n.span),
-                        attrs,
-                    );
-                    let node_id = NodeId::new(uri, &qualified);
-                    add_typing_edge_if_exists(
-                        g,
-                        uri,
-                        &qualified,
-                        &n.type_name,
-                        Some(container_qualified),
-                    );
-
-                    if let PartUsageBody::Brace { elements } = &n.body {
-                        for child in elements {
-                            build_from_part_usage_body_element(
-                                child,
-                                uri,
-                                Some(&qualified),
-                                &node_id,
-                                root,
-                                g,
-                            );
-                        }
-                    }
-
-                    let nested_candidates = type_ref_candidates(Some(pkg_prefix), &n.type_name);
-                    if let Some((nested_def, nested_def_qualified)) = nested_candidates
-                        .iter()
-                        .find_map(|c| find_part_def_in_root(root, c))
-                    {
-                        if expansion_stack
-                            .iter()
-                            .any(|visited| visited == &nested_def_qualified)
-                        {
-                            continue;
-                        }
-                        expansion_stack.push(nested_def_qualified);
-                        expand_part_def_members(
-                            root,
-                            uri,
-                            &qualified,
-                            nested_def,
-                            &node_id,
-                            g,
-                            pkg_prefix,
-                            expansion_stack,
-                        );
-                        expansion_stack.pop();
-                    }
-                }
-                _ => {}
-            }
-        }
     }
 }

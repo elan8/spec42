@@ -37,6 +37,24 @@ const TYPING_TARGET_KINDS: &[&str] = &[
 ];
 
 const SPECIALIZES_TARGET_KINDS: &[&str] = &["part def"];
+pub const TYPE_REFERENCE_ATTR_KEYS: &[&str] = &[
+    "partType",
+    "attributeType",
+    "portType",
+    "actionType",
+    "actorType",
+    "itemType",
+    "occurrenceType",
+    "flowType",
+    "allocationType",
+    "stateType",
+    "requirementType",
+    "useCaseType",
+    "concernType",
+    "subjectType",
+    "analysisType",
+    "verificationType",
+];
 
 /// Canonical set of #kind suffixes that `qualified_name_for_node` may append.
 /// Note: these are suffix spellings, not element_kind strings.
@@ -94,47 +112,19 @@ fn element_kind_allowed(element_kind: &str, allowed_kinds: &[&str]) -> bool {
     allowed_kinds.contains(&element_kind)
 }
 
-fn resolve_type_target_local(
+pub fn resolve_type_target_in_workspace(
     g: &SemanticGraph,
-    uri: &Url,
+    context_node: &SemanticNode,
     type_ref: &str,
-    container_prefix: Option<&str>,
     allowed_target_kinds: &[&str],
 ) -> Option<NodeId> {
-    // 1) Try deterministic candidate qualified names (plain + #kind variants).
-    for suffix_kind in DISAMBIGUATION_SUFFIX_KINDS {
-        for candidate in type_ref_candidates_with_kind(container_prefix, type_ref, suffix_kind) {
-            let tgt_key = normalize_for_lookup(&candidate);
-            let tgt_id = NodeId::new(uri, &tgt_key);
-            if let Some(tgt) = g.get_node(&tgt_id) {
-                if element_kind_allowed(tgt.element_kind.as_str(), allowed_target_kinds) {
-                    return Some(tgt_id);
-                }
-            }
-        }
+    let normalized_type_ref = normalize_declared_type_ref(type_ref);
+    if normalized_type_ref.is_empty() {
+        return None;
     }
-
-    // 2) Fallback: find by short name within the same document (best-effort).
-    // This is intentionally conservative: only matches allowed definitional kinds,
-    // and returns the shortest qualified name to prefer nearer scopes.
-    let mut best: Option<NodeId> = None;
-    for n in g.nodes_for_uri(uri) {
-        if !element_kind_allowed(n.element_kind.as_str(), allowed_target_kinds) {
-            continue;
-        }
-        if n.name != type_ref {
-            continue;
-        }
-        let candidate = n.id.clone();
-        let take = match &best {
-            None => true,
-            Some(current) => candidate.qualified_name.len() < current.qualified_name.len(),
-        };
-        if take {
-            best = Some(candidate);
-        }
-    }
-    best
+    resolve_type_reference_targets(g, context_node, &normalized_type_ref, allowed_target_kinds)
+        .into_iter()
+        .next()
 }
 
 /// Returns true if the edge was added.
@@ -322,27 +312,12 @@ pub fn add_typing_edge_if_exists(
     type_ref: &str,
     container_prefix: Option<&str>,
 ) {
-    let normalized_type_ref = normalize_declared_type_ref(type_ref);
-    if normalized_type_ref.is_empty() {
+    let source_id = NodeId::new(uri, normalize_for_lookup(source_qualified));
+    if g.get_node(&source_id).is_none() {
         return;
     }
-    if let Some(target_id) = resolve_type_target_local(
-        g,
-        uri,
-        &normalized_type_ref,
-        container_prefix,
-        TYPING_TARGET_KINDS,
-    ) {
-        let target_qualified = target_id.qualified_name.clone();
-        let _ = add_edge_if_both_exist_opt(
-            g,
-            uri,
-            source_qualified,
-            &target_qualified,
-            RelationshipKind::Typing,
-            Some(TYPING_TARGET_KINDS),
-        );
-    }
+    let _ = container_prefix;
+    add_typing_edge_for_node(g, &source_id, type_ref);
 }
 
 /// Adds a specializes edge if source exists and target can be resolved. Same resolution as typing:
@@ -356,23 +331,62 @@ pub fn add_specializes_edge_if_exists(
     specializes_ref: &str,
     container_prefix: Option<&str>,
 ) {
+    let source_id = NodeId::new(uri, normalize_for_lookup(source_qualified));
+    if g.get_node(&source_id).is_none() {
+        return;
+    }
+    let _ = container_prefix;
+    add_specializes_edges_for_node(g, &source_id, specializes_ref);
+}
+
+pub fn add_typing_edge_for_node(g: &mut SemanticGraph, source_id: &NodeId, type_ref: &str) {
+    let Some(source_node) = g.get_node(source_id).cloned() else {
+        return;
+    };
+    let Some(target_id) =
+        resolve_type_target_in_workspace(g, &source_node, type_ref, TYPING_TARGET_KINDS)
+    else {
+        return;
+    };
+    add_resolved_edge_once(g, source_id, &target_id, RelationshipKind::Typing);
+}
+
+pub fn add_specializes_edges_for_node(
+    g: &mut SemanticGraph,
+    source_id: &NodeId,
+    specializes_ref: &str,
+) {
+    let Some(source_node) = g.get_node(source_id).cloned() else {
+        return;
+    };
     for normalized in split_specializes_refs(specializes_ref) {
-        if let Some(target_id) = resolve_type_target_local(
-            g,
-            uri,
-            &normalized,
-            container_prefix,
-            SPECIALIZES_TARGET_KINDS,
-        ) {
-            let target_qualified = target_id.qualified_name.clone();
-            let _ = add_edge_if_both_exist_opt(
-                g,
-                uri,
-                source_qualified,
-                &target_qualified,
-                RelationshipKind::Specializes,
-                Some(SPECIALIZES_TARGET_KINDS),
-            );
+        let Some(target_id) =
+            resolve_type_target_in_workspace(g, &source_node, &normalized, SPECIALIZES_TARGET_KINDS)
+        else {
+            continue;
+        };
+        add_resolved_edge_once(g, source_id, &target_id, RelationshipKind::Specializes);
+    }
+}
+
+pub fn link_workspace_relationships(g: &mut SemanticGraph) {
+    let node_ids: Vec<NodeId> = g.node_index_by_id.keys().cloned().collect();
+    for node_id in node_ids {
+        let Some(node) = g.get_node(&node_id).cloned() else {
+            continue;
+        };
+        for key in TYPE_REFERENCE_ATTR_KEYS {
+            if let Some(type_ref) = node.attributes.get(*key).and_then(|value| value.as_str()) {
+                add_typing_edge_for_node(g, &node_id, type_ref);
+            }
+        }
+        let specializes_refs = node
+            .attributes
+            .get("specializes")
+            .map(specializes_refs_from_value)
+            .unwrap_or_default();
+        for specializes_ref in specializes_refs {
+            add_specializes_edges_for_node(g, &node_id, &specializes_ref);
         }
     }
 }
@@ -470,22 +484,8 @@ pub fn resolve_cross_document_edges_for_uri(
             .map(|p| p.id.qualified_name.clone());
 
         // Typing relationships
-        for key in [
-            "partType",
-            "attributeType",
-            "portType",
-            "actionType",
-            "actorType",
-            "itemType",
-            "occurrenceType",
-            "flowType",
-            "allocationType",
-            "stateType",
-            "requirementType",
-            "useCaseType",
-            "concernType",
-        ] {
-            if let Some(type_ref) = node.attributes.get(key).and_then(|v| v.as_str()) {
+        for key in TYPE_REFERENCE_ATTR_KEYS {
+            if let Some(type_ref) = node.attributes.get(*key).and_then(|v| v.as_str()) {
                 if let Some(target_id) = resolve_typing_edge_cross_document_inner(
                     g,
                     node,

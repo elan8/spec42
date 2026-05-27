@@ -354,6 +354,7 @@ pub(super) fn build_from_verification_body(
             UseCaseDefBodyElement::Error(_)
             | UseCaseDefBodyElement::Doc(_)
             | UseCaseDefBodyElement::Other(_)
+            | UseCaseDefBodyElement::AttributeDef(_)
             | UseCaseDefBodyElement::SubjectRef(_)
             | UseCaseDefBodyElement::ActorUsage(_)
             | UseCaseDefBodyElement::ActorRedefinitionAssignment(_)

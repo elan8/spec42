@@ -5,7 +5,7 @@ use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::build_graph_from_doc;
-use crate::semantic::relationships::add_cross_document_edges_for_uri;
+use crate::semantic::relationships::link_workspace_relationships;
 use crate::semantic::source::{SysmlDocument, SysmlDocumentProvider};
 
 #[derive(Debug, Clone)]
@@ -42,9 +42,7 @@ pub fn build_semantic_graph_from_documents(
         });
     }
 
-    for doc in &parsed_docs {
-        add_cross_document_edges_for_uri(&mut graph, &doc.uri);
-    }
+    link_workspace_relationships(&mut graph);
 
     Ok((graph, parsed_docs))
 }

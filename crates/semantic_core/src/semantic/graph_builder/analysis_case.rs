@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{UseCaseDefBody, UseCaseDefBodyElement};
-use sysml_v2_parser::RootNamespace;
 use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
@@ -9,16 +8,14 @@ use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
-use super::part_usage;
 use super::requirement_body::resolve_subject_type_target_qualified;
-use super::{add_node_and_recurse, qualified_name_for_node};
+use super::{add_node_and_recurse, expressions, qualified_name_for_node};
 
 pub(super) fn build_from_analysis_body(
     body: &UseCaseDefBody,
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: &NodeId,
-    root: &RootNamespace,
     g: &mut SemanticGraph,
 ) {
     let UseCaseDefBody::Brace { elements } = body else {
@@ -54,22 +51,12 @@ pub(super) fn build_from_analysis_body(
                     attrs,
                     Some(parent_id),
                 );
-                let subject_id = NodeId::new(uri, &qualified);
                 add_typing_edge_if_exists(
                     g,
                     uri,
                     &qualified,
                     sd.value.type_name.as_str(),
                     container_prefix,
-                );
-                part_usage::expand_typed_part_usage(
-                    root,
-                    uri,
-                    &qualified,
-                    sd.value.type_name.as_str(),
-                    container_prefix,
-                    &subject_id,
-                    g,
                 );
                 if let Some(target_qualified) = resolve_subject_type_target_qualified(
                     g,
@@ -184,6 +171,38 @@ pub(super) fn build_from_analysis_body(
                     attrs,
                     Some(parent_id),
                 );
+            }
+            UseCaseDefBodyElement::AttributeDef(attribute) => {
+                let value = &attribute.value;
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    &value.name,
+                    "attribute def",
+                );
+                let mut attrs = HashMap::new();
+                if let Some(ref typing) = value.typing {
+                    attrs.insert("attributeType".to_string(), serde_json::json!(typing));
+                }
+                if let Some(expr_node) = &value.value {
+                    let rendered = expressions::expression_to_debug_string(expr_node);
+                    attrs.insert("value".to_string(), serde_json::json!(rendered));
+                    attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "attribute def",
+                    value.name.clone(),
+                    span_to_range(&attribute.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                if let Some(ref typing) = value.typing {
+                    add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
+                }
             }
             UseCaseDefBodyElement::Other(text) => {
                 for parsed in parse_analysis_attributes_from_other(text) {

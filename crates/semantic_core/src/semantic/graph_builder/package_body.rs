@@ -200,7 +200,6 @@ pub(super) fn build_from_package_body_element(
                         uri,
                         Some(&qualified),
                         &node_id,
-                        root,
                         g,
                     );
                 }
@@ -259,20 +258,10 @@ pub(super) fn build_from_package_body_element(
                         uri,
                         Some(&qualified),
                         &node_id,
-                        root,
                         g,
                     );
                 }
             }
-            part_usage::expand_typed_part_usage(
-                root,
-                uri,
-                &qualified,
-                &pu_node.type_name,
-                container_prefix,
-                &node_id,
-                g,
-            );
         }
         PBE::FeatureDecl(feature_node) => {
             let fv = &feature_node.value;
@@ -1210,7 +1199,6 @@ pub(super) fn build_from_package_body_element(
                     uri,
                     Some(&qualified),
                     &node_id,
-                    root,
                     g,
                 );
             }
@@ -1241,7 +1229,6 @@ pub(super) fn build_from_package_body_element(
                 uri,
                 Some(&qualified),
                 &node_id,
-                root,
                 g,
             );
         }

@@ -22,3 +22,6 @@ rmcp = { version = "0.9", features = ["server"] }
 schemars = { version = "1.1", features = ["derive"] }
 petgraph = "0.8"
 sysml-v2-parser = { git = "https://github.com/elan8/sysml-v2-parser", tag = "v0.10.0" }
+
+[patch."https://github.com/elan8/sysml-v2-parser"]
+sysml-v2-parser = { path = "../sysml-v2-parser" }
