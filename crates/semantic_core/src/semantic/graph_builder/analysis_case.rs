@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{UseCaseDefBody, UseCaseDefBodyElement};
+use sysml_v2_parser::RootNamespace;
 use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
@@ -8,6 +9,7 @@ use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
+use super::part_usage;
 use super::requirement_body::resolve_subject_type_target_qualified;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
@@ -16,6 +18,7 @@ pub(super) fn build_from_analysis_body(
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: &NodeId,
+    root: &RootNamespace,
     g: &mut SemanticGraph,
 ) {
     let UseCaseDefBody::Brace { elements } = body else {
@@ -51,12 +54,22 @@ pub(super) fn build_from_analysis_body(
                     attrs,
                     Some(parent_id),
                 );
+                let subject_id = NodeId::new(uri, &qualified);
                 add_typing_edge_if_exists(
                     g,
                     uri,
                     &qualified,
                     sd.value.type_name.as_str(),
                     container_prefix,
+                );
+                part_usage::expand_typed_part_usage(
+                    root,
+                    uri,
+                    &qualified,
+                    sd.value.type_name.as_str(),
+                    container_prefix,
+                    &subject_id,
+                    g,
                 );
                 if let Some(target_qualified) = resolve_subject_type_target_qualified(
                     g,
@@ -102,6 +115,15 @@ pub(super) fn build_from_analysis_body(
                 );
                 if analysis_result_qualified.is_none() {
                     analysis_result_qualified = Some(qualified);
+                    let expression = strip_analysis_return_body(value.body.as_str());
+                    if !expression.is_empty() {
+                        if let Some(parent_node) = g.get_node_mut(parent_id) {
+                            parent_node.attributes.insert(
+                                "analysisExpression".to_string(),
+                                serde_json::json!(expression),
+                            );
+                        }
+                    }
                 }
             }
             UseCaseDefBodyElement::Objective(objective) => {
@@ -163,9 +185,46 @@ pub(super) fn build_from_analysis_body(
                     Some(parent_id),
                 );
             }
+            UseCaseDefBodyElement::Other(text) => {
+                for parsed in parse_analysis_attributes_from_other(text) {
+                    let qualified = qualified_name_for_node(
+                        g,
+                        uri,
+                        Some(parent_id.qualified_name.as_str()),
+                        &parsed.name,
+                        parsed.kind,
+                    );
+                    let mut attrs = HashMap::new();
+                    if let Some(typing) = parsed.typing.as_ref() {
+                        attrs.insert("attributeType".to_string(), serde_json::json!(typing));
+                    }
+                    if let Some(value) = parsed.value {
+                        attrs.insert(
+                            if parsed.kind == "attribute def" {
+                                "defaultValue".to_string()
+                            } else {
+                                "value".to_string()
+                            },
+                            serde_json::json!(value),
+                        );
+                    }
+                    add_node_and_recurse(
+                        g,
+                        uri,
+                        &qualified,
+                        parsed.kind,
+                        parsed.name,
+                        span_to_range(&node.span),
+                        attrs,
+                        Some(parent_id),
+                    );
+                    if let Some(typing) = parsed.typing.as_ref() {
+                        add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
+                    }
+                }
+            }
             UseCaseDefBodyElement::Error(_)
             | UseCaseDefBodyElement::Doc(_)
-            | UseCaseDefBodyElement::Other(_)
             | UseCaseDefBodyElement::SubjectRef(_)
             | UseCaseDefBodyElement::ActorUsage(_)
             | UseCaseDefBodyElement::ActorRedefinitionAssignment(_)
@@ -189,4 +248,67 @@ pub(super) fn build_from_analysis_body(
             }
         }
     }
+}
+
+fn strip_analysis_return_body(body: &str) -> String {
+    let mut trimmed = body.trim();
+    if trimmed.starts_with('{') && trimmed.ends_with('}') {
+        trimmed = trimmed[1..trimmed.len() - 1].trim();
+    }
+    let without_return = trimmed
+        .strip_prefix("return")
+        .map(str::trim)
+        .unwrap_or(trimmed);
+    without_return.trim_end_matches(';').trim().to_string()
+}
+
+#[derive(Debug, Clone)]
+struct ParsedAnalysisAttribute {
+    name: String,
+    kind: &'static str,
+    typing: Option<String>,
+    value: Option<String>,
+}
+
+fn parse_analysis_attributes_from_other(text: &str) -> Vec<ParsedAnalysisAttribute> {
+    text.lines()
+        .filter_map(parse_analysis_attribute_line)
+        .collect()
+}
+
+fn parse_analysis_attribute_line(line: &str) -> Option<ParsedAnalysisAttribute> {
+    let line = line.trim();
+    if !line.starts_with("attribute ") {
+        return None;
+    }
+    let body = line
+        .trim_start_matches("attribute ")
+        .trim_end_matches(';')
+        .trim();
+    if body.is_empty() {
+        return None;
+    }
+    let (lhs, rhs) = if let Some((lhs, rhs)) = body.split_once('=') {
+        (lhs.trim(), Some(rhs.trim().to_string()))
+    } else {
+        (body, None)
+    };
+    let (name, typing, kind) = if let Some((name, ty)) = lhs.split_once(':') {
+        (
+            name.trim().to_string(),
+            Some(ty.trim().to_string()),
+            "attribute def",
+        )
+    } else {
+        (lhs.trim().to_string(), None, "attribute")
+    };
+    if name.is_empty() {
+        return None;
+    }
+    Some(ParsedAnalysisAttribute {
+        name,
+        kind,
+        typing,
+        value: rhs,
+    })
 }

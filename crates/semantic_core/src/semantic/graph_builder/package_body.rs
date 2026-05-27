@@ -1210,6 +1210,7 @@ pub(super) fn build_from_package_body_element(
                     uri,
                     Some(&qualified),
                     &node_id,
+                    root,
                     g,
                 );
             }
@@ -1240,6 +1241,7 @@ pub(super) fn build_from_package_body_element(
                 uri,
                 Some(&qualified),
                 &node_id,
+                root,
                 g,
             );
         }

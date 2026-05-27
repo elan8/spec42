@@ -29,6 +29,8 @@ const ANALYSIS_EVAL_STATUS_KEY: &str = "analysisEvaluationStatus";
 const ANALYSIS_EVAL_VALUE_KEY: &str = "analysisEvaluationValue";
 const ANALYSIS_EVAL_ERROR_KEY: &str = "analysisEvaluationError";
 const ANALYSIS_CONSTRAINT_PASSED_KEY: &str = "analysisConstraintPassed";
+const ANALYSIS_COMPUTED_VALUE_KEY: &str = "analysisComputedValue";
+const ANALYSIS_COMPUTED_UNIT_KEY: &str = "analysisComputedUnit";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum EvalStatus {
@@ -198,6 +200,7 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
             let mut value: Option<Value> = None;
             let mut error: Option<String> = None;
             let mut passed: Option<bool> = None;
+            let mut computed: Option<Quantity> = None;
             if !inline_constraints.is_empty() {
                 evaluated = true;
                 for constraint in inline_constraints {
@@ -212,12 +215,16 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
                         Ok(bool_value) => {
                             let all_pass = passed.unwrap_or(true) && bool_value;
                             passed = Some(all_pass);
-                            status = if bool_value {
+                            status = if all_pass {
                                 STATUS_OK.to_string()
                             } else {
                                 "failed_constraint".to_string()
                             };
-                            value = Some(Value::Bool(bool_value));
+                            value = Some(Value::Bool(all_pass));
+                            if computed.is_none() {
+                                computed =
+                                    evaluate_analysis_display_quantity(&mut engine, &node_id, expr);
+                            }
                         }
                         Err(err) => {
                             status = err.status.as_str().to_string();
@@ -229,9 +236,15 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
                 evaluated = true;
                 match evaluate_analysis_expression(&mut engine, &node_id, expr) {
                     Ok(bool_value) => {
-                        status = STATUS_OK.to_string();
+                        status = if bool_value {
+                            STATUS_OK.to_string()
+                        } else {
+                            "failed_constraint".to_string()
+                        };
                         value = Some(Value::Bool(bool_value));
                         passed = Some(bool_value);
+                        computed =
+                            evaluate_analysis_display_quantity(&mut engine, &node_id, expr);
                     }
                     Err(err) => {
                         status = err.status.as_str().to_string();
@@ -241,13 +254,13 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
             }
 
             if evaluated {
-                outcomes.push((node_id, status, value, error, passed));
+                outcomes.push((node_id, status, value, error, passed, computed));
             }
         }
         outcomes
     };
 
-    for (node_id, status, value, error, passed) in outcomes {
+    for (node_id, status, value, error, passed, computed) in outcomes {
         let Some(node_mut) = graph.get_node_mut(&node_id) else {
             continue;
         };
@@ -270,7 +283,45 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
                 .attributes
                 .insert(ANALYSIS_CONSTRAINT_PASSED_KEY.to_string(), Value::Bool(p));
         }
+        if let Some(quantity) = computed {
+            node_mut.attributes.insert(
+                ANALYSIS_COMPUTED_VALUE_KEY.to_string(),
+                number_to_json(quantity.value),
+            );
+            if let Some(unit) = quantity.unit {
+                node_mut.attributes.insert(
+                    ANALYSIS_COMPUTED_UNIT_KEY.to_string(),
+                    Value::String(unit),
+                );
+            }
+        }
     }
+}
+
+fn split_comparison_lhs(expression: &str) -> Option<&str> {
+    let trimmed = expression.trim();
+    for op in ["<=", ">=", "==", "!=", "<", ">"] {
+        if let Some(index) = trimmed.find(op) {
+            let lhs = trimmed[..index].trim();
+            if !lhs.is_empty() {
+                return Some(lhs);
+            }
+        }
+    }
+    None
+}
+
+fn evaluate_analysis_display_quantity(
+    engine: &mut EvalEngine<'_>,
+    context_id: &NodeId,
+    expression: &str,
+) -> Option<Quantity> {
+    let repaired = normalize_broken_invocation_syntax(expression.trim());
+    let normalized = normalize_truncated_analysis_comparison(repaired.as_str());
+    let quantity_expr = split_comparison_lhs(normalized.as_str()).unwrap_or(normalized.as_str());
+    engine
+        .evaluate_quantity_expression(context_id, quantity_expr)
+        .ok()
 }
 
 fn is_definition_only_analysis_node(node: &SemanticNode) -> bool {
@@ -819,7 +870,7 @@ struct EvalEngine<'a> {
     units: UnitRegistry,
     memoized: HashMap<NodeId, EvalOutcome>,
     active_stack: HashSet<NodeId>,
-    parameter_bindings: Vec<HashMap<String, Quantity>>,
+    parameter_bindings: Vec<HashMap<String, BoundValue>>,
 }
 
 impl<'a> EvalEngine<'a> {
@@ -960,15 +1011,11 @@ impl<'a> EvalEngine<'a> {
         node_id: &NodeId,
         identifier: &str,
     ) -> Result<Quantity, EvalStatus> {
-        if let Some(bound) = self.parameter_bindings.iter().rev().find_map(|scope| {
-            scope.get(identifier).cloned().or_else(|| {
-                identifier
-                    .rsplit("::")
-                    .next()
-                    .and_then(|tail| scope.get(tail).cloned())
-            })
-        }) {
-            return Ok(bound);
+        if let Some(bound) = self.lookup_bound_value(identifier) {
+            return match bound {
+                BoundValue::Quantity(q) => Ok(q),
+                BoundValue::Collection(_) => Err(EvalStatus::TypeError),
+            };
         }
         let referenced_id = self
             .resolve_identifier_node(node_id, identifier)
@@ -989,11 +1036,37 @@ impl<'a> EvalEngine<'a> {
         })
     }
 
+    fn lookup_bound_value(&self, identifier: &str) -> Option<BoundValue> {
+        self.parameter_bindings.iter().rev().find_map(|scope| {
+            scope.get(identifier).cloned().or_else(|| {
+                identifier
+                    .rsplit("::")
+                    .next()
+                    .and_then(|tail| scope.get(tail).cloned())
+            })
+        })
+    }
+
     fn resolve_identifier_node(
         &self,
         current_id: &NodeId,
         identifier: &str,
     ) -> Result<NodeId, EvalOutcome> {
+        if let Some((head, rest)) = identifier.split_once('.') {
+            let mut current = self.resolve_identifier_node(current_id, head)?;
+            for seg in rest.split('.') {
+                let qualified = format!("{}::{seg}", current.qualified_name);
+                let candidates = self.lookup_qualified_candidates(&qualified);
+                if candidates.is_empty() {
+                    return Err(EvalOutcome::error(
+                        EvalStatus::Unknown,
+                        format!("unresolved reference '{identifier}'"),
+                    ));
+                }
+                current = choose_candidate(candidates, seg)?;
+            }
+            return Ok(current);
+        }
         let Some(current) = self.graph.get_node(current_id) else {
             return Err(EvalOutcome::error(
                 EvalStatus::Unknown,
@@ -1061,6 +1134,18 @@ impl<'a> EvalEngine<'a> {
         if callable_name == "sum" {
             return self.evaluate_builtin_sum(context_id, &normalized_args);
         }
+        if callable_name == "count" {
+            return self.evaluate_builtin_count(&normalized_args);
+        }
+        if callable_name == "min" {
+            return self.evaluate_builtin_min_max(context_id, &normalized_args, true);
+        }
+        if callable_name == "max" {
+            return self.evaluate_builtin_min_max(context_id, &normalized_args, false);
+        }
+        if callable_name == "avg" {
+            return self.evaluate_builtin_avg(context_id, &normalized_args);
+        }
         let callable_id = self
             .resolve_callable_node(context_id, callable_name)
             .ok_or(EvalStatus::Unknown)?;
@@ -1084,18 +1169,76 @@ impl<'a> EvalEngine<'a> {
                 param_names = inferred;
             }
         }
-        if param_names.len() != normalized_args.len() {
-            return Err(EvalStatus::Unsupported);
-        }
-        let mut bindings = HashMap::new();
-        for (name, arg_expr) in param_names.iter().zip(normalized_args.iter()) {
-            let evaluated = self.evaluate_quantity_expression(context_id, arg_expr)?;
-            bindings.insert(name.clone(), evaluated);
-        }
+        let bindings =
+            self.bind_invocation_parameters(context_id, callable, &param_names, &normalized_args)?;
         self.parameter_bindings.push(bindings);
         let result = self.evaluate_quantity_expression(&callable_id, &expression);
         self.parameter_bindings.pop();
         result
+    }
+
+    fn evaluate_builtin_count(&self, normalized_args: &[&str]) -> Result<Quantity, EvalStatus> {
+        if normalized_args.is_empty() {
+            return Err(EvalStatus::Unsupported);
+        }
+        Ok(Quantity::scalar(normalized_args.len() as f64))
+    }
+
+    fn evaluate_builtin_avg(
+        &mut self,
+        context_id: &NodeId,
+        normalized_args: &[&str],
+    ) -> Result<Quantity, EvalStatus> {
+        if normalized_args.is_empty() {
+            return Err(EvalStatus::Unsupported);
+        }
+        let sum = self.evaluate_builtin_sum(context_id, normalized_args)?;
+        let denom = normalized_args.len() as f64;
+        Ok(Quantity {
+            value: sum.value / denom,
+            unit: sum.unit,
+        })
+    }
+
+    fn evaluate_builtin_min_max(
+        &mut self,
+        context_id: &NodeId,
+        normalized_args: &[&str],
+        is_min: bool,
+    ) -> Result<Quantity, EvalStatus> {
+        if normalized_args.is_empty() {
+            return Err(EvalStatus::Unsupported);
+        }
+        let mut it = normalized_args.iter();
+        let first_expr = it.next().expect("non-empty args");
+        let mut best = self.evaluate_quantity_expression(context_id, first_expr)?;
+        for expr in it {
+            let candidate = self.evaluate_quantity_expression(context_id, expr)?;
+            let candidate_value = match (&best.unit, &candidate.unit) {
+                (None, None) => candidate.value,
+                (Some(best_unit), Some(candidate_unit)) => {
+                    let converted = self
+                        .units
+                        .convert_value(candidate.value, candidate_unit, best_unit);
+                    converted.map_err(map_unit_error)?
+                }
+                (Some(unit), None) | (None, Some(unit)) => {
+                    if !self.units.has_symbol(unit) {
+                        return Err(EvalStatus::Unknown);
+                    }
+                    return Err(EvalStatus::TypeError);
+                }
+            };
+            let take = if is_min {
+                candidate_value < best.value
+            } else {
+                candidate_value > best.value
+            };
+            if take {
+                best.value = candidate_value;
+            }
+        }
+        Ok(best)
     }
 
     fn evaluate_builtin_sum(
@@ -1105,6 +1248,23 @@ impl<'a> EvalEngine<'a> {
     ) -> Result<Quantity, EvalStatus> {
         if normalized_args.is_empty() {
             return Err(EvalStatus::Unsupported);
+        }
+        if normalized_args.len() == 1 {
+            let needle = normalized_args[0].trim();
+            if let Some((head, rest)) = needle.split_once('.') {
+                if let Some(BoundValue::Collection(items)) = self.lookup_bound_value(head) {
+                    let mut acc: Option<Quantity> = None;
+                    for item in items {
+                        let projected = format!("{item}.{rest}");
+                        let q = self.resolve_identifier_quantity(context_id, &projected)?;
+                        acc = Some(match acc {
+                            None => q,
+                            Some(prev) => add_quantities_with_units(&self.units, prev, q)?,
+                        });
+                    }
+                    return acc.ok_or(EvalStatus::Unsupported);
+                }
+            }
         }
         let mut it = normalized_args.iter();
         let first = it
@@ -1158,32 +1318,63 @@ impl<'a> EvalEngine<'a> {
                 param_names = inferred;
             }
         }
-        if param_names.len() != normalized_args.len() {
-            let arg_preview = normalized_args
-                .first()
-                .map(|arg| format!("; first arg='{arg}'"))
-                .unwrap_or_default();
-            return Err(AnalysisEvalError::with_message(
-                EvalStatus::Unsupported,
-                format!(
-                    "callable '{callable_name}' expects {} arguments but got {}{}",
-                    param_names.len(),
-                    normalized_args.len(),
-                    arg_preview
-                ),
-            ));
-        }
-        let mut bindings = HashMap::new();
-        for (name, arg_expr) in param_names.iter().zip(normalized_args.iter()) {
-            let evaluated = self
-                .evaluate_quantity_expression(context_id, arg_expr)
-                .map_err(AnalysisEvalError::from_status)?;
-            bindings.insert(name.clone(), evaluated);
-        }
+        let bindings = self
+            .bind_invocation_parameters(context_id, callable, &param_names, &normalized_args)
+            .map_err(AnalysisEvalError::from_status)?;
         self.parameter_bindings.push(bindings);
         let result = evaluate_analysis_expression(self, &callable_id, &expression);
         self.parameter_bindings.pop();
         result
+    }
+
+    fn bind_invocation_parameters(
+        &mut self,
+        context_id: &NodeId,
+        callable: &SemanticNode,
+        param_names: &[String],
+        normalized_args: &[&str],
+    ) -> Result<HashMap<String, BoundValue>, EvalStatus> {
+        let collection_params = callable_collection_params(callable);
+        let parsed = parse_invocation_args(normalized_args)?;
+        match parsed {
+            InvocationArgs::Positional(args) => {
+                if param_names.len() != args.len() {
+                    return Err(EvalStatus::Unsupported);
+                }
+                let mut bindings = HashMap::new();
+                for (name, arg_expr) in param_names.iter().zip(args.iter()) {
+                    let bound = if collection_params.contains(name) {
+                        BoundValue::Collection(parse_tuple_identifier_list(arg_expr)?)
+                    } else {
+                        BoundValue::Quantity(self.evaluate_quantity_expression(context_id, arg_expr)?)
+                    };
+                    bindings.insert(name.clone(), bound);
+                }
+                Ok(bindings)
+            }
+            InvocationArgs::Named(named) => {
+                if param_names.is_empty() {
+                    return Err(EvalStatus::Unsupported);
+                }
+                // Reject unknown names to avoid silent typos.
+                if named.len() != param_names.len() {
+                    return Err(EvalStatus::Unsupported);
+                }
+                let mut bindings = HashMap::new();
+                for param in param_names {
+                    let Some(expr) = named.get(param) else {
+                        return Err(EvalStatus::Unsupported);
+                    };
+                    let bound = if collection_params.contains(param) {
+                        BoundValue::Collection(parse_tuple_identifier_list(expr)?)
+                    } else {
+                        BoundValue::Quantity(self.evaluate_quantity_expression(context_id, expr)?)
+                    };
+                    bindings.insert(param.clone(), bound);
+                }
+                Ok(bindings)
+            }
+        }
     }
 
     fn resolve_callable_node(&self, context_id: &NodeId, callable_name: &str) -> Option<NodeId> {
@@ -1453,6 +1644,126 @@ fn parse_invocation(text: &str) -> Option<(&str, Vec<&str>)> {
     Some((name, args))
 }
 
+enum InvocationArgs<'a> {
+    Positional(Vec<&'a str>),
+    Named(HashMap<String, &'a str>),
+}
+
+#[derive(Debug, Clone)]
+enum BoundValue {
+    Quantity(Quantity),
+    Collection(Vec<String>),
+}
+
+fn parse_invocation_args<'a>(args: &[&'a str]) -> Result<InvocationArgs<'a>, EvalStatus> {
+    if args.is_empty() {
+        return Ok(InvocationArgs::Positional(Vec::new()));
+    }
+    let mut any_named = false;
+    let mut any_positional = false;
+    let mut named = HashMap::<String, &'a str>::new();
+    let mut positional = Vec::<&'a str>::new();
+    for arg in args {
+        if let Some((name, expr)) = parse_named_arg(arg) {
+            any_named = true;
+            if named.insert(name, expr).is_some() {
+                return Err(EvalStatus::Unsupported);
+            }
+        } else {
+            any_positional = true;
+            positional.push(*arg);
+        }
+    }
+    if any_named && any_positional {
+        return Err(EvalStatus::Unsupported);
+    }
+    if any_named {
+        Ok(InvocationArgs::Named(named))
+    } else {
+        Ok(InvocationArgs::Positional(positional))
+    }
+}
+
+fn parse_named_arg(arg: &str) -> Option<(String, &str)> {
+    let trimmed = arg.trim();
+    let mut paren_depth = 0usize;
+    let mut bracket_depth = 0usize;
+    for (idx, ch) in trimmed.char_indices() {
+        match ch {
+            '(' => paren_depth += 1,
+            ')' => paren_depth = paren_depth.saturating_sub(1),
+            '[' => bracket_depth += 1,
+            ']' => bracket_depth = bracket_depth.saturating_sub(1),
+            '=' if paren_depth == 0 && bracket_depth == 0 => {
+                let lhs = trimmed[..idx].trim();
+                let rhs = trimmed[idx + 1..].trim();
+                if rhs.is_empty() {
+                    return None;
+                }
+                let name = parse_standalone_identifier(lhs)?.to_string();
+                return Some((name, rhs));
+            }
+            _ => {}
+        }
+    }
+    None
+}
+
+fn callable_collection_params(node: &SemanticNode) -> HashSet<String> {
+    node.attributes
+        .get("parameters")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .filter_map(|entry| {
+            let direction = entry.get("direction").and_then(Value::as_str)?;
+            let name = entry.get("name").and_then(Value::as_str)?.trim();
+            if name.is_empty() || !matches!(direction, "in" | "inout") {
+                return None;
+            }
+            let ty = entry.get("type").and_then(Value::as_str)?.trim();
+            (ty.contains("[*]") || ty.contains("[0..*]") || ty.contains("[1..*]"))
+                .then_some(name.to_string())
+        })
+        .collect()
+}
+
+fn parse_tuple_identifier_list(expr: &str) -> Result<Vec<String>, EvalStatus> {
+    let trimmed = expr.trim();
+    if !trimmed.starts_with('(') || !trimmed.ends_with(')') {
+        return Err(EvalStatus::Unsupported);
+    }
+    let inner = &trimmed[1..trimmed.len() - 1];
+    let mut items = Vec::new();
+    let mut start = 0usize;
+    let mut paren_depth = 0usize;
+    let mut bracket_depth = 0usize;
+    for (idx, ch) in inner.char_indices() {
+        match ch {
+            '(' => paren_depth += 1,
+            ')' => paren_depth = paren_depth.saturating_sub(1),
+            '[' => bracket_depth += 1,
+            ']' => bracket_depth = bracket_depth.saturating_sub(1),
+            ',' if paren_depth == 0 && bracket_depth == 0 => {
+                let part = inner[start..idx].trim();
+                let ident = parse_standalone_identifier(part).ok_or(EvalStatus::Unsupported)?;
+                items.push(ident.to_string());
+                start = idx + 1;
+            }
+            _ => {}
+        }
+    }
+    let tail = inner[start..].trim();
+    if !tail.is_empty() {
+        let ident = parse_standalone_identifier(tail).ok_or(EvalStatus::Unsupported)?;
+        items.push(ident.to_string());
+    }
+    if items.is_empty() {
+        return Err(EvalStatus::Unsupported);
+    }
+    Ok(items)
+}
+
 struct QuantityParser<'s, 'u, F>
 where
     F: FnMut(&str, Option<&[&str]>) -> Result<Quantity, EvalStatus>,
@@ -1618,10 +1929,17 @@ where
                 self.pos += 2;
                 continue;
             }
+            if ch == '.' {
+                self.eat_char();
+                continue;
+            }
             break;
         }
         let parsed = &self.src[start..self.pos];
         if parsed.ends_with("::") {
+            return None;
+        }
+        if parsed.ends_with('.') {
             return None;
         }
         Some(parsed)
@@ -2634,6 +2952,150 @@ mod tests {
     }
 
     #[test]
+    fn evaluates_calc_invocation_with_named_arguments() {
+        let mut graph = SemanticGraph::new();
+        let uri = Url::parse("file:///C:/workspace/analysis-calc-call-named.sysml").expect("uri");
+        let _calc = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Margin",
+            "calc def",
+            "Margin",
+            None,
+            HashMap::from([
+                (
+                    "parameters".to_string(),
+                    serde_json::json!([
+                        {"direction":"in","name":"limit","type":"Real"},
+                        {"direction":"in","name":"measured","type":"Real"},
+                        {"direction":"in","name":"allowance","type":"Real"}
+                    ]),
+                ),
+                (
+                    ANALYSIS_EXPRESSION_KEY.to_string(),
+                    Value::String("limit - measured - allowance".to_string()),
+                ),
+            ]),
+        );
+        let requirement = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req",
+            "requirement def",
+            "Req",
+            None,
+            HashMap::from([(
+                ANALYSIS_EXPRESSION_KEY.to_string(),
+                Value::String("Margin(measured=measured, allowance=allowance, limit=limit) >= 0".to_string()),
+            )]),
+        );
+        let _limit = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::limit",
+            "attribute",
+            "limit",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("2.0".to_string()))]),
+        );
+        let _measured = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::measured",
+            "attribute",
+            "measured",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("1.7".to_string()))]),
+        );
+        let _allowance = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::allowance",
+            "attribute",
+            "allowance",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("0.1".to_string()))]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_VALUE_KEY),
+            Some(&Value::Bool(true))
+        );
+    }
+
+    #[test]
+    fn rejects_mixed_positional_and_named_invocation_arguments() {
+        let mut graph = SemanticGraph::new();
+        let uri = Url::parse("file:///C:/workspace/analysis-calc-call-mixed.sysml").expect("uri");
+        let _calc = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Margin",
+            "calc def",
+            "Margin",
+            None,
+            HashMap::from([
+                (
+                    "parameters".to_string(),
+                    serde_json::json!([
+                        {"direction":"in","name":"limit","type":"Real"},
+                        {"direction":"in","name":"measured","type":"Real"},
+                        {"direction":"in","name":"allowance","type":"Real"}
+                    ]),
+                ),
+                (
+                    ANALYSIS_EXPRESSION_KEY.to_string(),
+                    Value::String("limit - measured - allowance".to_string()),
+                ),
+            ]),
+        );
+        let requirement = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req",
+            "requirement def",
+            "Req",
+            None,
+            HashMap::from([(
+                ANALYSIS_EXPRESSION_KEY.to_string(),
+                Value::String("Margin(limit, measured=measured, allowance=allowance) >= 0".to_string()),
+            )]),
+        );
+        let _limit = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::limit",
+            "attribute",
+            "limit",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("2.0".to_string()))]),
+        );
+        let _measured = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::measured",
+            "attribute",
+            "measured",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("1.7".to_string()))]),
+        );
+        let _allowance = add_node(
+            &mut graph,
+            &uri,
+            "Demo::Req::allowance",
+            "attribute",
+            "allowance",
+            Some(&requirement),
+            HashMap::from([("value".to_string(), Value::String("0.1".to_string()))]),
+        );
+        evaluate_expressions(&mut graph);
+        assert_eq!(
+            node_attr(&graph, &requirement, ANALYSIS_EVAL_STATUS_KEY),
+            Some(&Value::String(STATUS_UNSUPPORTED.to_string()))
+        );
+    }
+
+    #[test]
     fn evaluates_constraint_invocation_as_boolean_predicate() {
         let mut graph = SemanticGraph::new();
         let uri = Url::parse("file:///C:/workspace/analysis-constraint-call.sysml").expect("uri");
@@ -2692,6 +3154,75 @@ mod tests {
         assert_eq!(
             node_attr(&graph, &requirement, ANALYSIS_EVAL_VALUE_KEY),
             Some(&Value::Bool(true))
+        );
+    }
+
+    #[test]
+    fn evaluates_analysis_subject_member_path_with_local_budget() {
+        let mut graph = SemanticGraph::new();
+        let uri = Url::parse("file:///C:/workspace/analysis-subject-rollup.sysml").expect("uri");
+        let analysis = add_node(
+            &mut graph,
+            &uri,
+            "Demo::PowerAnalysis",
+            "analysis def",
+            "PowerAnalysis",
+            None,
+            HashMap::from([(
+                ANALYSIS_EXPRESSION_KEY.to_string(),
+                Value::String("sum(robot.mobility.drivePowerW) <= powerBudgetW".to_string()),
+            )]),
+        );
+        let robot = add_node(
+            &mut graph,
+            &uri,
+            "Demo::PowerAnalysis::robot",
+            "subject",
+            "robot",
+            Some(&analysis),
+            HashMap::new(),
+        );
+        let mobility = add_node(
+            &mut graph,
+            &uri,
+            "Demo::PowerAnalysis::robot::mobility",
+            "part",
+            "mobility",
+            Some(&robot),
+            HashMap::new(),
+        );
+        let _drive = add_node(
+            &mut graph,
+            &uri,
+            "Demo::PowerAnalysis::robot::mobility::drivePowerW",
+            "attribute",
+            "drivePowerW",
+            Some(&mobility),
+            HashMap::from([("value".to_string(), Value::String("28".to_string()))]),
+        );
+        let _budget = add_node(
+            &mut graph,
+            &uri,
+            "Demo::PowerAnalysis::powerBudgetW",
+            "attribute",
+            "powerBudgetW",
+            Some(&analysis),
+            HashMap::from([("value".to_string(), Value::String("55".to_string()))]),
+        );
+
+        evaluate_expressions(&mut graph);
+
+        assert_eq!(
+            node_attr(&graph, &analysis, ANALYSIS_EVAL_STATUS_KEY),
+            Some(&Value::String(STATUS_OK.to_string()))
+        );
+        assert_eq!(
+            node_attr(&graph, &analysis, ANALYSIS_EVAL_VALUE_KEY),
+            Some(&Value::Bool(true))
+        );
+        assert_eq!(
+            node_attr(&graph, &analysis, ANALYSIS_COMPUTED_VALUE_KEY),
+            Some(&serde_json::json!(28))
         );
     }
 
@@ -2797,5 +3328,197 @@ mod tests {
             .and_then(Value::as_str)
             .expect("evaluated unit");
         assert_eq!(unit, "kg");
+    }
+
+    #[test]
+    fn evaluates_builtin_count_min_max_avg() {
+        let mut graph = SemanticGraph::new();
+        register_units_fixture(&mut graph);
+        let uri = Url::parse("file:///C:/workspace/aggs.sysml").expect("uri");
+        let owner = add_node(&mut graph, &uri, "P", "package", "P", None, HashMap::new());
+
+        let _a = add_node(
+            &mut graph,
+            &uri,
+            "P::a",
+            "attribute",
+            "a",
+            Some(&owner),
+            HashMap::from([("value".to_string(), Value::String("2 [cm]".to_string()))]),
+        );
+        let _b = add_node(
+            &mut graph,
+            &uri,
+            "P::b",
+            "attribute",
+            "b",
+            Some(&owner),
+            HashMap::from([("value".to_string(), Value::String("1 [m]".to_string()))]),
+        );
+        let min_id = add_node(
+            &mut graph,
+            &uri,
+            "P::minV",
+            "attribute",
+            "minV",
+            Some(&owner),
+            HashMap::from([("value".to_string(), Value::String("min(a, b)".to_string()))]),
+        );
+        let max_id = add_node(
+            &mut graph,
+            &uri,
+            "P::maxV",
+            "attribute",
+            "maxV",
+            Some(&owner),
+            HashMap::from([("value".to_string(), Value::String("max(a, b)".to_string()))]),
+        );
+        let avg_id = add_node(
+            &mut graph,
+            &uri,
+            "P::avgV",
+            "attribute",
+            "avgV",
+            Some(&owner),
+            HashMap::from([("value".to_string(), Value::String("avg(a, b)".to_string()))]),
+        );
+        let count_id = add_node(
+            &mut graph,
+            &uri,
+            "P::countV",
+            "attribute",
+            "countV",
+            Some(&owner),
+            HashMap::from([("value".to_string(), Value::String("count(a, b)".to_string()))]),
+        );
+
+        evaluate_expressions(&mut graph);
+
+        assert_eq!(
+            node_attr(&graph, &count_id, EVALUATED_VALUE_KEY),
+            Some(&Value::Number(serde_json::Number::from(2)))
+        );
+
+        // min(a=2cm, b=1m=100cm) => 2cm (keeps first-arg unit)
+        assert_eq!(
+            node_attr(&graph, &min_id, EVALUATED_VALUE_KEY),
+            Some(&Value::Number(serde_json::Number::from(2)))
+        );
+        assert_eq!(
+            node_attr(&graph, &min_id, EVALUATED_UNIT_KEY).and_then(Value::as_str),
+            Some("cm")
+        );
+
+        // max(a=2cm, b=100cm) => 100cm
+        assert_eq!(
+            node_attr(&graph, &max_id, EVALUATED_VALUE_KEY),
+            Some(&Value::Number(serde_json::Number::from(100)))
+        );
+        assert_eq!(
+            node_attr(&graph, &max_id, EVALUATED_UNIT_KEY).and_then(Value::as_str),
+            Some("cm")
+        );
+
+        // avg(2cm, 100cm) => 51cm
+        assert_eq!(
+            node_attr(&graph, &avg_id, EVALUATED_VALUE_KEY),
+            Some(&Value::Number(serde_json::Number::from(51)))
+        );
+        assert_eq!(
+            node_attr(&graph, &avg_id, EVALUATED_UNIT_KEY).and_then(Value::as_str),
+            Some("cm")
+        );
+    }
+
+    #[test]
+    fn evaluates_sum_over_bound_part_collection_projection() {
+        let mut graph = SemanticGraph::new();
+        register_units_fixture(&mut graph);
+        let uri = Url::parse("file:///C:/workspace/agg-collection.sysml").expect("uri");
+        let owner = add_node(&mut graph, &uri, "P", "package", "P", None, HashMap::new());
+
+        // Two parts with mass attributes.
+        let engine = add_node(
+            &mut graph,
+            &uri,
+            "P::engine",
+            "part",
+            "engine",
+            Some(&owner),
+            HashMap::new(),
+        );
+        let _engine_mass = add_node(
+            &mut graph,
+            &uri,
+            "P::engine::massKg",
+            "attribute",
+            "massKg",
+            Some(&engine),
+            HashMap::from([("value".to_string(), Value::String("2 [kg]".to_string()))]),
+        );
+        let chassis = add_node(
+            &mut graph,
+            &uri,
+            "P::chassis",
+            "part",
+            "chassis",
+            Some(&owner),
+            HashMap::new(),
+        );
+        let _chassis_mass = add_node(
+            &mut graph,
+            &uri,
+            "P::chassis::massKg",
+            "attribute",
+            "massKg",
+            Some(&chassis),
+            HashMap::from([("value".to_string(), Value::String("3 [kg]".to_string()))]),
+        );
+
+        // Calc def that expects a collection and rolls it up.
+        let _calc = add_node(
+            &mut graph,
+            &uri,
+            "P::TotalMass",
+            "calc def",
+            "TotalMass",
+            Some(&owner),
+            HashMap::from([
+                (
+                    "parameters".to_string(),
+                    serde_json::json!([
+                        {"direction":"in","name":"parts","type":"Part[*]"}
+                    ]),
+                ),
+                (
+                    ANALYSIS_EXPRESSION_KEY.to_string(),
+                    Value::String("sum(parts.massKg)".to_string()),
+                ),
+            ]),
+        );
+
+        let total = add_node(
+            &mut graph,
+            &uri,
+            "P::total",
+            "attribute",
+            "total",
+            Some(&owner),
+            HashMap::from([(
+                "value".to_string(),
+                Value::String("TotalMass(parts=(engine, chassis))".to_string()),
+            )]),
+        );
+
+        evaluate_expressions(&mut graph);
+
+        assert_eq!(
+            node_attr(&graph, &total, EVALUATED_VALUE_KEY),
+            Some(&Value::Number(serde_json::Number::from(5)))
+        );
+        assert_eq!(
+            node_attr(&graph, &total, EVALUATED_UNIT_KEY).and_then(Value::as_str),
+            Some("kg")
+        );
     }
 }
