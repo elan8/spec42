@@ -13,6 +13,7 @@ pub use semantic::dto::{
     WorkspaceModelSummaryDto,
 };
 pub use semantic::evaluation::evaluate_expressions;
+pub use semantic::ibd::{build_ibd_for_uri, merge_ibd_payloads};
 pub use semantic::explicit_views::{
     build_view_candidates, build_view_catalog, evaluate_views, project_ids_for_renderer,
     renderer_view_for_view_type, EvaluatedView, ExposeSpec, FilterExpr, ViewCatalog,

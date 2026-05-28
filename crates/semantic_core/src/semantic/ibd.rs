@@ -585,6 +585,60 @@ fn map_definition_endpoint_to_usage(
     None
 }
 
+fn qualify_pending_connection_endpoint(container_prefix: Option<&str>, endpoint: &str) -> String {
+    let trimmed = endpoint.trim();
+    if trimmed.is_empty() {
+        return String::new();
+    }
+    if trimmed.contains("::") {
+        return trimmed.replace("::", ".");
+    }
+    let Some(prefix) = container_prefix.map(str::trim).filter(|prefix| !prefix.is_empty()) else {
+        return trimmed.to_string();
+    };
+    let prefix_dot = prefix.replace("::", ".");
+    if trimmed == prefix_dot || trimmed.starts_with(&format!("{prefix_dot}.")) {
+        trimmed.to_string()
+    } else {
+        format!("{prefix_dot}.{trimmed}")
+    }
+}
+
+fn expand_relative_endpoint_to_part_path(
+    endpoint: &str,
+    parts: &[IbdPartDto],
+    ports: &[IbdPortDto],
+) -> String {
+    let trimmed = endpoint.trim();
+    if trimmed.is_empty() || trimmed.contains("::") {
+        return trimmed.replace("::", ".");
+    }
+    let segments = trimmed.split('.').collect::<Vec<_>>();
+    if segments.len() < 2 {
+        return trimmed.to_string();
+    }
+    let part_name = segments[segments.len() - 2];
+    let port_name = segments[segments.len() - 1];
+    let matches = parts
+        .iter()
+        .filter(|part| {
+            part.qualified_name
+                .split('.')
+                .next_back()
+                .is_some_and(|leaf| leaf == part_name)
+                && ports.iter().any(|port| {
+                    port.parent_id == part.qualified_name && port.name == port_name
+                })
+        })
+        .map(|part| format!("{}.{}", part.qualified_name, port_name))
+        .collect::<Vec<_>>();
+    if matches.len() == 1 {
+        matches[0].clone()
+    } else {
+        trimmed.to_string()
+    }
+}
+
 fn build_container_groups(parts: &[IbdPartDto]) -> Vec<IbdContainerGroupDto> {
     let part_qn: std::collections::HashSet<String> = parts
         .iter()
@@ -892,6 +946,59 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 target_id,
                 rel_type: "connection".to_string(),
             });
+        }
+    }
+    for (src, tgt, _range, src_endpoint, tgt_endpoint) in
+        graph.connection_edge_occurrence_details_for_uri(uri)
+    {
+        let source = src.qualified_name.clone();
+        let target = tgt.qualified_name.clone();
+        let source_id = src_endpoint
+            .unwrap_or_else(|| source.clone())
+            .replace("::", ".");
+        let target_id = tgt_endpoint
+            .unwrap_or_else(|| target.clone())
+            .replace("::", ".");
+        connectors.push(IbdConnectorDto {
+            source,
+            target,
+            source_id,
+            target_id,
+            rel_type: "connection".to_string(),
+        });
+    }
+    for pending in graph.pending_expression_relationships.iter().filter(|pending| {
+        pending.kind == RelationshipKind::Connection && &pending.uri == uri
+    }) {
+        let source_id = qualify_pending_connection_endpoint(
+            pending.container_prefix.as_deref(),
+            &pending.source_expression,
+        );
+        let target_id = qualify_pending_connection_endpoint(
+            pending.container_prefix.as_deref(),
+            &pending.target_expression,
+        );
+        if source_id.is_empty() || target_id.is_empty() {
+            continue;
+        }
+        connectors.push(IbdConnectorDto {
+            source: source_id.clone(),
+            target: target_id.clone(),
+            source_id,
+            target_id,
+            rel_type: "connection".to_string(),
+        });
+    }
+    for connector in &mut connectors {
+        connector.source_id =
+            expand_relative_endpoint_to_part_path(&connector.source_id, &parts, &ports);
+        connector.target_id =
+            expand_relative_endpoint_to_part_path(&connector.target_id, &parts, &ports);
+        if connector.source == connector.source_id {
+            connector.source = connector.source_id.clone();
+        }
+        if connector.target == connector.target_id {
+            connector.target = connector.target_id.clone();
         }
     }
 
@@ -1240,6 +1347,9 @@ mod tests {
 
     use url::Url;
 
+    use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
+    use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
+
     use super::{
         build_container_groups, infer_port_side, prune_ibd_payload_to_connected_scope,
         prune_redundant_top_level_roots, IbdConnectorDto, IbdPartDto, IbdPortDto,
@@ -1544,4 +1654,43 @@ mod tests {
             .iter()
             .all(|connector| !connector.source_id.starts_with("Pkg.Controller")));
     }
+
+    #[test]
+    fn build_ibd_materializes_pending_connection_endpoints_for_untyped_connects() {
+        let doc = SysmlDocument::from_memory_path(
+            "workspace",
+            "model.sysml",
+            r#"package Architecture {
+  part def PowerSubsystem {
+    port powerOut;
+  }
+  part def ControlSoftware {
+    port powerIn;
+  }
+  part AutonomousFloorCleaningRobot {
+    part power : PowerSubsystem;
+    part control : ControlSoftware;
+    connect power.powerOut to control.powerIn;
+  }
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("workspace doc");
+        let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+        let uri = Url::parse("memory://workspace/model.sysml").expect("uri");
+        let ibd = super::build_ibd_for_uri(&graph, &uri);
+        assert!(
+            ibd.connectors.iter().any(|connector| {
+                connector.source_id == "Architecture.AutonomousFloorCleaningRobot.power.powerOut"
+                    && connector.target_id
+                        == "Architecture.AutonomousFloorCleaningRobot.control.powerIn"
+            }),
+            "expected pending connect endpoints to materialize as IBD connector: {:?}",
+            ibd.connectors
+        );
+    }
+
 }
