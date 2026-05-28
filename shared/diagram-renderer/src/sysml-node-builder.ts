@@ -1,3 +1,5 @@
+import type { DiagramTheme } from "./theme";
+
 export interface SysMLNodeDetailItem {
   name: string;
   typeName?: string | null;
@@ -119,6 +121,15 @@ export function collectCompartments(node: {
   const directPorts = detailItems(attributes, "generalViewDirectPorts");
   const inheritedAttributes = detailItems(attributes, "generalViewInheritedAttributes");
   const inheritedParts = detailItems(attributes, "generalViewInheritedParts");
+  const packageMembers = [
+    ...detailItems(attributes, "generalViewPackageMembers"),
+    ...detailItems(attributes, "packageMembers"),
+    ...detailItems(attributes, "members"),
+  ];
+  const imports = [
+    ...detailItems(attributes, "generalViewImports"),
+    ...detailItems(attributes, "imports"),
+  ];
   const collapsibleSections: SysMLNodeSection[] = [];
   if (inheritedAttributes.length > 0) {
     collapsibleSections.push({
@@ -133,6 +144,22 @@ export function collectCompartments(node: {
       key: "inherited-parts",
       title: "Inherited Parts",
       items: inheritedParts,
+      collapsed: true,
+    });
+  }
+  if (packageMembers.length > 0) {
+    collapsibleSections.push({
+      key: "package-members",
+      title: "Members",
+      items: packageMembers,
+      collapsed: false,
+    });
+  }
+  if (imports.length > 0) {
+    collapsibleSections.push({
+      key: "imports",
+      title: "Imports",
+      items: imports,
       collapsed: true,
     });
   }
@@ -194,9 +221,17 @@ export function renderSysMLNode(
     isDefinition: boolean;
     selected: boolean;
     config?: SysMLNodeConfig;
+    theme?: DiagramTheme;
   },
 ): D3Selection {
   const cfg = { ...DEFAULT_CONFIG, ...(options.config ?? {}) };
+  const theme = options.theme;
+  const nodeFill = theme?.nodeFill ?? "var(--vscode-editor-background)";
+  const panelBackground = theme?.panelBackground ?? "var(--vscode-button-secondaryBackground)";
+  const textPrimary = theme?.textPrimary ?? "var(--vscode-editor-foreground)";
+  const textSecondary = theme?.textSecondary ?? "var(--vscode-descriptionForeground)";
+  const divider = theme?.divider ?? "var(--vscode-panel-border)";
+  const highlight = theme?.highlight ?? "#FFD700";
   const node = parent
     .append("g")
     .attr("class", `${options.nodeClass}${options.isDefinition ? " definition-node" : " usage-node"}${options.selected ? " is-selected" : ""}`)
@@ -212,8 +247,8 @@ export function renderSysMLNode(
     .attr("class", "graph-node-background sysml-node-bg")
     .attr("data-original-stroke", options.strokeColor)
     .attr("data-original-width", strokeWidth)
-    .style("fill", "var(--vscode-editor-background)")
-    .style("stroke", options.selected ? "#FFD700" : options.strokeColor)
+    .style("fill", nodeFill)
+    .style("stroke", options.selected ? highlight : options.strokeColor)
     .style("stroke-width", strokeWidth)
     .style("stroke-dasharray", options.isDefinition ? "6,3" : "none");
 
@@ -225,7 +260,7 @@ export function renderSysMLNode(
     .attr("height", headerHeight)
     .attr("rx", Math.max(2, options.isDefinition ? 2 : 6))
     .attr("class", "sysml-header-compartment")
-    .style("fill", "var(--vscode-button-secondaryBackground)");
+    .style("fill", panelBackground);
 
   node
     .append("text")
@@ -245,7 +280,7 @@ export function renderSysMLNode(
     .text(truncate(compartments.header.name, 26))
     .style("font-size", "11px")
     .style("font-weight", "bold")
-    .style("fill", "var(--vscode-editor-foreground)");
+    .style("fill", textPrimary);
 
   if (compartments.typedByName) {
     node
@@ -271,7 +306,7 @@ export function renderSysMLNode(
       .attr("x2", options.width - PADDING)
       .attr("y2", contentY)
       .attr("class", "sysml-compartment-divider")
-      .style("stroke", "var(--vscode-panel-border)")
+      .style("stroke", divider)
       .style("stroke-width", "1px");
     contentY += 4;
     node
@@ -281,7 +316,7 @@ export function renderSysMLNode(
       .text(collapsed ? `> ${title}` : title)
       .style("font-size", "9px")
       .style("font-weight", "bold")
-      .style("fill", "var(--vscode-descriptionForeground)");
+      .style("fill", textSecondary);
     contentY += COMPARTMENT_LABEL_HEIGHT;
     for (const item of shownItems) {
       node
@@ -290,7 +325,7 @@ export function renderSysMLNode(
         .attr("y", contentY + 9)
         .text(truncate(item.displayText, 32))
         .style("font-size", "9px")
-        .style("fill", "var(--vscode-descriptionForeground)")
+        .style("fill", textSecondary)
         .append("title")
         .text(item.declaredIn ? `${item.displayText} (from ${item.declaredIn})` : item.displayText);
       contentY += LINE_HEIGHT;

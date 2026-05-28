@@ -102,7 +102,7 @@ export function prepareViewData(visualizationInput: unknown): PreparedView {
 function prepareGraph(graphInput: unknown, visualization: VisualizationPayload): PreparedView {
   const graph = asRecord(graphInput);
   const rawNodes = asArray(graph.nodes).map(asRecord);
-  const sourceNodes = rawNodes.filter((node) => !isPackage(node));
+  const sourceNodes = rawNodes.filter((node) => !isSyntheticPackage(node));
   const nodeIds = new Set(sourceNodes.map((node) => asString(node.id)));
   const nodes = sourceNodes.map((node) => ({
     id: asString(node.id),
@@ -110,21 +110,28 @@ function prepareGraph(graphInput: unknown, visualization: VisualizationPayload):
     kind: asString(node.type ?? node.element_type, "Element"),
     sourcePath: asString(node.sourcePath ?? node.source_path) || null,
     range: (node.range as { start?: { line?: number } } | null | undefined) ?? null,
-    attributes: asRecord(node.attributes)
+    attributes: {
+      ...asRecord(node.attributes),
+      qualifiedName: asString(node.qualifiedName ?? asRecord(node.attributes).qualifiedName),
+      isPackage: isPackage(node),
+      isDefinition: isDefinitionKind(asString(node.type ?? node.element_type, "")),
+    },
   }));
   const edges = asArray(graph.edges)
     .map(asRecord)
     .filter((edge) => nodeIds.has(asString(edge.source)) && nodeIds.has(asString(edge.target)))
     .map((edge, index) => {
-      const label = asString(edge.name ?? edge.type ?? edge.rel_type, "");
+      const relationType = asString(edge.type ?? edge.rel_type ?? edge.relationType ?? edge.name, "");
+      const label = asString(edge.name ?? edge.label ?? edge.type ?? edge.rel_type, "");
       return {
         id: asString(edge.id, `edge-${index}`),
         source: asString(edge.source),
         target: asString(edge.target),
         label,
-        edgeKind: normalizeEdgeKind(label),
+        edgeKind: normalizeEdgeKind(relationType),
         attributes: {
-          relationType: normalizeEdgeKind(label),
+          ...asRecord(edge.attributes),
+          relationType: normalizeEdgeKind(relationType),
         },
       };
     });
@@ -246,6 +253,17 @@ function prepareInterconnection(visualization: VisualizationPayload): PreparedVi
       packageContainerGroups,
     },
   };
+}
+
+function isSyntheticPackage(node: UnknownRecord): boolean {
+  if (!isPackage(node)) return false;
+  const attrs = asRecord(node.attributes);
+  return Boolean(node.synthetic ?? node.isSynthetic ?? attrs.synthetic ?? attrs.isSyntheticContainer);
+}
+
+function isDefinitionKind(kind: string): boolean {
+  const normalized = kind.toLowerCase();
+  return normalized.includes(" def") || normalized.includes("_def") || normalized.includes("definition");
 }
 
 function prepareActivity(visualization: VisualizationPayload): PreparedView {

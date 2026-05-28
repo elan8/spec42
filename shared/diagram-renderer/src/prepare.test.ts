@@ -7,12 +7,15 @@ describe("shared graph normalization", () => {
     expect(normalizeEdgeKind("typing")).toBe("typing");
     expect(normalizeEdgeKind("specialization")).toBe("specializes");
     expect(normalizeEdgeKind("owns")).toBe("hierarchy");
+    expect(normalizeEdgeKind("dependency")).toBe("dependency");
+    expect(normalizeEdgeKind("defined by")).toBe("typing");
+    expect(normalizeEdgeKind("allocation")).toBe("allocate");
     expect(normalizeEdgeKind("")).toBe("relationship");
   });
 });
 
 describe("shared prepareViewData", () => {
-  it("maps general graph payload and omits package nodes", () => {
+  it("maps general graph payload and keeps real package nodes", () => {
     const prepared = prepareViewData({
       view: "general-view",
       selectedViewName: "General",
@@ -25,9 +28,27 @@ describe("shared prepareViewData", () => {
         edges: [{ id: "rel", source: "a", target: "b", type: "typing" }],
       },
     });
-    expect(prepared.nodes.map((n) => n.id)).toEqual(["a", "b"]);
+    expect(prepared.nodes.map((n) => n.id)).toEqual(["pkg", "a", "b"]);
+    expect(prepared.nodes.find((n) => n.id === "pkg")?.attributes?.isPackage).toBe(true);
+    expect(prepared.nodes.find((n) => n.id === "a")?.attributes?.isDefinition).toBe(true);
     expect(prepared.edges).toHaveLength(1);
     expect(prepared.edges[0].edgeKind).toBe("typing");
+  });
+
+  it("omits only synthetic package containers from general graphs", () => {
+    const prepared = prepareViewData({
+      view: "general-view",
+      graph: {
+        nodes: [
+          { id: "synthetic-pkg", name: "Synthetic", type: "package", attributes: { synthetic: true } },
+          { id: "real-pkg", name: "Real", type: "package" },
+          { id: "part", name: "Part", type: "part def" },
+        ],
+        edges: [],
+      },
+    });
+
+    expect(prepared.nodes.map((n) => n.id)).toEqual(["real-pkg", "part"]);
   });
 
   it("prefers canonical generalViewGraph when present", () => {

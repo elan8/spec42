@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
 import { renderVisualization } from "./renderer";
+import { DEFAULT_DIAGRAM_THEME, edgeColorForKind, nodeColorForKind, resolveDiagramTheme } from "./theme";
 
 function boundsFor(target: HTMLElement, nodeId: string): { x: number; y: number; width: number; height: number } {
   const node = target.querySelector(`[data-node-id="${nodeId}"]`);
@@ -26,6 +27,15 @@ function paintIndex(target: HTMLElement, nodeId: string): number {
 }
 
 describe("shared renderer", () => {
+  it("resolves semantic default theme colors", () => {
+    const theme = resolveDiagramTheme();
+    expect(theme.node.part).toBe(DEFAULT_DIAGRAM_THEME.node.part);
+    expect(nodeColorForKind("part def", theme)).toBe(theme.node.part);
+    expect(nodeColorForKind("requirement", theme)).toBe(theme.node.requirement);
+    expect(edgeColorForKind("flow", theme)).toBe(theme.edge.flow);
+    expect(edgeColorForKind("allocate", theme)).toBe(theme.edge.allocate);
+  });
+
   it("returns controller surface and SVG output", async () => {
     const target = document.createElement("div");
     Object.defineProperty(target, "clientWidth", { value: 900, configurable: true });
@@ -57,6 +67,139 @@ describe("shared renderer", () => {
 
     controller.reset();
     controller.destroy();
+  });
+
+  it("renders General view as SysML notation nodes with compartments", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1400, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 900, configurable: true });
+
+    await renderVisualization(target, {
+      title: "General",
+      view: "general-view",
+      nodes: [
+        {
+          id: "pkg",
+          label: "Definitions",
+          kind: "package",
+          attributes: {
+            packageMembers: ["Vehicle", "Engine"],
+            imports: ["SysML::*"],
+          },
+        },
+        {
+          id: "vehicle-def",
+          label: "Vehicle",
+          kind: "part def",
+          attributes: {
+            attributes: ["mass: Mass"],
+            parts: ["engine: Engine"],
+            ports: ["pwr: PowerPort"],
+            generalViewInheritedAttributes: ["^position"],
+          },
+        },
+        {
+          id: "vehicle-usage",
+          label: "vehicle",
+          kind: "part",
+          attributes: {
+            partType: "Vehicle",
+            attributes: ["dryMass = 42 [kg]"],
+          },
+        },
+      ],
+      edges: [
+        { id: "owns", source: "pkg", target: "vehicle-def", label: "owns", edgeKind: "hierarchy", attributes: { relationType: "hierarchy" } },
+        { id: "typed", source: "vehicle-usage", target: "vehicle-def", label: "defined by", edgeKind: "typing", attributes: { relationType: "typing" } },
+      ],
+    });
+
+    expect(target.textContent).toContain("«package»");
+    expect(target.textContent).toContain("«part def»");
+    expect(target.textContent).toContain("«part»");
+    expect(target.textContent).toContain(": Vehicle");
+    expect(target.textContent).toContain("Attributes");
+    expect(target.textContent).toContain("Parts");
+    expect(target.textContent).toContain("Ports");
+    expect(target.textContent).toContain("> Inherited Attributes");
+    expect(target.textContent).toContain("Members");
+    expect(target.textContent).toContain("> Imports");
+    const definitionBg = target.querySelector('[data-node-id="vehicle-def"] .sysml-node-bg') as SVGRectElement | null;
+    const usageBg = target.querySelector('[data-node-id="vehicle-usage"] .sysml-node-bg') as SVGRectElement | null;
+    expect(definitionBg?.style.strokeDasharray).toBe("6,3");
+    expect(usageBg?.style.strokeDasharray).toBe("none");
+  });
+
+  it("renders General view relationship notation and suppresses generic labels", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1800, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 1200, configurable: true });
+
+    await renderVisualization(target, {
+      title: "General",
+      view: "general-view",
+      nodes: [
+        { id: "a", label: "A", kind: "part def" },
+        { id: "b", label: "B", kind: "part def" },
+        { id: "c", label: "C", kind: "part" },
+        { id: "d", label: "D", kind: "requirement" },
+        { id: "e", label: "E", kind: "action" },
+      ],
+      edges: [
+        { id: "specializes", source: "a", target: "b", label: "specializes", edgeKind: "specializes", attributes: { relationType: "specializes" } },
+        { id: "typing", source: "c", target: "a", label: "typing", edgeKind: "typing", attributes: { relationType: "typing" } },
+        { id: "hierarchy", source: "a", target: "c", label: "contains", edgeKind: "hierarchy", attributes: { relationType: "hierarchy" } },
+        { id: "dependency", source: "e", target: "a", label: "riskImpact", edgeKind: "dependency", attributes: { relationType: "dependency" } },
+        { id: "allocation", source: "e", target: "c", label: "allocation", edgeKind: "allocate", attributes: { relationType: "allocate" } },
+        { id: "satisfy", source: "a", target: "d", label: "satisfy", edgeKind: "satisfy", attributes: { relationType: "satisfy" } },
+        { id: "verify", source: "e", target: "d", label: "verify", edgeKind: "verify", attributes: { relationType: "verify" } },
+        { id: "binding", source: "b", target: "d", label: "binding", edgeKind: "bind", attributes: { relationType: "binding" } },
+        { id: "generic", source: "b", target: "e", label: "relationship", edgeKind: "relationship", attributes: { relationType: "relationship" } },
+      ],
+    });
+
+    const labels = Array.from(target.querySelectorAll(".viz-edge-label")).map((node) => node.textContent);
+    expect(labels).toEqual(["riskImpact"]);
+    expect((target.querySelector('[data-connector-id="specializes"]') as SVGPathElement | null)?.style.markerEnd).toContain("general-d3-specializes");
+    expect((target.querySelector('[data-connector-id="typing"]') as SVGPathElement | null)?.style.markerEnd).toContain("general-d3-arrow-open");
+    expect((target.querySelector('[data-connector-id="typing"]') as SVGPathElement | null)?.style.strokeDasharray).toBe("5,3");
+    expect((target.querySelector('[data-connector-id="hierarchy"]') as SVGPathElement | null)?.style.markerStart).toContain("general-d3-diamond");
+    expect((target.querySelector('[data-connector-id="dependency"]') as SVGPathElement | null)?.style.strokeDasharray).toBe("4,4");
+    expect((target.querySelector('[data-connector-id="allocation"]') as SVGPathElement | null)?.style.strokeDasharray).toBe("8,4");
+    expect((target.querySelector('[data-connector-id="satisfy"]') as SVGPathElement | null)?.style.strokeDasharray).toBe("7,4");
+    expect((target.querySelector('[data-connector-id="verify"]') as SVGPathElement | null)?.style.strokeDasharray).toBe("7,4");
+    expect((target.querySelector('[data-connector-id="binding"]') as SVGPathElement | null)?.style.strokeDasharray).toBe("2,2");
+  });
+
+  it("applies custom theme overrides to nodes and edges", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 900, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 600, configurable: true });
+
+    await renderVisualization(
+      target,
+      {
+        title: "General",
+        view: "general-view",
+        nodes: [
+          { id: "a", label: "A", kind: "part def" },
+          { id: "b", label: "B", kind: "requirement" },
+        ],
+        edges: [{ id: "satisfy", source: "a", target: "b", label: "satisfy", edgeKind: "satisfy", attributes: { relationType: "satisfy" } }],
+      },
+      {
+        theme: {
+          node: { part: "#123456" },
+          edge: { satisfy: "#abcdef" },
+          highlight: "#fedcba",
+        },
+      },
+    );
+
+    const partStereotype = target.querySelector('[data-node-id="a"] text');
+    const edge = target.querySelector('[data-connector-id="satisfy"]') as SVGPathElement | null;
+    expect((partStereotype as SVGTextElement | null)?.style.fill).toBe("#123456");
+    expect(edge?.getAttribute("stroke")).toBe("#abcdef");
   });
 
   it("renders interconnection connectors and package containers with parity classes", async () => {

@@ -23,14 +23,15 @@ export function normalizeEdgeKind(relationshipType: string): NormalizedEdgeKind 
   if (type.includes("interface")) return "interface";
   if (type.includes("connection") || type === "connect") return "connection";
   if (type.includes("reference") || type === "ref") return "reference";
-  if (type === "satisfy") return "satisfy";
-  if (type === "verify") return "verify";
-  if (type === "typing") return "typing";
+  if (type.includes("satisfy")) return "satisfy";
+  if (type.includes("verify")) return "verify";
+  if (type === "typing" || type === "defined_by" || type === "defined by" || type === "definition") return "typing";
+  if (type === "dependency" || type.includes("depend")) return "dependency";
   if (type === "specializes" || type === "specialization") return "specializes";
   if (type === "bind" || type === "binding") return "bind";
   if (type === "allocate" || type === "allocation") return "allocate";
   if (type === "transition") return "transition";
-  if (type === "hierarchy" || type === "contains" || type === "owns") return "hierarchy";
+  if (type === "hierarchy" || type === "contains" || type === "owns" || type === "ownership" || type === "containment") return "hierarchy";
   return type.replace(/[^a-z0-9_-]+/g, "_") || "relationship";
 }
 

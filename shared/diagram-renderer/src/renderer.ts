@@ -3,6 +3,13 @@ import ELK from "elkjs/lib/elk.bundled.js";
 import { nodeAccentClass, type PreparedNode, type PreparedView } from "./prepare";
 import { normalizeEdgeKind } from "./graph-normalization";
 import { collectCompartments, computeNodeHeight, renderSysMLNode } from "./sysml-node-builder";
+import {
+  edgeColorForKind,
+  nodeColorForKind,
+  resolveDiagramTheme,
+  type DiagramTheme,
+  type DiagramThemeOverrides,
+} from "./theme";
 
 const elk = new ELK();
 const nodeWidth = 200;
@@ -13,6 +20,7 @@ const ibdNodeHeight = 140;
 export interface RenderOptions {
   onNodeClick?: (node: PreparedNode) => void;
   selectedNodeId?: string | null;
+  theme?: DiagramThemeOverrides;
 }
 
 export interface RenderController {
@@ -76,6 +84,7 @@ export async function renderVisualization(
   options: RenderOptions = {},
 ): Promise<RenderController> {
   target.innerHTML = "";
+  const theme = resolveDiagramTheme(options.theme);
   const width = Math.max(720, target.clientWidth || 960);
   const height = Math.max(480, target.clientHeight || 640);
   const svg = d3
@@ -90,8 +99,8 @@ export async function renderVisualization(
   svg.append("rect").attr("class", "viz-bg").attr("width", width).attr("height", height);
   svg
     .select(".viz-bg")
-    .attr("fill", "var(--vscode-editor-background, transparent)");
-  addMarkers(svg);
+    .attr("fill", theme.canvasBackground);
+  addMarkers(svg, theme);
 
   const root = svg.append("g").attr("class", "viz-root");
   const zoom = d3.zoom<SVGSVGElement, unknown>().scaleExtent([0.08, 5]).on("zoom", (event: any) => {
@@ -102,13 +111,13 @@ export async function renderVisualization(
   const isInterconnectionView = prepared.view === "interconnection-view";
   const layout = await layoutPrepared(prepared);
   if (isInterconnectionView) {
-    drawIbdViewFrame(root, prepared, contentBounds(layout));
-    drawInterconnectionContainers(root, prepared, layout.nodes);
-    drawNodes(root, layout.nodes, options, isInterconnectionView);
-    drawEdges(root, layout.edges, isInterconnectionView);
+    drawIbdViewFrame(root, prepared, contentBounds(layout), theme);
+    drawInterconnectionContainers(root, prepared, layout.nodes, theme);
+    drawNodes(root, layout.nodes, options, isInterconnectionView, theme);
+    drawEdges(root, layout.edges, isInterconnectionView, theme);
   } else {
-    drawEdges(root, layout.edges, isInterconnectionView);
-    drawNodes(root, layout.nodes, options, isInterconnectionView);
+    drawEdges(root, layout.edges, isInterconnectionView, theme);
+    drawNodes(root, layout.nodes, options, isInterconnectionView, theme);
   }
   const bounds = contentBounds(layout);
   fit(svg, zoom, bounds, width, height, isInterconnectionView);
@@ -464,12 +473,14 @@ function drawEdges(
   root: d3.Selection<SVGGElement, unknown, null, undefined>,
   edges: LaidOutEdge[],
   isInterconnectionView: boolean,
+  theme: DiagramTheme,
 ): void {
   const group = root.append("g").attr("class", "viz-edges");
   for (const edge of edges) {
     if (!edge.sourceNode || !edge.targetNode) continue;
     const path = edge.layout?.sections?.[0] ? pathFromSection(edge.layout.sections[0]) : pathFallback(edge);
     const edgeKind = edge.edgeKind ?? normalizeEdgeKind(edge.label);
+    const displayLabel = edgeDisplayLabel(edge, edgeKind, isInterconnectionView);
     const pathSelection = group
       .append("path")
       .attr("class", `${isInterconnectionView ? "ibd-connector" : "general-connector"} viz-edge viz-edge--${edgeKind}`)
@@ -479,10 +490,10 @@ function drawEdges(
       .attr("data-target", edge.target)
       .attr("data-type", String((edge.attributes?.relationType as string) || edgeKind || "relationship"))
       .attr("fill", "none")
-      .attr("stroke", "var(--vscode-editor-foreground, #d0d0d0)")
+      .attr("stroke", edgeColorForKind(edgeKind, theme))
       .attr("stroke-width", edgeKind === "hierarchy" ? 1.4 : 1.8)
       .attr("opacity", 0.85);
-    applyEdgeMarker(pathSelection, edgeKind, isInterconnectionView);
+    applyEdgeMarker(pathSelection, edgeKind, isInterconnectionView, theme);
     if (shouldRenderEdgeLabel(edge, edgeKind, isInterconnectionView)) {
       const midpoint = edgeMidpoint(edge);
       group
@@ -492,16 +503,53 @@ function drawEdges(
         .attr("y", midpoint.y)
         .attr("text-anchor", "middle")
         .attr("dy", "-0.35em")
-        .attr("fill", "var(--vscode-editor-foreground, #d0d0d0)")
+        .attr("fill", theme.textPrimary)
         .attr("font-size", 11)
-        .text(truncate(isInterconnectionView ? ibdEdgeDisplayLabel(edge, edgeKind) : edge.label, 18));
+        .text(truncate(displayLabel, 18));
     }
   }
 }
 
 function shouldRenderEdgeLabel(edge: LaidOutEdge, edgeKind: string, isInterconnectionView: boolean): boolean {
-  if (!isInterconnectionView) return edgeKind !== "hierarchy";
-  return ibdEdgeDisplayLabel(edge, edgeKind).length > 0;
+  return edgeDisplayLabel(edge, edgeKind, isInterconnectionView).length > 0;
+}
+
+function edgeDisplayLabel(edge: LaidOutEdge, edgeKind: string, isInterconnectionView: boolean): string {
+  return isInterconnectionView ? ibdEdgeDisplayLabel(edge, edgeKind) : generalEdgeDisplayLabel(edge, edgeKind);
+}
+
+function generalEdgeDisplayLabel(edge: LaidOutEdge, edgeKind: string): string {
+  const label = String(edge.label ?? "").trim();
+  const relationType = String(edge.attributes?.relationType ?? "").trim();
+  const generic = new Set([
+    "",
+    "relationship",
+    "edge",
+    "connect",
+    "connection",
+    "dependency",
+    "specializes",
+    "specialization",
+    "typing",
+    "defined_by",
+    "defined by",
+    "definition",
+    "hierarchy",
+    "contains",
+    "owns",
+    "ownership",
+    "containment",
+    "allocate",
+    "allocation",
+    "satisfy",
+    "verify",
+    "bind",
+    "binding",
+  ]);
+  const lowerLabel = label.toLowerCase();
+  if (generic.has(lowerLabel)) return "";
+  if (lowerLabel === relationType.toLowerCase() || lowerLabel === edgeKind.toLowerCase()) return "";
+  return label;
 }
 
 function ibdEdgeDisplayLabel(edge: LaidOutEdge, edgeKind: string): string {
@@ -520,7 +568,8 @@ function drawNodes(
   root: d3.Selection<SVGGElement, unknown, null, undefined>,
   nodes: LaidOutNode[],
   options: RenderOptions,
-  isInterconnectionView = false,
+  isInterconnectionView: boolean,
+  theme: DiagramTheme,
 ): void {
   const renderNodes = isInterconnectionView ? orderIbdNodesForPaint(nodes) : nodes;
   const groups = root
@@ -558,10 +607,11 @@ function drawNodes(
         height: d.height || computeNodeHeight(compartments, { maxLinesPerCompartment: 8 }),
         nodeClass: "",
         dataElementName: d.label,
-        strokeColor: typeColor(d.kind),
+        strokeColor: nodeColorForKind(d.kind, theme),
         isDefinition,
         selected: Boolean(options.selectedNodeId && d.id === options.selectedNodeId),
         config: { maxLinesPerCompartment: 8 },
+        theme,
       });
     });
     return;
@@ -570,7 +620,7 @@ function drawNodes(
   groups.each(function (d: LaidOutNode) {
     const group = d3.select(this);
     group.selectAll("*").remove();
-    renderIbdNode(group as any, d, Boolean(options.selectedNodeId && d.id === options.selectedNodeId));
+    renderIbdNode(group as any, d, Boolean(options.selectedNodeId && d.id === options.selectedNodeId), theme);
   });
   return;
 
@@ -684,33 +734,38 @@ function applyEdgeMarker(
   path: d3.Selection<SVGPathElement, unknown, null, undefined>,
   edgeKind: string,
   isInterconnectionView: boolean,
+  theme: DiagramTheme,
 ): void {
   if (isInterconnectionView) {
     if (edgeKind === "flow") {
-      path.attr("stroke", "var(--vscode-charts-green, #2f8f46)").attr("stroke-width", 2.5).style("marker-end", "url(#ibd-flow-arrow)");
+      path.attr("stroke", edgeColorForKind(edgeKind, theme)).attr("stroke-width", 2.5).style("marker-end", "url(#ibd-flow-arrow)");
     } else if (edgeKind === "interface") {
-      path.attr("stroke", "var(--vscode-charts-purple, #8b5cf6)").style("stroke-dasharray", "8,4").style("marker-end", "url(#ibd-interface-arrow)");
+      path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("stroke-dasharray", "8,4").style("marker-end", "url(#ibd-interface-arrow)");
     } else if (edgeKind === "bind" || edgeKind === "binding") {
-      path.attr("stroke", "#2F6FDD").style("stroke-dasharray", "6,4").style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
+      path.attr("stroke", edgeColorForKind("bind", theme)).style("stroke-dasharray", "6,4").style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
     } else if (edgeKind === "reference") {
-      path.attr("stroke", "#2F6FDD").attr("stroke-width", 1.6).style("stroke-dasharray", "4,4").style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
+      path.attr("stroke", edgeColorForKind(edgeKind, theme)).attr("stroke-width", 1.6).style("stroke-dasharray", "4,4").style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
     } else if (edgeKind === "connection" || edgeKind === "relationship") {
-      path.attr("stroke", "#2F6FDD").attr("stroke-width", 2).style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
+      path.attr("stroke", edgeColorForKind("connection", theme)).attr("stroke-width", 2).style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
     } else {
       path.style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
     }
     return;
   }
   if (edgeKind === "specializes") {
-    path.style("marker-end", "url(#general-d3-specializes)").style("stroke-width", "1.7px");
+    path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("marker-end", "url(#general-d3-specializes)").style("stroke-width", "1.7px");
   } else if (edgeKind === "typing") {
-    path.style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "5,3");
+    path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "5,3");
   } else if (edgeKind === "hierarchy") {
-    path.style("marker-start", "url(#general-d3-diamond)").style("marker-end", "none");
+    path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("marker-start", "url(#general-d3-diamond)").style("marker-end", "none");
   } else if (edgeKind === "bind") {
-    path.style("stroke-dasharray", "2,2").style("marker-end", "none");
+    path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("stroke-dasharray", "2,2").style("marker-end", "none");
   } else if (edgeKind === "allocate") {
-    path.style("marker-end", "url(#general-d3-arrow)").style("stroke-dasharray", "8,4");
+    path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow)").style("stroke-dasharray", "8,4");
+  } else if (edgeKind === "dependency") {
+    path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "4,4");
+  } else if (edgeKind === "satisfy" || edgeKind === "verify") {
+    path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "7,4");
   } else {
     path.style("marker-end", "url(#general-d3-arrow)");
   }
@@ -720,6 +775,7 @@ function renderIbdNode(
   group: d3.Selection<SVGGElement, LaidOutNode, null, undefined>,
   node: LaidOutNode,
   selected: boolean,
+  theme: DiagramTheme,
 ): void {
   const attrs = (node.attributes ?? {}) as Record<string, unknown>;
   const isContainer = Boolean(attrs.isSyntheticContainer) || Boolean(attrs.isPackageContainer) || Boolean(attrs._isLayoutContainer);
@@ -727,7 +783,7 @@ function renderIbdNode(
   const height = node.height ?? ibdNodeHeight;
   const kind = node.kind.toLowerCase();
   const isDefinition = kind.includes("def");
-  const stroke = selected ? "#FFD700" : "var(--vscode-panel-border, #E5E7EB)";
+  const stroke = selected ? theme.highlight : theme.nodeBorder;
   const strokeWidth = selected ? 4 : isContainer ? 2 : isDefinition ? 2 : 3;
   const headerHeight = isContainer ? 28 : attrs.partType ? 41 : 33;
   group.classed("ibd-container", isContainer);
@@ -738,9 +794,9 @@ function renderIbdNode(
     .attr("height", height)
     .attr("rx", isDefinition ? 4 : 8)
     .attr("class", "graph-node-background")
-    .attr("data-original-stroke", "var(--vscode-panel-border, #E5E7EB)")
+    .attr("data-original-stroke", theme.nodeBorder)
     .attr("data-original-width", `${strokeWidth}px`)
-    .style("fill", "var(--vscode-editor-background)")
+    .style("fill", theme.nodeFill)
     .style("stroke", stroke)
     .style("stroke-width", `${strokeWidth}px`)
     .style("stroke-dasharray", isContainer && !attrs.isPackageContainer ? "4,4" : isDefinition ? "6,3" : "none");
@@ -750,7 +806,7 @@ function renderIbdNode(
     .attr("width", width)
     .attr("height", headerHeight)
     .attr("rx", 6)
-    .style("fill", "var(--vscode-button-secondaryBackground)");
+    .style("fill", theme.panelBackground);
 
   if (isContainer) {
     group
@@ -761,8 +817,8 @@ function renderIbdNode(
       .text(node.label)
       .style("font-size", "11px")
       .style("font-weight", "bold")
-      .style("fill", "var(--vscode-editor-foreground)");
-    drawIbdPorts(group, node, width, headerHeight);
+      .style("fill", theme.textPrimary);
+    drawIbdPorts(group, node, width, headerHeight, theme);
     return;
   }
 
@@ -774,7 +830,7 @@ function renderIbdNode(
     .attr("text-anchor", "middle")
     .text(`\u00ab${stereo}\u00bb`)
     .style("font-size", "9px")
-    .style("fill", "var(--vscode-editor-foreground)");
+    .style("fill", theme.textPrimary);
 
   group
     .append("text")
@@ -785,7 +841,7 @@ function renderIbdNode(
     .text(truncate(node.label, 18))
     .style("font-size", "11px")
     .style("font-weight", "bold")
-    .style("fill", "var(--vscode-editor-foreground)");
+    .style("fill", theme.textPrimary);
 
   const typedBy = String(attrs.partType || "");
   if (typedBy) {
@@ -797,7 +853,7 @@ function renderIbdNode(
       .text(`: ${truncate(typedBy, 18)}`)
       .style("font-size", "10px")
       .style("font-style", "italic")
-      .style("fill", "var(--vscode-editor-foreground)");
+      .style("fill", theme.textPrimary);
   }
 
   const contentStartY = typedBy ? 50 : 38;
@@ -814,10 +870,10 @@ function renderIbdNode(
       .attr("y", contentStartY + 8 + index * 12)
       .text(truncate(`${prefix}${name}`, 28))
       .style("font-size", "9px")
-      .style("fill", "var(--vscode-descriptionForeground)");
+      .style("fill", theme.textSecondary);
   });
 
-  drawIbdPorts(group, node, width, contentStartY + 20);
+  drawIbdPorts(group, node, width, contentStartY + 20, theme);
 }
 
 function drawIbdPorts(
@@ -825,6 +881,7 @@ function drawIbdPorts(
   node: LaidOutNode,
   width: number,
   fallbackStartY: number,
+  theme: DiagramTheme,
 ): void {
   const attrs = (node.attributes ?? {}) as Record<string, unknown>;
   const details = Array.isArray(attrs.portDetails) ? attrs.portDetails as PreparedPort[] : [];
@@ -841,7 +898,7 @@ function drawIbdPorts(
     const side = anchor?.side || (name.toLowerCase().startsWith("in") ? "WEST" : "EAST");
     const x = anchor?.x ?? (side === "WEST" ? 0 : width);
     const y = anchor?.y ?? (fallbackStartY + index * fallbackSpacing);
-    const color = "var(--vscode-button-background, #2F6FDD)";
+    const color = theme.port.connection;
     group
       .append("rect")
       .attr("class", "port-icon")
@@ -874,18 +931,6 @@ function formatIbdPortLabel(name: string, detail?: PreparedPort): string {
   return `${name}: ${conjugated ? "~" : ""}${cleanType}`;
 }
 
-function typeColor(kind: string): string {
-  const normalized = kind.toLowerCase();
-  if (normalized.includes("requirement")) return "#5B8FC4";
-  if (normalized.includes("action")) return "#D4A02C";
-  if (normalized.includes("state")) return "#B85C38";
-  if (normalized.includes("interface")) return "#7BAA7D";
-  if (normalized.includes("port")) return "#0E7C7B";
-  if (normalized.includes("attribute")) return "#4A9B7F";
-  if (normalized.includes("part")) return "#2D8A6E";
-  return "var(--vscode-panel-border, #E5E7EB)";
-}
-
 function formatCompartmentSummary(attributes: Record<string, unknown> | undefined): string {
   if (!attributes) return "";
   const parts = Array.isArray(attributes.parts) ? attributes.parts : [];
@@ -902,6 +947,7 @@ function drawInterconnectionContainers(
   root: d3.Selection<SVGGElement, unknown, null, undefined>,
   prepared: PreparedView,
   nodes: LaidOutNode[],
+  theme: DiagramTheme,
 ): void {
   if (prepared.nodes.some((node) => Boolean((node.attributes ?? {}).isSyntheticContainer))) return;
   const packageGroups = ((prepared.meta?.packageContainerGroups as unknown[]) || []) as Array<Record<string, unknown>>;
@@ -933,7 +979,7 @@ function drawInterconnectionContainers(
       .attr("height", height)
       .attr("rx", 14)
       .attr("fill", "none")
-      .attr("stroke", "var(--vscode-panel-border, #666)")
+      .attr("stroke", theme.nodeBorder)
       .attr("stroke-width", 1.4)
       .attr("stroke-dasharray", "6,4")
       .attr("opacity", 0.7);
@@ -941,7 +987,7 @@ function drawInterconnectionContainers(
       .append("text")
       .attr("x", 12)
       .attr("y", 20)
-      .attr("fill", "var(--vscode-descriptionForeground, #a8a8a8)")
+      .attr("fill", theme.textSecondary)
       .attr("font-size", 11)
       .text(label);
   }
@@ -951,6 +997,7 @@ function drawIbdViewFrame(
   root: d3.Selection<SVGGElement, unknown, null, undefined>,
   prepared: PreparedView,
   bounds: ContentBounds,
+  theme: DiagramTheme,
 ): void {
   const label = String(prepared.meta?.selectedRoot || prepared.title || "").trim();
   if (!label || bounds.width <= 0 || bounds.height <= 0) return;
@@ -972,7 +1019,7 @@ function drawIbdViewFrame(
     .attr("height", height)
     .attr("rx", 6)
     .style("fill", "none")
-    .style("stroke", "var(--vscode-panel-border, #E5E7EB)")
+    .style("stroke", theme.frame.stroke)
     .style("stroke-width", "1.5px");
   frame
     .append("text")
@@ -981,7 +1028,7 @@ function drawIbdViewFrame(
     .attr("text-anchor", "middle")
     .style("font-size", "11px")
     .style("font-weight", "bold")
-    .style("fill", "var(--vscode-editor-foreground)")
+    .style("fill", theme.frame.text)
     .text(label);
 }
 
@@ -1068,16 +1115,16 @@ function fit(
   svg.transition().duration(180).call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
 }
 
-function addMarkers(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>): void {
+function addMarkers(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, theme: DiagramTheme): void {
   const defs = svg.append("defs");
-  defs.append("marker").attr("id", "viz-arrow").attr("markerWidth", 10).attr("markerHeight", 10).attr("refX", 9).attr("refY", 3).attr("orient", "auto").attr("markerUnits", "strokeWidth").append("path").attr("d", "M0,0 L0,6 L9,3 z").attr("fill", "var(--vscode-editor-foreground, #d0d0d0)");
-  defs.append("marker").attr("id", "general-d3-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 8).attr("refY", 0).attr("markerWidth", 5).attr("markerHeight", 5).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4").style("fill", "var(--vscode-editor-foreground, #d0d0d0)");
-  defs.append("marker").attr("id", "general-d3-arrow-open").attr("viewBox", "0 -5 10 10").attr("refX", 9).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4").style("fill", "none").style("stroke", "var(--vscode-editor-foreground, #d0d0d0)").style("stroke-width", "1.3");
-  defs.append("marker").attr("id", "general-d3-specializes").attr("viewBox", "0 -6 12 12").attr("refX", 11).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,0L10,-4L10,4Z").style("fill", "var(--vscode-editor-background, #1e1e1e)").style("stroke", "var(--vscode-editor-foreground, #d0d0d0)").style("stroke-width", "1.2");
-  defs.append("marker").attr("id", "general-d3-diamond").attr("viewBox", "0 -6 12 12").attr("refX", 2).attr("refY", 0).attr("markerWidth", 7).attr("markerHeight", 7).attr("orient", "auto").append("path").attr("d", "M0,0L5,-4L10,0L5,4Z").style("fill", "var(--vscode-editor-foreground, #d0d0d0)");
-  defs.append("marker").attr("id", "ibd-connection-dot").attr("viewBox", "-5 -5 10 10").attr("refX", 0).attr("refY", 0).attr("markerWidth", 5).attr("markerHeight", 5).attr("orient", "auto").append("circle").attr("r", 3).style("fill", "var(--vscode-editor-background, #1e1e1e)").style("stroke", "#2F6FDD").style("stroke-width", "1.5");
-  defs.append("marker").attr("id", "ibd-flow-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4Z").style("fill", "var(--vscode-charts-green, #2f8f46)");
-  defs.append("marker").attr("id", "ibd-interface-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4Z").style("fill", "none").style("stroke", "var(--vscode-charts-purple, #8b5cf6)").style("stroke-width", "1.5");
+  defs.append("marker").attr("id", "viz-arrow").attr("markerWidth", 10).attr("markerHeight", 10).attr("refX", 9).attr("refY", 3).attr("orient", "auto").attr("markerUnits", "strokeWidth").append("path").attr("d", "M0,0 L0,6 L9,3 z").attr("fill", theme.edge.default);
+  defs.append("marker").attr("id", "general-d3-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 8).attr("refY", 0).attr("markerWidth", 5).attr("markerHeight", 5).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4").style("fill", theme.edge.default);
+  defs.append("marker").attr("id", "general-d3-arrow-open").attr("viewBox", "0 -5 10 10").attr("refX", 9).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4").style("fill", "none").style("stroke", theme.edge.default).style("stroke-width", "1.3");
+  defs.append("marker").attr("id", "general-d3-specializes").attr("viewBox", "0 -6 12 12").attr("refX", 11).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,0L10,-4L10,4Z").style("fill", theme.nodeFill).style("stroke", theme.edge.default).style("stroke-width", "1.2");
+  defs.append("marker").attr("id", "general-d3-diamond").attr("viewBox", "0 -6 12 12").attr("refX", 2).attr("refY", 0).attr("markerWidth", 7).attr("markerHeight", 7).attr("orient", "auto").append("path").attr("d", "M0,0L5,-4L10,0L5,4Z").style("fill", theme.edge.default);
+  defs.append("marker").attr("id", "ibd-connection-dot").attr("viewBox", "-5 -5 10 10").attr("refX", 0).attr("refY", 0).attr("markerWidth", 5).attr("markerHeight", 5).attr("orient", "auto").append("circle").attr("r", 3).style("fill", theme.nodeFill).style("stroke", theme.edge.connection).style("stroke-width", "1.5");
+  defs.append("marker").attr("id", "ibd-flow-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4Z").style("fill", theme.edge.flow);
+  defs.append("marker").attr("id", "ibd-interface-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4Z").style("fill", "none").style("stroke", theme.edge.interface).style("stroke-width", "1.5");
 }
 
 function exportSvg(svgNode: SVGSVGElement, bounds: ContentBounds): string {

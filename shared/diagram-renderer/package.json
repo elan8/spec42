@@ -18,6 +18,7 @@
     "./graph-normalization": "./src/graph-normalization.ts",
     "./contract": "./src/contract.ts",
     "./prepare": "./src/prepare.ts",
+    "./theme": "./src/theme.ts",
     "./renderer": "./src/renderer.ts"
   }
 }
