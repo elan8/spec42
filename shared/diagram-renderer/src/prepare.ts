@@ -214,17 +214,20 @@ function prepareInterconnection(visualization: VisualizationPayload): PreparedVi
       const targetEndpoint = firstPresent(connector.targetId, connector.target);
       const source = resolveEndpointPartId(firstPresent(connector.sourcePartId, connector.sourcePortPartId), sourceEndpoint);
       const target = resolveEndpointPartId(firstPresent(connector.targetPartId, connector.targetPortPartId), targetEndpoint);
-      const type = asString(connector.type ?? connector.relationType ?? connector.rel_type, "connection");
+      const type = ibdConnectorKind(connector);
+      const label = ibdConnectorLabel(connector, type);
       return {
         id: asString(connector.id, `connector-${index}`),
         source,
         target,
-        label: asString(connector.name ?? connector.type, "connect"),
+        label,
         edgeKind: normalizeEdgeKind(type),
         attributes: {
+          ...asRecord(connector.attributes),
           sourceId: asString(sourceEndpoint),
           targetId: asString(targetEndpoint),
           itemType: asString(connector.itemType),
+          interfaceName: asString(connector.interfaceName ?? connector.interfaceType ?? connector.interfaceDefinition),
           relationType: type,
         },
       };
@@ -422,6 +425,29 @@ function bestBehaviorDiagram(diagrams: UnknownRecord[]): UnknownRecord | null {
 
 function firstPresent(...values: unknown[]): unknown {
   return values.find((value) => value != null && asString(value).trim() !== "");
+}
+
+function ibdConnectorKind(connector: UnknownRecord): string {
+  const type = asString(connector.type ?? connector.relationType ?? connector.rel_type).trim();
+  const name = asString(connector.name ?? connector.label).trim();
+  const itemType = asString(connector.itemType).trim();
+  const interfaceName = asString(connector.interfaceName ?? connector.interfaceType ?? connector.interfaceDefinition).trim();
+  const source = `${type} ${name}`.toLowerCase();
+  if (source.includes("binding") || source.includes("bind")) return "binding";
+  if (source.includes("reference") || source.includes("ref")) return "reference";
+  if (source.includes("interface") || interfaceName) return "interface";
+  if (source.includes("flow") || itemType) return "flow";
+  return type || "connection";
+}
+
+function ibdConnectorLabel(connector: UnknownRecord, type: string): string {
+  const name = asString(connector.name ?? connector.label).trim();
+  const interfaceName = asString(connector.interfaceName ?? connector.interfaceType ?? connector.interfaceDefinition).trim();
+  const itemType = asString(connector.itemType).trim();
+  const normalized = type.toLowerCase();
+  if (normalized.includes("flow") && itemType) return itemType;
+  if (normalized.includes("interface") && interfaceName) return interfaceName;
+  return name || type || "connection";
 }
 
 function synthesizeInterconnectionContainers(

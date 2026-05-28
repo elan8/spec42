@@ -19,7 +19,10 @@ export interface ArchitectureLikeElement {
 export function normalizeEdgeKind(relationshipType: string): NormalizedEdgeKind {
   const type = relationshipType.trim().toLowerCase();
   if (!type) return "relationship";
+  if (type.includes("item_flow") || type.includes("item flow") || type === "flow" || type.includes("flow")) return "flow";
+  if (type.includes("interface")) return "interface";
   if (type.includes("connection") || type === "connect") return "connection";
+  if (type.includes("reference") || type === "ref") return "reference";
   if (type === "satisfy") return "satisfy";
   if (type === "verify") return "verify";
   if (type === "typing") return "typing";

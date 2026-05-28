@@ -227,5 +227,111 @@ describe("shared renderer", () => {
 
     expect(batteryPortX).toBeGreaterThan(battery.width - 1);
     expect(distributionPortX).toBeLessThan(1);
+    expect(batteryPort?.getAttribute("data-port-side")).toBe("EAST");
+    expect(distributionPort?.getAttribute("data-port-side")).toBe("WEST");
+  });
+
+  it("renders SysML IBD edge kinds with distinct notation styles and meaningful labels", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1600, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 1000, configurable: true });
+
+    await renderVisualization(target, {
+      title: "DroneInterconnection",
+      view: "interconnection-view",
+      nodes: [
+        { id: "battery", label: "battery", kind: "part", attributes: { portDetails: [{ id: "Drone.battery.pwr", name: "pwr", portType: "PowerPort" }] } },
+        { id: "distribution", label: "distribution", kind: "part", attributes: { portDetails: [{ id: "Drone.distribution.mainPower", name: "mainPower", portType: "~PowerPort" }] } },
+        { id: "controller", label: "controller", kind: "part", attributes: { portDetails: [{ id: "Drone.controller.cmd", name: "cmd" }] } },
+        { id: "motor", label: "motor", kind: "part", attributes: { portDetails: [{ id: "Drone.motor.cmd", name: "cmd" }] } },
+        { id: "sensor", label: "sensor", kind: "part" },
+      ],
+      edges: [
+        {
+          id: "connection-edge",
+          source: "battery",
+          target: "distribution",
+          label: "connection",
+          edgeKind: "connection",
+          attributes: { sourceId: "Drone.battery.pwr", targetId: "Drone.distribution.mainPower", relationType: "connection" },
+        },
+        {
+          id: "flow-edge",
+          source: "distribution",
+          target: "controller",
+          label: "Power",
+          edgeKind: "flow",
+          attributes: { sourceId: "Drone.distribution.mainPower", targetId: "Drone.controller.cmd", relationType: "flow", itemType: "Power" },
+        },
+        {
+          id: "interface-edge",
+          source: "controller",
+          target: "motor",
+          label: "MotorControl",
+          edgeKind: "interface",
+          attributes: { sourceId: "Drone.controller.cmd", targetId: "Drone.motor.cmd", relationType: "interface", interfaceName: "MotorControl" },
+        },
+        {
+          id: "binding-edge",
+          source: "controller",
+          target: "sensor",
+          label: "binding",
+          edgeKind: "bind",
+          attributes: { relationType: "binding" },
+        },
+        {
+          id: "reference-edge",
+          source: "sensor",
+          target: "motor",
+          label: "reference",
+          edgeKind: "reference",
+          attributes: { relationType: "reference" },
+        },
+      ],
+      meta: { selectedRoot: "DroneInterconnection" },
+    });
+
+    expect(target.querySelector(".ibd-view-frame")?.getAttribute("data-view-name")).toBe("DroneInterconnection");
+    const labels = Array.from(target.querySelectorAll(".viz-edge-label")).map((node) => node.textContent);
+    expect(labels).toContain("Power");
+    expect(labels).toContain("MotorControl");
+    expect(labels).not.toContain("connection");
+    expect(labels).not.toContain("binding");
+    expect(labels).not.toContain("reference");
+
+    const connection = target.querySelector('[data-connector-id="connection-edge"]') as SVGPathElement | null;
+    const flow = target.querySelector('[data-connector-id="flow-edge"]') as SVGPathElement | null;
+    const iface = target.querySelector('[data-connector-id="interface-edge"]') as SVGPathElement | null;
+    const binding = target.querySelector('[data-connector-id="binding-edge"]') as SVGPathElement | null;
+    const reference = target.querySelector('[data-connector-id="reference-edge"]') as SVGPathElement | null;
+    expect(connection?.style.markerEnd).toContain("ibd-connection-dot");
+    expect(flow?.style.markerEnd).toContain("ibd-flow-arrow");
+    expect(iface?.style.markerEnd).toContain("ibd-interface-arrow");
+    expect(binding?.style.strokeDasharray).toBe("6,4");
+    expect(reference?.style.strokeDasharray).toBe("4,4");
+    expect(target.textContent).toContain("pwr: PowerPort");
+    expect(target.textContent).toContain("mainPower: ~PowerPort");
+  });
+
+  it("renders direct part-to-part IBD connections when ports are absent", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Interconnection",
+      view: "interconnection-view",
+      nodes: [
+        { id: "airframe", label: "airframe", kind: "part" },
+        { id: "payload", label: "payload", kind: "part" },
+      ],
+      edges: [
+        { id: "mount", source: "airframe", target: "payload", label: "mountedTo", edgeKind: "connection", attributes: { relationType: "connection" } },
+      ],
+    });
+
+    const connector = target.querySelector('[data-connector-id="mount"]');
+    expect(connector).toBeTruthy();
+    expect(connector?.getAttribute("d")).toMatch(/^M/);
   });
 });

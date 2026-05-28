@@ -123,6 +123,49 @@ describe("shared prepareViewData", () => {
     expect(prepared.nodes.map((node) => node.id)).toEqual(["airframe"]);
   });
 
+  it("normalizes IBD connector semantics for notation rendering", () => {
+    const prepared = prepareViewData({
+      view: "interconnection-view",
+      ibd: {
+        parts: [
+          { id: "tank", name: "tank", qualifiedName: "Vehicle.tank", type: "part" },
+          { id: "engine", name: "engine", qualifiedName: "Vehicle.engine", type: "part" },
+          { id: "controller", name: "controller", qualifiedName: "Vehicle.controller", type: "part" },
+        ],
+        connectors: [
+          {
+            id: "fuel-flow",
+            source: "Vehicle.tank.fuelOut",
+            target: "Vehicle.engine.fuelIn",
+            name: "flow",
+            itemType: "Fuel",
+          },
+          {
+            id: "control-interface",
+            sourcePartId: "controller",
+            targetPartId: "engine",
+            type: "interface",
+            interfaceName: "EngineControl",
+          },
+          {
+            id: "engine-reference",
+            sourcePartId: "controller",
+            targetPartId: "engine",
+            type: "reference",
+          },
+        ],
+      },
+    });
+
+    expect(prepared.edges.find((edge) => edge.id === "fuel-flow")?.edgeKind).toBe("flow");
+    expect(prepared.edges.find((edge) => edge.id === "fuel-flow")?.label).toBe("Fuel");
+    expect(prepared.edges.find((edge) => edge.id === "fuel-flow")?.source).toBe("tank");
+    expect(prepared.edges.find((edge) => edge.id === "fuel-flow")?.target).toBe("engine");
+    expect(prepared.edges.find((edge) => edge.id === "control-interface")?.edgeKind).toBe("interface");
+    expect(prepared.edges.find((edge) => edge.id === "control-interface")?.attributes?.interfaceName).toBe("EngineControl");
+    expect(prepared.edges.find((edge) => edge.id === "engine-reference")?.edgeKind).toBe("reference");
+  });
+
   it("adds synthetic initial state when missing", () => {
     const prepared = prepareViewData({
       view: "state-transition-view",

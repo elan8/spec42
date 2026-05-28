@@ -102,6 +102,7 @@ export async function renderVisualization(
   const isInterconnectionView = prepared.view === "interconnection-view";
   const layout = await layoutPrepared(prepared);
   if (isInterconnectionView) {
+    drawIbdViewFrame(root, prepared, contentBounds(layout));
     drawInterconnectionContainers(root, prepared, layout.nodes);
     drawNodes(root, layout.nodes, options, isInterconnectionView);
     drawEdges(root, layout.edges, isInterconnectionView);
@@ -493,19 +494,26 @@ function drawEdges(
         .attr("dy", "-0.35em")
         .attr("fill", "var(--vscode-editor-foreground, #d0d0d0)")
         .attr("font-size", 11)
-        .text(truncate(edge.label, 18));
+        .text(truncate(isInterconnectionView ? ibdEdgeDisplayLabel(edge, edgeKind) : edge.label, 18));
     }
   }
 }
 
 function shouldRenderEdgeLabel(edge: LaidOutEdge, edgeKind: string, isInterconnectionView: boolean): boolean {
-  if (!edge.label) return false;
   if (!isInterconnectionView) return edgeKind !== "hierarchy";
-  const label = edge.label.trim().toLowerCase();
-  const relationType = String(edge.attributes?.relationType ?? "").trim().toLowerCase();
-  const generic = new Set(["", "connect", "connection", "flow", "interface", "binding", "bind", "relationship"]);
-  if (generic.has(label) || generic.has(relationType)) return false;
-  return Boolean(edge.attributes?.itemType) || label.length > 0;
+  return ibdEdgeDisplayLabel(edge, edgeKind).length > 0;
+}
+
+function ibdEdgeDisplayLabel(edge: LaidOutEdge, edgeKind: string): string {
+  const itemType = String(edge.attributes?.itemType ?? "").trim();
+  if (edgeKind === "flow" && itemType) return itemType;
+  const interfaceName = String(edge.attributes?.interfaceName ?? "").trim();
+  if (edgeKind === "interface" && interfaceName) return interfaceName;
+  const label = String(edge.label ?? "").trim();
+  const relationType = String(edge.attributes?.relationType ?? "").trim();
+  const generic = new Set(["", "connect", "connection", "flow", "interface", "binding", "bind", "reference", "ref", "relationship"]);
+  if (generic.has(label.toLowerCase()) || generic.has(relationType.toLowerCase())) return "";
+  return label;
 }
 
 function drawNodes(
@@ -684,6 +692,8 @@ function applyEdgeMarker(
       path.attr("stroke", "var(--vscode-charts-purple, #8b5cf6)").style("stroke-dasharray", "8,4").style("marker-end", "url(#ibd-interface-arrow)");
     } else if (edgeKind === "bind" || edgeKind === "binding") {
       path.attr("stroke", "#2F6FDD").style("stroke-dasharray", "6,4").style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
+    } else if (edgeKind === "reference") {
+      path.attr("stroke", "#2F6FDD").attr("stroke-width", 1.6).style("stroke-dasharray", "4,4").style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
     } else if (edgeKind === "connection" || edgeKind === "relationship") {
       path.attr("stroke", "#2F6FDD").attr("stroke-width", 2).style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
     } else {
@@ -825,6 +835,7 @@ function drawIbdPorts(
   const portSize = 10;
   const fallbackSpacing = 26;
   portNames.forEach((name, index) => {
+    const detail = details.find((port) => port.name === name);
     const sanitized = name.replace(/[^A-Za-z0-9_.-]/g, "_");
     const anchor = anchors[sanitized] ?? anchors[name];
     const side = anchor?.side || (name.toLowerCase().startsWith("in") ? "WEST" : "EAST");
@@ -834,6 +845,8 @@ function drawIbdPorts(
     group
       .append("rect")
       .attr("class", "port-icon")
+      .attr("data-port-name", name)
+      .attr("data-port-side", side)
       .attr("x", x - portSize / 2)
       .attr("y", y - portSize / 2)
       .attr("width", portSize)
@@ -846,11 +859,19 @@ function drawIbdPorts(
       .attr("x", side === "WEST" ? Math.min(width - 10, x + 16) : Math.max(10, x - 16))
       .attr("y", y + 3)
       .attr("text-anchor", side === "WEST" ? "start" : "end")
-      .text(truncate(name, 18))
+      .text(truncate(formatIbdPortLabel(name, detail), 24))
       .style("font-size", "8px")
       .style("font-weight", "500")
       .style("fill", color);
   });
+}
+
+function formatIbdPortLabel(name: string, detail?: PreparedPort): string {
+  const type = String(detail?.portType || detail?.attributes?.portType || "").trim();
+  if (!type) return name;
+  const conjugated = type.startsWith("~");
+  const cleanType = type.replace(/^~/, "").split(/::|\./).pop() || type.replace(/^~/, "");
+  return `${name}: ${conjugated ? "~" : ""}${cleanType}`;
 }
 
 function typeColor(kind: string): string {
@@ -924,6 +945,44 @@ function drawInterconnectionContainers(
       .attr("font-size", 11)
       .text(label);
   }
+}
+
+function drawIbdViewFrame(
+  root: d3.Selection<SVGGElement, unknown, null, undefined>,
+  prepared: PreparedView,
+  bounds: ContentBounds,
+): void {
+  const label = String(prepared.meta?.selectedRoot || prepared.title || "").trim();
+  if (!label || bounds.width <= 0 || bounds.height <= 0) return;
+  const padding = 20;
+  const headerHeight = 18;
+  const x = bounds.x - padding;
+  const y = bounds.y - padding - headerHeight;
+  const width = bounds.width + padding * 2;
+  const height = bounds.height + padding * 2 + headerHeight;
+  const frame = root
+    .append("g")
+    .attr("class", "ibd-view-frame")
+    .attr("data-view-name", label);
+  frame
+    .append("rect")
+    .attr("x", x)
+    .attr("y", y)
+    .attr("width", width)
+    .attr("height", height)
+    .attr("rx", 6)
+    .style("fill", "none")
+    .style("stroke", "var(--vscode-panel-border, #E5E7EB)")
+    .style("stroke-width", "1.5px");
+  frame
+    .append("text")
+    .attr("x", x + width / 2)
+    .attr("y", y + 13)
+    .attr("text-anchor", "middle")
+    .style("font-size", "11px")
+    .style("font-weight", "bold")
+    .style("fill", "var(--vscode-editor-foreground)")
+    .text(label);
 }
 
 function pathFromSection(section: EdgeSection): string {
