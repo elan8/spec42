@@ -1,0 +1,23 @@
+{
+  "name": "@spec42/diagram-renderer",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "d3": "^7.9.0",
+    "elkjs": "^0.11.1"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.15",
+    "jsdom": "^26.1.0",
+    "vitest": "^4.0.15"
+  },
+  "exports": {
+    "./graph-normalization": "./src/graph-normalization.ts",
+    "./contract": "./src/contract.ts",
+    "./prepare": "./src/prepare.ts",
+    "./renderer": "./src/renderer.ts"
+  }
+}

@@ -1,0 +1,10 @@
+[package]
+name = "diagram_core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Shared diagram projection utilities for Spec42 and consumers"
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }

@@ -336,6 +336,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "diagram_core"
+version = "0.24.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "digest"
 version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
