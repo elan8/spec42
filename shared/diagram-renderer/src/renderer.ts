@@ -2,10 +2,11 @@ import * as d3 from "d3";
 import ELK from "elkjs/lib/elk.bundled.js";
 import { nodeAccentClass, type PreparedNode, type PreparedView } from "./prepare";
 import { normalizeEdgeKind } from "./graph-normalization";
+import { collectCompartments, computeNodeHeight, renderSysMLNode } from "./sysml-node-builder";
 
 const elk = new ELK();
-const nodeWidth = 220;
-const nodeHeight = 86;
+const nodeWidth = 200;
+const nodeHeight = 70;
 const ibdNodeWidth = 280;
 const ibdNodeHeight = 140;
 
@@ -25,6 +26,7 @@ interface LaidOutNode extends PreparedNode {
   y?: number;
   width?: number;
   height?: number;
+  compartments?: ReturnType<typeof collectCompartments>;
 }
 
 interface EdgeSection {
@@ -57,6 +59,15 @@ interface ContentBounds {
   y: number;
   width: number;
   height: number;
+}
+
+interface PreparedPort {
+  id?: string;
+  name: string;
+  direction?: string;
+  portType?: string;
+  portSide?: string;
+  attributes?: Record<string, unknown>;
 }
 
 export async function renderVisualization(
@@ -92,9 +103,12 @@ export async function renderVisualization(
   const layout = await layoutPrepared(prepared);
   if (isInterconnectionView) {
     drawInterconnectionContainers(root, prepared, layout.nodes);
+    drawNodes(root, layout.nodes, options, isInterconnectionView);
+    drawEdges(root, layout.edges, isInterconnectionView);
+  } else {
+    drawEdges(root, layout.edges, isInterconnectionView);
+    drawNodes(root, layout.nodes, options, isInterconnectionView);
   }
-  drawEdges(root, layout.edges, isInterconnectionView);
-  drawNodes(root, layout.nodes, options, isInterconnectionView);
   const bounds = contentBounds(layout);
   fit(svg, zoom, bounds, width, height, isInterconnectionView);
 
@@ -120,11 +134,26 @@ async function layoutPrepared(prepared: PreparedView): Promise<LayoutResult> {
     layoutOptions: {
       "elk.algorithm": "layered",
       "elk.direction": isInterconnectionView ? "RIGHT" : "DOWN",
-      "elk.spacing.nodeNode": isInterconnectionView ? "80" : "48",
-      "elk.layered.spacing.nodeNodeBetweenLayers": isInterconnectionView ? "110" : "72",
-      "elk.edgeRouting": "ORTHOGONAL"
+      "elk.spacing.nodeNode": isInterconnectionView ? "80" : "220",
+      "elk.layered.spacing.nodeNodeBetweenLayers": isInterconnectionView ? "110" : "280",
+      "elk.spacing.edgeNode": isInterconnectionView ? "80" : "120",
+      "elk.spacing.edgeEdge": isInterconnectionView ? "60" : "120",
+      "elk.edgeRouting": "ORTHOGONAL",
+      "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
+      "elk.separateConnectedComponents": "true",
+      "elk.aspectRatio": isInterconnectionView ? "1.6" : "1.4",
+      "elk.padding": isInterconnectionView ? "[top=70,left=70,bottom=70,right=70]" : "[top=100,left=100,bottom=100,right=100]",
+      "org.eclipse.elk.portConstraints": "FIXED_SIDE",
+      "org.eclipse.elk.json.edgeCoords": "ROOT"
     },
-    children: prepared.nodes.map((node) => ({ id: node.id, width, height })),
+    children: prepared.nodes.map((node) => {
+      const compartments = collectCompartments(node);
+      return {
+        id: node.id,
+        width,
+        height: Math.max(height, computeNodeHeight(compartments, { maxLinesPerCompartment: 8 })),
+      };
+    }),
     edges: prepared.edges.map((edge) => ({ id: edge.id, sources: [edge.source], targets: [edge.target] }))
   };
   try {
@@ -132,7 +161,10 @@ async function layoutPrepared(prepared: PreparedView): Promise<LayoutResult> {
     const byId = new Map(prepared.nodes.map((node) => [node.id, node]));
     const layouts = new Map((laidOut.children || []).map((node: any) => [String(node.id), node]));
     return {
-      nodes: prepared.nodes.map((node) => ({ ...node, ...(layouts.get(node.id) || {}) })),
+      nodes: prepared.nodes.map((node) => {
+        const compartments = collectCompartments(node);
+        return { ...node, compartments, ...(layouts.get(node.id) || {}) };
+      }),
       edges: prepared.edges.map((edge) => ({
         ...edge,
         sourceNode: byId.get(edge.source),
@@ -164,45 +196,107 @@ async function layoutInterconnectionPrepared(prepared: PreparedView): Promise<La
 
   const sanitizeId = (value: string) => value.replace(/[^A-Za-z0-9_.-]/g, "_");
   const portIdFor = (nodeId: string, portName: string) => `${sanitizeId(nodeId)}__port__${sanitizeId(portName)}`;
+  const portDetailsFor = (node: PreparedNode): PreparedPort[] => {
+    const attrs = (node.attributes ?? {}) as Record<string, unknown>;
+    const details = Array.isArray(attrs.portDetails) ? attrs.portDetails : [];
+    if (details.length > 0) {
+      return details
+        .map((item) => item && typeof item === "object" ? item as PreparedPort : null)
+        .filter((item): item is PreparedPort => Boolean(item?.name));
+    }
+    return Array.isArray(attrs.ports)
+      ? (attrs.ports as unknown[]).map((name) => ({ name: String(name) }))
+      : [];
+  };
+  const normalizeEndpoint = (value: unknown): string => String(value ?? "").replace(/::/g, ".").trim();
+  const portLayoutKey = (node: PreparedNode, port: PreparedPort): string => {
+    const attrs = (node.attributes ?? {}) as Record<string, unknown>;
+    const explicit = normalizeEndpoint(port.id);
+    if (explicit) return explicit;
+    const parent = normalizeEndpoint(port.attributes?.parentId ?? (port as Record<string, unknown>).parentId ?? attrs.qualifiedName ?? node.id ?? node.label);
+    return parent ? `${parent}.${port.name}` : normalizeEndpoint(port.name);
+  };
+  const portUsage = new Map<string, { sourceCount: number; targetCount: number }>();
+  const bumpPortUsage = (endpoint: unknown, role: "sourceCount" | "targetCount") => {
+    const normalized = normalizeEndpoint(endpoint);
+    if (!normalized) return;
+    const current = portUsage.get(normalized) ?? { sourceCount: 0, targetCount: 0 };
+    current[role] += 1;
+    portUsage.set(normalized, current);
+  };
+  for (const edge of prepared.edges) {
+    bumpPortUsage(edge.attributes?.sourceId ?? edge.source, "sourceCount");
+    bumpPortUsage(edge.attributes?.targetId ?? edge.target, "targetCount");
+  }
+  const usageForPort = (node: PreparedNode, port: PreparedPort): { sourceCount: number; targetCount: number } => {
+    const key = portLayoutKey(node, port);
+    const explicit = portUsage.get(key);
+    if (explicit) return explicit;
+    const attrs = (node.attributes ?? {}) as Record<string, unknown>;
+    const parent = normalizeEndpoint(attrs.qualifiedName ?? node.id ?? node.label);
+    const fallback = portUsage.get(`${parent}.${normalizeEndpoint(port.name)}`);
+    return fallback ?? { sourceCount: 0, targetCount: 0 };
+  };
   const connectorPortName = (node: PreparedNode, endpoint: unknown): string | null => {
     const endpointText = String(endpoint ?? "").trim();
     if (!endpointText) return null;
     const endpointLeaf = endpointText.split(".").pop()?.split("::").pop()?.trim() ?? "";
     if (!endpointLeaf) return null;
-    const ports = Array.isArray((node.attributes as Record<string, unknown>)?.ports)
-      ? (((node.attributes as Record<string, unknown>).ports as unknown[]).map((value) => String(value)))
-      : [];
+    const ports = portDetailsFor(node).map((port) => port.name);
     const matched = ports.find((port) => port === endpointLeaf || endpointText.endsWith(`.${port}`));
     return matched ?? null;
   };
 
-  const sideForPort = (name: string): "WEST" | "EAST" => {
-    const lower = name.toLowerCase();
+  const sideForPort = (port: PreparedPort, node: PreparedNode): "WEST" | "EAST" => {
+    const explicit = String(port.portSide || port.attributes?.portSide || "").toLowerCase();
+    if (explicit === "left" || explicit === "west") return "WEST";
+    if (explicit === "right" || explicit === "east") return "EAST";
+    const direction = String(port.direction || "").toLowerCase();
+    if (direction === "in") return "WEST";
+    if (direction === "out") return "EAST";
+    const usage = usageForPort(node, port);
+    if (usage.targetCount > usage.sourceCount) return "WEST";
+    if (usage.sourceCount > usage.targetCount) return "EAST";
+    const lower = port.name.toLowerCase();
+    const portType = String(port.portType || port.attributes?.portType || "").toLowerCase();
     if (lower.endsWith("in") || lower.includes("input") || lower.startsWith("in")) return "WEST";
+    if (lower.endsWith("out") || lower.startsWith("out")) return "EAST";
+    if (portType.startsWith("~") && /(powerport|telemetryport|sensordataport|gimbalcommandport|cameracontrolport)/.test(portType)) {
+      return "WEST";
+    }
+    if (!portType.startsWith("~") && /(powerport|telemetryport|sensordataport)/.test(portType)) {
+      return "EAST";
+    }
+    const nodeText = `${node.label} ${String(node.attributes?.qualifiedName || "")}`.toLowerCase();
+    const prefersLeft = /(sensor|imu|barometer|gnss|receiver|battery|input|telemetryin|videoin|c2in|rcin|sensorin)/.test(nodeText)
+      || /(cmd$|control$|input|telemetryin|videoin|sensorin|mainpower)/.test(lower);
+    const prefersRight = /(camera|gimbal|propulsion|motor|radio|communication|distribution|controller|payload|actuator)/.test(nodeText)
+      || /(videoout|telemetryout|regulated|pwr|cmd|ctrl)/.test(lower);
+    if (prefersLeft && !prefersRight) return "WEST";
+    if (prefersRight && !prefersLeft) return "EAST";
     return "EAST";
   };
 
   const toElkNode = (node: PreparedNode): any => {
-    const ports = Array.isArray((node.attributes as Record<string, unknown>)?.ports)
-      ? (((node.attributes as Record<string, unknown>).ports as unknown[]).map((value) => String(value)))
-      : [];
+    const ports = portDetailsFor(node);
     const children = (childrenByParent.get(node.id) ?? []).map((child) => toElkNode(child));
-    const baseWidth = children.length > 0 ? 420 : ibdNodeWidth;
+    const isContainer = Boolean((node.attributes ?? {}).isSyntheticContainer) || children.length > 0;
+    const baseWidth = isContainer ? 420 : ibdNodeWidth;
     const width = Math.max(
       baseWidth,
-      180 + Math.max(node.label.length * 6, ...ports.map((item) => item.length * 5), 0),
+      180 + Math.max(node.label.length * 6, ...ports.map((item) => item.name.length * 5), 0),
     );
-    const height = children.length > 0 ? 120 : Math.max(ibdNodeHeight, 90 + ports.length * 20);
+    const height = isContainer ? 92 : Math.max(ibdNodeHeight, 90 + ports.length * 26);
     return {
       id: node.id,
       width,
       height,
       ports: ports.map((port, index) => ({
-        id: portIdFor(node.id, port),
+        id: portIdFor(node.id, port.name),
         width: 10,
         height: 10,
         layoutOptions: {
-          "org.eclipse.elk.port.side": sideForPort(port),
+          "org.eclipse.elk.port.side": sideForPort(port, node),
           "org.eclipse.elk.port.index": String(index),
         },
       })),
@@ -265,20 +359,12 @@ async function layoutInterconnectionPrepared(prepared: PreparedView): Promise<La
     const laidOut = await elk.layout(graph);
     const laidOutNodes = new Map<string, LaidOutNode>();
     const portCenters = new Map<string, { x: number; y: number }>();
+    const nodePortAnchors = new Map<string, Record<string, { x: number; y: number; side: string }>>();
 
-    const visit = (elkNode: any, ox: number, oy: number) => {
+    const visit = (elkNode: any, ox: number, oy: number, depth: number) => {
       const absX = ox + (elkNode.x ?? 0);
       const absY = oy + (elkNode.y ?? 0);
       const base = nodesById.get(String(elkNode.id));
-      if (base) {
-        laidOutNodes.set(base.id, {
-          ...base,
-          x: absX,
-          y: absY,
-          width: elkNode.width ?? ibdNodeWidth,
-          height: elkNode.height ?? ibdNodeHeight,
-        });
-      }
       for (const port of elkNode.ports ?? []) {
         const pw = port.width ?? 10;
         const ph = port.height ?? 10;
@@ -291,14 +377,36 @@ async function layoutInterconnectionPrepared(prepared: PreparedView): Promise<La
               : absX + (port.x ?? 0) + pw / 2;
         const y = absY + (port.y ?? 0) + ph / 2;
         portCenters.set(String(port.id), { x, y });
+        if (base) {
+          const portName = String(port.id).split("__port__").pop() ?? String(port.id);
+          const anchors = nodePortAnchors.get(base.id) ?? {};
+          anchors[portName] = { x: x - absX, y: y - absY, side: String(side || "") };
+          nodePortAnchors.set(base.id, anchors);
+        }
+      }
+      if (base) {
+        const hasLayoutChildren = Array.isArray(elkNode.children) && elkNode.children.length > 0;
+        laidOutNodes.set(base.id, {
+          ...base,
+          x: absX,
+          y: absY,
+          width: elkNode.width ?? ibdNodeWidth,
+          height: elkNode.height ?? ibdNodeHeight,
+          attributes: {
+            ...(base.attributes ?? {}),
+            _isLayoutContainer: hasLayoutChildren,
+            _layoutDepth: depth,
+            _portAnchors: nodePortAnchors.get(base.id),
+          },
+        });
       }
       for (const child of elkNode.children ?? []) {
-        visit(child, absX, absY);
+        visit(child, absX, absY, depth + 1);
       }
     };
 
     for (const child of laidOut.children ?? []) {
-      visit(child, 0, 0);
+      visit(child, 0, 0, 0);
     }
 
     const edgeLayout = new Map<string, any>();
@@ -317,8 +425,8 @@ async function layoutInterconnectionPrepared(prepared: PreparedView): Promise<La
       const elkEdge = elkEdges.find((item) => item.id === edge.id);
       return {
         ...edge,
-        sourceNode: nodesById.get(edge.source),
-        targetNode: nodesById.get(edge.target),
+        sourceNode: laidOutNodes.get(edge.source),
+        targetNode: laidOutNodes.get(edge.target),
         layout: layout ? { sections: layout.sections as EdgeSection[] } : undefined,
         attributes: {
           ...(edge.attributes ?? {}),
@@ -341,10 +449,11 @@ function fallbackLayout(prepared: PreparedView): LayoutResult {
   const columns = Math.max(1, Math.ceil(Math.sqrt(prepared.nodes.length || 1)));
   const nodes = prepared.nodes.map((node, index) => ({
     ...node,
+    compartments: collectCompartments(node),
     x: (index % columns) * (width + 60),
     y: Math.floor(index / columns) * (height + 64),
     width,
-    height
+    height: Math.max(height, computeNodeHeight(collectCompartments(node), { maxLinesPerCompartment: 8 })),
   }));
   const byId = new Map(nodes.map((node) => [node.id, node]));
   return { nodes, edges: prepared.edges.map((edge) => ({ ...edge, sourceNode: byId.get(edge.source), targetNode: byId.get(edge.target) })) };
@@ -360,7 +469,7 @@ function drawEdges(
     if (!edge.sourceNode || !edge.targetNode) continue;
     const path = edge.layout?.sections?.[0] ? pathFromSection(edge.layout.sections[0]) : pathFallback(edge);
     const edgeKind = edge.edgeKind ?? normalizeEdgeKind(edge.label);
-    group
+    const pathSelection = group
       .append("path")
       .attr("class", `${isInterconnectionView ? "ibd-connector" : "general-connector"} viz-edge viz-edge--${edgeKind}`)
       .attr("d", path)
@@ -372,7 +481,8 @@ function drawEdges(
       .attr("stroke", "var(--vscode-editor-foreground, #d0d0d0)")
       .attr("stroke-width", edgeKind === "hierarchy" ? 1.4 : 1.8)
       .attr("opacity", 0.85);
-    if (edgeKind !== "hierarchy" && edge.label) {
+    applyEdgeMarker(pathSelection, edgeKind, isInterconnectionView);
+    if (shouldRenderEdgeLabel(edge, edgeKind, isInterconnectionView)) {
       const midpoint = edgeMidpoint(edge);
       group
         .append("text")
@@ -388,17 +498,28 @@ function drawEdges(
   }
 }
 
+function shouldRenderEdgeLabel(edge: LaidOutEdge, edgeKind: string, isInterconnectionView: boolean): boolean {
+  if (!edge.label) return false;
+  if (!isInterconnectionView) return edgeKind !== "hierarchy";
+  const label = edge.label.trim().toLowerCase();
+  const relationType = String(edge.attributes?.relationType ?? "").trim().toLowerCase();
+  const generic = new Set(["", "connect", "connection", "flow", "interface", "binding", "bind", "relationship"]);
+  if (generic.has(label) || generic.has(relationType)) return false;
+  return Boolean(edge.attributes?.itemType) || label.length > 0;
+}
+
 function drawNodes(
   root: d3.Selection<SVGGElement, unknown, null, undefined>,
   nodes: LaidOutNode[],
   options: RenderOptions,
   isInterconnectionView = false,
 ): void {
+  const renderNodes = isInterconnectionView ? orderIbdNodesForPaint(nodes) : nodes;
   const groups = root
     .append("g")
     .attr("class", "viz-nodes")
     .selectAll("g")
-    .data(nodes)
+    .data(renderNodes)
     .enter()
     .append("g")
     .attr("class", (d: LaidOutNode) => {
@@ -410,7 +531,41 @@ function drawNodes(
     .attr("transform", (d: LaidOutNode) => `translate(${d.x || 0},${d.y || 0})`)
     .attr("data-node-id", (d: LaidOutNode) => d.id)
     .attr("data-element-name", (d: LaidOutNode) => d.label)
+    .attr("data-bounds", (d: LaidOutNode) =>
+      [d.x || 0, d.y || 0, d.width || (isInterconnectionView ? ibdNodeWidth : nodeWidth), d.height || (isInterconnectionView ? ibdNodeHeight : nodeHeight)].join(",")
+    )
     .on("click", (_event: unknown, d: LaidOutNode) => options.onNodeClick?.(d));
+
+  if (!isInterconnectionView) {
+    groups.each(function (d: LaidOutNode) {
+      const group = d3.select(this);
+      group.selectAll("*").remove();
+      const compartments = d.compartments ?? collectCompartments(d);
+      const kind = d.kind.toLowerCase();
+      const isDefinition = kind.includes("def") || kind.includes("definition");
+      renderSysMLNode(group as any, compartments, {
+        x: 0,
+        y: 0,
+        width: d.width || nodeWidth,
+        height: d.height || computeNodeHeight(compartments, { maxLinesPerCompartment: 8 }),
+        nodeClass: "",
+        dataElementName: d.label,
+        strokeColor: typeColor(d.kind),
+        isDefinition,
+        selected: Boolean(options.selectedNodeId && d.id === options.selectedNodeId),
+        config: { maxLinesPerCompartment: 8 },
+      });
+    });
+    return;
+  }
+
+  groups.each(function (d: LaidOutNode) {
+    const group = d3.select(this);
+    group.selectAll("*").remove();
+    renderIbdNode(group as any, d, Boolean(options.selectedNodeId && d.id === options.selectedNodeId));
+  });
+  return;
+
   groups
     .append("rect")
     .attr("width", (d: LaidOutNode) => d.width || nodeWidth)
@@ -504,6 +659,212 @@ function drawNodes(
     .text((d: LaidOutNode) => formatCompartmentSummary(d.attributes));
 }
 
+function orderIbdNodesForPaint(nodes: LaidOutNode[]): LaidOutNode[] {
+  return nodes.slice().sort((a, b) => {
+    const aContainer = Boolean((a.attributes ?? {})._isLayoutContainer || (a.attributes ?? {}).isSyntheticContainer || (a.attributes ?? {}).isPackageContainer);
+    const bContainer = Boolean((b.attributes ?? {})._isLayoutContainer || (b.attributes ?? {}).isSyntheticContainer || (b.attributes ?? {}).isPackageContainer);
+    if (aContainer !== bContainer) return aContainer ? -1 : 1;
+    const aDepth = Number((a.attributes ?? {})._layoutDepth ?? 0);
+    const bDepth = Number((b.attributes ?? {})._layoutDepth ?? 0);
+    if (aContainer && bContainer && aDepth !== bDepth) return aDepth - bDepth;
+    if (!aContainer && !bContainer && aDepth !== bDepth) return aDepth - bDepth;
+    return nodes.indexOf(a) - nodes.indexOf(b);
+  });
+}
+
+function applyEdgeMarker(
+  path: d3.Selection<SVGPathElement, unknown, null, undefined>,
+  edgeKind: string,
+  isInterconnectionView: boolean,
+): void {
+  if (isInterconnectionView) {
+    if (edgeKind === "flow") {
+      path.attr("stroke", "var(--vscode-charts-green, #2f8f46)").attr("stroke-width", 2.5).style("marker-end", "url(#ibd-flow-arrow)");
+    } else if (edgeKind === "interface") {
+      path.attr("stroke", "var(--vscode-charts-purple, #8b5cf6)").style("stroke-dasharray", "8,4").style("marker-end", "url(#ibd-interface-arrow)");
+    } else if (edgeKind === "bind" || edgeKind === "binding") {
+      path.attr("stroke", "#2F6FDD").style("stroke-dasharray", "6,4").style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
+    } else if (edgeKind === "connection" || edgeKind === "relationship") {
+      path.attr("stroke", "#2F6FDD").attr("stroke-width", 2).style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
+    } else {
+      path.style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
+    }
+    return;
+  }
+  if (edgeKind === "specializes") {
+    path.style("marker-end", "url(#general-d3-specializes)").style("stroke-width", "1.7px");
+  } else if (edgeKind === "typing") {
+    path.style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "5,3");
+  } else if (edgeKind === "hierarchy") {
+    path.style("marker-start", "url(#general-d3-diamond)").style("marker-end", "none");
+  } else if (edgeKind === "bind") {
+    path.style("stroke-dasharray", "2,2").style("marker-end", "none");
+  } else if (edgeKind === "allocate") {
+    path.style("marker-end", "url(#general-d3-arrow)").style("stroke-dasharray", "8,4");
+  } else {
+    path.style("marker-end", "url(#general-d3-arrow)");
+  }
+}
+
+function renderIbdNode(
+  group: d3.Selection<SVGGElement, LaidOutNode, null, undefined>,
+  node: LaidOutNode,
+  selected: boolean,
+): void {
+  const attrs = (node.attributes ?? {}) as Record<string, unknown>;
+  const isContainer = Boolean(attrs.isSyntheticContainer) || Boolean(attrs.isPackageContainer) || Boolean(attrs._isLayoutContainer);
+  const width = node.width ?? ibdNodeWidth;
+  const height = node.height ?? ibdNodeHeight;
+  const kind = node.kind.toLowerCase();
+  const isDefinition = kind.includes("def");
+  const stroke = selected ? "#FFD700" : "var(--vscode-panel-border, #E5E7EB)";
+  const strokeWidth = selected ? 4 : isContainer ? 2 : isDefinition ? 2 : 3;
+  const headerHeight = isContainer ? 28 : attrs.partType ? 41 : 33;
+  group.classed("ibd-container", isContainer);
+
+  group
+    .append("rect")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("rx", isDefinition ? 4 : 8)
+    .attr("class", "graph-node-background")
+    .attr("data-original-stroke", "var(--vscode-panel-border, #E5E7EB)")
+    .attr("data-original-width", `${strokeWidth}px`)
+    .style("fill", "var(--vscode-editor-background)")
+    .style("stroke", stroke)
+    .style("stroke-width", `${strokeWidth}px`)
+    .style("stroke-dasharray", isContainer && !attrs.isPackageContainer ? "4,4" : isDefinition ? "6,3" : "none");
+
+  group
+    .append("rect")
+    .attr("width", width)
+    .attr("height", headerHeight)
+    .attr("rx", 6)
+    .style("fill", "var(--vscode-button-secondaryBackground)");
+
+  if (isContainer) {
+    group
+      .append("text")
+      .attr("x", width / 2)
+      .attr("y", headerHeight / 2 + 4)
+      .attr("text-anchor", "middle")
+      .text(node.label)
+      .style("font-size", "11px")
+      .style("font-weight", "bold")
+      .style("fill", "var(--vscode-editor-foreground)");
+    drawIbdPorts(group, node, width, headerHeight);
+    return;
+  }
+
+  const stereo = kind.includes("part def") ? "part def" : kind.includes("part") ? "part" : node.kind.replace(/_/g, " ");
+  group
+    .append("text")
+    .attr("x", width / 2)
+    .attr("y", 17)
+    .attr("text-anchor", "middle")
+    .text(`\u00ab${stereo}\u00bb`)
+    .style("font-size", "9px")
+    .style("fill", "var(--vscode-editor-foreground)");
+
+  group
+    .append("text")
+    .attr("class", "node-name-text viz-node-name")
+    .attr("x", width / 2)
+    .attr("y", 31)
+    .attr("text-anchor", "middle")
+    .text(truncate(node.label, 18))
+    .style("font-size", "11px")
+    .style("font-weight", "bold")
+    .style("fill", "var(--vscode-editor-foreground)");
+
+  const typedBy = String(attrs.partType || "");
+  if (typedBy) {
+    group
+      .append("text")
+      .attr("x", width / 2)
+      .attr("y", 43)
+      .attr("text-anchor", "middle")
+      .text(`: ${truncate(typedBy, 18)}`)
+      .style("font-size", "10px")
+      .style("font-style", "italic")
+      .style("fill", "var(--vscode-editor-foreground)");
+  }
+
+  const contentStartY = typedBy ? 50 : 38;
+  const children = Array.isArray(attrs.children) ? attrs.children : [];
+  children.slice(0, 8).forEach((child, index) => {
+    const childRecord = child && typeof child === "object" ? child as Record<string, unknown> : {};
+    const childType = String(childRecord.type || "").toLowerCase();
+    const prefix = childType.includes("attribute") ? "[attr] " : childType.includes("state") ? "[state] " : childType.includes("part") ? "[part] " : "";
+    const name = String(childRecord.name || "");
+    if (!name) return;
+    group
+      .append("text")
+      .attr("x", 6)
+      .attr("y", contentStartY + 8 + index * 12)
+      .text(truncate(`${prefix}${name}`, 28))
+      .style("font-size", "9px")
+      .style("fill", "var(--vscode-descriptionForeground)");
+  });
+
+  drawIbdPorts(group, node, width, contentStartY + 20);
+}
+
+function drawIbdPorts(
+  group: d3.Selection<SVGGElement, LaidOutNode, null, undefined>,
+  node: LaidOutNode,
+  width: number,
+  fallbackStartY: number,
+): void {
+  const attrs = (node.attributes ?? {}) as Record<string, unknown>;
+  const details = Array.isArray(attrs.portDetails) ? attrs.portDetails as PreparedPort[] : [];
+  const portNames = details.length > 0
+    ? details.map((port) => port.name)
+    : Array.isArray(attrs.ports) ? (attrs.ports as unknown[]).map((port) => String(port)) : [];
+  const anchors = (attrs._portAnchors && typeof attrs._portAnchors === "object" ? attrs._portAnchors : {}) as Record<string, { x: number; y: number; side: string }>;
+  const portSize = 10;
+  const fallbackSpacing = 26;
+  portNames.forEach((name, index) => {
+    const sanitized = name.replace(/[^A-Za-z0-9_.-]/g, "_");
+    const anchor = anchors[sanitized] ?? anchors[name];
+    const side = anchor?.side || (name.toLowerCase().startsWith("in") ? "WEST" : "EAST");
+    const x = anchor?.x ?? (side === "WEST" ? 0 : width);
+    const y = anchor?.y ?? (fallbackStartY + index * fallbackSpacing);
+    const color = "var(--vscode-button-background, #2F6FDD)";
+    group
+      .append("rect")
+      .attr("class", "port-icon")
+      .attr("x", x - portSize / 2)
+      .attr("y", y - portSize / 2)
+      .attr("width", portSize)
+      .attr("height", portSize)
+      .style("fill", "none")
+      .style("stroke", color)
+      .style("stroke-width", "1.8px");
+    group
+      .append("text")
+      .attr("x", side === "WEST" ? Math.min(width - 10, x + 16) : Math.max(10, x - 16))
+      .attr("y", y + 3)
+      .attr("text-anchor", side === "WEST" ? "start" : "end")
+      .text(truncate(name, 18))
+      .style("font-size", "8px")
+      .style("font-weight", "500")
+      .style("fill", color);
+  });
+}
+
+function typeColor(kind: string): string {
+  const normalized = kind.toLowerCase();
+  if (normalized.includes("requirement")) return "#5B8FC4";
+  if (normalized.includes("action")) return "#D4A02C";
+  if (normalized.includes("state")) return "#B85C38";
+  if (normalized.includes("interface")) return "#7BAA7D";
+  if (normalized.includes("port")) return "#0E7C7B";
+  if (normalized.includes("attribute")) return "#4A9B7F";
+  if (normalized.includes("part")) return "#2D8A6E";
+  return "var(--vscode-panel-border, #E5E7EB)";
+}
+
 function formatCompartmentSummary(attributes: Record<string, unknown> | undefined): string {
   if (!attributes) return "";
   const parts = Array.isArray(attributes.parts) ? attributes.parts : [];
@@ -521,6 +882,7 @@ function drawInterconnectionContainers(
   prepared: PreparedView,
   nodes: LaidOutNode[],
 ): void {
+  if (prepared.nodes.some((node) => Boolean((node.attributes ?? {}).isSyntheticContainer))) return;
   const packageGroups = ((prepared.meta?.packageContainerGroups as unknown[]) || []) as Array<Record<string, unknown>>;
   if (packageGroups.length === 0) return;
   const nodeById = new Map(nodes.map((node) => [node.id, node]));
@@ -648,7 +1010,15 @@ function fit(
 }
 
 function addMarkers(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>): void {
-  svg.append("defs").append("marker").attr("id", "viz-arrow").attr("markerWidth", 10).attr("markerHeight", 10).attr("refX", 9).attr("refY", 3).attr("orient", "auto").attr("markerUnits", "strokeWidth").append("path").attr("d", "M0,0 L0,6 L9,3 z");
+  const defs = svg.append("defs");
+  defs.append("marker").attr("id", "viz-arrow").attr("markerWidth", 10).attr("markerHeight", 10).attr("refX", 9).attr("refY", 3).attr("orient", "auto").attr("markerUnits", "strokeWidth").append("path").attr("d", "M0,0 L0,6 L9,3 z").attr("fill", "var(--vscode-editor-foreground, #d0d0d0)");
+  defs.append("marker").attr("id", "general-d3-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 8).attr("refY", 0).attr("markerWidth", 5).attr("markerHeight", 5).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4").style("fill", "var(--vscode-editor-foreground, #d0d0d0)");
+  defs.append("marker").attr("id", "general-d3-arrow-open").attr("viewBox", "0 -5 10 10").attr("refX", 9).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4").style("fill", "none").style("stroke", "var(--vscode-editor-foreground, #d0d0d0)").style("stroke-width", "1.3");
+  defs.append("marker").attr("id", "general-d3-specializes").attr("viewBox", "0 -6 12 12").attr("refX", 11).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,0L10,-4L10,4Z").style("fill", "var(--vscode-editor-background, #1e1e1e)").style("stroke", "var(--vscode-editor-foreground, #d0d0d0)").style("stroke-width", "1.2");
+  defs.append("marker").attr("id", "general-d3-diamond").attr("viewBox", "0 -6 12 12").attr("refX", 2).attr("refY", 0).attr("markerWidth", 7).attr("markerHeight", 7).attr("orient", "auto").append("path").attr("d", "M0,0L5,-4L10,0L5,4Z").style("fill", "var(--vscode-editor-foreground, #d0d0d0)");
+  defs.append("marker").attr("id", "ibd-connection-dot").attr("viewBox", "-5 -5 10 10").attr("refX", 0).attr("refY", 0).attr("markerWidth", 5).attr("markerHeight", 5).attr("orient", "auto").append("circle").attr("r", 3).style("fill", "var(--vscode-editor-background, #1e1e1e)").style("stroke", "#2F6FDD").style("stroke-width", "1.5");
+  defs.append("marker").attr("id", "ibd-flow-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4Z").style("fill", "var(--vscode-charts-green, #2f8f46)");
+  defs.append("marker").attr("id", "ibd-interface-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4Z").style("fill", "none").style("stroke", "var(--vscode-charts-purple, #8b5cf6)").style("stroke-width", "1.5");
 }
 
 function exportSvg(svgNode: SVGSVGElement, bounds: ContentBounds): string {

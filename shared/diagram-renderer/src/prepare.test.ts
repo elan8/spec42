@@ -30,6 +30,21 @@ describe("shared prepareViewData", () => {
     expect(prepared.edges[0].edgeKind).toBe("typing");
   });
 
+  it("prefers canonical generalViewGraph when present", () => {
+    const prepared = prepareViewData({
+      view: "general-view",
+      graph: {
+        nodes: [{ id: "legacy", name: "Legacy", type: "part_def" }],
+        edges: [],
+      },
+      generalViewGraph: {
+        nodes: [{ id: "canonical", name: "Canonical", type: "part_def" }],
+        edges: [],
+      },
+    });
+    expect(prepared.nodes.map((n) => n.id)).toEqual(["canonical"]);
+  });
+
   it("maps interconnection payload and filters invalid connectors", () => {
     const prepared = prepareViewData({
       view: "interconnection-view",
@@ -58,11 +73,11 @@ describe("shared prepareViewData", () => {
       ibd: {
         rootCandidates: ["ConnectedBlocks", "IT"],
         packageContainerGroups: [
-          { id: "pkg1", name: "ConnectedBlocks", memberIds: ["p1", "p2"] },
+          { id: "pkg1", name: "ConnectedBlocks", memberIds: ["Pkg.Engine", "Pkg.Controller"] },
         ],
         parts: [
-          { id: "p1", name: "Engine", type: "part" },
-          { id: "p2", name: "Controller", type: "part" },
+          { id: "p1", name: "Engine", qualifiedName: "Pkg.Engine", type: "part" },
+          { id: "p2", name: "Controller", qualifiedName: "Pkg.Controller", type: "part" },
         ],
         connectors: [
           { id: "c1", sourcePartId: "p1", targetPartId: "p2", sourceId: "Engine.out", targetId: "Controller.in", type: "flow" },
@@ -71,7 +86,41 @@ describe("shared prepareViewData", () => {
     });
     expect(prepared.meta?.rootCandidates).toEqual(["ConnectedBlocks", "IT"]);
     expect(Array.isArray(prepared.meta?.packageContainerGroups)).toBe(true);
+    expect(prepared.nodes.some((node) => node.id === "pkg1")).toBe(true);
+    expect(prepared.nodes.find((node) => node.id === "p1")?.attributes?.containerId).toBe("pkg1");
     expect(prepared.edges[0].attributes?.relationType).toBe("flow");
+  });
+
+  it("normalizes interconnection containment aliases for compound layout", () => {
+    const prepared = prepareViewData({
+      view: "interconnection-view",
+      ibd: {
+        parts: [
+          { id: "root-id", name: "Drone", qualifiedName: "Pkg.Drone", type: "part def" },
+          { id: "controller-id", name: "flightController", qualifiedName: "Pkg.Drone.flightController", containerId: "Pkg.Drone", type: "part" },
+          { id: "gps-id", name: "gps", qualifiedName: "Pkg.Drone.flightController.gps", containerId: "Pkg.Drone.flightController", type: "part" },
+        ],
+      },
+    });
+
+    expect(prepared.nodes.find((node) => node.id === "controller-id")?.attributes?.containerId).toBe("root-id");
+    expect(prepared.nodes.find((node) => node.id === "gps-id")?.attributes?.containerId).toBe("controller-id");
+  });
+
+  it("drops empty synthetic interconnection containers", () => {
+    const prepared = prepareViewData({
+      view: "interconnection-view",
+      ibd: {
+        packageContainerGroups: [
+          { id: "empty-root", label: "SurveillanceDrone", memberIds: ["missing.member"] },
+        ],
+        parts: [
+          { id: "airframe", name: "airframe", qualifiedName: "Pkg.SurveillanceDrone.airframe", type: "part" },
+        ],
+      },
+    });
+
+    expect(prepared.nodes.map((node) => node.id)).toEqual(["airframe"]);
   });
 
   it("adds synthetic initial state when missing", () => {

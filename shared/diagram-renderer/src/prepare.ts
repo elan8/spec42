@@ -96,7 +96,7 @@ export function prepareViewData(visualizationInput: unknown): PreparedView {
   if (view === "action-flow-view") return prepareActivity(visualization);
   if (view === "state-transition-view") return prepareState(visualization);
   if (view === "sequence-view") return prepareSequence(visualization);
-  return prepareGraph(visualization?.graph, visualization);
+  return prepareGraph(visualization?.generalViewGraph ?? visualization?.graph, visualization);
 }
 
 function prepareGraph(graphInput: unknown, visualization: VisualizationPayload): PreparedView {
@@ -123,6 +123,9 @@ function prepareGraph(graphInput: unknown, visualization: VisualizationPayload):
         target: asString(edge.target),
         label,
         edgeKind: normalizeEdgeKind(label),
+        attributes: {
+          relationType: normalizeEdgeKind(label),
+        },
       };
     });
   return {
@@ -150,9 +153,10 @@ function prepareInterconnection(visualization: VisualizationPayload): PreparedVi
   const connectors = asArray(scoped.connectors ?? ibd.connectors).map(asRecord);
   const containerGroups = asArray(scoped.containerGroups ?? ibd.containerGroups).map(asRecord);
   const packageContainerGroups = asArray(scoped.packageContainerGroups ?? ibd.packageContainerGroups).map(asRecord);
-  const nodes = parts.map((part) => {
+  const baseNodes = parts.map((part) => {
     const partId = asString(part.id ?? part.name);
     const parent = asString(part.containerId ?? part.parentId, "");
+    const portDetails = portsForPart(ports, part);
     return {
       id: partId,
       label: asString(part.name ?? part.id, "Unnamed"),
@@ -163,28 +167,69 @@ function prepareInterconnection(visualization: VisualizationPayload): PreparedVi
         ...asRecord(part.attributes),
         containerId: parent || null,
         qualifiedName: asString(part.qualifiedName),
-        ports: portsForPart(ports, part),
+        partType: firstPresent(
+          asRecord(part.attributes).partType,
+          asRecord(part.attributes).type,
+          asRecord(part.attributes).typedBy,
+          part.partType,
+        ),
+        children: asArray(part.children),
+        ports: portDetails.map((port) => port.name),
+        portDetails,
       },
     };
   });
+  const nodes = synthesizeInterconnectionContainers(baseNodes, containerGroups, packageContainerGroups);
   const nodeIds = new Set(nodes.map((node) => node.id));
+  const nodeById = new Map(nodes.map((node) => [node.id, node]));
+  const concreteNodes = nodes.filter((node) => !asRecord(node.attributes).isSyntheticContainer);
+  const resolveEndpointPartId = (explicit: unknown, endpoint: unknown): string => {
+    const explicitText = asString(explicit);
+    if (explicitText && nodeIds.has(explicitText)) return explicitText;
+    const endpointText = asString(endpoint).replace(/::/g, ".").trim();
+    if (!endpointText) return explicitText;
+    const direct = concreteNodes.find((node) => {
+      const attrs = asRecord(node.attributes);
+      return [node.id, node.label, asString(attrs.qualifiedName).replace(/::/g, ".")]
+        .filter(Boolean)
+        .includes(endpointText);
+    });
+    if (direct) return direct.id;
+    const best = concreteNodes
+      .map((node) => {
+        const qn = asString(asRecord(node.attributes).qualifiedName, node.label).replace(/::/g, ".").trim();
+        const aliases = [qn, node.label, node.id].filter(Boolean);
+        const matched = aliases
+          .filter((alias) => endpointText === alias || endpointText.startsWith(`${alias}.`))
+          .sort((a, b) => b.length - a.length)[0];
+        return matched ? { node, score: matched.length } : null;
+      })
+      .filter((value): value is { node: (typeof nodes)[number]; score: number } => Boolean(value))
+      .sort((a, b) => b.score - a.score)[0];
+    return best?.node.id ?? explicitText;
+  };
   const edges = connectors
     .map((connector, index) => {
-      const source = firstPresent(connector.sourcePartId, connector.source, connector.sourceId, connector.sourcePortPartId);
-      const target = firstPresent(connector.targetPartId, connector.target, connector.targetId, connector.targetPortPartId);
+      const sourceEndpoint = firstPresent(connector.sourceId, connector.source);
+      const targetEndpoint = firstPresent(connector.targetId, connector.target);
+      const source = resolveEndpointPartId(firstPresent(connector.sourcePartId, connector.sourcePortPartId), sourceEndpoint);
+      const target = resolveEndpointPartId(firstPresent(connector.targetPartId, connector.targetPortPartId), targetEndpoint);
+      const type = asString(connector.type ?? connector.relationType ?? connector.rel_type, "connection");
       return {
         id: asString(connector.id, `connector-${index}`),
-        source: source ? asString(source) : "",
-        target: target ? asString(target) : "",
+        source,
+        target,
         label: asString(connector.name ?? connector.type, "connect"),
+        edgeKind: normalizeEdgeKind(type),
         attributes: {
-          sourceId: asString(connector.sourceId ?? connector.source),
-          targetId: asString(connector.targetId ?? connector.target),
-          relationType: asString(connector.type ?? connector.relationType ?? connector.rel_type, "connection"),
+          sourceId: asString(sourceEndpoint),
+          targetId: asString(targetEndpoint),
+          itemType: asString(connector.itemType),
+          relationType: type,
         },
       };
     })
-    .filter((edge) => nodeIds.has(edge.source) && nodeIds.has(edge.target));
+    .filter((edge) => nodeById.has(edge.source) && nodeById.has(edge.target));
   const rootCandidates = asArray(ibd.rootCandidates).map((value) => asString(value)).filter(Boolean);
   return {
     title: scopedName || selectedName || "Interconnection View",
@@ -379,11 +424,142 @@ function firstPresent(...values: unknown[]): unknown {
   return values.find((value) => value != null && asString(value).trim() !== "");
 }
 
-function portsForPart(ports: UnknownRecord[], part: UnknownRecord): string[] {
+function synthesizeInterconnectionContainers(
+  baseNodes: Array<PreparedNode>,
+  containerGroups: UnknownRecord[],
+  packageContainerGroups: UnknownRecord[],
+): PreparedNode[] {
+  const byId = new Map(baseNodes.map((node) => [node.id, node]));
+  const nodes = [...baseNodes];
+  const resolveMember = (memberId: string): PreparedNode | undefined => {
+    const normalized = memberId.replace(/::/g, ".");
+    return (
+      byId.get(memberId) ??
+      baseNodes.find((node) => {
+        const attrs = asRecord(node.attributes);
+        const qualifiedName = asString(attrs.qualifiedName).replace(/::/g, ".");
+        return node.id === memberId || node.label === memberId || qualifiedName === normalized;
+      })
+    );
+  };
+  const addGroup = (group: UnknownRecord, packageGroup: boolean) => {
+    const id = asString(group.id || group.qualifiedPackage || group.qualifiedName || group.label || group.name);
+    if (!id || byId.has(id)) return;
+    const label = asString(group.label || group.name || group.qualifiedPackage || group.qualifiedName || id, "package");
+    const memberIds = groupMemberIds(group);
+    const parentId = asString(group.parentId);
+    const node: PreparedNode = {
+      id,
+      label,
+      kind: "package",
+      attributes: {
+        isSyntheticContainer: true,
+        isPackageContainer: packageGroup,
+        containerId: parentId || null,
+        memberIds,
+        qualifiedName: asString(group.qualifiedPackage || group.qualifiedName || id),
+      },
+    };
+    byId.set(id, node);
+    nodes.push(node);
+    for (const memberId of memberIds) {
+      const member = resolveMember(memberId);
+      if (!member) continue;
+      const attrs = member.attributes ?? {};
+      member.attributes = {
+        ...attrs,
+        containerId: attrs.containerId || id,
+        _fallbackContainerId: id,
+      };
+    }
+  };
+  packageContainerGroups.forEach((group) => addGroup(group, true));
+  containerGroups.forEach((group) => addGroup(group, false));
+  resolveInterconnectionContainerIds(nodes);
+  return pruneEmptySyntheticContainers(nodes);
+}
+
+function resolveInterconnectionContainerIds(nodes: PreparedNode[]): void {
+  const aliases = new Map<string, string>();
+  const addAlias = (alias: unknown, id: string) => {
+    const text = asString(alias).trim();
+    if (!text) return;
+    aliases.set(text, id);
+    aliases.set(text.replace(/::/g, "."), id);
+    aliases.set(text.replace(/\./g, "::"), id);
+  };
+  for (const node of nodes) {
+    const attrs = asRecord(node.attributes);
+    addAlias(node.id, node.id);
+    addAlias(node.label, node.id);
+    addAlias(attrs.qualifiedName, node.id);
+  }
+
+  for (const node of nodes) {
+    const attrs = asRecord(node.attributes);
+    const rawParent = asString(attrs.containerId);
+    const fallbackParent = asString(attrs._fallbackContainerId);
+    const resolved = aliases.get(rawParent) ?? aliases.get(rawParent.replace(/::/g, ".")) ?? aliases.get(fallbackParent);
+    if (resolved && resolved !== node.id) {
+      node.attributes = { ...attrs, containerId: resolved };
+    } else if (rawParent) {
+      node.attributes = { ...attrs, containerId: null };
+    }
+  }
+}
+
+function groupMemberIds(group: UnknownRecord): string[] {
+  return asArray(group.memberPartIds ?? group.memberIds ?? group.nodeIds)
+    .map((value) => asString(value))
+    .filter(Boolean);
+}
+
+function pruneEmptySyntheticContainers(nodes: PreparedNode[]): PreparedNode[] {
+  let current = nodes;
+  let changed = true;
+  while (changed) {
+    changed = false;
+    const childCount = new Map<string, number>();
+    for (const node of current) {
+      const parentId = asString(asRecord(node.attributes).containerId);
+      if (parentId) childCount.set(parentId, (childCount.get(parentId) ?? 0) + 1);
+    }
+    const next = current.filter((node) => {
+      const attrs = asRecord(node.attributes);
+      const emptySynthetic = Boolean(attrs.isSyntheticContainer) && !childCount.has(node.id);
+      if (emptySynthetic) changed = true;
+      return !emptySynthetic;
+    });
+    if (changed) {
+      const ids = new Set(next.map((node) => node.id));
+      for (const node of next) {
+        const attrs = asRecord(node.attributes);
+        const parentId = asString(attrs.containerId);
+        if (parentId && !ids.has(parentId)) {
+          node.attributes = { ...attrs, containerId: null };
+        }
+      }
+    }
+    current = next;
+  }
+  return current;
+}
+
+function portsForPart(ports: UnknownRecord[], part: UnknownRecord): Array<Record<string, unknown> & { name: string }> {
   const id = asString(part.id ?? part.name);
+  const name = asString(part.name);
+  const qualifiedName = asString(part.qualifiedName).replace(/::/g, ".");
   return ports
-    .filter((port) => asString(port.partId ?? port.ownerId ?? port.containerId, "") === id)
-    .map((port) => asString(port.name ?? port.id))
-    .filter(Boolean)
+    .filter((port) => {
+      const parent = asString(port.partId ?? port.ownerId ?? port.containerId ?? port.parentId, "").replace(/::/g, ".");
+      return parent === id || parent === name || parent === qualifiedName;
+    })
+    .map((port) => ({
+      ...port,
+      name: asString(port.name ?? port.id),
+      id: asString(port.id ?? port.name),
+      parentId: asString(port.parentId ?? port.partId ?? port.ownerId ?? port.containerId),
+    }))
+    .filter((port) => Boolean(port.name))
     .slice(0, 8);
 }
