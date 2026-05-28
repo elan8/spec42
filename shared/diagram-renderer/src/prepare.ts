@@ -23,6 +23,7 @@ export interface PreparedView {
   view: string;
   nodes: PreparedNode[];
   edges: PreparedEdge[];
+  meta?: Record<string, unknown>;
 }
 
 type UnknownRecord = Record<string, unknown>;
@@ -37,6 +38,7 @@ interface VisualizationPayload extends UnknownRecord {
   ibd?: UnknownRecord;
   activityDiagrams?: UnknownArray;
   sequenceDiagrams?: UnknownArray;
+  synthesizeInitialState?: boolean;
 }
 
 function asRecord(value: unknown): UnknownRecord {
@@ -146,6 +148,8 @@ function prepareInterconnection(visualization: VisualizationPayload): PreparedVi
   const parts = asArray(scoped.parts ?? ibd.parts).map(asRecord);
   const ports = asArray(scoped.ports ?? ibd.ports).map(asRecord);
   const connectors = asArray(scoped.connectors ?? ibd.connectors).map(asRecord);
+  const containerGroups = asArray(scoped.containerGroups ?? ibd.containerGroups).map(asRecord);
+  const packageContainerGroups = asArray(scoped.packageContainerGroups ?? ibd.packageContainerGroups).map(asRecord);
   const nodes = parts.map((part) => {
     const partId = asString(part.id ?? part.name);
     const parent = asString(part.containerId ?? part.parentId, "");
@@ -176,16 +180,33 @@ function prepareInterconnection(visualization: VisualizationPayload): PreparedVi
         attributes: {
           sourceId: asString(connector.sourceId ?? connector.source),
           targetId: asString(connector.targetId ?? connector.target),
+          relationType: asString(connector.type ?? connector.relationType ?? connector.rel_type, "connection"),
         },
       };
     })
     .filter((edge) => nodeIds.has(edge.source) && nodeIds.has(edge.target));
-  return { title: scopedName || selectedName || "Interconnection View", view: "interconnection-view", nodes, edges };
+  const rootCandidates = asArray(ibd.rootCandidates).map((value) => asString(value)).filter(Boolean);
+  return {
+    title: scopedName || selectedName || "Interconnection View",
+    view: "interconnection-view",
+    nodes,
+    edges,
+    meta: {
+      selectedRoot: scopedName || null,
+      rootCandidates,
+      containerGroups,
+      packageContainerGroups,
+    },
+  };
 }
 
 function prepareActivity(visualization: VisualizationPayload): PreparedView {
-  const selected = selectNamedDiagram(visualization?.activityDiagrams, visualization?.selectedViewName);
-  const selectedRecord = asRecord(selected);
+  const selected = visualization?.selectedViewName
+    ? selectNamedDiagram(visualization?.activityDiagrams, visualization?.selectedViewName)
+    : null;
+  const fallbackDiagram = bestBehaviorDiagram(asArray(visualization?.activityDiagrams).map(asRecord));
+  const effective = selected ?? fallbackDiagram;
+  const selectedRecord = asRecord(effective);
   const nodes = asArray(selectedRecord.nodes ?? selectedRecord.actions ?? selectedRecord.steps).map((nodeRaw, index) => {
     const node = asRecord(nodeRaw);
     return {
@@ -209,10 +230,32 @@ function prepareActivity(visualization: VisualizationPayload): PreparedView {
       };
     })
     .filter((edge) => nodeIds.has(edge.source) && nodeIds.has(edge.target));
-  return { title: asString(selectedRecord.name ?? visualization?.selectedViewName, "Action Flow View"), view: "action-flow-view", nodes, edges };
+  return {
+    title: asString(selectedRecord.name ?? visualization?.selectedViewName, "Action Flow View"),
+    view: "action-flow-view",
+    nodes,
+    edges,
+    meta: {
+      selectedDiagramId: asString(selectedRecord.id),
+      nodeCount: nodes.length,
+      edgeCount: edges.length,
+    },
+  };
 }
 
 function prepareState(visualization: VisualizationPayload): PreparedView {
+  const selectedStateDiagram = selectNamedDiagram((visualization as UnknownRecord).stateDiagrams, visualization?.selectedViewName);
+  if (selectedStateDiagram) {
+    const diagram = asRecord(selectedStateDiagram);
+    const prepared = diagramToPrepared(diagram, "state-transition-view", "State Transition View");
+    return {
+      ...prepared,
+      meta: {
+        selectedDiagramId: asString(diagram.id),
+        selectedDiagramName: asString(diagram.name),
+      },
+    };
+  }
   const graph = asRecord(visualization?.graph);
   const stateNodes = asArray(graph.nodes)
     .map(asRecord)
@@ -237,12 +280,46 @@ function prepareState(visualization: VisualizationPayload): PreparedView {
       };
     })
     .filter((edge) => ids.has(edge.source) && ids.has(edge.target));
-  return { title: asString(visualization?.selectedViewName, "State Transition View"), view: "state-transition-view", nodes, edges };
+  const synthesizeInitial = visualization?.synthesizeInitialState === true;
+  const hasInitial = nodes.some((node) => node.kind.toLowerCase().includes("initial") || node.label.toLowerCase() === "initial");
+  const withSyntheticInitial = synthesizeInitial && !hasInitial && nodes.length > 0
+    ? [{ id: "__synthetic_initial__", label: "Initial", kind: "initial", attributes: { synthetic: true } }, ...nodes]
+    : nodes;
+  const idsWithInitial = new Set(withSyntheticInitial.map((node) => node.id));
+  const edgesWithInitial =
+    !hasInitial && withSyntheticInitial.length > 1
+      ? [
+          {
+            id: "transition-synthetic-initial",
+            source: "__synthetic_initial__",
+            target: withSyntheticInitial[1].id,
+            label: "initial",
+          },
+          ...edges,
+        ]
+      : edges;
+  return {
+    title: asString(visualization?.selectedViewName, "State Transition View"),
+    view: "state-transition-view",
+    nodes: withSyntheticInitial.filter((node) => idsWithInitial.has(node.id)),
+    edges: edgesWithInitial.filter((edge) => idsWithInitial.has(edge.source) && idsWithInitial.has(edge.target)),
+    meta: {
+      syntheticInitial: synthesizeInitial && !hasInitial && nodes.length > 0,
+    },
+  };
 }
 
 function prepareSequence(visualization: VisualizationPayload): PreparedView {
   const selected = selectNamedDiagram(visualization?.sequenceDiagrams, visualization?.selectedViewName);
-  if (selected) return diagramToPrepared(selected, "sequence-view", "Sequence View");
+  if (selected) {
+    const prepared = diagramToPrepared(selected, "sequence-view", "Sequence View");
+    return {
+      ...prepared,
+      meta: {
+        selectedDiagramName: asString(asRecord(selected).name),
+      },
+    };
+  }
   return prepareGraph(visualization?.graph, visualization);
 }
 
@@ -284,6 +361,18 @@ function selectNamedDiagram(diagramsInput: unknown, selectedName: string | undef
         asString(diagram.id) === selectedName || asString(diagram.name) === selectedName,
     ) ?? null
   );
+}
+
+function bestBehaviorDiagram(diagrams: UnknownRecord[]): UnknownRecord | null {
+  if (diagrams.length === 0) return null;
+  const score = (diagram: UnknownRecord): number => {
+    const nodes = asArray(diagram.nodes ?? diagram.actions ?? diagram.steps);
+    const edges = asArray(diagram.edges ?? diagram.flows ?? diagram.transitions);
+    return (nodes.length * 10) + edges.length;
+  };
+  return diagrams
+    .slice()
+    .sort((a, b) => score(b) - score(a))[0] ?? null;
 }
 
 function firstPresent(...values: unknown[]): unknown {

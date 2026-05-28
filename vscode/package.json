@@ -481,6 +481,11 @@
           "maximum": 4,
           "description": "Scale factor for PNG/SVG export of the visualization."
         },
+        "spec42.visualization.useSharedRenderer": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use shared diagram renderer for general/interconnection views (experimental parity mode)."
+        },
         "spec42.experimentalFeatures.enabled": {
           "type": "boolean",
           "default": false,

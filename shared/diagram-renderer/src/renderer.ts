@@ -90,7 +90,10 @@ export async function renderVisualization(
 
   const isInterconnectionView = prepared.view === "interconnection-view";
   const layout = await layoutPrepared(prepared);
-  drawEdges(root, layout.edges);
+  if (isInterconnectionView) {
+    drawInterconnectionContainers(root, prepared, layout.nodes);
+  }
+  drawEdges(root, layout.edges, isInterconnectionView);
   drawNodes(root, layout.nodes, options, isInterconnectionView);
   const bounds = contentBounds(layout);
   fit(svg, zoom, bounds, width, height, isInterconnectionView);
@@ -347,7 +350,11 @@ function fallbackLayout(prepared: PreparedView): LayoutResult {
   return { nodes, edges: prepared.edges.map((edge) => ({ ...edge, sourceNode: byId.get(edge.source), targetNode: byId.get(edge.target) })) };
 }
 
-function drawEdges(root: d3.Selection<SVGGElement, unknown, null, undefined>, edges: LaidOutEdge[]): void {
+function drawEdges(
+  root: d3.Selection<SVGGElement, unknown, null, undefined>,
+  edges: LaidOutEdge[],
+  isInterconnectionView: boolean,
+): void {
   const group = root.append("g").attr("class", "viz-edges");
   for (const edge of edges) {
     if (!edge.sourceNode || !edge.targetNode) continue;
@@ -355,8 +362,12 @@ function drawEdges(root: d3.Selection<SVGGElement, unknown, null, undefined>, ed
     const edgeKind = edge.edgeKind ?? normalizeEdgeKind(edge.label);
     group
       .append("path")
-      .attr("class", `viz-edge viz-edge--${edgeKind}`)
+      .attr("class", `${isInterconnectionView ? "ibd-connector" : "general-connector"} viz-edge viz-edge--${edgeKind}`)
       .attr("d", path)
+      .attr("data-connector-id", edge.id)
+      .attr("data-source", edge.source)
+      .attr("data-target", edge.target)
+      .attr("data-type", String((edge.attributes?.relationType as string) || edgeKind || "relationship"))
       .attr("fill", "none")
       .attr("stroke", "var(--vscode-editor-foreground, #d0d0d0)")
       .attr("stroke-width", edgeKind === "hierarchy" ? 1.4 : 1.8)
@@ -393,7 +404,8 @@ function drawNodes(
     .attr("class", (d: LaidOutNode) => {
       const clickable = options.onNodeClick ? "is-clickable" : "";
       const selected = options.selectedNodeId && d.id === options.selectedNodeId ? "is-selected" : "";
-      return `viz-node ${nodeAccentClass(d.kind)} ${clickable} ${selected}`.trim();
+      const legacyClass = isInterconnectionView ? "ibd-part" : "general-node";
+      return `${legacyClass} viz-node ${nodeAccentClass(d.kind)} ${clickable} ${selected}`.trim();
     })
     .attr("transform", (d: LaidOutNode) => `translate(${d.x || 0},${d.y || 0})`)
     .attr("data-node-id", (d: LaidOutNode) => d.id)
@@ -471,6 +483,85 @@ function drawNodes(
     .attr("fill", "var(--vscode-editor-foreground, #d0d0d0)")
     .attr("font-size", 12)
     .text((d: LaidOutNode) => truncate(d.label, 30));
+
+  groups
+    .append("line")
+    .attr("x1", 10)
+    .attr("x2", (d: LaidOutNode) => (d.width || nodeWidth) - 10)
+    .attr("y1", 58)
+    .attr("y2", 58)
+    .attr("stroke", "var(--vscode-panel-border, #666)")
+    .attr("opacity", 0.5);
+
+  groups
+    .append("text")
+    .attr("class", "viz-node-attrs")
+    .attr("x", 12)
+    .attr("y", 74)
+    .attr("text-anchor", "start")
+    .attr("fill", "var(--vscode-descriptionForeground, #a8a8a8)")
+    .attr("font-size", 10)
+    .text((d: LaidOutNode) => formatCompartmentSummary(d.attributes));
+}
+
+function formatCompartmentSummary(attributes: Record<string, unknown> | undefined): string {
+  if (!attributes) return "";
+  const parts = Array.isArray(attributes.parts) ? attributes.parts : [];
+  const ports = Array.isArray(attributes.ports) ? attributes.ports : [];
+  const attrs = Array.isArray(attributes.attributes) ? attributes.attributes : [];
+  const summary: string[] = [];
+  if (attrs.length > 0) summary.push(`attrs:${attrs.length}`);
+  if (parts.length > 0) summary.push(`parts:${parts.length}`);
+  if (ports.length > 0) summary.push(`ports:${ports.length}`);
+  return summary.join("  ");
+}
+
+function drawInterconnectionContainers(
+  root: d3.Selection<SVGGElement, unknown, null, undefined>,
+  prepared: PreparedView,
+  nodes: LaidOutNode[],
+): void {
+  const packageGroups = ((prepared.meta?.packageContainerGroups as unknown[]) || []) as Array<Record<string, unknown>>;
+  if (packageGroups.length === 0) return;
+  const nodeById = new Map(nodes.map((node) => [node.id, node]));
+  const layer = root.append("g").attr("class", "ibd-containers");
+  for (const group of packageGroups) {
+    const memberIds = Array.isArray(group.memberIds) ? group.memberIds.map((value) => String(value)) : [];
+    const label = String(group.name || group.label || group.id || "");
+    const memberNodes = memberIds.map((id) => nodeById.get(id)).filter((value): value is LaidOutNode => Boolean(value));
+    if (memberNodes.length === 0) continue;
+    const minX = Math.min(...memberNodes.map((node) => node.x || 0));
+    const minY = Math.min(...memberNodes.map((node) => node.y || 0));
+    const maxX = Math.max(...memberNodes.map((node) => (node.x || 0) + (node.width || ibdNodeWidth)));
+    const maxY = Math.max(...memberNodes.map((node) => (node.y || 0) + (node.height || ibdNodeHeight)));
+    const padding = 26;
+    const x = minX - padding;
+    const y = minY - padding;
+    const width = (maxX - minX) + (padding * 2);
+    const height = (maxY - minY) + (padding * 2);
+    const groupG = layer
+      .append("g")
+      .attr("class", "ibd-part ibd-container")
+      .attr("transform", `translate(${x},${y})`)
+      .attr("data-element-name", label);
+    groupG
+      .append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("rx", 14)
+      .attr("fill", "none")
+      .attr("stroke", "var(--vscode-panel-border, #666)")
+      .attr("stroke-width", 1.4)
+      .attr("stroke-dasharray", "6,4")
+      .attr("opacity", 0.7);
+    groupG
+      .append("text")
+      .attr("x", 12)
+      .attr("y", 20)
+      .attr("fill", "var(--vscode-descriptionForeground, #a8a8a8)")
+      .attr("font-size", 11)
+      .text(label);
+  }
 }
 
 function pathFromSection(section: EdgeSection): string {

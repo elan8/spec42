@@ -57,6 +57,7 @@ import { postJumpToElement } from './jumpToElement';
 import { buildGeneralViewGraph } from './graphBuilders';
 import { RenderScheduler } from './renderScheduler';
 import { setupVisualizerControls } from './uiControls';
+import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter';
 
     let vscode: { postMessage: (msg: unknown) => void };
 
@@ -84,6 +85,7 @@ import { setupVisualizerControls } from './uiControls';
             : []
     );
     const verboseWebviewLogging = Boolean((typeof window !== 'undefined' && (window).__VIZ_INIT?.verboseLogging));
+    const useSharedRenderer = Boolean((typeof window !== 'undefined' && (window).__VIZ_INIT?.useSharedRenderer));
 
     let currentData = null;
     let currentView = 'general-view';  // SysML v2 general-view as default
@@ -101,6 +103,7 @@ import { setupVisualizerControls } from './uiControls';
     let filteredData = null; // Active filter state shared across views
     let showMetadata = false;
     let showCategoryHeaders = true; // Show category headers in General View
+    let sharedRenderController: { reset: () => void; exportSvg: () => string; destroy: () => void } | null = null;
     // Export handler - uses getCurrentData/getViewState for lazy evaluation
     const exportHandler = createExportHandler({
         getCurrentData: () => currentData,
@@ -238,6 +241,18 @@ import { setupVisualizerControls } from './uiControls';
         g = svg.select('g.codex-render-root');
         if (g.empty()) {
             g = svg.append('g').attr('class', 'codex-render-root');
+        }
+    }
+
+    function destroySharedRenderController(resetCanvasRefs = false): void {
+        if (sharedRenderController) {
+            sharedRenderController.destroy();
+            sharedRenderController = null;
+        }
+        if (resetCanvasRefs) {
+            svg = null;
+            g = null;
+            zoom = null;
         }
     }
 
@@ -1291,6 +1306,10 @@ import { setupVisualizerControls } from './uiControls';
         const dataForPrepare = baseData;
         const prepareStartedAt = Date.now();
         const dataToRender = prepareDataForView(dataForPrepare, view);
+        const sharedPrepared =
+            (view === 'general-view' || view === 'interconnection-view')
+                ? prepareSharedViewData({ ...(dataForPrepare as Record<string, unknown>), view })
+                : null;
         const prepareMs = Date.now() - prepareStartedAt;
         if (view === 'interconnection-view') {
             const ibd = (dataForPrepare as any)?.ibd;
@@ -1386,6 +1405,11 @@ import { setupVisualizerControls } from './uiControls';
 
         const width = document.getElementById('visualization').clientWidth;
         const height = document.getElementById('visualization').clientHeight;
+        const useSharedRendererForView = useSharedRenderer && (view === 'general-view' || view === 'interconnection-view');
+        if (useSharedRendererForView && vizElement) {
+            destroySharedRenderController(true);
+            vizElement.innerHTML = '';
+        }
         ensureVisualizationCanvas(width, height);
         g.selectAll('*').remove();
 
@@ -1472,7 +1496,41 @@ import { setupVisualizerControls } from './uiControls';
             }
         });
 
-        if (view === 'general-view' || view === 'software-module-view' || view === 'software-dependency-view') {
+        if (useSharedRendererForView && (view === 'general-view' || view === 'interconnection-view')) {
+            if (!sharedPrepared || !vizElement) {
+                renderPlaceholderView(width, height, 'Shared Renderer', 'Unable to prepare shared view data.', dataToRender);
+                setTimeout(() => {
+                    updateDimensionsDisplay();
+                    finishRender();
+                }, 100);
+                return;
+            }
+            sharedRenderController = await renderSharedView(vizElement, sharedPrepared, {
+                onNodeNavigate: (node: any) => {
+                    const attrs = (node?.attributes || {}) as Record<string, unknown>;
+                    const elementName = String(node?.label || node?.id || '');
+                    const qualifiedName = String(attrs.qualifiedName || node?.id || elementName || '');
+                    postJumpToElement(
+                        (msg) => vscode.postMessage(msg),
+                        {
+                            name: elementName,
+                            id: qualifiedName || undefined,
+                            uri: (node?.sourcePath as string | undefined) || undefined,
+                            range: (node?.range as any) || undefined,
+                        },
+                        { skipCentering: true }
+                    );
+                }
+            });
+            setTimeout(() => {
+                if (isStaleRender()) {
+                    finishRender();
+                    return;
+                }
+                updateDimensionsDisplay();
+                finishRender();
+            }, 100);
+        } else if (view === 'general-view' || view === 'software-module-view' || view === 'software-dependency-view') {
             const ctx = {
                 ...buildRenderContext(width, height),
                 buildGeneralViewGraph: (data: any) => buildGeneralViewGraphForView(data),
@@ -2147,6 +2205,10 @@ import { setupVisualizerControls } from './uiControls';
 
     function resetZoom() {
         // Home action: return to initial fit-and-center framing.
+        if (useSharedRenderer && (currentView === 'general-view' || currentView === 'interconnection-view') && sharedRenderController) {
+            sharedRenderController.reset();
+            return;
+        }
         zoomToFit('user');
     }
 

@@ -27,6 +27,9 @@ export function getWebviewHtml(
 
     const nonce = getNonce();
     const enabledViewSet = new Set<string>(enabledViews);
+    const useSharedRenderer = vscode.workspace
+        .getConfiguration('spec42')
+        .get<boolean>('visualization.useSharedRenderer', false);
     const vars: Record<string, string> = {
         NONCE: nonce,
         CSP_SOURCE: webview.cspSource,
@@ -40,6 +43,7 @@ export function getWebviewHtml(
         ENABLED_VIEW_IDS_JSON: JSON.stringify(Array.from(enabledViewSet)),
         EXPERIMENTAL_VIEW_IDS_JSON: JSON.stringify(EXPERIMENTAL_VIEW_IDS),
         VERBOSE_LOGGING_JSON: JSON.stringify(isVerboseLoggingEnabled()),
+        USE_SHARED_RENDERER_JSON: JSON.stringify(useSharedRenderer),
     };
 
     for (const [key, value] of Object.entries(vars)) {
