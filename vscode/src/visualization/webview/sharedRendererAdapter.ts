@@ -25,6 +25,7 @@ export interface SharedRenderAdapterController {
     reset: () => void;
     exportSvg: () => string;
     destroy: () => void;
+    getFitTransform: () => { toString: () => string };
 }
 
 export async function renderSharedView(
@@ -36,11 +37,13 @@ export async function renderSharedView(
         selectedNodeId: options.selectedNodeId ?? null,
         onNodeClick: options.onNodeNavigate,
         theme: { colorScheme: "vscode" },
+        delegateZoom: true,
     });
 
     return {
         reset: () => controller.reset(),
         exportSvg: () => controller.exportSvg(),
-        destroy: () => controller.destroy()
+        destroy: () => controller.destroy(),
+        getFitTransform: () => controller.getFitTransform(),
     };
 }

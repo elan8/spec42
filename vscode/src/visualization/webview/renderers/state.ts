@@ -1,5 +1,6 @@
 /**
  * State Transition View renderer - ELK-backed state-machine layout with D3 rendering.
+ * @deprecated Use shared `@spec42/diagram-renderer` when `spec42.visualization.useSharedRenderer` is enabled.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

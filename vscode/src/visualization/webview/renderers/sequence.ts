@@ -1,5 +1,6 @@
 /**
  * Sequence/interaction renderer for the experimental Spec42 sequence-view.
+ * @deprecated Use shared `@spec42/diagram-renderer` when `spec42.visualization.useSharedRenderer` is enabled.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

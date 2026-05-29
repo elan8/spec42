@@ -1549,6 +1549,83 @@ fn lsp_sysml_model_ibd_kitchen_timer_interface_connects_produce_connectors() {
 }
 
 #[test]
+fn lsp_sysml_model_ibd_reference_member_has_ref_kind_and_no_definitions() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///parts_tree_ref_ibd.sysml";
+    let content = r#"package PartsTree {
+  part def Tree {
+    part branch;
+  }
+  part tree : Tree;
+  ref sharedBranch : Tree;
+}"#;
+
+    let init_id = next_id();
+    let init_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": init_id,
+        "method": "initialize",
+        "params": {
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": "test", "version": "0.1.0" }
+        }
+    });
+    send_message(&mut stdin, &init_req.to_string());
+    let _ = read_message(&mut stdout).expect("init response");
+
+    let initialized =
+        serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
+    send_message(&mut stdin, &initialized.to_string());
+
+    let did_open = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "textDocument/didOpen",
+        "params": {
+            "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+        }
+    });
+    send_message(&mut stdin, &did_open.to_string());
+    std::thread::sleep(std::time::Duration::from_millis(200));
+
+    let model_id = next_id();
+    let model_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": model_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": uri },
+            "scope": ["graph"]
+        }
+    });
+    send_message(&mut stdin, &model_req.to_string());
+    let model_resp = read_response(&mut stdout, model_id).expect("sysml/model response");
+    let model_json: serde_json::Value =
+        serde_json::from_str(&model_resp).expect("parse sysml/model response");
+    let ibd = &model_json["result"]["ibd"];
+    assert_ibd_parts_exclude_definitions(ibd);
+
+    let ref_part = collect_ibd_parts(ibd).into_iter().find(|part| {
+        part["name"]
+            .as_str()
+            .is_some_and(|name| name == "sharedBranch")
+    });
+    if let Some(ref_part) = ref_part {
+        let element_type = ibd_part_element_type(&ref_part).to_lowercase();
+        assert!(
+            element_type == "ref" || ref_part["attributes"]["isReference"].as_bool() == Some(true),
+            "expected reference part metadata, got: {ref_part:?}"
+        );
+    }
+
+    let _ = child.kill();
+}
+
+#[test]
 fn lsp_sysml_model_ibd_surveillance_drone_is_complete_enough_for_interconnection_view() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");

@@ -20,7 +20,10 @@ async function build() {
             define: {
                 'process.env.NODE_ENV': '"production"',
             },
-            // d3, elk are loaded via <script> tags before this bundle; webview code uses them as globals
+            alias: {
+                // Use the same d3 instance as orchestrator (script tag), not a second bundled copy.
+                d3: path.join(rootDir, 'src', 'visualization', 'webview', 'd3-global.ts'),
+            },
         });
         console.log(`Webview bundle written to ${outFile}`);
     } catch (err) {

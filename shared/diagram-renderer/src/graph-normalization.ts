@@ -31,6 +31,7 @@ export function normalizeEdgeKind(relationshipType: string): NormalizedEdgeKind 
   if (type === "bind" || type === "binding") return "bind";
   if (type === "allocate" || type === "allocation") return "allocate";
   if (type === "transition") return "transition";
+  if (type === "composition") return "composition";
   if (type === "hierarchy" || type === "contains" || type === "owns" || type === "ownership" || type === "containment") return "hierarchy";
   return type.replace(/[^a-z0-9_-]+/g, "_") || "relationship";
 }

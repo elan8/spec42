@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { collectCompartmentsFromElement, computeNodeHeightFromCompartments } from "../../visualization/webview/renderers/sysmlNodeBuilder";
+import { collectCompartmentsFromElement, computeNodeHeightFromCompartments } from "../../visualization/sysmlCompartments";
 
 describe("General View node details", () => {
     it("reads structured detail groups from map-like attribute bags", () => {

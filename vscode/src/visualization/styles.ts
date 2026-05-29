@@ -356,6 +356,10 @@ export function getVisualizerStyles(): string {
         width: 100%;
         height: 100%;
     }
+    #visualization svg.sysml-viz-svg {
+        touch-action: none;
+        cursor: grab;
+    }
     .node-group {
         cursor: pointer;
     }

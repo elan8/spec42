@@ -11,6 +11,9 @@ import {
   type DiagramTheme,
   type DiagramThemeOverrides,
 } from "./theme";
+import { addActionFlowMarkers, renderActionFlowView } from "./views/action-flow";
+import { renderSequenceView, addSequenceMarkers } from "./views/sequence";
+import { addStateTransitionMarkers, renderStateTransitionView } from "./views/state-transition";
 
 const elk = new ELK();
 const nodeWidth = 200;
@@ -22,12 +25,16 @@ export interface RenderOptions {
   onNodeClick?: (node: PreparedNode) => void;
   selectedNodeId?: string | null;
   theme?: DiagramThemeOverrides;
+  /** When true, skip internal d3.zoom; host (e.g. VS Code webview) attaches pan/zoom to the SVG. */
+  delegateZoom?: boolean;
 }
 
 export interface RenderController {
   reset: () => void;
   exportSvg: () => string;
   destroy: () => void;
+  /** Last fit-to-view transform (for hosts that delegate pan/zoom). */
+  getFitTransform: () => d3.ZoomTransform;
 }
 
 interface LaidOutNode extends PreparedNode {
@@ -70,6 +77,24 @@ interface ContentBounds {
   height: number;
 }
 
+interface ContentExtents {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+}
+
+function contentBoundsFromExtents(extents: ContentExtents): ContentBounds {
+  const width = extents.maxX - extents.minX;
+  const height = extents.maxY - extents.minY;
+  return {
+    x: extents.minX,
+    y: extents.minY,
+    width: width > 0 ? width : 1,
+    height: height > 0 ? height : 1,
+  };
+}
+
 interface PreparedPort {
   id?: string;
   name: string;
@@ -96,7 +121,9 @@ export async function renderVisualization(
     .attr("height", "100%")
     .attr("viewBox", `0 0 ${width} ${height}`)
     .attr("role", "img")
-    .attr("aria-label", prepared.title || "SysML view");
+    .attr("aria-label", prepared.title || "SysML view")
+    .style("touch-action", "none")
+    .style("cursor", "grab");
   if (theme.colorScheme === "light" || theme.colorScheme === "dark" || theme.colorScheme === "auto") {
     const scheme =
       theme.colorScheme === "auto"
@@ -113,39 +140,100 @@ export async function renderVisualization(
   addMarkers(svg, theme);
 
   const root = svg.append("g").attr("class", "viz-root");
-  const zoom = d3.zoom<SVGSVGElement, unknown>().scaleExtent([0.08, 5]).on("zoom", (event: any) => {
-    root.attr("transform", event.transform.toString());
-  });
-  svg.call(zoom);
-
-  const isInterconnectionView = prepared.view === "interconnection-view";
-  const layout = await layoutPrepared(prepared);
-  if (isInterconnectionView) {
-    if (shouldDrawIbdViewFrame(prepared)) {
-      drawIbdViewFrame(root, prepared, contentBounds(layout), theme);
-    }
-    drawInterconnectionContainers(root, prepared, layout.nodes, theme);
-    drawNodes(root, layout.nodes, options, isInterconnectionView, theme);
-    drawEdges(root, layout.edges, isInterconnectionView, theme);
-  } else {
-    drawEdges(root, layout.edges, isInterconnectionView, theme);
-    drawNodes(root, layout.nodes, options, isInterconnectionView, theme);
+  const delegateZoom = options.delegateZoom === true;
+  const zoom = d3.zoom<SVGSVGElement, unknown>()
+    .scaleExtent([0.08, 5])
+    .on("start", () => svg.style("cursor", "grabbing"))
+    .on("zoom", (event: any) => {
+      root.attr("transform", event.transform.toString());
+    })
+    .on("end", () => svg.style("cursor", "grab"));
+  if (!delegateZoom) {
+    svg
+      .call(zoom)
+      .on("dblclick.zoom", null)
+      .on("wheel.zoom", function(event: WheelEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+        const mouse = d3.pointer(event, this as SVGSVGElement);
+        const currentTransform = d3.zoomTransform(this as SVGSVGElement);
+        const factor = event.deltaY > 0 ? 0.7 : 1.45;
+        const newScale = Math.min(Math.max(currentTransform.k * factor, 0.08), 5);
+        const translateX = mouse[0] - (mouse[0] - currentTransform.x) * (newScale / currentTransform.k);
+        const translateY = mouse[1] - (mouse[1] - currentTransform.y) * (newScale / currentTransform.k);
+        d3.select(this as SVGSVGElement)
+          .transition()
+          .duration(50)
+          .call(zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(newScale));
+      });
   }
-  const bounds = contentBounds(layout);
-  fit(svg, zoom, bounds, width, height, isInterconnectionView);
+
+  const view = prepared.view;
+  const isInterconnectionView = view === "interconnection-view";
+  const isBehaviorView =
+    view === "action-flow-view" || view === "state-transition-view" || view === "sequence-view";
+
+  let bounds: ContentBounds;
+  if (view === "action-flow-view") {
+    addActionFlowMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
+    bounds = contentBoundsFromExtents(await renderActionFlowView({ root, prepared, theme, width, height }));
+  } else if (view === "state-transition-view") {
+    addStateTransitionMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
+    bounds = contentBoundsFromExtents(await renderStateTransitionView({ root, prepared, theme, width, height }));
+  } else if (view === "sequence-view") {
+    addSequenceMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
+    bounds = contentBoundsFromExtents(renderSequenceView({ root, prepared, theme, width, height }));
+  } else {
+    const layout = await layoutPrepared(prepared);
+    if (isInterconnectionView) {
+      if (shouldDrawIbdViewFrame(prepared)) {
+        drawIbdViewFrame(root, prepared, contentBounds(layout), theme);
+      }
+      drawInterconnectionContainers(root, prepared, layout.nodes, theme);
+      drawNodes(root, layout.nodes, options, isInterconnectionView, theme);
+      drawEdges(root, layout.edges, isInterconnectionView, theme);
+    } else {
+      drawEdges(root, layout.edges, isInterconnectionView, theme);
+      drawNodes(root, layout.nodes, options, isInterconnectionView, theme);
+    }
+    bounds = contentBounds(layout);
+  }
+
+  let lastFitTransform = d3.zoomIdentity;
+  const fitView = () => {
+    lastFitTransform = applyFit(
+      svg,
+      zoom,
+      root,
+      bounds,
+      width,
+      height,
+      isInterconnectionView || isBehaviorView,
+      delegateZoom,
+    );
+  };
+  fitView();
 
   return {
-    reset: () => fit(svg, zoom, bounds, width, height, isInterconnectionView),
+    reset: () => fitView(),
+    getFitTransform: () => lastFitTransform,
     exportSvg: () => exportSvg(svg.node() as SVGSVGElement, bounds),
     destroy: () => {
       target.innerHTML = "";
-    }
+    },
   };
 }
 
 async function layoutPrepared(prepared: PreparedView): Promise<LayoutResult> {
   if (!prepared.nodes.length) return { nodes: [], edges: [] };
   const isInterconnectionView = prepared.view === "interconnection-view";
+  if (
+    prepared.view === "action-flow-view" ||
+    prepared.view === "state-transition-view" ||
+    prepared.view === "sequence-view"
+  ) {
+    return { nodes: [], edges: [] };
+  }
   if (isInterconnectionView) {
     return layoutInterconnectionPrepared(prepared);
   }
@@ -801,8 +889,10 @@ function applyEdgeMarker(
     path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("stroke-dasharray", "2,2").style("marker-end", "none");
   } else if (edgeKind === "allocate") {
     path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow)").style("stroke-dasharray", "8,4");
-  } else if (edgeKind === "dependency") {
+  } else if (edgeKind === "dependency" || edgeKind === "usage") {
     path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "4,4");
+  } else if (edgeKind === "composition") {
+    path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-start", "url(#general-d3-diamond)").style("marker-end", "none").style("stroke-dasharray", "6,3");
   } else if (edgeKind === "satisfy" || edgeKind === "verify") {
     path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "7,4");
   } else {
@@ -1147,14 +1237,16 @@ function contentBounds(layout: LayoutResult): ContentBounds {
   return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
 }
 
-function fit(
+function applyFit(
   svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
   zoom: d3.ZoomBehavior<SVGSVGElement, unknown>,
+  root: d3.Selection<SVGGElement, unknown, null, undefined>,
   bounds: ContentBounds,
   width: number,
   height: number,
   isInterconnectionView = false,
-): void {
+  delegateZoom = false,
+): d3.ZoomTransform {
   const padding = 48;
   const minScale = isInterconnectionView ? 0.2 : 0.08;
   const maxScale = isInterconnectionView ? 1.1 : 1.3;
@@ -1164,7 +1256,14 @@ function fit(
   );
   const tx = (width - bounds.width * scale) / 2 - bounds.x * scale;
   const ty = (height - bounds.height * scale) / 2 - bounds.y * scale;
-  svg.transition().duration(180).call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+  const transform = d3.zoomIdentity.translate(tx, ty).scale(scale);
+  if (delegateZoom) {
+    // Host applies this via d3.zoom; keep attr in sync for first paint before host wiring.
+    root.attr("transform", transform.toString());
+    return transform;
+  }
+  svg.transition().duration(180).call(zoom.transform, transform);
+  return transform;
 }
 
 function addMarkers(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, theme: DiagramTheme): void {

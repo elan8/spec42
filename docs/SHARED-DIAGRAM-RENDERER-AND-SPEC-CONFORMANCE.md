@@ -7,6 +7,8 @@ This document describes how the **shared diagram renderer** (`shared/diagram-ren
 - [`shared/diagram-renderer/README.md`](../shared/diagram-renderer/README.md) — build, theme, structure CSS classes
 - [`docs/SUPPORTED-WORKFLOWS.md`](SUPPORTED-WORKFLOWS.md) — release-gating vs experimental views
 - [`docs/SHARED-RENDERER-PARITY.md`](SHARED-RENDERER-PARITY.md) — shared vs legacy parity checklist
+- [`docs/GENERAL-VIEW-ELEMENT-AUDIT.md`](GENERAL-VIEW-ELEMENT-AUDIT.md) — general-view element → canvas audit (Phase 2.1)
+- [`docs/SYSML-NOTATION-INVENTORY.md`](SYSML-NOTATION-INVENTORY.md) — BNF SVG traceability (Phase 4; regenerate via `node scripts/generate-notation-inventory.mjs`)
 - [`docs/SEMANTIC_CORE_ARCHITECTURE.md`](SEMANTIC_CORE_ARCHITECTURE.md) — visualization payloads from `semantic_core`
 - **Normative reference (external):** [SysML v2 graphical BNF](https://github.com/Systems-Modeling/SysML-v2-Release) — `bnf/SysML-graphical-bnf.kgbnf` and `bnf/images/*.svg`
 
@@ -16,11 +18,13 @@ This document describes how the **shared diagram renderer** (`shared/diagram-ren
 
 | Layer | Scope |
 |-------|--------|
-| **Shared renderer** | **General view** and **Interconnection view** only (D3 + ELK, notation-neutral theme, def/usage/reference chrome) |
-| **Legacy webview** | All SysML visualizer views when shared path is off, or for views the shared package does not implement |
-| **SysML v2 spec** | Many view kinds and per-element notations; Spec42 implements a **practical subset** |
+| **Shared renderer** | All **`SYSML_ENABLED_VIEWS`** when `spec42.visualization.useSharedRenderer` is `true` (default): general, interconnection, action-flow, state-transition, sequence |
+| **Legacy webview** | Same views when the flag is `false`, plus **software-module** / **software-dependency** views (extension; always legacy) |
+| **SysML v2 spec** | Many view kinds and per-element notations; Spec42 implements a **practical subset**, not full OMG graphical conformance |
 
-The shared package is an **incremental migration**, not a drop-in replacement for the entire visualizer. `prepare.ts` can prepare data for action-flow, sequence, and state views, but `renderer.ts` does not implement their graphical notation — those views still depend on legacy modules in `vscode/src/visualization/webview/renderers/`.
+The shared package (`shared/diagram-renderer`) is the **default** visualization path for release-gating SysML views. Structural views use D3 + ELK with notation-neutral theme and def/usage/reference chrome; behavior views use dedicated modules under `src/views/`. Legacy `activity.ts`, `state.ts`, and `sequence.ts` remain as **fallback** implementations (marked `@deprecated`) when the shared flag is off.
+
+**Not “full roadmap complete”:** Phases 0–1 meet their exit criteria in product and CI. Phases 2–4 delivered **baseline** work (audit, first-cut behavior renderers, inventory script); parity sign-off, annotation notation, full BNF catalog coverage, and legacy deletion are still open. See [Roadmap implementation status](#roadmap-implementation-status) below.
 
 ---
 
@@ -30,22 +34,23 @@ The shared package is an **incremental migration**, not a drop-in replacement fo
 
 Defined in [`vscode/src/visualization/webview/constants.ts`](../vscode/src/visualization/webview/constants.ts):
 
-| View ID | SysML v2 view kind (spec) | Legacy renderer | Shared renderer | Babel42 |
-|---------|---------------------------|-----------------|-----------------|---------|
-| `general-view` | `general-view` | `generalView.ts` | **Yes** (when `useSharedRenderer`) | Via shared package (structure/overview) |
-| `interconnection-view` | `interconnection-view` | `ibd.ts` | **Yes** (when `useSharedRenderer`) | Via shared package |
-| `action-flow-view` | `action-flow-view` | `activity.ts` | **No** (generic graph only if forced) | **No** |
-| `sequence-view` | `sequence-view` | `sequence.ts` | **No** | **No** |
-| `state-transition-view` | `state-transition-view` | `state.ts` | **No** | **No** |
-| `software-module-view` | *(extension)* | general-style D3 | **No** | **No** |
-| `software-dependency-view` | *(extension)* | general-style D3 | **No** | **No** |
+| View ID | SysML v2 view kind (spec) | Legacy renderer | Shared renderer (default) | Babel42 |
+|---------|---------------------------|-----------------|-------------------------|---------|
+| `general-view` | `general-view` | `generalView.ts` | **Yes** — ELK + compartments | Via shared package |
+| `interconnection-view` | `interconnection-view` | `ibd.ts` | **Yes** — hierarchical IBD | Via shared package |
+| `action-flow-view` | `action-flow-view` | `activity.ts` | **Yes** — `views/action-flow.ts` (first cut) | **No** |
+| `state-transition-view` | `state-transition-view` | `state.ts` | **Yes** — `views/state-transition.ts` (first cut) | **No** |
+| `sequence-view` | `sequence-view` | `sequence.ts` | **Yes** — `views/sequence.ts` (Spec42 payloads; experimental) | **No** |
+| `software-module-view` | *(extension)* | general-style D3 | **No** (legacy only) | **No** |
+| `software-dependency-view` | *(extension)* | general-style D3 | **No** (legacy only) | **No** |
 
 ### Routing in the VS Code webview
 
 [`vscode/src/visualization/webview/orchestrator.ts`](../vscode/src/visualization/webview/orchestrator.ts):
 
-- `window.__VIZ_INIT.useSharedRenderer` → `renderSharedView()` for **`general-view`** and **`interconnection-view`** only.
-- All other views → legacy `renderGeneralViewD3`, `renderIbdView`, `renderActivityViewModule`, `renderSequenceViewModule`, `renderStateViewModule`.
+- `window.__VIZ_INIT.useSharedRenderer` → `renderSharedView()` for every view in **`SYSML_ENABLED_VIEWS`** (`general-view`, `interconnection-view`, `action-flow-view`, `state-transition-view`, `sequence-view`).
+- **`software-module-view`** / **`software-dependency-view`** → legacy general-style renderer only.
+- When `useSharedRenderer` is `false`, SysML views fall back to legacy `renderGeneralViewD3`, `renderIbdView`, `renderActivityViewModule`, `renderSequenceViewModule`, `renderStateViewModule`.
 
 After changing shared sources, rebuild the webview bundle:
 
@@ -94,7 +99,7 @@ Important spec rule:
 interconnection-element = part | part-ref   // not part-def
 ```
 
-Definitions belong in **general-view**, not as `interconnection-element` nodes in **interconnection-view**. Today both legacy and shared paths may still show `part def` in IBD when the semantic projection includes them — treat as a known conformance gap.
+Definitions belong in **general-view**, not as `interconnection-element` nodes in **interconnection-view**. As of Phase 1, `semantic_core` filters `*-def` from IBD payloads before render; the shared renderer only draws usage/reference parts.
 
 ---
 
@@ -109,11 +114,14 @@ flowchart TB
     ST[state-transition-view]
     SQ[sequence-view]
   end
-  subgraph shared [shared/diagram-renderer]
-    SGV[general-view partial]
-    SIV[interconnection-view partial]
+  subgraph shared [shared/diagram-renderer default]
+    SGV[general-view]
+    SIV[interconnection-view]
+    SAF[action-flow.ts]
+    SST[state-transition.ts]
+    SSQ[sequence.ts]
   end
-  subgraph legacy [vscode webview legacy]
+  subgraph legacy [legacy when flag off]
     LGV[generalView.ts]
     LIBD[ibd.ts]
     LAF[activity.ts]
@@ -121,12 +129,15 @@ flowchart TB
     LSQ[sequence.ts]
   end
   GV --> SGV
-  GV --> LGV
   IV --> SIV
-  IV --> LIBD
-  AF --> LAF
-  ST --> LST
-  SQ --> LSQ
+  AF --> SAF
+  ST --> SST
+  SQ --> SSQ
+  GV -.-> LGV
+  IV -.-> LIBD
+  AF -.-> LAF
+  ST -.-> LST
+  SQ -.-> LSQ
 ```
 
 ### Shared renderer — what it does today
@@ -142,24 +153,26 @@ flowchart TB
 | Def / usage / reference node chrome | Implemented | `node-notation.ts`, `prepare.ts` |
 | Notation-neutral colors | Implemented | `theme.ts` |
 | Package filter chips (general) | Legacy only / partial | `generalView.ts` |
-| Action-flow graphical notation | **Not implemented** | — |
-| Sequence lifelines / messages | **Not implemented** | — |
-| State pseudostates / regions | **Not implemented** | — |
-| Per-kind silhouettes (requirement pill, etc.) | **Partial** (corner radius only) | `node-notation.ts` category map |
+| Action-flow graphical notation | **First cut** (ELK layered; initial/final/decision/fork/action) | `views/action-flow.ts` |
+| Sequence lifelines / messages | **First cut** (lifelines + sync messages; no fragments) | `views/sequence.ts` |
+| State pseudostates / regions | **First cut** (initial/final/state; limited composite) | `views/state-transition.ts` |
+| Per-kind silhouettes (requirement pill, etc.) | **Partial** (requirement usage `rx` 16; not full pill SVG) | `node-notation.ts` |
 
-### Legacy-only capabilities still needed for parity
+### Legacy fallback and parity gaps
 
-- **General view:** Cytoscape fallback paths, rich filter chips, some package-container edge cases.
-- **Interconnection view:** Large `ibd.ts` with degraded-routing diagnostics, mature port-side heuristics, long-tail connector edge cases.
-- **Behavior views:** Full dedicated layout and notation in `activity.ts`, `sequence.ts`, `state.ts`.
+When `useSharedRenderer` is `false`, or for features only in legacy code:
+
+- **General view:** Cytoscape fallback, rich type filter chips (UI), some package-container edge cases.
+- **Interconnection view:** Degraded-routing console diagnostics in `ibd.ts`, more mature port-side heuristics.
+- **Behavior views:** Legacy modules have richer notation (perform actions, I/O badges, sequence fragments, state force layout, self-loops). Compare shared vs legacy before removing fallback.
 
 ### Semantic / data pipeline
 
 Visualization payloads are built in `semantic_core` (`visualization_workspace.rs`, graph-first APIs). The shared renderer consumes **prepared** `PreparedView` from [`prepare.ts`](../shared/diagram-renderer/src/prepare.ts):
 
-- `prepareGraph` → general-view nodes/edges
+- `prepareGraph` → general-view
 - `prepareInterconnection` → IBD parts, ports, connectors
-- `prepareActivity` / `prepareSequence` / `prepareState` → structured nodes/edges **without** matching render logic in `renderer.ts`
+- `prepareActivity` / `prepareState` / `prepareSequence` → behavior views; `renderer.ts` branches to `views/*`
 
 ---
 
@@ -172,12 +185,13 @@ Visualization payloads are built in `semantic_core` (`visualization_workspace.rs
 | Reference dotted / round | Yes | Yes | Partial | Shared |
 | Container dashed frame | Partial | Yes | Yes | Shared |
 | Dependencies / annotations | Partial | N/A | Partial | Shared + projection |
-| `part-def` excluded from IBD | **No** | **No** | **No** | `semantic_core` + shared |
+| `part-def` excluded from IBD | N/A | **Yes** (`prune_interconnection_definition_parts`) | Partial | `semantic_core` |
 | Port proxy notation | Partial | Partial | Partial | Shared + projection |
-| Action-flow nodes / forks | No | No | Partial | Legacy → shared (later) |
-| Sequence lifelines | No | No | Partial | Legacy → shared (later) |
-| State initial / final / composite | No | No | Partial | Legacy → shared (later) |
-| Requirement “pill” shape | No | No | No | Shared `node-notation` phase 2+ |
+| Action-flow nodes / forks | N/A | **First cut** | **Full** in legacy | Shared; parity TBD |
+| Sequence lifelines / messages | N/A | **First cut** | **Full** in legacy | Shared; fragments legacy-only |
+| State initial / final / composite | N/A | **First cut** | **Full** in legacy | Shared; composite regions TBD |
+| Requirement “pill” shape | **Partial** (`rx` only) | N/A | No | `node-notation.ts` |
+| Annotation / comment nodes | **Deferred** | N/A | Partial | WONTFIX for 1.0 unless required |
 
 Use `bnf/images/*.svg` as the checklist for any element kind you add.
 
@@ -187,7 +201,21 @@ Use `bnf/images/*.svg` as the checklist for any element kind you add.
 
 Phases are ordered by dependency and release value. Each phase should end with **automated tests** in `shared/diagram-renderer` (Vitest) and, where applicable, Rust integration tests on visualization payloads in `crates/kernel/tests/integration/model.rs`.
 
-### Phase 0 — Stabilize General + Interconnection (current track)
+### Roadmap implementation status
+
+| Phase | Goal (short) | Status | Exit criteria met? |
+|-------|----------------|--------|---------------------|
+| **0** | Stabilize general + interconnection | **Done** | Yes — default shared renderer, CI, parity doc |
+| **1** | IBD projection conformance | **Done** | Yes — no `part def` in IBD payload; tests |
+| **2** | General view completeness | **Partial** | No — audit + tests; no full SVG sign-off; annotations deferred |
+| **3** | Behavior views in shared package | **Partial** | No — all views routed; first-cut renderers; legacy not removed; no SVG snapshot suite |
+| **4** | Full notation catalog | **Started** | No — script + stub inventory; not &gt;90% BNF coverage |
+
+**What “implemented” means here:** infrastructure and a **shippable baseline** exist; **full SysML v2 graphical conformance** and **legacy parity** for behavior views are still future work.
+
+### Phase 0 — Stabilize General + Interconnection
+
+**Status: Done** (2026-05-29)
 
 **Goal:** Shared path matches or exceeds legacy for the two migrated views; no regressions on connectors, ports, or nesting.
 
@@ -205,6 +233,8 @@ Phases are ordered by dependency and release value. Each phase should end with *
 
 ### Phase 1 — Interconnection projection conformance
 
+**Status: Done** (2026-05-29)
+
 **Goal:** Data and view content align with `interconnection-view` productions in the BNF.
 
 | Step | Action |
@@ -217,9 +247,25 @@ Phases are ordered by dependency and release value. Each phase should end with *
 
 **Exit criteria:** IBD payload matches BNF `interconnection-element` set; diagrams do not show definition boxes in interconnection view.
 
+#### Proxy ports (step 1.5 — documented, behavior unchanged)
+
+Per BNF **interconnection-view**, ports appear on **part usages** (and `part-ref` usages), not on bare definitions in the diagram canvas. Current pipeline:
+
+- **Projection:** [`ibd.rs`](../crates/semantic_core/src/semantic/ibd.rs) emits `IbdPortDto` on usage parents; definition ports are expanded onto typed instances via `expand_def_subtree` / `add_ports_from_def`.
+- **Prepare:** [`prepare.ts`](../shared/diagram-renderer/src/prepare.ts) attaches `portDetails` to prepared nodes.
+- **Render:** [`renderer.ts`](../shared/diagram-renderer/src/renderer.ts) `drawIbdPorts` places port squares on ELK node boundaries.
+
+**Proxy port** notation (port on a boundary representing an internal port of a nested part) is not modeled as a separate SVG shape today; nested parts expose their own ports. Change only when a validation model or parity review shows a concrete gap.
+
 ### Phase 2 — General view completeness
 
+**Status: Partial** — see [`GENERAL-VIEW-ELEMENT-AUDIT.md`](GENERAL-VIEW-ELEMENT-AUDIT.md).
+
 **Goal:** General view covers spec `general-node` / `definition-node` / `usage-node` / dependency notation needed for release workflows.
+
+**Delivered:** Element audit table; `canonical_general_view_graph_retains_def_usage_ref_nodes` test; `composition` edge marker; requirement usage corner radius.
+
+**Open:** Step 2.3 annotations (deferred); formal sign-off against all BNF SVGs; filter chips remain host UI; n-ary relationship hubs.
 
 | Step | Action |
 |------|--------|
@@ -233,7 +279,13 @@ Phases are ordered by dependency and release value. Each phase should end with *
 
 ### Phase 3 — Migrate behavior views into shared renderer
 
+**Status: Partial** (2026-05-29)
+
 **Goal:** One renderer package for all release-gating SysML views; legacy webview modules become thin wrappers or are deleted.
+
+**Delivered:** `views/action-flow.ts`, `views/state-transition.ts`, `views/sequence.ts`, `views/behavior-common.ts`; `renderVisualization` branches; orchestrator uses `SYSML_ENABLED_VIEWS`; Vitest per view; legacy `@deprecated`.
+
+**Open:** Full port of legacy notation polish; step 3.6 SVG snapshot regression; delete legacy modules after parity sign-off.
 
 | Step | Action |
 |------|--------|
@@ -248,7 +300,13 @@ Phases are ordered by dependency and release value. Each phase should end with *
 
 ### Phase 4 — Full graphical notation catalog (long tail)
 
+**Status: Started** — regenerate with full tree: `SYSML_V2_RELEASE_DIR=<path-to-SysML-v2-Release> node scripts/generate-notation-inventory.mjs`
+
 **Goal:** Traceability from each BNF `*.svg` to renderer code or an explicit “not supported” list.
+
+**Delivered:** [`scripts/generate-notation-inventory.mjs`](../scripts/generate-notation-inventory.mjs), [`SYSML-NOTATION-INVENTORY.md`](SYSML-NOTATION-INVENTORY.md) (fallback list when release repo not present).
+
+**Open:** Steps 4.2–4.4; &gt;90% shipped-element coverage with explicit WONTFIX rows.
 
 | Step | Action |
 |------|--------|
@@ -288,7 +346,7 @@ From [SysML v2 validation library](https://github.com/Systems-Modeling/SysML-v2-
 |-------|------|----------------|
 | `01-Parts Tree/1d-Parts Tree with Reference.sysml` | General + Interconnection | Def/usage/ref shapes; `ref` dotted |
 | Interconnection / ports examples | Interconnection | Ports visible; connectors routed |
-| Action / state / sequence validation folders | Behavior views | After Phase 3 |
+| Action / state / sequence validation folders | Behavior views | Shared first cut; compare with legacy if flag off |
 
 ### Host-specific
 
@@ -305,9 +363,14 @@ From [SysML v2 validation library](https://github.com/Systems-Modeling/SysML-v2-
 |------|------|
 | `shared/diagram-renderer/src/node-notation.ts` | Def / usage / reference / container chrome |
 | `shared/diagram-renderer/src/prepare.ts` | Payload → `PreparedView` |
-| `shared/diagram-renderer/src/renderer.ts` | D3 + ELK render |
+| `shared/diagram-renderer/src/renderer.ts` | D3 + ELK render; view routing |
+| `shared/diagram-renderer/src/views/action-flow.ts` | Action-flow view |
+| `shared/diagram-renderer/src/views/state-transition.ts` | State-transition view |
+| `shared/diagram-renderer/src/views/sequence.ts` | Sequence view |
+| `shared/diagram-renderer/src/views/behavior-common.ts` | Shared ELK layout helpers |
 | `shared/diagram-renderer/src/theme.ts` | Notation-neutral colors |
 | `shared/diagram-renderer/src/graph-normalization.ts` | Edge kind normalization |
+| `scripts/generate-notation-inventory.mjs` | BNF SVG → inventory markdown |
 | `vscode/src/visualization/webview/sharedRendererAdapter.ts` | VS Code adapter |
 | `vscode/src/visualization/webview/renderers/*.ts` | Legacy per-view renderers |
 | `crates/semantic_core/src/semantic/visualization_workspace.rs` | View payloads, IBD scope |
@@ -320,7 +383,7 @@ From [SysML v2 validation library](https://github.com/Systems-Modeling/SysML-v2-
 1. **One notation rule, one place** — extend `node-notation.ts` or a view-specific notation module; do not copy dash/radius into renderers.
 2. **Spec first** — link PRs to BNF production or SVG file name.
 3. **Tests required** for chrome and edge styling changes.
-4. **Do not claim full OMG conformance** in user docs until Phase 4 inventory is complete; align with [`SUPPORTED-WORKFLOWS.md`](SUPPORTED-WORKFLOWS.md).
+4. **Do not claim full OMG conformance** until Phase 4 exit criteria are met; the default shared path covers all `SYSML_ENABLED_VIEWS` at a **practical** fidelity level. Align with [`SUPPORTED-WORKFLOWS.md`](SUPPORTED-WORKFLOWS.md).
 5. **Babel42** — after shared package changes, update `babel42/third_party/spec42` (subtree or copy per team workflow).
 
 ---
@@ -330,3 +393,5 @@ From [SysML v2 validation library](https://github.com/Systems-Modeling/SysML-v2-
 | Date | Change |
 |------|--------|
 | 2026-05-29 | Initial roadmap: shared vs legacy vs spec; phased plan to full conformance |
+| 2026-05-29 | Phases 1–4 baseline: IBD projection, general audit, behavior views in shared package, notation inventory script |
+| 2026-05-29 | Docs aligned with implementation status (all SYSML views on shared path; phase exit criteria clarified) |

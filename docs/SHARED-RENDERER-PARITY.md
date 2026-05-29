@@ -1,9 +1,9 @@
 # Shared vs legacy renderer parity
 
-Side-by-side checklist for `spec42.visualization.useSharedRenderer` (General + Interconnection only).  
+Side-by-side checklist for `spec42.visualization.useSharedRenderer` (all **`SYSML_ENABLED_VIEWS`** when the flag is on).  
 Normative notation targets: [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md).
 
-**How to compare:** Open the same workspace in VS Code, toggle **Spec42 › Visualization: Use Shared Renderer**, reload the visualizer panel for each view.
+**How to compare:** Open the same workspace in VS Code, toggle **Spec42 › Visualization: Use Shared Renderer**, reload the visualizer panel for each view. Set the flag to `false` to exercise legacy `renderers/*.ts` fallbacks.
 
 | Severity | Meaning |
 |----------|---------|
@@ -57,8 +57,62 @@ Normative notation targets: [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](SH
 
 ---
 
-## Phase 0 sign-off (2026-05-29)
+## Action-flow view
+
+| Check | Shared (`views/action-flow.ts`) | Legacy (`activity.ts`) | Severity |
+|-------|--------------------------------|------------------------|----------|
+| ELK layered layout | Yes | Yes | cosmetic |
+| Initial / final / decision / fork nodes | Yes | Yes | — |
+| Control-flow edges | Yes | Yes | cosmetic |
+| Perform-action / I/O badges | No | Yes | legacy-only (for now) |
+| Rich action compartment text | Partial | Yes | cosmetic |
+
+**Automated:** `action-flow-view.test.ts` in `shared/diagram-renderer`
+
+---
+
+## State-transition view
+
+| Check | Shared (`views/state-transition.ts`) | Legacy (`state.ts`) | Severity |
+|-------|--------------------------------------|---------------------|----------|
+| States + transitions | Yes | Yes | — |
+| Initial / final pseudostates | Yes | Yes | — |
+| ELK layout | Yes | Yes (force optional in legacy) | cosmetic |
+| Composite state regions | Limited | Yes | cosmetic |
+| Self-loop / transition labels | Partial | Yes | cosmetic |
+
+**Automated:** `state-transition-view.test.ts`
+
+---
+
+## Sequence view
+
+| Check | Shared (`views/sequence.ts`) | Legacy (`sequence.ts`) | Severity |
+|-------|------------------------------|------------------------|----------|
+| Lifelines + sync messages | Yes | Yes | — |
+| D3 column layout (not ELK) | Yes | Yes | — |
+| Fragments (alt/opt/loop) | No | Partial | legacy-only |
+| Self-messages / return arrows | Partial | Yes | cosmetic |
+
+**Note:** Sequence is **experimental** per [SUPPORTED-WORKFLOWS.md](SUPPORTED-WORKFLOWS.md) (Spec42 `SequenceView` payloads).
+
+**Automated:** `sequence-view.test.ts`
+
+---
+
+## Sign-off summary (2026-05-29)
+
+### Phase 0 — General + interconnection
 
 - **Blockers:** None identified after IBD `kind` ReferenceError fix, connector `style()` stroke, and `nodeBodyChromeStyle` centralization.
-- **Decision:** Safe to set `spec42.visualization.useSharedRenderer` default to `true`.
-- **Follow-up:** Phase 1 removes `part def` from IBD payloads (semantic_core), not a renderer-only gap.
+- **Decision:** Safe to set `spec42.visualization.useSharedRenderer` default to `true` for structural views.
+
+### Phase 1 — IBD projection
+
+- IBD payloads exclude `part def` via `semantic_core`; scoped roots collapse redundant package/view frames in shared renderer.
+
+### Phases 2–3 — General + behavior (baseline)
+
+- **Blockers:** None for routing all `SYSML_ENABLED_VIEWS` through the shared package.
+- **Not signed off:** Full legacy parity for behavior notation, general-view BNF checklist, or Phase 3.6 SVG snapshots.
+- **Workaround:** Set `useSharedRenderer` to `false` for behavior views if shared output is insufficient.

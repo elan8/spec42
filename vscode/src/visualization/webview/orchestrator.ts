@@ -22,6 +22,7 @@ import {
 } from './shared';
 import {
     STRUCTURAL_VIEWS,
+    SYSML_ENABLED_VIEWS,
     MIN_CANVAS_ZOOM,
     MAX_CANVAS_ZOOM,
     MIN_SYSML_ZOOM,
@@ -74,6 +75,7 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
 
     export function initializeOrchestrator(api: { postMessage: (msg: unknown) => void }): void {
         vscode = api;
+        setupSharedRendererWheelCapture();
         webviewPerf('visualizer:webviewInitialized');
         vscode.postMessage({ command: 'webviewReady' });
     }
@@ -104,7 +106,12 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
     let filteredData = null; // Active filter state shared across views
     let showMetadata = false;
     let showCategoryHeaders = true; // Show category headers in General View
-    let sharedRenderController: { reset: () => void; exportSvg: () => string; destroy: () => void } | null = null;
+    let sharedRenderController: {
+        reset: () => void;
+        exportSvg: () => string;
+        destroy: () => void;
+        getFitTransform: () => d3.ZoomTransform;
+    } | null = null;
     // Export handler - uses getCurrentData/getViewState for lazy evaluation
     const exportHandler = createExportHandler({
         getCurrentData: () => currentData,
@@ -191,6 +198,58 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
         renderScheduler.cancelOutstandingRenderRequests(reason);
     }
 
+    function attachCanvasZoomHandlers(targetSvg: d3.Selection<SVGSVGElement, unknown, null, undefined>): void {
+        if (!zoom) {
+            zoom = d3.zoom()
+                .scaleExtent([MIN_CANVAS_ZOOM, MAX_CANVAS_ZOOM])
+                .on('zoom', (event) => {
+                    if (!g || g.empty()) {
+                        return;
+                    }
+                    g.attr('transform', event.transform);
+                    if (event.sourceEvent) {
+                        window.userHasManuallyZoomed = true;
+                    }
+                });
+        }
+
+        targetSvg
+            .style('touch-action', 'none')
+            .style('cursor', 'grab')
+            .call(zoom)
+            .on('dblclick.zoom', null)
+            .on('wheel.zoom', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                window.userHasManuallyZoomed = true;
+
+                const mouse = d3.pointer(event, this);
+                const currentTransform = d3.zoomTransform(this);
+                const factor = event.deltaY > 0 ? 0.7 : 1.45;
+                const newScale = Math.min(
+                    Math.max(currentTransform.k * factor, MIN_CANVAS_ZOOM),
+                    MAX_CANVAS_ZOOM
+                );
+                const translateX = mouse[0] - (mouse[0] - currentTransform.x) * (newScale / currentTransform.k);
+                const translateY = mouse[1] - (mouse[1] - currentTransform.y) * (newScale / currentTransform.k);
+
+                d3.select(this)
+                    .transition()
+                    .duration(50)
+                    .call(zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(newScale));
+            });
+    }
+
+    function ensureSharedCanvasZoom(fitTransform?: d3.ZoomTransform): void {
+        if (!svg || svg.empty() || !g || g.empty()) {
+            return;
+        }
+        const initialTransform = fitTransform ?? d3.zoomIdentity;
+        attachCanvasZoomHandlers(svg);
+        svg.call(zoom.transform, initialTransform);
+    }
+
     function ensureVisualizationCanvas(width: number, height: number): void {
         const root = d3.select('#visualization');
 
@@ -205,44 +264,11 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
                 .attr('height', height);
         }
 
-        if (!zoom) {
-            zoom = d3.zoom()
-                .scaleExtent([MIN_CANVAS_ZOOM, MAX_CANVAS_ZOOM])
-                .on('zoom', (event) => {
-                    g.attr('transform', event.transform);
-                    if (event.sourceEvent) {
-                        window.userHasManuallyZoomed = true;
-                    }
-                });
-
-            svg.call(zoom)
-                .on('dblclick.zoom', null)
-                .on('wheel.zoom', function(event) {
-                    event.preventDefault();
-
-                    window.userHasManuallyZoomed = true;
-
-                    const mouse = d3.pointer(event, this);
-                    const currentTransform = d3.zoomTransform(this);
-                    const factor = event.deltaY > 0 ? 0.7 : 1.45;
-                    const newScale = Math.min(
-                        Math.max(currentTransform.k * factor, MIN_CANVAS_ZOOM),
-                        MAX_CANVAS_ZOOM
-                    );
-                    const translateX = mouse[0] - (mouse[0] - currentTransform.x) * (newScale / currentTransform.k);
-                    const translateY = mouse[1] - (mouse[1] - currentTransform.y) * (newScale / currentTransform.k);
-
-                    d3.select(this)
-                        .transition()
-                        .duration(50)
-                        .call(zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(newScale));
-                });
-        }
-
         g = svg.select('g.codex-render-root');
         if (g.empty()) {
             g = svg.append('g').attr('class', 'codex-render-root');
         }
+        attachCanvasZoomHandlers(svg);
     }
 
     function destroySharedRenderController(resetCanvasRefs = false): void {
@@ -255,6 +281,88 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
             g = null;
             zoom = null;
         }
+    }
+
+    /** Prevent VS Code webview from scrolling the panel instead of zooming the diagram. */
+    function setupSharedRendererWheelCapture(): void {
+        const wrapper = document.getElementById('visualization-wrapper');
+        if (!wrapper || wrapper.dataset.wheelCapture === '1') {
+            return;
+        }
+        wrapper.dataset.wheelCapture = '1';
+        wrapper.addEventListener(
+            'wheel',
+            (event) => {
+                if (!useSharedRenderer) {
+                    return;
+                }
+                const viz = document.getElementById('visualization');
+                if (!viz || !viz.contains(event.target as Node)) {
+                    return;
+                }
+                event.preventDefault();
+            },
+            { passive: false, capture: true },
+        );
+    }
+
+    function bindSharedCanvasRefs(container: HTMLElement): boolean {
+        const svgNode = container.querySelector('svg.sysml-viz-svg');
+        if (!svgNode) {
+            return false;
+        }
+        const rootNode = svgNode.querySelector('g.viz-root');
+        if (!rootNode) {
+            return false;
+        }
+        svg = d3.select(svgNode);
+        g = d3.select(rootNode);
+        return true;
+    }
+
+    function attachCanvasClickHandler(): void {
+        if (!svg || svg.empty() || !g || g.empty()) {
+            return;
+        }
+        svg.on('click', (event) => {
+            if (event.target === svg.node() || event.target === g.node()) {
+                clearVisualHighlights();
+                g.selectAll('.expanded-details').remove();
+                g.selectAll('.graph-node-background').each(function() {
+                    const el = d3.select(this);
+                    el.style('stroke', el.attr('data-original-stroke') || 'var(--vscode-panel-border)');
+                    el.style('stroke-width', el.attr('data-original-width') || '2px');
+                });
+                g.selectAll('.node-group').classed('selected', false);
+                g.selectAll('.graph-node-group').classed('selected', false);
+                g.selectAll('.hierarchy-cell').classed('selected', false);
+                g.selectAll('.elk-node').classed('selected', false);
+                g.selectAll('.ibd-connector').each(function() {
+                    const el = d3.select(this);
+                    const origStroke = el.attr('data-original-stroke');
+                    const origWidth = el.attr('data-original-width');
+                    if (origStroke) {
+                        el.style('stroke', origStroke)
+                          .style('stroke-width', origWidth)
+                          .classed('connector-highlighted', false);
+                        el.attr('data-original-stroke', null)
+                          .attr('data-original-width', null);
+                    }
+                });
+                g.selectAll('.general-connector').each(function() {
+                    const el = d3.select(this);
+                    const origStroke = el.attr('data-original-stroke');
+                    const origWidth = el.attr('data-original-width');
+                    if (origStroke) {
+                        el.style('stroke', origStroke)
+                          .style('stroke-width', origWidth)
+                          .classed('connector-highlighted', false);
+                        el.attr('data-original-stroke', null)
+                          .attr('data-original-width', null);
+                    }
+                });
+            }
+        });
     }
 
     function populateViewDropdown() {
@@ -1307,10 +1415,10 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
         const dataForPrepare = baseData;
         const prepareStartedAt = Date.now();
         const dataToRender = prepareDataForView(dataForPrepare, view);
-        const sharedPrepared =
-            (view === 'general-view' || view === 'interconnection-view')
-                ? prepareSharedViewData({ ...(dataForPrepare as Record<string, unknown>), view })
-                : null;
+        const sharedRendererViewSet = new Set<string>(SYSML_ENABLED_VIEWS);
+        const sharedPrepared = sharedRendererViewSet.has(view)
+            ? prepareSharedViewData({ ...(dataForPrepare as Record<string, unknown>), view })
+            : null;
         const prepareMs = Date.now() - prepareStartedAt;
         if (view === 'interconnection-view') {
             const ibd = (dataForPrepare as any)?.ibd;
@@ -1406,13 +1514,16 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
 
         const width = document.getElementById('visualization').clientWidth;
         const height = document.getElementById('visualization').clientHeight;
-        const useSharedRendererForView = useSharedRenderer && (view === 'general-view' || view === 'interconnection-view');
+        const sharedRendererViews = new Set<string>(SYSML_ENABLED_VIEWS);
+        const useSharedRendererForView = useSharedRenderer && sharedRendererViews.has(view);
         if (useSharedRendererForView && vizElement) {
             destroySharedRenderController(true);
             vizElement.innerHTML = '';
         }
-        ensureVisualizationCanvas(width, height);
-        g.selectAll('*').remove();
+        if (!useSharedRendererForView) {
+            ensureVisualizationCanvas(width, height);
+            g.selectAll('*').remove();
+        }
 
         // Restore the zoom state after creating new elements, but do it after render
         const restoreZoom = () => {
@@ -1449,55 +1560,11 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
             };
         }
 
-        // Add global click handler to close expanded details when clicking on empty space
-        svg.on('click', (event) => {
-            // Only close if clicking on the SVG background (not on nodes or details)
-            if (event.target === svg.node() || event.target === g.node()) {
-                // Clear all highlights when clicking on empty space
-                clearVisualHighlights();
-                g.selectAll('.expanded-details').remove();
-                // Reset graph view selections (clearVisualHighlights already restores node-background)
-                g.selectAll('.graph-node-background').each(function() {
-                    const el = d3.select(this);
-                    el.style('stroke', el.attr('data-original-stroke') || 'var(--vscode-panel-border)');
-                    el.style('stroke-width', el.attr('data-original-width') || '2px');
-                });
-                g.selectAll('.node-group').classed('selected', false);
-                g.selectAll('.graph-node-group').classed('selected', false);
-                g.selectAll('.hierarchy-cell').classed('selected', false);
-                g.selectAll('.elk-node').classed('selected', false);
+        if (!useSharedRendererForView) {
+            attachCanvasClickHandler();
+        }
 
-                // Clear IBD connector highlights
-                g.selectAll('.ibd-connector').each(function() {
-                    const el = d3.select(this);
-                    const origStroke = el.attr('data-original-stroke');
-                    const origWidth = el.attr('data-original-width');
-                    if (origStroke) {
-                        el.style('stroke', origStroke)
-                          .style('stroke-width', origWidth)
-                          .classed('connector-highlighted', false);
-                        el.attr('data-original-stroke', null)
-                          .attr('data-original-width', null);
-                    }
-                });
-
-                // Clear General View connector highlights
-                g.selectAll('.general-connector').each(function() {
-                    const el = d3.select(this);
-                    const origStroke = el.attr('data-original-stroke');
-                    const origWidth = el.attr('data-original-width');
-                    if (origStroke) {
-                        el.style('stroke', origStroke)
-                          .style('stroke-width', origWidth)
-                          .classed('connector-highlighted', false);
-                        el.attr('data-original-stroke', null)
-                          .attr('data-original-width', null);
-                    }
-                });
-            }
-        });
-
-        if (useSharedRendererForView && (view === 'general-view' || view === 'interconnection-view')) {
+        if (useSharedRendererForView && sharedRendererViews.has(view)) {
             if (!sharedPrepared || !vizElement) {
                 renderPlaceholderView(width, height, 'Shared Renderer', 'Unable to prepare shared view data.', dataToRender);
                 setTimeout(() => {
@@ -1523,6 +1590,9 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
                     );
                 }
             });
+            bindSharedCanvasRefs(vizElement);
+            ensureSharedCanvasZoom(sharedRenderController.getFitTransform());
+            attachCanvasClickHandler();
             setTimeout(() => {
                 if (isStaleRender()) {
                     finishRender();
@@ -1531,6 +1601,8 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
                 updateDimensionsDisplay();
                 finishRender();
             }, 100);
+            lastView = view;
+            return;
         } else if (view === 'general-view' || view === 'software-module-view' || view === 'software-dependency-view') {
             const ctx = {
                 ...buildRenderContext(width, height),
@@ -1606,13 +1678,16 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
                 renderPlaceholderView(width, height, 'Unknown View', 'The selected view is not yet implemented.', dataToRender);
             }
 
-            // General view and interconnection view handle zoom/hide in their async .then(); others run here
+            // Legacy-only: shared renderer applies fit/zoom in renderSharedView + ensureSharedCanvasZoom.
             if (
-                view !== 'general-view'
+                !useSharedRendererForView
+                && view !== 'general-view'
                 && view !== 'software-module-view'
                 && view !== 'software-dependency-view'
                 && view !== 'interconnection-view'
                 && view !== 'state-transition-view'
+                && view !== 'action-flow-view'
+                && view !== 'sequence-view'
             ) {
                 // If zoom was previously modified, restore it; otherwise zoom to fit
                 if (shouldPreserveZoom) {
@@ -2206,8 +2281,9 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
 
     function resetZoom() {
         // Home action: return to initial fit-and-center framing.
-        if (useSharedRenderer && (currentView === 'general-view' || currentView === 'interconnection-view') && sharedRenderController) {
+        if (useSharedRenderer && new Set<string>(SYSML_ENABLED_VIEWS).has(currentView) && sharedRenderController) {
             sharedRenderController.reset();
+            ensureSharedCanvasZoom(sharedRenderController.getFitTransform());
             return;
         }
         zoomToFit('user');
@@ -2226,8 +2302,12 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
             const bounds = selectionBounds || g.node().getBBox();
             if (!bounds || bounds.width === 0 || bounds.height === 0) return;
 
-            const svgWidth = +svg.attr('width');
-            const svgHeight = +svg.attr('height');
+            const svgNode = svg.node() as SVGSVGElement | null;
+            const svgWidth = svgNode?.clientWidth || Number(svg.attr('width')) || 0;
+            const svgHeight = svgNode?.clientHeight || Number(svg.attr('height')) || 0;
+            if (!svgWidth || !svgHeight) {
+                return;
+            }
 
             // Use tighter padding for selections, default padding otherwise
             const basePadding = selectionBounds ? 0.06 : 0.08;

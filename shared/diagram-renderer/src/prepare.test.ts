@@ -286,6 +286,58 @@ describe("shared prepareViewData", () => {
     expect(prepared.meta?.syntheticInitial).toBe(true);
   });
 
+  it("matches sequence diagram when view usage name differs in case from diagram name", () => {
+    const prepared = prepareViewData({
+      view: "sequence-view",
+      selectedViewName: "orderEventFanout",
+      sequenceDiagrams: [
+        {
+          id: "WebShopArchitecture::OrderEventFanout::sequence",
+          name: "OrderEventFanout",
+          package_path: "WebShopArchitecture",
+          lifelines: [
+            { id: "WebShopArchitecture::checkoutService", name: "checkoutService" },
+            { id: "WebShopArchitecture::ordersEventsTopic", name: "ordersEventsTopic" },
+          ],
+          messages: [
+            {
+              id: "m1",
+              source: "WebShopArchitecture::checkoutService",
+              target: "WebShopArchitecture::ordersEventsTopic",
+              name: "order-created",
+              type: "async",
+            },
+          ],
+        },
+      ],
+    });
+    expect(prepared.view).toBe("sequence-view");
+    expect(prepared.nodes.length).toBeGreaterThanOrEqual(2);
+    expect(prepared.edges.length).toBeGreaterThanOrEqual(1);
+    expect(prepared.meta?.selectedDiagramName).toBe("OrderEventFanout");
+  });
+
+  it("matches action-flow diagram when view usage name differs in case from diagram name", () => {
+    const prepared = prepareViewData({
+      view: "action-flow-view",
+      selectedViewName: "checkoutPipeline",
+      activityDiagrams: [
+        {
+          id: "WebShopBehavior::CheckoutPipeline",
+          name: "CheckoutPipeline",
+          nodes: [
+            { id: "validateCart", name: "validateCart" },
+            { id: "authorizePayment", name: "authorizePayment" },
+          ],
+          edges: [{ id: "e1", source: "validateCart", target: "authorizePayment", name: "flow" }],
+        },
+      ],
+    });
+    expect(prepared.title).toBe("CheckoutPipeline");
+    expect(prepared.nodes).toHaveLength(2);
+    expect(prepared.edges).toHaveLength(1);
+  });
+
   it("prefers richest action-flow candidate", () => {
     const prepared = prepareViewData({
       view: "action-flow-view",

@@ -313,9 +313,11 @@ function isSyntheticPackage(node: UnknownRecord): boolean {
 }
 
 function prepareActivity(visualization: VisualizationPayload): PreparedView {
-  const selected = visualization?.selectedViewName
-    ? selectNamedDiagram(visualization?.activityDiagrams, visualization?.selectedViewName)
-    : null;
+  const selected = selectNamedDiagram(
+    visualization?.activityDiagrams,
+    visualization?.selectedViewName,
+    visualization?.selectedView,
+  );
   const fallbackDiagram = bestBehaviorDiagram(asArray(visualization?.activityDiagrams).map(asRecord));
   const effective = selected ?? fallbackDiagram;
   const selectedRecord = asRecord(effective);
@@ -351,12 +353,18 @@ function prepareActivity(visualization: VisualizationPayload): PreparedView {
       selectedDiagramId: asString(selectedRecord.id),
       nodeCount: nodes.length,
       edgeCount: edges.length,
+      layoutDirection: asString(visualization?.activityLayoutDirection, "vertical"),
+      activityDiagram: effective,
     },
   };
 }
 
 function prepareState(visualization: VisualizationPayload): PreparedView {
-  const selectedStateDiagram = selectNamedDiagram((visualization as UnknownRecord).stateDiagrams, visualization?.selectedViewName);
+  const selectedStateDiagram = selectNamedDiagram(
+    (visualization as UnknownRecord).stateDiagrams,
+    visualization?.selectedViewName,
+    visualization?.selectedView,
+  );
   if (selectedStateDiagram) {
     const diagram = asRecord(selectedStateDiagram);
     const prepared = diagramToPrepared(diagram, "state-transition-view", "State Transition View");
@@ -365,6 +373,8 @@ function prepareState(visualization: VisualizationPayload): PreparedView {
       meta: {
         selectedDiagramId: asString(diagram.id),
         selectedDiagramName: asString(diagram.name),
+        layoutDirection: asString(visualization?.stateLayoutDirection, "horizontal"),
+        stateDiagram: diagram,
       },
     };
   }
@@ -422,13 +432,20 @@ function prepareState(visualization: VisualizationPayload): PreparedView {
 }
 
 function prepareSequence(visualization: VisualizationPayload): PreparedView {
-  const selected = selectNamedDiagram(visualization?.sequenceDiagrams, visualization?.selectedViewName);
-  if (selected) {
-    const prepared = diagramToPrepared(selected, "sequence-view", "Sequence View");
+  const selected = selectNamedDiagram(
+    visualization?.sequenceDiagrams,
+    visualization?.selectedViewName,
+    visualization?.selectedView,
+  );
+  const fallbackDiagram = asArray(visualization?.sequenceDiagrams).map(asRecord)[0] ?? null;
+  const effective = selected ?? fallbackDiagram;
+  if (effective) {
+    const prepared = diagramToPrepared(effective, "sequence-view", "Sequence View");
     return {
       ...prepared,
       meta: {
-        selectedDiagramName: asString(asRecord(selected).name),
+        selectedDiagramName: asString(asRecord(effective).name),
+        sequenceDiagram: effective,
       },
     };
   }
@@ -437,7 +454,7 @@ function prepareSequence(visualization: VisualizationPayload): PreparedView {
 
 function diagramToPrepared(diagramInput: unknown, view: string, fallbackTitle: string): PreparedView {
   const diagram = asRecord(diagramInput);
-  const nodes = asArray(diagram.nodes ?? diagram.states).map((nodeRaw, index) => {
+  let nodes = asArray(diagram.nodes ?? diagram.states).map((nodeRaw, index) => {
     const node = asRecord(nodeRaw);
     return {
       id: asString(node.id ?? node.name, `node-${index}`),
@@ -448,8 +465,7 @@ function diagramToPrepared(diagramInput: unknown, view: string, fallbackTitle: s
       attributes: asRecord(node.attributes)
     };
   });
-  const ids = new Set(nodes.map((node) => node.id));
-  const edges = asArray(diagram.edges ?? diagram.transitions)
+  let edges = asArray(diagram.edges ?? diagram.transitions)
     .map((edgeRaw, index) => {
       const edge = asRecord(edgeRaw);
       return {
@@ -458,21 +474,88 @@ function diagramToPrepared(diagramInput: unknown, view: string, fallbackTitle: s
         target: asString(edge.target ?? edge.to ?? edge.targetId, ""),
         label: asString(edge.name ?? edge.label ?? edge.type, "")
       };
-    })
-    .filter((edge) => ids.has(edge.source) && ids.has(edge.target));
+    });
+  // Sequence DTOs use lifelines/messages instead of nodes/edges.
+  if (view === "sequence-view" && nodes.length === 0) {
+    nodes = asArray(diagram.lifelines).map((lifelineRaw, index) => {
+      const lifeline = asRecord(lifelineRaw);
+      return {
+        id: asString(lifeline.id ?? lifeline.name, `lifeline-${index}`),
+        label: asString(lifeline.name ?? lifeline.label ?? lifeline.id, `Lifeline ${index + 1}`),
+        kind: "lifeline",
+        sourcePath: asString(lifeline.sourcePath) || null,
+        range: (lifeline.range as { start?: { line?: number } } | null | undefined) ?? null,
+        attributes: asRecord(lifeline.attributes),
+      };
+    });
+    edges = asArray(diagram.messages).map((messageRaw, index) => {
+      const message = asRecord(messageRaw);
+      return {
+        id: asString(message.id, `message-${index}`),
+        source: asString(message.source ?? message.from ?? message.sourceId, ""),
+        target: asString(message.target ?? message.to ?? message.targetId, ""),
+        label: asString(message.name ?? message.label ?? message.type, ""),
+      };
+    });
+  }
+  const ids = new Set(nodes.map((node) => node.id));
+  edges = edges.filter((edge) => ids.has(edge.source) && ids.has(edge.target));
   return { title: asString(diagram.name, fallbackTitle), view, nodes, edges };
 }
 
-function selectNamedDiagram(diagramsInput: unknown, selectedName: string | undefined): UnknownRecord | null {
+function normalizeDiagramKey(value: string): string {
+  return value.replace(/::/g, ".").trim().toLowerCase();
+}
+
+function diagramSimpleName(value: string): string {
+  const normalized = value.replace(/::/g, ".");
+  const segments = normalized.split(".").filter(Boolean);
+  return segments[segments.length - 1] ?? normalized;
+}
+
+function diagramMatchesSelection(
+  diagram: UnknownRecord,
+  selectedName?: string,
+  selectedViewId?: string,
+): boolean {
+  const selectors = [selectedName, selectedViewId].filter((value): value is string => Boolean(value?.trim()));
+  if (selectors.length === 0) return false;
+
+  const diagramKeys = [
+    asString(diagram.id),
+    asString(diagram.name),
+    `${asString(diagram.package_path)}::${asString(diagram.name)}`.replace(/^::+/, ""),
+  ].filter(Boolean);
+
+  return selectors.some((selector) => {
+    const selectorKey = normalizeDiagramKey(selector);
+    const selectorSimple = diagramSimpleName(selector).toLowerCase();
+    return diagramKeys.some((candidate) => {
+      const candidateKey = normalizeDiagramKey(candidate);
+      const candidateSimple = diagramSimpleName(candidate).toLowerCase();
+      return (
+        candidateKey === selectorKey ||
+        candidateSimple === selectorSimple ||
+        candidateKey.endsWith(`.${selectorKey}`) ||
+        selectorKey.endsWith(`.${candidateKey}`) ||
+        candidateKey.includes(selectorSimple) ||
+        selectorKey.includes(candidateSimple)
+      );
+    });
+  });
+}
+
+function selectNamedDiagram(
+  diagramsInput: unknown,
+  selectedName?: string,
+  selectedViewId?: string,
+): UnknownRecord | null {
   const diagrams = asArray(diagramsInput).map(asRecord);
   if (diagrams.length === 0) return null;
-  if (!selectedName) return diagrams[0];
-  return (
-    diagrams.find(
-      (diagram) =>
-        asString(diagram.id) === selectedName || asString(diagram.name) === selectedName,
-    ) ?? null
-  );
+  if (!selectedName && !selectedViewId) return null;
+  const matched = diagrams.find((diagram) => diagramMatchesSelection(diagram, selectedName, selectedViewId));
+  if (matched) return matched;
+  return diagrams.length === 1 ? diagrams[0] : null;
 }
 
 function bestBehaviorDiagram(diagrams: UnknownRecord[]): UnknownRecord | null {

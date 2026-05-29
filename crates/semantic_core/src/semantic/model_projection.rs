@@ -1195,6 +1195,64 @@ mod tests {
             "contains edges to redefinition stubs should be removed too"
         );
     }
+
+    #[test]
+    fn canonical_general_view_graph_retains_def_usage_ref_nodes() {
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::Tree".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "Tree".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::tree".to_string(),
+                    element_type: "part".to_string(),
+                    name: "tree".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::sharedBranch".to_string(),
+                    element_type: "ref".to_string(),
+                    name: "sharedBranch".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+            ],
+            edges: vec![GraphEdgeDto {
+                source: "Pkg::tree".to_string(),
+                target: "Pkg::Tree".to_string(),
+                rel_type: "typing".to_string(),
+                name: None,
+            }],
+        };
+
+        let canonical = canonical_general_view_graph(&graph, false);
+        let types: Vec<_> = canonical
+            .nodes
+            .iter()
+            .map(|node| node.element_type.as_str())
+            .collect();
+        assert!(types.iter().any(|t| t.contains("part def")));
+        assert!(types.iter().any(|t| *t == "part"));
+        assert!(types.iter().any(|t| *t == "ref"));
+        assert!(
+            canonical
+                .edges
+                .iter()
+                .any(|edge| edge.rel_type.eq_ignore_ascii_case("typing")),
+            "typing edge should survive canonicalization"
+        );
+    }
 }
 
 pub fn build_workspace_graph_dto(

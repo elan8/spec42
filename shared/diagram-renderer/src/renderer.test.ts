@@ -28,6 +28,18 @@ function paintIndex(target: HTMLElement, nodeId: string): number {
   return nodes.findIndex((node) => node.getAttribute("data-node-id") === nodeId);
 }
 
+function expectFiniteRootTransform(target: HTMLElement): void {
+  const transform = target.querySelector("g.viz-root")?.getAttribute("transform") ?? "";
+  expect(transform).toMatch(/translate\(/);
+  expect(transform).not.toMatch(/NaN/);
+  const scaleMatch = transform.match(/scale\(([-\d.eE+]+)\)/);
+  if (scaleMatch) {
+    const scale = Number(scaleMatch[1]);
+    expect(Number.isFinite(scale)).toBe(true);
+    expect(scale).toBeGreaterThan(0);
+  }
+}
+
 describe("shared renderer", () => {
   it("uses notation-neutral ink for all kinds", () => {
     const theme = resolveDiagramTheme({ colorScheme: "light" });
@@ -696,5 +708,115 @@ describe("shared renderer", () => {
     const connector = target.querySelector('[data-connector-id="mount"]');
     expect(connector).toBeTruthy();
     expect(connector?.getAttribute("d")).toMatch(/^M/);
+  });
+
+  it("renders action-flow view with activity nodes and flows", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+    await renderVisualization(
+      target,
+      {
+        title: "Robot Flow",
+        view: "action-flow-view",
+        nodes: [
+          { id: "start", label: "start", kind: "initial" },
+          { id: "move", label: "move", kind: "action" },
+          { id: "done", label: "done", kind: "final" },
+        ],
+        edges: [
+          { id: "f1", source: "start", target: "move", label: "" },
+          { id: "f2", source: "move", target: "done", label: "complete" },
+        ],
+      },
+      { delegateZoom: true },
+    );
+
+    expectFiniteRootTransform(target);
+    expect(target.querySelectorAll(".action-flow-node").length).toBe(3);
+    expect(target.querySelectorAll(".action-flow-edge").length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("renders state-transition view with pseudostates", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+    await renderVisualization(
+      target,
+      {
+        title: "Mode State Machine",
+        view: "state-transition-view",
+        nodes: [
+          { id: "i", label: "Initial", kind: "initial" },
+          { id: "idle", label: "idle", kind: "state" },
+          { id: "f", label: "Final", kind: "final" },
+        ],
+        edges: [
+          { id: "t1", source: "i", target: "idle", label: "" },
+          { id: "t2", source: "idle", target: "f", label: "shutdown" },
+        ],
+      },
+      { delegateZoom: true },
+    );
+
+    expectFiniteRootTransform(target);
+    expect(target.querySelectorAll(".state-transition-node").length).toBe(3);
+    expect(target.querySelectorAll(".state-transition-edge").length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("renders sequence view from sequenceDiagram meta", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1400, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 900, configurable: true });
+
+    await renderVisualization(
+      target,
+      {
+        title: "Interaction",
+        view: "sequence-view",
+        nodes: [],
+        edges: [],
+        meta: {
+          sequenceDiagram: {
+            name: "Demo",
+            lifelines: [
+              { id: "user", name: "User" },
+              { id: "robot", name: "Robot" },
+            ],
+            messages: [
+              { id: "m1", source: "user", target: "robot", name: "command", order: 1 },
+              { id: "m2", source: "robot", target: "user", name: "status", order: 2 },
+            ],
+          },
+        },
+      },
+      { delegateZoom: true },
+    );
+
+    expectFiniteRootTransform(target);
+    expect(target.querySelectorAll(".sequence-lifelines line").length).toBeGreaterThanOrEqual(2);
+    expect(target.querySelectorAll(".sequence-message").length).toBe(2);
+  });
+
+  it("styles composition edges with diamond marker in general view", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 900, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 600, configurable: true });
+
+    await renderVisualization(target, {
+      title: "General",
+      view: "general-view",
+      nodes: [
+        { id: "a", label: "A", kind: "part def" },
+        { id: "b", label: "B", kind: "part" },
+      ],
+      edges: [{ id: "e1", source: "a", target: "b", label: "composition", edgeKind: "composition" }],
+    });
+
+    const path = target.querySelector(".general-connector") as SVGPathElement | null;
+    expect(path?.style.strokeDasharray).toBe("6,3");
+    expect(path?.style.markerStart).toContain("general-d3-diamond");
   });
 });

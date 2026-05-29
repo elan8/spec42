@@ -840,7 +840,9 @@ fn dedupe_connectors(connectors: Vec<IbdConnectorDto>) -> Vec<IbdConnectorDto> {
 }
 
 fn endpoint_under_definition_prefix(endpoint: &str, def_prefix: &str) -> bool {
-    endpoint == def_prefix || endpoint.starts_with(&format!("{def_prefix}::"))
+    let endpoint_dot = qualified_name_to_dot(endpoint);
+    let def_dot = qualified_name_to_dot(def_prefix);
+    endpoint_dot == def_dot || endpoint_dot.starts_with(&format!("{def_dot}."))
 }
 
 fn map_definition_endpoint_to_usage(
@@ -848,20 +850,136 @@ fn map_definition_endpoint_to_usage(
     def_prefix: &str,
     usage_prefix_dot: &str,
 ) -> Option<String> {
-    if endpoint == def_prefix {
+    let endpoint_dot = qualified_name_to_dot(endpoint);
+    let def_dot = qualified_name_to_dot(def_prefix);
+    if endpoint_dot == def_dot {
         return Some(usage_prefix_dot.to_string());
     }
-    let prefixed = format!("{def_prefix}::");
-    if let Some(remainder) = endpoint.strip_prefix(&prefixed) {
+    let prefixed = format!("{def_dot}.");
+    if let Some(remainder) = endpoint_dot.strip_prefix(&prefixed) {
         if remainder.is_empty() {
             return Some(usage_prefix_dot.to_string());
         }
-        return Some(format!(
-            "{usage_prefix_dot}.{}",
-            remainder.replace("::", ".")
-        ));
+        return Some(format!("{usage_prefix_dot}.{remainder}"));
     }
     None
+}
+
+fn def_container_prefixes_for_uri(graph: &SemanticGraph, uri: &Url) -> Vec<String> {
+    graph
+        .nodes_for_uri(uri)
+        .iter()
+        .filter(|node| node.element_kind.to_lowercase().contains("part def"))
+        .map(|node| node.id.qualified_name.clone())
+        .collect()
+}
+
+/// Copy connectors declared on a part definition's document onto a typed instance path.
+fn mirror_connectors_from_definition_document(
+    graph: &SemanticGraph,
+    def_uri: &Url,
+    def_prefix: &str,
+    usage_prefix_dot: &str,
+    parts: &[IbdPartDto],
+    ports: &[IbdPortDto],
+    connectors: &mut Vec<IbdConnectorDto>,
+    connector_keys: &mut std::collections::HashSet<(String, String, String)>,
+) {
+    let def_prefix_dot = qualified_name_to_dot(def_prefix);
+    let def_container_prefixes = def_container_prefixes_for_uri(graph, def_uri);
+
+    let mut push_connector = |source_id: String, target_id: String| {
+        let source_id = expand_relative_endpoint_to_part_path(&source_id, parts, ports);
+        let target_id = expand_relative_endpoint_to_part_path(&target_id, parts, ports);
+        let source_id =
+            map_container_endpoint_to_instance(&source_id, &def_prefix_dot, usage_prefix_dot)
+                .unwrap_or(source_id);
+        let target_id =
+            map_container_endpoint_to_instance(&target_id, &def_prefix_dot, usage_prefix_dot)
+                .unwrap_or(target_id);
+        let key = (
+            source_id.clone(),
+            target_id.clone(),
+            "connection".to_string(),
+        );
+        if !connector_keys.insert(key) {
+            return;
+        }
+        connectors.push(IbdConnectorDto {
+            source: source_id.clone(),
+            target: target_id.clone(),
+            source_id,
+            target_id,
+            source_part_id: None,
+            target_part_id: None,
+            rel_type: "connection".to_string(),
+        });
+    };
+
+    for (src, tgt, _range, src_endpoint, tgt_endpoint, container_prefix) in
+        graph.connection_edge_occurrence_details_for_uri(def_uri)
+    {
+        let source_id = src_endpoint
+            .as_ref()
+            .map(|endpoint| {
+                if container_prefix.is_some() {
+                    qualify_pending_connection_endpoint(container_prefix.as_deref(), endpoint)
+                } else {
+                    qualify_occurrence_endpoint(endpoint, &def_container_prefixes)
+                }
+            })
+            .unwrap_or_else(|| src.qualified_name.replace("::", "."));
+        let target_id = tgt_endpoint
+            .as_ref()
+            .map(|endpoint| {
+                if container_prefix.is_some() {
+                    qualify_pending_connection_endpoint(container_prefix.as_deref(), endpoint)
+                } else {
+                    qualify_occurrence_endpoint(endpoint, &def_container_prefixes)
+                }
+            })
+            .unwrap_or_else(|| tgt.qualified_name.replace("::", "."));
+        push_connector(source_id, target_id);
+    }
+
+    for pending in graph.pending_expression_relationships.iter().filter(|pending| {
+        pending.kind == RelationshipKind::Connection && pending.uri == *def_uri
+    }) {
+        let source_id = qualify_pending_connection_endpoint(
+            pending.container_prefix.as_deref(),
+            &pending.source_expression,
+        );
+        let target_id = qualify_pending_connection_endpoint(
+            pending.container_prefix.as_deref(),
+            &pending.target_expression,
+        );
+        if source_id.is_empty() || target_id.is_empty() {
+            continue;
+        }
+        push_connector(source_id, target_id);
+    }
+
+    for (src, tgt, kind, _) in graph.edges_for_uri_as_strings(def_uri) {
+        if kind != RelationshipKind::Connection {
+            continue;
+        }
+        if !endpoint_under_definition_prefix(&src, def_prefix)
+            && !endpoint_under_definition_prefix(&tgt, def_prefix)
+        {
+            continue;
+        }
+        let Some(source_id) =
+            map_definition_endpoint_to_usage(&src, def_prefix, usage_prefix_dot)
+        else {
+            continue;
+        };
+        let Some(target_id) =
+            map_definition_endpoint_to_usage(&tgt, def_prefix, usage_prefix_dot)
+        else {
+            continue;
+        };
+        push_connector(source_id, target_id);
+    }
 }
 
 fn qualify_pending_connection_endpoint(container_prefix: Option<&str>, endpoint: &str) -> String {
@@ -1382,7 +1500,21 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         };
         let def_prefix = def_node.id.qualified_name.as_str();
         let usage_prefix_dot = p.qualified_name.as_str();
-        for (src, tgt, kind, _name) in &edges {
+        if def_node.id.uri != *uri {
+            mirror_connectors_from_definition_document(
+                graph,
+                &def_node.id.uri,
+                def_prefix,
+                usage_prefix_dot,
+                &parts,
+                &ports,
+                &mut connectors,
+                &mut connector_keys,
+            );
+            continue;
+        }
+        let def_edges = graph.edges_for_uri_as_strings(&def_node.id.uri);
+        for (src, tgt, kind, _name) in &def_edges {
             if *kind != RelationshipKind::Connection {
                 continue;
             }
@@ -2086,6 +2218,75 @@ mod tests {
         assert!(connectors
             .iter()
             .all(|connector| !connector.source_id.starts_with("Pkg.Controller")));
+    }
+
+    #[test]
+    fn build_ibd_mirrors_definition_connections_onto_cross_file_instance() {
+        let architecture = r#"
+            package WebShopArchitecture {
+                part def Storefront {
+                    port checkoutApiOut;
+                }
+                part def ApiGateway {
+                    port publicCheckoutIn;
+                }
+                part def WebShopSystem {
+                    part storefront : Storefront;
+                    part apiGateway : ApiGateway;
+                    connect storefront.checkoutApiOut to apiGateway.publicCheckoutIn;
+                }
+            }
+        "#;
+        let instance = r#"
+            package WebShopExample {
+                import WebShopArchitecture::*;
+                part webshopSystem : WebShopSystem;
+            }
+        "#;
+
+        let arch_doc = SysmlDocument::from_memory_path(
+            "workspace",
+            "WebShopArchitecture.sysml",
+            architecture.to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("arch doc");
+        let instance_doc = SysmlDocument::from_memory_path(
+            "workspace",
+            "webshop.sysml",
+            instance.to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("instance doc");
+        let architecture_uri = arch_doc.uri.clone();
+        let instance_uri = instance_doc.uri.clone();
+
+        let (graph, _parsed) = build_semantic_graph_from_documents(&[arch_doc, instance_doc])
+            .expect("graph");
+
+        let merged = super::merge_ibd_payloads(vec![
+            super::build_ibd_for_uri(&graph, &architecture_uri),
+            super::build_ibd_for_uri(&graph, &instance_uri),
+        ]);
+
+        let root_view = merged
+            .root_views
+            .get("webshopSystem")
+            .expect("webshopSystem root view");
+        assert!(
+            root_view.connectors.iter().any(|connector| {
+                connector.source_id.contains("webshopSystem.storefront")
+                    && connector.source_id.contains("checkoutApiOut")
+                    && connector.target_id.contains("webshopSystem.apiGateway")
+                    && connector.target_id.contains("publicCheckoutIn")
+            }),
+            "expected mirrored storefront→gateway connector, got {:?}",
+            root_view.connectors
+        );
     }
 
     #[test]

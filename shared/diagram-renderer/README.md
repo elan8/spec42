@@ -1,6 +1,14 @@
 # Diagram renderer
 
-Shared D3 + ELK renderer for Spec42 General and Interconnection views, used by the VS Code extension and Babel42.
+Shared D3 + ELK renderer for Spec42 **SysML visualizer views** (`SYSML_ENABLED_VIEWS`), used by the VS Code extension. Babel42 embeds **general** and **interconnection** only today.
+
+| View | Layout | Module |
+|------|--------|--------|
+| `general-view` | ELK | `renderer.ts` |
+| `interconnection-view` | ELK hierarchical | `renderer.ts` |
+| `action-flow-view` | ELK layered | `views/action-flow.ts` |
+| `state-transition-view` | ELK | `views/state-transition.ts` |
+| `sequence-view` | D3 columns | `views/sequence.ts` |
 
 For the full picture (legacy vs shared vs SysML v2 spec) and the conformance roadmap, see [`docs/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md`](../../docs/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md).
 
