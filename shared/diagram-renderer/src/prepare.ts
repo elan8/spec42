@@ -14,7 +14,8 @@ export interface PreparedNode {
   label: string;
   kind: string;
   sourcePath?: string | null;
-  range?: { start?: { line?: number } } | null;
+  uri?: string | null;
+  range?: { start?: { line?: number; character?: number }; end?: { line?: number; character?: number } } | null;
   attributes?: Record<string, unknown>;
 }
 
@@ -49,8 +50,11 @@ interface VisualizationPayload extends UnknownRecord {
   diagrams?: UnknownArray;
   activityDiagrams?: UnknownArray;
   sequenceDiagrams?: UnknownArray;
+  stateMachines?: UnknownArray;
+  stateDiagrams?: UnknownArray;
   synthesizeInitialState?: boolean;
   activityLayoutDirection?: string;
+  stateLayoutDirection?: string;
 }
 
 function asRecord(value: unknown): UnknownRecord {
@@ -143,6 +147,7 @@ function prepareGraph(graphInput: unknown, visualization: VisualizationPayload):
     label: asString(node.name ?? node.qualifiedName ?? node.id, "Unnamed"),
     kind: elementTypeOf(node) || "Element",
     sourcePath: asString(node.sourcePath ?? node.source_path) || null,
+    uri: nodeUri(node),
     range: (node.range as { start?: { line?: number } } | null | undefined) ?? null,
     attributes: {
       ...asRecord(node.attributes),
@@ -309,6 +314,37 @@ function prepareInterconnection(visualization: VisualizationPayload): PreparedVi
   };
 }
 
+function nodeUri(node: UnknownRecord): string | null {
+  return asString(node.uri ?? node.sourcePath ?? node.source_path) || null;
+}
+
+function nodeRange(node: UnknownRecord): PreparedNode["range"] {
+  return (node.range as PreparedNode["range"]) ?? null;
+}
+
+function buildBehaviorNode(
+  node: UnknownRecord,
+  index: number,
+  defaults: { id: string; label: string; kind: string },
+): PreparedNode {
+  const attrs = asRecord(node.attributes);
+  const qualifiedName = asString(node.qualifiedName ?? attrs.qualifiedName ?? node.id);
+  return {
+    id: asString(node.id ?? node.name, defaults.id),
+    label: asString(node.name ?? node.label ?? node.id, defaults.label),
+    kind: defaults.kind,
+    sourcePath: nodeUri(node),
+    uri: nodeUri(node),
+    range: nodeRange(node),
+    attributes: {
+      ...attrs,
+      ...(qualifiedName ? { qualifiedName } : {}),
+      ...(node.parentId != null ? { parentId: node.parentId } : {}),
+      ...(node.parent != null ? { parent: node.parent } : {}),
+    },
+  };
+}
+
 function isSyntheticPackage(node: UnknownRecord): boolean {
   if (!isPackage(node)) return false;
   const attrs = asRecord(node.attributes);
@@ -327,27 +363,21 @@ function collectActivityNodes(diagram: UnknownRecord): PreparedNode[] {
   const allowedKinds = new Set(["action", "perform", "decision", "merge", "fork", "join", "initial", "final"]);
   const decisions = asArray(diagram.decisions).map((nodeRaw, index) => {
     const node = asRecord(nodeRaw);
-    return {
-      id: asString(node.id ?? node.name, `decision-${index}`),
-      label: asString(node.name ?? node.label, "Decision"),
+    return buildBehaviorNode(node, index, {
+      id: `decision-${index}`,
+      label: "Decision",
       kind: "decision",
-      sourcePath: asString(node.sourcePath) || null,
-      range: (node.range as { start?: { line?: number } } | null | undefined) ?? null,
-      attributes: asRecord(node.attributes),
-    };
+    });
   });
   const states = asArray(diagram.states)
     .map((nodeRaw, index) => {
       const node = asRecord(nodeRaw);
       const kind = asString(node.type ?? node.stateType ?? node.kind, "state").toLowerCase();
-      return {
-        id: asString(node.id ?? node.name, `state-${index}`),
-        label: asString(node.name ?? node.label ?? node.id, `State ${index + 1}`),
+      return buildBehaviorNode(node, index, {
+        id: `state-${index}`,
+        label: `State ${index + 1}`,
         kind,
-        sourcePath: asString(node.sourcePath) || null,
-        range: (node.range as { start?: { line?: number } } | null | undefined) ?? null,
-        attributes: asRecord(node.attributes),
-      };
+      });
     })
     .filter((node) =>
       ["initial", "final", "decision", "merge", "fork", "join"].some((token) => node.kind.includes(token)),
@@ -370,14 +400,11 @@ function collectActivityNodes(diagram: UnknownRecord): PreparedNode[] {
                 : kind.includes("final")
                   ? "final"
                   : "action";
-    return {
-      id: asString(node.id ?? node.name, `action-${index}`),
-      label: asString(node.name ?? node.label ?? node.id, `Action ${index + 1}`),
+    return buildBehaviorNode(node, index, {
+      id: `action-${index}`,
+      label: `Action ${index + 1}`,
       kind: normalizedKind,
-      sourcePath: asString(node.sourcePath) || null,
-      range: (node.range as { start?: { line?: number } } | null | undefined) ?? null,
-      attributes: asRecord(node.attributes),
-    };
+    });
   });
   return [...actions, ...decisions, ...states].filter((node) => allowedKinds.has(node.kind));
 }
@@ -467,13 +494,100 @@ function prepareActivity(visualization: VisualizationPayload): PreparedView {
       edgeCount: edges.length,
       layoutDirection: asString(visualization?.activityLayoutDirection, "vertical"),
       activityDiagram: effective,
+      parentContext: asString(diagram.name),
+    },
+  };
+}
+
+function stateMachineCatalog(visualization: VisualizationPayload): UnknownRecord[] {
+  const normalized = asArray(visualization.stateMachines).map(asRecord);
+  if (normalized.length > 0) {
+    return normalized;
+  }
+  return asArray(visualization.stateDiagrams).map(asRecord);
+}
+
+function collectStateMachineNodes(machine: UnknownRecord): PreparedNode[] {
+  return asArray(machine.states).map((stateRaw, index) => {
+    const state = asRecord(stateRaw);
+    const element = asRecord(state.element);
+    const merged = {
+      ...element,
+      ...state,
+      id: state.id ?? element.id,
+      name: state.name ?? element.name,
+      range: element.range ?? state.range,
+      uri: element.uri ?? state.uri ?? element.sourcePath ?? state.sourcePath,
+      qualifiedName: state.qualifiedName ?? element.qualifiedName ?? state.id,
+    };
+    const kind = asString(state.kind ?? state.type ?? element.type, "state").toLowerCase();
+    return buildBehaviorNode(asRecord(merged), index, {
+      id: `state-${index}`,
+      label: "State",
+      kind: kind.includes("initial")
+        ? "initial"
+        : kind.includes("final")
+          ? "final"
+          : kind.includes("composite")
+            ? "composite"
+            : "state",
+    });
+  });
+}
+
+function prepareStateMachine(machine: UnknownRecord, visualization: VisualizationPayload): PreparedView {
+  const nodes = collectStateMachineNodes(machine);
+  const nodeIds = new Set(nodes.map((node) => node.id));
+  const aliases = buildActivityNodeAliasMap(nodes);
+  const edges = asArray(machine.transitions)
+    .map((edgeRaw, index) => {
+      const edge = asRecord(edgeRaw);
+      const source = resolveActivityNodeRef(edge.source ?? edge.sourceName ?? edge.from, aliases);
+      const target = resolveActivityNodeRef(edge.target ?? edge.targetName ?? edge.to, aliases);
+      const label = asString(edge.label ?? edge.name ?? edge.guard, "");
+      return {
+        id: asString(edge.id, `transition-${index}`),
+        source,
+        target,
+        label: label === "entry" ? "" : label,
+        attributes: {
+          selfLoop: Boolean(edge.selfLoop ?? source === target),
+        },
+      };
+    })
+    .filter(
+      (edge) =>
+        edge.source &&
+        edge.target &&
+        nodeIds.has(edge.source) &&
+        nodeIds.has(edge.target),
+    );
+  return {
+    title: asString(machine.name ?? visualization?.selectedViewName, "State Transition View"),
+    view: "state-transition-view",
+    nodes,
+    edges,
+    meta: {
+      selectedDiagramId: asString(machine.id),
+      selectedDiagramName: asString(machine.name),
+      layoutDirection: asString(visualization?.stateLayoutDirection, "horizontal"),
+      stateMachine: machine,
+      parentContext: asString(machine.name),
     },
   };
 }
 
 function prepareState(visualization: VisualizationPayload): PreparedView {
+  const catalog = stateMachineCatalog(visualization);
+  if (catalog.length > 0) {
+    const selected = selectNamedDiagram(catalog, visualization?.selectedViewName, visualization?.selectedView);
+    const effective = selected ?? catalog[0];
+    if (effective) {
+      return prepareStateMachine(asRecord(effective), visualization);
+    }
+  }
   const selectedStateDiagram = selectNamedDiagram(
-    (visualization as UnknownRecord).stateDiagrams,
+    visualization.stateDiagrams,
     visualization?.selectedViewName,
     visualization?.selectedView,
   );
@@ -558,6 +672,7 @@ function prepareSequence(visualization: VisualizationPayload): PreparedView {
       meta: {
         selectedDiagramName: asString(asRecord(effective).name),
         sequenceDiagram: effective,
+        parentContext: asString(asRecord(effective).name),
       },
     };
   }
@@ -568,14 +683,11 @@ function diagramToPrepared(diagramInput: unknown, view: string, fallbackTitle: s
   const diagram = asRecord(diagramInput);
   let nodes = asArray(diagram.nodes ?? diagram.states).map((nodeRaw, index) => {
     const node = asRecord(nodeRaw);
-    return {
-      id: asString(node.id ?? node.name, `node-${index}`),
-      label: asString(node.name ?? node.label ?? node.id, `Node ${index + 1}`),
-      kind: asString(node.type, view),
-      sourcePath: asString(node.sourcePath) || null,
-      range: (node.range as { start?: { line?: number } } | null | undefined) ?? null,
-      attributes: asRecord(node.attributes)
-    };
+    return buildBehaviorNode(node, index, {
+      id: `node-${index}`,
+      label: `Node ${index + 1}`,
+      kind: asString(node.type ?? node.kind, view),
+    });
   });
   let edges = asArray(diagram.edges ?? diagram.transitions)
     .map((edgeRaw, index) => {
@@ -591,14 +703,11 @@ function diagramToPrepared(diagramInput: unknown, view: string, fallbackTitle: s
   if (view === "sequence-view" && nodes.length === 0) {
     nodes = asArray(diagram.lifelines).map((lifelineRaw, index) => {
       const lifeline = asRecord(lifelineRaw);
-      return {
-        id: asString(lifeline.id ?? lifeline.name, `lifeline-${index}`),
-        label: asString(lifeline.name ?? lifeline.label ?? lifeline.id, `Lifeline ${index + 1}`),
+      return buildBehaviorNode(lifeline, index, {
+        id: `lifeline-${index}`,
+        label: `Lifeline ${index + 1}`,
         kind: "lifeline",
-        sourcePath: asString(lifeline.sourcePath) || null,
-        range: (lifeline.range as { start?: { line?: number } } | null | undefined) ?? null,
-        attributes: asRecord(lifeline.attributes),
-      };
+      });
     });
     edges = asArray(diagram.messages).map((messageRaw, index) => {
       const message = asRecord(messageRaw);

@@ -23,6 +23,13 @@ export const SYSML_ENABLED_VIEWS = [
     'state-transition-view',
 ] as const;
 
+/** Behavior renderer views that are supported — never show experimental badges/banners. */
+export const GRADUATED_BEHAVIOR_VIEWS = new Set<string>([
+    'action-flow-view',
+    'state-transition-view',
+    'sequence-view',
+]);
+
 export const SOFTWARE_ENABLED_VIEWS = [
     'software-module-view',
     'software-dependency-view',

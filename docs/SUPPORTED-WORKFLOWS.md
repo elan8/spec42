@@ -32,16 +32,14 @@ These workflows are available and useful, but still have known limits that shoul
 - Interconnection visualization view
   Release-enabled for structural connection inspection, export, and root-based exploration, with known caveats mainly around very dense routing/layout.
 - Shared vs legacy renderer scope and SysML graphical-notation roadmap: [`SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md`](SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md)
-- Action Flow and State Transition views are available by default in the visualizer and are treated as release-gating workflows for `1.0`.
-- Sequence View is available as an experimental software-interaction extension.
-  It is intended for Spec42-authored `SequenceView` + `SoftwareInteractions` models rather than full UML sequence-diagram parity.
+- Action Flow, State Transition, and Sequence views are available by default in the visualizer and are treated as release-gating workflows for `1.0`.
+- Sequence View targets Spec42-authored `SequenceView` + `SoftwareInteractions` models; full UML sequence-diagram parity (fragments, advanced message kinds) is still evolving.
 
 ## Experimental Areas
 
 The following areas are intentionally not release-gating for `1.0`:
 
-- `sequence-view`
-- Additional visualization routing and layout quality beyond `general-view` and `interconnection-view`
+- Additional visualization routing and layout quality beyond the five SysML visualizer views
 - Broader SysML v2 language coverage outside the currently well-tested subset
 - Deep semantic validation beyond the existing parser and graph-based support
 

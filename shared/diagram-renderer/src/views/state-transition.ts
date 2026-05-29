@@ -1,8 +1,11 @@
 import * as d3 from "d3";
 import type { PreparedNode } from "../prepare";
 import type { DiagramTheme } from "../theme";
+import { attachBehaviorNodeClick } from "./behavior-interaction";
 import {
   BehaviorSceneContext,
+  buildSelfLoopPath,
+  edgeLabelPositionFromSections,
   fallbackEdgePath,
   layoutBehaviorGraph,
   nodeKind,
@@ -10,12 +13,18 @@ import {
   truncateLabel,
 } from "./behavior-common";
 
+function transitionDisplayLabel(label: string): string {
+  const trimmed = label.trim();
+  if (!trimmed || trimmed.toLowerCase() === "entry") return "";
+  return trimmed;
+}
+
 function drawStateNode(
   group: d3.Selection<SVGGElement, unknown, null, undefined>,
   node: PreparedNode,
   layout: { x: number; y: number; width: number; height: number },
   theme: DiagramTheme,
-): void {
+): d3.Selection<SVGGElement, unknown, null, undefined> {
   const kind = nodeKind(node);
   const g = group
     .append("g")
@@ -25,6 +34,9 @@ function drawStateNode(
 
   if (kind.includes("initial")) {
     g.append("circle")
+      .attr("class", "node-background")
+      .attr("data-original-stroke", theme.nodeBorder)
+      .attr("data-original-width", "2px")
       .attr("cx", layout.width / 2)
       .attr("cy", layout.height / 2)
       .attr("r", layout.width / 2 - 2)
@@ -33,6 +45,9 @@ function drawStateNode(
       .style("stroke-width", "2px");
   } else if (kind.includes("final")) {
     g.append("circle")
+      .attr("class", "node-background")
+      .attr("data-original-stroke", theme.nodeBorder)
+      .attr("data-original-width", "2px")
       .attr("cx", layout.width / 2)
       .attr("cy", layout.height / 2)
       .attr("r", layout.width / 2 - 2)
@@ -47,6 +62,9 @@ function drawStateNode(
       .style("stroke", "none");
   } else {
     g.append("rect")
+      .attr("class", "node-background")
+      .attr("data-original-stroke", theme.nodeBorder)
+      .attr("data-original-width", "2px")
       .attr("width", layout.width)
       .attr("height", layout.height)
       .attr("rx", kind.includes("composite") ? 10 : 14)
@@ -62,12 +80,15 @@ function drawStateNode(
       .style("fill", theme.textPrimary)
       .text(truncateLabel(node.label, 28));
   }
+
+  return g;
 }
 
 export async function renderStateTransitionView(ctx: BehaviorSceneContext): Promise<{ minX: number; minY: number; maxX: number; maxY: number }> {
   const layoutMode = String(ctx.prepared.meta?.layoutDirection ?? "horizontal").toLowerCase();
   const horizontal = layoutMode !== "vertical" && layoutMode !== "force";
   const layout = await layoutBehaviorGraph(ctx.prepared, { horizontal, mode: "state" });
+  const renderOptions = ctx.options ?? {};
 
   ctx.root
     .append("text")
@@ -86,7 +107,8 @@ export async function renderStateTransitionView(ctx: BehaviorSceneContext): Prom
     const target = layout.positions.get(edge.target);
     if (!source || !target) continue;
     const sections = layout.edgeSectionsById.get(edge.id);
-    const fallback = fallbackEdgePath(source, target, horizontal);
+    const selfLoop = Boolean(edge.attributes?.selfLoop) || edge.source === edge.target;
+    const fallback = selfLoop ? buildSelfLoopPath(source) : fallbackEdgePath(source, target, horizontal);
     edgeLayer
       .append("path")
       .attr("class", "state-transition-edge")
@@ -95,15 +117,36 @@ export async function renderStateTransitionView(ctx: BehaviorSceneContext): Prom
       .style("stroke", ctx.theme.edge.default)
       .style("stroke-width", "2px")
       .style("marker-end", "url(#state-transition-arrow)");
-    const label = truncateLabel(edge.label, 24);
+
+    const label = transitionDisplayLabel(edge.label);
     if (label) {
+      const elkLabel = layout.edgeLabelsById.get(edge.id)?.[0];
+      const labelFromSections = edgeLabelPositionFromSections(sections);
+      const labelPosition = elkLabel
+        ? { x: elkLabel.x + elkLabel.width / 2, y: elkLabel.y + elkLabel.height / 2 }
+        : (labelFromSections ?? { x: fallback.labelX, y: fallback.labelY });
+      const labelWidth = elkLabel?.width ?? Math.max(42, label.length * 6 + 10);
+      const labelHeight = elkLabel?.height ?? 18;
+
+      edgeLayer
+        .append("rect")
+        .attr("x", elkLabel ? elkLabel.x : labelPosition.x - labelWidth / 2)
+        .attr("y", elkLabel ? elkLabel.y : labelPosition.y - 10)
+        .attr("width", labelWidth)
+        .attr("height", labelHeight)
+        .attr("rx", 4)
+        .style("fill", ctx.theme.canvasBackground)
+        .style("stroke", ctx.theme.edge.default)
+        .style("stroke-width", "1px");
+
       edgeLayer
         .append("text")
-        .attr("x", fallback.labelX)
-        .attr("y", fallback.labelY)
+        .attr("x", labelPosition.x)
+        .attr("y", labelPosition.y + 3)
         .attr("text-anchor", "middle")
         .style("font-size", "10px")
-        .style("fill", ctx.theme.textSecondary)
+        .style("font-weight", "500")
+        .style("fill", ctx.theme.edge.default)
         .text(label);
     }
   }
@@ -111,7 +154,8 @@ export async function renderStateTransitionView(ctx: BehaviorSceneContext): Prom
   for (const node of ctx.prepared.nodes) {
     const position = layout.positions.get(node.id);
     if (!position) continue;
-    drawStateNode(nodeLayer, node, position, ctx.theme);
+    const nodeGroup = drawStateNode(nodeLayer, node, position, ctx.theme);
+    attachBehaviorNodeClick(nodeGroup, node, ctx.theme, renderOptions, ctx.root);
   }
 
   let minX = 0;

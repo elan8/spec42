@@ -64,6 +64,7 @@ Normative notation targets: [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](SH
 | ELK layered layout | Yes | Yes | cosmetic |
 | Initial / final / decision / fork nodes | Yes | Yes | — |
 | Control-flow edges | Yes | Yes | cosmetic |
+| Node click highlight + jump to source | Yes | Yes | — |
 | Perform-action / I/O badges | No | Yes | legacy-only (for now) |
 | Rich action compartment text | Partial | Yes | cosmetic |
 
@@ -77,9 +78,10 @@ Normative notation targets: [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](SH
 |-------|--------------------------------------|---------------------|----------|
 | States + transitions | Yes | Yes | — |
 | Initial / final pseudostates | Yes | Yes | — |
-| ELK layout | Yes | Yes (force optional in legacy) | cosmetic |
+| ELK layout + edge labels | Yes | Yes | cosmetic |
+| Node click highlight + jump to source | Yes | Yes | — |
 | Composite state regions | Limited | Yes | cosmetic |
-| Self-loop / transition labels | Partial | Yes | cosmetic |
+| Self-loop transitions | Yes | Yes | cosmetic |
 
 **Automated:** `state-transition-view.test.ts`
 
@@ -90,13 +92,16 @@ Normative notation targets: [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](SH
 | Check | Shared (`views/sequence.ts`) | Legacy (`sequence.ts`) | Severity |
 |-------|------------------------------|------------------------|----------|
 | Lifelines + sync messages | Yes | Yes | — |
+| Lifeline click + jump to source | Yes | Yes | — |
 | D3 column layout (not ELK) | Yes | Yes | — |
 | Fragments (alt/opt/loop) | No | Partial | legacy-only |
 | Self-messages / return arrows | Partial | Yes | cosmetic |
 
-**Note:** Sequence is **experimental** per [SUPPORTED-WORKFLOWS.md](SUPPORTED-WORKFLOWS.md) (Spec42 `SequenceView` payloads).
+**Note:** Sequence targets Spec42 `SequenceView` payloads; fragment overlays remain legacy-only for now.
 
 **Automated:** `sequence-view.test.ts`
+
+**Manual (webshop):** Open `orderEventFanout` — click a lifeline header → gold highlight + editor jumps to the lifeline declaration.
 
 ---
 
@@ -111,8 +116,8 @@ Normative notation targets: [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](SH
 
 - IBD payloads exclude `part def` via `semantic_core`; scoped roots collapse redundant package/view frames in shared renderer.
 
-### Phases 2–3 — General + behavior (baseline)
+### Phases 2–3 — General + behavior
 
-- **Blockers:** None for routing all `SYSML_ENABLED_VIEWS` through the shared package.
-- **Not signed off:** Full legacy parity for behavior notation, general-view BNF checklist, or Phase 3.6 SVG snapshots.
-- **Workaround:** Set `useSharedRenderer` to `false` for behavior views if shared output is insufficient.
+- **Blockers:** None for routing all `SYSML_ENABLED_VIEWS` through the shared package with click/highlight/jump and ELK transition labels.
+- **Not signed off:** Full legacy parity for behavior notation (I/O badges, composite regions, sequence fragments), general-view BNF checklist, or Phase 3.6 SVG snapshots.
+- **Manual (webshop):** `CheckoutPipeline` (action flow), `OrderLifecycleStateMachine` (state), `orderEventFanout` (sequence) — click node/lifeline → gold highlight + editor jumps to correct line.

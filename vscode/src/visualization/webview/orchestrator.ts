@@ -21,6 +21,7 @@ import {
     isLibraryValidated
 } from './shared';
 import {
+    GRADUATED_BEHAVIOR_VIEWS,
     STRUCTURAL_VIEWS,
     SYSML_ENABLED_VIEWS,
     MIN_CANVAS_ZOOM,
@@ -59,7 +60,7 @@ import { postJumpToElement } from './jumpToElement';
 import { buildGeneralViewGraph } from './graphBuilders';
 import { RenderScheduler } from './renderScheduler';
 import { setupVisualizerControls } from './uiControls';
-import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter';
+import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './sharedRendererAdapter';
 
     let vscode: { postMessage: (msg: unknown) => void };
 
@@ -83,10 +84,28 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
     // ELK Worker URL (must be set before ELK is instantiated)
     const elkWorkerUrl = (typeof window !== 'undefined' && (window).__VIZ_INIT?.elkWorkerUrl) ?? '';
     const experimentalViews = new Set(
-        Array.isArray((typeof window !== 'undefined' && (window).__VIZ_INIT?.experimentalViews))
+        (Array.isArray((typeof window !== 'undefined' && (window).__VIZ_INIT?.experimentalViews))
             ? (window).__VIZ_INIT.experimentalViews
             : []
+        ).filter((viewId: string) => !GRADUATED_BEHAVIOR_VIEWS.has(viewId)),
     );
+
+    function isExperimentalRendererView(viewId: string | null | undefined): boolean {
+        if (!viewId || GRADUATED_BEHAVIOR_VIEWS.has(viewId)) {
+            return false;
+        }
+        return experimentalViews.has(viewId);
+    }
+
+    function resolveActiveRendererView(activeView: string): string {
+        const selectedCandidate = Array.isArray(currentData?.viewCandidates)
+            ? currentData.viewCandidates.find((candidate: any) => candidate.id === currentData?.selectedView)
+            : null;
+        const candidateRenderer = selectedCandidate?.supported ? selectedCandidate?.rendererView : null;
+        return typeof candidateRenderer === 'string' && candidateRenderer.length > 0
+            ? candidateRenderer
+            : activeView;
+    }
     const verboseWebviewLogging = Boolean((typeof window !== 'undefined' && (window).__VIZ_INIT?.verboseLogging));
     const useSharedRenderer = Boolean((typeof window !== 'undefined' && (window).__VIZ_INIT?.useSharedRenderer));
 
@@ -389,7 +408,7 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
             textSpan.textContent = label;
             item.appendChild(iconSpan);
             item.appendChild(textSpan);
-            if (!candidate?.supported || experimentalViews.has(candidate?.rendererView)) {
+            if (!candidate?.supported || isExperimentalRendererView(candidate?.rendererView)) {
                 const badge = document.createElement('span');
                 badge.className = 'view-badge';
                 badge.textContent = !candidate?.supported ? 'Unsupported' : 'Experimental';
@@ -437,10 +456,11 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
                 return;
             }
         }
-        if (experimentalViews.has(activeView)) {
-            const option = VIEW_OPTIONS[activeView];
+        const rendererView = resolveActiveRendererView(activeView);
+        if (isExperimentalRendererView(rendererView)) {
+            const option = VIEW_OPTIONS[rendererView];
             banner.className = 'experimental';
-            banner.textContent = (option?.label || activeView) + ' is experimental. Layout, routing, or element coverage may still be incomplete.';
+            banner.textContent = (option?.label || rendererView) + ' is experimental. Layout, routing, or element coverage may still be incomplete.';
             banner.style.display = 'block';
             return;
         }
@@ -1427,6 +1447,9 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
                 sequenceDiagrams:
                     (dataToRender as { diagrams?: unknown[] }).diagrams ??
                     (dataForPrepare as { sequenceDiagrams?: unknown[] }).sequenceDiagrams,
+                stateMachines:
+                    (dataToRender as { stateMachines?: unknown[] }).stateMachines ??
+                    (dataForPrepare as { stateMachines?: unknown[] }).stateMachines,
             })
             : null;
         const prepareMs = Date.now() - prepareStartedAt;
@@ -1585,18 +1608,21 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
             }
             sharedRenderController = await renderSharedView(vizElement, sharedPrepared, {
                 onNodeNavigate: (node: any) => {
-                    const attrs = (node?.attributes || {}) as Record<string, unknown>;
-                    const elementName = String(node?.label || node?.id || '');
-                    const qualifiedName = String(attrs.qualifiedName || node?.id || elementName || '');
+                    clearVisualHighlights();
+                    const parentContext = String(sharedPrepared.meta?.parentContext ?? sharedPrepared.meta?.selectedDiagramName ?? '');
+                    const payload = jumpPayloadFromNode(node, parentContext || undefined);
                     postJumpToElement(
                         (msg) => vscode.postMessage(msg),
                         {
-                            name: elementName,
-                            id: qualifiedName || undefined,
-                            uri: (node?.sourcePath as string | undefined) || undefined,
-                            range: (node?.range as any) || undefined,
+                            name: payload.name,
+                            id: payload.id,
+                            uri: payload.uri,
+                            range: payload.range,
                         },
-                        { skipCentering: true }
+                        {
+                            parentContext: payload.parentContext,
+                            skipCentering: true,
+                        }
                     );
                 }
             });

@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import ELK from "elkjs/lib/elk.bundled.js";
 import { nodeBodyChromeStyle, resolveNodeChrome } from "./node-notation";
 import { type PreparedNode, type PreparedView } from "./prepare";
+import { nodeSupportsSourceNavigation } from "./views/behavior-interaction";
 import { isOverviewVisualElementType, normalizeEdgeKind } from "./graph-normalization";
 import { collectCompartments, computeNodeHeight, renderSysMLNode } from "./sysml-node-builder";
 import {
@@ -176,13 +177,13 @@ export async function renderVisualization(
   let bounds: ContentBounds;
   if (view === "action-flow-view") {
     addActionFlowMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
-    bounds = contentBoundsFromExtents(await renderActionFlowView({ root, prepared, theme, width, height }));
+    bounds = contentBoundsFromExtents(await renderActionFlowView({ root, prepared, theme, width, height, options }));
   } else if (view === "state-transition-view") {
     addStateTransitionMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
-    bounds = contentBoundsFromExtents(await renderStateTransitionView({ root, prepared, theme, width, height }));
+    bounds = contentBoundsFromExtents(await renderStateTransitionView({ root, prepared, theme, width, height, options }));
   } else if (view === "sequence-view") {
     addSequenceMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
-    bounds = contentBoundsFromExtents(renderSequenceView({ root, prepared, theme, width, height }));
+    bounds = contentBoundsFromExtents(renderSequenceView({ root, prepared, theme, width, height, options }));
   } else {
     const layout = await layoutPrepared(prepared);
     if (isInterconnectionView) {
@@ -689,7 +690,7 @@ function drawNodes(
     .enter()
     .append("g")
     .attr("class", (d: LaidOutNode) => {
-      const clickable = options.onNodeClick ? "is-clickable" : "";
+      const clickable = options.onNodeClick && nodeSupportsSourceNavigation(d) ? "is-clickable" : "";
       const selected = options.selectedNodeId && d.id === options.selectedNodeId ? "is-selected" : "";
       const legacyClass = isInterconnectionView ? "ibd-part" : "general-node";
       const attrs = (d.attributes ?? {}) as Record<string, unknown>;
@@ -710,7 +711,16 @@ function drawNodes(
     .attr("data-bounds", (d: LaidOutNode) =>
       [d.x || 0, d.y || 0, d.width || (isInterconnectionView ? ibdNodeWidth : nodeWidth), d.height || (isInterconnectionView ? ibdNodeHeight : nodeHeight)].join(",")
     )
-    .on("click", (_event: unknown, d: LaidOutNode) => options.onNodeClick?.(d));
+    .style("cursor", (d: LaidOutNode) =>
+      options.onNodeClick && nodeSupportsSourceNavigation(d) ? "pointer" : null,
+    )
+    .on("click", (event: unknown, d: LaidOutNode) => {
+      if (!options.onNodeClick || !nodeSupportsSourceNavigation(d)) {
+        return;
+      }
+      (event as Event).stopPropagation?.();
+      options.onNodeClick?.(d);
+    });
 
   if (!isInterconnectionView) {
     groups.each(function (d: LaidOutNode) {

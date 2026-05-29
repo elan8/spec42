@@ -7,6 +7,7 @@ import {
     renderVisualization,
     type RenderController
 } from "../../../../shared/diagram-renderer/src/renderer";
+import { jumpPayloadFromNode } from "../../../../shared/diagram-renderer/src/views/behavior-interaction";
 
 /**
  * Thin adapter around the shared renderer package to keep Spec42's
@@ -27,6 +28,8 @@ export interface SharedRenderAdapterController {
     destroy: () => void;
     getFitTransform: () => { toString: () => string };
 }
+
+export { jumpPayloadFromNode, nodeSupportsSourceNavigation };
 
 export async function renderSharedView(
     target: HTMLElement,

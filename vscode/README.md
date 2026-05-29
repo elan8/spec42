@@ -35,6 +35,7 @@ Published extension builds include the language server binary, so most users can
 - **Interconnection View**: a connection-focused view for inspecting parts, ports, and connectors across the system architecture.
 - **Action Flow View**: a behavior-oriented view for following control and data flow through actions in a process.
 - **State Transition View**: a lifecycle view that shows states and transitions so you can reason about system behavior over time.
+- **Sequence View**: a software-interaction view for Spec42 `SequenceView` models (lifelines and messages).
 
 ## Getting Started
 

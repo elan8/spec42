@@ -1,5 +1,7 @@
 import * as d3 from "d3";
+import type { PreparedNode } from "../prepare";
 import type { DiagramTheme } from "../theme";
+import { attachBehaviorNodeClick } from "./behavior-interaction";
 import { BehaviorSceneContext, truncateLabel } from "./behavior-common";
 
 const HEADER_Y = 64;
@@ -27,6 +29,18 @@ function messageRow(order: number): number {
   return LIFELINE_TOP + 58 + (Math.max(1, order) - 1) * MESSAGE_GAP;
 }
 
+function findPreparedLifeline(preparedNodes: PreparedNode[], lifeline: Record<string, unknown>): PreparedNode | undefined {
+  const id = asString(lifeline.id ?? lifeline.name);
+  const name = asString(lifeline.name ?? lifeline.label);
+  return preparedNodes.find(
+    (node) =>
+      node.id === id ||
+      node.label === name ||
+      asString(node.attributes?.qualifiedName) === id ||
+      asString(node.attributes?.qualifiedName) === name,
+  );
+}
+
 function addSequenceMarkers(defs: d3.Selection<SVGDefsElement, unknown, null, undefined>, theme: DiagramTheme): void {
   defs.selectAll("#sequence-arrow-sync").remove();
   defs
@@ -49,6 +63,7 @@ export function renderSequenceView(ctx: BehaviorSceneContext): { minX: number; m
   const messages = asArray(diagram.messages)
     .map(asRecord)
     .sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0));
+  const renderOptions = ctx.options ?? {};
 
   ctx.root
     .append("text")
@@ -85,8 +100,17 @@ export function renderSequenceView(ctx: BehaviorSceneContext): { minX: number; m
     const id = asString(lifeline.id ?? lifeline.name);
     const x = lifelineX.get(id) ?? xOffset;
     const label = truncateLabel(asString(lifeline.name ?? lifeline.label ?? id), 18);
-    lifelineLayer
+    const preparedNode = findPreparedLifeline(ctx.prepared.nodes, lifeline);
+    const group = lifelineLayer
+      .append("g")
+      .attr("class", "sequence-lifeline")
+      .attr("data-node-id", preparedNode?.id ?? id);
+
+    group
       .append("rect")
+      .attr("class", "node-background")
+      .attr("data-original-stroke", ctx.theme.nodeBorder)
+      .attr("data-original-width", "1.5px")
       .attr("x", x - LIFELINE_BOX_WIDTH / 2)
       .attr("y", HEADER_Y)
       .attr("width", LIFELINE_BOX_WIDTH)
@@ -95,7 +119,7 @@ export function renderSequenceView(ctx: BehaviorSceneContext): { minX: number; m
       .style("fill", ctx.theme.nodeFill)
       .style("stroke", ctx.theme.nodeBorder)
       .style("stroke-width", "1.5px");
-    lifelineLayer
+    group
       .append("text")
       .attr("x", x)
       .attr("y", HEADER_Y + 24)
@@ -103,7 +127,7 @@ export function renderSequenceView(ctx: BehaviorSceneContext): { minX: number; m
       .style("font-size", "11px")
       .style("fill", ctx.theme.textPrimary)
       .text(label);
-    lifelineLayer
+    group
       .append("line")
       .attr("x1", x)
       .attr("y1", LIFELINE_TOP)
@@ -111,6 +135,10 @@ export function renderSequenceView(ctx: BehaviorSceneContext): { minX: number; m
       .attr("y2", lifelineBottom)
       .style("stroke", ctx.theme.nodeBorder)
       .style("stroke-dasharray", "6,4");
+
+    if (preparedNode) {
+      attachBehaviorNodeClick(group, preparedNode, ctx.theme, renderOptions, ctx.root);
+    }
   }
 
   const messageLayer = ctx.root.append("g").attr("class", "sequence-messages");

@@ -378,4 +378,48 @@ describe("shared prepareViewData", () => {
     expect(prepared.title).toBe("Rich");
     expect(prepared.meta?.selectedDiagramId).toBe("d2");
   });
+
+  it("prepares state machines with alias-resolved transitions and navigation metadata", () => {
+    const prepared = prepareViewData({
+      view: "state-transition-view",
+      selectedViewName: "OrderLifecycleStateMachine",
+      stateMachines: [
+        {
+          id: "WebShopBehavior::OrderLifecycleStateMachine",
+          name: "OrderLifecycleStateMachine",
+          states: [
+            {
+              id: "WebShopBehavior::OrderLifecycleStateMachine::Pending",
+              name: "Pending",
+              kind: "state",
+              element: {
+                uri: "file:///webshop.sysml",
+                range: { start: { line: 40, character: 8 }, end: { line: 40, character: 20 } },
+              },
+            },
+            {
+              id: "WebShopBehavior::OrderLifecycleStateMachine::Shipped",
+              name: "Shipped",
+              kind: "state",
+              element: {
+                uri: "file:///webshop.sysml",
+                range: { start: { line: 44, character: 8 }, end: { line: 44, character: 20 } },
+              },
+            },
+          ],
+          transitions: [
+            { id: "t1", source: "Pending", target: "Shipped", label: "ship" },
+          ],
+        },
+      ],
+    });
+
+    expect(prepared.nodes).toHaveLength(2);
+    expect(prepared.edges).toHaveLength(1);
+    expect(prepared.edges[0]?.source).toBe("WebShopBehavior::OrderLifecycleStateMachine::Pending");
+    expect(prepared.edges[0]?.target).toBe("WebShopBehavior::OrderLifecycleStateMachine::Shipped");
+    expect(prepared.nodes[0]?.uri).toBe("file:///webshop.sysml");
+    expect(prepared.nodes[0]?.range?.start?.line).toBe(40);
+    expect(prepared.meta?.parentContext).toBe("OrderLifecycleStateMachine");
+  });
 });

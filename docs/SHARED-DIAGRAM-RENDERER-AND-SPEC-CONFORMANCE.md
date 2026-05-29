@@ -40,7 +40,7 @@ Defined in [`vscode/src/visualization/webview/constants.ts`](../vscode/src/visua
 | `interconnection-view` | `interconnection-view` | `ibd.ts` | **Yes** — hierarchical IBD | Via shared package |
 | `action-flow-view` | `action-flow-view` | `activity.ts` | **Yes** — `views/action-flow.ts` (first cut) | **No** |
 | `state-transition-view` | `state-transition-view` | `state.ts` | **Yes** — `views/state-transition.ts` (first cut) | **No** |
-| `sequence-view` | `sequence-view` | `sequence.ts` | **Yes** — `views/sequence.ts` (Spec42 payloads; experimental) | **No** |
+| `sequence-view` | `sequence-view` | `sequence.ts` | **Yes** — `views/sequence.ts` (Spec42 payloads) | **No** |
 | `software-module-view` | *(extension)* | general-style D3 | **No** (legacy only) | **No** |
 | `software-dependency-view` | *(extension)* | general-style D3 | **No** (legacy only) | **No** |
 

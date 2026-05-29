@@ -5,7 +5,7 @@ import { isVerboseLoggingEnabled } from '../logger';
 import { getVisualizerStyles } from './styles';
 import { DEFAULT_ENABLED_VIEWS } from './webview/constants';
 
-const EXPERIMENTAL_VIEW_IDS = ['sequence-view'];
+const EXPERIMENTAL_VIEW_IDS: string[] = [];
 
 function getNonce(): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

@@ -798,6 +798,37 @@ describe("shared renderer", () => {
     expect(target.querySelectorAll(".state-transition-edge").length).toBeGreaterThanOrEqual(2);
   });
 
+  it("highlights action-flow nodes on click when onNodeClick is wired", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+    const clicked: string[] = [];
+    await renderVisualization(
+      target,
+      {
+        title: "Robot Flow",
+        view: "action-flow-view",
+        nodes: [
+          { id: "start", label: "start", kind: "initial" },
+          { id: "move", label: "move", kind: "action" },
+        ],
+        edges: [{ id: "f1", source: "start", target: "move", label: "" }],
+      },
+      {
+        delegateZoom: true,
+        onNodeClick: (node) => clicked.push(node.id),
+      },
+    );
+
+    const node = target.querySelector('.action-flow-node[data-node-id="move"]') as SVGGElement | null;
+    expect(node).toBeTruthy();
+    node?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+    expect(clicked).toEqual(["move"]);
+    expect(node?.classList.contains("highlighted-element")).toBe(true);
+    expect(node?.querySelector(".node-background")).toBeTruthy();
+  });
+
   it("renders sequence view from sequenceDiagram meta", async () => {
     const target = document.createElement("div");
     Object.defineProperty(target, "clientWidth", { value: 1400, configurable: true });

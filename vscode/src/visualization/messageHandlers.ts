@@ -203,7 +203,11 @@ export function createMessageHandlers(context: MessageHandlerContext) {
 
         let element: SysMLElement | undefined;
         let resolvedUri = elementUri || document?.uri.toString() || workspaceRootUri;
-        const hasExplicitLocation = Boolean(elementUri && elementRange);
+        const hasExplicitLocation = Boolean(
+            elementUri &&
+            elementRange?.start &&
+            typeof elementRange.start.line === 'number',
+        );
 
         if (document && !hasExplicitLocation) {
             const dto = await lspModelProvider.findElement(
@@ -225,6 +229,20 @@ export function createMessageHandlers(context: MessageHandlerContext) {
             }
         }
 
+        const targetRange =
+            element?.range ??
+            (hasExplicitLocation && elementRange ? toVscodeRange(elementRange) : undefined);
+
+        if (!targetRange) {
+            vscode.window.showInformationMessage(
+                elementQualifiedName || elementName
+                    ? `Could not locate "${elementQualifiedName || elementName}" in source.`
+                    : 'Could not locate this element in source.',
+            );
+            setNavigating(false);
+            return;
+        }
+
         if (element || resolvedUri) {
             const visualizerColumn = panel.viewColumn || vscode.ViewColumn.Two;
             const targetColumn = visualizerColumn === vscode.ViewColumn.One
@@ -239,10 +257,6 @@ export function createMessageHandlers(context: MessageHandlerContext) {
             }).then(editor => {
                 clearActiveSourceHighlight();
 
-                const targetRange =
-                    element?.range ??
-                    (elementRange ? toVscodeRange(elementRange) : undefined) ??
-                    new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0));
                 editor.selection = new vscode.Selection(targetRange.start, targetRange.start);
                 editor.revealRange(targetRange, vscode.TextEditorRevealType.InCenter);
 

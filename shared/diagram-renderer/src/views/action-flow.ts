@@ -1,8 +1,10 @@
 import * as d3 from "d3";
 import type { PreparedNode } from "../prepare";
 import type { DiagramTheme } from "../theme";
+import { attachBehaviorNodeClick } from "./behavior-interaction";
 import {
   BehaviorSceneContext,
+  edgeLabelPositionFromSections,
   fallbackEdgePath,
   layoutBehaviorGraph,
   nodeKind,
@@ -28,7 +30,7 @@ function drawActionNode(
   node: PreparedNode,
   layout: { x: number; y: number; width: number; height: number },
   theme: DiagramTheme,
-): void {
+): d3.Selection<SVGGElement, unknown, null, undefined> {
   const kind = nodeKind(node);
   const g = group
     .append("g")
@@ -38,6 +40,9 @@ function drawActionNode(
 
   if (isInitial(kind) || isFinal(kind)) {
     g.append("circle")
+      .attr("class", "node-background")
+      .attr("data-original-stroke", theme.nodeBorder)
+      .attr("data-original-width", "2px")
       .attr("cx", layout.width / 2)
       .attr("cy", layout.height / 2)
       .attr("r", layout.width / 2 - 2)
@@ -56,12 +61,18 @@ function drawActionNode(
     const cx = layout.width / 2;
     const cy = layout.height / 2;
     g.append("path")
+      .attr("class", "node-background")
+      .attr("data-original-stroke", theme.edge.default)
+      .attr("data-original-width", "2px")
       .attr("d", `M${cx},0 L${layout.width},${cy} L${cx},${layout.height} L0,${cy} Z`)
       .style("fill", theme.canvasBackground)
       .style("stroke", theme.edge.default)
       .style("stroke-width", "2px");
   } else if (isFork(kind)) {
     g.append("rect")
+      .attr("class", "node-background")
+      .attr("data-original-stroke", "none")
+      .attr("data-original-width", "0px")
       .attr("width", layout.width)
       .attr("height", layout.height)
       .attr("rx", 3)
@@ -69,6 +80,9 @@ function drawActionNode(
       .style("stroke", "none");
   } else {
     g.append("rect")
+      .attr("class", "node-background")
+      .attr("data-original-stroke", theme.nodeBorder)
+      .attr("data-original-width", "2px")
       .attr("width", layout.width)
       .attr("height", layout.height)
       .attr("rx", 8)
@@ -92,11 +106,14 @@ function drawActionNode(
     .style("font-weight", "600")
     .style("fill", theme.textPrimary)
     .text(truncateLabel(node.label, 24));
+
+  return g;
 }
 
 export async function renderActionFlowView(ctx: BehaviorSceneContext): Promise<{ minX: number; minY: number; maxX: number; maxY: number }> {
   const horizontal = String(ctx.prepared.meta?.layoutDirection ?? "").toLowerCase() === "horizontal";
   const layout = await layoutBehaviorGraph(ctx.prepared, { horizontal, mode: "action" });
+  const renderOptions = ctx.options ?? {};
 
   ctx.root
     .append("text")
@@ -126,21 +143,40 @@ export async function renderActionFlowView(ctx: BehaviorSceneContext): Promise<{
       .style("marker-end", "url(#action-flow-arrow)");
     const label = truncateLabel(edge.label, 20);
     if (label && !["flow", "first", "bind"].includes(label.toLowerCase())) {
+      const elkLabel = layout.edgeLabelsById.get(edge.id)?.[0];
+      const labelFromSections = edgeLabelPositionFromSections(sections);
+      const labelPosition = elkLabel
+        ? { x: elkLabel.x + elkLabel.width / 2, y: elkLabel.y + elkLabel.height / 2 }
+        : (labelFromSections ?? { x: fallback.labelX, y: fallback.labelY });
+      const displayLabel = label.startsWith("[") ? label : `[${label}]`;
+      if (elkLabel) {
+        flowLayer
+          .append("rect")
+          .attr("x", elkLabel.x)
+          .attr("y", elkLabel.y)
+          .attr("width", elkLabel.width)
+          .attr("height", elkLabel.height)
+          .attr("rx", 3)
+          .style("fill", ctx.theme.canvasBackground)
+          .style("stroke", ctx.theme.edge.default)
+          .style("stroke-width", "1px");
+      }
       flowLayer
         .append("text")
-        .attr("x", fallback.labelX)
-        .attr("y", fallback.labelY)
+        .attr("x", labelPosition.x)
+        .attr("y", labelPosition.y + (elkLabel ? 3 : 0))
         .attr("text-anchor", "middle")
         .style("font-size", "10px")
         .style("fill", ctx.theme.textSecondary)
-        .text(label.startsWith("[") ? label : `[${label}]`);
+        .text(displayLabel);
     }
   }
 
   for (const node of ctx.prepared.nodes) {
     const position = layout.positions.get(node.id);
     if (!position) continue;
-    drawActionNode(nodeLayer, node, position, ctx.theme);
+    const nodeGroup = drawActionNode(nodeLayer, node, position, ctx.theme);
+    attachBehaviorNodeClick(nodeGroup, node, ctx.theme, renderOptions, ctx.root);
   }
 
   let minX = 0;
