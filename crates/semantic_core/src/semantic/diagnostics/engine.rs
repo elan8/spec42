@@ -21,6 +21,30 @@ pub fn collect_diagnostics_from_graph(
 mod tests {
     use super::*;
     use crate::build_graph_from_doc;
+    use crate::DiagnosticSeverity;
+
+    #[test]
+    fn collect_diagnostics_from_graph_emits_implicit_redefinition_without_operator() {
+        let input = r#"
+            package P {
+                part def Base {
+                    attribute mass : Real;
+                }
+                part def Child :> Base {
+                    attribute mass = 1200;
+                }
+            }
+        "#;
+        let parsed = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let graph = build_graph_from_doc(&parsed, &uri);
+        let diagnostics =
+            collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+        assert!(diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "implicit_redefinition_without_operator"
+                && diagnostic.severity == DiagnosticSeverity::Error
+        }));
+    }
 
     #[test]
     fn collect_diagnostics_from_graph_emits_unresolved_import_target() {

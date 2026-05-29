@@ -16,7 +16,7 @@ use crate::semantic::diagnostics::checks::import_resolution::{
 use crate::semantic::diagnostics::helpers::*;
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::{
-    resolve_member_via_type, RelationshipKind, ResolveResult, SemanticDiagnostic,
+    resolve_inherited_member_via_type, RelationshipKind, ResolveResult, SemanticDiagnostic,
     SemanticGraph,
 };
 
@@ -530,16 +530,13 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             continue;
         }
         let ResolveResult::Resolved(target_id) =
-            resolve_member_via_type(graph, owner, feature_name)
+            resolve_inherited_member_via_type(graph, owner, feature_name)
         else {
             continue;
         };
         let Some(target) = graph.get_node(&target_id) else {
             continue;
         };
-        if target.id == node.id {
-            continue;
-        }
         if target.name.trim() != feature_name {
             continue;
         }

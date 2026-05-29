@@ -232,6 +232,8 @@ mod tests {
                 source_id: "WebShopArchitecture.WebShopSystem.checkoutService.apiIn".to_string(),
                 target_id: "WebShopArchitecture.WebShopSystem.apiGateway.checkoutApiOut"
                     .to_string(),
+                source_part_id: None,
+                target_part_id: None,
                 rel_type: "connection".to_string(),
             }],
             container_groups: Vec::new(),

@@ -163,24 +163,12 @@ pub fn resolve_expression_endpoint_strict(
     }
 }
 
-/// Resolve `member` through typing/specialization starting from `owner`.
-pub fn resolve_member_via_type(
+/// Resolve `member` declared on a supertype of `owner` (does not match direct children of `owner`).
+pub fn resolve_inherited_member_via_type(
     g: &SemanticGraph,
     owner: &SemanticNode,
     member: &str,
 ) -> ResolveResult<NodeId> {
-    let direct_children: Vec<NodeId> = g
-        .child_named(&owner.id, member)
-        .into_iter()
-        .filter(|child| child.element_kind != "import")
-        .map(|child| child.id.clone())
-        .collect();
-    match direct_children.len() {
-        1 => return ResolveResult::Resolved(direct_children.into_iter().next().expect("one child")),
-        n if n > 1 => return ResolveResult::Ambiguous,
-        _ => {}
-    }
-
     let mut matches: Vec<NodeId> = Vec::new();
     let mut visited: HashSet<NodeId> = HashSet::new();
     let mut stack: Vec<NodeId> = g
@@ -214,6 +202,27 @@ pub fn resolve_member_via_type(
     }
 }
 
+/// Resolve `member` through typing/specialization starting from `owner`.
+pub fn resolve_member_via_type(
+    g: &SemanticGraph,
+    owner: &SemanticNode,
+    member: &str,
+) -> ResolveResult<NodeId> {
+    let direct_children: Vec<NodeId> = g
+        .child_named(&owner.id, member)
+        .into_iter()
+        .filter(|child| child.element_kind != "import")
+        .map(|child| child.id.clone())
+        .collect();
+    match direct_children.len() {
+        1 => return ResolveResult::Resolved(direct_children.into_iter().next().expect("one child")),
+        n if n > 1 => return ResolveResult::Ambiguous,
+        _ => {}
+    }
+
+    resolve_inherited_member_via_type(g, owner, member)
+}
+
 #[cfg(test)]
 mod tests {
     use url::Url;
@@ -221,7 +230,10 @@ mod tests {
     use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
     use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
 
-    use super::{resolve_expression_endpoint_strict, ResolveResult};
+    use super::{
+        resolve_expression_endpoint_strict, resolve_inherited_member_via_type,
+        resolve_member_via_type, ResolveResult,
+    };
 
     #[test]
     fn member_chain_resolves_through_typed_part_usage_after_workspace_link() {
@@ -302,6 +314,57 @@ mod tests {
         assert!(
             matches!(target, ResolveResult::Resolved(_)),
             "expected nested target endpoint, got {target:?}"
+        );
+    }
+
+    #[test]
+    fn inherited_member_resolution_skips_shadowing_child_on_owner() {
+        let doc = SysmlDocument::from_memory_path(
+            "workspace",
+            "implicit_redefine.sysml",
+            r#"package P {
+  part def Base {
+    attribute mass : Real;
+  }
+  part def Child :> Base {
+    attribute mass = 1200;
+  }
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("workspace doc");
+        let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+        let uri = Url::parse("memory://workspace/implicit_redefine.sysml").expect("uri");
+        let child = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "part def" && node.name == "Child")
+            .expect("child part def");
+        let child_mass = graph
+            .child_named(&child.id, "mass")
+            .into_iter()
+            .next()
+            .expect("child mass");
+        let base_mass = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| {
+                node.name == "mass"
+                    && matches!(node.element_kind.as_str(), "attribute" | "attribute def")
+                    && node.id != child_mass.id
+            })
+            .expect("base mass");
+
+        assert_eq!(
+            resolve_member_via_type(&graph, child, "mass"),
+            ResolveResult::Resolved(child_mass.id.clone())
+        );
+        assert_eq!(
+            resolve_inherited_member_via_type(&graph, child, "mass"),
+            ResolveResult::Resolved(base_mass.id.clone())
         );
     }
 }

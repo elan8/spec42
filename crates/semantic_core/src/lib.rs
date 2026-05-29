@@ -26,7 +26,8 @@ pub use semantic::import_resolution::{
 };
 pub use semantic::model::{NodeId, RelationshipKind, SemanticNode};
 pub use semantic::reference_resolution::{
-    resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult,
+    resolve_expression_endpoint_strict, resolve_inherited_member_via_type,
+    resolve_member_via_type, ResolveResult,
 };
 pub use semantic::relationships::{
     add_cross_document_edges_for_uri, link_workspace_relationships,

@@ -23,6 +23,14 @@ async function build() {
             alias: {
                 // Use the same d3 instance as orchestrator (script tag), not a second bundled copy.
                 d3: path.join(rootDir, 'src', 'visualization', 'webview', 'd3-global.ts'),
+                // diagram-renderer imports elkjs; resolve via vscode's dependency (CI only runs npm ci here).
+                'elkjs/lib/elk.bundled.js': path.join(
+                    rootDir,
+                    'node_modules',
+                    'elkjs',
+                    'lib',
+                    'elk.bundled.js',
+                ),
             },
         });
         console.log(`Webview bundle written to ${outFile}`);
