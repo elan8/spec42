@@ -2,6 +2,8 @@
 
 Shared D3 + ELK renderer for Spec42 General and Interconnection views, used by the VS Code extension and Babel42.
 
+For the full picture (legacy vs shared vs SysML v2 spec) and the conformance roadmap, see [`docs/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md`](../../docs/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md).
+
 ## Notation-neutral theme
 
 Diagrams use a single ink color for nodes and edges. Meaning comes from SysML notation (definition vs usage borders, edge markers, dash patterns), not per-element hues. Filter chips in the VS Code UI may still use colors for discoverability; SVG diagram content does not.
