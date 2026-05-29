@@ -40,6 +40,7 @@ export function isPackageElementType(elementType: string): boolean {
   return (
     !normalized ||
     normalized === "package" ||
+    normalized === "library package" ||
     normalized.endsWith("_package") ||
     normalized.includes("package_def")
   );

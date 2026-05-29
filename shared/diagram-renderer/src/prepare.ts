@@ -1,4 +1,8 @@
-import { normalizeEdgeKind } from "./graph-normalization";
+import {
+  isOverviewVisualElementType,
+  isPackageElementType,
+  normalizeEdgeKind,
+} from "./graph-normalization";
 
 export interface PreparedNode {
   id: string;
@@ -56,7 +60,19 @@ function asString(value: unknown, fallback = ""): string {
 }
 
 function isPackage(node: UnknownRecord): boolean {
-  return asString(node.type ?? node.element_type).toLowerCase() === "package";
+  return isPackageElementType(elementTypeOf(node));
+}
+
+function elementTypeOf(node: UnknownRecord): string {
+  const attrs = asRecord(node.attributes);
+  return asString(
+    node.type ??
+      node.element_type ??
+      node.element_kind ??
+      attrs.element_type ??
+      attrs.element_kind ??
+      attrs.elementKind,
+  );
 }
 
 export function nodeAccentClass(kind: string): string {
@@ -99,15 +115,24 @@ export function prepareViewData(visualizationInput: unknown): PreparedView {
   return prepareGraph(visualization?.generalViewGraph ?? visualization?.graph, visualization);
 }
 
+function isGeneralViewDiagramNode(node: UnknownRecord): boolean {
+  if (isSyntheticPackage(node)) {
+    return false;
+  }
+  const elementType = elementTypeOf(node);
+  // General / structure view: packages are namespace containers, not diagram nodes.
+  return isOverviewVisualElementType(elementType);
+}
+
 function prepareGraph(graphInput: unknown, visualization: VisualizationPayload): PreparedView {
   const graph = asRecord(graphInput);
   const rawNodes = asArray(graph.nodes).map(asRecord);
-  const sourceNodes = rawNodes.filter((node) => !isSyntheticPackage(node));
+  const sourceNodes = rawNodes.filter((node) => isGeneralViewDiagramNode(node));
   const nodeIds = new Set(sourceNodes.map((node) => asString(node.id)));
   const nodes = sourceNodes.map((node) => ({
     id: asString(node.id),
     label: asString(node.name ?? node.qualifiedName ?? node.id, "Unnamed"),
-    kind: asString(node.type ?? node.element_type, "Element"),
+    kind: elementTypeOf(node) || "Element",
     sourcePath: asString(node.sourcePath ?? node.source_path) || null,
     range: (node.range as { start?: { line?: number } } | null | undefined) ?? null,
     attributes: {

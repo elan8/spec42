@@ -114,7 +114,7 @@ describe("shared renderer", () => {
       ],
     });
 
-    expect(target.textContent).toContain("«package»");
+    expect(target.textContent).not.toContain("«package»");
     expect(target.textContent).toContain("«part def»");
     expect(target.textContent).toContain("«part»");
     expect(target.textContent).toContain(": Vehicle");
@@ -122,8 +122,6 @@ describe("shared renderer", () => {
     expect(target.textContent).toContain("Parts");
     expect(target.textContent).toContain("Ports");
     expect(target.textContent).toContain("> Inherited Attributes");
-    expect(target.textContent).toContain("Members");
-    expect(target.textContent).toContain("> Imports");
     const definitionBg = target.querySelector('[data-node-id="vehicle-def"] .sysml-node-bg') as SVGRectElement | null;
     const usageBg = target.querySelector('[data-node-id="vehicle-usage"] .sysml-node-bg') as SVGRectElement | null;
     expect(definitionBg?.style.strokeDasharray).toBe("6,3");

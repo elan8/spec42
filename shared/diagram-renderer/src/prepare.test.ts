@@ -15,7 +15,7 @@ describe("shared graph normalization", () => {
 });
 
 describe("shared prepareViewData", () => {
-  it("maps general graph payload and keeps real package nodes", () => {
+  it("maps general graph payload and omits package namespace nodes", () => {
     const prepared = prepareViewData({
       view: "general-view",
       selectedViewName: "General",
@@ -25,17 +25,34 @@ describe("shared prepareViewData", () => {
           { id: "a", name: "A", type: "part_def" },
           { id: "b", name: "B", type: "part_def" },
         ],
-        edges: [{ id: "rel", source: "a", target: "b", type: "typing" }],
+        edges: [
+          { id: "contains", source: "pkg", target: "a", type: "contains" },
+          { id: "rel", source: "a", target: "b", type: "typing" },
+        ],
       },
     });
-    expect(prepared.nodes.map((n) => n.id)).toEqual(["pkg", "a", "b"]);
-    expect(prepared.nodes.find((n) => n.id === "pkg")?.attributes?.isPackage).toBe(true);
+    expect(prepared.nodes.map((n) => n.id)).toEqual(["a", "b"]);
     expect(prepared.nodes.find((n) => n.id === "a")?.attributes?.isDefinition).toBe(true);
     expect(prepared.edges).toHaveLength(1);
     expect(prepared.edges[0].edgeKind).toBe("typing");
   });
 
-  it("omits only synthetic package containers from general graphs", () => {
+  it("omits library package nodes from general graphs", () => {
+    const prepared = prepareViewData({
+      view: "general-view",
+      graph: {
+        nodes: [
+          { id: "lib-pkg", name: "Lib", type: "library package" },
+          { id: "part", name: "Part", type: "part def" },
+        ],
+        edges: [],
+      },
+    });
+
+    expect(prepared.nodes.map((n) => n.id)).toEqual(["part"]);
+  });
+
+  it("omits real and synthetic package nodes from general graphs", () => {
     const prepared = prepareViewData({
       view: "general-view",
       graph: {
@@ -48,7 +65,7 @@ describe("shared prepareViewData", () => {
       },
     });
 
-    expect(prepared.nodes.map((n) => n.id)).toEqual(["real-pkg", "part"]);
+    expect(prepared.nodes.map((n) => n.id)).toEqual(["part"]);
   });
 
   it("prefers canonical generalViewGraph when present", () => {

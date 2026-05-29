@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import ELK from "elkjs/lib/elk.bundled.js";
 import { nodeAccentClass, type PreparedNode, type PreparedView } from "./prepare";
-import { normalizeEdgeKind } from "./graph-normalization";
+import { isOverviewVisualElementType, normalizeEdgeKind } from "./graph-normalization";
 import { collectCompartments, computeNodeHeight, renderSysMLNode } from "./sysml-node-builder";
 import {
   edgeColorForKind,
@@ -137,6 +137,12 @@ async function layoutPrepared(prepared: PreparedView): Promise<LayoutResult> {
   if (isInterconnectionView) {
     return layoutInterconnectionPrepared(prepared);
   }
+  const diagramNodes = prepared.nodes.filter((node) => isOverviewVisualElementType(node.kind));
+  const visibleIds = new Set(diagramNodes.map((node) => node.id));
+  const diagramEdges = prepared.edges.filter(
+    (edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target),
+  );
+  if (!diagramNodes.length) return { nodes: [], edges: [] };
   const width = isInterconnectionView ? ibdNodeWidth : nodeWidth;
   const height = isInterconnectionView ? ibdNodeHeight : nodeHeight;
   const graph = {
@@ -156,7 +162,7 @@ async function layoutPrepared(prepared: PreparedView): Promise<LayoutResult> {
       "org.eclipse.elk.portConstraints": "FIXED_SIDE",
       "org.eclipse.elk.json.edgeCoords": "ROOT"
     },
-    children: prepared.nodes.map((node) => {
+    children: diagramNodes.map((node) => {
       const compartments = collectCompartments(node);
       return {
         id: node.id,
@@ -164,18 +170,18 @@ async function layoutPrepared(prepared: PreparedView): Promise<LayoutResult> {
         height: Math.max(height, computeNodeHeight(compartments, { maxLinesPerCompartment: 8 })),
       };
     }),
-    edges: prepared.edges.map((edge) => ({ id: edge.id, sources: [edge.source], targets: [edge.target] }))
+    edges: diagramEdges.map((edge) => ({ id: edge.id, sources: [edge.source], targets: [edge.target] }))
   };
   try {
     const laidOut = await elk.layout(graph);
-    const byId = new Map(prepared.nodes.map((node) => [node.id, node]));
+    const byId = new Map(diagramNodes.map((node) => [node.id, node]));
     const layouts = new Map((laidOut.children || []).map((node: any) => [String(node.id), node]));
     return {
-      nodes: prepared.nodes.map((node) => {
+      nodes: diagramNodes.map((node) => {
         const compartments = collectCompartments(node);
         return { ...node, compartments, ...(layouts.get(node.id) || {}) };
       }),
-      edges: prepared.edges.map((edge) => ({
+      edges: diagramEdges.map((edge) => ({
         ...edge,
         sourceNode: byId.get(edge.source),
         targetNode: byId.get(edge.target),
@@ -183,7 +189,7 @@ async function layoutPrepared(prepared: PreparedView): Promise<LayoutResult> {
       }))
     };
   } catch {
-    return fallbackLayout(prepared);
+    return fallbackLayout({ ...prepared, nodes: diagramNodes, edges: diagramEdges });
   }
 }
 
