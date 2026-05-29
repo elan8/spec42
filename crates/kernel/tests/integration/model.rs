@@ -25,6 +25,38 @@ fn request_model(session: &mut TestSession, uri: &str) -> serde_json::Value {
     )
 }
 
+fn ibd_part_element_type(part: &serde_json::Value) -> &str {
+    part.get("type")
+        .and_then(|value| value.as_str())
+        .or_else(|| part.get("elementType").and_then(|value| value.as_str()))
+        .unwrap_or("")
+}
+
+fn collect_ibd_parts(ibd: &serde_json::Value) -> Vec<serde_json::Value> {
+    let mut parts = Vec::new();
+    if let Some(top_level) = ibd.get("parts").and_then(|value| value.as_array()) {
+        parts.extend(top_level.iter().cloned());
+    }
+    if let Some(root_views) = ibd.get("rootViews").and_then(|value| value.as_object()) {
+        for view in root_views.values() {
+            if let Some(scoped) = view.get("parts").and_then(|value| value.as_array()) {
+                parts.extend(scoped.iter().cloned());
+            }
+        }
+    }
+    parts
+}
+
+fn assert_ibd_parts_exclude_definitions(ibd: &serde_json::Value) {
+    for part in collect_ibd_parts(ibd) {
+        let element_type = ibd_part_element_type(&part).to_lowercase();
+        assert!(
+            !element_type.contains(" def") && !element_type.ends_with(" def"),
+            "IBD interconnection payload must not include definition elements: {part:?}"
+        );
+    }
+}
+
 #[test]
 fn lsp_sysml_model_stats_report_parse_and_build_timing_and_cache_transitions() {
     let mut session = TestSession::new();
@@ -1511,6 +1543,7 @@ fn lsp_sysml_model_ibd_kitchen_timer_interface_connects_produce_connectors() {
             .map(|c| (c["sourceId"].as_str(), c["targetId"].as_str()))
             .collect::<Vec<_>>()
     );
+    assert_ibd_parts_exclude_definitions(ibd);
 
     let _ = child.kill();
 }
@@ -1665,6 +1698,7 @@ fn lsp_sysml_model_ibd_surveillance_drone_is_complete_enough_for_interconnection
         "expected regulated5V to resolve to right-side port, got {:?}",
         ports
     );
+    assert_ibd_parts_exclude_definitions(ibd);
 
     let _ = child.kill();
 }

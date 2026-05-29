@@ -11,9 +11,91 @@ fn is_part_like(kind: &str) -> bool {
     k.contains("part def") || k == "part" || (k.contains("part") && !k.contains("def"))
 }
 
+/// BNF interconnection-element: part usage or part-ref (not definitions).
+fn is_interconnection_element_kind(kind: &str) -> bool {
+    is_part_like(kind) || is_reference_element_kind(kind)
+}
+
 fn is_part_instance_kind(kind: &str) -> bool {
     let k = kind.to_lowercase();
     k == "part" || k.contains("part usage")
+}
+
+/// True when the element kind is a SysML definition (not valid as interconnection-element).
+fn is_definition_element_kind(kind: &str) -> bool {
+    let k = kind.trim().to_lowercase();
+    k.contains(" def") || k.ends_with(" def") || k.contains("_def") || k.contains("definition")
+}
+
+fn is_reference_element_kind(kind: &str) -> bool {
+    let k = kind.trim().to_lowercase();
+    if k == "ref" {
+        return true;
+    }
+    if k.ends_with("-ref") || k.ends_with(" ref") {
+        return true;
+    }
+    k.split_whitespace().any(|token| token == "ref")
+}
+
+/// Normalize graph element_kind to interconnection-view `type` for the diagram renderer.
+fn normalize_ibd_element_type(kind: &str) -> String {
+    if is_reference_element_kind(kind) {
+        return "ref".to_string();
+    }
+    if is_part_instance_kind(kind) {
+        return "part".to_string();
+    }
+    kind.trim().to_string()
+}
+
+fn decorate_ibd_part_attributes(
+    element_type: &str,
+    attributes: &mut std::collections::HashMap<String, serde_json::Value>,
+) {
+    attributes.insert(
+        "isReference".to_string(),
+        serde_json::json!(is_reference_element_kind(element_type)),
+    );
+    attributes.insert(
+        "isDefinition".to_string(),
+        serde_json::json!(is_definition_element_kind(element_type)),
+    );
+}
+
+/// Interconnection view (BNF): `interconnection-element = part | part-ref` — no definitions on canvas.
+fn prune_interconnection_definition_parts(
+    parts: Vec<IbdPartDto>,
+    ports: Vec<IbdPortDto>,
+    connectors: Vec<IbdConnectorDto>,
+) -> (Vec<IbdPartDto>, Vec<IbdPortDto>, Vec<IbdConnectorDto>) {
+    let mut normalized_parts: Vec<IbdPartDto> = Vec::with_capacity(parts.len());
+    for mut part in parts {
+        if is_definition_element_kind(&part.element_type) {
+            continue;
+        }
+        part.element_type = normalize_ibd_element_type(&part.element_type);
+        decorate_ibd_part_attributes(&part.element_type, &mut part.attributes);
+        normalized_parts.push(part);
+    }
+    let remaining: std::collections::HashSet<String> = normalized_parts
+        .iter()
+        .map(|part| part.qualified_name.clone())
+        .collect();
+    let ports = ports
+        .into_iter()
+        .filter(|port| remaining.contains(&port.parent_id))
+        .collect();
+    let connectors = connectors
+        .into_iter()
+        .filter(|connector| {
+            resolve_owner_part_qn_for_endpoint(&connector.source_id, &normalized_parts)
+                .is_some()
+                && resolve_owner_part_qn_for_endpoint(&connector.target_id, &normalized_parts)
+                    .is_some()
+        })
+        .collect();
+    (normalized_parts, ports, connectors)
 }
 
 /// True if the element kind represents a port (port def or port usage). Public for semantic_checks.
@@ -362,14 +444,20 @@ fn ensure_endpoint_parts_present(
             .parent_id
             .as_ref()
             .map(|parent| qualified_name_to_dot(&parent.qualified_name));
+        if is_definition_element_kind(&node.element_kind) {
+            continue;
+        }
+        let element_type = normalize_ibd_element_type(&node.element_kind);
+        let mut attributes = node.attributes.clone();
+        decorate_ibd_part_attributes(&element_type, &mut attributes);
         parts.push(IbdPartDto {
             id: node.id.qualified_name.clone(),
             name: node.name.clone(),
             qualified_name,
             uri: Some(node.id.uri.as_str().to_string()),
             container_id,
-            element_type: node.element_kind.clone(),
-            attributes: node.attributes.clone(),
+            element_type,
+            attributes,
         });
     }
 }
@@ -950,10 +1038,10 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         let qn = node.id.qualified_name.clone();
         let parent_qualified = node.parent_id.as_ref().map(|p| p.qualified_name.clone());
 
-        if is_part_like(&node.element_kind) {
+        if is_interconnection_element_kind(&node.element_kind) {
             let container_id = node.parent_id.as_ref().and_then(|pid| {
                 graph.get_node(pid).and_then(|p| {
-                    if is_part_like(&p.element_kind) {
+                    if is_interconnection_element_kind(&p.element_kind) {
                         Some(qualified_name_to_dot(&pid.qualified_name))
                     } else {
                         None
@@ -1352,6 +1440,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
 
     ensure_endpoint_parts_present(&mut parts, &connectors, graph, uri);
 
+    let (parts, ports, connectors) = prune_interconnection_definition_parts(parts, ports, connectors);
     let (parts, ports, connectors) = prune_ibd_payload_to_connected_scope(parts, ports, connectors);
     let mut connectors = connectors;
     enrich_connector_part_ids(&mut connectors, &parts);
@@ -1634,6 +1723,17 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
     let ports: Vec<IbdPortDto> = ports_by_key.into_values().collect();
     let mut connectors: Vec<IbdConnectorDto> = connectors_by_key.into_values().collect();
     enrich_connector_part_ids(&mut connectors, &parts);
+    let (parts, ports, connectors) = prune_interconnection_definition_parts(parts, ports, connectors);
+    for view in root_views.values_mut() {
+        let (view_parts, view_ports, view_connectors) = prune_interconnection_definition_parts(
+            std::mem::take(&mut view.parts),
+            std::mem::take(&mut view.ports),
+            std::mem::take(&mut view.connectors),
+        );
+        view.parts = view_parts;
+        view.ports = view_ports;
+        view.connectors = view_connectors;
+    }
 
     let default_root = root_candidates
         .iter()
@@ -1676,7 +1776,8 @@ mod tests {
 
     use super::{
         build_container_groups, infer_port_side, prune_ibd_payload_to_connected_scope,
-        prune_redundant_top_level_roots, IbdConnectorDto, IbdPartDto, IbdPortDto,
+        prune_interconnection_definition_parts, prune_redundant_top_level_roots,
+        IbdConnectorDto, IbdPartDto, IbdPortDto,
     };
 
     #[test]
@@ -2083,6 +2184,92 @@ mod tests {
             root_view.connectors.len(),
             default_root,
             root_view.connectors
+        );
+        for part in &ibd.parts {
+            assert!(
+                !part.element_type.to_lowercase().contains(" def"),
+                "IBD parts must not include definitions: {:?}",
+                part
+            );
+        }
+        for part in &root_view.parts {
+            assert!(
+                !part.element_type.to_lowercase().contains(" def"),
+                "scoped IBD parts must not include definitions: {:?}",
+                part
+            );
+        }
+    }
+
+    #[test]
+    fn ibd_payload_excludes_definitions_from_connected_scope() {
+        let doc = SysmlDocument::from_memory_path(
+            "workspace",
+            "parts_tree.sysml",
+            r#"package PartsTree {
+  part def Tree {
+    part branch;
+  }
+  part def Vehicle {
+    part tree : Tree;
+  }
+  part vehicle : Vehicle;
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("workspace doc");
+        let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+        let uri = Url::parse("memory://workspace/parts_tree.sysml").expect("uri");
+        let ibd = super::build_ibd_for_uri(&graph, &uri);
+
+        assert!(
+            ibd.parts
+                .iter()
+                .all(|part| !part.element_type.to_lowercase().contains(" def")),
+            "expected no part definitions in IBD payload, got {:?}",
+            ibd.parts
+                .iter()
+                .map(|part| (&part.name, &part.element_type))
+                .collect::<Vec<_>>()
+        );
+        for view in ibd.root_views.values() {
+            assert!(
+                view.parts
+                    .iter()
+                    .all(|part| !part.element_type.to_lowercase().contains(" def")),
+                "scoped IBD must not include definitions: {:?}",
+                view.parts
+            );
+        }
+    }
+
+    #[test]
+    fn prune_interconnection_definition_parts_normalizes_reference_metadata() {
+        let parts = vec![IbdPartDto {
+            id: "PartsTree::sharedBranch".to_string(),
+            name: "sharedBranch".to_string(),
+            qualified_name: "PartsTree.sharedBranch".to_string(),
+            uri: None,
+            container_id: Some("PartsTree.tree".to_string()),
+            element_type: "ref".to_string(),
+            attributes: HashMap::new(),
+        }];
+        let (parts, ports, connectors) =
+            prune_interconnection_definition_parts(parts, Vec::new(), Vec::new());
+        assert!(ports.is_empty());
+        assert!(connectors.is_empty());
+        assert_eq!(parts.len(), 1);
+        assert_eq!(parts[0].element_type, "ref");
+        assert_eq!(
+            parts[0].attributes.get("isReference"),
+            Some(&serde_json::json!(true))
+        );
+        assert_eq!(
+            parts[0].attributes.get("isDefinition"),
+            Some(&serde_json::json!(false))
         );
     }
 

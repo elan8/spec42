@@ -78,12 +78,53 @@ function usageCornerRadius(kind: string): number {
   return 8;
 }
 
+export interface NodeBodyChromeStyle {
+  cornerRadius: number;
+  strokeDasharray: string;
+  strokeWidthPx: number;
+  headerCornerRadius: number;
+}
+
+/** Resolved stroke dash for a node body rect (package containers stay solid). */
+export function nodeBodyStrokeDasharray(chrome: NodeChrome, isPackageContainer = false): string {
+  if (chrome.isContainer && isPackageContainer) return "none";
+  return chrome.strokeDasharray ?? "none";
+}
+
+/** Shared body rect metrics for general and interconnection node backgrounds. */
+export function nodeBodyChromeStyle(
+  chrome: NodeChrome,
+  opts?: {
+    selected?: boolean;
+    isContainer?: boolean;
+    isPackageContainer?: boolean;
+    /** General view uses slightly heavier definition borders. */
+    generalView?: boolean;
+  },
+): NodeBodyChromeStyle {
+  const selected = opts?.selected ?? false;
+  const isContainer = opts?.isContainer ?? chrome.isContainer;
+  let strokeWidthPx = 2;
+  if (selected) strokeWidthPx = 4;
+  else if (isContainer) strokeWidthPx = 2;
+  else if (opts?.generalView) strokeWidthPx = chrome.isDefinition ? 3 : 2;
+  else strokeWidthPx = chrome.isDefinition ? 2 : 3;
+
+  return {
+    cornerRadius: chrome.cornerRadius,
+    strokeDasharray: nodeBodyStrokeDasharray(chrome, opts?.isPackageContainer),
+    strokeWidthPx,
+    headerCornerRadius: chrome.isDefinition ? 0 : Math.max(2, chrome.cornerRadius - 2),
+  };
+}
+
 export function resolveNodeChrome(
   kind: string,
   opts?: {
     isDefinition?: boolean;
     isReference?: boolean;
     isContainer?: boolean;
+    isPackageContainer?: boolean;
   },
 ): NodeChrome {
   const normalized = kind.toLowerCase();
@@ -92,12 +133,13 @@ export function resolveNodeChrome(
     (normalized.includes("container") || normalized.includes("part_usage"));
 
   if (isContainer) {
+    const isPackageContainer = opts?.isPackageContainer ?? false;
     return {
       isDefinition: false,
       isReference: false,
       isContainer: true,
       cornerRadius: 8,
-      strokeDasharray: "4,4",
+      strokeDasharray: isPackageContainer ? null : "4,4",
       structureClass: "viz-node--container",
       nodeClassSuffix: "",
     };

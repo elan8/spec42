@@ -6,6 +6,7 @@ This document describes how the **shared diagram renderer** (`shared/diagram-ren
 
 - [`shared/diagram-renderer/README.md`](../shared/diagram-renderer/README.md) — build, theme, structure CSS classes
 - [`docs/SUPPORTED-WORKFLOWS.md`](SUPPORTED-WORKFLOWS.md) — release-gating vs experimental views
+- [`docs/SHARED-RENDERER-PARITY.md`](SHARED-RENDERER-PARITY.md) — shared vs legacy parity checklist
 - [`docs/SEMANTIC_CORE_ARCHITECTURE.md`](SEMANTIC_CORE_ARCHITECTURE.md) — visualization payloads from `semantic_core`
 - **Normative reference (external):** [SysML v2 graphical BNF](https://github.com/Systems-Modeling/SysML-v2-Release) — `bnf/SysML-graphical-bnf.kgbnf` and `bnf/images/*.svg`
 

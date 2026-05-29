@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   isDefinitionKind,
   isReferenceKind,
+  nodeBodyChromeStyle,
+  nodeBodyStrokeDasharray,
   resolveNodeChrome,
 } from "./node-notation";
 
@@ -73,5 +75,18 @@ describe("resolveNodeChrome", () => {
   it("uses extra rounding for requirement usages", () => {
     expect(resolveNodeChrome("requirement").cornerRadius).toBe(16);
     expect(resolveNodeChrome("requirement def").cornerRadius).toBe(0);
+  });
+
+  it("keeps package containers solid while layout containers are dashed", () => {
+    const layout = resolveNodeChrome("part_usage", { isContainer: true });
+    const pkg = resolveNodeChrome("package", { isContainer: true, isPackageContainer: true });
+    expect(nodeBodyStrokeDasharray(layout)).toBe("4,4");
+    expect(nodeBodyStrokeDasharray(pkg, true)).toBe("none");
+  });
+
+  it("nodeBodyChromeStyle matches general vs ibd stroke widths", () => {
+    const def = resolveNodeChrome("part def");
+    expect(nodeBodyChromeStyle(def, { generalView: true }).strokeWidthPx).toBe(3);
+    expect(nodeBodyChromeStyle(def, { generalView: false }).strokeWidthPx).toBe(2);
   });
 });

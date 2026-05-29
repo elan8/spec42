@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import ELK from "elkjs/lib/elk.bundled.js";
-import { resolveNodeChrome } from "./node-notation";
+import { nodeBodyChromeStyle, resolveNodeChrome } from "./node-notation";
 import { type PreparedNode, type PreparedView } from "./prepare";
 import { isOverviewVisualElementType, normalizeEdgeKind } from "./graph-normalization";
 import { collectCompartments, computeNodeHeight, renderSysMLNode } from "./sysml-node-builder";
@@ -121,7 +121,9 @@ export async function renderVisualization(
   const isInterconnectionView = prepared.view === "interconnection-view";
   const layout = await layoutPrepared(prepared);
   if (isInterconnectionView) {
-    drawIbdViewFrame(root, prepared, contentBounds(layout), theme);
+    if (shouldDrawIbdViewFrame(prepared)) {
+      drawIbdViewFrame(root, prepared, contentBounds(layout), theme);
+    }
     drawInterconnectionContainers(root, prepared, layout.nodes, theme);
     drawNodes(root, layout.nodes, options, isInterconnectionView, theme);
     drawEdges(root, layout.edges, isInterconnectionView, theme);
@@ -610,6 +612,7 @@ function drawNodes(
         ...(typeof attrs.isDefinition === "boolean" ? { isDefinition: attrs.isDefinition } : {}),
         ...(typeof attrs.isReference === "boolean" ? { isReference: attrs.isReference } : {}),
         isContainer: isLayoutContainer,
+        isPackageContainer: Boolean(attrs.isPackageContainer),
       }).structureClass;
       return `${legacyClass} viz-node ${structureClass} ${clickable} ${selected}`.trim();
     })
@@ -822,29 +825,29 @@ function renderIbdNode(
     ...(typeof attrs.isDefinition === "boolean" ? { isDefinition: attrs.isDefinition } : {}),
     ...(typeof attrs.isReference === "boolean" ? { isReference: attrs.isReference } : {}),
     isContainer,
+    isPackageContainer: Boolean(attrs.isPackageContainer),
+  });
+  const body = nodeBodyChromeStyle(chrome, {
+    selected,
+    isContainer,
+    isPackageContainer: Boolean(attrs.isPackageContainer),
   });
   const stroke = selected ? theme.highlight : theme.nodeBorder;
-  const strokeWidth = selected ? 4 : isContainer ? 2 : chrome.isDefinition ? 2 : 3;
   const headerHeight = isContainer ? 28 : attrs.partType ? 41 : 33;
   group.classed("ibd-container", isContainer);
-
-  const bodyDash =
-    chrome.isContainer && !attrs.isPackageContainer
-      ? "4,4"
-      : chrome.strokeDasharray ?? "none";
 
   group
     .append("rect")
     .attr("width", width)
     .attr("height", height)
-    .attr("rx", chrome.cornerRadius)
+    .attr("rx", body.cornerRadius)
     .attr("class", "graph-node-background")
     .attr("data-original-stroke", theme.nodeBorder)
-    .attr("data-original-width", `${strokeWidth}px`)
+    .attr("data-original-width", `${body.strokeWidthPx}px`)
     .style("fill", theme.nodeFill)
     .style("stroke", stroke)
-    .style("stroke-width", `${strokeWidth}px`)
-    .style("stroke-dasharray", bodyDash);
+    .style("stroke-width", `${body.strokeWidthPx}px`)
+    .style("stroke-dasharray", body.strokeDasharray);
 
   group
     .append("rect")
@@ -1036,6 +1039,10 @@ function drawInterconnectionContainers(
       .attr("font-size", 11)
       .text(label);
   }
+}
+
+function shouldDrawIbdViewFrame(prepared: PreparedView): boolean {
+  return !prepared.nodes.some((node) => Boolean((node.attributes ?? {}).isDiagramRoot));
 }
 
 function drawIbdViewFrame(

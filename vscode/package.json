@@ -483,8 +483,8 @@
         },
         "spec42.visualization.useSharedRenderer": {
           "type": "boolean",
-          "default": false,
-          "description": "Use shared diagram renderer for general/interconnection views (experimental parity mode)."
+          "default": true,
+          "description": "Use the shared diagram renderer for General and Interconnection views (SysML v2 notation-neutral theme). Set false to use the legacy webview renderer."
         },
         "spec42.experimentalFeatures.enabled": {
           "type": "boolean",

@@ -177,6 +177,54 @@ describe("shared prepareViewData", () => {
     expect(prepared.nodes.map((node) => node.id)).toEqual(["airframe"]);
   });
 
+  it("collapses package wrapper when scoped to an instance root", () => {
+    const prepared = prepareViewData({
+      view: "interconnection-view",
+      selectedViewName: "droneInstance",
+      ibd: {
+        defaultRoot: "droneInstance",
+        rootViews: {
+          droneInstance: {
+            parts: [
+              {
+                id: "inst",
+                name: "droneInstance",
+                qualifiedName: "SurveillanceDrone.droneInstance",
+                type: "part",
+              },
+              {
+                id: "power",
+                name: "power",
+                qualifiedName: "SurveillanceDrone.droneInstance.power",
+                containerId: "SurveillanceDrone.droneInstance",
+                type: "part",
+              },
+            ],
+            connectors: [],
+            ports: [],
+            containerGroups: [
+              {
+                id: "container:SurveillanceDrone",
+                label: "SurveillanceDrone",
+                qualifiedName: "SurveillanceDrone",
+                memberPartIds: ["inst", "power"],
+              },
+            ],
+          },
+        },
+      },
+    });
+
+    expect(
+      prepared.nodes.some(
+        (node) => node.label === "SurveillanceDrone" && node.attributes?.isSyntheticContainer,
+      ),
+    ).toBe(false);
+    expect(prepared.nodes.find((node) => node.id === "inst")?.attributes?.containerId).toBeFalsy();
+    expect(prepared.nodes.find((node) => node.id === "inst")?.attributes?.isDiagramRoot).toBe(true);
+    expect(prepared.nodes.find((node) => node.id === "power")?.attributes?.containerId).toBe("inst");
+  });
+
   it("normalizes IBD connector semantics for notation rendering", () => {
     const prepared = prepareViewData({
       view: "interconnection-view",

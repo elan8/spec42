@@ -219,6 +219,67 @@ describe("shared renderer", () => {
     expect(edge?.getAttribute("stroke")).toBe("#abcdef");
   });
 
+  it("renders IBD connectors with visible stroke in dark colorScheme", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+    await renderVisualization(
+      target,
+      {
+        title: "Interconnection",
+        view: "interconnection-view",
+        nodes: [
+          { id: "a", label: "A", kind: "part", attributes: { ports: ["out"] } },
+          { id: "b", label: "B", kind: "part", attributes: { ports: ["in"] } },
+        ],
+        edges: [
+          {
+            id: "c1",
+            source: "a",
+            target: "b",
+            label: "connection",
+            edgeKind: "connection",
+            attributes: { relationType: "connection" },
+          },
+        ],
+      },
+      { theme: { colorScheme: "dark" } },
+    );
+
+    const connector = target.querySelector(".ibd-connector") as SVGPathElement | null;
+    expect(connector).toBeTruthy();
+    expect(connector?.getAttribute("d")).toBeTruthy();
+    expect(connector?.style.stroke).toBeTruthy();
+    expect(connector?.style.stroke).not.toBe("none");
+    expect(target.querySelector("svg")?.getAttribute("data-color-scheme")).toBe("dark");
+  });
+
+  it("renders parts tree reference usage with dotted chrome", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+    await renderVisualization(target, {
+      title: "General",
+      view: "general-view",
+      nodes: [
+        { id: "def", label: "HitchBall", kind: "part def" },
+        { id: "ref", label: "hitchBall", kind: "ref", attributes: { isReference: true } },
+        { id: "usage", label: "mount", kind: "part" },
+      ],
+      edges: [],
+    });
+
+    const defBg = target.querySelector('[data-node-id="def"] .sysml-node-bg') as SVGRectElement | null;
+    const refBg = target.querySelector('[data-node-id="ref"] .sysml-node-bg') as SVGRectElement | null;
+    const usageBg = target.querySelector('[data-node-id="usage"] .sysml-node-bg') as SVGRectElement | null;
+    expect(defBg?.style.strokeDasharray).toBe("none");
+    expect(refBg?.style.strokeDasharray).toBe("2,4");
+    expect(usageBg?.style.strokeDasharray).toBe("none");
+    expect(target.querySelector('[data-node-id="ref"]')?.classList.contains("viz-node--reference")).toBe(true);
+  });
+
   it("renders light and dark schemes with distinct strokes", async () => {
     const lightTarget = document.createElement("div");
     const darkTarget = document.createElement("div");
@@ -275,6 +336,52 @@ describe("shared renderer", () => {
     expect(svg).toContain("data-connector-id=\"conn:engine-controller\"");
     expect(svg).toContain("ibd-container");
     expect(svg).toContain("ConnectedBlocks");
+  });
+
+  it("skips redundant view frame when scoped root is already a layout container", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1600, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 1000, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Interconnection",
+      view: "interconnection-view",
+      meta: { selectedRoot: "droneInstance" },
+      nodes: [
+        {
+          id: "instance",
+          label: "droneInstance",
+          kind: "part",
+          attributes: { isDiagramRoot: true, ports: ["mainPwr"] },
+        },
+        {
+          id: "power",
+          label: "power",
+          kind: "part",
+          attributes: { containerId: "instance", ports: ["pwrOut"] },
+        },
+        {
+          id: "flight",
+          label: "FlightControl",
+          kind: "part",
+          attributes: { containerId: "instance", ports: ["pwrIn"] },
+        },
+      ],
+      edges: [
+        {
+          id: "pwr-flow",
+          source: "power",
+          target: "flight",
+          label: "flow",
+          edgeKind: "flow",
+          attributes: { sourceId: "power.pwrOut", targetId: "flight.pwrIn", relationType: "flow" },
+        },
+      ],
+    });
+
+    expect(target.querySelector(".ibd-view-frame")).toBeNull();
+    expect(target.querySelectorAll(".ibd-container").length).toBeGreaterThanOrEqual(1);
+    expect(target.querySelector('[data-element-name="droneInstance"]')).toBeTruthy();
   });
 
   it("renders nested interconnection with connectors after leaf node chrome", async () => {

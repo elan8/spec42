@@ -221,7 +221,13 @@ function prepareInterconnection(visualization: VisualizationPayload): PreparedVi
       },
     };
   });
-  const nodes = synthesizeInterconnectionContainers(baseNodes, containerGroups, packageContainerGroups);
+  const scopedRootPart = scopedName ? findScopedRootPart(baseNodes, scopedName) : undefined;
+  const scopedContainerGroups = scopedRootPart
+    ? filterContainerGroupsForScopedRoot(containerGroups, baseNodes, scopedName)
+    : containerGroups;
+  const scopedPackageGroups = scopedRootPart ? [] : packageContainerGroups;
+  let nodes = synthesizeInterconnectionContainers(baseNodes, scopedContainerGroups, scopedPackageGroups);
+  nodes = scopedRootPart ? collapseRedundantOuterBoundaries(nodes, scopedName) : nodes;
   const nodeIds = new Set(nodes.map((node) => node.id));
   const nodeById = new Map(nodes.map((node) => [node.id, node]));
   const concreteNodes = nodes.filter((node) => !asRecord(node.attributes).isSyntheticContainer);
@@ -506,6 +512,84 @@ function ibdConnectorLabel(connector: UnknownRecord, type: string): string {
   if (normalized.includes("flow") && itemType) return itemType;
   if (normalized.includes("interface") && interfaceName) return interfaceName;
   return name || type || "connection";
+}
+
+function findScopedRootPart(nodes: PreparedNode[], selectedRoot: string): PreparedNode | undefined {
+  const normalized = selectedRoot.trim().toLowerCase();
+  if (!normalized) return undefined;
+  return nodes.find((node) => {
+    if (asRecord(node.attributes).isSyntheticContainer) return false;
+    const label = node.label.trim().toLowerCase();
+    if (label === normalized || node.id.trim().toLowerCase() === normalized) return true;
+    const qualifiedName = asString(asRecord(node.attributes).qualifiedName).replace(/::/g, ".").toLowerCase();
+    return qualifiedName === normalized || qualifiedName.endsWith(`.${normalized}`);
+  });
+}
+
+function filterContainerGroupsForScopedRoot(
+  containerGroups: UnknownRecord[],
+  baseNodes: PreparedNode[],
+  scopedName: string,
+): UnknownRecord[] {
+  if (!scopedName.trim()) return containerGroups;
+  const root = findScopedRootPart(baseNodes, scopedName);
+  if (!root) return containerGroups;
+  const rootQualifiedName = asString(asRecord(root.attributes).qualifiedName).replace(/::/g, ".");
+  const packagePrefix = rootQualifiedName.includes(".") ? rootQualifiedName.split(".")[0] : "";
+  if (!packagePrefix) return containerGroups;
+  return containerGroups.filter((group) => {
+    const groupQualifiedName = asString(group.qualifiedName ?? group.label).replace(/::/g, ".");
+    const groupLabel = asString(group.label ?? group.name);
+    return !(groupQualifiedName === packagePrefix || groupLabel === packagePrefix);
+  });
+}
+
+/** Remove package wrappers and mark the scoped instance as the single diagram root. */
+function collapseRedundantOuterBoundaries(nodes: PreparedNode[], selectedRoot: string): PreparedNode[] {
+  const root = findScopedRootPart(nodes, selectedRoot);
+  if (!root) return nodes;
+
+  const removedSyntheticIds = new Set<string>();
+  let parentId = asString(asRecord(root.attributes).containerId);
+  while (parentId) {
+    const parent = nodes.find((node) => node.id === parentId);
+    if (!parent || !asRecord(parent.attributes).isSyntheticContainer) break;
+    removedSyntheticIds.add(parentId);
+    parentId = asString(asRecord(parent.attributes).containerId);
+  }
+  if (removedSyntheticIds.size === 0) {
+    root.attributes = { ...asRecord(root.attributes), isDiagramRoot: true };
+    return nodes;
+  }
+
+  const rootQualifiedName = asString(asRecord(root.attributes).qualifiedName).replace(/::/g, ".");
+  const resolveContainerId = (node: PreparedNode): string | null => {
+    const attrs = asRecord(node.attributes);
+    const current = asString(attrs.containerId);
+    if (!current || !removedSyntheticIds.has(current)) return current || null;
+    if (node.id === root.id) return null;
+    const qualifiedName = asString(attrs.qualifiedName).replace(/::/g, ".");
+    if (rootQualifiedName && (qualifiedName === rootQualifiedName || qualifiedName.startsWith(`${rootQualifiedName}.`))) {
+      return root.id;
+    }
+    return null;
+  };
+
+  return nodes
+    .filter((node) => !removedSyntheticIds.has(node.id))
+    .map((node) => {
+      const attrs = asRecord(node.attributes);
+      const nextContainerId = resolveContainerId(node);
+      const nextAttributes: Record<string, unknown> = {
+        ...attrs,
+        containerId: nextContainerId,
+      };
+      delete nextAttributes._fallbackContainerId;
+      if (node.id === root.id) {
+        nextAttributes.isDiagramRoot = true;
+      }
+      return { ...node, attributes: nextAttributes };
+    });
 }
 
 function synthesizeInterconnectionContainers(

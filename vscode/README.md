@@ -78,6 +78,20 @@ Useful commands:
   - Scale factor used for PNG/SVG export.
   - Default: `2`
 
+- **`spec42.visualization.useSharedRenderer`**
+  - Use the shared diagram renderer (`shared/diagram-renderer`) for **General** and **Interconnection** views. Implements SysML v2 def/usage/reference node shapes and notation-neutral styling.
+  - Default: `true`
+  - Set to `false` to use the legacy webview renderer for those views.
+  - See [`docs/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md`](../docs/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md) and [`docs/SHARED-RENDERER-PARITY.md`](../docs/SHARED-RENDERER-PARITY.md).
+
+**Developers:** after changing `shared/diagram-renderer` or webview TypeScript, rebuild the visualizer bundle:
+
+```bash
+cd vscode && npm run build:webview
+```
+
+(`media/webview/visualizer.js` is gitignored.)
+
 - **`spec42.logging.verbose`**
   - Enable verbose runtime logs.
   - Default: `false`
