@@ -45,9 +45,12 @@ interface VisualizationPayload extends UnknownRecord {
   graph?: UnknownRecord;
   generalViewGraph?: UnknownRecord;
   ibd?: UnknownRecord;
+  /** Normalized activity diagrams from VS Code prepareDataForView (nodes + resolved flows). */
+  diagrams?: UnknownArray;
   activityDiagrams?: UnknownArray;
   sequenceDiagrams?: UnknownArray;
   synthesizeInitialState?: boolean;
+  activityLayoutDirection?: string;
 }
 
 function asRecord(value: unknown): UnknownRecord {
@@ -312,45 +315,154 @@ function isSyntheticPackage(node: UnknownRecord): boolean {
   return Boolean(node.synthetic ?? node.isSynthetic ?? attrs.synthetic ?? attrs.isSyntheticContainer);
 }
 
-function prepareActivity(visualization: VisualizationPayload): PreparedView {
-  const selected = selectNamedDiagram(
-    visualization?.activityDiagrams,
-    visualization?.selectedViewName,
-    visualization?.selectedView,
-  );
-  const fallbackDiagram = bestBehaviorDiagram(asArray(visualization?.activityDiagrams).map(asRecord));
-  const effective = selected ?? fallbackDiagram;
-  const selectedRecord = asRecord(effective);
-  const nodes = asArray(selectedRecord.nodes ?? selectedRecord.actions ?? selectedRecord.steps).map((nodeRaw, index) => {
+function activityDiagramCatalog(visualization: VisualizationPayload): UnknownRecord[] {
+  const normalized = asArray(visualization.diagrams).map(asRecord);
+  if (normalized.length > 0) {
+    return normalized;
+  }
+  return asArray(visualization.activityDiagrams).map(asRecord);
+}
+
+function collectActivityNodes(diagram: UnknownRecord): PreparedNode[] {
+  const allowedKinds = new Set(["action", "perform", "decision", "merge", "fork", "join", "initial", "final"]);
+  const decisions = asArray(diagram.decisions).map((nodeRaw, index) => {
     const node = asRecord(nodeRaw);
+    return {
+      id: asString(node.id ?? node.name, `decision-${index}`),
+      label: asString(node.name ?? node.label, "Decision"),
+      kind: "decision",
+      sourcePath: asString(node.sourcePath) || null,
+      range: (node.range as { start?: { line?: number } } | null | undefined) ?? null,
+      attributes: asRecord(node.attributes),
+    };
+  });
+  const states = asArray(diagram.states)
+    .map((nodeRaw, index) => {
+      const node = asRecord(nodeRaw);
+      const kind = asString(node.type ?? node.stateType ?? node.kind, "state").toLowerCase();
+      return {
+        id: asString(node.id ?? node.name, `state-${index}`),
+        label: asString(node.name ?? node.label ?? node.id, `State ${index + 1}`),
+        kind,
+        sourcePath: asString(node.sourcePath) || null,
+        range: (node.range as { start?: { line?: number } } | null | undefined) ?? null,
+        attributes: asRecord(node.attributes),
+      };
+    })
+    .filter((node) =>
+      ["initial", "final", "decision", "merge", "fork", "join"].some((token) => node.kind.includes(token)),
+    );
+  const actions = asArray(diagram.nodes ?? diagram.actions ?? diagram.steps).map((nodeRaw, index) => {
+    const node = asRecord(nodeRaw);
+    const kind = asString(node.kind ?? node.type ?? node.action_type, "action").toLowerCase();
+    const normalizedKind = kind.includes("perform")
+      ? "perform"
+      : kind.includes("decision")
+        ? "decision"
+        : kind.includes("merge")
+          ? "merge"
+          : kind.includes("fork")
+            ? "fork"
+            : kind.includes("join")
+              ? "join"
+              : kind.includes("initial")
+                ? "initial"
+                : kind.includes("final")
+                  ? "final"
+                  : "action";
     return {
       id: asString(node.id ?? node.name, `action-${index}`),
       label: asString(node.name ?? node.label ?? node.id, `Action ${index + 1}`),
-      kind: asString(node.type, "action"),
+      kind: normalizedKind,
       sourcePath: asString(node.sourcePath) || null,
       range: (node.range as { start?: { line?: number } } | null | undefined) ?? null,
-      attributes: asRecord(node.attributes)
+      attributes: asRecord(node.attributes),
     };
   });
+  return [...actions, ...decisions, ...states].filter((node) => allowedKinds.has(node.kind));
+}
+
+function buildActivityNodeAliasMap(nodes: PreparedNode[]): Map<string, string> {
+  const aliases = new Map<string, string>();
+  const register = (alias: unknown, nodeId: string) => {
+    const key = asString(alias).trim();
+    if (!key) {
+      return;
+    }
+    if (!aliases.has(key)) {
+      aliases.set(key, nodeId);
+    }
+    const normalized = key.replace(/::/g, ".");
+    if (!aliases.has(normalized)) {
+      aliases.set(normalized, nodeId);
+    }
+    const lastSegment = normalized.split(".").filter(Boolean).pop();
+    if (lastSegment && !aliases.has(lastSegment)) {
+      aliases.set(lastSegment, nodeId);
+    }
+  };
+  for (const node of nodes) {
+    const nodeId = node.id;
+    register(node.id, nodeId);
+    register(node.label, nodeId);
+    register(asRecord(node.attributes).qualifiedName, nodeId);
+  }
+  return aliases;
+}
+
+function resolveActivityNodeRef(value: unknown, aliases: Map<string, string>): string {
+  const key = asString(value).trim();
+  if (!key) {
+    return "";
+  }
+  const normalized = key.replace(/::/g, ".");
+  const segments = normalized.split(".").filter(Boolean);
+  const last = segments[segments.length - 1] || "";
+  const first = segments[0] || "";
+  return (
+    aliases.get(key) ??
+    aliases.get(normalized) ??
+    (last ? aliases.get(last) : undefined) ??
+    (first ? aliases.get(first) : undefined) ??
+    key
+  );
+}
+
+function prepareActivity(visualization: VisualizationPayload): PreparedView {
+  const catalog = activityDiagramCatalog(visualization);
+  const selected = selectNamedDiagram(catalog, visualization?.selectedViewName, visualization?.selectedView);
+  const effective = selected ?? bestBehaviorDiagram(catalog);
+  const diagram = asRecord(effective);
+  const nodes = collectActivityNodes(diagram);
   const nodeIds = new Set(nodes.map((node) => node.id));
-  const edges = asArray(selectedRecord.edges ?? selectedRecord.flows ?? selectedRecord.transitions)
+  const aliases = buildActivityNodeAliasMap(nodes);
+  const edges = asArray(diagram.flows ?? diagram.edges ?? diagram.transitions)
     .map((edgeRaw, index) => {
       const edge = asRecord(edgeRaw);
+      const source = resolveActivityNodeRef(edge.from ?? edge.source ?? edge.sourceId, aliases);
+      const target = resolveActivityNodeRef(edge.to ?? edge.target ?? edge.targetId, aliases);
       return {
         id: asString(edge.id, `flow-${index}`),
-        source: asString(edge.source ?? edge.from ?? edge.sourceId, ""),
-        target: asString(edge.target ?? edge.to ?? edge.targetId, ""),
-        label: asString(edge.name ?? edge.label ?? edge.type, "")
+        source,
+        target,
+        label: asString(edge.name ?? edge.label ?? edge.guard ?? edge.type, ""),
       };
     })
-    .filter((edge) => nodeIds.has(edge.source) && nodeIds.has(edge.target));
+    .filter(
+      (edge) =>
+        edge.source &&
+        edge.target &&
+        edge.source !== edge.target &&
+        nodeIds.has(edge.source) &&
+        nodeIds.has(edge.target),
+    );
   return {
-    title: asString(selectedRecord.name ?? visualization?.selectedViewName, "Action Flow View"),
+    title: asString(diagram.name ?? visualization?.selectedViewName, "Action Flow View"),
     view: "action-flow-view",
     nodes,
     edges,
     meta: {
-      selectedDiagramId: asString(selectedRecord.id),
+      selectedDiagramId: asString(diagram.id),
       nodeCount: nodes.length,
       edgeCount: edges.length,
       layoutDirection: asString(visualization?.activityLayoutDirection, "vertical"),

@@ -738,6 +738,38 @@ describe("shared renderer", () => {
     expect(target.querySelectorAll(".action-flow-edge").length).toBeGreaterThanOrEqual(2);
   });
 
+  it("renders action-flow connectors for qualified node ids with simple flow names", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 900, configurable: true });
+
+    await renderVisualization(target, {
+      title: "CheckoutPipeline",
+      view: "action-flow-view",
+      nodes: [
+        { id: "WebShopBehavior::CheckoutPipeline::validateCart", label: "validateCart", kind: "action" },
+        { id: "WebShopBehavior::CheckoutPipeline::authorizePayment", label: "authorizePayment", kind: "action" },
+        { id: "WebShopBehavior::CheckoutPipeline::reserveInventory", label: "reserveInventory", kind: "action" },
+      ],
+      edges: [
+        {
+          id: "f1",
+          source: "WebShopBehavior::CheckoutPipeline::validateCart",
+          target: "WebShopBehavior::CheckoutPipeline::authorizePayment",
+          label: "",
+        },
+        {
+          id: "f2",
+          source: "WebShopBehavior::CheckoutPipeline::authorizePayment",
+          target: "WebShopBehavior::CheckoutPipeline::reserveInventory",
+          label: "",
+        },
+      ],
+    });
+
+    expect(target.querySelectorAll(".action-flow-edge").length).toBe(2);
+  });
+
   it("renders state-transition view with pseudostates", async () => {
     const target = document.createElement("div");
     Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });

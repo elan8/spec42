@@ -1417,7 +1417,17 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
         const dataToRender = prepareDataForView(dataForPrepare, view);
         const sharedRendererViewSet = new Set<string>(SYSML_ENABLED_VIEWS);
         const sharedPrepared = sharedRendererViewSet.has(view)
-            ? prepareSharedViewData({ ...(dataForPrepare as Record<string, unknown>), view })
+            ? prepareSharedViewData({
+                ...(dataToRender as Record<string, unknown>),
+                ...(dataForPrepare as Record<string, unknown>),
+                view,
+                activityDiagrams:
+                    (dataToRender as { diagrams?: unknown[] }).diagrams ??
+                    (dataForPrepare as { activityDiagrams?: unknown[] }).activityDiagrams,
+                sequenceDiagrams:
+                    (dataToRender as { diagrams?: unknown[] }).diagrams ??
+                    (dataForPrepare as { sequenceDiagrams?: unknown[] }).sequenceDiagrams,
+            })
             : null;
         const prepareMs = Date.now() - prepareStartedAt;
         if (view === 'interconnection-view') {

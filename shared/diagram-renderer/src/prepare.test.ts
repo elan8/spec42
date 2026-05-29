@@ -317,6 +317,30 @@ describe("shared prepareViewData", () => {
     expect(prepared.meta?.selectedDiagramName).toBe("OrderEventFanout");
   });
 
+  it("resolves action-flow flows when node ids are qualified but flow endpoints are simple names", () => {
+    const prepared = prepareViewData({
+      view: "action-flow-view",
+      activityDiagrams: [
+        {
+          id: "WebShopBehavior::CheckoutPipeline",
+          name: "CheckoutPipeline",
+          actions: [
+            { id: "WebShopBehavior::CheckoutPipeline::validateCart", name: "validateCart", type: "action" },
+            { id: "WebShopBehavior::CheckoutPipeline::authorizePayment", name: "authorizePayment", type: "action" },
+            { id: "WebShopBehavior::CheckoutPipeline::reserveInventory", name: "reserveInventory", type: "action" },
+          ],
+          flows: [
+            { from: "validateCart", to: "authorizePayment" },
+            { from: "authorizePayment", to: "reserveInventory" },
+          ],
+        },
+      ],
+    });
+    expect(prepared.edges).toHaveLength(2);
+    expect(prepared.edges[0]?.source).toBe("WebShopBehavior::CheckoutPipeline::validateCart");
+    expect(prepared.edges[1]?.target).toBe("WebShopBehavior::CheckoutPipeline::reserveInventory");
+  });
+
   it("matches action-flow diagram when view usage name differs in case from diagram name", () => {
     const prepared = prepareViewData({
       view: "action-flow-view",
