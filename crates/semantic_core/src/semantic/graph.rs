@@ -49,6 +49,7 @@ pub(crate) struct ConnectionOccurrence {
     pub range: TextRange,
     pub source_endpoint: Option<String>,
     pub target_endpoint: Option<String>,
+    pub container_prefix: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -594,6 +595,7 @@ impl SemanticGraph {
                 range,
                 source_endpoint: None,
                 target_endpoint: None,
+                container_prefix: None,
             });
     }
 
@@ -605,6 +607,7 @@ impl SemanticGraph {
         range: TextRange,
         source_endpoint: String,
         target_endpoint: String,
+        container_prefix: Option<String>,
     ) {
         self.connection_occurrences_by_uri
             .entry(uri.clone())
@@ -615,6 +618,7 @@ impl SemanticGraph {
                 range,
                 source_endpoint: Some(source_endpoint),
                 target_endpoint: Some(target_endpoint),
+                container_prefix,
             });
     }
 
@@ -622,7 +626,14 @@ impl SemanticGraph {
     pub fn connection_edge_occurrence_details_for_uri(
         &self,
         uri: &Url,
-    ) -> Vec<(NodeId, NodeId, TextRange, Option<String>, Option<String>)> {
+    ) -> Vec<(
+        NodeId,
+        NodeId,
+        TextRange,
+        Option<String>,
+        Option<String>,
+        Option<String>,
+    )> {
         self.connection_occurrences_by_uri
             .get(uri)
             .into_iter()
@@ -635,6 +646,7 @@ impl SemanticGraph {
                     occ.range,
                     occ.source_endpoint,
                     occ.target_endpoint,
+                    occ.container_prefix,
                 )
             })
             .collect()

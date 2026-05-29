@@ -5,7 +5,9 @@ use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::build_graph_from_doc;
-use crate::semantic::relationships::link_workspace_relationships;
+use crate::semantic::relationships::{
+    link_workspace_relationships, resolve_workspace_pending_relationships,
+};
 use crate::semantic::source::{SysmlDocument, SysmlDocumentProvider};
 
 #[derive(Debug, Clone)]
@@ -43,6 +45,7 @@ pub fn build_semantic_graph_from_documents(
     }
 
     link_workspace_relationships(&mut graph);
+    resolve_workspace_pending_relationships(&mut graph);
 
     Ok((graph, parsed_docs))
 }

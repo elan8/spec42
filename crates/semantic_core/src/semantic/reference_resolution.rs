@@ -101,6 +101,37 @@ pub fn resolve_expression_endpoint_strict(
                 }
             }
         }
+
+        // Member chains under a container (e.g. `battery.powerOut` in a part def body) resolve
+        // through typed part usages and features on their definitions.
+        let segments: Vec<&str> = expr_normalized
+            .split("::")
+            .filter(|segment| !segment.is_empty())
+            .collect();
+        if segments.len() > 1 {
+            if let ResolveResult::Resolved(mut current_id) =
+                resolve_expression_endpoint_strict(g, uri, container_prefix, segments[0])
+            {
+                let mut resolved_all = true;
+                for member in segments.iter().skip(1) {
+                    let Some(owner) = g.get_node(&current_id) else {
+                        resolved_all = false;
+                        break;
+                    };
+                    match resolve_member_via_type(g, owner, member) {
+                        ResolveResult::Resolved(next_id) => current_id = next_id,
+                        ResolveResult::Ambiguous => return ResolveResult::Ambiguous,
+                        ResolveResult::Unresolved => {
+                            resolved_all = false;
+                            break;
+                        }
+                    }
+                }
+                if resolved_all {
+                    return ResolveResult::Resolved(current_id);
+                }
+            }
+        }
     }
 
     let suffixes: Vec<String> = expression_forms
@@ -138,6 +169,18 @@ pub fn resolve_member_via_type(
     owner: &SemanticNode,
     member: &str,
 ) -> ResolveResult<NodeId> {
+    let direct_children: Vec<NodeId> = g
+        .child_named(&owner.id, member)
+        .into_iter()
+        .filter(|child| child.element_kind != "import")
+        .map(|child| child.id.clone())
+        .collect();
+    match direct_children.len() {
+        1 => return ResolveResult::Resolved(direct_children.into_iter().next().expect("one child")),
+        n if n > 1 => return ResolveResult::Ambiguous,
+        _ => {}
+    }
+
     let mut matches: Vec<NodeId> = Vec::new();
     let mut visited: HashSet<NodeId> = HashSet::new();
     let mut stack: Vec<NodeId> = g
@@ -168,5 +211,97 @@ pub fn resolve_member_via_type(
         ResolveResult::Ambiguous
     } else {
         ResolveResult::Unresolved
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use url::Url;
+
+    use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
+    use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
+
+    use super::{resolve_expression_endpoint_strict, ResolveResult};
+
+    #[test]
+    fn member_chain_resolves_through_typed_part_usage_after_workspace_link() {
+        let doc = SysmlDocument::from_memory_path(
+            "workspace",
+            "model.sysml",
+            r#"package Demo {
+  part def Battery { port powerOut; }
+  part def Controller { port powerIn; }
+  part def System {
+    part battery : Battery;
+    part controller : Controller;
+    connect battery.powerOut to controller.powerIn;
+  }
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("workspace doc");
+        let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+        let uri = Url::parse("memory://workspace/model.sysml").expect("uri");
+        let result = resolve_expression_endpoint_strict(
+            &graph,
+            &uri,
+            Some("Demo::System"),
+            "battery.powerOut",
+        );
+        assert!(
+            matches!(result, ResolveResult::Resolved(_)),
+            "expected member chain to resolve after workspace link, got {result:?}"
+        );
+    }
+
+    #[test]
+    fn three_segment_member_chain_resolves_nested_typed_parts() {
+        let doc = SysmlDocument::from_memory_path(
+            "workspace",
+            "model.sysml",
+            r#"package Demo {
+  part def Motor { port cmd; }
+  part def Propulsion { part unit1 : Motor; }
+  part def FlightController { port motorCmd; }
+  part def FlightStack {
+    part flightController : FlightController;
+  }
+  part def Drone {
+    part flightControl : FlightStack;
+    part propulsion : Propulsion;
+    connect flightControl.flightController.motorCmd to propulsion.unit1.cmd;
+  }
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("workspace doc");
+        let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+        let uri = Url::parse("memory://workspace/model.sysml").expect("uri");
+        let source = resolve_expression_endpoint_strict(
+            &graph,
+            &uri,
+            Some("Demo::Drone"),
+            "flightControl.flightController.motorCmd",
+        );
+        let target = resolve_expression_endpoint_strict(
+            &graph,
+            &uri,
+            Some("Demo::Drone"),
+            "propulsion.unit1.cmd",
+        );
+        assert!(
+            matches!(source, ResolveResult::Resolved(_)),
+            "expected nested source endpoint, got {source:?}"
+        );
+        assert!(
+            matches!(target, ResolveResult::Resolved(_)),
+            "expected nested target endpoint, got {target:?}"
+        );
     }
 }

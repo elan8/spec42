@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Parser dependency upgrade** - Bumped `sysml-v2-parser` to `v0.11.0` and removed the local `[patch]` override to `../sysml-v2-parser`.
+
 ## [0.24.0] - 2026-05-15
 
 ### Added

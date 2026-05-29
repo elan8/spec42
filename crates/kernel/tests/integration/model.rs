@@ -1585,38 +1585,38 @@ fn lsp_sysml_model_ibd_surveillance_drone_is_complete_enough_for_interconnection
     );
     assert!(
         connectors.iter().any(|c|
-            c["sourceId"].as_str() == Some("SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController.motorCmd")
-                && c["targetId"].as_str() == Some("SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit1.cmd")
+            c["sourceId"].as_str() == Some("SurveillanceDrone.droneInstance.flightControl.flightController.motorCmd")
+                && c["targetId"].as_str() == Some("SurveillanceDrone.droneInstance.propulsion.propulsionUnit1.cmd")
         ),
         "expected propulsion command connector in IBD, got {:?}",
         connectors
     );
     assert!(
         connectors.iter().any(|c| c["sourceId"].as_str()
-            == Some("SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution.regulated5V")
+            == Some("SurveillanceDrone.droneInstance.power.distribution.regulated5V")
             && c["targetId"].as_str()
-                == Some("SurveillanceDrone.SurveillanceQuadrotorDrone.communication.pwr")),
+                == Some("SurveillanceDrone.droneInstance.communication.pwr")),
         "expected regulated power connector in IBD, got {:?}",
         connectors
     );
     assert!(
         connectors.iter().any(|c| c["sourceId"].as_str()
-            == Some("SurveillanceDrone.SurveillanceQuadrotorDrone.cameraPayload.videoOut")
+            == Some("SurveillanceDrone.droneInstance.cameraPayload.videoOut")
             && c["targetId"].as_str()
-                == Some("SurveillanceDrone.SurveillanceQuadrotorDrone.communication.videoIn")),
+                == Some("SurveillanceDrone.droneInstance.communication.videoIn")),
         "expected video link connector in IBD, got {:?}",
         connectors
     );
 
     assert!(
         parts.iter().any(|p| p["qualifiedName"].as_str()
-            == Some("SurveillanceDrone.SurveillanceQuadrotorDrone.propulsion.propulsionUnit4")),
+            == Some("SurveillanceDrone.droneInstance.propulsion.propulsionUnit4")),
         "expected expanded propulsion unit part in IBD, got {:?}",
         parts
     );
     assert!(
         parts.iter().any(|p| p["qualifiedName"].as_str()
-            == Some("SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution")),
+            == Some("SurveillanceDrone.droneInstance.power.distribution")),
         "expected expanded power distribution part in IBD, got {:?}",
         parts
     );
@@ -1636,14 +1636,14 @@ fn lsp_sysml_model_ibd_surveillance_drone_is_complete_enough_for_interconnection
     );
     assert!(
         ports.iter().any(|p| p["parentId"].as_str()
-            == Some("SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController")
+            == Some("SurveillanceDrone.droneInstance.flightControl.flightController")
             && p["name"].as_str() == Some("sensorIn")),
         "expected nested flight controller port in IBD, got {:?}",
         ports
     );
     assert!(
         ports.iter().any(|p| p["parentId"].as_str()
-            == Some("SurveillanceDrone.SurveillanceQuadrotorDrone.flightControl.flightController")
+            == Some("SurveillanceDrone.droneInstance.flightControl.flightController")
             && p["name"].as_str() == Some("telemetryOut")
             && p["portSide"].as_str() == Some("right")),
         "expected telemetryOut to resolve to right-side port, got {:?}",
@@ -1651,7 +1651,7 @@ fn lsp_sysml_model_ibd_surveillance_drone_is_complete_enough_for_interconnection
     );
     assert!(
         ports.iter().any(|p| p["parentId"].as_str()
-            == Some("SurveillanceDrone.SurveillanceQuadrotorDrone.communication")
+            == Some("SurveillanceDrone.droneInstance.communication")
             && p["name"].as_str() == Some("videoIn")
             && p["portSide"].as_str() == Some("left")),
         "expected videoIn to resolve to left-side port, got {:?}",
@@ -1659,7 +1659,7 @@ fn lsp_sysml_model_ibd_surveillance_drone_is_complete_enough_for_interconnection
     );
     assert!(
         ports.iter().any(|p| p["parentId"].as_str()
-            == Some("SurveillanceDrone.SurveillanceQuadrotorDrone.power.distribution")
+            == Some("SurveillanceDrone.droneInstance.power.distribution")
             && p["name"].as_str() == Some("regulated5V")
             && p["portSide"].as_str() == Some("right")),
         "expected regulated5V to resolve to right-side port, got {:?}",

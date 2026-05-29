@@ -198,6 +198,28 @@ pub(crate) fn add_pending_expression_relationship(
         });
 }
 
+/// Re-resolve pending relationship queues for every document in the merged graph.
+///
+/// Must run after [`link_workspace_relationships`] so typing edges needed for member-chain
+/// connection endpoints are available.
+pub fn resolve_workspace_pending_relationships(g: &mut SemanticGraph) {
+    const MAX_PASSES: usize = 8;
+    for _ in 0..MAX_PASSES {
+        let pending_before = g.pending_relationships.len() + g.pending_expression_relationships.len();
+        if pending_before == 0 {
+            break;
+        }
+        let uris: Vec<Url> = g.nodes_by_uri.keys().cloned().collect();
+        for uri in uris {
+            resolve_pending_relationships_for_uri(g, &uri);
+        }
+        let pending_after = g.pending_relationships.len() + g.pending_expression_relationships.len();
+        if pending_after == pending_before {
+            break;
+        }
+    }
+}
+
 pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
     resolve_pending_expression_relationships_for_uri(g, uri);
 
@@ -275,6 +297,7 @@ fn resolve_pending_expression_relationships_for_uri(g: &mut SemanticGraph, uri: 
                 pending_edge.source_range,
                 pending_edge.source_expression,
                 pending_edge.target_expression,
+                pending_edge.container_prefix.clone(),
             );
         }
     }

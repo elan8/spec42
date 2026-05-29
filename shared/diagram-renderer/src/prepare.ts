@@ -191,8 +191,18 @@ function prepareInterconnection(visualization: VisualizationPayload): PreparedVi
   const nodeById = new Map(nodes.map((node) => [node.id, node]));
   const concreteNodes = nodes.filter((node) => !asRecord(node.attributes).isSyntheticContainer);
   const resolveEndpointPartId = (explicit: unknown, endpoint: unknown): string => {
-    const explicitText = asString(explicit);
-    if (explicitText && nodeIds.has(explicitText)) return explicitText;
+    const explicitText = asString(explicit).replace(/::/g, ".").trim();
+    if (explicitText) {
+      const directById = concreteNodes.find((node) => {
+        const attrs = asRecord(node.attributes);
+        const aliases = [node.id, node.label, asString(attrs.qualifiedName)]
+          .filter(Boolean)
+          .map((alias) => alias.replace(/::/g, "."));
+        return aliases.includes(explicitText);
+      });
+      if (directById) return directById.id;
+      if (nodeIds.has(explicitText)) return explicitText;
+    }
     const endpointText = asString(endpoint).replace(/::/g, ".").trim();
     if (!endpointText) return explicitText;
     const direct = concreteNodes.find((node) => {
@@ -604,6 +614,5 @@ function portsForPart(ports: UnknownRecord[], part: UnknownRecord): Array<Record
       id: asString(port.id ?? port.name),
       parentId: asString(port.parentId ?? port.partId ?? port.ownerId ?? port.containerId),
     }))
-    .filter((port) => Boolean(port.name))
-    .slice(0, 8);
+    .filter((port) => Boolean(port.name));
 }

@@ -185,8 +185,8 @@ export function prepareDataForView(data: VisualizationDataDto | Record<string, a
                         connectorCount * 1000
                         + portCount * 100
                         + partCount * 10
-                        + (isPartDef ? 5 : 0)
-                        - (isInstance ? 5 : 0)
+                        + (isInstance ? 50 : 0)
+                        - (isPartDef ? 5 : 0)
                     );
                 };
                 const ibd = data.ibd as {

@@ -44,7 +44,8 @@ pub use semantic::visualization_workspace::{
     build_package_groups_from_graph, build_sysml_visualization_from_graph_and_documents,
     build_sysml_visualization_workspace, build_workspace_activity_diagrams,
     build_workspace_graph_dto_for_uris, filter_ibd_by_visible_ids,
-    select_interconnection_ibd_scope, uri_under_root, workspace_uris_for_root,
+    select_interconnection_ibd_scope, select_interconnection_ibd_scope_with_trace,
+    uri_under_root, workspace_uris_for_root, IbdScopeTrace,
 };
 pub use semantic::workspace_graph::{
     build_semantic_graph_from_documents, build_semantic_graph_with_provider,

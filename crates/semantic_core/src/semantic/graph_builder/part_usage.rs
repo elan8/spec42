@@ -29,6 +29,9 @@ pub(super) fn build_from_part_usage_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, kind);
             let range = span_to_range(&n.span);
             let mut attrs = HashMap::new();
+            if let Some(ref t) = n.typing {
+                attrs.insert("attributeType".to_string(), serde_json::json!(t));
+            }
             if let Some(ref r) = n.redefines {
                 attrs.insert("redefines".to_string(), serde_json::json!(r));
             }
@@ -48,6 +51,9 @@ pub(super) fn build_from_part_usage_body_element(
                 attrs,
                 Some(parent_id),
             );
+            if let Some(ref t) = n.typing {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
         }
         PUBE::PartUsage(n) => {
             let name = &n.name;

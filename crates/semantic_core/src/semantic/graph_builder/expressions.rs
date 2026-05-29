@@ -80,6 +80,7 @@ pub(super) fn add_expression_edge_if_both_exist(
                     span_to_range(&left.span),
                     left_str,
                     right_str,
+                    container_prefix.map(ToString::to_string),
                 );
                 return;
             }

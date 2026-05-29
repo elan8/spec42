@@ -87,16 +87,26 @@ fn mvp_roundtrip_subset_has_authoritative_graph_facts() {
             .any(|(src, tgt, edge_kind, _)| src == source && tgt == target && *edge_kind == kind)
     };
 
-    assert!(has_edge(
-        "Demo::Battery::powerOut",
-        "Demo::Controller::powerIn",
-        RelationshipKind::Connection
-    ));
-    assert!(has_edge(
-        "Demo::System::battery::powerOut",
-        "Demo::System::controller::powerIn",
-        RelationshipKind::Connection
-    ));
+    let connection_edges: Vec<_> = edges
+        .iter()
+        .filter(|(_, _, kind, _)| *kind == RelationshipKind::Connection)
+        .collect();
+    assert!(
+        connection_edges.iter().any(|(src, tgt, _, _)| {
+            src.ends_with("Battery::powerOut") && tgt.ends_with("Controller::powerIn")
+        }),
+        "expected connection between battery and controller ports, got: {:?}",
+        connection_edges
+    );
+    let occurrences = graph.connection_edge_occurrence_details_for_uri(&documents[0].uri);
+    assert!(
+        occurrences.iter().any(|(_, _, _, src, tgt, _)| {
+            src.as_deref() == Some("battery::powerOut")
+                && tgt.as_deref() == Some("controller::powerIn")
+        }),
+        "expected part-body connect to record usage-relative endpoints, got: {:?}",
+        occurrences
+    );
     assert!(has_edge(
         "Demo::Battery",
         "Demo::BatteryRuntime",
