@@ -19,6 +19,7 @@
     "./contract": "./src/contract.ts",
     "./prepare": "./src/prepare.ts",
     "./theme": "./src/theme.ts",
+    "./node-notation": "./src/node-notation.ts",
     "./renderer": "./src/renderer.ts"
   }
 }

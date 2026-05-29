@@ -34,7 +34,8 @@ export async function renderSharedView(
 ): Promise<SharedRenderAdapterController> {
     const controller: RenderController = await renderVisualization(target, prepared, {
         selectedNodeId: options.selectedNodeId ?? null,
-        onNodeClick: options.onNodeNavigate
+        onNodeClick: options.onNodeNavigate,
+        theme: { colorScheme: "vscode" },
     });
 
     return {

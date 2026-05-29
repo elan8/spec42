@@ -3,6 +3,11 @@ import {
   isPackageElementType,
   normalizeEdgeKind,
 } from "./graph-normalization";
+import {
+  isDefinitionKind,
+  isReferenceKind,
+  resolveNodeChrome,
+} from "./node-notation";
 
 export interface PreparedNode {
   id: string;
@@ -75,20 +80,21 @@ function elementTypeOf(node: UnknownRecord): string {
   );
 }
 
+/** @deprecated Use nodeStructureClass */
 export function nodeAccentClass(kind: string): string {
-  const normalized = kind.toLowerCase();
-  if (normalized.includes("verification")) return "viz-node--verification";
-  if (normalized.includes("analysis")) return "viz-node--analysis";
-  if (normalized.includes("requirement")) return "viz-node--requirement";
-  if (normalized.includes("part_usage")) return "viz-node--part-usage";
-  if (normalized.includes("part")) return "viz-node--part";
-  if (normalized.includes("port")) return "viz-node--port";
-  if (normalized.includes("interface")) return "viz-node--interface";
-  if (normalized.includes("action")) return "viz-node--action";
-  if (normalized.includes("connection")) return "viz-node--connection";
-  if (normalized.includes("state")) return "viz-node--state";
-  return "viz-node--default";
+  return nodeStructureClass(kind, kind.toLowerCase().includes("def"));
 }
+
+/** Structure-only CSS classes (definition / usage / reference / container); no per-kind color. */
+export function nodeStructureClass(
+  kind: string,
+  isDefinition?: boolean,
+  isReference?: boolean,
+): string {
+  return resolveNodeChrome(kind, { isDefinition, isReference }).structureClass;
+}
+
+export { isDefinitionKind, isReferenceKind, resolveNodeChrome } from "./node-notation";
 
 export function rendererLabel(view: string): string {
   switch (view) {
@@ -140,6 +146,7 @@ function prepareGraph(graphInput: unknown, visualization: VisualizationPayload):
       qualifiedName: asString(node.qualifiedName ?? asRecord(node.attributes).qualifiedName),
       isPackage: isPackage(node),
       isDefinition: isDefinitionKind(asString(node.type ?? node.element_type, "")),
+      isReference: isReferenceKind(asString(node.type ?? node.element_type, "")),
     },
   }));
   const edges = asArray(graph.edges)
@@ -189,10 +196,11 @@ function prepareInterconnection(visualization: VisualizationPayload): PreparedVi
     const partId = asString(part.id ?? part.name);
     const parent = asString(part.containerId ?? part.parentId, "");
     const portDetails = portsForPart(ports, part);
+    const partKind = asString(part.type, "part");
     return {
       id: partId,
       label: asString(part.name ?? part.id, "Unnamed"),
-      kind: asString(part.type, "part"),
+      kind: partKind,
       sourcePath: asString(part.sourcePath) || null,
       range: (part.range as { start?: { line?: number } } | null | undefined) ?? null,
       attributes: {
@@ -208,6 +216,8 @@ function prepareInterconnection(visualization: VisualizationPayload): PreparedVi
         children: asArray(part.children),
         ports: portDetails.map((port) => port.name),
         portDetails,
+        isDefinition: isDefinitionKind(partKind),
+        isReference: isReferenceKind(partKind),
       },
     };
   });
@@ -294,11 +304,6 @@ function isSyntheticPackage(node: UnknownRecord): boolean {
   if (!isPackage(node)) return false;
   const attrs = asRecord(node.attributes);
   return Boolean(node.synthetic ?? node.isSynthetic ?? attrs.synthetic ?? attrs.isSyntheticContainer);
-}
-
-function isDefinitionKind(kind: string): boolean {
-  const normalized = kind.toLowerCase();
-  return normalized.includes(" def") || normalized.includes("_def") || normalized.includes("definition");
 }
 
 function prepareActivity(visualization: VisualizationPayload): PreparedView {

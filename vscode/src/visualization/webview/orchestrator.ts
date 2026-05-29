@@ -33,6 +33,7 @@ import {
     GENERAL_VIEW_PALETTE,
     GENERAL_VIEW_CATEGORIES
 } from './constants';
+import { DIAGRAM_STYLE } from './styleTokens';
 import {
     convertToHierarchy,
     isMetadataElement,
@@ -836,11 +837,11 @@ import { prepareSharedViewData, renderSharedView } from './sharedRendererAdapter
             // Apply direct style to node-background for immediate visual feedback
             // This works for general-node, ibd-part, and node-group elements
             targetElement.select('.node-background')
-                .style('stroke', '#FFD700')
+                .style('stroke', DIAGRAM_STYLE.highlight)
                 .style('stroke-width', '3px');
             // For IBD parts, the rect is a direct child
             targetElement.select('rect')
-                .style('stroke', '#FFD700')
+                .style('stroke', DIAGRAM_STYLE.highlight)
                 .style('stroke-width', '3px');
 
             // Update status bar

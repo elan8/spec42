@@ -310,8 +310,13 @@ export function graphToGeneralViewElements(
                   const displayName = node.name || 'Unnamed';
                   return stereotype ? stereotype + ' ' + displayName : displayName;
               })();
-        const typeLower = (node.type || '').toLowerCase();
+        const typeLower = (node.type || node.element_type || '').toLowerCase();
         const isDefinition = typeLower.includes('def') || typeLower.includes('definition');
+        const isReference =
+            typeLower === 'ref' ||
+            typeLower.endsWith('-ref') ||
+            typeLower.endsWith(' ref') ||
+            (/\bref\b/.test(typeLower) && !typeLower.includes('refine'));
         const color = getTypeColor(node.type);
         const cat = GENERAL_VIEW_CATEGORIES.find((c) => c.id === category);
         const borderColor = (cat && cat.color) || color;
@@ -333,6 +338,7 @@ export function graphToGeneralViewElements(
                 elementUri: node.uri || elementWithChildren?.uri || null,
                 color: borderColor,
                 isDefinition,
+                isReference,
                 category,
                 packagePath: idToPackagePath.get(node.id) || [],
                 metadata,

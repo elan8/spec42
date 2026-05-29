@@ -104,11 +104,8 @@ export function isLibraryValidated(element: any): boolean {
     return attrs.isStandardType === true || attrs.isStandardElement === true;
 }
 
-export function getNodeColor(element: any): string {
-    if (isLibraryValidated(element)) {
-        return 'var(--vscode-charts-green)';
-    }
-    return 'var(--vscode-charts-blue)';
+export function getNodeColor(_element: any): string {
+    return 'var(--vscode-editor-foreground)';
 }
 
 export function getNodeBorderStyle(element: any): string {
@@ -118,13 +115,9 @@ export function getNodeBorderStyle(element: any): string {
     return '1px';
 }
 
-export function getTypeColor(type: string | null | undefined): string {
-    const t = (type || '').toLowerCase();
-    if (GENERAL_VIEW_TYPE_COLORS[t]) return GENERAL_VIEW_TYPE_COLORS[t];
-    for (const key of Object.keys(GENERAL_VIEW_TYPE_COLORS)) {
-        if (key !== 'default' && t.includes(key)) return GENERAL_VIEW_TYPE_COLORS[key];
-    }
-    return GENERAL_VIEW_TYPE_COLORS['default'];
+/** Notation-neutral diagram ink; filter chips use GENERAL_VIEW_TYPE_COLORS separately. */
+export function getTypeColor(_type: string | null | undefined): string {
+    return 'var(--vscode-editor-foreground)';
 }
 
 export function isActorElement(elementOrType: any): boolean {

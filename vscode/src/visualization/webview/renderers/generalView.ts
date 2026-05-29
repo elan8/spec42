@@ -5,10 +5,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { RenderContext } from '../types';
-import { GENERAL_VIEW_PALETTE } from '../constants';
 import { postJumpToElement } from '../jumpToElement';
 import { formatSysMLStereotype } from '../shared';
-import { getTypeColor } from '../shared';
 import { DIAGRAM_STYLE } from '../styleTokens';
 import {
     collectCompartmentsFromElement,
@@ -24,7 +22,7 @@ declare const ELK: any;
 const NODE_WIDTH = 200;
 const NODE_HEIGHT_BASE = 70;
 const GENERAL_NEUTRAL_EDGE = 'var(--vscode-editor-foreground)';
-const GENERAL_NEUTRAL_BORDER = DIAGRAM_STYLE.nodeBorder;
+const GENERAL_NEUTRAL_BORDER = 'var(--vscode-editor-foreground)';
 const collapsedGeneralViewSections = new Set<string>();
 const expandedGeneralViewSectionRows = new Set<string>();
 const initializedGeneralViewSections = new Set<string>();
@@ -494,7 +492,7 @@ function renderGeneralNodes(
             collapsibleSections: []
         };
         const isDefinition = d.isDefinition === true;
-        const typeColor = d.color || getTypeColor(d.sysmlType);
+        const isReference = d.isReference === true;
         const nodeG = renderSysMLNode(nodeGroup, compartments, {
             x: pos.x,
             y: pos.y,
@@ -502,7 +500,8 @@ function renderGeneralNodes(
             height: pos.height,
             config: GENERAL_VIEW_NODE_CONFIG,
             isDefinition,
-            typeColor,
+            isReference,
+            typeColor: GENERAL_NEUTRAL_BORDER,
             formatStereotype: (t) => formatSysMLStereotype(t) || ('«' + t + '»'),
             nodeClass: 'general-node elk-node',
             dataElementName: d.elementName || d.label,

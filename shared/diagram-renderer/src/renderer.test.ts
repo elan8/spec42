@@ -1,7 +1,9 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
 import { renderVisualization } from "./renderer";
-import { DEFAULT_DIAGRAM_THEME, edgeColorForKind, nodeColorForKind, resolveDiagramTheme } from "./theme";
+import { resolveDiagramTheme, strokeColorForEdge, strokeColorForNode } from "./theme";
+
+const LIGHT_THEME = { colorScheme: "light" as const };
 
 function boundsFor(target: HTMLElement, nodeId: string): { x: number; y: number; width: number; height: number } {
   const node = target.querySelector(`[data-node-id="${nodeId}"]`);
@@ -27,13 +29,12 @@ function paintIndex(target: HTMLElement, nodeId: string): number {
 }
 
 describe("shared renderer", () => {
-  it("resolves semantic default theme colors", () => {
-    const theme = resolveDiagramTheme();
-    expect(theme.node.part).toBe(DEFAULT_DIAGRAM_THEME.node.part);
-    expect(nodeColorForKind("part def", theme)).toBe(theme.node.part);
-    expect(nodeColorForKind("requirement", theme)).toBe(theme.node.requirement);
-    expect(edgeColorForKind("flow", theme)).toBe(theme.edge.flow);
-    expect(edgeColorForKind("allocate", theme)).toBe(theme.edge.allocate);
+  it("uses notation-neutral ink for all kinds", () => {
+    const theme = resolveDiagramTheme({ colorScheme: "light" });
+    expect(strokeColorForNode(theme)).toBe(theme.nodeBorder);
+    expect(strokeColorForEdge("flow", theme)).toBe(theme.edge.default);
+    expect(strokeColorForEdge("allocate", theme)).toBe(theme.edge.default);
+    expect(theme.nodeBorder).not.toBe("#2D8A6E");
   });
 
   it("returns controller surface and SVG output", async () => {
@@ -41,15 +42,19 @@ describe("shared renderer", () => {
     Object.defineProperty(target, "clientWidth", { value: 900, configurable: true });
     Object.defineProperty(target, "clientHeight", { value: 600, configurable: true });
 
-    const controller = await renderVisualization(target, {
-      title: "General",
-      view: "general-view",
-      nodes: [
-        { id: "a", label: "A", kind: "part_def", attributes: { attributes: [{ name: "mass" }], ports: [{ name: "in" }] } },
-        { id: "b", label: "B", kind: "part_def" },
-      ],
-      edges: [{ id: "e1", source: "a", target: "b", label: "typing", edgeKind: "typing" }],
-    });
+    const controller = await renderVisualization(
+      target,
+      {
+        title: "General",
+        view: "general-view",
+        nodes: [
+          { id: "a", label: "A", kind: "part_def", attributes: { attributes: [{ name: "mass" }], ports: [{ name: "in" }] } },
+          { id: "b", label: "B", kind: "part_def" },
+        ],
+        edges: [{ id: "e1", source: "a", target: "b", label: "typing", edgeKind: "typing" }],
+      },
+      { theme: LIGHT_THEME },
+    );
 
     expect(typeof controller.reset).toBe("function");
     expect(typeof controller.exportSvg).toBe("function");
@@ -74,10 +79,12 @@ describe("shared renderer", () => {
     Object.defineProperty(target, "clientWidth", { value: 1400, configurable: true });
     Object.defineProperty(target, "clientHeight", { value: 900, configurable: true });
 
-    await renderVisualization(target, {
-      title: "General",
-      view: "general-view",
-      nodes: [
+    await renderVisualization(
+      target,
+      {
+        title: "General",
+        view: "general-view",
+        nodes: [
         {
           id: "pkg",
           label: "Definitions",
@@ -112,7 +119,9 @@ describe("shared renderer", () => {
         { id: "owns", source: "pkg", target: "vehicle-def", label: "owns", edgeKind: "hierarchy", attributes: { relationType: "hierarchy" } },
         { id: "typed", source: "vehicle-usage", target: "vehicle-def", label: "defined by", edgeKind: "typing", attributes: { relationType: "typing" } },
       ],
-    });
+      },
+      { theme: LIGHT_THEME },
+    );
 
     expect(target.textContent).not.toContain("«package»");
     expect(target.textContent).toContain("«part def»");
@@ -124,8 +133,13 @@ describe("shared renderer", () => {
     expect(target.textContent).toContain("> Inherited Attributes");
     const definitionBg = target.querySelector('[data-node-id="vehicle-def"] .sysml-node-bg') as SVGRectElement | null;
     const usageBg = target.querySelector('[data-node-id="vehicle-usage"] .sysml-node-bg') as SVGRectElement | null;
-    expect(definitionBg?.style.strokeDasharray).toBe("6,3");
+    expect(definitionBg?.style.strokeDasharray).toBe("none");
     expect(usageBg?.style.strokeDasharray).toBe("none");
+    expect(definitionBg?.getAttribute("rx")).toBe("0");
+    expect(usageBg?.getAttribute("rx")).toBe("8");
+    const theme = resolveDiagramTheme({ colorScheme: "light" });
+    expect(definitionBg?.style.stroke).toBe(theme.nodeBorder);
+    expect(definitionBg?.style.stroke).not.toBe("#2D8A6E");
   });
 
   it("renders General view relationship notation and suppresses generic labels", async () => {
@@ -133,10 +147,12 @@ describe("shared renderer", () => {
     Object.defineProperty(target, "clientWidth", { value: 1800, configurable: true });
     Object.defineProperty(target, "clientHeight", { value: 1200, configurable: true });
 
-    await renderVisualization(target, {
-      title: "General",
-      view: "general-view",
-      nodes: [
+    await renderVisualization(
+      target,
+      {
+        title: "General",
+        view: "general-view",
+        nodes: [
         { id: "a", label: "A", kind: "part def" },
         { id: "b", label: "B", kind: "part def" },
         { id: "c", label: "C", kind: "part" },
@@ -154,7 +170,9 @@ describe("shared renderer", () => {
         { id: "binding", source: "b", target: "d", label: "binding", edgeKind: "bind", attributes: { relationType: "binding" } },
         { id: "generic", source: "b", target: "e", label: "relationship", edgeKind: "relationship", attributes: { relationType: "relationship" } },
       ],
-    });
+      },
+      { theme: LIGHT_THEME },
+    );
 
     const labels = Array.from(target.querySelectorAll(".viz-edge-label")).map((node) => node.textContent);
     expect(labels).toEqual(["riskImpact"]);
@@ -187,8 +205,9 @@ describe("shared renderer", () => {
       },
       {
         theme: {
-          node: { part: "#123456" },
-          edge: { satisfy: "#abcdef" },
+          colorScheme: "light",
+          nodeBorder: "#123456",
+          edge: { default: "#abcdef" },
           highlight: "#fedcba",
         },
       },
@@ -198,6 +217,30 @@ describe("shared renderer", () => {
     const edge = target.querySelector('[data-connector-id="satisfy"]') as SVGPathElement | null;
     expect((partStereotype as SVGTextElement | null)?.style.fill).toBe("#123456");
     expect(edge?.getAttribute("stroke")).toBe("#abcdef");
+  });
+
+  it("renders light and dark schemes with distinct strokes", async () => {
+    const lightTarget = document.createElement("div");
+    const darkTarget = document.createElement("div");
+    for (const el of [lightTarget, darkTarget]) {
+      Object.defineProperty(el, "clientWidth", { value: 900, configurable: true });
+      Object.defineProperty(el, "clientHeight", { value: 600, configurable: true });
+    }
+    const payload = {
+      title: "General",
+      view: "general-view" as const,
+      nodes: [{ id: "a", label: "A", kind: "part def" }],
+      edges: [] as const,
+    };
+    await renderVisualization(lightTarget, payload, { theme: { colorScheme: "light" } });
+    await renderVisualization(darkTarget, payload, { theme: { colorScheme: "dark" } });
+    const lightStroke = (lightTarget.querySelector(".sysml-node-bg") as SVGRectElement | null)?.style.stroke;
+    const darkStroke = (darkTarget.querySelector(".sysml-node-bg") as SVGRectElement | null)?.style.stroke;
+    expect(lightStroke).toBeTruthy();
+    expect(darkStroke).toBeTruthy();
+    expect(lightStroke).not.toBe(darkStroke);
+    expect(lightTarget.querySelector("svg")?.getAttribute("data-color-scheme")).toBe("light");
+    expect(darkTarget.querySelector("svg")?.getAttribute("data-color-scheme")).toBe("dark");
   });
 
   it("renders interconnection connectors and package containers with parity classes", async () => {
@@ -232,6 +275,78 @@ describe("shared renderer", () => {
     expect(svg).toContain("data-connector-id=\"conn:engine-controller\"");
     expect(svg).toContain("ibd-container");
     expect(svg).toContain("ConnectedBlocks");
+  });
+
+  it("renders nested interconnection with connectors after leaf node chrome", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1600, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 1000, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Interconnection",
+      view: "interconnection-view",
+      nodes: [
+        {
+          id: "features",
+          label: "drone features",
+          kind: "package",
+          attributes: { isSyntheticContainer: true, isPackageContainer: true },
+        },
+        {
+          id: "drone",
+          label: "SurveillanceDrone",
+          kind: "part def",
+          attributes: { containerId: "features", ports: ["pwrIn"] },
+        },
+        {
+          id: "instance",
+          label: "droneInstance",
+          kind: "part",
+          attributes: { containerId: "drone", partType: "SurveillanceDrone", ports: ["mainPwr"] },
+        },
+        {
+          id: "power",
+          label: "power",
+          kind: "part",
+          attributes: { containerId: "instance", ports: ["pwrOut"] },
+        },
+        {
+          id: "flight",
+          label: "FlightControl",
+          kind: "part",
+          attributes: { containerId: "instance", ports: ["pwrIn", "cmdOut"] },
+        },
+        {
+          id: "propulsion",
+          label: "propulsion",
+          kind: "part",
+          attributes: { containerId: "instance", ports: ["pwrIn"] },
+        },
+      ],
+      edges: [
+        {
+          id: "pwr-flow",
+          source: "power",
+          target: "flight",
+          label: "flow",
+          edgeKind: "flow",
+          attributes: { sourceId: "power.pwrOut", targetId: "flight.pwrIn", relationType: "flow" },
+        },
+        {
+          id: "prop-conn",
+          source: "flight",
+          target: "propulsion",
+          label: "connection",
+          edgeKind: "connection",
+          attributes: { sourceId: "flight.cmdOut", targetId: "propulsion.pwrIn", relationType: "connection" },
+        },
+      ],
+    });
+
+    expect(target.querySelectorAll(".ibd-connector").length).toBeGreaterThanOrEqual(2);
+    expect(target.querySelectorAll(".port-icon").length).toBeGreaterThan(0);
+    const flightBg = target.querySelector('[data-node-id="flight"] .graph-node-background') as SVGRectElement | null;
+    expect(flightBg?.style.strokeDasharray).toBe("none");
   });
 
   it("renders real parent parts as interconnection containers", async () => {

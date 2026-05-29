@@ -5,19 +5,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { RenderContext } from '../types';
-import { GENERAL_VIEW_PALETTE } from '../constants';
 import { postJumpToElement } from '../jumpToElement';
-import { getTypeColor, isLibraryValidated } from '../shared';
+import { isLibraryValidated } from '../shared';
+import { resolveNodeChrome } from '../../../../../shared/diagram-renderer/src/node-notation';
 import { DIAGRAM_STYLE } from '../styleTokens';
 
 declare const d3: any;
 declare const ELK: any;
-const NEUTRAL_EDGE_BLUE = DIAGRAM_STYLE.edgePrimary;
-const NEUTRAL_PORT_BLUE = DIAGRAM_STYLE.edgePrimary;
+const NEUTRAL_EDGE = DIAGRAM_STYLE.edgePrimary;
 const NEUTRAL_NODE_BORDER = DIAGRAM_STYLE.nodeBorder;
 const NEUTRAL_NODE_FILL = DIAGRAM_STYLE.nodeFill;
 const NEUTRAL_TEXT = DIAGRAM_STYLE.textPrimary;
-const PORT_OUTLINE_GREEN = 'var(--vscode-button-background)';
+const NEUTRAL_PORT = DIAGRAM_STYLE.nodeBorder;
 
 type NodeRect = { x: number; y: number; width: number; height: number };
 type ElkSection = { startPoint?: { x: number; y: number }; endPoint?: { x: number; y: number }; bendPoints?: Array<{ x: number; y: number }> };
@@ -280,9 +279,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
     const truncateLabel = (value: string, maxLength: number): string =>
         value.length > maxLength ? value.substring(0, maxLength - 2) + '..' : value;
     const getPortVisualColor = (direction: 'in' | 'out' | 'inout'): string => {
-        if (direction === 'in') return NEUTRAL_PORT_BLUE;
-        if (direction === 'out') return NEUTRAL_PORT_BLUE;
-        return NEUTRAL_PORT_BLUE;
+        return NEUTRAL_PORT;
     };
     const getConnectorVisualStyle = (connector: any) => {
         const connTypeLower = String(connector?.type || '').toLowerCase();
@@ -294,7 +291,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
 
         if (isFlow) {
             return {
-                strokeColor: 'var(--vscode-charts-green)',
+                strokeColor: NEUTRAL_EDGE,
                 strokeStyle: 'none',
                 strokeWidth: '2.5px',
                 markerStart: 'none',
@@ -305,7 +302,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         }
         if (isInterface) {
             return {
-                strokeColor: 'var(--vscode-charts-purple)',
+                strokeColor: NEUTRAL_EDGE,
                 strokeStyle: '8,4',
                 strokeWidth: '2px',
                 markerStart: 'none',
@@ -316,7 +313,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         }
         if (isBinding) {
             return {
-                strokeColor: NEUTRAL_EDGE_BLUE,
+                strokeColor: NEUTRAL_EDGE,
                 strokeStyle: '6,4',
                 strokeWidth: '1.5px',
                 markerStart: 'url(#ibd-connection-dot)',
@@ -326,7 +323,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             };
         }
         return {
-            strokeColor: NEUTRAL_EDGE_BLUE,
+            strokeColor: NEUTRAL_EDGE,
             strokeStyle: isConnection ? 'none' : '2,2',
             strokeWidth: isConnection ? '2px' : '1.5px',
             markerStart: 'url(#ibd-connection-dot)',
@@ -1415,7 +1412,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         .attr('orient', 'auto')
         .append('path')
         .attr('d', 'M0,-4L10,0L0,4Z')
-        .style('fill', NEUTRAL_EDGE_BLUE);
+        .style('fill', NEUTRAL_EDGE);
 
     defs.append('marker')
         .attr('id', 'ibd-interface-arrow')
@@ -1428,7 +1425,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         .append('path')
         .attr('d', 'M0,-4L10,0L0,4Z')
         .style('fill', 'none')
-        .style('stroke', NEUTRAL_EDGE_BLUE)
+        .style('stroke', NEUTRAL_EDGE)
         .style('stroke-width', '1.5px');
 
     defs.append('marker')
@@ -1442,7 +1439,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         .attr('cx', 5)
         .attr('cy', 5)
         .attr('r', 4)
-        .style('fill', NEUTRAL_EDGE_BLUE);
+        .style('fill', NEUTRAL_EDGE);
 
     defs.append('marker')
         .attr('id', 'ibd-port-connector')
@@ -1456,7 +1453,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         .attr('y', 1)
         .attr('width', 6)
         .attr('height', 6)
-        .style('fill', 'var(--vscode-charts-purple)');
+        .style('fill', NEUTRAL_EDGE);
 
     let connectorGroup = g.append('g').attr('class', 'ibd-connectors');
     let usedLabelPositions: { x: number; y: number; width: number; height: number }[] = [];
@@ -1938,7 +1935,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                 const self = d3.select(this);
                 self.attr('data-original-stroke', originalStroke)
                     .attr('data-original-width', originalStrokeWidth)
-                    .style('stroke', '#FFD700')
+                    .style('stroke', DIAGRAM_STYLE.highlight)
                     .style('stroke-width', '4px')
                     .classed('connector-highlighted', true);
                 (this as any).parentNode.appendChild(this);
@@ -2019,7 +2016,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                     width: itemWidth,
                     height: itemHeight,
                     text: '«' + connector.itemType + '»',
-                    strokeColor: 'var(--vscode-charts-green)',
+                    strokeColor: NEUTRAL_TEXT,
                     isItemType: true
                 });
             }
@@ -2128,10 +2125,18 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             }
 
             const typeLower = (part.type || '').toLowerCase();
-            const typeColor = getTypeColor(part.type);
             const isLibValidated = isLibraryValidated(part);
-            const isDefinition = typeLower.includes('def');
-            const isUsage = !isDefinition;
+            const chrome = resolveNodeChrome(typeLower, {
+                isDefinition: typeLower.includes('def'),
+                isReference:
+                    typeLower === 'ref' ||
+                    typeLower.endsWith('-ref') ||
+                    typeLower.endsWith(' ref') ||
+                    (/\bref\b/.test(typeLower) && !typeLower.includes('refine')),
+                isContainer: Boolean(pos.isContainer)
+            });
+            const isDefinition = chrome.isDefinition;
+            const isUsage = !isDefinition && !chrome.isReference;
 
             let typedByName: string | null = null;
             if (part.attributes && part.attributes.get) {
@@ -2225,7 +2230,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
 
         const partG = (pos.isContainer ? containerLayer : nodeLayer).append('g')
             .attr('transform', 'translate(' + pos.x + ',' + pos.y + ')')
-            .attr('class', 'ibd-part' + (isDefinition ? ' definition-node' : ' usage-node') + (pos.isContainer ? ' ibd-container' : ''))
+            .attr('class', 'ibd-part' + chrome.nodeClassSuffix + (pos.isContainer ? ' ibd-container' : ''))
             .attr('data-element-name', part.name)
             .attr('data-bounds', [pos.x, pos.y, w, h].join(','))
             .style('cursor', 'pointer');
@@ -2270,7 +2275,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
                             .style('stroke-width', r.attr('data-original-width'));
                     }
                 });
-                partG.select('rect.graph-node-background').style('stroke', '#FFD700').style('stroke-width', '4px');
+                partG.select('rect.graph-node-background').style('stroke', DIAGRAM_STYLE.highlight).style('stroke-width', '4px');
                 const statusEl = document.getElementById('status-text');
                 if (statusEl) statusEl.textContent = part.name + ' [' + (part.type || 'part') + ']';
             });
@@ -2280,7 +2285,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             partPorts.forEach((p: any) => {
                 const anchor = getRenderedPortAnchor(pos, p);
                 if (!anchor) return;
-                const portColor = PORT_OUTLINE_GREEN;
+                const portColor = NEUTRAL_PORT;
                 partG.append('rect')
                     .attr('class', 'port-icon')
                     .attr('x', anchor.x - portSize / 2)
@@ -2295,17 +2300,17 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
         }
 
             const _ibdStroke = isLibValidated ? NEUTRAL_NODE_BORDER : NEUTRAL_NODE_BORDER;
-        const _ibdStrokeW = isUsage ? '3px' : '2px';
+        const _ibdStrokeW = isUsage || chrome.isReference ? '3px' : '2px';
         partG.append('rect')
             .attr('width', w)
             .attr('height', h)
-            .attr('rx', isUsage ? 8 : 4)
+            .attr('rx', chrome.cornerRadius)
             .attr('data-original-stroke', _ibdStroke)
             .attr('data-original-width', _ibdStrokeW)
             .style('fill', NEUTRAL_NODE_FILL)
             .style('stroke', _ibdStroke)
             .style('stroke-width', _ibdStrokeW)
-            .style('stroke-dasharray', isDefinition ? '6,3' : 'none');
+            .style('stroke-dasharray', chrome.strokeDasharray ?? 'none');
 
         partG.append('rect')
             .attr('y', 0)
@@ -2386,7 +2391,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             if (!anchor) return;
             const portY = anchor.y;
             const portX = anchor.x;
-            const portColor = PORT_OUTLINE_GREEN;
+            const portColor = NEUTRAL_PORT;
             partG.append('rect')
                 .attr('class', 'port-icon')
                 .attr('x', portX - portSize/2)
@@ -2404,7 +2409,7 @@ export async function renderIbdView(ctx: RenderContext & { elkWorkerUrl?: string
             if (!anchor) return;
             const portY = anchor.y;
             const portX = anchor.x;
-            const portColor = PORT_OUTLINE_GREEN;
+            const portColor = NEUTRAL_PORT;
             partG.append('rect')
                 .attr('class', 'port-icon')
                 .attr('x', portX - portSize/2)

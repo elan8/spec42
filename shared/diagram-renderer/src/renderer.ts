@@ -1,12 +1,13 @@
 import * as d3 from "d3";
 import ELK from "elkjs/lib/elk.bundled.js";
-import { nodeAccentClass, type PreparedNode, type PreparedView } from "./prepare";
+import { resolveNodeChrome } from "./node-notation";
+import { type PreparedNode, type PreparedView } from "./prepare";
 import { isOverviewVisualElementType, normalizeEdgeKind } from "./graph-normalization";
 import { collectCompartments, computeNodeHeight, renderSysMLNode } from "./sysml-node-builder";
 import {
-  edgeColorForKind,
-  nodeColorForKind,
   resolveDiagramTheme,
+  strokeColorForEdge,
+  strokeColorForNode,
   type DiagramTheme,
   type DiagramThemeOverrides,
 } from "./theme";
@@ -96,6 +97,15 @@ export async function renderVisualization(
     .attr("viewBox", `0 0 ${width} ${height}`)
     .attr("role", "img")
     .attr("aria-label", prepared.title || "SysML view");
+  if (theme.colorScheme === "light" || theme.colorScheme === "dark" || theme.colorScheme === "auto") {
+    const scheme =
+      theme.colorScheme === "auto"
+        ? typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)")?.matches
+          ? "dark"
+          : "light"
+        : theme.colorScheme;
+    svg.attr("data-color-scheme", scheme);
+  }
   svg.append("rect").attr("class", "viz-bg").attr("width", width).attr("height", height);
   svg
     .select(".viz-bg")
@@ -485,8 +495,11 @@ function drawEdges(
   for (const edge of edges) {
     if (!edge.sourceNode || !edge.targetNode) continue;
     const path = edge.layout?.sections?.[0] ? pathFromSection(edge.layout.sections[0]) : pathFallback(edge);
+    if (!path) continue;
     const edgeKind = edge.edgeKind ?? normalizeEdgeKind(edge.label);
     const displayLabel = edgeDisplayLabel(edge, edgeKind, isInterconnectionView);
+    const stroke = strokeColorForEdge(edgeKind, theme);
+    const strokeWidth = edgeKind === "hierarchy" ? 1.4 : isInterconnectionView ? 2 : 1.8;
     const pathSelection = group
       .append("path")
       .attr("class", `${isInterconnectionView ? "ibd-connector" : "general-connector"} viz-edge viz-edge--${edgeKind}`)
@@ -495,10 +508,10 @@ function drawEdges(
       .attr("data-source", edge.source)
       .attr("data-target", edge.target)
       .attr("data-type", String((edge.attributes?.relationType as string) || edgeKind || "relationship"))
-      .attr("fill", "none")
-      .attr("stroke", edgeColorForKind(edgeKind, theme))
-      .attr("stroke-width", edgeKind === "hierarchy" ? 1.4 : 1.8)
-      .attr("opacity", 0.85);
+      .style("fill", "none")
+      .style("stroke", stroke)
+      .style("stroke-width", strokeWidth)
+      .style("opacity", 0.9);
     applyEdgeMarker(pathSelection, edgeKind, isInterconnectionView, theme);
     if (shouldRenderEdgeLabel(edge, edgeKind, isInterconnectionView)) {
       const midpoint = edgeMidpoint(edge);
@@ -589,7 +602,16 @@ function drawNodes(
       const clickable = options.onNodeClick ? "is-clickable" : "";
       const selected = options.selectedNodeId && d.id === options.selectedNodeId ? "is-selected" : "";
       const legacyClass = isInterconnectionView ? "ibd-part" : "general-node";
-      return `${legacyClass} viz-node ${nodeAccentClass(d.kind)} ${clickable} ${selected}`.trim();
+      const attrs = (d.attributes ?? {}) as Record<string, unknown>;
+      const isLayoutContainer = Boolean(
+        attrs.isSyntheticContainer || attrs.isPackageContainer || attrs._isLayoutContainer,
+      );
+      const structureClass = resolveNodeChrome(d.kind || "part", {
+        ...(typeof attrs.isDefinition === "boolean" ? { isDefinition: attrs.isDefinition } : {}),
+        ...(typeof attrs.isReference === "boolean" ? { isReference: attrs.isReference } : {}),
+        isContainer: isLayoutContainer,
+      }).structureClass;
+      return `${legacyClass} viz-node ${structureClass} ${clickable} ${selected}`.trim();
     })
     .attr("transform", (d: LaidOutNode) => `translate(${d.x || 0},${d.y || 0})`)
     .attr("data-node-id", (d: LaidOutNode) => d.id)
@@ -604,8 +626,11 @@ function drawNodes(
       const group = d3.select(this);
       group.selectAll("*").remove();
       const compartments = d.compartments ?? collectCompartments(d);
-      const kind = d.kind.toLowerCase();
-      const isDefinition = kind.includes("def") || kind.includes("definition");
+      const attrs = (d.attributes ?? {}) as Record<string, unknown>;
+      const chrome = resolveNodeChrome(d.kind, {
+        ...(typeof attrs.isDefinition === "boolean" ? { isDefinition: attrs.isDefinition } : {}),
+        ...(typeof attrs.isReference === "boolean" ? { isReference: attrs.isReference } : {}),
+      });
       renderSysMLNode(group as any, compartments, {
         x: 0,
         y: 0,
@@ -613,8 +638,9 @@ function drawNodes(
         height: d.height || computeNodeHeight(compartments, { maxLinesPerCompartment: 8 }),
         nodeClass: "",
         dataElementName: d.label,
-        strokeColor: nodeColorForKind(d.kind, theme),
-        isDefinition,
+        strokeColor: strokeColorForNode(theme),
+        kind: d.kind,
+        chrome,
         selected: Boolean(options.selectedNodeId && d.id === options.selectedNodeId),
         config: { maxLinesPerCompartment: 8 },
         theme,
@@ -626,7 +652,11 @@ function drawNodes(
   groups.each(function (d: LaidOutNode) {
     const group = d3.select(this);
     group.selectAll("*").remove();
-    renderIbdNode(group as any, d, Boolean(options.selectedNodeId && d.id === options.selectedNodeId), theme);
+    try {
+      renderIbdNode(group as any, d, Boolean(options.selectedNodeId && d.id === options.selectedNodeId), theme);
+    } catch (error) {
+      console.error("[IBD] failed to render node", d.id, error);
+    }
   });
   return;
 
@@ -744,34 +774,34 @@ function applyEdgeMarker(
 ): void {
   if (isInterconnectionView) {
     if (edgeKind === "flow") {
-      path.attr("stroke", edgeColorForKind(edgeKind, theme)).attr("stroke-width", 2.5).style("marker-end", "url(#ibd-flow-arrow)");
+      path.attr("stroke", strokeColorForEdge(edgeKind, theme)).attr("stroke-width", 2.5).style("marker-end", "url(#ibd-flow-arrow)");
     } else if (edgeKind === "interface") {
-      path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("stroke-dasharray", "8,4").style("marker-end", "url(#ibd-interface-arrow)");
+      path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("stroke-dasharray", "8,4").style("marker-end", "url(#ibd-interface-arrow)");
     } else if (edgeKind === "bind" || edgeKind === "binding") {
-      path.attr("stroke", edgeColorForKind("bind", theme)).style("stroke-dasharray", "6,4").style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
+      path.attr("stroke", strokeColorForEdge("bind", theme)).style("stroke-dasharray", "6,4").style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
     } else if (edgeKind === "reference") {
-      path.attr("stroke", edgeColorForKind(edgeKind, theme)).attr("stroke-width", 1.6).style("stroke-dasharray", "4,4").style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
+      path.attr("stroke", strokeColorForEdge(edgeKind, theme)).attr("stroke-width", 1.6).style("stroke-dasharray", "4,4").style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
     } else if (edgeKind === "connection" || edgeKind === "relationship") {
-      path.attr("stroke", edgeColorForKind("connection", theme)).attr("stroke-width", 2).style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
+      path.attr("stroke", strokeColorForEdge("connection", theme)).attr("stroke-width", 2).style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
     } else {
       path.style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
     }
     return;
   }
   if (edgeKind === "specializes") {
-    path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("marker-end", "url(#general-d3-specializes)").style("stroke-width", "1.7px");
+    path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-specializes)").style("stroke-width", "1.7px");
   } else if (edgeKind === "typing") {
-    path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "5,3");
+    path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "5,3");
   } else if (edgeKind === "hierarchy") {
-    path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("marker-start", "url(#general-d3-diamond)").style("marker-end", "none");
+    path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-start", "url(#general-d3-diamond)").style("marker-end", "none");
   } else if (edgeKind === "bind") {
-    path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("stroke-dasharray", "2,2").style("marker-end", "none");
+    path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("stroke-dasharray", "2,2").style("marker-end", "none");
   } else if (edgeKind === "allocate") {
-    path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow)").style("stroke-dasharray", "8,4");
+    path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow)").style("stroke-dasharray", "8,4");
   } else if (edgeKind === "dependency") {
-    path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "4,4");
+    path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "4,4");
   } else if (edgeKind === "satisfy" || edgeKind === "verify") {
-    path.attr("stroke", edgeColorForKind(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "7,4");
+    path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "7,4");
   } else {
     path.style("marker-end", "url(#general-d3-arrow)");
   }
@@ -784,28 +814,37 @@ function renderIbdNode(
   theme: DiagramTheme,
 ): void {
   const attrs = (node.attributes ?? {}) as Record<string, unknown>;
+  const kind = (node.kind || "part").toLowerCase();
   const isContainer = Boolean(attrs.isSyntheticContainer) || Boolean(attrs.isPackageContainer) || Boolean(attrs._isLayoutContainer);
   const width = node.width ?? ibdNodeWidth;
   const height = node.height ?? ibdNodeHeight;
-  const kind = node.kind.toLowerCase();
-  const isDefinition = kind.includes("def");
+  const chrome = resolveNodeChrome(kind, {
+    ...(typeof attrs.isDefinition === "boolean" ? { isDefinition: attrs.isDefinition } : {}),
+    ...(typeof attrs.isReference === "boolean" ? { isReference: attrs.isReference } : {}),
+    isContainer,
+  });
   const stroke = selected ? theme.highlight : theme.nodeBorder;
-  const strokeWidth = selected ? 4 : isContainer ? 2 : isDefinition ? 2 : 3;
+  const strokeWidth = selected ? 4 : isContainer ? 2 : chrome.isDefinition ? 2 : 3;
   const headerHeight = isContainer ? 28 : attrs.partType ? 41 : 33;
   group.classed("ibd-container", isContainer);
+
+  const bodyDash =
+    chrome.isContainer && !attrs.isPackageContainer
+      ? "4,4"
+      : chrome.strokeDasharray ?? "none";
 
   group
     .append("rect")
     .attr("width", width)
     .attr("height", height)
-    .attr("rx", isDefinition ? 4 : 8)
+    .attr("rx", chrome.cornerRadius)
     .attr("class", "graph-node-background")
     .attr("data-original-stroke", theme.nodeBorder)
     .attr("data-original-width", `${strokeWidth}px`)
     .style("fill", theme.nodeFill)
     .style("stroke", stroke)
     .style("stroke-width", `${strokeWidth}px`)
-    .style("stroke-dasharray", isContainer && !attrs.isPackageContainer ? "4,4" : isDefinition ? "6,3" : "none");
+    .style("stroke-dasharray", bodyDash);
 
   group
     .append("rect")
@@ -828,7 +867,7 @@ function renderIbdNode(
     return;
   }
 
-  const stereo = kind.includes("part def") ? "part def" : kind.includes("part") ? "part" : node.kind.replace(/_/g, " ");
+  const stereo = kind.includes("part def") ? "part def" : kind.includes("part") ? "part" : (node.kind || "part").replace(/_/g, " ");
   group
     .append("text")
     .attr("x", width / 2)
@@ -904,7 +943,7 @@ function drawIbdPorts(
     const side = anchor?.side || (name.toLowerCase().startsWith("in") ? "WEST" : "EAST");
     const x = anchor?.x ?? (side === "WEST" ? 0 : width);
     const y = anchor?.y ?? (fallbackStartY + index * fallbackSpacing);
-    const color = theme.port.connection;
+    const color = theme.nodeBorder;
     group
       .append("rect")
       .attr("class", "port-icon")
@@ -1128,9 +1167,9 @@ function addMarkers(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, 
   defs.append("marker").attr("id", "general-d3-arrow-open").attr("viewBox", "0 -5 10 10").attr("refX", 9).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4").style("fill", "none").style("stroke", theme.edge.default).style("stroke-width", "1.3");
   defs.append("marker").attr("id", "general-d3-specializes").attr("viewBox", "0 -6 12 12").attr("refX", 11).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,0L10,-4L10,4Z").style("fill", theme.nodeFill).style("stroke", theme.edge.default).style("stroke-width", "1.2");
   defs.append("marker").attr("id", "general-d3-diamond").attr("viewBox", "0 -6 12 12").attr("refX", 2).attr("refY", 0).attr("markerWidth", 7).attr("markerHeight", 7).attr("orient", "auto").append("path").attr("d", "M0,0L5,-4L10,0L5,4Z").style("fill", theme.edge.default);
-  defs.append("marker").attr("id", "ibd-connection-dot").attr("viewBox", "-5 -5 10 10").attr("refX", 0).attr("refY", 0).attr("markerWidth", 5).attr("markerHeight", 5).attr("orient", "auto").append("circle").attr("r", 3).style("fill", theme.nodeFill).style("stroke", theme.edge.connection).style("stroke-width", "1.5");
-  defs.append("marker").attr("id", "ibd-flow-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4Z").style("fill", theme.edge.flow);
-  defs.append("marker").attr("id", "ibd-interface-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4Z").style("fill", "none").style("stroke", theme.edge.interface).style("stroke-width", "1.5");
+  defs.append("marker").attr("id", "ibd-connection-dot").attr("viewBox", "-5 -5 10 10").attr("refX", 0).attr("refY", 0).attr("markerWidth", 5).attr("markerHeight", 5).attr("orient", "auto").append("circle").attr("r", 3).style("fill", theme.nodeFill).style("stroke", theme.edge.default).style("stroke-width", "1.5");
+  defs.append("marker").attr("id", "ibd-flow-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4Z").style("fill", theme.edge.default);
+  defs.append("marker").attr("id", "ibd-interface-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4Z").style("fill", "none").style("stroke", theme.edge.default).style("stroke-width", "1.5");
 }
 
 function exportSvg(svgNode: SVGSVGElement, bounds: ContentBounds): string {

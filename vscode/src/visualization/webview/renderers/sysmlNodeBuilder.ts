@@ -5,6 +5,7 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { resolveNodeChrome } from '../../../../../shared/diagram-renderer/src/node-notation';
 import { DIAGRAM_STYLE } from '../styleTokens';
 
 declare const d3: any;
@@ -390,6 +391,7 @@ export function renderSysMLNode(
         height: number;
         config?: SysMLNodeConfig;
         isDefinition?: boolean;
+        isReference?: boolean;
         typeColor?: string;
         formatStereotype?: (type: string) => string;
         nodeClass?: string;
@@ -403,22 +405,20 @@ export function renderSysMLNode(
     // Coordinates are relative to the group origin (0,0) - node has transform translate(x,y)
     let contentY = 0;
 
+    const chrome = resolveNodeChrome(compartments.header.stereotype, {
+        isDefinition: options.isDefinition,
+        isReference: options.isReference
+    });
     const nodeG = parentGroup.append('g')
-        .attr('class', (options.nodeClass || 'sysml-node') + (options.isDefinition ? ' definition-node' : ' usage-node'))
+        .attr('class', (options.nodeClass || 'sysml-node') + chrome.nodeClassSuffix)
         .attr('transform', 'translate(' + options.x + ',' + options.y + ')')
         .attr('data-element-name', options.dataElementName || compartments.header.name)
         .style('cursor', 'pointer');
 
-    const strokeColor = options.typeColor || DIAGRAM_STYLE.edgePrimary;
-    const strokeW = options.isDefinition ? '3px' : '2px';
+    const strokeColor = options.typeColor || DIAGRAM_STYLE.nodeBorder;
+    const strokeW = chrome.isDefinition ? '3px' : '2px';
+    const cornerRadius = chrome.cornerRadius;
     const nodeCategory = classifyNodeCategory(compartments.header.stereotype);
-    const cornerRadius = nodeCategory === 'requirements'
-        ? 16
-        : nodeCategory === 'behavior'
-            ? 12
-            : options.isDefinition
-                ? 4
-                : 8;
     const bodyFill = DIAGRAM_STYLE.nodeFill;
     const headerFill = DIAGRAM_STYLE.panelBackground;
     const dividerColor = DIAGRAM_STYLE.nodeBorder;
@@ -441,7 +441,7 @@ export function renderSysMLNode(
         .style('fill', bodyFill)
         .style('stroke', strokeColor)
         .style('stroke-width', strokeW)
-        .style('stroke-dasharray', options.isDefinition ? '6,3' : 'none');
+        .style('stroke-dasharray', chrome.strokeDasharray ?? 'none');
 
     // ---- Header compartment (Name Compartment per SysML v2) ----
     if (cfg.showHeader) {

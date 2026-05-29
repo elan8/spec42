@@ -1,3 +1,5 @@
+export type DiagramColorScheme = "vscode" | "light" | "dark" | "auto";
+
 export interface DiagramTheme {
   canvasBackground: string;
   panelBackground: string;
@@ -7,120 +9,120 @@ export interface DiagramTheme {
   textSecondary: string;
   divider: string;
   highlight: string;
-  node: Record<string, string>;
-  edge: Record<string, string>;
-  port: Record<string, string>;
+  edge: {
+    default: string;
+  };
   frame: {
     stroke: string;
     text: string;
   };
+  colorScheme: DiagramColorScheme;
 }
 
-export type DiagramThemeOverrides = Partial<Omit<DiagramTheme, "node" | "edge" | "port" | "frame">> & {
-  node?: Partial<DiagramTheme["node"]>;
+export type DiagramThemeOverrides = Partial<Omit<DiagramTheme, "edge" | "frame">> & {
   edge?: Partial<DiagramTheme["edge"]>;
-  port?: Partial<DiagramTheme["port"]>;
   frame?: Partial<DiagramTheme["frame"]>;
+  colorScheme?: DiagramColorScheme;
 };
 
-export const DEFAULT_DIAGRAM_THEME: DiagramTheme = {
+const NOTATION_THEME_LIGHT: Omit<DiagramTheme, "colorScheme"> = {
+  canvasBackground: "#ffffff",
+  panelBackground: "#f3f4f6",
+  nodeFill: "#ffffff",
+  nodeBorder: "#374151",
+  textPrimary: "#111827",
+  textSecondary: "#6b7280",
+  divider: "#d1d5db",
+  highlight: "#d97706",
+  edge: { default: "#374151" },
+  frame: { stroke: "#9ca3af", text: "#374151" },
+};
+
+const NOTATION_THEME_DARK: Omit<DiagramTheme, "colorScheme"> = {
+  canvasBackground: "#1e1e1e",
+  panelBackground: "#2d2d2d",
+  nodeFill: "#1e1e1e",
+  nodeBorder: "#d4d4d4",
+  textPrimary: "#e5e5e5",
+  textSecondary: "#a3a3a3",
+  divider: "#525252",
+  highlight: "#fbbf24",
+  edge: { default: "#d4d4d4" },
+  frame: { stroke: "#737373", text: "#e5e5e5" },
+};
+
+const NOTATION_THEME_VSCODE: Omit<DiagramTheme, "colorScheme"> = {
   canvasBackground: "var(--vscode-editor-background, transparent)",
   panelBackground: "var(--vscode-button-secondaryBackground)",
   nodeFill: "var(--vscode-editor-background)",
-  nodeBorder: "#E5E7EB",
+  nodeBorder: "var(--vscode-editor-foreground)",
   textPrimary: "var(--vscode-editor-foreground)",
   textSecondary: "var(--vscode-descriptionForeground)",
   divider: "var(--vscode-panel-border)",
-  highlight: "#FFD700",
-  node: {
-    default: "var(--vscode-panel-border, #E5E7EB)",
-    package: "#6B7280",
-    part: "#2D8A6E",
-    port: "#0E7C7B",
-    attribute: "#4A9B7F",
-    item: "#5A9B6E",
-    interface: "#7BAA7D",
-    action: "#D4A02C",
-    state: "#B85C38",
-    requirement: "#5B8FC4",
-    useCase: "#6B9BD1",
-    allocation: "#9CA3AF",
-    constraint: "#E07C5A",
-    enumeration: "#C9A227",
-    metadata: "#8B7355",
-    occurrence: "#5A9B6E",
-    analysis: "#D4A02C",
-    verification: "#C9A227",
-  },
-  edge: {
-    default: "var(--vscode-editor-foreground, #d0d0d0)",
-    relationship: "var(--vscode-editor-foreground, #d0d0d0)",
-    specializes: "var(--vscode-editor-foreground, #d0d0d0)",
-    typing: "var(--vscode-editor-foreground, #d0d0d0)",
-    hierarchy: "var(--vscode-editor-foreground, #d0d0d0)",
-    dependency: "var(--vscode-editor-foreground, #d0d0d0)",
-    allocate: "#9CA3AF",
-    satisfy: "#5B8FC4",
-    verify: "#C9A227",
-    bind: "#2F6FDD",
-    connection: "#2F6FDD",
-    flow: "var(--vscode-charts-green, #2f8f46)",
-    interface: "var(--vscode-charts-purple, #8b5cf6)",
-    reference: "#2F6FDD",
-    transition: "var(--vscode-editor-foreground, #d0d0d0)",
-  },
-  port: {
-    default: "#2F6FDD",
-    connection: "#2F6FDD",
-  },
+  highlight: "var(--vscode-focusBorder, #d97706)",
+  edge: { default: "var(--vscode-editor-foreground)" },
   frame: {
-    stroke: "#E5E7EB",
+    stroke: "var(--vscode-panel-border)",
     text: "var(--vscode-editor-foreground)",
   },
 };
 
-export function resolveDiagramTheme(overrides?: DiagramThemeOverrides): DiagramTheme {
+/** @deprecated Use resolveDiagramTheme() — kept for test imports during migration. */
+export const DEFAULT_DIAGRAM_THEME: DiagramTheme = {
+  ...NOTATION_THEME_LIGHT,
+  colorScheme: "light",
+};
+
+export function detectColorScheme(host?: HTMLElement | null): DiagramColorScheme {
+  if (typeof host !== "undefined" && host !== null) {
+    const svg = host.closest?.(".sysml-viz-svg");
+    const scheme = svg?.getAttribute("data-color-scheme");
+    if (scheme === "light" || scheme === "dark") {
+      return scheme;
+    }
+  }
+  if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  return "light";
+}
+
+function baseThemeForScheme(scheme: DiagramColorScheme): Omit<DiagramTheme, "colorScheme"> {
+  if (scheme === "vscode") {
+    return NOTATION_THEME_VSCODE;
+  }
+  const resolved = scheme === "auto" ? detectColorScheme() : scheme;
+  return resolved === "dark" ? NOTATION_THEME_DARK : NOTATION_THEME_LIGHT;
+}
+
+export function resolveDiagramTheme(options?: DiagramThemeOverrides): DiagramTheme {
+  const colorScheme = options?.colorScheme ?? "vscode";
+  const base = baseThemeForScheme(colorScheme);
   return {
-    ...DEFAULT_DIAGRAM_THEME,
-    ...(overrides ?? {}),
-    node: { ...DEFAULT_DIAGRAM_THEME.node, ...(overrides?.node ?? {}) },
-    edge: { ...DEFAULT_DIAGRAM_THEME.edge, ...(overrides?.edge ?? {}) },
-    port: { ...DEFAULT_DIAGRAM_THEME.port, ...(overrides?.port ?? {}) },
-    frame: { ...DEFAULT_DIAGRAM_THEME.frame, ...(overrides?.frame ?? {}) },
+    ...base,
+    ...(options ?? {}),
+    colorScheme,
+    edge: { ...base.edge, ...(options?.edge ?? {}) },
+    frame: { ...base.frame, ...(options?.frame ?? {}) },
   };
 }
 
-export function nodeColorForKind(kind: string, theme: DiagramTheme): string {
-  const normalized = normalizeKind(kind);
-  if (normalized.includes("package")) return theme.node.package;
-  if (normalized.includes("requirement") || normalized === "req") return theme.node.requirement;
-  if (normalized.includes("use_case") || normalized.includes("usecase")) return theme.node.useCase;
-  if (normalized.includes("verification")) return theme.node.verification;
-  if (normalized.includes("analysis")) return theme.node.analysis;
-  if (normalized.includes("allocation") || normalized.includes("allocate")) return theme.node.allocation;
-  if (normalized.includes("constraint")) return theme.node.constraint;
-  if (normalized.includes("enumeration") || normalized.includes("enum")) return theme.node.enumeration;
-  if (normalized.includes("metadata")) return theme.node.metadata;
-  if (normalized.includes("occurrence")) return theme.node.occurrence;
-  if (normalized.includes("interface")) return theme.node.interface;
-  if (normalized.includes("state")) return theme.node.state;
-  if (normalized.includes("action") || normalized.includes("calc")) return theme.node.action;
-  if (normalized.includes("item")) return theme.node.item;
-  if (normalized.includes("attribute")) return theme.node.attribute;
-  if (normalized.includes("port")) return theme.node.port;
-  if (normalized.includes("part")) return theme.node.part;
-  return theme.node.default;
+/** Notation-neutral: all nodes share the same ink color. */
+export function strokeColorForNode(theme: DiagramTheme): string {
+  return theme.nodeBorder;
 }
 
+/** Notation-neutral: all edges share the same ink color; markers and dashes convey kind. */
+export function strokeColorForEdge(_kind: string, theme: DiagramTheme): string {
+  return theme.edge.default;
+}
+
+/** @deprecated Use strokeColorForNode(theme) */
+export function nodeColorForKind(_kind: string, theme: DiagramTheme): string {
+  return strokeColorForNode(theme);
+}
+
+/** @deprecated Use strokeColorForEdge(kind, theme) */
 export function edgeColorForKind(kind: string, theme: DiagramTheme): string {
-  const normalized = normalizeKind(kind);
-  return theme.edge[normalized] ?? theme.edge.default;
-}
-
-function normalizeKind(kind: string): string {
-  return String(kind || "")
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
+  return strokeColorForEdge(kind, theme);
 }

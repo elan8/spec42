@@ -33,8 +33,24 @@ describe("shared prepareViewData", () => {
     });
     expect(prepared.nodes.map((n) => n.id)).toEqual(["a", "b"]);
     expect(prepared.nodes.find((n) => n.id === "a")?.attributes?.isDefinition).toBe(true);
+    expect(prepared.nodes.find((n) => n.id === "a")?.attributes?.isReference).toBe(false);
     expect(prepared.edges).toHaveLength(1);
     expect(prepared.edges[0].edgeKind).toBe("typing");
+  });
+
+  it("marks reference usages on prepared nodes", () => {
+    const prepared = prepareViewData({
+      view: "general-view",
+      graph: {
+        nodes: [
+          { id: "def", name: "HitchBall", type: "part def" },
+          { id: "ref", name: "hitchBall", type: "ref" },
+        ],
+        edges: [],
+      },
+    });
+    expect(prepared.nodes.find((n) => n.id === "ref")?.attributes?.isReference).toBe(true);
+    expect(prepared.nodes.find((n) => n.id === "ref")?.attributes?.isDefinition).toBe(false);
   });
 
   it("omits library package nodes from general graphs", () => {

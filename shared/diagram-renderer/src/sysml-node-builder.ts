@@ -1,3 +1,5 @@
+import type { NodeChrome } from "./node-notation";
+import { resolveNodeChrome } from "./node-notation";
 import type { DiagramTheme } from "./theme";
 
 export interface SysMLNodeDetailItem {
@@ -218,7 +220,10 @@ export function renderSysMLNode(
     nodeClass: string;
     dataElementName: string;
     strokeColor: string;
-    isDefinition: boolean;
+    kind?: string;
+    isDefinition?: boolean;
+    isReference?: boolean;
+    chrome?: NodeChrome;
     selected: boolean;
     config?: SysMLNodeConfig;
     theme?: DiagramTheme;
@@ -232,33 +237,44 @@ export function renderSysMLNode(
   const textSecondary = theme?.textSecondary ?? "var(--vscode-descriptionForeground)";
   const divider = theme?.divider ?? "var(--vscode-panel-border)";
   const highlight = theme?.highlight ?? "#FFD700";
+  const chrome =
+    options.chrome ??
+    resolveNodeChrome(options.kind ?? "", {
+      isDefinition: options.isDefinition,
+      isReference: options.isReference,
+    });
   const node = parent
     .append("g")
-    .attr("class", `${options.nodeClass}${options.isDefinition ? " definition-node" : " usage-node"}${options.selected ? " is-selected" : ""}`)
+    .attr(
+      "class",
+      `${options.nodeClass}${chrome.nodeClassSuffix}${options.selected ? " is-selected" : ""}`,
+    )
     .attr("transform", `translate(${options.x},${options.y})`)
     .attr("data-element-name", options.dataElementName);
-  const strokeWidth = options.selected ? "4px" : options.isDefinition ? "3px" : "2px";
+  const strokeWidth = options.selected ? "4px" : chrome.isDefinition ? "3px" : "2px";
+  const dashStyle = chrome.strokeDasharray ?? "none";
 
   node
     .append("rect")
     .attr("width", options.width)
     .attr("height", options.height)
-    .attr("rx", options.isDefinition ? 4 : 8)
+    .attr("rx", chrome.cornerRadius)
     .attr("class", "graph-node-background sysml-node-bg")
     .attr("data-original-stroke", options.strokeColor)
     .attr("data-original-width", strokeWidth)
     .style("fill", nodeFill)
     .style("stroke", options.selected ? highlight : options.strokeColor)
     .style("stroke-width", strokeWidth)
-    .style("stroke-dasharray", options.isDefinition ? "6,3" : "none");
+    .style("stroke-dasharray", dashStyle);
 
   const headerHeight = HEADER_COMPARTMENT_HEIGHT + (compartments.typedByName ? TYPED_BY_HEIGHT : 0);
+  const headerRx = chrome.isDefinition ? 0 : Math.max(2, chrome.cornerRadius - 2);
   node
     .append("rect")
     .attr("y", 0)
     .attr("width", options.width)
     .attr("height", headerHeight)
-    .attr("rx", Math.max(2, options.isDefinition ? 2 : 6))
+    .attr("rx", headerRx)
     .attr("class", "sysml-header-compartment")
     .style("fill", panelBackground);
 
