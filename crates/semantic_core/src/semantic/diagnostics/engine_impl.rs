@@ -16,7 +16,7 @@ use crate::semantic::diagnostics::checks::import_resolution::{
 use crate::semantic::diagnostics::helpers::*;
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::{
-    resolve_member_via_type, NodeId, RelationshipKind, ResolveResult, SemanticDiagnostic,
+    resolve_member_via_type, RelationshipKind, ResolveResult, SemanticDiagnostic,
     SemanticGraph,
 };
 
@@ -198,23 +198,28 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         diagnostics.len().saturating_sub(d2),
     ));
 
-    // 3) Duplicate connections (same pair of endpoints connected more than once)
+    // 3) Duplicate connections (same textual connect endpoints repeated)
     let t3 = Instant::now();
     let d3 = diagnostics.len();
-    let mut seen_pairs: HashSet<(NodeId, NodeId)> = HashSet::new();
-    for (src_id, tgt_id) in graph.connection_edge_node_pairs_for_uri(uri) {
-        let pair = normalize_edge_pair(&src_id, &tgt_id);
-        if !seen_pairs.insert(pair) {
-            if let Some(tgt) = graph.get_node(&tgt_id) {
-                diagnostics.push(diag(
-                    uri,
-                    diagnostic_range(graph, tgt, None),
-                    DiagnosticSeverity::Information,
-                    "semantic",
-                    "duplicate_connection",
-                    "Duplicate connection between the same two endpoints.".to_string(),
-                ));
-            }
+    let mut seen_connections: HashSet<String> = HashSet::new();
+    for (src_id, tgt_id, connection_range, source_endpoint, target_endpoint, _) in
+        graph.connection_edge_occurrence_details_for_uri(uri)
+    {
+        let key = connection_duplicate_key(
+            source_endpoint.as_deref(),
+            target_endpoint.as_deref(),
+            &src_id,
+            &tgt_id,
+        );
+        if !seen_connections.insert(key) {
+            diagnostics.push(diag(
+                uri,
+                connection_range,
+                DiagnosticSeverity::Information,
+                "semantic",
+                "duplicate_connection",
+                "Duplicate connection between the same two endpoints.".to_string(),
+            ));
         }
     }
     section_timings.push((

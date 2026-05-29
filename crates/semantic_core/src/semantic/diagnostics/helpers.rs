@@ -130,6 +130,27 @@ pub(super) fn normalize_edge_pair(a: &NodeId, b: &NodeId) -> (NodeId, NodeId) {
     }
 }
 
+/// Key for duplicate-connection detection. Prefer textual connect endpoints so
+/// distinct usage paths (e.g. `propulsionUnit1.cmd` vs `propulsionUnit2.cmd`) are
+/// not collapsed to the same typed port feature on a part def.
+pub(super) fn connection_duplicate_key(
+    source_endpoint: Option<&str>,
+    target_endpoint: Option<&str>,
+    source_id: &NodeId,
+    target_id: &NodeId,
+) -> String {
+    if let (Some(source), Some(target)) = (source_endpoint, target_endpoint) {
+        let mut endpoints = [
+            source.replace('.', "::"),
+            target.replace('.', "::"),
+        ];
+        endpoints.sort();
+        return format!("expr:{}|{}", endpoints[0], endpoints[1]);
+    }
+    let (left, right) = normalize_edge_pair(source_id, target_id);
+    format!("node:{}|{}", left.qualified_name, right.qualified_name)
+}
+
 pub(super) fn port_compatibility_mismatch(
     graph: &SemanticGraph,
     src: &SemanticNode,
@@ -424,6 +445,50 @@ Add a `return ref` clause to the analysis def before this objective \
             "Objective '{objective_name}' could not be bound (expected binding: {other}). \
 Check the case definition body: required clauses must appear before the objective."
         ),
+    }
+}
+
+#[cfg(test)]
+mod connection_duplicate_key_tests {
+    use url::Url;
+
+    use crate::semantic::model::NodeId;
+
+    use super::connection_duplicate_key;
+
+    fn node(qn: &str) -> NodeId {
+        NodeId::new(
+            &Url::parse("file:///test.sysml").expect("url"),
+            qn,
+        )
+    }
+
+    #[test]
+    fn connection_duplicate_key_distinguishes_usage_scoped_endpoints() {
+        let motor = node("Pkg.drone.propulsion.propulsionUnit1.cmd");
+        let shared = node("Pkg.PropulsionUnit.cmd");
+        let key_one = connection_duplicate_key(
+            Some("propulsion.propulsionUnit1.cmd"),
+            Some("flightControl.flightController.motorCmd"),
+            &motor,
+            &shared,
+        );
+        let key_two = connection_duplicate_key(
+            Some("propulsion.propulsionUnit2.cmd"),
+            Some("flightControl.flightController.motorCmd"),
+            &motor,
+            &shared,
+        );
+        assert_ne!(key_one, key_two);
+    }
+
+    #[test]
+    fn connection_duplicate_key_flags_repeated_textual_endpoints() {
+        let left = node("Pkg.a");
+        let right = node("Pkg.b");
+        let key = connection_duplicate_key(Some("a.out"), Some("b.in"), &left, &right);
+        let repeated = connection_duplicate_key(Some("a.out"), Some("b.in"), &left, &right);
+        assert_eq!(key, repeated);
     }
 }
 
