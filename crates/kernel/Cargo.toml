@@ -14,6 +14,7 @@ default = []
 
 [dependencies]
 semantic_core = { path = "../semantic_core" }
+sysml_semantic_tokens = { path = "../sysml_semantic_tokens" }
 sysml-v2-parser = { workspace = true }
 petgraph = { workspace = true }
 tower-lsp = "0.20"

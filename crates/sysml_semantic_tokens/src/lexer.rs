@@ -1,10 +1,7 @@
 //! Lexer-based tokenization for semantic highlighting fallback (when parse fails).
 
-use super::types::*;
-
-fn is_keyword(w: &str) -> bool {
-    crate::language::is_reserved_keyword(w)
-}
+use crate::keywords::is_reserved_keyword;
+use crate::types::*;
 
 /// Token: (line, start_char, length, type_index).
 /// Returns (tokens, still_inside_block_comment).
@@ -23,7 +20,6 @@ pub fn tokenize_line(
     let mut expect_package_name = false;
 
     while i < n {
-        // If we're inside a block comment (from a previous line), look for */ or treat rest of line as comment (once per line)
         if !already_continued_block && (in_block_comment || still_in_block_comment) {
             already_continued_block = true;
             let start = i;
@@ -43,13 +39,11 @@ pub fn tokenize_line(
             continue;
         }
 
-        // Skip whitespace
         if chars[i].is_whitespace() {
             i += 1;
             continue;
         }
 
-        // Line comment (not block)
         if i + 1 < n
             && chars[i] == '/'
             && chars[i + 1] == '/'
@@ -64,7 +58,6 @@ pub fn tokenize_line(
             continue;
         }
 
-        // Block comment /* ... */ or //* ... */
         if chars[i] == '/' && i + 1 < n {
             if chars[i + 1] == '*' {
                 let start = i;
@@ -106,7 +99,6 @@ pub fn tokenize_line(
             }
         }
 
-        // Single-quoted string
         if chars[i] == '\'' {
             let start = i;
             i += 1;
@@ -124,7 +116,6 @@ pub fn tokenize_line(
             continue;
         }
 
-        // Double-quoted string
         if chars[i] == '"' {
             let start = i;
             i += 1;
@@ -142,7 +133,6 @@ pub fn tokenize_line(
             continue;
         }
 
-        // Metadata @name
         if chars[i] == '@' {
             let start = i;
             i += 1;
@@ -162,12 +152,11 @@ pub fn tokenize_line(
             continue;
         }
 
-        // Operators :> :>> :: .. ->
         if chars[i] == ':' && i + 1 < n && chars[i + 1] == '>' {
             let start = i;
             i += 2;
             if i < n && chars[i] == '>' {
-                i += 1; // :>>
+                i += 1;
             }
             last_was_colon = false;
             tokens.push((line_index, start as u32, (i - start) as u32, TYPE_OPERATOR));
@@ -192,7 +181,6 @@ pub fn tokenize_line(
             continue;
         }
 
-        // Numbers: integer or float
         if chars[i].is_ascii_digit()
             || (chars[i] == '-' && i + 1 < n && chars[i + 1].is_ascii_digit())
         {
@@ -223,7 +211,6 @@ pub fn tokenize_line(
             continue;
         }
 
-        // Identifier or keyword: letters/numbers/underscore/hyphen (word boundary)
         if chars[i].is_alphabetic() || chars[i] == '_' {
             let start = i;
             while i < n && (chars[i].is_alphanumeric() || chars[i] == '_' || chars[i] == '-') {
@@ -231,7 +218,7 @@ pub fn tokenize_line(
             }
             let word: String = chars[start..i].iter().collect();
             let len = (i - start) as u32;
-            let token_type = if is_keyword(&word) {
+            let token_type = if is_reserved_keyword(&word) {
                 last_was_colon = false;
                 if word == "package" {
                     expect_package_name = true;
@@ -250,7 +237,6 @@ pub fn tokenize_line(
             continue;
         }
 
-        // Single-char operator or other: skip one char so we don't loop forever
         if chars[i] == ';'
             || chars[i] == ','
             || chars[i] == '('

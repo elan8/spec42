@@ -1,0 +1,15 @@
+[package]
+name = "sysml_semantic_tokens"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "SysML v2 semantic tokenization for editor highlighting (WASM and LSP neutral)"
+
+[dependencies]
+serde = { workspace = true, optional = true }
+sysml-v2-parser.workspace = true
+
+[features]
+default = []
+serde = ["dep:serde"]

@@ -6,6 +6,7 @@ members = [
   "crates/software-architecture",
   "crates/server",
   "crates/semantic_core",
+  "crates/sysml_semantic_tokens",
 ]
 
 [workspace.package]

@@ -796,6 +796,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sysml-v2-parser",
+ "sysml_semantic_tokens",
  "tempfile",
  "thiserror 2.0.18",
  "tokio",
@@ -1476,6 +1477,14 @@ dependencies = [
  "log",
  "nom",
  "nom_locate",
+]
+
+[[package]]
+name = "sysml_semantic_tokens"
+version = "0.24.0"
+dependencies = [
+ "serde",
+ "sysml-v2-parser",
 ]
 
 [[package]]
