@@ -632,6 +632,10 @@ pub(super) fn build_from_package_body_element(
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, &name, "requirement def");
             let range = span_to_range(&rd_node.span);
+            let mut attrs = HashMap::new();
+            if let Some(ref s) = rd_node.specializes {
+                attrs.insert("specializes".to_string(), serde_json::json!(s));
+            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -639,7 +643,7 @@ pub(super) fn build_from_package_body_element(
                 "requirement def",
                 name.clone(),
                 range,
-                HashMap::new(),
+                attrs,
                 parent_id,
             );
             let node_id = NodeId::new(uri, &qualified);
@@ -651,6 +655,9 @@ pub(super) fn build_from_package_body_element(
                 &node_id,
                 &rd_node.body,
             );
+            if let Some(ref s) = rd_node.specializes {
+                add_specializes_edge_if_exists(g, uri, &qualified, s, container_prefix);
+            }
         }
         PBE::RequirementUsage(ru_node) => {
             let name = &ru_node.name;

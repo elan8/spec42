@@ -367,4 +367,77 @@ mod tests {
             ResolveResult::Resolved(base_mass.id.clone())
         );
     }
+
+    #[test]
+    fn requirement_usage_inherited_status_resolves() {
+        let doc = SysmlDocument::from_memory_path(
+            "workspace",
+            "req_status.sysml",
+            r#"package Demo {
+  enum def RequirementStatusKind {
+    enum approved;
+  }
+  requirement def ManagedRequirement {
+    attribute status : RequirementStatusKind;
+  }
+  requirement def UserRequirement :> ManagedRequirement;
+  requirement def Need :> UserRequirement;
+  requirement need : Need {
+    attribute status = "approved";
+  }
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("workspace doc");
+        let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+        let uri = Url::parse("memory://workspace/req_status.sysml").expect("uri");
+        let need = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "requirement" && node.name == "need")
+            .expect("need usage");
+        let need_def = graph
+            .outgoing_typing_or_specializes_targets(need)
+            .into_iter()
+            .find(|node| node.name == "Need")
+            .expect("Need def typing");
+        let need_def_bases: Vec<_> = graph
+            .outgoing_typing_or_specializes_targets(need_def)
+            .iter()
+            .map(|node| node.name.clone())
+            .collect();
+        assert!(
+            need_def_bases.iter().any(|name| name == "UserRequirement"),
+            "Need def should specialize UserRequirement, got {need_def_bases:?}"
+        );
+        let managed = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.name == "ManagedRequirement")
+            .expect("ManagedRequirement def");
+        let managed_status = graph
+            .child_named(&managed.id, "status")
+            .into_iter()
+            .next()
+            .expect("ManagedRequirement status");
+        assert_eq!(managed_status.element_kind, "attribute def");
+        let status_attr = graph
+            .child_named(&need.id, "status")
+            .into_iter()
+            .next()
+            .expect("status attribute");
+        assert!(
+            status_attr.attributes.contains_key("value"),
+            "status attribute should carry value, attrs={:?}",
+            status_attr.attributes
+        );
+        let inherited = resolve_inherited_member_via_type(&graph, need, "status");
+        assert!(
+            matches!(inherited, ResolveResult::Resolved(_)),
+            "expected inherited status, got {inherited:?}"
+        );
+    }
 }

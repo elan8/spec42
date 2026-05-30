@@ -318,6 +318,20 @@ pub(super) fn is_builtin_type_ref(type_ref: &str) -> bool {
     matches!(type_ref, "String")
 }
 
+pub(super) fn attribute_value_is_string_literal(value: &str) -> bool {
+    let trimmed = value.trim();
+    trimmed.starts_with('"') && trimmed.ends_with('"') && trimmed.len() >= 2
+}
+
+pub(super) fn resolves_to_enum_def(
+    graph: &crate::SemanticGraph,
+    context_node: &crate::SemanticNode,
+    type_ref: &str,
+) -> bool {
+    use crate::resolve_type_reference_targets;
+    !resolve_type_reference_targets(graph, context_node, type_ref, &["enum def"]).is_empty()
+}
+
 pub(super) fn unresolved_type_diagnostic_range(node: &SemanticNode) -> Option<TextRange> {
     if !is_unknown_range(node.range) {
         return Some(node.range);

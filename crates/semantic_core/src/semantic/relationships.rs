@@ -36,7 +36,7 @@ const TYPING_TARGET_KINDS: &[&str] = &[
     "kermlDecl",
 ];
 
-const SPECIALIZES_TARGET_KINDS: &[&str] = &["part def"];
+const SPECIALIZES_TARGET_KINDS: &[&str] = &["part def", "requirement def"];
 pub const TYPE_REFERENCE_ATTR_KEYS: &[&str] = &[
     "partType",
     "attributeType",
@@ -346,7 +346,7 @@ pub fn add_typing_edge_if_exists(
 /// Adds a specializes edge if source exists and target can be resolved. Same resolution as typing:
 /// specializes target may be unqualified (e.g. "SurveillanceQuadrotorDrone") while the node
 /// has qualified name (e.g. "SurveillanceDrone::SurveillanceQuadrotorDrone").
-/// Only matches PartDef targets to avoid matching a package.
+/// Only matches definition targets (part def, requirement def, …) to avoid matching a package.
 pub fn add_specializes_edge_if_exists(
     g: &mut SemanticGraph,
     uri: &Url,

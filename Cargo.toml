@@ -23,4 +23,4 @@ clap = { version = "4", features = ["derive"] }
 rmcp = { version = "0.9", features = ["server"] }
 schemars = { version = "1.1", features = ["derive"] }
 petgraph = "0.8"
-sysml-v2-parser = { git = "https://github.com/elan8/sysml-v2-parser", tag = "v0.12.0" }
+sysml-v2-parser = { path = "../sysml-v2-parser" }

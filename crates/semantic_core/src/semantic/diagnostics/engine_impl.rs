@@ -557,6 +557,66 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         diagnostics.len().saturating_sub(d9),
     ));
 
+    // 9b) Inherited attribute values must match declared enum types (not string literals).
+    let t9b = Instant::now();
+    let d9b = diagnostics.len();
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "attribute" {
+            continue;
+        }
+        let Some(value) = node.attributes.get("value").and_then(|v| v.as_str()) else {
+            continue;
+        };
+        if !attribute_value_is_string_literal(value) {
+            continue;
+        }
+        let Some(owner_id) = node.parent_id.as_ref() else {
+            continue;
+        };
+        let Some(owner) = graph.get_node(owner_id) else {
+            continue;
+        };
+        let feature_name = node.name.trim();
+        if feature_name.is_empty() {
+            continue;
+        }
+        let ResolveResult::Resolved(target_id) =
+            resolve_inherited_member_via_type(graph, owner, feature_name)
+        else {
+            continue;
+        };
+        let Some(target) = graph.get_node(&target_id) else {
+            continue;
+        };
+        let Some(type_ref) = declared_type_ref(target) else {
+            continue;
+        };
+        if is_builtin_type_ref(type_ref) {
+            continue;
+        }
+        if !resolves_to_enum_def(graph, target, type_ref) {
+            continue;
+        }
+        diagnostics.push(diag(
+            uri,
+            diagnostic_range(graph, node, Some(target)),
+            DiagnosticSeverity::Error,
+            "semantic",
+            "inherited_attribute_value_type_mismatch",
+            format!(
+                "Feature '{}' is typed as enum '{}' but was assigned string literal {}; use an enumeration value (for example {type_ref}::approved).",
+                feature_name,
+                normalize_declared_type_ref(type_ref),
+                value.trim()
+            ),
+        ));
+    }
+    section_timings.push((
+        "9b_inherited_attribute_value_type_mismatch".to_string(),
+        t9b.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d9b),
+    ));
+
     // 10) Allocation usage conformance checks.
     let t10 = Instant::now();
     let d10 = diagnostics.len();
