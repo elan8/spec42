@@ -36,7 +36,38 @@ const TYPING_TARGET_KINDS: &[&str] = &[
     "kermlDecl",
 ];
 
-const SPECIALIZES_TARGET_KINDS: &[&str] = &["part def", "requirement def"];
+/// Definitional kinds that may appear as the target of `:>` / `specializes` on definitions.
+/// Aligns with typing/RULE7 definitional kinds plus definition-only element kinds from the graph builder.
+const SPECIALIZES_TARGET_KINDS: &[&str] = &[
+    "part def",
+    "port def",
+    "interface",
+    "item def",
+    "attribute def",
+    "action def",
+    "actor def",
+    "occurrence def",
+    "flow def",
+    "allocation def",
+    "state def",
+    "requirement def",
+    "use case def",
+    "concern def",
+    "enum def",
+    "alias",
+    "kermlDecl",
+    "individual def",
+    "connection def",
+    "metadata def",
+    "constraint def",
+    "calc def",
+    "case def",
+    "analysis def",
+    "verification def",
+    "view def",
+    "viewpoint def",
+    "rendering def",
+];
 pub const TYPE_REFERENCE_ATTR_KEYS: &[&str] = &[
     "partType",
     "attributeType",

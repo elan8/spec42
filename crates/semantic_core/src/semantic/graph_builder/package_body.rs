@@ -38,6 +38,27 @@ fn compact_whitespace(text: &str) -> String {
     text.split_whitespace().collect::<Vec<_>>().join(" ")
 }
 
+fn insert_def_specialization_attr(
+    attrs: &mut HashMap<String, serde_json::Value>,
+    specializes: Option<&str>,
+) {
+    if let Some(s) = specializes {
+        attrs.insert("specializes".to_string(), serde_json::json!(s));
+    }
+}
+
+fn wire_def_specialization_edge(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    qualified: &str,
+    container_prefix: Option<&str>,
+    specializes: Option<&str>,
+) {
+    if let Some(s) = specializes {
+        add_specializes_edge_if_exists(g, uri, qualified, s, container_prefix);
+    }
+}
+
 fn expression_text_from_span(uri: &Url, span: &sysml_v2_parser::Span, fallback: &str) -> String {
     let Some(path) = uri.to_file_path().ok() else {
         return fallback.to_string();
@@ -178,9 +199,7 @@ pub(super) fn build_from_package_body_element(
                     }),
                 );
             }
-            if let Some(ref s) = pd_node.specializes {
-                attrs.insert("specializes".to_string(), serde_json::json!(s));
-            }
+            insert_def_specialization_attr(&mut attrs, pd_node.specializes.as_deref());
             add_node_and_recurse(
                 g,
                 uri,
@@ -204,9 +223,13 @@ pub(super) fn build_from_package_body_element(
                     );
                 }
             }
-            if let Some(ref s) = pd_node.specializes {
-                add_specializes_edge_if_exists(g, uri, &qualified, s, container_prefix);
-            }
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                pd_node.specializes.as_deref(),
+            );
         }
         PBE::PartUsage(pu_node) => {
             let name = &pu_node.name;
@@ -306,9 +329,7 @@ pub(super) fn build_from_package_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "port def");
             let range = span_to_range(&pd_node.span);
             let mut attrs = HashMap::new();
-            if let Some(ref s) = pd_node.specializes {
-                attrs.insert("specializes".to_string(), serde_json::json!(s));
-            }
+            insert_def_specialization_attr(&mut attrs, pd_node.specializes.as_deref());
             add_node_and_recurse(
                 g,
                 uri,
@@ -331,14 +352,20 @@ pub(super) fn build_from_package_body_element(
                     );
                 }
             }
-            if let Some(ref s) = pd_node.specializes {
-                add_specializes_edge_if_exists(g, uri, &qualified, s, container_prefix);
-            }
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                pd_node.specializes.as_deref(),
+            );
         }
         PBE::InterfaceDef(id_node) => {
             let name = identification_name(&id_node.identification);
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "interface");
             let range = span_to_range(&id_node.span);
+            let mut attrs = HashMap::new();
+            insert_def_specialization_attr(&mut attrs, id_node.specializes.as_deref());
             add_node_and_recurse(
                 g,
                 uri,
@@ -346,7 +373,7 @@ pub(super) fn build_from_package_body_element(
                 "interface",
                 name.clone(),
                 range,
-                HashMap::new(),
+                attrs,
                 parent_id,
             );
             let node_id = NodeId::new(uri, &qualified);
@@ -361,6 +388,13 @@ pub(super) fn build_from_package_body_element(
                     );
                 }
             }
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                id_node.specializes.as_deref(),
+            );
         }
         PBE::AttributeDef(ad_node) => {
             let name = &ad_node.name;
@@ -390,6 +424,8 @@ pub(super) fn build_from_package_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "action def");
             let range = span_to_range(&ad_node.span);
             let action_id = NodeId::new(uri, &qualified);
+            let mut attrs = HashMap::new();
+            insert_def_specialization_attr(&mut attrs, ad_node.specializes.as_deref());
             add_node_and_recurse(
                 g,
                 uri,
@@ -397,7 +433,7 @@ pub(super) fn build_from_package_body_element(
                 "action def",
                 name.clone(),
                 range,
-                HashMap::new(),
+                attrs,
                 parent_id,
             );
             if let ActionDefBody::Brace { elements } = &ad_node.body {
@@ -591,6 +627,13 @@ pub(super) fn build_from_package_body_element(
                     }
                 }
             }
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                ad_node.specializes.as_deref(),
+            );
         }
         PBE::ActionUsage(au_node) => {
             let name = &au_node.name;
@@ -633,9 +676,7 @@ pub(super) fn build_from_package_body_element(
                 qualified_name_for_node(g, uri, container_prefix, &name, "requirement def");
             let range = span_to_range(&rd_node.span);
             let mut attrs = HashMap::new();
-            if let Some(ref s) = rd_node.specializes {
-                attrs.insert("specializes".to_string(), serde_json::json!(s));
-            }
+            insert_def_specialization_attr(&mut attrs, rd_node.specializes.as_deref());
             add_node_and_recurse(
                 g,
                 uri,
@@ -655,9 +696,13 @@ pub(super) fn build_from_package_body_element(
                 &node_id,
                 &rd_node.body,
             );
-            if let Some(ref s) = rd_node.specializes {
-                add_specializes_edge_if_exists(g, uri, &qualified, s, container_prefix);
-            }
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                rd_node.specializes.as_deref(),
+            );
         }
         PBE::RequirementUsage(ru_node) => {
             let name = &ru_node.name;
@@ -780,6 +825,8 @@ pub(super) fn build_from_package_body_element(
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, &name, "use case def");
             let range = span_to_range(&ucd_node.span);
+            let mut attrs = HashMap::new();
+            insert_def_specialization_attr(&mut attrs, ucd_node.specializes.as_deref());
             add_node_and_recurse(
                 g,
                 uri,
@@ -787,13 +834,20 @@ pub(super) fn build_from_package_body_element(
                 "use case def",
                 name.clone(),
                 range,
-                HashMap::new(),
+                attrs,
                 parent_id,
             );
             let node_id = NodeId::new(uri, &qualified);
             if let UseCaseDefBody::Brace { elements } = &ucd_node.body {
                 use_case::build_from_use_case_body(elements, uri, Some(&qualified), &node_id, g);
             }
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                ucd_node.specializes.as_deref(),
+            );
         }
         PBE::UseCaseUsage(ucu_node) => {
             let name = &ucu_node.name;
@@ -826,6 +880,8 @@ pub(super) fn build_from_package_body_element(
             if !name.is_empty() {
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "item def");
+                let mut attrs = HashMap::new();
+                insert_def_specialization_attr(&mut attrs, item_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
                     uri,
@@ -833,8 +889,15 @@ pub(super) fn build_from_package_body_element(
                     "item def",
                     name,
                     span_to_range(&item_node.span),
-                    HashMap::new(),
+                    attrs,
                     parent_id,
+                );
+                wire_def_specialization_edge(
+                    g,
+                    uri,
+                    &qualified,
+                    container_prefix,
+                    item_node.specializes.as_deref(),
                 );
             }
         }
@@ -844,9 +907,7 @@ pub(super) fn build_from_package_body_element(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "individual def");
                 let mut attrs = HashMap::new();
-                if let Some(ref s) = ind_node.specializes {
-                    attrs.insert("specializes".to_string(), serde_json::json!(s.clone()));
-                }
+                insert_def_specialization_attr(&mut attrs, ind_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
                     uri,
@@ -857,9 +918,13 @@ pub(super) fn build_from_package_body_element(
                     attrs,
                     parent_id,
                 );
-                if let Some(ref s) = ind_node.specializes {
-                    add_specializes_edge_if_exists(g, uri, &qualified, s, container_prefix);
-                }
+                wire_def_specialization_edge(
+                    g,
+                    uri,
+                    &qualified,
+                    container_prefix,
+                    ind_node.specializes.as_deref(),
+                );
             }
         }
         PBE::MetadataDef(md_node) => {
@@ -867,6 +932,8 @@ pub(super) fn build_from_package_body_element(
             if !name.is_empty() {
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "metadata def");
+                let mut attrs = HashMap::new();
+                insert_def_specialization_attr(&mut attrs, md_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
                     uri,
@@ -874,8 +941,15 @@ pub(super) fn build_from_package_body_element(
                     "metadata def",
                     name,
                     span_to_range(&md_node.span),
-                    HashMap::new(),
+                    attrs,
                     parent_id,
+                );
+                wire_def_specialization_edge(
+                    g,
+                    uri,
+                    &qualified,
+                    container_prefix,
+                    md_node.specializes.as_deref(),
                 );
             }
         }
@@ -884,6 +958,8 @@ pub(super) fn build_from_package_body_element(
             if !name.is_empty() {
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "enum def");
+                let mut attrs = HashMap::new();
+                insert_def_specialization_attr(&mut attrs, enum_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
                     uri,
@@ -891,8 +967,15 @@ pub(super) fn build_from_package_body_element(
                     "enum def",
                     name,
                     span_to_range(&enum_node.span),
-                    HashMap::new(),
+                    attrs,
                     parent_id,
+                );
+                wire_def_specialization_edge(
+                    g,
+                    uri,
+                    &qualified,
+                    container_prefix,
+                    enum_node.specializes.as_deref(),
                 );
             }
         }
@@ -901,6 +984,8 @@ pub(super) fn build_from_package_body_element(
             if !name.is_empty() {
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "occurrence def");
+                let mut attrs = HashMap::new();
+                insert_def_specialization_attr(&mut attrs, occ_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
                     uri,
@@ -908,8 +993,15 @@ pub(super) fn build_from_package_body_element(
                     "occurrence def",
                     name,
                     span_to_range(&occ_node.span),
-                    HashMap::new(),
+                    attrs,
                     parent_id,
+                );
+                wire_def_specialization_edge(
+                    g,
+                    uri,
+                    &qualified,
+                    container_prefix,
+                    occ_node.specializes.as_deref(),
                 );
             }
         }
@@ -953,6 +1045,7 @@ pub(super) fn build_from_package_body_element(
                     serde_json::json!(annotation),
                 );
             }
+            insert_def_specialization_attr(&mut attrs, conn_node.specializes.as_deref());
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, base_name, "connection def");
             add_node_and_recurse(
@@ -1020,12 +1113,21 @@ pub(super) fn build_from_package_body_element(
                     }
                 }
             }
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                conn_node.specializes.as_deref(),
+            );
         }
         PBE::FlowDef(flow_node) => {
             let name = identification_name(&flow_node.identification);
             if !name.is_empty() {
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "flow def");
+                let mut attrs = HashMap::new();
+                insert_def_specialization_attr(&mut attrs, flow_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
                     uri,
@@ -1033,8 +1135,15 @@ pub(super) fn build_from_package_body_element(
                     "flow def",
                     name,
                     span_to_range(&flow_node.span),
-                    HashMap::new(),
+                    attrs,
                     parent_id,
+                );
+                wire_def_specialization_edge(
+                    g,
+                    uri,
+                    &qualified,
+                    container_prefix,
+                    flow_node.specializes.as_deref(),
                 );
             }
         }
@@ -1064,6 +1173,8 @@ pub(super) fn build_from_package_body_element(
             if !name.is_empty() {
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "allocation def");
+                let mut attrs = HashMap::new();
+                insert_def_specialization_attr(&mut attrs, alloc_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
                     uri,
@@ -1071,8 +1182,15 @@ pub(super) fn build_from_package_body_element(
                     "allocation def",
                     name,
                     span_to_range(&alloc_node.span),
-                    HashMap::new(),
+                    attrs,
                     parent_id,
+                );
+                wire_def_specialization_edge(
+                    g,
+                    uri,
+                    &qualified,
+                    container_prefix,
+                    alloc_node.specializes.as_deref(),
                 );
             }
         }
@@ -1113,6 +1231,7 @@ pub(super) fn build_from_package_body_element(
                 if let Some(expr) = expression {
                     attrs.insert("analysisExpression".to_string(), serde_json::json!(expr));
                 }
+                insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
                     uri,
@@ -1122,6 +1241,13 @@ pub(super) fn build_from_package_body_element(
                     span_to_range(&c_node.span),
                     attrs,
                     parent_id,
+                );
+                wire_def_specialization_edge(
+                    g,
+                    uri,
+                    &qualified,
+                    container_prefix,
+                    c_node.specializes.as_deref(),
                 );
             }
         }
@@ -1160,6 +1286,8 @@ pub(super) fn build_from_package_body_element(
             if !name.is_empty() {
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "case def");
+                let mut attrs = HashMap::new();
+                insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
                     uri,
@@ -1167,8 +1295,15 @@ pub(super) fn build_from_package_body_element(
                     "case def",
                     name,
                     span_to_range(&c_node.span),
-                    HashMap::new(),
+                    attrs,
                     parent_id,
+                );
+                wire_def_specialization_edge(
+                    g,
+                    uri,
+                    &qualified,
+                    container_prefix,
+                    c_node.specializes.as_deref(),
                 );
             }
         }
@@ -1190,6 +1325,8 @@ pub(super) fn build_from_package_body_element(
             if !name.is_empty() {
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "analysis def");
+                let mut attrs = HashMap::new();
+                insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
                     uri,
@@ -1197,7 +1334,7 @@ pub(super) fn build_from_package_body_element(
                     "analysis def",
                     name,
                     span_to_range(&c_node.span),
-                    HashMap::new(),
+                    attrs,
                     parent_id,
                 );
                 let node_id = NodeId::new(uri, &qualified);
@@ -1207,6 +1344,13 @@ pub(super) fn build_from_package_body_element(
                     Some(&qualified),
                     &node_id,
                     g,
+                );
+                wire_def_specialization_edge(
+                    g,
+                    uri,
+                    &qualified,
+                    container_prefix,
+                    c_node.specializes.as_deref(),
                 );
             }
         }
@@ -1244,6 +1388,8 @@ pub(super) fn build_from_package_body_element(
             if !name.is_empty() {
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "verification def");
+                let mut attrs = HashMap::new();
+                insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
                     uri,
@@ -1251,7 +1397,7 @@ pub(super) fn build_from_package_body_element(
                     "verification def",
                     name,
                     span_to_range(&c_node.span),
-                    HashMap::new(),
+                    attrs,
                     parent_id,
                 );
                 let node_id = NodeId::new(uri, &qualified);
@@ -1261,6 +1407,13 @@ pub(super) fn build_from_package_body_element(
                     Some(&qualified),
                     &node_id,
                     g,
+                );
+                wire_def_specialization_edge(
+                    g,
+                    uri,
+                    &qualified,
+                    container_prefix,
+                    c_node.specializes.as_deref(),
                 );
             }
         }
@@ -1312,6 +1465,8 @@ pub(super) fn build_from_package_body_element(
             let name = identification_name(&sd_node.identification);
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "state def");
             let range = span_to_range(&sd_node.span);
+            let mut attrs = HashMap::new();
+            insert_def_specialization_attr(&mut attrs, sd_node.specializes.as_deref());
             add_node_and_recurse(
                 g,
                 uri,
@@ -1319,13 +1474,20 @@ pub(super) fn build_from_package_body_element(
                 "state def",
                 name.clone(),
                 range,
-                HashMap::new(),
+                attrs,
                 parent_id,
             );
             let node_id = NodeId::new(uri, &qualified);
             if let StateDefBody::Brace { elements } = &sd_node.body {
                 state::build_from_state_body(elements, uri, Some(&qualified), &node_id, g);
             }
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                sd_node.specializes.as_deref(),
+            );
         }
         PBE::StateUsage(su_node) => {
             let name = &su_node.name;
@@ -1357,6 +1519,8 @@ pub(super) fn build_from_package_body_element(
             let name = identification_name(&vd_node.identification);
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "view def");
             let range = span_to_range(&vd_node.span);
+            let mut attrs = HashMap::new();
+            insert_def_specialization_attr(&mut attrs, vd_node.specializes.as_deref());
             add_node_and_recurse(
                 g,
                 uri,
@@ -1364,8 +1528,15 @@ pub(super) fn build_from_package_body_element(
                 "view def",
                 name.clone(),
                 range,
-                HashMap::new(),
+                attrs,
                 parent_id,
+            );
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                vd_node.specializes.as_deref(),
             );
         }
         PBE::ViewpointDef(vpd_node) => {
@@ -1373,6 +1544,8 @@ pub(super) fn build_from_package_body_element(
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, &name, "viewpoint def");
             let range = span_to_range(&vpd_node.span);
+            let mut attrs = HashMap::new();
+            insert_def_specialization_attr(&mut attrs, vpd_node.specializes.as_deref());
             add_node_and_recurse(
                 g,
                 uri,
@@ -1380,8 +1553,15 @@ pub(super) fn build_from_package_body_element(
                 "viewpoint def",
                 name.clone(),
                 range,
-                HashMap::new(),
+                attrs,
                 parent_id,
+            );
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                vpd_node.specializes.as_deref(),
             );
         }
         PBE::RenderingDef(rd_node) => {
@@ -1389,6 +1569,8 @@ pub(super) fn build_from_package_body_element(
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, &name, "rendering def");
             let range = span_to_range(&rd_node.span);
+            let mut attrs = HashMap::new();
+            insert_def_specialization_attr(&mut attrs, rd_node.specializes.as_deref());
             add_node_and_recurse(
                 g,
                 uri,
@@ -1396,8 +1578,15 @@ pub(super) fn build_from_package_body_element(
                 "rendering def",
                 name.clone(),
                 range,
-                HashMap::new(),
+                attrs,
                 parent_id,
+            );
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                rd_node.specializes.as_deref(),
             );
         }
         PBE::ViewUsage(vu_node) => {

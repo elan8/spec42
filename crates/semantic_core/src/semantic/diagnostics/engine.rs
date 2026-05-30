@@ -111,6 +111,51 @@ mod tests {
     }
 
     #[test]
+    fn collect_diagnostics_from_graph_accepts_resolved_port_def_specialization() {
+        let input = r#"
+            package P {
+                port def BasePort;
+                port def ChildPort :> BasePort;
+            }
+        "#;
+        let parsed = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let graph = build_graph_from_doc(&parsed, &uri);
+        let diagnostics =
+            collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+        assert!(!diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "unresolved_specializes_reference"
+        }));
+    }
+
+    #[test]
+    fn collect_diagnostics_from_graph_emits_inherited_part_attribute_value_type_mismatch() {
+        let input = r#"
+            package Demo {
+                enum def StatusKind {
+                    enum approved;
+                }
+                part def BasePart {
+                    attribute status : StatusKind;
+                }
+                part def DerivedPart :> BasePart;
+                part host : DerivedPart {
+                    attribute status = "approved";
+                }
+            }
+        "#;
+        let parsed = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let graph = build_graph_from_doc(&parsed, &uri);
+        let diagnostics =
+            collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+        assert!(diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "inherited_attribute_value_type_mismatch"
+                && diagnostic.severity == DiagnosticSeverity::Error
+        }));
+    }
+
+    #[test]
     fn collect_diagnostics_from_graph_emits_unresolved_import_target() {
         let input = r#"
             package P {

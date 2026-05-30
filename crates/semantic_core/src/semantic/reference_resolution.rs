@@ -227,6 +227,7 @@ pub fn resolve_member_via_type(
 mod tests {
     use url::Url;
 
+    use crate::semantic::model::RelationshipKind;
     use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
     use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
 
@@ -438,6 +439,146 @@ mod tests {
         assert!(
             matches!(inherited, ResolveResult::Resolved(_)),
             "expected inherited status, got {inherited:?}"
+        );
+    }
+
+    #[test]
+    fn port_def_specialization_inherits_attribute() {
+        let doc = SysmlDocument::from_memory_path(
+            "workspace",
+            "port_inherit.sysml",
+            r#"package P {
+  port def BasePort {
+    attribute width : Real;
+  }
+  port def WidePort :> BasePort;
+  part def Host {
+    port p : WidePort {
+      attribute width = 42;
+    }
+  }
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("workspace doc");
+        let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+        let uri = Url::parse("memory://workspace/port_inherit.sysml").expect("uri");
+        let wide_port = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "port def" && node.name == "WidePort")
+            .expect("WidePort def");
+        let base_port = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "port def" && node.name == "BasePort")
+            .expect("BasePort def");
+        let base_width = graph
+            .child_named(&base_port.id, "width")
+            .into_iter()
+            .next()
+            .expect("BasePort width");
+        let host = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "part def" && node.name == "Host")
+            .expect("Host def");
+        let port_usage = graph
+            .child_named(&host.id, "p")
+            .into_iter()
+            .next()
+            .expect("port usage p");
+        assert_eq!(
+            resolve_inherited_member_via_type(&graph, port_usage, "width"),
+            ResolveResult::Resolved(base_width.id.clone())
+        );
+        assert!(
+            graph
+                .outgoing_targets_by_kind(wide_port, RelationshipKind::Specializes)
+                .iter()
+                .any(|node| node.id == base_port.id),
+            "WidePort should specialize BasePort"
+        );
+    }
+
+    #[test]
+    fn enum_def_specialization_preserves_inheritance_chain() {
+        let doc = SysmlDocument::from_memory_path(
+            "workspace",
+            "enum_inherit.sysml",
+            r#"package P {
+  enum def BaseEnum {
+    enum a;
+  }
+  enum def ChildEnum :> BaseEnum;
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("workspace doc");
+        let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+        let uri = Url::parse("memory://workspace/enum_inherit.sysml").expect("uri");
+        let child = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "enum def" && node.name == "ChildEnum")
+            .expect("ChildEnum def");
+        let base = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "enum def" && node.name == "BaseEnum")
+            .expect("BaseEnum def");
+        assert_eq!(
+            child.attributes.get("specializes").and_then(|v| v.as_str()),
+            Some("BaseEnum")
+        );
+        assert!(
+            graph
+                .outgoing_targets_by_kind(child, RelationshipKind::Specializes)
+                .iter()
+                .any(|node| node.id == base.id),
+            "ChildEnum should specialize BaseEnum"
+        );
+    }
+
+    #[test]
+    fn use_case_def_specialization_resolves() {
+        let doc = SysmlDocument::from_memory_path(
+            "workspace",
+            "usecase_inherit.sysml",
+            r#"package P {
+  case def Case;
+  use case def MyUseCase :> Case;
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("workspace doc");
+        let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+        let uri = Url::parse("memory://workspace/usecase_inherit.sysml").expect("uri");
+        let use_case = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "use case def" && node.name == "MyUseCase")
+            .expect("MyUseCase def");
+        let case_def = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "case def" && node.name == "Case")
+            .expect("Case def");
+        assert!(
+            graph
+                .outgoing_targets_by_kind(use_case, RelationshipKind::Specializes)
+                .iter()
+                .any(|node| node.id == case_def.id),
+            "MyUseCase should specialize Case"
         );
     }
 }
