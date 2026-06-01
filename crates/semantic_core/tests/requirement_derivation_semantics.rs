@@ -4,7 +4,7 @@ use semantic_core::{
 
 const STAKEHOLDER_NEEDS: &str = r#"package StakeholderNeeds {
   requirement def CleanLargeAreas;
-  requirement cleanLargeAreasNeed : CleanLargeAreas;
+  requirement cleanLargeAreas : CleanLargeAreas;
 }
 "#;
 
@@ -12,11 +12,11 @@ const SYSTEM_REQUIREMENTS: &str = r#"package SystemRequirements {
   private import StakeholderNeeds::*;
 
   requirement def CleanAtLeastEightySquareMetersPerCharge;
-  requirement cleanAtLeastEightyReq : CleanAtLeastEightySquareMetersPerCharge;
+  requirement cleanAtLeastEighty : CleanAtLeastEightySquareMetersPerCharge;
 
   #derivation connection {
-    end #original ::> cleanLargeAreasNeed;
-    end #derive ::> cleanAtLeastEightyReq;
+    end #original ::> cleanLargeAreas;
+    end #derive ::> cleanAtLeastEighty;
   }
 }
 "#;
@@ -65,8 +65,8 @@ fn requirement_usage_derivation_links_across_workspace_files() {
     assert_eq!(
         derivations,
         vec![(
-            "StakeholderNeeds::cleanLargeAreasNeed".to_string(),
-            "SystemRequirements::cleanAtLeastEightyReq".to_string(),
+            "StakeholderNeeds::cleanLargeAreas".to_string(),
+            "SystemRequirements::cleanAtLeastEighty".to_string(),
         )],
         "expected derivation from imported stakeholder usage to system usage"
     );
@@ -77,15 +77,15 @@ fn requirement_usage_derivation_links_within_one_package() {
     let content = r#"package Demo {
   package UserNeeds {
     requirement def TrackParcel;
-    requirement trackParcelNeed : TrackParcel;
+    requirement trackParcel : TrackParcel;
   }
   package SystemRequirements {
     private import UserNeeds::*;
     requirement def DetectParcel;
-    requirement detectParcelReq : DetectParcel;
+    requirement detectParcel : DetectParcel;
     #derivation connection {
-      end #original ::> trackParcelNeed;
-      end #derive ::> detectParcelReq;
+      end #original ::> trackParcel;
+      end #derive ::> detectParcel;
     }
   }
 }"#;
@@ -97,8 +97,8 @@ fn requirement_usage_derivation_links_within_one_package() {
     assert_eq!(
         derivations,
         vec![(
-            "Demo::UserNeeds::trackParcelNeed".to_string(),
-            "Demo::SystemRequirements::detectParcelReq".to_string(),
+            "Demo::UserNeeds::trackParcel".to_string(),
+            "Demo::SystemRequirements::detectParcel".to_string(),
         )]
     );
 }
