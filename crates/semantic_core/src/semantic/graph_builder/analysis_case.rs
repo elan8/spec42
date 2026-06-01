@@ -5,10 +5,8 @@ use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{NodeId, RelationshipKind};
-use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
-
-use super::requirement_body::resolve_subject_type_target_qualified;
+use crate::semantic::model::NodeId;
+use crate::semantic::relationships::add_typing_edge_if_exists;
 use super::{add_node_and_recurse, expressions, qualified_name_for_node};
 
 pub(super) fn build_from_analysis_body(
@@ -58,20 +56,6 @@ pub(super) fn build_from_analysis_body(
                     sd.value.type_name.as_str(),
                     container_prefix,
                 );
-                if let Some(target_qualified) = resolve_subject_type_target_qualified(
-                    g,
-                    uri,
-                    container_prefix,
-                    sd.value.type_name.as_str(),
-                ) {
-                    add_edge_if_both_exist(
-                        g,
-                        uri,
-                        &parent_id.qualified_name,
-                        &target_qualified,
-                        RelationshipKind::Subject,
-                    );
-                }
             }
             UseCaseDefBodyElement::ReturnRef(return_ref) => {
                 let value = &return_ref.value;

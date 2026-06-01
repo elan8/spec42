@@ -8,11 +8,10 @@ use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{NodeId, RelationshipKind};
+use crate::semantic::model::NodeId;
+use crate::semantic::model::RelationshipKind;
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 use crate::semantic::text_span::TextRange;
-
-use super::requirement_body::resolve_subject_type_target_qualified;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
 fn verify_requirement_target(member: &VerifyRequirementMember) -> Option<String> {
@@ -71,17 +70,6 @@ fn add_verified_requirement_node(
         Some(parent_id),
     );
     add_typing_edge_if_exists(g, uri, &qualified, requirement_ref, container_prefix);
-    if let Some(target_qualified) =
-        resolve_subject_type_target_qualified(g, uri, container_prefix, requirement_ref)
-    {
-        add_edge_if_both_exist(
-            g,
-            uri,
-            &parent_id.qualified_name,
-            &target_qualified,
-            RelationshipKind::Subject,
-        );
-    }
 }
 
 fn extract_verdict_kind_token(body_text: &str) -> Option<String> {
@@ -150,20 +138,6 @@ pub(super) fn build_from_verification_body(
                     sd.value.type_name.as_str(),
                     container_prefix,
                 );
-                if let Some(target_qualified) = resolve_subject_type_target_qualified(
-                    g,
-                    uri,
-                    container_prefix,
-                    sd.value.type_name.as_str(),
-                ) {
-                    add_edge_if_both_exist(
-                        g,
-                        uri,
-                        &parent_id.qualified_name,
-                        &target_qualified,
-                        RelationshipKind::Subject,
-                    );
-                }
             }
             UseCaseDefBodyElement::Objective(objective) => {
                 let objective_name = &objective.value.requirement.value.name;
