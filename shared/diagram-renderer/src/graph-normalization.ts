@@ -20,13 +20,17 @@ export function normalizeEdgeKind(relationshipType: string): NormalizedEdgeKind 
   const type = relationshipType.trim().toLowerCase();
   if (!type) return "relationship";
   if (type.includes("item_flow") || type.includes("item flow") || type === "flow" || type.includes("flow")) return "flow";
+  if (type.includes("interface-connection") || type.includes("interface connection")) return "interface";
   if (type.includes("interface")) return "interface";
+  if (type.includes("binding-connection") || type.includes("binding connection")) return "bind";
   if (type.includes("connection") || type === "connect") return "connection";
   if (type.includes("reference") || type === "ref") return "reference";
   if (type.includes("satisfy")) return "satisfy";
   if (type.includes("verify")) return "verify";
   if (type === "typing" || type === "defined_by" || type === "defined by" || type === "definition") return "typing";
-  if (type === "dependency" || type.includes("depend")) return "dependency";
+  if (type === "dependency" || type.includes("depend") || type.includes("binary-dependency")) return "dependency";
+  if (type === "usage" || type === "usage-relationship") return "usage";
+  if (type.includes("redefin")) return "redefinition";
   if (type === "specializes" || type === "specialization") return "specializes";
   if (type === "bind" || type === "binding") return "bind";
   if (type === "allocate" || type === "allocation") return "allocate";

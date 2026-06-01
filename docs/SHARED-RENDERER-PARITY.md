@@ -23,7 +23,8 @@ Normative notation targets: [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](SH
 | Connectors visible (flow / connection / interface / bind) | Yes (after `kind` fix + edge `style()`) | Yes | — |
 | ELK hierarchical layout | Yes | Yes | cosmetic (routing may differ) |
 | Heuristic connector paths (non-ELK) | No (ELK sections required) | No | — |
-| Heuristic node grid when ELK fails | No (empty layout) | Partial | cosmetic |
+| Heuristic node grid when ELK fails | No (empty layout) | No (legacy general also unified ELK) | — |
+| BNF connector kinds (`binding-connection`, `interface-connection`) | Yes (`normalizeEdgeKind`) | Yes | — |
 | Render only when model ready | Yes (`modelReady` + loading gate) | Partial (legacy skips connectors without ELK) | — |
 | Single outer boundary for scoped instance root | Yes (package wrapper + view frame collapsed) | Partial | — |
 | Degraded routing console diagnostics | No | Yes | legacy-only |
@@ -40,13 +41,15 @@ Normative notation targets: [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](SH
 |-------|--------|---------------------------|----------|
 | SysML compartments (header / attrs / parts / ports) | Yes | Yes | — |
 | Def solid sharp / usage round / ref dotted | Yes | Partial (defs were dashed before shared chrome) | — |
-| Relationship edge markers (typing, specializes, hierarchy, …) | Yes | Yes | cosmetic |
+| Relationship edge markers (typing, specializes, hierarchy, redefinition, …) | Yes | Yes | — |
 | Package namespace nodes omitted from canvas | Yes | Yes | — |
-| Package container frames | Partial | Yes | cosmetic |
+| Package container frames (multi-package models) | Yes (`drawGeneralPackageContainers`) | No (unified single layout) | cosmetic |
+| Heuristic node grid when ELK fails | No (empty layout) | No | — |
 | Type filter chips (UI) | No | Yes | legacy-only |
 | Cytoscape fallback layout | No | Yes | legacy-only |
 
-**Fixture:** External `sysml-v2-release/.../01-Parts Tree/1d-Parts Tree with Reference.sysml` (def + `ref hitchBall`)
+**Fixture:** External `sysml-v2-release/.../01-Parts Tree/1d-Parts Tree with Reference.sysml` (def + `ref hitchBall`)  
+**Automated:** `shared/diagram-renderer` — def/usage/ref chrome, relationship markers, package frames, `prepareViewData` package groups
 
 ---
 
@@ -108,19 +111,28 @@ Normative notation targets: [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](SH
 
 ---
 
-## Sign-off summary (2026-05-29)
+## Sign-off summary (2026-06-01)
 
 ### Phase 0 — General + interconnection
 
-- **Blockers:** None identified after IBD `kind` ReferenceError fix, connector `style()` stroke, and `nodeBodyChromeStyle` centralization.
+- **Blockers:** None. ELK-only routing; model-ready gate; BNF connector/relationship normalization.
 - **Decision:** Safe to set `spec42.visualization.useSharedRenderer` default to `true` for structural views.
 
 ### Phase 1 — IBD projection
 
 - IBD payloads exclude `part def` via `semantic_core`; scoped roots collapse redundant package/view frames in shared renderer.
 
-### Phases 2–3 — General + behavior
+### Phase 2 — General view (BNF)
 
-- **Blockers:** None for routing all `SYSML_ENABLED_VIEWS` through the shared package with click/highlight/jump and ELK transition labels.
-- **Not signed off:** Full legacy parity for behavior notation (I/O badges, composite regions, sequence fragments), general-view BNF checklist, or Phase 3.6 SVG snapshots.
+- **Done (except 2.3):** Full inventory + [GENERAL-IBD-BNF-SIGNOFF.md](GENERAL-IBD-BNF-SIGNOFF.md); `redefinition` edge marker; multi-package frames; no `fallbackLayout` grid on ELK failure.
+- **WONTFIX 1.0:** Annotation nodes (2.3); n-ary hub graphics (binary edges from projection); package tab variant SVG.
+
+### Phase 4 — Notation catalog
+
+- **284** BNF SVGs indexed in [SYSML-NOTATION-INVENTORY.md](SYSML-NOTATION-INVENTORY.md) (regenerate with `SYSML_V2_RELEASE_DIR`).
+
+### Phases 3 — Behavior
+
+- **Blockers:** None for routing all `SYSML_ENABLED_VIEWS` through the shared package.
+- **Not signed off:** Full legacy parity for behavior notation (I/O badges, composite regions, sequence fragments) or Phase 3.6 SVG snapshots.
 - **Manual (webshop):** `CheckoutPipeline` (action flow), `OrderLifecycleStateMachine` (state), `orderEventFanout` (sequence) — click node/lifeline → gold highlight + editor jumps to correct line.

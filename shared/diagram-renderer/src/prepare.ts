@@ -175,12 +175,33 @@ function prepareGraph(graphInput: unknown, visualization: VisualizationPayload):
         },
       };
     });
+  const packageContainerGroups = buildGeneralPackageContainerGroups(nodes);
   return {
     title: visualization?.selectedViewName || "SysML View",
     view: visualization?.view || "general-view",
     nodes,
-    edges
+    edges,
+    meta: packageContainerGroups.length > 0 ? { packageContainerGroups } : undefined,
   };
+}
+
+function buildGeneralPackageContainerGroups(nodes: PreparedNode[]): UnknownRecord[] {
+  const byPackage = new Map<string, string[]>();
+  for (const node of nodes) {
+    const qn = asString(asRecord(node.attributes).qualifiedName);
+    const sep = qn.indexOf("::");
+    if (sep <= 0) continue;
+    const pkg = qn.slice(0, sep);
+    const members = byPackage.get(pkg) ?? [];
+    members.push(node.id);
+    byPackage.set(pkg, members);
+  }
+  if (byPackage.size < 2) return [];
+  return [...byPackage.entries()].map(([name, memberIds]) => ({
+    id: `package:${name}`,
+    name,
+    memberIds,
+  }));
 }
 
 function prepareInterconnection(visualization: VisualizationPayload): PreparedView {

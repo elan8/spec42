@@ -9,6 +9,7 @@ This document describes how the **shared diagram renderer** (`shared/diagram-ren
 - [`docs/SHARED-RENDERER-PARITY.md`](SHARED-RENDERER-PARITY.md) — shared vs legacy parity checklist
 - [`docs/GENERAL-VIEW-ELEMENT-AUDIT.md`](GENERAL-VIEW-ELEMENT-AUDIT.md) — general-view element → canvas audit (Phase 2.1)
 - [`docs/SYSML-NOTATION-INVENTORY.md`](SYSML-NOTATION-INVENTORY.md) — BNF SVG traceability (Phase 4; regenerate via `node scripts/generate-notation-inventory.mjs`)
+- [`docs/GENERAL-IBD-BNF-SIGNOFF.md`](GENERAL-IBD-BNF-SIGNOFF.md) — general + interconnection sign-off checklist (generated with inventory script)
 - [`docs/SEMANTIC_CORE_ARCHITECTURE.md`](SEMANTIC_CORE_ARCHITECTURE.md) — visualization payloads from `semantic_core`
 - **Normative reference (external):** [SysML v2 graphical BNF](https://github.com/Systems-Modeling/SysML-v2-Release) — `bnf/SysML-graphical-bnf.kgbnf` and `bnf/images/*.svg`
 
@@ -207,9 +208,9 @@ Phases are ordered by dependency and release value. Each phase should end with *
 |-------|----------------|--------|---------------------|
 | **0** | Stabilize general + interconnection | **Done** | Yes — default shared renderer, CI, parity doc |
 | **1** | IBD projection conformance | **Done** | Yes — no `part def` in IBD payload; tests |
-| **2** | General view completeness | **Partial** | No — audit + tests; no full SVG sign-off; annotations deferred |
+| **2** | General view completeness | **Done** (annotations 2.3 WONTFIX) | Yes — BNF sign-off checklist; relationship markers; package frames; ELK-only |
 | **3** | Behavior views in shared package | **Partial** | No — all views routed; first-cut renderers; legacy not removed; no SVG snapshot suite |
-| **4** | Full notation catalog | **Started** | No — script + stub inventory; not &gt;90% BNF coverage |
+| **4** | Full notation catalog | **Done** (shipped views) | Yes — 284 SVG inventory + [GENERAL-IBD-BNF-SIGNOFF.md](GENERAL-IBD-BNF-SIGNOFF.md) |
 
 **What “implemented” means here:** infrastructure and a **shippable baseline** exist; **full SysML v2 graphical conformance** and **legacy parity** for behavior views are still future work.
 
@@ -259,13 +260,13 @@ Per BNF **interconnection-view**, ports appear on **part usages** (and `part-ref
 
 ### Phase 2 — General view completeness
 
-**Status: Partial** — see [`GENERAL-VIEW-ELEMENT-AUDIT.md`](GENERAL-VIEW-ELEMENT-AUDIT.md).
+**Status: Done** (2026-06-01) — annotations (2.3) remain WONTFIX for 1.0. See [`GENERAL-VIEW-ELEMENT-AUDIT.md`](GENERAL-VIEW-ELEMENT-AUDIT.md) and [`GENERAL-IBD-BNF-SIGNOFF.md`](GENERAL-IBD-BNF-SIGNOFF.md).
 
 **Goal:** General view covers spec `general-node` / `definition-node` / `usage-node` / dependency notation needed for release workflows.
 
-**Delivered:** Element audit table; `canonical_general_view_graph_retains_def_usage_ref_nodes` test; `composition` edge marker; requirement usage corner radius.
+**Delivered:** Element audit table; BNF relationship normalization (`redefinition`, `usage`, `binary-dependency`); package container frames for multi-package graphs; ELK-only layout (no `fallbackLayout` grid); Vitest marker/package tests.
 
-**Open:** Step 2.3 annotations (deferred); formal sign-off against all BNF SVGs; filter chips remain host UI; n-ary relationship hubs.
+**Open:** Step 2.3 annotations (deferred); filter chips remain host UI; n-ary hub graphics (hub-and-spoke binary edges).
 
 | Step | Action |
 |------|--------|
@@ -300,13 +301,13 @@ Per BNF **interconnection-view**, ports appear on **part usages** (and `part-ref
 
 ### Phase 4 — Full graphical notation catalog (long tail)
 
-**Status: Started** — regenerate with full tree: `SYSML_V2_RELEASE_DIR=<path-to-SysML-v2-Release> node scripts/generate-notation-inventory.mjs`
+**Status: Done** for shipped general + interconnection views (2026-06-01). Regenerate: `SYSML_V2_RELEASE_DIR=<path-to-SysML-v2-Release> node scripts/generate-notation-inventory.mjs`
 
 **Goal:** Traceability from each BNF `*.svg` to renderer code or an explicit “not supported” list.
 
-**Delivered:** [`scripts/generate-notation-inventory.mjs`](../scripts/generate-notation-inventory.mjs), [`SYSML-NOTATION-INVENTORY.md`](SYSML-NOTATION-INVENTORY.md) (fallback list when release repo not present).
+**Delivered:** Full **284**-row [`SYSML-NOTATION-INVENTORY.md`](SYSML-NOTATION-INVENTORY.md); [`GENERAL-IBD-BNF-SIGNOFF.md`](GENERAL-IBD-BNF-SIGNOFF.md) with implementation + test pointers; enhanced inventory script with IBD connector and general relationship mappings.
 
-**Open:** Steps 4.2–4.4; &gt;90% shipped-element coverage with explicit WONTFIX rows.
+**Open:** Steps 4.2–4.4 for non-shipped views (behavior, sequence fragments); optional SVG attribute validator (4.4).
 
 | Step | Action |
 |------|--------|

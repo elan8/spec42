@@ -38,6 +38,22 @@ describe("shared prepareViewData", () => {
     expect(prepared.edges[0].edgeKind).toBe("typing");
   });
 
+  it("builds package container groups for multi-package general graphs", () => {
+    const prepared = prepareViewData({
+      view: "general-view",
+      graph: {
+        nodes: [
+          { id: "a", name: "A", type: "part def", qualifiedName: "PkgA::A" },
+          { id: "b", name: "B", type: "part def", qualifiedName: "PkgB::B" },
+        ],
+        edges: [],
+      },
+    });
+    const groups = prepared.meta?.packageContainerGroups as Array<{ name: string; memberIds: string[] }>;
+    expect(groups).toHaveLength(2);
+    expect(groups?.map((g) => g.name).sort()).toEqual(["PkgA", "PkgB"]);
+  });
+
   it("marks reference usages on prepared nodes", () => {
     const prepared = prepareViewData({
       view: "general-view",

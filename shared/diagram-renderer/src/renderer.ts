@@ -242,6 +242,7 @@ export async function renderVisualization(
       drawNodes(root, layout.nodes, options, isInterconnectionView, theme);
       drawEdges(root, layout.edges, isInterconnectionView, theme);
     } else {
+      drawGeneralPackageContainers(root, prepared, layout.nodes, theme);
       drawEdges(root, layout.edges, isInterconnectionView, theme);
       drawNodes(root, layout.nodes, options, isInterconnectionView, theme);
     }
@@ -338,7 +339,8 @@ async function layoutPrepared(prepared: PreparedView): Promise<LayoutResult> {
       }))
     };
   } catch {
-    return fallbackLayout({ ...prepared, nodes: diagramNodes, edges: diagramEdges });
+    // Match interconnection policy: no heuristic grid when ELK fails.
+    return { nodes: [], edges: [] };
   }
 }
 
@@ -661,23 +663,6 @@ async function layoutInterconnectionPrepared(prepared: PreparedView): Promise<La
     // Match legacy ibd.ts: no heuristic grid when ELK fails for interconnection view.
     return { nodes: [], edges: [] };
   }
-}
-
-function fallbackLayout(prepared: PreparedView): LayoutResult {
-  const isInterconnectionView = prepared.view === "interconnection-view";
-  const width = isInterconnectionView ? ibdNodeWidth : nodeWidth;
-  const height = isInterconnectionView ? ibdNodeHeight : nodeHeight;
-  const columns = Math.max(1, Math.ceil(Math.sqrt(prepared.nodes.length || 1)));
-  const nodes = prepared.nodes.map((node, index) => ({
-    ...node,
-    compartments: collectCompartments(node),
-    x: (index % columns) * (width + 60),
-    y: Math.floor(index / columns) * (height + 64),
-    width,
-    height: Math.max(height, computeNodeHeight(collectCompartments(node), { maxLinesPerCompartment: 8 })),
-  }));
-  const byId = new Map(nodes.map((node) => [node.id, node]));
-  return { nodes, edges: prepared.edges.map((edge) => ({ ...edge, sourceNode: byId.get(edge.source), targetNode: byId.get(edge.target) })) };
 }
 
 function drawEdges(
@@ -1005,6 +990,8 @@ function applyEdgeMarker(
     path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow)").style("stroke-dasharray", "8,4");
   } else if (edgeKind === "dependency" || edgeKind === "usage") {
     path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "4,4");
+  } else if (edgeKind === "redefinition") {
+    path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-specializes)").style("stroke-dasharray", "5,3");
   } else if (edgeKind === "composition") {
     path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-start", "url(#general-d3-diamond)").style("marker-end", "none").style("stroke-dasharray", "6,3");
   } else if (edgeKind === "satisfy" || edgeKind === "verify") {
@@ -1212,6 +1199,54 @@ function formatCompartmentSummary(attributes: Record<string, unknown> | undefine
   if (parts.length > 0) summary.push(`parts:${parts.length}`);
   if (ports.length > 0) summary.push(`ports:${ports.length}`);
   return summary.join("  ");
+}
+
+function drawGeneralPackageContainers(
+  root: d3.Selection<SVGGElement, unknown, null, undefined>,
+  prepared: PreparedView,
+  nodes: LaidOutNode[],
+  theme: DiagramTheme,
+): void {
+  const packageGroups = ((prepared.meta?.packageContainerGroups as unknown[]) || []) as Array<Record<string, unknown>>;
+  if (packageGroups.length === 0) return;
+  const nodeById = new Map(nodes.map((node) => [node.id, node]));
+  const layer = root.append("g").attr("class", "general-package-containers");
+  for (const group of packageGroups) {
+    const memberIds = Array.isArray(group.memberIds) ? group.memberIds.map((value) => String(value)) : [];
+    const label = String(group.name || group.label || group.id || "");
+    const memberNodes = memberIds.map((id) => nodeById.get(id)).filter((value): value is LaidOutNode => Boolean(value));
+    if (memberNodes.length === 0) continue;
+    const minX = Math.min(...memberNodes.map((node) => node.x || 0));
+    const minY = Math.min(...memberNodes.map((node) => (node.y || 0)));
+    const maxX = Math.max(...memberNodes.map((node) => (node.x || 0) + (node.width || nodeWidth)));
+    const maxY = Math.max(...memberNodes.map((node) => (node.y || 0) + (node.height || nodeHeight)));
+    const padding = 28;
+    const x = minX - padding;
+    const y = minY - padding;
+    const width = maxX - minX + padding * 2;
+    const height = maxY - minY + padding * 2;
+    layer
+      .append("rect")
+      .attr("class", "general-package-frame")
+      .attr("x", x)
+      .attr("y", y)
+      .attr("width", width)
+      .attr("height", height)
+      .attr("rx", 18)
+      .style("fill", "transparent")
+      .style("stroke", theme.nodeBorder)
+      .style("stroke-width", "1.5px")
+      .style("opacity", 0.9);
+    layer
+      .append("text")
+      .attr("class", "general-package-label")
+      .attr("x", x + 14)
+      .attr("y", y + 21)
+      .style("font-size", "11px")
+      .style("font-weight", "700")
+      .style("fill", theme.nodeBorder)
+      .text(label);
+  }
 }
 
 function drawInterconnectionContainers(

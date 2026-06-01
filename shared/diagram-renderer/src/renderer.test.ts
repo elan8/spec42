@@ -1117,4 +1117,81 @@ describe("shared renderer", () => {
     expect(path?.style.strokeDasharray).toBe("6,3");
     expect(path?.style.markerStart).toContain("general-d3-diamond");
   });
+
+  it("applies BNF interconnection connector markers per edge kind", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1400, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 900, configurable: true });
+
+    await renderVisualization(target, {
+      title: "IBD",
+      view: "interconnection-view",
+      nodes: [
+        { id: "a", label: "A", kind: "part", attributes: { ports: ["p1"] } },
+        { id: "b", label: "B", kind: "part", attributes: { ports: ["p2"] } },
+      ],
+      edges: [
+        { id: "flow-e", source: "a", target: "b", edgeKind: "flow", attributes: { relationType: "flow", sourceId: "A.p1", targetId: "B.p2" } },
+        { id: "iface-e", source: "a", target: "b", edgeKind: "interface", attributes: { relationType: "interface-connection", sourceId: "A.p1", targetId: "B.p2" } },
+        { id: "bind-e", source: "a", target: "b", edgeKind: "bind", attributes: { relationType: "binding-connection", sourceId: "A.p1", targetId: "B.p2" } },
+        { id: "conn-e", source: "a", target: "b", edgeKind: "connection", attributes: { relationType: "connection", sourceId: "A.p1", targetId: "B.p2" } },
+      ],
+    });
+
+    const flow = target.querySelector('[data-connector-id="flow-e"]') as SVGPathElement | null;
+    const iface = target.querySelector('[data-connector-id="iface-e"]') as SVGPathElement | null;
+    const bind = target.querySelector('[data-connector-id="bind-e"]') as SVGPathElement | null;
+    const conn = target.querySelector('[data-connector-id="conn-e"]') as SVGPathElement | null;
+    expect(flow?.style.markerEnd).toContain("ibd-flow-arrow");
+    expect(iface?.style.strokeDasharray).toBe("8,4");
+    expect(iface?.style.markerEnd).toContain("ibd-interface-arrow");
+    expect(bind?.style.strokeDasharray).toBe("6,4");
+    expect(conn?.style.markerStart).toContain("ibd-connection-dot");
+  });
+
+  it("draws general package frames when multiple package namespaces are present", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+    await renderVisualization(target, {
+      title: "General",
+      view: "general-view",
+      meta: {
+        packageContainerGroups: [
+          { id: "pkg:A", name: "PackageA", memberIds: ["n1"] },
+          { id: "pkg:B", name: "PackageB", memberIds: ["n2"] },
+        ],
+      },
+      nodes: [
+        { id: "n1", label: "PartA", kind: "part def", attributes: { qualifiedName: "PackageA::PartA" } },
+        { id: "n2", label: "PartB", kind: "part def", attributes: { qualifiedName: "PackageB::PartB" } },
+      ],
+      edges: [],
+    });
+
+    expect(target.querySelectorAll(".general-package-frame").length).toBe(2);
+    expect(target.textContent).toContain("PackageA");
+    expect(target.textContent).toContain("PackageB");
+  });
+
+  it("styles redefinition edges like specializes in general view", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 900, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 600, configurable: true });
+
+    await renderVisualization(target, {
+      title: "General",
+      view: "general-view",
+      nodes: [
+        { id: "a", label: "A", kind: "part def" },
+        { id: "b", label: "B", kind: "part" },
+      ],
+      edges: [{ id: "e1", source: "a", target: "b", label: "redefinition", edgeKind: "redefinition" }],
+    });
+
+    const path = target.querySelector(".general-connector") as SVGPathElement | null;
+    expect(path?.style.markerEnd).toContain("general-d3-specializes");
+    expect(path?.style.strokeDasharray).toBe("5,3");
+  });
 });
