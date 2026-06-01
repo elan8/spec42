@@ -1,3 +1,4 @@
+pub(crate) mod library_closure;
 pub(crate) mod library_search;
 pub(crate) mod scan;
 pub(crate) mod services;

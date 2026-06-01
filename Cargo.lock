@@ -1255,6 +1255,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sysml-v2-parser",
+ "tempfile",
  "url",
  "walkdir",
 ]

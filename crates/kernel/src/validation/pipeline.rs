@@ -101,15 +101,35 @@ fn collect_entries(
     target_files: &[std::path::PathBuf],
     _parallel_enabled: bool,
 ) -> Result<Vec<(Url, String)>, String> {
-    let scan_roots: Vec<Url> = workspace_root_url
-        .iter()
-        .cloned()
-        .chain(library_root_urls.iter().cloned())
-        .collect();
+    let scan_roots: Vec<Url> = if crate::workspace::library_closure::library_full_scan_enabled() {
+        workspace_root_url
+            .iter()
+            .cloned()
+            .chain(library_root_urls.iter().cloned())
+            .collect()
+    } else {
+        workspace_root_url.iter().cloned().collect()
+    };
     let mut entries = Vec::new();
     if !scan_roots.is_empty() {
         let (scanned_entries, _) = scan_sysml_files(scan_roots);
         entries.extend(scanned_entries);
+    }
+
+    if !crate::workspace::library_closure::library_full_scan_enabled() && !library_root_urls.is_empty()
+    {
+        let workspace_sources: Vec<semantic_core::WorkspaceSource<'_>> = entries
+            .iter()
+            .map(|(uri, content)| semantic_core::WorkspaceSource {
+                path: uri.as_str(),
+                content: content.as_str(),
+            })
+            .collect();
+        let library_entries = crate::workspace::library_closure::load_library_closure_scan_entries(
+            &workspace_sources,
+            library_root_urls,
+        )?;
+        entries.extend(library_entries);
     }
 
     let mut seen = HashSet::new();

@@ -57,6 +57,7 @@ pub fn build_sysml_visualization_for_paths(
                         parse_time_ms: doc.parse_time_ms,
                         parse_cached: doc.parse_cached,
                     },
+                    include_in_semantic_graph: true,
                 },
             )
         })

@@ -26,6 +26,9 @@ pub use semantic::graph_builder::build_graph_from_doc;
 pub use semantic::import_resolution::{
     resolve_imported_node_ids_for_simple_name, resolve_type_reference_targets,
 };
+pub use semantic::library_loader::{
+    resolve_library_closure, LibraryClosureOptions, LoadedLibraryFile, WorkspaceSource,
+};
 pub use semantic::model::{NodeId, RelationshipKind, SemanticNode};
 pub use semantic::reference_resolution::{
     resolve_expression_endpoint_strict, resolve_inherited_member_via_type,

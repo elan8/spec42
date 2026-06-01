@@ -8,6 +8,7 @@ pub mod graph;
 pub mod graph_builder;
 pub mod ibd;
 pub mod import_resolution;
+pub mod library_loader;
 pub mod model;
 pub mod model_projection;
 pub mod reference_resolution;

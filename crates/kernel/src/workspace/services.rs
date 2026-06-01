@@ -202,6 +202,7 @@ pub(crate) fn store_parsed_document_text(
             content: text,
             parsed,
             parse_metadata,
+            include_in_semantic_graph: true,
         },
     );
     refresh_symbols_for_uri(state, uri_norm);
@@ -285,6 +286,7 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
                 content: entry.content,
                 parsed: entry.parsed,
                 parse_metadata: entry.parse_metadata,
+                include_in_semantic_graph: true,
             },
         );
         let warning = warning_from_parse_errors(
@@ -386,11 +388,111 @@ pub(crate) fn remove_document(state: &mut ServerState, uri_norm: &Url) {
     state.semantic_graph.remove_nodes_for_uri(uri_norm);
 }
 
+fn semantic_graph_uris(index: &std::collections::HashMap<Url, IndexEntry>) -> Vec<Url> {
+    index
+        .iter()
+        .filter(|(_, entry)| entry.include_in_semantic_graph)
+        .map(|(uri, _)| uri.clone())
+        .collect()
+}
+
+/// Scan configured library roots for `sysml/librarySearch` without merging the full tree into the semantic graph.
+pub(crate) fn index_library_paths_for_search(
+    state: &mut ServerState,
+    library_paths: &[Url],
+) -> usize {
+    if library_paths.is_empty() {
+        return 0;
+    }
+    let (entries, _) = crate::workspace::scan::scan_sysml_files(library_paths.to_vec());
+    if entries.is_empty() {
+        return 0;
+    }
+    let parsed_entries = parse_scanned_entries(entries, false);
+    let mut indexed = 0usize;
+    for entry in parsed_entries {
+        let uri_norm = crate::common::util::normalize_file_uri(&entry.uri);
+        if state.index.contains_key(&uri_norm) {
+            continue;
+        }
+        state.index.insert(
+            uri_norm.clone(),
+            IndexEntry {
+                content: entry.content.clone(),
+                parsed: entry.parsed,
+                parse_metadata: entry.parse_metadata,
+                include_in_semantic_graph: false,
+            },
+        );
+        let mut symbols = Vec::new();
+        library_search::add_short_name_symbol_entries(&mut symbols, &entry.content, &uri_norm);
+        state.symbol_table.extend(symbols);
+        indexed += 1;
+    }
+    indexed
+}
+
+/// Load import-closure library files for the current workspace index (semantic graph merge).
+pub(crate) fn ingest_missing_library_closure(state: &mut ServerState) -> usize {
+    if crate::workspace::library_closure::library_full_scan_enabled() || state.library_paths.is_empty()
+    {
+        return 0;
+    }
+    let workspace_sources: Vec<semantic_core::WorkspaceSource<'_>> = state
+        .index
+        .iter()
+        .filter(|(uri, entry)| {
+            entry.include_in_semantic_graph
+                && !crate::common::util::uri_under_any_library(uri, &state.library_paths)
+        })
+        .map(|(uri, entry)| semantic_core::WorkspaceSource {
+            path: uri.as_str(),
+            content: entry.content.as_str(),
+        })
+        .collect();
+    let Ok(loaded) = crate::workspace::library_closure::load_library_closure_scan_entries(
+        &workspace_sources,
+        &state.library_paths,
+    ) else {
+        return 0;
+    };
+    let mut added = 0usize;
+    for (uri, content) in loaded {
+        let uri_norm = crate::common::util::normalize_file_uri(&uri);
+        if state.index.contains_key(&uri_norm) {
+            continue;
+        }
+        let parsed_result = crate::common::util::parse_for_editor(&content);
+        let parse_errors = parsed_result
+            .errors
+            .iter()
+            .take(5)
+            .map(|e| e.message.clone())
+            .collect::<Vec<_>>();
+        store_parsed_document_text(
+            state,
+            &uri_norm,
+            content,
+            Some(parsed_result.root),
+            ParseMetadata {
+                parse_time_ms: 0,
+                parse_cached: false,
+            },
+            &parse_errors,
+            parsed_result.errors.len(),
+            "library_closure",
+            false,
+        );
+        added += 1;
+    }
+    added
+}
+
 pub(crate) fn rebuild_all_document_links(
     state: &mut ServerState,
 ) -> RebuildAllDocumentLinksMetrics {
     let total_start = Instant::now();
-    let uris: Vec<Url> = state.index.keys().cloned().collect();
+    let uris: Vec<Url> = semantic_graph_uris(&state.index);
     let parsed_docs: Vec<(Url, RootNamespace)> = uris
         .iter()
         .filter_map(|uri| {
@@ -493,15 +595,23 @@ pub(crate) fn rebuild_all_document_links(
 
     let refresh_symbols_start = Instant::now();
     let mut all_symbols = Vec::new();
-    for uri in &uris {
-        let mut new_entries = semantic::symbol_entries_for_uri(&state.semantic_graph, uri);
-        if let Some(index_entry) = state.index.get(uri) {
+    for (uri, index_entry) in &state.index {
+        if !index_entry.include_in_semantic_graph {
+            let mut search_symbols = Vec::new();
             library_search::add_short_name_symbol_entries(
-                &mut new_entries,
+                &mut search_symbols,
                 &index_entry.content,
                 uri,
             );
+            all_symbols.extend(search_symbols);
+            continue;
         }
+        let mut new_entries = semantic::symbol_entries_for_uri(&state.semantic_graph, uri);
+        library_search::add_short_name_symbol_entries(
+            &mut new_entries,
+            &index_entry.content,
+            uri,
+        );
         all_symbols.extend(new_entries);
     }
     state.symbol_table = all_symbols;
@@ -530,7 +640,7 @@ pub(crate) fn rebuild_semantic_graph_staged(
     RebuildAllDocumentLinksMetrics,
 ) {
     let total_start = Instant::now();
-    let uris: Vec<Url> = index.keys().cloned().collect();
+    let uris: Vec<Url> = semantic_graph_uris(index);
     let parsed_docs: Vec<(Url, RootNamespace)> = uris
         .iter()
         .filter_map(|uri| {
@@ -615,15 +725,23 @@ pub(crate) fn rebuild_semantic_graph_staged(
 
     let refresh_symbols_start = Instant::now();
     let mut all_symbols = Vec::new();
-    for uri in &uris {
-        let mut new_entries = semantic::symbol_entries_for_uri(&semantic_graph, uri);
-        if let Some(index_entry) = index.get(uri) {
+    for (uri, index_entry) in index {
+        if !index_entry.include_in_semantic_graph {
+            let mut search_symbols = Vec::new();
             library_search::add_short_name_symbol_entries(
-                &mut new_entries,
+                &mut search_symbols,
                 &index_entry.content,
                 uri,
             );
+            all_symbols.extend(search_symbols);
+            continue;
         }
+        let mut new_entries = semantic::symbol_entries_for_uri(&semantic_graph, uri);
+        library_search::add_short_name_symbol_entries(
+            &mut new_entries,
+            &index_entry.content,
+            uri,
+        );
         all_symbols.extend(new_entries);
     }
     let refresh_symbols_ms = elapsed_ms(refresh_symbols_start);

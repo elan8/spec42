@@ -113,8 +113,12 @@ pub(crate) async fn initialized(
             .log_message(MessageType::INFO, format!("{} initialized", server_name))
             .await;
     }
-    let scan_roots = scan_roots(&workspace_roots, &library_paths);
-    if scan_roots.is_empty() {
+    let scan_roots = if crate::workspace::library_closure::library_full_scan_enabled() {
+        scan_roots(&workspace_roots, &library_paths)
+    } else {
+        workspace_roots.clone()
+    };
+    if scan_roots.is_empty() && library_paths.is_empty() {
         set_semantic_lifecycle(state, SemanticLifecycle::Ready).await;
         return;
     }
@@ -152,6 +156,7 @@ pub(crate) async fn initialized(
             util::env_usize("SPEC42_PARALLEL_STARTUP_PARSE_MIN_FILES", 10);
         let should_parallel_parse =
             parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
+        let library_paths_for_closure = library_paths.clone();
         let parse_worker_start = Instant::now();
         let parsed_entries = tokio::task::spawn_blocking(move || {
             parse_scanned_entries(entries, should_parallel_parse)
@@ -159,6 +164,52 @@ pub(crate) async fn initialized(
         .await
         .unwrap_or_default();
         let parse_worker_ms = parse_worker_start.elapsed().as_millis() as u64;
+        let workspace_closure_inputs: Vec<(String, String)> = parsed_entries
+            .iter()
+            .map(|entry| (entry.uri.to_string(), entry.content.clone()))
+            .collect();
+        let library_entries = if crate::workspace::library_closure::library_full_scan_enabled() {
+            Vec::new()
+        } else {
+            match tokio::task::spawn_blocking(move || {
+                let workspace_sources: Vec<semantic_core::WorkspaceSource<'_>> =
+                    workspace_closure_inputs
+                        .iter()
+                        .map(|(path, content)| semantic_core::WorkspaceSource {
+                            path: path.as_str(),
+                            content: content.as_str(),
+                        })
+                        .collect();
+                crate::workspace::library_closure::load_library_closure_scan_entries(
+                    &workspace_sources,
+                    &library_paths_for_closure,
+                )
+            })
+            .await
+            {
+                Ok(Ok(entries)) => entries,
+                Ok(Err(err)) => {
+                    warn!("library import closure load failed: {err}");
+                    Vec::new()
+                }
+                Err(err) => {
+                    warn!("library import closure task failed: {err}");
+                    Vec::new()
+                }
+            }
+        };
+        let library_parsed = if library_entries.is_empty() {
+            Vec::new()
+        } else {
+            let parallel = library_entries.len() >= parallel_parse_min_files && should_parallel_parse;
+            tokio::task::spawn_blocking(move || parse_scanned_entries(library_entries, parallel))
+                .await
+                .unwrap_or_default()
+        };
+        let parsed_entries: Vec<_> = parsed_entries
+            .into_iter()
+            .chain(library_parsed)
+            .collect();
         let merge_index_start = Instant::now();
         let mut st = state.write().await;
         for parsed_entry in &parsed_entries {
@@ -210,6 +261,23 @@ pub(crate) async fn initialized(
                 st.symbol_table = new_symbols;
                 st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
                 relink_metrics = metrics;
+            }
+
+            if !crate::workspace::library_closure::library_full_scan_enabled()
+                && !st.library_paths.is_empty()
+            {
+                let library_paths_for_search = st.library_paths.clone();
+                let search_indexed = crate::workspace::services::index_library_paths_for_search(
+                    &mut st,
+                    &library_paths_for_search,
+                );
+                if search_indexed > 0 && perf_logging_enabled {
+                    info!(
+                        trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
+                        search_indexed,
+                        "startup:library-search-index:end"
+                    );
+                }
             }
 
             for (uri_norm, warning) in &ingest_results {
@@ -333,6 +401,13 @@ pub(crate) async fn did_open(
     let warning = {
         let mut state = state.write().await;
         let warning = store_document_text(&mut state, &uri_norm, text.clone());
+        if !crate::workspace::library_closure::library_full_scan_enabled()
+            && !state.library_paths.is_empty()
+            && !util::uri_under_any_library(&uri_norm, &state.library_paths)
+        {
+            crate::workspace::services::ingest_missing_library_closure(&mut state);
+            crate::workspace::services::rebuild_all_document_links(&mut state);
+        }
         state.semantic_state_version = state.semantic_state_version.wrapping_add(1);
         warning
     };

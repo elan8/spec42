@@ -14,6 +14,8 @@ pub(crate) struct IndexEntry {
     pub(crate) content: String,
     pub(crate) parsed: Option<RootNamespace>,
     pub(crate) parse_metadata: ParseMetadata,
+    /// When `false`, the file is indexed for `sysml/librarySearch` only (not merged into the semantic graph).
+    pub(crate) include_in_semantic_graph: bool,
 }
 
 #[derive(Debug, Default)]
