@@ -12,7 +12,9 @@ pub use semantic::dto::{
     SysmlVisualizationViewCandidateDto, WorkspaceFileModelDto, WorkspaceModelDto,
     WorkspaceModelSummaryDto,
 };
-pub use semantic::evaluation::evaluate_expressions;
+pub use semantic::evaluation::{
+    evaluate_expressions, evaluate_expressions_with_unit_catalogs, UnitRegistry,
+};
 pub use semantic::ibd::{build_ibd_for_uri, merge_ibd_payloads};
 pub use semantic::explicit_views::{
     build_view_candidates, build_view_catalog, evaluate_views, project_ids_for_renderer,

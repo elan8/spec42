@@ -8,7 +8,8 @@ use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResu
 
 mod units;
 
-use units::{UnitError, UnitRegistry};
+pub use units::UnitRegistry;
+use units::UnitError;
 
 const EVALUATED_VALUE_KEY: &str = "evaluatedValue";
 const EVALUATED_UNIT_KEY: &str = "evaluatedUnit";
@@ -32,6 +33,9 @@ const ANALYSIS_EVAL_ERROR_KEY: &str = "analysisEvaluationError";
 const ANALYSIS_CONSTRAINT_PASSED_KEY: &str = "analysisConstraintPassed";
 const ANALYSIS_COMPUTED_VALUE_KEY: &str = "analysisComputedValue";
 const ANALYSIS_COMPUTED_UNIT_KEY: &str = "analysisComputedUnit";
+const ANALYSIS_LIMIT_VALUE_KEY: &str = "analysisLimitValue";
+const ANALYSIS_LIMIT_UNIT_KEY: &str = "analysisLimitUnit";
+const ANALYSIS_LIMIT_DISPLAY_KEY: &str = "analysisLimitDisplay";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum EvalStatus {
@@ -130,8 +134,16 @@ impl Quantity {
 }
 
 pub fn evaluate_expressions(graph: &mut SemanticGraph) {
+    evaluate_expressions_with_unit_catalogs(graph, &[]);
+}
+
+pub fn evaluate_expressions_with_unit_catalogs(
+    graph: &mut SemanticGraph,
+    extra_unit_catalogs: &[&str],
+) {
+    let units = UnitRegistry::build_for_evaluation(graph, extra_unit_catalogs);
     let outcomes = {
-        let mut engine = EvalEngine::new(graph);
+        let mut engine = EvalEngine::new(graph, units.clone());
         graph
             .node_index_by_id
             .keys()
@@ -169,12 +181,12 @@ pub fn evaluate_expressions(graph: &mut SemanticGraph) {
                 .insert(EVALUATION_ERROR_KEY.to_string(), Value::String(error));
         }
     }
-    evaluate_analysis_constraints(graph);
+    evaluate_analysis_constraints(graph, units);
 }
 
-fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
+fn evaluate_analysis_constraints(graph: &mut SemanticGraph, units: UnitRegistry) {
     let outcomes = {
-        let mut engine = EvalEngine::new(graph);
+        let mut engine = EvalEngine::new(graph, units);
         let node_ids: Vec<NodeId> = graph.node_index_by_id.keys().cloned().collect();
         let mut outcomes = Vec::new();
         for node_id in node_ids {
@@ -202,6 +214,7 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
             let mut error: Option<String> = None;
             let mut passed: Option<bool> = None;
             let mut computed: Option<Quantity> = None;
+            let mut limit: Option<Quantity> = None;
             if !inline_constraints.is_empty() {
                 evaluated = true;
                 for constraint in inline_constraints {
@@ -226,6 +239,9 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
                                 computed =
                                     evaluate_analysis_display_quantity(&mut engine, &node_id, expr);
                             }
+                            if limit.is_none() {
+                                limit = evaluate_analysis_limit_quantity(&mut engine, &node_id, expr);
+                            }
                         }
                         Err(err) => {
                             status = err.status.as_str().to_string();
@@ -235,6 +251,7 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
                 }
             } else if let Some(expr) = single_expression.as_deref() {
                 evaluated = true;
+                limit = evaluate_analysis_limit_quantity(&mut engine, &node_id, expr);
                 match evaluate_analysis_expression(&mut engine, &node_id, expr) {
                     Ok(bool_value) => {
                         status = if bool_value {
@@ -255,13 +272,13 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
             }
 
             if evaluated {
-                outcomes.push((node_id, status, value, error, passed, computed));
+                outcomes.push((node_id, status, value, error, passed, computed, limit));
             }
         }
         outcomes
     };
 
-    for (node_id, status, value, error, passed, computed) in outcomes {
+    for (node_id, status, value, error, passed, computed, limit) in outcomes {
         let Some(node_mut) = graph.get_node_mut(&node_id) else {
             continue;
         };
@@ -296,6 +313,23 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph) {
                 );
             }
         }
+        if let Some(quantity) = limit {
+            let display = format_quantity_display(&quantity);
+            node_mut.attributes.insert(
+                ANALYSIS_LIMIT_VALUE_KEY.to_string(),
+                number_to_json(quantity.value),
+            );
+            if let Some(unit) = quantity.unit {
+                node_mut.attributes.insert(
+                    ANALYSIS_LIMIT_UNIT_KEY.to_string(),
+                    Value::String(unit),
+                );
+            }
+            node_mut.attributes.insert(
+                ANALYSIS_LIMIT_DISPLAY_KEY.to_string(),
+                Value::String(display),
+            );
+        }
     }
 }
 
@@ -310,6 +344,48 @@ fn split_comparison_lhs(expression: &str) -> Option<&str> {
         }
     }
     None
+}
+
+fn split_comparison_rhs(expression: &str) -> Option<&str> {
+    let trimmed = expression.trim();
+    for op in ["<=", ">=", "==", "!=", "<", ">"] {
+        if let Some(index) = trimmed.find(op) {
+            let rhs = trimmed[index + op.len()..].trim().trim_end_matches(';');
+            if !rhs.is_empty() {
+                return Some(rhs);
+            }
+        }
+    }
+    None
+}
+
+fn format_quantity_display(quantity: &Quantity) -> String {
+    let formatted = if (quantity.value - quantity.value.round()).abs() < f64::EPSILON {
+        format!("{}", quantity.value.round() as i64)
+    } else {
+        format!("{}", quantity.value)
+    };
+    match quantity
+        .unit
+        .as_deref()
+        .filter(|unit| !unit.trim().is_empty())
+    {
+        Some(unit) => format!("{formatted} {unit}"),
+        None => formatted,
+    }
+}
+
+fn evaluate_analysis_limit_quantity(
+    engine: &mut EvalEngine<'_>,
+    context_id: &NodeId,
+    expression: &str,
+) -> Option<Quantity> {
+    let repaired = normalize_broken_invocation_syntax(expression.trim());
+    let normalized = normalize_truncated_analysis_comparison(repaired.as_str());
+    let rhs = split_comparison_rhs(normalized.as_str())?;
+    engine
+        .evaluate_quantity_expression(context_id, rhs)
+        .ok()
 }
 
 fn evaluate_analysis_display_quantity(
@@ -875,10 +951,10 @@ struct EvalEngine<'a> {
 }
 
 impl<'a> EvalEngine<'a> {
-    fn new(graph: &'a SemanticGraph) -> Self {
+    fn new(graph: &'a SemanticGraph, units: UnitRegistry) -> Self {
         Self {
             graph,
-            units: UnitRegistry::from_semantic_graph(graph),
+            units,
             memoized: HashMap::new(),
             active_stack: HashSet::new(),
             parameter_bindings: Vec::new(),

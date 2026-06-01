@@ -191,4 +191,9 @@ fn cross_document_analysis_evaluates_power_rollup() {
         Some("true"),
         "comparison constraint should pass"
     );
+    assert_eq!(
+        node_attr(&graph, analysis_qualified, "analysisLimitDisplay").as_deref(),
+        Some("55"),
+        "budget attribute on analysis def should project as limit"
+    );
 }

@@ -52,12 +52,25 @@ impl CanonicalUnitExpr {
 }
 
 impl UnitRegistry {
+    /// Builds a registry from OMG QUDM files on disk (when present on `file://` graph URIs)
+    /// plus optional supplemental SysML unit catalog text (e.g. platform library sources).
+    pub fn build_for_evaluation(
+        graph: &SemanticGraph,
+        extra_unit_catalogs: &[&str],
+    ) -> Self {
+        let mut registry = Self::from_semantic_graph(graph);
+        for catalog in extra_unit_catalogs {
+            registry.ingest_unit_catalog(catalog);
+        }
+        registry
+    }
+
     pub fn from_semantic_graph(graph: &SemanticGraph) -> Self {
         let mut registry = UnitRegistry::default();
         let mut candidate_files = HashSet::new();
         for uri in graph.nodes_by_uri.keys() {
             if let Some(path) = uri_to_path(uri) {
-                if !path.to_string_lossy().contains("Quantities and Units") {
+                if !should_ingest_unit_library_file(&path) {
                     continue;
                 }
                 if path
@@ -75,6 +88,11 @@ impl UnitRegistry {
             }
         }
         registry
+    }
+
+    /// Ingests linear unit definitions from SysML library text (`attribute <EUR> … : SomeUnit;`).
+    pub fn ingest_unit_catalog(&mut self, sysml_contents: &str) {
+        self.ingest_file_contents(sysml_contents);
     }
 
     #[cfg(test)]
@@ -305,6 +323,11 @@ fn parse_linear_unit_def(line: &str) -> Option<UnitDef> {
         conversion_factor,
         conversion_offset: 0.0,
     })
+}
+
+fn should_ingest_unit_library_file(path: &PathBuf) -> bool {
+    let normalized = path.to_string_lossy().replace('\\', "/");
+    normalized.contains("Quantities and Units")
 }
 
 fn uri_to_path(uri: &Url) -> Option<PathBuf> {
@@ -561,6 +584,30 @@ mod tests {
         assert!(
             (value - 0.0).abs() < 1e-6,
             "expected 32°F_abs to map to 0°C_abs, got {value}"
+        );
+    }
+
+    #[test]
+    fn ingests_supplemental_unit_catalog() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_unit_catalog(
+            "attribute <EUR> 'euro' : MonetaryUnit;\nattribute <USD> 'US dollar' : MonetaryUnit;",
+        );
+        assert!(registry.has_symbol("EUR"));
+        assert!(registry.has_symbol("USD"));
+        assert!((registry.convert_value(1.0, "EUR", "EUR").unwrap() - 1.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn ingests_unit_catalog_file_format() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_unit_catalog(
+            "attribute <EUR> 'euro' : MonetaryUnit;\nattribute <USD> 'US dollar' : MonetaryUnit;",
+        );
+        assert!(registry.has_symbol("EUR"));
+        assert_eq!(
+            registry.get("EUR").map(|def| def.dimension.as_str()),
+            Some("MonetaryUnit")
         );
     }
 
