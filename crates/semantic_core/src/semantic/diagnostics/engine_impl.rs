@@ -814,6 +814,17 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         diagnostics.len().saturating_sub(d13),
     ));
 
+    let t14 = Instant::now();
+    let d14 = diagnostics.len();
+    super::pending_relationship_diagnostics::append_unresolved_pending_relationship_diagnostics(
+        graph, uri, &mut diagnostics,
+    );
+    section_timings.push((
+        "14_unresolved_pending_relationships".to_string(),
+        t14.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d14),
+    ));
+
     if std::env::var("SEMANTIC_CORE_TIMING")
         .map(|value| {
             let value = value.trim().to_ascii_lowercase();

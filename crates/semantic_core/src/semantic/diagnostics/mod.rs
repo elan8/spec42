@@ -2,6 +2,7 @@ mod checks;
 pub mod engine;
 mod engine_impl;
 mod helpers;
+mod pending_relationship_diagnostics;
 mod shared_rules;
 pub mod types;
 
