@@ -1020,7 +1020,7 @@ mod tests {
     }
 
     #[cfg(test)]
-    fn range_text_from_source(source: &str, r: &crate::syntax::ast_util::SourceRange) -> String {
+    fn range_text_from_source(source: &str, r: &crate::semantic_tokens::SourceRange) -> String {
         let lines: Vec<&str> = source.lines().collect();
         let line = match lines.get(r.start_line as usize) {
             Some(l) => l,
@@ -1038,7 +1038,7 @@ mod tests {
     #[cfg(test)]
     fn write_semantic_ranges_for_review(
         source: &str,
-        ranges: &[(crate::syntax::ast_util::SourceRange, u32)],
+        ranges: &[(crate::semantic_tokens::SourceRange, u32)],
         out_path: &std::path::Path,
     ) {
         use std::io::Write;
