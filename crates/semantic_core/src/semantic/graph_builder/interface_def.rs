@@ -11,7 +11,7 @@ use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{
-    add_edge_if_both_exist, add_typing_edge_if_exists, normalize_for_lookup,
+    add_edge_if_both_exist, add_typing_edge_if_exists, try_wire_derivation_connection,
 };
 
 use super::expressions;
@@ -91,54 +91,7 @@ fn add_connect_stmt(
 }
 
 fn maybe_add_derivation_edge(g: &mut SemanticGraph, uri: &Url, parent_id: &NodeId) {
-    let Some(parent) = g.get_node(parent_id) else {
-        return;
-    };
-    if parent
-        .attributes
-        .get("connectionAnnotation")
-        .and_then(|value| value.as_str())
-        != Some("derivation")
-    {
-        return;
-    }
-    let Some(original_target) = g
-        .child_named(parent_id, "#original")
-        .into_iter()
-        .next()
-        .and_then(|node| node.attributes.get("endType"))
-        .and_then(|value| value.as_str())
-    else {
-        return;
-    };
-    let Some(derived_target) = g
-        .child_named(parent_id, "#derive")
-        .into_iter()
-        .next()
-        .and_then(|node| node.attributes.get("endType"))
-        .and_then(|value| value.as_str())
-    else {
-        return;
-    };
-    let original_target = normalize_for_lookup(original_target);
-    let derived_target = normalize_for_lookup(derived_target);
-    let _ = add_edge_if_both_exist(
-        g,
-        uri,
-        &original_target,
-        &derived_target,
-        RelationshipKind::Derivation,
-    );
-    if let Some(parent) = g.get_node_mut(parent_id) {
-        parent.attributes.insert(
-            "derivationOriginal".to_string(),
-            serde_json::json!(original_target),
-        );
-        parent.attributes.insert(
-            "derivationDerived".to_string(),
-            serde_json::json!(derived_target),
-        );
-    }
+    try_wire_derivation_connection(g, uri, parent_id);
 }
 
 fn add_connection_edges_from_end_typing(g: &mut SemanticGraph, uri: &Url, parent_id: &NodeId) {

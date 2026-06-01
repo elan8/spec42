@@ -15,7 +15,7 @@ use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{
     add_edge_if_both_exist, add_specializes_edge_if_exists, add_typing_edge_if_exists,
-    normalize_for_lookup,
+    try_wire_derivation_connection,
 };
 
 use super::analysis_case;
@@ -1072,45 +1072,7 @@ pub(super) fn build_from_package_body_element(
                     g,
                 );
                 if annotation == Some("derivation") {
-                    let original_end = g.child_named(&node_id, "#original").into_iter().next();
-                    let derived_end = g.child_named(&node_id, "#derive").into_iter().next();
-                    let original_target = original_end.and_then(|node| {
-                        g.outgoing_targets_by_kind(node, RelationshipKind::Typing)
-                            .into_iter()
-                            .next()
-                            .map(|target| target.id.clone())
-                    });
-                    let derived_target = derived_end.and_then(|node| {
-                        g.outgoing_targets_by_kind(node, RelationshipKind::Typing)
-                            .into_iter()
-                            .next()
-                            .map(|target| target.id.clone())
-                    });
-                    if let (Some(original_target), Some(derived_target)) =
-                        (original_target, derived_target)
-                    {
-                        if let (Some(&src_idx), Some(&tgt_idx)) = (
-                            g.node_index_by_id.get(&original_target),
-                            g.node_index_by_id.get(&derived_target),
-                        ) {
-                            g.graph
-                                .add_edge(src_idx, tgt_idx, RelationshipKind::Derivation);
-                        }
-                        if let Some(connection) = g.get_node_mut(&node_id) {
-                            connection.attributes.insert(
-                                "derivationOriginal".to_string(),
-                                serde_json::json!(normalize_for_lookup(
-                                    &original_target.qualified_name
-                                )),
-                            );
-                            connection.attributes.insert(
-                                "derivationDerived".to_string(),
-                                serde_json::json!(normalize_for_lookup(
-                                    &derived_target.qualified_name
-                                )),
-                            );
-                        }
-                    }
+                    try_wire_derivation_connection(g, uri, &node_id);
                 }
             }
             wire_def_specialization_edge(

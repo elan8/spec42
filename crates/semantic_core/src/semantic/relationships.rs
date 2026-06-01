@@ -28,6 +28,7 @@ const TYPING_TARGET_KINDS: &[&str] = &[
     "allocation def",
     "state def",
     "requirement def",
+    "requirement",
     "use case def",
     "concern def",
     "enum def",
@@ -334,6 +335,80 @@ fn resolve_pending_expression_relationships_for_uri(g: &mut SemanticGraph, uri: 
     }
 }
 
+/// Links `#derivation connection` ends (`#original`, `#derive`) to requirement elements.
+pub(crate) fn try_wire_derivation_connection(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    connection_node_id: &NodeId,
+) {
+    let Some(connection) = g.get_node(connection_node_id) else {
+        return;
+    };
+    if connection
+        .attributes
+        .get("connectionAnnotation")
+        .and_then(|value| value.as_str())
+        != Some("derivation")
+    {
+        return;
+    }
+    let scope_prefix = connection
+        .parent_id
+        .as_ref()
+        .and_then(|parent_id| g.get_node(parent_id))
+        .map(|parent| parent.id.qualified_name.as_str());
+
+    let Some(original_id) =
+        resolve_derivation_end_target(g, uri, scope_prefix, connection_node_id, "#original")
+    else {
+        return;
+    };
+    let Some(derived_id) =
+        resolve_derivation_end_target(g, uri, scope_prefix, connection_node_id, "#derive")
+    else {
+        return;
+    };
+
+    add_resolved_edge_once(g, &original_id, &derived_id, RelationshipKind::Derivation);
+    if let Some(connection) = g.get_node_mut(connection_node_id) {
+        connection.attributes.insert(
+            "derivationOriginal".to_string(),
+            serde_json::json!(normalize_for_lookup(&original_id.qualified_name)),
+        );
+        connection.attributes.insert(
+            "derivationDerived".to_string(),
+            serde_json::json!(normalize_for_lookup(&derived_id.qualified_name)),
+        );
+    }
+}
+
+fn resolve_derivation_end_target(
+    g: &SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    connection_node_id: &NodeId,
+    end_name: &str,
+) -> Option<NodeId> {
+    let end = g
+        .child_named(connection_node_id, end_name)
+        .into_iter()
+        .next()?;
+    if let Some(target) = g
+        .outgoing_targets_by_kind(&end, RelationshipKind::Typing)
+        .into_iter()
+        .next()
+    {
+        return Some(target.id.clone());
+    }
+    let type_ref = end.attributes.get("endType")?.as_str()?;
+    match resolve_expression_endpoint_strict(g, uri, container_prefix, type_ref) {
+        ResolveResult::Resolved(id) => Some(id),
+        ResolveResult::Ambiguous | ResolveResult::Unresolved => {
+            resolve_type_target_in_workspace(g, end, type_ref, TYPING_TARGET_KINDS)
+        }
+    }
+}
+
 fn add_resolved_edge_once(
     g: &mut SemanticGraph,
     source_id: &NodeId,
@@ -442,6 +517,21 @@ pub fn link_workspace_relationships(g: &mut SemanticGraph) {
         for specializes_ref in specializes_refs {
             add_specializes_edges_for_node(g, &node_id, &specializes_ref);
         }
+    }
+
+    // Per-document graph build cannot see imported elements from other files; re-wire after merge.
+    let connection_ids: Vec<NodeId> = g
+        .node_index_by_id
+        .keys()
+        .filter(|node_id| {
+            g.get_node(node_id)
+                .map(|node| node.element_kind == "derivation connection")
+                .unwrap_or(false)
+        })
+        .cloned()
+        .collect();
+    for connection_id in connection_ids {
+        try_wire_derivation_connection(g, &connection_id.uri, &connection_id);
     }
 }
 
