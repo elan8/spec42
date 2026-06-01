@@ -79,9 +79,9 @@ npm run compile
 
 ## Parser Dependency Policy
 
-The workspace pins `sysml-v2-parser` in the root `Cargo.toml` as a git dependency with an explicit tag. When updating parser behavior:
+The workspace pins `sysml-v2-parser` in the root `Cargo.toml` as a git dependency on `https://github.com/elan8/sysml-v2-parser` with an explicit tag (currently `v0.13.0`). When updating parser behavior:
 
-1. Update the `sysml-v2-parser` tag in root `Cargo.toml`.
+1. Bump the `tag` in root `Cargo.toml` and run `cargo update -p sysml-v2-parser`.
 2. Run `cargo test --workspace` with the embedded stdlib bundle available.
 3. Run `cargo test --workspace --no-default-features`.
 4. Run targeted workspace/indexing checks in `crates/kernel/tests/integration/workspace.rs`.

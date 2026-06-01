@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Parser dependency upgrade** - Bumped `sysml-v2-parser` to `v0.11.0` and removed the local `[patch]` override to `../sysml-v2-parser`.
+- **Parser dependency upgrade** - Bumped `sysml-v2-parser` to git tag `v0.13.0` (`https://github.com/elan8/sysml-v2-parser`). Brings definition `specializes` / `specializes_span` on AST nodes, library typed-header parsing, P1 parser prelude/body consolidation, and calc/constraint `return` fixes. Re-run validation after upgrading.
 
 ## [0.24.0] - 2026-05-15
 
