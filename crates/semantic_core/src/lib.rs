@@ -10,7 +10,7 @@ pub use semantic::dto::{
     SysmlElementDto, SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationGroupDto,
     SysmlVisualizationPackageCandidateDto, SysmlVisualizationResultDto,
     SysmlVisualizationViewCandidateDto, WorkspaceFileModelDto, WorkspaceModelDto,
-    WorkspaceModelSummaryDto,
+    WorkspaceModelSummaryDto, visualization_model_not_ready,
 };
 pub use semantic::evaluation::{
     evaluate_expressions, evaluate_expressions_with_unit_catalogs, UnitRegistry,

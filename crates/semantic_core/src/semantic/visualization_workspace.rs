@@ -1278,6 +1278,7 @@ pub fn build_sysml_visualization_workspace(
     if catalog.usages.is_empty() {
         return Ok(SysmlVisualizationResultDto {
             version: 0,
+            model_ready: true,
             view: view.to_string(),
             workspace_root_uri: workspace_root_uri.as_str().to_string(),
             view_candidates: Vec::new(),
@@ -1351,6 +1352,7 @@ pub fn build_sysml_visualization_workspace(
     let Some(selected_candidate) = selected_candidate else {
         return Ok(SysmlVisualizationResultDto {
             version: 0,
+            model_ready: true,
             view: view.to_string(),
             workspace_root_uri: workspace_root_uri.as_str().to_string(),
             view_candidates,
@@ -1384,6 +1386,7 @@ pub fn build_sysml_visualization_workspace(
     if !selected_candidate.supported {
         return Ok(SysmlVisualizationResultDto {
             version: 0,
+            model_ready: true,
             view: view.to_string(),
             workspace_root_uri: workspace_root_uri.as_str().to_string(),
             view_candidates,
@@ -1465,6 +1468,7 @@ pub fn build_sysml_visualization_workspace(
 
     Ok(SysmlVisualizationResultDto {
         version: 0,
+        model_ready: true,
         view: resolved_view,
         workspace_root_uri: workspace_root_uri.as_str().to_string(),
         view_candidates,

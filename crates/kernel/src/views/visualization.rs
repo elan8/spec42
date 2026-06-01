@@ -140,6 +140,7 @@ pub(crate) fn build_sysml_visualization_response(
     )
     .unwrap_or_else(|message| SysmlVisualizationResultDto {
         version: 0,
+        model_ready: true,
         view: view.to_string(),
         workspace_root_uri: workspace_root_uri.as_str().to_string(),
         view_candidates: Vec::new(),

@@ -35,6 +35,7 @@ import {
   VisualizationPanel,
   VisualizerRestoreState,
 } from "./visualization/visualizationPanel";
+import { setVisualizationGateState } from "./visualization/visualizationGate";
 import {
   SOFTWARE_RESTORE_STATE_KEY,
   SoftwareVisualizationPanel,
@@ -170,6 +171,7 @@ function setServerHealth(
 ): void {
   serverHealthState = state;
   serverHealthDetail = detail;
+  setVisualizationGateState({ serverHealthState: state });
   log("Server health:", state, detail);
   updateStatusBar(context);
 }
@@ -733,10 +735,12 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     client.onDidChangeState(({ newState }) => {
       if (newState === State.Starting) {
+        setVisualizationGateState({ languageClientReady: false });
         setServerHealth(context, "starting", "Starting SysML language server.");
       } else if (newState === State.Running) {
         restartCount = 0;
         crashDialogShown = false;
+        setVisualizationGateState({ languageClientReady: true });
         setServerHealth(context, "ready", "SysML language server is ready.");
       } else if (newState === State.Stopped && !manualStopInProgress) {
         setServerHealth(context, "crashed", "SysML language server is stopped.");
@@ -749,6 +753,7 @@ export function activate(context: vscode.ExtensionContext): void {
       restartCount = 0;
       crashDialogShown = false;
       languageClientReady = true;
+      setVisualizationGateState({ languageClientReady: true });
       setServerHealth(context, "ready", "SysML language server is ready.");
       log("Language client ready, scheduling Model Explorer refresh");
       logStartupPhase("languageClient:ready");
@@ -760,6 +765,7 @@ export function activate(context: vscode.ExtensionContext): void {
     .catch((error) => {
       const detail = error instanceof Error ? error.message : String(error ?? "unknown startup failure");
       languageClientReady = false;
+      setVisualizationGateState({ languageClientReady: false });
       setServerHealth(context, "crashed", `Startup failed: ${detail}`);
       logError("Language client failed to start", error);
       void showServerIssue(
@@ -1348,6 +1354,7 @@ export function activate(context: vscode.ExtensionContext): void {
     finishWorkspaceLoad(run, {
       workspaceViewMode: provider.getWorkspaceViewMode(),
     });
+    VisualizationPanel.currentPanel?.refresh();
     updateStatusBar(context);
   }
 

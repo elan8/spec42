@@ -63,6 +63,8 @@ interface LaidOutEdge {
   targetNode?: LaidOutNode;
   layout?: {
     sections?: EdgeSection[];
+    edgeOwnerOffset?: { x: number; y: number };
+    lcaOffset?: { x: number; y: number };
   };
 }
 
@@ -103,6 +105,52 @@ interface PreparedPort {
   portType?: string;
   portSide?: string;
   attributes?: Record<string, unknown>;
+}
+
+type PortUsage = { sourceCount: number; targetCount: number };
+
+function compareIbdPorts(
+  node: PreparedNode,
+  a: PreparedPort,
+  b: PreparedPort,
+  usageForPort: (node: PreparedNode, port: PreparedPort) => PortUsage,
+): number {
+  const usageA = usageForPort(node, a);
+  const usageB = usageForPort(node, b);
+  const degreeA = usageA.sourceCount + usageA.targetCount;
+  const degreeB = usageB.sourceCount + usageB.targetCount;
+  if (degreeB !== degreeA) return degreeB - degreeA;
+  return a.name.localeCompare(b.name);
+}
+
+function splitIbdPortsBySide(
+  node: PreparedNode,
+  ports: PreparedPort[],
+  sideForPort: (port: PreparedPort, node: PreparedNode) => "WEST" | "EAST",
+  usageForPort: (node: PreparedNode, port: PreparedPort) => PortUsage,
+): { west: PreparedPort[]; east: PreparedPort[] } {
+  const west: PreparedPort[] = [];
+  const east: PreparedPort[] = [];
+  for (const port of ports) {
+    (sideForPort(port, node) === "WEST" ? west : east).push(port);
+  }
+  const compare = (a: PreparedPort, b: PreparedPort) => compareIbdPorts(node, a, b, usageForPort);
+  west.sort(compare);
+  east.sort(compare);
+  return { west, east };
+}
+
+function computeIbdLeafHeight(node: PreparedNode, ports: PreparedPort[], portRows: number): number {
+  const attrs = (node.attributes ?? {}) as Record<string, unknown>;
+  const headerHeight = attrs.partType ? 50 : 38;
+  const children = Array.isArray(attrs.children) ? attrs.children : [];
+  const contentLineCount = children.filter(
+    (child) => child && typeof child === "object" && String((child as Record<string, unknown>).name || ""),
+  ).length;
+  const contentHeight = Math.min(contentLineCount, 8) * 12 + 10;
+  const portSpacing = 26;
+  const portsHeight = ports.length > 0 ? portRows * portSpacing + 22 : 0;
+  return Math.min(340, Math.max(ibdNodeHeight, headerHeight + contentHeight + portsHeight));
 }
 
 export async function renderVisualization(
@@ -394,38 +442,64 @@ async function layoutInterconnectionPrepared(prepared: PreparedView): Promise<La
     return "EAST";
   };
 
+  const rootHeaderHeight = 28;
+  const containerTopInset = rootHeaderHeight + 20;
+
   const toElkNode = (node: PreparedNode): any => {
     const ports = portDetailsFor(node);
+    const { west: westPorts, east: eastPorts } = splitIbdPortsBySide(node, ports, sideForPort, usageForPort);
+    const portRows = Math.max(westPorts.length, eastPorts.length, ports.length > 0 ? 1 : 0);
     const children = (childrenByParent.get(node.id) ?? []).map((child) => toElkNode(child));
-    const isContainer = Boolean((node.attributes ?? {}).isSyntheticContainer) || children.length > 0;
+    const attrs = (node.attributes ?? {}) as Record<string, unknown>;
+    const isSyntheticPackage = Boolean(attrs.isSyntheticPackage);
+    const isContainer = Boolean(attrs.isSyntheticContainer) || children.length > 0;
     const baseWidth = isContainer ? 420 : ibdNodeWidth;
-    const width = Math.max(
+    let width = Math.max(
       baseWidth,
       180 + Math.max(node.label.length * 6, ...ports.map((item) => item.name.length * 5), 0),
     );
-    const height = isContainer ? 92 : Math.max(ibdNodeHeight, 90 + ports.length * 26);
+    let height = isContainer
+      ? rootHeaderHeight + 72
+      : computeIbdLeafHeight(node, ports, portRows);
+    if (isContainer && children.length > 0) {
+      const childWidthSum = children.reduce((sum: number, child: { width?: number }) => sum + (child.width ?? ibdNodeWidth), 0);
+      width = isSyntheticPackage
+        ? Math.max(width, Math.min(980, childWidthSum + children.length * 44))
+        : Math.max(width, Math.min(1040, childWidthSum + children.length * 72));
+      height = isSyntheticPackage
+        ? rootHeaderHeight + 72
+        : rootHeaderHeight + Math.max(72, Math.min(132, 58 + children.length * 14));
+    }
+    const buildElkPort = (port: PreparedPort, side: "WEST" | "EAST", index: number) => ({
+      id: portIdFor(node.id, port.name),
+      width: 10,
+      height: 10,
+      layoutOptions: {
+        "org.eclipse.elk.port.side": side,
+        "org.eclipse.elk.port.index": String(index),
+      },
+    });
     return {
       id: node.id,
       width,
       height,
-      ports: ports.map((port, index) => ({
-        id: portIdFor(node.id, port.name),
-        width: 10,
-        height: 10,
-        layoutOptions: {
-          "org.eclipse.elk.port.side": sideForPort(port, node),
-          "org.eclipse.elk.port.index": String(index),
-        },
-      })),
+      ports: [
+        ...westPorts.map((port, index) => buildElkPort(port, "WEST", index)),
+        ...eastPorts.map((port, index) => buildElkPort(port, "EAST", index)),
+      ],
       children,
       layoutOptions: children.length
         ? {
-            "elk.padding": "[top=52,left=18,bottom=18,right=18]",
-            "elk.direction": "RIGHT",
+            "elk.padding": isSyntheticPackage
+              ? `[top=${rootHeaderHeight + 12},left=16,bottom=16,right=16]`
+              : `[top=${containerTopInset},left=24,bottom=24,right=24]`,
+            "elk.direction": isSyntheticPackage ? "DOWN" : "RIGHT",
             "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+            "org.eclipse.elk.portAlignment.default": "CENTER",
           }
         : {
             "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+            "org.eclipse.elk.portAlignment.default": "CENTER",
           },
     };
   };
@@ -514,6 +588,11 @@ async function layoutInterconnectionPrepared(prepared: PreparedView): Promise<La
             _isLayoutContainer: hasLayoutChildren,
             _layoutDepth: depth,
             _portAnchors: nodePortAnchors.get(base.id),
+            _portDrawOrder: (() => {
+              const ports = portDetailsFor(base);
+              const { west, east } = splitIbdPortsBySide(base, ports, sideForPort, usageForPort);
+              return { west: west.map((port) => port.name), east: east.map((port) => port.name) };
+            })(),
           },
         });
       }
@@ -526,25 +605,49 @@ async function layoutInterconnectionPrepared(prepared: PreparedView): Promise<La
       visit(child, 0, 0, 0);
     }
 
-    const edgeLayout = new Map<string, any>();
-    const visitEdges = (elkNode: any) => {
-      for (const edge of elkNode.edges ?? []) edgeLayout.set(String(edge.id), edge);
-      for (const child of elkNode.children ?? []) visitEdges(child);
+    const edgeLayout = new Map<string, { edge: any; offset: { x: number; y: number } }>();
+    const collectElkEdgesWithOffsets = (
+      elkNode: any,
+      containerOffset: { x: number; y: number },
+    ) => {
+      for (const elkEdge of elkNode.edges ?? []) {
+        const edgeId = String(elkEdge?.id ?? "");
+        if (!edgeId) continue;
+        edgeLayout.set(edgeId, { edge: elkEdge, offset: containerOffset });
+      }
+      for (const child of elkNode.children ?? []) {
+        collectElkEdgesWithOffsets(child, {
+          x: containerOffset.x + (child.x ?? 0),
+          y: containerOffset.y + (child.y ?? 0),
+        });
+      }
     };
-    visitEdges(laidOut);
+    collectElkEdgesWithOffsets(laidOut, { x: 0, y: 0 });
 
     const nodes = prepared.nodes
       .map((node) => laidOutNodes.get(node.id))
       .filter((value): value is LaidOutNode => Boolean(value));
 
     const edges = prepared.edges.map((edge) => {
-      const layout = edgeLayout.get(edge.id);
+      const layoutRecord = edgeLayout.get(edge.id);
       const elkEdge = elkEdges.find((item) => item.id === edge.id);
       return {
         ...edge,
         sourceNode: laidOutNodes.get(edge.source),
         targetNode: laidOutNodes.get(edge.target),
-        layout: layout ? { sections: layout.sections as EdgeSection[] } : undefined,
+        layout: layoutRecord
+          ? {
+              sections: layoutRecord.edge.sections as EdgeSection[],
+              edgeOwnerOffset: layoutRecord.offset,
+              lcaOffset: (() => {
+                const sourceNode = laidOutNodes.get(edge.source);
+                const targetNode = laidOutNodes.get(edge.target);
+                return sourceNode && targetNode
+                  ? lcaOffsetForNodes(sourceNode, targetNode, laidOutNodes)
+                  : { x: 0, y: 0 };
+              })(),
+            }
+          : undefined,
         attributes: {
           ...(edge.attributes ?? {}),
           _sourcePortCenter: elkEdge?.sourcePortId ? portCenters.get(elkEdge.sourcePortId) : undefined,
@@ -555,7 +658,8 @@ async function layoutInterconnectionPrepared(prepared: PreparedView): Promise<La
 
     return { nodes, edges };
   } catch {
-    return fallbackLayout(prepared);
+    // Match legacy ibd.ts: no heuristic grid when ELK fails for interconnection view.
+    return { nodes: [], edges: [] };
   }
 }
 
@@ -585,7 +689,7 @@ function drawEdges(
   const group = root.append("g").attr("class", "viz-edges");
   for (const edge of edges) {
     if (!edge.sourceNode || !edge.targetNode) continue;
-    const path = edge.layout?.sections?.[0] ? pathFromSection(edge.layout.sections[0]) : pathFallback(edge);
+    const path = isInterconnectionView ? pathForIbdEdge(edge) : pathFromSimpleSection(edge.layout?.sections?.[0]);
     if (!path) continue;
     const edgeKind = edge.edgeKind ?? normalizeEdgeKind(edge.label);
     const displayLabel = edgeDisplayLabel(edge, edgeKind, isInterconnectionView);
@@ -605,7 +709,7 @@ function drawEdges(
       .style("opacity", 0.9);
     applyEdgeMarker(pathSelection, edgeKind, isInterconnectionView, theme);
     if (shouldRenderEdgeLabel(edge, edgeKind, isInterconnectionView)) {
-      const midpoint = edgeMidpoint(edge);
+      const midpoint = edgeMidpoint(edge, isInterconnectionView);
       group
         .append("text")
         .attr("class", `viz-edge-label viz-edge-label--${edgeKind}`)
@@ -1033,25 +1137,30 @@ function drawIbdPorts(
 ): void {
   const attrs = (node.attributes ?? {}) as Record<string, unknown>;
   const details = Array.isArray(attrs.portDetails) ? attrs.portDetails as PreparedPort[] : [];
-  const portNames = details.length > 0
-    ? details.map((port) => port.name)
-    : Array.isArray(attrs.ports) ? (attrs.ports as unknown[]).map((port) => String(port)) : [];
+  const drawOrder = (attrs._portDrawOrder && typeof attrs._portDrawOrder === "object"
+    ? attrs._portDrawOrder
+    : null) as { west?: string[]; east?: string[] } | null;
+  const portNames = drawOrder
+    ? [...(drawOrder.west ?? []), ...(drawOrder.east ?? [])]
+    : details.length > 0
+      ? details.map((port) => port.name)
+      : Array.isArray(attrs.ports) ? (attrs.ports as unknown[]).map((port) => String(port)) : [];
   const anchors = (attrs._portAnchors && typeof attrs._portAnchors === "object" ? attrs._portAnchors : {}) as Record<string, { x: number; y: number; side: string }>;
   const portSize = 10;
   const fallbackSpacing = 26;
-  portNames.forEach((name, index) => {
+  const drawPort = (name: string, sideIndex: number, side: "WEST" | "EAST") => {
     const detail = details.find((port) => port.name === name);
     const sanitized = name.replace(/[^A-Za-z0-9_.-]/g, "_");
     const anchor = anchors[sanitized] ?? anchors[name];
-    const side = anchor?.side || (name.toLowerCase().startsWith("in") ? "WEST" : "EAST");
-    const x = anchor?.x ?? (side === "WEST" ? 0 : width);
-    const y = anchor?.y ?? (fallbackStartY + index * fallbackSpacing);
+    const resolvedSide = (anchor?.side === "WEST" || anchor?.side === "EAST" ? anchor.side : side) as "WEST" | "EAST";
+    const x = anchor?.x ?? (resolvedSide === "WEST" ? 0 : width);
+    const y = anchor?.y ?? (fallbackStartY + sideIndex * fallbackSpacing);
     const color = theme.nodeBorder;
     group
       .append("rect")
       .attr("class", "port-icon")
       .attr("data-port-name", name)
-      .attr("data-port-side", side)
+      .attr("data-port-side", resolvedSide)
       .attr("x", x - portSize / 2)
       .attr("y", y - portSize / 2)
       .attr("width", portSize)
@@ -1061,13 +1170,27 @@ function drawIbdPorts(
       .style("stroke-width", "1.8px");
     group
       .append("text")
-      .attr("x", side === "WEST" ? Math.min(width - 10, x + 16) : Math.max(10, x - 16))
+      .attr("x", resolvedSide === "WEST" ? Math.min(width - 10, x + 16) : Math.max(10, x - 16))
       .attr("y", y + 3)
-      .attr("text-anchor", side === "WEST" ? "start" : "end")
+      .attr("text-anchor", resolvedSide === "WEST" ? "start" : "end")
       .text(truncate(formatIbdPortLabel(name, detail), 24))
       .style("font-size", "8px")
       .style("font-weight", "500")
       .style("fill", color);
+  };
+
+  if (drawOrder) {
+    (drawOrder.west ?? []).forEach((name, index) => drawPort(name, index, "WEST"));
+    (drawOrder.east ?? []).forEach((name, index) => drawPort(name, index, "EAST"));
+    return;
+  }
+
+  portNames.forEach((name, index) => {
+    const sanitized = name.replace(/[^A-Za-z0-9_.-]/g, "_");
+    const anchor = anchors[sanitized] ?? anchors[name];
+    const side: "WEST" | "EAST" =
+      anchor?.side === "WEST" ? "WEST" : anchor?.side === "EAST" ? "EAST" : name.toLowerCase().startsWith("in") ? "WEST" : "EAST";
+    drawPort(name, index, side);
   });
 }
 
@@ -1184,58 +1307,190 @@ function drawIbdViewFrame(
     .text(label);
 }
 
-function pathFromSection(section: EdgeSection): string {
-  const points = [section.startPoint, ...(section.bendPoints || []), section.endPoint].filter(Boolean);
-  return d3.line<{ x: number; y: number }>().x((d) => d.x).y((d) => d.y)(points as { x: number; y: number }[]) || "";
+function pruneRoutePoints(points: Array<{ x: number; y: number }>): Array<{ x: number; y: number }> {
+  const pruned: Array<{ x: number; y: number }> = [];
+  for (const point of points) {
+    const last = pruned[pruned.length - 1];
+    if (last && Math.abs(last.x - point.x) < 1e-6 && Math.abs(last.y - point.y) < 1e-6) {
+      continue;
+    }
+    pruned.push({ x: point.x, y: point.y });
+    while (pruned.length >= 3) {
+      const a = pruned[pruned.length - 3];
+      const b = pruned[pruned.length - 2];
+      const c = pruned[pruned.length - 1];
+      const sameX = Math.abs(a.x - b.x) < 1e-6 && Math.abs(b.x - c.x) < 1e-6;
+      const sameY = Math.abs(a.y - b.y) < 1e-6 && Math.abs(b.y - c.y) < 1e-6;
+      if (!sameX && !sameY) break;
+      pruned.splice(pruned.length - 2, 1);
+    }
+  }
+  return pruned;
 }
 
-function edgeMidpoint(edge: LaidOutEdge): { x: number; y: number } {
-  const section = edge.layout?.sections?.[0];
-  if (section) {
-    const points = [section.startPoint, ...(section.bendPoints || []), section.endPoint].filter(Boolean) as {
-      x: number;
-      y: number;
-    }[];
-    if (points.length > 0) {
-      const index = Math.floor((points.length - 1) / 2);
-      return points[index];
+function pointsFromElkSections(
+  sections: EdgeSection[],
+  offset: { x: number; y: number },
+): Array<{ x: number; y: number }> {
+  const points: Array<{ x: number; y: number }> = [];
+  for (const section of sections) {
+    if (section.startPoint) {
+      points.push({ x: section.startPoint.x + offset.x, y: section.startPoint.y + offset.y });
+    }
+    for (const bend of section.bendPoints ?? []) {
+      points.push({ x: bend.x + offset.x, y: bend.y + offset.y });
+    }
+    if (section.endPoint) {
+      points.push({ x: section.endPoint.x + offset.x, y: section.endPoint.y + offset.y });
+    }
+  }
+  return pruneRoutePoints(points);
+}
+
+function containerChain(node: LaidOutNode, nodesById: Map<string, LaidOutNode>): string[] {
+  const chain: string[] = [];
+  let current: LaidOutNode | undefined = node;
+  while (current) {
+    chain.push(current.id);
+    const parentId = String((current.attributes as Record<string, unknown> | undefined)?.containerId ?? "");
+    current = parentId && nodesById.has(parentId) ? nodesById.get(parentId) : undefined;
+  }
+  return chain;
+}
+
+function lcaOffsetForNodes(
+  sourceNode: LaidOutNode,
+  targetNode: LaidOutNode,
+  laidOutNodes: Map<string, LaidOutNode>,
+): { x: number; y: number } {
+  const sourceChain = containerChain(sourceNode, laidOutNodes);
+  const targetSet = new Set(containerChain(targetNode, laidOutNodes));
+  const lcaId = sourceChain.find((id) => targetSet.has(id));
+  if (!lcaId) return { x: 0, y: 0 };
+  const lca = laidOutNodes.get(lcaId);
+  return lca ? { x: lca.x ?? 0, y: lca.y ?? 0 } : { x: 0, y: 0 };
+}
+
+function uniqueOffsets(offsets: Array<{ x: number; y: number }>): Array<{ x: number; y: number }> {
+  const seen = new Set<string>();
+  const unique: Array<{ x: number; y: number }> = [];
+  for (const offset of offsets) {
+    const key = `${offset.x.toFixed(3)},${offset.y.toFixed(3)}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    unique.push(offset);
+  }
+  return unique;
+}
+
+function routeEndpointError(
+  points: Array<{ x: number; y: number }>,
+  source: { x: number; y: number },
+  target: { x: number; y: number },
+): number {
+  if (points.length < 2) return Number.POSITIVE_INFINITY;
+  const start = points[0];
+  const end = points[points.length - 1];
+  return Math.hypot(start.x - source.x, start.y - source.y) + Math.hypot(end.x - target.x, end.y - target.y);
+}
+
+function snapRouteEndpoints(
+  points: Array<{ x: number; y: number }>,
+  source?: { x: number; y: number } | null,
+  target?: { x: number; y: number } | null,
+): Array<{ x: number; y: number }> {
+  if (points.length < 2) return points;
+  const route = points.map((point) => ({ x: point.x, y: point.y }));
+  if (source) route[0] = { x: source.x, y: source.y };
+  if (target) route[route.length - 1] = { x: target.x, y: target.y };
+  return pruneRoutePoints(route);
+}
+
+function resolveIbdRoutePoints(edge: LaidOutEdge): Array<{ x: number; y: number }> | null {
+  const sections = edge.layout?.sections;
+  if (!sections?.length) return null;
+  const sourceNode = edge.sourceNode;
+  const targetNode = edge.targetNode;
+  if (!sourceNode || !targetNode) return null;
+
+  const attrs = (edge.attributes ?? {}) as Record<string, unknown>;
+  const sourcePort = (attrs._sourcePortCenter ?? null) as { x: number; y: number } | null;
+  const targetPort = (attrs._targetPortCenter ?? null) as { x: number; y: number } | null;
+  const lcaOffset = edge.layout?.lcaOffset ?? { x: 0, y: 0 };
+  const edgeOwnerOffset = edge.layout?.edgeOwnerOffset ?? { x: 0, y: 0 };
+  const candidates = uniqueOffsets([
+    { x: 0, y: 0 },
+    edgeOwnerOffset,
+    lcaOffset,
+  ]);
+
+  let bestPoints: Array<{ x: number; y: number }> | null = null;
+  let bestError = Number.POSITIVE_INFINITY;
+  for (const offset of candidates) {
+    const points = pointsFromElkSections(sections, offset);
+    if (points.length < 2) continue;
+    const error = sourcePort && targetPort
+      ? routeEndpointError(points, sourcePort, targetPort)
+      : 0;
+    if (error < bestError) {
+      bestError = error;
+      bestPoints = points;
+    }
+  }
+
+  if (!bestPoints) return null;
+  return snapRouteEndpoints(bestPoints, sourcePort, targetPort);
+}
+
+function pointsToPathD(points: Array<{ x: number; y: number }>): string {
+  if (points.length < 2) return "";
+  return d3.line<{ x: number; y: number }>().x((d) => d.x).y((d) => d.y)(points) || "";
+}
+
+function pathFromSimpleSection(section: EdgeSection | undefined): string | null {
+  if (!section) return null;
+  const points = [section.startPoint, ...(section.bendPoints || []), section.endPoint].filter(Boolean) as Array<{ x: number; y: number }>;
+  if (points.length < 2) return null;
+  return pointsToPathD(points);
+}
+
+function pathForIbdEdge(edge: LaidOutEdge): string | null {
+  const points = resolveIbdRoutePoints(edge);
+  if (!points || points.length < 2) return null;
+  return pointsToPathD(points);
+}
+
+function edgeMidpoint(edge: LaidOutEdge, isInterconnectionView: boolean): { x: number; y: number } {
+  if (isInterconnectionView) {
+    const routePoints = resolveIbdRoutePoints(edge);
+    if (routePoints && routePoints.length > 0) {
+      const index = Math.floor((routePoints.length - 1) / 2);
+      return routePoints[index];
+    }
+  } else {
+    const section = edge.layout?.sections?.[0];
+    if (section) {
+      const points = [section.startPoint, ...(section.bendPoints || []), section.endPoint].filter(Boolean) as Array<{
+        x: number;
+        y: number;
+      }>;
+      if (points.length > 0) {
+        const index = Math.floor((points.length - 1) / 2);
+        return points[index];
+      }
     }
   }
   const sourceNode = edge.sourceNode;
   const targetNode = edge.targetNode;
   if (sourceNode && targetNode) {
+    const width = isInterconnectionView ? ibdNodeWidth : nodeWidth;
+    const height = isInterconnectionView ? ibdNodeHeight : nodeHeight;
     return {
-      x: ((sourceNode.x || 0) + (targetNode.x || 0) + nodeWidth) / 2,
-      y: ((sourceNode.y || 0) + (targetNode.y || 0) + nodeHeight) / 2,
+      x: ((sourceNode.x || 0) + (targetNode.x || 0) + width) / 2,
+      y: ((sourceNode.y || 0) + (targetNode.y || 0) + height) / 2,
     };
   }
   return { x: 0, y: 0 };
-}
-
-function pathFallback(edge: LaidOutEdge): string {
-  const sourceNode = edge.sourceNode;
-  const targetNode = edge.targetNode;
-  if (!sourceNode || !targetNode) return "";
-  const sourceWidth = sourceNode.width || nodeWidth;
-  const sourceHeight = sourceNode.height || nodeHeight;
-  const targetWidth = targetNode.width || nodeWidth;
-  const targetHeight = targetNode.height || nodeHeight;
-  const sourcePortCenter = ((edge.attributes as Record<string, unknown> | undefined)?._sourcePortCenter ??
-    null) as { x: number; y: number } | null;
-  const targetPortCenter = ((edge.attributes as Record<string, unknown> | undefined)?._targetPortCenter ??
-    null) as { x: number; y: number } | null;
-  const sx = sourcePortCenter?.x ?? (sourceNode.x || 0) + sourceWidth;
-  const sy = sourcePortCenter?.y ?? (sourceNode.y || 0) + sourceHeight / 2;
-  const tx = targetPortCenter?.x ?? (targetNode.x || 0);
-  const ty = targetPortCenter?.y ?? (targetNode.y || 0) + targetHeight / 2;
-  if (!sourcePortCenter && !targetPortCenter && (targetNode.x || 0) + targetWidth < (sourceNode.x || 0)) {
-    const sxLeft = sourceNode.x || 0;
-    const txRight = (targetNode.x || 0) + targetWidth;
-    const mid = (sxLeft + txRight) / 2;
-    return `M${sxLeft},${sy} L${mid},${sy} L${mid},${ty} L${txRight},${ty}`;
-  }
-  const mid = (sx + tx) / 2;
-  return `M${sx},${sy} L${mid},${sy} L${mid},${ty} L${tx},${ty}`;
 }
 
 function contentBounds(layout: LayoutResult): ContentBounds {

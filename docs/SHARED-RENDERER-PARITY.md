@@ -22,6 +22,9 @@ Normative notation targets: [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](SH
 | Port squares on boundaries | Yes | Yes | — |
 | Connectors visible (flow / connection / interface / bind) | Yes (after `kind` fix + edge `style()`) | Yes | — |
 | ELK hierarchical layout | Yes | Yes | cosmetic (routing may differ) |
+| Heuristic connector paths (non-ELK) | No (ELK sections required) | No | — |
+| Heuristic node grid when ELK fails | No (empty layout) | Partial | cosmetic |
+| Render only when model ready | Yes (`modelReady` + loading gate) | Partial (legacy skips connectors without ELK) | — |
 | Single outer boundary for scoped instance root | Yes (package wrapper + view frame collapsed) | Partial | — |
 | Degraded routing console diagnostics | No | Yes | legacy-only |
 | Port-side heuristics maturity | Good | More tuned in legacy | cosmetic |

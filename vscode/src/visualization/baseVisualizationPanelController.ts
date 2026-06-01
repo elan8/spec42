@@ -3,6 +3,7 @@ import { LspModelProvider } from '../providers/lspModelProvider';
 import { getWebviewHtml } from './htmlBuilder';
 import { createMessageDispatcher } from './messageHandlers';
 import { type UpdateMessage, type FetchModelParams } from './modelFetcher';
+import { waitForDocumentDiagnostics } from './documentQuiescence';
 import { createUpdateVisualizationFlow } from './updateFlow';
 
 export interface BaseVisualizerRestoreState {
@@ -237,8 +238,16 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
         }
         this._fileChangeDebounceTimer = setTimeout(() => {
             this._fileChangeDebounceTimer = undefined;
-            void this.updateVisualization(true, triggerSource);
-        }, 400);
+            void (async () => {
+                if (triggerSource === 'fileChanged') {
+                    await waitForDocumentDiagnostics(uri, {
+                        debounceMs: 200,
+                        timeoutMs: 2500,
+                    });
+                }
+                await this.updateVisualization(true, triggerSource);
+            })();
+        }, 500);
     }
 
     refresh(): void {

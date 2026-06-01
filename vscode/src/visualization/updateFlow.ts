@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { hashContent, type UpdateMessage } from './modelFetcher';
+import { evaluateClientVisualizationReadiness } from './visualizationGate';
 import { isVerboseLoggingEnabled, log, logError, logPerfEvent } from '../logger';
 
 export interface UpdateFlowDeps {
@@ -64,6 +65,15 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
         const document = getDocument?.();
         const workspaceRootUri = getWorkspaceRootUri();
         const updateStartedAt = Date.now();
+        const clientReadiness = evaluateClientVisualizationReadiness();
+        if (!clientReadiness.ready) {
+            log('updateFlow:modelNotReady', clientReadiness.message ?? 'waiting');
+            await panel.webview.postMessage({
+                command: 'modelNotReady',
+                message: clientReadiness.message ?? 'Waiting for SysML model...',
+            });
+            return;
+        }
         try {
             log(
                 'updateFlow:fetch:start',
@@ -96,6 +106,14 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                 workspaceRootUri,
             });
             if (msg) {
+                if (msg.modelReady === false) {
+                    log('updateFlow:serverModelNotReady', msg.modelStatusMessage ?? '');
+                    await panel.webview.postMessage({
+                        command: 'modelNotReady',
+                        message: msg.modelStatusMessage ?? 'Waiting for SysML model...',
+                    });
+                    return;
+                }
                 if (msg.currentView && msg.currentView !== getCurrentView()) {
                     setCurrentView(msg.currentView);
                 }

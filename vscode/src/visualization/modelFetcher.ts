@@ -18,6 +18,8 @@ export interface FetchModelParams {
 
 export interface UpdateMessage {
     command: 'update';
+    modelReady?: boolean;
+    modelStatusMessage?: string;
     graph?: SysMLGraphDTO;
     elements?: SysMLElementDTO[];
     generalViewGraph?: SysMLGraphDTO;
@@ -89,8 +91,13 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         );
         const requestMs = Date.now() - requestStartedAt;
 
+        const modelReady = result.modelReady !== false;
         const msg: UpdateMessage = {
             command: 'update',
+            modelReady,
+            modelStatusMessage: modelReady
+                ? undefined
+                : result.emptyStateMessage ?? 'SysML model is not ready yet.',
             graph: result.graph ?? { nodes: [], edges: [] },
             elements: result.workspaceModel?.semantic,
             generalViewGraph: result.generalViewGraph ?? result.graph,

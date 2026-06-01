@@ -1,7 +1,8 @@
 use crate::host::config::Spec42Config;
 use crate::views::dto;
+use crate::workspace::state::SemanticLifecycle;
 use crate::workspace::ServerState;
-use semantic_core::SysmlVisualizationResultDto;
+use semantic_core::{visualization_model_not_ready, SysmlVisualizationResultDto};
 use std::time::Instant;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::{MessageType, Url};
@@ -228,6 +229,25 @@ pub(crate) fn sysml_visualization_result(
 ) -> Result<SysmlVisualizationResultDto> {
     let (workspace_root_uri, view, selected_view) =
         crate::views::parse_sysml_visualization_params(&params)?;
+    if !state.semantic_lifecycle.supports_semantic_queries() {
+        let message = match state.semantic_lifecycle {
+            SemanticLifecycle::Indexing => {
+                "SysML workspace is still indexing. The diagram will appear when indexing completes."
+            }
+            SemanticLifecycle::Reindexing => {
+                "SysML model is being refreshed. The diagram will update when processing completes."
+            }
+            SemanticLifecycle::Cold => {
+                "SysML language server is starting. The diagram will appear when the server is ready."
+            }
+            SemanticLifecycle::Ready => "SysML model is not ready.",
+        };
+        return Ok(visualization_model_not_ready(
+            workspace_root_uri.as_str(),
+            &view,
+            message,
+        ));
+    }
     Ok(crate::views::build_sysml_visualization_response(
         &state.semantic_graph,
         &state.index,

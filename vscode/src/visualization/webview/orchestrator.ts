@@ -478,6 +478,19 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
             case 'hideLoading':
                 hideLoading();
                 break;
+            case 'modelNotReady':
+                showLoading(message.message || 'Waiting for SysML model...');
+                if (sharedRenderController) {
+                    sharedRenderController.destroy();
+                    sharedRenderController = null;
+                }
+                if (vizElement) {
+                    vizElement.innerHTML = '';
+                }
+                currentData = null;
+                filteredData = null;
+                renderScheduler.dataHash = '';
+                break;
             case 'update':
                 webviewPerf('visualizer:webviewUpdateReceived', {
                     currentView: message.currentView || currentView,
@@ -492,6 +505,21 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
                     ibd: message.ibd,
                     selectedView: message.selectedView,
                 });
+
+                if (message.modelReady === false) {
+                    showLoading(message.modelStatusMessage || 'Waiting for SysML model...');
+                    if (sharedRenderController) {
+                        sharedRenderController.destroy();
+                        sharedRenderController = null;
+                    }
+                    if (vizElement) {
+                        vizElement.innerHTML = '';
+                    }
+                    currentData = null;
+                    filteredData = null;
+                    renderScheduler.dataHash = '';
+                    return;
+                }
 
                 if (newHash === renderScheduler.dataHash && currentData) {
                     // Data unchanged, skip expensive re-render

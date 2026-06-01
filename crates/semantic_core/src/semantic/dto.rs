@@ -151,6 +151,9 @@ pub struct SysmlVisualizationResultDto {
     pub version: u32,
     pub view: String,
     pub workspace_root_uri: String,
+    /// When false, clients must not render diagram geometry (model still indexing or refreshing).
+    #[serde(default = "default_model_ready")]
+    pub model_ready: bool,
     pub view_candidates: Vec<SysmlVisualizationViewCandidateDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub selected_view: Option<String>,
@@ -174,6 +177,40 @@ pub struct SysmlVisualizationResultDto {
     pub ibd: Option<IbdDataDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stats: Option<SysmlModelStatsDto>,
+}
+
+#[allow(dead_code)]
+fn default_model_ready() -> bool {
+    true
+}
+
+pub fn visualization_model_not_ready(
+    workspace_root_uri: &str,
+    view: &str,
+    message: &str,
+) -> SysmlVisualizationResultDto {
+    let empty_graph = SysmlGraphDto {
+        nodes: Vec::new(),
+        edges: Vec::new(),
+    };
+    SysmlVisualizationResultDto {
+        version: 0,
+        model_ready: false,
+        view: view.to_string(),
+        workspace_root_uri: workspace_root_uri.to_string(),
+        view_candidates: Vec::new(),
+        selected_view: None,
+        selected_view_name: None,
+        empty_state_message: Some(message.to_string()),
+        package_groups: Some(Vec::new()),
+        graph: Some(empty_graph.clone()),
+        general_view_graph: Some(empty_graph),
+        workspace_model: None,
+        activity_diagrams: None,
+        sequence_diagrams: None,
+        ibd: None,
+        stats: None,
+    }
 }
 
 pub fn range_to_dto(r: TextRange) -> RangeDto {

@@ -396,6 +396,153 @@ describe("shared renderer", () => {
     expect(target.querySelector('[data-element-name="droneInstance"]')).toBeTruthy();
   });
 
+  it("routes nested container connectors without orphan segments", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1400, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 900, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Interconnection",
+      view: "interconnection-view",
+      nodes: [
+        {
+          id: "webshopSystem",
+          label: "webshopSystem",
+          kind: "part",
+          attributes: { isSyntheticContainer: true },
+        },
+        {
+          id: "storefront",
+          label: "storefront",
+          kind: "part",
+          attributes: {
+            containerId: "webshopSystem",
+            portDetails: [
+              { name: "apiOut", direction: "out" },
+              { name: "catalogIn", direction: "in" },
+            ],
+          },
+        },
+        {
+          id: "apiGateway",
+          label: "apiGateway",
+          kind: "part",
+          attributes: {
+            containerId: "webshopSystem",
+            portDetails: [
+              { name: "storefrontIn", direction: "in" },
+              { name: "checkoutOut", direction: "out" },
+            ],
+          },
+        },
+        {
+          id: "checkoutService",
+          label: "checkoutService",
+          kind: "part",
+          attributes: {
+            containerId: "webshopSystem",
+            portDetails: [
+              { name: "apiIn", direction: "in" },
+              { name: "ordersOut", direction: "out" },
+            ],
+          },
+        },
+        {
+          id: "ordersEventsTopic",
+          label: "ordersEventsTopic",
+          kind: "part",
+          attributes: {
+            containerId: "webshopSystem",
+            portDetails: [{ name: "ordersIn", direction: "in" }],
+          },
+        },
+      ],
+      edges: [
+        {
+          id: "storefront-api",
+          source: "storefront",
+          target: "apiGateway",
+          label: "connection",
+          edgeKind: "connection",
+          attributes: {
+            sourceId: "webshopSystem.storefront.apiOut",
+            targetId: "webshopSystem.apiGateway.storefrontIn",
+            relationType: "connection",
+          },
+        },
+        {
+          id: "api-checkout",
+          source: "apiGateway",
+          target: "checkoutService",
+          label: "connection",
+          edgeKind: "connection",
+          attributes: {
+            sourceId: "webshopSystem.apiGateway.checkoutOut",
+            targetId: "webshopSystem.checkoutService.apiIn",
+            relationType: "connection",
+          },
+        },
+        {
+          id: "checkout-orders",
+          source: "checkoutService",
+          target: "ordersEventsTopic",
+          label: "connection",
+          edgeKind: "connection",
+          attributes: {
+            sourceId: "webshopSystem.checkoutService.ordersOut",
+            targetId: "webshopSystem.ordersEventsTopic.ordersIn",
+            relationType: "connection",
+          },
+        },
+      ],
+    });
+
+    const parsePathPoints = (path: string): Array<{ x: number; y: number }> => {
+      const tokens = path.trim().split(/[ML]/).map((part) => part.trim()).filter(Boolean);
+      return tokens.map((token) => {
+        const [x, y] = token.split(/[,\s]+/).map(Number);
+        return { x, y };
+      });
+    };
+
+    const portCenter = (nodeId: string, portName: string) => {
+      const icon = target.querySelector(`[data-node-id="${nodeId}"] [data-port-name="${portName}"]`) as SVGRectElement | null;
+      expect(icon).toBeTruthy();
+      const node = boundsFor(target, nodeId);
+      return {
+        x: node.x + Number(icon?.getAttribute("x") ?? 0) + 5,
+        y: node.y + Number(icon?.getAttribute("y") ?? 0) + 5,
+      };
+    };
+
+    const connectors = Array.from(target.querySelectorAll(".ibd-connector")) as SVGPathElement[];
+    expect(connectors.length).toBe(3);
+    for (const connector of connectors) {
+      const points = parsePathPoints(connector.getAttribute("d") ?? "");
+      expect(points.length).toBeGreaterThanOrEqual(2);
+      for (let index = 1; index < points.length; index += 1) {
+        const prev = points[index - 1];
+        const current = points[index];
+        expect(Math.abs(prev.x - current.x) < 1e-3 || Math.abs(prev.y - current.y) < 1e-3).toBe(true);
+      }
+    }
+
+    const storefrontApi = target.querySelector('[data-connector-id="storefront-api"]') as SVGPathElement | null;
+    const apiCheckout = target.querySelector('[data-connector-id="api-checkout"]') as SVGPathElement | null;
+    const checkoutOrders = target.querySelector('[data-connector-id="checkout-orders"]') as SVGPathElement | null;
+    for (const [pathEl, sourceId, sourcePort, targetId, targetPort] of [
+      [storefrontApi, "storefront", "apiOut", "apiGateway", "storefrontIn"],
+      [apiCheckout, "apiGateway", "checkoutOut", "checkoutService", "apiIn"],
+      [checkoutOrders, "checkoutService", "ordersOut", "ordersEventsTopic", "ordersIn"],
+    ] as const) {
+      const points = parsePathPoints(pathEl?.getAttribute("d") ?? "");
+      const sourceCenter = portCenter(sourceId, sourcePort);
+      const targetCenter = portCenter(targetId, targetPort);
+      expect(Math.hypot(points[0].x - sourceCenter.x, points[0].y - sourceCenter.y)).toBeLessThan(4);
+      expect(Math.hypot(points[points.length - 1].x - targetCenter.x, points[points.length - 1].y - targetCenter.y)).toBeLessThan(4);
+    }
+  });
+
   it("renders nested interconnection with connectors after leaf node chrome", async () => {
     const target = document.createElement("div");
     Object.defineProperty(target, "clientWidth", { value: 1600, configurable: true });
@@ -555,6 +702,94 @@ describe("shared renderer", () => {
     expect(edgeLayerIndex).toBeGreaterThan(nodeLayerIndex);
     expect(target.querySelectorAll(".ibd-connector")).toHaveLength(2);
     expect(target.querySelectorAll(".viz-edge-label")).toHaveLength(0);
+  });
+
+  it("aligns IBD connector endpoints with rendered port anchors", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Interconnection",
+      view: "interconnection-view",
+      nodes: [
+        {
+          id: "source",
+          label: "source",
+          kind: "part",
+          attributes: {
+            qualifiedName: "System.source",
+            portDetails: [
+              { id: "System.source.outA", name: "outA", direction: "out" },
+              { id: "System.source.outB", name: "outB", direction: "out" },
+            ],
+          },
+        },
+        {
+          id: "sink",
+          label: "sink",
+          kind: "part",
+          attributes: {
+            qualifiedName: "System.sink",
+            portDetails: [
+              { id: "System.sink.inA", name: "inA", direction: "in" },
+              { id: "System.sink.inB", name: "inB", direction: "in" },
+            ],
+          },
+        },
+      ],
+      edges: [
+        {
+          id: "edge-a",
+          source: "source",
+          target: "sink",
+          label: "connection",
+          edgeKind: "connection",
+          attributes: { sourceId: "System.source.outA", targetId: "System.sink.inA", relationType: "connection" },
+        },
+        {
+          id: "edge-b",
+          source: "source",
+          target: "sink",
+          label: "connection",
+          edgeKind: "connection",
+          attributes: { sourceId: "System.source.outB", targetId: "System.sink.inB", relationType: "connection" },
+        },
+      ],
+    });
+
+    const parsePathPoints = (path: string): Array<{ x: number; y: number }> => {
+      const tokens = path.trim().split(/[ML]/).map((part) => part.trim()).filter(Boolean);
+      return tokens.map((token) => {
+        const [x, y] = token.split(/[,\s]+/).map(Number);
+        return { x, y };
+      });
+    };
+
+    const portCenter = (nodeId: string, portName: string) => {
+      const icon = target.querySelector(`[data-node-id="${nodeId}"] [data-port-name="${portName}"]`) as SVGRectElement | null;
+      expect(icon).toBeTruthy();
+      const node = boundsFor(target, nodeId);
+      return {
+        x: node.x + Number(icon?.getAttribute("x") ?? 0) + 5,
+        y: node.y + Number(icon?.getAttribute("y") ?? 0) + 5,
+      };
+    };
+
+    for (const edgeId of ["edge-a", "edge-b"]) {
+      const connector = target.querySelector(`[data-connector-id="${edgeId}"]`) as SVGPathElement | null;
+      expect(connector?.getAttribute("d")).toBeTruthy();
+      const points = parsePathPoints(connector?.getAttribute("d") ?? "");
+      expect(points.length).toBeGreaterThanOrEqual(2);
+      const start = points[0];
+      const end = points[points.length - 1];
+      const sourcePort = edgeId === "edge-a" ? "outA" : "outB";
+      const targetPort = edgeId === "edge-a" ? "inA" : "inB";
+      const sourceCenter = portCenter("source", sourcePort);
+      const targetCenter = portCenter("sink", targetPort);
+      expect(Math.hypot(start.x - sourceCenter.x, start.y - sourceCenter.y)).toBeLessThan(4);
+      expect(Math.hypot(end.x - targetCenter.x, end.y - targetCenter.y)).toBeLessThan(4);
+    }
   });
 
   it("uses connector direction to choose ambiguous IBD port sides", async () => {

@@ -56,7 +56,6 @@ describe("createUpdateVisualizationFlow", () => {
       panel,
       getDocument: () => document,
       getWorkspaceRootUri: () => "file:///workspace",
-      lspModelProvider: provider,
       getCurrentView: () => "general-view",
       getSelectedView: () => undefined,
       setCurrentView: () => {},
@@ -65,6 +64,20 @@ describe("createUpdateVisualizationFlow", () => {
       getLastContentHash: () => "",
       setLastContentHash: () => {},
       setNeedsUpdateWhenVisible: () => {},
+      fetchUpdateMessage: async () => {
+        getVisualizationCount += 1;
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        return {
+          command: "update",
+          modelReady: true,
+          graph: { nodes: [], edges: [] },
+          generalViewGraph: { nodes: [], edges: [] },
+          activityDiagrams: [],
+          sequenceDiagrams: [],
+          currentView: "general-view",
+          viewCandidates: [],
+        };
+      },
     });
 
     await Promise.all([
@@ -75,36 +88,13 @@ describe("createUpdateVisualizationFlow", () => {
     assert.strictEqual(getVisualizationCount, 1);
   });
 
-  it("allows non-webviewReady forced updates before bootstrap", async () => {
-    let getVisualizationCount = 0;
-    const { panel } = createMockPanel();
-    const document = createMockDocument("file:///drone.sysml");
-    const provider = {
-      getVisualization: async () => {
-        getVisualizationCount += 1;
-        return {
-          version: 1,
-          view: "general-view",
-          workspaceRootUri: "file:///workspace",
-          viewCandidates: [],
-          graph: { nodes: [], edges: [] },
-          stats: {
-            totalElements: 0,
-            resolvedElements: 0,
-            unresolvedElements: 0,
-            parseTimeMs: 1,
-            modelBuildTimeMs: 1,
-            parseCached: true,
-          },
-        };
-      }
-    } as any;
-
+  it("posts modelNotReady without fetching when client gate is closed", async () => {
+    const { panel, messages } = createMockPanel();
+    let fetchCount = 0;
     const flow = createUpdateVisualizationFlow({
       panel,
-      getDocument: () => document,
+      getDocument: () => createMockDocument("file:///drone.sysml"),
       getWorkspaceRootUri: () => "file:///workspace",
-      lspModelProvider: provider,
       getCurrentView: () => "general-view",
       getSelectedView: () => undefined,
       setCurrentView: () => {},
@@ -113,6 +103,60 @@ describe("createUpdateVisualizationFlow", () => {
       getLastContentHash: () => "",
       setLastContentHash: () => {},
       setNeedsUpdateWhenVisible: () => {},
+      fetchUpdateMessage: async () => {
+        fetchCount += 1;
+        return {
+          command: "update",
+          modelReady: true,
+          graph: { nodes: [], edges: [] },
+          generalViewGraph: { nodes: [], edges: [] },
+          activityDiagrams: [],
+          sequenceDiagrams: [],
+          currentView: "general-view",
+          viewCandidates: [],
+        };
+      },
+    });
+
+    const { setVisualizationGateState } = await import("../../visualization/visualizationGate");
+    setVisualizationGateState({ languageClientReady: false, serverHealthState: "starting" });
+
+    await flow.update(true, "webviewReady");
+
+    assert.strictEqual(fetchCount, 0);
+    assert.ok(messages.some((message) => (message as { command?: string }).command === "modelNotReady"));
+  });
+
+  it("allows non-webviewReady forced updates before bootstrap", async () => {
+    let getVisualizationCount = 0;
+    const { panel } = createMockPanel();
+    const document = createMockDocument("file:///drone.sysml");
+
+    const flow = createUpdateVisualizationFlow({
+      panel,
+      getDocument: () => document,
+      getWorkspaceRootUri: () => "file:///workspace",
+      getCurrentView: () => "general-view",
+      getSelectedView: () => undefined,
+      setCurrentView: () => {},
+      getIsNavigating: () => false,
+      getNeedsUpdateWhenVisible: () => false,
+      getLastContentHash: () => "",
+      setLastContentHash: () => {},
+      setNeedsUpdateWhenVisible: () => {},
+      fetchUpdateMessage: async () => {
+        getVisualizationCount += 1;
+        return {
+          command: "update",
+          modelReady: true,
+          graph: { nodes: [], edges: [] },
+          generalViewGraph: { nodes: [], edges: [] },
+          activityDiagrams: [],
+          sequenceDiagrams: [],
+          currentView: "general-view",
+          viewCandidates: [],
+        };
+      },
     });
 
     await flow.update(true, "panelReveal");
@@ -125,36 +169,14 @@ describe("createUpdateVisualizationFlow", () => {
   it("allows a later view change to trigger a new fetch after bootstrap", async () => {
     let getVisualizationCount = 0;
     let currentView = "general-view";
-    const requests: Array<{ workspaceRootUri: string; view: string; selectedView?: string }> = [];
+    const requests: Array<{ view: string }> = [];
     const { panel } = createMockPanel();
     const document = createMockDocument("file:///drone.sysml");
-    const provider = {
-      getVisualization: async (workspaceRootUri: string, view: string, selectedView?: string) => {
-        getVisualizationCount += 1;
-        requests.push({ workspaceRootUri, view, selectedView });
-        return {
-          version: 1,
-          view,
-          workspaceRootUri,
-          viewCandidates: [],
-          graph: { nodes: [], edges: [] },
-          stats: {
-            totalElements: 0,
-            resolvedElements: 0,
-            unresolvedElements: 0,
-            parseTimeMs: 1,
-            modelBuildTimeMs: 1,
-            parseCached: true,
-          },
-        };
-      }
-    } as any;
 
     const flow = createUpdateVisualizationFlow({
       panel,
       getDocument: () => document,
       getWorkspaceRootUri: () => "file:///workspace",
-      lspModelProvider: provider,
       getCurrentView: () => currentView,
       getSelectedView: () => undefined,
       setCurrentView: (view: string) => { currentView = view; },
@@ -163,6 +185,20 @@ describe("createUpdateVisualizationFlow", () => {
       getLastContentHash: () => "",
       setLastContentHash: () => {},
       setNeedsUpdateWhenVisible: () => {},
+      fetchUpdateMessage: async () => {
+        getVisualizationCount += 1;
+        requests.push({ view: currentView });
+        return {
+          command: "update",
+          modelReady: true,
+          graph: { nodes: [], edges: [] },
+          generalViewGraph: { nodes: [], edges: [] },
+          activityDiagrams: [],
+          sequenceDiagrams: [],
+          currentView,
+          viewCandidates: [],
+        };
+      },
     });
 
     await flow.update(true, "webviewReady");
@@ -170,17 +206,6 @@ describe("createUpdateVisualizationFlow", () => {
     await flow.update(true, "viewChanged");
 
     assert.strictEqual(getVisualizationCount, 2);
-    assert.deepStrictEqual(requests, [
-      {
-        workspaceRootUri: "file:///workspace",
-        view: "general-view",
-        selectedView: undefined,
-      },
-      {
-        workspaceRootUri: "file:///workspace",
-        view: "action-flow-view",
-        selectedView: undefined,
-      },
-    ]);
+    assert.deepStrictEqual(requests, [{ view: "general-view" }, { view: "action-flow-view" }]);
   });
 });

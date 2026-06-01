@@ -237,6 +237,7 @@ export interface SoftwareProjectViewParams {
 
 export interface SysMLVisualizationResult {
   version: number;
+  modelReady?: boolean;
   view: string;
   workspaceRootUri: string;
   viewCandidates: VisualizationViewCandidateDTO[];
