@@ -164,42 +164,40 @@ pub fn resolve_expression_endpoint_strict(
 }
 
 /// Resolve `member` declared on a supertype of `owner` (does not match direct children of `owner`).
+///
+/// Walks the typing/specialization chain from the nearest type outward and returns the first
+/// matching member so redefinitions on a specialized `part def` win over inherited declarations.
 pub fn resolve_inherited_member_via_type(
     g: &SemanticGraph,
     owner: &SemanticNode,
     member: &str,
 ) -> ResolveResult<NodeId> {
-    let mut matches: Vec<NodeId> = Vec::new();
+    use std::collections::VecDeque;
+
     let mut visited: HashSet<NodeId> = HashSet::new();
-    let mut stack: Vec<NodeId> = g
+    let mut queue: VecDeque<NodeId> = g
         .outgoing_typing_or_specializes_targets(owner)
         .into_iter()
         .map(|n| n.id.clone())
         .collect();
 
-    while let Some(type_id) = stack.pop() {
+    while let Some(type_id) = queue.pop_front() {
         if !visited.insert(type_id.clone()) {
             continue;
         }
-        for child in g.child_named(&type_id, member) {
-            matches.push(child.id.clone());
+        let children: Vec<_> = g.child_named(&type_id, member);
+        match children.len() {
+            0 => {}
+            1 => return ResolveResult::Resolved(children[0].id.clone()),
+            _ => return ResolveResult::Ambiguous,
         }
         if let Some(type_node) = g.get_node(&type_id) {
             for base in g.outgoing_typing_or_specializes_targets(type_node) {
-                stack.push(base.id.clone());
+                queue.push_back(base.id.clone());
             }
         }
     }
-
-    matches.sort_by_key(|id| id.qualified_name.len());
-    matches.dedup_by(|a, b| a == b);
-    if matches.len() == 1 {
-        ResolveResult::Resolved(matches.remove(0))
-    } else if matches.len() > 1 {
-        ResolveResult::Ambiguous
-    } else {
-        ResolveResult::Unresolved
-    }
+    ResolveResult::Unresolved
 }
 
 /// Resolve `member` through typing/specialization starting from `owner`.
@@ -579,6 +577,55 @@ mod tests {
                 .iter()
                 .any(|node| node.id == case_def.id),
             "MyUseCase should specialize Case"
+        );
+    }
+
+    #[test]
+    fn inherited_member_resolution_prefers_specialized_redefinition() {
+        use crate::semantic::evaluation::evaluate_expressions;
+
+        let doc = SysmlDocument::from_memory_path(
+            "workspace",
+            "subsystem-specialize.sysml",
+            r#"package Demo {
+  part def RobotSubsystem {
+    attribute powerDrawW : Real;
+  }
+  part def MobilitySubsystem :> RobotSubsystem {
+    attribute :>> powerDrawW = 28;
+  }
+  part def Robot {
+    part mobility : MobilitySubsystem;
+  }
+  analysis def PowerAnalysis {
+    attribute powerBudgetW : Real = 55;
+    subject robot : Robot;
+    return ref withinBudget {
+      return robot.mobility.powerDrawW <= powerBudgetW;
+    }
+  }
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("workspace doc");
+        let (mut graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+        evaluate_expressions(&mut graph);
+        let uri = Url::parse("memory://workspace/subsystem-specialize.sysml").expect("uri");
+        let analysis = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "analysis def" && node.name == "PowerAnalysis")
+            .expect("analysis");
+        assert_eq!(
+            analysis
+                .attributes
+                .get("analysisEvaluationStatus")
+                .and_then(|value| value.as_str()),
+            Some("ok"),
+            "specialized :>> attribute values should resolve for analysis roll-up"
         );
     }
 }
