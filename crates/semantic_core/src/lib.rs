@@ -21,7 +21,9 @@ pub use semantic::explicit_views::{
     renderer_view_for_view_type, EvaluatedView, ExposeSpec, FilterExpr, ViewCatalog,
     ViewDefinitionSpec, ViewUsageSpec,
 };
-pub use semantic::graph::SemanticGraph;
+pub use semantic::graph::{
+    PendingExpressionRelationship, PendingRelationship, SemanticGraph,
+};
 pub use semantic::graph_builder::build_graph_from_doc;
 pub use semantic::import_resolution::{
     resolve_imported_node_ids_for_simple_name, resolve_type_reference_targets,
@@ -29,14 +31,18 @@ pub use semantic::import_resolution::{
 pub use semantic::library_loader::{
     resolve_library_closure, LibraryClosureOptions, LoadedLibraryFile, WorkspaceSource,
 };
-pub use semantic::model::{NodeId, RelationshipKind, SemanticNode};
+pub use semantic::model::{
+    ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+};
+pub use semantic::relationships::{add_semantic_edge_once, AddSemanticEdgeResult};
 pub use semantic::reference_resolution::{
     resolve_expression_endpoint_strict, resolve_inherited_member_via_type,
     resolve_member_via_type, ResolveResult,
 };
 pub use semantic::relationships::{
     add_cross_document_edges_for_uri, link_workspace_relationships,
-    resolve_cross_document_edges_for_uri, TYPE_REFERENCE_ATTR_KEYS,
+    resolve_cross_document_edges_for_uri, resolve_workspace_pending_relationships,
+    TYPE_REFERENCE_ATTR_KEYS,
 };
 pub use semantic::root_element::root_element_body;
 pub use semantic::source::providers::filesystem::FileSystemDocumentProvider;

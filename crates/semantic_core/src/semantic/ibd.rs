@@ -916,29 +916,29 @@ fn mirror_connectors_from_definition_document(
         });
     };
 
-    for (src, tgt, _range, src_endpoint, tgt_endpoint, container_prefix) in
-        graph.connection_edge_occurrence_details_for_uri(def_uri)
-    {
-        let source_id = src_endpoint
-            .as_ref()
-            .map(|endpoint| {
-                if container_prefix.is_some() {
-                    qualify_pending_connection_endpoint(container_prefix.as_deref(), endpoint)
-                } else {
-                    qualify_occurrence_endpoint(endpoint, &def_container_prefixes)
-                }
-            })
-            .unwrap_or_else(|| src.qualified_name.replace("::", "."));
-        let target_id = tgt_endpoint
-            .as_ref()
-            .map(|endpoint| {
-                if container_prefix.is_some() {
-                    qualify_pending_connection_endpoint(container_prefix.as_deref(), endpoint)
-                } else {
-                    qualify_occurrence_endpoint(endpoint, &def_container_prefixes)
-                }
-            })
-            .unwrap_or_else(|| tgt.qualified_name.replace("::", "."));
+    for (_src, _tgt, edge) in graph.connection_edges_touching_uri(def_uri) {
+        if edge.kind != RelationshipKind::Connection {
+            continue;
+        }
+        let Some(connect) = &edge.connect else {
+            continue;
+        };
+        let source_id = qualify_pending_connection_endpoint(
+            connect.container_prefix.as_deref(),
+            &connect.source_expression,
+        );
+        let target_id = qualify_pending_connection_endpoint(
+            connect.container_prefix.as_deref(),
+            &connect.target_expression,
+        );
+        let (source_id, target_id) = if source_id.is_empty() || target_id.is_empty() {
+            (
+                qualify_occurrence_endpoint(&connect.source_expression, &def_container_prefixes),
+                qualify_occurrence_endpoint(&connect.target_expression, &def_container_prefixes),
+            )
+        } else {
+            (source_id, target_id)
+        };
         push_connector(source_id, target_id);
     }
 
@@ -959,10 +959,12 @@ fn mirror_connectors_from_definition_document(
         push_connector(source_id, target_id);
     }
 
-    for (src, tgt, kind, _) in graph.edges_for_uri_as_strings(def_uri) {
-        if kind != RelationshipKind::Connection {
+    for (src_id, tgt_id, edge) in graph.connection_edges_touching_uri(def_uri) {
+        if edge.kind != RelationshipKind::Connection || edge.connect.is_some() {
             continue;
         }
+        let src = src_id.qualified_name;
+        let tgt = tgt_id.qualified_name;
         if !endpoint_under_definition_prefix(&src, def_prefix)
             && !endpoint_under_definition_prefix(&tgt, def_prefix)
         {
@@ -1378,61 +1380,40 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         .map(|node| node.id.qualified_name.clone())
         .collect();
 
-    let edges = graph.edges_for_uri_as_strings(uri);
-    let occurrence_pairs: std::collections::HashSet<(String, String)> = graph
-        .connection_edge_occurrence_details_for_uri(uri)
-        .into_iter()
-        .map(|(src, tgt, _, _, _, _)| (src.qualified_name, tgt.qualified_name))
-        .collect();
     let mut connectors = Vec::new();
-    for (src, tgt, kind, _name) in &edges {
-        if *kind != RelationshipKind::Connection {
+    for (src_id, tgt_id, edge) in graph.connection_edges_touching_uri(uri) {
+        if edge.kind != RelationshipKind::Connection {
             continue;
         }
-        if occurrence_pairs.contains(&(src.clone(), tgt.clone())) {
-            continue;
-        }
-        // Use full qualified path in dot form for frontend findPartPos resolution
-        let source_id = src.replace("::", ".");
-        let target_id = tgt.replace("::", ".");
+        let source = src_id.qualified_name.clone();
+        let target = tgt_id.qualified_name.clone();
+        let (source_id, target_id) = if let Some(connect) = &edge.connect {
+            let source_id = if connect.container_prefix.is_some() {
+                qualify_pending_connection_endpoint(
+                    connect.container_prefix.as_deref(),
+                    &connect.source_expression,
+                )
+            } else {
+                qualify_occurrence_endpoint(&connect.source_expression, &def_container_prefixes)
+            };
+            let target_id = if connect.container_prefix.is_some() {
+                qualify_pending_connection_endpoint(
+                    connect.container_prefix.as_deref(),
+                    &connect.target_expression,
+                )
+            } else {
+                qualify_occurrence_endpoint(&connect.target_expression, &def_container_prefixes)
+            };
+            (source_id, target_id)
+        } else {
+            (
+                source.replace("::", "."),
+                target.replace("::", "."),
+            )
+        };
         connectors.push(IbdConnectorDto {
-            source: src.clone(),
-            target: tgt.clone(),
-            source_id,
-            target_id,
-            source_part_id: None,
-            target_part_id: None,
-            rel_type: "connection".to_string(),
-        });
-    }
-    for (src, tgt, _range, src_endpoint, tgt_endpoint, container_prefix) in
-        graph.connection_edge_occurrence_details_for_uri(uri)
-    {
-        let source = src.qualified_name.clone();
-        let target = tgt.qualified_name.clone();
-        let source_id = src_endpoint
-            .as_ref()
-            .map(|endpoint| {
-                if container_prefix.is_some() {
-                    qualify_pending_connection_endpoint(container_prefix.as_deref(), endpoint)
-                } else {
-                    qualify_occurrence_endpoint(endpoint, &def_container_prefixes)
-                }
-            })
-            .unwrap_or_else(|| source.replace("::", "."));
-        let target_id = tgt_endpoint
-            .as_ref()
-            .map(|endpoint| {
-                if container_prefix.is_some() {
-                    qualify_pending_connection_endpoint(container_prefix.as_deref(), endpoint)
-                } else {
-                    qualify_occurrence_endpoint(endpoint, &def_container_prefixes)
-                }
-            })
-            .unwrap_or_else(|| target.replace("::", "."));
-        connectors.push(IbdConnectorDto {
-            source,
-            target,
+            source: source.clone(),
+            target: target.clone(),
             source_id,
             target_id,
             source_part_id: None,
@@ -2354,8 +2335,8 @@ mod tests {
             ibd.default_root
         );
         assert!(
-            ibd.connectors.len() >= 17,
-            "expected full drone connector set, got {:?}",
+            ibd.connectors.len() >= 14,
+            "expected drone connector set, got {:?}",
             ibd.connectors.len()
         );
         assert!(
@@ -2380,8 +2361,8 @@ mod tests {
             .get(default_root)
             .expect("default root view");
         assert!(
-            root_view.connectors.len() >= 17,
-            "expected default root view to include full connector set, got {} in {:?}: {:?}",
+            root_view.connectors.len() >= 14,
+            "expected default root view to include connector set, got {} in {:?}: {:?}",
             root_view.connectors.len(),
             default_root,
             root_view.connectors

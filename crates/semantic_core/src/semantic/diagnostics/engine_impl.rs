@@ -111,8 +111,9 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     // 1) Connection endpoints must be ports; port types must be compatible
     let t1 = Instant::now();
     let d1 = diagnostics.len();
-    let connection_occurrences = graph.connection_edge_occurrences_for_uri(uri);
-    for (src_id, tgt_id, connection_range) in connection_occurrences {
+    let connection_occurrences = graph.connect_statement_edges_for_uri(uri);
+    for (src_id, tgt_id, connect) in connection_occurrences {
+        let connection_range = connect.range;
         if let (Some(src), Some(tgt)) = (graph.get_node(&src_id), graph.get_node(&tgt_id)) {
             if !is_port_like(&src.element_kind) {
                 diagnostics.push(diag(
@@ -202,19 +203,17 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     let t3 = Instant::now();
     let d3 = diagnostics.len();
     let mut seen_connections: HashSet<String> = HashSet::new();
-    for (src_id, tgt_id, connection_range, source_endpoint, target_endpoint, _) in
-        graph.connection_edge_occurrence_details_for_uri(uri)
-    {
+    for (src_id, tgt_id, connect) in graph.connect_statement_edges_for_uri(uri) {
         let key = connection_duplicate_key(
-            source_endpoint.as_deref(),
-            target_endpoint.as_deref(),
+            Some(connect.source_expression.as_str()),
+            Some(connect.target_expression.as_str()),
             &src_id,
             &tgt_id,
         );
         if !seen_connections.insert(key) {
             diagnostics.push(diag(
                 uri,
-                connection_range,
+                connect.range,
                 DiagnosticSeverity::Information,
                 "semantic",
                 "duplicate_connection",

@@ -10,19 +10,20 @@ use petgraph::Directed;
 use petgraph::Direction;
 use url::Url;
 
-use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
+use crate::semantic::model::{
+    ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+};
 use crate::semantic::workspace_uri;
 
 /// Semantic graph: nodes (model elements) and edges (relationships).
 /// Uses petgraph StableGraph for efficient add/remove and future algorithm support.
 #[derive(Debug, Default)]
 pub struct SemanticGraph {
-    pub graph: StableGraph<SemanticNode, RelationshipKind, Directed>,
+    pub graph: StableGraph<SemanticNode, SemanticEdge, Directed>,
     pub node_index_by_id: HashMap<NodeId, NodeIndex>,
     pub nodes_by_uri: HashMap<Url, Vec<NodeId>>,
     pub node_ids_by_qualified_name: HashMap<String, Vec<NodeId>>,
-    pub(crate) connection_occurrences_by_uri: HashMap<Url, Vec<ConnectionOccurrence>>,
-    pub(crate) pending_expression_relationships: Vec<PendingExpressionRelationship>,
+    pub pending_expression_relationships: Vec<PendingExpressionRelationship>,
     pub pending_relationships: Vec<PendingRelationship>,
     pub import_lookup_cache: Mutex<HashMap<(NodeId, String, bool), Vec<NodeId>>>,
 }
@@ -34,7 +35,6 @@ impl Clone for SemanticGraph {
             node_index_by_id: self.node_index_by_id.clone(),
             nodes_by_uri: self.nodes_by_uri.clone(),
             node_ids_by_qualified_name: self.node_ids_by_qualified_name.clone(),
-            connection_occurrences_by_uri: self.connection_occurrences_by_uri.clone(),
             pending_expression_relationships: self.pending_expression_relationships.clone(),
             pending_relationships: self.pending_relationships.clone(),
             import_lookup_cache: Mutex::new(HashMap::new()),
@@ -43,17 +43,7 @@ impl Clone for SemanticGraph {
 }
 
 #[derive(Debug, Clone)]
-pub(crate) struct ConnectionOccurrence {
-    pub source: NodeId,
-    pub target: NodeId,
-    pub range: TextRange,
-    pub source_endpoint: Option<String>,
-    pub target_endpoint: Option<String>,
-    pub container_prefix: Option<String>,
-}
-
-#[derive(Debug, Clone)]
-pub(crate) struct PendingExpressionRelationship {
+pub struct PendingExpressionRelationship {
     pub uri: Url,
     pub source_expression: String,
     pub target_expression: String,
@@ -78,7 +68,6 @@ impl SemanticGraph {
             node_index_by_id: HashMap::new(),
             nodes_by_uri: HashMap::new(),
             node_ids_by_qualified_name: HashMap::new(),
-            connection_occurrences_by_uri: HashMap::new(),
             pending_expression_relationships: Vec::new(),
             pending_relationships: Vec::new(),
             import_lookup_cache: Mutex::new(HashMap::new()),
@@ -88,7 +77,6 @@ impl SemanticGraph {
     /// Removes all nodes (and their incident edges) for the given URI.
     pub fn remove_nodes_for_uri(&mut self, uri: &Url) {
         let Some(node_ids) = self.nodes_by_uri.remove(uri) else {
-            self.connection_occurrences_by_uri.remove(uri);
             self.clear_import_lookup_cache();
             return;
         };
@@ -105,18 +93,11 @@ impl SemanticGraph {
                 self.graph.remove_node(idx);
             }
         }
-        self.connection_occurrences_by_uri.remove(uri);
         self.clear_import_lookup_cache();
     }
 
     /// Merges nodes and edges from another graph (built from a single document).
     pub fn merge(&mut self, other: SemanticGraph) {
-        for (uri, occurrences) in &other.connection_occurrences_by_uri {
-            self.connection_occurrences_by_uri
-                .entry(uri.clone())
-                .or_default()
-                .extend(occurrences.iter().cloned());
-        }
         self.pending_relationships
             .extend(other.pending_relationships.iter().cloned());
         self.pending_expression_relationships
@@ -133,12 +114,12 @@ impl SemanticGraph {
                 .or_default()
                 .push(id);
         }
-        for (src_id, tgt_id, kind) in other.iter_edges() {
+        for (src_id, tgt_id, edge) in other.iter_edges() {
             if let (Some(&src_idx), Some(&tgt_idx)) = (
                 self.node_index_by_id.get(&src_id),
                 self.node_index_by_id.get(&tgt_id),
             ) {
-                self.graph.add_edge(src_idx, tgt_idx, kind.clone());
+                self.graph.add_edge(src_idx, tgt_idx, edge.clone());
             }
         }
         self.clear_import_lookup_cache();
@@ -165,7 +146,7 @@ impl SemanticGraph {
             .map(Vec::as_slice)
     }
 
-    fn iter_edges(&self) -> impl Iterator<Item = (NodeId, NodeId, RelationshipKind)> + '_ {
+    fn iter_edges(&self) -> impl Iterator<Item = (NodeId, NodeId, SemanticEdge)> + '_ {
         let node_ids: Vec<_> = self
             .node_index_by_id
             .iter()
@@ -176,8 +157,8 @@ impl SemanticGraph {
         self.graph.edge_references().filter_map(move |e| {
             let src_id = id_by_idx.get(&e.source())?.clone();
             let tgt_id = id_by_idx.get(&e.target())?.clone();
-            let kind = e.weight().clone();
-            Some((src_id, tgt_id, kind))
+            let edge = e.weight().clone();
+            Some((src_id, tgt_id, edge))
         })
     }
 
@@ -329,7 +310,7 @@ impl SemanticGraph {
         let mut targets = Vec::new();
         for edge in self.graph.edges_directed(src_idx, Direction::Outgoing) {
             if matches!(
-                edge.weight(),
+                edge.weight().kind,
                 RelationshipKind::Typing | RelationshipKind::Specializes
             ) {
                 if let Some(tgt_id) = id_by_idx.get(&edge.target()) {
@@ -359,7 +340,7 @@ impl SemanticGraph {
             .collect();
         let mut targets = Vec::new();
         for edge in self.graph.edges_directed(src_idx, Direction::Outgoing) {
-            if edge.weight() == &kind {
+            if edge.weight().kind == kind {
                 if let Some(tgt_id) = id_by_idx.get(&edge.target()) {
                     if let Some(tgt) = self.get_node(tgt_id) {
                         targets.push(tgt);
@@ -387,7 +368,7 @@ impl SemanticGraph {
         let mut sources = Vec::new();
         for edge in self.graph.edges_directed(tgt_idx, Direction::Incoming) {
             if matches!(
-                edge.weight(),
+                edge.weight().kind,
                 RelationshipKind::Typing | RelationshipKind::Specializes
             ) {
                 if let Some(src_id) = id_by_idx.get(&edge.source()) {
@@ -417,7 +398,7 @@ impl SemanticGraph {
             .collect();
         let mut sources = Vec::new();
         for edge in self.graph.edges_directed(tgt_idx, Direction::Incoming) {
-            if edge.weight() == &kind {
+            if edge.weight().kind == kind {
                 if let Some(src_id) = id_by_idx.get(&edge.source()) {
                     if let Some(src) = self.get_node(src_id) {
                         sources.push(src);
@@ -446,7 +427,7 @@ impl SemanticGraph {
         for edge in self.graph.edges_directed(src_idx, Direction::Outgoing) {
             if let Some(tgt_id) = id_by_idx.get(&edge.target()) {
                 if let Some(tgt) = self.get_node(tgt_id) {
-                    relationships.push((tgt, edge.weight().clone()));
+                    relationships.push((tgt, edge.weight().kind.clone()));
                 }
             }
         }
@@ -471,7 +452,7 @@ impl SemanticGraph {
         for edge in self.graph.edges_directed(tgt_idx, Direction::Incoming) {
             if let Some(src_id) = id_by_idx.get(&edge.source()) {
                 if let Some(src) = self.get_node(src_id) {
-                    relationships.push((src, edge.weight().clone()));
+                    relationships.push((src, edge.weight().kind.clone()));
                 }
             }
         }
@@ -491,7 +472,7 @@ impl SemanticGraph {
             .collect();
         let mut targets = Vec::new();
         for edge in self.graph.edges_directed(src_idx, Direction::Outgoing) {
-            if matches!(edge.weight(), RelationshipKind::Perform) {
+            if edge.weight().kind == RelationshipKind::Perform {
                 if let Some(tgt_id) = id_by_idx.get(&edge.target()) {
                     if let Some(tgt) = self.get_node(tgt_id) {
                         targets.push(tgt);
@@ -515,7 +496,7 @@ impl SemanticGraph {
             .collect();
         let mut sources = Vec::new();
         for edge in self.graph.edges_directed(tgt_idx, Direction::Incoming) {
-            if matches!(edge.weight(), RelationshipKind::Perform) {
+            if edge.weight().kind == RelationshipKind::Perform {
                 if let Some(src_id) = id_by_idx.get(&edge.source()) {
                     if let Some(src) = self.get_node(src_id) {
                         sources.push(src);
@@ -546,7 +527,7 @@ impl SemanticGraph {
             .collect();
         let mut out = Vec::new();
         for e in self.graph.edge_references() {
-            if *e.weight() != RelationshipKind::Connection {
+            if e.weight().kind != RelationshipKind::Connection {
                 continue;
             }
             let src_id = match id_by_idx.get(&e.source()) {
@@ -564,92 +545,88 @@ impl SemanticGraph {
         out
     }
 
-    /// Returns connection edge occurrences anchored to source ranges from parsed connect statements.
-    /// Multiple entries can exist for the same endpoint pair.
-    pub fn connection_edge_occurrences_for_uri(
+    /// Returns all `Connection` edges incident to nodes in the given URI.
+    pub fn connection_edges_touching_uri(
         &self,
         uri: &Url,
-    ) -> Vec<(NodeId, NodeId, TextRange)> {
-        self.connection_occurrences_by_uri
+    ) -> Vec<(NodeId, NodeId, SemanticEdge)> {
+        let ids: std::collections::HashSet<_> = self
+            .nodes_by_uri
             .get(uri)
             .into_iter()
             .flatten()
             .cloned()
-            .map(|occ| (occ.source, occ.target, occ.range))
-            .collect()
+            .collect();
+        if ids.is_empty() {
+            return Vec::new();
+        }
+        let id_by_idx: HashMap<NodeIndex, NodeId> = self
+            .node_index_by_id
+            .iter()
+            .map(|(k, v)| (*v, k.clone()))
+            .collect();
+        let mut out = Vec::new();
+        for e in self.graph.edge_references() {
+            if e.weight().kind != RelationshipKind::Connection {
+                continue;
+            }
+            let src_id = match id_by_idx.get(&e.source()) {
+                Some(id) => id.clone(),
+                None => continue,
+            };
+            let tgt_id = match id_by_idx.get(&e.target()) {
+                Some(id) => id.clone(),
+                None => continue,
+            };
+            if ids.contains(&src_id) || ids.contains(&tgt_id) {
+                out.push((src_id, tgt_id, e.weight().clone()));
+            }
+        }
+        out
     }
 
-    pub fn record_connection_occurrence(
-        &mut self,
-        uri: &Url,
-        source: NodeId,
-        target: NodeId,
-        range: TextRange,
-    ) {
-        self.connection_occurrences_by_uri
-            .entry(uri.clone())
-            .or_default()
-            .push(ConnectionOccurrence {
-                source,
-                target,
-                range,
-                source_endpoint: None,
-                target_endpoint: None,
-                container_prefix: None,
-            });
-    }
-
-    pub fn record_connection_occurrence_with_endpoints(
-        &mut self,
-        uri: &Url,
-        source: NodeId,
-        target: NodeId,
-        range: TextRange,
-        source_endpoint: String,
-        target_endpoint: String,
-        container_prefix: Option<String>,
-    ) {
-        self.connection_occurrences_by_uri
-            .entry(uri.clone())
-            .or_default()
-            .push(ConnectionOccurrence {
-                source,
-                target,
-                range,
-                source_endpoint: Some(source_endpoint),
-                target_endpoint: Some(target_endpoint),
-                container_prefix,
-            });
-    }
-
-    /// Returns connection occurrences with the source text endpoint names preserved.
-    pub fn connection_edge_occurrence_details_for_uri(
+    /// Returns `Connection` edges declared in the given URI with `connect` metadata.
+    pub fn connect_statement_edges_for_uri(
         &self,
         uri: &Url,
-    ) -> Vec<(
-        NodeId,
-        NodeId,
-        TextRange,
-        Option<String>,
-        Option<String>,
-        Option<String>,
-    )> {
-        self.connection_occurrences_by_uri
+    ) -> Vec<(NodeId, NodeId, ConnectStatementDetail)> {
+        let ids: std::collections::HashSet<_> = self
+            .nodes_by_uri
             .get(uri)
             .into_iter()
             .flatten()
             .cloned()
-            .map(|occ| {
-                (
-                    occ.source,
-                    occ.target,
-                    occ.range,
-                    occ.source_endpoint,
-                    occ.target_endpoint,
-                    occ.container_prefix,
-                )
-            })
-            .collect()
+            .collect();
+        if ids.is_empty() {
+            return Vec::new();
+        }
+        let id_by_idx: HashMap<NodeIndex, NodeId> = self
+            .node_index_by_id
+            .iter()
+            .map(|(k, v)| (*v, k.clone()))
+            .collect();
+        let mut out = Vec::new();
+        for e in self.graph.edge_references() {
+            let Some(connect) = e.weight().connect.clone() else {
+                continue;
+            };
+            if connect.declaring_uri != *uri {
+                continue;
+            }
+            if e.weight().kind != RelationshipKind::Connection {
+                continue;
+            }
+            let src_id = match id_by_idx.get(&e.source()) {
+                Some(id) => id.clone(),
+                None => continue,
+            };
+            let tgt_id = match id_by_idx.get(&e.target()) {
+                Some(id) => id.clone(),
+                None => continue,
+            };
+            out.push((src_id, tgt_id, connect));
+        }
+        out
     }
 
     /// Returns edges incident to nodes in the given URI as (source, target, kind, optional edge name).
@@ -687,7 +664,7 @@ impl SemanticGraph {
                 out.push((
                     src_id.qualified_name,
                     tgt_id.qualified_name,
-                    e.weight().clone(),
+                    e.weight().kind.clone(),
                     None::<String>, // edge name for connection
                 ));
             }
@@ -747,11 +724,55 @@ impl SemanticGraph {
                 out.push((
                     src_id.qualified_name,
                     tgt_id.qualified_name,
-                    e.weight().clone(),
+                    e.weight().kind.clone(),
                     None::<String>,
                 ));
             }
         }
         out
+    }
+
+    /// Inserts a workspace node when rebuilding a graph from a persisted slice.
+    pub fn insert_workspace_node(&mut self, node: SemanticNode) {
+        if self.node_index_by_id.contains_key(&node.id) {
+            return;
+        }
+        let idx = self.graph.add_node(node.clone());
+        self.node_index_by_id.insert(node.id.clone(), idx);
+        self.nodes_by_uri
+            .entry(node.id.uri.clone())
+            .or_default()
+            .push(node.id.clone());
+        self.node_ids_by_qualified_name
+            .entry(node.id.qualified_name.clone())
+            .or_default()
+            .push(node.id);
+    }
+
+    /// Inserts a directed relationship between existing workspace nodes.
+    pub fn insert_workspace_edge(
+        &mut self,
+        source: &NodeId,
+        target: &NodeId,
+        edge: SemanticEdge,
+    ) {
+        let Some(&source_idx) = self.node_index_by_id.get(source) else {
+            return;
+        };
+        let Some(&target_idx) = self.node_index_by_id.get(target) else {
+            return;
+        };
+        self.graph.add_edge(source_idx, target_idx, edge);
+    }
+
+    pub fn restore_pending_relationship(&mut self, pending: PendingRelationship) {
+        self.pending_relationships.push(pending);
+    }
+
+    pub fn restore_pending_expression_relationship(
+        &mut self,
+        pending: PendingExpressionRelationship,
+    ) {
+        self.pending_expression_relationships.push(pending);
     }
 }

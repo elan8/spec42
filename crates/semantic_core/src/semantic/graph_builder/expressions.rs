@@ -5,7 +5,8 @@ use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{NodeId, RelationshipKind};
+use crate::semantic::model::{ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge};
+use crate::semantic::relationships::{add_semantic_edge_once, AddSemanticEdgeResult};
 use crate::semantic::reference_resolution::{
     resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult,
 };
@@ -70,18 +71,30 @@ pub(super) fn add_expression_edge_if_both_exist(
             resolve_expression_endpoint_strict(g, uri, container_prefix, &right_str);
         match (left_resolved, right_resolved) {
             (ResolveResult::Resolved(src_id), ResolveResult::Resolved(tgt_id)) => {
-                let src = src_id.qualified_name.clone();
-                let tgt = tgt_id.qualified_name.clone();
-                add_edge_if_both_exist(g, uri, &src, &tgt, kind.clone());
-                g.record_connection_occurrence_with_endpoints(
-                    uri,
-                    src_id,
-                    tgt_id,
-                    span_to_range(&left.span),
-                    left_str,
-                    right_str,
-                    container_prefix.map(ToString::to_string),
-                );
+                match add_semantic_edge_once(
+                    g,
+                    &src_id,
+                    &tgt_id,
+                    SemanticEdge::connection_with_connect(ConnectStatementDetail {
+                        declaring_uri: uri.clone(),
+                        range: span_to_range(&left.span),
+                        source_expression: left_str,
+                        target_expression: right_str,
+                        container_prefix: container_prefix.map(ToString::to_string),
+                    }),
+                ) {
+                    AddSemanticEdgeResult::DuplicateConnect => {
+                        add_diagnostic_node(
+                            g,
+                            uri,
+                            container_prefix,
+                            "duplicate_connection",
+                            "Duplicate connection between the same two endpoints.".to_string(),
+                            span_to_range(&left.span),
+                        );
+                    }
+                    _ => {}
+                }
                 return;
             }
             (ResolveResult::Ambiguous, _) => {
@@ -224,14 +237,35 @@ pub(super) fn add_expression_edge_if_both_exist(
         };
         id
     };
-    add_edge_if_both_exist(g, uri, &src, &tgt, kind.clone());
     if kind == RelationshipKind::Connection {
-        g.record_connection_occurrence(
-            uri,
-            NodeId::new(uri, &src),
-            NodeId::new(uri, &tgt),
-            span_to_range(&left.span),
-        );
+        let src_id = NodeId::new(uri, &src);
+        let tgt_id = NodeId::new(uri, &tgt);
+        if matches!(
+            add_semantic_edge_once(
+                g,
+                &src_id,
+                &tgt_id,
+                SemanticEdge::connection_with_connect(ConnectStatementDetail {
+                    declaring_uri: uri.clone(),
+                    range: span_to_range(&left.span),
+                    source_expression: left_str.clone(),
+                    target_expression: right_str.clone(),
+                    container_prefix: container_prefix.map(ToString::to_string),
+                }),
+            ),
+            AddSemanticEdgeResult::DuplicateConnect
+        ) {
+            add_diagnostic_node(
+                g,
+                uri,
+                container_prefix,
+                "duplicate_connection",
+                "Duplicate connection between the same two endpoints.".to_string(),
+                span_to_range(&left.span),
+            );
+        }
+    } else {
+        add_edge_if_both_exist(g, uri, &src, &tgt, kind.clone());
     }
 }
 

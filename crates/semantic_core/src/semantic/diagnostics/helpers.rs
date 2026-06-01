@@ -140,12 +140,16 @@ pub(super) fn connection_duplicate_key(
     target_id: &NodeId,
 ) -> String {
     if let (Some(source), Some(target)) = (source_endpoint, target_endpoint) {
+        let (left, right) = normalize_edge_pair(source_id, target_id);
         let mut endpoints = [
             source.replace('.', "::"),
             target.replace('.', "::"),
         ];
         endpoints.sort();
-        return format!("expr:{}|{}", endpoints[0], endpoints[1]);
+        return format!(
+            "expr:{}|{}|node:{}|{}",
+            endpoints[0], endpoints[1], left.qualified_name, right.qualified_name
+        );
     }
     let (left, right) = normalize_edge_pair(source_id, target_id);
     format!("node:{}|{}", left.qualified_name, right.qualified_name)

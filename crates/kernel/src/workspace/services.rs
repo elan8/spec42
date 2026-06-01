@@ -586,7 +586,11 @@ pub(crate) fn rebuild_all_document_links(
                 state.semantic_graph.node_index_by_id.get(&src_id),
                 state.semantic_graph.node_index_by_id.get(&tgt_id),
             ) {
-                state.semantic_graph.graph.add_edge(src_idx, tgt_idx, kind);
+                state.semantic_graph.graph.add_edge(
+                    src_idx,
+                    tgt_idx,
+                    semantic_core::SemanticEdge::plain(kind),
+                );
             }
         }
     }
@@ -716,7 +720,11 @@ pub(crate) fn rebuild_semantic_graph_staged(
                 semantic_graph.node_index_by_id.get(&src_id),
                 semantic_graph.node_index_by_id.get(&tgt_id),
             ) {
-                semantic_graph.graph.add_edge(src_idx, tgt_idx, kind);
+                semantic_graph.graph.add_edge(
+                    src_idx,
+                    tgt_idx,
+                    semantic_core::SemanticEdge::plain(kind),
+                );
             }
         }
     }

@@ -98,14 +98,14 @@ fn mvp_roundtrip_subset_has_authoritative_graph_facts() {
         "expected connection between battery and controller ports, got: {:?}",
         connection_edges
     );
-    let occurrences = graph.connection_edge_occurrence_details_for_uri(&documents[0].uri);
+    let connect_edges = graph.connect_statement_edges_for_uri(&documents[0].uri);
     assert!(
-        occurrences.iter().any(|(_, _, _, src, tgt, _)| {
-            src.as_deref() == Some("battery::powerOut")
-                && tgt.as_deref() == Some("controller::powerIn")
+        connect_edges.iter().any(|(_, _, connect)| {
+            connect.source_expression == "battery::powerOut"
+                && connect.target_expression == "controller::powerIn"
         }),
         "expected part-body connect to record usage-relative endpoints, got: {:?}",
-        occurrences
+        connect_edges
     );
     assert!(has_edge(
         "Demo::Battery",

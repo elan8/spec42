@@ -42,6 +42,40 @@ pub enum RelationshipKind {
     InitialState,
 }
 
+/// Optional metadata when a `Connection` edge came from a resolved `connect` statement.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ConnectStatementDetail {
+    pub declaring_uri: Url,
+    pub range: TextRange,
+    pub source_expression: String,
+    pub target_expression: String,
+    pub container_prefix: Option<String>,
+}
+
+/// Edge weight in the semantic graph: relationship kind plus optional connect metadata.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SemanticEdge {
+    pub kind: RelationshipKind,
+    /// Set when this `Connection` came from a resolved `connect` (or pending-expression resolve).
+    pub connect: Option<ConnectStatementDetail>,
+}
+
+impl SemanticEdge {
+    pub fn plain(kind: RelationshipKind) -> Self {
+        Self {
+            kind,
+            connect: None,
+        }
+    }
+
+    pub fn connection_with_connect(connect: ConnectStatementDetail) -> Self {
+        Self {
+            kind: RelationshipKind::Connection,
+            connect: Some(connect),
+        }
+    }
+}
+
 impl RelationshipKind {
     pub fn as_str(&self) -> &'static str {
         match self {
@@ -57,6 +91,24 @@ impl RelationshipKind {
             RelationshipKind::Derivation => "derivation",
             RelationshipKind::Transition => "transition",
             RelationshipKind::InitialState => "initialState",
+        }
+    }
+
+    /// Parses persisted relationship type strings (babel42 projection / Surreal).
+    pub fn from_persisted_type(value: &str) -> Option<Self> {
+        match value.trim().to_ascii_lowercase().as_str() {
+            "typing" => Some(RelationshipKind::Typing),
+            "specializes" => Some(RelationshipKind::Specializes),
+            "connection" => Some(RelationshipKind::Connection),
+            "bind" => Some(RelationshipKind::Bind),
+            "flow" => Some(RelationshipKind::Flow),
+            "perform" => Some(RelationshipKind::Perform),
+            "allocate" => Some(RelationshipKind::Allocate),
+            "satisfy" => Some(RelationshipKind::Satisfy),
+            "subject" => Some(RelationshipKind::Subject),
+            "derivation" => Some(RelationshipKind::Derivation),
+            "transition" | "initialstate" => Some(RelationshipKind::Transition),
+            _ => None,
         }
     }
 }

@@ -1,5 +1,6 @@
 //! Relationship edge logic: typing, specializes, connection, bind, workspace relationship linking.
 
+use petgraph::visit::EdgeRef;
 use sysml_v2_parser::ast::{PackageBody, PackageBodyElement};
 use sysml_v2_parser::RootNamespace;
 
@@ -8,7 +9,9 @@ use url::Url;
 use crate::semantic::ast_util::identification_name;
 use crate::semantic::graph::{PendingExpressionRelationship, SemanticGraph};
 use crate::semantic::import_resolution::resolve_type_reference_targets;
-use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
+use crate::semantic::model::{
+    ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+};
 use crate::semantic::reference_resolution::{resolve_expression_endpoint_strict, ResolveResult};
 pub use crate::semantic::resolution::naming::{
     normalize_for_lookup, type_ref_candidates, type_ref_candidates_with_kind,
@@ -206,7 +209,8 @@ fn add_edge_if_both_exist_opt(
     let Some(tgt_idx) = g.node_index_by_id.get(&tgt_id).copied() else {
         return false;
     };
-    g.graph.add_edge(src_idx, tgt_idx, kind);
+    g.graph
+        .add_edge(src_idx, tgt_idx, SemanticEdge::plain(kind));
     true
 }
 
@@ -263,7 +267,7 @@ pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
         }
         let source_id = NodeId::new(uri, &pending_edge.source_qualified);
         let target_id = NodeId::new(uri, &pending_edge.target_qualified);
-        let (Some(&src_idx), Some(tgt_node), Some(&tgt_idx)) = (
+        let (Some(_), Some(tgt_node), Some(_)) = (
             g.node_index_by_id.get(&source_id),
             g.get_node(&target_id),
             g.node_index_by_id.get(&target_id),
@@ -279,13 +283,12 @@ pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
                 continue;
             }
         }
-        if !g
-            .graph
-            .edges_connecting(src_idx, tgt_idx)
-            .any(|edge| edge.weight() == &pending_edge.kind)
-        {
-            g.graph.add_edge(src_idx, tgt_idx, pending_edge.kind);
-        }
+        add_semantic_edge_once(
+            g,
+            &source_id,
+            &target_id,
+            SemanticEdge::plain(pending_edge.kind.clone()),
+        );
     }
 }
 
@@ -320,16 +323,25 @@ fn resolve_pending_expression_relationships_for_uri(g: &mut SemanticGraph, uri: 
                 continue;
             }
         };
-        add_resolved_edge_once(g, &source_id, &target_id, pending_edge.kind.clone());
         if pending_edge.kind == RelationshipKind::Connection {
-            g.record_connection_occurrence_with_endpoints(
-                uri,
-                source_id,
-                target_id,
-                pending_edge.source_range,
-                pending_edge.source_expression,
-                pending_edge.target_expression,
-                pending_edge.container_prefix.clone(),
+            add_semantic_edge_once(
+                g,
+                &source_id,
+                &target_id,
+                SemanticEdge::connection_with_connect(ConnectStatementDetail {
+                    declaring_uri: uri.clone(),
+                    range: pending_edge.source_range,
+                    source_expression: pending_edge.source_expression,
+                    target_expression: pending_edge.target_expression,
+                    container_prefix: pending_edge.container_prefix.clone(),
+                }),
+            );
+        } else {
+            add_semantic_edge_once(
+                g,
+                &source_id,
+                &target_id,
+                SemanticEdge::plain(pending_edge.kind.clone()),
             );
         }
     }
@@ -369,7 +381,12 @@ pub(crate) fn try_wire_derivation_connection(
         return;
     };
 
-    add_resolved_edge_once(g, &original_id, &derived_id, RelationshipKind::Derivation);
+    add_semantic_edge_once(
+        g,
+        &original_id,
+        &derived_id,
+        SemanticEdge::plain(RelationshipKind::Derivation),
+    );
     if let Some(connection) = g.get_node_mut(connection_node_id) {
         connection.attributes.insert(
             "derivationOriginal".to_string(),
@@ -409,25 +426,56 @@ fn resolve_derivation_end_target(
     }
 }
 
-fn add_resolved_edge_once(
+/// Result of attempting to add a semantic edge between two nodes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AddSemanticEdgeResult {
+    Added,
+    SkippedSameKind,
+    DuplicateConnect,
+}
+
+/// Adds an edge when no same-kind edge exists between the pair.
+/// For `Connection` edges with connect metadata, returns [`AddSemanticEdgeResult::DuplicateConnect`]
+/// when a connection edge already exists (keeps the first edge's metadata).
+pub fn add_semantic_edge_once(
     g: &mut SemanticGraph,
     source_id: &NodeId,
     target_id: &NodeId,
-    kind: RelationshipKind,
-) {
+    edge: SemanticEdge,
+) -> AddSemanticEdgeResult {
     let (Some(&src_idx), Some(&tgt_idx)) = (
         g.node_index_by_id.get(source_id),
         g.node_index_by_id.get(target_id),
     ) else {
-        return;
+        return AddSemanticEdgeResult::SkippedSameKind;
     };
-    if !g
-        .graph
-        .edges_connecting(src_idx, tgt_idx)
-        .any(|edge| edge.weight() == &kind)
-    {
-        g.graph.add_edge(src_idx, tgt_idx, kind);
+    for existing in g.graph.edges_connecting(src_idx, tgt_idx) {
+        if existing.weight().kind != edge.kind {
+            continue;
+        }
+        if edge.kind == RelationshipKind::Connection {
+            if let Some(connect) = edge.connect.clone() {
+                if existing.weight().connect.is_none() {
+                    if let Some(weight) = g.graph.edge_weight_mut(existing.id()) {
+                        weight.connect = Some(connect);
+                    }
+                    return AddSemanticEdgeResult::Added;
+                }
+                if let Some(existing_connect) = &existing.weight().connect {
+                    if existing_connect.source_expression == connect.source_expression
+                        && existing_connect.target_expression == connect.target_expression
+                        && existing_connect.container_prefix == connect.container_prefix
+                    {
+                        return AddSemanticEdgeResult::DuplicateConnect;
+                    }
+                }
+                return AddSemanticEdgeResult::SkippedSameKind;
+            }
+        }
+        return AddSemanticEdgeResult::SkippedSameKind;
     }
+    g.graph.add_edge(src_idx, tgt_idx, edge);
+    AddSemanticEdgeResult::Added
 }
 
 /// Adds a typing edge if source exists and target can be resolved. Tries type_ref as-is,
@@ -477,7 +525,12 @@ pub fn add_typing_edge_for_node(g: &mut SemanticGraph, source_id: &NodeId, type_
     else {
         return;
     };
-    add_resolved_edge_once(g, source_id, &target_id, RelationshipKind::Typing);
+    add_semantic_edge_once(
+        g,
+        source_id,
+        &target_id,
+        SemanticEdge::plain(RelationshipKind::Typing),
+    );
 }
 
 pub fn add_specializes_edges_for_node(
@@ -494,7 +547,12 @@ pub fn add_specializes_edges_for_node(
         else {
             continue;
         };
-        add_resolved_edge_once(g, source_id, &target_id, RelationshipKind::Specializes);
+        add_semantic_edge_once(
+            g,
+            source_id,
+            &target_id,
+            SemanticEdge::plain(RelationshipKind::Specializes),
+        );
     }
 }
 
@@ -602,7 +660,8 @@ pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
             g.node_index_by_id.get(&src_id),
             g.node_index_by_id.get(&tgt_id),
         ) {
-            g.graph.add_edge(src_idx, tgt_idx, kind);
+            g.graph
+                .add_edge(src_idx, tgt_idx, SemanticEdge::plain(kind));
         }
     }
 }

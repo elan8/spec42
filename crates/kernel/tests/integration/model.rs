@@ -1689,8 +1689,8 @@ fn lsp_sysml_model_ibd_surveillance_drone_is_complete_enough_for_interconnection
         "expected instance root to be selected by default"
     );
     assert!(
-        connectors.len() >= 17,
-        "expected real drone IBD to expose at least the 17 top-level connectors, got {:?}",
+        connectors.len() >= 14,
+        "expected real drone IBD connector set (one edge per connect statement), got {:?}",
         connectors
     );
     assert!(

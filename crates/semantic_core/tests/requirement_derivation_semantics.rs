@@ -39,7 +39,7 @@ fn derivation_edges(graph: &semantic_core::SemanticGraph) -> Vec<(String, String
         .edge_indices()
         .filter_map(|edge_index| {
             let (source_index, target_index) = graph.graph.edge_endpoints(edge_index)?;
-            if graph.graph.edge_weight(edge_index)? != &RelationshipKind::Derivation {
+            if graph.graph.edge_weight(edge_index)?.kind != RelationshipKind::Derivation {
                 return None;
             }
             let source = graph.graph.node_weight(source_index)?;
