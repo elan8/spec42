@@ -1847,22 +1847,61 @@ fn parse_named_arg(arg: &str) -> Option<(String, &str)> {
 }
 
 fn callable_collection_params(node: &SemanticNode) -> HashSet<String> {
-    node.attributes
-        .get("parameters")
-        .and_then(Value::as_array)
-        .into_iter()
-        .flatten()
-        .filter_map(|entry| {
-            let direction = entry.get("direction").and_then(Value::as_str)?;
-            let name = entry.get("name").and_then(Value::as_str)?.trim();
-            if name.is_empty() || !matches!(direction, "in" | "inout") {
-                return None;
+    let mut names = HashSet::new();
+    for key in ["parameters", "analysisParams"] {
+        if let Some(array) = node.attributes.get(key).and_then(Value::as_array) {
+            for entry in array {
+                let Some(direction) = entry.get("direction").and_then(Value::as_str) else {
+                    continue;
+                };
+                let Some(name) = entry.get("name").and_then(Value::as_str) else {
+                    continue;
+                };
+                let name = name.trim();
+                if name.is_empty() || !matches!(direction, "in" | "inout") {
+                    continue;
+                }
+                let ty = entry
+                    .get("type")
+                    .and_then(Value::as_str)
+                    .unwrap_or("")
+                    .trim();
+                if ty.contains("[*]") || ty.contains("[0..*]") || ty.contains("[1..*]") {
+                    names.insert(name.to_string());
+                }
             }
-            let ty = entry.get("type").and_then(Value::as_str)?.trim();
-            (ty.contains("[*]") || ty.contains("[0..*]") || ty.contains("[1..*]"))
-                .then_some(name.to_string())
-        })
-        .collect()
+        }
+    }
+    if let Some(param) = node
+        .attributes
+        .get(ANALYSIS_EXPRESSION_KEY)
+        .and_then(Value::as_str)
+        .and_then(collection_param_from_sum_projection)
+    {
+        names.insert(param);
+    }
+    names
+}
+
+/// Detects `sum(parts.massKg)`-style collection roll-ups (SysML calc body pattern).
+fn collection_param_from_sum_projection(expression: &str) -> Option<String> {
+    let inner = expression.trim().strip_prefix("sum(")?.trim();
+    let head = inner.split_once('.')?.0.trim();
+    if head.is_empty() || !head.chars().all(|ch| ch.is_ascii_alphanumeric() || ch == '_') {
+        return None;
+    }
+    Some(head.to_string())
+}
+
+fn parse_tuple_member_path(part: &str) -> Result<String, EvalStatus> {
+    let trimmed = part.trim();
+    if trimmed.is_empty() {
+        return Err(EvalStatus::Unsupported);
+    }
+    for segment in trimmed.split('.') {
+        parse_standalone_identifier(segment).ok_or(EvalStatus::Unsupported)?;
+    }
+    Ok(trimmed.to_string())
 }
 
 fn parse_tuple_identifier_list(expr: &str) -> Result<Vec<String>, EvalStatus> {
@@ -1883,8 +1922,7 @@ fn parse_tuple_identifier_list(expr: &str) -> Result<Vec<String>, EvalStatus> {
             ']' => bracket_depth = bracket_depth.saturating_sub(1),
             ',' if paren_depth == 0 && bracket_depth == 0 => {
                 let part = inner[start..idx].trim();
-                let ident = parse_standalone_identifier(part).ok_or(EvalStatus::Unsupported)?;
-                items.push(ident.to_string());
+                items.push(parse_tuple_member_path(part)?);
                 start = idx + 1;
             }
             _ => {}
@@ -1892,8 +1930,7 @@ fn parse_tuple_identifier_list(expr: &str) -> Result<Vec<String>, EvalStatus> {
     }
     let tail = inner[start..].trim();
     if !tail.is_empty() {
-        let ident = parse_standalone_identifier(tail).ok_or(EvalStatus::Unsupported)?;
-        items.push(ident.to_string());
+        items.push(parse_tuple_member_path(tail)?);
     }
     if items.is_empty() {
         return Err(EvalStatus::Unsupported);
@@ -3656,6 +3693,110 @@ mod tests {
         assert_eq!(
             node_attr(&graph, &avg_id, EVALUATED_UNIT_KEY).and_then(Value::as_str),
             Some("cm")
+        );
+    }
+
+    #[test]
+    fn evaluates_analysis_case_with_calc_collection_rollup() {
+        let mut graph = SemanticGraph::new();
+        register_units_fixture(&mut graph);
+        let uri = Url::parse("file:///C:/workspace/calc-rollup-analysis.sysml").expect("uri");
+        let _calc = add_node(
+            &mut graph,
+            &uri,
+            "Demo::SubsystemMassSum",
+            "calc def",
+            "SubsystemMassSum",
+            None,
+            HashMap::from([
+                (
+                    "parameters".to_string(),
+                    serde_json::json!([{"direction":"in","name":"parts","type":""}]),
+                ),
+                (
+                    ANALYSIS_EXPRESSION_KEY.to_string(),
+                    Value::String("sum(parts.massKg)".to_string()),
+                ),
+            ]),
+        );
+        let analysis = add_node(
+            &mut graph,
+            &uri,
+            "Demo::MassAnalysis",
+            "analysis def",
+            "MassAnalysis",
+            None,
+            HashMap::from([(
+                ANALYSIS_EXPRESSION_KEY.to_string(),
+                Value::String(
+                    "SubsystemMassSum(parts=(robot.engine, robot.chassis)) <= massLimitKg".to_string(),
+                ),
+            )]),
+        );
+        let robot = add_node(
+            &mut graph,
+            &uri,
+            "Demo::MassAnalysis::robot",
+            "subject",
+            "robot",
+            Some(&analysis),
+            HashMap::new(),
+        );
+        let engine = add_node(
+            &mut graph,
+            &uri,
+            "Demo::MassAnalysis::robot::engine",
+            "part",
+            "engine",
+            Some(&robot),
+            HashMap::new(),
+        );
+        let _engine_mass = add_node(
+            &mut graph,
+            &uri,
+            "Demo::MassAnalysis::robot::engine::massKg",
+            "attribute",
+            "massKg",
+            Some(&engine),
+            HashMap::from([("value".to_string(), Value::String("2 [kg]".to_string()))]),
+        );
+        let chassis = add_node(
+            &mut graph,
+            &uri,
+            "Demo::MassAnalysis::robot::chassis",
+            "part",
+            "chassis",
+            Some(&robot),
+            HashMap::new(),
+        );
+        let _chassis_mass = add_node(
+            &mut graph,
+            &uri,
+            "Demo::MassAnalysis::robot::chassis::massKg",
+            "attribute",
+            "massKg",
+            Some(&chassis),
+            HashMap::from([("value".to_string(), Value::String("3 [kg]".to_string()))]),
+        );
+        let _limit = add_node(
+            &mut graph,
+            &uri,
+            "Demo::MassAnalysis::massLimitKg",
+            "attribute",
+            "massLimitKg",
+            Some(&analysis),
+            HashMap::from([("value".to_string(), Value::String("10 [kg]".to_string()))]),
+        );
+
+        evaluate_expressions(&mut graph);
+
+        assert_eq!(
+            node_attr(&graph, &analysis, ANALYSIS_EVAL_STATUS_KEY),
+            Some(&Value::String(STATUS_OK.to_string()))
+        );
+        assert_eq!(
+            node_attr(&graph, &analysis, ANALYSIS_COMPUTED_VALUE_KEY),
+            Some(&serde_json::json!(5))
         );
     }
 

@@ -109,6 +109,16 @@ fn extract_constraint_metadata(
     (params, expression)
 }
 
+fn strip_calc_return_expression(text: &str) -> String {
+    text.trim()
+        .strip_prefix("return")
+        .map(str::trim)
+        .unwrap_or(text.trim())
+        .trim_end_matches(';')
+        .trim()
+        .to_string()
+}
+
 fn extract_calc_metadata(
     uri: &Url,
     body: &CalcDefBody,
@@ -140,13 +150,18 @@ fn extract_calc_metadata(
                         &expr.span,
                         &expressions::expression_to_debug_string(expr),
                     );
-                    if !rendered.trim().is_empty() {
+                    let rendered = strip_calc_return_expression(&rendered);
+                    if !rendered.is_empty() {
                         expression = Some(rendered);
                     }
                 }
-                CalcDefBodyElement::Error(_)
-                | CalcDefBodyElement::Doc(_)
-                | CalcDefBodyElement::Other(_) => {}
+                CalcDefBodyElement::Other(preview) => {
+                    let rendered = strip_calc_return_expression(preview);
+                    if expression.is_none() && !rendered.is_empty() {
+                        expression = Some(rendered);
+                    }
+                }
+                CalcDefBodyElement::Error(_) | CalcDefBodyElement::Doc(_) => {}
             }
         }
     }
@@ -1221,10 +1236,9 @@ pub(super) fn build_from_package_body_element(
                 let (params, return_decl, expression) = extract_calc_metadata(uri, &c_node.body);
                 let mut attrs = HashMap::new();
                 attrs.insert("analysisKind".to_string(), serde_json::json!("calc_def"));
-                attrs.insert(
-                    "analysisParams".to_string(),
-                    serde_json::Value::Array(params),
-                );
+                let params_json = serde_json::Value::Array(params.clone());
+                attrs.insert("analysisParams".to_string(), params_json.clone());
+                attrs.insert("parameters".to_string(), params_json);
                 if let Some(ret) = return_decl {
                     attrs.insert("analysisReturn".to_string(), ret);
                 }
