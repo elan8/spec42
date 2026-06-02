@@ -60,6 +60,14 @@ const RULE7_ALLOWED_KINDS: &[&str] = &[
     "kermlDecl",
 ];
 
+fn is_view_kind(kind: &str) -> bool {
+    matches!(kind, "view" | "view def")
+}
+
+fn is_viewpoint_kind(kind: &str) -> bool {
+    matches!(kind, "viewpoint" | "viewpoint def")
+}
+
 /// Returns LSP diagnostics for semantic rules in the given document.
 /// Only runs when the document has been parsed and merged into the graph.
 pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<SemanticDiagnostic> {
@@ -691,6 +699,45 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         "10_allocation_conformance".to_string(),
         t10.elapsed().as_millis(),
         diagnostics.len().saturating_sub(d10),
+    ));
+
+    // 10b) Viewpoint conformance: view satisfy targets must be viewpoints.
+    let t10b = Instant::now();
+    let d10b = diagnostics.len();
+    for (source_qn, target_qn, kind, _) in graph.edges_for_uri_as_strings(uri) {
+        if kind != RelationshipKind::Satisfy {
+            continue;
+        }
+        let source_id = crate::NodeId::new(uri, source_qn.clone());
+        let target_id = crate::NodeId::new(uri, target_qn.clone());
+        let Some(source_node) = graph.get_node(&source_id) else {
+            continue;
+        };
+        let Some(target_node) = graph.get_node(&target_id) else {
+            continue;
+        };
+        if !is_view_kind(&source_node.element_kind) {
+            continue;
+        }
+        if is_viewpoint_kind(&target_node.element_kind) {
+            continue;
+        }
+        diagnostics.push(diag(
+            uri,
+            diagnostic_range(graph, source_node, Some(target_node)),
+            DiagnosticSeverity::Warning,
+            "semantic",
+            "viewpoint_conformance_invalid_target_kind",
+            format!(
+                "View '{}' satisfies '{}', but viewpoint conformance targets must be viewpoint definitions/usages (got '{}').",
+                source_node.name, target_node.name, target_node.element_kind
+            ),
+        ));
+    }
+    section_timings.push((
+        "10b_viewpoint_conformance".to_string(),
+        t10b.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d10b),
     ));
 
     // 11) Verdict normalization and domain validation.

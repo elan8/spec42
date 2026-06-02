@@ -162,6 +162,15 @@ pub(super) fn add_expression_edge_if_both_exist(
         let Some(id) = resolve_expression_endpoint_legacy(g, uri, container_prefix, &left_str)
         else {
             if kind == RelationshipKind::Satisfy || kind == RelationshipKind::Allocate {
+                add_pending_expression_relationship(
+                    g,
+                    uri,
+                    container_prefix,
+                    &left_str,
+                    &right_str,
+                    kind.clone(),
+                    span_to_range(&left.span),
+                );
                 let code = if kind == RelationshipKind::Allocate {
                     "unresolved_allocate_source"
                 } else {
@@ -211,13 +220,34 @@ pub(super) fn add_expression_edge_if_both_exist(
         let Some(id) = resolve_expression_endpoint_legacy(g, uri, container_prefix, &right_str)
         else {
             if kind == RelationshipKind::Satisfy || kind == RelationshipKind::Allocate {
-                let code = if kind == RelationshipKind::Allocate {
+                add_pending_expression_relationship(
+                    g,
+                    uri,
+                    container_prefix,
+                    &left_str,
+                    &right_str,
+                    kind.clone(),
+                    span_to_range(&left.span),
+                );
+                let source_is_view = if kind == RelationshipKind::Satisfy {
+                    let source_id = NodeId::new(uri, &src);
+                    g.get_node(&source_id).is_some_and(|source_node| {
+                        source_node.element_kind == "view" || source_node.element_kind == "view def"
+                    })
+                } else {
+                    false
+                };
+                let code = if source_is_view {
+                    "unresolved_viewpoint_conformance_target"
+                } else if kind == RelationshipKind::Allocate {
                     "unresolved_allocate_target"
                 } else {
                     "unresolved_satisfy_target"
                 };
                 let relation = if kind == RelationshipKind::Allocate {
                     "allocate"
+                } else if source_is_view {
+                    "viewpoint conformance"
                 } else {
                     "satisfy"
                 };

@@ -16,6 +16,7 @@ pub(crate) fn should_suppress_builder_diagnostic(
         code,
         "unresolved_satisfy_source"
             | "unresolved_satisfy_target"
+            | "unresolved_viewpoint_conformance_target"
             | "unresolved_allocate_source"
             | "unresolved_allocate_target"
     ) {

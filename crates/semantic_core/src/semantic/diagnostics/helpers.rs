@@ -359,6 +359,9 @@ pub(super) fn declared_type_ref(node: &SemanticNode) -> Option<&str> {
         "requirementType",
         "useCaseType",
         "concernType",
+        "viewType",
+        "viewpointType",
+        "renderingType",
     ]
     .iter()
     .find_map(|k| {

@@ -40,6 +40,7 @@ pub struct ViewUsageSpec {
     pub definition_id: Option<String>,
     pub filters: Vec<FilterExpr>,
     pub exposes: Vec<ExposeSpec>,
+    pub conforms_to: Vec<String>,
     #[allow(dead_code)]
     pub range: RangeDto,
     pub issues: Vec<String>,
@@ -57,6 +58,7 @@ pub struct EvaluatedView {
     pub name: String,
     pub effective_view_type: Option<String>,
     pub exposed_ids: HashSet<String>,
+    pub conforms_to: Vec<String>,
     pub filters: Vec<FilterExpr>,
     #[allow(dead_code)]
     pub visible_ids: HashSet<String>,
@@ -204,6 +206,7 @@ fn walk_package_body(
                     definition_id: None,
                     filters,
                     exposes,
+                    conforms_to: Vec::new(),
                     range: span_to_range_dto(&view_usage.span),
                     issues: Vec::new(),
                 });
@@ -285,6 +288,7 @@ pub fn evaluate_views(
         .map(|usage| {
             let mut issues = usage.issues.clone();
             let mut filters = usage.filters.clone();
+            let mut conforms_to = usage.conforms_to.clone();
             let effective_view_type = usage
                 .definition_id
                 .as_deref()
@@ -310,6 +314,22 @@ pub fn evaluate_views(
             if usage.exposes.is_empty() {
                 issues.push("View has no expose members.".to_string());
             }
+            if let Some(view_node) = node_by_id.get(usage.id.as_str()) {
+                for edge in &graph.edges {
+                    if edge.rel_type != "satisfy" || edge.source != view_node.id {
+                        continue;
+                    }
+                    let Some(target) = node_by_id.get(edge.target.as_str()) else {
+                        continue;
+                    };
+                    let target_kind = target.element_type.as_str();
+                    if target_kind == "viewpoint" || target_kind == "viewpoint def" {
+                        conforms_to.push(target.id.clone());
+                    }
+                }
+            }
+            conforms_to.sort();
+            conforms_to.dedup();
 
             let filtered_ids: HashSet<String> = exposed_ids
                 .iter()
@@ -322,6 +342,7 @@ pub fn evaluate_views(
                 name: usage.name.clone(),
                 effective_view_type,
                 exposed_ids,
+                conforms_to,
                 filters,
                 visible_ids: closure,
                 issues,
@@ -883,6 +904,7 @@ mod tests {
                 name: "Supported".to_string(),
                 effective_view_type: Some("GeneralView".to_string()),
                 exposed_ids: HashSet::new(),
+                conforms_to: Vec::new(),
                 filters: Vec::new(),
                 visible_ids: HashSet::new(),
                 issues: Vec::new(),
@@ -892,6 +914,7 @@ mod tests {
                 name: "Safety".to_string(),
                 effective_view_type: Some("SafetyView".to_string()),
                 exposed_ids: HashSet::new(),
+                conforms_to: Vec::new(),
                 filters: Vec::new(),
                 visible_ids: HashSet::new(),
                 issues: Vec::new(),
@@ -915,6 +938,7 @@ mod tests {
             name: "Checkout Sequence".to_string(),
             effective_view_type: Some("SequenceView".to_string()),
             exposed_ids: HashSet::new(),
+            conforms_to: Vec::new(),
             filters: Vec::new(),
             visible_ids: HashSet::new(),
             issues: Vec::new(),
@@ -972,6 +996,7 @@ mod tests {
             name: "structure".to_string(),
             effective_view_type: Some("GeneralView".to_string()),
             exposed_ids: HashSet::from(["Office::OfficeDeskSetup".to_string()]),
+            conforms_to: Vec::new(),
             filters: Vec::new(),
             visible_ids: HashSet::new(),
             issues: Vec::new(),
@@ -1065,6 +1090,7 @@ mod tests {
             name: "view".to_string(),
             effective_view_type: Some("InterconnectionView".to_string()),
             exposed_ids: HashSet::from(["Pkg::System".to_string()]),
+            conforms_to: Vec::new(),
             filters: Vec::new(),
             visible_ids: HashSet::new(),
             issues: Vec::new(),
@@ -1134,6 +1160,7 @@ mod tests {
             name: "orderLifecycle".to_string(),
             effective_view_type: Some("StateTransitionView".to_string()),
             exposed_ids: HashSet::from(["Pkg::OrderLifecycle".to_string()]),
+            conforms_to: Vec::new(),
             filters: Vec::new(),
             visible_ids: HashSet::new(),
             issues: Vec::new(),

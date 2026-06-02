@@ -1569,6 +1569,10 @@ pub(super) fn build_from_package_body_element(
             let name = &vu_node.name;
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "view");
             let range = span_to_range(&vu_node.span);
+            let mut attrs = HashMap::new();
+            if let Some(ref t) = vu_node.type_name {
+                attrs.insert("viewType".to_string(), serde_json::json!(t));
+            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -1576,14 +1580,22 @@ pub(super) fn build_from_package_body_element(
                 "view",
                 name.clone(),
                 range,
-                HashMap::new(),
+                attrs,
                 parent_id,
             );
+            if let Some(ref t) = vu_node.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
         }
         PBE::ViewpointUsage(vpu_node) => {
             let name = &vpu_node.name;
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "viewpoint");
             let range = span_to_range(&vpu_node.span);
+            let mut attrs = HashMap::new();
+            attrs.insert(
+                "viewpointType".to_string(),
+                serde_json::json!(vpu_node.type_name.as_str()),
+            );
             add_node_and_recurse(
                 g,
                 uri,
@@ -1591,8 +1603,15 @@ pub(super) fn build_from_package_body_element(
                 "viewpoint",
                 name.clone(),
                 range,
-                HashMap::new(),
+                attrs,
                 parent_id,
+            );
+            add_typing_edge_if_exists(
+                g,
+                uri,
+                &qualified,
+                vpu_node.type_name.as_str(),
+                container_prefix,
             );
         }
         PBE::RenderingUsage(ru_node) => {

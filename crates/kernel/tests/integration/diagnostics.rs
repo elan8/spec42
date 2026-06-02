@@ -865,6 +865,49 @@ fn unresolved_ref_type_reference_emits_semantic_diagnostic() {
 }
 
 #[test]
+fn unresolved_viewpoint_conformance_target_emits_semantic_diagnostic() {
+    let content = r#"
+        package P {
+            view def StructuralView;
+            view structure : StructuralView;
+            satisfy structure by MissingViewpoint;
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("missing_viewpoint_conformance_target.sysml", content);
+    let found = has_diag_code(
+        &diagnostics,
+        "semantic",
+        "unresolved_viewpoint_conformance_target",
+    );
+    assert!(
+        found,
+        "expected unresolved_viewpoint_conformance_target semantic diagnostic"
+    );
+}
+
+#[test]
+fn non_viewpoint_target_for_view_conformance_emits_semantic_diagnostic() {
+    let content = r#"
+        package P {
+            requirement def RequirementTarget;
+            view def StructuralView;
+            view structure : StructuralView;
+            satisfy structure by RequirementTarget;
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("invalid_viewpoint_conformance_target.sysml", content);
+    let found = has_diag_code(
+        &diagnostics,
+        "semantic",
+        "viewpoint_conformance_invalid_target_kind",
+    );
+    assert!(
+        found,
+        "expected viewpoint_conformance_invalid_target_kind semantic diagnostic"
+    );
+}
+
+#[test]
 fn missing_library_context_info_is_emitted_for_imported_unresolved_types_without_library_paths() {
     let content = r#"
         package P {

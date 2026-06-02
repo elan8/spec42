@@ -58,6 +58,45 @@ fn assert_ibd_parts_exclude_definitions(ibd: &serde_json::Value) {
 }
 
 #[test]
+fn lsp_sysml_model_graph_includes_view_to_viewpoint_conformance_edge() {
+    let mut session = TestSession::new();
+    session.initialize_default("viewpoint-conformance");
+
+    let uri = "file:///viewpoint_conformance.sysml";
+    let content = r#"
+        package Demo {
+            part def System;
+            viewpoint def ArchitectureViewpoint;
+            view def StructuralView;
+            view structure : StructuralView {
+                expose Demo::System;
+            }
+            satisfy structure by ArchitectureViewpoint;
+        }
+    "#;
+
+    session.did_open(uri, content, 1);
+    session.barrier();
+    let response = request_model(&mut session, uri);
+    let edges = response["result"]["graph"]["edges"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
+    assert!(
+        edges.iter().any(|edge| {
+            edge["type"].as_str() == Some("satisfy")
+                && edge["source"]
+                    .as_str()
+                    .is_some_and(|source| source.ends_with("structure"))
+                && edge["target"]
+                    .as_str()
+                    .is_some_and(|target| target.ends_with("ArchitectureViewpoint"))
+        }),
+        "expected view->viewpoint satisfy edge in graph: {edges:#?}"
+    );
+}
+
+#[test]
 fn lsp_sysml_model_stats_report_parse_and_build_timing_and_cache_transitions() {
     let mut session = TestSession::new();
     session.initialize_default("model-stats");
