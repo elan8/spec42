@@ -1472,7 +1472,8 @@ dependencies = [
 
 [[package]]
 name = "sysml-v2-parser"
-version = "0.13.0"
+version = "0.14.0"
+source = "git+https://github.com/elan8/sysml-v2-parser?tag=v0.14.0#7b5858eee9893d72a0cbffaddbb67eefb70e652b"
 dependencies = [
  "log",
  "nom",
