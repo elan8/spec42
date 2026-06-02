@@ -219,3 +219,39 @@ fn part_def_ref_assignment_creates_reference_edge() {
         "expected reference edge from part-def ref assignment, got: {edges:#?}"
     );
 }
+
+#[test]
+fn part_usage_ref_redefinition_shorthand_creates_reference_edge() {
+    let doc = workspace_doc(
+        "part_usage_ref_redefinition_shorthand.sysml",
+        r#"package Astronomy {
+  part def CelestialBody;
+  part def Orbit {
+    ref part centralBody : CelestialBody;
+  }
+  part system {
+    part sun : CelestialBody;
+    part earthOrbit : Orbit {
+      ref part :>> centralBody = sun;
+    }
+  }
+}"#,
+    );
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
+
+    let central_body_ref = graph
+        .nodes_named("centralBody")
+        .into_iter()
+        .find(|node| node.element_kind == "ref" && node.attributes.contains_key("value"))
+        .expect("assigned ref with :>> shorthand");
+    let edges = graph.edges_for_workspace_as_strings(&[]);
+
+    assert!(
+        edges.iter().any(|(src, tgt, kind, _)| {
+            src == &central_body_ref.id.qualified_name
+                && tgt.ends_with("system::sun")
+                && *kind == RelationshipKind::Reference
+        }),
+        "expected reference edge from shorthand redefinition ref assignment, got: {edges:#?}"
+    );
+}

@@ -1,3 +1,6 @@
 # Optional: uncomment to fail the build on warnings locally.
 # [build]
 # rustflags = ["-D", "warnings"]
+
+[patch."https://github.com/elan8/sysml-v2-parser"]
+sysml-v2-parser = { path = "../sysml-v2-parser" }
