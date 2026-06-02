@@ -5,7 +5,6 @@ use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
 use std::time::Instant;
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
-use tracing::warn;
 
 fn elapsed_ms(start: Instant) -> u32 {
     start.elapsed().as_millis().max(1) as u32
@@ -571,27 +570,24 @@ pub(crate) fn rebuild_all_document_links(
         }));
     }
 
-    // Move the graph back to state
-    state.semantic_graph = std::sync::Arc::try_unwrap(graph_arc).unwrap_or_else(|arc| {
-        // This shouldn't happen if all threads finished.
-        // If it does, we have to clone or return default.
-        warn!("Arc unwrap failed for semantic_graph, cloning instead.");
-        (*arc).clone()
-    });
-
+    let mut resolved_edges = Vec::new();
     for handle in cross_handles {
-        let edges = handle.join().unwrap_or_default();
-        for (src_id, tgt_id, kind) in edges {
-            if let (Some(&src_idx), Some(&tgt_idx)) = (
-                state.semantic_graph.node_index_by_id.get(&src_id),
-                state.semantic_graph.node_index_by_id.get(&tgt_id),
-            ) {
-                state.semantic_graph.graph.add_edge(
-                    src_idx,
-                    tgt_idx,
-                    semantic_core::SemanticEdge::plain(kind),
-                );
-            }
+        resolved_edges.extend(handle.join().unwrap_or_default());
+    }
+
+    // Move the graph back to state after all worker Arc clones are dropped.
+    state.semantic_graph = std::sync::Arc::try_unwrap(graph_arc).unwrap_or_else(|arc| (*arc).clone());
+
+    for (src_id, tgt_id, kind) in resolved_edges {
+        if let (Some(&src_idx), Some(&tgt_idx)) = (
+            state.semantic_graph.node_index_by_id.get(&src_id),
+            state.semantic_graph.node_index_by_id.get(&tgt_id),
+        ) {
+            state.semantic_graph.graph.add_edge(
+                src_idx,
+                tgt_idx,
+                semantic_core::SemanticEdge::plain(kind),
+            );
         }
     }
     semantic::evaluate_expressions(&mut state.semantic_graph);
@@ -711,21 +707,23 @@ pub(crate) fn rebuild_semantic_graph_staged(
         }));
     }
 
+    let mut resolved_edges = Vec::new();
+    for handle in cross_handles {
+        resolved_edges.extend(handle.join().unwrap_or_default());
+    }
+
     semantic_graph = std::sync::Arc::try_unwrap(graph_arc).unwrap_or_else(|arc| (*arc).clone());
 
-    for handle in cross_handles {
-        let edges = handle.join().unwrap_or_default();
-        for (src_id, tgt_id, kind) in edges {
-            if let (Some(&src_idx), Some(&tgt_idx)) = (
-                semantic_graph.node_index_by_id.get(&src_id),
-                semantic_graph.node_index_by_id.get(&tgt_id),
-            ) {
-                semantic_graph.graph.add_edge(
-                    src_idx,
-                    tgt_idx,
-                    semantic_core::SemanticEdge::plain(kind),
-                );
-            }
+    for (src_id, tgt_id, kind) in resolved_edges {
+        if let (Some(&src_idx), Some(&tgt_idx)) = (
+            semantic_graph.node_index_by_id.get(&src_id),
+            semantic_graph.node_index_by_id.get(&tgt_id),
+        ) {
+            semantic_graph.graph.add_edge(
+                src_idx,
+                tgt_idx,
+                semantic_core::SemanticEdge::plain(kind),
+            );
         }
     }
     semantic::evaluate_expressions(&mut semantic_graph);

@@ -188,3 +188,34 @@ fn astronomy_orbit_pattern_uses_ref_relationships() {
         "expected orbitingBody reference edge to earth, got: {edges:#?}"
     );
 }
+
+#[test]
+fn part_def_ref_assignment_creates_reference_edge() {
+    let doc = workspace_doc(
+        "part_def_ref_assignment.sysml",
+        r#"package Astronomy {
+  part def CelestialBody;
+  part def OrbitTemplate {
+    part sun : CelestialBody;
+    ref part centralBody : CelestialBody = sun;
+  }
+}"#,
+    );
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
+
+    let central_body_ref = graph
+        .nodes_named("centralBody")
+        .into_iter()
+        .find(|node| node.element_kind == "ref" && node.attributes.contains_key("value"))
+        .expect("assigned ref in part def");
+    let edges = graph.edges_for_workspace_as_strings(&[]);
+
+    assert!(
+        edges.iter().any(|(src, tgt, kind, _)| {
+            src == &central_body_ref.id.qualified_name
+                && tgt.ends_with("OrbitTemplate::sun")
+                && *kind == RelationshipKind::Reference
+        }),
+        "expected reference edge from part-def ref assignment, got: {edges:#?}"
+    );
+}

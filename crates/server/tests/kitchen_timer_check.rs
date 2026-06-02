@@ -33,3 +33,36 @@ fn kitchen_timer_example_validates() {
         "expected no errors in KitchenTimer example"
     );
 }
+
+#[test]
+fn kitchen_timer_example_validates_with_explicit_workspace_root() {
+    let example =
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/timer/KitchenTimer.sysml");
+    let example = example
+        .canonicalize()
+        .unwrap_or_else(|_| panic!("missing example file at {}", example.display()));
+    let workspace_root = example
+        .parent()
+        .map(|path| path.to_path_buf())
+        .expect("example parent dir");
+
+    let cli = Cli {
+        config_path: None,
+        library_paths: vec![],
+        stdlib_path: None,
+        no_stdlib: false,
+        stdio: false,
+        command: None,
+    };
+    let args = CheckArgs {
+        path: example,
+        workspace_root: Some(workspace_root),
+        format: OutputFormat::Json,
+    };
+
+    let report = perform_check(&cli, &args).expect("validation should run");
+    assert_eq!(
+        report.summary.error_count, 0,
+        "expected no errors in KitchenTimer example with explicit workspace root"
+    );
+}

@@ -145,3 +145,42 @@ fn astronomy_fixture_view_conforms_to_viewpoint() {
         "expected astronomy view->viewpoint satisfy edge, got: {edges:#?}"
     );
 }
+
+#[test]
+fn imported_view_and_viewpoint_types_resolve_from_nested_namespace() {
+    let defs = workspace_doc(
+        "defs_nested.sysml",
+        r#"package Defs {
+  package Views {
+    viewpoint def ArchitectureViewpoint;
+    view def StructuralView;
+  }
+}"#,
+    );
+    let usage = workspace_doc(
+        "usage_nested.sysml",
+        r#"package Usage {
+  import Defs::Views::*;
+  view structure : StructuralView {
+    expose Usage;
+  }
+  satisfy structure by ArchitectureViewpoint;
+}"#,
+    );
+    let usage_uri = usage.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[defs, usage]).expect("semantic graph");
+    let diagnostics =
+        collect_diagnostics_from_graph(&graph, &usage_uri, DiagnosticsOptions::default());
+
+    assert!(
+        diagnostics.iter().all(|diagnostic| {
+            diagnostic.code != "unresolved_type_reference"
+                && diagnostic.code != "unresolved_viewpoint_conformance_target"
+        }),
+        "expected imported view/viewpoint references to resolve from nested namespace, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|diagnostic| (&diagnostic.code, &diagnostic.message))
+            .collect::<Vec<_>>()
+    );
+}
