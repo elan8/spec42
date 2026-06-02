@@ -141,10 +141,7 @@ pub(super) fn connection_duplicate_key(
 ) -> String {
     if let (Some(source), Some(target)) = (source_endpoint, target_endpoint) {
         let (left, right) = normalize_edge_pair(source_id, target_id);
-        let mut endpoints = [
-            source.replace('.', "::"),
-            target.replace('.', "::"),
-        ];
+        let mut endpoints = [source.replace('.', "::"), target.replace('.', "::")];
         endpoints.sort();
         return format!(
             "expr:{}|{}|node:{}|{}",
@@ -319,7 +316,7 @@ pub(super) fn normalize_declared_type_ref(type_ref: &str) -> String {
 }
 
 pub(super) fn is_builtin_type_ref(type_ref: &str) -> bool {
-    matches!(type_ref, "String")
+    matches!(type_ref, "String" | "GeneralView")
 }
 
 pub(super) fn attribute_value_is_string_literal(value: &str) -> bool {
@@ -479,10 +476,7 @@ mod connection_duplicate_key_tests {
     use super::connection_duplicate_key;
 
     fn node(qn: &str) -> NodeId {
-        NodeId::new(
-            &Url::parse("file:///test.sysml").expect("url"),
-            qn,
-        )
+        NodeId::new(&Url::parse("file:///test.sysml").expect("url"), qn)
     }
 
     #[test]
@@ -529,8 +523,7 @@ mod objective_binding_message_tests {
 
     #[test]
     fn analysis_result_message_mentions_return_ref() {
-        let message =
-            objective_binding_unresolved_message("runtimeObjective", "analysis_result");
+        let message = objective_binding_unresolved_message("runtimeObjective", "analysis_result");
         assert!(message.contains("return ref"));
         assert!(!message.contains("analysis_result"));
     }

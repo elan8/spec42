@@ -6,7 +6,7 @@ use crate::semantic::diagnostics::helpers::diag;
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::text_span::{TextPosition, TextRange};
-use crate::SemanticDiagnostic;
+use crate::{RelationshipKind, SemanticDiagnostic};
 
 /// Append error diagnostics for pending relationships on `uri` that could not be resolved.
 ///
@@ -38,6 +38,12 @@ pub fn append_unresolved_pending_relationship_diagnostics(
 
     for pending in &graph.pending_expression_relationships {
         if pending.uri != *uri {
+            continue;
+        }
+        if matches!(
+            pending.kind,
+            RelationshipKind::Satisfy | RelationshipKind::Allocate
+        ) {
             continue;
         }
         diagnostics.push(diag(

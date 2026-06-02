@@ -186,6 +186,7 @@ fn collect_definition_range_part_usage_body(
             }
         }
         PUBE::PortUsage(n) => out.push((n.name.clone(), span_to_range(&n.span))),
+        PUBE::Ref(n) => out.push((n.value.name.clone(), span_to_range(&n.span))),
         _ => {}
     }
 }
@@ -792,6 +793,16 @@ fn document_symbols_from_part_usage_body(
                 selection_range: range,
                 children: None,
             }),
+            PUBE::Ref(n) => out.push(DocumentSymbol {
+                name: n.value.name.clone(),
+                detail: Some("ref".to_string()),
+                kind: SymbolKind::PROPERTY,
+                tags: None,
+                deprecated: None,
+                range,
+                selection_range: range,
+                children: None,
+            }),
             _ => {}
         }
     }
@@ -992,6 +1003,7 @@ fn collect_named_from_part_usage_body(
             }
         }
         PUBE::PortUsage(n) => out.push((n.name.clone(), format!("port '{}'", n.name))),
+        PUBE::Ref(n) => out.push((n.value.name.clone(), format!("ref '{}'", n.value.name))),
         _ => {}
     }
 }

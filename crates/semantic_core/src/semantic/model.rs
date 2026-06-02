@@ -36,6 +36,7 @@ pub enum RelationshipKind {
     Allocate,
     Satisfy,
     Subject,
+    Reference,
     Derivation,
     Transition,
     /// `then` initial state in a state composite (`transition` without `first` uses the same resolution path with [`RelationshipKind::Transition`]).
@@ -88,6 +89,7 @@ impl RelationshipKind {
             RelationshipKind::Allocate => "allocate",
             RelationshipKind::Satisfy => "satisfy",
             RelationshipKind::Subject => "subject",
+            RelationshipKind::Reference => "reference",
             RelationshipKind::Derivation => "derivation",
             RelationshipKind::Transition => "transition",
             RelationshipKind::InitialState => "initialState",
@@ -106,6 +108,7 @@ impl RelationshipKind {
             "allocate" => Some(RelationshipKind::Allocate),
             "satisfy" => Some(RelationshipKind::Satisfy),
             "subject" => Some(RelationshipKind::Subject),
+            "reference" => Some(RelationshipKind::Reference),
             "derivation" => Some(RelationshipKind::Derivation),
             "transition" | "initialstate" => Some(RelationshipKind::Transition),
             _ => None,

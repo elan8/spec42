@@ -204,6 +204,16 @@ fn collect_semantic_ranges_part_usage_body_element(
                 out.push((span_to_source_range(s), TYPE_TYPE));
             }
         }
+        PUBE::Ref(n) => {
+            if let Some(ref s) = n.value.name_span {
+                out.push((span_to_source_range(s), TYPE_PROPERTY));
+            } else {
+                out.push((span_to_source_range(&n.span), TYPE_PROPERTY));
+            }
+            if let Some(ref s) = n.value.type_ref_span {
+                out.push((span_to_source_range(s), TYPE_TYPE));
+            }
+        }
         _ => {}
     }
 }

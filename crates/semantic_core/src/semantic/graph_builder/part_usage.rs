@@ -7,9 +7,7 @@ use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
-use crate::semantic::relationships::{
-    add_edge_if_both_exist, add_typing_edge_if_exists,
-};
+use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
 use super::expressions;
 use super::{add_node_and_recurse, qualified_name_for_node};
@@ -97,13 +95,7 @@ pub(super) fn build_from_part_usage_body_element(
             add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
             if let PartUsageBody::Brace { elements } = &n.body {
                 for child in elements {
-                    build_from_part_usage_body_element(
-                        child,
-                        uri,
-                        Some(&qualified),
-                        &node_id,
-                        g,
-                    );
+                    build_from_part_usage_body_element(child, uri, Some(&qualified), &node_id, g);
                 }
             }
         }
@@ -224,11 +216,12 @@ pub(super) fn build_from_part_usage_body_element(
             let range = span_to_range(&r.span);
             let mut attrs = HashMap::new();
             attrs.insert("refType".to_string(), serde_json::json!(&n.type_name));
-            if let Some(ref v) = n.value {
-                attrs.insert(
-                    "value".to_string(),
-                    serde_json::json!(expressions::expression_to_debug_string(v)),
-                );
+            let value_expression = n
+                .value
+                .as_ref()
+                .map(expressions::expression_to_debug_string);
+            if let Some(ref v) = value_expression {
+                attrs.insert("value".to_string(), serde_json::json!(v));
             }
             add_node_and_recurse(
                 g,
@@ -241,6 +234,22 @@ pub(super) fn build_from_part_usage_body_element(
                 Some(parent_id),
             );
             add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
+            if let Some(value_expression) = value_expression.as_deref() {
+                if let Some(target) = expressions::resolve_expression_endpoint_legacy(
+                    g,
+                    uri,
+                    container_prefix,
+                    value_expression,
+                ) {
+                    add_edge_if_both_exist(
+                        g,
+                        uri,
+                        &qualified,
+                        &target,
+                        RelationshipKind::Reference,
+                    );
+                }
+            }
         }
         PUBE::StateUsage(state_node) => {
             let name = &state_node.name;

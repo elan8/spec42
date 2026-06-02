@@ -546,6 +546,9 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     let t9 = Instant::now();
     let d9 = diagnostics.len();
     for node in graph.nodes_for_uri(uri) {
+        if node.element_kind == "ref" {
+            continue;
+        }
         if !node.attributes.contains_key("value") || node.attributes.contains_key("redefines") {
             continue;
         }
@@ -887,7 +890,9 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     let t14 = Instant::now();
     let d14 = diagnostics.len();
     super::pending_relationship_diagnostics::append_unresolved_pending_relationship_diagnostics(
-        graph, uri, &mut diagnostics,
+        graph,
+        uri,
+        &mut diagnostics,
     );
     section_timings.push((
         "14_unresolved_pending_relationships".to_string(),

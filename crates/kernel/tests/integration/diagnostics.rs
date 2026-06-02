@@ -2038,3 +2038,47 @@ fn private_import_chain_keeps_unresolved_type_diagnostic() {
 
 // Removed: `did_change_watched_files_delete_clears_diagnostics`.
 // Classification: flaky harness timing around watched-file delete notifications.
+
+#[test]
+fn qualified_package_declaration_has_no_diagnostics() {
+    let content = r#"
+        package AstronomyReference::Domain {
+            part def Thing;
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("qualified_package.sysml", content);
+    assert!(
+        diagnostics.is_empty(),
+        "expected qualified package declaration to be diagnostic-clean, got: {diagnostics:#?}"
+    );
+}
+
+#[test]
+fn nested_ref_part_assignments_have_no_parse_diagnostics() {
+    let content = r#"
+        package RefPartAssignmentProbe {
+            part def Body;
+            part def Orbit {
+                ref part centralBody : Body;
+                ref part orbitingBody : Body;
+            }
+            part system {
+                part sun : Body;
+                part earth : Body;
+                part earthOrbit : Orbit {
+                    ref part centralBody = sun;
+                    ref part orbitingBody : Body = earth;
+                }
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("ref_part_assignment.sysml", content);
+    assert!(
+        !has_diag_code(&diagnostics, "parser", "recovered_part_usage_body_element"),
+        "valid ref part assignments must not recover as part usage body elements: {diagnostics:#?}"
+    );
+    assert!(
+        diagnostics.is_empty(),
+        "expected ref part assignment fixture to be diagnostic-clean, got: {diagnostics:#?}"
+    );
+}

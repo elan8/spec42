@@ -46,6 +46,8 @@ const TYPING_TARGET_KINDS: &[&str] = &[
 /// Definitional kinds that may appear as the target of `:>` / `specializes` on definitions.
 /// Aligns with typing/RULE7 definitional kinds plus definition-only element kinds from the graph builder.
 /// Definitional targets for `subject robot : SomePartDef` on cases and requirements.
+const VERIFIED_REQUIREMENT_TARGET_KINDS: &[&str] = &["requirement def", "requirement"];
+
 const SUBJECT_TYPE_TARGET_KINDS: &[&str] = &[
     "part def",
     "port def",
@@ -356,7 +358,8 @@ pub(crate) fn add_pending_expression_relationship(
 pub fn resolve_workspace_pending_relationships(g: &mut SemanticGraph) {
     const MAX_PASSES: usize = 8;
     for _ in 0..MAX_PASSES {
-        let pending_before = g.pending_relationships.len() + g.pending_expression_relationships.len();
+        let pending_before =
+            g.pending_relationships.len() + g.pending_expression_relationships.len();
         if pending_before == 0 {
             break;
         }
@@ -364,7 +367,8 @@ pub fn resolve_workspace_pending_relationships(g: &mut SemanticGraph) {
         for uri in uris {
             resolve_pending_relationships_for_uri(g, &uri);
         }
-        let pending_after = g.pending_relationships.len() + g.pending_expression_relationships.len();
+        let pending_after =
+            g.pending_relationships.len() + g.pending_expression_relationships.len();
         if pending_after == pending_before {
             break;
         }
@@ -407,6 +411,49 @@ pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
     }
 }
 
+fn resolve_pending_expression_endpoint(
+    g: &SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    expression: &str,
+) -> ResolveResult<NodeId> {
+    match resolve_expression_endpoint_strict(g, uri, container_prefix, expression) {
+        ResolveResult::Resolved(id) => return ResolveResult::Resolved(id),
+        ResolveResult::Ambiguous => {}
+        ResolveResult::Unresolved => {}
+    }
+
+    let normalized = normalize_for_lookup(&expression.replace('.', "::"));
+    if normalized.is_empty() {
+        return ResolveResult::Unresolved;
+    }
+    let suffix = format!("::{normalized}");
+    let endpoint_candidate = |node: &SemanticNode| {
+        node.element_kind != "import"
+            && node.element_kind != "subject"
+            && (node.id.qualified_name == normalized
+                || node.id.qualified_name.ends_with(&suffix)
+                || node.name == expression)
+    };
+    let mut matches: Vec<NodeId> = g
+        .graph
+        .node_weights()
+        .filter(|node| endpoint_candidate(node))
+        .map(|node| node.id.clone())
+        .collect();
+    matches.sort_by(|a, b| {
+        a.qualified_name
+            .cmp(&b.qualified_name)
+            .then(a.uri.as_str().cmp(b.uri.as_str()))
+    });
+    matches.dedup();
+    match matches.len() {
+        0 => ResolveResult::Unresolved,
+        1 => ResolveResult::Resolved(matches.remove(0)),
+        _ => ResolveResult::Ambiguous,
+    }
+}
+
 fn resolve_pending_expression_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
     let pending = std::mem::take(&mut g.pending_expression_relationships);
     for pending_edge in pending {
@@ -414,7 +461,7 @@ fn resolve_pending_expression_relationships_for_uri(g: &mut SemanticGraph, uri: 
             g.pending_expression_relationships.push(pending_edge);
             continue;
         }
-        let source_id = match resolve_expression_endpoint_strict(
+        let source_id = match resolve_pending_expression_endpoint(
             g,
             uri,
             pending_edge.container_prefix.as_deref(),
@@ -426,7 +473,7 @@ fn resolve_pending_expression_relationships_for_uri(g: &mut SemanticGraph, uri: 
                 continue;
             }
         };
-        let target_id = match resolve_expression_endpoint_strict(
+        let target_id = match resolve_pending_expression_endpoint(
             g,
             uri,
             pending_edge.container_prefix.as_deref(),
@@ -657,9 +704,12 @@ pub fn add_specializes_edges_for_node(
         return;
     };
     for normalized in split_specializes_refs(specializes_ref) {
-        let Some(target_id) =
-            resolve_type_target_in_workspace(g, &source_node, &normalized, SPECIALIZES_TARGET_KINDS)
-        else {
+        let Some(target_id) = resolve_type_target_in_workspace(
+            g,
+            &source_node,
+            &normalized,
+            SPECIALIZES_TARGET_KINDS,
+        ) else {
             continue;
         };
         add_semantic_edge_once(
@@ -892,8 +942,40 @@ pub fn resolve_cross_document_edges_for_uri(
                 if let Some(target_id) = target_id {
                     let dedupe_key = (node_id.clone(), target_id.clone(), "subject");
                     if seen_edges.insert(dedupe_key) {
-                        resolved_edges.push((node_id.clone(), target_id, RelationshipKind::Subject));
+                        resolved_edges.push((
+                            node_id.clone(),
+                            target_id,
+                            RelationshipKind::Subject,
+                        ));
                     }
+                }
+            }
+
+            for verified_requirement in g
+                .children_of(node)
+                .into_iter()
+                .filter(|child| child.element_kind == "verified requirement")
+            {
+                let Some(requirement_ref) = verified_requirement
+                    .attributes
+                    .get("verifiedRequirement")
+                    .and_then(|value| value.as_str())
+                else {
+                    continue;
+                };
+                let Some(target_id) = resolve_type_reference_targets(
+                    g,
+                    &verified_requirement,
+                    requirement_ref,
+                    VERIFIED_REQUIREMENT_TARGET_KINDS,
+                )
+                .into_iter()
+                .next() else {
+                    continue;
+                };
+                let dedupe_key = (node_id.clone(), target_id.clone(), "subject");
+                if seen_edges.insert(dedupe_key) {
+                    resolved_edges.push((node_id.clone(), target_id, RelationshipKind::Subject));
                 }
             }
         }

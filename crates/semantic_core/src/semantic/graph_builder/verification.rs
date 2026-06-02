@@ -6,13 +6,13 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
+use super::{add_node_and_recurse, qualified_name_for_node};
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
 use crate::semantic::model::RelationshipKind;
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 use crate::semantic::text_span::TextRange;
-use super::{add_node_and_recurse, qualified_name_for_node};
 
 fn verify_requirement_target(member: &VerifyRequirementMember) -> Option<String> {
     if let Some(requirement) = member.requirement.as_ref() {
@@ -70,6 +70,22 @@ fn add_verified_requirement_node(
         Some(parent_id),
     );
     add_typing_edge_if_exists(g, uri, &qualified, requirement_ref, container_prefix);
+    let requirement_target = if requirement_ref.contains("::") {
+        requirement_ref.to_string()
+    } else {
+        parent_id
+            .qualified_name
+            .rsplit_once("::")
+            .map(|(owner, _)| format!("{owner}::{requirement_ref}"))
+            .unwrap_or_else(|| requirement_ref.to_string())
+    };
+    add_edge_if_both_exist(
+        g,
+        uri,
+        &parent_id.qualified_name,
+        &requirement_target,
+        RelationshipKind::Subject,
+    );
 }
 
 fn extract_verdict_kind_token(body_text: &str) -> Option<String> {

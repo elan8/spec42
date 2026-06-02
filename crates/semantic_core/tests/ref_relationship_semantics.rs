@@ -73,8 +73,8 @@ fn cross_file_ref_usage_resolves_after_workspace_merge() {
   }
 }"#,
     );
-    let (graph, _parsed) =
-        build_semantic_graph_from_documents(&[defs.clone(), usage.clone()]).expect("semantic graph");
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[defs.clone(), usage.clone()])
+        .expect("semantic graph");
 
     let ref_node = graph
         .nodes_named("importedTree")
@@ -85,14 +85,16 @@ fn cross_file_ref_usage_resolves_after_workspace_merge() {
 
     assert!(
         typing_targets.iter().any(|target| {
-            target.name == "Tree"
-                && target.element_kind == "part def"
-                && target.id.uri == defs.uri
+            target.name == "Tree" && target.element_kind == "part def" && target.id.uri == defs.uri
         }),
         "expected cross-file typing target in defs document, got: {:?}",
         typing_targets
             .iter()
-            .map(|target| (&target.id.qualified_name, &target.element_kind, &target.id.uri))
+            .map(|target| (
+                &target.id.qualified_name,
+                &target.element_kind,
+                &target.id.uri
+            ))
             .collect::<Vec<_>>()
     );
 }
@@ -130,12 +132,17 @@ fn astronomy_orbit_pattern_uses_ref_relationships() {
         r#"package Astronomy {
   part def CelestialBody;
   part def Orbit {
-    ref centralBody : CelestialBody;
-    ref orbitingBody : CelestialBody;
+    ref part centralBody : CelestialBody;
+    ref part orbitingBody : CelestialBody;
   }
-  part sun : CelestialBody;
-  part earth : CelestialBody;
-  part earthOrbit : Orbit;
+  part system {
+    part sun : CelestialBody;
+    part earth : CelestialBody;
+    part earthOrbit : Orbit {
+      ref part centralBody = sun;
+      ref part orbitingBody : CelestialBody = earth;
+    }
+  }
 }"#,
     );
     let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
@@ -143,27 +150,41 @@ fn astronomy_orbit_pattern_uses_ref_relationships() {
     let central_body_ref = graph
         .nodes_named("centralBody")
         .into_iter()
-        .find(|node| node.element_kind == "ref")
-        .expect("centralBody ref node");
+        .find(|node| node.element_kind == "ref" && node.attributes.contains_key("value"))
+        .expect("centralBody assigned ref node");
     let orbiting_body_ref = graph
         .nodes_named("orbitingBody")
         .into_iter()
-        .find(|node| node.element_kind == "ref")
-        .expect("orbitingBody ref node");
-    let ref_nodes = vec![central_body_ref, orbiting_body_ref];
+        .find(|node| node.element_kind == "ref" && node.attributes.contains_key("value"))
+        .expect("orbitingBody assigned ref node");
 
-    for ref_node in ref_nodes {
-        let typing_targets = graph.outgoing_typing_or_specializes_targets(ref_node);
-        assert!(
-            typing_targets
-                .iter()
-                .any(|target| target.name == "CelestialBody" && target.element_kind == "part def"),
-            "expected ref '{}' to resolve CelestialBody typing, got: {:?}",
-            ref_node.id.qualified_name,
-            typing_targets
-                .iter()
-                .map(|target| (&target.id.qualified_name, &target.element_kind))
-                .collect::<Vec<_>>()
-        );
-    }
+    let typing_targets = graph.outgoing_typing_or_specializes_targets(orbiting_body_ref);
+    assert!(
+        typing_targets
+            .iter()
+            .any(|target| target.name == "CelestialBody" && target.element_kind == "part def"),
+        "expected typed ref assignment to resolve CelestialBody typing, got: {:?}",
+        typing_targets
+            .iter()
+            .map(|target| (&target.id.qualified_name, &target.element_kind))
+            .collect::<Vec<_>>()
+    );
+
+    let edges = graph.edges_for_workspace_as_strings(&[]);
+    assert!(
+        edges.iter().any(|(src, tgt, kind, _)| {
+            src == &central_body_ref.id.qualified_name
+                && tgt.ends_with("system::sun")
+                && *kind == RelationshipKind::Reference
+        }),
+        "expected centralBody reference edge to sun, got: {edges:#?}"
+    );
+    assert!(
+        edges.iter().any(|(src, tgt, kind, _)| {
+            src == &orbiting_body_ref.id.qualified_name
+                && tgt.ends_with("system::earth")
+                && *kind == RelationshipKind::Reference
+        }),
+        "expected orbitingBody reference edge to earth, got: {edges:#?}"
+    );
 }
