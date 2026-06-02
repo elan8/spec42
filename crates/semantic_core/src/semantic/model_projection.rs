@@ -423,8 +423,14 @@ fn detail_type_name(
             } else {
                 detail
                     .attributes
-                    .get("dataType")
+                    .get("refType")
                     .and_then(|value| value.as_str())
+                    .or_else(|| {
+                        detail
+                            .attributes
+                            .get("dataType")
+                            .and_then(|value| value.as_str())
+                    })
                     .or_else(|| {
                         detail
                             .attributes

@@ -847,6 +847,24 @@ fn unresolved_type_reference_emits_semantic_diagnostic() {
 }
 
 #[test]
+fn unresolved_ref_type_reference_emits_semantic_diagnostic() {
+    let content = r#"
+        package P {
+            part def OrbitContext {
+                ref centralBody : MissingCelestialBody;
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("missing_ref_type.sysml", content);
+    let found_unresolved_ref_type =
+        has_diag_code(&diagnostics, "semantic", "unresolved_ref_type_reference");
+    assert!(
+        found_unresolved_ref_type,
+        "expected unresolved_ref_type_reference semantic diagnostic"
+    );
+}
+
+#[test]
 fn missing_library_context_info_is_emitted_for_imported_unresolved_types_without_library_paths() {
     let content = r#"
         package P {

@@ -361,16 +361,39 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         if !unresolved_seen.insert(key) {
             continue;
         }
+        let is_ref_usage = node
+            .attributes
+            .get("refType")
+            .and_then(|value| value.as_str())
+            .map(str::trim)
+            .filter(|value| !value.is_empty())
+            .is_some();
+        let (code, message) = if is_ref_usage {
+            (
+                "unresolved_ref_type_reference",
+                format!(
+                    "Reference type '{}' for ref '{}' could not be resolved in the semantic graph (owner: '{}').",
+                    type_ref,
+                    node.name,
+                    node.id.qualified_name
+                ),
+            )
+        } else {
+            (
+                "unresolved_type_reference",
+                format!(
+                    "Type reference '{}' for '{}' could not be resolved in the semantic graph.",
+                    type_ref, node.name
+                ),
+            )
+        };
         diagnostics.push(diag(
             uri,
             range,
             DiagnosticSeverity::Warning,
             "semantic",
-            "unresolved_type_reference",
-            format!(
-                "Type reference '{}' for '{}' could not be resolved in the semantic graph.",
-                type_ref, node.name
-            ),
+            code,
+            message,
         ));
     }
     section_timings.push((

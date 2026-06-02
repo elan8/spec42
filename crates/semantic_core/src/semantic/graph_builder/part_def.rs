@@ -354,13 +354,36 @@ pub(super) fn build_from_part_def_body_element(
                 RelationshipKind::Allocate,
             );
         }
+        PDBE::Ref(r) => {
+            let n = &r.value;
+            let qualified = qualified_name_for_node(g, uri, container_prefix, &n.name, "ref");
+            let range = span_to_range(&r.span);
+            let mut attrs = HashMap::new();
+            attrs.insert("refType".to_string(), serde_json::json!(&n.type_name));
+            if let Some(ref v) = n.value {
+                attrs.insert(
+                    "value".to_string(),
+                    serde_json::json!(expressions::expression_to_debug_string(v)),
+                );
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "ref",
+                n.name.clone(),
+                range,
+                attrs,
+                Some(parent_id),
+            );
+            add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
+        }
         // Compatibility-only members introduced by newer parser versions are intentionally ignored.
         PDBE::Annotation(_)
         | PDBE::Error(_)
         | PDBE::Doc(_)
         | PDBE::Comment(_)
         | PDBE::Other(_)
-        | PDBE::Ref(_)
         | PDBE::OpaqueMember(_) => {}
     }
 }

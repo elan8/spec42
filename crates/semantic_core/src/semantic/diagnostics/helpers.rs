@@ -346,6 +346,7 @@ pub(super) fn unresolved_type_diagnostic_range(node: &SemanticNode) -> Option<Te
 pub(super) fn declared_type_ref(node: &SemanticNode) -> Option<&str> {
     [
         "partType",
+        "refType",
         "attributeType",
         "portType",
         "actionType",

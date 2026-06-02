@@ -92,6 +92,7 @@ const SPECIALIZES_TARGET_KINDS: &[&str] = &[
 ];
 pub const TYPE_REFERENCE_ATTR_KEYS: &[&str] = &[
     "partType",
+    "refType",
     "attributeType",
     "portType",
     "actionType",
@@ -234,10 +235,15 @@ pub fn add_subject_relationship_to_declared_type_if_resolved(
 fn link_case_subject_relationships(g: &mut SemanticGraph) {
     const CASE_KINDS: &[&str] = &[
         "analysis def",
+        "analysis",
         "verification def",
+        "verification",
         "use case def",
+        "use case",
         "concern def",
+        "concern",
         "requirement def",
+        "requirement",
     ];
     let node_ids: Vec<NodeId> = g.node_index_by_id.keys().cloned().collect();
     for node_id in node_ids {
@@ -778,6 +784,18 @@ pub fn resolve_cross_document_edges_for_uri(
     g: &SemanticGraph,
     uri: &Url,
 ) -> Vec<(NodeId, NodeId, RelationshipKind)> {
+    const CASE_KINDS: &[&str] = &[
+        "analysis def",
+        "analysis",
+        "verification def",
+        "verification",
+        "use case def",
+        "use case",
+        "concern def",
+        "concern",
+        "requirement def",
+        "requirement",
+    ];
     let node_ids: Vec<NodeId> = g.nodes_by_uri.get(uri).cloned().unwrap_or_default();
     let mut resolved_edges = Vec::new();
     let mut seen_edges = std::collections::HashSet::new();
@@ -831,6 +849,45 @@ pub fn resolve_cross_document_edges_for_uri(
                         target_id,
                         RelationshipKind::Specializes,
                     ));
+                }
+            }
+        }
+
+        // Subject relationships (case/requirement declarations and usages).
+        if CASE_KINDS.contains(&node.element_kind.as_str()) {
+            for subject in g
+                .children_of(node)
+                .into_iter()
+                .filter(|child| child.element_kind == "subject")
+            {
+                let target_id = g
+                    .outgoing_targets_by_kind(&subject, RelationshipKind::Typing)
+                    .into_iter()
+                    .find(|target| {
+                        element_kind_allowed(&target.element_kind, SUBJECT_TYPE_TARGET_KINDS)
+                    })
+                    .map(|target| target.id.clone())
+                    .or_else(|| {
+                        subject
+                            .attributes
+                            .get("subjectType")
+                            .and_then(|value| value.as_str())
+                            .and_then(|type_ref| {
+                                resolve_type_reference_targets(
+                                    g,
+                                    &subject,
+                                    type_ref,
+                                    SUBJECT_TYPE_TARGET_KINDS,
+                                )
+                                .into_iter()
+                                .next()
+                            })
+                    });
+                if let Some(target_id) = target_id {
+                    let dedupe_key = (node_id.clone(), target_id.clone(), "subject");
+                    if seen_edges.insert(dedupe_key) {
+                        resolved_edges.push((node_id.clone(), target_id, RelationshipKind::Subject));
+                    }
                 }
             }
         }
