@@ -496,7 +496,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-zed"
-version = "0.24.0"
+version = "0.25.0"
 dependencies = [
  "zed_extension_api",
 ]

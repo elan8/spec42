@@ -7,9 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.25.0] - 2026-06-02
+
+### Added
+
+- **`diagram_core` crate** - Added a shared Rust diagram-core layer for reusable view/model shaping and renderer-facing contracts used by visualization pipelines.
+- **`sysml_semantic_tokens` crate** - Introduced a dedicated semantic-token crate with parser-aware range extraction, keyword classification, and focused token tests.
+- **Shared diagram renderer package** - Added `shared/diagram-renderer` with normalized graph preparation, node-notation handling, theme support, and view-specific renderer modules (general/IBD/action/state/sequence).
+- **Pending-relationship diagnostics** - Added explicit semantic diagnostics for unresolved pending relationships to improve cross-document and late-resolution feedback.
+- **Viewpoint conformance coverage** - Added viewpoint conformance fixtures and semantic tests to validate conformance graph and diagnostic behavior.
+- **General/interconnection notation audit artifacts** - Added BNF/sign-off and notation-inventory docs plus generation tooling to track renderer/spec parity.
+
 ### Changed
 
-- **Parser dependency upgrade** - Bumped `sysml-v2-parser` to git tag `v0.14.0` (`https://github.com/elan8/sysml-v2-parser`) and switched back from local path wiring to the tagged GitHub source. This brings qualified package identification support and `ref part` assignment parsing improvements. Re-run validation after upgrading.
+- **Parser dependency upgrade** - Bumped `sysml-v2-parser` to git tag `v0.14.0` (`https://github.com/elan8/sysml-v2-parser`) and switched back from local path wiring to the tagged GitHub source. This brings qualified package identification support and `ref part` assignment parsing improvements.
+- **Semantic graph/evaluation architecture** - Expanded semantic graph construction, relationship resolution, and analysis evaluation paths (including unit-aware handling) for stronger cross-file behavior and more consistent graph-first outputs.
+- **Visualization/webview pipeline** - Refactored webview orchestration with render scheduling, quiescence/gating, shared-renderer adapters, and updated UI control/state flows for more predictable refresh behavior.
+- **Workspace/library closure handling** - Improved document/workspace services and library-closure flows to better preserve cross-document linkage and indexing consistency.
+- **Release surface alignment** - Updated Rust workspace/server, VS Code extension, and Zed extension versions in lockstep for `0.25.0`.
+
+### Fixed
+
+- **Reference and endpoint resolution edge cases** - Improved handling for typed/member-chain and pending-expression endpoint resolution so semantic links and diagnostics are less sensitive to declaration order and container context.
+- **IBD/interconnection rendering consistency** - Fixed multiple interconnection/IBD shaping and endpoint-mirroring issues that could lead to missing or unstable rendered structure.
+- **Verification/subject relationship propagation** - Corrected subject and verified-requirement relationship wiring so verification semantics are represented consistently in the semantic graph.
 
 ## [0.24.0] - 2026-05-15
 
@@ -398,6 +419,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.25.0]: https://github.com/elan8/spec42/releases/tag/v0.25.0
 [0.24.0]: https://github.com/elan8/spec42/releases/tag/v0.24.0
 [0.23.0]: https://github.com/elan8/spec42/releases/tag/v0.23.0
 [0.22.0]: https://github.com/elan8/spec42/releases/tag/v0.22.0
