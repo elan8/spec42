@@ -133,31 +133,35 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     for (src_id, tgt_id, connect) in connection_occurrences {
         let connection_range = connect.range;
         if let (Some(src), Some(tgt)) = (graph.get_node(&src_id), graph.get_node(&tgt_id)) {
-            if !is_port_like(&src.element_kind) {
-                diagnostics.push(diag(
-                    uri,
-                    diagnostic_range(graph, src, Some(tgt)),
-                    DiagnosticSeverity::Warning,
-                    "semantic",
-                    "connection_endpoint_not_port",
-                    format!(
-                        "Connection source '{}' is not a port (element kind: {}).",
-                        src.name, src.element_kind
-                    ),
-                ));
-            }
-            if !is_port_like(&tgt.element_kind) {
-                diagnostics.push(diag(
-                    uri,
-                    diagnostic_range(graph, tgt, Some(src)),
-                    DiagnosticSeverity::Warning,
-                    "semantic",
-                    "connection_endpoint_not_port",
-                    format!(
-                        "Connection target '{}' is not a port (element kind: {}).",
-                        tgt.name, tgt.element_kind
-                    ),
-                ));
+            let both_part_like =
+                is_part_like(&src.element_kind) && is_part_like(&tgt.element_kind);
+            if !both_part_like {
+                if !is_port_like(&src.element_kind) {
+                    diagnostics.push(diag(
+                        uri,
+                        diagnostic_range(graph, src, Some(tgt)),
+                        DiagnosticSeverity::Warning,
+                        "semantic",
+                        "connection_endpoint_not_port",
+                        format!(
+                            "Connection source '{}' is not a port (element kind: {}).",
+                            src.name, src.element_kind
+                        ),
+                    ));
+                }
+                if !is_port_like(&tgt.element_kind) {
+                    diagnostics.push(diag(
+                        uri,
+                        diagnostic_range(graph, tgt, Some(src)),
+                        DiagnosticSeverity::Warning,
+                        "semantic",
+                        "connection_endpoint_not_port",
+                        format!(
+                            "Connection target '{}' is not a port (element kind: {}).",
+                            tgt.name, tgt.element_kind
+                        ),
+                    ));
+                }
             }
             if is_port_like(&src.element_kind) && is_port_like(&tgt.element_kind) {
                 if let Some(msg) = port_compatibility_mismatch(graph, src, tgt) {

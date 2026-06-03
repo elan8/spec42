@@ -133,3 +133,12 @@ What to do:
 1. Run `SysML: Refresh SysML Model Explorer`.
 2. Run `SysML: Refresh Visualization`.
 3. If needed, enable `spec42.logging.verbose` and inspect the SysML output channel.
+
+## Connection And Port Semantic Warnings
+
+SysML v2 allows logical **part-to-part** `connect` statements (for example `connect navigation to system` between part usages). Spec42 does **not** emit `connection_endpoint_not_port` when both endpoints are part-like.
+
+Port compatibility checks apply when endpoints are ports:
+
+- `port_type_mismatch` compares port features and definitions. If two ports share a simple type name (for example `FillState`) but resolve to different `port def` elements in different packages, the message names the qualified definitions so you can align imports or reuse one port definition.
+- Conjugation and direction mismatches are reported separately when feature lists are unavailable.

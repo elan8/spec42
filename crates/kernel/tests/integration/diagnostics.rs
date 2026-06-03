@@ -1474,6 +1474,74 @@ fn compatible_different_port_def_connection_has_no_port_type_mismatch_diagnostic
 }
 
 #[test]
+fn part_to_part_connect_has_no_connection_endpoint_not_port_diagnostic() {
+    let content = r#"
+        package P {
+            part def System;
+            part def Environment;
+            part def Context {
+                part system : System;
+                part environment : Environment;
+                connect environment to system;
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("part_to_part_connect.sysml", content);
+    assert!(
+        !has_diag_code(&diagnostics, "semantic", "connection_endpoint_not_port"),
+        "logical part-to-part connect should not warn about non-port endpoints: {:?}",
+        diagnostics
+    );
+}
+
+#[test]
+fn homonymous_port_defs_emit_port_type_mismatch_with_qualified_names() {
+    let content = r#"
+        package P {
+            package PkgA {
+                port def FillState { in level : Real; }
+            }
+            package PkgB {
+                port def FillState { in level : Integer; }
+            }
+            part def TankA { port fill : PkgA::FillState; }
+            part def TankB { port fill : PkgB::FillState; }
+            part context {
+                part tankA : TankA;
+                part tankB : TankB;
+                connect tankA.fill to tankB.fill;
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("homonymous_ports.sysml", content);
+    assert!(
+        !has_diag_code(&diagnostics, "sysml", "expected_keyword"),
+        "fixture should parse cleanly: {:?}",
+        diagnostics
+    );
+    assert!(
+        has_diag_code(&diagnostics, "semantic", "port_type_mismatch"),
+        "homonymous incompatible port defs should emit port_type_mismatch; got: {:?}",
+        diagnostics
+    );
+    let mismatch = diagnostics
+        .iter()
+        .find(|d| {
+            d.source.as_deref() == Some("semantic")
+                && d.code.as_ref()
+                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                        "port_type_mismatch".to_string(),
+                    ))
+        })
+        .map(|d| d.message.as_str())
+        .unwrap_or("");
+    assert!(
+        mismatch.contains("PkgA") && mismatch.contains("PkgB"),
+        "message should name qualified port definitions, got: {mismatch}"
+    );
+}
+
+#[test]
 fn top_level_part_def_emits_illegal_top_level_definition_diagnostic() {
     let content = r#"
 part def Laptop {

@@ -8,6 +8,10 @@ pub(super) fn is_port_like(kind: &str) -> bool {
     ibd::is_port_like(kind)
 }
 
+pub(super) fn is_part_like(kind: &str) -> bool {
+    ibd::is_part_like(kind)
+}
+
 pub(super) fn diag(
     uri: &url::Url,
     range: TextRange,
@@ -152,6 +156,21 @@ pub(super) fn connection_duplicate_key(
     format!("node:{}|{}", left.qualified_name, right.qualified_name)
 }
 
+fn port_definition_qualified_name(graph: &SemanticGraph, port: &SemanticNode) -> Option<String> {
+    graph
+        .outgoing_typing_or_specializes_targets(port)
+        .iter()
+        .find(|node| node.element_kind == "port def")
+        .map(|node| node.id.qualified_name.clone())
+}
+
+fn port_type_display_label(port_type: &str) -> &str {
+    port_type
+        .rsplit("::")
+        .next()
+        .unwrap_or(port_type)
+}
+
 pub(super) fn port_compatibility_mismatch(
     graph: &SemanticGraph,
     src: &SemanticNode,
@@ -169,9 +188,17 @@ pub(super) fn port_compatibility_mismatch(
         if ports_feature_compatible(&src_features, &tgt_features) {
             return None;
         }
+        let src_qn = port_definition_qualified_name(graph, src).unwrap_or_else(|| src_type.to_string());
+        let tgt_qn = port_definition_qualified_name(graph, tgt).unwrap_or_else(|| tgt_type.to_string());
+        let label = port_type_display_label(src_type);
+        if src_qn == tgt_qn {
+            return Some(format!(
+                "Port definitions '{}' are not feature-compatible (check port features and directions).",
+                src_qn
+            ));
+        }
         return Some(format!(
-            "Port definitions '{}' and '{}' are not feature-compatible.",
-            src_type, tgt_type
+            "Port types look alike ('{label}') but refer to incompatible definitions: '{src_qn}' vs '{tgt_qn}'. Align imports or use the same port def."
         ));
     }
 

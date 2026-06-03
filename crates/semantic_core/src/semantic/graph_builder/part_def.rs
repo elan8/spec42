@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use sysml_v2_parser::ast::{InterfaceDefBody, PartDefBodyElement, PartUsageBody};
+use sysml_v2_parser::ast::{CalcDefBody, InterfaceDefBody, PartDefBodyElement, PartUsageBody};
 use url::Url;
 
 use crate::semantic::ast_util::{identification_name, span_to_range};
@@ -331,6 +331,31 @@ pub(super) fn build_from_part_def_body_element(
                     &connection_node_id,
                     g,
                 );
+            }
+        }
+        PDBE::CalcUsage(calc_node) => {
+            let name = identification_name(&calc_node.value.identification);
+            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "calc");
+            let range = span_to_range(&calc_node.span);
+            let mut attrs = HashMap::new();
+            if let Some(ref t) = calc_node.value.type_name {
+                attrs.insert("calcType".to_string(), serde_json::json!(t));
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "calc",
+                name,
+                range,
+                attrs,
+                Some(parent_id),
+            );
+            if let Some(ref t) = calc_node.value.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
+            if let CalcDefBody::Brace { .. } = &calc_node.value.body {
+                // Calc body members (parameters, return) are not expanded into the graph yet.
             }
         }
         PDBE::Perform(perform_node) => {

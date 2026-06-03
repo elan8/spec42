@@ -6,7 +6,7 @@ use url::Url;
 
 use crate::{NodeId, RelationshipKind, SemanticGraph, SemanticNode};
 
-fn is_part_like(kind: &str) -> bool {
+pub(crate) fn is_part_like(kind: &str) -> bool {
     let k = kind.to_lowercase();
     k.contains("part def") || k == "part" || (k.contains("part") && !k.contains("def"))
 }
