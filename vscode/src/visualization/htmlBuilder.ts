@@ -29,7 +29,7 @@ export function getWebviewHtml(
     const enabledViewSet = new Set<string>(enabledViews);
     const useSharedRenderer = vscode.workspace
         .getConfiguration('spec42')
-        .get<boolean>('visualization.useSharedRenderer', false);
+        .get<boolean>('visualization.useSharedRenderer', true);
     const vars: Record<string, string> = {
         NONCE: nonce,
         CSP_SOURCE: webview.cspSource,

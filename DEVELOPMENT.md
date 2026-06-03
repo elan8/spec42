@@ -87,6 +87,14 @@ The workspace pins `sysml-v2-parser` in the root `Cargo.toml` as a git dependenc
 4. Run targeted workspace/indexing checks in `crates/kernel/tests/integration/workspace.rs`.
 5. Update docs if parser compatibility or supported workflow expectations changed.
 
+## Workspace indexing limits
+
+Large repositories may truncate file discovery per folder pattern. The VS Code setting `spec42.workspace.maxFilesPerPattern` (default in `vscode/package.json`) caps how many `.sysml` / `.kerml` files are indexed per glob pass. When truncation applies, go-to-definition and workspace symbols may be incomplete for files that were not indexed.
+
+- **User docs:** [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) (increase the cap for large repos).
+- **Fixture:** [vscode/testFixture/workspaces/large-workspace](vscode/testFixture/workspaces/large-workspace) sets `maxFilesPerPattern: 2` for manual truncation testing.
+- **Integration:** `crates/kernel/tests/integration/workspace.rs` (large-workspace / perf paths pass a higher cap via LSP `initializationOptions`).
+
 ## Running Tests
 
 ### Rust

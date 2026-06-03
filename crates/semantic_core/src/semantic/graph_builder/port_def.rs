@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use sysml_v2_parser::ast::{InOut, PortDefBodyElement};
+use sysml_v2_parser::ast::{
+    InOut, InOutDecl, PortBody, PortBodyElement, PortDefBodyElement, PortUsage,
+};
+use sysml_v2_parser::Node;
 use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
@@ -11,43 +14,118 @@ use crate::semantic::relationships::add_typing_edge_if_exists;
 use super::expressions;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
-pub(super) fn build_from_port_def_body_element(
-    node: &sysml_v2_parser::Node<PortDefBodyElement>,
+fn build_in_out_decl(
+    w: &Node<InOutDecl>,
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: &NodeId,
     g: &mut SemanticGraph,
 ) {
-    use sysml_v2_parser::ast::PortDefBodyElement as PDBE;
+    let d = &w.value;
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &d.name, "in out parameter");
+    let range = span_to_range(&w.span);
+    let mut attrs = HashMap::new();
+    attrs.insert(
+        "direction".to_string(),
+        serde_json::json!(match d.direction {
+            InOut::In => "in",
+            InOut::Out => "out",
+            InOut::InOut => "inout",
+        }),
+    );
+    attrs.insert("parameterType".to_string(), serde_json::json!(&d.type_name));
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "in out parameter",
+        d.name.clone(),
+        range,
+        attrs,
+        Some(parent_id),
+    );
+    add_typing_edge_if_exists(g, uri, &qualified, &d.type_name, container_prefix);
+}
+
+/// Materializes a port usage node and recurses into a structured `PortBody` when present.
+pub(super) fn materialize_port_usage(
+    n: &Node<PortUsage>,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    g: &mut SemanticGraph,
+) {
+    let name = &n.name;
+    let qualified = qualified_name_for_node(g, uri, container_prefix, name, "port");
+    let range = span_to_range(&n.span);
+    let mut attrs = HashMap::new();
+    if let Some(ref t) = n.type_name {
+        attrs.insert("portType".to_string(), serde_json::json!(t));
+    }
+    if let Some(ref m) = n.multiplicity {
+        attrs.insert("multiplicity".to_string(), serde_json::json!(m));
+    }
+    if let Some((ref feat, ref val)) = n.subsets {
+        attrs.insert("subsetsFeature".to_string(), serde_json::json!(feat));
+        if let Some(v) = val {
+            attrs.insert(
+                "subsetsValue".to_string(),
+                serde_json::json!(expressions::expression_to_debug_string(v)),
+            );
+        }
+    }
+    if let Some(ref r) = n.redefines {
+        attrs.insert("redefines".to_string(), serde_json::json!(r));
+    }
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "port",
+        name.clone(),
+        range,
+        attrs,
+        Some(parent_id),
+    );
+    let node_id = NodeId::new(uri, &qualified);
+    if let Some(ref t) = n.type_name {
+        add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+    }
+    if let PortBody::Brace { elements } = &n.body {
+        for child in elements {
+            build_from_port_body_element(child, uri, Some(&qualified), &node_id, g);
+        }
+    }
+}
+
+pub(super) fn build_from_port_body_element(
+    node: &Node<PortBodyElement>,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    g: &mut SemanticGraph,
+) {
+    use PortBodyElement as PBE;
+    match &node.value {
+        PBE::PortUsage(n) => {
+            materialize_port_usage(n, uri, container_prefix, parent_id, g);
+        }
+        PBE::InOutDecl(w) => build_in_out_decl(w, uri, container_prefix, parent_id, g),
+        PBE::Error(_) | PBE::Other(_) => {}
+    }
+}
+
+pub(super) fn build_from_port_def_body_element(
+    node: &Node<PortDefBodyElement>,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    g: &mut SemanticGraph,
+) {
+    use PortDefBodyElement as PDBE;
     match &node.value {
         PDBE::Doc(_) => {}
-        PDBE::InOutDecl(w) => {
-            let d = &w.value;
-            let qualified =
-                qualified_name_for_node(g, uri, container_prefix, &d.name, "in out parameter");
-            let range = span_to_range(&w.span);
-            let mut attrs = HashMap::new();
-            attrs.insert(
-                "direction".to_string(),
-                serde_json::json!(match d.direction {
-                    InOut::In => "in",
-                    InOut::Out => "out",
-                    InOut::InOut => "inout",
-                }),
-            );
-            attrs.insert("parameterType".to_string(), serde_json::json!(&d.type_name));
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "in out parameter",
-                d.name.clone(),
-                range,
-                attrs,
-                Some(parent_id),
-            );
-            add_typing_edge_if_exists(g, uri, &qualified, &d.type_name, container_prefix);
-        }
+        PDBE::InOutDecl(w) => build_in_out_decl(w, uri, container_prefix, parent_id, g),
         PDBE::AttributeDef(n) => {
             let name = &n.name;
             let qualified =
@@ -97,41 +175,7 @@ pub(super) fn build_from_port_def_body_element(
             );
         }
         PDBE::PortUsage(n) => {
-            let name = &n.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "port");
-            let range = span_to_range(&n.span);
-            let mut attrs = HashMap::new();
-            if let Some(ref t) = n.type_name {
-                attrs.insert("portType".to_string(), serde_json::json!(t));
-            }
-            if let Some(ref m) = n.multiplicity {
-                attrs.insert("multiplicity".to_string(), serde_json::json!(m));
-            }
-            if let Some((ref feat, ref val)) = n.subsets {
-                attrs.insert("subsetsFeature".to_string(), serde_json::json!(feat));
-                if let Some(v) = val {
-                    attrs.insert(
-                        "subsetsValue".to_string(),
-                        serde_json::json!(expressions::expression_to_debug_string(v)),
-                    );
-                }
-            }
-            if let Some(ref r) = n.redefines {
-                attrs.insert("redefines".to_string(), serde_json::json!(r));
-            }
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "port",
-                name.clone(),
-                range,
-                attrs,
-                Some(parent_id),
-            );
-            if let Some(ref t) = n.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
+            materialize_port_usage(n, uri, container_prefix, parent_id, g);
         }
         PDBE::Error(_) => {}
     }

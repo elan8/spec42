@@ -10,10 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Import/namespace regression coverage** - Added semantic-core tests for recursive namespace import (`::**`) so nested members remain resolvable in cross-document typing and ref scenarios.
+- **Import and ref test matrix** - Extended tests for membership imports (`import Pkg::*`), qualified package declarations, part-def/part-usage ref parity, and multi-file `perform_check` workspaces.
+- **Nested port semantics tests** - Integration tests for nested port bodies in port definitions and part usages.
 - **CLI check workspace-root smoke coverage** - Added server smoke coverage that validates `perform_check` behavior with an explicit `workspace_root`, matching common `spec42 check` workspace invocations.
+- **Docs** - [AST-SEMANTIC-COVERAGE.md](docs/AST-SEMANTIC-COVERAGE.md) prioritization matrix and [LEGACY-RENDERER-SUNSET.md](docs/LEGACY-RENDERER-SUNSET.md) removal plan for legacy webview renderers.
 
 ### Changed
 
+- **Nested port bodies in semantic graph** - Port usage bodies (`PortBody::Brace`) are now walked in the graph builder (port def, part def, and part usage paths) so nested ports appear in the workspace graph and views.
+- **Semantic tokens for ports** - Token range collection recurses nested port bodies and includes `InOutDecl` members in port definitions.
+- **Shared renderer default alignment** - Webview `htmlBuilder` fallback for `useSharedRenderer` matches `package.json` default (`true`).
 - **Parser dependency upgrade** - Bumped `sysml-v2-parser` to git tag `v0.15.0` (`https://github.com/elan8/sysml-v2-parser`). Structured port/attribute/definition brace bodies and recovery `Error` members; port-def graph building ignores parse-recovery nodes.
 - **Ref assignment graph parity** - `ref` assignments inside `part def` bodies now emit `reference` edges the same way as `part usage` bodies, reducing reliance on identifier-only fallbacks in downstream models.
 - **Type disambiguation for view symbols** - Import/type resolution now includes view/viewpoint suffix disambiguation paths, improving nested namespace resolution for viewpoint conformance and view typing.

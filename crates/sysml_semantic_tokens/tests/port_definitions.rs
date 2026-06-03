@@ -45,7 +45,7 @@ port def SensorDataPort {
             .collect()
     };
 
-    for ident in ["position", "panAngle"] {
+    for ident in ["position", "panAngle", "tiltAngle"] {
         let ident_tokens: Vec<_> = decoded.iter().filter(|t| token_text(t) == ident).collect();
         assert!(!ident_tokens.is_empty(), "should tokenize '{ident}'");
         for t in &ident_tokens {
@@ -55,5 +55,39 @@ port def SensorDataPort {
                 t.3
             );
         }
+    }
+}
+
+#[test]
+fn nested_port_usage_body_tokenizes_member_names() {
+    let content = r#"package P {
+  part vehicle {
+    port vehicleToRoadPort {
+      port leftWheelToRoadPort;
+      port rightWheelToRoadPort;
+    }
+  }
+}"#;
+    let parsed = parse_for_editor(content);
+    let ranges = ast_semantic_ranges(&parsed.root);
+    let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
+    let decoded = decode_semantic_tokens(&tokens.data);
+
+    let lines: Vec<&str> = content.lines().collect();
+    let token_text = |(ln, start, len, _ty): &(u32, u32, u32, u32)| -> String {
+        let line_str = lines.get(*ln as usize).unwrap_or(&"");
+        line_str
+            .chars()
+            .skip(*start as usize)
+            .take(*len as usize)
+            .collect()
+    };
+
+    for ident in ["vehicleToRoadPort", "leftWheelToRoadPort", "rightWheelToRoadPort"] {
+        let ident_tokens: Vec<_> = decoded.iter().filter(|t| token_text(t) == ident).collect();
+        assert!(
+            !ident_tokens.is_empty(),
+            "should tokenize nested port member '{ident}'"
+        );
     }
 }

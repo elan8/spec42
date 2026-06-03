@@ -255,3 +255,41 @@ fn part_usage_ref_redefinition_shorthand_creates_reference_edge() {
         "expected reference edge from shorthand redefinition ref assignment, got: {edges:#?}"
     );
 }
+
+#[test]
+fn part_def_and_part_usage_ref_assignments_both_emit_reference_edges() {
+    let doc = workspace_doc(
+        "ref_parity.sysml",
+        r#"package P {
+  part def Body;
+  part def Template {
+    part anchor : Body;
+    ref part linkInDef : Body = anchor;
+  }
+  part instance {
+    part anchor : Body;
+    part usageBox {
+      ref part linkInUsage : Body = anchor;
+    }
+  }
+}"#,
+    );
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
+    let edges = graph.edges_for_workspace_as_strings(&[]);
+
+    for ref_name in ["linkInDef", "linkInUsage"] {
+        let ref_node = graph
+            .nodes_named(ref_name)
+            .into_iter()
+            .find(|node| node.element_kind == "ref" && node.attributes.contains_key("value"))
+            .unwrap_or_else(|| panic!("expected assigned ref '{ref_name}'"));
+        assert!(
+            edges.iter().any(|(src, tgt, kind, _)| {
+                src == &ref_node.id.qualified_name
+                    && tgt.contains("anchor")
+                    && *kind == RelationshipKind::Reference
+            }),
+            "expected Reference edge for '{ref_name}', got: {edges:#?}"
+        );
+    }
+}

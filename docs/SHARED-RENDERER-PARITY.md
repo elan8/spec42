@@ -111,7 +111,27 @@ Normative notation targets: [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](SH
 
 ---
 
-## Sign-off summary (2026-06-01)
+## Behavior view gap classification (1.0)
+
+| Gap | Severity | 1.0 action |
+|-----|----------|------------|
+| Action-flow perform / I/O badges | legacy-only | Keep in legacy `activity.ts`; shared path acceptable without badges |
+| Action-flow rich compartment text | cosmetic | Shared shows nodes/edges; polish deferred |
+| State composite regions | cosmetic | Shared renders states/transitions; nested region chrome deferred |
+| Sequence fragments (alt/opt/loop) | legacy-only | Spec42 `SequenceView` payloads use shared lifelines/messages; UML fragments not release-gating |
+| Sequence self-messages / returns | cosmetic | Partial in shared; full parity deferred |
+| ELK routing differences (all views) | cosmetic | Documented; not a blocker |
+
+**Blockers for default shared renderer:** none identified for any `SYSML_ENABLED_VIEWS` view as of 2026-06-03.
+
+---
+
+## Sign-off summary (2026-06-03)
+
+### Product defaults
+
+- `spec42.visualization.useSharedRenderer` default is **`true`** in [`vscode/package.json`](../vscode/package.json).
+- Webview init in [`vscode/src/visualization/htmlBuilder.ts`](../vscode/src/visualization/htmlBuilder.ts) uses the same default when the setting is unset (aligned 2026-06-03).
 
 ### Phase 0 — General + interconnection
 
@@ -134,5 +154,7 @@ Normative notation targets: [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](SH
 ### Phases 3 — Behavior
 
 - **Blockers:** None for routing all `SYSML_ENABLED_VIEWS` through the shared package.
-- **Not signed off:** Full legacy parity for behavior notation (I/O badges, composite regions, sequence fragments) or Phase 3.6 SVG snapshots.
+- **Signed off for 1.0 default path:** Structural + behavior views render via shared package; gaps above are legacy-only or cosmetic.
+- **Not required for 1.0:** Full legacy parity (I/O badges, composite regions, sequence fragments) or Phase 3.6 SVG snapshots.
 - **Manual (webshop):** `CheckoutPipeline` (action flow), `OrderLifecycleStateMachine` (state), `orderEventFanout` (sequence) — click node/lifeline → gold highlight + editor jumps to correct line.
+- **Automated regression:** `shared/diagram-renderer` Vitest per view; `crates/kernel/tests/integration/model.rs` for IBD/general payloads.

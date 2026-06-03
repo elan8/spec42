@@ -11,6 +11,7 @@ use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_
 use super::expressions;
 use super::interface_def;
 use super::part_usage;
+use super::port_def::materialize_port_usage;
 use super::requirement_body::walk_requirement_def_body;
 use super::state;
 use super::{add_node_and_recurse, qualified_name_for_node};
@@ -105,26 +106,7 @@ pub(super) fn build_from_part_def_body_element(
             }
         }
         PDBE::PortUsage(n) => {
-            let name = &n.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "port");
-            let range = span_to_range(&n.span);
-            let mut attrs = HashMap::new();
-            if let Some(ref t) = n.type_name {
-                attrs.insert("portType".to_string(), serde_json::json!(t));
-            }
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "port",
-                name.clone(),
-                range,
-                attrs,
-                Some(parent_id),
-            );
-            if let Some(ref t) = n.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
+            materialize_port_usage(n, uri, container_prefix, parent_id, g);
         }
         PDBE::PartUsage(n) => {
             let name = &n.name;

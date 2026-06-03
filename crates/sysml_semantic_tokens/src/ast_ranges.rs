@@ -3,7 +3,8 @@
 use sysml_v2_parser::ast::{
     ActionDefBody, ActionUsageBody, ActionUsageBodyElement, InterfaceDefBody,
     InterfaceDefBodyElement, PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement,
-    PartUsageBody, PartUsageBodyElement, PortDefBody, PortDefBodyElement, RootElement,
+    PartUsageBody, PartUsageBodyElement, PortBody, PortBodyElement, PortDefBody,
+    PortDefBodyElement, RootElement,
 };
 use sysml_v2_parser::RootNamespace;
 
@@ -169,14 +170,7 @@ fn collect_semantic_ranges_part_def_body_element(
     use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
     match &node.value {
         PDBE::AttributeDef(n) => out.push((span_to_source_range(&n.span), TYPE_PROPERTY)),
-        PDBE::PortUsage(n) => {
-            if let Some(ref s) = n.value.name_span {
-                out.push((span_to_source_range(s), TYPE_PROPERTY));
-            }
-            if let Some(ref s) = n.value.type_ref_span {
-                out.push((span_to_source_range(s), TYPE_TYPE));
-            }
-        }
+        PDBE::PortUsage(n) => collect_semantic_ranges_port_usage(n, out),
         _ => {}
     }
 }
@@ -196,14 +190,7 @@ fn collect_semantic_ranges_part_usage_body_element(
                 out.push((span_to_source_range(s), TYPE_TYPE));
             }
         }
-        PUBE::PortUsage(n) => {
-            if let Some(ref s) = n.value.name_span {
-                out.push((span_to_source_range(s), TYPE_PROPERTY));
-            }
-            if let Some(ref s) = n.value.type_ref_span {
-                out.push((span_to_source_range(s), TYPE_TYPE));
-            }
-        }
+        PUBE::PortUsage(n) => collect_semantic_ranges_port_usage(n, out),
         PUBE::Ref(n) => {
             if let Some(ref s) = n.value.name_span {
                 out.push((span_to_source_range(s), TYPE_PROPERTY));
@@ -218,18 +205,48 @@ fn collect_semantic_ranges_part_usage_body_element(
     }
 }
 
+fn collect_semantic_ranges_port_usage(
+    n: &sysml_v2_parser::Node<sysml_v2_parser::ast::PortUsage>,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    if let Some(ref s) = n.value.name_span {
+        out.push((span_to_source_range(s), TYPE_PROPERTY));
+    }
+    if let Some(ref s) = n.value.type_ref_span {
+        out.push((span_to_source_range(s), TYPE_TYPE));
+    }
+    if let PortBody::Brace { elements } = &n.body {
+        for child in elements {
+            collect_semantic_ranges_port_body_element(child, out);
+        }
+    }
+}
+
+fn collect_semantic_ranges_port_body_element(
+    node: &sysml_v2_parser::Node<PortBodyElement>,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    use PortBodyElement as PBE;
+    match &node.value {
+        PBE::PortUsage(n) => collect_semantic_ranges_port_usage(n, out),
+        PBE::InOutDecl(w) => {
+            out.push((span_to_source_range(&w.span), TYPE_PROPERTY));
+        }
+        PBE::Error(_) | PBE::Other(_) => {}
+    }
+}
+
 fn collect_semantic_ranges_port_def_body_element(
     node: &sysml_v2_parser::Node<PortDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use sysml_v2_parser::ast::PortDefBodyElement as PDBE;
-    if let PDBE::PortUsage(n) = &node.value {
-        if let Some(ref s) = n.value.name_span {
-            out.push((span_to_source_range(s), TYPE_PROPERTY));
+    match &node.value {
+        PDBE::PortUsage(n) => collect_semantic_ranges_port_usage(n, out),
+        PDBE::InOutDecl(w) => {
+            out.push((span_to_source_range(&w.span), TYPE_PROPERTY));
         }
-        if let Some(ref s) = n.value.type_ref_span {
-            out.push((span_to_source_range(s), TYPE_TYPE));
-        }
+        _ => {}
     }
 }
 

@@ -10,6 +10,7 @@ use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResu
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
 use super::expressions;
+use super::port_def::materialize_port_usage;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
 pub(super) fn build_from_part_usage_body_element(
@@ -100,41 +101,7 @@ pub(super) fn build_from_part_usage_body_element(
             }
         }
         PUBE::PortUsage(n) => {
-            let name = &n.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "port");
-            let range = span_to_range(&n.span);
-            let mut attrs = HashMap::new();
-            if let Some(ref t) = n.type_name {
-                attrs.insert("portType".to_string(), serde_json::json!(t));
-            }
-            if let Some(ref m) = n.multiplicity {
-                attrs.insert("multiplicity".to_string(), serde_json::json!(m));
-            }
-            if let Some((ref feat, ref val)) = n.subsets {
-                attrs.insert("subsetsFeature".to_string(), serde_json::json!(feat));
-                if let Some(v) = val {
-                    attrs.insert(
-                        "subsetsValue".to_string(),
-                        serde_json::json!(expressions::expression_to_debug_string(v)),
-                    );
-                }
-            }
-            if let Some(ref r) = n.redefines {
-                attrs.insert("redefines".to_string(), serde_json::json!(r));
-            }
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "port",
-                name.clone(),
-                range,
-                attrs,
-                Some(parent_id),
-            );
-            if let Some(ref t) = n.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
+            materialize_port_usage(n, uri, container_prefix, parent_id, g);
         }
         PUBE::Connect(c) => {
             expressions::add_expression_edge_if_both_exist(
