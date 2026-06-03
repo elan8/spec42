@@ -419,39 +419,11 @@ fn resolve_pending_expression_endpoint(
 ) -> ResolveResult<NodeId> {
     match resolve_expression_endpoint_strict(g, uri, container_prefix, expression) {
         ResolveResult::Resolved(id) => return ResolveResult::Resolved(id),
-        ResolveResult::Ambiguous => {}
+        ResolveResult::Ambiguous => return ResolveResult::Ambiguous,
         ResolveResult::Unresolved => {}
     }
 
-    let normalized = normalize_for_lookup(&expression.replace('.', "::"));
-    if normalized.is_empty() {
-        return ResolveResult::Unresolved;
-    }
-    let suffix = format!("::{normalized}");
-    let endpoint_candidate = |node: &SemanticNode| {
-        node.element_kind != "import"
-            && node.element_kind != "subject"
-            && (node.id.qualified_name == normalized
-                || node.id.qualified_name.ends_with(&suffix)
-                || node.name == expression)
-    };
-    let mut matches: Vec<NodeId> = g
-        .graph
-        .node_weights()
-        .filter(|node| endpoint_candidate(node))
-        .map(|node| node.id.clone())
-        .collect();
-    matches.sort_by(|a, b| {
-        a.qualified_name
-            .cmp(&b.qualified_name)
-            .then(a.uri.as_str().cmp(b.uri.as_str()))
-    });
-    matches.dedup();
-    match matches.len() {
-        0 => ResolveResult::Unresolved,
-        1 => ResolveResult::Resolved(matches.remove(0)),
-        _ => ResolveResult::Ambiguous,
-    }
+    crate::semantic::reference_resolution::resolve_expression_endpoint_workspace(g, expression)
 }
 
 fn resolve_pending_expression_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {

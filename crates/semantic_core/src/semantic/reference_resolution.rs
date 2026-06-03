@@ -5,6 +5,7 @@ use url::Url;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::import_resolution::resolve_imported_node_ids_for_simple_name;
 use crate::semantic::model::{NodeId, SemanticNode};
+use crate::semantic::resolution::naming::normalize_for_lookup;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ResolveResult<T> {
@@ -163,6 +164,42 @@ pub fn resolve_expression_endpoint_strict(
     }
 }
 
+/// Resolve an endpoint expression against any node in the merged workspace graph.
+pub fn resolve_expression_endpoint_workspace(
+    g: &SemanticGraph,
+    expression: &str,
+) -> ResolveResult<NodeId> {
+    let normalized = normalize_for_lookup(&expression.replace('.', "::"));
+    if normalized.is_empty() {
+        return ResolveResult::Unresolved;
+    }
+    let suffix = format!("::{normalized}");
+    let endpoint_candidate = |node: &SemanticNode| {
+        node.element_kind != "import"
+            && node.element_kind != "subject"
+            && (node.id.qualified_name == normalized
+                || node.id.qualified_name.ends_with(&suffix)
+                || node.name == expression)
+    };
+    let mut matches: Vec<NodeId> = g
+        .graph
+        .node_weights()
+        .filter(|node| endpoint_candidate(node))
+        .map(|node| node.id.clone())
+        .collect();
+    matches.sort_by(|a, b| {
+        a.qualified_name
+            .cmp(&b.qualified_name)
+            .then(a.uri.as_str().cmp(b.uri.as_str()))
+    });
+    matches.dedup();
+    match matches.len() {
+        0 => ResolveResult::Unresolved,
+        1 => ResolveResult::Resolved(matches.remove(0)),
+        _ => ResolveResult::Ambiguous,
+    }
+}
+
 /// Resolve `member` declared on a supertype of `owner` (does not match direct children of `owner`).
 ///
 /// Walks the typing/specialization chain from the nearest type outward and returns the first
@@ -230,8 +267,8 @@ mod tests {
     use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
 
     use super::{
-        resolve_expression_endpoint_strict, resolve_inherited_member_via_type,
-        resolve_member_via_type, ResolveResult,
+        resolve_expression_endpoint_strict, resolve_expression_endpoint_workspace,
+        resolve_inherited_member_via_type, resolve_member_via_type, ResolveResult,
     };
 
     #[test]
@@ -626,6 +663,44 @@ mod tests {
                 .and_then(|value| value.as_str()),
             Some("ok"),
             "specialized :>> attribute values should resolve for analysis roll-up"
+        );
+    }
+
+    #[test]
+    fn workspace_endpoint_resolution_finds_imported_part_def_by_simple_name() {
+        let architecture = SysmlDocument::from_memory_path(
+            "workspace",
+            "WebShopArchitecture.sysml",
+            r#"package WebShopArchitecture {
+                part def CheckoutService;
+            }"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("architecture doc");
+        let example = SysmlDocument::from_memory_path(
+            "workspace",
+            "webshop.sysml",
+            r#"package WebShopExample {
+                import WebShopArchitecture::*;
+                part commerceCluster;
+                allocate CheckoutService to commerceCluster;
+            }"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("example doc");
+        let (graph, _parsed) =
+            build_semantic_graph_from_documents(&[architecture, example]).expect("graph");
+
+        let resolved = resolve_expression_endpoint_workspace(&graph, "CheckoutService");
+        assert!(
+            matches!(resolved, ResolveResult::Resolved(_)),
+            "expected imported CheckoutService part def to resolve workspace-wide, got {resolved:?}"
         );
     }
 }

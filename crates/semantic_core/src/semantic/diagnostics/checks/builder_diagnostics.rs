@@ -4,6 +4,7 @@ use crate::{
     resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult, SemanticGraph,
     SemanticNode,
 };
+use crate::semantic::reference_resolution::resolve_expression_endpoint_workspace;
 
 pub(crate) fn should_suppress_builder_diagnostic(
     graph: &SemanticGraph,
@@ -69,7 +70,10 @@ fn endpoint_reference_resolves(
         .filter(|segment| !segment.is_empty())
         .collect();
     if segments.len() <= 1 {
-        return false;
+        return matches!(
+            resolve_expression_endpoint_workspace(graph, reference_name),
+            ResolveResult::Resolved(_)
+        );
     }
     let owner_expr = segments[0];
     let ResolveResult::Resolved(mut current_id) =
@@ -87,4 +91,57 @@ fn endpoint_reference_resolves(
         current_id = next_id;
     }
     true
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::collect_diagnostics_from_graph;
+    use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
+    use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
+    use crate::DiagnosticsOptions;
+
+    #[test]
+    fn suppresses_unresolved_allocate_source_for_imported_part_def() {
+        let architecture = SysmlDocument::from_memory_path(
+            "workspace",
+            "WebShopArchitecture.sysml",
+            r#"package WebShopArchitecture {
+                part def CheckoutService;
+            }"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("architecture doc");
+        let example = SysmlDocument::from_memory_path(
+            "workspace",
+            "webshop.sysml",
+            r#"package WebShopExample {
+                import WebShopArchitecture::*;
+                part commerceCluster;
+                allocate CheckoutService to commerceCluster;
+            }"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("example doc");
+        let (graph, _parsed) =
+            build_semantic_graph_from_documents(&[architecture, example.clone()]).expect("graph");
+        let diagnostics = collect_diagnostics_from_graph(
+            &graph,
+            &example.uri,
+            DiagnosticsOptions::default(),
+        );
+        assert!(
+            !diagnostics.iter().any(|d| d.code == "unresolved_allocate_source"),
+            "unexpected unresolved_allocate_source: {:?}",
+            diagnostics
+                .iter()
+                .filter(|d| d.code == "unresolved_allocate_source")
+                .collect::<Vec<_>>()
+        );
+    }
 }
