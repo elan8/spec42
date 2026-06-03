@@ -15,6 +15,7 @@ import {
 import { addActionFlowMarkers, renderActionFlowView } from "./views/action-flow";
 import { renderSequenceView, addSequenceMarkers } from "./views/sequence";
 import { addStateTransitionMarkers, renderStateTransitionView } from "./views/state-transition";
+import { renderBrowserView, renderGeometryView, renderGridView } from "./views/standard-views";
 
 const elk = new ELK();
 const nodeWidth = 200;
@@ -220,7 +221,12 @@ export async function renderVisualization(
   const view = prepared.view;
   const isInterconnectionView = view === "interconnection-view";
   const isBehaviorView =
-    view === "action-flow-view" || view === "state-transition-view" || view === "sequence-view";
+    view === "action-flow-view" ||
+    view === "state-transition-view" ||
+    view === "sequence-view" ||
+    view === "browser-view" ||
+    view === "grid-view" ||
+    view === "geometry-view";
 
   let bounds: ContentBounds;
   if (view === "action-flow-view") {
@@ -232,6 +238,12 @@ export async function renderVisualization(
   } else if (view === "sequence-view") {
     addSequenceMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
     bounds = contentBoundsFromExtents(renderSequenceView({ root, prepared, theme, width, height, options }));
+  } else if (view === "browser-view") {
+    bounds = contentBoundsFromExtents(renderBrowserView({ root, prepared, theme, width, height, options }));
+  } else if (view === "grid-view") {
+    bounds = contentBoundsFromExtents(renderGridView({ root, prepared, theme, width, height, options }));
+  } else if (view === "geometry-view") {
+    bounds = contentBoundsFromExtents(renderGeometryView({ root, prepared, theme, width, height, options }));
   } else {
     const layout = await layoutPrepared(prepared);
     if (isInterconnectionView) {
@@ -280,7 +292,10 @@ async function layoutPrepared(prepared: PreparedView): Promise<LayoutResult> {
   if (
     prepared.view === "action-flow-view" ||
     prepared.view === "state-transition-view" ||
-    prepared.view === "sequence-view"
+    prepared.view === "sequence-view" ||
+    prepared.view === "browser-view" ||
+    prepared.view === "grid-view" ||
+    prepared.view === "geometry-view"
   ) {
     return { nodes: [], edges: [] };
   }
@@ -660,7 +675,7 @@ async function layoutInterconnectionPrepared(prepared: PreparedView): Promise<La
 
     return { nodes, edges };
   } catch {
-    // Match legacy ibd.ts: no heuristic grid when ELK fails for interconnection view.
+    // Interconnection notation must not degrade into a heuristic layout if ELK fails.
     return { nodes: [], edges: [] };
   }
 }

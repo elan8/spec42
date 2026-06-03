@@ -50,11 +50,7 @@ import {
     getLibraryKind,
     slugify
 } from './helpers';
-import { renderActivityView as renderActivityViewModule } from './renderers/activity';
-import { renderSequenceView as renderSequenceViewModule } from './renderers/sequence';
-import { renderStateView as renderStateViewModule } from './renderers/state';
 import { renderGeneralViewD3 } from './renderers/generalView';
-import { renderIbdView } from './renderers/ibd';
 import { createExportHandler } from './export';
 import { postJumpToElement } from './jumpToElement';
 import { buildGeneralViewGraph } from './graphBuilders';
@@ -107,7 +103,6 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
             : activeView;
     }
     const verboseWebviewLogging = Boolean((typeof window !== 'undefined' && (window).__VIZ_INIT?.verboseLogging));
-    const useSharedRenderer = Boolean((typeof window !== 'undefined' && (window).__VIZ_INIT?.useSharedRenderer));
 
     let currentData = null;
     let currentView = 'general-view';  // SysML v2 general-view as default
@@ -312,9 +307,6 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
         wrapper.addEventListener(
             'wheel',
             (event) => {
-                if (!useSharedRenderer) {
-                    return;
-                }
                 const viz = document.getElementById('visualization');
                 if (!viz || !viz.contains(event.target as Node)) {
                     return;
@@ -1575,13 +1567,13 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
 
         const width = document.getElementById('visualization').clientWidth;
         const height = document.getElementById('visualization').clientHeight;
-        const sharedRendererViews = new Set<string>(SYSML_ENABLED_VIEWS);
-        const useSharedRendererForView = useSharedRenderer && sharedRendererViews.has(view);
-        if (useSharedRendererForView && vizElement) {
+        const sysmlSharedViews = new Set<string>(SYSML_ENABLED_VIEWS);
+        const isSysmlSharedView = sysmlSharedViews.has(view);
+        if (isSysmlSharedView && vizElement) {
             destroySharedRenderController(true);
             vizElement.innerHTML = '';
         }
-        if (!useSharedRendererForView) {
+        if (!isSysmlSharedView) {
             ensureVisualizationCanvas(width, height);
             g.selectAll('*').remove();
         }
@@ -1621,11 +1613,11 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
             };
         }
 
-        if (!useSharedRendererForView) {
+        if (!isSysmlSharedView) {
             attachCanvasClickHandler();
         }
 
-        if (useSharedRendererForView && sharedRendererViews.has(view)) {
+        if (isSysmlSharedView) {
             if (!sharedPrepared || !vizElement) {
                 renderPlaceholderView(width, height, 'Shared Renderer', 'Unable to prepare shared view data.', dataToRender);
                 setTimeout(() => {
@@ -1667,7 +1659,7 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
             }, 100);
             lastView = view;
             return;
-        } else if (view === 'general-view' || view === 'software-module-view' || view === 'software-dependency-view') {
+        } else if (view === 'software-module-view' || view === 'software-dependency-view') {
             const ctx = {
                 ...buildRenderContext(width, height),
                 buildGeneralViewGraph: (data: any) => buildGeneralViewGraphForView(data),
@@ -1692,81 +1684,13 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
                 updateDimensionsDisplay();
                 finishRender();
             }, 100);
-        } else if (view === 'interconnection-view') {
-            const ctx = {
-                ...buildRenderContext(width, height),
-                elkWorkerUrl,
-            };
-            await renderIbdView(ctx as any, dataToRender);
-            if (isStaleRender()) {
-                finishRender();
-                return;
-            }
+        } else {
+            renderPlaceholderView(width, height, 'Unknown View', 'The selected view is not yet implemented.', dataToRender);
             setTimeout(() => {
-                if (isStaleRender()) {
-                    finishRender();
-                    return;
-                }
-                if (shouldPreserveZoom) {
-                    restoreZoom();
-                } else {
-                    zoomToFit('auto');
-                }
                 updateDimensionsDisplay();
                 finishRender();
             }, 100);
-            } else if (view === 'action-flow-view') {
-                await renderActivityViewModule(buildRenderContext(width, height), dataToRender);
-            } else if (view === 'sequence-view') {
-                await renderSequenceViewModule(buildRenderContext(width, height), dataToRender);
-            } else if (view === 'state-transition-view') {
-                await renderStateViewModule(buildRenderContext(width, height), dataToRender);
-                if (isStaleRender()) {
-                    finishRender();
-                    return;
-                }
-                setTimeout(() => {
-                    if (isStaleRender()) {
-                        finishRender();
-                        return;
-                    }
-                    if (shouldPreserveZoom) {
-                        restoreZoom();
-                    } else {
-                        zoomToFit('auto');
-                    }
-                    updateDimensionsDisplay();
-                    finishRender();
-                }, 100);
-            } else {
-                renderPlaceholderView(width, height, 'Unknown View', 'The selected view is not yet implemented.', dataToRender);
-            }
-
-            // Legacy-only: shared renderer applies fit/zoom in renderSharedView + ensureSharedCanvasZoom.
-            if (
-                !useSharedRendererForView
-                && view !== 'general-view'
-                && view !== 'software-module-view'
-                && view !== 'software-dependency-view'
-                && view !== 'interconnection-view'
-                && view !== 'state-transition-view'
-                && view !== 'action-flow-view'
-                && view !== 'sequence-view'
-            ) {
-                // If zoom was previously modified, restore it; otherwise zoom to fit
-                if (shouldPreserveZoom) {
-                    restoreZoom();
-                } else {
-                    // Delay zoom to fit to ensure rendering is complete
-                    setTimeout(() => zoomToFit('auto'), 100);
-                }
-
-                // Show initial dimensions briefly
-                setTimeout(() => {
-                    updateDimensionsDisplay();
-                    finishRender();
-                }, 200);
-            }
+        }
 
         // Update lastView after successful render start
         lastView = view;
@@ -2345,7 +2269,7 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
 
     function resetZoom() {
         // Home action: return to initial fit-and-center framing.
-        if (useSharedRenderer && new Set<string>(SYSML_ENABLED_VIEWS).has(currentView) && sharedRenderController) {
+        if (new Set<string>(SYSML_ENABLED_VIEWS).has(currentView) && sharedRenderController) {
             sharedRenderController.reset();
             ensureSharedCanvasZoom(sharedRenderController.getFitTransform());
             return;
@@ -2411,16 +2335,6 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
     window.exportJSON = () => exportHandler.exportJSON();
     window.resetZoom = resetZoom;
     window.zoomToFit = zoomToFit;
-
-    // IBD/Interconnection View Renderer - implemented in renderers/ibd.ts
-
-    // Activity/Action Flow View Renderer - implemented in renderers/activity.ts
-
-    // State Transition View Renderer - implemented in renderers/state.ts
-
-    // Use Case View Renderer - implemented in renderers/usecase.ts
-
-    // Package View Renderer - implemented in renderers/package.ts
 
     // Placeholder renderer for views that cannot display a diagram (no data or not supported)
     function wrapTextToFit(line, maxCharsPerLine) {

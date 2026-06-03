@@ -973,6 +973,38 @@ describe("shared renderer", () => {
     expect(target.querySelectorAll(".action-flow-edge").length).toBeGreaterThanOrEqual(2);
   });
 
+  it("renders action-flow perform actions with parameter badges and flow final notation", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Perform Flow",
+      view: "action-flow-view",
+      nodes: [
+        { id: "start", label: "start", kind: "initial" },
+        {
+          id: "perform",
+          label: "authorizePayment",
+          kind: "perform",
+          attributes: { inputs: [{ name: "cart" }], outputs: [{ name: "receipt" }] },
+        },
+        { id: "end", label: "flowDone", kind: "flow-final" },
+      ],
+      edges: [
+        { id: "f1", source: "start", target: "perform", label: "" },
+        { id: "f2", source: "perform", target: "end", label: "" },
+      ],
+    });
+
+    expect(target.querySelector(".perform-action-node")).toBeTruthy();
+    expect(target.querySelectorAll(".action-parameter-badge").length).toBe(2);
+    expect(target.querySelector(".flow-final-x")).toBeTruthy();
+    expect(target.textContent).toContain("perform");
+    expect(target.textContent).toContain("cart");
+    expect(target.textContent).toContain("receipt");
+  });
+
   it("renders action-flow connectors for qualified node ids with simple flow names", async () => {
     const target = document.createElement("div");
     Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
@@ -1031,6 +1063,39 @@ describe("shared renderer", () => {
     expectFiniteRootTransform(target);
     expect(target.querySelectorAll(".state-transition-node").length).toBe(3);
     expect(target.querySelectorAll(".state-transition-edge").length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("renders composite state regions and entry do exit compartments", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 900, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Composite",
+      view: "state-transition-view",
+      nodes: [
+        {
+          id: "operating",
+          label: "Operating",
+          kind: "composite state",
+          attributes: {
+            entry: "arm",
+            doAction: "monitor",
+            exit: "safe",
+            regions: [{ name: "nominal" }, { name: "fault" }],
+          },
+        },
+        { id: "terminate", label: "Terminate", kind: "terminate" },
+      ],
+      edges: [{ id: "self", source: "operating", target: "operating", label: "retry", attributes: { selfLoop: true } }],
+    });
+
+    expect(target.querySelectorAll(".state-region").length).toBe(2);
+    expect(target.querySelectorAll(".state-action-compartment").length).toBe(3);
+    expect(target.querySelector(".state-transition-edge")?.getAttribute("d")).toContain("C");
+    expect(target.textContent).toContain("entry / arm");
+    expect(target.textContent).toContain("do / monitor");
+    expect(target.textContent).toContain("exit / safe");
   });
 
   it("highlights action-flow nodes on click when onNodeClick is wired", async () => {
@@ -1096,6 +1161,84 @@ describe("shared renderer", () => {
     expectFiniteRootTransform(target);
     expect(target.querySelectorAll(".sequence-lifelines line").length).toBeGreaterThanOrEqual(2);
     expect(target.querySelectorAll(".sequence-message").length).toBe(2);
+  });
+
+  it("renders sequence fragments, activations, self messages, and return messages", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1400, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 900, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Interaction",
+      view: "sequence-view",
+      nodes: [],
+      edges: [],
+      meta: {
+        sequenceDiagram: {
+          name: "Demo",
+          lifelines: [
+            { id: "user", name: "User" },
+            { id: "robot", name: "Robot" },
+          ],
+          messages: [
+            { id: "m1", source: "user", target: "robot", name: "command", order: 1, kind: "sync" },
+            { id: "m2", source: "robot", target: "robot", name: "calculate", order: 2, kind: "sync" },
+            { id: "m3", source: "robot", target: "user", name: "status", order: 3, kind: "return" },
+          ],
+          activations: [{ id: "a1", lifeline: "robot", startMessage: "m1", finishMessage: "m3" }],
+          fragments: [{ id: "frag1", kind: "opt", operands: [{ guard: "ok", messageIds: ["m2"] }] }],
+        },
+      },
+    });
+
+    expect(target.querySelector(".sequence-fragment-opt")).toBeTruthy();
+    expect(target.querySelector(".sequence-activation")).toBeTruthy();
+    expect(target.querySelector(".sequence-message-self")).toBeTruthy();
+    expect((target.querySelector(".sequence-message-return") as SVGElement | null)?.style.strokeDasharray).toBe("6,4");
+    expect(target.textContent).toContain("[ok]");
+  });
+
+  it("renders provisional Browser, Grid, and Geometry standard views", async () => {
+    for (const view of ["browser-view", "grid-view", "geometry-view"]) {
+      const target = document.createElement("div");
+      Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+      Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+      await renderVisualization(target, {
+        title: view,
+        view,
+        nodes: [
+          {
+            id: "system",
+            label: "System",
+            kind: "part def",
+            attributes: { name: "System", kind: "part def", attributeCount: 1, partCount: 2, portCount: 3 },
+          },
+          { id: "engine", label: "engine", kind: "part", attributes: { name: "engine", kind: "part" } },
+        ],
+        edges: [],
+        meta: {
+          rows: [
+            { id: "system", label: "System", kind: "part def", qualifiedName: "Demo::System" },
+            { id: "engine", label: "engine", kind: "part", qualifiedName: "Demo::System::engine" },
+          ],
+          cells: [
+            { id: "system", name: "System", kind: "part def", attributeCount: 1, partCount: 2, portCount: 3 },
+          ],
+          elements: [
+            { id: "system", label: "System", kind: "part def" },
+            { id: "engine", label: "engine", kind: "part" },
+          ],
+          provisional: true,
+        },
+      }, { delegateZoom: true });
+
+      expectFiniteRootTransform(target);
+      expect(target.querySelector(".provisional-view-badge")).toBeTruthy();
+      if (view === "browser-view") expect(target.querySelectorAll(".browser-row").length).toBeGreaterThan(0);
+      if (view === "grid-view") expect(target.querySelectorAll(".grid-cell").length).toBeGreaterThan(0);
+      if (view === "geometry-view") expect(target.querySelectorAll(".geometry-object").length).toBeGreaterThan(0);
+    }
   });
 
   it("styles composition edges with diamond marker in general view", async () => {

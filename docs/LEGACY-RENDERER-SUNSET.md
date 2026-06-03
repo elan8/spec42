@@ -1,37 +1,30 @@
-# Legacy webview renderer sunset plan
+# Legacy SysML renderer retirement
 
-The shared diagram renderer (`shared/diagram-renderer`) is the default for all `SYSML_ENABLED_VIEWS` when `spec42.visualization.useSharedRenderer` is true (product default as of 2026-06-03). Legacy modules under `vscode/src/visualization/webview/renderers/` remain as fallbacks only.
+The SysML visualizer no longer exposes or routes through legacy SysML renderers. All `SYSML_ENABLED_VIEWS` render through `shared/diagram-renderer`.
 
-## Current legacy modules
+## Retired SysML modules
 
-| File | View | Shared replacement |
+Deleted from `vscode/src/visualization/webview/renderers/`:
+
+| Former file | View | Shared replacement |
 |------|------|-------------------|
-| `generalView.ts` | General | `shared/diagram-renderer` general + `prepareGraph` |
-| `ibd.ts` | Interconnection | `shared/diagram-renderer` interconnection + `prepareInterconnection` |
+| `ibd.ts` | Interconnection | `shared/diagram-renderer` interconnection |
 | `activity.ts` | Action flow | `shared/diagram-renderer/views/action-flow.ts` |
 | `state.ts` | State transition | `shared/diagram-renderer/views/state-transition.ts` |
 | `sequence.ts` | Sequence | `shared/diagram-renderer/views/sequence.ts` |
 
-Orchestrator: [`vscode/src/visualization/webview/orchestrator.ts`](../vscode/src/visualization/webview/orchestrator.ts) branches on `useSharedRenderer` and `SYSML_ENABLED_VIEWS`.
+`generalView.ts` remains only for Spec42 extension views: `software-module-view` and `software-dependency-view`. It is not a SysML fallback.
 
-## Removal criteria (all must be true)
+## Product behavior
 
-1. [SHARED-RENDERER-PARITY.md](SHARED-RENDERER-PARITY.md) sign-off holds with no **blocker** rows for shipped views.
-2. No open regression in `shared/diagram-renderer` Vitest or `crates/kernel/tests/integration/model.rs` visualization tests.
-3. Manual webshop fixtures pass click-to-source on the **shared** path (documented in parity doc).
-4. At least one release cycle with default `useSharedRenderer: true` and no user-facing rollback request for structural views.
+- `spec42.visualization.useSharedRenderer` has been removed.
+- The webview initializes without a shared-renderer feature flag.
+- `orchestrator.ts` routes every SysML view in `SYSML_ENABLED_VIEWS` to `renderSharedView()`.
+- Browser, Grid, and Geometry views are standard-view placeholders with provisional shared renderers while graphical notation details remain unsettled upstream.
 
-## Removal steps
+## Guardrails
 
-1. Delete `renderers/generalView.ts`, `ibd.ts`, `activity.ts`, `state.ts`, `sequence.ts`.
-2. Remove legacy branches from `orchestrator.ts` (keep ELK worker + shared `renderVisualization` only).
-3. Remove `spec42.visualization.useSharedRenderer` setting from `package.json` (always shared) or keep as hidden escape hatch for one release with deprecation notice.
-4. Update [vscode/README.md](../vscode/README.md) and [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md) to drop legacy references.
-
-## Explicitly retained in legacy until reimplemented in shared (optional post-1.0)
-
-- Action-flow perform / I/O badges (legacy-only today).
-- Sequence interaction fragments (alt/opt/loop).
-- General view type-filter chips and Cytoscape fallback (host UI concerns, not SVG core).
-
-These are **not** blockers for deleting legacy renderers if the shared path is the only shipped path and the gaps remain documented as WONTFIX or follow-up.
+1. Do not reintroduce SysML renderer branches under `vscode/src/visualization/webview/renderers/`.
+2. Keep notation rules in `shared/diagram-renderer`.
+3. Keep software-specific visualizations outside `SYSML_ENABLED_VIEWS`.
+4. Add shared renderer Vitest coverage for every new SysML notation rule.

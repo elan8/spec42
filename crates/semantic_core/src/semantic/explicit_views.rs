@@ -395,7 +395,11 @@ pub fn project_ids_for_renderer(
     };
 
     let expanded_ids = match renderer_view {
-        "general-view" | "interconnection-view" => expand_structural_scope(
+        "general-view"
+        | "interconnection-view"
+        | "browser-view"
+        | "grid-view"
+        | "geometry-view" => expand_structural_scope(
             &evaluated.exposed_ids,
             &children_by_parent,
             &typing_targets,
@@ -827,11 +831,20 @@ pub fn renderer_view_for_view_type(effective_view_type: Option<&str>) -> Option<
     let view_type = effective_view_type?;
     let normalized = normalize_kind_name(view_type);
     match normalized.as_str() {
-        "generalview" => Some("general-view"),
+        "generalview"
+        | "caseview"
+        | "analysiscaseview"
+        | "verificationcaseview"
+        | "requirementview"
+        | "structureview"
+        | "parttreeview" => Some("general-view"),
         "interconnectionview" => Some("interconnection-view"),
         "actionflowview" | "actionview" => Some("action-flow-view"),
         "sequenceview" => Some("sequence-view"),
         "statetransitionview" | "stateview" => Some("state-transition-view"),
+        "browserview" => Some("browser-view"),
+        "gridview" => Some("grid-view"),
+        "geometryview" | "geometricview" => Some("geometry-view"),
         _ => None,
     }
 }
@@ -951,6 +964,31 @@ mod tests {
             candidates[0].renderer_view.as_deref(),
             Some("sequence-view")
         );
+    }
+
+    #[test]
+    fn standard_view_types_map_to_shared_renderers_or_filtered_general_view() {
+        let cases = [
+            ("GeneralView", Some("general-view")),
+            ("CaseView", Some("general-view")),
+            ("RequirementView", Some("general-view")),
+            ("InterconnectionView", Some("interconnection-view")),
+            ("ActionFlowView", Some("action-flow-view")),
+            ("SequenceView", Some("sequence-view")),
+            ("StateTransitionView", Some("state-transition-view")),
+            ("BrowserView", Some("browser-view")),
+            ("GridView", Some("grid-view")),
+            ("GeometryView", Some("geometry-view")),
+            ("GeometricView", Some("geometry-view")),
+            ("SafetyView", None),
+        ];
+        for (view_type, expected) in cases {
+            assert_eq!(
+                super::renderer_view_for_view_type(Some(view_type)),
+                expected,
+                "{view_type}"
+            );
+        }
     }
 
     #[test]

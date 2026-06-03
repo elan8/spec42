@@ -36,6 +36,7 @@ Published extension builds include the language server binary, so most users can
 - **Action Flow View**: a behavior-oriented view for following control and data flow through actions in a process.
 - **State Transition View**: a lifecycle view that shows states and transitions so you can reason about system behavior over time.
 - **Sequence View**: a software-interaction view for Spec42 `SequenceView` models (lifelines and messages).
+- **Browser, Grid, and Geometry Views**: provisional standard-view renderers while upstream SysML graphical notation details settle.
 
 ## Getting Started
 
@@ -79,11 +80,7 @@ Useful commands:
   - Scale factor used for PNG/SVG export.
   - Default: `2`
 
-- **`spec42.visualization.useSharedRenderer`**
-  - Use the shared diagram renderer (`shared/diagram-renderer`) for all **SysML** visualizer views (general, interconnection, action-flow, state-transition, sequence). Implements SysML v2 def/usage/reference node shapes and notation-neutral styling on structural views; behavior views use `shared/diagram-renderer/src/views/*`.
-  - Default: `true`
-  - Set to `false` to use the legacy webview renderers under `renderers/` for those views.
-  - See [`docs/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md`](../docs/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md) and [`docs/SHARED-RENDERER-PARITY.md`](../docs/SHARED-RENDERER-PARITY.md).
+All SysML visualizer views use the shared diagram renderer (`shared/diagram-renderer`). Legacy SysML renderer fallback has been removed; software extension views remain separate.
 
 **Developers:** after changing `shared/diagram-renderer` or webview TypeScript, rebuild the visualizer bundle:
 

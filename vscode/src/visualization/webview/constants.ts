@@ -21,6 +21,9 @@ export const SYSML_ENABLED_VIEWS = [
     'action-flow-view',
     'sequence-view',
     'state-transition-view',
+    'browser-view',
+    'grid-view',
+    'geometry-view',
 ] as const;
 
 /** Behavior renderer views that are supported — never show experimental badges/banners. */
@@ -28,6 +31,13 @@ export const GRADUATED_BEHAVIOR_VIEWS = new Set<string>([
     'action-flow-view',
     'state-transition-view',
     'sequence-view',
+]);
+
+/** Standard SysML views with provisional renderer support while spec notation details settle. */
+export const PROVISIONAL_STANDARD_VIEWS = new Set<string>([
+    'browser-view',
+    'grid-view',
+    'geometry-view',
 ]);
 
 export const SOFTWARE_ENABLED_VIEWS = [
@@ -65,6 +75,9 @@ export const VIEW_OPTIONS: Record<string, { label: string; shortLabel: string; i
     'action-flow-view': { label: 'Action Flow View', shortLabel: 'Action Flow', icon: 'git-commit' },
     'sequence-view': { label: 'Sequence View', shortLabel: 'Sequence', icon: 'symbol-event' },
     'state-transition-view': { label: 'State Transition View', shortLabel: 'State Transition', icon: 'git-compare' },
+    'browser-view': { label: 'Browser View', shortLabel: 'Browser', icon: 'list-tree' },
+    'grid-view': { label: 'Grid View', shortLabel: 'Grid', icon: 'table' },
+    'geometry-view': { label: 'Geometry View', shortLabel: 'Geometry', icon: 'symbol-ruler' },
 };
 
 /** Documentation: rendering technology per view. All views use D3 + ELK. */
@@ -76,6 +89,9 @@ export const VIEW_RENDERER_TECH: Record<string, string> = {
     'action-flow-view': 'D3+ELK',
     'sequence-view': 'D3',
     'state-transition-view': 'D3+ELK',
+    'browser-view': 'D3',
+    'grid-view': 'D3',
+    'geometry-view': 'D3',
 };
 
 /** General View type filter categories - def categories first for correct matching. */

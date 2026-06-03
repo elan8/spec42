@@ -18,6 +18,9 @@ function isInitial(kind: string): boolean {
 function isFinal(kind: string): boolean {
   return kind.includes("final") || kind.includes("done") || kind.includes("end");
 }
+function isFlowFinal(kind: string): boolean {
+  return kind.includes("flow-final") || kind.includes("flow final") || kind.includes("terminate");
+}
 function isDecision(kind: string): boolean {
   return kind.includes("decision") || kind.includes("merge");
 }
@@ -32,9 +35,13 @@ function drawActionNode(
   theme: DiagramTheme,
 ): d3.Selection<SVGGElement, unknown, null, undefined> {
   const kind = nodeKind(node);
+  const attrs = (node.attributes ?? {}) as Record<string, unknown>;
+  const inputs = Array.isArray(attrs.inputs) ? attrs.inputs : Array.isArray(attrs.inputParameters) ? attrs.inputParameters : [];
+  const outputs = Array.isArray(attrs.outputs) ? attrs.outputs : Array.isArray(attrs.outputParameters) ? attrs.outputParameters : [];
+  const isPerform = kind.includes("perform") || String(attrs.actionType ?? attrs.type ?? "").toLowerCase().includes("perform");
   const g = group
     .append("g")
-    .attr("class", "activity-action action-flow-node")
+    .attr("class", `activity-action action-flow-node${isPerform ? " perform-action-node" : ""}`)
     .attr("data-node-id", node.id)
     .attr("transform", `translate(${layout.x},${layout.y})`);
 
@@ -49,13 +56,20 @@ function drawActionNode(
       .style("fill", isInitial(kind) ? theme.edge.default : theme.canvasBackground)
       .style("stroke", theme.nodeBorder)
       .style("stroke-width", "2px");
-    if (isFinal(kind)) {
+    if (isFinal(kind) && !isFlowFinal(kind)) {
       g.append("circle")
         .attr("cx", layout.width / 2)
         .attr("cy", layout.height / 2)
         .attr("r", 10)
         .style("fill", theme.edge.default)
         .style("stroke", "none");
+    }
+    if (isFlowFinal(kind)) {
+      g.append("path")
+        .attr("class", "flow-final-x")
+        .attr("d", `M${layout.width / 2 - 8},${layout.height / 2 - 8} L${layout.width / 2 + 8},${layout.height / 2 + 8} M${layout.width / 2 + 8},${layout.height / 2 - 8} L${layout.width / 2 - 8},${layout.height / 2 + 8}`)
+        .style("stroke", theme.edge.default)
+        .style("stroke-width", "2px");
     }
   } else if (isDecision(kind)) {
     const cx = layout.width / 2;
@@ -88,16 +102,27 @@ function drawActionNode(
       .attr("rx", 8)
       .style("fill", theme.nodeFill)
       .style("stroke", theme.nodeBorder)
-      .style("stroke-width", "2px");
+      .style("stroke-width", "2px")
+      .style("stroke-dasharray", isPerform ? "5,3" : "none");
     g.append("rect")
       .attr("width", layout.width)
       .attr("height", 6)
       .attr("rx", 8)
       .style("fill", theme.nodeBorder)
       .style("stroke", "none");
+    if (isPerform) {
+      g.append("text")
+        .attr("class", "perform-action-stereotype")
+        .attr("x", layout.width / 2)
+        .attr("y", 20)
+        .attr("text-anchor", "middle")
+        .style("font-size", "9px")
+        .style("fill", theme.textSecondary)
+        .text("perform");
+    }
   }
 
-  const labelY = isFork(kind) ? layout.height + 14 : layout.height / 2 + 4;
+  const labelY = isFork(kind) ? layout.height + 14 : layout.height / 2 + (isPerform ? 12 : 4);
   g.append("text")
     .attr("x", layout.width / 2)
     .attr("y", labelY)
@@ -106,6 +131,35 @@ function drawActionNode(
     .style("font-weight", "600")
     .style("fill", theme.textPrimary)
     .text(truncateLabel(node.label, 24));
+
+  const drawParameter = (items: unknown[], side: "input" | "output") => {
+    items.slice(0, 4).forEach((item, index) => {
+      const parameter = item && typeof item === "object" ? item as Record<string, unknown> : { name: String(item) };
+      const name = String(parameter.name ?? parameter.label ?? item ?? "");
+      const y = 20 + index * 14;
+      const x = side === "input" ? -9 : layout.width + 9;
+      g.append("circle")
+        .attr("class", `action-parameter-badge action-parameter-${side}`)
+        .attr("cx", x)
+        .attr("cy", y)
+        .attr("r", 5)
+        .style("fill", theme.canvasBackground)
+        .style("stroke", theme.nodeBorder)
+        .style("stroke-width", "1.5px");
+      g.append("text")
+        .attr("class", `action-parameter-label action-parameter-${side}-label`)
+        .attr("x", side === "input" ? x - 8 : x + 8)
+        .attr("y", y + 3)
+        .attr("text-anchor", side === "input" ? "end" : "start")
+        .style("font-size", "8px")
+        .style("fill", theme.textSecondary)
+        .text(truncateLabel(name, 14));
+    });
+  };
+  if (!isInitial(kind) && !isFinal(kind) && !isDecision(kind) && !isFork(kind)) {
+    drawParameter(inputs, "input");
+    drawParameter(outputs, "output");
+  }
 
   return g;
 }

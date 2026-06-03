@@ -26,6 +26,13 @@ function drawStateNode(
   theme: DiagramTheme,
 ): d3.Selection<SVGGElement, unknown, null, undefined> {
   const kind = nodeKind(node);
+  const attrs = (node.attributes ?? {}) as Record<string, unknown>;
+  const regions = Array.isArray(attrs.regions) ? attrs.regions : Array.isArray(attrs.children) ? attrs.children : [];
+  const entry = String(attrs.entry ?? attrs.entryAction ?? "").trim();
+  const doAction = String(attrs.do ?? attrs.doAction ?? "").trim();
+  const exit = String(attrs.exit ?? attrs.exitAction ?? "").trim();
+  const isComposite = kind.includes("composite") || regions.length > 0;
+  const isTerminate = kind.includes("terminate");
   const g = group
     .append("g")
     .attr("class", "state-node state-transition-node")
@@ -43,7 +50,7 @@ function drawStateNode(
       .style("fill", theme.edge.default)
       .style("stroke", theme.nodeBorder)
       .style("stroke-width", "2px");
-  } else if (kind.includes("final")) {
+  } else if (kind.includes("final") || isTerminate) {
     g.append("circle")
       .attr("class", "node-background")
       .attr("data-original-stroke", theme.nodeBorder)
@@ -54,12 +61,20 @@ function drawStateNode(
       .style("fill", theme.canvasBackground)
       .style("stroke", theme.nodeBorder)
       .style("stroke-width", "2px");
-    g.append("circle")
-      .attr("cx", layout.width / 2)
-      .attr("cy", layout.height / 2)
-      .attr("r", 10)
-      .style("fill", theme.edge.default)
-      .style("stroke", "none");
+    if (isTerminate) {
+      g.append("path")
+        .attr("class", "terminate-state-x")
+        .attr("d", `M${layout.width / 2 - 9},${layout.height / 2 - 9} L${layout.width / 2 + 9},${layout.height / 2 + 9} M${layout.width / 2 + 9},${layout.height / 2 - 9} L${layout.width / 2 - 9},${layout.height / 2 + 9}`)
+        .style("stroke", theme.edge.default)
+        .style("stroke-width", "2px");
+    } else {
+      g.append("circle")
+        .attr("cx", layout.width / 2)
+        .attr("cy", layout.height / 2)
+        .attr("r", 10)
+        .style("fill", theme.edge.default)
+        .style("stroke", "none");
+    }
   } else {
     g.append("rect")
       .attr("class", "node-background")
@@ -67,7 +82,7 @@ function drawStateNode(
       .attr("data-original-width", "2px")
       .attr("width", layout.width)
       .attr("height", layout.height)
-      .attr("rx", kind.includes("composite") ? 10 : 14)
+      .attr("rx", isComposite ? 10 : 14)
       .style("fill", theme.nodeFill)
       .style("stroke", theme.nodeBorder)
       .style("stroke-width", "2px");
@@ -79,6 +94,56 @@ function drawStateNode(
       .style("font-weight", "700")
       .style("fill", theme.textPrimary)
       .text(truncateLabel(node.label, 28));
+    const actionLines = [
+      entry ? `entry / ${entry}` : "",
+      doAction ? `do / ${doAction}` : "",
+      exit ? `exit / ${exit}` : "",
+    ].filter(Boolean);
+    if (actionLines.length > 0 || isComposite) {
+      g.append("line")
+        .attr("class", "state-compartment-divider")
+        .attr("x1", 0)
+        .attr("x2", layout.width)
+        .attr("y1", 34)
+        .attr("y2", 34)
+        .style("stroke", theme.nodeBorder)
+        .style("stroke-width", "1px");
+    }
+    actionLines.forEach((line, index) => {
+      g.append("text")
+        .attr("class", "state-action-compartment")
+        .attr("x", 12)
+        .attr("y", 54 + index * 16)
+        .style("font-size", "10px")
+        .style("fill", theme.textSecondary)
+        .text(truncateLabel(line, 34));
+    });
+    if (isComposite) {
+      const regionTop = Math.max(80, 52 + actionLines.length * 16);
+      const regionHeight = Math.max(32, (layout.height - regionTop - 14) / Math.max(1, regions.length || 1));
+      const regionList = regions.length > 0 ? regions : [{ name: "region" }];
+      regionList.slice(0, 4).forEach((region, index) => {
+        const item = region && typeof region === "object" ? region as Record<string, unknown> : { name: String(region) };
+        const y = regionTop + index * regionHeight;
+        g.append("rect")
+          .attr("class", "state-region")
+          .attr("x", 12)
+          .attr("y", y)
+          .attr("width", layout.width - 24)
+          .attr("height", Math.max(24, regionHeight - 8))
+          .attr("rx", 5)
+          .style("fill", "none")
+          .style("stroke", theme.nodeBorder)
+          .style("stroke-dasharray", "4,3");
+        g.append("text")
+          .attr("class", "state-region-label")
+          .attr("x", 20)
+          .attr("y", y + 17)
+          .style("font-size", "9px")
+          .style("fill", theme.textSecondary)
+          .text(truncateLabel(String(item.name ?? item.label ?? `region ${index + 1}`), 28));
+      });
+    }
   }
 
   return g;
@@ -109,10 +174,11 @@ export async function renderStateTransitionView(ctx: BehaviorSceneContext): Prom
     const sections = layout.edgeSectionsById.get(edge.id);
     const selfLoop = Boolean(edge.attributes?.selfLoop) || edge.source === edge.target;
     const fallback = selfLoop ? buildSelfLoopPath(source) : fallbackEdgePath(source, target, horizontal);
+    const path = selfLoop ? fallback.path : (pathFromSections(sections) || fallback.path);
     edgeLayer
       .append("path")
       .attr("class", "state-transition-edge")
-      .attr("d", pathFromSections(sections) || fallback.path)
+      .attr("d", path)
       .style("fill", "none")
       .style("stroke", ctx.theme.edge.default)
       .style("stroke-width", "2px")

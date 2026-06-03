@@ -9,6 +9,11 @@ Shared D3 + ELK renderer for Spec42 **SysML visualizer views** (`SYSML_ENABLED_V
 | `action-flow-view` | ELK layered | `views/action-flow.ts` |
 | `state-transition-view` | ELK | `views/state-transition.ts` |
 | `sequence-view` | D3 columns | `views/sequence.ts` |
+| `browser-view` | D3 rows | `views/standard-views.ts` |
+| `grid-view` | D3 grid | `views/standard-views.ts` |
+| `geometry-view` | D3 provisional scene | `views/standard-views.ts` |
+
+Browser, Grid, and Geometry are exposed as provisional standard-view renderers until the upstream graphical notation gaps are closed. Filtered standard views such as case/requirement-style views are projected through `general-view` with filters preserved by the backend.
 
 For the full picture (legacy vs shared vs SysML v2 spec) and the conformance roadmap, see [`docs/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md`](../../docs/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md).
 

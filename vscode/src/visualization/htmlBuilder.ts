@@ -3,9 +3,9 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { isVerboseLoggingEnabled } from '../logger';
 import { getVisualizerStyles } from './styles';
-import { DEFAULT_ENABLED_VIEWS } from './webview/constants';
+import { DEFAULT_ENABLED_VIEWS, PROVISIONAL_STANDARD_VIEWS } from './webview/constants';
 
-const EXPERIMENTAL_VIEW_IDS: string[] = [];
+const EXPERIMENTAL_VIEW_IDS: string[] = Array.from(PROVISIONAL_STANDARD_VIEWS);
 
 function getNonce(): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -27,9 +27,6 @@ export function getWebviewHtml(
 
     const nonce = getNonce();
     const enabledViewSet = new Set<string>(enabledViews);
-    const useSharedRenderer = vscode.workspace
-        .getConfiguration('spec42')
-        .get<boolean>('visualization.useSharedRenderer', true);
     const vars: Record<string, string> = {
         NONCE: nonce,
         CSP_SOURCE: webview.cspSource,
@@ -43,7 +40,6 @@ export function getWebviewHtml(
         ENABLED_VIEW_IDS_JSON: JSON.stringify(Array.from(enabledViewSet)),
         EXPERIMENTAL_VIEW_IDS_JSON: JSON.stringify(EXPERIMENTAL_VIEW_IDS),
         VERBOSE_LOGGING_JSON: JSON.stringify(isVerboseLoggingEnabled()),
-        USE_SHARED_RENDERER_JSON: JSON.stringify(useSharedRenderer),
     };
 
     for (const [key, value] of Object.entries(vars)) {
