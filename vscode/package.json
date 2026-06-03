@@ -31,12 +31,7 @@
   "activationEvents": [
     "workspaceContains:**/*.sysml",
     "workspaceContains:**/*.kerml",
-    "onWebviewPanel:sysmlVisualizer",
-    "onWebviewPanel:spec42SoftwareVisualizer",
-    "onView:spec42Addons",
-    "onCommand:spec42.addons.runSoftwareArchitectureAnalysis",
-    "onCommand:spec42.addons.openSoftwareArchitecture",
-    "onCommand:spec42.addons.toggle"
+    "onWebviewPanel:sysmlVisualizer"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -213,23 +208,6 @@
         "command": "sysml.debugDumpGraphForGeneralView",
         "title": "Debug: Dump Graph for General View",
         "category": "SysML"
-      },
-      {
-        "command": "spec42.addons.runSoftwareArchitectureAnalysis",
-        "title": "Run Software Architecture Analysis",
-        "icon": "$(run-all)",
-        "category": "Spec42"
-      },
-      {
-        "command": "spec42.addons.openSoftwareArchitecture",
-        "title": "Open Software Architecture Visualizer",
-        "icon": "$(extensions)",
-        "category": "Spec42"
-      },
-      {
-        "command": "spec42.addons.toggle",
-        "title": "Toggle Add-on",
-        "category": "Spec42"
       }
     ],
     "menus": {
@@ -345,12 +323,6 @@
         },
         {
           "command": "sysml.library.showStdLibStatus"
-        },
-        {
-          "command": "spec42.addons.runSoftwareArchitectureAnalysis"
-        },
-        {
-          "command": "spec42.addons.openSoftwareArchitecture"
         }
       ]
     },
@@ -378,12 +350,6 @@
           "name": "Library",
           "type": "webview",
           "contextualTitle": "Spec42 Library"
-        },
-        {
-          "id": "spec42Addons",
-          "name": "Add-ons",
-          "type": "webview",
-          "contextualTitle": "Spec42 Add-ons"
         }
       ]
     },
@@ -395,10 +361,6 @@
       {
         "view": "sysmlModelExplorer",
         "contents": "No SysML model loaded.\\n\\n- Open a `.sysml` or `.kerml` file\\n- Or run **SysML: Show SysML Model Explorer**"
-      },
-      {
-        "view": "spec42Addons",
-        "contents": "Discover optional Spec42 add-ons, open dedicated tools, and enable workspace-specific capabilities."
       }
     ],
     "configuration": {
@@ -480,17 +442,6 @@
           "minimum": 1,
           "maximum": 4,
           "description": "Scale factor for PNG/SVG export of the visualization."
-        },
-        "spec42.experimentalFeatures.enabled": {
-          "type": "boolean",
-          "default": false,
-          "description": "Enable experimental Spec42 features that are still under active development."
-        },
-        "spec42.addons.softwareArchitecture.enabled": {
-          "type": "boolean",
-          "default": false,
-          "scope": "resource",
-          "description": "Enable the Software Architecture add-on and its dedicated Rust visualizer."
         }
       }
     },
@@ -532,7 +483,6 @@
     "test:interconnection-drone": "vscode-test --config .vscode-test.interconnection-drone.mjs",
     "test:multi-file": "vscode-test --config .vscode-test.multi-file.mjs",
     "test:workspace-smoke": "vscode-test --config .vscode-test.workspace-smoke.mjs",
-    "test:sysml-examples": "vscode-test --config .vscode-test.sysml-examples.mjs",
     "package": "vsce package"
   },
   "devDependencies": {

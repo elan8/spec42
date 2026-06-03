@@ -15,8 +15,6 @@ This file records the legacy-removal sign-off for SysML visualizer views. The ol
 | Grid | Provisional standard-view renderer | N/A |
 | Geometry | Provisional standard-view renderer | N/A |
 
-`software-module-view` and `software-dependency-view` are not SysML standard views and continue to use the separate extension renderer path.
-
 ## Remaining Non-Blocking Gaps
 
 | Gap | Status |

@@ -46,9 +46,6 @@ async fn run_lsp(cli: &Cli) -> Result<ExitCode, String> {
     let environment = resolve_environment(cli)?;
     let config = Arc::new(
         kernel::default_server_config()
-            .with_custom_rpc_provider(Arc::new(
-                software_architecture::software_rpc::SoftwareRpcProvider,
-            ))
             .with_default_library_paths(environment.library_paths.clone()),
     );
     kernel::run_lsp(config, "spec42").await;

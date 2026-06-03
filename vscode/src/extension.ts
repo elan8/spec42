@@ -19,14 +19,6 @@ import {
 } from "./explorer/modelExplorerProvider";
 import { ExamplesViewProvider } from "./examples/examplesViewProvider";
 import { LibraryWebviewViewProvider } from "./library/libraryWebviewViewProvider";
-import { AddonsWebviewViewProvider } from "./addons/addonsWebviewViewProvider";
-import {
-  areExperimentalFeaturesEnabled,
-  getAddonStates,
-  isAddonEnabled,
-  setAddonEnabled,
-} from "./addons/registry";
-import { SoftwareAnalysisStore } from "./addons/softwareAnalysisStore";
 import type { GraphNodeDTO } from "./providers/sysmlModelTypes";
 import { getOutputChannel, log, logError, logPerfEvent, logStartupEvent, showChannel } from "./logger";
 import { dumpGraphForGeneralView } from "./graphDump";
@@ -36,15 +28,7 @@ import {
   VisualizerRestoreState,
 } from "./visualization/visualizationPanel";
 import { setVisualizationGateState } from "./visualization/visualizationGate";
-import {
-  SOFTWARE_RESTORE_STATE_KEY,
-  SoftwareVisualizationPanel,
-  type SoftwareVisualizerRestoreState,
-} from "./visualization/softwareVisualizationPanel";
-import {
-  SOFTWARE_ENABLED_VIEWS,
-  SYSML_ENABLED_VIEWS,
-} from "./visualization/webview/constants";
+import { SYSML_ENABLED_VIEWS } from "./visualization/webview/constants";
 import { getWebviewHtml } from "./visualization/htmlBuilder";
 const CONFIG_SECTION = "spec42";
 const LEGACY_CONFIG_SECTION = "sysml-language-server";
@@ -65,7 +49,6 @@ let statusItem: vscode.StatusBarItem | undefined;
 let modelExplorerProvider: ModelExplorerProvider | undefined;
 let examplesViewProvider: ExamplesViewProvider | undefined;
 let libraryWebviewProvider: LibraryWebviewViewProvider | undefined;
-let addonsWebviewProvider: AddonsWebviewViewProvider | undefined;
 let lspModelProviderForStatus: LspModelProvider | undefined;
 let serverHealthState: ServerHealthState = "starting";
 let serverHealthDetail = "";
@@ -778,8 +761,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
   // Model Explorer (phase 3). getModel awaits whenReady so the server has received didOpen.
   const lspModelProvider = new LspModelProvider(client, clientReadyPromise);
-  const softwareAnalysisStore = new SoftwareAnalysisStore();
-  context.subscriptions.push(softwareAnalysisStore);
   lspModelProviderForStatus = lspModelProvider;
   modelExplorerProvider = new ModelExplorerProvider(lspModelProvider);
   examplesViewProvider = new ExamplesViewProvider(
@@ -791,36 +772,6 @@ export function activate(context: vscode.ExtensionContext): void {
     () => ({
       pinnedVersion: getConfigString("standardLibrary.version") ?? "2026-03",
     })
-  );
-  addonsWebviewProvider = new AddonsWebviewViewProvider(
-    context.extensionUri,
-    () => {
-      const workspaceRootUri = vscode.workspace.workspaceFolders?.[0]?.uri?.toString();
-      const analysisEntry = workspaceRootUri
-        ? softwareAnalysisStore.get(workspaceRootUri)
-        : undefined;
-      return getAddonStates(analysisEntry);
-    },
-    async (addonId, enabled) => {
-      await setAddonEnabled(addonId, enabled);
-      if (!enabled && addonId === "software-architecture") {
-        const workspaceRootUri = vscode.workspace.workspaceFolders?.[0]?.uri?.toString();
-        if (workspaceRootUri) {
-          softwareAnalysisStore.clear(workspaceRootUri);
-        }
-      }
-      await addonsWebviewProvider?.refresh();
-    },
-    async (addonId) => {
-      if (addonId === "software-architecture") {
-        await vscode.commands.executeCommand("spec42.addons.runSoftwareArchitectureAnalysis");
-      }
-    },
-    async (addonId) => {
-      if (addonId === "software-architecture") {
-        await vscode.commands.executeCommand("spec42.addons.openSoftwareArchitecture");
-      }
-    }
   );
 
   function scheduleActiveDocumentExplorerRefresh(
@@ -925,48 +876,6 @@ export function activate(context: vscode.ExtensionContext): void {
     })
   );
 
-  context.subscriptions.push(
-    vscode.window.registerWebviewPanelSerializer("spec42SoftwareVisualizer", {
-      async deserializeWebviewPanel(
-        panel: vscode.WebviewPanel,
-        _state: unknown
-      ) {
-        const saved = context.workspaceState.get<SoftwareVisualizerRestoreState>(
-          SOFTWARE_RESTORE_STATE_KEY
-        );
-        const extVersion =
-          vscode.extensions.getExtension(EXTENSION_ID)?.packageJSON?.version ??
-          "0.0.0";
-        if (!saved?.workspaceRootUri) {
-          panel.webview.html = getWebviewHtml(
-            panel.webview,
-            context.extensionUri,
-            extVersion,
-            SOFTWARE_ENABLED_VIEWS,
-          );
-          return;
-        }
-        try {
-          await SoftwareVisualizationPanel.restore(
-            panel,
-            context,
-            lspModelProvider,
-            softwareAnalysisStore,
-            saved
-          );
-        } catch (err) {
-          logError("Failed to restore software visualization panel", err);
-          panel.webview.html = getWebviewHtml(
-            panel.webview,
-            context.extensionUri,
-            extVersion,
-            SOFTWARE_ENABLED_VIEWS,
-          );
-        }
-      },
-    })
-  );
-
   const treeView = vscode.window.createTreeView("sysmlModelExplorer", {
     treeDataProvider: modelExplorerProvider,
   });
@@ -987,20 +896,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider("spec42Library", libraryWebviewProvider)
-  );
-  context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider("spec42Addons", addonsWebviewProvider)
-  );
-  context.subscriptions.push(
-    softwareAnalysisStore.onDidChange((entry) => {
-      void addonsWebviewProvider?.refresh();
-      if (
-        SoftwareVisualizationPanel.currentPanel &&
-        SoftwareVisualizationPanel.currentPanel.getWorkspaceRootUri() === entry.workspaceRootUri
-      ) {
-        SoftwareVisualizationPanel.currentPanel.refresh();
-      }
-    })
   );
 
   context.subscriptions.push(
@@ -1045,100 +940,6 @@ export function activate(context: vscode.ExtensionContext): void {
       const cfg = getStandardLibraryConfig();
       void vscode.window.showInformationMessage(
         `The SysML standard library is bundled with the Spec42 language server (release ${cfg.version}). Add extra library roots with spec42.libraryPaths if needed.`
-      );
-    })
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("spec42.addons.toggle", async (addonId?: string, enabled?: boolean) => {
-      const targetAddonId = addonId || "software-architecture";
-      if (targetAddonId === "software-architecture" && !areExperimentalFeaturesEnabled()) {
-        vscode.window.showInformationMessage(
-          "The Software Architecture add-on is experimental. Enable Spec42 experimental features in settings first."
-        );
-        return;
-      }
-      const nextEnabled = typeof enabled === "boolean"
-        ? enabled
-        : !isAddonEnabled(targetAddonId);
-      await setAddonEnabled(targetAddonId, nextEnabled);
-      await addonsWebviewProvider?.refresh();
-      if (!nextEnabled && targetAddonId === "software-architecture") {
-        SoftwareVisualizationPanel.currentPanel?.dispose();
-        const workspaceRootUri = vscode.workspace.workspaceFolders?.[0]?.uri?.toString();
-        if (workspaceRootUri) {
-          softwareAnalysisStore.clear(workspaceRootUri);
-        }
-      }
-    })
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("spec42.addons.runSoftwareArchitectureAnalysis", async () => {
-      if (!areExperimentalFeaturesEnabled()) {
-        vscode.window.showInformationMessage(
-          "The Software Architecture add-on is experimental. Enable Spec42 experimental features in settings first."
-        );
-        return;
-      }
-      if (!isAddonEnabled("software-architecture")) {
-        vscode.window.showInformationMessage(
-          "The Software Architecture add-on is currently disabled. Enable it in the Spec42 Add-ons view first."
-        );
-        return;
-      }
-      const workspaceRootUri = vscode.workspace.workspaceFolders?.[0]?.uri;
-      if (!workspaceRootUri) {
-        vscode.window.showWarningMessage("Open a workspace folder to analyze a Rust software workspace.");
-        return;
-      }
-      try {
-        const result = await softwareAnalysisStore.runAnalysis(
-          workspaceRootUri.toString(),
-          lspModelProvider,
-        );
-        if (result.status === "ready" && SoftwareVisualizationPanel.currentPanel) {
-          SoftwareVisualizationPanel.currentPanel.refresh();
-        }
-      } catch (error) {
-        vscode.window.showErrorMessage(
-          `Software workspace analysis failed: ${error instanceof Error ? error.message : String(error)}`
-        );
-      }
-    })
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("spec42.addons.openSoftwareArchitecture", async () => {
-      if (!areExperimentalFeaturesEnabled()) {
-        vscode.window.showInformationMessage(
-          "The Software Architecture add-on is experimental. Enable Spec42 experimental features in settings first."
-        );
-        return;
-      }
-      if (!isAddonEnabled("software-architecture")) {
-        vscode.window.showInformationMessage(
-          "The Software Architecture add-on is currently disabled. Enable it in the Spec42 Add-ons view first."
-        );
-        return;
-      }
-      const workspaceRootUri = vscode.workspace.workspaceFolders?.[0]?.uri;
-      if (!workspaceRootUri) {
-        vscode.window.showWarningMessage("Open a workspace folder to use the Software Architecture visualizer.");
-        return;
-      }
-      const entry = softwareAnalysisStore.get(workspaceRootUri.toString());
-      if (entry.status !== "ready" || !entry.model) {
-        vscode.window.showInformationMessage(
-          "Run Software Architecture analysis from the Spec42 Add-ons view before opening the visualizer."
-        );
-        return;
-      }
-      SoftwareVisualizationPanel.createOrShow(
-        context,
-        workspaceRootUri,
-        lspModelProvider,
-        softwareAnalysisStore,
       );
     })
   );
@@ -2151,40 +1952,6 @@ export function activate(context: vscode.ExtensionContext): void {
         VisualizationPanel.currentPanel.dispose();
         VisualizationPanel.createOrShow(context, panelDoc, undefined, lspModelProvider);
       }
-      if (verboseLoggingChanged && SoftwareVisualizationPanel.currentPanel) {
-        const workspaceRootUri = vscode.workspace.workspaceFolders?.[0]?.uri;
-        SoftwareVisualizationPanel.currentPanel.dispose();
-        if (workspaceRootUri) {
-          SoftwareVisualizationPanel.createOrShow(
-            context,
-            workspaceRootUri,
-            lspModelProvider,
-            softwareAnalysisStore,
-          );
-        }
-      }
-
-      if (event.affectsConfiguration("spec42.addons.softwareArchitecture.enabled")) {
-        if (!isAddonEnabled("software-architecture")) {
-          SoftwareVisualizationPanel.currentPanel?.dispose();
-          const workspaceRootUri = vscode.workspace.workspaceFolders?.[0]?.uri?.toString();
-          if (workspaceRootUri) {
-            softwareAnalysisStore.clear(workspaceRootUri);
-          }
-        }
-        void addonsWebviewProvider?.refresh();
-      }
-
-      if (event.affectsConfiguration("spec42.experimentalFeatures.enabled")) {
-        if (!areExperimentalFeaturesEnabled()) {
-          SoftwareVisualizationPanel.currentPanel?.dispose();
-          const workspaceRootUri = vscode.workspace.workspaceFolders?.[0]?.uri?.toString();
-          if (workspaceRootUri) {
-            softwareAnalysisStore.clear(workspaceRootUri);
-          }
-        }
-        void addonsWebviewProvider?.refresh();
-      }
 
       if (codeLensConfigChanged || performanceLoggingConfigChanged) {
         void vscode.window
@@ -2198,8 +1965,6 @@ export function activate(context: vscode.ExtensionContext): void {
             }
           });
       }
-
-      void addonsWebviewProvider?.refresh();
     })
   );
 
@@ -2259,22 +2024,9 @@ export function activate(context: vscode.ExtensionContext): void {
   });
   context.subscriptions.push(sysmlFileWatcher);
 
-  const rustFileWatcher = vscode.workspace.createFileSystemWatcher("**/*.{rs,toml}");
-  rustFileWatcher.onDidChange(() => {
-    void addonsWebviewProvider?.refresh();
-  });
-  rustFileWatcher.onDidCreate(() => {
-    void addonsWebviewProvider?.refresh();
-  });
-  rustFileWatcher.onDidDelete(() => {
-    void addonsWebviewProvider?.refresh();
-  });
-  context.subscriptions.push(rustFileWatcher);
-
   context.subscriptions.push(
     vscode.workspace.onDidChangeWorkspaceFolders(() => {
       examplesViewProvider?.refresh();
-      void addonsWebviewProvider?.refresh();
     })
   );
 

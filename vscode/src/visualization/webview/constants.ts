@@ -11,8 +11,6 @@ export const MAX_SYSML_ZOOM = 20;
 export const STRUCTURAL_VIEWS = new Set([
     'general-view',
     'interconnection-view',
-    'software-module-view',
-    'software-dependency-view',
 ]);
 
 export const SYSML_ENABLED_VIEWS = [
@@ -40,11 +38,6 @@ export const PROVISIONAL_STANDARD_VIEWS = new Set<string>([
     'geometry-view',
 ]);
 
-export const SOFTWARE_ENABLED_VIEWS = [
-    'software-module-view',
-    'software-dependency-view',
-] as const;
-
 export const DEFAULT_ENABLED_VIEWS = SYSML_ENABLED_VIEWS;
 
 /** Default release-enabled views. */
@@ -70,8 +63,6 @@ export const STATE_LAYOUT_ICONS: Record<string, string> = {
 export const VIEW_OPTIONS: Record<string, { label: string; shortLabel: string; icon: string }> = {
     'general-view': { label: 'General View', shortLabel: 'General', icon: 'symbol-structure' },
     'interconnection-view': { label: 'Interconnection View', shortLabel: 'Interconnection', icon: 'plug' },
-    'software-module-view': { label: 'Rust Module View', shortLabel: 'Rust Modules', icon: 'symbol-module' },
-    'software-dependency-view': { label: 'Rust Dependency View', shortLabel: 'Rust Dependencies', icon: 'git-pull-request' },
     'action-flow-view': { label: 'Action Flow View', shortLabel: 'Action Flow', icon: 'git-commit' },
     'sequence-view': { label: 'Sequence View', shortLabel: 'Sequence', icon: 'symbol-event' },
     'state-transition-view': { label: 'State Transition View', shortLabel: 'State Transition', icon: 'git-compare' },
@@ -84,8 +75,6 @@ export const VIEW_OPTIONS: Record<string, { label: string; shortLabel: string; i
 export const VIEW_RENDERER_TECH: Record<string, string> = {
     'general-view': 'D3+ELK',
     'interconnection-view': 'D3+ELK',
-    'software-module-view': 'D3+ELK',
-    'software-dependency-view': 'D3+ELK',
     'action-flow-view': 'D3+ELK',
     'sequence-view': 'D3',
     'state-transition-view': 'D3+ELK',
@@ -93,107 +82,6 @@ export const VIEW_RENDERER_TECH: Record<string, string> = {
     'grid-view': 'D3',
     'geometry-view': 'D3',
 };
-
-/** General View type filter categories - def categories first for correct matching. */
-export const GENERAL_VIEW_CATEGORIES = [
-    { id: 'partDefs', label: 'Part defs', keywords: ['part def', 'part definition'], color: '#2D8A6E' },
-    { id: 'parts', label: 'Parts', keywords: ['part'], color: '#2D8A6E' },
-    { id: 'portDefs', label: 'Port defs', keywords: ['port def', 'port definition'], color: '#0E7C7B' },
-    { id: 'ports', label: 'Ports', keywords: ['port'], color: '#0E7C7B' },
-    { id: 'attributeDefs', label: 'Attribute defs', keywords: ['attribute def', 'attribute definition'], color: '#4A9B7F' },
-    { id: 'attributes', label: 'Attributes', keywords: ['attribute'], color: '#4A9B7F' },
-    { id: 'reqDefs', label: 'Requirement defs', keywords: ['requirement def', 'requirement definition'], color: '#5B8FC4' },
-    { id: 'requirements', label: 'Requirements', keywords: ['requirement', 'req'], color: '#5B8FC4' },
-    { id: 'actionDefs', label: 'Action defs', keywords: ['action def', 'action definition'], color: '#D4A02C' },
-    { id: 'actions', label: 'Actions', keywords: ['action'], color: '#D4A02C' },
-    { id: 'stateDefs', label: 'State defs', keywords: ['state def', 'state definition'], color: '#B85C38' },
-    { id: 'states', label: 'States', keywords: ['state'], color: '#B85C38' },
-    { id: 'interfaceDefs', label: 'Interface defs', keywords: ['interface def', 'interface definition'], color: '#7BAA7D' },
-    { id: 'interfaces', label: 'Interfaces', keywords: ['interface'], color: '#7BAA7D' },
-    { id: 'usecaseDefs', label: 'Use case defs', keywords: ['use case def', 'usecase def'], color: '#6B9BD1' },
-    { id: 'usecases', label: 'Use cases', keywords: ['use case', 'usecase'], color: '#6B9BD1' },
-    { id: 'allocationDefs', label: 'Allocation defs', keywords: ['allocation def', 'allocate def'], color: '#9CA3AF' },
-    { id: 'allocations', label: 'Allocations', keywords: ['allocation', 'allocate'], color: '#9CA3AF' },
-    { id: 'constraintDefs', label: 'Constraint defs', keywords: ['constraint def', 'constraint definition'], color: '#E07C5A' },
-    { id: 'constraints', label: 'Constraints', keywords: ['constraint'], color: '#E07C5A' },
-    { id: 'enumerations', label: 'Enumerations', keywords: ['enumeration', 'enum'], color: '#C9A227' },
-    { id: 'metadata', label: 'Metadata', keywords: ['metadata'], color: '#8B7355' },
-    { id: 'occurrences', label: 'Occurrences', keywords: ['occurrence'], color: '#5A9B6E' },
-    { id: 'concerns', label: 'Concerns', keywords: ['concern', 'viewpoint', 'stakeholder', 'frame'], color: '#9CA3AF' },
-    { id: 'items', label: 'Items', keywords: ['item'], color: '#5A9B6E' },
-    { id: 'packages', label: 'Packages', keywords: ['package'], color: '#6B7280' },
-    { id: 'other', label: 'Other', keywords: [] as string[], color: '#808080' },
-] as const;
-
-export const GENERAL_VIEW_CONCERNS = [
-    {
-        id: 'structure',
-        label: 'Structure',
-        categories: ['partDefs', 'parts', 'portDefs', 'ports', 'attributeDefs', 'attributes', 'packages'],
-        color: '#2D8A6E',
-    },
-    {
-        id: 'items',
-        label: 'Items',
-        categories: ['items'],
-        color: '#5A9B6E',
-    },
-    {
-        id: 'requirements',
-        label: 'Requirements',
-        categories: ['reqDefs', 'requirements', 'concerns'],
-        color: '#5B8FC4',
-    },
-    {
-        id: 'behavior',
-        label: 'Behavior',
-        categories: ['actionDefs', 'actions', 'usecaseDefs', 'usecases'],
-        color: '#D4A02C',
-    },
-    {
-        id: 'states',
-        label: 'States',
-        categories: ['stateDefs', 'states'],
-        color: '#B85C38',
-    },
-    {
-        id: 'interfaces',
-        label: 'Interfaces',
-        categories: ['interfaceDefs', 'interfaces'],
-        color: '#7BAA7D',
-    },
-    {
-        id: 'allocations',
-        label: 'Allocations',
-        categories: ['allocationDefs', 'allocations'],
-        color: '#9CA3AF',
-    },
-] as const;
-
-export const GENERAL_VIEW_ALWAYS_ON_CATEGORIES = [
-    'other',
-    'constraintDefs',
-    'constraints',
-    'enumerations',
-    'metadata',
-    'occurrences',
-] as const;
-
-export function getGeneralViewEnabledCategoryIds(enabledConcernIds: Iterable<string>): Set<string> {
-    const concernSet = new Set(enabledConcernIds);
-    const enableFallbackCategories = concernSet.size === GENERAL_VIEW_CONCERNS.length;
-    const enabled = new Set<string>(
-        enableFallbackCategories ? GENERAL_VIEW_ALWAYS_ON_CATEGORIES : []
-    );
-
-    GENERAL_VIEW_CONCERNS.forEach((concern) => {
-        if (concernSet.has(concern.id)) {
-            concern.categories.forEach((categoryId) => enabled.add(categoryId));
-        }
-    });
-
-    return enabled;
-}
 
 /**
  * General View palette - Option C semantic (align with SysML pillars).
@@ -256,9 +144,6 @@ export const GENERAL_VIEW_TYPE_COLORS: Record<string, string> = {
     metadata: '#8B7355',
     'occurrence def': GENERAL_VIEW_PALETTE.structural.item,
     occurrence: GENERAL_VIEW_PALETTE.structural.item,
-    crate: GENERAL_VIEW_PALETTE.structural.part,
-    module: GENERAL_VIEW_PALETTE.structural.interface,
-    externalCrate: GENERAL_VIEW_PALETTE.other.allocation,
     package: '#6B7280',
     default: GENERAL_VIEW_PALETTE.other.default,
 };

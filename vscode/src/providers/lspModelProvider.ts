@@ -8,11 +8,6 @@ import type {
   SysMLElementDTO,
   SysMLModelParams,
   SysMLModelResult,
-  SoftwareVisualizationParams,
-  SoftwareProjectViewParams,
-  SoftwareAnalyzeWorkspaceParams,
-  SoftwareAnalyzeWorkspaceResult,
-  SoftwareVisualizationResult,
   SysMLVisualizationParams,
   SysMLVisualizationResult,
 } from "./sysmlModelTypes";
@@ -536,84 +531,6 @@ export class LspModelProvider {
       );
     } catch (error) {
       logError("getVisualization failed", error);
-      throw error;
-    }
-  }
-
-  async getSoftwareVisualization(
-    workspaceRootUri: string,
-    view: string,
-    token?: vscode.CancellationToken
-  ): Promise<SoftwareVisualizationResult> {
-    const trimmed = (workspaceRootUri || "").trim();
-    if (!trimmed) {
-      throw new Error("getSoftwareVisualization requires a non-empty workspaceRootUri");
-    }
-    await this.whenReady;
-    const params: SoftwareVisualizationParams = {
-      workspaceRootUri: trimmed,
-      view,
-    };
-    try {
-      return await this.client.sendRequest<SoftwareVisualizationResult>(
-        "software/visualization",
-        params,
-        token
-      );
-    } catch (error) {
-      logError("getSoftwareVisualization failed", error);
-      throw error;
-    }
-  }
-
-  async analyzeSoftwareWorkspace(
-    workspaceRootUri: string,
-    token?: vscode.CancellationToken
-  ): Promise<SoftwareAnalyzeWorkspaceResult> {
-    const trimmed = (workspaceRootUri || "").trim();
-    if (!trimmed) {
-      throw new Error("analyzeSoftwareWorkspace requires a non-empty workspaceRootUri");
-    }
-    await this.whenReady;
-    const params: SoftwareAnalyzeWorkspaceParams = {
-      workspaceRootUri: trimmed,
-    };
-    try {
-      return await this.client.sendRequest<SoftwareAnalyzeWorkspaceResult>(
-        "software/analyzeWorkspace",
-        params,
-        token
-      );
-    } catch (error) {
-      logError("analyzeSoftwareWorkspace failed", error);
-      throw error;
-    }
-  }
-
-  async projectSoftwareView(
-    workspaceRootUri: string,
-    view: string,
-    workspaceModel: SoftwareAnalyzeWorkspaceResult["workspaceModel"],
-    token?: vscode.CancellationToken
-  ): Promise<SoftwareVisualizationResult> {
-    const trimmed = (workspaceRootUri || "").trim();
-    if (!trimmed) {
-      throw new Error("projectSoftwareView requires a non-empty workspaceRootUri");
-    }
-    await this.whenReady;
-    const params: SoftwareProjectViewParams = {
-      workspaceRootUri: trimmed,
-      view,
-      workspaceModel,
-    };
-    try {
-      return await this.client.sendRequest<SoftwareVisualizationResult>(
-        "software/projectView",
-        params,
-        token
-      );
-    } catch (error) {
-      logError("projectSoftwareView failed", error);
       throw error;
     }
   }

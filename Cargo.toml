@@ -3,7 +3,6 @@ resolver = "2"
 members = [
   "crates/diagram_core",
   "crates/kernel",
-  "crates/software-architecture",
   "crates/server",
   "crates/semantic_core",
   "crates/sysml_semantic_tokens",

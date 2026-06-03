@@ -39,53 +39,6 @@ export interface SysMLGraphDTO {
   edges: GraphEdgeDTO[];
 }
 
-export interface SourceAnchorDTO {
-  filePath: string;
-  range?: RangeDTO;
-}
-
-export interface SoftwareComponentDTO {
-  id: string;
-  name: string;
-  kind: string;
-  parentId?: string;
-  crateName: string;
-  modulePath: string;
-  anchors: SourceAnchorDTO[];
-  isExternal: boolean;
-}
-
-export interface SoftwareDependencyDTO {
-  from: string;
-  to: string;
-  kind: string;
-  sourceAnchor?: SourceAnchorDTO;
-}
-
-export interface SoftwareArchitectureModelDTO {
-  components: SoftwareComponentDTO[];
-  dependencies: SoftwareDependencyDTO[];
-}
-
-export interface SoftwareAnalysisSummaryDTO {
-  crateCount: number;
-  moduleCount: number;
-  dependencyCount: number;
-}
-
-export interface SoftwareWorkspaceModelDTO {
-  workspaceRoot: string;
-  architecture: SoftwareArchitectureModelDTO;
-  summary: SoftwareAnalysisSummaryDTO;
-}
-
-export interface SoftwareVisualizationViewCandidateDTO {
-  id: string;
-  name: string;
-  supported: boolean;
-  description?: string;
-}
-
 export interface SysMLElementDTO {
   id?: string;
   type: string;
@@ -196,7 +149,6 @@ export interface IbdDataDTO {
 export interface SysMLModelResult {
   version: number;
   graph?: SysMLGraphDTO;
-  softwareArchitecture?: SoftwareArchitectureModelDTO;
   generalViewGraph?: SysMLGraphDTO;
   workspaceModel?: WorkspaceModelDTO;
   activityDiagrams?: ActivityDiagramDTO[];
@@ -220,21 +172,6 @@ export interface SysMLVisualizationParams {
   selectedView?: string;
 }
 
-export interface SoftwareVisualizationParams {
-  workspaceRootUri: string;
-  view: string;
-}
-
-export interface SoftwareAnalyzeWorkspaceParams {
-  workspaceRootUri: string;
-}
-
-export interface SoftwareProjectViewParams {
-  workspaceRootUri: string;
-  view: string;
-  workspaceModel: SoftwareWorkspaceModelDTO;
-}
-
 export interface SysMLVisualizationResult {
   version: number;
   modelReady?: boolean;
@@ -245,30 +182,12 @@ export interface SysMLVisualizationResult {
   selectedViewName?: string;
   emptyStateMessage?: string;
   graph?: SysMLGraphDTO;
-  softwareArchitecture?: SoftwareArchitectureModelDTO;
   generalViewGraph?: SysMLGraphDTO;
   workspaceModel?: WorkspaceModelDTO;
   activityDiagrams?: ActivityDiagramDTO[];
   sequenceDiagrams?: SequenceDiagramDTO[];
   ibd?: IbdDataDTO;
   stats?: SysMLModelStatsDTO;
-}
-
-export interface SoftwareVisualizationResult {
-  version: number;
-  view: string;
-  workspaceRootUri: string;
-  views: SoftwareVisualizationViewCandidateDTO[];
-  emptyStateMessage?: string;
-  graph: SysMLGraphDTO;
-  softwareArchitecture: SoftwareArchitectureModelDTO;
-  workspaceModel: WorkspaceModelDTO;
-  stats: SysMLModelStatsDTO;
-}
-
-export interface SoftwareAnalyzeWorkspaceResult {
-  version: number;
-  workspaceModel: SoftwareWorkspaceModelDTO;
 }
 
 // ---------------------------------------------------------------------------

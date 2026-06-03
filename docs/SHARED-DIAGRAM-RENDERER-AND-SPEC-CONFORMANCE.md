@@ -17,7 +17,6 @@ Related docs:
 | Layer | Scope |
 |-------|-------|
 | Shared renderer | All `SYSML_ENABLED_VIEWS`: general, interconnection, action-flow, state-transition, sequence, browser, grid, geometry |
-| Extension renderer | `software-module-view` and `software-dependency-view` only; these are Spec42 extension views, not SysML v2 standard views |
 | SysML v2 spec target | Strict standard-view ambition for shipped views, with Browser/Grid/Geometry marked provisional while upstream graphical details settle |
 
 The removed `spec42.visualization.useSharedRenderer` setting must not be reintroduced. New SysML notation belongs in `shared/diagram-renderer`, not in VS Code host-specific renderer branches.
@@ -35,11 +34,10 @@ The removed `spec42.visualization.useSharedRenderer` setting must not be reintro
 | `grid-view` | Grid View | `views/standard-views.ts` | Provisional standard-view renderer |
 | `geometry-view` / `geometric-view` | Geometry View | `views/standard-views.ts` | Provisional standard-view renderer |
 | Case-style filtered views | Filtered standard views | mapped to `general-view` | Mapped |
-| `software-module-view`, `software-dependency-view` | Spec42 extension views | `generalView.ts` extension path | Not SysML standard |
 
 ## Routing
 
-`vscode/src/visualization/webview/orchestrator.ts` routes every view in `SYSML_ENABLED_VIEWS` to `renderSharedView()`. Software extension views keep the existing general-style renderer path. There is no SysML legacy fallback.
+`vscode/src/visualization/webview/orchestrator.ts` routes every view in `SYSML_ENABLED_VIEWS` to `renderSharedView()`. There is no SysML legacy fallback.
 
 Visualization payloads are built by `semantic_core` and normalized in `shared/diagram-renderer/src/prepare.ts`:
 
@@ -88,9 +86,8 @@ Manual acceptance:
 ## Guardrails
 
 1. Keep all SysML rendering in `shared/diagram-renderer`.
-2. Keep software extension views outside `SYSML_ENABLED_VIEWS`.
-3. Do not claim full OMG graphical conformance until provisional views and deferred notation are closed.
-4. Rebuild the webview bundle after shared renderer or webview TypeScript changes:
+2. Do not claim full OMG graphical conformance until provisional views and deferred notation are closed.
+3. Rebuild the webview bundle after shared renderer or webview TypeScript changes:
 
 ```bash
 cd vscode && npm run build:webview

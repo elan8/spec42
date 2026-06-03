@@ -9,7 +9,6 @@ Spec42 is a Rust workspace plus a VS Code extension.
 - `crates/server` (`spec42`) owns the CLI, LSP binary, MCP binary, environment resolution, and standard-library materialization.
 - `crates/kernel` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP handlers, validation wiring, DTO assembly, and host adapters.
 - `crates/semantic_core` owns reusable semantic logic: graph construction, cross-document linking, resolution, evaluation, diagnostics, and graph-first visualization helpers.
-- `crates/software-architecture` owns the optional software-architecture analysis/RPC provider.
 - `vscode` owns the VS Code client, webviews, tests, packaging, and bundled asset staging.
 
 Keep reusable semantic/model behavior in `semantic_core`; keep protocol, filesystem runtime, and editor behavior in `kernel` or the host crate that owns it.

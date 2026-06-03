@@ -12,8 +12,7 @@ Deleted from `vscode/src/visualization/webview/renderers/`:
 | `activity.ts` | Action flow | `shared/diagram-renderer/views/action-flow.ts` |
 | `state.ts` | State transition | `shared/diagram-renderer/views/state-transition.ts` |
 | `sequence.ts` | Sequence | `shared/diagram-renderer/views/sequence.ts` |
-
-`generalView.ts` remains only for Spec42 extension views: `software-module-view` and `software-dependency-view`. It is not a SysML fallback.
+| `generalView.ts` | Rust software extension views | Removed with Software Architecture add-on |
 
 ## Product behavior
 
@@ -26,5 +25,4 @@ Deleted from `vscode/src/visualization/webview/renderers/`:
 
 1. Do not reintroduce SysML renderer branches under `vscode/src/visualization/webview/renderers/`.
 2. Keep notation rules in `shared/diagram-renderer`.
-3. Keep software-specific visualizations outside `SYSML_ENABLED_VIEWS`.
-4. Add shared renderer Vitest coverage for every new SysML notation rule.
+3. Add shared renderer Vitest coverage for every new SysML notation rule.

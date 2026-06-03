@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- **Software Architecture add-on** - Removed the experimental Rust workspace analyzer (`software-architecture` crate), `software/*` LSP RPCs, dedicated software visualizer views (`software-module-view`, `software-dependency-view`), legacy `generalView.ts` / `graphBuilders.ts` extension renderer path, and the Spec42 Add-ons sidebar UI with related settings and commands.
+
 ### Added
 
 - **Import/namespace regression coverage** - Added semantic-core tests for recursive namespace import (`::**`) so nested members remain resolvable in cross-document typing and ref scenarios.

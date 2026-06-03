@@ -31,9 +31,7 @@ import {
     ORIENTATION_LABELS,
     STATE_LAYOUT_LABELS,
     STATE_LAYOUT_ICONS,
-    VIEW_OPTIONS,
-    GENERAL_VIEW_PALETTE,
-    GENERAL_VIEW_CATEGORIES
+    VIEW_OPTIONS
 } from './constants';
 import { DIAGRAM_STYLE } from './styleTokens';
 import {
@@ -50,10 +48,8 @@ import {
     getLibraryKind,
     slugify
 } from './helpers';
-import { renderGeneralViewD3 } from './renderers/generalView';
 import { createExportHandler } from './export';
 import { postJumpToElement } from './jumpToElement';
-import { buildGeneralViewGraph } from './graphBuilders';
 import { RenderScheduler } from './renderScheduler';
 import { setupVisualizerControls } from './uiControls';
 import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './sharedRendererAdapter';
@@ -184,7 +180,7 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
         const legendBtn = document.getElementById('legend-btn');
         const legendPopup = document.getElementById('legend-popup');
         if (legendBtn) {
-            const cytoscapeViews = ['general', 'general-view', 'software-module-view', 'software-dependency-view'];
+            const cytoscapeViews = ['general', 'general-view'];
             legendBtn.style.display = cytoscapeViews.includes(view) ? 'inline-block' : 'none';
             // Hide popup when switching away from cytoscape views
             if (!cytoscapeViews.includes(view) && legendPopup) {
@@ -920,17 +916,6 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
         d3.selectAll('.hierarchy-cell').style('opacity', null);
     }
 
-    function renderGeneralChips(_typeStats = {}) {
-        // General View filtering is defined in SysML view code, not in the webview UI.
-    }
-
-    function buildGeneralViewGraphForView(dataOrElements, relationships = []) {
-        return buildGeneralViewGraph(dataOrElements, relationships, {
-            enabledGeneralCategories: new Set(GENERAL_VIEW_CATEGORIES.map((category) => category.id)),
-            webviewLog
-        });
-    }
-
     function highlightElementInVisualization(elementName, skipCentering = false) {
         // Remove any existing highlights without refreshing
         clearVisualHighlights();
@@ -947,7 +932,7 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
                     elementData = d.data;
                 }
             });
-        } else if (['general-view', 'software-module-view', 'software-dependency-view'].includes(currentView)) {
+        } else if (currentView === 'general-view') {
             // In General View (Cytoscape), find nodes by data-element-name attribute
             d3.selectAll('.general-node').each(function() {
                 const node = d3.select(this);
@@ -1442,7 +1427,7 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
         // Apply package filter for views that support it (excluding elk which handles it internally).
         // Use selected diagram NAME (not index) so filtering remains stable even if package order
         const hasSpecificPackageSelection = !!selectedDiagramName && selectedDiagramName !== 'All Packages';
-        if (view === 'general-view' || view === 'software-module-view' || view === 'software-dependency-view') {
+        if (view === 'general-view') {
             webviewLog('info', '[GENERAL][render-start]', {
                 selectedDiagramName,
                 selectedDiagramIndex,
@@ -1659,31 +1644,6 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
             }, 100);
             lastView = view;
             return;
-        } else if (view === 'software-module-view' || view === 'software-dependency-view') {
-            const ctx = {
-                ...buildRenderContext(width, height),
-                buildGeneralViewGraph: (data: any) => buildGeneralViewGraphForView(data),
-                renderGeneralChips,
-                elkWorkerUrl,
-            };
-            await renderGeneralViewD3(ctx as any, dataToRender);
-            if (isStaleRender()) {
-                finishRender();
-                return;
-            }
-            setTimeout(() => {
-                if (isStaleRender()) {
-                    finishRender();
-                    return;
-                }
-                if (shouldPreserveZoom) {
-                    restoreZoom();
-                } else {
-                    zoomToFit('auto');
-                }
-                updateDimensionsDisplay();
-                finishRender();
-            }, 100);
         } else {
             renderPlaceholderView(width, height, 'Unknown View', 'The selected view is not yet implemented.', dataToRender);
             setTimeout(() => {

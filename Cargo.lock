@@ -1124,18 +1124,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "regex"
-version = "1.12.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e10754a14b9137dd7b1e3e5b0493cc9171fdd105e0ab477f51b72e7f3ac0e276"
-dependencies = [
- "aho-corasick",
- "memchr",
- "regex-automata",
- "regex-syntax",
-]
-
-[[package]]
 name = "regex-automata"
 version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1399,22 +1387,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "software-architecture"
-version = "0.25.0"
-dependencies = [
- "glob",
- "kernel",
- "serde",
- "serde_json",
- "tempfile",
- "toml",
- "tower-lsp",
- "tree-sitter",
- "tree-sitter-rust",
- "walkdir",
-]
-
-[[package]]
 name = "spec42"
 version = "0.25.0"
 dependencies = [
@@ -1426,7 +1398,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "software-architecture",
  "sysml-v2-parser",
  "tempfile",
  "tokio",
@@ -1760,26 +1731,6 @@ dependencies = [
  "tracing",
  "tracing-core",
  "tracing-log",
-]
-
-[[package]]
-name = "tree-sitter"
-version = "0.20.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e747b1f9b7b931ed39a548c1fae149101497de3c1fc8d9e18c62c1a66c683d3d"
-dependencies = [
- "cc",
- "regex",
-]
-
-[[package]]
-name = "tree-sitter-rust"
-version = "0.20.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b0832309b0b2b6d33760ce5c0e818cb47e1d72b468516bfe4134408926fa7594"
-dependencies = [
- "cc",
- "tree-sitter",
 ]
 
 [[package]]

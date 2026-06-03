@@ -122,7 +122,7 @@ function normalizeUnitBrackets(text: string): string {
 }
 
 /**
- * Collect compartments from general-view element (from buildGeneralViewGraph).
+ * Collect compartments from general-view element graph nodes.
  */
 export function collectCompartmentsFromElement(element: any): SysMLNodeCompartments {
     const headerName = (element?.name ?? element?.elementName ?? element?.label ?? 'Unnamed').toString();

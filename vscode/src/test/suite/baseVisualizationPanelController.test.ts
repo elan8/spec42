@@ -12,7 +12,7 @@ function createMockPanel() {
   const disposeHandlers: Array<() => void> = [];
   const viewStateHandlers: Array<() => void> = [];
   const panel = {
-    title: "Software Architecture Visualizer",
+    title: "SysML Visualizer",
     visible: true,
     viewColumn: vscode.ViewColumn.One,
     webview: {
@@ -47,18 +47,18 @@ describe("BaseVisualizationPanelController", () => {
     const workspaceStateUpdates: Array<{ key: string; value: unknown }> = [];
     const runtimeState: VisualizationPanelRuntimeState = {
       workspaceRootUri: "file:///workspace",
-      currentView: "software-module-view",
-      selectedView: "software-module-view",
+      currentView: "general-view",
+      selectedView: "general-view",
       document: undefined,
       lspModelProvider: {} as never,
     };
     const config: VisualizationPanelVariantConfig<BaseVisualizerRestoreState> = {
-      panelTypeId: "spec42SoftwareVisualizer",
-      restoreStateKey: "softwareVisualizerRestoreState",
-      defaultTitle: "Software Architecture Visualizer",
-      enabledViews: ["software-module-view", "software-dependency-view"],
-      defaultView: "software-module-view",
-      loadingMessage: "Loading software visualization...",
+      panelTypeId: "sysmlVisualizer",
+      restoreStateKey: "visualizerRestoreState",
+      defaultTitle: "SysML Visualizer",
+      enabledViews: ["general-view", "interconnection-view"],
+      defaultView: "general-view",
+      loadingMessage: "Loading SysML visualization...",
       getRuntimeState: () => runtimeState,
       updateCurrentView: (view) => {
         runtimeState.currentView = view;
@@ -89,7 +89,7 @@ describe("BaseVisualizationPanelController", () => {
           workspaceRootUri: state.workspaceRootUri,
           currentView: state.currentView,
         }),
-      shouldTrackUri: (uri) => uri.fsPath.toLowerCase().startsWith("c:\\workspace"),
+      shouldTrackUri: (uri) => uri.fsPath.toLowerCase().endsWith(".sysml"),
     };
 
     const controller = new BaseVisualizationPanelController(
@@ -108,15 +108,15 @@ describe("BaseVisualizationPanelController", () => {
     await controller.updateVisualization(true, "webviewReady");
     assert.strictEqual(fetchCount, 1);
 
-    await controller.notifyTrackedUriChanged(vscode.Uri.file("C:\\workspace\\src\\lib.rs"));
-    await controller.notifyTrackedUriChanged(vscode.Uri.file("C:\\workspace\\src\\main.rs"));
+    await controller.notifyTrackedUriChanged(vscode.Uri.file("C:\\workspace\\model.sysml"));
+    await controller.notifyTrackedUriChanged(vscode.Uri.file("C:\\workspace\\parts.sysml"));
     await new Promise((resolve) => setTimeout(resolve, 500));
     assert.strictEqual(fetchCount, 2);
 
     controller.dispose();
 
     assert.ok(messages.some((message) => (message as { command?: string }).command === "requestCurrentView"));
-    assert.ok(workspaceStateUpdates.some((entry) => entry.key === "softwareVisualizerRestoreState" && entry.value !== undefined));
-    assert.ok(workspaceStateUpdates.some((entry) => entry.key === "softwareVisualizerRestoreState" && entry.value === undefined));
+    assert.ok(workspaceStateUpdates.some((entry) => entry.key === "visualizerRestoreState" && entry.value !== undefined));
+    assert.ok(workspaceStateUpdates.some((entry) => entry.key === "visualizerRestoreState" && entry.value === undefined));
   });
 });

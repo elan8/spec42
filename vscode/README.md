@@ -80,7 +80,7 @@ Useful commands:
   - Scale factor used for PNG/SVG export.
   - Default: `2`
 
-All SysML visualizer views use the shared diagram renderer (`shared/diagram-renderer`). Legacy SysML renderer fallback has been removed; software extension views remain separate.
+All SysML visualizer views use the shared diagram renderer (`shared/diagram-renderer`). Legacy SysML renderer fallback has been removed.
 
 **Developers:** after changing `shared/diagram-renderer` or webview TypeScript, rebuild the visualizer bundle:
 

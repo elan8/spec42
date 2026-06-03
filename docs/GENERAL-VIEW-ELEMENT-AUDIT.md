@@ -50,5 +50,5 @@ Multi-package general graphs: `prepareGraph` builds `meta.packageContainerGroups
 
 ## Legacy-only (not general-view renderer)
 
-- Type filter chips (`generalView.ts` UI)
+- Type filter chips (retired with legacy General View webview renderer)
 - Cytoscape fallback layout
