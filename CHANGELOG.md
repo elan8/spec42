@@ -7,36 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.26.0] - 2026-06-03
+
 ### Removed
 
 - **Software Architecture add-on** - Removed the experimental Rust workspace analyzer (`software-architecture` crate), `software/*` LSP RPCs, dedicated software visualizer views (`software-module-view`, `software-dependency-view`), legacy `generalView.ts` / `graphBuilders.ts` extension renderer path, and the Spec42 Add-ons sidebar UI with related settings and commands.
 
 ### Added
 
+- **Workspace import graph** - [`workspace/import_graph.rs`](crates/kernel/src/workspace/import_graph.rs) detects workspace files that import a changed package so `didChange` can republish importer diagnostics immediately (debounced full-workspace republish remains as a backstop).
 - **Import/namespace regression coverage** - Added semantic-core tests for recursive namespace import (`::**`) so nested members remain resolvable in cross-document typing and ref scenarios.
 - **Import and ref test matrix** - Extended tests for membership imports (`import Pkg::*`), qualified package declarations, part-def/part-usage ref parity, and multi-file `perform_check` workspaces.
 - **Nested port semantics tests** - Integration tests for nested port bodies in port definitions and part usages.
 - **CLI check workspace-root smoke coverage** - Added server smoke coverage that validates `perform_check` behavior with an explicit `workspace_root`, matching common `spec42 check` workspace invocations.
+- **Semantic index ready notification** - LSP clients receive `spec42/semanticIndexReady` after workspace indexing so startup diagnostics filtering and Model Explorer can align with graph readiness.
 - **Docs** - [AST-SEMANTIC-COVERAGE.md](docs/AST-SEMANTIC-COVERAGE.md) prioritization matrix and [LEGACY-RENDERER-SUNSET.md](docs/LEGACY-RENDERER-SUNSET.md) removal plan for legacy webview renderers.
 
 ### Changed
 
+- **Parser dependency** - Bumped `sysml-v2-parser` to **0.16.0** on [crates.io](https://crates.io/crates/sysml-v2-parser) (no local path / git pin required for CI). Brings requirement-body `actor` declarations, `enum` usages in part bodies, diagnostic taxonomy and cascade suppression, and fewer false positives on spec-aligned models (see parser `CHANGELOG.md`).
+- **Graph builder for parser 0.16.0** - Handles `RequirementActorDecl` in requirement bodies and `EnumerationUsage` in part def/usage bodies; drops kernel priority for removed `missing_statement_separator_between_members` parse code.
 - **Examples sidebar** - Lists example workspaces from a single canonical `examples/` root (repository submodule) instead of scanning both `vscode/examples` and `../examples`; hides dot-prefixed folders such as `.github`.
 - **Workspace-first extension behavior** - Default workspace indexing is `background`; Model Explorer shows indexing status until the workspace model is ready and no longer falls back to the active file tree when a workspace folder is open. Status bar and **Validate Model** summarize diagnostics across workspace SysML/KerML files. `sysml/model` graph requests from the extension use `workspaceVisualization` when a workspace is open.
-- **Cross-file diagnostic refresh** - The language server debounces and republishes workspace diagnostics after `didOpen` / `didChange` so peer files update when shared semantics change.
+- **Cross-file diagnostic refresh** - After `didChange`, importer files are republished in the same handler once the semantic graph is updated; a debounced workspace pass still runs after idle typing.
+- **Untyped part usage severity** - `untyped_part_usage` is **Information** (was Warning) to match SysML typing optionalities on usages.
+- **Analysis diagnostics on requirements** - Requirement definitions are no longer skipped for analysis status collection (only `constraint def` / `calc def` remain excluded).
 - **Nested port bodies in semantic graph** - Port usage bodies (`PortBody::Brace`) are now walked in the graph builder (port def, part def, and part usage paths) so nested ports appear in the workspace graph and views.
 - **Semantic tokens for ports** - Token range collection recurses nested port bodies and includes `InOutDecl` members in port definitions.
 - **Shared renderer default alignment** - Webview `htmlBuilder` fallback for `useSharedRenderer` matches `package.json` default (`true`).
-- **Parser dependency upgrade** - Bumped `sysml-v2-parser` to git tag `v0.15.0` (`https://github.com/elan8/sysml-v2-parser`). Structured port/attribute/definition brace bodies and recovery `Error` members; port-def graph building ignores parse-recovery nodes.
 - **Ref assignment graph parity** - `ref` assignments inside `part def` bodies now emit `reference` edges the same way as `part usage` bodies, reducing reliance on identifier-only fallbacks in downstream models.
 - **Type disambiguation for view symbols** - Import/type resolution now includes view/viewpoint suffix disambiguation paths, improving nested namespace resolution for viewpoint conformance and view typing.
+- **Release surface alignment** - Rust workspace, `spec42` server, VS Code extension, and Zed extension versions aligned at `0.26.0`.
 
 ### Fixed
 
+- **Flaky cross-file diagnostic integration test** - `did_change_republishs_peer_diagnostics_after_debounce` now waits for the latest peer `publishDiagnostics` instead of racing debounce timing against `hover`.
 - **Standard SysML view types in examples** - Spec42 standard view types (`InterconnectionView`, `SequenceView`, `StateTransitionView`, `ActionFlowView`, and related) are recognized for type diagnostics like `GeneralView`, so `examples/webshop/Views.sysml` no longer reports spurious `unresolved_type_reference` warnings.
 - **Cross-file allocate/satisfy endpoints** - Imported simple names such as `CheckoutService` in `allocate CheckoutService to CommerceCluster` resolve workspace-wide, so `unresolved_allocate_source` is no longer reported when the target exists in another file.
 - **Model Explorer diagnostic nodes** - Internal builder diagnostic nodes (for example `unresolved_allocate_source`) are excluded from workspace/document graph payloads and tree building, so they no longer appear as spurious children in Model Explorer.
 - **Allocate/satisfy diagnostic clarity** - Relationship endpoint diagnostics now explain when a name resolves to a type definition instead of a usage (`allocate_endpoint_prefers_usage`, `satisfy_endpoint_prefers_usage`), suggest concrete usage paths, and hint at case-mismatched part usages when applicable.
+- **Part connection and port compatibility diagnostics** - Clearer semantic messages for allocation typing and homonymous port definitions.
 
 ## [0.25.0] - 2026-06-02
 
@@ -450,6 +460,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.26.0]: https://github.com/elan8/spec42/releases/tag/v0.26.0
 [0.25.0]: https://github.com/elan8/spec42/releases/tag/v0.25.0
 [0.24.0]: https://github.com/elan8/spec42/releases/tag/v0.24.0
 [0.23.0]: https://github.com/elan8/spec42/releases/tag/v0.23.0
