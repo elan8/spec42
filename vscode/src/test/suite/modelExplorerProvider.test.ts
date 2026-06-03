@@ -260,6 +260,24 @@ describe("ModelExplorerProvider", () => {
     assert.ok(provider.isWorkspaceBacked());
   });
 
+  it("does not show document tree while workspace indexing is pending", async () => {
+    const provider = new ModelExplorerProvider({
+      getModel: async () => createModelResult("ShouldNotLoad"),
+    } as any);
+    provider.setWorkspaceLoadStatus({
+      state: "pending",
+      scannedFiles: 0,
+      loadedFiles: 0,
+      cancelled: false,
+      failures: 0,
+      truncated: false,
+    });
+
+    const items = await provider.getChildren();
+    assert.ok(items.every((item) => item.label !== "ShouldNotLoad"));
+    assert.strictEqual(items[0]?.label, "Workspace indexing scheduled");
+  });
+
   it("hides workspace status info after indexing completes successfully", async () => {
     const provider = new ModelExplorerProvider({
       getModel: async () => createModelResult("WorkspaceRoot"),

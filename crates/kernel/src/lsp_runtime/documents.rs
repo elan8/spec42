@@ -1,5 +1,6 @@
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use tokio::sync::RwLock;
 use tower_lsp::lsp_types::*;
@@ -18,6 +19,34 @@ use crate::workspace::{
 use super::capabilities::server_capabilities;
 use super::diagnostics::{publish_document_diagnostics, publish_workspace_diagnostics};
 use super::lifecycle::{scan_roots, workspace_roots_from_initialize};
+
+static WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN: AtomicU64 = AtomicU64::new(0);
+const WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS: u64 = 450;
+
+fn schedule_workspace_diagnostics_republish(
+    client: &Client,
+    state: &Arc<RwLock<ServerState>>,
+    config: &Arc<Spec42Config>,
+) {
+    let generation = WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN.fetch_add(1, Ordering::SeqCst) + 1;
+    let client = client.clone();
+    let state = Arc::clone(state);
+    let config = Arc::clone(config);
+    tokio::spawn(async move {
+        tokio::time::sleep(Duration::from_millis(WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS)).await;
+        if WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN.load(Ordering::SeqCst) != generation {
+            return;
+        }
+        let lifecycle = {
+            let locked = state.read().await;
+            locked.semantic_lifecycle
+        };
+        if !lifecycle.supports_semantic_queries() {
+            return;
+        }
+        publish_workspace_diagnostics(&client, &state, &config, None).await;
+    });
+}
 
 async fn log_perf(client: &Client, enabled: bool, event: &str, fields: Vec<(&str, String)>) {
     if !enabled {
@@ -415,6 +444,7 @@ pub(crate) async fn did_open(
         client.log_message(MessageType::WARNING, message).await;
     }
     publish_document_diagnostics(client, state, config, uri, &text).await;
+    schedule_workspace_diagnostics_republish(client, state, config);
 }
 
 pub(crate) async fn did_change(
@@ -468,6 +498,7 @@ pub(crate) async fn did_change(
         ],
     )
     .await;
+    schedule_workspace_diagnostics_republish(client, state, config);
 }
 
 pub(crate) async fn did_close(client: &Client, params: DidCloseTextDocumentParams) {

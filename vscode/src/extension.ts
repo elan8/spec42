@@ -13,7 +13,11 @@ import {
   State,
   TransportKind,
 } from "vscode-languageclient/node";
-import { LspModelProvider } from "./providers/lspModelProvider";
+import {
+  graphScopesForContext,
+  hasWorkspaceFolder,
+  LspModelProvider,
+} from "./providers/lspModelProvider";
 import {
   ModelExplorerProvider,
   ModelTreeItem,
@@ -31,6 +35,10 @@ import {
 import { setVisualizationGateState } from "./visualization/visualizationGate";
 import { SYSML_ENABLED_VIEWS } from "./visualization/webview/constants";
 import { getWebviewHtml } from "./visualization/htmlBuilder";
+import {
+  summarizeActiveFileSysmlDiagnostics,
+  summarizeWorkspaceSysmlDiagnostics,
+} from "./diagnostics/workspaceDiagnostics";
 const CONFIG_SECTION = "spec42";
 const LEGACY_CONFIG_SECTION = "sysml-language-server";
 const EXTENSION_ID = "Elan8.spec42";
@@ -445,6 +453,15 @@ function ensureStatusItem(context: vscode.ExtensionContext): vscode.StatusBarIte
   return statusItem;
 }
 
+function getResolvedLibraryPaths(): string[] {
+  const libraryPathsRaw = getConfigStringArray("libraryPaths") ?? [];
+  const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "";
+  const customLibraryPaths = libraryPathsRaw.map((p) =>
+    path.isAbsolute(p) ? p : path.resolve(workspaceRoot, p)
+  );
+  return customLibraryPaths.filter((value, index, all) => all.indexOf(value) === index);
+}
+
 function updateStatusBar(context: vscode.ExtensionContext): void {
   const enabled = getConfigBoolean("statusBar.enabled", true);
   if (!enabled) {
@@ -455,19 +472,23 @@ function updateStatusBar(context: vscode.ExtensionContext): void {
   const editor = vscode.window.activeTextEditor;
   const doc = editor?.document;
   const showHealthWithoutDoc = serverHealthState !== "ready";
-  if ((!doc || !isSysmlDoc(doc)) && !showHealthWithoutDoc) {
+  const useWorkspaceDiagnostics =
+    hasWorkspaceFolder() && serverHealthState === "ready";
+  if ((!doc || !isSysmlDoc(doc)) && !showHealthWithoutDoc && !useWorkspaceDiagnostics) {
     statusItem?.hide();
     return;
   }
 
   const item = ensureStatusItem(context);
-  const diags = doc && isSysmlDoc(doc) ? vscode.languages.getDiagnostics(doc.uri) : [];
-  const errors = diags.filter(
-    (d) => d.severity === vscode.DiagnosticSeverity.Error
-  ).length;
-  const warnings = diags.filter(
-    (d) => d.severity === vscode.DiagnosticSeverity.Warning
-  ).length;
+  const workspaceSummary = useWorkspaceDiagnostics
+    ? summarizeWorkspaceSysmlDiagnostics({
+        libraryRootPaths: getResolvedLibraryPaths(),
+      })
+    : undefined;
+  const activeSummary =
+    doc && isSysmlDoc(doc) ? summarizeActiveFileSysmlDiagnostics(doc) : undefined;
+  const errors = workspaceSummary?.errors ?? activeSummary?.errors ?? 0;
+  const warnings = workspaceSummary?.warnings ?? activeSummary?.warnings ?? 0;
   const healthText =
     serverHealthState === "starting"
       ? "$(sync~spin) SysML: Starting"
@@ -485,9 +506,22 @@ function updateStatusBar(context: vscode.ExtensionContext): void {
     return `${icon} SysML: ${errors}E ${warnings}W`;
   })();
   item.text = healthText ?? diagnosticsText;
+  const workspaceDiagTooltip = workspaceSummary
+    ? `${workspaceSummary.errors} error(s), ${workspaceSummary.warnings} warning(s) across ${workspaceSummary.totalFiles} workspace file(s) (${workspaceSummary.filesWithIssues} with issues)`
+    : undefined;
+  const activeDiagTooltip =
+    activeSummary && doc && isSysmlDoc(doc)
+      ? `Active file: ${activeSummary.errors} error(s), ${activeSummary.warnings} warning(s)`
+      : undefined;
   const baseTooltip = healthText
     ? `Server state: ${serverHealthState}${serverHealthDetail ? `\n${serverHealthDetail}` : ""}`
-    : `${errors} error(s), ${warnings} warning(s)\nClick to open Problems panel.`;
+    : [
+        workspaceDiagTooltip,
+        activeDiagTooltip,
+        "Click to open Problems panel.",
+      ]
+        .filter(Boolean)
+        .join("\n");
   const workspaceTooltip = lastWorkspaceIndexSummary
     ? `\n\nWorkspace indexing:\nScanned ${lastWorkspaceIndexSummary.scannedFiles} file(s)\nLoaded ${lastWorkspaceIndexSummary.loadedFiles} file(s)${(lastWorkspaceIndexSummary.failures ?? 0) > 0 ? `\nFailures: ${lastWorkspaceIndexSummary.failures}` : ""}${lastWorkspaceIndexSummary.truncated ? "\nResults may be incomplete." : ""}${lastWorkspaceIndexSummary.cancelled ? "\nLast scan was cancelled." : ""}`
     : "";
@@ -795,6 +829,9 @@ export function activate(context: vscode.ExtensionContext): void {
     reason: string,
     doc?: vscode.TextDocument
   ): void {
+    if (hasWorkspaceFolder()) {
+      return;
+    }
     const targetDoc = activeSysmlDocument(doc);
     if (
       !languageClientReady ||
@@ -1015,7 +1052,7 @@ export function activate(context: vscode.ExtensionContext): void {
         try {
           const result = await lspModelProvider.getModel(
             doc.uri.toString(),
-            ["graph"],
+            graphScopesForContext(),
             undefined,
             "selectionSync:diagram"
           );
@@ -1310,21 +1347,25 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.validateModel", async () => {
+      if (hasWorkspaceFolder()) {
+        const summary = summarizeWorkspaceSysmlDiagnostics({
+          libraryRootPaths: getResolvedLibraryPaths(),
+        });
+        vscode.window.showInformationMessage(
+          `Validation (workspace): ${summary.errors} error(s), ${summary.warnings} warning(s) across ${summary.totalFiles} file(s).`
+        );
+        await vscode.commands.executeCommand("workbench.actions.view.problems");
+        return;
+      }
       const editor = vscode.window.activeTextEditor;
       const doc = editor?.document;
       if (!doc || !isSysmlDoc(doc)) {
         vscode.window.showWarningMessage("No SysML/KerML document is active.");
         return;
       }
-      const diags = vscode.languages.getDiagnostics(doc.uri);
-      const errors = diags.filter(
-        (d) => d.severity === vscode.DiagnosticSeverity.Error
-      ).length;
-      const warnings = diags.filter(
-        (d) => d.severity === vscode.DiagnosticSeverity.Warning
-      ).length;
+      const summary = summarizeActiveFileSysmlDiagnostics(doc);
       vscode.window.showInformationMessage(
-        `Validation: ${errors} error(s), ${warnings} warning(s).`
+        `Validation: ${summary.errors} error(s), ${summary.warnings} warning(s).`
       );
       await vscode.commands.executeCommand("workbench.actions.view.problems");
     })
@@ -1348,7 +1389,11 @@ export function activate(context: vscode.ExtensionContext): void {
         await client.start();
         lspModelProvider.clearModelCache();
         languageClientReady = true;
-        scheduleActiveDocumentExplorerRefresh("restartServer");
+        if (hasWorkspaceFolder()) {
+          void ensureWorkspaceModelLoaded(modelExplorerProvider);
+        } else {
+          scheduleActiveDocumentExplorerRefresh("restartServer");
+        }
         vscode.window.showInformationMessage("SysML language server restarted.");
       } catch (e) {
         manualStopInProgress = false;
@@ -1374,7 +1419,7 @@ export function activate(context: vscode.ExtensionContext): void {
         shouldShowModelExplorerContext(modelExplorerProvider)
       );
       await vscode.commands.executeCommand("sysmlModelExplorer.focus");
-      if ((vscode.workspace.workspaceFolders?.length ?? 0) > 0) {
+      if (hasWorkspaceFolder()) {
         await ensureWorkspaceModelLoaded(modelExplorerProvider);
       } else if (modelExplorerProvider?.isWorkspaceBacked()) {
         modelExplorerProvider.refresh();
@@ -1645,7 +1690,7 @@ export function activate(context: vscode.ExtensionContext): void {
       try {
         const result = await lspModelProvider.getModel(
           editor.document.uri.toString(),
-          ["graph"],
+          graphScopesForContext(),
           undefined,
           "debugDumpGraphForGeneralView"
         );

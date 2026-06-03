@@ -1,6 +1,10 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
-import { LspModelProvider } from "../../providers/lspModelProvider";
+import {
+  graphScopesForDocument,
+  graphScopesForWorkspace,
+  LspModelProvider,
+} from "../../providers/lspModelProvider";
 import type { SysMLModelResult } from "../../providers/sysmlModelTypes";
 
 function createModelResult(): SysMLModelResult {
@@ -109,5 +113,14 @@ describe("LspModelProvider", () => {
 
     assert.strictEqual(capturedToken, cts.token);
     cts.dispose();
+  });
+
+  it("exposes workspace and document graph scope helpers", () => {
+    assert.deepStrictEqual(graphScopesForWorkspace(), [
+      "graph",
+      "stats",
+      "workspaceVisualization",
+    ]);
+    assert.deepStrictEqual(graphScopesForDocument(), ["graph", "stats"]);
   });
 });

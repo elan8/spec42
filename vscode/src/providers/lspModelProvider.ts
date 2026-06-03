@@ -102,7 +102,23 @@ export interface SysMLLibrarySearchResult {
   total: number;
 }
 
-type NormalizedScope = NonNullable<SysMLModelParams["scope"]>[number];
+export type NormalizedScope = NonNullable<SysMLModelParams["scope"]>[number];
+
+export function hasWorkspaceFolder(): boolean {
+  return (vscode.workspace.workspaceFolders?.length ?? 0) > 0;
+}
+
+export function graphScopesForWorkspace(): NormalizedScope[] {
+  return ["graph", "stats", "workspaceVisualization"];
+}
+
+export function graphScopesForDocument(): NormalizedScope[] {
+  return ["graph", "stats"];
+}
+
+export function graphScopesForContext(): NormalizedScope[] {
+  return hasWorkspaceFolder() ? graphScopesForWorkspace() : graphScopesForDocument();
+}
 
 type CachedModelResult = {
   key: string;
@@ -575,7 +591,12 @@ export class LspModelProvider {
     elementQualifiedName?: string,
     token?: vscode.CancellationToken
   ): Promise<SysMLElementDTO | undefined> {
-    const result = await this.getModel(uri, ["graph"], token, "findElement");
+    const result = await this.getModel(
+      uri,
+      graphScopesForContext(),
+      token,
+      "findElement"
+    );
     if (!result.graph?.nodes?.length) {
       return undefined;
     }

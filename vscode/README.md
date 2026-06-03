@@ -13,7 +13,7 @@ Published extension builds include the language server binary, so most users can
 ## Highlights
 
 - rich language support for `.sysml` and `.kerml`
-- workspace-aware diagnostics, navigation, and symbols
+- workspace-first diagnostics, navigation, and symbols (background workspace indexing by default)
 - configurable library indexing with `spec42.libraryPaths`
 - bundled SysML standard library support via the `spec42` server
 - snippets, semantic tokens, Model Explorer, and Model Visualizer
@@ -23,7 +23,7 @@ Published extension builds include the language server binary, so most users can
 ## What You Can Do With It
 
 - **Author models efficiently** with completion, snippets, hover details, semantic highlighting, and editing assists.
-- **Catch quality issues early** with live diagnostics while you work.
+- **Catch quality issues early** with live diagnostics while you work; the status bar and **Validate Model** reflect the whole workspace when a folder is open.
 - **Move confidently through large models** with definitions, references, rename, symbols, call hierarchy, and type hierarchy.
 - **Use multiple SysML v2 views**: text editing for precision, Model Explorer for structure, and Model Visualizer for graphical understanding.
 - **Scale to real projects** by analyzing workspace files and configured libraries together.
@@ -75,6 +75,9 @@ Useful commands:
 - **`spec42.workspace.maxFilesPerPattern`**
   - Discovery cap per workspace folder and file type.
   - Default: `500`
+
+- **`spec42.startup.workspaceIndexing`**
+  - When to load the full workspace model for Model Explorer: `background` (default, short delay), `eager` (immediately), or `lazy` (active file only until you request workspace mode).
 
 - **`spec42.visualization.exportScale`**
   - Scale factor used for PNG/SVG export.

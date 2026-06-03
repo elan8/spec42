@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Workspace-first extension behavior** - Default workspace indexing is `background`; Model Explorer shows indexing status until the workspace model is ready and no longer falls back to the active file tree when a workspace folder is open. Status bar and **Validate Model** summarize diagnostics across workspace SysML/KerML files. `sysml/model` graph requests from the extension use `workspaceVisualization` when a workspace is open.
+- **Cross-file diagnostic refresh** - The language server debounces and republishes workspace diagnostics after `didOpen` / `didChange` so peer files update when shared semantics change.
 - **Nested port bodies in semantic graph** - Port usage bodies (`PortBody::Brace`) are now walked in the graph builder (port def, part def, and part usage paths) so nested ports appear in the workspace graph and views.
 - **Semantic tokens for ports** - Token range collection recurses nested port bodies and includes `InOutDecl` members in port definitions.
 - **Shared renderer default alignment** - Webview `htmlBuilder` fallback for `useSharedRenderer` matches `package.json` default (`true`).

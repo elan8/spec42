@@ -482,6 +482,10 @@ export class ModelExplorerProvider
     );
   }
 
+  private hasWorkspaceFolder(): boolean {
+    return (vscode.workspace.workspaceFolders?.length ?? 0) > 0;
+  }
+
   private isWorkspaceIndexingInProgress(): boolean {
     const state = this.workspaceLoadStatus.state;
     return state === "pending" || state === "indexing";
@@ -898,10 +902,12 @@ export class ModelExplorerProvider
 
   refresh(): void {
     log("refresh: workspaceBacked=", this.isWorkspaceBacked(), "fileCount=", this.workspaceFileUris.length);
-    if (this.isWorkspaceBacked()) {
+    if (this.hasWorkspaceFolder() || this.isWorkspaceBacked()) {
       this.invalidateTreeCache();
       this._onDidChangeTreeData.fire();
-    } else if (this.lastUri) {
+      return;
+    }
+    if (this.lastUri) {
       const doc = vscode.workspace.textDocuments.find(
         (d) => d.uri.toString() === this.lastUri!.toString()
       );
@@ -1199,7 +1205,23 @@ export class ModelExplorerProvider
       return this.rootItemsCache;
     }
 
-    if (this.documentLoadState === "loading") {
+    if (this.hasWorkspaceFolder() && !this.hasWorkspaceData()) {
+      this.rootItemsCache = [
+        new ExplorerInfoItem(
+          "Workspace model not loaded yet",
+          "Indexing not started",
+          "Workspace indexing will load the full model. Open this view or switch to a SysML file to start indexing.",
+          "info"
+        ),
+      ];
+      logPerf("modelExplorer:buildTreeCache", {
+        mode: "workspace-not-loaded",
+        totalMs: Date.now() - startedAt,
+      });
+      return this.rootItemsCache;
+    }
+
+    if (!this.hasWorkspaceFolder() && this.documentLoadState === "loading") {
       this.rootItemsCache = [
         new ExplorerInfoItem(
           "Loading model...",
@@ -1216,6 +1238,7 @@ export class ModelExplorerProvider
     }
 
     if (
+      !this.hasWorkspaceFolder() &&
       !this.isWorkspaceBacked() &&
       !this.lastUri &&
       !this.lastElements &&
@@ -1238,7 +1261,7 @@ export class ModelExplorerProvider
       return this.rootItemsCache;
     }
 
-    if (this.lastUri && this.lastElements) {
+    if (!this.hasWorkspaceFolder() && this.lastUri && this.lastElements) {
       const mergeStartedAt = Date.now();
       const merged = this.mergeElements(this.lastElements);
       const mergeMs = Date.now() - mergeStartedAt;

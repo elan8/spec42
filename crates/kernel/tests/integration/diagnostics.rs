@@ -1936,6 +1936,156 @@ fn public_import_reexport_clears_unresolved_type_diagnostic() {
 }
 
 #[test]
+fn did_change_republishs_peer_diagnostics_after_debounce() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri_a = "file:///workspace/a.sysml";
+    let uri_b = "file:///workspace/b.sysml";
+    let content_a_initial = "package A {}";
+    let content_a_fixed = "package A { attribute def Name; }";
+    let content_b = "package B { import A::*; part def P { attribute n : Name; } }";
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": "file:///workspace",
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+
+    for (uri, text) in [(uri_a, content_a_initial), (uri_b, content_b)] {
+        send_message(
+            &mut stdin,
+            &serde_json::json!({
+                "jsonrpc": "2.0",
+                "method": "textDocument/didOpen",
+                "params": {
+                    "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": text }
+                }
+            })
+            .to_string(),
+        );
+    }
+    std::thread::sleep(std::time::Duration::from_millis(250));
+
+    let mut peer_had_unresolved = false;
+    let hover_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": hover_id,
+            "method": "textDocument/hover",
+            "params": {
+                "textDocument": { "uri": uri_b },
+                "position": { "line": 0, "character": 0 }
+            }
+        })
+        .to_string(),
+    );
+    loop {
+        let msg = read_message(&mut stdout).expect("expected message while waiting for hover");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"].as_str() == Some(uri_b)
+        {
+            let diagnostics = json["params"]["diagnostics"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+            if diagnostics.iter().any(|d| {
+                d["source"].as_str() == Some("semantic")
+                    && d["code"].as_str() == Some("unresolved_type_reference")
+            }) {
+                peer_had_unresolved = true;
+            }
+        }
+        if json["id"].as_i64() == Some(hover_id) {
+            break;
+        }
+    }
+    assert!(
+        peer_had_unresolved,
+        "expected peer file to publish unresolved_type_reference before provider file was fixed"
+    );
+
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didChange",
+            "params": {
+                "textDocument": { "uri": uri_a, "version": 2 },
+                "contentChanges": [{ "text": content_a_fixed }]
+            }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(700));
+
+    let barrier_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": barrier_id,
+            "method": "textDocument/hover",
+            "params": {
+                "textDocument": { "uri": uri_b },
+                "position": { "line": 0, "character": 0 }
+            }
+        })
+        .to_string(),
+    );
+
+    let mut peer_still_unresolved = false;
+    loop {
+        let msg = read_message(&mut stdout).expect("expected message while waiting for barrier");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"].as_str() == Some(uri_b)
+        {
+            let diagnostics = json["params"]["diagnostics"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+            if diagnostics.iter().any(|d| {
+                d["source"].as_str() == Some("semantic")
+                    && d["code"].as_str() == Some("unresolved_type_reference")
+            }) {
+                peer_still_unresolved = true;
+            }
+        }
+        if json["id"].as_i64() == Some(barrier_id) {
+            break;
+        }
+    }
+
+    assert!(
+        !peer_still_unresolved,
+        "expected debounced workspace diagnostics republish to clear peer unresolved_type_reference"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
 fn private_import_chain_keeps_unresolved_type_diagnostic() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");

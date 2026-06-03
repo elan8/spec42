@@ -23,3 +23,9 @@ These budgets are not enforced yet:
 | `sysml/visualization` | 1500 ms |
 
 Treat repeated regressions above these numbers as release risks. Once the team accepts stable baselines across CI runners, convert the report-only step into a hard gate.
+
+## Debounced workspace diagnostics
+
+After `textDocument/didOpen` and `textDocument/didChange`, the kernel still publishes diagnostics for the edited document immediately, then schedules a **450ms debounced** republish of all project files in the server index (excluding configured library paths). That pass is O(project files) and keeps cross-file semantic diagnostics consistent when imports or references change in another file.
+
+Large workspaces should rely on `spec42.workspace.maxFilesPerPattern` for Model Explorer discovery limits; the debounced diagnostic republish uses whatever the language server has already indexed (opened files plus startup workspace scan).
