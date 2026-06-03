@@ -2,5 +2,7 @@
 # [build]
 # rustflags = ["-D", "warnings"]
 
-[patch."https://github.com/elan8/sysml-v2-parser"]
-sysml-v2-parser = { path = "../sysml-v2-parser" }
+# Optional local override when developing sysml-v2-parser as a sibling checkout:
+#   git clone https://github.com/elan8/sysml-v2-parser ../sysml-v2-parser
+# [patch."https://github.com/elan8/sysml-v2-parser"]
+# sysml-v2-parser = { path = "../sysml-v2-parser" }
