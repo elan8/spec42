@@ -38,6 +38,8 @@ const RULE6_ALLOWED_KINDS: &[&str] = &[
     "enum def",
     "alias",
     "kermlDecl",
+    "view def",
+    "viewpoint def",
 ];
 
 const RULE7_ALLOWED_KINDS: &[&str] = &[
@@ -58,6 +60,8 @@ const RULE7_ALLOWED_KINDS: &[&str] = &[
     "concern def",
     "alias",
     "kermlDecl",
+    "view def",
+    "viewpoint def",
 ];
 
 fn is_view_kind(kind: &str) -> bool {
@@ -341,6 +345,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
                                         | "enum def"
                                         | "alias"
                                         | "kermlDecl"
+                                        | "view def"
+                                        | "viewpoint def"
                                 )
                         })
                 })

@@ -31,6 +31,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Ref assignment graph parity** - `ref` assignments inside `part def` bodies now emit `reference` edges the same way as `part usage` bodies, reducing reliance on identifier-only fallbacks in downstream models.
 - **Type disambiguation for view symbols** - Import/type resolution now includes view/viewpoint suffix disambiguation paths, improving nested namespace resolution for viewpoint conformance and view typing.
 
+### Fixed
+
+- **Standard SysML view types in examples** - Spec42 standard view types (`InterconnectionView`, `SequenceView`, `StateTransitionView`, `ActionFlowView`, and related) are recognized for type diagnostics like `GeneralView`, so `examples/webshop/Views.sysml` no longer reports spurious `unresolved_type_reference` warnings.
+
 ## [0.25.0] - 2026-06-02
 
 ### Added

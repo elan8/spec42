@@ -171,4 +171,31 @@ mod tests {
             .iter()
             .any(|diagnostic| diagnostic.code == "unresolved_import_target"));
     }
+
+    #[test]
+    fn collect_diagnostics_from_graph_accepts_spec42_standard_view_types() {
+        let input = r#"
+            package Views {
+                view structure : GeneralView;
+                view connections : InterconnectionView;
+                view checkoutFlow : SequenceView;
+                view orderLifecycle : StateTransitionView;
+                view checkoutPipeline : ActionFlowView;
+            }
+        "#;
+        let parsed = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///Views.sysml").expect("uri");
+        let graph = build_graph_from_doc(&parsed, &uri);
+        let diagnostics =
+            collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+        let unresolved: Vec<_> = diagnostics
+            .iter()
+            .filter(|diagnostic| diagnostic.code == "unresolved_type_reference")
+            .map(|diagnostic| diagnostic.message.clone())
+            .collect();
+        assert!(
+            unresolved.is_empty(),
+            "expected no unresolved_type_reference for standard view types, got: {unresolved:?}"
+        );
+    }
 }
