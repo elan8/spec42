@@ -4,9 +4,27 @@ use std::path::PathBuf;
 
 use spec42::cli::{CheckArgs, Cli, OutputFormat};
 use spec42::perform_check;
+use tempfile::TempDir;
+
+fn with_isolated_data_dir(test: impl FnOnce()) {
+    let data_dir = TempDir::new().expect("temp data dir");
+    let previous = std::env::var_os("SPEC42_DATA_DIR");
+    std::env::set_var("SPEC42_DATA_DIR", data_dir.path());
+    test();
+    match previous {
+        Some(value) => std::env::set_var("SPEC42_DATA_DIR", value),
+        None => std::env::remove_var("SPEC42_DATA_DIR"),
+    }
+}
 
 #[test]
 fn kitchen_timer_example_validates() {
+    with_isolated_data_dir(|| {
+    kitchen_timer_example_validates_body();
+    });
+}
+
+fn kitchen_timer_example_validates_body() {
     let example =
         PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/timer/KitchenTimer.sysml");
     let example = example
@@ -38,6 +56,12 @@ fn kitchen_timer_example_validates() {
 
 #[test]
 fn kitchen_timer_example_validates_with_explicit_workspace_root() {
+    with_isolated_data_dir(|| {
+    kitchen_timer_example_validates_with_explicit_workspace_root_body();
+    });
+}
+
+fn kitchen_timer_example_validates_with_explicit_workspace_root_body() {
     let example =
         PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/timer/KitchenTimer.sysml");
     let example = example

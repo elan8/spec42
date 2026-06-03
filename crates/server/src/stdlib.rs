@@ -1,7 +1,8 @@
 use std::fs;
-use std::io::Cursor;
+use std::io::{self, Cursor, Write};
 use std::path::{Path, PathBuf};
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::thread;
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
@@ -216,6 +217,78 @@ pub fn install_embedded_standard_library(
     install_standard_library_from_bytes(paths, &cfg, EMBEDDED_STDLIB_ARCHIVE)
 }
 
+const INSTALL_LOCK_FILE: &str = ".install.lock";
+const INSTALL_LOCK_POLL_MS: u64 = 50;
+const INSTALL_LOCK_TIMEOUT_MS: u64 = 120_000;
+
+struct InstallLockGuard {
+    lock_path: PathBuf,
+    _file: fs::File,
+}
+
+impl Drop for InstallLockGuard {
+    fn drop(&mut self) {
+        let _ = fs::remove_file(&self.lock_path);
+    }
+}
+
+fn acquire_install_lock(paths: &StandardLibraryPaths) -> Result<InstallLockGuard, String> {
+    ensure_directory_path(&paths.managed_root, "Managed standard-library root")?;
+    let lock_path = paths.managed_root.join(INSTALL_LOCK_FILE);
+    let deadline = Instant::now() + Duration::from_millis(INSTALL_LOCK_TIMEOUT_MS);
+    loop {
+        match fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&lock_path)
+        {
+            Ok(mut file) => {
+                let _ = writeln!(file, "{}", std::process::id());
+                return Ok(InstallLockGuard {
+                    lock_path,
+                    _file: file,
+                });
+            }
+            Err(err) if err.kind() == io::ErrorKind::AlreadyExists => {
+                if Instant::now() >= deadline {
+                    return Err(format!(
+                        "Timed out waiting for standard-library install lock at {}",
+                        lock_path.display()
+                    ));
+                }
+                thread::sleep(Duration::from_millis(INSTALL_LOCK_POLL_MS));
+            }
+            Err(err) => {
+                return Err(format!(
+                    "Failed to acquire standard-library install lock at {}: {err}",
+                    lock_path.display()
+                ));
+            }
+        }
+    }
+}
+
+fn metadata_for_ready_install(
+    paths: &StandardLibraryPaths,
+    config: &StandardLibraryConfig,
+    normalized_content_path: &str,
+    install_path: &Path,
+) -> Result<StandardLibraryMetadata, String> {
+    let installed_at = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_secs().to_string())
+        .unwrap_or_else(|_| "0".to_string());
+    let metadata = StandardLibraryMetadata {
+        installed_version: config.version.clone(),
+        install_path: install_path.display().to_string(),
+        installed_at,
+        repo: config.repo.clone(),
+        content_path: normalized_content_path.to_string(),
+    };
+    save_managed_metadata(paths, &metadata)?;
+    Ok(metadata)
+}
+
 pub fn install_standard_library_from_bytes(
     paths: &StandardLibraryPaths,
     config: &StandardLibraryConfig,
@@ -230,20 +303,14 @@ pub fn install_standard_library_from_bytes(
 
     let install_path = managed_install_path(paths, config);
     if install_path_is_ready(&install_path) {
-        let installed_at = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map(|duration| duration.as_secs().to_string())
-            .unwrap_or_else(|_| "0".to_string());
-        let metadata = StandardLibraryMetadata {
-            installed_version: config.version.clone(),
-            install_path: install_path.display().to_string(),
-            installed_at,
-            repo: config.repo.clone(),
-            content_path: normalized_content_path,
-        };
-        save_managed_metadata(paths, &metadata)?;
-        return Ok(metadata);
+        return metadata_for_ready_install(paths, config, &normalized_content_path, &install_path);
     }
+
+    let _install_lock = acquire_install_lock(paths)?;
+    if install_path_is_ready(&install_path) {
+        return metadata_for_ready_install(paths, config, &normalized_content_path, &install_path);
+    }
+
     let version_root = install_path
         .parent()
         .ok_or_else(|| "Managed install root is malformed.".to_string())?;
@@ -308,19 +375,7 @@ pub fn install_standard_library_from_bytes(
         ));
     }
 
-    let installed_at = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|duration| duration.as_secs().to_string())
-        .unwrap_or_else(|_| "0".to_string());
-    let metadata = StandardLibraryMetadata {
-        installed_version: config.version.clone(),
-        install_path: install_path.display().to_string(),
-        installed_at,
-        repo: config.repo.clone(),
-        content_path: normalized_content_path,
-    };
-    save_managed_metadata(paths, &metadata)?;
-    Ok(metadata)
+    metadata_for_ready_install(paths, config, &normalized_content_path, &install_path)
 }
 
 pub fn remove_standard_library(paths: &StandardLibraryPaths) -> Result<bool, String> {
