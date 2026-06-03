@@ -2,6 +2,7 @@
 
 pub mod cli;
 pub mod diagrams;
+pub mod elk_layout;
 pub mod environment;
 pub mod mcp;
 pub mod reports;

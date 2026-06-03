@@ -23,7 +23,7 @@ SysML v2 is powerful, but practical modeling work depends on fast feedback, reli
 - **Validate the same way locally and in CI** with the `spec42 check` command.
 - **Avoid standard-library setup friction** with bundled SysML library support and `spec42 doctor` diagnostics.
 - **Integrate with Sysand when present** so package-managed dependencies can participate in library resolution without making Sysand mandatory.
-- **Publish deterministic artifacts** with CI-friendly validation formats and SVG/JSON diagram export.
+- **Publish deterministic artifacts** with CI-friendly validation formats and Rust-owned SVG/JSON diagram export; routed SysML views use vendored ELK.js through embedded QuickJS.
 - **Learn by example** with compact SysML v2 models that progress from workstation and timer examples to richer software and drone systems.
 
 In short, `spec42` helps you edit, understand, and validate models with consistent behavior from developer workstation to automation pipeline.
@@ -47,6 +47,7 @@ spec42 doctor
 spec42 check examples/timer/KitchenTimer.sysml
 spec42 check examples/timer/KitchenTimer.sysml --format sarif
 spec42 sysand status --format json
+spec42 diagrams export examples/office --view general-view --format svg --output target/diagrams
 ```
 
 Use `spec42 doctor` first when library paths, editor setup, or CI behavior differ from what you expect.
@@ -60,6 +61,7 @@ Use `spec42 doctor` first when library paths, editor setup, or CI behavior diffe
 - **Onboard reliably across environments** with embedded standard-library support and robust resolution behavior.
 - **Troubleshoot environment issues quickly** with resolved runtime, config, and library diagnostics when setups differ.
 - **Track conformance transparently** through the generated [`docs/CONFORMANCE-MATRIX.md`](docs/CONFORMANCE-MATRIX.md).
+- **Export diagrams headlessly** as JSON payloads or SVG; General, Interconnection, Action Flow, and State Transition SVG use ELK routing, while Sequence, Browser, Grid, and Geometry remain deterministic native exports.
 
 ### Supported SysML v2 Views (Current)
 

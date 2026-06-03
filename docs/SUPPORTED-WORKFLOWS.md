@@ -18,7 +18,7 @@ These are the workflows the project is actively hardening for `1.0` and treats a
 - Folding ranges
 - Deterministic CLI validation reports for CI (`text`, `json`, `sarif`, `junit`)
 - Optional Sysand package-manager detection and dependency-root ingestion
-- Shared-renderer visualization and deterministic CLI SVG/JSON diagram export
+- Shared-renderer visualization and deterministic CLI SVG/JSON diagram export; routed views use ELK.js through embedded QuickJS in the Rust exporter
 - Generated conformance reporting for language, validation, views, CLI, and Sysand integration
 
 ## Usable With Caveats
@@ -44,6 +44,7 @@ These workflows are available and useful, but still have known limits that shoul
 The following areas are intentionally not release-gating for `1.0`:
 
 - Diagram export beyond deterministic SVG/JSON, such as PNG/PDF or browser-identical rendering
+- Full visual parity between CLI SVG and the VS Code renderer; the 1.0 CLI target is stable ELK layout/routing parity for routed views
 - Broader SysML v2 language coverage outside the currently well-tested subset
 - Deep semantic validation beyond the existing parser and graph-based support
 - Editable table/matrix views

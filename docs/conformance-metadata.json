@@ -24,7 +24,7 @@
     { "feature": "check sarif/junit", "status": "supported" },
     { "feature": "warnings-as-errors", "status": "supported" },
     { "feature": "diagnostic baseline", "status": "supported" },
-    { "feature": "diagram export svg/json", "status": "supported" }
+    { "feature": "diagram export svg/json", "status": "supported", "notes": "Rust-owned export: ELK.js via QuickJS for General, Interconnection, Action Flow, and State Transition SVG; native deterministic SVG for Sequence, Browser, Grid, and Geometry." }
   ],
   "sysand": [
     { "feature": "status detection", "status": "supported" },

@@ -11,7 +11,7 @@ Public benchmark sources:
 | Bucket | Capability | Spec42 1.0 position |
 | --- | --- | --- |
 | match | Diagnostics, formatting, rename, navigation | Release-gating editor workflows with CLI parity |
-| match | Visualization export | VS Code export plus deterministic CLI SVG/JSON export |
+| match | Visualization export | VS Code export plus Rust-owned CLI SVG/JSON export; routed SVG uses vendored ELK.js through embedded QuickJS |
 | match | CI validation | `spec42 check` with text/json/sarif/junit, warnings-as-errors, and baselines |
 | exceed | Transparent conformance | Generated conformance matrix checked in CI |
 | exceed | Local-first workflow | Bundled server, bundled standard library, no cloud dependency |
@@ -28,5 +28,5 @@ Public benchmark sources:
 - Existing editor/LSP workflows remain stable.
 - `spec42 doctor --format json` reports Sysand status without requiring Sysand.
 - `spec42 check` supports SARIF/JUnit and baseline-driven CI.
-- `spec42 diagrams export` produces deterministic SVG/JSON artifacts for shipped shared-renderer views.
+- `spec42 diagrams export` produces deterministic SVG/JSON artifacts for shipped shared-renderer views, with ELK-backed SVG for General, Interconnection, Action Flow, and State Transition.
 - `docs/CONFORMANCE-MATRIX.md` is generated from checked-in metadata and enforced by CI.

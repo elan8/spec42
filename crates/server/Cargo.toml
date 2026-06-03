@@ -38,6 +38,7 @@ zip = { version = "2", default-features = false, features = ["deflate"] }
 tower-lsp = "0.20"
 rmcp = { workspace = true }
 schemars = { workspace = true }
+rquickjs = "0.11"
 
 [dev-dependencies]
 sysml-v2-parser = { workspace = true }
