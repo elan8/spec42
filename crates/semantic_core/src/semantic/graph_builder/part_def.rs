@@ -182,6 +182,31 @@ pub(super) fn build_from_part_def_body_element(
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
         }
+        PDBE::ItemUsage(item_node) => {
+            let name = &item_node.name;
+            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "item");
+            let range = span_to_range(&item_node.span);
+            let mut attrs = HashMap::new();
+            if let Some(ref t) = item_node.type_name {
+                attrs.insert("itemType".to_string(), serde_json::json!(t));
+            }
+            if let Some(ref m) = item_node.multiplicity {
+                attrs.insert("multiplicity".to_string(), serde_json::json!(m));
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "item",
+                name.clone(),
+                range,
+                attrs,
+                Some(parent_id),
+            );
+            if let Some(ref t) = item_node.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
+        }
         PDBE::RequirementUsage(ru_node) => {
             let name = &ru_node.name;
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "requirement");

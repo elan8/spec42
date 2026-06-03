@@ -1,0 +1,1178 @@
+﻿{
+  "workspace_root": "\\\\?\\C:\\Git\\apollo-11-sysml-v2",
+  "resolved_library_paths": [
+    "C:\\Users\\jeroe\\AppData\\Local\\Elan8\\spec42\\data\\standard-library\\versions\\2026-03\\sysml.library",
+    "\\\\?\\C:\\Git\\spec42\\domain-libraries"
+  ],
+  "documents": [
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Analysis/AnalysisPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Analysis/CalculationsPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Apollo11Model.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/CoSMA/CoSMAPackage.sysml",
+      "diagnostics": [
+        {
+          "range": {
+            "start": {
+              "line": 20,
+              "character": 8
+            },
+            "end": {
+              "line": 20,
+              "character": 72
+            }
+          },
+          "severity": 1,
+          "code": "recovered_part_def_body_element",
+          "source": "sysml",
+          "message": "unexpected token in part definition body"
+        },
+        {
+          "range": {
+            "start": {
+              "line": 105,
+              "character": 2
+            },
+            "end": {
+              "line": 105,
+              "character": 32
+            }
+          },
+          "severity": 1,
+          "code": "unexpected_keyword_in_scope",
+          "source": "sysml",
+          "message": "unexpected keyword `item` in part definition body"
+        },
+        {
+          "range": {
+            "start": {
+              "line": 68,
+              "character": 2
+            },
+            "end": {
+              "line": 68,
+              "character": 33
+            }
+          },
+          "severity": 2,
+          "code": "untyped_part_usage",
+          "source": "sysml",
+          "message": "Part 'requiredCapabilites[0..*]' has no declared type."
+        }
+      ]
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/CoSMA/CoSMAQuantitiesAndUnitsPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/CoSMA/CoSMAViewsPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Execution/Apollo11MissionExecutionPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Function/FunctionSpecificationPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Function/FunctionsPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Logical/LogicalComponentsPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Operation/OperationsPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Program/ProgramPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Purpose/CapabilitiesPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Purpose/ContextPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Purpose/MissionPackage.sysml",
+      "diagnostics": [
+        {
+          "range": {
+            "start": {
+              "line": 27,
+              "character": 2
+            },
+            "end": {
+              "line": 27,
+              "character": 71
+            }
+          },
+          "severity": 2,
+          "code": "unresolved_type_reference",
+          "source": "semantic",
+          "message": "Type reference 'Astronaut, LogicalComponentsPackage::Crew' for 'crew' could not be resolved in the semantic graph."
+        }
+      ]
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Purpose/MissionPhasesPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Purpose/MissionSpecificationPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Purpose/StakeholderPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Requirements/FunctionalRequirementsPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Requirements/MissionRequirementsPackage.sysml",
+      "diagnostics": [
+        {
+          "range": {
+            "start": {
+              "line": 18,
+              "character": 1
+            },
+            "end": {
+              "line": 18,
+              "character": 944
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'CrewReturnSafetyRequirement' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 33,
+              "character": 1
+            },
+            "end": {
+              "line": 33,
+              "character": 1325
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'LunarLanderSoftLandingRequirement' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 59,
+              "character": 1
+            },
+            "end": {
+              "line": 59,
+              "character": 1248
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'TransLunarInjectionAccuracyRequirement' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 82,
+              "character": 1
+            },
+            "end": {
+              "line": 82,
+              "character": 1205
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'CommunicationUptimeRequirement' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 112,
+              "character": 1
+            },
+            "end": {
+              "line": 112,
+              "character": 1103
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'LunarSampleCollectionQuantityRequirement' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 133,
+              "character": 1
+            },
+            "end": {
+              "line": 133,
+              "character": 1300
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'ScientificInstrumentDeploymentRequirement' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 158,
+              "character": 1
+            },
+            "end": {
+              "line": 158,
+              "character": 1009
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'LunarVisualDocumentationRequirement' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 179,
+              "character": 1
+            },
+            "end": {
+              "line": 179,
+              "character": 983
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'NationalSymbolDeploymentRequirement' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 199,
+              "character": 1
+            },
+            "end": {
+              "line": 199,
+              "character": 1080
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'PlanetaryProtectionQuarantineRequirement' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 230,
+              "character": 1
+            },
+            "end": {
+              "line": 230,
+              "character": 664
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'WasteManagementEffectiveness' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 243,
+              "character": 1
+            },
+            "end": {
+              "line": 243,
+              "character": 944
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'CrewSleepEnvironmentQuality' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 263,
+              "character": 1
+            },
+            "end": {
+              "line": 263,
+              "character": 705
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'CrewAlarmResponseTime' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 277,
+              "character": 1
+            },
+            "end": {
+              "line": 277,
+              "character": 765
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'LunarLanderToOrbiterVoiceComm' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 291,
+              "character": 1
+            },
+            "end": {
+              "line": 291,
+              "character": 793
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'ExtravehicularMobilityUnitLifeSupportDuration' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 305,
+              "character": 1
+            },
+            "end": {
+              "line": 305,
+              "character": 976
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'ExtravehicularMobilityUnitDexterityForTasks' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 320,
+              "character": 1
+            },
+            "end": {
+              "line": 320,
+              "character": 980
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'LunarSurfaceMobilityRange' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 340,
+              "character": 1
+            },
+            "end": {
+              "line": 340,
+              "character": 829
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'ExtravehicularActivityToolSecurity' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 358,
+              "character": 1
+            },
+            "end": {
+              "line": 358,
+              "character": 945
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'SamplePristinePreservation' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 373,
+              "character": 1
+            },
+            "end": {
+              "line": 373,
+              "character": 912
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'SampleGeologicalContext' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 391,
+              "character": 1
+            },
+            "end": {
+              "line": 391,
+              "character": 740
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'CriticalComponentRedundancy' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 404,
+              "character": 1
+            },
+            "end": {
+              "line": 404,
+              "character": 839
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'AbortSequenceExecutionTime' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 419,
+              "character": 1
+            },
+            "end": {
+              "line": 419,
+              "character": 828
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'ManualOverrideResponseTime' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 433,
+              "character": 1
+            },
+            "end": {
+              "line": 433,
+              "character": 735
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'GroundSegmentDataUpdateFrequency' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 447,
+              "character": 1
+            },
+            "end": {
+              "line": 447,
+              "character": 776
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'LunarLanderAscentReadinessTime' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 461,
+              "character": 1
+            },
+            "end": {
+              "line": 461,
+              "character": 756
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'FlightSoftwareUpdateTime' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 475,
+              "character": 1
+            },
+            "end": {
+              "line": 475,
+              "character": 968
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'CrewEmergencyMedicalProficiency' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 495,
+              "character": 1
+            },
+            "end": {
+              "line": 495,
+              "character": 748
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'InFlightProcedureErrorRate' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 509,
+              "character": 1
+            },
+            "end": {
+              "line": 509,
+              "character": 771
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'CrewNutritionAndHydration' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 526,
+              "character": 1
+            },
+            "end": {
+              "line": 526,
+              "character": 763
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'CrewPsychologicalState' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 540,
+              "character": 1
+            },
+            "end": {
+              "line": 540,
+              "character": 837
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'MicrometeoroidPenetrationRisk' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 554,
+              "character": 1
+            },
+            "end": {
+              "line": 554,
+              "character": 847
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'LunarElementEnvironmentalResistance' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 567,
+              "character": 1
+            },
+            "end": {
+              "line": 567,
+              "character": 1000
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'PostFlightDataArchiving' depend on declared value(s) that have not been assigned."
+        }
+      ]
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Requirements/StakeholderNeedsPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Requirements/TechnicalRequirementsPackage.sysml",
+      "diagnostics": [
+        {
+          "range": {
+            "start": {
+              "line": 176,
+              "character": 1
+            },
+            "end": {
+              "line": 176,
+              "character": 858
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'GNCGuidancePrecision' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 194,
+              "character": 1
+            },
+            "end": {
+              "line": 194,
+              "character": 743
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'RCSControlStability' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 208,
+              "character": 1
+            },
+            "end": {
+              "line": 208,
+              "character": 979
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'LMDSRadarPrecision' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 260,
+              "character": 1
+            },
+            "end": {
+              "line": 260,
+              "character": 1611
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'CabinEnvironmentalControlRequirement' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 508,
+              "character": 1
+            },
+            "end": {
+              "line": 508,
+              "character": 552
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'SICThrustMagnitude' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 521,
+              "character": 1
+            },
+            "end": {
+              "line": 521,
+              "character": 937
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'SPSIgnitionReliability' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 541,
+              "character": 1
+            },
+            "end": {
+              "line": 541,
+              "character": 961
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'DPSThrottlingRange' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 561,
+              "character": 1
+            },
+            "end": {
+              "line": 561,
+              "character": 707
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'LMASBurnDuration' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 575,
+              "character": 1
+            },
+            "end": {
+              "line": 575,
+              "character": 859
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'PrimaryStructureLoadLimit' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 595,
+              "character": 1
+            },
+            "end": {
+              "line": 595,
+              "character": 860
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'CMHeatShieldThermalPerf' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 614,
+              "character": 1
+            },
+            "end": {
+              "line": 614,
+              "character": 685
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'PyrotechnicInitiationReliability' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 627,
+              "character": 1
+            },
+            "end": {
+              "line": 627,
+              "character": 946
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'DockingMechanismReliability' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 648,
+              "character": 1
+            },
+            "end": {
+              "line": 648,
+              "character": 1021
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'LMDSLandingGearEnergy' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 670,
+              "character": 1
+            },
+            "end": {
+              "line": 670,
+              "character": 569
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'ECSWaterSupplyRate' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 682,
+              "character": 1
+            },
+            "end": {
+              "line": 682,
+              "character": 827
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'ECSFilterEfficiency' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 701,
+              "character": 2
+            },
+            "end": {
+              "line": 701,
+              "character": 648
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'DataHandlingIntegrity' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 714,
+              "character": 1
+            },
+            "end": {
+              "line": 714,
+              "character": 1003
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'CommVideoBandwidth' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 738,
+              "character": 1
+            },
+            "end": {
+              "line": 738,
+              "character": 862
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'EMUPressureContainment' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 756,
+              "character": 1
+            },
+            "end": {
+              "line": 756,
+              "character": 988
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'EASEPOperationalDuration' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 776,
+              "character": 1
+            },
+            "end": {
+              "line": 776,
+              "character": 680
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'MissionSystemReliability' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 789,
+              "character": 1
+            },
+            "end": {
+              "line": 789,
+              "character": 967
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'FlightSoftwareDefectRate' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 809,
+              "character": 1
+            },
+            "end": {
+              "line": 809,
+              "character": 631
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'ComponentAcceptanceRate' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 822,
+              "character": 1
+            },
+            "end": {
+              "line": 822,
+              "character": 1075
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'MaterialVacuumResistance' depend on declared value(s) that have not been assigned."
+        },
+        {
+          "range": {
+            "start": {
+              "line": 843,
+              "character": 1
+            },
+            "end": {
+              "line": 843,
+              "character": 605
+            }
+          },
+          "severity": 3,
+          "code": "analysis_evaluation_incomplete",
+          "source": "semantic",
+          "message": "Analysis constraint(s) on 'ElectronicEMIImmunity' depend on declared value(s) that have not been assigned."
+        }
+      ]
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Technical/AstronautsPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Technical/SystemPackage.sysml",
+      "diagnostics": [
+        {
+          "range": {
+            "start": {
+              "line": 25,
+              "character": 3
+            },
+            "end": {
+              "line": 25,
+              "character": 52
+            }
+          },
+          "severity": 1,
+          "code": "unresolved_pending_expression_relationship",
+          "source": "semantic",
+          "message": "unresolved connection relationship from 'launchVehicle::instrumentUnit::payloadInterfacePort' to 'spacecraft::spacecraftLMAdapter::launchVehicleInterfacePort'"
+        },
+        {
+          "range": {
+            "start": {
+              "line": 25,
+              "character": 3
+            },
+            "end": {
+              "line": 25,
+              "character": 52
+            }
+          },
+          "severity": 1,
+          "code": "unresolved_pending_expression_relationship",
+          "source": "semantic",
+          "message": "unresolved connection relationship from 'launchVehicle::instrumentUnit::payloadInterfacePort' to 'spacecraft::spacecraftLMAdapter::launchVehicleInterfacePort'"
+        },
+        {
+          "range": {
+            "start": {
+              "line": 25,
+              "character": 3
+            },
+            "end": {
+              "line": 25,
+              "character": 52
+            }
+          },
+          "severity": 1,
+          "code": "unresolved_pending_expression_relationship",
+          "source": "semantic",
+          "message": "unresolved connection relationship from 'launchVehicle::instrumentUnit::payloadInterfacePort' to 'spacecraft::spacecraftLMAdapter::launchVehicleInterfacePort'"
+        }
+      ]
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Technical/SystemSpecificationPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Technical/TechnicalComponentsPackage.sysml",
+      "diagnostics": [
+        {
+          "range": {
+            "start": {
+              "line": 35,
+              "character": 2
+            },
+            "end": {
+              "line": 35,
+              "character": 47
+            }
+          },
+          "severity": 1,
+          "code": "recovered_part_def_body_element",
+          "source": "sysml",
+          "message": "unexpected token in part definition body"
+        },
+        {
+          "range": {
+            "start": {
+              "line": 40,
+              "character": 2
+            },
+            "end": {
+              "line": 40,
+              "character": 45
+            }
+          },
+          "severity": 1,
+          "code": "recovered_part_def_body_element",
+          "source": "sysml",
+          "message": "unexpected token in part definition body"
+        }
+      ]
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Technical/TechnicalIndividualsPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Technical/TechnicalPortsPackage.sysml",
+      "diagnostics": []
+    },
+    {
+      "uri": "file:///c:/Git/apollo-11-sysml-v2/Technical/Views.sysml",
+      "diagnostics": []
+    }
+  ],
+  "summary": {
+    "document_count": 29,
+    "error_count": 7,
+    "warning_count": 2,
+    "information_count": 56
+  },
+  "advice": []
+}

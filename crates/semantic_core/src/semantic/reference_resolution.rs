@@ -200,6 +200,56 @@ pub fn resolve_expression_endpoint_workspace(
     }
 }
 
+/// Resolve a dotted/`::` member chain by walking typed features across the workspace.
+pub fn resolve_workspace_member_chain(
+    g: &SemanticGraph,
+    expression: &str,
+) -> ResolveResult<NodeId> {
+    let normalized = normalize_for_lookup(&expression.replace('.', "::"));
+    let segments: Vec<&str> = normalized
+        .split("::")
+        .filter(|segment| !segment.is_empty())
+        .collect();
+    if segments.len() < 2 {
+        return ResolveResult::Unresolved;
+    }
+    let mut current: Vec<NodeId> = g
+        .graph
+        .node_weights()
+        .filter(|node| {
+            node.element_kind != "import"
+                && node.element_kind != "subject"
+                && node.name == segments[0]
+        })
+        .map(|node| node.id.clone())
+        .collect();
+    current.sort_by_key(|id| id.qualified_name.clone());
+    current.dedup();
+    for member in segments.iter().skip(1) {
+        let mut next = Vec::new();
+        for owner_id in &current {
+            let Some(owner) = g.get_node(owner_id) else {
+                continue;
+            };
+            match resolve_member_via_type(g, owner, member) {
+                ResolveResult::Resolved(id) => next.push(id),
+                ResolveResult::Ambiguous => return ResolveResult::Ambiguous,
+                ResolveResult::Unresolved => {}
+            }
+        }
+        next.sort_by_key(|id| id.qualified_name.clone());
+        next.dedup();
+        current = next;
+        if current.is_empty() {
+            return ResolveResult::Unresolved;
+        }
+    }
+    match current.len() {
+        1 => ResolveResult::Resolved(current.remove(0)),
+        _ => ResolveResult::Ambiguous,
+    }
+}
+
 /// Resolve `member` declared on a supertype of `owner` (does not match direct children of `owner`).
 ///
 /// Walks the typing/specialization chain from the nearest type outward and returns the first

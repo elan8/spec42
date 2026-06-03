@@ -759,8 +759,10 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     let t11 = Instant::now();
     let d11 = diagnostics.len();
     for node in graph.nodes_for_uri(uri) {
-        let is_definition_only_analysis =
-            matches!(node.element_kind.as_str(), "constraint def" | "calc def");
+        let is_definition_only_analysis = matches!(
+            node.element_kind.as_str(),
+            "constraint def" | "calc def" | "requirement def" | "requirement"
+        );
         if let Some(status) = node
             .attributes
             .get("analysisEvaluationStatus")

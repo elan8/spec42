@@ -140,13 +140,25 @@ const DISAMBIGUATION_SUFFIX_KINDS: &[&str] = &[
     "kermlDecl",
 ];
 
+fn strip_wrapping_quotes(value: &str) -> String {
+    let trimmed = value.trim();
+    if trimmed.len() >= 2 {
+        if (trimmed.starts_with('\'') && trimmed.ends_with('\''))
+            || (trimmed.starts_with('"') && trimmed.ends_with('"'))
+        {
+            return trimmed[1..trimmed.len() - 1].to_string();
+        }
+    }
+    trimmed.to_string()
+}
+
 fn normalize_declared_type_ref(type_ref: &str) -> String {
-    type_ref
+    let trimmed = type_ref
         .trim()
         .strip_prefix('~')
         .map(str::trim)
-        .unwrap_or(type_ref.trim())
-        .to_string()
+        .unwrap_or(type_ref.trim());
+    strip_wrapping_quotes(trimmed)
 }
 
 fn split_specializes_refs(raw: &str) -> Vec<String> {
@@ -340,6 +352,16 @@ pub(crate) fn add_pending_expression_relationship(
     kind: RelationshipKind,
     source_range: crate::semantic::text_span::TextRange,
 ) {
+    let duplicate = g.pending_expression_relationships.iter().any(|pending| {
+        pending.uri == *uri
+            && pending.kind == kind
+            && pending.source_expression == source_expression
+            && pending.target_expression == target_expression
+            && pending.container_prefix.as_deref() == container_prefix
+    });
+    if duplicate {
+        return;
+    }
     g.pending_expression_relationships
         .push(PendingExpressionRelationship {
             uri: uri.clone(),
@@ -423,7 +445,14 @@ fn resolve_pending_expression_endpoint(
         ResolveResult::Unresolved => {}
     }
 
-    crate::semantic::reference_resolution::resolve_expression_endpoint_workspace(g, expression)
+    match crate::semantic::reference_resolution::resolve_expression_endpoint_workspace(g, expression)
+    {
+        ResolveResult::Resolved(id) => return ResolveResult::Resolved(id),
+        ResolveResult::Ambiguous => return ResolveResult::Ambiguous,
+        ResolveResult::Unresolved => {}
+    }
+
+    crate::semantic::reference_resolution::resolve_workspace_member_chain(g, expression)
 }
 
 fn resolve_pending_expression_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {

@@ -169,6 +169,8 @@ fn update_semantic_graph_for_uri(
         state.semantic_graph.merge(new_graph);
         semantic::add_cross_document_edges_for_uri(&mut state.semantic_graph, uri);
         if evaluate {
+            semantic::link_workspace_relationships(&mut state.semantic_graph);
+            semantic::resolve_workspace_pending_relationships(&mut state.semantic_graph);
             semantic::evaluate_expressions(&mut state.semantic_graph);
         }
     }
@@ -590,6 +592,8 @@ pub(crate) fn rebuild_all_document_links(
             );
         }
     }
+    semantic::link_workspace_relationships(&mut state.semantic_graph);
+    semantic::resolve_workspace_pending_relationships(&mut state.semantic_graph);
     semantic::evaluate_expressions(&mut state.semantic_graph);
     let cross_document_edges_ms = elapsed_ms(cross_document_edges_start);
 
@@ -726,6 +730,8 @@ pub(crate) fn rebuild_semantic_graph_staged(
             );
         }
     }
+    semantic::link_workspace_relationships(&mut semantic_graph);
+    semantic::resolve_workspace_pending_relationships(&mut semantic_graph);
     semantic::evaluate_expressions(&mut semantic_graph);
     let cross_document_edges_ms = elapsed_ms(cross_document_edges_start);
 

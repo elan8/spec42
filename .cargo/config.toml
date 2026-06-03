@@ -2,7 +2,6 @@
 # [build]
 # rustflags = ["-D", "warnings"]
 
-# Optional local override when developing sysml-v2-parser as a sibling checkout:
-#   git clone https://github.com/elan8/sysml-v2-parser ../sysml-v2-parser
-# [patch."https://github.com/elan8/sysml-v2-parser"]
-# sysml-v2-parser = { path = "../sysml-v2-parser" }
+# Local override for sysml-v2-parser in the Cursor workspace (sibling checkout).
+[patch."https://github.com/elan8/sysml-v2-parser"]
+sysml-v2-parser = { path = "../sysml-v2-parser" }

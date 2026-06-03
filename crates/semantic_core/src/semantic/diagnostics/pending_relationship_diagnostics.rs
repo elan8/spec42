@@ -17,6 +17,7 @@ pub fn append_unresolved_pending_relationship_diagnostics(
     uri: &Url,
     diagnostics: &mut Vec<SemanticDiagnostic>,
 ) {
+    let mut reported_expression_relationships = std::collections::HashSet::new();
     for pending in &graph.pending_relationships {
         if pending.uri != *uri {
             continue;
@@ -44,6 +45,14 @@ pub fn append_unresolved_pending_relationship_diagnostics(
             pending.kind,
             RelationshipKind::Satisfy | RelationshipKind::Allocate
         ) {
+            continue;
+        }
+        let key = (
+            pending.kind.as_str().to_string(),
+            pending.source_expression.clone(),
+            pending.target_expression.clone(),
+        );
+        if !reported_expression_relationships.insert(key) {
             continue;
         }
         diagnostics.push(diag(
