@@ -2,6 +2,6 @@
 # [build]
 # rustflags = ["-D", "warnings"]
 
-# Local override for sysml-v2-parser in the Cursor workspace (sibling checkout).
-[patch."https://github.com/elan8/sysml-v2-parser"]
-sysml-v2-parser = { path = "../sysml-v2-parser" }
+# Optional local override (do not commit enabled):
+# [patch.crates-io]
+# sysml-v2-parser = { path = "../sysml-v2-parser" }
