@@ -8,6 +8,7 @@ import {
   ErrorHandler,
   LanguageClient,
   LanguageClientOptions,
+  NotificationType,
   RevealOutputChannelOn,
   ServerOptions,
   State,
@@ -24,7 +25,10 @@ import {
 } from "./explorer/modelExplorerProvider";
 import { ExamplesViewProvider } from "./examples/examplesViewProvider";
 import { LibraryWebviewViewProvider } from "./library/libraryWebviewViewProvider";
-import type { GraphNodeDTO } from "./providers/sysmlModelTypes";
+import type {
+  GraphNodeDTO,
+  SemanticIndexReadyParams,
+} from "./providers/sysmlModelTypes";
 import { getOutputChannel, log, logError, logPerfEvent, logStartupEvent, showChannel } from "./logger";
 import { dumpGraphForGeneralView } from "./graphDump";
 import {
@@ -66,6 +70,8 @@ let activeDocumentExplorerRefreshTimer: ReturnType<typeof setTimeout> | undefine
 let activeDocumentExplorerRefreshUri: string | undefined;
 let activeDocumentExplorerRefreshGuardUntil = 0;
 let languageClientReady = false;
+let lastLoadedSemanticStateVersion: number | undefined;
+let lastSemanticIndexReadyWorkspaceFileCount: number | undefined;
 
 function getConfig() {
   return {
@@ -151,6 +157,8 @@ type DebugExtensionState = {
   serverHealthState: ServerHealthState;
   serverHealthDetail: string;
   workspaceIndexSummary?: WorkspaceIndexSummary;
+  lastLoadedSemanticStateVersion?: number;
+  lastSemanticIndexReadyWorkspaceFileCount?: number;
   modelExplorer?: {
     lastRevealedElementId?: string;
   };
@@ -785,7 +793,7 @@ export function activate(context: vscode.ExtensionContext): void {
       languageClientReady = true;
       setVisualizationGateState({ languageClientReady: true });
       setServerHealth(context, "ready", "SysML language server is ready.");
-      log("Language client ready, scheduling Model Explorer refresh");
+      log("Language client ready, waiting for semantic index before workspace model load");
       logStartupPhase("languageClient:ready");
       scheduleModelExplorerRefreshForCurrentMode("languageClient:ready");
       // If the visualizer panel was restored/open before LSP became ready,
@@ -867,6 +875,18 @@ export function activate(context: vscode.ExtensionContext): void {
     }, 75);
   }
 
+  function scheduleWorkspaceExplorerPending(provider: ModelExplorerProvider): void {
+    provider.setWorkspaceLoadStatus({
+      state: "pending",
+      scannedFiles: 0,
+      loadedFiles: 0,
+      truncated: false,
+      cancelled: false,
+      failures: 0,
+    });
+    provider.refresh();
+  }
+
   function scheduleModelExplorerRefreshForCurrentMode(
     reason: string,
     doc?: vscode.TextDocument
@@ -877,9 +897,13 @@ export function activate(context: vscode.ExtensionContext): void {
     }
     if ((vscode.workspace.workspaceFolders?.length ?? 0) > 0) {
       log("scheduleModelExplorerRefreshForCurrentMode: workspace", reason);
-      void ensureWorkspaceModelLoaded(provider).catch((error) => {
-        logError(`Workspace explorer refresh failed (${reason})`, error);
-      });
+      if (lastLoadedSemanticStateVersion !== undefined) {
+        void ensureWorkspaceModelLoaded(provider).catch((error) => {
+          logError(`Workspace explorer refresh failed (${reason})`, error);
+        });
+      } else {
+        scheduleWorkspaceExplorerPending(provider);
+      }
       return;
     }
     scheduleActiveDocumentExplorerRefresh(reason, doc);
@@ -1247,14 +1271,41 @@ export function activate(context: vscode.ExtensionContext): void {
     updateStatusBar(context);
   }
 
-  async function ensureWorkspaceModelLoaded(
-    provider: ModelExplorerProvider | undefined
+  async function reloadWorkspaceExplorerModel(
+    params: SemanticIndexReadyParams
   ): Promise<void> {
-    if (!provider) {
+    const provider = modelExplorerProvider;
+    if (!provider || !hasWorkspaceFolder()) {
       return;
     }
-    if (provider.hasWorkspaceData()) {
-      provider.refresh();
+    if (params.lifecycle !== "ready") {
+      return;
+    }
+    if (params.semanticStateVersion === lastLoadedSemanticStateVersion) {
+      return;
+    }
+    lastSemanticIndexReadyWorkspaceFileCount = params.workspaceFileCount;
+    log(
+      "reloadWorkspaceExplorerModel: semantic index ready",
+      "version=",
+      params.semanticStateVersion,
+      "workspaceFiles=",
+      params.workspaceFileCount
+    );
+    lspModelProvider.clearModelCache();
+    try {
+      await loadWorkspaceSysMLFiles(provider);
+      lastLoadedSemanticStateVersion = params.semanticStateVersion;
+    } catch (error) {
+      logError("reloadWorkspaceExplorerModel failed", error);
+    }
+  }
+
+  async function ensureWorkspaceModelLoaded(
+    provider: ModelExplorerProvider | undefined,
+    options?: { force?: boolean }
+  ): Promise<void> {
+    if (!provider) {
       return;
     }
     const hasWorkspaceFolders =
@@ -1263,8 +1314,34 @@ export function activate(context: vscode.ExtensionContext): void {
       provider.refresh();
       return;
     }
-    await loadWorkspaceSysMLFiles(provider);
+    if (provider.hasWorkspaceData()) {
+      if (options?.force) {
+        lspModelProvider.clearModelCache();
+        await loadWorkspaceSysMLFiles(provider);
+        return;
+      }
+      if (lastLoadedSemanticStateVersion !== undefined) {
+        provider.refresh();
+        return;
+      }
+      scheduleWorkspaceExplorerPending(provider);
+      return;
+    }
+    if (lastLoadedSemanticStateVersion !== undefined) {
+      await loadWorkspaceSysMLFiles(provider);
+      return;
+    }
+    scheduleWorkspaceExplorerPending(provider);
   }
+
+  const semanticIndexReadyNotification = new NotificationType<SemanticIndexReadyParams>(
+    "spec42/semanticIndexReady"
+  );
+  context.subscriptions.push(
+    client.onNotification(semanticIndexReadyNotification, (params) => {
+      void reloadWorkspaceExplorerModel(params);
+    })
+  );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.switchToByFile", async () => {
@@ -1375,6 +1452,8 @@ export function activate(context: vscode.ExtensionContext): void {
       }
       try {
         lspModelProvider.clearModelCache();
+        lastLoadedSemanticStateVersion = undefined;
+        lastSemanticIndexReadyWorkspaceFileCount = undefined;
         languageClientReady = false;
         manualStopInProgress = true;
         setServerHealth(context, "restarting", "Restarting SysML language server.");
@@ -1385,8 +1464,8 @@ export function activate(context: vscode.ExtensionContext): void {
         await client.start();
         lspModelProvider.clearModelCache();
         languageClientReady = true;
-        if (hasWorkspaceFolder()) {
-          void ensureWorkspaceModelLoaded(modelExplorerProvider);
+        if (hasWorkspaceFolder() && modelExplorerProvider) {
+          scheduleWorkspaceExplorerPending(modelExplorerProvider);
         } else {
           scheduleActiveDocumentExplorerRefresh("restartServer");
         }
@@ -1650,6 +1729,8 @@ export function activate(context: vscode.ExtensionContext): void {
       serverHealthState,
       serverHealthDetail,
       workspaceIndexSummary: lastWorkspaceIndexSummary,
+      lastLoadedSemanticStateVersion,
+      lastSemanticIndexReadyWorkspaceFileCount,
       modelExplorer: {
         lastRevealedElementId: modelExplorerProvider?.getDebugState().lastRevealedElementId,
       },
@@ -2150,30 +2231,12 @@ export function activate(context: vscode.ExtensionContext): void {
     !!VisualizationPanel.currentPanel
   );
   if (hasWorkspaceFolders && modelExplorerProvider) {
-    const provider = modelExplorerProvider;
-    if (startupWorkspaceIndexingMode === "background") {
-      provider.setWorkspaceLoadStatus({
-        state: "pending",
-        scannedFiles: 0,
-        loadedFiles: 0,
-        truncated: false,
-        cancelled: false,
-        failures: 0,
-      });
-      setTimeout(() => {
-        loadWorkspaceSysMLFiles(provider).catch(() => {});
-      }, 3000);
-    } else if (startupWorkspaceIndexingMode === "eager") {
-      setTimeout(() => {
-        loadWorkspaceSysMLFiles(provider).catch(() => {});
-      }, 0);
-    } else {
-      log(
-        "Startup workspace indexing deferred",
-        "mode=",
-        startupWorkspaceIndexingMode
-      );
-    }
+    scheduleWorkspaceExplorerPending(modelExplorerProvider);
+    log(
+      "Startup workspace model load deferred until semantic index is ready",
+      "mode=",
+      startupWorkspaceIndexingMode
+    );
   }
 }
 

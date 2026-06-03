@@ -182,3 +182,12 @@ pub struct SysmlLibrarySearchResultDto {
     pub symbol_total: usize,
     pub total: usize,
 }
+
+/// Client notification emitted when the workspace semantic index reaches `Ready`.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct SemanticIndexReadyNotificationDto {
+    pub lifecycle: String,
+    pub semantic_state_version: u64,
+    pub workspace_file_count: usize,
+}

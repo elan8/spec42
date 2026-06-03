@@ -38,6 +38,9 @@ pub(crate) async fn sysml_model_result(
         scope.iter().any(|entry| entry == "workspaceVisualization");
     let params_ms = params_start.elapsed().as_millis().max(1);
     let build_start = Instant::now();
+    if workspace_visualization_requested && !state.semantic_lifecycle.supports_semantic_queries() {
+        return Ok((crate::views::empty_model_response(build_start), None));
+    }
     let index_lookup_start = Instant::now();
     let (effective_uri, entry) = match state.index.get(&uri) {
         Some(e) => (uri.clone(), e),

@@ -11,6 +11,8 @@ import {
 type DebugExtensionState = {
   serverHealthState: "starting" | "ready" | "indexing" | "degraded" | "restarting" | "crashed";
   serverHealthDetail: string;
+  lastLoadedSemanticStateVersion?: number;
+  lastSemanticIndexReadyWorkspaceFileCount?: number;
   workspaceIndexSummary?: {
     scannedFiles: number;
     loadedFiles: number;
@@ -32,6 +34,35 @@ describe("Workspace Indexing Smoke Test", () => {
   after(async () => {
     await vscode.commands.executeCommand("workbench.action.closeAllEditors");
     await new Promise((r) => setTimeout(r, 250));
+  });
+
+  it("loads workspace model automatically when semantic index is ready", async function () {
+    this.timeout(45000);
+    const state = await waitFor(
+      "semantic index ready and workspace model loaded",
+      () =>
+        vscode.commands.executeCommand<DebugExtensionState>(
+          "sysml.debug.getExtensionState"
+        ),
+      (value) =>
+        Boolean(
+          value?.lastLoadedSemanticStateVersion !== undefined &&
+          (value.lastLoadedSemanticStateVersion ?? 0) > 0 &&
+          value.workspaceIndexSummary &&
+          value.workspaceIndexSummary.loadedFiles >= 2
+        ),
+      40000,
+      300
+    );
+    assert.ok(
+      state.lastLoadedSemanticStateVersion,
+      "Expected semantic index version after auto workspace reload"
+    );
+    assert.ok(
+      state.workspaceIndexSummary &&
+        state.workspaceIndexSummary.loadedFiles >= 2,
+      "Expected multi-file workspace model without manual refresh"
+    );
   });
 
   it("keeps the workspace usable while workspace indexing completes", async function () {

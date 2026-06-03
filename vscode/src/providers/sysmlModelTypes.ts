@@ -78,6 +78,13 @@ export interface WorkspaceModelDTO {
   summary: WorkspaceModelSummaryDTO;
 }
 
+/** LSP notification `spec42/semanticIndexReady` payload. */
+export interface SemanticIndexReadyParams {
+  lifecycle: string;
+  semanticStateVersion: number;
+  workspaceFileCount: number;
+}
+
 export interface SysMLModelParams {
   textDocument: { uri: string };
   scope?: Array<"graph" | "ibd" | "stats" | "activityDiagrams" | "sequenceDiagrams" | "workspaceVisualization">;

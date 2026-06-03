@@ -3,12 +3,13 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use tokio::sync::RwLock;
-use tower_lsp::lsp_types::*;
+use tower_lsp::lsp_types::{notification::Notification, *};
 use tower_lsp::Client;
 use tracing::{info, warn};
 
 use crate::common::util;
 use crate::host::config::Spec42Config;
+use crate::views::dto::SemanticIndexReadyNotificationDto;
 use crate::workspace::{
     clear_documents_under_roots, ingest_parsed_scan_entries, ingest_parsed_scan_entries_batch,
     parse_scanned_entries, rebuild_all_document_links, rebuild_semantic_graph_staged,
@@ -65,12 +66,47 @@ async fn log_perf(client: &Client, enabled: bool, event: &str, fields: Vec<(&str
         .await;
 }
 
+fn workspace_file_count(state: &ServerState) -> usize {
+    state
+        .semantic_graph
+        .workspace_uris_excluding_libraries(&state.library_paths)
+        .len()
+}
+
+pub(crate) struct SemanticIndexReady;
+
+impl Notification for SemanticIndexReady {
+    type Params = SemanticIndexReadyNotificationDto;
+    const METHOD: &'static str = "spec42/semanticIndexReady";
+}
+
+pub(crate) fn semantic_index_ready_notification(
+    state: &ServerState,
+) -> SemanticIndexReadyNotificationDto {
+    SemanticIndexReadyNotificationDto {
+        lifecycle: "ready".to_string(),
+        semantic_state_version: state.semantic_state_version,
+        workspace_file_count: workspace_file_count(state),
+    }
+}
+
 async fn set_semantic_lifecycle(
+    client: &Client,
     state: &Arc<RwLock<ServerState>>,
     semantic_lifecycle: SemanticLifecycle,
 ) {
-    let mut st = state.write().await;
-    st.semantic_lifecycle = semantic_lifecycle;
+    let notification = {
+        let mut st = state.write().await;
+        st.semantic_lifecycle = semantic_lifecycle;
+        if semantic_lifecycle == SemanticLifecycle::Ready {
+            Some(semantic_index_ready_notification(&st))
+        } else {
+            None
+        }
+    };
+    if let Some(params) = notification {
+        client.send_notification::<SemanticIndexReady>(params).await;
+    }
 }
 
 pub(crate) async fn initialize(
@@ -148,10 +184,10 @@ pub(crate) async fn initialized(
         workspace_roots.clone()
     };
     if scan_roots.is_empty() && library_paths.is_empty() {
-        set_semantic_lifecycle(state, SemanticLifecycle::Ready).await;
+        set_semantic_lifecycle(client, state, SemanticLifecycle::Ready).await;
         return;
     }
-    set_semantic_lifecycle(state, SemanticLifecycle::Indexing).await;
+    set_semantic_lifecycle(client, state, SemanticLifecycle::Indexing).await;
     if perf_logging_enabled {
         info!(
             trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
@@ -370,7 +406,7 @@ pub(crate) async fn initialized(
             );
         }
         let diagnostics_start = Instant::now();
-        set_semantic_lifecycle(&state, SemanticLifecycle::Ready).await;
+        set_semantic_lifecycle(&client, &state, SemanticLifecycle::Ready).await;
         publish_workspace_diagnostics(&client, &state, &config, None).await;
         let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
         log_perf(
@@ -680,7 +716,7 @@ pub(crate) async fn did_change_configuration(
         for warning in warnings {
             client.log_message(MessageType::WARNING, warning).await;
         }
-        set_semantic_lifecycle(&state, SemanticLifecycle::Ready).await;
+        set_semantic_lifecycle(&client, &state, SemanticLifecycle::Ready).await;
         let diagnostics_start = Instant::now();
         publish_workspace_diagnostics(&client, &state, &config, None).await;
         log_perf(
@@ -724,4 +760,21 @@ pub(crate) async fn did_change_configuration(
         )
         .await;
     });
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::workspace::state::SemanticLifecycle;
+
+    #[test]
+    fn semantic_index_ready_notification_includes_version_and_file_count() {
+        let mut state = ServerState::default();
+        state.semantic_state_version = 7;
+        state.semantic_lifecycle = SemanticLifecycle::Ready;
+        let params = semantic_index_ready_notification(&state);
+        assert_eq!(params.lifecycle, "ready");
+        assert_eq!(params.semantic_state_version, 7);
+        assert_eq!(params.workspace_file_count, 0);
+    }
 }
