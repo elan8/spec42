@@ -133,5 +133,6 @@ pub(super) fn build_from_port_def_body_element(
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
         }
+        PDBE::Error(_) => {}
     }
 }
