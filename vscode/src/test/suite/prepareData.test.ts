@@ -770,6 +770,20 @@ describe("prepareDataForView", () => {
         assert.strictEqual(roots[0].children[0].name, "child");
     });
 
+    it("graphToElementTree omits builder diagnostic nodes", () => {
+        const graph = {
+            nodes: [
+                { id: "Pkg", name: "Pkg", type: "package", range: { start: { line: 0, character: 0 }, end: { line: 1, character: 0 } }, attributes: {} },
+                { id: "Pkg::unresolved_allocate_source", name: "unresolved_allocate_source", type: "diagnostic", parentId: "Pkg", range: { start: { line: 1, character: 0 }, end: { line: 2, character: 0 } }, attributes: {} },
+            ],
+            edges: [{ source: "Pkg", target: "Pkg::unresolved_allocate_source", type: "contains" }],
+        };
+        const roots = graphToElementTree(graph);
+        assert.strictEqual(roots.length, 1);
+        assert.strictEqual(roots[0].name, "Pkg");
+        assert.strictEqual(roots[0].children?.length ?? 0, 0);
+    });
+
     describe("interconnection-view with backend IBD payload", () => {
         const mockIbdFromServer = {
             parts: [

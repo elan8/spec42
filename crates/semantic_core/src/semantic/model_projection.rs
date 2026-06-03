@@ -691,6 +691,46 @@ mod tests {
     }
 
     #[test]
+    fn strip_synthetic_nodes_removes_builder_diagnostic_nodes() {
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "WebShopExample".to_string(),
+                    element_type: "package".to_string(),
+                    name: "WebShopExample".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+                GraphNodeDto {
+                    id: "WebShopExample::unresolved_allocate_source".to_string(),
+                    element_type: "diagnostic".to_string(),
+                    name: "unresolved_allocate_source".to_string(),
+                    uri: None,
+                    parent_id: Some("WebShopExample".to_string()),
+                    range: range(),
+                    attributes: Default::default(),
+                },
+            ],
+            edges: vec![GraphEdgeDto {
+                source: "WebShopExample".to_string(),
+                target: "WebShopExample::unresolved_allocate_source".to_string(),
+                rel_type: "contains".to_string(),
+                name: None,
+            }],
+        };
+
+        let stripped = strip_synthetic_nodes(&graph);
+        assert!(
+            stripped.nodes.iter().all(|n| n.element_type != "diagnostic"),
+            "diagnostic nodes must not appear in model explorer graphs: {:?}",
+            stripped.nodes
+        );
+        assert!(stripped.edges.is_empty());
+    }
+
+    #[test]
     fn canonical_general_view_graph_inlines_ports_and_attributes_into_owner_nodes() {
         let graph = SysmlGraphDto {
             nodes: vec![
@@ -1268,6 +1308,7 @@ pub fn build_workspace_graph_dto(
     let sg_nodes = semantic_graph.workspace_nodes_excluding_libraries(library_paths);
     let nodes: Vec<GraphNodeDto> = sg_nodes
         .iter()
+        .filter(|n| n.element_kind != "diagnostic")
         .map(|n| GraphNodeDto {
             id: n.id.qualified_name.clone(),
             element_type: n.element_kind.clone(),
@@ -1312,10 +1353,12 @@ pub fn strip_synthetic_nodes(graph: &SysmlGraphDto) -> SysmlGraphDto {
         .nodes
         .iter()
         .filter(|node| {
-            node.attributes
-                .get("synthetic")
-                .and_then(|v| v.as_bool())
-                .unwrap_or(false)
+            node.element_type == "diagnostic"
+                || node
+                    .attributes
+                    .get("synthetic")
+                    .and_then(|v| v.as_bool())
+                    .unwrap_or(false)
         })
         .map(|n| n.id.clone())
         .collect();

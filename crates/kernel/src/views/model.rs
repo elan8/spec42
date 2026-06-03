@@ -48,6 +48,7 @@ fn build_document_graph_dto(semantic_graph: &semantic::SemanticGraph, uri: &Url)
     let nodes: Vec<GraphNodeDto> = semantic_graph
         .nodes_for_uri(uri)
         .into_iter()
+        .filter(|n| n.element_kind != "diagnostic")
         .map(|n| GraphNodeDto {
             id: n.id.qualified_name.clone(),
             element_type: n.element_kind.clone(),

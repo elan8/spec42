@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Standard SysML view types in examples** - Spec42 standard view types (`InterconnectionView`, `SequenceView`, `StateTransitionView`, `ActionFlowView`, and related) are recognized for type diagnostics like `GeneralView`, so `examples/webshop/Views.sysml` no longer reports spurious `unresolved_type_reference` warnings.
 - **Cross-file allocate/satisfy endpoints** - Imported simple names such as `CheckoutService` in `allocate CheckoutService to CommerceCluster` resolve workspace-wide, so `unresolved_allocate_source` is no longer reported when the target exists in another file.
+- **Model Explorer diagnostic nodes** - Internal builder diagnostic nodes (for example `unresolved_allocate_source`) are excluded from workspace/document graph payloads and tree building, so they no longer appear as spurious children in Model Explorer.
 
 ## [0.25.0] - 2026-06-02
 

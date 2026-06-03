@@ -11,9 +11,14 @@ import type { GraphPayloadDto, VisualizationDataDto } from './visualizationTypes
  * Build a tree of elements from graph (nodes + edges).
  * Used when data has graph instead of elements for views that need tree structure.
  */
+function isBuilderDiagnosticNode(n: { type?: string; element_type?: string }): boolean {
+    const kind = (n.type || n.element_type || '').toLowerCase();
+    return kind === 'diagnostic';
+}
+
 export function graphToElementTree(graph: GraphPayloadDto | null | undefined): any[] {
     if (!graph?.nodes?.length) return [];
-    const nodes = graph.nodes;
+    const nodes = graph.nodes.filter((n: any) => !isBuilderDiagnosticNode(n));
     const edges = graph.edges || [];
     const nodeMap = new Map<string, any>();
     nodes.forEach((n: any) => {

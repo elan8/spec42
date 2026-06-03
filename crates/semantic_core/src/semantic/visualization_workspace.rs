@@ -89,7 +89,11 @@ pub fn build_workspace_graph_dto_for_uris(
     let mut nodes = Vec::new();
     let mut node_ids = HashSet::new();
     for workspace_uri in workspace_uris {
-        for node in semantic_graph.nodes_for_uri(workspace_uri) {
+        for node in semantic_graph
+            .nodes_for_uri(workspace_uri)
+            .into_iter()
+            .filter(|n| n.element_kind != "diagnostic")
+        {
             node_ids.insert(node.id.qualified_name.clone());
             nodes.push(GraphNodeDto {
                 id: node.id.qualified_name.clone(),
