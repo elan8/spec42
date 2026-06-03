@@ -6,7 +6,7 @@
   ],
   "semanticValidation": [
     { "category": "library-resolution", "codes": ["missing_library_context", "unresolved_type_reference", "unresolved_import_target", "unresolved_specializes_reference"], "status": "supported" },
-    { "category": "relationship-resolution", "codes": ["unresolved_satisfy_source", "unresolved_satisfy_target", "unresolved_allocate_source", "unresolved_allocate_target", "unresolved_pending_relationship", "unresolved_pending_expression_relationship"], "status": "supported" },
+    { "category": "relationship-resolution", "codes": ["unresolved_satisfy_source", "unresolved_satisfy_target", "unresolved_allocate_source", "unresolved_allocate_target", "allocate_endpoint_prefers_usage", "satisfy_endpoint_prefers_usage", "unresolved_pending_relationship", "unresolved_pending_expression_relationship"], "status": "supported" },
     { "category": "model-quality", "codes": ["duplicate_connection", "invalid_multiplicity", "invalid_redefines_reference", "implicit_redefinition_without_operator", "invalid_allocation_endpoints", "invalid_verdict_value"], "status": "supported" }
   ],
   "views": [

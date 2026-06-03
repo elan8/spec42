@@ -9,7 +9,7 @@ use std::{
 };
 use url::Url;
 
-use crate::semantic::diagnostics::checks::builder_diagnostics::should_suppress_builder_diagnostic;
+use crate::semantic::diagnostics::relationship_endpoint_messages::builder_relationship_diagnostic_to_emit;
 use crate::semantic::diagnostics::checks::import_resolution::{
     has_import_in_scope, import_target, import_target_resolves,
 };
@@ -102,16 +102,22 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             .and_then(|v| v.as_str())
             .unwrap_or("semantic diagnostic")
             .to_string();
-        if should_suppress_builder_diagnostic(graph, uri, node, code, &message) {
+        let Some((emit_code, emit_message)) = builder_relationship_diagnostic_to_emit(
+            graph,
+            uri,
+            node,
+            code,
+            &message,
+        ) else {
             continue;
-        }
+        };
         diagnostics.push(diag(
             uri,
             diagnostic_range(graph, node, None),
             DiagnosticSeverity::Warning,
             "semantic",
-            code,
-            message,
+            &emit_code,
+            emit_message,
         ));
     }
     section_timings.push((
