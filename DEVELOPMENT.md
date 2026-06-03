@@ -188,6 +188,17 @@ Frontend rendering and SVG export checks live under `vscode/src/test/suite`. SVG
 
 Action Flow and State Transition views are stable-facing and should remain release-gating. Sequence View remains experimental.
 
+## Examples and domain libraries
+
+Large model content is versioned as Git submodules at the **repository root** only:
+
+- `examples/` → [elan8/sysml-examples](https://github.com/elan8/sysml-examples)
+- `domain-libraries/` → [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries)
+
+`vscode/.gitignore` ignores `vscode/examples` and `vscode/domain-libraries` so duplicate checkouts under `vscode/` are not committed. If you see the same example folders twice in the Spec42 **Examples** view, remove the extra copy under `vscode/examples` and keep the root submodule.
+
+The VS Code **Examples** sidebar lists folders from the canonical root `examples/` only (not both `vscode/examples` and `../examples`). Hidden directories such as `.github` are excluded.
+
 ## Testing the Extension Manually
 
 1. Build the Rust server: `cargo build` or `cargo build --release`.

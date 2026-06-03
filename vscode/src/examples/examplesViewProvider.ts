@@ -44,6 +44,11 @@ export class ExamplesInfoItem extends vscode.TreeItem {
 
 export type ExamplesTreeItem = ExampleTreeItem | ExamplesInfoItem;
 
+/** Example folders to show in the Examples view (excludes dot dirs like .github). */
+export function isVisibleExampleFolder(folderName: string): boolean {
+  return folderName.length > 0 && !folderName.startsWith(".");
+}
+
 export class ExamplesViewProvider
   implements vscode.TreeDataProvider<ExamplesTreeItem>
 {
@@ -117,6 +122,7 @@ export class ExamplesViewProvider
       const folders = entries
         .filter((entry) => (entry[1] & vscode.FileType.Directory) !== 0)
         .map((entry) => entry[0])
+        .filter(isVisibleExampleFolder)
         .sort((a, b) => a.localeCompare(b));
 
       for (const folderName of folders) {

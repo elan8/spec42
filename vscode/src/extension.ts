@@ -319,23 +319,19 @@ function shouldShowModelExplorerContext(
 function resolveAdditionalExamplesRoots(
   extensionPath: string
 ): vscode.Uri[] {
-  const roots: vscode.Uri[] = [];
-  const seen = new Set<string>();
-  const addRoot = (rootPath: string): void => {
-    const normalized = path.resolve(rootPath);
-    const key = normalized.toLowerCase();
-    if (seen.has(key) || !fs.existsSync(normalized)) {
-      return;
-    }
-    seen.add(key);
-    roots.push(vscode.Uri.file(normalized));
-  };
+  const repoExamples = path.resolve(extensionPath, "..", "examples");
+  const extensionExamples = path.resolve(extensionPath, "examples");
 
-  // Extension-local examples roots only (no workspace-relative probing).
-  addRoot(path.join(extensionPath, "examples"));
-  addRoot(path.join(extensionPath, "..", "examples"));
-
-  return roots;
+  // Canonical examples live in the repository submodule at <repo>/examples.
+  // When developing from vscode/, prefer that root so we do not also scan
+  // vscode/examples (often a duplicate local checkout; see vscode/.gitignore).
+  if (fs.existsSync(repoExamples)) {
+    return [vscode.Uri.file(repoExamples)];
+  }
+  if (fs.existsSync(extensionExamples)) {
+    return [vscode.Uri.file(extensionExamples)];
+  }
+  return [];
 }
 
 function getEnabledVisualizationViewIds(): Set<string> {
