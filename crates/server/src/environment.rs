@@ -10,6 +10,7 @@ use crate::stdlib::{
     managed_status, project_dirs, standard_library_paths_from_data_dir, StandardLibraryConfig,
     StandardLibraryPaths, StandardLibraryStatus, EMBEDDED_STDLIB_ARCHIVE, EMBEDDED_STDLIB_REPO,
 };
+use crate::sysand::{dependency_roots_from_status, detect_sysand_status, SysandStatus};
 
 #[derive(Debug, Clone, Deserialize, Default)]
 pub struct ConfigFile {
@@ -31,6 +32,7 @@ pub struct ResolvedEnvironment {
     pub stdlib_source: Option<String>,
     pub used_legacy_vscode_fallback: bool,
     pub domain_libraries_path: Option<PathBuf>,
+    pub sysand: SysandStatus,
     pub standard_library: StandardLibraryConfig,
     pub standard_library_paths: StandardLibraryPaths,
 }
@@ -47,6 +49,7 @@ pub struct DoctorReport {
     pub stdlib_source_kind: String,
     pub used_legacy_vscode_fallback: bool,
     pub resolved_domain_libraries_path: Option<String>,
+    pub sysand: SysandStatus,
     pub standard_library_status: StandardLibraryStatus,
     pub library_paths: Vec<DoctorPathStatus>,
 }
@@ -114,10 +117,13 @@ fn resolve_environment_with_dirs(
     )?;
 
     let domain_libraries_path = discover_domain_libraries_path();
+    let sysand = detect_sysand_status();
+    let sysand_dependency_roots = dependency_roots_from_status(&sysand);
     let library_paths = resolve_library_paths(
         cli,
         &explicit_config,
         &default_config,
+        &sysand_dependency_roots,
         stdlib_resolution.path.as_ref(),
         domain_libraries_path.as_ref(),
     );
@@ -131,6 +137,7 @@ fn resolve_environment_with_dirs(
         stdlib_source: stdlib_resolution.source,
         used_legacy_vscode_fallback: stdlib_resolution.used_legacy_vscode_fallback,
         domain_libraries_path,
+        sysand,
         standard_library,
         standard_library_paths,
     })
@@ -192,6 +199,7 @@ pub fn build_doctor_report(
             .domain_libraries_path
             .as_ref()
             .map(|path| path.display().to_string()),
+        sysand: environment.sysand.clone(),
         standard_library_status: status,
         library_paths: environment
             .library_paths
@@ -250,6 +258,7 @@ fn resolve_library_paths(
     cli: &Cli,
     explicit_config: &ConfigFile,
     default_config: &ConfigFile,
+    sysand_dependency_roots: &[PathBuf],
     stdlib_path: Option<&PathBuf>,
     domain_libraries_path: Option<&PathBuf>,
 ) -> Vec<PathBuf> {
@@ -276,6 +285,7 @@ fn resolve_library_paths(
         Vec::new()
     };
 
+    paths.extend(sysand_dependency_roots.iter().cloned());
     if let Some(stdlib_path) = stdlib_path {
         paths.push(stdlib_path.clone());
     }
@@ -491,6 +501,7 @@ mod tests {
             &cli,
             &ConfigFile::default(),
             &ConfigFile::default(),
+            &[],
             None,
             None,
         );

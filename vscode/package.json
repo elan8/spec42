@@ -127,6 +127,18 @@
         "category": "Spec42"
       },
       {
+        "command": "sysml.sysand.showStatus",
+        "title": "Sysand: Show Status",
+        "icon": "$(package)",
+        "category": "Spec42"
+      },
+      {
+        "command": "sysml.sysand.refreshDependencies",
+        "title": "Sysand: Refresh Dependencies",
+        "icon": "$(sync)",
+        "category": "Spec42"
+      },
+      {
         "command": "sysml.showVisualizer",
         "title": "Open SysML Visualizer",
         "icon": {

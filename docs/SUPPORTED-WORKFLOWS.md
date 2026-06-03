@@ -16,6 +16,10 @@ These are the workflows the project is actively hardening for `1.0` and treats a
 - Formatting
 - Semantic tokens
 - Folding ranges
+- Deterministic CLI validation reports for CI (`text`, `json`, `sarif`, `junit`)
+- Optional Sysand package-manager detection and dependency-root ingestion
+- Shared-renderer visualization and deterministic CLI SVG/JSON diagram export
+- Generated conformance reporting for language, validation, views, CLI, and Sysand integration
 
 ## Usable With Caveats
 
@@ -39,9 +43,11 @@ These workflows are available and useful, but still have known limits that shoul
 
 The following areas are intentionally not release-gating for `1.0`:
 
-- Additional visualization routing and layout quality beyond the five SysML visualizer views
+- Diagram export beyond deterministic SVG/JSON, such as PNG/PDF or browser-identical rendering
 - Broader SysML v2 language coverage outside the currently well-tested subset
 - Deep semantic validation beyond the existing parser and graph-based support
+- Editable table/matrix views
+- Python automation APIs and ReqIF/DOORS/Polarion bridges
 
 ## Current Support Boundaries
 
@@ -58,10 +64,12 @@ For this project, `1.0` means:
 
 - safe daily use for core editing workflows
 - clear failure states and recovery in VS Code
-- deterministic CI coverage for the release-critical editor features
+- deterministic CI coverage for editor, validation, report, package-detection, and shared-renderer workflows
+- a credible open/local-first alternative for teams comparing SysML v2 tooling ecosystems
 
 It does not mean:
 
 - every planned SysML feature is implemented
 - every visualization is stable
 - the full specification is covered
+- Spec42 replaces Sysand; Sysand is treated as optional package infrastructure

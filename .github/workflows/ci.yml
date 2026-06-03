@@ -36,6 +36,9 @@ jobs:
           mkdir -p "$(dirname "$SPEC42_STDLIB_BUNDLE_ZIP")"
           curl --fail --location --retry 3 --output "$SPEC42_STDLIB_BUNDLE_ZIP" "$SPEC42_STDLIB_BUNDLE_URL"
 
+      - name: Conformance matrix is current
+        run: node scripts/generate-conformance-matrix.mjs --check
+
       - name: cargo test (required fast path)
         run: cargo test --workspace
 

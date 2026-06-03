@@ -67,6 +67,8 @@ fn handle_spec42_check(arguments: Value) -> Result<Value, String> {
         path: PathBuf::from(&params.path),
         workspace_root: params.workspace_root.map(PathBuf::from),
         format: OutputFormat::Json,
+        warnings_as_errors: false,
+        baseline: None,
     };
 
     let report = perform_check(&cli, &check_args)?;

@@ -74,6 +74,16 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
         await vscode.commands.executeCommand("sysml.library.managePaths");
         return;
       }
+
+      if (message?.type === "showSysandStatus") {
+        await vscode.commands.executeCommand("sysml.sysand.showStatus");
+        return;
+      }
+
+      if (message?.type === "refreshSysandDependencies") {
+        await vscode.commands.executeCommand("sysml.sysand.refreshDependencies");
+        return;
+      }
     });
 
     this.postStatus();
@@ -163,6 +173,17 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       </button>
     </div>
   </div>
+  <div class="stdlib-row">
+    <div class="stdlib-title" title="Optional Sysand package dependencies">Sysand packages</div>
+    <div class="actions">
+      <button id="btnShowSysandStatus" class="icon-btn" title="Show Sysand status">
+        <span class="codicon codicon-package"></span>
+      </button>
+      <button id="btnRefreshSysandDependencies" class="icon-btn" title="Refresh Sysand dependencies">
+        <span class="codicon codicon-sync"></span>
+      </button>
+    </div>
+  </div>
   <div id="customPackages" class="custom-packages"></div>
   <div class="row">
     <input id="query" type="text" placeholder="Search standard + custom libraries..." />
@@ -178,6 +199,8 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
     const stdlibTitle = document.getElementById('stdlibTitle');
     const stdlibVersion = document.getElementById('stdlibVersion');
     const btnManageCustomLibraries = document.getElementById('btnManageCustomLibraries');
+    const btnShowSysandStatus = document.getElementById('btnShowSysandStatus');
+    const btnRefreshSysandDependencies = document.getElementById('btnRefreshSysandDependencies');
     const customPackages = document.getElementById('customPackages');
     let timer = null;
     let latestTree = { sources: [], symbolTotal: 0, total: 0 };
@@ -368,6 +391,12 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
 
     btnManageCustomLibraries.addEventListener('click', () => {
       vscode.postMessage({ type: 'manageCustomLibraries' });
+    });
+    btnShowSysandStatus.addEventListener('click', () => {
+      vscode.postMessage({ type: 'showSysandStatus' });
+    });
+    btnRefreshSysandDependencies.addEventListener('click', () => {
+      vscode.postMessage({ type: 'refreshSysandDependencies' });
     });
 
     vscode.postMessage({ type: 'initLoad' });

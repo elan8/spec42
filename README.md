@@ -22,6 +22,8 @@ SysML v2 is powerful, but practical modeling work depends on fast feedback, reli
 - **Understand model structure quickly** with symbols, references, hierarchy features, Model Explorer, and Model Visualizer.
 - **Validate the same way locally and in CI** with the `spec42 check` command.
 - **Avoid standard-library setup friction** with bundled SysML library support and `spec42 doctor` diagnostics.
+- **Integrate with Sysand when present** so package-managed dependencies can participate in library resolution without making Sysand mandatory.
+- **Publish deterministic artifacts** with CI-friendly validation formats and SVG/JSON diagram export.
 - **Learn by example** with compact SysML v2 models that progress from workstation and timer examples to richer software and drone systems.
 
 In short, `spec42` helps you edit, understand, and validate models with consistent behavior from developer workstation to automation pipeline.
@@ -43,6 +45,8 @@ Download a release from [GitHub Releases](https://github.com/elan8/spec42/releas
 ```bash
 spec42 doctor
 spec42 check examples/timer/KitchenTimer.sysml
+spec42 check examples/timer/KitchenTimer.sysml --format sarif
+spec42 sysand status --format json
 ```
 
 Use `spec42 doctor` first when library paths, editor setup, or CI behavior differ from what you expect.
@@ -55,6 +59,7 @@ Use `spec42 doctor` first when library paths, editor setup, or CI behavior diffe
 - **Stay productive across real workspaces** with analysis across `.sysml` and `.kerml` files plus configured library roots.
 - **Onboard reliably across environments** with embedded standard-library support and robust resolution behavior.
 - **Troubleshoot environment issues quickly** with resolved runtime, config, and library diagnostics when setups differ.
+- **Track conformance transparently** through the generated [`docs/CONFORMANCE-MATRIX.md`](docs/CONFORMANCE-MATRIX.md).
 
 ### Supported SysML v2 Views (Current)
 

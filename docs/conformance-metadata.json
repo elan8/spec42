@@ -1,0 +1,35 @@
+{
+  "languageCoverage": [
+    { "area": "SysML/KerML parsing", "status": "partial", "notes": "Pinned parser coverage; release gating follows tested editor and validation workflows." },
+    { "area": "Workspace imports and library resolution", "status": "supported", "notes": "Bundled standard library, custom roots, domain libraries, and optional Sysand dependency roots." },
+    { "area": "Formatting, rename, navigation", "status": "release-gating", "notes": "Daily editing workflows tracked in supported workflows." }
+  ],
+  "semanticValidation": [
+    { "category": "library-resolution", "codes": ["missing_library_context", "unresolved_type_reference", "unresolved_import_target", "unresolved_specializes_reference"], "status": "supported" },
+    { "category": "relationship-resolution", "codes": ["unresolved_satisfy_source", "unresolved_satisfy_target", "unresolved_allocate_source", "unresolved_allocate_target", "unresolved_pending_relationship", "unresolved_pending_expression_relationship"], "status": "supported" },
+    { "category": "model-quality", "codes": ["duplicate_connection", "invalid_multiplicity", "invalid_redefines_reference", "implicit_redefinition_without_operator", "invalid_allocation_endpoints", "invalid_verdict_value"], "status": "supported" }
+  ],
+  "views": [
+    { "id": "general-view", "renderer": "shared", "status": "complete", "notes": "General structural view with shared renderer." },
+    { "id": "interconnection-view", "renderer": "shared", "status": "complete", "notes": "Connection-focused shared renderer." },
+    { "id": "action-flow-view", "renderer": "shared", "status": "complete", "notes": "Behavior flow renderer with perform action and parameter notation." },
+    { "id": "sequence-view", "renderer": "shared", "status": "complete", "notes": "Sequence renderer with fragments, activations, self and return messages." },
+    { "id": "state-transition-view", "renderer": "shared", "status": "complete", "notes": "State renderer with regions, entry/do/exit, terminate/final distinctions." },
+    { "id": "browser-view", "renderer": "shared", "status": "provisional", "notes": "Standard-view renderer while graphical notation details settle." },
+    { "id": "grid-view", "renderer": "shared", "status": "provisional", "notes": "Standard-view renderer while graphical notation details settle." },
+    { "id": "geometry-view", "renderer": "shared", "status": "provisional", "notes": "Standard-view renderer while graphical notation details settle." }
+  ],
+  "cliReporting": [
+    { "feature": "check text/json", "status": "supported" },
+    { "feature": "check sarif/junit", "status": "supported" },
+    { "feature": "warnings-as-errors", "status": "supported" },
+    { "feature": "diagnostic baseline", "status": "supported" },
+    { "feature": "diagram export svg/json", "status": "supported" }
+  ],
+  "sysand": [
+    { "feature": "status detection", "status": "supported" },
+    { "feature": "doctor reporting", "status": "supported" },
+    { "feature": "dependency roots in library resolution", "status": "supported" },
+    { "feature": "package install/update orchestration", "status": "deferred" }
+  ]
+}

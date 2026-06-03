@@ -24,9 +24,17 @@ pub enum Command {
     Lsp,
     Check(CheckArgs),
     Doctor(DoctorArgs),
+    Sysand {
+        #[command(subcommand)]
+        command: SysandCommand,
+    },
     Stdlib {
         #[command(subcommand)]
         command: StdlibCommand,
+    },
+    Diagrams {
+        #[command(subcommand)]
+        command: DiagramsCommand,
     },
 }
 
@@ -37,6 +45,10 @@ pub struct CheckArgs {
     pub workspace_root: Option<PathBuf>,
     #[arg(long = "format", value_enum, default_value_t = OutputFormat::Text)]
     pub format: OutputFormat,
+    #[arg(long = "warnings-as-errors", default_value_t = false)]
+    pub warnings_as_errors: bool,
+    #[arg(long = "baseline")]
+    pub baseline: Option<PathBuf>,
 }
 
 #[derive(Debug, Clone, Args)]
@@ -65,9 +77,48 @@ pub enum StdlibCommand {
     ClearCache,
 }
 
+#[derive(Debug, Clone, Subcommand)]
+pub enum SysandCommand {
+    /// Show optional Sysand package-manager integration status.
+    Status(SysandStatusArgs),
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct SysandStatusArgs {
+    #[arg(long = "format", value_enum, default_value_t = OutputFormat::Text)]
+    pub format: OutputFormat,
+}
+
+#[derive(Debug, Clone, Subcommand)]
+pub enum DiagramsCommand {
+    /// Export deterministic shared-view payloads for CI documentation workflows.
+    Export(DiagramExportArgs),
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct DiagramExportArgs {
+    pub path: PathBuf,
+    #[arg(long = "workspace-root")]
+    pub workspace_root: Option<PathBuf>,
+    #[arg(long = "view", default_value = "all")]
+    pub view: String,
+    #[arg(long = "format", value_enum, default_value_t = DiagramExportFormat::Svg)]
+    pub format: DiagramExportFormat,
+    #[arg(long = "output")]
+    pub output: PathBuf,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
 pub enum OutputFormat {
     Text,
+    Json,
+    Sarif,
+    Junit,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+pub enum DiagramExportFormat {
+    Svg,
     Json,
 }
 
@@ -104,8 +155,70 @@ mod tests {
                 assert_eq!(args.path, PathBuf::from("models"));
                 assert_eq!(args.workspace_root, Some(PathBuf::from("workspace")));
                 assert_eq!(args.format, OutputFormat::Json);
+                assert!(!args.warnings_as_errors);
+                assert!(args.baseline.is_none());
             }
             other => panic!("expected check command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn check_command_parses_ci_flags() {
+        let cli = Cli::parse_from([
+            "spec42",
+            "check",
+            "models",
+            "--format",
+            "sarif",
+            "--warnings-as-errors",
+            "--baseline",
+            "baseline.json",
+        ]);
+        match cli.command {
+            Some(Command::Check(args)) => {
+                assert_eq!(args.format, OutputFormat::Sarif);
+                assert!(args.warnings_as_errors);
+                assert_eq!(args.baseline, Some(PathBuf::from("baseline.json")));
+            }
+            other => panic!("expected check command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn sysand_status_command_parses() {
+        let cli = Cli::parse_from(["spec42", "sysand", "status", "--format", "json"]);
+        match cli.command {
+            Some(Command::Sysand {
+                command: SysandCommand::Status(args),
+            }) => assert_eq!(args.format, OutputFormat::Json),
+            other => panic!("expected sysand status command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn diagrams_export_command_parses() {
+        let cli = Cli::parse_from([
+            "spec42",
+            "diagrams",
+            "export",
+            "models",
+            "--view",
+            "general-view",
+            "--format",
+            "json",
+            "--output",
+            "out",
+        ]);
+        match cli.command {
+            Some(Command::Diagrams {
+                command: DiagramsCommand::Export(args),
+            }) => {
+                assert_eq!(args.path, PathBuf::from("models"));
+                assert_eq!(args.view, "general-view");
+                assert_eq!(args.format, DiagramExportFormat::Json);
+                assert_eq!(args.output, PathBuf::from("out"));
+            }
+            other => panic!("expected diagrams export command, got {other:?}"),
         }
     }
 }

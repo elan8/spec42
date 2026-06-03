@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import * as cp from "child_process";
 import * as vscode from "vscode";
 import {
   CloseAction,
@@ -242,6 +243,22 @@ function prepareDevelopmentServerCommand(
     logError("Failed to stage development server binary", err);
     return source;
   }
+}
+
+function runSpec42Json(command: string, args: string[], cwd: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    cp.execFile(command, args, { cwd: cwd || undefined }, (error, stdout, stderr) => {
+      if (error) {
+        reject(new Error(stderr?.trim() || error.message));
+        return;
+      }
+      try {
+        resolve(JSON.parse(stdout));
+      } catch (parseError) {
+        reject(parseError instanceof Error ? parseError : new Error(String(parseError)));
+      }
+    });
+  });
 }
 
 function isSysmlDoc(doc: vscode.TextDocument | undefined): boolean {
@@ -941,6 +958,44 @@ export function activate(context: vscode.ExtensionContext): void {
       void vscode.window.showInformationMessage(
         `The SysML standard library is bundled with the Spec42 language server (release ${cfg.version}). Add extra library roots with spec42.libraryPaths if needed.`
       );
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sysml.sysand.showStatus", async () => {
+      try {
+        const status = await runSpec42Json(
+          serverCommand,
+          ["sysand", "status", "--format", "json"],
+          workspaceRoot
+        );
+        const roots = Array.isArray(status?.dependencyRoots)
+          ? status.dependencyRoots.length
+          : 0;
+        const warnings = Array.isArray(status?.warnings) ? status.warnings : [];
+        const detail = [
+          status?.installed ? "installed" : "not installed",
+          status?.projectRoot ? `project: ${status.projectRoot}` : "no project manifest",
+          `${roots} dependency root(s)`,
+        ].join("; ");
+        if (warnings.length > 0) {
+          void vscode.window.showWarningMessage(`Sysand ${detail}. ${warnings[0]}`);
+        } else {
+          void vscode.window.showInformationMessage(`Sysand ${detail}.`);
+        }
+      } catch (error) {
+        void vscode.window.showErrorMessage(
+          `Unable to read Sysand status: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sysml.sysand.refreshDependencies", async () => {
+      await vscode.commands.executeCommand("sysml.sysand.showStatus");
+      await vscode.commands.executeCommand("sysml.restartServer");
+      libraryWebviewProvider?.refresh();
     })
   );
 

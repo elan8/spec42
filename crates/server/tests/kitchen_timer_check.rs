@@ -25,6 +25,8 @@ fn kitchen_timer_example_validates() {
         path: example,
         workspace_root: None,
         format: OutputFormat::Json,
+        warnings_as_errors: false,
+        baseline: None,
     };
 
     let report = perform_check(&cli, &args).expect("validation should run");
@@ -58,6 +60,8 @@ fn kitchen_timer_example_validates_with_explicit_workspace_root() {
         path: example,
         workspace_root: Some(workspace_root),
         format: OutputFormat::Json,
+        warnings_as_errors: false,
+        baseline: None,
     };
 
     let report = perform_check(&cli, &args).expect("validation should run");

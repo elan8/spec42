@@ -27,6 +27,7 @@ zip = { version = "2", default-features = false, features = ["deflate"] }
 
 [dependencies]
 kernel = { path = "../kernel" }
+semantic_core = { path = "../semantic_core" }
 tokio = { version = "1", features = ["full"] }
 serde_json = { workspace = true }
 clap = { workspace = true }

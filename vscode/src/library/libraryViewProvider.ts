@@ -74,6 +74,11 @@ export class LibraryViewProvider
         "Search available libraries (coming soon)",
         "sysml.library.search"
       ),
+      new LibraryTreeItem(
+        "Sysand Packages",
+        "Show optional package-manager status",
+        "sysml.sysand.showStatus"
+      ),
     ];
   }
 }

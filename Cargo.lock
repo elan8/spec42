@@ -1395,6 +1395,7 @@ dependencies = [
  "kernel",
  "rmcp",
  "schemars",
+ "semantic_core",
  "serde",
  "serde_json",
  "sha2",

@@ -34,7 +34,7 @@ pub use syntax::ast_util::{identification_name, span_to_range, span_to_source_ra
 pub use validation::{
     validate_paths, validate_paths_with_semantics, SemanticModelNode, SemanticModelProjection,
     SemanticModelRelationship, SemanticValidationReport, ValidationReport, ValidationRequest,
-    ValidationSummary,
+    ValidationSummary, ValidatedDocument,
 };
 pub use views::dto::{
     SysmlClearCacheResultDto, SysmlFeatureInspectorElementDto, SysmlFeatureInspectorElementRefDto,

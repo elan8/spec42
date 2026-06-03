@@ -1,16 +1,23 @@
 //! Spec42 CLI and MCP shared implementation.
 
 pub mod cli;
+pub mod diagrams;
 pub mod environment;
 pub mod mcp;
+pub mod reports;
 pub mod stdlib;
+pub mod sysand;
 
 use std::process::ExitCode;
 use std::sync::Arc;
 
-use cli::{CheckArgs, Cli, Command, DoctorArgs, OutputFormat, StdlibCommand};
+use cli::{
+    CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, OutputFormat, StdlibCommand,
+    SysandCommand,
+};
 use environment::{build_doctor_report, resolve_environment};
 use kernel::{validate_paths, ValidationReport, ValidationRequest};
+use reports::{apply_baseline, emit_validation_report};
 use stdlib::{managed_status, remove_standard_library};
 
 /// Run validation for the given CLI environment and [`CheckArgs`] (same logic as `spec42 check`).
@@ -38,7 +45,9 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
         Some(Command::Lsp) => run_lsp(&cli).await,
         Some(Command::Check(args)) => run_check(&cli, args),
         Some(Command::Doctor(args)) => run_doctor(&cli, args),
+        Some(Command::Sysand { command }) => run_sysand(command),
         Some(Command::Stdlib { command }) => run_stdlib(&cli, command),
+        Some(Command::Diagrams { command }) => run_diagrams(&cli, command),
     }
 }
 
@@ -54,19 +63,18 @@ async fn run_lsp(cli: &Cli) -> Result<ExitCode, String> {
 
 fn run_check(cli: &Cli, args: &CheckArgs) -> Result<ExitCode, String> {
     let report = perform_check(cli, args)?;
+    let report = if let Some(baseline) = &args.baseline {
+        apply_baseline(&report, baseline.as_path())?
+    } else {
+        report
+    };
 
-    match args.format {
-        OutputFormat::Json => {
-            println!(
-                "{}",
-                serde_json::to_string_pretty(&report)
-                    .map_err(|err| format!("Failed to serialize report as JSON: {err}"))?
-            );
-        }
-        OutputFormat::Text => print_check_report(&report),
-    }
+    emit_validation_report(&report, args.format)?;
 
-    Ok(if report.summary.error_count > 0 {
+    let failed = report.summary.error_count > 0
+        || (args.warnings_as_errors && report.summary.warning_count > 0);
+
+    Ok(if failed {
         ExitCode::from(1)
     } else {
         ExitCode::SUCCESS
@@ -85,8 +93,50 @@ fn run_doctor(cli: &Cli, args: &DoctorArgs) -> Result<ExitCode, String> {
             );
         }
         OutputFormat::Text => print_doctor_report(&report),
+        other => {
+            return Err(format!(
+                "Doctor supports text and json output, not {other:?}."
+            ))
+        }
     }
     Ok(ExitCode::SUCCESS)
+}
+
+fn run_sysand(command: &SysandCommand) -> Result<ExitCode, String> {
+    match command {
+        SysandCommand::Status(args) => {
+            let status = sysand::detect_sysand_status();
+            match args.format {
+                OutputFormat::Json => println!(
+                    "{}",
+                    serde_json::to_string_pretty(&status)
+                        .map_err(|err| format!("Failed to serialize Sysand status: {err}"))?
+                ),
+                OutputFormat::Text => print_sysand_status(&status),
+                other => {
+                    return Err(format!(
+                        "Sysand status supports text and json output, not {other:?}."
+                    ))
+                }
+            }
+            Ok(ExitCode::SUCCESS)
+        }
+    }
+}
+
+fn run_diagrams(cli: &Cli, command: &DiagramsCommand) -> Result<ExitCode, String> {
+    match command {
+        DiagramsCommand::Export(args) => {
+            let environment = resolve_environment(cli)?;
+            let summary = diagrams::export_diagrams(args, &environment.library_paths)?;
+            println!(
+                "Exported {} diagram artifact(s) to {}",
+                summary.exported,
+                summary.output_dir.display()
+            );
+            Ok(ExitCode::SUCCESS)
+        }
+    }
 }
 
 fn run_stdlib(cli: &Cli, command: &StdlibCommand) -> Result<ExitCode, String> {
@@ -145,42 +195,6 @@ fn run_stdlib(cli: &Cli, command: &StdlibCommand) -> Result<ExitCode, String> {
     Ok(ExitCode::SUCCESS)
 }
 
-fn print_check_report(report: &ValidationReport) {
-    for document in &report.documents {
-        for diagnostic in &document.diagnostics {
-            let severity = diagnostic.severity.map(severity_label).unwrap_or("error");
-            let code = diagnostic
-                .code
-                .as_ref()
-                .map(number_or_string_label)
-                .unwrap_or_default();
-            println!(
-                "{}:{}:{}: {}{}{}",
-                document.uri,
-                diagnostic.range.start.line + 1,
-                diagnostic.range.start.character + 1,
-                severity,
-                if code.is_empty() { "" } else { " [" },
-                if code.is_empty() {
-                    diagnostic.message.clone()
-                } else {
-                    format!("{code}] {}", diagnostic.message)
-                }
-            );
-        }
-    }
-    println!(
-        "Checked {} document(s): {} error(s), {} warning(s), {} info(s)",
-        report.summary.document_count,
-        report.summary.error_count,
-        report.summary.warning_count,
-        report.summary.information_count
-    );
-    for advice in &report.advice {
-        println!("Advice: {advice}");
-    }
-}
-
 fn print_doctor_report(report: &environment::DoctorReport) {
     println!("spec42 {}", report.version);
     println!("mode: {}", report.mode);
@@ -233,6 +247,17 @@ fn print_doctor_report(report: &environment::DoctorReport) {
             if path.exists { "exists" } else { "missing" }
         );
     }
+    println!(
+        "sysand: {}",
+        if report.sysand.installed {
+            "installed"
+        } else {
+            "not installed"
+        }
+    );
+    if let Some(root) = &report.sysand.project_root {
+        println!("sysand project: {root}");
+    }
 }
 
 fn print_stdlib_status(status: &stdlib::StandardLibraryStatus) {
@@ -260,19 +285,34 @@ fn print_stdlib_status(status: &stdlib::StandardLibraryStatus) {
     }
 }
 
-fn severity_label(severity: tower_lsp::lsp_types::DiagnosticSeverity) -> &'static str {
-    match severity {
-        tower_lsp::lsp_types::DiagnosticSeverity::ERROR => "error",
-        tower_lsp::lsp_types::DiagnosticSeverity::WARNING => "warning",
-        tower_lsp::lsp_types::DiagnosticSeverity::INFORMATION => "info",
-        tower_lsp::lsp_types::DiagnosticSeverity::HINT => "hint",
-        _ => "unknown",
+fn print_sysand_status(status: &sysand::SysandStatus) {
+    println!(
+        "sysand: {}",
+        if status.installed {
+            "installed"
+        } else {
+            "not installed"
+        }
+    );
+    println!(
+        "executable: {}",
+        status.executable_path.as_deref().unwrap_or("(none)")
+    );
+    println!(
+        "version: {}",
+        status.version.as_deref().unwrap_or("(unknown)")
+    );
+    println!(
+        "project root: {}",
+        status.project_root.as_deref().unwrap_or("(none)")
+    );
+    println!("manifest present: {}", status.manifest_present);
+    println!("lock present: {}", status.lock_present);
+    println!("dependency roots:");
+    for root in &status.dependency_roots {
+        println!("  - {root}");
     }
-}
-
-fn number_or_string_label(value: &tower_lsp::lsp_types::NumberOrString) -> String {
-    match value {
-        tower_lsp::lsp_types::NumberOrString::String(value) => value.clone(),
-        tower_lsp::lsp_types::NumberOrString::Number(value) => value.to_string(),
+    for warning in &status.warnings {
+        println!("warning: {warning}");
     }
 }
