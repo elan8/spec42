@@ -521,6 +521,20 @@ pub(crate) async fn did_change(
     }
     let diagnostics_start = Instant::now();
     publish_document_diagnostics(client, state, config, uri, &text).await;
+    let peer_uris = {
+        let locked = state.read().await;
+        if locked.semantic_lifecycle.supports_semantic_queries() {
+            crate::workspace::import_graph::workspace_uris_importing_declarations_from(
+                &locked,
+                &uri_norm,
+            )
+        } else {
+            Vec::new()
+        }
+    };
+    if !peer_uris.is_empty() {
+        publish_workspace_diagnostics(client, state, config, Some(&peer_uris)).await;
+    }
     let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
     log_perf(
         client,
@@ -531,6 +545,7 @@ pub(crate) async fn did_change(
             ("version", version.to_string()),
             ("applyChangesMs", apply_ms.to_string()),
             ("diagnosticsMs", diagnostics_ms.to_string()),
+            ("peerDiagnosticsRepublish", peer_uris.len().to_string()),
         ],
     )
     .await;

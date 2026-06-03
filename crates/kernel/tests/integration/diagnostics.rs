@@ -2105,49 +2105,52 @@ fn did_change_republishs_peer_diagnostics_after_debounce() {
         })
         .to_string(),
     );
-    std::thread::sleep(std::time::Duration::from_millis(700));
 
-    let barrier_id = next_id();
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": barrier_id,
-            "method": "textDocument/hover",
-            "params": {
-                "textDocument": { "uri": uri_b },
-                "position": { "line": 0, "character": 0 }
+    // Wait until peer diagnostics clear. Importers are republished immediately after didChange
+    // (import graph); debounce is a backstop. Use last publishDiagnostics for uri_b (hover also
+    // republishes diagnostics, so do not treat an earlier unresolved publish as final).
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(3);
+    let mut peer_has_unresolved = true;
+    while std::time::Instant::now() < deadline && peer_has_unresolved {
+        let barrier_id = next_id();
+        send_message(
+            &mut stdin,
+            &serde_json::json!({
+                "jsonrpc": "2.0",
+                "id": barrier_id,
+                "method": "textDocument/hover",
+                "params": {
+                    "textDocument": { "uri": uri_b },
+                    "position": { "line": 0, "character": 0 }
+                }
+            })
+            .to_string(),
+        );
+        loop {
+            let msg =
+                read_message(&mut stdout).expect("expected message while waiting for peer clear");
+            let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+            if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+                && json["params"]["uri"].as_str() == Some(uri_b)
+            {
+                let diagnostics = json["params"]["diagnostics"]
+                    .as_array()
+                    .cloned()
+                    .unwrap_or_default();
+                peer_has_unresolved = diagnostics.iter().any(|d| {
+                    d["source"].as_str() == Some("semantic")
+                        && d["code"].as_str() == Some("unresolved_type_reference")
+                });
             }
-        })
-        .to_string(),
-    );
-
-    let mut peer_still_unresolved = false;
-    loop {
-        let msg = read_message(&mut stdout).expect("expected message while waiting for barrier");
-        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
-        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
-            && json["params"]["uri"].as_str() == Some(uri_b)
-        {
-            let diagnostics = json["params"]["diagnostics"]
-                .as_array()
-                .cloned()
-                .unwrap_or_default();
-            if diagnostics.iter().any(|d| {
-                d["source"].as_str() == Some("semantic")
-                    && d["code"].as_str() == Some("unresolved_type_reference")
-            }) {
-                peer_still_unresolved = true;
+            if json["id"].as_i64() == Some(barrier_id) {
+                break;
             }
-        }
-        if json["id"].as_i64() == Some(barrier_id) {
-            break;
         }
     }
 
     assert!(
-        !peer_still_unresolved,
-        "expected debounced workspace diagnostics republish to clear peer unresolved_type_reference"
+        !peer_has_unresolved,
+        "expected peer diagnostics to clear after provider file was fixed (immediate importer republish + debounced workspace backstop)"
     );
 
     let _ = child.kill();
