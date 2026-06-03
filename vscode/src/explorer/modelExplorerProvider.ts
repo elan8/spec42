@@ -372,7 +372,7 @@ function percentileMs(values: number[], percentile: number): number {
 type ExplorerTreeItem = ExplorerInfoItem | FileTreeItem | ModelTreeItem;
 
 type WorkspaceLoadStatus = {
-  state: "idle" | "indexing" | "ready" | "degraded";
+  state: "idle" | "pending" | "indexing" | "ready" | "degraded";
   scannedFiles: number;
   loadedFiles: number;
   perPatternLimit?: number;
@@ -478,8 +478,13 @@ export class ModelExplorerProvider
     return (
       this.workspaceFileData.size > 0 ||
       this.workspaceFileUris.length > 0 ||
-      this.workspaceLoadStatus.state === "indexing"
+      this.isWorkspaceIndexingInProgress()
     );
+  }
+
+  private isWorkspaceIndexingInProgress(): boolean {
+    const state = this.workspaceLoadStatus.state;
+    return state === "pending" || state === "indexing";
   }
 
   getWorkspaceFileUris(): vscode.Uri[] {
@@ -960,17 +965,31 @@ export class ModelExplorerProvider
 
   private getWorkspaceInfoItems(): ExplorerInfoItem[] {
     const status = this.workspaceLoadStatus;
-    if (status.state === "idle") {
+    if (status.state === "idle" || status.state === "ready") {
       return [];
     }
 
     const details = `Scanned ${status.scannedFiles} file(s), loaded ${status.loadedFiles} file(s)${status.failures > 0 ? `, ${status.failures} failed` : ""}${status.perPatternLimit ? `, limit ${status.perPatternLimit} per folder/type` : ""}`;
+    if (status.state === "pending") {
+      return [
+        new ExplorerInfoItem(
+          "Workspace indexing scheduled",
+          "Starting soon",
+          "The full workspace model will load in the background. The tree updates when indexing completes.",
+          "sync"
+        ),
+      ];
+    }
     if (status.state === "indexing") {
+      const progressLabel =
+        status.scannedFiles > 0 || status.loadedFiles > 0
+          ? `${status.loadedFiles}/${status.scannedFiles} loaded`
+          : "In progress";
       return [
         new ExplorerInfoItem(
           "Workspace indexing in progress",
-          `${status.scannedFiles} scanned`,
-          `${details}. Results may still be incomplete.`,
+          progressLabel,
+          `${details}. The model tree may be incomplete until indexing finishes.`,
           "sync"
         ),
       ];
@@ -985,14 +1004,7 @@ export class ModelExplorerProvider
         ),
       ];
     }
-    return [
-      new ExplorerInfoItem(
-        "Workspace indexed",
-        `${status.loadedFiles} loaded`,
-        details,
-        "info"
-      ),
-    ];
+    return [];
   }
 
   private buildSemanticUriMapping(rootItems: ModelTreeItem[]): void {
@@ -1106,6 +1118,20 @@ export class ModelExplorerProvider
     const startedAt = Date.now();
 
     const infoItems = this.getWorkspaceInfoItems();
+    if (
+      infoItems.length > 0 &&
+      this.isWorkspaceIndexingInProgress() &&
+      !this.hasWorkspaceData()
+    ) {
+      this.rootItemsCache = infoItems;
+      logPerf("modelExplorer:buildTreeCache", {
+        mode: "workspace-indexing",
+        totalMs: Date.now() - startedAt,
+        rootItemCount: infoItems.length,
+        loadState: this.workspaceLoadStatus.state,
+      });
+      return this.rootItemsCache;
+    }
     if (this._workspaceViewMode === "byFile" && this.workspaceFileData.size > 0) {
       const metadataStartedAt = Date.now();
       this.buildElementMetadata(
@@ -1162,8 +1188,14 @@ export class ModelExplorerProvider
       return this.rootItemsCache;
     }
 
-    if (this._workspaceViewMode === "bySemantic" && infoItems.length > 0) {
+    if (infoItems.length > 0 && !this.hasWorkspaceData()) {
       this.rootItemsCache = infoItems;
+      logPerf("modelExplorer:buildTreeCache", {
+        mode: "workspace-status",
+        totalMs: Date.now() - startedAt,
+        rootItemCount: infoItems.length,
+        loadState: this.workspaceLoadStatus.state,
+      });
       return this.rootItemsCache;
     }
 

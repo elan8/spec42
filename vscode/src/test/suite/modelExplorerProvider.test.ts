@@ -221,7 +221,64 @@ describe("ModelExplorerProvider", () => {
     assert.strictEqual(result.loadedFiles, 1);
   });
 
-  it("hides workspace indexing info when switching back to by-file mode", async () => {
+  it("shows workspace indexing status in by-file mode before data is loaded", async () => {
+    const provider = new ModelExplorerProvider({
+      getModel: async () => createModelResult("WorkspaceRoot"),
+    } as any);
+
+    provider.setWorkspaceViewMode("byFile");
+    provider.setWorkspaceLoadStatus({
+      state: "indexing",
+      scannedFiles: 3,
+      loadedFiles: 0,
+      cancelled: false,
+      failures: 0,
+      truncated: false,
+    });
+
+    const items = await provider.getChildren();
+    assert.strictEqual(items[0]?.label, "Workspace indexing in progress");
+    assert.strictEqual(items.length, 1);
+  });
+
+  it("shows pending workspace indexing status until load starts", async () => {
+    const provider = new ModelExplorerProvider({
+      getModel: async () => createModelResult("WorkspaceRoot"),
+    } as any);
+
+    provider.setWorkspaceLoadStatus({
+      state: "pending",
+      scannedFiles: 0,
+      loadedFiles: 0,
+      cancelled: false,
+      failures: 0,
+      truncated: false,
+    });
+
+    const items = await provider.getChildren();
+    assert.strictEqual(items[0]?.label, "Workspace indexing scheduled");
+    assert.ok(provider.isWorkspaceBacked());
+  });
+
+  it("hides workspace status info after indexing completes successfully", async () => {
+    const provider = new ModelExplorerProvider({
+      getModel: async () => createModelResult("WorkspaceRoot"),
+    } as any);
+
+    provider.setWorkspaceLoadStatus({
+      state: "ready",
+      scannedFiles: 2,
+      loadedFiles: 2,
+      cancelled: false,
+      failures: 0,
+      truncated: false,
+    });
+
+    const items = await provider.getChildren();
+    assert.strictEqual(items.length, 0);
+  });
+
+  it("shows workspace indexing info when switching between view modes during indexing", async () => {
     const provider = new ModelExplorerProvider({
       getModel: async () => createModelResult("WorkspaceRoot"),
     } as any);

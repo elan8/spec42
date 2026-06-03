@@ -435,8 +435,8 @@
         "spec42.startup.workspaceIndexing": {
           "type": "string",
           "enum": ["lazy", "background", "eager"],
-          "default": "lazy",
-          "description": "Control when the Model Explorer indexes the full workspace at startup. 'lazy' loads only the active document until workspace mode is requested, 'background' starts indexing after a short delay, and 'eager' starts indexing immediately."
+          "default": "background",
+          "description": "Control when the Model Explorer indexes the full workspace at startup. 'lazy' loads only the active document until workspace mode is requested, 'background' starts indexing after a short delay (default), and 'eager' starts indexing immediately."
         },
         "spec42.debug": {
           "type": "boolean",

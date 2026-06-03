@@ -102,7 +102,7 @@ function getStartupWorkspaceIndexingMode(): StartupWorkspaceIndexingMode {
   ) {
     return configured;
   }
-  return "lazy";
+  return "background";
 }
 
 function getStandardLibraryConfig(): StandardLibraryConfig {
@@ -2111,6 +2111,14 @@ export function activate(context: vscode.ExtensionContext): void {
   if (hasWorkspaceFolders && modelExplorerProvider) {
     const provider = modelExplorerProvider;
     if (startupWorkspaceIndexingMode === "background") {
+      provider.setWorkspaceLoadStatus({
+        state: "pending",
+        scannedFiles: 0,
+        loadedFiles: 0,
+        truncated: false,
+        cancelled: false,
+        failures: 0,
+      });
       setTimeout(() => {
         loadWorkspaceSysMLFiles(provider).catch(() => {});
       }, 3000);
