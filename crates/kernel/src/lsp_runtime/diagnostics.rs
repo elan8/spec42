@@ -150,6 +150,7 @@ async fn collect_diagnostics_for_document(
         &uri_norm,
         text,
         false,
+        diagnostics_core::lsp_postprocess_options(),
     );
     diagnostics = filter_transient_startup_semantic_diagnostics(
         diagnostics,

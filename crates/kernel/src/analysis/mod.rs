@@ -1,6 +1,7 @@
 pub(crate) mod checks;
 pub(crate) mod diagnostics_adapter;
 pub(crate) mod diagnostics_core;
+pub(crate) mod diagnostics_postprocess;
 
 pub use crate::language::SymbolEntry;
 pub use crate::semantic::{

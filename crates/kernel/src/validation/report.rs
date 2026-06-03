@@ -30,8 +30,19 @@ pub(super) fn summarize(documents: &[ValidatedDocument]) -> ValidationSummary {
 }
 
 pub(super) fn build_advice(documents: &[ValidatedDocument], no_library_paths: bool) -> Vec<String> {
+    let mut advice = Vec::new();
+    if documents.iter().any(|document| {
+        crate::analysis::diagnostics_postprocess::diagnostics_dominated_by_cascades(
+            &document.diagnostics,
+        )
+    }) {
+        advice.push(
+            "Many errors may be cascades from a few root syntax issues; fix the earliest error in each file first."
+                .to_string(),
+        );
+    }
     if !no_library_paths {
-        return Vec::new();
+        return advice;
     }
     let should_suggest_library_roots = documents.iter().any(|document| {
         document
@@ -43,13 +54,12 @@ pub(super) fn build_advice(documents: &[ValidatedDocument], no_library_paths: bo
             })
     });
     if should_suggest_library_roots {
-        vec![
+        advice.push(
             "Configure SysML library roots: ensure the standard library is available (bundled materialization, or pass `--stdlib-path` / `SPEC42_STDLIB_PATH` / `--library-path` explicitly)."
                 .to_string(),
-        ]
-    } else {
-        Vec::new()
+        );
     }
+    advice
 }
 
 #[cfg(test)]

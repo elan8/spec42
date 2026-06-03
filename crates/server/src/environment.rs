@@ -474,6 +474,53 @@ fn canonicalize_lossy(path: &Path) -> PathBuf {
     path.canonicalize().unwrap_or_else(|_| path.to_path_buf())
 }
 
+/// True when any `.sysml` / `.kerml` file under `path` references common standard-library packages.
+pub fn workspace_references_standard_library(path: &Path) -> bool {
+    fn file_references_stdlib(path: &Path) -> bool {
+        let Ok(content) = fs::read_to_string(path) else {
+            return false;
+        };
+        content.contains("ScalarValues")
+            || content.contains("ISQ::")
+            || content.contains("ISQ ")
+            || content.contains("SI::")
+            || content.contains("import ISQ")
+            || content.contains("import SI")
+    }
+
+    fn walk(dir: &Path, budget: &mut usize) -> bool {
+        if *budget == 0 {
+            return false;
+        }
+        let Ok(entries) = fs::read_dir(dir) else {
+            return false;
+        };
+        for entry in entries.flatten() {
+            if *budget == 0 {
+                break;
+            }
+            let path = entry.path();
+            if path.is_dir() {
+                if walk(&path, budget) {
+                    return true;
+                }
+            } else if path.extension().is_some_and(|ext| ext == "sysml" || ext == "kerml") {
+                *budget = budget.saturating_sub(1);
+                if file_references_stdlib(&path) {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
+    if path.is_file() {
+        return file_references_stdlib(path);
+    }
+    let mut budget = 256usize;
+    walk(path, &mut budget)
+}
+
 #[cfg(test)]
 mod tests {
     use std::sync::Mutex;

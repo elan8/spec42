@@ -23,9 +23,10 @@ use stdlib::{managed_status, remove_standard_library};
 
 /// Run validation for the given CLI environment and [`CheckArgs`] (same logic as `spec42 check`).
 pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, String> {
+    let references_stdlib = environment::workspace_references_standard_library(&args.path);
     let environment = resolve_environment(cli)?;
     let config = Arc::new(kernel::default_server_config());
-    validate_paths(
+    let mut report = validate_paths(
         &config,
         ValidationRequest {
             targets: vec![args.path.clone()],
@@ -33,7 +34,21 @@ pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, St
             library_paths: environment.library_paths.clone(),
             parallel_enabled: true,
         },
-    )
+    )?;
+    if references_stdlib
+        && environment.stdlib_path.is_none()
+        && !cli.no_stdlib
+        && !report
+            .advice
+            .iter()
+            .any(|line| line.contains("standard library"))
+    {
+        report.advice.push(
+            "This workspace references standard-library packages (for example ScalarValues or ISQ); run with the embedded/bundled standard library available or pass `--stdlib-path`."
+                .to_string(),
+        );
+    }
+    Ok(report)
 }
 
 /// Main CLI dispatcher (without panic handling): used by both the `spec42` binary and tests.

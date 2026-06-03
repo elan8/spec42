@@ -254,8 +254,13 @@ package UseLibrary {
                 .any(|diagnostic| diagnostic.message.contains("DurationValue")),
             "expected unresolved DurationValue diagnostic: {unresolved:#?}"
         );
-        assert_eq!(report.advice.len(), 1);
-        assert!(report.advice[0].contains("library roots"));
+        assert!(!report.advice.is_empty());
+        assert!(
+            report
+                .advice
+                .iter()
+                .any(|line| line.contains("library roots"))
+        );
     }
 
     #[test]

@@ -88,6 +88,14 @@ When updating parser behavior:
 4. Run targeted workspace/indexing checks in `crates/kernel/tests/integration/workspace.rs`.
 5. Update docs if parser compatibility or supported workflow expectations changed.
 
+Cross-repo notes for real-model diagnostic quality live in the parser repo: [`docs/CORPUS_MBSE_VACUUM_PARSER_SPEC42_FEEDBACK.md`](../sysml-v2-parser/docs/CORPUS_MBSE_VACUUM_PARSER_SPEC42_FEEDBACK.md).
+
+## Diagnostic quality workflow
+
+- `spec42 check` post-processes diagnostics: deduplication, one root parse error per file (cascades in `relatedInformation`), and suppression of misleading semantic warnings after the first parse error in a file.
+- Parser-side cascade suppression and dialect-specific codes come from `sysml-v2-parser`; post-processing lives in `crates/kernel/src/analysis/diagnostics_postprocess.rs`.
+- Optional corpus regression: set `MBSE_VACUUM_EXAMPLE_DIR` to a checkout of the public vacuum-cleaner example and run `cargo test -p kernel --test lsp_integration mbse_vacuum -- --ignored`.
+
 ## Workspace indexing limits
 
 Large repositories may truncate file discovery per folder pattern. The VS Code setting `spec42.workspace.maxFilesPerPattern` (default in `vscode/package.json`) caps how many `.sysml` / `.kerml` files are indexed per glob pass. When truncation applies, go-to-definition and workspace symbols may be incomplete for files that were not indexed.

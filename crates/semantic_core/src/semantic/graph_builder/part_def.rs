@@ -428,7 +428,8 @@ pub(super) fn build_from_part_def_body_element(
             }
         }
         // Compatibility-only members introduced by newer parser versions are intentionally ignored.
-        PDBE::Annotation(_)
+        PDBE::EnumerationUsage(_)
+        | PDBE::Annotation(_)
         | PDBE::Error(_)
         | PDBE::Doc(_)
         | PDBE::Comment(_)

@@ -9,6 +9,8 @@
 mod completion;
 mod definition;
 mod diagnostics;
+mod diagnostics_postprocess;
+mod mbse_vacuum_baseline;
 mod experimental_capabilities;
 mod experimental_requests;
 mod feature_inspector;

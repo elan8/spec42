@@ -1248,8 +1248,8 @@ fn requirement_placeholder_attribute_emits_incomplete_analysis_info() {
     let content = r#"
         package P {
             requirement def PlaceholderEvaluation {
-                attribute actual: Real;
-                attribute limit: Real = 1.0;
+                attribute actual;
+                attribute limit = 1.0;
                 require constraint { actual <= limit }
             }
         }
@@ -1285,7 +1285,7 @@ fn missing_analysis_identifier_still_emits_unresolved_warning() {
     let content = r#"
         package P {
             requirement def MissingReferenceEvaluation {
-                attribute limit: Real = 1.0;
+                attribute limit = 1.0;
                 require constraint { missingActual <= limit }
             }
         }
@@ -1317,8 +1317,8 @@ fn false_analysis_constraint_still_emits_failed_warning() {
     let content = r#"
         package P {
             requirement def FailedEvaluation {
-                attribute actual: Real = 2.0;
-                attribute limit: Real = 1.0;
+                attribute actual = 2.0;
+                attribute limit = 1.0;
                 require constraint { actual <= limit }
             }
         }

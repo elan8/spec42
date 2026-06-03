@@ -3,6 +3,9 @@ use std::sync::Arc;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Position, Range, Url};
 
 use crate::analysis::diagnostics_adapter::semantic_to_lsp_diagnostic;
+use crate::analysis::diagnostics_postprocess::{
+    postprocess_document_diagnostics, DiagnosticsPostprocessOptions,
+};
 use crate::common::util;
 use crate::host::config::SemanticCheckProvider;
 use crate::semantic::SemanticGraph;
@@ -14,6 +17,7 @@ pub(crate) fn collect_document_diagnostics(
     uri: &Url,
     text: &str,
     block_on_any_parse_issue: bool,
+    postprocess: DiagnosticsPostprocessOptions,
 ) -> Vec<Diagnostic> {
     let mut diagnostics = Vec::new();
     let result = util::parse_for_editor(text);
@@ -92,7 +96,19 @@ pub(crate) fn collect_document_diagnostics(
         }
     }
 
-    diagnostics
+    postprocess_document_diagnostics(uri, diagnostics, postprocess)
+}
+
+pub(crate) fn validation_postprocess_options() -> DiagnosticsPostprocessOptions {
+    DiagnosticsPostprocessOptions {
+        suppress_semantic_after_parse_error: true,
+    }
+}
+
+pub(crate) fn lsp_postprocess_options() -> DiagnosticsPostprocessOptions {
+    DiagnosticsPostprocessOptions {
+        suppress_semantic_after_parse_error: false,
+    }
 }
 
 fn has_semantic_code(diagnostics: &[Diagnostic], code: &str) -> bool {

@@ -57,7 +57,7 @@ pub fn collect_untyped_part_usage_diagnostics(uri: &Url, content: &str) -> Vec<S
                 TextPosition::new(line_idx as u32, start_char),
                 TextPosition::new(line_idx as u32, end_char),
             ),
-            severity: DiagnosticSeverity::Warning,
+            severity: DiagnosticSeverity::Information,
             source: "sysml".to_string(),
             code: "untyped_part_usage".to_string(),
             message: format!("Part '{name}' has no declared type."),

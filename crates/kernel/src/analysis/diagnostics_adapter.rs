@@ -1,5 +1,7 @@
-use semantic_core::{DiagnosticSeverity as CoreSeverity, SemanticDiagnostic};
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString};
+use semantic_core::{DiagnosticRelatedInfo, DiagnosticSeverity as CoreSeverity, SemanticDiagnostic};
+use tower_lsp::lsp_types::{
+    Diagnostic, DiagnosticRelatedInformation, DiagnosticSeverity, Location, NumberOrString,
+};
 
 use crate::common::text_span::to_lsp_range;
 
@@ -16,10 +18,30 @@ pub fn semantic_to_lsp_diagnostic(diagnostic: SemanticDiagnostic) -> Diagnostic 
         code_description: None,
         source: Some(diagnostic.source),
         message: diagnostic.message,
-        related_information: None,
+        related_information: map_related_information(&diagnostic.related_information),
         tags: None,
         data: None,
     }
+}
+
+fn map_related_information(
+    related: &[DiagnosticRelatedInfo],
+) -> Option<Vec<DiagnosticRelatedInformation>> {
+    if related.is_empty() {
+        return None;
+    }
+    Some(
+        related
+            .iter()
+            .map(|info| DiagnosticRelatedInformation {
+                location: Location {
+                    uri: info.uri.clone(),
+                    range: to_lsp_range(info.range),
+                },
+                message: info.message.clone(),
+            })
+            .collect(),
+    )
 }
 
 #[cfg(test)]

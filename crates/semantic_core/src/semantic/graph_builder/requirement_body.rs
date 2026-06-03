@@ -243,6 +243,38 @@ pub(super) fn walk_requirement_def_body(
                     type_resolution_prefix,
                 );
             }
+            RequirementDefBodyElement::RequirementActorDecl(ad) => {
+                let name = ad.value.name.clone();
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    &name,
+                    "actor",
+                );
+                let mut attrs = HashMap::new();
+                attrs.insert(
+                    "actorType".to_string(),
+                    serde_json::json!(ad.value.type_name.as_str()),
+                );
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "actor",
+                    name,
+                    span_to_range(&ad.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                add_typing_edge_if_exists(
+                    g,
+                    uri,
+                    &qualified,
+                    ad.value.type_name.as_str(),
+                    type_resolution_prefix,
+                );
+            }
             RequirementDefBodyElement::RequireConstraint(rc) => {
                 for line in require_constraint_display_lines(&rc.value.body) {
                     append_string_list_attribute(g, parent_id, REQUIREMENT_CONSTRAINTS_ATTR, line);

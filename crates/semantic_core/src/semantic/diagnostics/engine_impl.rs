@@ -763,16 +763,18 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     let t11 = Instant::now();
     let d11 = diagnostics.len();
     for node in graph.nodes_for_uri(uri) {
-        let is_definition_only_analysis = matches!(
+        // Match evaluation: constraint/calc *definitions* are templates; requirement defs
+        // can carry inline `require constraint` analysis on the same node.
+        let is_analysis_template_def = matches!(
             node.element_kind.as_str(),
-            "constraint def" | "calc def" | "requirement def" | "requirement"
+            "constraint def" | "calc def"
         );
         if let Some(status) = node
             .attributes
             .get("analysisEvaluationStatus")
             .and_then(|value| value.as_str())
         {
-            if is_definition_only_analysis {
+            if is_analysis_template_def {
                 continue;
             }
             if status == "failed_constraint"
