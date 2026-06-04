@@ -96,9 +96,9 @@ pub fn edge_pair_key(source: &str, target: &str) -> String {
 }
 
 pub fn has_edge_between(edges: &[DiagramEdge], a: &str, b: &str) -> bool {
-    edges
-        .iter()
-        .any(|edge| (edge.source == a && edge.target == b) || (edge.source == b && edge.target == a))
+    edges.iter().any(|edge| {
+        (edge.source == a && edge.target == b) || (edge.source == b && edge.target == a)
+    })
 }
 
 #[cfg(test)]

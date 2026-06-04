@@ -137,9 +137,8 @@ fn graph_builder_materializes_analysis_attributes_and_subject_typing() {
         .get("Demo::PowerAnalysis::robot")
         .and_then(|ids| ids.first())
         .expect("analysis subject node");
-    let targets = graph.outgoing_typing_or_specializes_targets(
-        graph.get_node(subject_id).expect("subject node"),
-    );
+    let targets = graph
+        .outgoing_typing_or_specializes_targets(graph.get_node(subject_id).expect("subject node"));
     assert!(
         targets
             .iter()
@@ -157,9 +156,8 @@ fn cross_document_analysis_subject_links_to_architecture_type() {
         .get(subject_qualified)
         .and_then(|ids| ids.first())
         .expect("analysis subject node");
-    let targets = graph.outgoing_typing_or_specializes_targets(
-        graph.get_node(subject_id).expect("subject node"),
-    );
+    let targets = graph
+        .outgoing_typing_or_specializes_targets(graph.get_node(subject_id).expect("subject node"));
     assert!(
         targets.iter().any(|target| {
             target.id.qualified_name == "Architecture::AutonomousFloorCleaningRobot"

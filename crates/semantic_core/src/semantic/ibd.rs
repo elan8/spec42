@@ -89,8 +89,7 @@ fn prune_interconnection_definition_parts(
     let connectors = connectors
         .into_iter()
         .filter(|connector| {
-            resolve_owner_part_qn_for_endpoint(&connector.source_id, &normalized_parts)
-                .is_some()
+            resolve_owner_part_qn_for_endpoint(&connector.source_id, &normalized_parts).is_some()
                 && resolve_owner_part_qn_for_endpoint(&connector.target_id, &normalized_parts)
                     .is_some()
         })
@@ -684,7 +683,8 @@ fn build_instance_def_mappings(
         }
     }
     for node in graph.nodes_for_uri(uri) {
-        if !is_part_like(&node.element_kind) || node.element_kind.to_lowercase().contains("part def")
+        if !is_part_like(&node.element_kind)
+            || node.element_kind.to_lowercase().contains("part def")
         {
             continue;
         }
@@ -704,7 +704,7 @@ fn build_instance_def_mappings(
             mappings.push((def_dot, usage_dot));
         }
     }
-    mappings.sort_by(|left, right| right.0.len().cmp(&left.0.len()));
+    mappings.sort_by_key(|mapping| std::cmp::Reverse(mapping.0.len()));
     mappings.dedup_by(|left, right| left.0 == right.0 && left.1 == right.1);
     extend_instance_def_mappings_with_specializations(graph, &mut mappings);
     mappings
@@ -738,7 +738,7 @@ fn extend_instance_def_mappings_with_specializations(
             continue;
         };
         for def_id in def_ids {
-            let Some(def_node) = graph.get_node(&def_id) else {
+            let Some(def_node) = graph.get_node(def_id) else {
                 continue;
             };
             let mut stack: Vec<&SemanticNode> =
@@ -761,16 +761,14 @@ fn extend_instance_def_mappings_with_specializations(
             }
         }
     }
-    mappings.sort_by(|left, right| right.0.len().cmp(&left.0.len()));
+    mappings.sort_by_key(|mapping| std::cmp::Reverse(mapping.0.len()));
     mappings.dedup_by(|left, right| left.0 == right.0 && left.1 == right.1);
 }
 
-fn remap_endpoint_via_instance_mappings(
-    endpoint: &str,
-    mappings: &[(String, String)],
-) -> String {
+fn remap_endpoint_via_instance_mappings(endpoint: &str, mappings: &[(String, String)]) -> String {
     for (def_dot, instance_dot) in mappings {
-        if let Some(remapped) = map_container_endpoint_to_instance(endpoint, def_dot, instance_dot) {
+        if let Some(remapped) = map_container_endpoint_to_instance(endpoint, def_dot, instance_dot)
+        {
             return remapped;
         }
     }
@@ -778,7 +776,7 @@ fn remap_endpoint_via_instance_mappings(
 }
 
 fn remap_connectors_to_typed_instances(
-    connectors: &mut Vec<IbdConnectorDto>,
+    connectors: &mut [IbdConnectorDto],
     mappings: &[(String, String)],
 ) {
     if mappings.is_empty() {
@@ -816,10 +814,8 @@ fn remap_connectors_to_typed_instances(
 
 fn enrich_connector_part_ids(connectors: &mut [IbdConnectorDto], parts: &[IbdPartDto]) {
     for connector in connectors.iter_mut() {
-        connector.source_part_id =
-            resolve_owner_part_qn_for_endpoint(&connector.source_id, parts);
-        connector.target_part_id =
-            resolve_owner_part_qn_for_endpoint(&connector.target_id, parts);
+        connector.source_part_id = resolve_owner_part_qn_for_endpoint(&connector.source_id, parts);
+        connector.target_part_id = resolve_owner_part_qn_for_endpoint(&connector.target_id, parts);
     }
 }
 
@@ -874,6 +870,11 @@ fn def_container_prefixes_for_uri(graph: &SemanticGraph, uri: &Url) -> Vec<Strin
         .collect()
 }
 
+struct IbdConnectorSink<'a> {
+    connectors: &'a mut Vec<IbdConnectorDto>,
+    keys: &'a mut std::collections::HashSet<(String, String, String)>,
+}
+
 /// Copy connectors declared on a part definition's document onto a typed instance path.
 fn mirror_connectors_from_definition_document(
     graph: &SemanticGraph,
@@ -882,8 +883,7 @@ fn mirror_connectors_from_definition_document(
     usage_prefix_dot: &str,
     parts: &[IbdPartDto],
     ports: &[IbdPortDto],
-    connectors: &mut Vec<IbdConnectorDto>,
-    connector_keys: &mut std::collections::HashSet<(String, String, String)>,
+    sink: &mut IbdConnectorSink<'_>,
 ) {
     let def_prefix_dot = qualified_name_to_dot(def_prefix);
     let def_container_prefixes = def_container_prefixes_for_uri(graph, def_uri);
@@ -902,10 +902,10 @@ fn mirror_connectors_from_definition_document(
             target_id.clone(),
             "connection".to_string(),
         );
-        if !connector_keys.insert(key) {
+        if !sink.keys.insert(key) {
             return;
         }
-        connectors.push(IbdConnectorDto {
+        sink.connectors.push(IbdConnectorDto {
             source: source_id.clone(),
             target: target_id.clone(),
             source_id,
@@ -942,9 +942,11 @@ fn mirror_connectors_from_definition_document(
         push_connector(source_id, target_id);
     }
 
-    for pending in graph.pending_expression_relationships.iter().filter(|pending| {
-        pending.kind == RelationshipKind::Connection && pending.uri == *def_uri
-    }) {
+    for pending in graph
+        .pending_expression_relationships
+        .iter()
+        .filter(|pending| pending.kind == RelationshipKind::Connection && pending.uri == *def_uri)
+    {
         let source_id = qualify_pending_connection_endpoint(
             pending.container_prefix.as_deref(),
             &pending.source_expression,
@@ -970,13 +972,11 @@ fn mirror_connectors_from_definition_document(
         {
             continue;
         }
-        let Some(source_id) =
-            map_definition_endpoint_to_usage(&src, def_prefix, usage_prefix_dot)
+        let Some(source_id) = map_definition_endpoint_to_usage(&src, def_prefix, usage_prefix_dot)
         else {
             continue;
         };
-        let Some(target_id) =
-            map_definition_endpoint_to_usage(&tgt, def_prefix, usage_prefix_dot)
+        let Some(target_id) = map_definition_endpoint_to_usage(&tgt, def_prefix, usage_prefix_dot)
         else {
             continue;
         };
@@ -992,7 +992,10 @@ fn qualify_pending_connection_endpoint(container_prefix: Option<&str>, endpoint:
     if trimmed.contains("::") {
         return trimmed.replace("::", ".");
     }
-    let Some(prefix) = container_prefix.map(str::trim).filter(|prefix| !prefix.is_empty()) else {
+    let Some(prefix) = container_prefix
+        .map(str::trim)
+        .filter(|prefix| !prefix.is_empty())
+    else {
         return trimmed.to_string();
     };
     let prefix_dot = prefix.replace("::", ".");
@@ -1052,23 +1055,27 @@ fn expand_relative_endpoint_to_part_path(
         }
         if path_without_port == part.qualified_name
             || path_without_port.ends_with(&format!(".{}", part.qualified_name))
-            || part.qualified_name.ends_with(&format!(".{path_without_port}"))
+            || part
+                .qualified_name
+                .ends_with(&format!(".{path_without_port}"))
         {
             let candidate = format!("{}.{}", part.qualified_name, port_name);
             let is_instance = is_part_instance_kind(&part.element_type);
-            let is_better = best_match.as_ref().is_none_or(|(_, best_instance, best_len)| {
-                if is_instance && !*best_instance {
-                    true
-                } else if is_instance == *best_instance {
-                    if is_instance {
-                        candidate.len() < *best_len
+            let is_better = best_match
+                .as_ref()
+                .is_none_or(|(_, best_instance, best_len)| {
+                    if is_instance && !*best_instance {
+                        true
+                    } else if is_instance == *best_instance {
+                        if is_instance {
+                            candidate.len() < *best_len
+                        } else {
+                            candidate.len() > *best_len
+                        }
                     } else {
-                        candidate.len() > *best_len
+                        false
                     }
-                } else {
-                    false
-                }
-            });
+                });
             if is_better {
                 let candidate_len = candidate.len();
                 best_match = Some((candidate, is_instance, candidate_len));
@@ -1406,10 +1413,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             };
             (source_id, target_id)
         } else {
-            (
-                source.replace("::", "."),
-                target.replace("::", "."),
-            )
+            (source.replace("::", "."), target.replace("::", "."))
         };
         connectors.push(IbdConnectorDto {
             source: source.clone(),
@@ -1421,9 +1425,11 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             rel_type: "connection".to_string(),
         });
     }
-    for pending in graph.pending_expression_relationships.iter().filter(|pending| {
-        pending.kind == RelationshipKind::Connection && &pending.uri == uri
-    }) {
+    for pending in graph
+        .pending_expression_relationships
+        .iter()
+        .filter(|pending| pending.kind == RelationshipKind::Connection && &pending.uri == uri)
+    {
         let source_id = qualify_pending_connection_endpoint(
             pending.container_prefix.as_deref(),
             &pending.source_expression,
@@ -1489,8 +1495,10 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 usage_prefix_dot,
                 &parts,
                 &ports,
-                &mut connectors,
-                &mut connector_keys,
+                &mut IbdConnectorSink {
+                    connectors: &mut connectors,
+                    keys: &mut connector_keys,
+                },
             );
             continue;
         }
@@ -1553,7 +1561,8 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
 
     ensure_endpoint_parts_present(&mut parts, &connectors, graph, uri);
 
-    let (parts, ports, connectors) = prune_interconnection_definition_parts(parts, ports, connectors);
+    let (parts, ports, connectors) =
+        prune_interconnection_definition_parts(parts, ports, connectors);
     let (parts, ports, connectors) = prune_ibd_payload_to_connected_scope(parts, ports, connectors);
     let mut connectors = connectors;
     enrich_connector_part_ids(&mut connectors, &parts);
@@ -1836,7 +1845,8 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
     let ports: Vec<IbdPortDto> = ports_by_key.into_values().collect();
     let mut connectors: Vec<IbdConnectorDto> = connectors_by_key.into_values().collect();
     enrich_connector_part_ids(&mut connectors, &parts);
-    let (parts, ports, connectors) = prune_interconnection_definition_parts(parts, ports, connectors);
+    let (parts, ports, connectors) =
+        prune_interconnection_definition_parts(parts, ports, connectors);
     for view in root_views.values_mut() {
         let (view_parts, view_ports, view_connectors) = prune_interconnection_definition_parts(
             std::mem::take(&mut view.parts),
@@ -1889,8 +1899,8 @@ mod tests {
 
     use super::{
         build_container_groups, infer_port_side, prune_ibd_payload_to_connected_scope,
-        prune_interconnection_definition_parts, prune_redundant_top_level_roots,
-        IbdConnectorDto, IbdPartDto, IbdPortDto,
+        prune_interconnection_definition_parts, prune_redundant_top_level_roots, IbdConnectorDto,
+        IbdPartDto, IbdPortDto,
     };
 
     #[test]
@@ -2246,8 +2256,8 @@ mod tests {
         let architecture_uri = arch_doc.uri.clone();
         let instance_uri = instance_doc.uri.clone();
 
-        let (graph, _parsed) = build_semantic_graph_from_documents(&[arch_doc, instance_doc])
-            .expect("graph");
+        let (graph, _parsed) =
+            build_semantic_graph_from_documents(&[arch_doc, instance_doc]).expect("graph");
 
         let merged = super::merge_ibd_payloads(vec![
             super::build_ibd_for_uri(&graph, &architecture_uri),
@@ -2340,11 +2350,14 @@ mod tests {
             ibd.connectors.len()
         );
         assert!(
-            ibd.parts.iter().any(|part| {
-                part.qualified_name.ends_with("propulsion.propulsionUnit4")
-            }),
+            ibd.parts
+                .iter()
+                .any(|part| { part.qualified_name.ends_with("propulsion.propulsionUnit4") }),
             "expected expanded propulsion unit in IBD, got {:?}",
-            ibd.parts.iter().map(|p| &p.qualified_name).collect::<Vec<_>>()
+            ibd.parts
+                .iter()
+                .map(|p| &p.qualified_name)
+                .collect::<Vec<_>>()
         );
         assert!(
             ibd.connectors.iter().any(|connector| {
@@ -2356,10 +2369,7 @@ mod tests {
         );
 
         let default_root = ibd.default_root.as_deref().expect("default root");
-        let root_view = ibd
-            .root_views
-            .get(default_root)
-            .expect("default root view");
+        let root_view = ibd.root_views.get(default_root).expect("default root view");
         assert!(
             root_view.connectors.len() >= 14,
             "expected default root view to include connector set, got {} in {:?}: {:?}",
@@ -2454,5 +2464,4 @@ mod tests {
             Some(&serde_json::json!(false))
         );
     }
-
 }

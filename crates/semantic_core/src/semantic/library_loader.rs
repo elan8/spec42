@@ -77,7 +77,10 @@ pub fn resolve_library_closure(
     }
     if wants_sysml_bootstrap {
         for (key, entries) in &index.packages {
-            if entries.iter().any(|entry| is_stdlib_slice_root(&entry.root)) {
+            if entries
+                .iter()
+                .any(|entry| is_stdlib_slice_root(&entry.root))
+            {
                 seeds.insert(key.clone());
             }
         }
@@ -96,10 +99,7 @@ pub fn resolve_library_closure(
             }
             let full_path = PathBuf::from(&entry.root).join(&entry.path);
             let content = std::fs::read_to_string(&full_path).map_err(|err| {
-                format!(
-                    "failed to read library file {}: {err}",
-                    full_path.display()
-                )
+                format!("failed to read library file {}: {err}", full_path.display())
             })?;
             for target in collect_import_targets_from_content(&content) {
                 for next in package_keys_for_import_target(&target) {
@@ -134,7 +134,9 @@ pub fn resolve_library_closure(
             content,
         });
     }
-    files.sort_by(|a, b| (a.root.as_str(), a.path.as_str()).cmp(&(b.root.as_str(), b.path.as_str())));
+    files.sort_by(|a, b| {
+        (a.root.as_str(), a.path.as_str()).cmp(&(b.root.as_str(), b.path.as_str()))
+    });
     Ok(files)
 }
 
@@ -175,9 +177,8 @@ fn build_package_index(library_roots: &[String]) -> Result<PackageIndex, String>
                     path: rel.clone(),
                 });
             }
-            let content = std::fs::read_to_string(path).map_err(|err| {
-                format!("failed to read {}: {err}", path.display())
-            })?;
+            let content = std::fs::read_to_string(path)
+                .map_err(|err| format!("failed to read {}: {err}", path.display()))?;
             if let Some(package) = extract_package_name(&content) {
                 packages
                     .entry(PackageKey(package))
@@ -249,9 +250,7 @@ fn walk_package_body(body: &PackageBody, out: &mut Vec<String>) {
         match &member.value {
             PackageBodyElement::Import(import) => push_import_target(import, out),
             PackageBodyElement::Package(nested) => walk_package_imports(nested, out),
-            PackageBodyElement::LibraryPackage(nested) => {
-                walk_library_package_imports(nested, out)
-            }
+            PackageBodyElement::LibraryPackage(nested) => walk_library_package_imports(nested, out),
             _ => {}
         }
     }
@@ -273,7 +272,10 @@ fn push_import_target(import: &Node<Import>, out: &mut Vec<String>) {
 }
 
 fn package_keys_for_import_target(target: &str) -> Vec<String> {
-    let target = target.trim().trim_end_matches("::*").trim_end_matches("::**");
+    let target = target
+        .trim()
+        .trim_end_matches("::*")
+        .trim_end_matches("::**");
     if target.is_empty() {
         return Vec::new();
     }
@@ -310,12 +312,14 @@ mod tests {
             content: "package App { import Demo::*; part def AppPart; }",
         }];
         let roots = vec![lib.to_string_lossy().replace('\\', "/")];
-        let loaded =
-            resolve_library_closure(&workspace, &roots, &LibraryClosureOptions::default())
-                .expect("closure");
+        let loaded = resolve_library_closure(&workspace, &roots, &LibraryClosureOptions::default())
+            .expect("closure");
         let paths: Vec<_> = loaded.iter().map(|f| f.path.as_str()).collect();
         assert!(paths.iter().any(|p| p.contains("Base.sysml")), "{paths:?}");
-        assert!(paths.iter().any(|p| p.contains("Consumer.sysml")), "{paths:?}");
+        assert!(
+            paths.iter().any(|p| p.contains("Consumer.sysml")),
+            "{paths:?}"
+        );
     }
 
     #[test]
@@ -333,9 +337,8 @@ mod tests {
             content: "package P { private import ScalarValues::Real; attribute x : Real; }",
         }];
         let roots = vec![lib.to_string_lossy().replace('\\', "/")];
-        let loaded =
-            resolve_library_closure(&workspace, &roots, &LibraryClosureOptions::default())
-                .expect("closure");
+        let loaded = resolve_library_closure(&workspace, &roots, &LibraryClosureOptions::default())
+            .expect("closure");
         assert!(
             loaded.iter().any(|f| f.path.contains("ScalarValues.sysml")),
             "expected ScalarValues.sysml in closure, got {:?}",
@@ -355,9 +358,8 @@ mod tests {
             content: "package App { import Base::*; }",
         }];
         let roots = vec![lib.to_string_lossy().replace('\\', "/")];
-        let loaded =
-            resolve_library_closure(&workspace, &roots, &LibraryClosureOptions::default())
-                .expect("closure");
+        let loaded = resolve_library_closure(&workspace, &roots, &LibraryClosureOptions::default())
+            .expect("closure");
         assert!(!loaded.iter().any(|f| f.path.contains("Unused.sysml")));
     }
 }

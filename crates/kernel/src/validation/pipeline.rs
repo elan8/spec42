@@ -61,8 +61,7 @@ pub(super) fn validate_paths_with_semantics(
     );
     rebuild_all_document_links(&mut state);
 
-    let documents =
-        collect_target_documents(&state, config, &target_files)?;
+    let documents = collect_target_documents(&state, config, &target_files)?;
     let summary = summarize(&documents);
     let advice = build_advice(&documents, request.library_paths.is_empty());
     let target_urls = target_file_urls(&target_files)?;
@@ -117,7 +116,8 @@ fn collect_entries(
         entries.extend(scanned_entries);
     }
 
-    if !crate::workspace::library_closure::library_full_scan_enabled() && !library_root_urls.is_empty()
+    if !crate::workspace::library_closure::library_full_scan_enabled()
+        && !library_root_urls.is_empty()
     {
         let workspace_sources: Vec<semantic_core::WorkspaceSource<'_>> = entries
             .iter()
@@ -159,8 +159,7 @@ fn collect_target_documents(
         .into_iter()
         .map(|uri| {
             let text = indexed_text_or_empty(state, &uri);
-            let diagnostics =
-                collect_diagnostics_for_document(state, config, &uri, &text);
+            let diagnostics = collect_diagnostics_for_document(state, config, &uri, &text);
             ValidatedDocument {
                 uri: uri.to_string(),
                 diagnostics,

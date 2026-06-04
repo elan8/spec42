@@ -1733,18 +1733,17 @@ fn lsp_sysml_model_ibd_surveillance_drone_is_complete_enough_for_interconnection
         connectors
     );
     assert!(
-        connectors.iter().any(|c|
-            c["sourceId"].as_str() == Some("SurveillanceDrone.droneInstance.flightControl.flightController.motorCmd")
-                && c["targetId"].as_str() == Some("SurveillanceDrone.droneInstance.propulsion.propulsionUnit1.cmd")
-        ),
+        connectors.iter().any(|c| c["sourceId"].as_str()
+            == Some("SurveillanceDrone.droneInstance.flightControl.flightController.motorCmd")
+            && c["targetId"].as_str()
+                == Some("SurveillanceDrone.droneInstance.propulsion.propulsionUnit1.cmd")),
         "expected propulsion command connector in IBD, got {:?}",
         connectors
     );
     assert!(
         connectors.iter().any(|c| c["sourceId"].as_str()
             == Some("SurveillanceDrone.droneInstance.power.distribution.regulated5V")
-            && c["targetId"].as_str()
-                == Some("SurveillanceDrone.droneInstance.communication.pwr")),
+            && c["targetId"].as_str() == Some("SurveillanceDrone.droneInstance.communication.pwr")),
         "expected regulated power connector in IBD, got {:?}",
         connectors
     );

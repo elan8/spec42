@@ -123,9 +123,9 @@ mod tests {
         let graph = build_graph_from_doc(&parsed, &uri);
         let diagnostics =
             collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
-        assert!(!diagnostics.iter().any(|diagnostic| {
-            diagnostic.code == "unresolved_specializes_reference"
-        }));
+        assert!(!diagnostics
+            .iter()
+            .any(|diagnostic| { diagnostic.code == "unresolved_specializes_reference" }));
     }
 
     #[test]

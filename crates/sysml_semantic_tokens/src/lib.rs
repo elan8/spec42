@@ -266,11 +266,7 @@ pub fn semantic_tokens_range(
 
         for (ln, start_char, length, token_type) in line_tokens {
             let token_end_char = start_char + length;
-            let range_start_char = if ln == start_line {
-                start_character
-            } else {
-                0
-            };
+            let range_start_char = if ln == start_line { start_character } else { 0 };
             let range_end_char = if ln == end_line {
                 end_character
             } else {

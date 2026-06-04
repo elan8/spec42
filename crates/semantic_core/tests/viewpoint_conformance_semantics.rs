@@ -61,8 +61,8 @@ fn cross_file_viewpoint_conformance_resolves_after_workspace_merge() {
   satisfy structure by ArchitectureViewpoint;
 }"#,
     );
-    let (graph, _parsed) = build_semantic_graph_from_documents(&[defs, usage.clone()])
-        .expect("semantic graph");
+    let (graph, _parsed) =
+        build_semantic_graph_from_documents(&[defs, usage.clone()]).expect("semantic graph");
     let usage_uri = usage.uri;
     let edges = graph.edges_for_uri_as_strings(&usage_uri);
     assert!(
@@ -168,7 +168,8 @@ fn imported_view_and_viewpoint_types_resolve_from_nested_namespace() {
 }"#,
     );
     let usage_uri = usage.uri.clone();
-    let (graph, _parsed) = build_semantic_graph_from_documents(&[defs, usage]).expect("semantic graph");
+    let (graph, _parsed) =
+        build_semantic_graph_from_documents(&[defs, usage]).expect("semantic graph");
     let diagnostics =
         collect_diagnostics_from_graph(&graph, &usage_uri, DiagnosticsOptions::default());
 

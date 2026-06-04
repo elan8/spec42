@@ -6,7 +6,6 @@ use url::Url;
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge};
-use crate::semantic::relationships::{add_semantic_edge_once, AddSemanticEdgeResult};
 use crate::semantic::reference_resolution::{
     resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult,
 };
@@ -14,6 +13,7 @@ use crate::semantic::relationships::{
     add_edge_if_both_exist, add_pending_expression_relationship, add_typing_edge_if_exists,
     normalize_for_lookup,
 };
+use crate::semantic::relationships::{add_semantic_edge_once, AddSemanticEdgeResult};
 
 use super::{add_node_and_recurse, qualified_name_for_node};
 
@@ -71,7 +71,7 @@ pub(super) fn add_expression_edge_if_both_exist(
             resolve_expression_endpoint_strict(g, uri, container_prefix, &right_str);
         match (left_resolved, right_resolved) {
             (ResolveResult::Resolved(src_id), ResolveResult::Resolved(tgt_id)) => {
-                match add_semantic_edge_once(
+                if add_semantic_edge_once(
                     g,
                     &src_id,
                     &tgt_id,
@@ -82,18 +82,16 @@ pub(super) fn add_expression_edge_if_both_exist(
                         target_expression: right_str,
                         container_prefix: container_prefix.map(ToString::to_string),
                     }),
-                ) {
-                    AddSemanticEdgeResult::DuplicateConnect => {
-                        add_diagnostic_node(
-                            g,
-                            uri,
-                            container_prefix,
-                            "duplicate_connection",
-                            "Duplicate connection between the same two endpoints.".to_string(),
-                            span_to_range(&left.span),
-                        );
-                    }
-                    _ => {}
+                ) == AddSemanticEdgeResult::DuplicateConnect
+                {
+                    add_diagnostic_node(
+                        g,
+                        uri,
+                        container_prefix,
+                        "duplicate_connection",
+                        "Duplicate connection between the same two endpoints.".to_string(),
+                        span_to_range(&left.span),
+                    );
                 }
                 return;
             }

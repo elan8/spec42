@@ -50,19 +50,15 @@ mod tests {
             None,
         )
         .expect("requirements doc");
-        let (graph, _parsed) = build_semantic_graph_from_documents(&[
-            architecture,
-            requirements,
-            example.clone(),
-        ])
-        .expect("graph");
-        let diagnostics = collect_diagnostics_from_graph(
-            &graph,
-            &example.uri,
-            DiagnosticsOptions::default(),
-        );
+        let (graph, _parsed) =
+            build_semantic_graph_from_documents(&[architecture, requirements, example.clone()])
+                .expect("graph");
+        let diagnostics =
+            collect_diagnostics_from_graph(&graph, &example.uri, DiagnosticsOptions::default());
         assert!(
-            !diagnostics.iter().any(|d| d.code == "unresolved_satisfy_target"),
+            !diagnostics
+                .iter()
+                .any(|d| d.code == "unresolved_satisfy_target"),
             "unexpected unresolved_satisfy_target: {:?}",
             diagnostics
                 .iter()

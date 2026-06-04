@@ -58,8 +58,7 @@ fn requirement_usage_derivation_links_across_workspace_files() {
         document("StakeholderNeeds.sysml", STAKEHOLDER_NEEDS),
         document("SystemRequirements.sysml", SYSTEM_REQUIREMENTS),
     ];
-    let (graph, _parsed) =
-        build_semantic_graph_from_documents(&documents).expect("semantic graph");
+    let (graph, _parsed) = build_semantic_graph_from_documents(&documents).expect("semantic graph");
 
     let derivations = derivation_edges(&graph);
     assert_eq!(
@@ -90,8 +89,7 @@ fn requirement_usage_derivation_links_within_one_package() {
   }
 }"#;
     let documents = vec![document("model.sysml", content)];
-    let (graph, _parsed) =
-        build_semantic_graph_from_documents(&documents).expect("semantic graph");
+    let (graph, _parsed) = build_semantic_graph_from_documents(&documents).expect("semantic graph");
 
     let derivations = derivation_edges(&graph);
     assert_eq!(

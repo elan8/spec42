@@ -31,10 +31,7 @@ pub fn postprocess_document_diagnostics(
 }
 
 pub fn diagnostics_dominated_by_cascades(diagnostics: &[Diagnostic]) -> bool {
-    let cascade_codes = diagnostics
-        .iter()
-        .filter(|d| is_cascade_code(d))
-        .count();
+    let cascade_codes = diagnostics.iter().filter(|d| is_cascade_code(d)).count();
     let parse_errors = diagnostics
         .iter()
         .filter(|d| d.source.as_deref() == Some("sysml") && is_parse_error_severity(d))
@@ -101,15 +98,18 @@ fn is_shadowable_semantic_code(diagnostic: &Diagnostic) -> bool {
     )
 }
 
-fn attach_cascade_related_information(
-    uri: &Url,
-    diagnostics: Vec<Diagnostic>,
-) -> Vec<Diagnostic> {
+fn attach_cascade_related_information(uri: &Url, diagnostics: Vec<Diagnostic>) -> Vec<Diagnostic> {
     let primary_index = diagnostics
         .iter()
         .enumerate()
         .filter(|(_, d)| d.source.as_deref() == Some("sysml") && is_parse_error_severity(d))
-        .min_by_key(|(_, d)| (diagnostic_priority(d), d.range.start.line, d.range.start.character))
+        .min_by_key(|(_, d)| {
+            (
+                diagnostic_priority(d),
+                d.range.start.line,
+                d.range.start.character,
+            )
+        })
         .map(|(idx, _)| idx);
 
     let Some(primary_index) = primary_index else {
@@ -143,7 +143,10 @@ fn attach_cascade_related_information(
                         _ => None,
                     })
                     .unwrap_or("cascade"),
-                diagnostic.severity.map(|s| format!("{s:?}")).unwrap_or_default(),
+                diagnostic
+                    .severity
+                    .map(|s| format!("{s:?}"))
+                    .unwrap_or_default(),
                 diagnostic.message
             ),
         });
@@ -174,10 +177,9 @@ fn collapse_cascade_parse_diagnostics(diagnostics: Vec<Diagnostic>) -> Vec<Diagn
 
     for diagnostic in diagnostics {
         if diagnostic.source.as_deref() == Some("sysml") && is_parse_error_severity(&diagnostic) {
-            if primary_parse
-                .as_ref()
-                .is_none_or(|existing| diagnostic_priority(&diagnostic) < diagnostic_priority(existing))
-            {
+            if primary_parse.as_ref().is_none_or(|existing| {
+                diagnostic_priority(&diagnostic) < diagnostic_priority(existing)
+            }) {
                 primary_parse = Some(diagnostic);
             }
             continue;
@@ -246,10 +248,7 @@ fn is_cascade_code(diagnostic: &Diagnostic) -> bool {
 }
 
 fn is_parse_error_severity(diagnostic: &Diagnostic) -> bool {
-    matches!(
-        diagnostic.severity,
-        Some(DiagnosticSeverity::ERROR) | None
-    )
+    matches!(diagnostic.severity, Some(DiagnosticSeverity::ERROR) | None)
 }
 
 fn diagnostic_code_str(diagnostic: &Diagnostic) -> Option<String> {
@@ -271,7 +270,9 @@ mod tests {
                 end: Position::new(line, 1),
             },
             severity: Some(DiagnosticSeverity::ERROR),
-            code: Some(NumberOrString::String("recovered_part_def_body_element".to_string())),
+            code: Some(NumberOrString::String(
+                "recovered_part_def_body_element".to_string(),
+            )),
             code_description: None,
             source: Some("sysml".to_string()),
             message: "recovered".to_string(),

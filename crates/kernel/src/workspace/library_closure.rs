@@ -21,11 +21,8 @@ pub(crate) fn load_library_closure_scan_entries(
     if roots.is_empty() {
         return Ok(Vec::new());
     }
-    let loaded = resolve_library_closure(
-        workspace_sources,
-        &roots,
-        &LibraryClosureOptions::default(),
-    )?;
+    let loaded =
+        resolve_library_closure(workspace_sources, &roots, &LibraryClosureOptions::default())?;
     let mut entries = Vec::with_capacity(loaded.len());
     for file in loaded {
         let path = PathBuf::from(&file.root).join(&file.path);

@@ -290,10 +290,7 @@ pub(super) fn build_from_part_usage_body_element(
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
         }
-        PUBE::EnumerationUsage(_)
-        | PUBE::Annotation(_)
-        | PUBE::Error(_)
-        | PUBE::Doc(_) => {}
+        PUBE::EnumerationUsage(_) | PUBE::Annotation(_) | PUBE::Error(_) | PUBE::Doc(_) => {}
     }
 }
 

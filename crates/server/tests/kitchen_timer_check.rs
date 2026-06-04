@@ -20,7 +20,7 @@ fn with_isolated_data_dir(test: impl FnOnce()) {
 #[test]
 fn kitchen_timer_example_validates() {
     with_isolated_data_dir(|| {
-    kitchen_timer_example_validates_body();
+        kitchen_timer_example_validates_body();
     });
 }
 
@@ -57,7 +57,7 @@ fn kitchen_timer_example_validates_body() {
 #[test]
 fn kitchen_timer_example_validates_with_explicit_workspace_root() {
     with_isolated_data_dir(|| {
-    kitchen_timer_example_validates_with_explicit_workspace_root_body();
+        kitchen_timer_example_validates_with_explicit_workspace_root_body();
     });
 }
 

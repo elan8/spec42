@@ -9,11 +9,11 @@ use std::{
 };
 use url::Url;
 
-use crate::semantic::diagnostics::relationship_endpoint_messages::builder_relationship_diagnostic_to_emit;
 use crate::semantic::diagnostics::checks::import_resolution::{
     has_import_in_scope, import_target, import_target_resolves,
 };
 use crate::semantic::diagnostics::helpers::*;
+use crate::semantic::diagnostics::relationship_endpoint_messages::builder_relationship_diagnostic_to_emit;
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::{
     resolve_inherited_member_via_type, RelationshipKind, ResolveResult, SemanticDiagnostic,
@@ -102,13 +102,9 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             .and_then(|v| v.as_str())
             .unwrap_or("semantic diagnostic")
             .to_string();
-        let Some((emit_code, emit_message)) = builder_relationship_diagnostic_to_emit(
-            graph,
-            uri,
-            node,
-            code,
-            &message,
-        ) else {
+        let Some((emit_code, emit_message)) =
+            builder_relationship_diagnostic_to_emit(graph, uri, node, code, &message)
+        else {
             continue;
         };
         diagnostics.push(diag(
@@ -133,8 +129,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     for (src_id, tgt_id, connect) in connection_occurrences {
         let connection_range = connect.range;
         if let (Some(src), Some(tgt)) = (graph.get_node(&src_id), graph.get_node(&tgt_id)) {
-            let both_part_like =
-                is_part_like(&src.element_kind) && is_part_like(&tgt.element_kind);
+            let both_part_like = is_part_like(&src.element_kind) && is_part_like(&tgt.element_kind);
             if !both_part_like {
                 if !is_port_like(&src.element_kind) {
                     diagnostics.push(diag(
@@ -765,10 +760,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     for node in graph.nodes_for_uri(uri) {
         // Match evaluation: constraint/calc *definitions* are templates; requirement defs
         // can carry inline `require constraint` analysis on the same node.
-        let is_analysis_template_def = matches!(
-            node.element_kind.as_str(),
-            "constraint def" | "calc def"
-        );
+        let is_analysis_template_def =
+            matches!(node.element_kind.as_str(), "constraint def" | "calc def");
         if let Some(status) = node
             .attributes
             .get("analysisEvaluationStatus")

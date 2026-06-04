@@ -504,7 +504,10 @@ pub fn workspace_references_standard_library(path: &Path) -> bool {
                 if walk(&path, budget) {
                     return true;
                 }
-            } else if path.extension().is_some_and(|ext| ext == "sysml" || ext == "kerml") {
+            } else if path
+                .extension()
+                .is_some_and(|ext| ext == "sysml" || ext == "kerml")
+            {
                 *budget = budget.saturating_sub(1);
                 if file_references_stdlib(&path) {
                     return true;

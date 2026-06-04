@@ -165,10 +165,7 @@ fn port_definition_qualified_name(graph: &SemanticGraph, port: &SemanticNode) ->
 }
 
 fn port_type_display_label(port_type: &str) -> &str {
-    port_type
-        .rsplit("::")
-        .next()
-        .unwrap_or(port_type)
+    port_type.rsplit("::").next().unwrap_or(port_type)
 }
 
 pub(super) fn port_compatibility_mismatch(
@@ -188,8 +185,10 @@ pub(super) fn port_compatibility_mismatch(
         if ports_feature_compatible(&src_features, &tgt_features) {
             return None;
         }
-        let src_qn = port_definition_qualified_name(graph, src).unwrap_or_else(|| src_type.to_string());
-        let tgt_qn = port_definition_qualified_name(graph, tgt).unwrap_or_else(|| tgt_type.to_string());
+        let src_qn =
+            port_definition_qualified_name(graph, src).unwrap_or_else(|| src_type.to_string());
+        let tgt_qn =
+            port_definition_qualified_name(graph, tgt).unwrap_or_else(|| tgt_type.to_string());
         let label = port_type_display_label(src_type);
         if src_qn == tgt_qn {
             return Some(format!(
@@ -347,7 +346,8 @@ pub(super) fn is_builtin_type_ref(type_ref: &str) -> bool {
         return true;
     }
     let normalized = normalize_declared_type_ref(type_ref);
-    crate::semantic::explicit_views::renderer_view_for_view_type(Some(normalized.as_str())).is_some()
+    crate::semantic::explicit_views::renderer_view_for_view_type(Some(normalized.as_str()))
+        .is_some()
 }
 
 pub(super) fn attribute_value_is_string_literal(value: &str) -> bool {

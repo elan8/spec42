@@ -1,5 +1,5 @@
 use std::collections::{BTreeMap, HashMap, HashSet};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use url::Url;
 
@@ -54,10 +54,7 @@ impl CanonicalUnitExpr {
 impl UnitRegistry {
     /// Builds a registry from OMG QUDM files on disk (when present on `file://` graph URIs)
     /// plus optional supplemental SysML unit catalog text (e.g. platform library sources).
-    pub fn build_for_evaluation(
-        graph: &SemanticGraph,
-        extra_unit_catalogs: &[&str],
-    ) -> Self {
+    pub fn build_for_evaluation(graph: &SemanticGraph, extra_unit_catalogs: &[&str]) -> Self {
         let mut registry = Self::from_semantic_graph(graph);
         for catalog in extra_unit_catalogs {
             registry.ingest_unit_catalog(catalog);
@@ -325,7 +322,7 @@ fn parse_linear_unit_def(line: &str) -> Option<UnitDef> {
     })
 }
 
-fn should_ingest_unit_library_file(path: &PathBuf) -> bool {
+fn should_ingest_unit_library_file(path: &Path) -> bool {
     let normalized = path.to_string_lossy().replace('\\', "/");
     normalized.contains("Quantities and Units")
 }

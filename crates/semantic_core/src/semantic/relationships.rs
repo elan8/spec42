@@ -142,12 +142,11 @@ const DISAMBIGUATION_SUFFIX_KINDS: &[&str] = &[
 
 fn strip_wrapping_quotes(value: &str) -> String {
     let trimmed = value.trim();
-    if trimmed.len() >= 2 {
-        if (trimmed.starts_with('\'') && trimmed.ends_with('\''))
-            || (trimmed.starts_with('"') && trimmed.ends_with('"'))
-        {
-            return trimmed[1..trimmed.len() - 1].to_string();
-        }
+    if trimmed.len() >= 2
+        && ((trimmed.starts_with('\'') && trimmed.ends_with('\''))
+            || (trimmed.starts_with('"') && trimmed.ends_with('"')))
+    {
+        return trimmed[1..trimmed.len() - 1].to_string();
     }
     trimmed.to_string()
 }
@@ -445,8 +444,9 @@ fn resolve_pending_expression_endpoint(
         ResolveResult::Unresolved => {}
     }
 
-    match crate::semantic::reference_resolution::resolve_expression_endpoint_workspace(g, expression)
-    {
+    match crate::semantic::reference_resolution::resolve_expression_endpoint_workspace(
+        g, expression,
+    ) {
         ResolveResult::Resolved(id) => return ResolveResult::Resolved(id),
         ResolveResult::Ambiguous => return ResolveResult::Ambiguous,
         ResolveResult::Unresolved => {}
@@ -574,7 +574,7 @@ fn resolve_derivation_end_target(
         .into_iter()
         .next()?;
     if let Some(target) = g
-        .outgoing_targets_by_kind(&end, RelationshipKind::Typing)
+        .outgoing_targets_by_kind(end, RelationshipKind::Typing)
         .into_iter()
         .next()
     {
@@ -918,7 +918,7 @@ pub fn resolve_cross_document_edges_for_uri(
                 .filter(|child| child.element_kind == "subject")
             {
                 let target_id = g
-                    .outgoing_targets_by_kind(&subject, RelationshipKind::Typing)
+                    .outgoing_targets_by_kind(subject, RelationshipKind::Typing)
                     .into_iter()
                     .find(|target| {
                         element_kind_allowed(&target.element_kind, SUBJECT_TYPE_TARGET_KINDS)
@@ -932,7 +932,7 @@ pub fn resolve_cross_document_edges_for_uri(
                             .and_then(|type_ref| {
                                 resolve_type_reference_targets(
                                     g,
-                                    &subject,
+                                    subject,
                                     type_ref,
                                     SUBJECT_TYPE_TARGET_KINDS,
                                 )
@@ -966,7 +966,7 @@ pub fn resolve_cross_document_edges_for_uri(
                 };
                 let Some(target_id) = resolve_type_reference_targets(
                     g,
-                    &verified_requirement,
+                    verified_requirement,
                     requirement_ref,
                     VERIFIED_REQUIREMENT_TARGET_KINDS,
                 )

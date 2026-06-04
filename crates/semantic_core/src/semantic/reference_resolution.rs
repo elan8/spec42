@@ -300,7 +300,9 @@ pub fn resolve_member_via_type(
         .map(|child| child.id.clone())
         .collect();
     match direct_children.len() {
-        1 => return ResolveResult::Resolved(direct_children.into_iter().next().expect("one child")),
+        1 => {
+            return ResolveResult::Resolved(direct_children.into_iter().next().expect("one child"))
+        }
         n if n > 1 => return ResolveResult::Ambiguous,
         _ => {}
     }

@@ -546,10 +546,7 @@ impl SemanticGraph {
     }
 
     /// Returns all `Connection` edges incident to nodes in the given URI.
-    pub fn connection_edges_touching_uri(
-        &self,
-        uri: &Url,
-    ) -> Vec<(NodeId, NodeId, SemanticEdge)> {
+    pub fn connection_edges_touching_uri(&self, uri: &Url) -> Vec<(NodeId, NodeId, SemanticEdge)> {
         let ids: std::collections::HashSet<_> = self
             .nodes_by_uri
             .get(uri)
@@ -750,12 +747,7 @@ impl SemanticGraph {
     }
 
     /// Inserts a directed relationship between existing workspace nodes.
-    pub fn insert_workspace_edge(
-        &mut self,
-        source: &NodeId,
-        target: &NodeId,
-        edge: SemanticEdge,
-    ) {
+    pub fn insert_workspace_edge(&mut self, source: &NodeId, target: &NodeId, edge: SemanticEdge) {
         let Some(&source_idx) = self.node_index_by_id.get(source) else {
             return;
         };

@@ -24,19 +24,24 @@ enum RelationshipKindHint {
 #[derive(Debug, Clone)]
 enum EndpointResolveOutcome {
     UsageLike,
-    Definitional(SemanticNode),
+    Definitional(Box<SemanticNode>),
     Unresolved,
 }
 
 fn relationship_kind_from_code(code: &str) -> Option<(RelationshipKindHint, EndpointRole)> {
     match code {
-        "unresolved_allocate_source" => Some((RelationshipKindHint::Allocate, EndpointRole::Source)),
-        "unresolved_allocate_target" => Some((RelationshipKindHint::Allocate, EndpointRole::Target)),
+        "unresolved_allocate_source" => {
+            Some((RelationshipKindHint::Allocate, EndpointRole::Source))
+        }
+        "unresolved_allocate_target" => {
+            Some((RelationshipKindHint::Allocate, EndpointRole::Target))
+        }
         "unresolved_satisfy_source" => Some((RelationshipKindHint::Satisfy, EndpointRole::Source)),
         "unresolved_satisfy_target" => Some((RelationshipKindHint::Satisfy, EndpointRole::Target)),
-        "unresolved_viewpoint_conformance_target" => {
-            Some((RelationshipKindHint::ViewpointConformance, EndpointRole::Target))
-        }
+        "unresolved_viewpoint_conformance_target" => Some((
+            RelationshipKindHint::ViewpointConformance,
+            EndpointRole::Target,
+        )),
         _ => None,
     }
 }
@@ -112,12 +117,15 @@ fn resolve_endpoint_reference(
     }
 }
 
-fn classify_resolved_node(graph: &SemanticGraph, id: crate::semantic::model::NodeId) -> EndpointResolveOutcome {
+fn classify_resolved_node(
+    graph: &SemanticGraph,
+    id: crate::semantic::model::NodeId,
+) -> EndpointResolveOutcome {
     let Some(node) = graph.get_node(&id).cloned() else {
         return EndpointResolveOutcome::Unresolved;
     };
     if is_definitional_element_kind(&node.element_kind) {
-        EndpointResolveOutcome::Definitional(node)
+        EndpointResolveOutcome::Definitional(Box::new(node))
     } else {
         EndpointResolveOutcome::UsageLike
     }
@@ -128,9 +136,7 @@ fn find_case_alternate_part_usage(graph: &SemanticGraph, uri: &Url, name: &str) 
         .nodes_for_uri(uri)
         .into_iter()
         .find(|node| {
-            node.element_kind == "part"
-                && node.name != name
-                && node.name.eq_ignore_ascii_case(name)
+            node.element_kind == "part" && node.name != name && node.name.eq_ignore_ascii_case(name)
         })
         .map(|node| node.name.clone())
 }
@@ -153,9 +159,7 @@ fn format_definition_preferred_message(
         EndpointRole::Target => "target",
     };
     let usage_example = match (kind, role) {
-        (RelationshipKindHint::Allocate, EndpointRole::Source) => {
-            "webshopSystem.checkoutService"
-        }
+        (RelationshipKindHint::Allocate, EndpointRole::Source) => "webshopSystem.checkoutService",
         (RelationshipKindHint::Allocate, EndpointRole::Target) => "commerceCluster",
         (RelationshipKindHint::Satisfy, EndpointRole::Target) => "webshopSystem.checkoutService",
         _ => "owner.feature",
@@ -227,12 +231,8 @@ pub(crate) fn builder_relationship_diagnostic_to_emit(
         return Some((code.to_string(), message.to_string()));
     };
     let container_prefix = diagnostic_container_prefix(node);
-    let mut outcome = resolve_endpoint_reference(
-        graph,
-        uri,
-        Some(container_prefix),
-        &reference_name,
-    );
+    let mut outcome =
+        resolve_endpoint_reference(graph, uri, Some(container_prefix), &reference_name);
     if matches!(outcome, EndpointResolveOutcome::Unresolved) {
         outcome = resolve_endpoint_reference(graph, uri, None, &reference_name);
     }
@@ -304,11 +304,8 @@ mod tests {
         .expect("example doc");
         let (graph, _parsed) =
             build_semantic_graph_from_documents(&[architecture, example.clone()]).expect("graph");
-        let diagnostics = collect_diagnostics_from_graph(
-            &graph,
-            &example.uri,
-            DiagnosticsOptions::default(),
-        );
+        let diagnostics =
+            collect_diagnostics_from_graph(&graph, &example.uri, DiagnosticsOptions::default());
         let prefers_usage = diagnostics
             .iter()
             .find(|d| d.code == "allocate_endpoint_prefers_usage")
@@ -319,7 +316,9 @@ mod tests {
             prefers_usage.message
         );
         assert!(
-            prefers_usage.message.contains("webshopSystem.checkoutService"),
+            prefers_usage
+                .message
+                .contains("webshopSystem.checkoutService"),
             "message should suggest usage path: {}",
             prefers_usage.message
         );
@@ -349,11 +348,8 @@ mod tests {
         .expect("example doc");
         let (graph, _parsed) =
             build_semantic_graph_from_documents(&[example.clone()]).expect("graph");
-        let diagnostics = collect_diagnostics_from_graph(
-            &graph,
-            &example.uri,
-            DiagnosticsOptions::default(),
-        );
+        let diagnostics =
+            collect_diagnostics_from_graph(&graph, &example.uri, DiagnosticsOptions::default());
         let target_diag = diagnostics
             .iter()
             .find(|d| d.code == "unresolved_allocate_target")

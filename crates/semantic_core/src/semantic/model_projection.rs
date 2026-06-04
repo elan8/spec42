@@ -723,7 +723,10 @@ mod tests {
 
         let stripped = strip_synthetic_nodes(&graph);
         assert!(
-            stripped.nodes.iter().all(|n| n.element_type != "diagnostic"),
+            stripped
+                .nodes
+                .iter()
+                .all(|n| n.element_type != "diagnostic"),
             "diagnostic nodes must not appear in model explorer graphs: {:?}",
             stripped.nodes
         );

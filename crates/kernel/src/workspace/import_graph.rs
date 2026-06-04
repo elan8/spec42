@@ -28,7 +28,9 @@ pub(crate) fn workspace_uris_importing_declarations_from(
         .iter()
         .filter(|(uri, _)| *uri != provider_uri)
         .filter(|(uri, _)| !util::uri_under_any_library(uri, &state.library_paths))
-        .filter(|(_, entry)| document_imports_any_package(entry.parsed.as_ref(), &entry.content, &exported))
+        .filter(|(_, entry)| {
+            document_imports_any_package(entry.parsed.as_ref(), &entry.content, &exported)
+        })
         .map(|(uri, _)| uri.clone())
         .collect()
 }
@@ -63,9 +65,11 @@ fn document_imports_any_package(
     packages: &[String],
 ) -> bool {
     let targets = import_targets_from_document(parsed, content);
-    packages
-        .iter()
-        .any(|package| targets.iter().any(|target| import_references_package(target, package)))
+    packages.iter().any(|package| {
+        targets
+            .iter()
+            .any(|target| import_references_package(target, package))
+    })
 }
 
 fn import_targets_from_document(parsed: Option<&RootNamespace>, content: &str) -> Vec<String> {
@@ -152,10 +156,7 @@ mod tests {
         let provider = Url::parse("file:///workspace/a.sysml").unwrap();
         let importer = Url::parse("file:///workspace/b.sysml").unwrap();
         let mut index = HashMap::new();
-        index.insert(
-            provider.clone(),
-            entry("package A { attribute def Name; }"),
-        );
+        index.insert(provider.clone(), entry("package A { attribute def Name; }"));
         index.insert(
             importer.clone(),
             entry("package B { import A::*; part def P { attribute n : Name; } }"),

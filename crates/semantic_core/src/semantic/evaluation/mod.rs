@@ -8,8 +8,8 @@ use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResu
 
 mod units;
 
-pub use units::UnitRegistry;
 use units::UnitError;
+pub use units::UnitRegistry;
 
 const EVALUATED_VALUE_KEY: &str = "evaluatedValue";
 const EVALUATED_UNIT_KEY: &str = "evaluatedUnit";
@@ -240,7 +240,8 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph, units: UnitRegistry)
                                     evaluate_analysis_display_quantity(&mut engine, &node_id, expr);
                             }
                             if limit.is_none() {
-                                limit = evaluate_analysis_limit_quantity(&mut engine, &node_id, expr);
+                                limit =
+                                    evaluate_analysis_limit_quantity(&mut engine, &node_id, expr);
                             }
                         }
                         Err(err) => {
@@ -261,8 +262,7 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph, units: UnitRegistry)
                         };
                         value = Some(Value::Bool(bool_value));
                         passed = Some(bool_value);
-                        computed =
-                            evaluate_analysis_display_quantity(&mut engine, &node_id, expr);
+                        computed = evaluate_analysis_display_quantity(&mut engine, &node_id, expr);
                     }
                     Err(err) => {
                         status = err.status.as_str().to_string();
@@ -307,10 +307,9 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph, units: UnitRegistry)
                 number_to_json(quantity.value),
             );
             if let Some(unit) = quantity.unit {
-                node_mut.attributes.insert(
-                    ANALYSIS_COMPUTED_UNIT_KEY.to_string(),
-                    Value::String(unit),
-                );
+                node_mut
+                    .attributes
+                    .insert(ANALYSIS_COMPUTED_UNIT_KEY.to_string(), Value::String(unit));
             }
         }
         if let Some(quantity) = limit {
@@ -320,10 +319,9 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph, units: UnitRegistry)
                 number_to_json(quantity.value),
             );
             if let Some(unit) = quantity.unit {
-                node_mut.attributes.insert(
-                    ANALYSIS_LIMIT_UNIT_KEY.to_string(),
-                    Value::String(unit),
-                );
+                node_mut
+                    .attributes
+                    .insert(ANALYSIS_LIMIT_UNIT_KEY.to_string(), Value::String(unit));
             }
             node_mut.attributes.insert(
                 ANALYSIS_LIMIT_DISPLAY_KEY.to_string(),
@@ -383,9 +381,7 @@ fn evaluate_analysis_limit_quantity(
     let repaired = normalize_broken_invocation_syntax(expression.trim());
     let normalized = normalize_truncated_analysis_comparison(repaired.as_str());
     let rhs = split_comparison_rhs(normalized.as_str())?;
-    engine
-        .evaluate_quantity_expression(context_id, rhs)
-        .ok()
+    engine.evaluate_quantity_expression(context_id, rhs).ok()
 }
 
 fn evaluate_analysis_display_quantity(
@@ -1312,9 +1308,9 @@ impl<'a> EvalEngine<'a> {
             let candidate_value = match (&best.unit, &candidate.unit) {
                 (None, None) => candidate.value,
                 (Some(best_unit), Some(candidate_unit)) => {
-                    let converted = self
-                        .units
-                        .convert_value(candidate.value, candidate_unit, best_unit);
+                    let converted =
+                        self.units
+                            .convert_value(candidate.value, candidate_unit, best_unit);
                     converted.map_err(map_unit_error)?
                 }
                 (Some(unit), None) | (None, Some(unit)) => {
@@ -1362,10 +1358,7 @@ impl<'a> EvalEngine<'a> {
             }
         }
         let mut it = normalized_args.iter();
-        let first = it
-            .next()
-            .expect("non-empty args")
-            .to_string();
+        let first = it.next().expect("non-empty args").to_string();
         let mut acc = self.evaluate_quantity_expression(context_id, &first)?;
         for arg in it {
             let evaluated = self.evaluate_quantity_expression(context_id, arg)?;
@@ -1441,7 +1434,9 @@ impl<'a> EvalEngine<'a> {
                     let bound = if collection_params.contains(name) {
                         BoundValue::Collection(parse_tuple_identifier_list(arg_expr)?)
                     } else {
-                        BoundValue::Quantity(self.evaluate_quantity_expression(context_id, arg_expr)?)
+                        BoundValue::Quantity(
+                            self.evaluate_quantity_expression(context_id, arg_expr)?,
+                        )
                     };
                     bindings.insert(name.clone(), bound);
                 }
@@ -1536,11 +1531,7 @@ fn choose_candidate(
         candidate_preference_score(graph, left)
             .cmp(&candidate_preference_score(graph, right))
             .reverse()
-            .then_with(|| {
-                left.qualified_name
-                    .len()
-                    .cmp(&right.qualified_name.len())
-            })
+            .then_with(|| left.qualified_name.len().cmp(&right.qualified_name.len()))
     });
     let best = sorted[0].clone();
     let best_score = candidate_preference_score(graph, &best);
@@ -1568,7 +1559,7 @@ fn candidate_preference_score(graph: &SemanticGraph, candidate: &NodeId) -> u8 {
     let has_evaluable_source = EVALUATION_SOURCE_KEYS.iter().any(|key| {
         node.attributes
             .get(*key)
-            .is_some_and(|value| value_has_evaluable_content(value))
+            .is_some_and(value_has_evaluable_content)
     });
     if has_evaluable_source {
         2
@@ -1887,7 +1878,11 @@ fn callable_collection_params(node: &SemanticNode) -> HashSet<String> {
 fn collection_param_from_sum_projection(expression: &str) -> Option<String> {
     let inner = expression.trim().strip_prefix("sum(")?.trim();
     let head = inner.split_once('.')?.0.trim();
-    if head.is_empty() || !head.chars().all(|ch| ch.is_ascii_alphanumeric() || ch == '_') {
+    if head.is_empty()
+        || !head
+            .chars()
+            .all(|ch| ch.is_ascii_alphanumeric() || ch == '_')
+    {
         return None;
     }
     Some(head.to_string())
@@ -3160,7 +3155,9 @@ mod tests {
             None,
             HashMap::from([(
                 ANALYSIS_EXPRESSION_KEY.to_string(),
-                Value::String("Margin(measured=measured, allowance=allowance, limit=limit) >= 0".to_string()),
+                Value::String(
+                    "Margin(measured=measured, allowance=allowance, limit=limit) >= 0".to_string(),
+                ),
             )]),
         );
         let _limit = add_node(
@@ -3232,7 +3229,9 @@ mod tests {
             None,
             HashMap::from([(
                 ANALYSIS_EXPRESSION_KEY.to_string(),
-                Value::String("Margin(limit, measured=measured, allowance=allowance) >= 0".to_string()),
+                Value::String(
+                    "Margin(limit, measured=measured, allowance=allowance) >= 0".to_string(),
+                ),
             )]),
         );
         let _limit = add_node(
@@ -3472,7 +3471,13 @@ mod tests {
             Some(&analysis),
             HashMap::new(),
         );
-        add_typing_edge_if_exists(&mut graph, &uri, "Demo::PowerAnalysis::robot", "Demo::Robot", None);
+        add_typing_edge_if_exists(
+            &mut graph,
+            &uri,
+            "Demo::PowerAnalysis::robot",
+            "Demo::Robot",
+            None,
+        );
         add_typing_edge_if_exists(
             &mut graph,
             &uri,
@@ -3547,15 +3552,7 @@ mod tests {
         let uri = Url::parse("file:///C:/workspace/sum.sysml").expect("uri");
 
         // Workspace values.
-        let owner = add_node(
-            &mut graph,
-            &uri,
-            "P",
-            "package",
-            "P",
-            None,
-            HashMap::new(),
-        );
+        let owner = add_node(&mut graph, &uri, "P", "package", "P", None, HashMap::new());
         let _a = add_node(
             &mut graph,
             &uri,
@@ -3655,7 +3652,10 @@ mod tests {
             "attribute",
             "countV",
             Some(&owner),
-            HashMap::from([("value".to_string(), Value::String("count(a, b)".to_string()))]),
+            HashMap::from([(
+                "value".to_string(),
+                Value::String("count(a, b)".to_string()),
+            )]),
         );
 
         evaluate_expressions(&mut graph);
@@ -3729,7 +3729,8 @@ mod tests {
             HashMap::from([(
                 ANALYSIS_EXPRESSION_KEY.to_string(),
                 Value::String(
-                    "SubsystemMassSum(parts=(robot.engine, robot.chassis)) <= massLimitKg".to_string(),
+                    "SubsystemMassSum(parts=(robot.engine, robot.chassis)) <= massLimitKg"
+                        .to_string(),
                 ),
             )]),
         );

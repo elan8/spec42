@@ -1,8 +1,9 @@
-use semantic_core::{
-    build_semantic_graph_from_documents, collect_diagnostics_from_graph, resolve_expression_endpoint_strict,
-    resolve_workspace_pending_relationships, DiagnosticsOptions, ResolveResult,
-};
 use semantic_core::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
+use semantic_core::{
+    build_semantic_graph_from_documents, collect_diagnostics_from_graph,
+    resolve_expression_endpoint_strict, resolve_workspace_pending_relationships,
+    DiagnosticsOptions, ResolveResult,
+};
 use url::Url;
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
@@ -87,7 +88,9 @@ fn apollo_style_interface_connect_resolves_individual_and_inherited_features() {
 
     let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
     assert!(
-        !diagnostics.iter().any(|d| d.code == "unresolved_pending_expression_relationship"),
+        !diagnostics
+            .iter()
+            .any(|d| d.code == "unresolved_pending_expression_relationship"),
         "unexpected pending connection diagnostics: {diagnostics:?}"
     );
 }

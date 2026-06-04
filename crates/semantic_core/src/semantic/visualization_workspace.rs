@@ -319,9 +319,9 @@ pub fn filter_ibd_by_visible_ids(ibd: &IbdDataDto, visible_ids: &HashSet<String>
             return false;
         }
         port_dot_ids.contains(&endpoint)
-            || part_qualified_names.iter().any(|qn| {
-                endpoint == *qn || endpoint.starts_with(&format!("{qn}."))
-            })
+            || part_qualified_names
+                .iter()
+                .any(|qn| endpoint == *qn || endpoint.starts_with(&format!("{qn}.")))
             || part_ids.iter().any(|id| {
                 let id_dot = id.replace("::", ".");
                 endpoint == id_dot || endpoint.starts_with(&format!("{id_dot}."))
@@ -335,20 +335,12 @@ pub fn filter_ibd_by_visible_ids(ibd: &IbdDataDto, visible_ids: &HashSet<String>
                 || port_ids.contains(connector.target.as_str())
                 || endpoint_visible(&connector.source_id)
                 || endpoint_visible(&connector.target_id)
-                || connector
-                    .source_part_id
-                    .as_deref()
-                    .is_some_and(|part_id| {
-                        part_ids.contains(part_id)
-                            || part_qualified_names.contains(part_id)
-                    })
-                || connector
-                    .target_part_id
-                    .as_deref()
-                    .is_some_and(|part_id| {
-                        part_ids.contains(part_id)
-                            || part_qualified_names.contains(part_id)
-                    })
+                || connector.source_part_id.as_deref().is_some_and(|part_id| {
+                    part_ids.contains(part_id) || part_qualified_names.contains(part_id)
+                })
+                || connector.target_part_id.as_deref().is_some_and(|part_id| {
+                    part_ids.contains(part_id) || part_qualified_names.contains(part_id)
+                })
         })
         .cloned()
         .collect();
@@ -634,24 +626,20 @@ pub fn select_interconnection_ibd_scope_with_trace(
     selected_ids: &HashSet<String>,
     selected_exposed_ids: Option<&HashSet<String>>,
 ) -> (IbdDataDto, IbdScopeTrace) {
-    let trace = |chosen: &'static str,
-                 visible: &IbdDataDto,
-                 root_scoped: &IbdDataDto|
-     -> IbdScopeTrace {
-        IbdScopeTrace {
-            full_parts: full_ibd.parts.len(),
-            full_connectors: full_ibd.connectors.len(),
-            visible_parts: visible.parts.len(),
-            visible_connectors: visible.connectors.len(),
-            root_scoped_parts: root_scoped.parts.len(),
-            root_scoped_connectors: root_scoped.connectors.len(),
-            chosen,
-        }
-    };
+    let trace =
+        |chosen: &'static str, visible: &IbdDataDto, root_scoped: &IbdDataDto| -> IbdScopeTrace {
+            IbdScopeTrace {
+                full_parts: full_ibd.parts.len(),
+                full_connectors: full_ibd.connectors.len(),
+                visible_parts: visible.parts.len(),
+                visible_connectors: visible.connectors.len(),
+                root_scoped_parts: root_scoped.parts.len(),
+                root_scoped_connectors: root_scoped.connectors.len(),
+                chosen,
+            }
+        };
 
-    if selected_ids.is_empty()
-        && selected_exposed_ids.map_or(true, |ids| ids.is_empty())
-    {
+    if selected_ids.is_empty() && selected_exposed_ids.is_none_or(|ids| ids.is_empty()) {
         return (
             full_ibd.clone(),
             trace("full_unfiltered", full_ibd, full_ibd),
@@ -1557,8 +1545,7 @@ mod interconnection_scope_tests {
     #[test]
     fn interconnection_scope_keeps_full_ibd_when_graph_ids_do_not_match_parts() {
         let full = sample_ibd();
-        let graph_ids: HashSet<String> =
-            HashSet::from(["unrelated-graph-node-id".to_string()]);
+        let graph_ids: HashSet<String> = HashSet::from(["unrelated-graph-node-id".to_string()]);
         let exposed: HashSet<String> = HashSet::from(["Wrong::expose::path".to_string()]);
 
         let (scoped, trace) =

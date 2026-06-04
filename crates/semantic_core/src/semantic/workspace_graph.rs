@@ -93,7 +93,9 @@ mod tests {
             "workspace declaration should be present"
         );
         assert!(
-            graph.node_ids_by_qualified_name.contains_key("L::ExternalThing"),
+            graph
+                .node_ids_by_qualified_name
+                .contains_key("L::ExternalThing"),
             "custom-scheme declaration should be present"
         );
     }
@@ -125,7 +127,8 @@ package AnalysisCases {
             .and_then(|ids| ids.first())
             .expect("subject node");
         let subject = graph.get_node(subject_id).expect("subject");
-        let typing_targets = graph.outgoing_targets_by_kind(subject, crate::RelationshipKind::Typing);
+        let typing_targets =
+            graph.outgoing_targets_by_kind(subject, crate::RelationshipKind::Typing);
         assert!(
             typing_targets.is_empty(),
             "missing dependency should remain unresolved for strict subset behavior"

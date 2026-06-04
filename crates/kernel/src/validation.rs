@@ -255,12 +255,10 @@ package UseLibrary {
             "expected unresolved DurationValue diagnostic: {unresolved:#?}"
         );
         assert!(!report.advice.is_empty());
-        assert!(
-            report
-                .advice
-                .iter()
-                .any(|line| line.contains("library roots"))
-        );
+        assert!(report
+            .advice
+            .iter()
+            .any(|line| line.contains("library roots")));
     }
 
     #[test]

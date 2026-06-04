@@ -121,4 +121,3 @@ fn qualified_package_declaration_import_resolves_member() {
             .collect::<Vec<_>>()
     );
 }
-

@@ -83,7 +83,11 @@ fn nested_port_usage_body_tokenizes_member_names() {
             .collect()
     };
 
-    for ident in ["vehicleToRoadPort", "leftWheelToRoadPort", "rightWheelToRoadPort"] {
+    for ident in [
+        "vehicleToRoadPort",
+        "leftWheelToRoadPort",
+        "rightWheelToRoadPort",
+    ] {
         let ident_tokens: Vec<_> = decoded.iter().filter(|t| token_text(t) == ident).collect();
         assert!(
             !ident_tokens.is_empty(),
