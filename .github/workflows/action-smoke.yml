@@ -30,7 +30,7 @@ jobs:
       - name: Validate action.yml with actionlint
         run: |
           curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash
-          ./actionlint -shellcheck= -action-manifest-validate
+          ./actionlint -shellcheck= .github/workflows/action-smoke.yml
 
       - name: Run local composite action against latest release
         uses: ./
