@@ -1,0 +1,43 @@
+# Smoke-test the composite Action manifest and a real release download + check.
+name: Action smoke
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - action.yml
+      - .github/workflows/action-smoke.yml
+      - examples/timer/**
+  pull_request:
+    branches: [main, master]
+    paths:
+      - action.yml
+      - .github/workflows/action-smoke.yml
+      - examples/timer/**
+
+permissions:
+  contents: read
+
+jobs:
+  action-smoke:
+    name: Composite action smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Validate action.yml with actionlint
+        run: |
+          curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash
+          ./actionlint -shellcheck= -action-manifest-validate
+
+      - name: Run local composite action against latest release
+        uses: ./
+        with:
+          # Pin to latest published CLI until this commit is tagged.
+          version: v0.26.2
+          path: examples/timer/KitchenTimer.sysml
+          format: text
+          run-doctor: true
+          upload-sarif: false

@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.26.3] - 2026-06-04
+
+### Fixed
+
+- **GitHub Action version resolution** - Install step now uses `github.action_ref` when `inputs.version` is omitted. Composite actions do not expose `GITHUB_ACTION_REF` to `run` scripts, which caused `No Spec42 version was provided and GITHUB_ACTION_REF is empty` in downstream workflows such as [sysml-examples](https://github.com/elan8/sysml-examples).
+- **GitHub Action release ref validation** - Reject branch-style refs (for example `main` → `vmain`) with a clear error; only semver tags like `v0.26.3` download release archives.
+- **GitHub Action SARIF upload on forks** - SARIF upload runs with `continue-on-error` so fork PRs still fail only on validation results, not Code Scanning upload restrictions.
+
+### Added
+
+- **Action smoke CI** - `.github/workflows/action-smoke.yml` runs actionlint and exercises the composite Action against a published release binary.
+
+### Changed
+
+- **Release surface alignment** - Rust workspace, `spec42` server, VS Code extension, and Zed extension versions aligned at `0.26.3`.
+
 ## [0.26.2] - 2026-06-04
 
 ### Fixed
@@ -480,6 +496,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.26.3]: https://github.com/elan8/spec42/releases/tag/v0.26.3
 [0.26.2]: https://github.com/elan8/spec42/releases/tag/v0.26.2
 [0.26.1]: https://github.com/elan8/spec42/releases/tag/v0.26.1
 [0.26.0]: https://github.com/elan8/spec42/releases/tag/v0.26.0

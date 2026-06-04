@@ -8,7 +8,7 @@ branding:
 
 inputs:
   version:
-    description: Spec42 release tag to install, for example v0.26.2. Defaults to the Action ref.
+    description: Spec42 release tag to install, for example v0.26.3. Defaults to the Action ref.
     required: false
   path:
     description: File or workspace path to validate.
@@ -57,6 +57,9 @@ outputs:
   executable-path:
     description: Path to the installed spec42 executable.
     value: ${{ steps.install.outputs.executable-path }}
+  exit-code:
+    description: Exit code from spec42 check (0 = passed).
+    value: ${{ steps.check.outputs.exit-code }}
   sarif-file:
     description: SARIF output file path when format is sarif.
     value: ${{ inputs.sarif-file }}
@@ -69,19 +72,35 @@ runs:
       shell: bash
       env:
         INPUT_VERSION: ${{ inputs.version }}
+        # Composite actions do not receive GITHUB_ACTION_REF in run scripts; inject the caller ref.
+        ACTION_REF: ${{ github.action_ref }}
       run: |
         set -euo pipefail
 
         VERSION="$INPUT_VERSION"
         if [ -z "$VERSION" ]; then
+          VERSION="${ACTION_REF:-}"
+        fi
+        if [ -z "$VERSION" ]; then
           VERSION="${GITHUB_ACTION_REF:-}"
         fi
         if [ -z "$VERSION" ]; then
-          echo "No Spec42 version was provided and GITHUB_ACTION_REF is empty." >&2
+          echo "No Spec42 version was provided (inputs.version) and no action ref is available." >&2
           exit 1
         fi
         if [[ "$VERSION" != v* ]]; then
-          VERSION="v$VERSION"
+          if [[ "$VERSION" =~ ^[0-9]+(\.[0-9]+){1,2}([+-][A-Za-z0-9.-]+)?$ ]]; then
+            VERSION="v$VERSION"
+          else
+            echo "Spec42 version must be a release tag like v0.26.3 (got: $VERSION)." >&2
+            echo "Pin uses: elan8/spec42@vX.Y.Z or set inputs.version explicitly." >&2
+            exit 1
+          fi
+        fi
+        if [[ ! "$VERSION" =~ ^v[0-9]+(\.[0-9]+){1,2}([+-][A-Za-z0-9.-]+)?$ ]]; then
+          echo "Spec42 version must be a semver release tag like v0.26.3 (got: $VERSION)." >&2
+          echo "Do not use branch refs such as @main; they have no matching release archive." >&2
+          exit 1
         fi
 
         case "$RUNNER_OS:$RUNNER_ARCH" in
@@ -222,13 +241,14 @@ runs:
         echo "exit-code=0" >> "$GITHUB_OUTPUT"
 
     - name: Upload Spec42 SARIF
-      if: ${{ inputs.format == 'sarif' && inputs.upload-sarif == 'true' }}
+      if: ${{ inputs.format == 'sarif' && inputs.upload-sarif == 'true' && steps.check.outputs.exit-code != '' }}
+      continue-on-error: true
       uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: ${{ inputs.sarif-file }}
 
     - name: Fail when Spec42 check failed
-      if: ${{ steps.check.outputs.exit-code != '0' }}
+      if: ${{ steps.check.outputs.exit-code != '' && steps.check.outputs.exit-code != '0' }}
       shell: bash
       run: |
         echo "spec42 check failed with exit code ${{ steps.check.outputs.exit-code }}." >&2
