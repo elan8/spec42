@@ -22,6 +22,15 @@ fn completion_items(
         .expect("completion items")
 }
 
+fn position_for(content: &str, needle: &str) -> (u32, u32) {
+    for (line_index, line) in content.lines().enumerate() {
+        if let Some(character) = line.find(needle) {
+            return (line_index as u32, (character + needle.len()) as u32);
+        }
+    }
+    panic!("needle not found in content: {needle}");
+}
+
 fn completion_labels(
     session: &mut TestSession,
     uri: &str,
@@ -297,6 +306,83 @@ fn completion_resolve_populates_documentation() {
             || resolved["documentation"]["value"].as_str().is_some(),
         "expected documentation after resolve: {}",
         resolved
+    );
+    let markdown = resolved["documentation"]["value"]
+        .as_str()
+        .or_else(|| resolved["documentation"].as_str())
+        .expect("completion documentation text");
+    assert!(
+        markdown.contains("Qualified name") && markdown.contains("Vehicle"),
+        "expected semantic markdown after resolve: {}",
+        markdown
+    );
+}
+
+#[test]
+fn completion_keeps_homonyms_distinguishable() {
+    let mut session = TestSession::new();
+    let uri = "file:///homonym_context.sysml";
+    let content = r#"package A {
+    part def Sensor;
+}
+package B {
+    part def Sensor;
+}
+package Main {
+    part device: S
+}"#;
+
+    session.initialize_default("test");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let (line, character) = position_for(content, "part device: S");
+    let items = completion_items(&mut session, uri, line, character);
+    let sensors: Vec<_> = items
+        .iter()
+        .filter(|item| item["label"].as_str() == Some("Sensor"))
+        .collect();
+    assert!(
+        sensors.len() >= 2,
+        "expected homonym Sensor completions to remain distinct: {}",
+        serde_json::Value::Array(items)
+    );
+    assert!(
+        sensors
+            .iter()
+            .any(|item| item["labelDetails"]["description"].as_str() == Some("A"))
+            && sensors
+                .iter()
+                .any(|item| item["labelDetails"]["description"].as_str() == Some("B")),
+        "expected homonym completion label details to show containers: {:?}",
+        sensors
+    );
+}
+
+#[test]
+fn completion_prefix_matches_outrank_substring_matches() {
+    let mut session = TestSession::new();
+    let uri = "file:///prefix_context.sysml";
+    let content = r#"package P {
+    part def RemoteMotor;
+    part def Motor;
+    part drive: Mo
+}"#;
+
+    session.initialize_default("test");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let (line, character) = position_for(content, "part drive: Mo");
+    let labels = completion_labels(&mut session, uri, line, character);
+    let motor_idx = labels.iter().position(|label| label == "Motor");
+    let remote_idx = labels.iter().position(|label| label == "RemoteMotor");
+    assert!(motor_idx.is_some(), "expected Motor in {:?}", labels);
+    assert!(remote_idx.is_some(), "expected RemoteMotor in {:?}", labels);
+    assert!(
+        motor_idx.unwrap() < remote_idx.unwrap(),
+        "prefix match should outrank substring match in {:?}",
+        labels
     );
 }
 

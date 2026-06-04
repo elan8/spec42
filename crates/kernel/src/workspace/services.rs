@@ -301,11 +301,12 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
     loaded
 }
 
-pub(crate) fn apply_document_changes(
+fn apply_document_changes_impl(
     state: &mut ServerState,
     uri_norm: &Url,
     version: i32,
     content_changes: Vec<TextDocumentContentChangeEvent>,
+    evaluate: bool,
 ) -> Vec<(MessageType, String)> {
     let mut runtime_warnings = Vec::new();
     let should_update = if let Some(entry) = state.index.get_mut(uri_norm) {
@@ -376,11 +377,30 @@ pub(crate) fn apply_document_changes(
             .get(uri_norm)
             .and_then(|entry| entry.parsed.as_ref())
             .cloned();
-        update_semantic_graph_for_uri(state, uri_norm, parsed.as_ref(), true);
+        update_semantic_graph_for_uri(state, uri_norm, parsed.as_ref(), evaluate);
         refresh_symbols_for_uri(state, uri_norm);
     }
 
     runtime_warnings
+}
+
+#[cfg(test)]
+pub(crate) fn apply_document_changes(
+    state: &mut ServerState,
+    uri_norm: &Url,
+    version: i32,
+    content_changes: Vec<TextDocumentContentChangeEvent>,
+) -> Vec<(MessageType, String)> {
+    apply_document_changes_impl(state, uri_norm, version, content_changes, true)
+}
+
+pub(crate) fn apply_document_changes_fast(
+    state: &mut ServerState,
+    uri_norm: &Url,
+    version: i32,
+    content_changes: Vec<TextDocumentContentChangeEvent>,
+) -> Vec<(MessageType, String)> {
+    apply_document_changes_impl(state, uri_norm, version, content_changes, false)
 }
 
 pub(crate) fn remove_document(state: &mut ServerState, uri_norm: &Url) {
@@ -435,7 +455,8 @@ pub(crate) fn index_library_paths_for_search(
 
 /// Load import-closure library files for the current workspace index (semantic graph merge).
 pub(crate) fn ingest_missing_library_closure(state: &mut ServerState) -> usize {
-    if crate::workspace::library_closure::library_full_scan_enabled() || state.library_paths.is_empty()
+    if crate::workspace::library_closure::library_full_scan_enabled()
+        || state.library_paths.is_empty()
     {
         return 0;
     }
@@ -578,7 +599,8 @@ pub(crate) fn rebuild_all_document_links(
     }
 
     // Move the graph back to state after all worker Arc clones are dropped.
-    state.semantic_graph = std::sync::Arc::try_unwrap(graph_arc).unwrap_or_else(|arc| (*arc).clone());
+    state.semantic_graph =
+        std::sync::Arc::try_unwrap(graph_arc).unwrap_or_else(|arc| (*arc).clone());
 
     for (src_id, tgt_id, kind) in resolved_edges {
         if let (Some(&src_idx), Some(&tgt_idx)) = (
@@ -611,11 +633,7 @@ pub(crate) fn rebuild_all_document_links(
             continue;
         }
         let mut new_entries = semantic::symbol_entries_for_uri(&state.semantic_graph, uri);
-        library_search::add_short_name_symbol_entries(
-            &mut new_entries,
-            &index_entry.content,
-            uri,
-        );
+        library_search::add_short_name_symbol_entries(&mut new_entries, &index_entry.content, uri);
         all_symbols.extend(new_entries);
     }
     state.symbol_table = all_symbols;
@@ -749,11 +767,7 @@ pub(crate) fn rebuild_semantic_graph_staged(
             continue;
         }
         let mut new_entries = semantic::symbol_entries_for_uri(&semantic_graph, uri);
-        library_search::add_short_name_symbol_entries(
-            &mut new_entries,
-            &index_entry.content,
-            uri,
-        );
+        library_search::add_short_name_symbol_entries(&mut new_entries, &index_entry.content, uri);
         all_symbols.extend(new_entries);
     }
     let refresh_symbols_ms = elapsed_ms(refresh_symbols_start);
@@ -790,7 +804,8 @@ mod tests {
     use std::fs;
 
     use super::{
-        apply_document_changes, rebuild_all_document_links, remove_document, store_document_text,
+        apply_document_changes, apply_document_changes_fast, rebuild_all_document_links,
+        remove_document, store_document_text,
     };
     use crate::analysis::compute_semantic_diagnostics;
     use crate::workspace::state::ServerState;
@@ -909,6 +924,46 @@ mod tests {
         assert!(!state.index.contains_key(&uri));
         assert!(state.semantic_graph.nodes_for_uri(&uri).is_empty());
         assert!(state.symbol_table.iter().all(|entry| entry.uri != uri));
+    }
+
+    #[test]
+    fn fast_apply_updates_document_without_running_workspace_evaluation() {
+        let uri = fixture_uri();
+        let mut state = ServerState::default();
+
+        store_document_text(
+            &mut state,
+            &uri,
+            "package Demo { part def Rocket { attribute mass = 1 + 1; } }".to_string(),
+        );
+        let mass = find_attribute_node(&state, &uri, "mass");
+        assert_eq!(
+            mass.attributes.get("evaluatedValue"),
+            Some(&serde_json::json!(2))
+        );
+
+        let warnings = apply_document_changes_fast(
+            &mut state,
+            &uri,
+            2,
+            vec![TextDocumentContentChangeEvent {
+                range: Some(Range::new(Position::new(0, 54), Position::new(0, 55))),
+                range_length: None,
+                text: "2".to_string(),
+            }],
+        );
+        assert!(warnings.is_empty());
+        assert!(state
+            .index
+            .get(&uri)
+            .expect("updated doc")
+            .content
+            .contains("1 + 2"));
+        let mass = find_attribute_node(&state, &uri, "mass");
+        assert!(
+            !mass.attributes.contains_key("evaluatedValue"),
+            "fast path should defer expression evaluation until async relink"
+        );
     }
 
     #[test]

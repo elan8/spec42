@@ -6,6 +6,7 @@ use tower_lsp::lsp_types::*;
 use crate::common::text_span::to_core_position;
 use crate::common::util;
 use crate::language::{completion_prefix, keyword_doc, line_prefix_at_position};
+use crate::semantic;
 use crate::workspace::ServerState;
 
 use super::shared::TYPE_LOOKUP_KINDS;
@@ -113,6 +114,13 @@ struct CompletionEditShape {
 struct CompletionResolveData {
     detail: Option<String>,
     documentation: Option<String>,
+}
+
+fn markdown_documentation(markdown: String) -> Documentation {
+    Documentation::MarkupContent(MarkupContent {
+        kind: MarkupKind::Markdown,
+        value: markdown,
+    })
 }
 
 fn detect_completion_context(line_prefix: &str) -> CompletionContext {
@@ -507,16 +515,38 @@ fn collect_symbol_candidates(
             continue;
         }
         let detail = entry.detail.clone();
+        let node = state
+            .semantic_graph
+            .nodes_for_uri(&entry.uri)
+            .into_iter()
+            .find(|node| {
+                node.name == entry.name
+                    && detail
+                        .as_deref()
+                        .is_none_or(|detail| detail == node.element_kind)
+            });
+        let documentation = node
+            .map(|node| semantic::hover_markdown_for_node(&state.semantic_graph, node, false))
+            .or_else(|| entry.description.clone());
+        let label_details =
+            entry
+                .container_name
+                .as_ref()
+                .map(|container| CompletionItemLabelDetails {
+                    detail: Some(format!(
+                        " - {}",
+                        entry.detail.as_deref().unwrap_or("symbol")
+                    )),
+                    description: Some(container.clone()),
+                });
         out.push(CompletionCandidate {
             label: entry.name.clone(),
             item: CompletionItem {
                 label: entry.name.clone(),
                 kind: Some(symbol_kind_to_completion_item_kind(entry.kind)),
                 detail: detail.clone(),
-                documentation: entry
-                    .description
-                    .as_ref()
-                    .map(|doc| Documentation::String(doc.clone())),
+                label_details,
+                documentation: documentation.clone().map(markdown_documentation),
                 filter_text: Some(entry.name.clone()),
                 text_edit: Some(CompletionTextEdit::Edit(TextEdit {
                     range: edit_shape.replace_range,
@@ -525,7 +555,7 @@ fn collect_symbol_candidates(
                 data: Some(serde_json::json!({
                     COMPLETION_RESOLVE_DATA_KEY: CompletionResolveData {
                         detail,
-                        documentation: entry.description.clone(),
+                        documentation,
                     }
                 })),
                 ..CompletionItem::default()
@@ -556,8 +586,8 @@ fn rank_candidates_in_place(
         let mut tier = candidate.tier;
         let mut score = candidate.score
             + match (starts_with_prefix, contains_prefix) {
-                (true, _) => 200,
-                (_, true) => 80,
+                (true, _) => 420,
+                (_, true) => 45,
                 _ => 0,
             };
 
@@ -616,6 +646,10 @@ fn rank_candidates_in_place(
         if kind_matches_context && tier == TIER_GENERIC_SYMBOL {
             tier = TIER_WORKSPACE_COMPATIBLE;
         }
+        if matches!(context, CompletionContext::TypeReference { .. }) && !kind_matches_context {
+            tier = tier.min(TIER_GENERIC_SYMBOL);
+            score -= 250;
+        }
 
         candidate.tier = tier;
         candidate.score = score;
@@ -645,7 +679,15 @@ fn dedupe_completion_candidates(candidates: Vec<CompletionCandidate>) -> Vec<Com
     let mut seen = HashSet::new();
     let mut deduped = Vec::new();
     for candidate in candidates {
-        if seen.insert(candidate.label.clone()) {
+        let detail = candidate.item.detail.as_deref().unwrap_or("");
+        let description = candidate
+            .item
+            .label_details
+            .as_ref()
+            .and_then(|details| details.description.as_deref())
+            .unwrap_or("");
+        let key = format!("{}|{}|{}", candidate.label, detail, description);
+        if seen.insert(key) {
             deduped.push(candidate);
         }
     }
@@ -699,7 +741,7 @@ pub(crate) fn completion_resolve(
         item.documentation = payload
             .get("documentation")
             .and_then(|value| value.as_str())
-            .map(|value| Documentation::String(value.to_string()));
+            .map(|value| markdown_documentation(value.to_string()));
     }
     Ok(item)
 }

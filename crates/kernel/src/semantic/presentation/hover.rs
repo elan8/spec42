@@ -53,6 +53,44 @@ fn append_field(md: &mut String, label: &str, value: &str) {
     md.push_str(&format!("*{}:* `{}`\n\n", label, value));
 }
 
+fn append_plain_field(md: &mut String, label: &str, value: &str) {
+    if value.trim().is_empty() {
+        return;
+    }
+    md.push_str(&format!("*{}:* {}\n\n", label, value));
+}
+
+fn declared_type(node: &SemanticNode) -> Option<&str> {
+    first_attr_str(
+        node,
+        &[
+            "partType",
+            "subjectType",
+            "attributeType",
+            "portType",
+            "actorType",
+            "itemType",
+            "parameterType",
+            "stateType",
+            "requirementType",
+            "objectiveType",
+            "refType",
+            "type",
+        ],
+    )
+}
+
+fn append_attribute_value(md: &mut String, node: &SemanticNode, label: &str, keys: &[&str]) {
+    if let Some(value) = keys.iter().find_map(|key| {
+        node.attributes
+            .get(*key)
+            .and_then(json_value_to_inline_text)
+            .filter(|value| !value.trim().is_empty())
+    }) {
+        append_field(md, label, &value);
+    }
+}
+
 fn append_multiline_section(md: &mut String, title: &str, lines: &[String]) {
     if lines.is_empty() {
         return;
@@ -204,41 +242,47 @@ pub fn hover_markdown_for_node(
     md.push_str(&code_block);
     md.push_str("\n```\n\n");
 
+    append_field(&mut md, "Kind", &node.element_kind);
+    append_field(&mut md, "Qualified name", &node.id.qualified_name);
+
     if let Some(parent_id) = &node.parent_id {
         if let Some(parent) = graph.get_node(parent_id) {
-            if !parent.name.trim().is_empty() {
-                append_field(&mut md, "In", &parent.name);
+            if !parent.id.qualified_name.trim().is_empty() {
+                append_field(&mut md, "Container", &parent.id.qualified_name);
             }
         }
     }
 
+    if let Some(type_name) = declared_type(node) {
+        append_field(&mut md, "Declared type", type_name);
+    }
+
     let typed_targets = graph.outgoing_typing_or_specializes_targets(node);
     if let Some(target) = typed_targets.first() {
-        let declared_type = first_attr_str(
-            node,
-            &[
-                "partType",
-                "subjectType",
-                "attributeType",
-                "portType",
-                "actorType",
-                "itemType",
-            ],
-        );
-        let should_show_target = match declared_type {
+        let should_show_target = match declared_type(node) {
             Some(type_name) => type_name.trim() != target.name.trim(),
             None => true,
         };
         if should_show_target {
-            md.push_str(&format!("*Resolves to:* `{}`\n\n", target.name));
+            let label = if target.element_kind.ends_with(" def") {
+                "Resolved type"
+            } else {
+                "Resolves to"
+            };
+            append_field(&mut md, label, &target.id.qualified_name);
         }
     }
+
+    append_attribute_value(&mut md, node, "Multiplicity", &["multiplicity"]);
+    append_attribute_value(&mut md, node, "Value", &["value", "defaultValue"]);
+    append_attribute_value(&mut md, node, "Evaluated value", &["evaluatedValue"]);
+    append_attribute_value(&mut md, node, "Unit", &["evaluatedUnit"]);
 
     let constraint_lines = array_attr_lines(node, "requirementConstraints");
     append_multiline_section(&mut md, "Constraint body", &constraint_lines);
 
     if show_location {
-        md.push_str(&format!("*Defined in:* {}", node.id.uri.path()));
+        append_plain_field(&mut md, "Defined in", node.id.uri.path());
     }
 
     md

@@ -9,7 +9,7 @@ pub(crate) struct ParseMetadata {
     pub(crate) parse_cached: bool,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct IndexEntry {
     pub(crate) content: String,
     pub(crate) parsed: Option<RootNamespace>,

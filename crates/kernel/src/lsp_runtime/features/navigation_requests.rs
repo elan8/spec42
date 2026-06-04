@@ -178,15 +178,17 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
             semantic::hover_markdown_for_node(&state.semantic_graph, node, node.id.uri != uri_norm)
         };
         let markdown = if target_match.is_none() && word != node.name {
-            resolve_hover_type_reference_target(state, node, &word, &lookup_name)
-                .map(|target| {
-                    semantic::hover_markdown_for_node(
-                        &state.semantic_graph,
-                        target,
-                        target.id.uri != uri_norm,
-                    )
-                })
-                .unwrap_or(markdown)
+            match resolve_hover_type_reference_target(state, node, &word, &lookup_name) {
+                Some(target) => semantic::hover_markdown_for_node(
+                    &state.semantic_graph,
+                    target,
+                    target.id.uri != uri_norm,
+                ),
+                None => format!(
+                    "**Unresolved reference** `{}`\n\nSpec42 could not resolve this name in the current scope, imports, or indexed workspace symbols.",
+                    lookup_name
+                ),
+            }
         } else {
             markdown
         };
@@ -281,15 +283,26 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
         return Ok(response);
     }
 
+    let unresolved = Some(Hover {
+        contents: HoverContents::Markup(MarkupContent {
+            kind: MarkupKind::Markdown,
+            value: format!(
+                "**Unresolved reference** `{}`\n\nSpec42 could not resolve this name in the current scope, imports, or indexed workspace symbols.",
+                lookup_name
+            ),
+        }),
+        range: Some(range),
+    });
+
     log_hover_result(
         state.perf_logging_enabled,
         &uri_norm,
         pos,
         &lookup_name,
         started_at,
-        "hover completed with no result",
+        "hover completed with unresolved reference fallback",
     );
-    Ok(None)
+    Ok(unresolved)
 }
 
 fn log_hover_result(

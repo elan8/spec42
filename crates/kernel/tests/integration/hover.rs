@@ -1,7 +1,7 @@
 //! Hover integration tests.
 
 use super::harness::{
-    lsp_barrier, next_id, read_message, read_response, send_message, spawn_server,
+    lsp_barrier, next_id, read_message, read_response, send_message, spawn_server, TestSession,
 };
 
 fn position_for(content: &str, needle: &str) -> (usize, usize) {
@@ -19,6 +19,21 @@ fn position_for_within(content: &str, needle: &str, inner: &str) -> (usize, usiz
         .find(inner)
         .unwrap_or_else(|| panic!("inner needle not found: {inner}"));
     (line, character + inner_offset)
+}
+
+fn hover_contents(session: &mut TestSession, uri: &str, line: u32, character: u32) -> String {
+    let response = session.request(
+        "textDocument/hover",
+        serde_json::json!({
+            "textDocument": { "uri": uri },
+            "position": { "line": line, "character": character }
+        }),
+    );
+    response["result"]["contents"]["value"]
+        .as_str()
+        .or_else(|| response["result"]["contents"].as_str())
+        .expect("hover contents")
+        .to_string()
 }
 
 #[test]
@@ -424,8 +439,8 @@ fn lsp_hover_resolves_requirement_subject_in_context_instead_of_showing_ambiguou
     );
     assert!(
         contents.contains("part communication : Communication;")
-            && contents.contains("*In:* `Drone`"),
-        "hover should still point at the local communication part after simplifying the hover: {}",
+            && contents.contains("*Container:* `DronePackage::Drone`"),
+        "hover should still point at the local communication part with container context: {}",
         contents
     );
     assert!(
@@ -518,8 +533,8 @@ fn lsp_hover_returns_subject_declaration_hover_for_requirement_subject_name() {
         contents
     );
     assert!(
-        contents.contains("*In:* `MaxAltitudeAGLReq`"),
-        "hover should keep only concise parent context: {}",
+        contents.contains("*Container:* `DronePackage::MaxAltitudeAGLReq`"),
+        "hover should include qualified parent context: {}",
         contents
     );
 
@@ -720,4 +735,53 @@ fn lsp_hover_resolves_public_reexported_type_reference() {
     );
 
     let _ = child.kill();
+}
+
+#[test]
+fn lsp_hover_includes_semantic_context_fields() {
+    let mut session = TestSession::new();
+    let uri = "file:///hover-context-fields.sysml";
+    let content = r#"package Demo {
+    part def Engine;
+    part vehicle {
+        part engine : Engine;
+    }
+}"#;
+
+    session.initialize_default("test");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let (line, character) = position_for_within(content, "part engine : Engine;", "engine");
+    let contents = hover_contents(&mut session, uri, line as u32, character as u32);
+    assert!(
+        contents.contains("Qualified name")
+            && contents.contains("Demo::vehicle::engine")
+            && contents.contains("Declared type")
+            && contents.contains("Engine")
+            && contents.contains("Container"),
+        "expected richer semantic hover fields: {}",
+        contents
+    );
+}
+
+#[test]
+fn lsp_hover_returns_unresolved_reference_fallback() {
+    let mut session = TestSession::new();
+    let uri = "file:///hover-unresolved.sysml";
+    let content = r#"package Demo {
+    part vehicle : MissingType;
+}"#;
+
+    session.initialize_default("test");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let (line, character) = position_for_within(content, "MissingType", "MissingType");
+    let contents = hover_contents(&mut session, uri, line as u32, character as u32);
+    assert!(
+        contents.contains("Unresolved reference") && contents.contains("MissingType"),
+        "expected unresolved hover fallback: {}",
+        contents
+    );
 }
