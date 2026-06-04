@@ -3,15 +3,19 @@
   "displayName": "SysML v2 Editor",
   "publisher": "Elan8",
   "icon": "logo/logo.png",
-  "description": "Language support for SysML v2 including syntax validation, navigation and diagnostics.",
+  "description": "SysML v2 and KerML editor with live validation, navigation, Model Explorer, diagram views, CLI checks and GitHub Action support.",
   "version": "0.26.3",
   "license": "MIT",
   "keywords": [
     "sysml",
     "sysml-v2",
+    "kerml",
     "mbse",
     "systems engineering",
-    "model based systems engineering"
+    "model based systems engineering",
+    "model validation",
+    "visualization",
+    "lsp"
   ],
   "repository": {
     "type": "git",
@@ -26,7 +30,8 @@
   },
   "categories": [
     "Programming Languages",
-    "Linters"
+    "Linters",
+    "Visualization"
   ],
   "activationEvents": [
     "workspaceContains:**/*.sysml",

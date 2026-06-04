@@ -4,8 +4,8 @@
 
 # Spec42 VS Code Extension
 
-This extension brings a complete SysML v2 and KerML editing experience to VS Code, powered by the `spec42` language server.
-It is designed for day-to-day modeling work: writing models faster, navigating large workspaces, and catching issues early while you edit.
+This extension brings a practical SysML v2 and KerML editing experience to VS Code, powered by the `spec42` language server.
+It is designed for day-to-day modeling work: writing models with live feedback, navigating large workspaces, visualizing model structure, and catching issues early while you edit.
 
 If you are new to `spec42`, this is the recommended starting point.
 Published extension builds include the language server binary, so most users can install the extension and begin modeling without separate CLI setup.
@@ -39,6 +39,16 @@ Published extension builds include the language server binary, so most users can
 - **Browser, Grid, and Geometry Views**: provisional standard-view renderers while upstream SysML graphical notation details settle.
 
 ## Getting Started
+
+### Try It in 2 Minutes
+
+1. Install the extension.
+2. Open [`examples/timer/KitchenTimer.sysml`](../examples/timer/KitchenTimer.sysml).
+3. Run **SysML: Show SysML Model Explorer**.
+4. Run **SysML: Open SysML Visualizer**.
+5. Optionally run `spec42 check examples/timer/KitchenTimer.sysml` for the same validation outside VS Code.
+
+### Standard Setup
 
 1. Install the extension.
 2. Open any `.sysml` or `.kerml` file.

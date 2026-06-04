@@ -1,7 +1,9 @@
 # Spec42
 
 Modern language tooling for [SysML v2](https://www.omg.org/sysml/sysmlv2/) and KerML.
-`spec42` gives systems engineers a smoother path from model authoring to validation by shipping the same analysis engine as:
+`spec42` makes textual systems modeling practical day to day: edit with live feedback, navigate large models, visualize structure, and run the same validation in CI.
+
+It ships the same analysis engine as:
 
 - an LSP server for editors
 - a CLI for validation, troubleshooting, and standard-library diagnostics
@@ -12,6 +14,8 @@ Modern language tooling for [SysML v2](https://www.omg.org/sysml/sysmlv2/) and K
 
 [![Install from Marketplace](https://img.shields.io/badge/Install-VS%20Code%20Marketplace-007ACC?logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42)
 [![Download Releases](https://img.shields.io/badge/Download-GitHub%20Releases-24292F?logo=github)](https://github.com/elan8/spec42/releases)
+
+![Spec42 SysML v2 editor and visualizer](vscode/media/screenshot.png)
 
 ## Why Spec42
 
@@ -29,6 +33,14 @@ SysML v2 is powerful, but practical modeling work depends on fast feedback, reli
 In short, `spec42` helps you edit, understand, and validate models with consistent behavior from developer workstation to automation pipeline.
 
 ## Quick Start
+
+### Try It in 2 Minutes
+
+1. Install [SysML v2 Editor (Elan8.spec42)](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42).
+2. Open [`examples/timer/KitchenTimer.sysml`](examples/timer/KitchenTimer.sysml) or any `.sysml` / `.kerml` file.
+3. Use the command palette to open **SysML: Show SysML Model Explorer**.
+4. Open **SysML: Open SysML Visualizer** to inspect the model graphically.
+5. Run `spec42 check examples/timer/KitchenTimer.sysml` when you want the same validation in a terminal or CI.
 
 ### VS Code
 
