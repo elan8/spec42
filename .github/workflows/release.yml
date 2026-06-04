@@ -326,6 +326,8 @@ jobs:
           Release ${TAG}.
           The VS Code extension (.vsix) includes the language server. The Zed extension downloads the matching spec42 server binary automatically, and its source bundle is attached here for convenience.
 
+          GitHub Action: use \`elan8/spec42@${TAG}\` in workflows to install this release's CLI and run \`spec42 check\` (see docs/GITHUB-ACTION.md).
+
           Each platform archive includes `spec42` and `spec42-mcp`: the MCP binary is a stdio server exposing `spec42_check`, matching `spec42 check`.
 
           Zed install notes:

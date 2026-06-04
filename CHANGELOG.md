@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.26.1] - 2026-06-04
+
 ### Added
 
-- **GitHub Action** - Added a composite Action (`action.yml`) that downloads the matching Spec42 release binary, runs `spec42 doctor`, validates models with `spec42 check`, and uploads SARIF reports to GitHub Code Scanning by default.
+- **GitHub Action** - Composite Action (`action.yml`) that downloads the matching Spec42 release binary for the runner OS, runs `spec42 doctor`, validates models with `spec42 check`, and uploads SARIF to GitHub Code Scanning by default. Documented in [docs/GITHUB-ACTION.md](docs/GITHUB-ACTION.md).
+
+### Changed
+
+- **Release surface alignment** - Rust workspace, `spec42` server, VS Code extension, and Zed extension versions aligned at `0.26.1`.
 
 ## [0.26.0] - 2026-06-03
 
@@ -464,6 +470,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.26.1]: https://github.com/elan8/spec42/releases/tag/v0.26.1
 [0.26.0]: https://github.com/elan8/spec42/releases/tag/v0.26.0
 [0.25.0]: https://github.com/elan8/spec42/releases/tag/v0.25.0
 [0.24.0]: https://github.com/elan8/spec42/releases/tag/v0.24.0
