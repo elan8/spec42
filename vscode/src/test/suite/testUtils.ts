@@ -84,6 +84,19 @@ export async function waitFor<T>(
   );
 }
 
+export async function waitForExtensionServerReady(timeoutMs = 30000): Promise<void> {
+  await waitFor(
+    "extension server ready",
+    () =>
+      vscode.commands.executeCommand<DebugExtensionState>(
+        "sysml.debug.getExtensionState"
+      ),
+    (value) => value?.serverHealthState === "ready",
+    timeoutMs,
+    300
+  );
+}
+
 export async function configureServerForTests(): Promise<void> {
   const testExportDir = path.join(os.tmpdir(), "spec42-vscode-test-exports");
   fs.mkdirSync(testExportDir, { recursive: true });

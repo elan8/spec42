@@ -68,6 +68,7 @@ let lspModelProviderForStatus: LspModelProvider | undefined;
 let serverHealthState: ServerHealthState = "starting";
 let serverHealthDetail = "";
 let sourceSelectionSyncTimer: ReturnType<typeof setTimeout> | undefined;
+let modelExplorerSelectionSyncTimer: ReturnType<typeof setTimeout> | undefined;
 let activeDocumentExplorerRefreshTimer: ReturnType<typeof setTimeout> | undefined;
 let activeDocumentExplorerRefreshUri: string | undefined;
 let activeDocumentExplorerRefreshGuardUntil = 0;
@@ -1165,11 +1166,80 @@ export function activate(context: vscode.ExtensionContext): void {
     })
   );
 
+  const scheduleModelExplorerSelectionSync = (
+    event: vscode.TextEditorSelectionChangeEvent
+  ) => {
+    if (!languageClientReady || !modelExplorerProvider) {
+      return;
+    }
+    const doc = event.textEditor.document;
+    if (!isSysmlDoc(doc)) {
+      return;
+    }
+    if (modelExplorerSelectionSyncTimer) {
+      clearTimeout(modelExplorerSelectionSyncTimer);
+    }
+    modelExplorerSelectionSyncTimer = setTimeout(() => {
+      modelExplorerSelectionSyncTimer = undefined;
+      const provider = modelExplorerProvider;
+      if (!provider) {
+        return;
+      }
+      const position =
+        event.selections[0]?.active ?? event.textEditor.selection.active;
+      const syncStartedAt = Date.now();
+      void (async () => {
+        try {
+          if (hasWorkspaceFolder()) {
+            await ensureWorkspaceModelLoaded(provider);
+          } else {
+            await provider.loadDocument(doc);
+          }
+          const result = await lspModelProvider.getModel(
+            doc.uri.toString(),
+            graphScopesForContext(),
+            undefined,
+            "selectionSync:modelExplorer"
+          );
+          const node = bestGraphNodeAtPosition(result.graph?.nodes, position);
+          if (node?.id) {
+            await provider.revealElement(doc.uri, node.id, node.range);
+            logPerf("selectionSync:modelExplorer", {
+              uri: doc.uri.toString(),
+              totalMs: Date.now() - syncStartedAt,
+              nodeId: node.id,
+            });
+          } else {
+            logPerf("selectionSync:modelExplorerNoNode", {
+              uri: doc.uri.toString(),
+              totalMs: Date.now() - syncStartedAt,
+            });
+          }
+        } catch (error) {
+          logError(
+            `Source-to-model-explorer sync failed for ${doc.uri.toString()}`,
+            error
+          );
+          logPerf("selectionSync:modelExplorerFailed", {
+            uri: doc.uri.toString(),
+            totalMs: Date.now() - syncStartedAt,
+            error: error instanceof Error ? error.message : String(error),
+          });
+        }
+      })();
+    }, 150);
+  };
+
   context.subscriptions.push(
     vscode.window.onDidChangeTextEditorSelection((event) => {
-      const panel = VisualizationPanel.currentPanel;
       const doc = event.textEditor.document;
-      if (!panel || !isSysmlDoc(doc) || !panel.tracksUri(doc.uri) || panel.isNavigating()) {
+      if (!isSysmlDoc(doc)) {
+        return;
+      }
+      scheduleModelExplorerSelectionSync(event);
+
+      const panel = VisualizationPanel.currentPanel;
+      if (!panel || !panel.tracksUri(doc.uri) || panel.isNavigating()) {
         return;
       }
       if (sourceSelectionSyncTimer) {
@@ -1185,7 +1255,10 @@ export function activate(context: vscode.ExtensionContext): void {
             undefined,
             "selectionSync:diagram"
           );
-          const node = bestGraphNodeAtPosition(result.graph?.nodes, event.selections[0]?.active ?? event.textEditor.selection.active);
+          const node = bestGraphNodeAtPosition(
+            result.graph?.nodes,
+            event.selections[0]?.active ?? event.textEditor.selection.active
+          );
           if (node) {
             panel.revealSourceSelection(node);
             logPerf("selectionSync:diagram", {
@@ -2366,6 +2439,10 @@ export function deactivate(): Thenable<void> | undefined {
   if (activeDocumentExplorerRefreshTimer) {
     clearTimeout(activeDocumentExplorerRefreshTimer);
     activeDocumentExplorerRefreshTimer = undefined;
+  }
+  if (modelExplorerSelectionSyncTimer) {
+    clearTimeout(modelExplorerSelectionSyncTimer);
+    modelExplorerSelectionSyncTimer = undefined;
   }
   cancelWorkspaceLoad(modelExplorerProvider, "deactivate");
   return client?.stop();

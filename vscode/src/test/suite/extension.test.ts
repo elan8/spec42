@@ -12,6 +12,7 @@ import {
   getFixturePath,
   getTestWorkspaceFolder,
   waitFor,
+  waitForExtensionServerReady,
   waitForLanguageServerReady,
 } from "./testUtils";
 
@@ -120,10 +121,13 @@ describe("Extension Test Suite", () => {
   });
 
   it("Model Explorer reveals the selected source element", async function () {
-    this.timeout(20000);
+    this.timeout(45000);
+    await vscode.commands.executeCommand("sysml.showModelExplorer");
+    await waitForExtensionServerReady();
     const filePath = getFixturePath(FIXTURE_FILE);
     const doc = await vscode.workspace.openTextDocument(filePath);
     const editor = await vscode.window.showTextDocument(doc);
+    await waitForLanguageServerReady(doc);
     const position = findPosition(doc, "part def PropulsionUnit");
     editor.selection = new vscode.Selection(position, position);
 
@@ -134,7 +138,9 @@ describe("Extension Test Suite", () => {
           "sysml.debug.getExtensionState"
         ),
       (value) =>
-        value?.modelExplorer?.lastRevealedElementId?.includes("PropulsionUnit") === true
+        value?.modelExplorer?.lastRevealedElementId?.includes("PropulsionUnit") === true,
+      30000,
+      300
     );
     assert.ok(state.modelExplorer?.lastRevealedElementId?.includes("PropulsionUnit"));
   });

@@ -7,8 +7,12 @@ import {
     getDiagramExportUri,
     getTestWorkspaceFolder,
     waitFor,
+    waitForExtensionServerReady,
     waitForLanguageServerReady,
 } from "./testUtils";
+
+const isCi = Boolean(process.env.CI);
+const visualizationPanelTimeoutMs = isCi ? 45000 : 20000;
 
 const VIEW_IDS = ["general-view"];
 
@@ -61,12 +65,13 @@ describe("Visualization Diagram Views", () => {
             const doc = await vscode.workspace.openTextDocument(docPath);
             await vscode.window.showTextDocument(doc);
             await waitForLanguageServerReady(doc);
+            await waitForExtensionServerReady();
             await vscode.commands.executeCommand("sysml.showVisualizer");
             panel = await waitFor(
                 "visualization panel",
                 async () => VisualizationPanel.currentPanel,
                 (value) => Boolean(value),
-                20000,
+                visualizationPanelTimeoutMs,
                 300
             );
             await vscode.commands.executeCommand("sysml.changeVisualizerView", viewId);
