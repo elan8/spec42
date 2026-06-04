@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.26.2] - 2026-06-04
+
+### Fixed
+
+- **GitHub Action manifest** - Quoted the `format` input description in `action.yml` so YAML parsers accept the colon in `spec42 check: text, ...` (fixes `Mapping values are not allowed in this context` when loading `elan8/spec42@v0.26.1`).
+
+### Changed
+
+- **Release surface alignment** - Rust workspace, `spec42` server, VS Code extension, and Zed extension versions aligned at `0.26.2`.
+
 ## [0.26.1] - 2026-06-04
 
 ### Added
@@ -470,6 +480,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.26.2]: https://github.com/elan8/spec42/releases/tag/v0.26.2
 [0.26.1]: https://github.com/elan8/spec42/releases/tag/v0.26.1
 [0.26.0]: https://github.com/elan8/spec42/releases/tag/v0.26.0
 [0.25.0]: https://github.com/elan8/spec42/releases/tag/v0.25.0

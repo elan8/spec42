@@ -347,7 +347,7 @@ dependencies = [
 
 [[package]]
 name = "diagram_core"
-version = "0.26.1"
+version = "0.26.2"
 dependencies = [
  "serde",
 ]
@@ -820,7 +820,7 @@ dependencies = [
 
 [[package]]
 name = "kernel"
-version = "0.26.1"
+version = "0.26.2"
 dependencies = [
  "clap",
  "glob",
@@ -1308,7 +1308,7 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
 name = "semantic_core"
-version = "0.26.1"
+version = "0.26.2"
 dependencies = [
  "petgraph",
  "serde",
@@ -1465,7 +1465,7 @@ dependencies = [
 
 [[package]]
 name = "spec42"
-version = "0.26.1"
+version = "0.26.2"
 dependencies = [
  "clap",
  "directories",
@@ -1533,7 +1533,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_semantic_tokens"
-version = "0.26.1"
+version = "0.26.2"
 dependencies = [
  "serde",
  "sysml-v2-parser",

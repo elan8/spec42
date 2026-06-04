@@ -8,7 +8,7 @@ branding:
 
 inputs:
   version:
-    description: Spec42 release tag to install, for example v0.26.1. Defaults to the Action ref.
+    description: Spec42 release tag to install, for example v0.26.2. Defaults to the Action ref.
     required: false
   path:
     description: File or workspace path to validate.
@@ -17,7 +17,7 @@ inputs:
     description: Optional workspace root passed to spec42 check.
     required: false
   format:
-    description: Output format for spec42 check: text, json, sarif, or junit.
+    description: "Output format for spec42 check: text, json, sarif, or junit."
     required: false
     default: sarif
   warnings-as-errors:

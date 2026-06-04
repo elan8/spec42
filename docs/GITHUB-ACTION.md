@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: elan8/spec42@v0.26.1
+      - uses: elan8/spec42@v0.26.2
         with:
           path: examples/timer/KitchenTimer.sysml
           format: sarif
@@ -36,7 +36,7 @@ When `format` is `sarif`, the Action writes `spec42.sarif`, uploads it to GitHub
 
 | Input | Default | Description |
 | --- | --- | --- |
-| `version` | Action ref | Spec42 release tag to install, for example `v0.26.1`. |
+| `version` | Action ref | Spec42 release tag to install, for example `v0.26.2`. |
 | `path` | required | File or workspace path to validate. |
 | `workspace-root` | | Optional workspace root passed to `spec42 check`. |
 | `format` | `sarif` | Output format: `text`, `json`, `sarif`, or `junit`. |
@@ -56,7 +56,7 @@ The Action exposes the installed binary path as `executable-path`, so workflows 
 
 ```yaml
 - id: spec42
-  uses: elan8/spec42@v0.26.1
+  uses: elan8/spec42@v0.26.2
   with:
     path: examples/office
     format: text
