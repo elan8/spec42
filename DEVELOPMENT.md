@@ -177,17 +177,20 @@ Spec42 emits structured performance logs when `spec42.performanceLogging.enabled
 
 Current report-only budgets are documented in `docs/PERFORMANCE-GUARDRAILS.md`. Treat regressions there as release-risk signals even while the CI step remains non-blocking.
 
-## AI assistants (MCP)
+## AI assistants
 
-The `spec42-mcp` binary exposes MCP tools for Copilot, Cursor, and other agents (`spec42_check`, `spec42_doctor`, `spec42_model_summary`, `spec42_explain_diagnostic`). Setup and workflows: [`docs/AI-ASSISTANTS.md`](docs/AI-ASSISTANTS.md). Example VS Code MCP config: [`docs/examples/mcp-vscode.json`](docs/examples/mcp-vscode.json).
+**VS Code extension (Copilot Agent):** requires `engines.vscode` **^1.99.0** for Language Model Tools. Four tools in `vscode/package.json` `contributes.languageModelTools` are registered from `vscode/src/lmTools/` and invoke the same `spec42` binary as the LSP (`check`, `doctor`, `explain-diagnostic`, `model-summary` with `--format json`). No extra MCP config in VS Code for these tools.
 
-MCP tests (handler, in-process protocol, subprocess binary):
+**MCP:** `spec42-mcp` exposes the same four tools for Cursor and other MCP hosts. Setup: [`docs/AI-ASSISTANTS.md`](docs/AI-ASSISTANTS.md), example [`docs/examples/mcp-vscode.json`](docs/examples/mcp-vscode.json).
+
+Tests:
 
 ```bash
-cargo test -p spec42 --test mcp_tools --test mcp_protocol --test mcp_binary
+cargo test -p spec42 --test mcp_tools --test mcp_protocol --test mcp_binary --test cli_ai_tools
+cd vscode && npm run compile && npm run test:lm-cli-unit
 ```
 
-Protocol tests use the `rmcp` client dev-dependency with an in-memory duplex transport; `mcp_binary` exercises the `spec42-mcp` executable via stdio.
+MCP protocol tests use the `rmcp` client dev-dependency with an in-memory duplex transport; `mcp_binary` exercises `spec42-mcp` via stdio; `cli_ai_tools` asserts CLI JSON matches MCP handlers on the KitchenTimer fixture.
 
 ## Validation Pipeline
 

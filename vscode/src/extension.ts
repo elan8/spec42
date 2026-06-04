@@ -47,6 +47,8 @@ import {
   summarizeActiveFileSysmlDiagnostics,
   summarizeWorkspaceSysmlDiagnostics,
 } from "./diagnostics/workspaceDiagnostics";
+import { registerSpec42LmTools } from "./lmTools/spec42LmTools";
+import { runSpec42Json } from "./lmTools/spec42Cli";
 import {
   formatSpec42StatusBar,
   ServerHealthState,
@@ -259,22 +261,6 @@ function prepareDevelopmentServerCommand(
     logError("Failed to stage development server binary", err);
     return source;
   }
-}
-
-function runSpec42Json(command: string, args: string[], cwd: string): Promise<any> {
-  return new Promise((resolve, reject) => {
-    cp.execFile(command, args, { cwd: cwd || undefined }, (error, stdout, stderr) => {
-      if (error) {
-        reject(new Error(stderr?.trim() || error.message));
-        return;
-      }
-      try {
-        resolve(JSON.parse(stdout));
-      } catch (parseError) {
-        reject(parseError instanceof Error ? parseError : new Error(String(parseError)));
-      }
-    });
-  });
 }
 
 function isSysmlDoc(doc: vscode.TextDocument | undefined): boolean {
@@ -735,6 +721,11 @@ export function activate(context: vscode.ExtensionContext): void {
     );
   }
   log("Server command:", serverCommand, "args:", serverArgs, "libraryPaths:", libraryPaths);
+  registerSpec42LmTools(context, {
+    serverCommand,
+    workspaceRoot,
+    libraryPaths,
+  });
   if (getConfigBoolean("debug", false) || process.env.SPEC42_LOG_SERVER_COMMAND === "1") {
     try {
       // eslint-disable-next-line no-console
@@ -1134,11 +1125,16 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.sysand.showStatus", async () => {
       try {
-        const status = await runSpec42Json(
+        const status = (await runSpec42Json(
           serverCommand,
           ["sysand", "status", "--format", "json"],
           workspaceRoot
-        );
+        )) as {
+          installed?: boolean;
+          projectRoot?: string;
+          dependencyRoots?: string[];
+          warnings?: string[];
+        };
         const roots = Array.isArray(status?.dependencyRoots)
           ? status.dependencyRoots.length
           : 0;

@@ -24,6 +24,10 @@ pub enum Command {
     Lsp,
     Check(CheckArgs),
     Doctor(DoctorArgs),
+    /// Explain a diagnostic code (same as MCP `spec42_explain_diagnostic`).
+    ExplainDiagnostic(ExplainDiagnosticArgs),
+    /// Compact semantic graph summary (same as MCP `spec42_model_summary`).
+    ModelSummary(ModelSummaryArgs),
     Sysand {
         #[command(subcommand)]
         command: SysandCommand,
@@ -54,6 +58,38 @@ pub struct CheckArgs {
 #[derive(Debug, Clone, Args)]
 pub struct DoctorArgs {
     #[arg(long = "format", value_enum, default_value_t = OutputFormat::Text)]
+    pub format: OutputFormat,
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct ExplainDiagnosticArgs {
+    /// Diagnostic code (for example `unresolved_type_reference`).
+    #[arg(long = "code")]
+    pub code: String,
+    /// Optional file or directory to list matching diagnostics from validation.
+    #[arg(long = "path")]
+    pub path: Option<PathBuf>,
+    #[arg(long = "workspace-root")]
+    pub workspace_root: Option<PathBuf>,
+    /// Optional 0-based line number to filter instances.
+    #[arg(long = "line")]
+    pub line: Option<u32>,
+    #[arg(long = "format", value_enum, default_value_t = OutputFormat::Json)]
+    pub format: OutputFormat,
+}
+
+fn default_max_nodes() -> usize {
+    500
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct ModelSummaryArgs {
+    pub path: PathBuf,
+    #[arg(long = "workspace-root")]
+    pub workspace_root: Option<PathBuf>,
+    #[arg(long = "max-nodes", default_value_t = default_max_nodes())]
+    pub max_nodes: usize,
+    #[arg(long = "format", value_enum, default_value_t = OutputFormat::Json)]
     pub format: OutputFormat,
 }
 
@@ -192,6 +228,52 @@ mod tests {
                 command: SysandCommand::Status(args),
             }) => assert_eq!(args.format, OutputFormat::Json),
             other => panic!("expected sysand status command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn explain_diagnostic_command_parses() {
+        let cli = Cli::parse_from([
+            "spec42",
+            "explain-diagnostic",
+            "--code",
+            "unresolved_type_reference",
+            "--path",
+            "model.sysml",
+            "--format",
+            "json",
+        ]);
+        match cli.command {
+            Some(Command::ExplainDiagnostic(args)) => {
+                assert_eq!(args.code, "unresolved_type_reference");
+                assert_eq!(args.path, Some(PathBuf::from("model.sysml")));
+                assert_eq!(args.format, OutputFormat::Json);
+            }
+            other => panic!("expected explain-diagnostic command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn model_summary_command_parses() {
+        let cli = Cli::parse_from([
+            "spec42",
+            "model-summary",
+            "models",
+            "--workspace-root",
+            "workspace",
+            "--max-nodes",
+            "1",
+            "--format",
+            "json",
+        ]);
+        match cli.command {
+            Some(Command::ModelSummary(args)) => {
+                assert_eq!(args.path, PathBuf::from("models"));
+                assert_eq!(args.workspace_root, Some(PathBuf::from("workspace")));
+                assert_eq!(args.max_nodes, 1);
+                assert_eq!(args.format, OutputFormat::Json);
+            }
+            other => panic!("expected model-summary command, got {other:?}"),
         }
     }
 

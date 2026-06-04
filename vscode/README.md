@@ -137,7 +137,9 @@ spec42 check path/to/model-or-workspace
 
 ## AI assistants (Copilot, Cursor, …)
 
-For chatbots, configure the **`spec42-mcp`** stdio server (bundled in Spec42 releases). See [`docs/AI-ASSISTANTS.md`](../docs/AI-ASSISTANTS.md) and the copy-paste template [`docs/examples/mcp-vscode.json`](../docs/examples/mcp-vscode.json).
+**VS Code 1.99+ with Copilot Agent:** four Spec42 **Language Model Tools** ship with this extension (`#spec42Check`, `#spec42Doctor`, `#spec42ModelSummary`, `#spec42ExplainDiagnostic`). No `mcp.json` required — tools call the bundled `spec42` CLI.
+
+**Cursor and other hosts:** use the **`spec42-mcp`** stdio server. See [`docs/AI-ASSISTANTS.md`](../docs/AI-ASSISTANTS.md) and [`docs/examples/mcp-vscode.json`](../docs/examples/mcp-vscode.json).
 
 ## Links
 

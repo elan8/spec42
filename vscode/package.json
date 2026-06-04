@@ -26,7 +26,7 @@
     "url": "https://github.com/elan8/spec42/issues"
   },
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.99.0"
   },
   "categories": [
     "Programming Languages",
@@ -441,6 +441,104 @@
         }
       ]
     },
+    "languageModelTools": [
+      {
+        "name": "spec42_check",
+        "toolReferenceName": "spec42Check",
+        "displayName": "Spec42 check",
+        "modelDescription": "Run the same validation pipeline as `spec42 check`. Returns error and warning counts plus diagnostic codes. Use when validating SysML v2 or KerML models before edits or CI. Prefer spec42_model_summary for large semantic graphs.",
+        "userDescription": "Validate SysML/KerML with Spec42 (same as spec42 check).",
+        "canBeReferencedInPrompt": true,
+        "icon": "$(checklist)",
+        "when": "resourceExtname == .sysml || resourceExtname == .kerml || workspaceFolderCount > 0",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Absolute path to a .sysml/.kerml file or directory. Defaults to the active editor file or workspace folder."
+            },
+            "workspace_root": {
+              "type": "string",
+              "description": "Optional workspace root when validating a single file in a multi-file project."
+            }
+          }
+        }
+      },
+      {
+        "name": "spec42_doctor",
+        "toolReferenceName": "spec42Doctor",
+        "displayName": "Spec42 doctor",
+        "modelDescription": "Report Spec42 environment: standard library, config/data dirs, library paths, and Sysand detection (same as `spec42 doctor`). Run before blaming unresolved imports on model text.",
+        "userDescription": "Check Spec42 environment and library setup.",
+        "canBeReferencedInPrompt": true,
+        "icon": "$(heart)",
+        "when": "workspaceFolderCount > 0",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
+        }
+      },
+      {
+        "name": "spec42_model_summary",
+        "toolReferenceName": "spec42ModelSummary",
+        "displayName": "Spec42 model summary",
+        "modelDescription": "Validate the path and return a capped semantic graph: nodes (qualified names, kinds) and relationships filtered to typing, connection, and reference. Use max_nodes to limit payload size.",
+        "userDescription": "Compact semantic graph summary for a SysML model.",
+        "canBeReferencedInPrompt": true,
+        "icon": "$(type-hierarchy)",
+        "when": "resourceExtname == .sysml || resourceExtname == .kerml || workspaceFolderCount > 0",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Absolute path to a .sysml/.kerml file or directory."
+            },
+            "workspace_root": {
+              "type": "string",
+              "description": "Optional workspace root."
+            },
+            "max_nodes": {
+              "type": "number",
+              "description": "Maximum semantic nodes to return (default 500)."
+            }
+          }
+        }
+      },
+      {
+        "name": "spec42_explain_diagnostic",
+        "toolReferenceName": "spec42ExplainDiagnostic",
+        "displayName": "Spec42 explain diagnostic",
+        "modelDescription": "Catalog entry for a Spec42 diagnostic code (severity, meaning, typical fix). Optionally pass path and line to list matching instances from a check run.",
+        "userDescription": "Explain a Spec42 diagnostic code and list instances.",
+        "canBeReferencedInPrompt": true,
+        "icon": "$(question)",
+        "when": "resourceExtname == .sysml || resourceExtname == .kerml || workspaceFolderCount > 0",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Diagnostic code (for example unresolved_type_reference)."
+            },
+            "path": {
+              "type": "string",
+              "description": "Optional file or directory to list matching diagnostics."
+            },
+            "workspace_root": {
+              "type": "string",
+              "description": "Optional workspace root when path is set."
+            },
+            "line": {
+              "type": "number",
+              "description": "Optional 0-based line number to filter instances."
+            }
+          },
+          "required": ["code"]
+        }
+      }
+    ],
     "viewsWelcome": [
       {
         "view": "spec42Library",
@@ -562,7 +660,8 @@
     "build:extension": "node scripts/build-extension.js",
     "verify:package-layout": "npm run stage:package-content && node scripts/verify-package-layout.js",
     "extract-styles": "node scripts/extract-styles.js",
-    "compile": "npm run typecheck && npm run build:extension",
+    "compile": "npm run typecheck && tsc -p ./ && npm run build:extension",
+    "test:lm-cli-unit": "tsc -p ./ && node --test out/test/suite/spec42Cli.test.js",
     "typecheck": "tsc -p ./ --noEmit",
     "watch": "tsc -watch -p ./",
     "test": "vscode-test",
@@ -578,7 +677,7 @@
     "@types/adm-zip": "^0.5.8",
     "@types/mocha": "^10.0.0",
     "@types/node": "^22.0.0",
-    "@types/vscode": "^1.85.0",
+    "@types/vscode": "^1.99.0",
     "@vscode/codicons": "0.0.44",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.4.1",

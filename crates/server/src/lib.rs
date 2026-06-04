@@ -1,5 +1,6 @@
 //! Spec42 CLI and MCP shared implementation.
 
+pub mod ai_tools;
 pub mod cli;
 pub mod diagrams;
 pub mod elk_layout;
@@ -12,9 +13,10 @@ pub mod sysand;
 use std::process::ExitCode;
 use std::sync::Arc;
 
+use ai_tools::{perform_explain_diagnostic, perform_model_summary};
 use cli::{
-    CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, OutputFormat, StdlibCommand,
-    SysandCommand,
+    CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, ExplainDiagnosticArgs,
+    ModelSummaryArgs, OutputFormat, StdlibCommand, SysandCommand,
 };
 use environment::{build_doctor_report, resolve_environment, DoctorReport};
 use kernel::{
@@ -180,6 +182,8 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
         Some(Command::Lsp) => run_lsp(&cli).await,
         Some(Command::Check(args)) => run_check(&cli, args),
         Some(Command::Doctor(args)) => run_doctor(&cli, args),
+        Some(Command::ExplainDiagnostic(args)) => run_explain_diagnostic(&cli, args),
+        Some(Command::ModelSummary(args)) => run_model_summary(&cli, args),
         Some(Command::Sysand { command }) => run_sysand(command),
         Some(Command::Stdlib { command }) => run_stdlib(&cli, command),
         Some(Command::Diagrams { command }) => run_diagrams(&cli, command),
@@ -214,6 +218,62 @@ fn run_check(cli: &Cli, args: &CheckArgs) -> Result<ExitCode, String> {
     } else {
         ExitCode::SUCCESS
     })
+}
+
+fn run_explain_diagnostic(cli: &Cli, args: &ExplainDiagnosticArgs) -> Result<ExitCode, String> {
+    let response = perform_explain_diagnostic(
+        cli,
+        &ai_tools::ExplainDiagnosticArgs {
+            code: args.code.clone(),
+            path: args.path.clone(),
+            workspace_root: args.workspace_root.clone(),
+            line: args.line,
+        },
+    )?;
+    match args.format {
+        OutputFormat::Json => {
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&response).map_err(|err| {
+                    format!("Failed to serialize explain-diagnostic response as JSON: {err}")
+                })?
+            );
+        }
+        OutputFormat::Text => print_explain_diagnostic(&response),
+        other => {
+            return Err(format!(
+                "explain-diagnostic supports text and json output, not {other:?}."
+            ));
+        }
+    }
+    Ok(ExitCode::SUCCESS)
+}
+
+fn run_model_summary(cli: &Cli, args: &ModelSummaryArgs) -> Result<ExitCode, String> {
+    let summary = perform_model_summary(
+        cli,
+        &ai_tools::ModelSummaryArgs {
+            path: args.path.clone(),
+            workspace_root: args.workspace_root.clone(),
+            max_nodes: args.max_nodes,
+        },
+    )?;
+    match args.format {
+        OutputFormat::Json => {
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&summary)
+                    .map_err(|err| format!("Failed to serialize model-summary as JSON: {err}"))?
+            );
+        }
+        OutputFormat::Text => print_model_summary(&summary),
+        other => {
+            return Err(format!(
+                "model-summary supports text and json output, not {other:?}."
+            ));
+        }
+    }
+    Ok(ExitCode::SUCCESS)
 }
 
 fn run_doctor(cli: &Cli, args: &DoctorArgs) -> Result<ExitCode, String> {
@@ -418,6 +478,43 @@ fn print_stdlib_status(status: &stdlib::StandardLibraryStatus) {
     if let Some(message) = &status.status_message {
         println!("status: {message}");
     }
+}
+
+fn print_explain_diagnostic(response: &ai_tools::ExplainDiagnosticResponse) {
+    println!("code: {}", response.code);
+    if let Some(catalog) = &response.catalog {
+        println!("severity: {}", catalog.severity);
+        println!("meaning: {}", catalog.meaning);
+        println!("typical fix: {}", catalog.typical_fix);
+    } else {
+        println!("(no catalog entry for this code)");
+    }
+    if !response.instances.is_empty() {
+        println!("instances:");
+        for inst in &response.instances {
+            println!(
+                "  {}:{}:{} — {}",
+                inst.uri, inst.line, inst.character, inst.message
+            );
+        }
+    }
+}
+
+fn print_model_summary(summary: &ModelSummaryResponse) {
+    println!(
+        "summary: {} error(s), {} warning(s), {} info",
+        summary.summary.error_count,
+        summary.summary.warning_count,
+        summary.summary.information_count
+    );
+    println!(
+        "nodes: {}/{} (truncated)",
+        summary.truncation.nodes_returned, summary.truncation.nodes_total
+    );
+    println!(
+        "relationships: {}/{}",
+        summary.truncation.relationships_returned, summary.truncation.relationships_total
+    );
 }
 
 fn print_sysand_status(status: &sysand::SysandStatus) {

@@ -7,8 +7,9 @@ Spec42 gives chatbots **structured** SysML v2 / KerML feedback through MCP and t
 | Surface | Best for |
 | --- | --- |
 | **LSP (VS Code extension)** | Human editing: live diagnostics, hover, completion, navigation, diagrams |
-| **MCP `spec42-mcp`** | Agents: validate, environment check, model summary, explain diagnostic codes |
-| **CLI `spec42 check` / `spec42 doctor`** | CI, scripts, same engine as MCP |
+| **VS Code Language Model Tools** (Copilot Agent, VS Code 1.99+) | Same four tools as MCP, via bundled `spec42` CLI — no `mcp.json` in VS Code |
+| **MCP `spec42-mcp`** | Cursor and other MCP hosts; also Copilot when MCP is configured manually |
+| **CLI** `spec42 check` / `doctor` / `explain-diagnostic` / `model-summary` | CI, scripts, LM Tools backend — same engine as MCP |
 
 The language server does **not** expose its graph directly to Copilot Chat. Configure MCP (or run CLI) after substantive model edits.
 
@@ -20,13 +21,22 @@ Release archives include `spec42-mcp` next to `spec42`. For local development:
 target/release/spec42-mcp
 ```
 
-### VS Code / GitHub Copilot
+### VS Code Copilot (Language Model Tools)
 
-1. Install the [Spec42 extension](../vscode/README.md) for editing (optional but recommended).
+With VS Code **1.99+** and the [Spec42 extension](../vscode/README.md), Copilot Agent can use four built-in tools (`#spec42Check`, `#spec42Doctor`, `#spec42ModelSummary`, `#spec42ExplainDiagnostic`) without MCP configuration. The extension runs the bundled `spec42` binary (`check`, `doctor`, `explain-diagnostic`, `model-summary` with JSON output).
+
+Requirements:
+
+- Open a workspace folder (or a `.sysml` / `.kerml` file) so tool `when` clauses match.
+- Optional: set `spec42.libraryPaths` like for the language server.
+
+### MCP (VS Code, Cursor, other hosts)
+
+Use MCP when you want the stdio server explicitly (especially **Cursor**, which does not support VS Code Language Model Tools).
+
+1. Install the Spec42 extension for editing (recommended).
 2. Add an MCP server using the template in [`docs/examples/mcp-vscode.json`](examples/mcp-vscode.json).
 3. Point `command` at your `spec42-mcp` binary (absolute path on Windows is most reliable).
-
-Copilot Chat can then call MCP tools when the host enables MCP for the workspace.
 
 ### Cursor
 
@@ -67,8 +77,18 @@ Repo-level conventions for Copilot are in [`.github/copilot-instructions.md`](..
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — server, libraries, indexing
 - [GITHUB-ACTION.md](GITHUB-ACTION.md) — CI validation without MCP
 
+## CLI commands (agent parity)
+
+Same JSON shapes as MCP (pretty-printed on stdout):
+
+```bash
+spec42 explain-diagnostic --code unresolved_type_reference --format json
+spec42 model-summary path/to/model.sysml --max-nodes 500 --format json
+```
+
+Global flags match MCP: `--library-path`, `--config`, `--stdlib-path`, `--no-stdlib`.
+
 ## Future (not yet shipped)
 
-- VS Code **Language Model Tools** registered by the extension (no manual `mcp.json`)
 - Chat participant “Spec42” with pinned parser/workflow instructions
 - MCP **`spec42_symbols`** for workspace symbol export

@@ -8,7 +8,7 @@ const {
   resolveCliPathFromVSCodeExecutablePath,
   runTests,
 } = require("@vscode/test-electron");
-const vscodeTestVersion = process.env.VSCODE_TEST_VERSION || "1.85.0";
+const vscodeTestVersion = process.env.VSCODE_TEST_VERSION || "1.99.0";
 
 function getArg(name) {
   const idx = process.argv.indexOf(name);
@@ -82,7 +82,7 @@ function writeSmokeTestHost(tempDir) {
     private: true,
     publisher: "spec42",
     engines: {
-      vscode: "^1.85.0",
+      vscode: "^1.99.0",
     },
   };
   const smokeTest = `"use strict";
