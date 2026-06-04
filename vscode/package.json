@@ -108,6 +108,36 @@
         "category": "Spec42"
       },
       {
+        "command": "spec42.examples.openWorkspace",
+        "title": "Examples: Open Workspace",
+        "icon": "$(folder-opened)",
+        "category": "Spec42"
+      },
+      {
+        "command": "spec42.examples.openPrimaryFile",
+        "title": "Examples: Open Main File",
+        "icon": "$(go-to-file)",
+        "category": "Spec42"
+      },
+      {
+        "command": "spec42.examples.openAndVisualize",
+        "title": "Examples: Visualize Example",
+        "icon": "$(graph)",
+        "category": "Spec42"
+      },
+      {
+        "command": "spec42.examples.openRecommended",
+        "title": "Examples: Open Recommended Example",
+        "icon": "$(star-full)",
+        "category": "Spec42"
+      },
+      {
+        "command": "spec42.status.showActions",
+        "title": "Status: Show Spec42 Actions",
+        "icon": "$(list-selection)",
+        "category": "Spec42"
+      },
+      {
         "command": "sysml.library.refresh",
         "title": "Refresh Library View",
         "icon": "$(refresh)",
@@ -172,6 +202,18 @@
       {
         "command": "sysml.visualizePackage",
         "title": "Visualize Package",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.openLocation",
+        "title": "Open Source",
+        "icon": "$(go-to-file)",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.copyQualifiedName",
+        "title": "Copy Qualified Name",
+        "icon": "$(copy)",
         "category": "SysML"
       },
       {
@@ -281,8 +323,34 @@
       ],
       "view/item/context": [
         {
+          "command": "spec42.examples.openWorkspace",
+          "when": "view == spec42Examples && (viewItem == spec42ExampleFolder || viewItem == spec42ExampleFolderRecommended)",
+          "group": "navigation@1"
+        },
+        {
+          "command": "spec42.examples.openPrimaryFile",
+          "when": "view == spec42Examples && (viewItem == spec42ExampleFolder || viewItem == spec42ExampleFolderRecommended)",
+          "group": "navigation@2"
+        },
+        {
+          "command": "spec42.examples.openAndVisualize",
+          "when": "view == spec42Examples && (viewItem == spec42ExampleFolder || viewItem == spec42ExampleFolderRecommended)",
+          "group": "navigation@3"
+        },
+        {
+          "command": "sysml.openLocation",
+          "when": "view == sysmlModelExplorer && (viewItem == sysmlElement || viewItem == sysmlPackage)",
+          "group": "navigation@1"
+        },
+        {
+          "command": "sysml.copyQualifiedName",
+          "when": "view == sysmlModelExplorer && (viewItem == sysmlElement || viewItem == sysmlPackage)",
+          "group": "inline@2"
+        },
+        {
           "command": "sysml.visualizePackage",
-          "when": "view == sysmlModelExplorer && viewItem == sysmlPackage"
+          "when": "view == sysmlModelExplorer && viewItem == sysmlPackage",
+          "group": "navigation@3"
         }
       ],
       "commandPalette": [
@@ -319,6 +387,9 @@
         },
         {
           "command": "sysml.showOutput"
+        },
+        {
+          "command": "spec42.examples.openRecommended"
         },
         {
           "command": "sysml.changeVisualizerView"
@@ -377,7 +448,7 @@
       },
       {
         "view": "sysmlModelExplorer",
-        "contents": "No SysML model loaded.\\n\\n- Open a `.sysml` or `.kerml` file\\n- Or run **SysML: Show SysML Model Explorer**"
+        "contents": "No SysML model loaded.\\n\\n- Open a `.sysml` or `.kerml` file\\n- Run [Open Recommended Example](command:spec42.examples.openRecommended)\\n- Or use the **Examples** view in the Spec42 sidebar"
       }
     ],
     "configuration": {
@@ -495,6 +566,7 @@
     "typecheck": "tsc -p ./ --noEmit",
     "watch": "tsc -watch -p ./",
     "test": "vscode-test",
+    "test:ux-unit": "vscode-test --config .vscode-test.ux-unit.mjs",
     "test:state-view": "vscode-test --config .vscode-test.state-view.mjs",
     "test:interconnection": "vscode-test --config .vscode-test.interconnection.mjs",
     "test:interconnection-drone": "vscode-test --config .vscode-test.interconnection-drone.mjs",

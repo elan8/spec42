@@ -2,20 +2,85 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { log } from "../logger";
 
+export type ExampleMetadata = {
+  readonly folderName: string;
+  readonly description: string;
+  readonly primaryFile: string;
+  readonly recommendedView: string;
+  readonly recommended?: boolean;
+};
+
+export const EXAMPLE_METADATA: Record<string, ExampleMetadata> = {
+  timer: {
+    folderName: "timer",
+    description: "Start here",
+    primaryFile: "KitchenTimer.sysml",
+    recommendedView: "general-view",
+    recommended: true,
+  },
+  drone: {
+    folderName: "drone",
+    description: "Architecture + views",
+    primaryFile: "SurveillanceDrone.sysml",
+    recommendedView: "interconnection-view",
+  },
+  webshop: {
+    folderName: "webshop",
+    description: "Requirements + behavior",
+    primaryFile: "webshop.sysml",
+    recommendedView: "general-view",
+  },
+  intersection: {
+    folderName: "intersection",
+    description: "State behavior",
+    primaryFile: "TrafficLightIntersection.sysml",
+    recommendedView: "state-transition-view",
+  },
+  office: {
+    folderName: "office",
+    description: "Compact model",
+    primaryFile: "office.sysml",
+    recommendedView: "general-view",
+  },
+};
+
+export function metadataForExample(folderName: string): ExampleMetadata | undefined {
+  return EXAMPLE_METADATA[folderName.toLowerCase()];
+}
+
+export function compareExampleItems(a: ExampleTreeItem, b: ExampleTreeItem): number {
+  const aRecommended = a.metadata?.recommended ? 0 : 1;
+  const bRecommended = b.metadata?.recommended ? 0 : 1;
+  if (aRecommended !== bRecommended) {
+    return aRecommended - bRecommended;
+  }
+  return String(a.label).localeCompare(String(b.label));
+}
+
 export class ExampleTreeItem extends vscode.TreeItem {
   constructor(
     public readonly folderUri: vscode.Uri,
-    relativeExamplesPath: string
+    relativeExamplesPath: string,
+    public readonly metadata?: ExampleMetadata
   ) {
     super(relativeExamplesPath, vscode.TreeItemCollapsibleState.None);
-    this.description = "Open as workspace";
-    this.tooltip = folderUri.fsPath;
-    this.iconPath = new vscode.ThemeIcon("folder");
-    this.contextValue = "spec42ExampleFolder";
+    this.description = metadata?.description ?? "Open as workspace";
+    this.tooltip = [
+      metadata?.recommended ? "Recommended first example" : undefined,
+      metadata?.primaryFile ? `Main file: ${metadata.primaryFile}` : undefined,
+      metadata?.recommendedView ? `Suggested view: ${metadata.recommendedView}` : undefined,
+      folderUri.fsPath,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    this.iconPath = new vscode.ThemeIcon(metadata?.recommended ? "star-full" : "folder");
+    this.contextValue = metadata?.recommended
+      ? "spec42ExampleFolderRecommended"
+      : "spec42ExampleFolder";
     this.command = {
-      command: "spec42.examples.openWorkspace",
-      title: "Open Example Workspace",
-      arguments: [folderUri],
+      command: "spec42.examples.openPrimaryFile",
+      title: "Open Example",
+      arguments: [this],
     };
   }
 }
@@ -135,7 +200,7 @@ export class ExamplesViewProvider
 
         const relativePath = path.basename(folderUri.fsPath);
 
-        items.push(new ExampleTreeItem(folderUri, relativePath));
+        items.push(new ExampleTreeItem(folderUri, relativePath, metadataForExample(relativePath)));
       }
     }
 
@@ -148,6 +213,6 @@ export class ExamplesViewProvider
       return [new ExamplesInfoItem("empty-examples-dir", "examples/")];
     }
     log("examples.getChildren:done", items.length);
-    return items.sort((a, b) => String(a.label).localeCompare(String(b.label)));
+    return items.sort(compareExampleItems);
   }
 }

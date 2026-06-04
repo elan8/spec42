@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
-import { ModelExplorerProvider } from "../../explorer/modelExplorerProvider";
+import { ModelExplorerProvider, ModelTreeItem } from "../../explorer/modelExplorerProvider";
 import type { SysMLElementDTO, SysMLModelResult } from "../../providers/sysmlModelTypes";
 
 function createModelResult(id: string, name = "Drone"): SysMLModelResult {
@@ -80,6 +80,15 @@ function createWorkspaceModelResult(
 }
 
 describe("ModelExplorerProvider", () => {
+  it("sets package context and open-location command for tree actions", () => {
+    const uri = vscode.Uri.file("C:/workspace/Drone.sysml");
+    const item = new ModelTreeItem(createElement("Pkg::Drone", "Drone", uri.toString()), uri);
+
+    assert.strictEqual(item.contextValue, "sysmlPackage");
+    assert.strictEqual(item.command?.command, "sysml.openLocation");
+    assert.ok(String(item.tooltip).includes("package: Drone"));
+  });
+
   it("deduplicates concurrent document loads for the same URI", async () => {
     let requestCount = 0;
     let resolveRequest: ((value: SysMLModelResult) => void) | undefined;

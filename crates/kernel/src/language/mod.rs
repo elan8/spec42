@@ -253,6 +253,131 @@ fn has_matching_part_def(lines: &[&str], start: usize, end: usize, type_name: &s
         .any(|line| line.trim().starts_with(&needle))
 }
 
+fn has_matching_definition(
+    lines: &[&str],
+    start: usize,
+    end: usize,
+    definition_keyword: &str,
+    type_name: &str,
+) -> bool {
+    let needle = format!("{definition_keyword} {type_name}");
+    lines
+        .iter()
+        .take(end + 1)
+        .skip(start)
+        .any(|line| line.trim().starts_with(&needle))
+}
+
+fn parse_simple_unresolved_type_usage(raw_line: &str) -> Option<(&'static str, String)> {
+    let code_only = raw_line.split("//").next().unwrap_or("");
+    let trimmed = code_only.trim();
+    let (usage_keyword, definition_keyword) =
+        if trimmed.starts_with("part ") && !trimmed.starts_with("part def ") {
+            ("part", "part def")
+        } else if trimmed.starts_with("port ") && !trimmed.starts_with("port def ") {
+            ("port", "port def")
+        } else if trimmed.starts_with("attribute ") && !trimmed.starts_with("attribute def ") {
+            ("attribute", "attribute def")
+        } else {
+            return None;
+        };
+    let after_keyword = trimmed.strip_prefix(usage_keyword)?.trim_start();
+    let colon = after_keyword.find(':')?;
+    let after_colon = after_keyword[colon + 1..].trim_start();
+    let type_part = after_colon
+        .split(|ch: char| ch == ';' || ch == '{' || ch == '=' || ch.is_whitespace())
+        .next()?
+        .trim()
+        .trim_start_matches('~');
+    if type_part.is_empty()
+        || type_part.contains("::")
+        || type_part.contains('<')
+        || type_part.contains('>')
+    {
+        return None;
+    }
+    Some((definition_keyword, type_part.to_string()))
+}
+
+pub fn suggest_create_definition_for_unresolved_type_quick_fix(
+    source: &str,
+    uri: &Url,
+    diagnostic: &Diagnostic,
+) -> Option<CodeAction> {
+    let target_line = diagnostic.range.start.line as usize;
+    let lines: Vec<&str> = source.lines().collect();
+    let raw_line = *lines.get(target_line)?;
+    let (definition_keyword, type_name) = parse_simple_unresolved_type_usage(raw_line)?;
+    let (container_start, container_end) = find_insertion_context(&lines, target_line)?;
+    let (search_start, search_end, insert_line, insert_indent) =
+        if let Some((pkg_start, pkg_end)) = find_package_context(&lines, target_line) {
+            let pkg_line = lines.get(pkg_start)?;
+            let pkg_indent_len = pkg_line.len() - pkg_line.trim_start().len();
+            let pkg_indent = &pkg_line[..pkg_indent_len];
+            let member_indent = format!("{pkg_indent}  ");
+            let target_insert_line = if container_start > pkg_start && container_start < pkg_end {
+                container_start
+            } else {
+                pkg_end
+            };
+            (pkg_start, pkg_end, target_insert_line, member_indent)
+        } else {
+            let closing_line = lines.get(container_end)?;
+            let closing_indent_len = closing_line.len() - closing_line.trim_start().len();
+            let closing_indent = &closing_line[..closing_indent_len];
+            (0, container_end, container_end, closing_indent.to_string())
+        };
+    if has_matching_definition(
+        &lines,
+        search_start,
+        search_end,
+        definition_keyword,
+        &type_name,
+    ) {
+        return None;
+    }
+    let body = if definition_keyword == "part def" {
+        format!(
+            "{indent}{definition_keyword} {type_name} {{ }}\n",
+            indent = insert_indent
+        )
+    } else {
+        format!(
+            "{indent}{definition_keyword} {type_name};\n",
+            indent = insert_indent
+        )
+    };
+    let edit = WorkspaceEdit {
+        changes: None,
+        document_changes: Some(tower_lsp::lsp_types::DocumentChanges::Edits(vec![
+            TextDocumentEdit {
+                text_document: OptionalVersionedTextDocumentIdentifier {
+                    uri: uri.clone(),
+                    version: None,
+                },
+                edits: vec![OneOf::Left(TextEdit {
+                    range: Range::new(
+                        Position::new(insert_line as u32, 0),
+                        Position::new(insert_line as u32, 0),
+                    ),
+                    new_text: body,
+                })],
+            },
+        ])),
+        change_annotations: None,
+    };
+    Some(CodeAction {
+        title: format!("Create `{definition_keyword} {type_name}`"),
+        kind: Some(CodeActionKind::QUICKFIX),
+        diagnostics: Some(vec![diagnostic.clone()]),
+        edit: Some(edit),
+        command: None,
+        is_preferred: Some(true),
+        disabled: None,
+        data: None,
+    })
+}
+
 fn rewrite_untyped_part_usage_line(raw_line: &str, usage_name: &str, type_name: &str) -> String {
     let code_only = raw_line.split("//").next().unwrap_or("");
     let comment_part = &raw_line[code_only.len()..];
@@ -436,6 +561,23 @@ pub fn suggest_manage_custom_libraries_quick_fix(diagnostic: &Diagnostic) -> Cod
         command: Some(Command {
             title: "Configure SysML library paths".to_string(),
             command: "sysml.library.managePaths".to_string(),
+            arguments: None,
+        }),
+        is_preferred: Some(false),
+        disabled: None,
+        data: None,
+    }
+}
+
+pub fn suggest_show_standard_library_info_quick_fix(diagnostic: &Diagnostic) -> CodeAction {
+    CodeAction {
+        title: "Show bundled standard library information".to_string(),
+        kind: Some(CodeActionKind::QUICKFIX),
+        diagnostics: Some(vec![diagnostic.clone()]),
+        edit: None,
+        command: Some(Command {
+            title: "Show bundled standard library information".to_string(),
+            command: "sysml.library.showStdLibStatus".to_string(),
             arguments: None,
         }),
         is_preferred: Some(false),
@@ -857,6 +999,96 @@ mod tests {
         };
         let action = suggest_create_matching_part_def_quick_fix(source, &uri, &diagnostic);
         assert!(action.is_none());
+    }
+
+    #[test]
+    fn test_suggest_create_definition_for_unresolved_type_creates_part_def() {
+        let uri = Url::parse("file:///test.sysml").unwrap();
+        let source = "package P {\n  part car : Vehicle;\n}\n";
+        let diagnostic = Diagnostic {
+            range: Range::new(Position::new(1, 13), Position::new(1, 20)),
+            severity: Some(DiagnosticSeverity::WARNING),
+            code: Some(NumberOrString::String(
+                "unresolved_type_reference".to_string(),
+            )),
+            code_description: None,
+            source: Some("semantic".to_string()),
+            message: "unresolved".to_string(),
+            related_information: None,
+            tags: None,
+            data: None,
+        };
+        let action =
+            suggest_create_definition_for_unresolved_type_quick_fix(source, &uri, &diagnostic)
+                .expect("action");
+        assert_eq!(action.title, "Create `part def Vehicle`");
+        let edit = action.edit.expect("has edit");
+        let doc_edits = edit.document_changes.expect("document changes");
+        let edits = match doc_edits {
+            tower_lsp::lsp_types::DocumentChanges::Edits(v) => v,
+            _ => panic!("expected edits"),
+        };
+        let inserted = match &edits[0].edits[0] {
+            OneOf::Left(te) => te.new_text.clone(),
+            _ => panic!("expected text edit"),
+        };
+        assert_eq!(inserted, "  part def Vehicle { }\n");
+    }
+
+    #[test]
+    fn test_suggest_create_definition_for_unresolved_type_creates_port_def() {
+        let uri = Url::parse("file:///test.sysml").unwrap();
+        let source = "package P {\n  port command : CommandPort;\n}\n";
+        let diagnostic = Diagnostic {
+            range: Range::new(Position::new(1, 17), Position::new(1, 28)),
+            severity: Some(DiagnosticSeverity::WARNING),
+            code: Some(NumberOrString::String(
+                "unresolved_type_reference".to_string(),
+            )),
+            code_description: None,
+            source: Some("semantic".to_string()),
+            message: "unresolved".to_string(),
+            related_information: None,
+            tags: None,
+            data: None,
+        };
+        let action =
+            suggest_create_definition_for_unresolved_type_quick_fix(source, &uri, &diagnostic)
+                .expect("action");
+        assert_eq!(action.title, "Create `port def CommandPort`");
+        let edit = action.edit.expect("has edit");
+        let doc_edits = edit.document_changes.expect("document changes");
+        let edits = match doc_edits {
+            tower_lsp::lsp_types::DocumentChanges::Edits(v) => v,
+            _ => panic!("expected edits"),
+        };
+        let inserted = match &edits[0].edits[0] {
+            OneOf::Left(te) => te.new_text.clone(),
+            _ => panic!("expected text edit"),
+        };
+        assert_eq!(inserted, "  port def CommandPort;\n");
+    }
+
+    #[test]
+    fn test_suggest_show_standard_library_info_quick_fix_uses_command() {
+        let diagnostic = Diagnostic {
+            range: Range::new(Position::new(0, 0), Position::new(0, 1)),
+            severity: Some(DiagnosticSeverity::INFORMATION),
+            code: Some(NumberOrString::String(
+                "missing_library_context".to_string(),
+            )),
+            code_description: None,
+            source: Some("semantic".to_string()),
+            message: "missing library".to_string(),
+            related_information: None,
+            tags: None,
+            data: None,
+        };
+        let action = suggest_show_standard_library_info_quick_fix(&diagnostic);
+        assert_eq!(
+            action.command.expect("command").command,
+            "sysml.library.showStdLibStatus"
+        );
     }
 
     #[test]

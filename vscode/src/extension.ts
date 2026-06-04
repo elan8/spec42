@@ -23,7 +23,11 @@ import {
   ModelExplorerProvider,
   ModelTreeItem,
 } from "./explorer/modelExplorerProvider";
-import { ExamplesViewProvider } from "./examples/examplesViewProvider";
+import {
+  ExampleTreeItem,
+  ExamplesViewProvider,
+  metadataForExample,
+} from "./examples/examplesViewProvider";
 import { LibraryWebviewViewProvider } from "./library/libraryWebviewViewProvider";
 import type {
   GraphNodeDTO,
@@ -43,17 +47,13 @@ import {
   summarizeActiveFileSysmlDiagnostics,
   summarizeWorkspaceSysmlDiagnostics,
 } from "./diagnostics/workspaceDiagnostics";
+import {
+  formatSpec42StatusBar,
+  ServerHealthState,
+} from "./statusBar/statusBarViewModel";
 const CONFIG_SECTION = "spec42";
 const LEGACY_CONFIG_SECTION = "sysml-language-server";
 const EXTENSION_ID = "Elan8.spec42";
-
-type ServerHealthState =
-  | "starting"
-  | "ready"
-  | "indexing"
-  | "degraded"
-  | "restarting"
-  | "crashed";
 
 type StartupWorkspaceIndexingMode = "lazy" | "background" | "eager";
 
@@ -451,7 +451,7 @@ function ensureStatusItem(context: vscode.ExtensionContext): vscode.StatusBarIte
       100
     );
     statusItem.name = "SysML Diagnostics";
-    statusItem.command = "workbench.actions.view.problems";
+    statusItem.command = "spec42.status.showActions";
     context.subscriptions.push(statusItem);
   }
   return statusItem;
@@ -464,6 +464,106 @@ function getResolvedLibraryPaths(): string[] {
     path.isAbsolute(p) ? p : path.resolve(workspaceRoot, p)
   );
   return customLibraryPaths.filter((value, index, all) => all.indexOf(value) === index);
+}
+
+function exampleFolderUri(arg: vscode.Uri | ExampleTreeItem | undefined): vscode.Uri | undefined {
+  if (!arg) {
+    return undefined;
+  }
+  if (arg instanceof vscode.Uri) {
+    return arg;
+  }
+  return arg.folderUri;
+}
+
+function exampleMetadata(arg: vscode.Uri | ExampleTreeItem | undefined) {
+  if (arg instanceof ExampleTreeItem) {
+    return arg.metadata;
+  }
+  const folder = arg ? path.basename(arg.fsPath) : "";
+  return metadataForExample(folder);
+}
+
+async function findRecommendedExampleUri(
+  context: vscode.ExtensionContext
+): Promise<vscode.Uri | undefined> {
+  const roots = resolveAdditionalExamplesRoots(context.extensionPath);
+  for (const root of roots) {
+    const candidate = vscode.Uri.joinPath(root, "timer");
+    try {
+      const stat = await vscode.workspace.fs.stat(candidate);
+      if (stat.type === vscode.FileType.Directory) {
+        return candidate;
+      }
+    } catch {
+      // Try the next packaged/repo examples root.
+    }
+  }
+  return undefined;
+}
+
+async function openExamplePrimaryFile(
+  arg: vscode.Uri | ExampleTreeItem | undefined
+): Promise<vscode.TextDocument | undefined> {
+  const folderUri = exampleFolderUri(arg);
+  if (!folderUri) {
+    return undefined;
+  }
+  const metadata = exampleMetadata(arg);
+  const primaryFile = metadata?.primaryFile;
+  const fileUri = primaryFile ? vscode.Uri.joinPath(folderUri, primaryFile) : undefined;
+  if (!fileUri) {
+    await vscode.commands.executeCommand("vscode.openFolder", folderUri, false);
+    return undefined;
+  }
+  try {
+    const document = await vscode.workspace.openTextDocument(fileUri);
+    await vscode.window.showTextDocument(document, {
+      preview: false,
+      preserveFocus: false,
+    });
+    return document;
+  } catch (error) {
+    logError(`Failed to open example primary file ${fileUri.fsPath}`, error);
+    vscode.window.showWarningMessage(
+      `Could not open ${primaryFile}; opening the example workspace instead.`
+    );
+    await vscode.commands.executeCommand("vscode.openFolder", folderUri, false);
+    return undefined;
+  }
+}
+
+async function visualizeExample(
+  arg: vscode.Uri | ExampleTreeItem | undefined
+): Promise<void> {
+  const folderUri = exampleFolderUri(arg);
+  if (!folderUri) {
+    vscode.window.showWarningMessage("No Spec42 example selected.");
+    return;
+  }
+  await openExamplePrimaryFile(arg);
+  await vscode.commands.executeCommand("sysml.visualizeFolder", folderUri);
+  const viewId = exampleMetadata(arg)?.recommendedView;
+  if (viewId && VisualizationPanel.currentPanel) {
+    await vscode.commands.executeCommand("sysml.changeVisualizerView", viewId);
+  }
+}
+
+async function showSpec42StatusActions(): Promise<void> {
+  const selected = await vscode.window.showQuickPick(
+    [
+      { label: "$(issues) Open Problems", command: "workbench.actions.view.problems" },
+      { label: "$(list-tree) Show Model Explorer", command: "sysml.showModelExplorer" },
+      { label: "$(graph) Open Visualizer", command: "sysml.showVisualizer" },
+      { label: "$(star-full) Open Recommended Example", command: "spec42.examples.openRecommended" },
+      { label: "$(output) Show SysML Output", command: "sysml.showOutput" },
+      { label: "$(debug-restart) Restart Server", command: "sysml.restartServer" },
+    ],
+    { placeHolder: "Spec42 actions" }
+  );
+  if (selected) {
+    await vscode.commands.executeCommand(selected.command);
+  }
 }
 
 function updateStatusBar(context: vscode.ExtensionContext): void {
@@ -493,39 +593,16 @@ function updateStatusBar(context: vscode.ExtensionContext): void {
     doc && isSysmlDoc(doc) ? summarizeActiveFileSysmlDiagnostics(doc) : undefined;
   const errors = workspaceSummary?.errors ?? activeSummary?.errors ?? 0;
   const warnings = workspaceSummary?.warnings ?? activeSummary?.warnings ?? 0;
-  const healthText =
-    serverHealthState === "starting"
-      ? "$(sync~spin) SysML: Starting"
-      : serverHealthState === "indexing"
-        ? "$(sync~spin) SysML: Indexing"
-      : serverHealthState === "restarting"
-        ? "$(sync~spin) SysML: Restarting"
-        : serverHealthState === "degraded"
-          ? "$(warning) SysML: Degraded"
-          : serverHealthState === "crashed"
-            ? "$(error) SysML: Server stopped"
-            : undefined;
-  const diagnosticsText = (() => {
-    const icon = errors > 0 ? "$(error)" : warnings > 0 ? "$(warning)" : "$(check)";
-    return `${icon} SysML: ${errors}E ${warnings}W`;
-  })();
-  item.text = healthText ?? diagnosticsText;
-  const workspaceDiagTooltip = workspaceSummary
-    ? `${workspaceSummary.errors} error(s), ${workspaceSummary.warnings} warning(s) across ${workspaceSummary.totalFiles} workspace file(s) (${workspaceSummary.filesWithIssues} with issues)`
-    : undefined;
-  const activeDiagTooltip =
-    activeSummary && doc && isSysmlDoc(doc)
-      ? `Active file: ${activeSummary.errors} error(s), ${activeSummary.warnings} warning(s)`
-      : undefined;
-  const baseTooltip = healthText
-    ? `Server state: ${serverHealthState}${serverHealthDetail ? `\n${serverHealthDetail}` : ""}`
-    : [
-        workspaceDiagTooltip,
-        activeDiagTooltip,
-        "Click to open Problems panel.",
-      ]
-        .filter(Boolean)
-        .join("\n");
+  const status = formatSpec42StatusBar(
+    serverHealthState,
+    serverHealthDetail,
+    errors,
+    warnings,
+    workspaceSummary,
+    activeSummary
+  );
+  item.text = status.text;
+  const baseTooltip = status.baseTooltip;
   const workspaceTooltip = lastWorkspaceIndexSummary
     ? `\n\nWorkspace indexing:\nScanned ${lastWorkspaceIndexSummary.scannedFiles} file(s)\nLoaded ${lastWorkspaceIndexSummary.loadedFiles} file(s)${(lastWorkspaceIndexSummary.failures ?? 0) > 0 ? `\nFailures: ${lastWorkspaceIndexSummary.failures}` : ""}${lastWorkspaceIndexSummary.truncated ? "\nResults may be incomplete." : ""}${lastWorkspaceIndexSummary.cancelled ? "\nLast scan was cancelled." : ""}`
     : "";
@@ -542,7 +619,7 @@ function updateStatusBar(context: vscode.ExtensionContext): void {
           ? `${Math.floor(stats.uptime / 60)}m ${stats.uptime % 60}s`
           : `${stats.uptime}s`;
       const caches = stats.caches;
-      item.tooltip = `${baseTooltip}${workspaceTooltip}\n\n── LSP Server ──\nUptime: ${uptimeStr}\nCaches: ${caches.documents} docs, ${caches.symbolTables} symbols`;
+      item.tooltip = `${baseTooltip}${workspaceTooltip}\n\n-- LSP Server --\nUptime: ${uptimeStr}\nCaches: ${caches.documents} docs, ${caches.symbolTables} symbols`;
     }).catch(() => {});
   }
 }
@@ -973,7 +1050,8 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("spec42.examples.openWorkspace", async (folderUri: vscode.Uri) => {
+    vscode.commands.registerCommand("spec42.examples.openWorkspace", async (arg: vscode.Uri | ExampleTreeItem) => {
+      const folderUri = exampleFolderUri(arg);
       if (!folderUri) {
         return;
       }
@@ -982,8 +1060,43 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "spec42.examples.openPrimaryFile",
+      async (arg: vscode.Uri | ExampleTreeItem) => {
+        await openExamplePrimaryFile(arg);
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "spec42.examples.openAndVisualize",
+      async (arg: vscode.Uri | ExampleTreeItem) => {
+        await visualizeExample(arg);
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("spec42.examples.openRecommended", async () => {
+      const folderUri = await findRecommendedExampleUri(context);
+      if (!folderUri) {
+        vscode.window.showWarningMessage("Could not find the bundled timer example.");
+        return;
+      }
+      await visualizeExample(folderUri);
+    })
+  );
+
+  context.subscriptions.push(
     vscode.commands.registerCommand("spec42.examples.refresh", () => {
       examplesViewProvider?.refresh();
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("spec42.status.showActions", async () => {
+      await showSpec42StatusActions();
     })
   );
 
@@ -1403,6 +1516,18 @@ export function activate(context: vscode.ExtensionContext): void {
           );
       editor.selection = new vscode.Selection(range.start, range.start);
       editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sysml.copyQualifiedName", async (item: ModelTreeItem) => {
+      const qualifiedName = item?.element?.id || item?.element?.name;
+      if (!qualifiedName) {
+        vscode.window.showWarningMessage("No SysML element selected.");
+        return;
+      }
+      await vscode.env.clipboard.writeText(qualifiedName);
+      vscode.window.setStatusBarMessage(`Copied ${qualifiedName}`, 1800);
     })
   );
 

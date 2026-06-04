@@ -2330,7 +2330,10 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
             .attr('transform', 'translate(' + centerX + ',' + centerY + ')');
 
         // Message lines (handle both \n and escaped \\n)
-        const rawLines = message.split(/\n|\\n/).filter(l => l.length > 0);
+        const recoveryHint = data && ((data.elements && data.elements.length > 0) || (data.graph?.nodes && data.graph.nodes.length > 0))
+            ? 'Try another visualizer view or open the source element.'
+            : 'Open a SysML file or start from the recommended example in the Spec42 sidebar.';
+        const rawLines = `${message}\n${recoveryHint}`.split(/\n|\\n/).filter(l => l.length > 0);
         const maxCharsPerLine = 38;
         const wrappedLines = [];
         rawLines.forEach(l => wrappedLines.push.apply(wrappedLines, wrapTextToFit(l, maxCharsPerLine)));

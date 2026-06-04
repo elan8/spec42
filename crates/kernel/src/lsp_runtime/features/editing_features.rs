@@ -4,8 +4,9 @@ use tower_lsp::lsp_types::*;
 use crate::common::util;
 use crate::language::{
     collect_document_symbols, collect_folding_ranges, find_reference_ranges, format_document,
-    is_reserved_keyword, suggest_create_matching_part_def_quick_fix,
-    suggest_explicit_redefinition_quick_fix, suggest_manage_custom_libraries_quick_fix,
+    is_reserved_keyword, suggest_create_definition_for_unresolved_type_quick_fix,
+    suggest_create_matching_part_def_quick_fix, suggest_explicit_redefinition_quick_fix,
+    suggest_manage_custom_libraries_quick_fix, suggest_show_standard_library_info_quick_fix,
     suggest_wrap_in_package, word_at_position,
 };
 use crate::workspace::ServerState;
@@ -261,6 +262,18 @@ pub(crate) fn code_action(
                 actions.push(CodeActionOrCommand::CodeAction(action));
             }
         }
+        let is_unresolved_type_reference = matches!(
+            diagnostic.code.as_ref(),
+            Some(NumberOrString::String(code))
+                if code == "unresolved_type_reference" || code == "unresolved_ref_type_reference"
+        );
+        if is_unresolved_type_reference {
+            if let Some(action) =
+                suggest_create_definition_for_unresolved_type_quick_fix(&text, &uri, diagnostic)
+            {
+                actions.push(CodeActionOrCommand::CodeAction(action));
+            }
+        }
         let is_missing_library_context = matches!(
             diagnostic.code.as_ref(),
             Some(NumberOrString::String(code)) if code == "missing_library_context"
@@ -268,6 +281,9 @@ pub(crate) fn code_action(
         if is_missing_library_context {
             actions.push(CodeActionOrCommand::CodeAction(
                 suggest_manage_custom_libraries_quick_fix(diagnostic),
+            ));
+            actions.push(CodeActionOrCommand::CodeAction(
+                suggest_show_standard_library_info_quick_fix(diagnostic),
             ));
         }
     }

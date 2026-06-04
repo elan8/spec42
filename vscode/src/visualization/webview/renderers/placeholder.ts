@@ -11,6 +11,9 @@ export function renderPlaceholderView(
 ): void {
     const container = document.getElementById('visualization');
     if (!container) return;
-    const msg = message || 'No diagram to display. Select a view or open a SysML file.';
-    container.innerHTML = `<p style="padding:2em;color:var(--vscode-descriptionForeground);text-align:center">${msg}</p>`;
+    const msg = message || 'No diagram to display. Open a SysML file, choose another view, or start from the recommended example in the Spec42 sidebar.';
+    container.innerHTML = `<div style="padding:2em;color:var(--vscode-descriptionForeground);text-align:center;line-height:1.45">
+        <p>${msg}</p>
+        <p style="font-size:12px">Use the status bar for quick actions: Examples, Visualizer, Output, and Restart Server.</p>
+    </div>`;
 }

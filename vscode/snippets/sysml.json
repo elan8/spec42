@@ -400,5 +400,81 @@
       "}"
     ],
     "description": "Create a loop interaction fragment"
+  },
+  "SysML: workflow requirement": {
+    "prefix": "reqflow",
+    "body": [
+      "requirement def ${1:RequirementName} {",
+      "\tdoc \"${2:The system shall...}\";",
+      "\tattribute ${3:threshold} : ${4:Real};",
+      "\tverify ${5:verificationMethod};",
+      "\t$0",
+      "}"
+    ],
+    "description": "Create a requirement with text, parameter, and verification placeholder"
+  },
+  "SysML: workflow system with ports": {
+    "prefix": "systemports",
+    "body": [
+      "part def ${1:System} {",
+      "\tpart ${2:controller} : ${3:Controller};",
+      "\tpart ${4:device} : ${5:Device};",
+      "\tport ${6:commandOut} : ${7:CommandPort};",
+      "\tport ${8:statusIn} : ~${7:CommandPort};",
+      "\tconnect ${2:controller}.${6:commandOut} to ${4:device}.${8:statusIn};",
+      "\t$0",
+      "}",
+      "",
+      "part def ${3:Controller};",
+      "part def ${5:Device};",
+      "port def ${7:CommandPort};"
+    ],
+    "description": "Create a system structure with ports and a connector"
+  },
+  "SysML: workflow state flow": {
+    "prefix": "stateflow",
+    "body": [
+      "state def ${1:StateMachine} {",
+      "\tentry;",
+      "\tthen ${2:idle};",
+      "\tstate ${2:idle} : ${3:Idle};",
+      "\tstate ${4:active} : ${5:Active};",
+      "\ttransition ${6:start} first ${2:idle} then ${4:active};",
+      "\ttransition ${7:stop} first ${4:active} then ${2:idle};",
+      "\t$0",
+      "}"
+    ],
+    "description": "Create a state flow with states and transitions"
+  },
+  "SysML: workflow action flow": {
+    "prefix": "actionflow",
+    "body": [
+      "action def ${1:Process} {",
+      "\tin ${2:input} : ${3:InputItem};",
+      "\tout ${4:output} : ${5:OutputItem};",
+      "\taction ${6:transform} : ${7:TransformAction};",
+      "\tflow ${2:input} -> ${6:transform};",
+      "\tflow ${6:transform} -> ${4:output};",
+      "\t$0",
+      "}"
+    ],
+    "description": "Create an action flow with input, output, and internal action"
+  },
+  "SysML: workflow view expose": {
+    "prefix": "viewexpose",
+    "body": [
+      "view ${1:modelView} : ${2:GeneralView} {",
+      "\texpose ${3:Package}::${4:Element};",
+      "\t$0",
+      "}"
+    ],
+    "description": "Create a view that exposes a model element"
+  },
+  "SysML: workflow satisfy requirement": {
+    "prefix": "satisfyreq",
+    "body": [
+      "satisfy ${1:Requirement} by ${2:DesignElement};$0"
+    ],
+    "description": "Create a satisfy relationship from design element to requirement"
   }
 }
