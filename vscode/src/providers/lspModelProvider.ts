@@ -20,7 +20,7 @@ function isCancellationError(error: unknown): boolean {
   return error instanceof vscode.CancellationError;
 }
 
-function isClientNotRunningError(error: unknown): boolean {
+export function isClientNotRunningError(error: unknown): boolean {
   return error instanceof Error && /Client is not running/i.test(error.message);
 }
 

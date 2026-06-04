@@ -17,6 +17,7 @@ import {
 import {
   graphScopesForContext,
   hasWorkspaceFolder,
+  isClientNotRunningError,
   LspModelProvider,
 } from "./providers/lspModelProvider";
 import {
@@ -165,6 +166,7 @@ type DebugExtensionState = {
   modelExplorer?: {
     lastRevealedElementId?: string;
   };
+  visualizerOpen?: boolean;
 };
 
 function setServerHealth(
@@ -286,6 +288,27 @@ function rangeSpanScore(
   range: { start: { line: number; character: number }; end: { line: number; character: number } }
 ): number {
   return (range.end.line - range.start.line) * 10000 + (range.end.character - range.start.character);
+}
+
+function graphNodesForDocumentUri(
+  nodes: GraphNodeDTO[] | undefined,
+  docUri: vscode.Uri
+): GraphNodeDTO[] {
+  if (!nodes?.length) {
+    return [];
+  }
+  const normalized = docUri.toString().toLowerCase();
+  const scoped = nodes.filter((node) => {
+    if (!node.uri) {
+      return true;
+    }
+    try {
+      return vscode.Uri.parse(node.uri).toString().toLowerCase() === normalized;
+    } catch {
+      return false;
+    }
+  });
+  return scoped.length > 0 ? scoped : nodes;
 }
 
 function bestGraphNodeAtPosition(
@@ -1166,6 +1189,88 @@ export function activate(context: vscode.ExtensionContext): void {
     })
   );
 
+  async function syncModelExplorerFromEditor(
+    editor: vscode.TextEditor,
+    position: vscode.Position,
+    reason: string
+  ): Promise<void> {
+    if (!languageClientReady || !modelExplorerProvider || !client) {
+      return;
+    }
+    const doc = editor.document;
+    if (!isSysmlDoc(doc)) {
+      return;
+    }
+    const provider = modelExplorerProvider;
+    const syncStartedAt = Date.now();
+    try {
+      if (hasWorkspaceFolder()) {
+        if (!provider.hasWorkspaceData()) {
+          await loadWorkspaceSysMLFiles(provider);
+        } else {
+          await ensureWorkspaceModelLoaded(provider);
+        }
+      } else {
+        await provider.loadDocument(doc);
+      }
+      const result = await lspModelProvider.getModel(
+        doc.uri.toString(),
+        graphScopesForContext(),
+        undefined,
+        reason
+      );
+      const scopedNodes = graphNodesForDocumentUri(
+        result.graph?.nodes,
+        doc.uri
+      );
+      const node = bestGraphNodeAtPosition(scopedNodes, position);
+      if (node?.id) {
+        await provider.revealElement(doc.uri, node.id, node.range);
+        logPerf("selectionSync:modelExplorer", {
+          uri: doc.uri.toString(),
+          totalMs: Date.now() - syncStartedAt,
+          nodeId: node.id,
+        });
+        return;
+      }
+      const treeItem = provider.findElementTreeItemAtPosition(doc.uri, position);
+      if (treeItem?.element.id) {
+        await provider.revealElement(
+          doc.uri,
+          treeItem.element.id,
+          treeItem.element.range
+        );
+        logPerf("selectionSync:modelExplorerTreeFallback", {
+          uri: doc.uri.toString(),
+          totalMs: Date.now() - syncStartedAt,
+          nodeId: treeItem.element.id,
+        });
+        return;
+      }
+      logPerf("selectionSync:modelExplorerNoNode", {
+        uri: doc.uri.toString(),
+        totalMs: Date.now() - syncStartedAt,
+      });
+    } catch (error) {
+      if (isClientNotRunningError(error)) {
+        logPerf("selectionSync:modelExplorerSkipped", {
+          uri: doc.uri.toString(),
+          totalMs: Date.now() - syncStartedAt,
+        });
+        return;
+      }
+      logError(
+        `Source-to-model-explorer sync failed for ${doc.uri.toString()}`,
+        error
+      );
+      logPerf("selectionSync:modelExplorerFailed", {
+        uri: doc.uri.toString(),
+        totalMs: Date.now() - syncStartedAt,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
   const scheduleModelExplorerSelectionSync = (
     event: vscode.TextEditorSelectionChangeEvent
   ) => {
@@ -1179,54 +1284,16 @@ export function activate(context: vscode.ExtensionContext): void {
     if (modelExplorerSelectionSyncTimer) {
       clearTimeout(modelExplorerSelectionSyncTimer);
     }
+    const editor = event.textEditor;
+    const position =
+      event.selections[0]?.active ?? event.textEditor.selection.active;
     modelExplorerSelectionSyncTimer = setTimeout(() => {
       modelExplorerSelectionSyncTimer = undefined;
-      const provider = modelExplorerProvider;
-      if (!provider) {
-        return;
-      }
-      const position =
-        event.selections[0]?.active ?? event.textEditor.selection.active;
-      const syncStartedAt = Date.now();
-      void (async () => {
-        try {
-          if (hasWorkspaceFolder()) {
-            await ensureWorkspaceModelLoaded(provider);
-          } else {
-            await provider.loadDocument(doc);
-          }
-          const result = await lspModelProvider.getModel(
-            doc.uri.toString(),
-            graphScopesForContext(),
-            undefined,
-            "selectionSync:modelExplorer"
-          );
-          const node = bestGraphNodeAtPosition(result.graph?.nodes, position);
-          if (node?.id) {
-            await provider.revealElement(doc.uri, node.id, node.range);
-            logPerf("selectionSync:modelExplorer", {
-              uri: doc.uri.toString(),
-              totalMs: Date.now() - syncStartedAt,
-              nodeId: node.id,
-            });
-          } else {
-            logPerf("selectionSync:modelExplorerNoNode", {
-              uri: doc.uri.toString(),
-              totalMs: Date.now() - syncStartedAt,
-            });
-          }
-        } catch (error) {
-          logError(
-            `Source-to-model-explorer sync failed for ${doc.uri.toString()}`,
-            error
-          );
-          logPerf("selectionSync:modelExplorerFailed", {
-            uri: doc.uri.toString(),
-            totalMs: Date.now() - syncStartedAt,
-            error: error instanceof Error ? error.message : String(error),
-          });
-        }
-      })();
+      void syncModelExplorerFromEditor(
+        editor,
+        position,
+        "selectionSync:modelExplorer"
+      );
     }, 150);
   };
 
@@ -1247,6 +1314,9 @@ export function activate(context: vscode.ExtensionContext): void {
       }
       sourceSelectionSyncTimer = setTimeout(async () => {
         sourceSelectionSyncTimer = undefined;
+        if (!client || client.state !== State.Running) {
+          return;
+        }
         const diagramSyncStartedAt = Date.now();
         try {
           const result = await lspModelProvider.getModel(
@@ -1274,6 +1344,13 @@ export function activate(context: vscode.ExtensionContext): void {
             });
           }
         } catch (error) {
+          if (isClientNotRunningError(error)) {
+            logPerf("selectionSync:diagramSkipped", {
+              uri: doc.uri.toString(),
+              totalMs: Date.now() - diagramSyncStartedAt,
+            });
+            return;
+          }
           logError(`Source-to-diagram sync failed for ${doc.uri.toString()}`, error);
           logPerf("selectionSync:diagramFailed", {
             uri: doc.uri.toString(),
@@ -1699,75 +1776,48 @@ export function activate(context: vscode.ExtensionContext): void {
   );
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.showVisualizer", async () => {
-      if (!client) {
+      if (!client || !languageClientReady) {
         vscode.window.showErrorMessage("SysML language server is not running.");
         return;
       }
-      let editor = vscode.window.activeTextEditor;
-      if (!editor || (editor.document.languageId !== "sysml" && editor.document.languageId !== "kerml")) {
+      let editor =
+        vscode.window.activeTextEditor ??
+        vscode.window.visibleTextEditors.find(
+          (e) =>
+            (e.document.languageId === "sysml" || e.document.languageId === "kerml") &&
+            !e.document.isClosed
+        );
+      if (
+        editor &&
+        editor.document.languageId !== "sysml" &&
+        editor.document.languageId !== "kerml"
+      ) {
+        editor = undefined;
+      }
+      if (!editor) {
         editor = vscode.window.visibleTextEditors.find(
-          (e) => (e.document.languageId === "sysml" || e.document.languageId === "kerml") && !e.document.isClosed
+          (e) =>
+            (e.document.languageId === "sysml" || e.document.languageId === "kerml") &&
+            !e.document.isClosed
         );
       }
       if (!editor) {
         vscode.window.showWarningMessage("No SysML/KerML document is open. Open a .sysml or .kerml file first.");
         return;
       }
-      // When in workspace mode, pass all workspace file URIs so the diagram shows merged model from all files
-      const isWorkspace = modelExplorerProvider?.isWorkspaceBacked() ?? false;
-      const workspaceUris = isWorkspace ? modelExplorerProvider?.getWorkspaceFileUris() : undefined;
-      if (isWorkspace && workspaceUris && workspaceUris.length > 1) {
-        const openDocs: vscode.TextDocument[] = [];
-        let combinedContent = "";
-        const fileNames: string[] = [];
-        for (const uri of workspaceUris) {
-          try {
-            const doc = await vscode.workspace.openTextDocument(uri);
-            openDocs.push(doc);
-            const fileName = uri.fsPath.split(/[/\\]/).pop() ?? "";
-            fileNames.push(fileName);
-            combinedContent += `// === ${fileName} ===\n`;
-            combinedContent += doc.getText();
-            combinedContent += "\n\n";
-          } catch {
-            /* skip */
-          }
-        }
-        if (openDocs.length > 0) {
-          const firstDoc = openDocs[0];
-          const combinedDocumentProxy = {
-            getText: () => combinedContent,
-            uri: firstDoc.uri,
-            languageId: "sysml" as const,
-            version: firstDoc.version,
-            lineCount: combinedContent.split("\n").length,
-            lineAt: (line: number) =>
-              firstDoc.lineAt(Math.min(line, firstDoc.lineCount - 1)),
-            offsetAt: (position: vscode.Position) => firstDoc.offsetAt(position),
-            positionAt: (offset: number) => firstDoc.positionAt(offset),
-            getWordRangeAtPosition: (position: vscode.Position) =>
-              firstDoc.getWordRangeAtPosition(position),
-            validateRange: (range: vscode.Range) => firstDoc.validateRange(range),
-            validatePosition: (position: vscode.Position) =>
-              firstDoc.validatePosition(position),
-            fileName: firstDoc.fileName,
-            isUntitled: false,
-            isDirty: false,
-            isClosed: false,
-            eol: firstDoc.eol,
-            save: () => Promise.resolve(false),
-          } as unknown as vscode.TextDocument;
-          const title = `SysML Visualization - ${fileNames.length} file(s)`;
-          VisualizationPanel.createOrShow(
-            context,
-            combinedDocumentProxy,
-            title,
-            lspModelProvider
-          );
-          return;
-        }
+      try {
+        VisualizationPanel.createOrShow(
+          context,
+          editor.document,
+          undefined,
+          lspModelProvider
+        );
+      } catch (error) {
+        logError("Failed to open SysML visualizer", error);
+        void vscode.window.showErrorMessage(
+          `Failed to open visualizer: ${error instanceof Error ? error.message : String(error)}`
+        );
       }
-      VisualizationPanel.createOrShow(context, editor.document, undefined, lspModelProvider);
     })
   );
 
@@ -1919,6 +1969,26 @@ export function activate(context: vscode.ExtensionContext): void {
       showChannel();
     }),
 
+    vscode.commands.registerCommand(
+      "sysml.debug.syncModelExplorerSelection",
+      async (targetEditor?: vscode.TextEditor) => {
+        const editor =
+          targetEditor ??
+          vscode.window.activeTextEditor ??
+          vscode.window.visibleTextEditors.find((candidate) =>
+            isSysmlDoc(candidate.document)
+          );
+        if (!editor || !isSysmlDoc(editor.document)) {
+          return;
+        }
+        await syncModelExplorerFromEditor(
+          editor,
+          editor.selection.active,
+          "debug:syncModelExplorerSelection"
+        );
+      }
+    ),
+
     vscode.commands.registerCommand("sysml.debug.getExtensionState", (): DebugExtensionState => ({
       serverHealthState,
       serverHealthDetail,
@@ -1928,7 +1998,18 @@ export function activate(context: vscode.ExtensionContext): void {
       modelExplorer: {
         lastRevealedElementId: modelExplorerProvider?.getDebugState().lastRevealedElementId,
       },
+      visualizerOpen: VisualizationPanel.currentPanel !== undefined,
     })),
+
+    vscode.commands.registerCommand("sysml.debug.disposeVisualizer", () => {
+      VisualizationPanel.currentPanel?.dispose();
+    }),
+
+    vscode.commands.registerCommand("sysml.debug.exportVisualizerDiagramForTest", () => {
+      VisualizationPanel.currentPanel
+        ?.getWebview()
+        ?.postMessage({ command: "exportDiagramForTest" });
+    }),
 
     vscode.commands.registerCommand(
       "sysml.debug.getModelForTests",

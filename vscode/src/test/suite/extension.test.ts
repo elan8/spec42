@@ -130,6 +130,10 @@ describe("Extension Test Suite", () => {
     await waitForLanguageServerReady(doc);
     const position = findPosition(doc, "part def PropulsionUnit");
     editor.selection = new vscode.Selection(position, position);
+    await vscode.commands.executeCommand(
+      "sysml.debug.syncModelExplorerSelection",
+      editor
+    );
 
     const state = await waitFor(
       "model explorer source selection sync",

@@ -12,6 +12,25 @@ function logPerf(event: string, extra?: Record<string, unknown>): void {
   logPerfEvent(event, extra);
 }
 
+function rangeContainsPosition(range: RangeDTO, position: vscode.Position): boolean {
+  const afterStart =
+    position.line > range.start.line ||
+    (position.line === range.start.line &&
+      position.character >= range.start.character);
+  const beforeEnd =
+    position.line < range.end.line ||
+    (position.line === range.end.line &&
+      position.character <= range.end.character);
+  return afterStart && beforeEnd;
+}
+
+function rangeSpanScore(range: RangeDTO): number {
+  return (
+    (range.end.line - range.start.line) * 10000 +
+    (range.end.character - range.start.character)
+  );
+}
+
 /** Helper to convert RangeDTO to vscode.Range for openLocation. */
 export function toVscodeRange(dto: RangeDTO): vscode.Range {
   return new vscode.Range(
@@ -562,13 +581,13 @@ export class ModelExplorerProvider
       });
       return;
     }
+    this.lastRevealedElementId = item.element.id;
     try {
       await this.treeView.reveal(item, {
         select: true,
         focus: false,
         expand: true,
       });
-      this.lastRevealedElementId = item.element.id;
       logPerf("modelExplorer:revealElement", {
         uri: docUri.toString(),
         elementId: item.element.id,
@@ -1138,35 +1157,10 @@ export class ModelExplorerProvider
       });
       return this.rootItemsCache;
     }
-    if (this._workspaceViewMode === "byFile" && this.workspaceFileData.size > 0) {
-      const metadataStartedAt = Date.now();
-      this.buildElementMetadata(
-        Array.from(this.workspaceFileData.values()).flatMap((data) =>
-          data.elements.map((element) => ({ element, uri: data.uri }))
-        )
-      );
-      const metadataMs = Date.now() - metadataStartedAt;
-      const itemBuildStartedAt = Date.now();
-      const fileItems = Array.from(this.workspaceFileData.values())
-        .sort((a, b) => a.uri.fsPath.localeCompare(b.uri.fsPath))
-        .map((data) => this.createFileItem(data.uri, data.elements));
-      const itemBuildMs = Date.now() - itemBuildStartedAt;
-      this.uriToRootItems.clear();
-      for (const fileItem of fileItems) {
-        this.uriToRootItems.set(fileItem.fileUri.toString(), [fileItem]);
-      }
-      this.rootItemsCache = [...infoItems, ...fileItems];
-      logPerf("modelExplorer:buildTreeCache", {
-        mode: "workspace-byFile",
-        metadataMs,
-        itemBuildMs,
-        totalMs: Date.now() - startedAt,
-        rootItemCount: this.rootItemsCache.length,
-        fileCount: this.workspaceFileData.size,
-      });
-      return this.rootItemsCache;
-    }
-    if (this._workspaceViewMode === "bySemantic" && this.workspaceSemanticElements.length > 0) {
+    if (
+      this._workspaceViewMode === "bySemantic" &&
+      this.workspaceSemanticElements.length > 0
+    ) {
       const metadataStartedAt = Date.now();
       this.buildElementMetadata(
         this.workspaceSemanticElements.map((element) => ({
@@ -1190,6 +1184,38 @@ export class ModelExplorerProvider
         rootItemCount: this.rootItemsCache.length,
         fileCount: this.workspaceFileData.size,
         semanticRootCount: this.workspaceSemanticElements.length,
+      });
+      return this.rootItemsCache;
+    }
+
+    if (this.workspaceFileData.size > 0) {
+      const metadataStartedAt = Date.now();
+      this.buildElementMetadata(
+        Array.from(this.workspaceFileData.values()).flatMap((data) =>
+          data.elements.map((element) => ({ element, uri: data.uri }))
+        )
+      );
+      const metadataMs = Date.now() - metadataStartedAt;
+      const itemBuildStartedAt = Date.now();
+      const fileItems = Array.from(this.workspaceFileData.values())
+        .sort((a, b) => a.uri.fsPath.localeCompare(b.uri.fsPath))
+        .map((data) => this.createFileItem(data.uri, data.elements));
+      const itemBuildMs = Date.now() - itemBuildStartedAt;
+      this.uriToRootItems.clear();
+      for (const fileItem of fileItems) {
+        this.uriToRootItems.set(fileItem.fileUri.toString(), [fileItem]);
+      }
+      this.rootItemsCache = [...infoItems, ...fileItems];
+      logPerf("modelExplorer:buildTreeCache", {
+        mode:
+          this._workspaceViewMode === "byFile"
+            ? "workspace-byFile"
+            : "workspace-byFileFallback",
+        metadataMs,
+        itemBuildMs,
+        totalMs: Date.now() - startedAt,
+        rootItemCount: this.rootItemsCache.length,
+        fileCount: this.workspaceFileData.size,
       });
       return this.rootItemsCache;
     }
@@ -1356,6 +1382,34 @@ export class ModelExplorerProvider
     if (byIdOnly && !this.elementIndex.has(byIdOnly)) {
       this.elementIndex.set(byIdOnly, item);
     }
+  }
+
+  findElementTreeItemAtPosition(
+    docUri: vscode.Uri,
+    position: vscode.Position
+  ): ModelTreeItem | undefined {
+    this.ensureTreeCache();
+    const docKey = docUri.toString().toLowerCase();
+    let best: ModelTreeItem | undefined;
+    let bestScore = Number.POSITIVE_INFINITY;
+    for (const item of this.elementIndex.values()) {
+      if (item.itemType !== "sysml-element") {
+        continue;
+      }
+      if (item.elementUri.toString().toLowerCase() !== docKey) {
+        continue;
+      }
+      const range = item.element.range;
+      if (!range || !rangeContainsPosition(range, position)) {
+        continue;
+      }
+      const score = rangeSpanScore(range);
+      if (score < bestScore) {
+        bestScore = score;
+        best = item;
+      }
+    }
+    return best;
   }
 
   private findElementTreeItem(
