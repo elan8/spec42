@@ -208,4 +208,44 @@ describe("createUpdateVisualizationFlow", () => {
     assert.strictEqual(getVisualizationCount, 2);
     assert.deepStrictEqual(requests, [{ view: "general-view" }, { view: "action-flow-view" }]);
   });
+
+  it("skips unchanged startup retries after the first successful render", async () => {
+    let getVisualizationCount = 0;
+    let lastContentHash = "";
+    const { panel, messages } = createMockPanel();
+    const document = createMockDocument("file:///drone.sysml");
+
+    const flow = createUpdateVisualizationFlow({
+      panel,
+      getDocument: () => document,
+      getWorkspaceRootUri: () => "file:///workspace",
+      getCurrentView: () => "general-view",
+      getSelectedView: () => undefined,
+      setCurrentView: () => {},
+      getIsNavigating: () => false,
+      getNeedsUpdateWhenVisible: () => false,
+      getLastContentHash: () => lastContentHash,
+      setLastContentHash: (hash) => { lastContentHash = hash; },
+      setNeedsUpdateWhenVisible: () => {},
+      fetchUpdateMessage: async () => {
+        getVisualizationCount += 1;
+        return {
+          command: "update",
+          modelReady: true,
+          graph: { nodes: [], edges: [] },
+          generalViewGraph: { nodes: [], edges: [] },
+          activityDiagrams: [],
+          sequenceDiagrams: [],
+          currentView: "general-view",
+          viewCandidates: [],
+        };
+      },
+    });
+
+    await flow.update(true, "webviewReady");
+    await flow.update(true, "startupRetry");
+
+    assert.strictEqual(getVisualizationCount, 1);
+    assert.strictEqual(messages.filter((message) => (message as { command?: string }).command === "showLoading").length, 1);
+  });
 });

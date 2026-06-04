@@ -202,7 +202,11 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
             });
         const contentHash = hashContent(contentHashSource);
 
-        if (!forceUpdate && contentHash === getLastContentHash()) {
+        const contentUnchanged = contentHash === getLastContentHash();
+        const isRedundantStartupRetry = triggerSource === 'startupRetry'
+            && bootstrapCompleted
+            && contentUnchanged;
+        if ((!forceUpdate || isRedundantStartupRetry) && contentUnchanged) {
             return;
         }
         logPerf('visualizer:updateRequested', {
