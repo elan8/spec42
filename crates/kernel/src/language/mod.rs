@@ -244,6 +244,66 @@ fn find_package_context(lines: &[&str], target_line: usize) -> Option<(usize, us
     None
 }
 
+fn leading_indent(line: &str) -> String {
+    let len = line.len().saturating_sub(line.trim_start().len());
+    line[..len].to_string()
+}
+
+/// First non-empty member line inside `start..end` (exclusive of closing `}`).
+fn member_indent_in_range(lines: &[&str], start: usize, end: usize) -> Option<String> {
+    for idx in (start + 1)..end {
+        let trimmed = lines[idx].trim();
+        if trimmed.is_empty() || trimmed == "}" {
+            continue;
+        }
+        return Some(leading_indent(lines[idx]));
+    }
+    None
+}
+
+/// Where to insert a new definition and which leading whitespace to use.
+fn resolve_definition_insert_site(
+    lines: &[&str],
+    target_line: usize,
+    container_start: usize,
+    container_end: usize,
+    usage_line: &str,
+) -> (usize, usize, usize, String) {
+    if let Some((pkg_start, pkg_end)) = find_package_context(lines, target_line) {
+        let insert_line = if container_start > pkg_start && container_start < pkg_end {
+            container_start
+        } else {
+            pkg_end
+        };
+        let insert_indent = if insert_line == container_start {
+            lines
+                .get(container_start)
+                .map(|line| leading_indent(line))
+                .unwrap_or_default()
+        } else {
+            member_indent_in_range(lines, pkg_start, pkg_end).unwrap_or_else(|| {
+                let pkg_indent = lines
+                    .get(pkg_start)
+                    .map(|line| leading_indent(line))
+                    .unwrap_or_default();
+                let step = member_indent_in_range(lines, container_start, container_end)
+                    .and_then(|member| {
+                        member
+                            .strip_prefix(&pkg_indent)
+                            .filter(|s| !s.is_empty())
+                            .map(str::to_string)
+                    })
+                    .unwrap_or_else(|| "  ".to_string());
+                format!("{pkg_indent}{step}")
+            })
+        };
+        (pkg_start, pkg_end, insert_line, insert_indent)
+    } else {
+        let insert_indent = leading_indent(usage_line);
+        (0, container_end, container_end, insert_indent)
+    }
+}
+
 fn has_matching_part_def(lines: &[&str], start: usize, end: usize, type_name: &str) -> bool {
     let needle = format!("part def {}", type_name);
     lines
@@ -310,23 +370,7 @@ pub fn suggest_create_definition_for_unresolved_type_quick_fix(
     let (definition_keyword, type_name) = parse_simple_unresolved_type_usage(raw_line)?;
     let (container_start, container_end) = find_insertion_context(&lines, target_line)?;
     let (search_start, search_end, insert_line, insert_indent) =
-        if let Some((pkg_start, pkg_end)) = find_package_context(&lines, target_line) {
-            let pkg_line = lines.get(pkg_start)?;
-            let pkg_indent_len = pkg_line.len() - pkg_line.trim_start().len();
-            let pkg_indent = &pkg_line[..pkg_indent_len];
-            let member_indent = format!("{pkg_indent}  ");
-            let target_insert_line = if container_start > pkg_start && container_start < pkg_end {
-                container_start
-            } else {
-                pkg_end
-            };
-            (pkg_start, pkg_end, target_insert_line, member_indent)
-        } else {
-            let closing_line = lines.get(container_end)?;
-            let closing_indent_len = closing_line.len() - closing_line.trim_start().len();
-            let closing_indent = &closing_line[..closing_indent_len];
-            (0, container_end, container_end, closing_indent.to_string())
-        };
+        resolve_definition_insert_site(&lines, target_line, container_start, container_end, raw_line);
     if has_matching_definition(
         &lines,
         search_start,
@@ -444,25 +488,7 @@ pub fn suggest_create_matching_part_def_quick_fix(
     let type_name = to_pascal_case(&usage_name);
     let (container_start, container_end) = find_insertion_context(&lines, target_line)?;
     let (search_start, search_end, insert_line, insert_indent) =
-        if let Some((pkg_start, pkg_end)) = find_package_context(&lines, target_line) {
-            let pkg_line = lines.get(pkg_start)?;
-            let pkg_indent_len = pkg_line.len() - pkg_line.trim_start().len();
-            let pkg_indent = &pkg_line[..pkg_indent_len];
-            let member_indent = format!("{pkg_indent}  ");
-            // Prefer inserting before the containing part def so the new type is at package level
-            // and appears above the usage container.
-            let target_insert_line = if container_start > pkg_start && container_start < pkg_end {
-                container_start
-            } else {
-                pkg_end
-            };
-            (pkg_start, pkg_end, target_insert_line, member_indent)
-        } else {
-            let closing_line = lines.get(container_end)?;
-            let closing_indent_len = closing_line.len() - closing_line.trim_start().len();
-            let closing_indent = &closing_line[..closing_indent_len];
-            (0, container_end, container_end, closing_indent.to_string())
-        };
+        resolve_definition_insert_site(&lines, target_line, container_start, container_end, raw_line);
 
     let mut edits: Vec<OneOf<TextEdit, tower_lsp::lsp_types::AnnotatedTextEdit>> = Vec::new();
     if !has_matching_part_def(&lines, search_start, search_end, &type_name) {
@@ -980,6 +1006,69 @@ mod tests {
         };
         assert!(inserted.contains("part def Display { }"));
         assert_eq!(rewritten.trim(), "part display : Display;");
+    }
+
+    #[test]
+    fn test_suggest_create_matching_part_def_quick_fix_respects_four_space_indent() {
+        let uri = Url::parse("file:///test.sysml").unwrap();
+        let source = "package P {\n    part def Laptop {\n        part display;\n    }\n}\n";
+        let diagnostic = Diagnostic {
+            range: Range::new(Position::new(2, 8), Position::new(2, 21)),
+            severity: Some(DiagnosticSeverity::WARNING),
+            code: Some(NumberOrString::String("untyped_part_usage".to_string())),
+            code_description: None,
+            source: Some("sysml".to_string()),
+            message: "untyped".to_string(),
+            related_information: None,
+            tags: None,
+            data: None,
+        };
+        let action =
+            suggest_create_matching_part_def_quick_fix(source, &uri, &diagnostic).expect("action");
+        let edit = action.edit.expect("has edit");
+        let doc_edits = edit.document_changes.expect("document changes");
+        let edits = match doc_edits {
+            tower_lsp::lsp_types::DocumentChanges::Edits(v) => v,
+            _ => panic!("expected edits"),
+        };
+        let inserted = match &edits[0].edits[0] {
+            OneOf::Left(te) => te.new_text.clone(),
+            _ => panic!("expected text edit"),
+        };
+        assert_eq!(inserted, "    part def Display { }\n");
+    }
+
+    #[test]
+    fn test_suggest_create_matching_part_def_quick_fix_no_package_uses_usage_indent() {
+        let uri = Url::parse("file:///test.sysml").unwrap();
+        let source = "part def Outer {\n    part display;\n}\n";
+        let diagnostic = Diagnostic {
+            range: Range::new(Position::new(1, 4), Position::new(1, 17)),
+            severity: Some(DiagnosticSeverity::WARNING),
+            code: Some(NumberOrString::String("untyped_part_usage".to_string())),
+            code_description: None,
+            source: Some("sysml".to_string()),
+            message: "untyped".to_string(),
+            related_information: None,
+            tags: None,
+            data: None,
+        };
+        let action =
+            suggest_create_matching_part_def_quick_fix(source, &uri, &diagnostic).expect("action");
+        let edit = action.edit.expect("has edit");
+        let doc_edits = edit.document_changes.expect("document changes");
+        let edits = match doc_edits {
+            tower_lsp::lsp_types::DocumentChanges::Edits(v) => v,
+            _ => panic!("expected edits"),
+        };
+        let inserted = match &edits[0].edits[0] {
+            OneOf::Left(te) => {
+                assert_eq!(te.range.start.line, 2);
+                te.new_text.clone()
+            }
+            _ => panic!("expected text edit"),
+        };
+        assert_eq!(inserted, "    part def Display { }\n");
     }
 
     #[test]
