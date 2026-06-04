@@ -181,6 +181,14 @@ Current report-only budgets are documented in `docs/PERFORMANCE-GUARDRAILS.md`. 
 
 The `spec42-mcp` binary exposes MCP tools for Copilot, Cursor, and other agents (`spec42_check`, `spec42_doctor`, `spec42_model_summary`, `spec42_explain_diagnostic`). Setup and workflows: [`docs/AI-ASSISTANTS.md`](docs/AI-ASSISTANTS.md). Example VS Code MCP config: [`docs/examples/mcp-vscode.json`](docs/examples/mcp-vscode.json).
 
+MCP tests (handler, in-process protocol, subprocess binary):
+
+```bash
+cargo test -p spec42 --test mcp_tools --test mcp_protocol --test mcp_binary
+```
+
+Protocol tests use the `rmcp` client dev-dependency with an in-memory duplex transport; `mcp_binary` exercises the `spec42-mcp` executable via stdio.
+
 ## Validation Pipeline
 
 `spec42 check` and MCP `spec42_check` use the same validation engine as the editor host.

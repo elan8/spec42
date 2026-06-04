@@ -12,6 +12,14 @@ use crate::mcp::schemas::{
     Spec42CheckParams, Spec42DoctorParams, Spec42ExplainDiagnosticParams, Spec42ModelSummaryParams,
 };
 
+/// Registered MCP tool names (order matches [`build_mcp_tools`]).
+pub const MCP_TOOL_NAMES: &[&str] = &[
+    "spec42_check",
+    "spec42_doctor",
+    "spec42_model_summary",
+    "spec42_explain_diagnostic",
+];
+
 pub struct Spec42McpServer;
 
 impl Default for Spec42McpServer {
@@ -55,6 +63,98 @@ Recommended order: (1) spec42_doctor for environment/stdlib/library paths, \
 Pass workspace_root when validating a single file in a multi-file project. \
 Global flags: config_path, library_paths, stdlib_path, no_stdlib.";
 
+fn build_mcp_tools() -> Vec<rmcp::model::Tool> {
+    use rmcp::model::Tool;
+
+    vec![
+        Tool {
+            name: MCP_TOOL_NAMES[0].into(),
+            title: Some("Validate SysML / KerML (spec42 check)".into()),
+            description: Some(
+                "Run the same validation pipeline as `spec42 check`. Returns JSON with documents, \
+                diagnostics (code, message, range), summary (error_count, warning_count), and advice. \
+                Set include_semantic_model=true only when you need the full semantic projection; \
+                prefer spec42_model_summary for large workspaces.".into(),
+            ),
+            input_schema: schema_to_map(
+                serde_json::to_value(schemars::schema_for!(Spec42CheckParams)).unwrap_or_default(),
+            ),
+            output_schema: None,
+            annotations: None,
+            icons: None,
+            meta: None,
+        },
+        Tool {
+            name: MCP_TOOL_NAMES[1].into(),
+            title: Some("Spec42 environment doctor".into()),
+            description: Some(
+                "Report standard library installation, config/data dirs, library paths, and Sysand \
+                detection (same as `spec42 doctor`). Run before blaming unresolved imports on model text.".into(),
+            ),
+            input_schema: schema_to_map(
+                serde_json::to_value(schemars::schema_for!(Spec42DoctorParams)).unwrap_or_default(),
+            ),
+            output_schema: None,
+            annotations: None,
+            icons: None,
+            meta: None,
+        },
+        Tool {
+            name: MCP_TOOL_NAMES[2].into(),
+            title: Some("Compact semantic model summary".into()),
+            description: Some(
+                "Validate the path and return a capped semantic graph: nodes (qualified names, kinds) \
+                and relationships filtered to typing, connection, and reference. Use max_nodes to limit payload size.".into(),
+            ),
+            input_schema: schema_to_map(
+                serde_json::to_value(schemars::schema_for!(Spec42ModelSummaryParams))
+                    .unwrap_or_default(),
+            ),
+            output_schema: None,
+            annotations: None,
+            icons: None,
+            meta: None,
+        },
+        Tool {
+            name: MCP_TOOL_NAMES[3].into(),
+            title: Some("Explain a diagnostic code".into()),
+            description: Some(
+                "Deterministic catalog entry for a diagnostic code (severity, meaning, typical fix, \
+                editor quick-fix hints). Optionally pass path and line to list matching instances from spec42_check.".into(),
+            ),
+            input_schema: schema_to_map(
+                serde_json::to_value(schemars::schema_for!(Spec42ExplainDiagnosticParams))
+                    .unwrap_or_default(),
+            ),
+            output_schema: None,
+            annotations: None,
+            icons: None,
+            meta: None,
+        },
+    ]
+}
+
+fn dispatch_tool_handler(name: &str, arguments: Value) -> Result<Value, String> {
+    match name {
+        "spec42_check" => handle_spec42_check(arguments),
+        "spec42_doctor" => handle_spec42_doctor(arguments),
+        "spec42_model_summary" => handle_spec42_model_summary(arguments),
+        "spec42_explain_diagnostic" => handle_spec42_explain_diagnostic(arguments),
+        _ => Err(format!("Unknown tool: {name}")),
+    }
+}
+
+/// Execute an MCP tool by name (used by [`Spec42McpServer::call_tool`] and integration tests).
+pub fn execute_tool(
+    name: &str,
+    arguments: Value,
+) -> Result<rmcp::model::CallToolResult, rmcp::ErrorData> {
+    match dispatch_tool_handler(name, arguments) {
+        Ok(content) => tool_success(content),
+        Err(e) => tool_error(name, e),
+    }
+}
+
 impl ServerHandler for Spec42McpServer {
     fn get_info(&self) -> InitializeResult {
         use rmcp::model::ProtocolVersion;
@@ -82,77 +182,8 @@ impl ServerHandler for Spec42McpServer {
         _paginated: Option<rmcp::model::PaginatedRequestParam>,
         _ctx: RequestContext<RoleServer>,
     ) -> Result<rmcp::model::ListToolsResult, rmcp::ErrorData> {
-        use rmcp::model::Tool;
-
-        let tools = vec![
-            Tool {
-                name: "spec42_check".into(),
-                title: Some("Validate SysML / KerML (spec42 check)".into()),
-                description: Some(
-                    "Run the same validation pipeline as `spec42 check`. Returns JSON with documents, \
-                    diagnostics (code, message, range), summary (error_count, warning_count), and advice. \
-                    Set include_semantic_model=true only when you need the full semantic projection; \
-                    prefer spec42_model_summary for large workspaces.".into(),
-                ),
-                input_schema: schema_to_map(
-                    serde_json::to_value(schemars::schema_for!(Spec42CheckParams)).unwrap_or_default(),
-                ),
-                output_schema: None,
-                annotations: None,
-                icons: None,
-                meta: None,
-            },
-            Tool {
-                name: "spec42_doctor".into(),
-                title: Some("Spec42 environment doctor".into()),
-                description: Some(
-                    "Report standard library installation, config/data dirs, library paths, and Sysand \
-                    detection (same as `spec42 doctor`). Run before blaming unresolved imports on model text.".into(),
-                ),
-                input_schema: schema_to_map(
-                    serde_json::to_value(schemars::schema_for!(Spec42DoctorParams)).unwrap_or_default(),
-                ),
-                output_schema: None,
-                annotations: None,
-                icons: None,
-                meta: None,
-            },
-            Tool {
-                name: "spec42_model_summary".into(),
-                title: Some("Compact semantic model summary".into()),
-                description: Some(
-                    "Validate the path and return a capped semantic graph: nodes (qualified names, kinds) \
-                    and relationships filtered to typing, connection, and reference. Use max_nodes to limit payload size.".into(),
-                ),
-                input_schema: schema_to_map(
-                    serde_json::to_value(schemars::schema_for!(Spec42ModelSummaryParams))
-                        .unwrap_or_default(),
-                ),
-                output_schema: None,
-                annotations: None,
-                icons: None,
-                meta: None,
-            },
-            Tool {
-                name: "spec42_explain_diagnostic".into(),
-                title: Some("Explain a diagnostic code".into()),
-                description: Some(
-                    "Deterministic catalog entry for a diagnostic code (severity, meaning, typical fix, \
-                    editor quick-fix hints). Optionally pass path and line to list matching instances from spec42_check.".into(),
-                ),
-                input_schema: schema_to_map(
-                    serde_json::to_value(schemars::schema_for!(Spec42ExplainDiagnosticParams))
-                        .unwrap_or_default(),
-                ),
-                output_schema: None,
-                annotations: None,
-                icons: None,
-                meta: None,
-            },
-        ];
-
         Ok(rmcp::model::ListToolsResult {
-            tools,
+            tools: build_mcp_tools(),
             next_cursor: None,
         })
     }
@@ -162,22 +193,8 @@ impl ServerHandler for Spec42McpServer {
         params: rmcp::model::CallToolRequestParam,
         _ctx: RequestContext<RoleServer>,
     ) -> Result<rmcp::model::CallToolResult, rmcp::ErrorData> {
-        let name = &params.name;
-        let arguments_map = params.arguments.unwrap_or_default();
-        let arguments = Value::Object(arguments_map);
-
-        let result = match name.as_ref() {
-            "spec42_check" => handle_spec42_check(arguments),
-            "spec42_doctor" => handle_spec42_doctor(arguments),
-            "spec42_model_summary" => handle_spec42_model_summary(arguments),
-            "spec42_explain_diagnostic" => handle_spec42_explain_diagnostic(arguments),
-            _ => Err(format!("Unknown tool: {name}")),
-        };
-
-        match result {
-            Ok(content) => tool_success(content),
-            Err(e) => tool_error(name, e),
-        }
+        let arguments = Value::Object(params.arguments.unwrap_or_default());
+        execute_tool(params.name.as_ref(), arguments)
     }
 }
 

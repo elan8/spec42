@@ -45,3 +45,5 @@ sysml-v2-parser = { workspace = true }
 serde_json = { workspace = true }
 tempfile = "3"
 url = "2"
+rmcp = { workspace = true, features = ["client", "server", "transport-child-process"] }
+anyhow = "1"

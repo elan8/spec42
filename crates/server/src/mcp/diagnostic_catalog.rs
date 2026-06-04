@@ -187,3 +187,27 @@ pub fn lookup(code: &str) -> Option<&'static DiagnosticCatalogEntry> {
 pub fn all_codes() -> Vec<&'static str> {
     CATALOG.iter().map(|e| e.code).collect()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{all_codes, lookup};
+
+    #[test]
+    fn lookup_returns_entry_for_known_code() {
+        let entry = lookup("unresolved_type_reference").expect("catalog entry");
+        assert_eq!(entry.code, "unresolved_type_reference");
+        assert_eq!(entry.severity, "error");
+    }
+
+    #[test]
+    fn lookup_returns_none_for_unknown_code() {
+        assert!(lookup("not_a_real_diagnostic_code").is_none());
+    }
+
+    #[test]
+    fn all_codes_includes_common_semantic_codes() {
+        let codes = all_codes();
+        assert!(codes.contains(&"unresolved_type_reference"));
+        assert!(codes.contains(&"missing_library_context"));
+    }
+}

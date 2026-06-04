@@ -42,6 +42,9 @@ jobs:
       - name: cargo test (required fast path)
         run: cargo test --workspace
 
+      - name: Build spec42-mcp binary
+        run: cargo build -p spec42 --bin spec42-mcp
+
       - name: requirements slice integration checks
         run: |
           cargo test -p kernel --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file

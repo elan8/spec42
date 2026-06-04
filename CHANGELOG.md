@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **AI assistant integration** - [docs/AI-ASSISTANTS.md](docs/AI-ASSISTANTS.md), [`.github/copilot-instructions.md`](.github/copilot-instructions.md), and [docs/examples/mcp-vscode.json](docs/examples/mcp-vscode.json) for Copilot/Cursor MCP setup.
 - **MCP tools** - `spec42_doctor`, `spec42_model_summary`, and `spec42_explain_diagnostic` on `spec42-mcp`; `spec42_check` gains optional `include_semantic_model`.
+- **MCP test coverage** - Handler error-path tests, in-process `rmcp` protocol smoke (`mcp_protocol`), subprocess `spec42-mcp` smoke (`mcp_binary`), and unit tests for the diagnostic code catalog; CI builds `spec42-mcp` explicitly.
 
 ### Changed
 
