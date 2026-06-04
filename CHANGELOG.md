@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Parser dependency** - Bumped `sysml-v2-parser` to **0.17.0** on [crates.io](https://crates.io/crates/sysml-v2-parser). Structured view/part bodies, `implies` in expressions, and usage-header `:>` / `::>` / `=>` on attribute and port usages (see parser `CHANGELOG.md`).
+- **Graph builder for parser 0.17.0** - Maps `AttributeUsage` and `PortUsage` `subsets` / `references` / `crosses` into semantic node attributes.
+
 ## [0.26.3] - 2026-06-04
 
 ### Fixed

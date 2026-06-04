@@ -1,6 +1,6 @@
 # AST semantic coverage matrix
 
-Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.16.0** (crates.io).
+Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.17.0** (crates.io).
 
 | Parser surface | Graph (`semantic_core`) | Symbols / hover | Semantic tokens | Priority |
 |----------------|-------------------------|-----------------|-----------------|----------|
@@ -25,7 +25,11 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 2. **Graph:** implement when a **shipped workflow** needs it (LSP navigation, `spec42 check`, IBD/general/action/state/sequence views).
 3. **Tokens:** extend `sysml_semantic_tokens` `ast_ranges` for editor-visible identifiers in tested fixtures.
 
-## Recent changes (0.16.0 follow-through)
+## Recent changes (0.17.0 follow-through)
+
+- `AttributeUsage` / `PortUsage` usage-header operators (`:>`, `::>`, `=>`) are stored on graph nodes as `subsetsFeature`, `referencesFeature`, and `crossesFeature` in [`part_def.rs`](../crates/semantic_core/src/semantic/graph_builder/part_def.rs), [`part_usage.rs`](../crates/semantic_core/src/semantic/graph_builder/part_usage.rs), and [`port_def.rs`](../crates/semantic_core/src/semantic/graph_builder/port_def.rs).
+
+## Prior release (0.16.0 follow-through)
 
 - `RequirementActorDecl` in requirement bodies is wired in [`requirement_body.rs`](../crates/semantic_core/src/semantic/graph_builder/requirement_body.rs) (distinct from use-case `ActorDecl`).
 - `EnumerationUsage` in part def/usage bodies is accepted in the graph builder (ignored like other deferred usage members until a workflow needs graph nodes).

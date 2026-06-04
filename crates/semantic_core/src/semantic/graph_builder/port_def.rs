@@ -74,6 +74,12 @@ pub(super) fn materialize_port_usage(
             );
         }
     }
+    if let Some(ref r) = n.references {
+        attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
+    }
+    if let Some(ref c) = n.crosses {
+        attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
+    }
     if let Some(ref r) = n.redefines {
         attrs.insert("redefines".to_string(), serde_json::json!(r));
     }
@@ -154,6 +160,15 @@ pub(super) fn build_from_port_def_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute");
             let range = span_to_range(&n.span);
             let mut attrs = HashMap::new();
+            if let Some(ref s) = n.subsets {
+                attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
+            }
+            if let Some(ref r) = n.references {
+                attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
+            }
+            if let Some(ref c) = n.crosses {
+                attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
+            }
             if let Some(ref r) = n.redefines {
                 attrs.insert("redefines".to_string(), serde_json::json!(r));
             }

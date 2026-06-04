@@ -31,6 +31,15 @@ pub(super) fn build_from_part_usage_body_element(
             if let Some(ref t) = n.typing {
                 attrs.insert("attributeType".to_string(), serde_json::json!(t));
             }
+            if let Some(ref s) = n.subsets {
+                attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
+            }
+            if let Some(ref r) = n.references {
+                attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
+            }
+            if let Some(ref c) = n.crosses {
+                attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
+            }
             if let Some(ref r) = n.redefines {
                 attrs.insert("redefines".to_string(), serde_json::json!(r));
             }
