@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.27.0] - 2026-06-04
+
 ### Added
 
 - **AI assistant integration** - [docs/AI-ASSISTANTS.md](docs/AI-ASSISTANTS.md), [`.github/copilot-instructions.md`](.github/copilot-instructions.md), and [docs/examples/mcp-vscode.json](docs/examples/mcp-vscode.json) for Copilot/Cursor MCP setup.
@@ -14,11 +16,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **MCP test coverage** - Handler error-path tests, in-process `rmcp` protocol smoke (`mcp_protocol`), subprocess `spec42-mcp` smoke (`mcp_binary`), and unit tests for the diagnostic code catalog; CI builds `spec42-mcp` explicitly.
 - **VS Code Language Model Tools** - Four Copilot Agent tools (`spec42_check`, `spec42_doctor`, `spec42_model_summary`, `spec42_explain_diagnostic`) via bundled `spec42` CLI; extension `engines.vscode` ^1.99.0.
 - **CLI agent commands** - `spec42 explain-diagnostic` and `spec42 model-summary` (JSON parity with MCP); integration tests in `cli_ai_tools`.
+- **Semantic relink** - LSP/code-action path to relink symbols when the semantic graph has moved ahead of editor state.
+- **Unresolved type quick fix** - Quick fix to create a matching type definition for unresolved type references.
+- **Library view quick fixes** - Quick fixes and clearer library status handling in the library webview.
+- **Model Explorer selection sync** - Editor selection and Model Explorer tree stay aligned when navigating structure from either side.
+- **Visualization commands** - Additional palette commands for opening and refreshing visualizer views.
 
 ### Changed
 
 - **Parser dependency** - Bumped `sysml-v2-parser` to **0.17.0** on [crates.io](https://crates.io/crates/sysml-v2-parser). Structured view/part bodies, `implies` in expressions, and usage-header `:>` / `::>` / `=>` on attribute and port usages (see parser `CHANGELOG.md`).
 - **Graph builder for parser 0.17.0** - Maps `AttributeUsage` and `PortUsage` `subsets` / `references` / `crosses` into semantic node attributes.
+- **Definition insertion** - Snippet/insertion logic and indentation handling for new definitions in SysML bodies.
+- **Hover documentation** - Richer hover text for semantic elements.
+- **README and extension metadata** - Onboarding and marketplace-facing description updates for AI assistant and workspace workflows.
+- **Release surface alignment** - Rust workspace, `spec42` server, VS Code extension, and Zed extension versions aligned at `0.27.0`.
+
+### Fixed
+
+- **Action smoke CI** - Corrected actionlint invocation in `.github/workflows/action-smoke.yml`.
 
 ## [0.26.3] - 2026-06-04
 
@@ -509,6 +524,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.27.0]: https://github.com/elan8/spec42/releases/tag/v0.27.0
 [0.26.3]: https://github.com/elan8/spec42/releases/tag/v0.26.3
 [0.26.2]: https://github.com/elan8/spec42/releases/tag/v0.26.2
 [0.26.1]: https://github.com/elan8/spec42/releases/tag/v0.26.1

@@ -36,7 +36,7 @@ jobs:
         uses: ./
         with:
           # Pin to latest published CLI until this commit is tagged.
-          version: v0.26.2
+          version: v0.26.3
           path: examples/timer/KitchenTimer.sysml
           format: text
           run-doctor: true
