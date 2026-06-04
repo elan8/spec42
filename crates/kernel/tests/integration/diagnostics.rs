@@ -1764,6 +1764,7 @@ fn missing_library_context_offers_quick_fixes_for_stdlib_and_custom_libraries() 
     );
 
     let mut found_configure = false;
+    let mut found_open_library = false;
     loop {
         let msg = read_message(&mut stdout).expect("expected codeAction response");
         let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
@@ -1777,6 +1778,11 @@ fn missing_library_context_offers_quick_fixes_for_stdlib_and_custom_libraries() 
             {
                 found_configure = true;
             }
+            if action["title"].as_str() == Some("Open Spec42 Library view")
+                && action["command"]["command"].as_str() == Some("sysml.library.search")
+            {
+                found_open_library = true;
+            }
         }
         break;
     }
@@ -1784,6 +1790,10 @@ fn missing_library_context_offers_quick_fixes_for_stdlib_and_custom_libraries() 
     assert!(
         found_configure,
         "expected quickfix that runs sysml.library.managePaths"
+    );
+    assert!(
+        found_open_library,
+        "expected quickfix that opens the Spec42 Library view"
     );
 
     let _ = child.kill();

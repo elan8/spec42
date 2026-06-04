@@ -369,8 +369,13 @@ pub fn suggest_create_definition_for_unresolved_type_quick_fix(
     let raw_line = *lines.get(target_line)?;
     let (definition_keyword, type_name) = parse_simple_unresolved_type_usage(raw_line)?;
     let (container_start, container_end) = find_insertion_context(&lines, target_line)?;
-    let (search_start, search_end, insert_line, insert_indent) =
-        resolve_definition_insert_site(&lines, target_line, container_start, container_end, raw_line);
+    let (search_start, search_end, insert_line, insert_indent) = resolve_definition_insert_site(
+        &lines,
+        target_line,
+        container_start,
+        container_end,
+        raw_line,
+    );
     if has_matching_definition(
         &lines,
         search_start,
@@ -487,8 +492,13 @@ pub fn suggest_create_matching_part_def_quick_fix(
     let usage_name = parse_untyped_part_usage_name(raw_line)?;
     let type_name = to_pascal_case(&usage_name);
     let (container_start, container_end) = find_insertion_context(&lines, target_line)?;
-    let (search_start, search_end, insert_line, insert_indent) =
-        resolve_definition_insert_site(&lines, target_line, container_start, container_end, raw_line);
+    let (search_start, search_end, insert_line, insert_indent) = resolve_definition_insert_site(
+        &lines,
+        target_line,
+        container_start,
+        container_end,
+        raw_line,
+    );
 
     let mut edits: Vec<OneOf<TextEdit, tower_lsp::lsp_types::AnnotatedTextEdit>> = Vec::new();
     if !has_matching_part_def(&lines, search_start, search_end, &type_name) {
@@ -610,6 +620,69 @@ pub fn suggest_show_standard_library_info_quick_fix(diagnostic: &Diagnostic) -> 
         disabled: None,
         data: None,
     }
+}
+
+pub fn suggest_open_library_view_quick_fix(diagnostic: &Diagnostic) -> CodeAction {
+    CodeAction {
+        title: "Open Spec42 Library view".to_string(),
+        kind: Some(CodeActionKind::QUICKFIX),
+        diagnostics: Some(vec![diagnostic.clone()]),
+        edit: None,
+        command: Some(Command {
+            title: "Open Spec42 Library view".to_string(),
+            command: "sysml.library.search".to_string(),
+            arguments: None,
+        }),
+        is_preferred: Some(false),
+        disabled: None,
+        data: None,
+    }
+}
+
+fn library_search_symbol_from_diagnostic(diagnostic: &Diagnostic) -> Option<String> {
+    let message = diagnostic.message.as_str();
+    for quote in ['\'', '`', '"'] {
+        let Some(start) = message.find(quote) else {
+            continue;
+        };
+        let rest = &message[start + quote.len_utf8()..];
+        let Some(end) = rest.find(quote) else {
+            continue;
+        };
+        let candidate = rest[..end].trim();
+        if candidate
+            .chars()
+            .all(|ch| ch.is_alphanumeric() || ch == '_' || ch == ':')
+            && !candidate.is_empty()
+        {
+            return Some(
+                candidate
+                    .rsplit("::")
+                    .next()
+                    .unwrap_or(candidate)
+                    .to_string(),
+            );
+        }
+    }
+    None
+}
+
+pub fn suggest_search_library_for_symbol_quick_fix(diagnostic: &Diagnostic) -> Option<CodeAction> {
+    let symbol = library_search_symbol_from_diagnostic(diagnostic)?;
+    Some(CodeAction {
+        title: format!("Search Library for `{symbol}`"),
+        kind: Some(CodeActionKind::QUICKFIX),
+        diagnostics: Some(vec![diagnostic.clone()]),
+        edit: None,
+        command: Some(Command {
+            title: format!("Search Library for `{symbol}`"),
+            command: "sysml.library.search".to_string(),
+            arguments: Some(vec![serde_json::Value::String(symbol)]),
+        }),
+        is_preferred: Some(false),
+        disabled: None,
+        data: None,
+    })
 }
 
 #[cfg(test)]
@@ -1177,6 +1250,52 @@ mod tests {
         assert_eq!(
             action.command.expect("command").command,
             "sysml.library.showStdLibStatus"
+        );
+    }
+
+    #[test]
+    fn test_suggest_open_library_view_quick_fix_uses_search_command() {
+        let diagnostic = Diagnostic {
+            range: Range::new(Position::new(0, 0), Position::new(0, 1)),
+            severity: Some(DiagnosticSeverity::INFORMATION),
+            code: Some(NumberOrString::String(
+                "missing_library_context".to_string(),
+            )),
+            code_description: None,
+            source: Some("semantic".to_string()),
+            message: "missing library".to_string(),
+            related_information: None,
+            tags: None,
+            data: None,
+        };
+        let action = suggest_open_library_view_quick_fix(&diagnostic);
+        assert_eq!(
+            action.command.expect("command").command,
+            "sysml.library.search"
+        );
+    }
+
+    #[test]
+    fn test_suggest_search_library_for_symbol_quick_fix_uses_symbol_argument() {
+        let diagnostic = Diagnostic {
+            range: Range::new(Position::new(0, 0), Position::new(0, 1)),
+            severity: Some(DiagnosticSeverity::WARNING),
+            code: Some(NumberOrString::String(
+                "unresolved_type_reference".to_string(),
+            )),
+            code_description: None,
+            source: Some("semantic".to_string()),
+            message: "Type reference 'ScalarValues::Real' could not be resolved.".to_string(),
+            related_information: None,
+            tags: None,
+            data: None,
+        };
+        let action = suggest_search_library_for_symbol_quick_fix(&diagnostic).expect("action");
+        let command = action.command.expect("command");
+        assert_eq!(command.command, "sysml.library.search");
+        assert_eq!(
+            command.arguments.expect("args"),
+            vec![serde_json::Value::String("Real".to_string())]
         );
     }
 

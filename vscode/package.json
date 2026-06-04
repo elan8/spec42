@@ -666,6 +666,7 @@
     "watch": "tsc -watch -p ./",
     "test": "vscode-test",
     "test:ux-unit": "vscode-test --config .vscode-test.ux-unit.mjs",
+    "test:library-unit": "node ./node_modules/mocha/bin/mocha out/test/suite/libraryStatusViewModel.test.js",
     "test:state-view": "vscode-test --config .vscode-test.state-view.mjs",
     "test:interconnection": "vscode-test --config .vscode-test.interconnection.mjs",
     "test:interconnection-drone": "vscode-test --config .vscode-test.interconnection-drone.mjs",

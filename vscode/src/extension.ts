@@ -30,6 +30,7 @@ import {
   metadataForExample,
 } from "./examples/examplesViewProvider";
 import { LibraryWebviewViewProvider } from "./library/libraryWebviewViewProvider";
+import type { SysandStatusViewModel } from "./library/libraryStatusViewModel";
 import type {
   GraphNodeDTO,
   SemanticIndexReadyParams,
@@ -167,6 +168,17 @@ type DebugExtensionState = {
     lastRevealedElementId?: string;
   };
   visualizerOpen?: boolean;
+};
+
+type RawSysandStatus = {
+  installed?: boolean;
+  executablePath?: string;
+  version?: string;
+  projectRoot?: string;
+  manifestPresent?: boolean;
+  lockPresent?: boolean;
+  dependencyRoots?: string[];
+  warnings?: string[];
 };
 
 function setServerHealth(
@@ -744,6 +756,24 @@ export function activate(context: vscode.ExtensionContext): void {
       "warning"
     );
   }
+  const normalizeSysandStatus = (status: RawSysandStatus | undefined): SysandStatusViewModel => ({
+    installed: !!status?.installed,
+    executablePath: status?.executablePath,
+    version: status?.version,
+    projectRoot: status?.projectRoot,
+    manifestPresent: !!status?.manifestPresent,
+    lockPresent: !!status?.lockPresent,
+    dependencyRoots: Array.isArray(status?.dependencyRoots) ? status.dependencyRoots : [],
+    warnings: Array.isArray(status?.warnings) ? status.warnings : [],
+  });
+  const readSysandStatus = async (): Promise<SysandStatusViewModel> => {
+    const status = (await runSpec42Json(
+      serverCommand,
+      ["sysand", "status", "--format", "json"],
+      workspaceRoot
+    )) as RawSysandStatus;
+    return normalizeSysandStatus(status);
+  };
   log("Server command:", serverCommand, "args:", serverArgs, "libraryPaths:", libraryPaths);
   registerSpec42LmTools(context, {
     serverCommand,
@@ -916,9 +946,14 @@ export function activate(context: vscode.ExtensionContext): void {
   libraryWebviewProvider = new LibraryWebviewViewProvider(
     context.extensionUri,
     lspModelProvider,
-    () => ({
-      pinnedVersion: getConfigString("standardLibrary.version") ?? "2026-03",
-    })
+    {
+      getStdlibHeading: () => ({
+        pinnedVersion: getConfigString("standardLibrary.version") ?? "2026-03",
+      }),
+      getConfiguredLibraryPaths: () => libraryPaths,
+      getMissingLibraryPaths: () => missingLibraryPaths,
+      getSysandStatus: readSysandStatus,
+    }
   );
 
   function scheduleActiveDocumentExplorerRefresh(
@@ -1131,9 +1166,8 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("sysml.library.search", async () => {
-      await vscode.commands.executeCommand("workbench.view.extension.spec42");
-      await vscode.commands.executeCommand("spec42Library.focus");
+    vscode.commands.registerCommand("sysml.library.search", async (query?: string) => {
+      await libraryWebviewProvider?.searchAndReveal(String(query ?? ""));
     })
   );
 
@@ -1149,23 +1183,13 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.sysand.showStatus", async () => {
       try {
-        const status = (await runSpec42Json(
-          serverCommand,
-          ["sysand", "status", "--format", "json"],
-          workspaceRoot
-        )) as {
-          installed?: boolean;
-          projectRoot?: string;
-          dependencyRoots?: string[];
-          warnings?: string[];
-        };
-        const roots = Array.isArray(status?.dependencyRoots)
-          ? status.dependencyRoots.length
-          : 0;
-        const warnings = Array.isArray(status?.warnings) ? status.warnings : [];
+        const status = await readSysandStatus();
+        libraryWebviewProvider?.refresh();
+        const roots = status.dependencyRoots.length;
+        const warnings = status.warnings;
         const detail = [
-          status?.installed ? "installed" : "not installed",
-          status?.projectRoot ? `project: ${status.projectRoot}` : "no project manifest",
+          status.installed ? "installed" : "not installed",
+          status.projectRoot ? `project: ${status.projectRoot}` : "no project manifest",
           `${roots} dependency root(s)`,
         ].join("; ");
         if (warnings.length > 0) {

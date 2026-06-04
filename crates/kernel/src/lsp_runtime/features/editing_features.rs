@@ -6,7 +6,8 @@ use crate::language::{
     collect_document_symbols, collect_folding_ranges, find_reference_ranges, format_document,
     is_reserved_keyword, suggest_create_definition_for_unresolved_type_quick_fix,
     suggest_create_matching_part_def_quick_fix, suggest_explicit_redefinition_quick_fix,
-    suggest_manage_custom_libraries_quick_fix, suggest_show_standard_library_info_quick_fix,
+    suggest_manage_custom_libraries_quick_fix, suggest_open_library_view_quick_fix,
+    suggest_search_library_for_symbol_quick_fix, suggest_show_standard_library_info_quick_fix,
     suggest_wrap_in_package, word_at_position,
 };
 use crate::workspace::ServerState;
@@ -285,6 +286,14 @@ pub(crate) fn code_action(
             actions.push(CodeActionOrCommand::CodeAction(
                 suggest_show_standard_library_info_quick_fix(diagnostic),
             ));
+            actions.push(CodeActionOrCommand::CodeAction(
+                suggest_open_library_view_quick_fix(diagnostic),
+            ));
+        }
+        if is_missing_library_context || is_unresolved_type_reference {
+            if let Some(action) = suggest_search_library_for_symbol_quick_fix(diagnostic) {
+                actions.push(CodeActionOrCommand::CodeAction(action));
+            }
         }
     }
     Ok(Some(actions))

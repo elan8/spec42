@@ -282,6 +282,74 @@ mod tests {
     }
 
     #[test]
+    fn manifest_without_executable_reports_project_and_install_warning() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        std::fs::write(
+            temp.path().join("sysand.toml"),
+            "[package]\nname = \"demo\"",
+        )
+        .expect("write manifest");
+
+        let status = detect_sysand_status_from(Some(temp.path()), None, None);
+
+        assert!(!status.installed);
+        assert!(status.manifest_present);
+        assert!(status.project_root.is_some());
+        assert!(status
+            .warnings
+            .iter()
+            .any(|warning| warning.contains("not found")));
+    }
+
+    #[test]
+    fn missing_dependency_roots_are_reported_as_warnings() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        std::fs::write(
+            temp.path().join("sysand.toml"),
+            r#"
+                [dependencies]
+                missing = "missing/library"
+            "#,
+        )
+        .expect("write manifest");
+
+        let status = detect_sysand_status_from(
+            Some(temp.path()),
+            Some(PathBuf::from("sysand")),
+            Some("sysand 0.test".to_string()),
+        );
+
+        assert!(status
+            .dependency_roots
+            .iter()
+            .any(|path| path.ends_with("missing\\library") || path.ends_with("missing/library")));
+        assert!(status
+            .warnings
+            .iter()
+            .any(|warning| warning.contains("listed but missing")));
+    }
+
+    #[test]
+    fn lock_file_presence_is_reported() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        std::fs::write(
+            temp.path().join("sysand.toml"),
+            "[package]\nname = \"demo\"",
+        )
+        .expect("write manifest");
+        std::fs::write(temp.path().join("sysand.lock"), "# lock").expect("write lock");
+
+        let status = detect_sysand_status_from(
+            Some(temp.path()),
+            Some(PathBuf::from("sysand")),
+            Some("sysand 0.test".to_string()),
+        );
+
+        assert!(status.manifest_present);
+        assert!(status.lock_present);
+    }
+
+    #[test]
     fn discovers_project_root_from_manifest_ancestor() {
         let temp = tempfile::tempdir().expect("temp dir");
         let nested = temp.path().join("a").join("b");
