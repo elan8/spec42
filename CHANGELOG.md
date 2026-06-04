@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **AI assistant integration** - [docs/AI-ASSISTANTS.md](docs/AI-ASSISTANTS.md), [`.github/copilot-instructions.md`](.github/copilot-instructions.md), and [docs/examples/mcp-vscode.json](docs/examples/mcp-vscode.json) for Copilot/Cursor MCP setup.
+- **MCP tools** - `spec42_doctor`, `spec42_model_summary`, and `spec42_explain_diagnostic` on `spec42-mcp`; `spec42_check` gains optional `include_semantic_model`.
+
 ### Changed
 
 - **Parser dependency** - Bumped `sysml-v2-parser` to **0.17.0** on [crates.io](https://crates.io/crates/sysml-v2-parser). Structured view/part bodies, `implies` in expressions, and usage-header `:>` / `::>` / `=>` on attribute and port usages (see parser `CHANGELOG.md`).

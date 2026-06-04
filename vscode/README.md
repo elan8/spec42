@@ -135,6 +135,10 @@ spec42 check path/to/model-or-workspace
 - If you want a CLI view of the same environment problems, run `spec42 doctor`.
 - For broader troubleshooting guidance, see [`docs/TROUBLESHOOTING.md`](../docs/TROUBLESHOOTING.md).
 
+## AI assistants (Copilot, Cursor, …)
+
+For chatbots, configure the **`spec42-mcp`** stdio server (bundled in Spec42 releases). See [`docs/AI-ASSISTANTS.md`](../docs/AI-ASSISTANTS.md) and the copy-paste template [`docs/examples/mcp-vscode.json`](../docs/examples/mcp-vscode.json).
+
 ## Links
 
 - Source and releases: `https://github.com/elan8/spec42`

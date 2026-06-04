@@ -177,6 +177,10 @@ Spec42 emits structured performance logs when `spec42.performanceLogging.enabled
 
 Current report-only budgets are documented in `docs/PERFORMANCE-GUARDRAILS.md`. Treat regressions there as release-risk signals even while the CI step remains non-blocking.
 
+## AI assistants (MCP)
+
+The `spec42-mcp` binary exposes MCP tools for Copilot, Cursor, and other agents (`spec42_check`, `spec42_doctor`, `spec42_model_summary`, `spec42_explain_diagnostic`). Setup and workflows: [`docs/AI-ASSISTANTS.md`](docs/AI-ASSISTANTS.md). Example VS Code MCP config: [`docs/examples/mcp-vscode.json`](docs/examples/mcp-vscode.json).
+
 ## Validation Pipeline
 
 `spec42 check` and MCP `spec42_check` use the same validation engine as the editor host.

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "spec42": {
+      "command": "C:/path/to/spec42-mcp.exe",
+      "args": [],
+      "env": {
+        "SPEC42_CONFIG_DIR": "",
+        "SPEC42_DATA_DIR": ""
+      }
+    }
+  }
+}

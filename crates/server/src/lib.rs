@@ -16,8 +16,14 @@ use cli::{
     CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, OutputFormat, StdlibCommand,
     SysandCommand,
 };
-use environment::{build_doctor_report, resolve_environment};
-use kernel::{validate_paths, ValidationReport, ValidationRequest};
+use environment::{build_doctor_report, resolve_environment, DoctorReport};
+use kernel::{
+    validate_paths, validate_paths_with_semantics, SemanticModelNode, SemanticModelRelationship,
+    SemanticValidationReport, ValidationReport, ValidationRequest, ValidationSummary,
+};
+use mcp::schemas::Spec42GlobalParams;
+use serde::Serialize;
+use std::path::PathBuf;
 use reports::{apply_baseline, emit_validation_report};
 use stdlib::{managed_status, remove_standard_library};
 
@@ -49,6 +55,119 @@ pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, St
         );
     }
     Ok(report)
+}
+
+/// Build a CLI value from MCP global parameters.
+pub fn cli_from_global(global: &Spec42GlobalParams) -> Cli {
+    Cli {
+        config_path: global.config_path.as_ref().map(PathBuf::from),
+        library_paths: global
+            .library_paths
+            .clone()
+            .unwrap_or_default()
+            .into_iter()
+            .map(PathBuf::from)
+            .collect(),
+        stdlib_path: global.stdlib_path.as_ref().map(PathBuf::from),
+        no_stdlib: global.no_stdlib,
+        stdio: false,
+        command: None,
+    }
+}
+
+/// Environment report (same as `spec42 doctor`).
+pub fn perform_doctor(cli: &Cli) -> Result<DoctorReport, String> {
+    let environment = resolve_environment(cli)?;
+    build_doctor_report("doctor", &environment)
+}
+
+/// Validation with semantic graph projection (used by MCP model summary).
+pub fn perform_check_with_semantics(
+    cli: &Cli,
+    args: &CheckArgs,
+) -> Result<SemanticValidationReport, String> {
+    let references_stdlib = environment::workspace_references_standard_library(&args.path);
+    let environment = resolve_environment(cli)?;
+    let config = Arc::new(kernel::default_server_config());
+    let mut report = validate_paths_with_semantics(
+        &config,
+        ValidationRequest {
+            targets: vec![args.path.clone()],
+            workspace_root: args.workspace_root.clone(),
+            library_paths: environment.library_paths.clone(),
+            parallel_enabled: true,
+        },
+    )?;
+    if references_stdlib
+        && environment.stdlib_path.is_none()
+        && !cli.no_stdlib
+        && !report
+            .validation
+            .advice
+            .iter()
+            .any(|line| line.contains("standard library"))
+    {
+        report.validation.advice.push(
+            "This workspace references standard-library packages (for example ScalarValues or ISQ); run with the embedded/bundled standard library available or pass `--stdlib-path`."
+                .to_string(),
+        );
+    }
+    Ok(report)
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ModelSummaryTruncation {
+    pub nodes_total: usize,
+    pub nodes_returned: usize,
+    pub relationships_total: usize,
+    pub relationships_returned: usize,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ModelSummaryResponse {
+    pub workspace_root: Option<String>,
+    pub summary: ValidationSummary,
+    pub nodes: Vec<SemanticModelNode>,
+    pub relationships: Vec<SemanticModelRelationship>,
+    pub truncation: ModelSummaryTruncation,
+}
+
+const SUMMARY_RELATIONSHIP_KINDS: &[&str] = &["typing", "connection", "reference"];
+
+/// Compact semantic projection for agents (caps node count, filters relationship kinds).
+pub fn build_model_summary(
+    report: SemanticValidationReport,
+    max_nodes: usize,
+) -> ModelSummaryResponse {
+    let nodes_total = report.semantic_model.nodes.len();
+    let nodes: Vec<_> = report
+        .semantic_model
+        .nodes
+        .into_iter()
+        .take(max_nodes)
+        .collect();
+
+    let filtered: Vec<_> = report
+        .semantic_model
+        .relationships
+        .into_iter()
+        .filter(|rel| SUMMARY_RELATIONSHIP_KINDS.contains(&rel.kind.as_str()))
+        .collect();
+    let relationships_total = filtered.len();
+    let relationships: Vec<_> = filtered.into_iter().take(max_nodes.saturating_mul(2)).collect();
+
+    ModelSummaryResponse {
+        workspace_root: report.validation.workspace_root,
+        summary: report.validation.summary,
+        truncation: ModelSummaryTruncation {
+            nodes_total,
+            nodes_returned: nodes.len(),
+            relationships_total,
+            relationships_returned: relationships.len(),
+        },
+        nodes,
+        relationships,
+    }
 }
 
 /// Main CLI dispatcher (without panic handling): used by both the `spec42` binary and tests.
