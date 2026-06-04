@@ -6,9 +6,10 @@ import {
   type ElementMetadata,
   type ElementPresentationContext,
 } from "../../explorer/modelExplorerProvider";
-import { VisualizationPanel } from "../../visualization/visualizationPanel";
 import {
   configureServerForTests,
+  disposeVisualizer,
+  type ExtensionDebugState,
   getFixturePath,
   getTestWorkspaceFolder,
   waitFor,
@@ -17,11 +18,6 @@ import {
 } from "./testUtils";
 
 const FIXTURE_FILE = "SurveillanceDrone.sysml";
-type ExtensionDebugState = Awaited<ReturnType<typeof vscode.commands.executeCommand>> & {
-  modelExplorer?: {
-    lastRevealedElementId?: string;
-  };
-};
 
 function findPosition(doc: vscode.TextDocument, needle: string, occurrence = 0): vscode.Position {
   const text = doc.getText();
@@ -58,16 +54,12 @@ describe("Extension Test Suite", () => {
   });
 
   afterEach(async () => {
-    if (VisualizationPanel.currentPanel) {
-      VisualizationPanel.currentPanel.dispose();
-    }
+    await disposeVisualizer();
     await vscode.commands.executeCommand("workbench.action.closeAllEditors");
   });
 
   after(async () => {
-    if (VisualizationPanel.currentPanel) {
-      VisualizationPanel.currentPanel.dispose();
-    }
+    await disposeVisualizer();
     await vscode.commands.executeCommand("workbench.action.closeAllEditors");
     await new Promise((r) => setTimeout(r, 250));
   });

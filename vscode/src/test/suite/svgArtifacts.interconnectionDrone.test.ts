@@ -2,15 +2,15 @@ import * as assert from "assert";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { VisualizationPanel } from "../../visualization/visualizationPanel";
 import {
   configureServerForTests,
+  disposeVisualizer,
   getFixturePath,
   getDiagramExportUri,
   getTestWorkspaceFolder,
   waitForDiagramExport,
-  waitFor,
   waitForLanguageServerReady,
+  waitForVisualizerOpen,
 } from "./testUtils";
 
 function getExtensionRoot(): string {
@@ -34,9 +34,7 @@ describe("SVG artifacts (SurveillanceDrone, elkjs)", () => {
   });
 
   afterEach(async () => {
-    if (VisualizationPanel.currentPanel) {
-      VisualizationPanel.currentPanel.dispose();
-    }
+    await disposeVisualizer();
     await vscode.commands.executeCommand("workbench.action.closeAllEditors");
   });
 
@@ -50,13 +48,7 @@ describe("SVG artifacts (SurveillanceDrone, elkjs)", () => {
     await waitForLanguageServerReady(doc);
 
     await vscode.commands.executeCommand("sysml.showVisualizer");
-    const panel = await waitFor(
-      "visualization panel",
-      async () => VisualizationPanel.currentPanel,
-      (value) => Boolean(value),
-      20000,
-      300
-    );
+    await waitForVisualizerOpen();
 
     // Root cause for empty general SVG in this test:
     // webview rendering can lag behind panel creation. Push one explicit model update.
@@ -65,7 +57,7 @@ describe("SVG artifacts (SurveillanceDrone, elkjs)", () => {
       doc.uri.toString(),
       ["graph", "ibd", "activityDiagrams", "stats"]
     )) as any;
-    panel.getWebview()?.postMessage({
+    await vscode.commands.executeCommand("sysml.debug.postVisualizerMessage", {
       command: "update",
       graph: model?.graph,
       generalViewGraph: model?.generalViewGraph,
@@ -81,9 +73,9 @@ describe("SVG artifacts (SurveillanceDrone, elkjs)", () => {
       } catch {
         // ignore
       }
-      panel.getWebview()?.postMessage({ command: "exportDiagramForTest" });
+      await vscode.commands.executeCommand("sysml.debug.exportVisualizerDiagramForTest");
       await new Promise((r) => setTimeout(r, 800));
-      panel.getWebview()?.postMessage({ command: "exportDiagramForTest" });
+      await vscode.commands.executeCommand("sysml.debug.exportVisualizerDiagramForTest");
       const { svgText } = await waitForDiagramExport(
         workspaceFolder.uri,
         viewId,

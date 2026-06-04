@@ -4,10 +4,65 @@ import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
 
-type DebugExtensionState = {
+export type ExtensionDebugState = {
   serverHealthState: "starting" | "ready" | "indexing" | "degraded" | "restarting" | "crashed";
   serverHealthDetail: string;
+  visualizerOpen?: boolean;
+  modelExplorer?: {
+    lastRevealedElementId?: string;
+  };
 };
+
+export const isCi = Boolean(process.env.CI);
+export const visualizationPanelTimeoutMs = isCi ? 45000 : 20000;
+
+async function getExtensionDebugState(): Promise<ExtensionDebugState> {
+  return (await vscode.commands.executeCommand(
+    "sysml.debug.getExtensionState"
+  )) as ExtensionDebugState;
+}
+
+/** Wait until the extension bundle reports an open visualizer panel. */
+export async function waitForVisualizerOpen(
+  timeoutMs = visualizationPanelTimeoutMs
+): Promise<void> {
+  await waitFor(
+    "visualization panel",
+    () => getExtensionDebugState(),
+    (state) => state?.visualizerOpen === true,
+    timeoutMs,
+    300
+  );
+}
+
+export async function waitForVisualizerClosed(timeoutMs = 10000): Promise<void> {
+  await waitFor(
+    "visualization panel disposal",
+    () => getExtensionDebugState(),
+    (state) => !state?.visualizerOpen,
+    timeoutMs,
+    100
+  );
+}
+
+export async function disposeVisualizer(): Promise<void> {
+  await vscode.commands.executeCommand("sysml.debug.disposeVisualizer");
+}
+
+export async function triggerVisualizerExportForTest(): Promise<void> {
+  await vscode.commands.executeCommand("sysml.debug.exportVisualizerDiagramForTest");
+}
+
+export async function clearVisualizerPackageSelection(): Promise<void> {
+  await vscode.commands.executeCommand("sysml.debug.clearVisualizerPackageSelection");
+}
+
+export async function selectVisualizerPackage(packageName: string): Promise<void> {
+  await vscode.commands.executeCommand(
+    "sysml.debug.selectVisualizerPackage",
+    packageName
+  );
+}
 
 export function getTestWorkspaceFolder(): vscode.WorkspaceFolder {
   const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
@@ -88,9 +143,7 @@ export async function waitForExtensionServerReady(timeoutMs = 30000): Promise<vo
   await waitFor(
     "extension server ready",
     () =>
-      vscode.commands.executeCommand<DebugExtensionState>(
-        "sysml.debug.getExtensionState"
-      ),
+      getExtensionDebugState(),
     (value) => value?.serverHealthState === "ready",
     timeoutMs,
     300
@@ -127,9 +180,7 @@ export async function configureServerForTests(): Promise<void> {
   await waitFor(
     "extension server health",
     () =>
-      vscode.commands.executeCommand<DebugExtensionState>(
-        "sysml.debug.getExtensionState"
-      ),
+      getExtensionDebugState(),
     (value) =>
       Boolean(
         value &&

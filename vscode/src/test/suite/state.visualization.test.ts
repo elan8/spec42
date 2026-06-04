@@ -1,14 +1,15 @@
 import * as assert from "assert";
 import * as path from "path";
 import * as vscode from "vscode";
-import { VisualizationPanel } from "../../visualization/visualizationPanel";
 import {
     configureServerForTests,
+    disposeVisualizer,
     getFixturePath,
     getTestWorkspaceFolder,
-    waitFor,
+    triggerVisualizerExportForTest,
     waitForDiagramExport,
     waitForLanguageServerReady,
+    waitForVisualizerOpen,
 } from "./testUtils";
 
 const STATE_FIXTURE = getFixturePath("StateMachineDemo.sysml");
@@ -24,9 +25,7 @@ describe("State Transition Visualization", () => {
     });
 
     afterEach(async () => {
-        if (VisualizationPanel.currentPanel) {
-            VisualizationPanel.currentPanel.dispose();
-        }
+        await disposeVisualizer();
         await vscode.commands.executeCommand("workbench.action.closeAllEditors");
     });
 
@@ -35,21 +34,15 @@ describe("State Transition Visualization", () => {
 
         const workspaceFolder = getTestWorkspaceFolder();
         const doc = await vscode.workspace.openTextDocument(STATE_FIXTURE);
-        await vscode.window.showTextDocument(doc);
+        await vscode.window.showTextDocument(doc, { preserveFocus: false });
         await waitForLanguageServerReady(doc);
 
         await vscode.commands.executeCommand("sysml.showVisualizer");
-        const panel = await waitFor(
-            "visualization panel",
-            async () => VisualizationPanel.currentPanel,
-            (value) => Boolean(value),
-            20000,
-            300
-        );
+        await waitForVisualizerOpen();
 
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "state-transition-view");
         await new Promise((resolve) => setTimeout(resolve, 2500));
-        panel.getWebview()?.postMessage({ command: "exportDiagramForTest" });
+        await triggerVisualizerExportForTest();
 
         const { svgText } = await waitForDiagramExport(
             workspaceFolder.uri,

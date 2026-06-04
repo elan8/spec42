@@ -1,13 +1,14 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
-import { VisualizationPanel } from "../../visualization/visualizationPanel";
 import {
     configureServerForTests,
+    disposeVisualizer,
     getExternalFixturePath,
     getDiagramExportUri,
     getTestWorkspaceFolder,
-    waitFor,
+    triggerVisualizerExportForTest,
     waitForLanguageServerReady,
+    waitForVisualizerOpen,
 } from "./testUtils";
 
 const DRONE_FIXTURE = getExternalFixturePath("C:\\Git\\sysml-examples\\drone\\sysml\\SurveillanceDrone.sysml");
@@ -177,9 +178,7 @@ describe("Interconnection Visualization Drone", () => {
     });
 
     afterEach(async () => {
-        if (VisualizationPanel.currentPanel) {
-            VisualizationPanel.currentPanel.dispose();
-        }
+        await disposeVisualizer();
         await vscode.commands.executeCommand("workbench.action.closeAllEditors");
     });
 
@@ -191,14 +190,9 @@ describe("Interconnection Visualization Drone", () => {
         await vscode.window.showTextDocument(doc, { preview: false });
         await waitForLanguageServerReady(doc);
 
+        await vscode.window.showTextDocument(doc, { preserveFocus: false });
         await vscode.commands.executeCommand("sysml.showVisualizer");
-        const panel = await waitFor(
-            "visualization panel",
-            async () => VisualizationPanel.currentPanel,
-            (value) => Boolean(value),
-            20000,
-            300
-        );
+        await waitForVisualizerOpen();
 
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
         await new Promise((r) => setTimeout(r, 2600));
@@ -209,7 +203,7 @@ describe("Interconnection Visualization Drone", () => {
         } catch {
             // Ignore if there is no previous export yet.
         }
-        panel.getWebview()?.postMessage({ command: "exportDiagramForTest" });
+        await triggerVisualizerExportForTest();
         await new Promise((r) => setTimeout(r, 1500));
 
         const bytes = await vscode.workspace.fs.readFile(uri);

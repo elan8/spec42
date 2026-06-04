@@ -2,20 +2,16 @@ import * as assert from "assert";
 import * as vscode from "vscode";
 import {
     configureServerForTests,
+    disposeVisualizer,
     getFixturePath,
     getDiagramExportUri,
     getTestWorkspaceFolder,
-    waitFor,
+    triggerVisualizerExportForTest,
     waitForExtensionServerReady,
     waitForLanguageServerReady,
+    waitForVisualizerClosed,
+    waitForVisualizerOpen,
 } from "./testUtils";
-
-const isCi = Boolean(process.env.CI);
-const visualizationPanelTimeoutMs = isCi ? 45000 : 20000;
-
-type ExtensionDebugState = {
-    visualizerOpen?: boolean;
-};
 
 const VIEW_IDS = ["general-view"];
 
@@ -32,12 +28,12 @@ describe("Visualization Diagram Views", () => {
     });
 
     afterEach(async () => {
-        await vscode.commands.executeCommand("sysml.debug.disposeVisualizer");
+        await disposeVisualizer();
         await vscode.commands.executeCommand("workbench.action.closeAllEditors");
     });
 
     after(async () => {
-        await vscode.commands.executeCommand("sysml.debug.disposeVisualizer");
+        await disposeVisualizer();
         await vscode.commands.executeCommand("workbench.action.closeAllEditors");
         await new Promise((r) => setTimeout(r, 250));
     });
@@ -48,41 +44,18 @@ describe("Visualization Diagram Views", () => {
         const workspaceFolder = getTestWorkspaceFolder();
 
         for (const viewId of VIEW_IDS) {
-            const openState = await vscode.commands.executeCommand<ExtensionDebugState>(
-                "sysml.debug.getExtensionState"
-            );
-            if (openState?.visualizerOpen) {
-                await vscode.commands.executeCommand("sysml.debug.disposeVisualizer");
-                await waitFor(
-                    "visualization panel disposal",
-                    async () =>
-                        vscode.commands.executeCommand<ExtensionDebugState>(
-                            "sysml.debug.getExtensionState"
-                        ),
-                    (value) => !value?.visualizerOpen,
-                    10000,
-                    100
-                );
-            }
+            await disposeVisualizer();
+            await waitForVisualizerClosed();
             const docPath = REAL_DRONE_FIXTURE;
             const doc = await vscode.workspace.openTextDocument(docPath);
             await vscode.window.showTextDocument(doc, { preserveFocus: false });
             await waitForLanguageServerReady(doc);
             await waitForExtensionServerReady();
             await vscode.commands.executeCommand("sysml.showVisualizer");
-            await waitFor(
-                "visualization panel",
-                async () =>
-                    vscode.commands.executeCommand<ExtensionDebugState>(
-                        "sysml.debug.getExtensionState"
-                    ),
-                (value) => value?.visualizerOpen === true,
-                visualizationPanelTimeoutMs,
-                300
-            );
+            await waitForVisualizerOpen();
             await vscode.commands.executeCommand("sysml.changeVisualizerView", viewId);
             await new Promise((r) => setTimeout(r, 2000)); // Wait for render
-            await vscode.commands.executeCommand("sysml.debug.exportVisualizerDiagramForTest");
+            await triggerVisualizerExportForTest();
             await new Promise((r) => setTimeout(r, 1200)); // Wait for export + file write
         }
 

@@ -241,8 +241,8 @@ export class VisualizationPanel {
         this._controller.changeView(viewId);
     }
 
-    public selectPackage(_packageName: string): void {
-        this._runtimeState.currentView = 'general-view';
+    public selectPackage(packageName: string): void {
+        this._runtimeState.selectedView = packageName;
         this._controller.refresh();
         this._controller.persistRestoreState();
     }

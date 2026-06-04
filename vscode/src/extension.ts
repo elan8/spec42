@@ -2035,6 +2035,24 @@ export function activate(context: vscode.ExtensionContext): void {
         ?.postMessage({ command: "exportDiagramForTest" });
     }),
 
+    vscode.commands.registerCommand("sysml.debug.clearVisualizerPackageSelection", () => {
+      VisualizationPanel.currentPanel?.clearPackageSelection();
+    }),
+
+    vscode.commands.registerCommand(
+      "sysml.debug.selectVisualizerPackage",
+      (packageName: string) => {
+        VisualizationPanel.currentPanel?.selectPackage(packageName);
+      }
+    ),
+
+    vscode.commands.registerCommand(
+      "sysml.debug.postVisualizerMessage",
+      (message: Record<string, unknown>) => {
+        VisualizationPanel.currentPanel?.getWebview()?.postMessage(message);
+      }
+    ),
+
     vscode.commands.registerCommand(
       "sysml.debug.getModelForTests",
       async (
