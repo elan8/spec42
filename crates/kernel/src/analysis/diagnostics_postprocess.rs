@@ -93,7 +93,11 @@ fn is_shadowable_semantic_code(diagnostic: &Diagnostic) -> bool {
                 | "unresolved_ref_type_reference"
                 | "unresolved_pending_relationship"
                 | "unresolved_pending_expression_relationship"
+                | "unresolved_allocate_source"
+                | "unresolved_allocate_target"
+                | "unresolved_satisfy_source"
                 | "unresolved_satisfy_target"
+                | "unresolved_viewpoint_conformance_target"
         )
     )
 }
@@ -282,6 +286,23 @@ mod tests {
         }
     }
 
+    fn sample_semantic_warning(line: u32, code: &str) -> Diagnostic {
+        Diagnostic {
+            range: Range {
+                start: Position::new(line, 0),
+                end: Position::new(line, 1),
+            },
+            severity: Some(DiagnosticSeverity::WARNING),
+            code: Some(NumberOrString::String(code.to_string())),
+            code_description: None,
+            source: Some("semantic".to_string()),
+            message: code.to_string(),
+            related_information: None,
+            tags: None,
+            data: None,
+        }
+    }
+
     #[test]
     fn dedup_removes_identical_diagnostics() {
         let d = sample_parse_error(2);
@@ -326,5 +347,24 @@ mod tests {
                 "invalid_requirement_short_name_syntax".to_string()
             ))
         );
+    }
+
+    #[test]
+    fn suppresses_unresolved_relationship_cascades_after_parse_error() {
+        let diagnostics = vec![
+            sample_parse_error(5),
+            sample_semantic_warning(3, "unresolved_allocate_source"),
+            sample_semantic_warning(4, "unresolved_satisfy_source"),
+            sample_semantic_warning(4, "unresolved_viewpoint_conformance_target"),
+            sample_semantic_warning(6, "unresolved_allocate_target"),
+        ];
+
+        let filtered = suppress_semantic_shadowed_by_parse_errors(diagnostics);
+        let codes: Vec<_> = filtered.iter().filter_map(diagnostic_code_str).collect();
+
+        assert!(!codes.contains(&"unresolved_allocate_source".to_string()));
+        assert!(!codes.contains(&"unresolved_satisfy_source".to_string()));
+        assert!(!codes.contains(&"unresolved_viewpoint_conformance_target".to_string()));
+        assert!(codes.contains(&"unresolved_allocate_target".to_string()));
     }
 }

@@ -96,3 +96,37 @@ fn parse_with_diagnostics_invalid_returns_errors() {
         "at least one invalid SysML input should produce diagnostics"
     );
 }
+
+#[test]
+fn parse_with_diagnostics_common_invalid_inputs_have_codes_and_ranges() {
+    let invalid_inputs = [
+        ("extra closing brace", "package P { } }"),
+        ("invalid keyword in package", "package P { xyz }"),
+        ("missing member name", "package P { part def }"),
+        ("illegal top-level definition", "part def Top;"),
+    ];
+
+    for (label, content) in invalid_inputs {
+        let result = sysml_v2_parser::parse_with_diagnostics(content);
+        assert!(
+            !result.errors.is_empty(),
+            "{label}: expected at least one parser diagnostic"
+        );
+        assert!(
+            result.errors.iter().any(|error| error
+                .code
+                .as_deref()
+                .is_some_and(|code| !code.trim().is_empty())),
+            "{label}: expected at least one parser diagnostic with a stable code, got {:?}",
+            result.errors
+        );
+        assert!(
+            result
+                .errors
+                .iter()
+                .any(|error| error.to_lsp_range().is_some()),
+            "{label}: expected at least one parser diagnostic with an LSP range, got {:?}",
+            result.errors
+        );
+    }
+}
