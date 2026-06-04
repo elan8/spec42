@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **GitHub Action** - Added a composite Action (`action.yml`) that downloads the matching Spec42 release binary, runs `spec42 doctor`, validates models with `spec42 check`, and uploads SARIF reports to GitHub Code Scanning by default.
+
 ## [0.26.0] - 2026-06-03
 
 ### Removed

@@ -52,6 +52,29 @@ spec42 diagrams export examples/office --view general-view --format svg --output
 
 Use `spec42 doctor` first when library paths, editor setup, or CI behavior differ from what you expect.
 
+### GitHub Action
+
+Use the bundled GitHub Action to validate models in CI:
+
+```yaml
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  spec42:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: elan8/spec42@vX.Y.Z
+        with:
+          path: examples/timer/KitchenTimer.sysml
+          format: sarif
+          warnings-as-errors: true
+```
+
+See [docs/GITHUB-ACTION.md](docs/GITHUB-ACTION.md) for inputs, SARIF upload behavior, and advanced usage.
+
 ## What It Can Do
 
 - **Build trust in model quality early** with live diagnostics while editing and deterministic validation in CI.

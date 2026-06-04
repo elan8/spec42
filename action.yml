@@ -1,0 +1,235 @@
+name: Spec42
+description: Validate SysML v2 and KerML models with the Spec42 CLI.
+author: Elan8
+
+branding:
+  icon: check-circle
+  color: blue
+
+inputs:
+  version:
+    description: Spec42 release tag to install, for example v0.26.0. Defaults to the Action ref.
+    required: false
+  path:
+    description: File or workspace path to validate.
+    required: true
+  workspace-root:
+    description: Optional workspace root passed to spec42 check.
+    required: false
+  format:
+    description: Output format for spec42 check: text, json, sarif, or junit.
+    required: false
+    default: sarif
+  warnings-as-errors:
+    description: Treat warnings as errors.
+    required: false
+    default: "false"
+  baseline:
+    description: Optional baseline file passed to spec42 check.
+    required: false
+  config:
+    description: Optional Spec42 config file passed as --config.
+    required: false
+  library-path:
+    description: Optional additional library root passed as --library-path.
+    required: false
+  stdlib-path:
+    description: Optional standard library root passed as --stdlib-path.
+    required: false
+  no-stdlib:
+    description: Disable bundled standard library resolution.
+    required: false
+    default: "false"
+  run-doctor:
+    description: Run spec42 doctor before validation.
+    required: false
+    default: "true"
+  upload-sarif:
+    description: Upload spec42.sarif to GitHub code scanning when format is sarif.
+    required: false
+    default: "true"
+  sarif-file:
+    description: SARIF output file path when format is sarif.
+    required: false
+    default: spec42.sarif
+
+outputs:
+  executable-path:
+    description: Path to the installed spec42 executable.
+    value: ${{ steps.install.outputs.executable-path }}
+  sarif-file:
+    description: SARIF output file path when format is sarif.
+    value: ${{ inputs.sarif-file }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install Spec42
+      id: install
+      shell: bash
+      env:
+        INPUT_VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+
+        VERSION="$INPUT_VERSION"
+        if [ -z "$VERSION" ]; then
+          VERSION="${GITHUB_ACTION_REF:-}"
+        fi
+        if [ -z "$VERSION" ]; then
+          echo "No Spec42 version was provided and GITHUB_ACTION_REF is empty." >&2
+          exit 1
+        fi
+        if [[ "$VERSION" != v* ]]; then
+          VERSION="v$VERSION"
+        fi
+
+        case "$RUNNER_OS:$RUNNER_ARCH" in
+          Linux:X64)
+            PLATFORM="linux-x64"
+            ARCHIVE_EXT="tar.gz"
+            BINARY_NAME="spec42"
+            ;;
+          macOS:X64)
+            PLATFORM="darwin-x64"
+            ARCHIVE_EXT="tar.gz"
+            BINARY_NAME="spec42"
+            ;;
+          macOS:ARM64)
+            PLATFORM="darwin-arm64"
+            ARCHIVE_EXT="tar.gz"
+            BINARY_NAME="spec42"
+            ;;
+          Windows:X64)
+            PLATFORM="win32-x64"
+            ARCHIVE_EXT="zip"
+            BINARY_NAME="spec42.exe"
+            ;;
+          *)
+            echo "Unsupported runner platform: $RUNNER_OS/$RUNNER_ARCH" >&2
+            exit 1
+            ;;
+        esac
+
+        VERSION_NUMBER="${VERSION#v}"
+        ARCHIVE="spec42-${VERSION_NUMBER}-${PLATFORM}.${ARCHIVE_EXT}"
+        URL="https://github.com/elan8/spec42/releases/download/${VERSION}/${ARCHIVE}"
+        INSTALL_DIR="$RUNNER_TEMP/spec42-${VERSION_NUMBER}-${PLATFORM}"
+
+        mkdir -p "$INSTALL_DIR"
+        echo "Downloading $URL"
+        curl --fail --location --retry 3 --output "$RUNNER_TEMP/$ARCHIVE" "$URL"
+
+        if [ "$ARCHIVE_EXT" = "zip" ]; then
+          unzip -q -o "$RUNNER_TEMP/$ARCHIVE" -d "$INSTALL_DIR"
+        else
+          tar -xzf "$RUNNER_TEMP/$ARCHIVE" -C "$INSTALL_DIR"
+        fi
+
+        EXECUTABLE_PATH="$INSTALL_DIR/$BINARY_NAME"
+        if [ ! -f "$EXECUTABLE_PATH" ]; then
+          echo "Expected executable not found at $EXECUTABLE_PATH" >&2
+          find "$INSTALL_DIR" -maxdepth 2 -type f >&2
+          exit 1
+        fi
+
+        chmod +x "$EXECUTABLE_PATH" || true
+        echo "$INSTALL_DIR" >> "$GITHUB_PATH"
+        echo "executable-path=$EXECUTABLE_PATH" >> "$GITHUB_OUTPUT"
+        "$EXECUTABLE_PATH" --version
+
+    - name: Run Spec42 doctor
+      if: ${{ inputs.run-doctor == 'true' }}
+      shell: bash
+      env:
+        SPEC42_BIN: ${{ steps.install.outputs.executable-path }}
+        INPUT_CONFIG: ${{ inputs.config }}
+        INPUT_LIBRARY_PATH: ${{ inputs.library-path }}
+        INPUT_STDLIB_PATH: ${{ inputs.stdlib-path }}
+        INPUT_NO_STDLIB: ${{ inputs.no-stdlib }}
+      run: |
+        set -euo pipefail
+
+        GLOBAL_ARGS=()
+        if [ -n "$INPUT_CONFIG" ]; then
+          GLOBAL_ARGS+=("--config" "$INPUT_CONFIG")
+        fi
+        if [ -n "$INPUT_LIBRARY_PATH" ]; then
+          GLOBAL_ARGS+=("--library-path" "$INPUT_LIBRARY_PATH")
+        fi
+        if [ -n "$INPUT_STDLIB_PATH" ]; then
+          GLOBAL_ARGS+=("--stdlib-path" "$INPUT_STDLIB_PATH")
+        fi
+        if [ "$INPUT_NO_STDLIB" = "true" ]; then
+          GLOBAL_ARGS+=("--no-stdlib")
+        fi
+
+        "$SPEC42_BIN" "${GLOBAL_ARGS[@]}" doctor
+
+    - name: Run Spec42 check
+      id: check
+      shell: bash
+      env:
+        SPEC42_BIN: ${{ steps.install.outputs.executable-path }}
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_WORKSPACE_ROOT: ${{ inputs.workspace-root }}
+        INPUT_FORMAT: ${{ inputs.format }}
+        INPUT_WARNINGS_AS_ERRORS: ${{ inputs.warnings-as-errors }}
+        INPUT_BASELINE: ${{ inputs.baseline }}
+        INPUT_CONFIG: ${{ inputs.config }}
+        INPUT_LIBRARY_PATH: ${{ inputs.library-path }}
+        INPUT_STDLIB_PATH: ${{ inputs.stdlib-path }}
+        INPUT_NO_STDLIB: ${{ inputs.no-stdlib }}
+        INPUT_SARIF_FILE: ${{ inputs.sarif-file }}
+      run: |
+        set -euo pipefail
+
+        GLOBAL_ARGS=()
+        if [ -n "$INPUT_CONFIG" ]; then
+          GLOBAL_ARGS+=("--config" "$INPUT_CONFIG")
+        fi
+        if [ -n "$INPUT_LIBRARY_PATH" ]; then
+          GLOBAL_ARGS+=("--library-path" "$INPUT_LIBRARY_PATH")
+        fi
+        if [ -n "$INPUT_STDLIB_PATH" ]; then
+          GLOBAL_ARGS+=("--stdlib-path" "$INPUT_STDLIB_PATH")
+        fi
+        if [ "$INPUT_NO_STDLIB" = "true" ]; then
+          GLOBAL_ARGS+=("--no-stdlib")
+        fi
+
+        CHECK_ARGS=("check" "$INPUT_PATH" "--format" "$INPUT_FORMAT")
+        if [ -n "$INPUT_WORKSPACE_ROOT" ]; then
+          CHECK_ARGS+=("--workspace-root" "$INPUT_WORKSPACE_ROOT")
+        fi
+        if [ "$INPUT_WARNINGS_AS_ERRORS" = "true" ]; then
+          CHECK_ARGS+=("--warnings-as-errors")
+        fi
+        if [ -n "$INPUT_BASELINE" ]; then
+          CHECK_ARGS+=("--baseline" "$INPUT_BASELINE")
+        fi
+
+        if [ "$INPUT_FORMAT" = "sarif" ]; then
+          set +e
+          "$SPEC42_BIN" "${GLOBAL_ARGS[@]}" "${CHECK_ARGS[@]}" > "$INPUT_SARIF_FILE"
+          STATUS=$?
+          set -e
+          echo "exit-code=$STATUS" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        "$SPEC42_BIN" "${GLOBAL_ARGS[@]}" "${CHECK_ARGS[@]}"
+        echo "exit-code=0" >> "$GITHUB_OUTPUT"
+
+    - name: Upload Spec42 SARIF
+      if: ${{ inputs.format == 'sarif' && inputs.upload-sarif == 'true' }}
+      uses: github/codeql-action/upload-sarif@v4
+      with:
+        sarif_file: ${{ inputs.sarif-file }}
+
+    - name: Fail when Spec42 check failed
+      if: ${{ steps.check.outputs.exit-code != '0' }}
+      shell: bash
+      run: |
+        echo "spec42 check failed with exit code ${{ steps.check.outputs.exit-code }}." >&2
+        exit "${{ steps.check.outputs.exit-code }}"
