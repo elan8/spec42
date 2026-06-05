@@ -283,8 +283,7 @@ fn lsp_rename_does_not_edit_configured_libraries() {
     let library_path = library_root.to_string_lossy().to_string();
 
     let workspace_content = "package App { part def SharedThing; part localUse : SharedThing; }";
-    let library_content =
-        "package Domain { part def SharedThing; part libraryUse : SharedThing; }";
+    let library_content = "package Domain { part def SharedThing; part libraryUse : SharedThing; }";
 
     let mut session = TestSession::new();
     session.initialize_with_options(

@@ -1,8 +1,6 @@
 //! P1 diagnostic regression tests.
 
-use semantic_core::{
-    build_graph_from_doc, collect_diagnostics_from_graph, DiagnosticsOptions,
-};
+use semantic_core::{build_graph_from_doc, collect_diagnostics_from_graph, DiagnosticsOptions};
 use url::Url;
 
 fn diags_for(input: &str) -> Vec<semantic_core::SemanticDiagnostic> {

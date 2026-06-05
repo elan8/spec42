@@ -8,7 +8,7 @@ use common::with_isolated_data_dir_async;
 use rmcp::model::{CallToolRequestParam, ClientInfo};
 use rmcp::{ClientHandler, ServiceExt};
 use serde_json::json;
-use spec42::mcp::server::{MCP_TOOL_NAMES, Spec42McpServer};
+use spec42::mcp::server::{Spec42McpServer, MCP_TOOL_NAMES};
 
 #[derive(Debug, Clone, Default)]
 struct TestMcpClient;
@@ -81,10 +81,7 @@ async fn mcp_protocol_call_spec42_check() -> anyhow::Result<()> {
             .structured_content
             .expect("structured_content on success");
         let summary = structured.get("summary").expect("summary");
-        assert_eq!(
-            summary.get("error_count").and_then(|v| v.as_u64()),
-            Some(0)
-        );
+        assert_eq!(summary.get("error_count").and_then(|v| v.as_u64()), Some(0));
 
         client.cancel().await?;
         server_handle.abort();
@@ -112,9 +109,7 @@ async fn mcp_protocol_unknown_tool_returns_error_result() -> anyhow::Result<()> 
             .await?;
 
         assert_eq!(result.is_error, Some(true));
-        let structured = result
-            .structured_content
-            .expect("structured error content");
+        let structured = result.structured_content.expect("structured error content");
         let suggestion = structured["error"]["suggestion"]
             .as_str()
             .unwrap_or_default();

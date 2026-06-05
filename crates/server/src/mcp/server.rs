@@ -161,9 +161,7 @@ impl ServerHandler for Spec42McpServer {
         InitializeResult {
             protocol_version: ProtocolVersion::V_2024_11_05,
             capabilities: rmcp::model::ServerCapabilities {
-                tools: Some(rmcp::model::ToolsCapability {
-                    list_changed: None,
-                }),
+                tools: Some(rmcp::model::ToolsCapability { list_changed: None }),
                 ..Default::default()
             },
             server_info: rmcp::model::Implementation {

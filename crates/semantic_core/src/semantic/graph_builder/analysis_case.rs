@@ -245,8 +245,8 @@ pub(super) fn build_from_analysis_body(
     }
 
     let had_local_result = analysis_result_qualified.is_some();
-    let bound_to = analysis_result_qualified
-        .or_else(|| inherited_analysis_result_qualified(g, parent_id));
+    let bound_to =
+        analysis_result_qualified.or_else(|| inherited_analysis_result_qualified(g, parent_id));
     if let Some(bound_to) = bound_to.as_ref() {
         for objective_id in objective_node_ids {
             if let Some(objective_node) = g.get_node_mut(&objective_id) {

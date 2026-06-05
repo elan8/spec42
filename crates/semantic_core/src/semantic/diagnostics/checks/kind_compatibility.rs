@@ -30,10 +30,7 @@ fn parse_multiplicity_bounds(raw: Option<&str>) -> Option<MultiplicityBounds> {
     if raw.is_empty() || multiplicity_issue_message(raw).is_some() {
         return None;
     }
-    let normalized = raw
-        .trim_start_matches('[')
-        .trim_end_matches(']')
-        .trim();
+    let normalized = raw.trim_start_matches('[').trim_end_matches(']').trim();
     if let Some((lower_raw, upper_raw)) = normalized.split_once("..") {
         let lower = parse_non_negative_bound(lower_raw.trim()).ok()?;
         let upper = if upper_raw.trim() == "*" {
@@ -79,25 +76,29 @@ fn collect_specialization_cycles(graph: &SemanticGraph, uri: &Url) -> Vec<Semant
         let mut visiting = HashSet::new();
         let mut visited = HashSet::new();
 
+        struct CycleDfsContext<'a> {
+            graph: &'a SemanticGraph,
+            diagnostics: &'a mut Vec<SemanticDiagnostic>,
+            seen_reports: &'a mut HashSet<String>,
+            uri: &'a Url,
+        }
+
         fn dfs(
-            graph: &SemanticGraph,
             current_id: &crate::NodeId,
             origin: &crate::NodeId,
             stack: &mut Vec<crate::NodeId>,
             visiting: &mut HashSet<crate::NodeId>,
             visited: &mut HashSet<crate::NodeId>,
-            diagnostics: &mut Vec<SemanticDiagnostic>,
-            seen_reports: &mut HashSet<String>,
-            uri: &Url,
+            ctx: &mut CycleDfsContext<'_>,
         ) {
             if !visiting.insert(current_id.clone()) {
                 if stack.iter().any(|id| id == current_id) {
                     let key = format!("{}|{}", origin.qualified_name, current_id.qualified_name);
-                    if seen_reports.insert(key) {
-                        if let Some(node) = graph.get_node(origin) {
-                            diagnostics.push(diag(
-                                uri,
-                                diagnostic_range(graph, node, None),
+                    if ctx.seen_reports.insert(key) {
+                        if let Some(node) = ctx.graph.get_node(origin) {
+                            ctx.diagnostics.push(diag(
+                                ctx.uri,
+                                diagnostic_range(ctx.graph, node, None),
                                 DiagnosticSeverity::Error,
                                 "semantic",
                                 "specialization_cycle",
@@ -116,25 +117,15 @@ fn collect_specialization_cycles(graph: &SemanticGraph, uri: &Url) -> Vec<Semant
                 return;
             }
             stack.push(current_id.clone());
-            if let Some(node) = graph.get_node(current_id) {
+            if let Some(node) = ctx.graph.get_node(current_id) {
                 for specializes_ref in declared_specializes_refs(node) {
                     for target_id in resolve_type_reference_targets(
-                        graph,
+                        ctx.graph,
                         node,
                         &specializes_ref,
                         SPECIALIZES_TARGET_KINDS,
                     ) {
-                        dfs(
-                            graph,
-                            &target_id,
-                            origin,
-                            stack,
-                            visiting,
-                            visited,
-                            diagnostics,
-                            seen_reports,
-                            uri,
-                        );
+                        dfs(&target_id, origin, stack, visiting, visited, ctx);
                     }
                 }
             }
@@ -142,16 +133,19 @@ fn collect_specialization_cycles(graph: &SemanticGraph, uri: &Url) -> Vec<Semant
             visiting.remove(current_id);
         }
 
-        dfs(
+        let mut ctx = CycleDfsContext {
             graph,
+            diagnostics: &mut diagnostics,
+            seen_reports: &mut seen_reports,
+            uri,
+        };
+        dfs(
             &node.id,
             &node.id,
             &mut stack,
             &mut visiting,
             &mut visited,
-            &mut diagnostics,
-            &mut seen_reports,
-            uri,
+            &mut ctx,
         );
     }
 
@@ -175,9 +169,7 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
             if !is_builtin_type_ref(&normalized) {
                 for target in graph.outgoing_typing_or_specializes_targets(node) {
                     let allowed = allowed_typing_target_kinds(&node.element_kind);
-                    if !allowed.is_empty()
-                        && !is_compatible_kind(&target.element_kind, allowed)
-                    {
+                    if !allowed.is_empty() && !is_compatible_kind(&target.element_kind, allowed) {
                         let key = format!(
                             "type|{}|{}|{}",
                             node.id.qualified_name, type_ref, target.element_kind
@@ -220,9 +212,7 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
             .filter_map(|id| graph.get_node(&id))
             {
                 let allowed = allowed_specializes_target_kinds(&node.element_kind);
-                if !allowed.is_empty()
-                    && !is_compatible_kind(&target.element_kind, allowed)
-                {
+                if !allowed.is_empty() && !is_compatible_kind(&target.element_kind, allowed) {
                     let key = format!(
                         "specializes|{}|{}|{}",
                         node.id.qualified_name, specializes_ref, target.element_kind
@@ -255,9 +245,15 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
             .map(str::to_string)
             .or_else(|| {
                 if node.attributes.contains_key("value")
-                    && node.parent_id.as_ref().and_then(|id| graph.get_node(id)).is_some_and(
-                        |owner| !graph.outgoing_typing_or_specializes_targets(owner).is_empty(),
-                    )
+                    && node
+                        .parent_id
+                        .as_ref()
+                        .and_then(|id| graph.get_node(id))
+                        .is_some_and(|owner| {
+                            !graph
+                                .outgoing_typing_or_specializes_targets(owner)
+                                .is_empty()
+                        })
                 {
                     Some(node.name.clone())
                 } else {
@@ -278,11 +274,12 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
                 ResolveResult::Resolved(target_id) => {
                     if let Some(target) = graph.get_node(&target_id) {
                         let allowed = allowed_subset_redefine_target_kinds(&node.element_kind);
-                        if !allowed.is_empty()
-                            && !is_compatible_kind(&target.element_kind, allowed)
+                        if !allowed.is_empty() && !is_compatible_kind(&target.element_kind, allowed)
                         {
-                            let key =
-                                format!("subset|{}|{}", node.id.qualified_name, target.element_kind);
+                            let key = format!(
+                                "subset|{}|{}",
+                                node.id.qualified_name, target.element_kind
+                            );
                             if seen.insert(key) {
                                 diagnostics.push(diag(
                                     uri,
@@ -302,7 +299,10 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
                             node.attributes.get("multiplicity").and_then(|v| v.as_str()),
                         );
                         let parent_bounds = parse_multiplicity_bounds(
-                            target.attributes.get("multiplicity").and_then(|v| v.as_str()),
+                            target
+                                .attributes
+                                .get("multiplicity")
+                                .and_then(|v| v.as_str()),
                         );
                         if let (Some(child), Some(parent)) = (child_bounds, parent_bounds) {
                             if multiplicity_widens(child, parent) {
@@ -351,10 +351,9 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
                                     }
                                 }
                             }
-                            if let (Some(child_type), Some(parent_type)) = (
-                                declared_type_ref(node),
-                                declared_type_ref(target),
-                            ) {
+                            if let (Some(child_type), Some(parent_type)) =
+                                (declared_type_ref(node), declared_type_ref(target))
+                            {
                                 let child_norm = normalize_declared_type_ref(child_type);
                                 let parent_norm = normalize_declared_type_ref(parent_type);
                                 if !child_norm.is_empty()

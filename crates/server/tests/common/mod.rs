@@ -1,17 +1,14 @@
 //! Shared helpers for integration tests that mutate process-global env vars.
 
-use std::sync::Mutex;
-
 use tempfile::TempDir;
+use tokio::sync::Mutex;
 
-static SPEC42_DATA_DIR_LOCK: Mutex<()> = Mutex::new(());
+static SPEC42_DATA_DIR_LOCK: Mutex<()> = Mutex::const_new(());
 
 /// Run a test with an isolated `SPEC42_DATA_DIR`, serialized across threads in this binary.
 #[allow(dead_code)]
 pub fn with_isolated_data_dir(test: impl FnOnce()) {
-    let _guard = SPEC42_DATA_DIR_LOCK
-        .lock()
-        .expect("SPEC42_DATA_DIR test lock");
+    let _guard = SPEC42_DATA_DIR_LOCK.blocking_lock();
     let data_dir = TempDir::new().expect("temp data dir");
     let previous = std::env::var_os("SPEC42_DATA_DIR");
     std::env::set_var("SPEC42_DATA_DIR", data_dir.path());
@@ -29,9 +26,7 @@ where
     F: FnOnce() -> Fut,
     Fut: std::future::Future<Output = T>,
 {
-    let _guard = SPEC42_DATA_DIR_LOCK
-        .lock()
-        .expect("SPEC42_DATA_DIR test lock");
+    let _guard = SPEC42_DATA_DIR_LOCK.lock().await;
     let data_dir = TempDir::new().expect("temp data dir");
     let previous = std::env::var_os("SPEC42_DATA_DIR");
     std::env::set_var("SPEC42_DATA_DIR", data_dir.path());

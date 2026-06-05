@@ -49,10 +49,7 @@ fn has_diag_code(
     })
 }
 
-fn diagnostic_range_text(
-    content: &str,
-    diagnostic: &tower_lsp::lsp_types::Diagnostic,
-) -> String {
+fn diagnostic_range_text(content: &str, diagnostic: &tower_lsp::lsp_types::Diagnostic) -> String {
     let line = content
         .lines()
         .nth(diagnostic.range.start.line as usize)
@@ -869,7 +866,10 @@ fn unresolved_type_reference_emits_semantic_diagnostic() {
     let diagnostics = validate_inline_sysml("missing_type.sysml", content);
     let diagnostic = diagnostic_by_code(&diagnostics, "semantic", "unresolved_type_reference")
         .expect("expected unresolved_type_reference semantic diagnostic");
-    assert_eq!(diagnostic_range_text(content, diagnostic), "MissingEngineType");
+    assert_eq!(
+        diagnostic_range_text(content, diagnostic),
+        "MissingEngineType"
+    );
 }
 
 #[test]
@@ -884,7 +884,10 @@ fn unresolved_ref_type_reference_emits_semantic_diagnostic() {
     let diagnostics = validate_inline_sysml("missing_ref_type.sysml", content);
     let diagnostic = diagnostic_by_code(&diagnostics, "semantic", "unresolved_ref_type_reference")
         .expect("expected unresolved_ref_type_reference semantic diagnostic");
-    assert_eq!(diagnostic_range_text(content, diagnostic), "MissingCelestialBody");
+    assert_eq!(
+        diagnostic_range_text(content, diagnostic),
+        "MissingCelestialBody"
+    );
 }
 
 #[test]
@@ -903,7 +906,10 @@ fn unresolved_viewpoint_conformance_target_emits_semantic_diagnostic() {
         "unresolved_viewpoint_conformance_target",
     )
     .expect("expected unresolved_viewpoint_conformance_target semantic diagnostic");
-    assert_eq!(diagnostic_range_text(content, diagnostic), "MissingViewpoint");
+    assert_eq!(
+        diagnostic_range_text(content, diagnostic),
+        "MissingViewpoint"
+    );
 }
 
 #[test]
@@ -1048,8 +1054,7 @@ fn unresolved_specializes_reference_is_not_emitted_for_sibling_analysis_def_spec
             }
         }
     "#;
-    let diagnostics =
-        validate_inline_sysml("resolved_analysis_specializes_base.sysml", content);
+    let diagnostics = validate_inline_sysml("resolved_analysis_specializes_base.sysml", content);
     let found_unresolved_specializes = diagnostics.iter().any(|diagnostic| {
         diagnostic.source.as_deref() == Some("semantic")
             && diagnostic.code.as_ref()
@@ -1513,8 +1518,7 @@ fn analysis_objective_inherits_parent_return_ref_without_local_result() {
             }
         }
     "#;
-    let diagnostics =
-        validate_inline_sysml("analysis_inherited_return_ref.sysml", content);
+    let diagnostics = validate_inline_sysml("analysis_inherited_return_ref.sysml", content);
     assert!(
         !has_diag_code(&diagnostics, "semantic", "objective_binding_unresolved"),
         "specialized analysis def should inherit parent return ref for objective binding"

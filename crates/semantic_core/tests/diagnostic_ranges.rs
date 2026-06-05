@@ -60,7 +60,8 @@ fn unresolved_type_reference_points_at_type_token() {
 
 #[test]
 fn unresolved_ref_type_reference_points_at_type_token() {
-    let content = "package Demo {\n  part def Orbit;\n  part system { ref target : MissingOrbit; }\n}\n";
+    let content =
+        "package Demo {\n  part def Orbit;\n  part system { ref target : MissingOrbit; }\n}\n";
     let range = diagnostic_range_for(content, "unresolved_ref_type_reference");
     assert_range_text(content, range, "MissingOrbit");
 }

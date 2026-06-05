@@ -72,8 +72,8 @@ pub fn allowed_specializes_target_kinds(def_kind: &str) -> &'static [&'static st
 pub fn allowed_subset_redefine_target_kinds(usage_kind: &str) -> &'static [&'static str] {
     match usage_kind {
         "part" | "port" | "item" | "attribute" | "action" | "state" | "requirement"
-        | "use case" | "analysis" | "verification" | "view" | "viewpoint" | "concern"
-        | "actor" | "flow" | "allocation" | "interface" => allowed_typing_target_kinds(usage_kind),
+        | "use case" | "analysis" | "verification" | "view" | "viewpoint" | "concern" | "actor"
+        | "flow" | "allocation" | "interface" => allowed_typing_target_kinds(usage_kind),
         _ => &[],
     }
 }

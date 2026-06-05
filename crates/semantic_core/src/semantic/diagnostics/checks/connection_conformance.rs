@@ -33,8 +33,8 @@ fn first_unresolved_connection_segment(
         };
     }
     match resolve_expression_endpoint_strict(graph, uri, container_prefix, segments[0]) {
-        ResolveResult::Unresolved => return Some(segments[0].to_string()),
-        ResolveResult::Ambiguous => return None,
+        ResolveResult::Unresolved => Some(segments[0].to_string()),
+        ResolveResult::Ambiguous => None,
         ResolveResult::Resolved(mut current_id) => {
             for segment in segments.iter().skip(1) {
                 let Some(owner) = graph.get_node(&current_id) else {
@@ -100,14 +100,17 @@ pub(in crate::semantic::diagnostics) fn collect_connection_conformance_diagnosti
     }
 
     for (left_id, right_id) in graph.connection_edge_node_pairs_for_uri(uri) {
-        let (Some(left), Some(right)) = (graph.get_node(&left_id), graph.get_node(&right_id)) else {
+        let (Some(left), Some(right)) = (graph.get_node(&left_id), graph.get_node(&right_id))
+        else {
             continue;
         };
         if is_port_like(&left.element_kind) && is_port_like(&right.element_kind) {
             if let Some(message) = port_compatibility_mismatch(graph, left, right) {
                 if let Some(code) = port_mismatch_code(&message) {
-                    let key =
-                        format!("{}|{}|{}", code, left.id.qualified_name, right.id.qualified_name);
+                    let key = format!(
+                        "{}|{}|{}",
+                        code, left.id.qualified_name, right.id.qualified_name
+                    );
                     if seen.insert(key) {
                         diagnostics.push(diag(
                             uri,
@@ -122,8 +125,9 @@ pub(in crate::semantic::diagnostics) fn collect_connection_conformance_diagnosti
             }
             continue;
         }
-        if !(is_port_like(&left.element_kind) || is_port_like(&right.element_kind))
-            && !(is_part_like(&left.element_kind) && is_part_like(&right.element_kind))
+        if !(is_port_like(&left.element_kind)
+            || is_port_like(&right.element_kind)
+            || is_part_like(&left.element_kind) && is_part_like(&right.element_kind))
         {
             let key = format!(
                 "context|{}|{}",
@@ -183,10 +187,7 @@ pub(in crate::semantic::diagnostics) fn collect_connection_conformance_diagnosti
                     DiagnosticSeverity::Warning,
                     "semantic",
                     "interface_end_invalid",
-                    format!(
-                        "Interface end '{}' has an empty port type.",
-                        node.name
-                    ),
+                    format!("Interface end '{}' has an empty port type.", node.name),
                 ));
             }
         }
@@ -222,11 +223,11 @@ pub(in crate::semantic::diagnostics) fn collect_connection_conformance_diagnosti
                         .or_else(|| right.attributes.get("typeRef"))
                         .and_then(|v| v.as_str())
                         .unwrap_or("");
-                    if !left_type.is_empty()
-                        && !right_type.is_empty()
-                        && left_type != right_type
-                    {
-                        let key = format!("bind|{}|{}", left.id.qualified_name, right.id.qualified_name);
+                    if !left_type.is_empty() && !right_type.is_empty() && left_type != right_type {
+                        let key = format!(
+                            "bind|{}|{}",
+                            left.id.qualified_name, right.id.qualified_name
+                        );
                         if seen.insert(key) {
                             diagnostics.push(diag(
                                 uri,

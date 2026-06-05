@@ -187,7 +187,12 @@ fn find_reference_in_source_range(
     None
 }
 
-fn find_token_in_line(line: &str, start_char: u32, end_char: u32, needle: &str) -> Option<(u32, u32)> {
+fn find_token_in_line(
+    line: &str,
+    start_char: u32,
+    end_char: u32,
+    needle: &str,
+) -> Option<(u32, u32)> {
     if needle.is_empty() {
         return None;
     }

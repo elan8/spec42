@@ -35,7 +35,7 @@ fn attribute_def_quantity_specialization_resolves_in_workspace() {
         .find(|node| node.element_kind == "attribute def" && node.name == "Voltage")
         .expect("Voltage attribute def");
 
-    let typing_targets = graph.outgoing_targets_by_kind(&voltage, RelationshipKind::Typing);
+    let typing_targets = graph.outgoing_targets_by_kind(voltage, RelationshipKind::Typing);
     assert_eq!(typing_targets.len(), 1);
     assert_eq!(
         typing_targets[0].name, "ElectricPotentialDifferenceValue",

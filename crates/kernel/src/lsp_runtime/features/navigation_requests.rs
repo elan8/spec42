@@ -114,10 +114,7 @@ fn unit_registry_for_hover(state: &ServerState) -> UnitRegistry {
         .iter()
         .map(|(uri, entry)| (uri, entry.content.as_str()))
         .collect();
-    UnitRegistry::from_semantic_graph_with_indexed_sources(
-        &state.semantic_graph,
-        &indexed_sources,
-    )
+    UnitRegistry::from_semantic_graph_with_indexed_sources(&state.semantic_graph, &indexed_sources)
 }
 
 fn unit_literal_hover_markdown(state: &ServerState, text: &str, pos: Position) -> Option<String> {
@@ -651,12 +648,11 @@ pub(crate) fn document_highlight(
     pos: Position,
 ) -> Result<Option<Vec<DocumentHighlight>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let locations = match references_resolver::resolved_references_at_position(
-        state, &uri_norm, pos, true,
-    ) {
-        Some(locations) if !locations.is_empty() => locations,
-        _ => return Ok(None),
-    };
+    let locations =
+        match references_resolver::resolved_references_at_position(state, &uri_norm, pos, true) {
+            Some(locations) if !locations.is_empty() => locations,
+            _ => return Ok(None),
+        };
     let highlights = locations
         .into_iter()
         .filter(|location| util::normalize_file_uri(&location.uri) == uri_norm)

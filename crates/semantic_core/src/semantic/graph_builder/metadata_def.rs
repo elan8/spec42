@@ -24,13 +24,8 @@ pub(super) fn build_from_metadata_attribute_body(
         match &node.value {
             AttributeBodyElement::AttributeDef(attribute) => {
                 let value = &attribute.value;
-                let qualified = qualified_name_for_node(
-                    g,
-                    uri,
-                    container_prefix,
-                    &value.name,
-                    "attribute def",
-                );
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &value.name, "attribute def");
                 let mut attrs = HashMap::new();
                 if let Some(ref typing) = value.typing {
                     attrs.insert("attributeType".to_string(), serde_json::json!(typing));
@@ -79,7 +74,9 @@ pub(super) fn build_from_metadata_attribute_body(
                     Some(parent_id),
                 );
             }
-            AttributeBodyElement::Doc(_) | AttributeBodyElement::Error(_) | AttributeBodyElement::Other(_) => {}
+            AttributeBodyElement::Doc(_)
+            | AttributeBodyElement::Error(_)
+            | AttributeBodyElement::Other(_) => {}
         }
     }
 }

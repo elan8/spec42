@@ -3,10 +3,7 @@
 //! These checks use the semantic graph (parts, ports, connections) to report
 //! diagnostics such as: unconnected ports, connection to non-port, port type mismatch.
 
-use std::{
-    collections::HashSet,
-    time::Instant,
-};
+use std::{collections::HashSet, time::Instant};
 use url::Url;
 
 use crate::semantic::diagnostics::checks::{
@@ -228,7 +225,9 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     // 5) P1 import conformance (unresolved imports, kind mismatch, visibility, filters).
     let t5 = Instant::now();
     let d5 = diagnostics.len();
-    diagnostics.extend(import_conformance::collect_import_conformance_diagnostics(graph, uri));
+    diagnostics.extend(import_conformance::collect_import_conformance_diagnostics(
+        graph, uri,
+    ));
     section_timings.push((
         "5_import_conformance".to_string(),
         t5.elapsed().as_millis(),
@@ -238,7 +237,9 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     // 6) P1 name resolution (type/specializes refs, ambiguity, qualified-name segments, duplicates).
     let t6 = Instant::now();
     let d6 = diagnostics.len();
-    diagnostics.extend(name_resolution::collect_name_resolution_diagnostics(graph, uri));
+    diagnostics.extend(name_resolution::collect_name_resolution_diagnostics(
+        graph, uri,
+    ));
     section_timings.push((
         "6_name_resolution".to_string(),
         t6.elapsed().as_millis(),
@@ -642,9 +643,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     // 14) P1 connection/interface/flow conformance.
     let t14 = Instant::now();
     let d14 = diagnostics.len();
-    diagnostics.extend(connection_conformance::collect_connection_conformance_diagnostics(
-        graph, uri,
-    ));
+    diagnostics
+        .extend(connection_conformance::collect_connection_conformance_diagnostics(graph, uri));
     section_timings.push((
         "14_connection_conformance".to_string(),
         t14.elapsed().as_millis(),
@@ -654,9 +654,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     // 15) P1 expression/value/unit conformance.
     let t15 = Instant::now();
     let d15 = diagnostics.len();
-    diagnostics.extend(expression_conformance::collect_expression_conformance_diagnostics(
-        graph, uri,
-    ));
+    diagnostics
+        .extend(expression_conformance::collect_expression_conformance_diagnostics(graph, uri));
     section_timings.push((
         "15_expression_conformance".to_string(),
         t15.elapsed().as_millis(),

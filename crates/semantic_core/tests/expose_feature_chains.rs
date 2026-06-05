@@ -38,8 +38,8 @@ fn expose_feature_chain_resolves_nested_usage_in_view_projection() {
         .find(|entry| entry.uri == uri)
         .expect("parsed workspace document");
 
-    let catalog = build_view_catalog(&[uri.clone()], &[parsed_doc]);
-    let graph_dto = build_workspace_graph_dto_for_uris(&graph, &[uri.clone()]);
+    let catalog = build_view_catalog(std::slice::from_ref(&uri), &[parsed_doc]);
+    let graph_dto = build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri));
     let evaluated = evaluate_views(&catalog, &graph_dto);
     let view = evaluated
         .iter()
@@ -47,7 +47,8 @@ fn expose_feature_chain_resolves_nested_usage_in_view_projection() {
         .expect("evaluated view usage");
 
     assert!(
-        view.exposed_ids.contains("StedinRijnmondGridExpansion::rijnmondExpansionProject::architecture"),
+        view.exposed_ids
+            .contains("StedinRijnmondGridExpansion::rijnmondExpansionProject::architecture"),
         "feature-chain expose should resolve nested architecture usage, got: {:?}",
         view.exposed_ids
     );

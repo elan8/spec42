@@ -44,7 +44,7 @@ fn metadata_def_and_usage_with_attribute_bindings_have_no_semantic_diagnostics()
         .expect("metadata usage node");
 
     let def_attributes: Vec<_> = graph
-        .children_of(&metadata_def)
+        .children_of(metadata_def)
         .into_iter()
         .filter(|child| child.element_kind == "attribute def")
         .map(|child| child.name.as_str())
@@ -53,7 +53,7 @@ fn metadata_def_and_usage_with_attribute_bindings_have_no_semantic_diagnostics()
     assert!(def_attributes.contains(&"status"));
 
     let usage_attributes: Vec<_> = graph
-        .children_of(&metadata_usage)
+        .children_of(metadata_usage)
         .into_iter()
         .filter(|child| child.element_kind == "attribute")
         .map(|child| child.name.as_str())

@@ -14,8 +14,8 @@ use crate::{cli_from_global, perform_check, perform_check_with_semantics, perfor
 pub use crate::ai_tools::{CatalogInfo, ExplainDiagnosticInstance, ExplainDiagnosticResponse};
 
 pub fn handle_spec42_check(arguments: Value) -> Result<Value, String> {
-    let params: Spec42CheckParams =
-        serde_json::from_value(arguments).map_err(|e| format!("Invalid arguments for spec42_check: {e}"))?;
+    let params: Spec42CheckParams = serde_json::from_value(arguments)
+        .map_err(|e| format!("Invalid arguments for spec42_check: {e}"))?;
 
     let cli = cli_from_global(&params.global);
     let check_args = CheckArgs {
@@ -32,13 +32,14 @@ pub fn handle_spec42_check(arguments: Value) -> Result<Value, String> {
             .map_err(|e| format!("Failed to serialize semantic validation report: {e}"))
     } else {
         let report = perform_check(&cli, &check_args)?;
-        serde_json::to_value(&report).map_err(|e| format!("Failed to serialize validation report: {e}"))
+        serde_json::to_value(&report)
+            .map_err(|e| format!("Failed to serialize validation report: {e}"))
     }
 }
 
 pub fn handle_spec42_doctor(arguments: Value) -> Result<Value, String> {
-    let params: Spec42DoctorParams =
-        serde_json::from_value(arguments).map_err(|e| format!("Invalid arguments for spec42_doctor: {e}"))?;
+    let params: Spec42DoctorParams = serde_json::from_value(arguments)
+        .map_err(|e| format!("Invalid arguments for spec42_doctor: {e}"))?;
 
     let cli = cli_from_global(&params.global);
     let report = perform_doctor(&cli)?;
@@ -62,9 +63,8 @@ pub fn handle_spec42_model_summary(arguments: Value) -> Result<Value, String> {
 }
 
 pub fn handle_spec42_explain_diagnostic(arguments: Value) -> Result<Value, String> {
-    let params: Spec42ExplainDiagnosticParams = serde_json::from_value(arguments).map_err(|e| {
-        format!("Invalid arguments for spec42_explain_diagnostic: {e}")
-    })?;
+    let params: Spec42ExplainDiagnosticParams = serde_json::from_value(arguments)
+        .map_err(|e| format!("Invalid arguments for spec42_explain_diagnostic: {e}"))?;
 
     let cli = cli_from_global(&params.global);
     let response = perform_explain_diagnostic(

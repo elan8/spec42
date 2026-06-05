@@ -15,8 +15,8 @@ use std::sync::Arc;
 
 use ai_tools::{perform_explain_diagnostic, perform_model_summary};
 use cli::{
-    CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, ExplainDiagnosticArgs,
-    ModelSummaryArgs, OutputFormat, StdlibCommand, SysandCommand,
+    CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, ExplainDiagnosticArgs, ModelSummaryArgs,
+    OutputFormat, StdlibCommand, SysandCommand,
 };
 use environment::{build_doctor_report, resolve_environment, DoctorReport};
 use kernel::{
@@ -24,9 +24,9 @@ use kernel::{
     SemanticValidationReport, ValidationReport, ValidationRequest, ValidationSummary,
 };
 use mcp::schemas::Spec42GlobalParams;
+use reports::{apply_baseline, emit_validation_report};
 use serde::Serialize;
 use std::path::PathBuf;
-use reports::{apply_baseline, emit_validation_report};
 use stdlib::{managed_status, remove_standard_library};
 
 /// Run validation for the given CLI environment and [`CheckArgs`] (same logic as `spec42 check`).
@@ -156,7 +156,10 @@ pub fn build_model_summary(
         .filter(|rel| SUMMARY_RELATIONSHIP_KINDS.contains(&rel.kind.as_str()))
         .collect();
     let relationships_total = filtered.len();
-    let relationships: Vec<_> = filtered.into_iter().take(max_nodes.saturating_mul(2)).collect();
+    let relationships: Vec<_> = filtered
+        .into_iter()
+        .take(max_nodes.saturating_mul(2))
+        .collect();
 
     ModelSummaryResponse {
         workspace_root: report.validation.workspace_root,

@@ -373,10 +373,7 @@ impl UnitRegistry {
     }
 
     fn register_well_known_compound_units(&mut self) {
-        const COMPOUNDS: &[(&str, &[&str])] = &[
-            ("Wh", &["W", "h"]),
-            ("VA", &["V", "A"]),
-        ];
+        const COMPOUNDS: &[(&str, &[&str])] = &[("Wh", &["W", "h"]), ("VA", &["V", "A"])];
         for (symbol, factors) in COMPOUNDS {
             if self.has_symbol(symbol) {
                 continue;
@@ -417,7 +414,7 @@ impl UnitRegistry {
             .iter()
             .map(|(symbol, factor)| (symbol.clone(), *factor))
             .collect();
-        prefix_symbols.sort_by(|left, right| right.0.len().cmp(&left.0.len()));
+        prefix_symbols.sort_by_key(|symbol| std::cmp::Reverse(symbol.0.len()));
 
         for (prefix_symbol, prefix_factor) in &prefix_symbols {
             for base in &base_symbols {

@@ -111,7 +111,10 @@ pub fn perform_explain_diagnostic(
     })
 }
 
-pub fn perform_model_summary(cli: &Cli, args: &ModelSummaryArgs) -> Result<ModelSummaryResponse, String> {
+pub fn perform_model_summary(
+    cli: &Cli,
+    args: &ModelSummaryArgs,
+) -> Result<ModelSummaryResponse, String> {
     let check_args = CheckArgs {
         path: args.path.clone(),
         workspace_root: args.workspace_root.clone(),

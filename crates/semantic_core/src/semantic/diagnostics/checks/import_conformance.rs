@@ -2,7 +2,9 @@ use std::collections::HashSet;
 
 use url::Url;
 
-use crate::semantic::diagnostics::checks::import_resolution::{import_target, import_target_resolves};
+use crate::semantic::diagnostics::checks::import_resolution::{
+    import_target, import_target_resolves,
+};
 use crate::semantic::diagnostics::helpers::{diag, diagnostic_range, reference_token_range};
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::{SemanticDiagnostic, SemanticGraph};
@@ -47,7 +49,10 @@ fn normalized_namespace_target(target: &str) -> String {
         .to_string()
 }
 
-fn resolve_import_target_kind(graph: &SemanticGraph, import_node: &crate::SemanticNode) -> Option<String> {
+fn resolve_import_target_kind(
+    graph: &SemanticGraph,
+    import_node: &crate::SemanticNode,
+) -> Option<String> {
     let target = import_target(import_node)?;
     let lookup = if import_is_all(import_node) {
         normalized_namespace_target(target)

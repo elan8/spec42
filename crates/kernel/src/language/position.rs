@@ -80,10 +80,7 @@ pub fn unit_value_suffix_at_position(text: &str, line: u32, character: u32) -> O
             stack.push(i);
         } else if c == ']' {
             if let Some(open) = stack.pop() {
-                if pos >= open
-                    && pos <= i
-                    && is_likely_unit_suffix_before_bracket(&chars, open)
-                {
+                if pos >= open && pos <= i && is_likely_unit_suffix_before_bracket(&chars, open) {
                     match best {
                         None => best = Some((open, i)),
                         Some((best_open, _)) if open > best_open => best = Some((open, i)),

@@ -977,13 +977,8 @@ pub(super) fn build_from_package_body_element(
             }
         }
         PBE::MetadataUsage(mu_node) => {
-            let qualified = qualified_name_for_node(
-                g,
-                uri,
-                container_prefix,
-                &mu_node.name,
-                "metadata usage",
-            );
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &mu_node.name, "metadata usage");
             let mut attrs = HashMap::new();
             if let Some(ref t) = mu_node.type_name {
                 attrs.insert("metadataType".to_string(), serde_json::json!(t));

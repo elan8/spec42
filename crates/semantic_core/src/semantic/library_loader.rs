@@ -172,9 +172,7 @@ fn build_package_index(library_roots: &[String]) -> Result<PackageIndex, String>
                 .to_string_lossy()
                 .replace('\\', "/");
             let normalized_rel = rel.replace('\\', "/");
-            if lower.ends_with("units.sysml")
-                || normalized_rel.contains("Quantities and Units/")
-            {
+            if lower.ends_with("units.sysml") || normalized_rel.contains("Quantities and Units/") {
                 unit_catalog_files.push(IndexedFile {
                     root: root.clone(),
                     path: rel.clone(),

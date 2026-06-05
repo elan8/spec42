@@ -168,8 +168,10 @@ fn collect_references_for_lookup(
     if target_ids.is_empty() {
         return Vec::new();
     }
-    let def_locations: std::collections::HashSet<LocationKey> =
-        selected_defs.into_iter().map(|loc| location_key_for_location(&loc)).collect();
+    let def_locations: std::collections::HashSet<LocationKey> = selected_defs
+        .into_iter()
+        .map(|loc| location_key_for_location(&loc))
+        .collect();
 
     let mut locations: Vec<Location> = Vec::new();
     for (uri, entry) in state.index.iter() {

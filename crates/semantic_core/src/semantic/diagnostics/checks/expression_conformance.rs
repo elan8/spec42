@@ -3,8 +3,8 @@ use std::collections::HashSet;
 use url::Url;
 
 use crate::semantic::diagnostics::helpers::{
-    attribute_value_is_string_literal, declared_type_ref, diag, diagnostic_range,
-    is_synthetic, normalize_declared_type_ref, resolves_to_enum_def,
+    attribute_value_is_string_literal, declared_type_ref, diag, diagnostic_range, is_synthetic,
+    normalize_declared_type_ref, resolves_to_enum_def,
 };
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::UnitRegistry;
@@ -79,7 +79,8 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
                             "attribute_value_type_mismatch",
                             format!(
                                 "Attribute '{}' expects Boolean but was assigned '{}'.",
-                                node.name, value.trim()
+                                node.name,
+                                value.trim()
                             ),
                         ));
                     }

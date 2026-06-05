@@ -5,8 +5,7 @@ use url::Url;
 use crate::semantic::diagnostics::checks::import_resolution::has_import_in_scope;
 use crate::semantic::diagnostics::helpers::{
     declared_specializes_refs, declared_type_ref, diag, diagnostic_range, is_builtin_type_ref,
-    is_synthetic, normalize_declared_type_ref,
-    unresolved_type_diagnostic_range,
+    is_synthetic, normalize_declared_type_ref, unresolved_type_diagnostic_range,
 };
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::import_resolution::resolve_imported_node_ids_for_simple_name;
@@ -252,7 +251,8 @@ pub(in crate::semantic::diagnostics) fn collect_name_resolution_diagnostics(
         let resolved_via_import_scope = *rule6_resolution_cache
             .entry((node.id.qualified_name.clone(), normalized_type_ref.clone()))
             .or_insert_with(|| {
-                !resolve_type_reference_targets(graph, node, type_ref, RULE6_ALLOWED_KINDS).is_empty()
+                !resolve_type_reference_targets(graph, node, type_ref, RULE6_ALLOWED_KINDS)
+                    .is_empty()
             });
         let allow_graph_name_fallback = !*import_scope_cache
             .entry(node.id.qualified_name.clone())
@@ -266,8 +266,7 @@ pub(in crate::semantic::diagnostics) fn collect_name_resolution_diagnostics(
                         .iter()
                         .any(|candidate| {
                             candidate.id.uri == *uri
-                                && RULE6_ALLOWED_KINDS
-                                    .contains(&candidate.element_kind.as_str())
+                                && RULE6_ALLOWED_KINDS.contains(&candidate.element_kind.as_str())
                         })
                 })
         } else {
@@ -418,7 +417,10 @@ pub(in crate::semantic::diagnostics) fn collect_name_resolution_diagnostics(
                 continue;
             }
 
-            let lookup_name = normalized.rsplit("::").next().unwrap_or(normalized.as_str());
+            let lookup_name = normalized
+                .rsplit("::")
+                .next()
+                .unwrap_or(normalized.as_str());
             if is_ambiguous_simple_name(graph, node, lookup_name) {
                 let key = format!("{}|specializes|{}", node.id.qualified_name, lookup_name);
                 if ambiguous_seen.insert(key) {

@@ -102,7 +102,10 @@ fn mcp_spec42_model_summary_returns_nodes() {
             "max_nodes": 50,
         }))
         .expect("spec42_model_summary");
-        let nodes = value.get("nodes").and_then(|v| v.as_array()).expect("nodes");
+        let nodes = value
+            .get("nodes")
+            .and_then(|v| v.as_array())
+            .expect("nodes");
         assert!(!nodes.is_empty());
         let rels = value
             .get("relationships")
@@ -133,7 +136,10 @@ fn mcp_model_summary_respects_max_nodes() {
             truncation.get("nodes_returned").and_then(|v| v.as_u64()),
             Some(1)
         );
-        let nodes = value.get("nodes").and_then(|v| v.as_array()).expect("nodes");
+        let nodes = value
+            .get("nodes")
+            .and_then(|v| v.as_array())
+            .expect("nodes");
         assert_eq!(nodes.len(), 1);
     });
 }
@@ -161,7 +167,10 @@ fn mcp_explain_unknown_code_has_no_catalog() {
             "code": "not_a_real_diagnostic_code",
         }))
         .expect("spec42_explain_diagnostic");
-        assert!(value.get("catalog").unwrap_or(&serde_json::Value::Null).is_null());
+        assert!(value
+            .get("catalog")
+            .unwrap_or(&serde_json::Value::Null)
+            .is_null());
         let sample = value
             .get("known_codes_sample")
             .and_then(|v| v.as_array())
@@ -207,7 +216,10 @@ fn mcp_explain_with_invalid_model_lists_instances_when_diagnostics_exist() {
             .get("instances")
             .and_then(|v| v.as_array())
             .expect("instances");
-        assert!(!instances.is_empty(), "expected instances for code {first_code}");
+        assert!(
+            !instances.is_empty(),
+            "expected instances for code {first_code}"
+        );
     });
 }
 
