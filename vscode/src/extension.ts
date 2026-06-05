@@ -2005,10 +2005,20 @@ export function activate(context: vscode.ExtensionContext): void {
         if (!editor || !isSysmlDoc(editor.document)) {
           return;
         }
+        const previousReveal = modelExplorerProvider?.getDebugState().lastRevealedElementId;
         await syncModelExplorerFromEditor(
           editor,
           editor.selection.active,
           "debug:syncModelExplorerSelection"
+        );
+        if (modelExplorerProvider?.getDebugState().lastRevealedElementId !== previousReveal) {
+          return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        await syncModelExplorerFromEditor(
+          editor,
+          editor.selection.active,
+          "debug:syncModelExplorerSelection:retry"
         );
       }
     ),
