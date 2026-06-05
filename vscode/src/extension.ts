@@ -1996,6 +1996,10 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand(
       "sysml.debug.syncModelExplorerSelection",
       async (targetEditor?: vscode.TextEditor) => {
+        if (modelExplorerSelectionSyncTimer) {
+          clearTimeout(modelExplorerSelectionSyncTimer);
+          modelExplorerSelectionSyncTimer = undefined;
+        }
         const editor =
           targetEditor ??
           vscode.window.activeTextEditor ??
