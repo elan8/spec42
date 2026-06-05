@@ -107,48 +107,49 @@ The references below point to sections in `SysML_v2.txt` rather than quoting nor
 
 Spec areas: 7.5, 8.3.5, 8.4.2.
 
-- Ambiguous unqualified name: a reference resolves to multiple visible members.
-- Duplicate visible member name in the same namespace, excluding valid alias cases.
-- Invalid qualified-name path: an intermediate segment is not a namespace.
-- Import kind mismatch: namespace import targets a non-namespace, membership import targets a namespace when a wildcard was likely intended.
-- Recursive import sanity: unsupported or malformed recursive import patterns after parsing.
-- Private/protected/public visibility violation across namespaces.
-- Import filter validation: filter expression must be Boolean and refer to visible metadata/properties.
+- Done: `ambiguous_name_reference` — unqualified reference is ambiguous only when type/specializes resolution fails.
+- Done: `duplicate_namespace_member` — duplicate visible member names in a namespace.
+- Done: `invalid_qualified_name_segment` — intermediate qualified-name segment is not a namespace.
+- Done: `import_kind_mismatch` — namespace vs membership import target mismatch.
+- Done: `invalid_recursive_import` — recursive import targets a non-namespace.
+- Done: `visibility_violation` — private wildcard import re-export warning.
+- Done: `invalid_import_filter` — import filter expression is not Boolean-valued.
 
 ### P1: typing, specialization, subsetting, redefinition
 
 Spec areas: 7.6, 8.2.2.6, 8.4.2.
 
-- Type kind compatibility: a `part` should type to a part/occurrence-compatible definition, `port` to a port-compatible definition, `item` to item-compatible, etc.
-- Definition specialization kind compatibility: definitions should specialize compatible definition kinds.
-- Usage subsetting/redefinition kind compatibility: a usage should subset/redefine compatible feature kinds.
-- Redefines target resolution: resolve and validate non-empty redefines targets beyond self-reference.
-- Redefinition multiplicity conformance: redefining/subsetting feature must not loosen inherited multiplicity.
-- Redefinition type conformance: redefining feature type must conform to inherited feature type.
-- Cycle detection: direct or indirect specialization/redefinition/subsetting cycles.
+- Done: `incompatible_type_kind` — usage typed by incompatible definition kind.
+- Done: `incompatible_specializes_kind` — definition specializes incompatible base kind.
+- Done: `incompatible_subset_redefine_kind` — subset/redefine target kind mismatch.
+- Done: `unresolved_redefines_target` — redefines target does not resolve on specializing owners.
+- Done: `redefinition_multiplicity_widened` — redefinition loosens inherited multiplicity.
+- Done: `redefinition_type_incompatible` — redefinition type/value not conformant with inherited feature.
+- Done: `specialization_cycle` — specializes chain contains a cycle.
 
 ### P1: expressions, values, units, and multiplicity
 
 Spec areas: 7.7, 7.8, 7.19, 7.20, 8.4.3, 8.4.4, 8.4.15, 8.4.16, 9.2.
 
-- Attribute value type compatibility for scalar literals, enum values, booleans, strings, numerics, and references.
-- Enumeration value validation: enum-typed attributes should use a declared enumeration value.
-- Unit compatibility: quantity/unit dimensions should be compatible in assignments and calculations.
-- Boolean expression requirement: constraints, asserts, import filters, and guards should evaluate to Boolean.
-- Calculation parameter/result binding: invocation arguments should match parameter count, direction, and type.
-- Multiplicity lower/upper conformance across subsetting/redefinition, not only local syntax.
+- Done: `attribute_value_type_mismatch` — scalar literal incompatible with declared attribute type.
+- Done: `invalid_enumeration_value` — string literal not declared on enum type.
+- Done: `incompatible_unit_dimension` — unit suffix not in indexed quantity/unit catalogs.
+- Done: `non_boolean_expression` — constraint/assert/filter not Boolean-typed (when evaluation reports it).
+- Done: `calculation_binding_mismatch` — invocation arity below declared parameter count (when graph captures arg count).
+- Done: `redefinition_multiplicity_widened` — multiplicity conformance across redefinition (see typing section).
 
 ### P1: ports, connections, interfaces, and flows
 
 Spec areas: 7.12-7.16, 8.3.12-8.3.16, 8.4.8-8.4.12.
 
-- Connection endpoint resolution through feature chains with precise diagnostics for the first unresolved segment.
-- Connection endpoint ownership/context: endpoints should be connectable in the containing structural context.
-- Binding connector compatibility: bound ends should have compatible value/type semantics, not just port-like shape.
-- Interface end validation: interface ends should map to compatible port/features.
-- Flow direction compatibility, including conjugated ports.
-- Flow item type compatibility between source and target.
-- Conjugated port typing consistency.
+- Done: `ambiguous_connection_endpoint` — cataloged (emitted by graph builder).
+- Done: `unresolved_connection_segment` — first unresolved segment in pending connect endpoint chains.
+- Done: `connection_context_invalid` — endpoints not connectable in structural context.
+- Done: `binding_connector_incompatible` — binding ends with incompatible value types.
+- Done: `interface_end_invalid` — interface end missing/empty port type.
+- Done: `flow_direction_incompatible` — port feature direction mismatch (extends port compatibility).
+- Done: `flow_item_type_incompatible` — incompatible port definition pairing.
+- Done: `conjugated_port_inconsistent` — both connected ports share conjugation.
 
 ### P2: actions, states, and behavior
 

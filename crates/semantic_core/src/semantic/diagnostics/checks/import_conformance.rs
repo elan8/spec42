@@ -1,0 +1,227 @@
+use std::collections::HashSet;
+
+use url::Url;
+
+use crate::semantic::diagnostics::checks::import_resolution::{import_target, import_target_resolves};
+use crate::semantic::diagnostics::helpers::{diag, diagnostic_range, reference_token_range};
+use crate::semantic::diagnostics::types::DiagnosticSeverity;
+use crate::{SemanticDiagnostic, SemanticGraph};
+
+fn is_namespace_kind(kind: &str) -> bool {
+    matches!(
+        kind,
+        "package"
+            | "requirement def"
+            | "requirement"
+            | "use case def"
+            | "use case"
+            | "analysis def"
+            | "analysis"
+            | "verification def"
+            | "verification"
+            | "concern def"
+            | "concern"
+    )
+}
+
+fn import_is_all(node: &crate::SemanticNode) -> bool {
+    node.attributes
+        .get("importAll")
+        .and_then(|value| value.as_bool())
+        .unwrap_or(false)
+}
+
+fn import_is_recursive(node: &crate::SemanticNode) -> bool {
+    node.attributes
+        .get("recursive")
+        .and_then(|value| value.as_bool())
+        .unwrap_or(false)
+}
+
+fn normalized_namespace_target(target: &str) -> String {
+    target
+        .trim()
+        .trim_end_matches("::**")
+        .trim_end_matches("::*")
+        .trim()
+        .to_string()
+}
+
+fn resolve_import_target_kind(graph: &SemanticGraph, import_node: &crate::SemanticNode) -> Option<String> {
+    let target = import_target(import_node)?;
+    let lookup = if import_is_all(import_node) {
+        normalized_namespace_target(target)
+    } else {
+        target.trim().trim_end_matches("::**").trim().to_string()
+    };
+    graph
+        .nodes_by_uri
+        .values()
+        .flatten()
+        .find(|id| id.qualified_name == lookup)
+        .and_then(|id| graph.get_node(id))
+        .map(|node| node.element_kind.clone())
+}
+
+fn is_booleanish_filter(condition: &str) -> bool {
+    let trimmed = condition.trim();
+    if trimmed.is_empty() {
+        return false;
+    }
+    matches!(
+        trimmed.to_ascii_lowercase().as_str(),
+        "true" | "false" | "not" | "and" | "or" | "xor"
+    ) || trimmed.contains("==")
+        || trimmed.contains("!=")
+        || trimmed.contains(">")
+        || trimmed.contains("<")
+        || trimmed.contains("not ")
+        || trimmed.contains(" and ")
+        || trimmed.contains(" or ")
+}
+
+pub(in crate::semantic::diagnostics) fn collect_import_conformance_diagnostics(
+    graph: &SemanticGraph,
+    uri: &Url,
+) -> Vec<SemanticDiagnostic> {
+    let mut diagnostics = Vec::new();
+    let mut seen = HashSet::new();
+
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "import" {
+            continue;
+        }
+        let Some(target) = import_target(node) else {
+            continue;
+        };
+        let range = reference_token_range(node, target)
+            .unwrap_or_else(|| diagnostic_range(graph, node, None));
+
+        if !import_target_resolves(graph, node) {
+            let key = format!("unresolved|{}", target);
+            if seen.insert(key) {
+                diagnostics.push(diag(
+                    uri,
+                    range,
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "unresolved_import_target",
+                    format!(
+                        "Imported package/member '{}' could not be resolved in the semantic graph.",
+                        target
+                    ),
+                ));
+            }
+            continue;
+        }
+
+        if let Some(resolved_kind) = resolve_import_target_kind(graph, node) {
+            if import_is_all(node) && !is_namespace_kind(&resolved_kind) {
+                let key = format!("kind|{}", node.id.qualified_name);
+                if seen.insert(key) {
+                    diagnostics.push(diag(
+                        uri,
+                        range,
+                        DiagnosticSeverity::Warning,
+                        "semantic",
+                        "import_kind_mismatch",
+                        format!(
+                            "Namespace import '{}' targets '{}' which is a '{}', not a namespace.",
+                            target, target, resolved_kind
+                        ),
+                    ));
+                }
+            }
+            if !import_is_all(node)
+                && is_namespace_kind(&resolved_kind)
+                && (target.contains("::*") || target.ends_with("::**"))
+            {
+                let key = format!("membership|{}", node.id.qualified_name);
+                if seen.insert(key) {
+                    diagnostics.push(diag(
+                        uri,
+                        range,
+                        DiagnosticSeverity::Warning,
+                        "semantic",
+                        "import_kind_mismatch",
+                        format!(
+                            "Membership import '{}' targets namespace '{}'; use a namespace import for wildcard targets.",
+                            target, target
+                        ),
+                    ));
+                }
+            }
+            if import_is_recursive(node) && !is_namespace_kind(&resolved_kind) {
+                let key = format!("recursive|{}", node.id.qualified_name);
+                if seen.insert(key) {
+                    diagnostics.push(diag(
+                        uri,
+                        range,
+                        DiagnosticSeverity::Warning,
+                        "semantic",
+                        "invalid_recursive_import",
+                        format!(
+                            "Recursive import '{}' targets '{}', which is not a namespace.",
+                            target, resolved_kind
+                        ),
+                    ));
+                }
+            }
+        }
+
+        let visibility = node
+            .attributes
+            .get("visibility")
+            .and_then(|value| value.as_str())
+            .unwrap_or("Private");
+        if visibility.contains("Private") && import_is_all(node) {
+            let key = format!("visibility|{}", node.id.qualified_name);
+            if seen.insert(key) {
+                diagnostics.push(diag(
+                    uri,
+                    range,
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "visibility_violation",
+                    format!(
+                        "Import of '{}' is private but re-exports an entire namespace; use public import when exposing imported members.",
+                        target
+                    ),
+                ));
+            }
+        }
+    }
+
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "filter" {
+            continue;
+        }
+        let Some(condition) = node
+            .attributes
+            .get("condition")
+            .and_then(|value| value.as_str())
+        else {
+            continue;
+        };
+        if is_booleanish_filter(condition) {
+            continue;
+        }
+        let key = format!("filter|{}", node.id.qualified_name);
+        if !seen.insert(key) {
+            continue;
+        }
+        diagnostics.push(diag(
+            uri,
+            diagnostic_range(graph, node, None),
+            DiagnosticSeverity::Warning,
+            "semantic",
+            "invalid_import_filter",
+            format!(
+                "Import filter expression '{}' must be Boolean-valued.",
+                condition
+            ),
+        ));
+    }
+
+    diagnostics
+}

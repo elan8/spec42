@@ -4,44 +4,22 @@
 //! diagnostics such as: unconnected ports, connection to non-port, port type mismatch.
 
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashSet,
     time::Instant,
 };
 use url::Url;
 
-use crate::semantic::diagnostics::checks::import_resolution::{
-    has_import_in_scope, import_target, import_target_resolves,
+use crate::semantic::diagnostics::checks::{
+    connection_conformance, expression_conformance, import_conformance, kind_compatibility,
+    name_resolution,
 };
 use crate::semantic::diagnostics::helpers::*;
 use crate::semantic::diagnostics::relationship_endpoint_messages::builder_relationship_diagnostic_to_emit;
 use crate::semantic::diagnostics::types::{DiagnosticRelatedInfo, DiagnosticSeverity};
-use crate::semantic::relationships::SPECIALIZES_TARGET_KINDS;
 use crate::{
     resolve_inherited_member_via_type, RelationshipKind, ResolveResult, SemanticDiagnostic,
     SemanticGraph,
 };
-
-const RULE6_ALLOWED_KINDS: &[&str] = &[
-    "part def",
-    "port def",
-    "interface",
-    "item def",
-    "attribute def",
-    "action def",
-    "actor def",
-    "occurrence def",
-    "flow def",
-    "allocation def",
-    "state def",
-    "requirement def",
-    "use case def",
-    "concern def",
-    "enum def",
-    "alias",
-    "kermlDecl",
-    "view def",
-    "viewpoint def",
-];
 
 fn is_view_kind(kind: &str) -> bool {
     matches!(kind, "view" | "view def")
@@ -57,12 +35,6 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     let mut diagnostics = Vec::new();
     let total_start = Instant::now();
     let mut section_timings = Vec::<(String, u128, usize)>::new();
-    let mut import_scope_cache = HashMap::<String, bool>::new();
-    let mut rule6_resolution_cache = HashMap::<(String, String), bool>::new();
-    let mut rule7_resolution_cache = HashMap::<(String, String), bool>::new();
-    let mut rule6_graph_name_fallback_cache = HashMap::<String, bool>::new();
-    let mut rule7_graph_name_fallback_cache = HashMap::<String, bool>::new();
-
     // 0) Explicit builder diagnostics (e.g. ambiguous endpoint resolution).
     let t0 = Instant::now();
     let d0 = diagnostics.len();
@@ -253,236 +225,34 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         diagnostics.len().saturating_sub(d4),
     ));
 
-    // 5) Import targets should resolve to known namespace/member declarations.
+    // 5) P1 import conformance (unresolved imports, kind mismatch, visibility, filters).
     let t5 = Instant::now();
     let d5 = diagnostics.len();
-    for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "import" || import_target_resolves(graph, node) {
-            continue;
-        }
-        let Some(target) = import_target(node) else {
-            continue;
-        };
-        diagnostics.push(diag(
-            uri,
-            reference_token_range(node, target)
-                .unwrap_or_else(|| diagnostic_range(graph, node, None)),
-            DiagnosticSeverity::Warning,
-            "semantic",
-            "unresolved_import_target",
-            format!(
-                "Imported package/member '{}' could not be resolved in the semantic graph.",
-                target
-            ),
-        ));
-    }
+    diagnostics.extend(import_conformance::collect_import_conformance_diagnostics(graph, uri));
     section_timings.push((
-        "5_unresolved_import_targets".to_string(),
+        "5_import_conformance".to_string(),
         t5.elapsed().as_millis(),
         diagnostics.len().saturating_sub(d5),
     ));
 
-    // 6) Stronger typing checks: declarations that name a type should resolve via typing/specializes.
+    // 6) P1 name resolution (type/specializes refs, ambiguity, qualified-name segments, duplicates).
     let t6 = Instant::now();
     let d6 = diagnostics.len();
-    let mut unresolved_seen: HashSet<String> = HashSet::new();
-    for node in graph.nodes_for_uri(uri) {
-        if is_synthetic(node) {
-            continue;
-        }
-        let Some(type_ref) = declared_type_ref(node) else {
-            continue;
-        };
-        let normalized_type_ref = normalize_declared_type_ref(type_ref);
-        if is_builtin_type_ref(&normalized_type_ref) {
-            continue;
-        }
-        let has_resolved_type = !graph
-            .outgoing_typing_or_specializes_targets(node)
-            .is_empty();
-        let resolved_via_import_scope = *rule6_resolution_cache
-            .entry((node.id.qualified_name.clone(), normalized_type_ref.clone()))
-            .or_insert_with(|| {
-                !crate::resolve_type_reference_targets(graph, node, type_ref, RULE6_ALLOWED_KINDS)
-                    .is_empty()
-            });
-        let allow_graph_name_fallback = !*import_scope_cache
-            .entry(node.id.qualified_name.clone())
-            .or_insert_with(|| has_import_in_scope(graph, node));
-        let resolved_via_graph_name_fallback = if allow_graph_name_fallback {
-            *rule6_graph_name_fallback_cache
-                .entry(normalized_type_ref.clone())
-                .or_insert_with(|| {
-                    graph
-                        .nodes_named(&normalized_type_ref)
-                        .iter()
-                        .any(|candidate| {
-                            candidate.id.uri == *uri
-                                && matches!(
-                                    candidate.element_kind.as_str(),
-                                    "part def"
-                                        | "port def"
-                                        | "interface"
-                                        | "item def"
-                                        | "attribute def"
-                                        | "action def"
-                                        | "actor def"
-                                        | "occurrence def"
-                                        | "flow def"
-                                        | "allocation def"
-                                        | "state def"
-                                        | "requirement def"
-                                        | "use case def"
-                                        | "concern def"
-                                        | "enum def"
-                                        | "alias"
-                                        | "kermlDecl"
-                                        | "view def"
-                                        | "viewpoint def"
-                                )
-                        })
-                })
-        } else {
-            false
-        };
-        if has_resolved_type
-            || resolved_via_import_scope
-            || (allow_graph_name_fallback && resolved_via_graph_name_fallback)
-        {
-            continue;
-        }
-        let Some(range) = unresolved_type_diagnostic_range(node, type_ref) else {
-            continue;
-        };
-        let key = format!(
-            "{}|{}|{}:{}:{}:{}:{}",
-            node.id.qualified_name,
-            normalized_type_ref,
-            range.start.line,
-            range.start.character,
-            range.end.line,
-            range.end.character,
-            node.name
-        );
-        if !unresolved_seen.insert(key) {
-            continue;
-        }
-        let is_ref_usage = node
-            .attributes
-            .get("refType")
-            .and_then(|value| value.as_str())
-            .map(str::trim)
-            .filter(|value| !value.is_empty())
-            .is_some();
-        let (code, message) = if is_ref_usage {
-            (
-                "unresolved_ref_type_reference",
-                format!(
-                    "Reference type '{}' for ref '{}' could not be resolved in the semantic graph (owner: '{}').",
-                    type_ref,
-                    node.name,
-                    node.id.qualified_name
-                ),
-            )
-        } else {
-            (
-                "unresolved_type_reference",
-                format!(
-                    "Type reference '{}' for '{}' could not be resolved in the semantic graph.",
-                    type_ref, node.name
-                ),
-            )
-        };
-        diagnostics.push(diag(
-            uri,
-            range,
-            DiagnosticSeverity::Warning,
-            "semantic",
-            code,
-            message,
-        ));
-    }
+    diagnostics.extend(name_resolution::collect_name_resolution_diagnostics(graph, uri));
     section_timings.push((
-        "6_unresolved_type_references".to_string(),
+        "6_name_resolution".to_string(),
         t6.elapsed().as_millis(),
         diagnostics.len().saturating_sub(d6),
     ));
 
-    // 7) Specialization references should resolve to known definitions.
+    // 7) P1 kind compatibility (typing, specializes, redefinition conformance, cycles).
     let t7 = Instant::now();
     let d7 = diagnostics.len();
-    let mut unresolved_specializes_seen: HashSet<String> = HashSet::new();
-    for node in graph.nodes_for_uri(uri) {
-        if is_synthetic(node) {
-            continue;
-        }
-        for specializes_ref in declared_specializes_refs(node) {
-            let normalized = normalize_declared_type_ref(&specializes_ref);
-            if normalized.is_empty() || is_builtin_type_ref(&normalized) {
-                continue;
-            }
-            let resolved_via_import_scope = *rule7_resolution_cache
-                .entry((node.id.qualified_name.clone(), normalized.clone()))
-                .or_insert_with(|| {
-                    !crate::resolve_type_reference_targets(
-                        graph,
-                        node,
-                        &specializes_ref,
-                        SPECIALIZES_TARGET_KINDS,
-                    )
-                    .is_empty()
-                });
-            let allow_graph_name_fallback = !*import_scope_cache
-                .entry(node.id.qualified_name.clone())
-                .or_insert_with(|| has_import_in_scope(graph, node));
-            let resolved_via_graph_name_fallback = if allow_graph_name_fallback {
-                *rule7_graph_name_fallback_cache
-                    .entry(normalized.clone())
-                    .or_insert_with(|| {
-                        graph.nodes_named(&normalized).iter().any(|candidate| {
-                            candidate.id.uri == *uri
-                                && SPECIALIZES_TARGET_KINDS
-                                    .contains(&candidate.element_kind.as_str())
-                        })
-                    })
-            } else {
-                false
-            };
-            if resolved_via_import_scope
-                || (allow_graph_name_fallback && resolved_via_graph_name_fallback)
-            {
-                continue;
-            }
-            let Some(range) = unresolved_type_diagnostic_range(node, &specializes_ref) else {
-                continue;
-            };
-            let key = format!(
-                "{}|{}|{}:{}:{}:{}:{}",
-                node.id.qualified_name,
-                normalized,
-                range.start.line,
-                range.start.character,
-                range.end.line,
-                range.end.character,
-                node.name
-            );
-            if !unresolved_specializes_seen.insert(key) {
-                continue;
-            }
-            diagnostics.push(diag(uri,
-                range,
-                DiagnosticSeverity::Warning,
-                "semantic",
-                "unresolved_specializes_reference",
-                format!(
-                    "Specializes reference '{}' for '{}' could not be resolved in the semantic graph.",
-                    specializes_ref, node.name
-                ),
-            ));
-        }
-    }
+    diagnostics.extend(kind_compatibility::collect_kind_compatibility_diagnostics(
+        graph, uri,
+    ));
     section_timings.push((
-        "7_unresolved_specializes_references".to_string(),
+        "7_kind_compatibility".to_string(),
         t7.elapsed().as_millis(),
         diagnostics.len().saturating_sub(d7),
     ));
@@ -869,17 +639,41 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         diagnostics.len().saturating_sub(d13),
     ));
 
+    // 14) P1 connection/interface/flow conformance.
     let t14 = Instant::now();
     let d14 = diagnostics.len();
+    diagnostics.extend(connection_conformance::collect_connection_conformance_diagnostics(
+        graph, uri,
+    ));
+    section_timings.push((
+        "14_connection_conformance".to_string(),
+        t14.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d14),
+    ));
+
+    // 15) P1 expression/value/unit conformance.
+    let t15 = Instant::now();
+    let d15 = diagnostics.len();
+    diagnostics.extend(expression_conformance::collect_expression_conformance_diagnostics(
+        graph, uri,
+    ));
+    section_timings.push((
+        "15_expression_conformance".to_string(),
+        t15.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d15),
+    ));
+
+    let t16 = Instant::now();
+    let d16 = diagnostics.len();
     super::pending_relationship_diagnostics::append_unresolved_pending_relationship_diagnostics(
         graph,
         uri,
         &mut diagnostics,
     );
     section_timings.push((
-        "14_unresolved_pending_relationships".to_string(),
-        t14.elapsed().as_millis(),
-        diagnostics.len().saturating_sub(d14),
+        "16_unresolved_pending_relationships".to_string(),
+        t16.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d16),
     ));
 
     if std::env::var("SEMANTIC_CORE_TIMING")
