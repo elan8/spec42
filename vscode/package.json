@@ -4,7 +4,7 @@
   "publisher": "Elan8",
   "icon": "logo/logo.png",
   "description": "SysML v2 and KerML editor with live validation, navigation, Model Explorer, diagram views, CLI checks and GitHub Action support.",
-  "version": "0.27.0",
+  "version": "0.27.1",
   "license": "MIT",
   "keywords": [
     "sysml",

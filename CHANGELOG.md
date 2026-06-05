@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.27.1] - 2026-06-05
+
+### Added
+
+- **Diagnostic roadmap** - Added [docs/DIAGNOSTIC-CHECKS-ROADMAP.md](docs/DIAGNOSTIC-CHECKS-ROADMAP.md) to document status and rollout sequencing for diagnostic quality checks.
+- **Regression coverage** - Expanded integration and unit tests for unresolved-reference diagnostics, rename/reference behavior, and startup/update flow gating.
+
+### Changed
+
+- **Semantic diagnostics** - Refined unresolved relationship and reference diagnostics, including clearer endpoint messaging and post-processing behavior.
+- **Reference and rename resilience** - Improved reference resolution and rename flows to handle broader document/editing scenarios with better stability.
+- **Model Explorer sync reliability** - Added a retry path for debug source-to-explorer selection sync to reduce CI flakiness under concurrent refresh activity.
+- **Release surface alignment** - Rust workspace, `spec42` server, VS Code extension, and Zed extension versions aligned at `0.27.1`.
+
 ## [0.27.0] - 2026-06-04
 
 ### Added
@@ -524,6 +538,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.27.1]: https://github.com/elan8/spec42/releases/tag/v0.27.1
 [0.27.0]: https://github.com/elan8/spec42/releases/tag/v0.27.0
 [0.26.3]: https://github.com/elan8/spec42/releases/tag/v0.26.3
 [0.26.2]: https://github.com/elan8/spec42/releases/tag/v0.26.2
