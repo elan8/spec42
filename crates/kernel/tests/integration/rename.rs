@@ -189,11 +189,15 @@ fn lsp_rename_does_not_touch_same_file_homonyms() {
     let changes = rename_changes(&mut session, uri, line, character + 6, "display");
     let edits = changes[uri].as_array().expect("file edits");
     assert!(
-        edits.iter().any(|edit| edit["range"]["start"]["line"].as_u64() == Some(2)),
+        edits
+            .iter()
+            .any(|edit| edit["range"]["start"]["line"].as_u64() == Some(2)),
         "rename should include Laptop::hdmi declaration: {edits:?}"
     );
     assert!(
-        !edits.iter().any(|edit| edit["range"]["start"]["line"].as_u64() == Some(5)),
+        !edits
+            .iter()
+            .any(|edit| edit["range"]["start"]["line"].as_u64() == Some(5)),
         "rename should not include Monitor::hdmi declaration: {edits:?}"
     );
     assert_eq!(
@@ -224,11 +228,15 @@ fn lsp_rename_ignores_comments_and_strings() {
     let changes = rename_changes(&mut session, uri, line, character + 9, "Motor");
     let edits = changes[uri].as_array().expect("file edits");
     assert!(
-        edits.iter().any(|edit| edit["range"]["start"]["line"].as_u64() == Some(1)),
+        edits
+            .iter()
+            .any(|edit| edit["range"]["start"]["line"].as_u64() == Some(1)),
         "rename should include declaration: {edits:?}"
     );
     assert!(
-        edits.iter().any(|edit| edit["range"]["start"]["line"].as_u64() == Some(2)),
+        edits
+            .iter()
+            .any(|edit| edit["range"]["start"]["line"].as_u64() == Some(2)),
         "rename should include typed usage: {edits:?}"
     );
     assert!(
@@ -259,5 +267,94 @@ fn lsp_prepare_rename_rejects_comments() {
     assert!(
         response["result"].is_null(),
         "prepareRename should reject comment text: {response}"
+    );
+}
+
+#[test]
+fn lsp_rename_does_not_edit_configured_libraries() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root = temp.path().canonicalize().expect("canonical temp root");
+    let workspace_root = root.join("workspace");
+    let library_root = root.join("libraries");
+    let workspace_uri =
+        url::Url::from_file_path(workspace_root.join("app.sysml")).expect("workspace uri");
+    let library_uri =
+        url::Url::from_file_path(library_root.join("domain.sysml")).expect("library uri");
+    let library_path = library_root.to_string_lossy().to_string();
+
+    let workspace_content = "package App { part def SharedThing; part localUse : SharedThing; }";
+    let library_content =
+        "package Domain { part def SharedThing; part libraryUse : SharedThing; }";
+
+    let mut session = TestSession::new();
+    session.initialize_with_options(
+        "rename_library_filter_test",
+        Some(serde_json::json!({ "libraryPaths": [library_path] })),
+    );
+    session.did_open(workspace_uri.as_str(), workspace_content, 1);
+    session.did_open(library_uri.as_str(), library_content, 1);
+    session.barrier();
+
+    let (line, character) = position_for(workspace_content, "part def SharedThing;");
+    let changes = rename_changes(
+        &mut session,
+        workspace_uri.as_str(),
+        line,
+        character + 9,
+        "RenamedThing",
+    );
+
+    let changed_uris = changes.keys().map(String::as_str).collect::<Vec<_>>();
+    assert!(
+        changed_uris
+            .iter()
+            .any(|uri| uri.ends_with("/workspace/app.sysml")),
+        "rename should still edit workspace references: {changes:?}"
+    );
+    assert!(
+        !changed_uris
+            .iter()
+            .any(|uri| uri.ends_with("/libraries/domain.sysml")),
+        "rename must not include edits for configured libraries: {changes:?}"
+    );
+}
+
+#[test]
+fn lsp_rename_rejects_symbols_defined_in_configured_libraries() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root = temp.path().canonicalize().expect("canonical temp root");
+    let workspace_root = root.join("workspace");
+    let library_root = root.join("libraries");
+    let workspace_uri =
+        url::Url::from_file_path(workspace_root.join("app.sysml")).expect("workspace uri");
+    let library_uri =
+        url::Url::from_file_path(library_root.join("domain.sysml")).expect("library uri");
+    let library_path = library_root.to_string_lossy().to_string();
+
+    let workspace_content = "package App { part localUse : LibraryThing; }";
+    let library_content = "package Domain { part def LibraryThing; }";
+
+    let mut session = TestSession::new();
+    session.initialize_with_options(
+        "rename_library_symbol_reject_test",
+        Some(serde_json::json!({ "libraryPaths": [library_path] })),
+    );
+    session.did_open(library_uri.as_str(), library_content, 1);
+    session.did_open(workspace_uri.as_str(), workspace_content, 1);
+    session.barrier();
+
+    let (line, character) = position_for(workspace_content, "LibraryThing");
+    let response = session.request(
+        "textDocument/rename",
+        serde_json::json!({
+            "textDocument": { "uri": workspace_uri.as_str() },
+            "position": { "line": line, "character": character + 1 },
+            "newName": "RenamedThing"
+        }),
+    );
+
+    assert!(
+        response["result"].is_null(),
+        "rename should reject symbols whose definition is in a configured library: {response}"
     );
 }

@@ -122,17 +122,29 @@ impl TestSession {
     }
 
     pub fn initialize_default(&mut self, client_name: &str) {
+        self.initialize_with_options(client_name, None);
+    }
+
+    pub fn initialize_with_options(
+        &mut self,
+        client_name: &str,
+        initialization_options: Option<serde_json::Value>,
+    ) {
         let init_id = next_id();
+        let mut params = serde_json::json!({
+            "processId": null,
+            "rootUri": null,
+            "capabilities": {},
+            "clientInfo": { "name": client_name, "version": "0.1.0" }
+        });
+        if let Some(options) = initialization_options {
+            params["initializationOptions"] = options;
+        }
         let init_req = serde_json::json!({
             "jsonrpc": "2.0",
             "id": init_id,
             "method": "initialize",
-            "params": {
-                "processId": null,
-                "rootUri": null,
-                "capabilities": {},
-                "clientInfo": { "name": client_name, "version": "0.1.0" }
-            }
+            "params": params
         });
         send_message(&mut self.stdin, &init_req.to_string());
         let _ = read_response(&mut self.stdout, init_id).expect("initialize response");

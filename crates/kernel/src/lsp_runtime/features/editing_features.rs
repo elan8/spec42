@@ -92,9 +92,20 @@ pub(crate) fn prepare_rename(
     pos: Position,
 ) -> Result<Option<PrepareRenameResponse>> {
     let uri_norm = util::normalize_file_uri(&uri);
+    if util::uri_under_any_library(&uri_norm, &state.library_paths) {
+        return Ok(None);
+    }
     let target = match references_resolver::resolve_symbol_target_at_position(state, &uri_norm, pos)
     {
-        Some(target) if target.is_renameable => target,
+        Some(target)
+            if target.is_renameable
+                && !util::uri_under_any_library(
+                    &target.definition_location.uri,
+                    &state.library_paths,
+                ) =>
+        {
+            target
+        }
         _ => return Ok(None),
     };
     Ok(Some(PrepareRenameResponse::Range(Range::new(
@@ -110,11 +121,22 @@ pub(crate) fn rename(
     new_name: String,
 ) -> Result<Option<WorkspaceEdit>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let _target = match references_resolver::resolve_symbol_target_at_position(state, &uri_norm, pos)
-    {
-        Some(target) if target.is_renameable => target,
-        _ => return Ok(None),
-    };
+    if util::uri_under_any_library(&uri_norm, &state.library_paths) {
+        return Ok(None);
+    }
+    let _target =
+        match references_resolver::resolve_symbol_target_at_position(state, &uri_norm, pos) {
+            Some(target)
+                if target.is_renameable
+                    && !util::uri_under_any_library(
+                        &target.definition_location.uri,
+                        &state.library_paths,
+                    ) =>
+            {
+                target
+            }
+            _ => return Ok(None),
+        };
 
     let locations =
         match references_resolver::resolved_references_at_position(state, &uri_norm, pos, true) {
@@ -125,6 +147,9 @@ pub(crate) fn rename(
     let mut changes: std::collections::HashMap<Url, Vec<TextEdit>> =
         std::collections::HashMap::new();
     for location in locations {
+        if util::uri_under_any_library(&location.uri, &state.library_paths) {
+            continue;
+        }
         changes
             .entry(location.uri.clone())
             .or_default()
