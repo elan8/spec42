@@ -128,7 +128,7 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
             if let Some(unit_start) = value.find('[') {
                 if let Some(unit_end) = value[unit_start + 1..].find(']') {
                     let unit_expr = value[unit_start + 1..unit_start + 1 + unit_end].trim();
-                    if !unit_expr.is_empty() && !units.has_symbol(unit_expr) {
+                    if !unit_expr.is_empty() && !units.is_recognized_unit_expression(unit_expr) {
                         let key = format!("unit|{}", node.id.qualified_name);
                         if seen.insert(key) {
                             diagnostics.push(diag(

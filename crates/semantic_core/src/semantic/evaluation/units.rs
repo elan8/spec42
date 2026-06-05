@@ -18,6 +18,8 @@ pub struct UnitDef {
 pub struct UnitRegistry {
     by_symbol: HashMap<String, UnitDef>,
     conflicted_symbols: HashSet<String>,
+    prefixes_by_name: HashMap<String, f64>,
+    prefixes_by_symbol: HashMap<String, f64>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -84,6 +86,7 @@ impl UnitRegistry {
                 registry.ingest_file_contents(&contents);
             }
         }
+        registry.finalize_ingest();
         registry
     }
 
@@ -99,6 +102,7 @@ impl UnitRegistry {
                 registry.ingest_file_contents(content);
             }
         }
+        registry.finalize_ingest();
         registry
     }
 
@@ -109,6 +113,7 @@ impl UnitRegistry {
     /// Ingests linear unit definitions from SysML library text (`attribute <EUR> … : SomeUnit;`).
     pub fn ingest_unit_catalog(&mut self, sysml_contents: &str) {
         self.ingest_file_contents(sysml_contents);
+        self.finalize_ingest();
     }
 
     pub fn get(&self, symbol: &str) -> Option<&UnitDef> {
@@ -150,6 +155,11 @@ impl UnitRegistry {
 
     pub fn has_symbol(&self, symbol: &str) -> bool {
         self.by_symbol.contains_key(&normalize_symbol(symbol))
+    }
+
+    /// Returns true when every factor in a unit expression resolves against indexed catalogs.
+    pub fn is_recognized_unit_expression(&self, raw_unit: &str) -> bool {
+        self.canonicalize_unit_expr(Some(raw_unit)).is_ok()
     }
 
     pub fn convert_value(&self, value: f64, from: &str, to: &str) -> Result<f64, UnitError> {
@@ -286,6 +296,11 @@ impl UnitRegistry {
                 idx += 1;
                 continue;
             }
+            if trimmed.contains("UnitPrefix") && !trimmed.contains('{') {
+                self.ingest_unit_prefix_line(trimmed);
+                idx += 1;
+                continue;
+            }
             if trimmed.contains(": IntervalScale {") {
                 idx = self.ingest_interval_scale_block(&lines, idx);
                 continue;
@@ -302,7 +317,16 @@ impl UnitRegistry {
                     .map(|line| line.trim())
                     .collect::<Vec<_>>()
                     .join(" ");
-                if let Some(def) = parse_linear_unit_def(&block) {
+                if block.contains("UnitPrefix") {
+                    self.ingest_unit_prefix_line(&block);
+                } else if let Some(mut def) = parse_conversion_by_prefix_def(&block) {
+                    if let Some(prefix_name) = extract_assignment(&block, "prefix") {
+                        if let Some(factor) = prefix_factor_by_name(self, &prefix_name) {
+                            def.conversion_factor = factor;
+                        }
+                    }
+                    self.upsert_unit_def(def);
+                } else if let Some(def) = parse_linear_unit_def(&block) {
                     self.upsert_unit_def(def);
                 }
                 idx = end;
@@ -312,6 +336,106 @@ impl UnitRegistry {
                 self.upsert_unit_def(def);
             }
             idx += 1;
+        }
+    }
+
+    fn ingest_unit_prefix_line(&mut self, line: &str) {
+        let Some(name) = extract_bare_attribute_name(line) else {
+            return;
+        };
+        let factor = extract_assignment(line, "conversionFactor")
+            .and_then(|raw| parse_factor_expression(&raw));
+        if let Some(factor) = factor {
+            self.prefixes_by_name.insert(name.clone(), factor);
+        }
+        if let Some(symbol) = extract_assignment(line, "symbol") {
+            if let Some(factor) = factor {
+                self.prefixes_by_symbol.insert(symbol, factor);
+            }
+        }
+    }
+
+    fn finalize_ingest(&mut self) {
+        self.seed_default_si_prefixes();
+        self.register_well_known_compound_units();
+        self.derive_si_prefixed_units();
+    }
+
+    fn seed_default_si_prefixes(&mut self) {
+        for (name, symbol, factor) in DEFAULT_SI_PREFIXES {
+            self.prefixes_by_name
+                .entry(name.to_string())
+                .or_insert(*factor);
+            self.prefixes_by_symbol
+                .entry(symbol.to_string())
+                .or_insert(*factor);
+        }
+    }
+
+    fn register_well_known_compound_units(&mut self) {
+        const COMPOUNDS: &[(&str, &[&str])] = &[
+            ("Wh", &["W", "h"]),
+            ("VA", &["V", "A"]),
+        ];
+        for (symbol, factors) in COMPOUNDS {
+            if self.has_symbol(symbol) {
+                continue;
+            }
+            if !factors.iter().all(|factor| self.has_symbol(factor)) {
+                continue;
+            }
+            let Some(dimension) = self
+                .by_symbol
+                .get(&normalize_symbol(factors[0]))
+                .map(|def| def.dimension.clone())
+            else {
+                continue;
+            };
+            self.upsert_unit_def(UnitDef {
+                symbol: symbol.to_string(),
+                dimension,
+                reference_unit: None,
+                conversion_factor: 1.0,
+                conversion_offset: 0.0,
+            });
+        }
+    }
+
+    fn derive_si_prefixed_units(&mut self) {
+        // Only derive from root library units (no referenceUnit). Prefixed units such as
+        // `km` already carry a reference and must not seed further prefix combinations.
+        let base_symbols: Vec<String> = self
+            .by_symbol
+            .iter()
+            .filter(|(symbol, def)| {
+                !self.conflicted_symbols.contains(*symbol) && def.reference_unit.is_none()
+            })
+            .map(|(symbol, _)| symbol.clone())
+            .collect();
+        let mut prefix_symbols: Vec<(String, f64)> = self
+            .prefixes_by_symbol
+            .iter()
+            .map(|(symbol, factor)| (symbol.clone(), *factor))
+            .collect();
+        prefix_symbols.sort_by(|left, right| right.0.len().cmp(&left.0.len()));
+
+        for (prefix_symbol, prefix_factor) in &prefix_symbols {
+            for base in &base_symbols {
+                let derived = format!("{prefix_symbol}{base}");
+                if self.has_symbol(&derived) {
+                    continue;
+                }
+                let Some(base_def) = self.by_symbol.get(base) else {
+                    continue;
+                };
+                self.upsert_unit_def(UnitDef {
+                    symbol: derived,
+                    dimension: base_def.dimension.clone(),
+                    reference_unit: Some(base.clone()),
+                    conversion_factor: *prefix_factor,
+                    conversion_offset: 0.0,
+                });
+            }
         }
     }
 
@@ -355,6 +479,73 @@ impl UnitRegistry {
         self.upsert_unit_def(abs_def);
         idx
     }
+}
+
+const DEFAULT_SI_PREFIXES: &[(&str, &str, f64)] = &[
+    ("yocto", "y", 1E-24),
+    ("zepto", "z", 1E-21),
+    ("atto", "a", 1E-18),
+    ("femto", "f", 1E-15),
+    ("pico", "p", 1E-12),
+    ("nano", "n", 1E-9),
+    ("micro", "μ", 1E-6),
+    ("milli", "m", 1E-3),
+    ("centi", "c", 1E-2),
+    ("deci", "d", 1E-1),
+    ("deca", "da", 1E1),
+    ("hecto", "h", 1E2),
+    ("kilo", "k", 1E3),
+    ("mega", "M", 1E6),
+    ("giga", "G", 1E9),
+    ("tera", "T", 1E12),
+    ("peta", "P", 1E15),
+    ("exa", "E", 1E18),
+    ("zetta", "Z", 1E21),
+    ("yotta", "Y", 1E24),
+    ("kibi", "Ki", 1024.0),
+    ("mebi", "Mi", 1_048_576.0),
+    ("gibi", "Gi", 1_073_741_824.0),
+];
+
+fn extract_bare_attribute_name(line: &str) -> Option<String> {
+    let rest = line.strip_prefix("attribute ")?.trim_start();
+    let end = rest.find([':', '{', ';']).unwrap_or(rest.len());
+    let name = rest[..end].trim();
+    if name.is_empty() {
+        None
+    } else {
+        Some(name.to_string())
+    }
+}
+
+fn prefix_factor_by_name(registry: &UnitRegistry, prefix_name: &str) -> Option<f64> {
+    registry
+        .prefixes_by_name
+        .get(prefix_name)
+        .copied()
+        .or_else(|| {
+            DEFAULT_SI_PREFIXES
+                .iter()
+                .find(|(name, _, _)| *name == prefix_name)
+                .map(|(_, _, factor)| *factor)
+        })
+}
+
+fn parse_conversion_by_prefix_def(block: &str) -> Option<UnitDef> {
+    if !block.contains("ConversionByPrefix") {
+        return None;
+    }
+    let symbol = extract_symbol(block)?;
+    let dimension = extract_dimension(block)?;
+    let _prefix_name = extract_assignment(block, "prefix")?;
+    let reference_unit = extract_assignment(block, "referenceUnit")?;
+    Some(UnitDef {
+        symbol,
+        dimension,
+        reference_unit: Some(reference_unit),
+        conversion_factor: 1.0,
+        conversion_offset: 0.0,
+    })
 }
 
 fn parse_linear_unit_def(line: &str) -> Option<UnitDef> {
@@ -633,6 +824,42 @@ mod tests {
             (value - 0.0).abs() < 1e-6,
             "expected 32°F_abs to map to 0°C_abs, got {value}"
         );
+    }
+
+    #[test]
+    fn ingests_conversion_by_prefix_units() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents(
+            "attribute <km> kilometre : LengthUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = m; } }",
+        );
+        registry.ingest_file_contents("attribute <m> 'metre' : LengthUnit;");
+        registry.finalize_ingest();
+        assert!(registry.is_recognized_unit_expression("km"));
+        let def = registry.get("km").expect("km def");
+        assert_eq!(def.dimension, "LengthUnit");
+        assert_eq!(def.reference_unit.as_deref(), Some("m"));
+        assert!((def.conversion_factor - 1E3).abs() < 1e-9);
+    }
+
+    #[test]
+    fn derives_engineering_prefixed_units() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents(
+            r#"
+            attribute <V> volt : ElectricPotentialUnit;
+            attribute <W> watt : PowerUnit;
+            attribute <A> ampere : ElectricCurrentUnit;
+            attribute <h> hour: DurationUnit;
+            attribute <m> metre : LengthUnit;
+            "#,
+        );
+        registry.finalize_ingest();
+        for unit in ["kV", "MW", "MVA", "MWh", "km"] {
+            assert!(
+                registry.is_recognized_unit_expression(unit),
+                "expected derived unit {unit}"
+            );
+        }
     }
 
     #[test]
