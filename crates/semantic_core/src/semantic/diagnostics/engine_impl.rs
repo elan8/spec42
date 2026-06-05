@@ -14,7 +14,7 @@ use crate::semantic::diagnostics::checks::import_resolution::{
 };
 use crate::semantic::diagnostics::helpers::*;
 use crate::semantic::diagnostics::relationship_endpoint_messages::builder_relationship_diagnostic_to_emit;
-use crate::semantic::diagnostics::types::DiagnosticSeverity;
+use crate::semantic::diagnostics::types::{DiagnosticRelatedInfo, DiagnosticSeverity};
 use crate::{
     resolve_inherited_member_via_type, RelationshipKind, ResolveResult, SemanticDiagnostic,
     SemanticGraph,
@@ -107,14 +107,21 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         else {
             continue;
         };
-        diagnostics.push(diag(
+        let range = extract_single_quoted_value(&emit_message)
+            .and_then(|reference| reference_token_range(node, &reference))
+            .unwrap_or_else(|| diagnostic_range(graph, node, None));
+        let mut diagnostic = diag(
             uri,
-            diagnostic_range(graph, node, None),
+            range,
             DiagnosticSeverity::Warning,
             "semantic",
             &emit_code,
             emit_message,
-        ));
+        );
+        if let Some(related) = resolved_endpoint_related_information(graph, node) {
+            diagnostic.related_information.push(related);
+        }
+        diagnostics.push(diagnostic);
     }
     section_timings.push((
         "0_builder_diagnostics".to_string(),
@@ -279,7 +286,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         };
         diagnostics.push(diag(
             uri,
-            diagnostic_range(graph, node, None),
+            reference_token_range(node, target)
+                .unwrap_or_else(|| diagnostic_range(graph, node, None)),
             DiagnosticSeverity::Warning,
             "semantic",
             "unresolved_import_target",
@@ -364,7 +372,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         {
             continue;
         }
-        let Some(range) = unresolved_type_diagnostic_range(node) else {
+        let Some(range) = unresolved_type_diagnostic_range(node, type_ref) else {
             continue;
         };
         let key = format!(
@@ -484,7 +492,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
             {
                 continue;
             }
-            let Some(range) = unresolved_type_diagnostic_range(node) else {
+            let Some(range) = unresolved_type_diagnostic_range(node, &specializes_ref) else {
                 continue;
             };
             let key = format!(
@@ -937,4 +945,31 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     }
 
     diagnostics
+}
+
+fn extract_single_quoted_value(message: &str) -> Option<String> {
+    let start = message.find('\'')?;
+    let rest = &message[start + 1..];
+    let end = rest.find('\'')?;
+    Some(rest[..end].to_string())
+}
+
+fn resolved_endpoint_related_information(
+    graph: &SemanticGraph,
+    diagnostic_node: &crate::SemanticNode,
+) -> Option<DiagnosticRelatedInfo> {
+    let qn = diagnostic_node
+        .attributes
+        .get("resolvedEndpoint")
+        .and_then(|value| value.as_str())?;
+    let id = crate::NodeId::new(&diagnostic_node.id.uri, qn);
+    let node = graph.get_node(&id)?;
+    Some(DiagnosticRelatedInfo {
+        uri: node.id.uri.clone(),
+        range: node.range,
+        message: format!(
+            "Resolved endpoint '{}' ({})",
+            node.id.qualified_name, node.element_kind
+        ),
+    })
 }

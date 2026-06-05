@@ -126,6 +126,106 @@ pub(super) fn diagnostic_range(
     node.range
 }
 
+pub(super) fn reference_token_range(node: &SemanticNode, raw_reference: &str) -> Option<TextRange> {
+    let reference = raw_reference.trim();
+    if reference.is_empty() || is_unknown_range(node.range) {
+        return None;
+    }
+    let source = source_text_for_node(node)?;
+    find_reference_in_source_range(&source, node.range, reference)
+}
+
+fn source_text_for_node(node: &SemanticNode) -> Option<String> {
+    let path = node.id.uri.to_file_path().ok()?;
+    std::fs::read_to_string(path).ok()
+}
+
+fn find_reference_in_source_range(
+    source: &str,
+    range: TextRange,
+    reference: &str,
+) -> Option<TextRange> {
+    let lines: Vec<&str> = source.lines().collect();
+    if range.start.line as usize >= lines.len() || range.end.line as usize >= lines.len() {
+        return None;
+    }
+    let normalized_reference = reference.trim();
+    let simple_reference = normalized_reference
+        .rsplit("::")
+        .next()
+        .unwrap_or(normalized_reference)
+        .trim_end_matches("::*")
+        .trim_end_matches("::")
+        .trim();
+    let candidates = if simple_reference != normalized_reference && !simple_reference.is_empty() {
+        vec![normalized_reference, simple_reference]
+    } else {
+        vec![normalized_reference]
+    };
+
+    for line_no in range.start.line..=range.end.line {
+        let line = lines.get(line_no as usize)?;
+        let start_char = if line_no == range.start.line {
+            range.start.character
+        } else {
+            0
+        };
+        let end_char = if line_no == range.end.line {
+            range.end.character
+        } else {
+            line.chars().count() as u32
+        };
+        for candidate in &candidates {
+            if let Some((start, end)) = find_token_in_line(line, start_char, end_char, candidate) {
+                return Some(TextRange::new(
+                    TextPosition::new(line_no, start),
+                    TextPosition::new(line_no, end),
+                ));
+            }
+        }
+    }
+    None
+}
+
+fn find_token_in_line(line: &str, start_char: u32, end_char: u32, needle: &str) -> Option<(u32, u32)> {
+    if needle.is_empty() {
+        return None;
+    }
+    let line_len = line.chars().count() as u32;
+    let bounded_end = end_char.min(line_len);
+    if start_char >= bounded_end {
+        return None;
+    }
+    let start_byte = char_to_byte_index(line, start_char);
+    let end_byte = char_to_byte_index(line, bounded_end);
+    let search = &line[start_byte..end_byte];
+    let mut offset = 0usize;
+    while let Some(found) = search[offset..].find(needle) {
+        let byte_start = offset + found;
+        let byte_end = byte_start + needle.len();
+        let before = search[..byte_start].chars().next_back();
+        let after = search[byte_end..].chars().next();
+        if !before.is_some_and(is_reference_char) && !after.is_some_and(is_reference_char) {
+            let char_start = start_char + search[..byte_start].chars().count() as u32;
+            let char_end = char_start + needle.chars().count() as u32;
+            return Some((char_start, char_end));
+        }
+        offset = byte_end;
+    }
+    None
+}
+
+fn char_to_byte_index(text: &str, char_index: u32) -> usize {
+    text.char_indices()
+        .nth(char_index as usize)
+        .map(|(idx, _)| idx)
+        .unwrap_or(text.len())
+}
+
+fn is_reference_char(ch: char) -> bool {
+    ch.is_alphanumeric() || matches!(ch, '_' | '-' | ':' | '.')
+}
+
 pub(super) fn normalize_edge_pair(a: &NodeId, b: &NodeId) -> (NodeId, NodeId) {
     if a.qualified_name <= b.qualified_name {
         (a.clone(), b.clone())
@@ -364,7 +464,13 @@ pub(super) fn resolves_to_enum_def(
     !resolve_type_reference_targets(graph, context_node, type_ref, &["enum def"]).is_empty()
 }
 
-pub(super) fn unresolved_type_diagnostic_range(node: &SemanticNode) -> Option<TextRange> {
+pub(super) fn unresolved_type_diagnostic_range(
+    node: &SemanticNode,
+    raw_reference: &str,
+) -> Option<TextRange> {
+    if let Some(range) = reference_token_range(node, raw_reference) {
+        return Some(range);
+    }
     if !is_unknown_range(node.range) {
         return Some(node.range);
     }

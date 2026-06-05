@@ -249,7 +249,7 @@ pub(super) fn add_expression_edge_if_both_exist(
                 } else {
                     "satisfy"
                 };
-                add_diagnostic_node(
+                add_diagnostic_node_with_attrs(
                     g,
                     uri,
                     container_prefix,
@@ -259,6 +259,7 @@ pub(super) fn add_expression_edge_if_both_exist(
                         relation, right_str
                     ),
                     span_to_range(&right.span),
+                    [("resolvedEndpoint", serde_json::json!(src.clone()))],
                 );
             }
             return;
@@ -513,10 +514,33 @@ pub(super) fn add_diagnostic_node(
     message: String,
     range: TextRange,
 ) {
+    add_diagnostic_node_with_attrs(
+        g,
+        uri,
+        container_prefix,
+        code,
+        message,
+        range,
+        std::iter::empty::<(&str, serde_json::Value)>(),
+    );
+}
+
+fn add_diagnostic_node_with_attrs(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    code: &str,
+    message: String,
+    range: TextRange,
+    extra_attrs: impl IntoIterator<Item = (&'static str, serde_json::Value)>,
+) {
     let qualified = qualified_name_for_node(g, uri, container_prefix, code, "diagnostic");
     let mut attrs = HashMap::new();
     attrs.insert("code".to_string(), serde_json::json!(code));
     attrs.insert("message".to_string(), serde_json::json!(message));
+    for (key, value) in extra_attrs {
+        attrs.insert(key.to_string(), value);
+    }
     add_node_and_recurse(
         g,
         uri,

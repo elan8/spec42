@@ -23,6 +23,7 @@ pub fn postprocess_document_diagnostics(
     options: DiagnosticsPostprocessOptions,
 ) -> Vec<Diagnostic> {
     let mut diagnostics = deduplicate_diagnostics(diagnostics);
+    diagnostics = collapse_duplicate_unresolved_semantic_diagnostics(diagnostics);
     if options.suppress_semantic_after_parse_error {
         diagnostics = suppress_semantic_shadowed_by_parse_errors(diagnostics);
     }
@@ -58,6 +59,60 @@ fn deduplicate_diagnostics(diagnostics: Vec<Diagnostic>) -> Vec<Diagnostic> {
         }
     }
     output
+}
+
+fn collapse_duplicate_unresolved_semantic_diagnostics(
+    diagnostics: Vec<Diagnostic>,
+) -> Vec<Diagnostic> {
+    let mut seen_unresolved = BTreeSet::new();
+    let mut output = Vec::new();
+    for diagnostic in diagnostics {
+        if diagnostic.source.as_deref() == Some("semantic")
+            && diagnostic_code_str(&diagnostic)
+                .as_deref()
+                .is_some_and(is_unresolved_semantic_code)
+        {
+            let code = diagnostic_code_str(&diagnostic).unwrap_or_default();
+            let symbol = first_single_quoted_value(&diagnostic.message).unwrap_or_default();
+            let key = (
+                code,
+                diagnostic.range.start.line,
+                diagnostic.range.start.character,
+                diagnostic.range.end.line,
+                diagnostic.range.end.character,
+                symbol,
+            );
+            if !seen_unresolved.insert(key) {
+                continue;
+            }
+        }
+        output.push(diagnostic);
+    }
+    output
+}
+
+fn is_unresolved_semantic_code(code: &str) -> bool {
+    matches!(
+        code,
+        "unresolved_type_reference"
+            | "unresolved_ref_type_reference"
+            | "unresolved_import_target"
+            | "unresolved_specializes_reference"
+            | "unresolved_pending_relationship"
+            | "unresolved_pending_expression_relationship"
+            | "unresolved_allocate_source"
+            | "unresolved_allocate_target"
+            | "unresolved_satisfy_source"
+            | "unresolved_satisfy_target"
+            | "unresolved_viewpoint_conformance_target"
+    )
+}
+
+fn first_single_quoted_value(message: &str) -> Option<String> {
+    let start = message.find('\'')?;
+    let rest = &message[start + 1..];
+    let end = rest.find('\'')?;
+    Some(rest[..end].to_string())
 }
 
 fn suppress_semantic_shadowed_by_parse_errors(diagnostics: Vec<Diagnostic>) -> Vec<Diagnostic> {
@@ -366,5 +421,45 @@ mod tests {
         assert!(!codes.contains(&"unresolved_satisfy_source".to_string()));
         assert!(!codes.contains(&"unresolved_viewpoint_conformance_target".to_string()));
         assert!(codes.contains(&"unresolved_allocate_target".to_string()));
+    }
+
+    #[test]
+    fn collapses_duplicate_unresolved_semantic_diagnostics_by_code_range_and_symbol() {
+        let diagnostics = vec![
+            sample_semantic_warning(2, "unresolved_type_reference"),
+            Diagnostic {
+                message: "Type reference 'MissingType' for 'vehicle' could not be resolved."
+                    .to_string(),
+                ..sample_semantic_warning(2, "unresolved_type_reference")
+            },
+            Diagnostic {
+                message: "Type reference 'OtherType' for 'vehicle' could not be resolved."
+                    .to_string(),
+                ..sample_semantic_warning(2, "unresolved_type_reference")
+            },
+        ];
+
+        let collapsed = collapse_duplicate_unresolved_semantic_diagnostics(diagnostics);
+        assert_eq!(
+            collapsed.len(),
+            3,
+            "blank-symbol fixture plus two distinct symbols should remain"
+        );
+
+        let duplicate_messages = vec![
+            Diagnostic {
+                message: "Type reference 'MissingType' for 'vehicle' could not be resolved."
+                    .to_string(),
+                ..sample_semantic_warning(4, "unresolved_type_reference")
+            },
+            Diagnostic {
+                message:
+                    "Type reference 'MissingType' for 'vehicle' could not resolve via imports."
+                        .to_string(),
+                ..sample_semantic_warning(4, "unresolved_type_reference")
+            },
+        ];
+        let collapsed = collapse_duplicate_unresolved_semantic_diagnostics(duplicate_messages);
+        assert_eq!(collapsed.len(), 1);
     }
 }

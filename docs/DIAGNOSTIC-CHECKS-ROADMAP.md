@@ -101,7 +101,7 @@ The references below point to sections in `SysML_v2.txt` rather than quoting nor
 - Done: severity alignment between the catalog and current emitted severities.
 - Done: parser diagnostic audit fixture for common malformed inputs, requiring stable codes and LSP ranges.
 - Done: duplicate/cascade suppression now includes unresolved allocate/satisfy/viewpoint relationship diagnostics after parser errors.
-- Remaining: range quality audit; unresolved type/import/relation diagnostics should point at the offending reference token rather than the containing declaration where possible.
+- Done: range quality audit for file-backed sources; unresolved type/import/relation diagnostics prefer the offending reference token rather than the containing declaration when source text is available. Memory/custom URI sources still fall back to semantic node ranges unless token ranges are provided by the graph builder.
 
 ### P1: names, namespaces, imports
 

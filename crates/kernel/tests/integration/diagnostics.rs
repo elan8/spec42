@@ -49,6 +49,34 @@ fn has_diag_code(
     })
 }
 
+fn diagnostic_range_text(
+    content: &str,
+    diagnostic: &tower_lsp::lsp_types::Diagnostic,
+) -> String {
+    let line = content
+        .lines()
+        .nth(diagnostic.range.start.line as usize)
+        .expect("diagnostic line");
+    line.chars()
+        .skip(diagnostic.range.start.character as usize)
+        .take((diagnostic.range.end.character - diagnostic.range.start.character) as usize)
+        .collect()
+}
+
+fn diagnostic_by_code<'a>(
+    diagnostics: &'a [tower_lsp::lsp_types::Diagnostic],
+    source: &str,
+    code: &str,
+) -> Option<&'a tower_lsp::lsp_types::Diagnostic> {
+    diagnostics.iter().find(|diagnostic| {
+        diagnostic.source.as_deref() == Some(source)
+            && diagnostic.code.as_ref()
+                == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                    code.to_string(),
+                ))
+    })
+}
+
 #[test]
 fn lsp_diagnostics_on_invalid_sysml() {
     // Use invalid input that parse_with_diagnostics reports (extra closing brace).
@@ -839,11 +867,9 @@ fn unresolved_type_reference_emits_semantic_diagnostic() {
         }
     "#;
     let diagnostics = validate_inline_sysml("missing_type.sysml", content);
-    let found_unresolved = has_diag_code(&diagnostics, "semantic", "unresolved_type_reference");
-    assert!(
-        found_unresolved,
-        "expected unresolved_type_reference semantic diagnostic"
-    );
+    let diagnostic = diagnostic_by_code(&diagnostics, "semantic", "unresolved_type_reference")
+        .expect("expected unresolved_type_reference semantic diagnostic");
+    assert_eq!(diagnostic_range_text(content, diagnostic), "MissingEngineType");
 }
 
 #[test]
@@ -856,12 +882,9 @@ fn unresolved_ref_type_reference_emits_semantic_diagnostic() {
         }
     "#;
     let diagnostics = validate_inline_sysml("missing_ref_type.sysml", content);
-    let found_unresolved_ref_type =
-        has_diag_code(&diagnostics, "semantic", "unresolved_ref_type_reference");
-    assert!(
-        found_unresolved_ref_type,
-        "expected unresolved_ref_type_reference semantic diagnostic"
-    );
+    let diagnostic = diagnostic_by_code(&diagnostics, "semantic", "unresolved_ref_type_reference")
+        .expect("expected unresolved_ref_type_reference semantic diagnostic");
+    assert_eq!(diagnostic_range_text(content, diagnostic), "MissingCelestialBody");
 }
 
 #[test]
@@ -874,15 +897,13 @@ fn unresolved_viewpoint_conformance_target_emits_semantic_diagnostic() {
         }
     "#;
     let diagnostics = validate_inline_sysml("missing_viewpoint_conformance_target.sysml", content);
-    let found = has_diag_code(
+    let diagnostic = diagnostic_by_code(
         &diagnostics,
         "semantic",
         "unresolved_viewpoint_conformance_target",
-    );
-    assert!(
-        found,
-        "expected unresolved_viewpoint_conformance_target semantic diagnostic"
-    );
+    )
+    .expect("expected unresolved_viewpoint_conformance_target semantic diagnostic");
+    assert_eq!(diagnostic_range_text(content, diagnostic), "MissingViewpoint");
 }
 
 #[test]
