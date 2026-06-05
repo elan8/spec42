@@ -370,29 +370,44 @@ export class LspModelProvider {
     }
     const joinedRequest = this.findReusableInFlightRequest(trimmed, normalizedScopes);
     if (joinedRequest) {
-      const result = await this.awaitWithCancellation(
-        joinedRequest.request.promise,
-        token
-      );
-      logPerf(
-        joinedRequest.reuseType === "exact"
-          ? "lspModelProvider:getModelInFlightJoin"
-          : "lspModelProvider:getModelSupersetInFlightJoin",
-        {
-          requestId,
-          caller,
-          joinedRequestId: joinedRequest.request.requestId,
-          joinedCaller: joinedRequest.request.caller,
-          uri: trimmed,
-          scopes: normalizedScopes,
-          joinedScopes: joinedRequest.request.scopes,
-          readyWaitMs,
-          totalMs: Date.now() - totalStartedAt,
-          nodeCount: result.graph?.nodes?.length ?? 0,
-          edgeCount: result.graph?.edges?.length ?? 0,
+      try {
+        const result = await this.awaitWithCancellation(
+          joinedRequest.request.promise,
+          token
+        );
+        logPerf(
+          joinedRequest.reuseType === "exact"
+            ? "lspModelProvider:getModelInFlightJoin"
+            : "lspModelProvider:getModelSupersetInFlightJoin",
+          {
+            requestId,
+            caller,
+            joinedRequestId: joinedRequest.request.requestId,
+            joinedCaller: joinedRequest.request.caller,
+            uri: trimmed,
+            scopes: normalizedScopes,
+            joinedScopes: joinedRequest.request.scopes,
+            readyWaitMs,
+            totalMs: Date.now() - totalStartedAt,
+            nodeCount: result.graph?.nodes?.length ?? 0,
+            edgeCount: result.graph?.edges?.length ?? 0,
+          }
+        );
+        return result;
+      } catch (error) {
+        if (isCancellationError(error) && !token?.isCancellationRequested) {
+          this.inFlightModelRequests.delete(joinedRequest.request.key);
+          logPerf("lspModelProvider:getModelInFlightJoinCancelled", {
+            requestId,
+            caller,
+            joinedRequestId: joinedRequest.request.requestId,
+            uri: trimmed,
+            scopes: normalizedScopes,
+          });
+        } else {
+          throw error;
         }
-      );
-      return result;
+      }
     }
     const params: SysMLModelParams = {
       textDocument: { uri: trimmed },

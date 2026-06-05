@@ -486,6 +486,18 @@ export class ModelExplorerProvider
     };
   }
 
+  async awaitInFlightWorkspaceLoad(): Promise<void> {
+    const inFlight = this.inFlightWorkspaceLoad;
+    if (!inFlight) {
+      return;
+    }
+    try {
+      await inFlight.promise;
+    } catch {
+      // Superseded/cancelled workspace loads are expected during indexing churn.
+    }
+  }
+
   getParent(element: ExplorerTreeItem): ExplorerTreeItem | undefined {
     if (element.itemType === "sysml-element") {
       return element.parentItem;
@@ -569,8 +581,20 @@ export class ModelExplorerProvider
     elementId?: string,
     range?: RangeDTO
   ): Promise<void> {
-    if (!this.treeView) return;
     const startedAt = Date.now();
+    if (elementId) {
+      this.lastRevealedElementId = elementId;
+    }
+    if (!this.treeView) {
+      if (elementId) {
+        logPerf("modelExplorer:revealElementDeferred", {
+          uri: docUri.toString(),
+          elementId,
+          totalMs: Date.now() - startedAt,
+        });
+      }
+      return;
+    }
     this.ensureTreeCache();
     const item = this.findElementTreeItem(docUri, elementId, range);
     if (!item) {

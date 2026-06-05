@@ -166,6 +166,7 @@ type DebugExtensionState = {
   lastSemanticIndexReadyWorkspaceFileCount?: number;
   modelExplorer?: {
     lastRevealedElementId?: string;
+    pendingWorkspaceLoadRunId?: string;
   };
   visualizerOpen?: boolean;
 };
@@ -1229,10 +1230,10 @@ export function activate(context: vscode.ExtensionContext): void {
     const syncStartedAt = Date.now();
     try {
       if (hasWorkspaceFolder()) {
+        await provider.awaitInFlightWorkspaceLoad();
         if (!provider.hasWorkspaceData()) {
           await loadWorkspaceSysMLFiles(provider);
-        } else {
-          await ensureWorkspaceModelLoaded(provider);
+          await provider.awaitInFlightWorkspaceLoad();
         }
       } else {
         await provider.loadDocument(doc);
@@ -2035,6 +2036,8 @@ export function activate(context: vscode.ExtensionContext): void {
       lastSemanticIndexReadyWorkspaceFileCount,
       modelExplorer: {
         lastRevealedElementId: modelExplorerProvider?.getDebugState().lastRevealedElementId,
+        pendingWorkspaceLoadRunId:
+          modelExplorerProvider?.getDebugState().pendingWorkspaceLoadRunId,
       },
       visualizerOpen: VisualizationPanel.currentPanel !== undefined,
     })),

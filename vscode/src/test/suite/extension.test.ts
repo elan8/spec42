@@ -15,6 +15,7 @@ import {
   waitFor,
   waitForExtensionServerReady,
   waitForLanguageServerReady,
+  waitForModelExplorerWorkspaceReady,
 } from "./testUtils";
 
 const FIXTURE_FILE = "SurveillanceDrone.sysml";
@@ -113,9 +114,10 @@ describe("Extension Test Suite", () => {
   });
 
   it("Model Explorer reveals the selected source element", async function () {
-    this.timeout(45000);
+    this.timeout(60000);
     await vscode.commands.executeCommand("sysml.showModelExplorer");
     await waitForExtensionServerReady();
+    await waitForModelExplorerWorkspaceReady();
     const filePath = getFixturePath(FIXTURE_FILE);
     const doc = await vscode.workspace.openTextDocument(filePath);
     const editor = await vscode.window.showTextDocument(doc);

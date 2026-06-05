@@ -8,9 +8,18 @@ export type ExtensionDebugState = {
   serverHealthState: "starting" | "ready" | "indexing" | "degraded" | "restarting" | "crashed";
   serverHealthDetail: string;
   visualizerOpen?: boolean;
+  workspaceIndexSummary?: {
+    scannedFiles: number;
+    loadedFiles: number;
+    truncated: boolean;
+    cancelled: boolean;
+    failures: number;
+  };
   modelExplorer?: {
     lastRevealedElementId?: string;
+    pendingWorkspaceLoadRunId?: string;
   };
+  lastSemanticIndexReadyWorkspaceFileCount?: number;
 };
 
 export const isCi = Boolean(process.env.CI);
@@ -136,6 +145,28 @@ export async function waitFor<T>(
   }
   assert.fail(
     `${label} did not become ready within ${timeoutMs}ms. Last value: ${JSON.stringify(lastValue)}`
+  );
+}
+
+export async function waitForModelExplorerWorkspaceReady(timeoutMs = 30000): Promise<void> {
+  await waitFor(
+    "model explorer workspace indexing",
+    () => getExtensionDebugState(),
+    (state) => {
+      if (!state || state.serverHealthState !== "ready") {
+        return false;
+      }
+      if (state.modelExplorer?.pendingWorkspaceLoadRunId) {
+        return false;
+      }
+      const indexedFiles =
+        state.lastSemanticIndexReadyWorkspaceFileCount ??
+        state.workspaceIndexSummary?.loadedFiles ??
+        0;
+      return indexedFiles > 0;
+    },
+    timeoutMs,
+    300
   );
 }
 

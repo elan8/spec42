@@ -1494,6 +1494,34 @@ fn analysis_objective_without_result_emits_binding_diagnostic() {
 }
 
 #[test]
+fn analysis_objective_inherits_parent_return_ref_without_local_result() {
+    let content = r#"
+        package PowerAnalysis {
+            part def PowerSystem;
+
+            analysis def LoadFlowAnalysis {
+                subject powerSystem : PowerSystem;
+                return ref loadFlowComplete {
+                    return true;
+                }
+            }
+
+            analysis def VoltageDropAnalysis :> LoadFlowAnalysis {
+                objective voltageDropObjective {
+                    doc /* Evaluate voltage deviations across medium-voltage nodes. */
+                }
+            }
+        }
+    "#;
+    let diagnostics =
+        validate_inline_sysml("analysis_inherited_return_ref.sysml", content);
+    assert!(
+        !has_diag_code(&diagnostics, "semantic", "objective_binding_unresolved"),
+        "specialized analysis def should inherit parent return ref for objective binding"
+    );
+}
+
+#[test]
 fn compatible_different_port_def_connection_has_no_port_type_mismatch_diagnostic() {
     let content = r#"
         package P {

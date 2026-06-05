@@ -94,6 +94,27 @@ describe("LspModelProvider", () => {
     assert.strictEqual(requestCount, 2);
   });
 
+  it("retries getModel when a joined in-flight request was cancelled", async () => {
+    let requestCount = 0;
+    const client = {
+      sendRequest: async () => {
+        requestCount += 1;
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        return createModelResult();
+      },
+    } as any;
+    const provider = new LspModelProvider(client, Promise.resolve());
+    const cts = new vscode.CancellationTokenSource();
+    const cancelled = provider.getModel("file:///drone.sysml", ["graph"], cts.token);
+    const recovered = provider.getModel("file:///drone.sysml", ["graph"]);
+    cts.cancel();
+    await assert.rejects(cancelled, (error) => error instanceof vscode.CancellationError);
+    const result = await recovered;
+    assert.ok(requestCount >= 2);
+    assert.strictEqual(result.graph?.nodes?.length, 1);
+    cts.dispose();
+  });
+
   it("passes cancellation tokens through to sysml/model requests", async () => {
     let capturedToken: vscode.CancellationToken | undefined;
     const client = {
