@@ -406,7 +406,7 @@ fn resolve_stdlib_path(
             crate::stdlib::managed_install_path(standard_library_paths, standard_library);
         let metadata_is_current = metadata.installed_version == standard_library.version
             && canonicalize_lossy(&managed_path) == canonicalize_lossy(&expected_path);
-        if metadata_is_current && managed_path.is_dir() {
+        if metadata_is_current && crate::stdlib::install_path_is_ready(&managed_path) {
             let source = if metadata.repo == EMBEDDED_STDLIB_REPO {
                 "bundled".to_string()
             } else {

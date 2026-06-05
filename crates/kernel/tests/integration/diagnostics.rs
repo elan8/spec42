@@ -1028,6 +1028,43 @@ fn unresolved_specializes_reference_is_not_emitted_when_base_resolves() {
 }
 
 #[test]
+fn unresolved_specializes_reference_is_not_emitted_for_sibling_analysis_def_specialization() {
+    let content = r#"
+        package PowerAnalysis {
+            part def PowerSystem;
+
+            analysis def LoadFlowAnalysis {
+                subject powerSystem : PowerSystem;
+                return ref loadFlowComplete {
+                    return true;
+                }
+            }
+
+            analysis def VoltageDropAnalysis :> LoadFlowAnalysis {
+                subject powerSystem : PowerSystem;
+                return ref voltageDropComplete {
+                    return true;
+                }
+            }
+        }
+    "#;
+    let diagnostics =
+        validate_inline_sysml("resolved_analysis_specializes_base.sysml", content);
+    let found_unresolved_specializes = diagnostics.iter().any(|diagnostic| {
+        diagnostic.source.as_deref() == Some("semantic")
+            && diagnostic.code.as_ref()
+                == Some(&tower_lsp::lsp_types::NumberOrString::String(
+                    "unresolved_specializes_reference".to_string(),
+                ))
+    });
+
+    assert!(
+        !found_unresolved_specializes,
+        "did not expect unresolved_specializes_reference when sibling analysis def base resolves"
+    );
+}
+
+#[test]
 fn unresolved_specializes_reference_is_emitted_for_multi_base_with_missing_target() {
     let content = r#"
         package P {

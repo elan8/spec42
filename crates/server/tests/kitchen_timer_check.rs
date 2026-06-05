@@ -1,21 +1,12 @@
 //! Smoke test: `perform_check` on a bundled example (same engine as `spec42 check` / MCP `spec42_check`).
 
+mod common;
+
 use std::path::PathBuf;
 
+use common::with_isolated_data_dir;
 use spec42::cli::{CheckArgs, Cli, OutputFormat};
 use spec42::perform_check;
-use tempfile::TempDir;
-
-fn with_isolated_data_dir(test: impl FnOnce()) {
-    let data_dir = TempDir::new().expect("temp data dir");
-    let previous = std::env::var_os("SPEC42_DATA_DIR");
-    std::env::set_var("SPEC42_DATA_DIR", data_dir.path());
-    test();
-    match previous {
-        Some(value) => std::env::set_var("SPEC42_DATA_DIR", value),
-        None => std::env::remove_var("SPEC42_DATA_DIR"),
-    }
-}
 
 #[test]
 fn kitchen_timer_example_validates() {

@@ -449,8 +449,11 @@ fn normalize_content_path(path: &str) -> String {
     path.trim_matches('/').trim_matches('\\').to_string()
 }
 
-fn install_path_is_ready(path: &Path) -> bool {
-    path.is_dir() && fs::read_dir(path).is_ok()
+pub fn install_path_is_ready(path: &Path) -> bool {
+    path.is_dir()
+        && fs::read_dir(path)
+            .map(|mut entries| entries.next().is_some())
+            .unwrap_or(false)
 }
 
 fn canonicalize_lossy(path: &Path) -> PathBuf {
@@ -600,6 +603,11 @@ mod tests {
             .join("2026-02")
             .join(DEFAULT_STDLIB_CONTENT_PATH);
         fs::create_dir_all(&stale_install_path).expect("create stale install path");
+        fs::write(
+            stale_install_path.join("ScalarValues.sysml"),
+            "standard library package ScalarValues { attribute def Real; }",
+        )
+        .expect("write stale stdlib file");
         save_managed_metadata(
             &paths,
             &StandardLibraryMetadata {

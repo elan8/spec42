@@ -1,22 +1,13 @@
 //! CLI parity for agent surfaces (`explain-diagnostic`, `model-summary`) vs MCP handlers.
 
+mod common;
+
 use std::path::PathBuf;
 use std::process::Command;
 
+use common::with_isolated_data_dir;
 use serde_json::Value;
 use spec42::mcp::handlers::{handle_spec42_explain_diagnostic, handle_spec42_model_summary};
-use tempfile::TempDir;
-
-fn with_isolated_data_dir(test: impl FnOnce()) {
-    let data_dir = TempDir::new().expect("temp data dir");
-    let previous = std::env::var_os("SPEC42_DATA_DIR");
-    std::env::set_var("SPEC42_DATA_DIR", data_dir.path());
-    test();
-    match previous {
-        Some(value) => std::env::set_var("SPEC42_DATA_DIR", value),
-        None => std::env::remove_var("SPEC42_DATA_DIR"),
-    }
-}
 
 fn kitchen_timer_path() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/timer/KitchenTimer.sysml")

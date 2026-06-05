@@ -1,24 +1,16 @@
 //! MCP tool handlers (same logic as spec42-mcp stdio server).
 
+mod common;
+
 use std::path::PathBuf;
 
+use common::with_isolated_data_dir;
 use serde_json::json;
 use spec42::mcp::handlers::{
     handle_spec42_check, handle_spec42_doctor, handle_spec42_explain_diagnostic,
     handle_spec42_model_summary,
 };
 use spec42::mcp::server::{execute_tool, MCP_TOOL_NAMES};
-
-fn with_isolated_data_dir(test: impl FnOnce()) {
-    let data_dir = tempfile::TempDir::new().expect("temp data dir");
-    let previous = std::env::var_os("SPEC42_DATA_DIR");
-    std::env::set_var("SPEC42_DATA_DIR", data_dir.path());
-    test();
-    match previous {
-        Some(value) => std::env::set_var("SPEC42_DATA_DIR", value),
-        None => std::env::remove_var("SPEC42_DATA_DIR"),
-    }
-}
 
 fn kitchen_timer_path() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/timer/KitchenTimer.sysml")

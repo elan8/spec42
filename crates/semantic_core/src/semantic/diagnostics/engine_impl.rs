@@ -15,6 +15,7 @@ use crate::semantic::diagnostics::checks::import_resolution::{
 use crate::semantic::diagnostics::helpers::*;
 use crate::semantic::diagnostics::relationship_endpoint_messages::builder_relationship_diagnostic_to_emit;
 use crate::semantic::diagnostics::types::{DiagnosticRelatedInfo, DiagnosticSeverity};
+use crate::semantic::relationships::SPECIALIZES_TARGET_KINDS;
 use crate::{
     resolve_inherited_member_via_type, RelationshipKind, ResolveResult, SemanticDiagnostic,
     SemanticGraph,
@@ -36,28 +37,6 @@ const RULE6_ALLOWED_KINDS: &[&str] = &[
     "use case def",
     "concern def",
     "enum def",
-    "alias",
-    "kermlDecl",
-    "view def",
-    "viewpoint def",
-];
-
-const RULE7_ALLOWED_KINDS: &[&str] = &[
-    "part def",
-    "port def",
-    "action def",
-    "state def",
-    "flow def",
-    "allocation def",
-    "requirement def",
-    "use case def",
-    "attribute def",
-    "enum def",
-    "item def",
-    "actor def",
-    "occurrence def",
-    "interface",
-    "concern def",
     "alias",
     "kermlDecl",
     "view def",
@@ -449,7 +428,7 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
                         graph,
                         node,
                         &specializes_ref,
-                        RULE7_ALLOWED_KINDS,
+                        SPECIALIZES_TARGET_KINDS,
                     )
                     .is_empty()
                 });
@@ -462,26 +441,8 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
                     .or_insert_with(|| {
                         graph.nodes_named(&normalized).iter().any(|candidate| {
                             candidate.id.uri == *uri
-                                && matches!(
-                                    candidate.element_kind.as_str(),
-                                    "part def"
-                                        | "port def"
-                                        | "action def"
-                                        | "state def"
-                                        | "flow def"
-                                        | "allocation def"
-                                        | "requirement def"
-                                        | "use case def"
-                                        | "attribute def"
-                                        | "enum def"
-                                        | "item def"
-                                        | "actor def"
-                                        | "occurrence def"
-                                        | "interface"
-                                        | "concern def"
-                                        | "alias"
-                                        | "kermlDecl"
-                                )
+                                && SPECIALIZES_TARGET_KINDS
+                                    .contains(&candidate.element_kind.as_str())
                         })
                     })
             } else {

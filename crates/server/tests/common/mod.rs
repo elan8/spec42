@@ -1,0 +1,44 @@
+//! Shared helpers for integration tests that mutate process-global env vars.
+
+use std::sync::Mutex;
+
+use tempfile::TempDir;
+
+static SPEC42_DATA_DIR_LOCK: Mutex<()> = Mutex::new(());
+
+/// Run a test with an isolated `SPEC42_DATA_DIR`, serialized across threads in this binary.
+#[allow(dead_code)]
+pub fn with_isolated_data_dir(test: impl FnOnce()) {
+    let _guard = SPEC42_DATA_DIR_LOCK
+        .lock()
+        .expect("SPEC42_DATA_DIR test lock");
+    let data_dir = TempDir::new().expect("temp data dir");
+    let previous = std::env::var_os("SPEC42_DATA_DIR");
+    std::env::set_var("SPEC42_DATA_DIR", data_dir.path());
+    test();
+    match previous {
+        Some(value) => std::env::set_var("SPEC42_DATA_DIR", value),
+        None => std::env::remove_var("SPEC42_DATA_DIR"),
+    }
+}
+
+/// Async variant of [`with_isolated_data_dir`].
+#[allow(dead_code)]
+pub async fn with_isolated_data_dir_async<F, Fut, T>(f: F) -> T
+where
+    F: FnOnce() -> Fut,
+    Fut: std::future::Future<Output = T>,
+{
+    let _guard = SPEC42_DATA_DIR_LOCK
+        .lock()
+        .expect("SPEC42_DATA_DIR test lock");
+    let data_dir = TempDir::new().expect("temp data dir");
+    let previous = std::env::var_os("SPEC42_DATA_DIR");
+    std::env::set_var("SPEC42_DATA_DIR", data_dir.path());
+    let result = f().await;
+    match previous {
+        Some(value) => std::env::set_var("SPEC42_DATA_DIR", value),
+        None => std::env::remove_var("SPEC42_DATA_DIR"),
+    }
+    result
+}

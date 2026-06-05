@@ -40,7 +40,7 @@ Owned by `sysml-v2-parser` and surfaced as source `sysml`.
 - `unresolved_type_reference`: usage or feature type reference does not resolve.
 - `unresolved_ref_type_reference`: `ref` type reference does not resolve.
 - `unresolved_import_target`: import target does not resolve to a known namespace/member.
-- `unresolved_specializes_reference`: specializes target does not resolve.
+- `unresolved_specializes_reference`: specializes target does not resolve (includes `analysis def`, `verification def`, `metadata def`, and other case kinds via `SPECIALIZES_TARGET_KINDS`).
 - `unresolved_pending_relationship`: deferred cross-document relationship did not resolve after graph construction.
 - `unresolved_pending_expression_relationship`: deferred expression relationship did not resolve after graph construction.
 

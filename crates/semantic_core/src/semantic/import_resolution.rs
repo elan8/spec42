@@ -25,6 +25,15 @@ const TYPE_DISAMBIGUATION_SUFFIX_KINDS: &[&str] = &[
     "concern_def",
     "alias",
     "kermlDecl",
+    "individual_def",
+    "connection_def",
+    "metadata_def",
+    "constraint_def",
+    "calc_def",
+    "case_def",
+    "analysis_def",
+    "verification_def",
+    "rendering_def",
 ];
 
 fn is_namespace_kind(kind: &str) -> bool {

@@ -1,7 +1,10 @@
 //! In-process MCP protocol smoke (duplex transport, same stack as stdio hosts).
 
+mod common;
+
 use std::path::PathBuf;
 
+use common::with_isolated_data_dir_async;
 use rmcp::model::{CallToolRequestParam, ClientInfo};
 use rmcp::{ClientHandler, ServiceExt};
 use serde_json::json;
@@ -16,30 +19,13 @@ impl ClientHandler for TestMcpClient {
     }
 }
 
-async fn with_isolated_data_dir<F, Fut>(f: F) -> anyhow::Result<()>
-where
-    F: FnOnce() -> Fut,
-    Fut: std::future::Future<Output = anyhow::Result<()>>,
-{
-    let data_dir = tempfile::TempDir::new()?;
-    let previous = std::env::var_os("SPEC42_DATA_DIR");
-    std::env::set_var("SPEC42_DATA_DIR", data_dir.path());
-    let result = f().await;
-    match previous {
-        Some(value) => std::env::set_var("SPEC42_DATA_DIR", value),
-        None => std::env::remove_var("SPEC42_DATA_DIR"),
-    }
-    let _ = data_dir;
-    result
-}
-
 fn kitchen_timer_path() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/timer/KitchenTimer.sysml")
 }
 
 #[tokio::test]
 async fn mcp_protocol_lists_four_tools() -> anyhow::Result<()> {
-    with_isolated_data_dir(|| async {
+    with_isolated_data_dir_async(|| async {
         let (server_transport, client_transport) = tokio::io::duplex(4096);
         let server_handle = tokio::spawn(async move {
             let server = Spec42McpServer::new().serve(server_transport).await?;
@@ -66,7 +52,7 @@ async fn mcp_protocol_lists_four_tools() -> anyhow::Result<()> {
 
 #[tokio::test]
 async fn mcp_protocol_call_spec42_check() -> anyhow::Result<()> {
-    with_isolated_data_dir(|| async {
+    with_isolated_data_dir_async(|| async {
         let path = kitchen_timer_path();
         let path = path.canonicalize().unwrap_or(path);
 
@@ -109,7 +95,7 @@ async fn mcp_protocol_call_spec42_check() -> anyhow::Result<()> {
 
 #[tokio::test]
 async fn mcp_protocol_unknown_tool_returns_error_result() -> anyhow::Result<()> {
-    with_isolated_data_dir(|| async {
+    with_isolated_data_dir_async(|| async {
         let (server_transport, client_transport) = tokio::io::duplex(4096);
         let server_handle = tokio::spawn(async move {
             let server = Spec42McpServer::new().serve(server_transport).await?;

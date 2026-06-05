@@ -43,8 +43,6 @@ const TYPING_TARGET_KINDS: &[&str] = &[
     "kermlDecl",
 ];
 
-/// Definitional kinds that may appear as the target of `:>` / `specializes` on definitions.
-/// Aligns with typing/RULE7 definitional kinds plus definition-only element kinds from the graph builder.
 /// Definitional targets for `subject robot : SomePartDef` on cases and requirements.
 const VERIFIED_REQUIREMENT_TARGET_KINDS: &[&str] = &["requirement def", "requirement"];
 
@@ -65,7 +63,8 @@ const SUBJECT_TYPE_TARGET_KINDS: &[&str] = &[
     "concern def",
 ];
 
-const SPECIALIZES_TARGET_KINDS: &[&str] = &[
+/// Definitional kinds that may appear as the target of `:>` / `specializes` on definitions.
+pub const SPECIALIZES_TARGET_KINDS: &[&str] = &[
     "part def",
     "port def",
     "interface",
@@ -116,6 +115,7 @@ pub const TYPE_REFERENCE_ATTR_KEYS: &[&str] = &[
     "subjectType",
     "analysisType",
     "verificationType",
+    "metadataType",
 ];
 
 /// Canonical set of #kind suffixes that `qualified_name_for_node` may append.

@@ -1,28 +1,15 @@
 //! Subprocess smoke for the `spec42-mcp` binary (stdio transport).
 
+mod common;
+
+use common::with_isolated_data_dir_async;
 use rmcp::model::CallToolRequestParam;
 use rmcp::transport::TokioChildProcess;
 use rmcp::ServiceExt;
-async fn with_isolated_data_dir<F, Fut>(f: F) -> anyhow::Result<()>
-where
-    F: FnOnce() -> Fut,
-    Fut: std::future::Future<Output = anyhow::Result<()>>,
-{
-    let data_dir = tempfile::TempDir::new()?;
-    let previous = std::env::var_os("SPEC42_DATA_DIR");
-    std::env::set_var("SPEC42_DATA_DIR", data_dir.path());
-    let result = f().await;
-    match previous {
-        Some(value) => std::env::set_var("SPEC42_DATA_DIR", value),
-        None => std::env::remove_var("SPEC42_DATA_DIR"),
-    }
-    let _ = data_dir;
-    result
-}
 
 #[tokio::test]
 async fn spec42_mcp_binary_lists_tools_and_doctor() -> anyhow::Result<()> {
-    with_isolated_data_dir(|| async {
+    with_isolated_data_dir_async(|| async {
         let bin = env!("CARGO_BIN_EXE_spec42-mcp");
         let transport = TokioChildProcess::new(tokio::process::Command::new(bin))?;
 

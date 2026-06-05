@@ -1,0 +1,85 @@
+use std::collections::HashMap;
+
+use sysml_v2_parser::ast::{AttributeBody, AttributeBodyElement};
+use url::Url;
+
+use super::{add_node_and_recurse, expressions, qualified_name_for_node};
+use crate::semantic::ast_util::span_to_range;
+use crate::semantic::graph::SemanticGraph;
+use crate::semantic::model::NodeId;
+use crate::semantic::relationships::add_typing_edge_if_exists;
+
+pub(super) fn build_from_metadata_attribute_body(
+    body: &AttributeBody,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    g: &mut SemanticGraph,
+) {
+    let AttributeBody::Brace { elements } = body else {
+        return;
+    };
+
+    for node in elements {
+        match &node.value {
+            AttributeBodyElement::AttributeDef(attribute) => {
+                let value = &attribute.value;
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    &value.name,
+                    "attribute def",
+                );
+                let mut attrs = HashMap::new();
+                if let Some(ref typing) = value.typing {
+                    attrs.insert("attributeType".to_string(), serde_json::json!(typing));
+                }
+                if let Some(expr_node) = &value.value {
+                    let rendered = expressions::expression_to_debug_string(expr_node);
+                    attrs.insert("value".to_string(), serde_json::json!(rendered));
+                    attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "attribute def",
+                    value.name.clone(),
+                    span_to_range(&attribute.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                if let Some(ref typing) = value.typing {
+                    add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
+                }
+            }
+            AttributeBodyElement::AttributeUsage(attribute) => {
+                let value = &attribute.value;
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &value.name, "attribute");
+                let mut attrs = HashMap::new();
+                if let Some(ref r) = value.redefines {
+                    attrs.insert("redefines".to_string(), serde_json::json!(r));
+                }
+                if let Some(expr_node) = &value.value {
+                    attrs.insert(
+                        "value".to_string(),
+                        serde_json::json!(expressions::expression_to_debug_string(expr_node)),
+                    );
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "attribute",
+                    value.name.clone(),
+                    span_to_range(&attribute.span),
+                    attrs,
+                    Some(parent_id),
+                );
+            }
+            AttributeBodyElement::Doc(_) | AttributeBodyElement::Error(_) | AttributeBodyElement::Other(_) => {}
+        }
+    }
+}

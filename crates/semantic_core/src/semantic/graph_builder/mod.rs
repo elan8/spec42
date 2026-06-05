@@ -13,6 +13,7 @@ use crate::semantic::model::{NodeId, SemanticNode};
 mod analysis_case;
 mod expressions;
 mod interface_def;
+mod metadata_def;
 mod modeled_kerml_name;
 mod package_body;
 mod package_packages;

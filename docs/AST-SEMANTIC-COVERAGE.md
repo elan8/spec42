@@ -1,6 +1,6 @@
 # AST semantic coverage matrix
 
-Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.17.0** (crates.io).
+Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.18.0** (crates.io; local patch during cross-repo dev).
 
 | Parser surface | Graph (`semantic_core`) | Symbols / hover | Semantic tokens | Priority |
 |----------------|-------------------------|-----------------|-----------------|----------|
@@ -15,7 +15,9 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 | `ActionDefBody` / `ActionUsageBody` | Partial | Partial | Brace stub | P1 |
 | `StateDefBody` | Partial | Partial | Partial | P1 |
 | `RequirementDefBody` / constraint bodies | Partial | Partial | Partial | P1 |
-| `AttributeBody` / `DefinitionBody` (item, flow, metadata defs) | Shell node only | Name only | Def span | Defer |
+| `AttributeBody` on `metadata def` / `metadata` usage | Partial (inner attributes) | Partial | Def span | P1 |
+| `AttributeBody` / `DefinitionBody` (item, flow, other defs) | Shell node only | Name only | Def span | Defer |
+| View `expose` feature chains (§7.6.6) | Yes (0.18.0 parser + view eval) | N/A | N/A | P0 |
 | `Error` / `Other` / `OpaqueMember` | Ignored | Ignored | Ignored | N/A |
 | Doc / annotation members | Ignored | Ignored | Ignored | WONTFIX 1.0 |
 
@@ -25,7 +27,13 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 2. **Graph:** implement when a **shipped workflow** needs it (LSP navigation, `spec42 check`, IBD/general/action/state/sequence views).
 3. **Tokens:** extend `sysml_semantic_tokens` `ast_ranges` for editor-visible identifiers in tested fixtures.
 
-## Recent changes (0.17.0 follow-through)
+## Recent changes (0.18.0 follow-through)
+
+- `metadata def` and package-level `metadata` usage bodies walk `AttributeBodyElement` in [`metadata_def.rs`](../crates/semantic_core/src/semantic/graph_builder/metadata_def.rs); covered by [`metadata_semantics.rs`](../crates/semantic_core/tests/metadata_semantics.rs).
+- Parser 0.18.0 accepts dot feature chains in `expose` targets; view evaluation resolves normalized chains in [`explicit_views.rs`](../crates/semantic_core/src/semantic/explicit_views.rs); covered by [`expose_feature_chains.rs`](../crates/semantic_core/tests/expose_feature_chains.rs).
+- `unresolved_specializes_reference` (RULE7) includes case and metadata definition kinds via shared [`SPECIALIZES_TARGET_KINDS`](../crates/semantic_core/src/semantic/relationships.rs); analysis def `:>` regression in kernel integration diagnostics.
+
+## Prior release (0.17.0 follow-through)
 
 - `AttributeUsage` / `PortUsage` usage-header operators (`:>`, `::>`, `=>`) are stored on graph nodes as `subsetsFeature`, `referencesFeature`, and `crossesFeature` in [`part_def.rs`](../crates/semantic_core/src/semantic/graph_builder/part_def.rs), [`part_usage.rs`](../crates/semantic_core/src/semantic/graph_builder/part_usage.rs), and [`port_def.rs`](../crates/semantic_core/src/semantic/graph_builder/port_def.rs).
 
@@ -38,5 +46,5 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 
 ## Backlog (P1+)
 
-- Deeper `AttributeBodyElement` inside `item def` / `metadata def` when validation fixtures require inner attributes in the graph.
+- Deeper `AttributeBodyElement` inside `item def` and other definition families beyond metadata.
 - `DefinitionBodyElement` for occurrence/rendering/flow families when general view projection needs compartment detail beyond the definition shell.
