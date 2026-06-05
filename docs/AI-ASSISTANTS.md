@@ -88,6 +88,16 @@ spec42 model-summary path/to/model.sysml --max-nodes 500 --format json
 
 Global flags match MCP: `--library-path`, `--config`, `--stdlib-path`, `--no-stdlib`.
 
+## HTTP API
+
+A read-only HTTP server (`spec42 api serve`) exposes the same validation and semantic projections as CLI/MCP for non-agent HTTP clients. Design: [ADR 0001](adr/0001-read-only-systems-modeling-http-api.md), OpenAPI: [docs/api/spec42-readonly-v1.openapi.yaml](api/spec42-readonly-v1.openapi.yaml) (served at `GET /openapi.json`).
+
+```bash
+spec42 api serve --workspace-root ./my-model
+```
+
+Prefer **MCP or CLI** for AI assistants and CI one-shots; use HTTP when another service needs a stable network contract.
+
 ## Future (not yet shipped)
 
 - Chat participant “Spec42” with pinned parser/workflow instructions

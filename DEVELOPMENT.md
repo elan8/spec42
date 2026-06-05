@@ -6,7 +6,7 @@ Guidance for building, testing, and contributing to Spec42.
 
 Spec42 is a Rust workspace plus a VS Code extension.
 
-- `crates/server` (`spec42`) owns the CLI, LSP binary, MCP binary, environment resolution, and standard-library materialization.
+- `crates/server` (`spec42`) owns the CLI, LSP binary, MCP binary, read-only HTTP API, environment resolution, and standard-library materialization.
 - `crates/kernel` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP handlers, validation wiring, DTO assembly, and host adapters.
 - `crates/semantic_core` owns reusable semantic logic: graph construction, cross-document linking, resolution, evaluation, diagnostics, and graph-first visualization helpers.
 - `vscode` owns the VS Code client, webviews, tests, packaging, and bundled asset staging.
@@ -26,6 +26,21 @@ The LSP implementation lives under `crates/kernel/src/lsp_runtime`.
 - `mod.rs`: `tower-lsp` trait entrypoint that delegates to the modules above
 
 Semantic diagnostics rule evaluation is owned by `semantic_core::semantic::diagnostics`; kernel code maps neutral diagnostics at the LSP boundary.
+
+## HTTP API
+
+Read-only workspace access lives in `crates/server/src/api` and ships as:
+
+```bash
+spec42 api serve --workspace-root ./my-model
+```
+
+- Default bind: `127.0.0.1:3842` (loopback only; use `--allow-remote` for other interfaces).
+- Endpoints mirror CLI/MCP (`/v1/validate`, `/v1/model/summary`, `/v1/doctor`, …).
+- OpenAPI contract: `docs/api/spec42-readonly-v1.openapi.yaml` (served at `GET /openapi.json`).
+- Integration tests: `crates/server/tests/api_http.rs`.
+
+Design rationale: [docs/adr/0001-read-only-systems-modeling-http-api.md](docs/adr/0001-read-only-systems-modeling-http-api.md).
 
 ## Building
 

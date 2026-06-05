@@ -1,0 +1,669 @@
+openapi: 3.1.0
+info:
+  title: Spec42 Read-only HTTP API
+  version: 1.0.0
+  description: |
+    Read-only access to SysML v2 workspace semantics served by `spec42 api serve`.
+
+    This is a **Spec42-native** API. It is not the OMG Systems Modeling API REST/HTTP PSM.
+    See ADR 0001 for scope and future OMG mapping plans.
+  license:
+    name: MIT
+    url: https://github.com/elan8/spec42/blob/main/LICENSE
+
+servers:
+  - url: http://127.0.0.1:3842
+    description: Default local bind (loopback)
+
+tags:
+  - name: operational
+    description: Health and metadata
+  - name: environment
+    description: Library and configuration diagnostics
+  - name: validation
+    description: Parser and semantic validation
+  - name: model
+    description: Semantic graph projections
+  - name: diagnostics
+    description: Diagnostic catalog and explanations
+  - name: diagrams
+    description: Shared-renderer diagram export
+
+paths:
+  /health:
+    get:
+      tags: [operational]
+      summary: Liveness probe
+      operationId: getHealth
+      responses:
+        "200":
+          description: Server process is running
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /ready:
+    get:
+      tags: [operational]
+      summary: Readiness probe
+      operationId: getReady
+      description: Returns 200 when workspace root exists and environment resolves.
+      responses:
+        "200":
+          description: Ready to serve requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadyResponse"
+        "503":
+          description: Not ready
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /v1/meta:
+    get:
+      tags: [operational]
+      summary: Server and workspace metadata
+      operationId: getMeta
+      responses:
+        "200":
+          description: Metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetaResponse"
+
+  /v1/doctor:
+    get:
+      tags: [environment]
+      summary: Environment report
+      operationId: getDoctor
+      description: Same JSON as `spec42 doctor --format json`.
+      responses:
+        "200":
+          description: Environment report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DoctorReport"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/validate:
+    post:
+      tags: [validation]
+      summary: Validate SysML v2 / KerML sources
+      operationId: postValidate
+      description: Same report shape as `spec42 check --format json`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidateRequest"
+      responses:
+        "200":
+          description: Validation report (may include errors — check summary counts)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationReport"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/model/summary:
+    post:
+      tags: [model]
+      summary: Compact semantic graph
+      operationId: postModelSummary
+      description: Same JSON as `spec42 model-summary --format json`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ModelSummaryRequest"
+      responses:
+        "200":
+          description: Model summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModelSummaryResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/model/projection:
+    post:
+      tags: [model]
+      summary: Full semantic projection
+      operationId: postModelProjection
+      description: |
+        Returns the complete `SemanticModelProjection` (all nodes and relationships).
+        Prefer `/v1/model/summary` for large workspaces.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ModelProjectionRequest"
+      responses:
+        "200":
+          description: Semantic validation report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SemanticValidationReport"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/elements:
+    get:
+      tags: [model]
+      summary: Search semantic elements
+      operationId: getElements
+      parameters:
+        - name: q
+          in: query
+          description: Substring match on qualified name (case-insensitive)
+          schema:
+            type: string
+        - name: kind
+          in: query
+          description: Filter by element kind (for example `PartDefinition`)
+          schema:
+            type: string
+        - name: uri
+          in: query
+          description: Filter by document URI
+          schema:
+            type: string
+        - name: path
+          in: query
+          description: Scope search to a path relative to workspace root (default `.`)
+          schema:
+            type: string
+            default: "."
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5000
+            default: 100
+      responses:
+        "200":
+          description: Matching elements
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ElementSearchResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/elements/{qualifiedName}:
+    get:
+      tags: [model]
+      summary: Get element by qualified name
+      operationId: getElementByQualifiedName
+      parameters:
+        - name: qualifiedName
+          in: path
+          required: true
+          description: URL-encoded qualified name (for example `Drone%3A%3Abody`)
+          schema:
+            type: string
+        - name: path
+          in: query
+          description: Scope lookup to a path relative to workspace root (default `.`)
+          schema:
+            type: string
+            default: "."
+      responses:
+        "200":
+          description: Element detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ElementDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/diagnostics/codes:
+    get:
+      tags: [diagnostics]
+      summary: List known diagnostic codes
+      operationId: getDiagnosticCodes
+      responses:
+        "200":
+          description: Catalog codes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiagnosticCodesResponse"
+
+  /v1/diagnostics/explain/{code}:
+    get:
+      tags: [diagnostics]
+      summary: Explain a diagnostic code
+      operationId: getExplainDiagnostic
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: query
+          description: Optional file or directory to list instances from validation
+          schema:
+            type: string
+        - name: line
+          in: query
+          description: Optional 0-based line filter for instances
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        "200":
+          description: Explanation and optional instances
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainDiagnosticResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /v1/diagrams/export:
+    post:
+      tags: [diagrams]
+      summary: Export a shared-renderer diagram
+      operationId: postDiagramsExport
+      description: Same output as `spec42 diagrams export`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DiagramExportRequest"
+      responses:
+        "200":
+          description: Diagram payload
+          content:
+            image/svg+xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: object
+                description: Shared-renderer JSON payload (view-specific)
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+components:
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              example: invalid_path
+            message:
+              type: string
+
+    HealthResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+
+    ReadyResponse:
+      type: object
+      required: [status, workspace_root]
+      properties:
+        status:
+          type: string
+          enum: [ready]
+        workspace_root:
+          type: string
+
+    MetaResponse:
+      type: object
+      required: [spec42_version, api_version, workspace_root]
+      properties:
+        spec42_version:
+          type: string
+        api_version:
+          type: string
+          example: v1
+        workspace_root:
+          type: string
+
+    ValidateRequest:
+      type: object
+      properties:
+        path:
+          type: string
+          description: Path relative to workspace root (default `.` validates entire workspace)
+          default: "."
+        warnings_as_errors:
+          type: boolean
+          default: false
+
+    ModelSummaryRequest:
+      type: object
+      required: [path]
+      properties:
+        path:
+          type: string
+          description: File or directory relative to workspace root
+        max_nodes:
+          type: integer
+          minimum: 1
+          default: 500
+
+    ModelProjectionRequest:
+      type: object
+      required: [path]
+      properties:
+        path:
+          type: string
+
+    DiagramExportRequest:
+      type: object
+      required: [path, view, format]
+      properties:
+        path:
+          type: string
+        view:
+          type: string
+          description: Shared-renderer view name (for example `general-view`, `interconnection-view`, `all`)
+          example: general-view
+        format:
+          type: string
+          enum: [svg, json]
+
+    Position:
+      type: object
+      required: [line, character]
+      properties:
+        line:
+          type: integer
+        character:
+          type: integer
+
+    Range:
+      type: object
+      required: [start, end]
+      properties:
+        start:
+          $ref: "#/components/schemas/Position"
+        end:
+          $ref: "#/components/schemas/Position"
+
+    ValidationSummary:
+      type: object
+      properties:
+        document_count:
+          type: integer
+        error_count:
+          type: integer
+        warning_count:
+          type: integer
+        information_count:
+          type: integer
+
+    Diagnostic:
+      type: object
+      description: LSP Diagnostic shape (subset)
+      properties:
+        range:
+          $ref: "#/components/schemas/Range"
+        severity:
+          type: integer
+        code:
+          oneOf:
+            - type: string
+            - type: integer
+        message:
+          type: string
+
+    ValidatedDocument:
+      type: object
+      properties:
+        uri:
+          type: string
+        diagnostics:
+          type: array
+          items:
+            $ref: "#/components/schemas/Diagnostic"
+
+    ValidationReport:
+      type: object
+      properties:
+        workspace_root:
+          type: string
+          nullable: true
+        resolved_library_paths:
+          type: array
+          items:
+            type: string
+        documents:
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidatedDocument"
+        summary:
+          $ref: "#/components/schemas/ValidationSummary"
+        advice:
+          type: array
+          items:
+            type: string
+
+    SemanticModelNode:
+      type: object
+      properties:
+        uri:
+          type: string
+        qualified_name:
+          type: string
+        name:
+          type: string
+        element_kind:
+          type: string
+        range:
+          $ref: "#/components/schemas/Range"
+        parent:
+          type: string
+          nullable: true
+
+    SemanticModelRelationship:
+      type: object
+      properties:
+        source:
+          type: string
+        target:
+          type: string
+        kind:
+          type: string
+
+    SemanticModelProjection:
+      type: object
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/SemanticModelNode"
+        relationships:
+          type: array
+          items:
+            $ref: "#/components/schemas/SemanticModelRelationship"
+
+    SemanticValidationReport:
+      type: object
+      properties:
+        validation:
+          $ref: "#/components/schemas/ValidationReport"
+        semantic_model:
+          $ref: "#/components/schemas/SemanticModelProjection"
+
+    ModelSummaryTruncation:
+      type: object
+      properties:
+        nodes_total:
+          type: integer
+        nodes_returned:
+          type: integer
+        relationships_total:
+          type: integer
+        relationships_returned:
+          type: integer
+
+    ModelSummaryResponse:
+      type: object
+      properties:
+        workspace_root:
+          type: string
+          nullable: true
+        summary:
+          $ref: "#/components/schemas/ValidationSummary"
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/SemanticModelNode"
+        relationships:
+          type: array
+          items:
+            $ref: "#/components/schemas/SemanticModelRelationship"
+        truncation:
+          $ref: "#/components/schemas/ModelSummaryTruncation"
+
+    ElementSearchResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SemanticModelNode"
+        total:
+          type: integer
+        truncated:
+          type: boolean
+
+    ElementDetail:
+      type: object
+      properties:
+        element:
+          $ref: "#/components/schemas/SemanticModelNode"
+        incoming_relationships:
+          type: array
+          items:
+            $ref: "#/components/schemas/SemanticModelRelationship"
+        outgoing_relationships:
+          type: array
+          items:
+            $ref: "#/components/schemas/SemanticModelRelationship"
+
+    DoctorReport:
+      type: object
+      description: Same shape as `spec42 doctor --format json`
+      additionalProperties: true
+
+    DiagnosticCodesResponse:
+      type: object
+      properties:
+        codes:
+          type: array
+          items:
+            type: string
+
+    CatalogInfo:
+      type: object
+      properties:
+        code:
+          type: string
+        severity:
+          type: string
+        meaning:
+          type: string
+        typical_fix:
+          type: string
+        editor_quick_fixes:
+          type: array
+          items:
+            type: string
+
+    ExplainDiagnosticInstance:
+      type: object
+      properties:
+        uri:
+          type: string
+        message:
+          type: string
+        line:
+          type: integer
+        character:
+          type: integer
+
+    ExplainDiagnosticResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        catalog:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/CatalogInfo"
+        known_codes_sample:
+          type: array
+          items:
+            type: string
+        instances:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExplainDiagnosticInstance"

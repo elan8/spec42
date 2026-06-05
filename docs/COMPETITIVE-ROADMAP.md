@@ -18,6 +18,8 @@ Public benchmark sources:
 | exceed | Open renderer coverage | Shared renderer with complete core views and provisional Browser/Grid/Geometry |
 | exceed | Explainable diagnostics | Diagnostics keep stable codes and source ranges for automation |
 | integrate | Sysand package management | Detect status, report in doctor, and ingest dependency roots when present |
+| exceed | Read-only HTTP API (`spec42 api serve`) | Shipped — [ADR 0001](adr/0001-read-only-systems-modeling-http-api.md), OpenAPI at `/openapi.json` |
+| defer | Full OMG Systems Modeling API (commits, element CRUD) | Post-1.0 — likely Babel42 or separate repository layer |
 | defer | Python Automator equivalent | Post-1.0 |
 | defer | ReqIF/DOORS/Polarion bridges | Post-1.0 |
 | defer | Editable table/matrix views | Post-1.0 |

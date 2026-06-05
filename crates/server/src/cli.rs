@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use clap::{Args, Parser, Subcommand, ValueEnum};
 
-#[derive(Debug, Parser)]
+#[derive(Debug, Clone, Parser)]
 #[command(name = "spec42", version, about = "SysML v2 language server and CLI")]
 pub struct Cli {
     #[arg(long = "config", global = true)]
@@ -19,7 +19,7 @@ pub struct Cli {
     pub command: Option<Command>,
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Clone, Subcommand)]
 pub enum Command {
     Lsp,
     Check(CheckArgs),
@@ -40,6 +40,17 @@ pub enum Command {
         #[command(subcommand)]
         command: DiagramsCommand,
     },
+    /// Read-only HTTP API for workspace semantics.
+    Api {
+        #[command(subcommand)]
+        command: ApiCommand,
+    },
+}
+
+#[derive(Debug, Clone, Subcommand)]
+pub enum ApiCommand {
+    /// Start the read-only HTTP API server.
+    Serve(crate::api::ApiServeArgs),
 }
 
 #[derive(Debug, Clone, Args)]
@@ -152,7 +163,8 @@ pub enum OutputFormat {
     Junit,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum, serde::Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum DiagramExportFormat {
     Svg,
     Json,
@@ -274,6 +286,32 @@ mod tests {
                 assert_eq!(args.format, OutputFormat::Json);
             }
             other => panic!("expected model-summary command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn api_serve_command_parses() {
+        let cli = Cli::parse_from([
+            "spec42",
+            "api",
+            "serve",
+            "--workspace-root",
+            "workspace",
+            "--bind",
+            "127.0.0.1:9999",
+        ]);
+        match cli.command {
+            Some(Command::Api {
+                command: ApiCommand::Serve(args),
+            }) => {
+                assert_eq!(args.workspace_root, PathBuf::from("workspace"));
+                assert_eq!(
+                    args.bind,
+                    "127.0.0.1:9999".parse().expect("socket addr")
+                );
+                assert!(!args.allow_remote);
+            }
+            other => panic!("expected api serve command, got {other:?}"),
         }
     }
 

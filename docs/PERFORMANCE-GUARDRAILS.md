@@ -29,3 +29,16 @@ Treat repeated regressions above these numbers as release risks. Once the team a
 After `textDocument/didOpen` and `textDocument/didChange`, the kernel still publishes diagnostics for the edited document immediately, then schedules a **450ms debounced** republish of all project files in the server index (excluding configured library paths). That pass is O(project files) and keeps cross-file semantic diagnostics consistent when imports or references change in another file.
 
 Large workspaces should rely on `spec42.workspace.maxFilesPerPattern` for Model Explorer discovery limits; the debounced diagnostic republish uses whatever the language server has already indexed (opened files plus startup workspace scan).
+
+## Read-only HTTP API
+
+`spec42 api serve` is **stateless**: each request re-parses and re-validates from disk (same engine as `spec42 check`). There is no in-memory cache in phase 1.
+
+| Endpoint | Guidance |
+| --- | --- |
+| `POST /v1/model/summary` | Prefer over `/v1/model/projection` for large workspaces; default `max_nodes` is 500 |
+| `POST /v1/model/projection` | Full semantic graph; can be large — scope `path` to a file or small directory |
+| `GET /v1/elements` | Default `limit` 100, max 5000; always runs a full projection for the scoped `path` |
+| `POST /v1/diagrams/export` | ELK-backed SVG for routed views; comparable cost to `spec42 diagrams export` |
+
+For automation over large trees, prefer scoped paths, `model/summary` with a modest `max_nodes`, or the CLI/MCP surfaces when a one-shot subprocess is acceptable.

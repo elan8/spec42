@@ -1,6 +1,7 @@
 //! Spec42 CLI and MCP shared implementation.
 
 pub mod ai_tools;
+pub mod api;
 pub mod cli;
 pub mod diagrams;
 pub mod elk_layout;
@@ -18,10 +19,12 @@ use cli::{
     CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, ExplainDiagnosticArgs, ModelSummaryArgs,
     OutputFormat, StdlibCommand, SysandCommand,
 };
-use environment::{build_doctor_report, resolve_environment, DoctorReport};
+use environment::{build_doctor_report, resolve_environment};
+pub use environment::DoctorReport;
 use kernel::{
-    validate_paths, validate_paths_with_semantics, SemanticModelNode, SemanticModelRelationship,
-    SemanticValidationReport, ValidationReport, ValidationRequest, ValidationSummary,
+    validate_paths, validate_paths_with_semantics, SemanticModelNode, SemanticModelProjection,
+    SemanticModelRelationship, SemanticValidationReport, ValidationReport, ValidationRequest,
+    ValidationSummary,
 };
 use mcp::schemas::Spec42GlobalParams;
 use reports::{apply_baseline, emit_validation_report};
@@ -180,6 +183,9 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
     if cli.stdio && cli.command.is_none() {
         return run_lsp(&cli).await;
     }
+    if let Some(Command::Api { command }) = cli.command.clone() {
+        return run_api(cli, &command).await;
+    }
     match cli.command.as_ref() {
         None => run_lsp(&cli).await,
         Some(Command::Lsp) => run_lsp(&cli).await,
@@ -190,6 +196,16 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
         Some(Command::Sysand { command }) => run_sysand(command),
         Some(Command::Stdlib { command }) => run_stdlib(&cli, command),
         Some(Command::Diagrams { command }) => run_diagrams(&cli, command),
+        Some(Command::Api { .. }) => unreachable!("api command handled above"),
+    }
+}
+
+async fn run_api(cli: Cli, command: &cli::ApiCommand) -> Result<ExitCode, String> {
+    match command {
+        cli::ApiCommand::Serve(args) => {
+            api::run_api_serve(cli, args.clone()).await?;
+            Ok(ExitCode::SUCCESS)
+        }
     }
 }
 

@@ -24,6 +24,64 @@ pub struct DiagramExportSummary {
     pub exported: usize,
 }
 
+pub fn build_diagram_payload(
+    path: &Path,
+    workspace_root: Option<&Path>,
+    library_paths: &[PathBuf],
+    view: &str,
+) -> Result<SysmlVisualizationResultDto, String> {
+    let views = requested_views(view)?;
+    let export_view = views
+        .first()
+        .copied()
+        .ok_or_else(|| format!("No view resolved for '{view}'"))?;
+    build_sysml_visualization_for_paths(path, workspace_root, library_paths, export_view, None)
+}
+
+pub fn render_diagram(
+    payload: &SysmlVisualizationResultDto,
+    export_view: &str,
+    format: DiagramExportFormat,
+) -> Result<(String, &'static str), String> {
+    match format {
+        DiagramExportFormat::Json => {
+            let raw = serde_json::to_string_pretty(payload)
+                .map_err(|err| format!("Failed to serialize diagram payload: {err}"))?;
+            Ok((raw, "application/json"))
+        }
+        DiagramExportFormat::Svg => {
+            let svg = if uses_elk_layout(export_view) {
+                elk_svg(payload, export_view)?
+            } else {
+                native_svg(payload, export_view)
+            };
+            Ok((svg, "image/svg+xml"))
+        }
+    }
+}
+
+pub fn render_diagram_for_path(
+    path: &Path,
+    workspace_root: Option<&Path>,
+    library_paths: &[PathBuf],
+    view: &str,
+    format: DiagramExportFormat,
+) -> Result<(String, &'static str), String> {
+    let views = requested_views(view)?;
+    let export_view = views
+        .first()
+        .copied()
+        .ok_or_else(|| format!("No view resolved for '{view}'"))?;
+    let payload = build_sysml_visualization_for_paths(
+        path,
+        workspace_root,
+        library_paths,
+        export_view,
+        None,
+    )?;
+    render_diagram(&payload, export_view, format)
+}
+
 pub fn export_diagrams(
     args: &DiagramExportArgs,
     library_paths: &[PathBuf],
@@ -47,10 +105,9 @@ pub fn export_diagrams(
         let output_path = args
             .output
             .join(format!("{}.{}", safe_file_stem(view), extension));
-        match args.format {
-            DiagramExportFormat::Json => write_json(output_path.as_path(), &payload)?,
-            DiagramExportFormat::Svg => write_svg(output_path.as_path(), &payload, view)?,
-        }
+        let (body, _) = render_diagram(&payload, view, args.format)?;
+        std::fs::write(&output_path, body)
+            .map_err(|err| format!("Failed to write {}: {err}", output_path.display()))?;
         exported += 1;
     }
     Ok(DiagramExportSummary {
@@ -74,25 +131,6 @@ fn requested_views(view: &str) -> Result<Vec<&'static str>, String> {
                 EXPORTABLE_VIEWS.join(", ")
             )
         })
-}
-
-fn write_json(path: &Path, payload: &SysmlVisualizationResultDto) -> Result<(), String> {
-    let raw = serde_json::to_string_pretty(payload)
-        .map_err(|err| format!("Failed to serialize diagram payload: {err}"))?;
-    std::fs::write(path, raw).map_err(|err| format!("Failed to write {}: {err}", path.display()))
-}
-
-fn write_svg(
-    path: &Path,
-    payload: &SysmlVisualizationResultDto,
-    export_view: &str,
-) -> Result<(), String> {
-    let svg = if uses_elk_layout(export_view) {
-        elk_svg(payload, export_view)?
-    } else {
-        native_svg(payload, export_view)
-    };
-    std::fs::write(path, svg).map_err(|err| format!("Failed to write {}: {err}", path.display()))
 }
 
 fn uses_elk_layout(view: &str) -> bool {
