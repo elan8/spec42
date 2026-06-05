@@ -1292,8 +1292,8 @@ mod tests {
             .map(|node| node.element_type.as_str())
             .collect();
         assert!(types.iter().any(|t| t.contains("part def")));
-        assert!(types.iter().any(|t| *t == "part"));
-        assert!(types.iter().any(|t| *t == "ref"));
+        assert!(types.contains(&"part"));
+        assert!(types.contains(&"ref"));
         assert!(
             canonical
                 .edges

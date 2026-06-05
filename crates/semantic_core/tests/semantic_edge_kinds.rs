@@ -35,10 +35,8 @@ fn typing_and_connection_edges_can_coexist_between_same_node_pair() {
         .into_iter()
         .map(|(_, kind)| kind)
         .collect();
-    assert!(kinds.iter().any(|kind| *kind == RelationshipKind::Typing));
-    assert!(kinds
-        .iter()
-        .any(|kind| *kind == RelationshipKind::Connection));
+    assert!(kinds.contains(&RelationshipKind::Typing));
+    assert!(kinds.contains(&RelationshipKind::Connection));
 }
 
 #[test]

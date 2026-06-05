@@ -28,10 +28,6 @@ fn lsp_new_handlers_survive_invalid_intermediate_text() {
             "textDocument/linkedEditingRange",
             serde_json::json!({"textDocument":{"uri":uri},"position":{"line":0,"character":20}}),
         ),
-        (
-            "textDocument/inlayHint",
-            serde_json::json!({"textDocument":{"uri":uri},"range":{"start":{"line":0,"character":0},"end":{"line":10,"character":0}}}),
-        ),
     ];
 
     for (method, params) in probes {

@@ -51,7 +51,7 @@ pub fn format_document(source: &str, options: &FormattingOptions) -> Vec<TextEdi
         let mut close_braces = 0i32;
         let mut leading_close_braces = 0i32;
         let mut only_leading_closes = true;
-        for ch in trimmed.chars() {
+        for ch in code_chars_before_comment(trimmed) {
             match ch {
                 '{' => {
                     open_braces += 1;
@@ -80,6 +80,9 @@ pub fn format_document(source: &str, options: &FormattingOptions) -> Vec<TextEdi
         };
         formatted_lines.push(content);
     }
+    while formatted_lines.last().is_some_and(|line| line.is_empty()) {
+        formatted_lines.pop();
+    }
     let new_text = if formatted_lines.is_empty() {
         "\n".to_string()
     } else {
@@ -89,6 +92,35 @@ pub fn format_document(source: &str, options: &FormattingOptions) -> Vec<TextEdi
     let last_char = lines.last().map(|l| l.len()).unwrap_or(0) as u32;
     let range = Range::new(Position::new(0, 0), Position::new(last_line, last_char));
     vec![TextEdit { range, new_text }]
+}
+
+fn code_chars_before_comment(line: &str) -> Vec<char> {
+    let mut chars = Vec::new();
+    let mut in_string = false;
+    let mut escaped = false;
+    let mut iter = line.chars().peekable();
+    while let Some(ch) = iter.next() {
+        if escaped {
+            chars.push(ch);
+            escaped = false;
+            continue;
+        }
+        if ch == '\\' && in_string {
+            chars.push(ch);
+            escaped = true;
+            continue;
+        }
+        if ch == '"' {
+            in_string = !in_string;
+            chars.push(ch);
+            continue;
+        }
+        if !in_string && ch == '/' && iter.peek() == Some(&'/') {
+            break;
+        }
+        chars.push(ch);
+    }
+    chars
 }
 
 /// Suggests a "Wrap in package" code action when the document has top-level members (one package with empty name and members).
@@ -251,12 +283,12 @@ fn leading_indent(line: &str) -> String {
 
 /// First non-empty member line inside `start..end` (exclusive of closing `}`).
 fn member_indent_in_range(lines: &[&str], start: usize, end: usize) -> Option<String> {
-    for idx in (start + 1)..end {
-        let trimmed = lines[idx].trim();
+    for line in lines.iter().take(end).skip(start + 1) {
+        let trimmed = line.trim();
         if trimmed.is_empty() || trimmed == "}" {
             continue;
         }
-        return Some(leading_indent(lines[idx]));
+        return Some(leading_indent(line));
     }
     None
 }
@@ -1410,6 +1442,66 @@ mod tests {
         assert!(text.contains("package IT{"));
         assert!(text.contains("  part def Motherboard { }"));
         assert!(text.contains("  part def Display { }"));
+    }
+
+    #[test]
+    fn test_format_document_is_idempotent() {
+        let options = tower_lsp::lsp_types::FormattingOptions {
+            tab_size: 2,
+            insert_spaces: true,
+            ..Default::default()
+        };
+        let source = "package P {\npart def Engine {\nattribute mass;\n}\n}\n";
+        let first = format_document(source, &options)
+            .into_iter()
+            .next()
+            .expect("first edit")
+            .new_text;
+        let second = format_document(&first, &options)
+            .into_iter()
+            .next()
+            .expect("second edit")
+            .new_text;
+        assert_eq!(first, second);
+    }
+
+    #[test]
+    fn test_format_document_normalizes_crlf_to_lf_and_single_trailing_newline() {
+        let options = tower_lsp::lsp_types::FormattingOptions {
+            tab_size: 2,
+            insert_spaces: true,
+            ..Default::default()
+        };
+        let edits = format_document("package P {\r\npart def X;\r\n}\r\n\r\n", &options);
+        assert_eq!(edits[0].new_text, "package P {\n  part def X;\n}\n");
+    }
+
+    #[test]
+    fn test_format_document_nested_blocks() {
+        let options = tower_lsp::lsp_types::FormattingOptions {
+            tab_size: 4,
+            insert_spaces: true,
+            ..Default::default()
+        };
+        let source = "package P {\npart def Vehicle {\npart engine {\nattribute rpm;\n}\n}\n}\n";
+        let expected = "package P {\n    part def Vehicle {\n        part engine {\n            attribute rpm;\n        }\n    }\n}\n";
+        let edits = format_document(source, &options);
+        assert_eq!(edits[0].new_text, expected);
+    }
+
+    #[test]
+    fn test_format_document_trims_comment_trailing_whitespace() {
+        let options = tower_lsp::lsp_types::FormattingOptions {
+            tab_size: 2,
+            insert_spaces: true,
+            ..Default::default()
+        };
+        let source = "package P {\n// comment with brace {   \npart def X;  \n}\n";
+        let edits = format_document(source, &options);
+        assert!(edits[0].new_text.contains("  // comment with brace {"));
+        assert!(edits[0].new_text.contains("  part def X;"));
+        assert!(!edits[0].new_text.contains("   \n"));
+        assert!(!edits[0].new_text.contains(";  \n"));
     }
 
     /// Validation test: parse VehicleDefinitions.sysml and write semantic tokens and symbol table

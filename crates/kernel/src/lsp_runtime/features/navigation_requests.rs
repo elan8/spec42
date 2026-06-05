@@ -7,7 +7,7 @@ use tracing::{debug, info};
 use crate::common::text_span::{to_core_position, to_lsp_range};
 use crate::common::util;
 use crate::language::{
-    find_reference_ranges, is_reserved_keyword, keyword_hover_markdown, word_at_position,
+    is_reserved_keyword, keyword_hover_markdown, word_at_position,
 };
 use crate::semantic::{self, ResolveResult};
 use crate::workspace::ServerState;
@@ -588,25 +588,17 @@ pub(crate) fn document_highlight(
     pos: Position,
 ) -> Result<Option<Vec<DocumentHighlight>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state
-        .index
-        .get(&uri_norm)
-        .map(|entry| entry.content.clone())
-    {
-        Some(text) => text,
-        None => return Ok(None),
+    let locations = match references_resolver::resolved_references_at_position(
+        state, &uri_norm, pos, true,
+    ) {
+        Some(locations) if !locations.is_empty() => locations,
+        _ => return Ok(None),
     };
-    let (_, _, _, word) = match word_at_position(&text, pos.line, pos.character) {
-        Some(parts) => parts,
-        None => return Ok(None),
-    };
-    if is_reserved_keyword(&word) {
-        return Ok(None);
-    }
-    let highlights = find_reference_ranges(&text, &word)
+    let highlights = locations
         .into_iter()
-        .map(|range| DocumentHighlight {
-            range,
+        .filter(|location| util::normalize_file_uri(&location.uri) == uri_norm)
+        .map(|location| DocumentHighlight {
+            range: location.range,
             kind: Some(DocumentHighlightKind::TEXT),
         })
         .collect();

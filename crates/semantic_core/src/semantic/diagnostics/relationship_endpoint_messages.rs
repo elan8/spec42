@@ -347,7 +347,7 @@ mod tests {
         )
         .expect("example doc");
         let (graph, _parsed) =
-            build_semantic_graph_from_documents(&[example.clone()]).expect("graph");
+            build_semantic_graph_from_documents(std::slice::from_ref(&example)).expect("graph");
         let diagnostics =
             collect_diagnostics_from_graph(&graph, &example.uri, DiagnosticsOptions::default());
         let target_diag = diagnostics

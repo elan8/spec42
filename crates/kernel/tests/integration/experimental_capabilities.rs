@@ -14,6 +14,10 @@ fn lsp_initialize_advertises_remaining_feature_capabilities() {
     assert!(caps["selectionRangeProvider"].as_bool().unwrap_or(false));
     assert!(caps["documentLinkProvider"].is_object());
     assert!(caps["codeLensProvider"].is_object());
+    assert!(
+        caps["inlayHintProvider"].is_null(),
+        "inlay hints should not be advertised until the handler returns useful hints"
+    );
     assert!(caps["linkedEditingRangeProvider"]
         .as_bool()
         .unwrap_or(false));

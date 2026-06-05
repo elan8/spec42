@@ -1,7 +1,7 @@
 //! Find references integration tests.
 
 use super::harness::{
-    lsp_barrier, next_id, read_message, read_response, send_message, spawn_server,
+    lsp_barrier, next_id, read_message, read_response, send_message, spawn_server, TestSession,
 };
 
 /// Cross-file references: find references to a symbol defined in one file and used in another.
@@ -408,4 +408,57 @@ fn lsp_same_short_name_in_library_is_not_counted_without_semantic_match() {
     );
 
     let _ = child.kill();
+}
+
+#[test]
+fn lsp_document_highlight_uses_semantic_target() {
+    let mut session = TestSession::new();
+    let uri = "file:///refs/highlight-homonyms.sysml";
+    let content = r#"package IT {
+    part def Laptop {
+        port hdmi;
+    }
+    part def Monitor {
+        port hdmi;
+    }
+    part def Room {
+        part laptop : Laptop;
+        part monitor : Monitor;
+        connect laptop.hdmi to monitor.hdmi;
+    }
+}"#;
+    session.initialize_default("highlight_homonym_test");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let response = session.request(
+        "textDocument/documentHighlight",
+        serde_json::json!({
+            "textDocument": { "uri": uri },
+            "position": { "line": 2, "character": 13 }
+        }),
+    );
+    let highlights = response["result"]
+        .as_array()
+        .expect("documentHighlight result array");
+    assert!(
+        highlights
+            .iter()
+            .any(|h| h["range"]["start"]["line"].as_u64() == Some(2)),
+        "highlight should include Laptop::hdmi declaration: {highlights:?}"
+    );
+    assert!(
+        !highlights
+            .iter()
+            .any(|h| h["range"]["start"]["line"].as_u64() == Some(5)),
+        "highlight should not include Monitor::hdmi declaration: {highlights:?}"
+    );
+    assert_eq!(
+        highlights
+            .iter()
+            .filter(|h| h["range"]["start"]["line"].as_u64() == Some(10))
+            .count(),
+        1,
+        "highlight should include only one dotted hdmi usage: {highlights:?}"
+    );
 }

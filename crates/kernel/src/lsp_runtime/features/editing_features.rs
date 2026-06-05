@@ -3,14 +3,16 @@ use tower_lsp::lsp_types::*;
 
 use crate::common::util;
 use crate::language::{
-    collect_document_symbols, collect_folding_ranges, find_reference_ranges, format_document,
-    is_reserved_keyword, suggest_create_definition_for_unresolved_type_quick_fix,
+    collect_document_symbols, collect_folding_ranges, format_document,
+    suggest_create_definition_for_unresolved_type_quick_fix,
     suggest_create_matching_part_def_quick_fix, suggest_explicit_redefinition_quick_fix,
     suggest_manage_custom_libraries_quick_fix, suggest_open_library_view_quick_fix,
     suggest_search_library_for_symbol_quick_fix, suggest_show_standard_library_info_quick_fix,
-    suggest_wrap_in_package, word_at_position,
+    suggest_wrap_in_package,
 };
 use crate::workspace::ServerState;
+
+use super::super::references_resolver;
 
 fn collect_brace_folding_ranges(text: &str) -> Vec<FoldingRange> {
     let mut out = Vec::new();
@@ -90,25 +92,14 @@ pub(crate) fn prepare_rename(
     pos: Position,
 ) -> Result<Option<PrepareRenameResponse>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state
-        .index
-        .get(&uri_norm)
-        .map(|entry| entry.content.clone())
+    let target = match references_resolver::resolve_symbol_target_at_position(state, &uri_norm, pos)
     {
-        Some(text) => text,
-        None => return Ok(None),
+        Some(target) if target.is_renameable => target,
+        _ => return Ok(None),
     };
-    let (line, char_start, char_end, word) = match word_at_position(&text, pos.line, pos.character)
-    {
-        Some(parts) => parts,
-        None => return Ok(None),
-    };
-    if is_reserved_keyword(&word) {
-        return Ok(None);
-    }
     Ok(Some(PrepareRenameResponse::Range(Range::new(
-        Position::new(line, char_start),
-        Position::new(line, char_end),
+        target.identifier_range.start,
+        target.identifier_range.end,
     ))))
 }
 
@@ -119,34 +110,17 @@ pub(crate) fn rename(
     new_name: String,
 ) -> Result<Option<WorkspaceEdit>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state
-        .index
-        .get(&uri_norm)
-        .map(|entry| entry.content.clone())
+    let _target = match references_resolver::resolve_symbol_target_at_position(state, &uri_norm, pos)
     {
-        Some(text) => text,
-        None => return Ok(None),
+        Some(target) if target.is_renameable => target,
+        _ => return Ok(None),
     };
-    let (_, _, _, word) = match word_at_position(&text, pos.line, pos.character) {
-        Some(parts) => parts,
-        None => return Ok(None),
-    };
-    if is_reserved_keyword(&word) {
-        return Ok(None);
-    }
 
-    let mut locations = Vec::new();
-    for (uri, entry) in &state.index {
-        for range in find_reference_ranges(&entry.content, &word) {
-            locations.push(Location {
-                uri: uri.clone(),
-                range,
-            });
-        }
-    }
-    if locations.is_empty() {
-        return Ok(Some(WorkspaceEdit::default()));
-    }
+    let locations =
+        match references_resolver::resolved_references_at_position(state, &uri_norm, pos, true) {
+            Some(locations) if !locations.is_empty() => locations,
+            _ => return Ok(Some(WorkspaceEdit::default())),
+        };
 
     let mut changes: std::collections::HashMap<Url, Vec<TextEdit>> =
         std::collections::HashMap::new();
