@@ -785,3 +785,31 @@ fn lsp_hover_returns_unresolved_reference_fallback() {
         contents
     );
 }
+
+#[test]
+fn lsp_hover_resolves_unit_literal_suffix() {
+    let mut session = TestSession::new();
+    let uri_units = "file:///workspace/Quantities%20and%20Units/Electrical.sysml";
+    let uri_model = "file:///workspace/model.sysml";
+    let units_content =
+        "attribute <kV> 'kilovolt' : ElectricPotentialDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = V; :>> conversionFactor = 1E+03; } }";
+    let model_content = "package Demo { attribute ratedVoltage = 10 [kV]; }";
+
+    session.initialize_default("test");
+    session.did_open(uri_units, units_content, 1);
+    session.did_open(uri_model, model_content, 2);
+    session.barrier();
+
+    let (line, character) = position_for_within(model_content, "10 [kV]", "kV");
+    let contents = hover_contents(&mut session, uri_model, line as u32, character as u32);
+    assert!(
+        contents.contains("Unit literal") && contents.contains("kV"),
+        "expected unit literal hover, got: {}",
+        contents
+    );
+    assert!(
+        !contents.contains("Unresolved reference"),
+        "unit literal hover should not report unresolved reference: {}",
+        contents
+    );
+}

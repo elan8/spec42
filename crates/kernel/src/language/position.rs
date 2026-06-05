@@ -63,6 +63,69 @@ pub fn word_at_position(text: &str, line: u32, character: u32) -> Option<(u32, u
     Some((line, start as u32, end as u32, word))
 }
 
+/// Unit expression inside a value suffix `[...]` when the cursor is within the brackets and
+/// a numeric literal immediately precedes `[` on the same line (e.g. `10 [kV]`).
+pub fn unit_value_suffix_at_position(text: &str, line: u32, character: u32) -> Option<String> {
+    let line_str = text.lines().nth(line as usize)?;
+    let chars: Vec<char> = line_str.chars().collect();
+    let pos = character as usize;
+    if pos > chars.len() {
+        return None;
+    }
+
+    let mut best: Option<(usize, usize)> = None;
+    let mut stack = Vec::new();
+    for (i, &c) in chars.iter().enumerate() {
+        if c == '[' {
+            stack.push(i);
+        } else if c == ']' {
+            if let Some(open) = stack.pop() {
+                if pos >= open
+                    && pos <= i
+                    && is_likely_unit_suffix_before_bracket(&chars, open)
+                {
+                    match best {
+                        None => best = Some((open, i)),
+                        Some((best_open, _)) if open > best_open => best = Some((open, i)),
+                        _ => {}
+                    }
+                }
+            }
+        }
+    }
+
+    let (open, close) = best?;
+    let inner_start = open + 1;
+    let inner_end = close;
+    if inner_start >= inner_end {
+        return None;
+    }
+    let inner_text: String = chars[inner_start..inner_end].iter().collect();
+    let inner_text = inner_text.trim();
+    if inner_text.is_empty() {
+        return None;
+    }
+    Some(inner_text.to_string())
+}
+
+fn is_likely_unit_suffix_before_bracket(chars: &[char], open_idx: usize) -> bool {
+    let before: String = chars[..open_idx].iter().collect();
+    let before = before.trim_end();
+    let Some(last_token) = before.split_whitespace().last() else {
+        return false;
+    };
+    let mut chars = last_token.chars();
+    let Some(first) = chars.next() else {
+        return false;
+    };
+    if !(first.is_ascii_digit() || ((first == '+' || first == '-') && last_token.len() > 1)) {
+        return false;
+    }
+    last_token
+        .chars()
+        .all(|c| c.is_ascii_digit() || matches!(c, '.' | 'e' | 'E' | '+' | '-'))
+}
+
 /// Returns the text of the line up to (but not including) the given (line, character).
 pub fn line_prefix_at_position(text: &str, line: u32, character: u32) -> String {
     let line_str = match text.lines().nth(line as usize) {

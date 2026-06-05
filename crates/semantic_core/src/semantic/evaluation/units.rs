@@ -87,14 +87,65 @@ impl UnitRegistry {
         registry
     }
 
+    /// Builds a registry from graph file URIs plus in-memory workspace/library sources
+    /// (needed when unit catalogs are open in the editor but not yet on disk).
+    pub fn from_semantic_graph_with_indexed_sources(
+        graph: &SemanticGraph,
+        indexed_sources: &[(&Url, &str)],
+    ) -> Self {
+        let mut registry = Self::from_semantic_graph(graph);
+        for (uri, content) in indexed_sources {
+            if Self::is_unit_library_uri(uri) {
+                registry.ingest_file_contents(content);
+            }
+        }
+        registry
+    }
+
+    pub fn is_unit_library_uri(uri: &Url) -> bool {
+        uri_to_path(uri).is_some_and(|path| should_ingest_unit_library_file(&path))
+    }
+
     /// Ingests linear unit definitions from SysML library text (`attribute <EUR> … : SomeUnit;`).
     pub fn ingest_unit_catalog(&mut self, sysml_contents: &str) {
         self.ingest_file_contents(sysml_contents);
     }
 
-    #[cfg(test)]
     pub fn get(&self, symbol: &str) -> Option<&UnitDef> {
         self.by_symbol.get(&normalize_symbol(symbol))
+    }
+
+    pub fn hover_markdown_for_unit_literal(&self, raw_unit: &str) -> Option<String> {
+        let cleaned = strip_quotes(raw_unit.trim());
+        if cleaned.is_empty() {
+            return None;
+        }
+        let factors = parse_unit_expression(&cleaned).ok()?;
+        let mut lines = vec![format!("**Unit literal** `[{}]`", cleaned), String::new()];
+        for (symbol, exp) in factors {
+            if self.conflicted_symbols.contains(&symbol) {
+                lines.push(format!("*{symbol}* — ambiguous unit metadata"));
+                continue;
+            }
+            let def = self.by_symbol.get(&symbol)?;
+            let mut line = format!("*{}*", def.symbol);
+            if exp != 1 {
+                line.push_str(&format!("^{exp}"));
+            }
+            line.push_str(&format!(" — `{}`", def.dimension));
+            if let Some(ref_unit) = &def.reference_unit {
+                line.push_str(&format!(", reference `{ref_unit}`"));
+            }
+            lines.push(line);
+        }
+        Some(lines.join("\n"))
+    }
+
+    pub fn hover_markdown_for_unknown_unit_literal(raw_unit: &str) -> String {
+        format!(
+            "**Unit literal** `[{}]`\n\nSysML value-expression unit suffix. Not found in indexed quantity/unit catalogs.",
+            raw_unit.trim()
+        )
     }
 
     pub fn has_symbol(&self, symbol: &str) -> bool {
@@ -582,6 +633,32 @@ mod tests {
             (value - 0.0).abs() < 1e-6,
             "expected 32°F_abs to map to 0°C_abs, got {value}"
         );
+    }
+
+    #[test]
+    fn hover_markdown_for_known_unit_literal() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents(
+            "attribute <kV> 'kilovolt' : ElectricPotentialDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = V; :>> conversionFactor = 1E+03; } }",
+        );
+        let md = registry
+            .hover_markdown_for_unit_literal("kV")
+            .expect("kV hover");
+        assert!(md.contains("Unit literal"));
+        assert!(md.contains("kV"));
+        assert!(md.contains("ElectricPotentialDifferenceUnit"));
+    }
+
+    #[test]
+    fn hover_markdown_for_composite_unit_literal() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents("attribute <m> 'metre' : LengthUnit;");
+        registry.ingest_file_contents("attribute <s> second : TimeUnit;");
+        let md = registry
+            .hover_markdown_for_unit_literal("m/s")
+            .expect("m/s hover");
+        assert!(md.contains("m"));
+        assert!(md.contains("s"));
     }
 
     #[test]

@@ -7,8 +7,9 @@ use tracing::{debug, info};
 use crate::common::text_span::{to_core_position, to_lsp_range};
 use crate::common::util;
 use crate::language::{
-    is_reserved_keyword, keyword_hover_markdown, word_at_position,
+    is_reserved_keyword, keyword_hover_markdown, unit_value_suffix_at_position, word_at_position,
 };
+use crate::semantic::evaluation::UnitRegistry;
 use crate::semantic::{self, ResolveResult};
 use crate::workspace::ServerState;
 
@@ -107,6 +108,28 @@ fn resolve_hover_reference_target<'a>(
     None
 }
 
+fn unit_registry_for_hover(state: &ServerState) -> UnitRegistry {
+    let indexed_sources: Vec<(&Url, &str)> = state
+        .index
+        .iter()
+        .map(|(uri, entry)| (uri, entry.content.as_str()))
+        .collect();
+    UnitRegistry::from_semantic_graph_with_indexed_sources(
+        &state.semantic_graph,
+        &indexed_sources,
+    )
+}
+
+fn unit_literal_hover_markdown(state: &ServerState, text: &str, pos: Position) -> Option<String> {
+    let unit_expr = unit_value_suffix_at_position(text, pos.line, pos.character)?;
+    let registry = unit_registry_for_hover(state);
+    Some(
+        registry
+            .hover_markdown_for_unit_literal(&unit_expr)
+            .unwrap_or_else(|| UnitRegistry::hover_markdown_for_unknown_unit_literal(&unit_expr)),
+    )
+}
+
 pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Option<Hover>> {
     let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
@@ -153,6 +176,25 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
         return Ok(response);
     }
 
+    if let Some(md) = unit_literal_hover_markdown(state, &text, pos) {
+        let response = Some(Hover {
+            contents: HoverContents::Markup(MarkupContent {
+                kind: MarkupKind::Markdown,
+                value: md,
+            }),
+            range: Some(range),
+        });
+        log_hover_result(
+            state.perf_logging_enabled,
+            &uri_norm,
+            pos,
+            &lookup_name,
+            started_at,
+            "hover resolved via unit literal catalog",
+        );
+        return Ok(response);
+    }
+
     if let Some(node) = state
         .semantic_graph
         .find_deepest_node_at_position(&uri_norm, to_core_position(pos))
@@ -184,10 +226,12 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
                     target,
                     target.id.uri != uri_norm,
                 ),
-                None => format!(
-                    "**Unresolved reference** `{}`\n\nSpec42 could not resolve this name in the current scope, imports, or indexed workspace symbols.",
-                    lookup_name
-                ),
+                None => unit_literal_hover_markdown(state, &text, pos).unwrap_or_else(|| {
+                    format!(
+                        "**Unresolved reference** `{}`\n\nSpec42 could not resolve this name in the current scope, imports, or indexed workspace symbols.",
+                        lookup_name
+                    )
+                }),
             }
         } else {
             markdown
@@ -280,6 +324,25 @@ pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Opti
                 "hover resolved via symbol lookup"
             );
         }
+        return Ok(response);
+    }
+
+    if let Some(md) = unit_literal_hover_markdown(state, &text, pos) {
+        let response = Some(Hover {
+            contents: HoverContents::Markup(MarkupContent {
+                kind: MarkupKind::Markdown,
+                value: md,
+            }),
+            range: Some(range),
+        });
+        log_hover_result(
+            state.perf_logging_enabled,
+            &uri_norm,
+            pos,
+            &lookup_name,
+            started_at,
+            "hover resolved via unit literal catalog (fallback)",
+        );
         return Ok(response);
     }
 

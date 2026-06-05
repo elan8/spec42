@@ -9,7 +9,8 @@ pub use keywords::{
     is_reserved_keyword, keyword_doc, keyword_hover_markdown, sysml_keywords, RESERVED_KEYWORDS,
 };
 pub use position::{
-    completion_prefix, line_prefix_at_position, position_to_byte_offset, word_at_position,
+    completion_prefix, line_prefix_at_position, position_to_byte_offset,
+    unit_value_suffix_at_position, word_at_position,
 };
 #[cfg(test)]
 pub use position::{source_position_to_range, source_range_to_range, SourcePosition, SourceRange};
@@ -755,6 +756,21 @@ mod tests {
         assert_eq!(position_to_byte_offset(text, 0, 2), None);
         assert_eq!(position_to_byte_offset(text, 0, 3), Some(5));
         assert_eq!(position_to_byte_offset(text, 0, 4), Some(6));
+    }
+
+    #[test]
+    fn test_unit_value_suffix_at_position() {
+        let text = "package P { attribute v = 10 [kV]; }";
+        let bracket_start = text.find("[kV]").expect("unit suffix") as u32;
+        assert_eq!(
+            unit_value_suffix_at_position(text, 0, bracket_start + 1),
+            Some("kV".to_string())
+        );
+        assert_eq!(
+            unit_value_suffix_at_position(text, 0, bracket_start + 2),
+            Some("kV".to_string())
+        );
+        assert!(unit_value_suffix_at_position("multiplicity [0..1]", 0, 12).is_none());
     }
 
     #[test]
