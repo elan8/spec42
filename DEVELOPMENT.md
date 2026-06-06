@@ -121,13 +121,58 @@ Large repositories may truncate file discovery per folder pattern. The VS Code s
 
 ## Running Tests
 
-### Rust
+Spec42 uses two Rust integration layers in CI:
+
+| Layer | Scope | Typical runtime |
+| --- | --- | --- |
+| **Core (fast path)** | Workspace crates except slow `spec42` integration binaries; `spec42` unit tests; `multi_file_check` | Minutes |
+| **Agent/API surfaces** | CLI, MCP, and HTTP parity/integration tests on real fixtures | Several minutes (stdlib materialization) |
+
+### Rust (core, fast path)
+
+```bash
+cargo test --workspace --exclude spec42
+cargo test -p spec42 --lib
+cargo test -p spec42 --test multi_file_check
+cargo clippy --workspace --all-targets -- -D warnings
+```
+
+Full workspace including agent surfaces (local pre-push equivalent of CI):
 
 ```bash
 cargo test --workspace
-cargo test --workspace --no-default-features
-cargo clippy --workspace --all-targets -- -D warnings
 ```
+
+Without embedded stdlib:
+
+```bash
+cargo test --workspace --no-default-features
+```
+
+### Rust (agent/API surfaces)
+
+CLI, MCP, and HTTP tests share the same `perform_*` engine and KitchenTimer fixtures. Run them together when changing `crates/server` agent or API code:
+
+```bash
+cargo test -p spec42 \
+  --test api_http \
+  --test mcp_tools \
+  --test cli_ai_tools \
+  --test mcp_protocol \
+  --test mcp_binary \
+  --test kitchen_timer_check
+```
+
+| Integration test | Surface |
+| --- | --- |
+| `api_http` | Read-only HTTP API (`spec42 api serve` router) |
+| `mcp_tools` | MCP tool handlers (`spec42_check`, `spec42_doctor`, …) |
+| `mcp_protocol` | MCP JSON-RPC over in-memory transport |
+| `mcp_binary` | `spec42-mcp` stdio binary |
+| `cli_ai_tools` | CLI JSON parity with MCP |
+| `kitchen_timer_check` | `perform_check` smoke on bundled example |
+
+CI runs core and agent/API layers as separate jobs (see `.github/workflows/ci.yml`).
 
 Focused LSP integration tests:
 
@@ -196,16 +241,22 @@ Current report-only budgets are documented in `docs/PERFORMANCE-GUARDRAILS.md`. 
 
 **VS Code extension (Copilot Agent):** requires `engines.vscode` **^1.99.0** for Language Model Tools. Four tools in `vscode/package.json` `contributes.languageModelTools` are registered from `vscode/src/lmTools/` and invoke the same `spec42` binary as the LSP (`check`, `doctor`, `explain-diagnostic`, `model-summary` with `--format json`). No extra MCP config in VS Code for these tools.
 
-**MCP:** `spec42-mcp` exposes the same four tools for Cursor and other MCP hosts. Setup: [`docs/AI-ASSISTANTS.md`](docs/AI-ASSISTANTS.md), example [`docs/examples/mcp-vscode.json`](docs/examples/mcp-vscode.json).
+**MCP and HTTP API:** `spec42-mcp` and `spec42 api serve` expose the same validation and semantic projections as the CLI. Setup: [`docs/AI-ASSISTANTS.md`](docs/AI-ASSISTANTS.md), HTTP design: [`docs/adr/0001-read-only-systems-modeling-http-api.md`](docs/adr/0001-read-only-systems-modeling-http-api.md).
 
-Tests:
+Tests (see [Running Tests](#running-tests) → agent/API surfaces):
 
 ```bash
-cargo test -p spec42 --test mcp_tools --test mcp_protocol --test mcp_binary --test cli_ai_tools
+cargo test -p spec42 \
+  --test api_http \
+  --test mcp_tools \
+  --test cli_ai_tools \
+  --test mcp_protocol \
+  --test mcp_binary \
+  --test kitchen_timer_check
 cd vscode && npm run compile && npm run test:lm-cli-unit
 ```
 
-MCP protocol tests use the `rmcp` client dev-dependency with an in-memory duplex transport; `mcp_binary` exercises `spec42-mcp` via stdio; `cli_ai_tools` asserts CLI JSON matches MCP handlers on the KitchenTimer fixture.
+MCP protocol tests use the `rmcp` client dev-dependency with an in-memory duplex transport; `mcp_binary` exercises `spec42-mcp` via stdio; `cli_ai_tools` and `api_http` assert JSON parity with MCP handlers on the KitchenTimer fixture.
 
 ## Validation Pipeline
 

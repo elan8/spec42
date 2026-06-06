@@ -39,11 +39,11 @@ jobs:
       - name: Conformance matrix is current
         run: node scripts/generate-conformance-matrix.mjs --check
 
-      - name: cargo test (required fast path)
-        run: cargo test --workspace
-
-      - name: Build spec42-mcp binary
-        run: cargo build -p spec42 --bin spec42-mcp
+      - name: cargo test (core workspace, fast path)
+        run: |
+          cargo test --workspace --exclude spec42
+          cargo test -p spec42 --lib
+          cargo test -p spec42 --test multi_file_check
 
       - name: requirements slice integration checks
         run: |
@@ -73,6 +73,38 @@ jobs:
 
       - name: cargo clippy (required fast path)
         run: cargo clippy --workspace --all-targets -- -W clippy::all
+
+  rust-agent-surfaces:
+    name: Rust agent/API surfaces
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Fetch SysML stdlib bundle
+        run: |
+          mkdir -p "$(dirname "$SPEC42_STDLIB_BUNDLE_ZIP")"
+          curl --fail --location --retry 3 --output "$SPEC42_STDLIB_BUNDLE_ZIP" "$SPEC42_STDLIB_BUNDLE_URL"
+
+      - name: Agent/API surface integration tests
+        run: |
+          cargo test -p spec42 \
+            --test api_http \
+            --test mcp_tools \
+            --test cli_ai_tools \
+            --test mcp_protocol \
+            --test mcp_binary \
+            --test kitchen_timer_check
+
+      - name: Build spec42-mcp binary
+        run: cargo build -p spec42 --bin spec42-mcp
 
   extension-tests:
     name: VS Code extension tests

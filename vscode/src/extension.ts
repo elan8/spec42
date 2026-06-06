@@ -1753,7 +1753,7 @@ export function activate(context: vscode.ExtensionContext): void {
         languageClientReady = false;
         manualStopInProgress = true;
         setServerHealth(context, "restarting", "Restarting SysML language server.");
-        await client.stop();
+        await client.stop(process.env.CI ? 20000 : 10000);
         manualStopInProgress = false;
         restartCount = 0;
         crashDialogShown = false;

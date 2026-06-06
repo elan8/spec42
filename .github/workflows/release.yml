@@ -44,7 +44,17 @@ jobs:
           curl --fail --location --retry 3 --output "$SPEC42_STDLIB_BUNDLE_ZIP" "$SPEC42_STDLIB_BUNDLE_URL"
 
       - name: Rust tests
-        run: cargo test --workspace
+        run: |
+          cargo test --workspace --exclude spec42
+          cargo test -p spec42 --lib
+          cargo test -p spec42 --test multi_file_check
+          cargo test -p spec42 \
+            --test api_http \
+            --test mcp_tools \
+            --test cli_ai_tools \
+            --test mcp_protocol \
+            --test mcp_binary \
+            --test kitchen_timer_check
 
       - name: Rust clippy
         run: cargo clippy --workspace --all-targets -- -W clippy::all
