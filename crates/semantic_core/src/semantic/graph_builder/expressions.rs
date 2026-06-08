@@ -15,7 +15,11 @@ use crate::semantic::relationships::{
 };
 use crate::semantic::relationships::{add_semantic_edge_once, AddSemanticEdgeResult};
 
-use super::{add_node_and_recurse, qualified_name_for_node};
+use super::{add_node_and_recurse, qualified_name, qualified_name_for_node};
+
+fn is_action_like_kind(kind: &str) -> bool {
+    matches!(kind, "action" | "action def" | "perform" | "merge")
+}
 
 pub(super) fn add_perform_usage_node(
     g: &mut SemanticGraph,
@@ -26,6 +30,14 @@ pub(super) fn add_perform_usage_node(
     action_type: Option<&str>,
     range: TextRange,
 ) -> String {
+    let base = qualified_name(container_prefix, action_name);
+    let base_id = NodeId::new(uri, &base);
+    if let Some(existing) = g.get_node(&base_id) {
+        if !is_action_like_kind(&existing.element_kind) {
+            return base;
+        }
+    }
+
     let qualified = qualified_name_for_node(g, uri, container_prefix, action_name, "action");
     if !g
         .node_index_by_id

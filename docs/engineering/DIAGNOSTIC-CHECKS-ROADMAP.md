@@ -155,36 +155,40 @@ Spec areas: 7.12-7.16, 8.3.12-8.3.16, 8.4.8-8.4.12.
 
 Spec areas: 7.17-7.18, 8.3.17-8.3.18, 8.4.13-8.4.14.
 
-- Perform action target must resolve to an action definition/usage.
-- Send/accept payload compatibility.
-- Assignment action target must be assignable and value-compatible.
-- Transition source/target must resolve to states in the same state context.
-- Guards should be Boolean.
-- Initial/final state sanity within a state definition.
-- Succession endpoint validation for action and state flows.
+- Done: `perform_target_invalid_kind` — perform relationship target must be action-like.
+- Open: send/accept payload compatibility (needs stronger payload typing on graph).
+- Done: `assignment_target_unresolved` — verification assign lhs must resolve.
+- Open: assignment value compatibility (needs expression typing).
+- Done: `transition_endpoint_invalid_state` — transition endpoints must resolve to state usages.
+- Done: `transition_endpoint_invalid_context` — transition endpoints must share a state-def context.
+- Open: guards should be Boolean (transition guard not yet on semantic graph).
+- Done: `initial_state_invalid_target` — initial transition target must be a state usage.
+- Open: initial/final state cardinality sanity.
+- Done: `succession_endpoint_invalid` — behavior flow endpoints must be action-like.
 
 ### P2: requirements, cases, verification, use cases
 
 Spec areas: 7.21-7.25, 8.3.21-8.3.25, 8.4.17-8.4.21.
 
-- Requirement subject resolution and kind compatibility.
-- Requirement constraint membership kind validation.
-- `satisfy` source/target kind compatibility beyond unresolved/usage-preferred checks.
-- Verification case objective/requirement membership resolution.
-- Verification method/result/verdict shape validation.
-- Use case include target resolution and kind validation.
-- Case subject/objective binding cardinality and type checks.
+- Done: subject typing via extended `declared_type_ref` + `incompatible_type_kind` for `subject` nodes.
+- Open: requirement constraint membership kind validation.
+- Done: `satisfy_invalid_endpoint_kind` — requirement/use-case satisfy kind compatibility (view→viewpoint still uses viewpoint conformance checks).
+- Done: `verified_requirement_invalid_target` — verification verified-requirement membership resolution.
+- Open: verification method/result shape validation beyond `invalid_verdict_value`.
+- Done: `use_case_include_invalid_target` — include use case target resolution and kind validation.
+- Open: case subject/objective binding cardinality checks beyond `objective_binding_unresolved`.
 
 ### P2: views, viewpoints, renderings, metadata
 
 Spec areas: 7.26-7.27, 8.3.26, 8.4.22-8.4.23.
 
-- View rendering membership target kind validation.
-- View expose/import filter expression validation.
-- Viewpoint concern/stakeholder/language/purpose references should resolve where applicable.
-- Metadata annotation target resolution.
-- Metadata definition/usage kind compatibility.
-- User-defined keyword collision or unresolved metadata definition.
+- Done: `view_rendering_invalid_target` — view rendering membership target kind validation.
+- Done: `view_expose_empty` — view body without expose members.
+- Open: view expose/import filter expression Boolean validation as diagnostics.
+- Open: viewpoint concern/stakeholder/language/purpose reference resolution.
+- Done: `metadata_annotation_unresolved` — metadata annotation target resolution when untyped.
+- Done: metadata/rendering/subject typing via extended `kind_rules` + `incompatible_type_kind`.
+- Open: user-defined keyword collision or unresolved metadata definition.
 
 ## Suggested implementation order
 

@@ -7,8 +7,8 @@ use std::{collections::HashSet, time::Instant};
 use url::Url;
 
 use crate::semantic::diagnostics::checks::{
-    connection_conformance, expression_conformance, import_conformance, kind_compatibility,
-    name_resolution,
+    behavior_conformance, connection_conformance, expression_conformance, import_conformance,
+    kind_compatibility, name_resolution, requirement_case_conformance, view_metadata_conformance,
 };
 use crate::semantic::diagnostics::helpers::*;
 use crate::semantic::diagnostics::relationship_endpoint_messages::builder_relationship_diagnostic_to_emit;
@@ -309,6 +309,9 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         let Some(owner) = graph.get_node(owner_id) else {
             continue;
         };
+        if owner.element_kind == "metadata usage" {
+            continue;
+        }
         let feature_name = node.name.trim();
         if feature_name.is_empty() {
             continue;
@@ -662,17 +665,55 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
         diagnostics.len().saturating_sub(d15),
     ));
 
+    // 16) P2 behavior conformance (perform, transitions, succession).
     let t16 = Instant::now();
     let d16 = diagnostics.len();
+    diagnostics.extend(behavior_conformance::collect_behavior_conformance_diagnostics(
+        graph, uri,
+    ));
+    section_timings.push((
+        "16_behavior_conformance".to_string(),
+        t16.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d16),
+    ));
+
+    // 17) P2 requirement/case conformance.
+    let t17 = Instant::now();
+    let d17 = diagnostics.len();
+    diagnostics.extend(
+        requirement_case_conformance::collect_requirement_case_conformance_diagnostics(
+            graph, uri,
+        ),
+    );
+    section_timings.push((
+        "17_requirement_case_conformance".to_string(),
+        t17.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d17),
+    ));
+
+    // 18) P2 view/metadata conformance.
+    let t18 = Instant::now();
+    let d18 = diagnostics.len();
+    diagnostics.extend(view_metadata_conformance::collect_view_metadata_conformance_diagnostics(
+        graph, uri,
+    ));
+    section_timings.push((
+        "18_view_metadata_conformance".to_string(),
+        t18.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d18),
+    ));
+
+    let t19 = Instant::now();
+    let d19 = diagnostics.len();
     super::pending_relationship_diagnostics::append_unresolved_pending_relationship_diagnostics(
         graph,
         uri,
         &mut diagnostics,
     );
     section_timings.push((
-        "16_unresolved_pending_relationships".to_string(),
-        t16.elapsed().as_millis(),
-        diagnostics.len().saturating_sub(d16),
+        "19_unresolved_pending_relationships".to_string(),
+        t19.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d19),
     ));
 
     if std::env::var("SEMANTIC_CORE_TIMING")

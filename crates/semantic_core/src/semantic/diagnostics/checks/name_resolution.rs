@@ -32,6 +32,8 @@ const RULE6_ALLOWED_KINDS: &[&str] = &[
     "kermlDecl",
     "view def",
     "viewpoint def",
+    "metadata def",
+    "rendering def",
 ];
 
 fn is_namespace_kind(kind: &str) -> bool {

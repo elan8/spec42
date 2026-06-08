@@ -37,6 +37,7 @@ const TYPING_TARGET_KINDS: &[&str] = &[
     "view def",
     "viewpoint def",
     "rendering def",
+    "metadata def",
     "enum def",
     "alias",
     // KerML modeled declarations (`datatype`, `class`, ...) from `.kerml` / library sources.

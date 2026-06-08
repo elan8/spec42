@@ -4,7 +4,8 @@ use std::fs;
 use sysml_v2_parser::ast::{
     ActionDefBody, ActionDefBodyElement, CalcDefBody, CalcDefBodyElement, ConnectionDefBody,
     ConstraintDefBody, ConstraintDefBodyElement, InOut, InterfaceDefBody, PackageBodyElement,
-    PartDefBody, PartUsageBody, PortDefBody, StateDefBody, UseCaseDefBody,
+    PartDefBody, PartUsageBody, PortDefBody, StateDefBody, UseCaseDefBody, ViewBody,
+    ViewBodyElement, ViewRenderingUsage,
 };
 use sysml_v2_parser::RootNamespace;
 use url::Url;
@@ -31,6 +32,82 @@ fn direction_to_str(direction: &InOut) -> &'static str {
         InOut::In => "in",
         InOut::Out => "out",
         InOut::InOut => "inout",
+    }
+}
+
+fn add_view_rendering_node(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    parent_id: &NodeId,
+    rendering: &sysml_v2_parser::Node<ViewRenderingUsage>,
+) {
+    let vr = &rendering.value;
+    let qualified = qualified_name_for_node(
+        g,
+        uri,
+        Some(parent_id.qualified_name.as_str()),
+        &vr.name,
+        "view rendering",
+    );
+    let mut attrs = HashMap::new();
+    if let Some(ref rendering_type) = vr.type_name {
+        attrs.insert("renderingType".to_string(), serde_json::json!(rendering_type));
+    }
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "view rendering",
+        vr.name.clone(),
+        span_to_range(&rendering.span),
+        attrs,
+        Some(parent_id),
+    );
+    if let Some(ref rendering_type) = vr.type_name {
+        add_typing_edge_if_exists(
+            g,
+            uri,
+            &qualified,
+            rendering_type,
+            Some(parent_id.qualified_name.as_str()),
+        );
+    }
+}
+
+fn annotate_view_usage_body(
+    g: &mut SemanticGraph,
+    view_id: &NodeId,
+    body: &ViewBody,
+    uri: &Url,
+) {
+    let ViewBody::Brace { elements } = body else {
+        return;
+    };
+    if let Some(view_node) = g.get_node_mut(view_id) {
+        view_node
+            .attributes
+            .insert("hasViewBody".to_string(), serde_json::json!(true));
+    }
+    let mut has_expose = false;
+    for element in elements {
+        match &element.value {
+            ViewBodyElement::Expose(_) => has_expose = true,
+            ViewBodyElement::ViewRendering(rendering) => {
+                add_view_rendering_node(g, uri, view_id, rendering);
+            }
+            ViewBodyElement::Error(_)
+            | ViewBodyElement::Other(_)
+            | ViewBodyElement::Doc(_)
+            | ViewBodyElement::Filter(_)
+            | ViewBodyElement::Satisfy(_) => {}
+        }
+    }
+    if has_expose {
+        if let Some(view_node) = g.get_node_mut(view_id) {
+            view_node
+                .attributes
+                .insert("hasExpose".to_string(), serde_json::json!(true));
+        }
     }
 }
 
@@ -1620,9 +1697,11 @@ pub(super) fn build_from_package_body_element(
                 attrs,
                 parent_id,
             );
+            let view_id = NodeId::new(uri, &qualified);
             if let Some(ref t) = vu_node.type_name {
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
+            annotate_view_usage_body(g, &view_id, &vu_node.body, uri);
         }
         PBE::ViewpointUsage(vpu_node) => {
             let name = &vpu_node.name;
@@ -1655,6 +1734,10 @@ pub(super) fn build_from_package_body_element(
             let name = &ru_node.name;
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "rendering");
             let range = span_to_range(&ru_node.span);
+            let mut attrs = HashMap::new();
+            if let Some(ref t) = ru_node.type_name {
+                attrs.insert("renderingType".to_string(), serde_json::json!(t));
+            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -1662,9 +1745,12 @@ pub(super) fn build_from_package_body_element(
                 "rendering",
                 name.clone(),
                 range,
-                HashMap::new(),
+                attrs,
                 parent_id,
             );
+            if let Some(ref t) = ru_node.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
         }
         PBE::Import(imp) => {
             if let Some(pid) = parent_id {

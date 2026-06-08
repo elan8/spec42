@@ -6,6 +6,7 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
+use super::use_case::add_include_use_case_node;
 use super::{add_node_and_recurse, qualified_name_for_node};
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
@@ -341,6 +342,26 @@ pub(super) fn build_from_verification_body(
                     Some(parent_id),
                 );
             }
+            UseCaseDefBodyElement::ThenIncludeUseCase(then_include) => {
+                add_include_use_case_node(
+                    g,
+                    uri,
+                    parent_id,
+                    &then_include.value.include.value,
+                    span_to_range(&then_include.span),
+                    container_prefix,
+                );
+            }
+            UseCaseDefBodyElement::IncludeUseCase(include_node) => {
+                add_include_use_case_node(
+                    g,
+                    uri,
+                    parent_id,
+                    &include_node.value,
+                    span_to_range(&include_node.span),
+                    container_prefix,
+                );
+            }
             UseCaseDefBodyElement::Error(_)
             | UseCaseDefBodyElement::Doc(_)
             | UseCaseDefBodyElement::Other(_)
@@ -349,9 +370,7 @@ pub(super) fn build_from_verification_body(
             | UseCaseDefBodyElement::ActorUsage(_)
             | UseCaseDefBodyElement::ActorRedefinitionAssignment(_)
             | UseCaseDefBodyElement::FirstSuccession(_)
-            | UseCaseDefBodyElement::ThenIncludeUseCase(_)
             | UseCaseDefBodyElement::ThenUseCaseUsage(_)
-            | UseCaseDefBodyElement::IncludeUseCase(_)
             | UseCaseDefBodyElement::RefRedefinition(_)
             | UseCaseDefBodyElement::ForLoop(_) => {}
         }
