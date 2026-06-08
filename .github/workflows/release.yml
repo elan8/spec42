@@ -39,17 +39,29 @@ jobs:
       - name: Standard library config is current
         run: node scripts/sync-standard-library-config.mjs --check
 
-      - name: Resolve stdlib bundle paths
+      - name: Prepare SysML stdlib bundle
         run: |
           VERSION=$(node -p "require('./config/standard-library.json').version")
-          REPO=$(node -p "require('./config/standard-library.json').repo")
+          echo "SPEC42_STDLIB_VERSION=${VERSION}" >> $GITHUB_ENV
           echo "SPEC42_STDLIB_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-v2-release-${VERSION}.zip" >> $GITHUB_ENV
-          echo "SPEC42_STDLIB_BUNDLE_URL=https://github.com/${REPO}/archive/refs/tags/${VERSION}.zip" >> $GITHUB_ENV
+
+      - name: Restore SysML stdlib bundle cache
+        uses: actions/cache/restore@v4
+        id: stdlib-cache
+        with:
+          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
       - name: Fetch SysML stdlib bundle
-        run: |
-          mkdir -p "$(dirname "$SPEC42_STDLIB_BUNDLE_ZIP")"
-          curl --fail --location --retry 3 --output "$SPEC42_STDLIB_BUNDLE_ZIP" "$SPEC42_STDLIB_BUNDLE_URL"
+        if: steps.stdlib-cache.outputs.cache-hit != 'true'
+        run: bash scripts/fetch-stdlib-bundle.sh
+
+      - name: Save SysML stdlib bundle cache
+        if: steps.stdlib-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
       - name: Rust tests
         run: |
@@ -122,19 +134,31 @@ jobs:
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
 
-      - name: Resolve stdlib bundle paths
+      - name: Prepare SysML stdlib bundle
         shell: bash
         run: |
           VERSION=$(node -p "require('./config/standard-library.json').version")
-          REPO=$(node -p "require('./config/standard-library.json').repo")
+          echo "SPEC42_STDLIB_VERSION=${VERSION}" >> $GITHUB_ENV
           echo "SPEC42_STDLIB_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-v2-release-${VERSION}.zip" >> $GITHUB_ENV
-          echo "SPEC42_STDLIB_BUNDLE_URL=https://github.com/${REPO}/archive/refs/tags/${VERSION}.zip" >> $GITHUB_ENV
+
+      - name: Restore SysML stdlib bundle cache
+        uses: actions/cache/restore@v4
+        id: stdlib-cache
+        with:
+          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
       - name: Fetch SysML stdlib bundle
+        if: steps.stdlib-cache.outputs.cache-hit != 'true'
         shell: bash
-        run: |
-          mkdir -p "$(dirname "$SPEC42_STDLIB_BUNDLE_ZIP")"
-          curl --fail --location --retry 3 --output "$SPEC42_STDLIB_BUNDLE_ZIP" "$SPEC42_STDLIB_BUNDLE_URL"
+        run: bash scripts/fetch-stdlib-bundle.sh
+
+      - name: Save SysML stdlib bundle cache
+        if: steps.stdlib-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
       - name: Build release binary
         run: cargo build --release -p spec42 --target ${{ matrix.target }}
