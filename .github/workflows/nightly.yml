@@ -1,0 +1,221 @@
+name: Nightly
+
+on:
+  schedule:
+    # Nightly in Europe/Amsterdam: 02:30 CET / 03:30 CEST.
+    - cron: "30 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sysml-release-validation:
+    name: SysML release validation (informational)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Clone SysML-v2-Release
+        run: git clone --depth 1 https://github.com/Systems-Modeling/SysML-v2-Release.git sysml-v2-release
+
+      - name: Run workspace scan test with SysML release
+        env:
+          SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
+        run: cargo test -p kernel lsp_workspace_scan_sysml_release -- --nocapture
+
+  vscode-visualization-deep:
+    name: VS Code visualization deep tests (informational)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    env:
+      VSCODE_TEST_VERSION: "1.99.0"
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: vscode/package-lock.json
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Prepare SysML stdlib bundle
+        run: |
+          VERSION=$(node -p "require('./config/standard-library.json').version")
+          echo "SPEC42_STDLIB_VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "SPEC42_STDLIB_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-v2-release-${VERSION}.zip" >> $GITHUB_ENV
+
+      - name: Restore SysML stdlib bundle cache
+        uses: actions/cache/restore@v4
+        id: stdlib-cache
+        with:
+          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
+
+      - name: Fetch SysML stdlib bundle
+        if: steps.stdlib-cache.outputs.cache-hit != 'true'
+        run: bash scripts/fetch-stdlib-bundle.sh
+
+      - name: Save SysML stdlib bundle cache
+        if: steps.stdlib-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
+
+      - name: Build server (debug for visualization test host)
+        run: cargo build -p spec42
+
+      - name: Configure server path
+        run: |
+          echo "${{ github.workspace }}/target/debug" >> $GITHUB_PATH
+          chmod +x "${{ github.workspace }}/target/debug/spec42" || true
+          echo "SPEC42_SERVER_PATH=${{ github.workspace }}/target/debug/spec42" >> $GITHUB_ENV
+
+      - name: npm ci (vscode)
+        run: cd vscode && npm ci
+
+      - name: Build extension and webview
+        run: cd vscode && npm run build:webview-assets && npm run build:webview && npm run compile
+
+      - name: npm test (interconnection)
+        run: cd vscode && xvfb-run -a npm run test:interconnection
+
+      - name: npm test (state view)
+        run: cd vscode && xvfb-run -a npm run test:state-view
+
+      - name: npm test (interconnection drone)
+        run: cd vscode && xvfb-run -a npm run test:interconnection-drone
+
+      - name: Upload visualization failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vscode-visualization-deep-artifacts
+          if-no-files-found: ignore
+          path: |
+            vscode/.vscode-test/**
+            vscode/test-output/**
+            vscode/tests/output/**
+            /tmp/spec42-vscode-test-exports/**
+
+  large-workspace-performance:
+    name: Large workspace performance report (informational)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Prepare SysML stdlib bundle
+        run: |
+          VERSION=$(node -p "require('./config/standard-library.json').version")
+          echo "SPEC42_STDLIB_VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "SPEC42_STDLIB_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-v2-release-${VERSION}.zip" >> $GITHUB_ENV
+
+      - name: Restore SysML stdlib bundle cache
+        uses: actions/cache/restore@v4
+        id: stdlib-cache
+        with:
+          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
+
+      - name: Fetch SysML stdlib bundle
+        if: steps.stdlib-cache.outputs.cache-hit != 'true'
+        run: bash scripts/fetch-stdlib-bundle.sh
+
+      - name: Save SysML stdlib bundle cache
+        if: steps.stdlib-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
+
+      - name: Run large workspace performance report
+        run: |
+          set +e
+          cargo test -p kernel --test lsp_integration integration::workspace::lsp_large_workspace_performance_report -- --ignored --nocapture 2>&1 | tee large-workspace-perf.txt
+          status=${PIPESTATUS[0]}
+          set -e
+          {
+            echo "## Large workspace performance report"
+            echo
+            grep "SPEC42_PERF_REPORT" large-workspace-perf.txt || echo "No SPEC42_PERF_REPORT line emitted."
+            echo
+            if [ "$status" -ne 0 ]; then
+              echo "Perf report command exited with status $status (informational)."
+              echo
+            fi
+            echo "Budgets are report-only until baselines are accepted."
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+
+      - name: Summarize large workspace performance report
+        if: always()
+        run: |
+          node <<'NODE' >> "$GITHUB_STEP_SUMMARY"
+          const fs = require("fs");
+          const reportPath = "target/spec42-perf/large-workspace-performance.json";
+          if (!fs.existsSync(reportPath)) {
+            console.log("No structured performance JSON report was produced.");
+            process.exit(0);
+          }
+          const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
+          const workspace = report.modelRequests?.workspace ?? {};
+          const document = report.modelRequests?.document ?? {};
+          const visualization = report.visualization ?? {};
+          console.log("### Structured performance breakdown");
+          console.log("");
+          console.log(`Fixture: ${report.fixture?.files ?? 0} files, ${report.fixture?.totalBytes ?? 0} bytes`);
+          console.log("");
+          console.log("| Area | Time | Size / Count |");
+          console.log("| --- | ---: | ---: |");
+          console.log(`| Workspace model request | ${workspace.elapsedMs ?? 0} ms | ${workspace.responseBytes ?? 0} bytes |`);
+          console.log(`| Document model request | ${document.elapsedMs ?? 0} ms | ${document.responseBytes ?? 0} bytes |`);
+          console.log(`| Visualization request | ${visualization.elapsedMs ?? 0} ms | ${visualization.responseBytes ?? 0} bytes |`);
+          console.log(`| Local fixture parse | ${report.phases?.fixtureScanParse?.parseTotalMs ?? 0} ms | p95 ${report.phases?.fixtureScanParse?.parseP95Ms ?? 0} ms |`);
+          console.log("");
+          console.log("Top bottleneck phases:");
+          for (const phase of report.bottlenecks?.slowestPhases ?? []) {
+            console.log(`- ${phase.name}: ${phase.ms} ms`);
+          }
+          console.log("");
+          console.log("Slowest files by parse time:");
+          for (const file of report.bottlenecks?.slowestFilesByParse ?? []) {
+            console.log(`- ${file.path}: ${file.parse_ms} ms (${file.bytes} bytes)`);
+          }
+          NODE
+
+      - name: Upload performance report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: large-workspace-performance-report
+          if-no-files-found: error
+          path: |
+            large-workspace-perf.txt
+            target/spec42-perf/large-workspace-performance.json

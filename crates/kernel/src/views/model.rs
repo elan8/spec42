@@ -484,11 +484,13 @@ pub async fn build_sysml_model_response(
         None
     };
     let general_view_ms = general_view_start.elapsed().as_millis().max(1);
+    let workspace_model_start = Instant::now();
     let workspace_model = if workspace_viz {
         Some(build_workspace_model_dto(semantic_graph, library_paths))
     } else {
         None
     };
+    let workspace_model_ms = workspace_model_start.elapsed().as_millis().max(1);
 
     let doc = parsed;
     let activity_diagrams_start = Instant::now();
@@ -608,6 +610,7 @@ pub async fn build_sysml_model_response(
             ("rawGraphMs", raw_graph_ms.to_string()),
             ("stripSyntheticMs", strip_ms.to_string()),
             ("generalViewMs", general_view_ms.to_string()),
+            ("workspaceModelMs", workspace_model_ms.to_string()),
             ("activityDiagramsMs", activity_diagrams_ms.to_string()),
             ("sequenceDiagramsMs", sequence_diagrams_ms.to_string()),
             ("statsMs", stats_ms.to_string()),

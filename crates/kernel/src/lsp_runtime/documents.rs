@@ -133,6 +133,24 @@ fn schedule_semantic_relink_after_change(
                     relink_metrics.cross_document_edges_ms.to_string(),
                 ),
                 (
+                    "relinkCrossEdgeResolutionMs",
+                    relink_metrics.cross_edge_resolution_ms.to_string(),
+                ),
+                (
+                    "relinkWorkspaceRelationshipLinkingMs",
+                    relink_metrics.workspace_relationship_linking_ms.to_string(),
+                ),
+                (
+                    "relinkPendingRelationshipResolutionMs",
+                    relink_metrics
+                        .pending_relationship_resolution_ms
+                        .to_string(),
+                ),
+                (
+                    "relinkExpressionEvaluationMs",
+                    relink_metrics.expression_evaluation_ms.to_string(),
+                ),
+                (
                     "relinkRefreshSymbolsMs",
                     relink_metrics.refresh_symbols_ms.to_string(),
                 ),
@@ -528,6 +546,24 @@ pub(crate) async fn initialized(
                 (
                     "relinkCrossDocumentEdgesMs",
                     relink_metrics.cross_document_edges_ms.to_string(),
+                ),
+                (
+                    "relinkCrossEdgeResolutionMs",
+                    relink_metrics.cross_edge_resolution_ms.to_string(),
+                ),
+                (
+                    "relinkWorkspaceRelationshipLinkingMs",
+                    relink_metrics.workspace_relationship_linking_ms.to_string(),
+                ),
+                (
+                    "relinkPendingRelationshipResolutionMs",
+                    relink_metrics
+                        .pending_relationship_resolution_ms
+                        .to_string(),
+                ),
+                (
+                    "relinkExpressionEvaluationMs",
+                    relink_metrics.expression_evaluation_ms.to_string(),
                 ),
                 (
                     "relinkRefreshSymbolsMs",

@@ -34,6 +34,10 @@ pub(crate) struct RebuildAllDocumentLinksMetrics {
     pub(crate) parsed_doc_count: usize,
     pub(crate) remove_nodes_ms: u32,
     pub(crate) rebuild_graphs_ms: u32,
+    pub(crate) cross_edge_resolution_ms: u32,
+    pub(crate) workspace_relationship_linking_ms: u32,
+    pub(crate) pending_relationship_resolution_ms: u32,
+    pub(crate) expression_evaluation_ms: u32,
     pub(crate) cross_document_edges_ms: u32,
     pub(crate) refresh_symbols_ms: u32,
     pub(crate) total_ms: u32,
@@ -565,6 +569,7 @@ pub(crate) fn rebuild_all_document_links(
     let rebuild_graphs_ms = elapsed_ms(rebuild_graphs_start);
 
     let cross_document_edges_start = Instant::now();
+    let cross_edge_resolution_start = Instant::now();
     let worker_count = std::thread::available_parallelism()
         .map(|count| count.get())
         .unwrap_or(1)
@@ -614,9 +619,19 @@ pub(crate) fn rebuild_all_document_links(
             );
         }
     }
+    let cross_edge_resolution_ms = elapsed_ms(cross_edge_resolution_start);
+
+    let workspace_relationship_linking_start = Instant::now();
     semantic::link_workspace_relationships(&mut state.semantic_graph);
+    let workspace_relationship_linking_ms = elapsed_ms(workspace_relationship_linking_start);
+
+    let pending_relationship_resolution_start = Instant::now();
     semantic::resolve_workspace_pending_relationships(&mut state.semantic_graph);
+    let pending_relationship_resolution_ms = elapsed_ms(pending_relationship_resolution_start);
+
+    let expression_evaluation_start = Instant::now();
     semantic::evaluate_expressions(&mut state.semantic_graph);
+    let expression_evaluation_ms = elapsed_ms(expression_evaluation_start);
     let cross_document_edges_ms = elapsed_ms(cross_document_edges_start);
 
     let refresh_symbols_start = Instant::now();
@@ -644,6 +659,10 @@ pub(crate) fn rebuild_all_document_links(
         parsed_doc_count: uris.len(), // Use uris.len() as we processed all requested uris
         remove_nodes_ms,
         rebuild_graphs_ms,
+        cross_edge_resolution_ms,
+        workspace_relationship_linking_ms,
+        pending_relationship_resolution_ms,
+        expression_evaluation_ms,
         cross_document_edges_ms,
         refresh_symbols_ms,
         total_ms: elapsed_ms(total_start),
@@ -708,6 +727,7 @@ pub(crate) fn rebuild_semantic_graph_staged(
     let rebuild_graphs_ms = elapsed_ms(rebuild_graphs_start);
 
     let cross_document_edges_start = Instant::now();
+    let cross_edge_resolution_start = Instant::now();
     let mut uri_buckets: Vec<Vec<Url>> = (0..worker_count).map(|_| Vec::new()).collect();
     for (i, uri) in uris.iter().enumerate() {
         uri_buckets[i % worker_count].push(uri.clone());
@@ -748,9 +768,19 @@ pub(crate) fn rebuild_semantic_graph_staged(
             );
         }
     }
+    let cross_edge_resolution_ms = elapsed_ms(cross_edge_resolution_start);
+
+    let workspace_relationship_linking_start = Instant::now();
     semantic::link_workspace_relationships(&mut semantic_graph);
+    let workspace_relationship_linking_ms = elapsed_ms(workspace_relationship_linking_start);
+
+    let pending_relationship_resolution_start = Instant::now();
     semantic::resolve_workspace_pending_relationships(&mut semantic_graph);
+    let pending_relationship_resolution_ms = elapsed_ms(pending_relationship_resolution_start);
+
+    let expression_evaluation_start = Instant::now();
     semantic::evaluate_expressions(&mut semantic_graph);
+    let expression_evaluation_ms = elapsed_ms(expression_evaluation_start);
     let cross_document_edges_ms = elapsed_ms(cross_document_edges_start);
 
     let refresh_symbols_start = Instant::now();
@@ -777,6 +807,10 @@ pub(crate) fn rebuild_semantic_graph_staged(
         parsed_doc_count: uris.len(),
         remove_nodes_ms: 0, // No nodes to remove in a fresh graph
         rebuild_graphs_ms,
+        cross_edge_resolution_ms,
+        workspace_relationship_linking_ms,
+        pending_relationship_resolution_ms,
+        expression_evaluation_ms,
         cross_document_edges_ms,
         refresh_symbols_ms,
         total_ms: elapsed_ms(total_start),

@@ -410,8 +410,50 @@ impl Backend {
         &self,
         params: serde_json::Value,
     ) -> Result<SysmlVisualizationResultDto> {
+        let request_start = Instant::now();
         let state = self.state.read().await;
-        sysml_visualization_result(&state, params)
+        let perf_logging_enabled = state.perf_logging_enabled;
+        let response = sysml_visualization_result(&state, params)?;
+        drop(state);
+        if perf_logging_enabled {
+            let graph_nodes = response
+                .graph
+                .as_ref()
+                .map(|graph| graph.nodes.len())
+                .unwrap_or(0);
+            let graph_edges = response
+                .graph
+                .as_ref()
+                .map(|graph| graph.edges.len())
+                .unwrap_or(0);
+            let general_view_nodes = response
+                .general_view_graph
+                .as_ref()
+                .map(|graph| graph.nodes.len())
+                .unwrap_or(0);
+            let general_view_edges = response
+                .general_view_graph
+                .as_ref()
+                .map(|graph| graph.edges.len())
+                .unwrap_or(0);
+            self.client
+                .log_message(
+                    MessageType::INFO,
+                    format!(
+                        "[SysML][perf] {{\"event\":\"backend:sysmlVisualizationRequest\",\"view\":\"{}\",\"modelReady\":{},\"totalMs\":{},\"graphNodes\":{},\"graphEdges\":{},\"generalViewNodes\":{},\"generalViewEdges\":{},\"viewCandidates\":{}}}",
+                        response.view,
+                        response.model_ready,
+                        request_start.elapsed().as_millis().max(1),
+                        graph_nodes,
+                        graph_edges,
+                        general_view_nodes,
+                        general_view_edges,
+                        response.view_candidates.len(),
+                    ),
+                )
+                .await;
+        }
+        Ok(response)
     }
 
     async fn sysml_feature_inspector(

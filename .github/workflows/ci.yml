@@ -71,26 +71,6 @@ jobs:
           cargo test --workspace --exclude spec42
           cargo test -p spec42 --lib
 
-      - name: Large workspace performance report (non-blocking)
-        continue-on-error: true
-        run: |
-          set +e
-          cargo test -p kernel --test lsp_integration integration::workspace::lsp_large_workspace_performance_report -- --ignored --nocapture 2>&1 | tee large-workspace-perf.txt
-          status=${PIPESTATUS[0]}
-          set -e
-          {
-            echo "## Large workspace performance report"
-            echo
-            grep "SPEC42_PERF_REPORT" large-workspace-perf.txt || echo "No SPEC42_PERF_REPORT line emitted."
-            echo
-            if [ "$status" -ne 0 ]; then
-              echo "Perf report command exited with status $status (non-blocking)."
-              echo
-            fi
-            echo "Budgets are report-only until baselines are accepted."
-          } >> "$GITHUB_STEP_SUMMARY"
-          exit 0
-
       - name: cargo clippy
         run: cargo clippy --workspace --all-targets -- -W clippy::all
 

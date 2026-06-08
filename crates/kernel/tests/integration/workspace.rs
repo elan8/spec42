@@ -1,10 +1,13 @@
 //! Workspace scan integration tests.
 
-use std::path::PathBuf;
+use std::collections::HashMap;
+use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
 use super::harness::{next_id, read_message, read_response, send_message, spawn_server};
 use kernel::common::util;
+use serde::Serialize;
+use walkdir::WalkDir;
 
 fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -961,6 +964,303 @@ fn lsp_workspace_visualization_model_includes_all_workspace_systems() {
     let _ = child.kill();
 }
 
+#[derive(Debug, Clone, Serialize)]
+struct DurationSummary {
+    total_ms: u128,
+    p50_ms: u128,
+    p95_ms: u128,
+    max_ms: u128,
+}
+
+#[derive(Debug, Clone, Serialize)]
+struct FilePerfEntry {
+    path: String,
+    bytes: u64,
+    read_ms: u128,
+    parse_ms: u128,
+    parse_ok: bool,
+}
+
+#[derive(Debug, Clone, Serialize)]
+struct FixturePerfSummary {
+    files: usize,
+    total_bytes: u64,
+    scan_ms: u128,
+    read: DurationSummary,
+    parse: DurationSummary,
+    slowest_files_by_parse: Vec<FilePerfEntry>,
+    largest_files: Vec<FilePerfEntry>,
+}
+
+#[derive(Debug)]
+struct CapturedResponse {
+    raw: String,
+    json: serde_json::Value,
+    elapsed_ms: u128,
+    perf_events: Vec<serde_json::Value>,
+}
+
+fn percentile_ms(values: &[u128], percentile: u32) -> u128 {
+    if values.is_empty() {
+        return 0;
+    }
+    let mut sorted = values.to_vec();
+    sorted.sort_unstable();
+    let pct = percentile.clamp(0, 100) as usize;
+    let index = ((sorted.len() - 1) * pct).div_ceil(100);
+    sorted[index]
+}
+
+fn duration_summary(values: &[u128]) -> DurationSummary {
+    DurationSummary {
+        total_ms: values.iter().sum(),
+        p50_ms: percentile_ms(values, 50),
+        p95_ms: percentile_ms(values, 95),
+        max_ms: values.iter().copied().max().unwrap_or(0),
+    }
+}
+
+fn relative_perf_path(root: &Path, path: &Path) -> String {
+    path.strip_prefix(root)
+        .unwrap_or(path)
+        .to_string_lossy()
+        .replace('\\', "/")
+}
+
+fn collect_fixture_perf(root: &Path) -> FixturePerfSummary {
+    let scan_start = Instant::now();
+    let mut files = Vec::new();
+    for entry in WalkDir::new(root)
+        .follow_links(false)
+        .into_iter()
+        .filter_map(|entry| entry.ok())
+    {
+        if !entry.file_type().is_file() {
+            continue;
+        }
+        let ext = entry.path().extension().and_then(|ext| ext.to_str());
+        if ext != Some("sysml") && ext != Some("kerml") {
+            continue;
+        }
+
+        let read_start = Instant::now();
+        let content = std::fs::read_to_string(entry.path()).unwrap_or_default();
+        let read_ms = read_start.elapsed().as_millis();
+        let bytes = content.len() as u64;
+
+        let parse_start = Instant::now();
+        let parse_ok = sysml_v2_parser::parse(&content).is_ok();
+        let parse_ms = parse_start.elapsed().as_millis();
+
+        files.push(FilePerfEntry {
+            path: relative_perf_path(root, entry.path()),
+            bytes,
+            read_ms,
+            parse_ms,
+            parse_ok,
+        });
+    }
+    let scan_ms = scan_start.elapsed().as_millis();
+    files.sort_by(|left, right| left.path.cmp(&right.path));
+
+    let read_values = files.iter().map(|file| file.read_ms).collect::<Vec<_>>();
+    let parse_values = files.iter().map(|file| file.parse_ms).collect::<Vec<_>>();
+    let total_bytes = files.iter().map(|file| file.bytes).sum();
+
+    let mut slowest_files_by_parse = files.clone();
+    slowest_files_by_parse.sort_by(|left, right| {
+        right
+            .parse_ms
+            .cmp(&left.parse_ms)
+            .then_with(|| left.path.cmp(&right.path))
+    });
+    slowest_files_by_parse.truncate(5);
+
+    let mut largest_files = files.clone();
+    largest_files.sort_by(|left, right| {
+        right
+            .bytes
+            .cmp(&left.bytes)
+            .then_with(|| left.path.cmp(&right.path))
+    });
+    largest_files.truncate(5);
+
+    FixturePerfSummary {
+        files: files.len(),
+        total_bytes,
+        scan_ms,
+        read: duration_summary(&read_values),
+        parse: duration_summary(&parse_values),
+        slowest_files_by_parse,
+        largest_files,
+    }
+}
+
+fn perf_event_from_message(message: &str) -> Option<serde_json::Value> {
+    const MARKER: &str = "[SysML][perf] ";
+    let json_start = message.find(MARKER)? + MARKER.len();
+    serde_json::from_str(&message[json_start..]).ok()
+}
+
+fn collect_perf_event(message: &str, events: &mut Vec<serde_json::Value>) {
+    let Ok(json) = serde_json::from_str::<serde_json::Value>(message) else {
+        return;
+    };
+    if json["method"].as_str() != Some("window/logMessage") {
+        return;
+    }
+    let Some(message) = json["params"]["message"].as_str() else {
+        return;
+    };
+    if let Some(event) = perf_event_from_message(message) {
+        events.push(event);
+    }
+}
+
+fn request_with_perf_capture(
+    stdin: &mut std::process::ChildStdin,
+    stdout: &mut std::process::ChildStdout,
+    method: &str,
+    params: serde_json::Value,
+) -> CapturedResponse {
+    let id = next_id();
+    let req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": id,
+        "method": method,
+        "params": params
+    });
+    let start = Instant::now();
+    send_message(stdin, &req.to_string());
+    let mut perf_events = Vec::new();
+    loop {
+        let msg = read_message(stdout).expect("expected JSON-RPC message");
+        collect_perf_event(&msg, &mut perf_events);
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json.get("id").and_then(|value| value.as_i64()) == Some(id) {
+            return CapturedResponse {
+                raw: msg,
+                json,
+                elapsed_ms: start.elapsed().as_millis(),
+                perf_events,
+            };
+        }
+    }
+}
+
+fn latest_perf_event<'a>(
+    events: &'a [serde_json::Value],
+    event_name: &str,
+) -> Option<&'a serde_json::Value> {
+    events
+        .iter()
+        .rev()
+        .find(|event| event["event"].as_str() == Some(event_name))
+}
+
+fn value_ms(event: Option<&serde_json::Value>, key: &str) -> u128 {
+    event
+        .and_then(|event| event.get(key))
+        .and_then(|value| value.as_u64())
+        .unwrap_or(0) as u128
+}
+
+fn slowest_phase_entries(phases: &HashMap<&'static str, u128>) -> Vec<serde_json::Value> {
+    let mut entries = phases
+        .iter()
+        .map(|(name, ms)| (*name, *ms))
+        .collect::<Vec<_>>();
+    entries.sort_by(|left, right| right.1.cmp(&left.1).then_with(|| left.0.cmp(right.0)));
+    entries
+        .into_iter()
+        .take(5)
+        .map(|(name, ms)| serde_json::json!({ "name": name, "ms": ms }))
+        .collect()
+}
+
+fn write_perf_report(report: &serde_json::Value) -> PathBuf {
+    let output_dir = repo_root().join("target").join("spec42-perf");
+    std::fs::create_dir_all(&output_dir).expect("create perf report dir");
+    let output_path = output_dir.join("large-workspace-performance.json");
+    std::fs::write(
+        &output_path,
+        serde_json::to_string_pretty(report).expect("serialize perf report"),
+    )
+    .expect("write perf report");
+    output_path
+}
+
+fn workspace_loaded_files(response: &serde_json::Value) -> usize {
+    response["result"]["workspaceModel"]["summary"]["loadedFiles"]
+        .as_u64()
+        .unwrap_or(0) as usize
+}
+
+fn graph_node_count(response: &serde_json::Value) -> usize {
+    response["result"]["graph"]["nodes"]
+        .as_array()
+        .map(Vec::len)
+        .unwrap_or(0)
+}
+
+fn graph_edge_count(response: &serde_json::Value) -> usize {
+    response["result"]["graph"]["edges"]
+        .as_array()
+        .map(Vec::len)
+        .unwrap_or(0)
+}
+
+#[test]
+fn performance_percentile_helpers_are_stable() {
+    assert_eq!(percentile_ms(&[], 95), 0);
+    assert_eq!(percentile_ms(&[7], 50), 7);
+    assert_eq!(percentile_ms(&[1, 10, 3, 7], 50), 7);
+    assert_eq!(percentile_ms(&[1, 10, 3, 7], 95), 10);
+}
+
+#[test]
+fn performance_slowest_phase_entries_sort_by_duration_then_name() {
+    let phases = HashMap::from([
+        ("parse", 20),
+        ("scan", 20),
+        ("relink", 40),
+        ("visualization", 5),
+    ]);
+    let entries = slowest_phase_entries(&phases);
+    assert_eq!(entries[0]["name"], "relink");
+    assert_eq!(entries[1]["name"], "parse");
+    assert_eq!(entries[2]["name"], "scan");
+}
+
+#[test]
+fn performance_report_schema_keeps_required_top_level_keys() {
+    let report = serde_json::json!({
+        "schemaVersion": 1,
+        "fixture": {},
+        "phases": {},
+        "modelRequests": {},
+        "visualization": {},
+        "counts": {},
+        "budgets": {},
+        "bottlenecks": {}
+    });
+    for key in [
+        "schemaVersion",
+        "fixture",
+        "phases",
+        "modelRequests",
+        "visualization",
+        "counts",
+        "budgets",
+        "bottlenecks",
+    ] {
+        assert!(
+            report.get(key).is_some(),
+            "missing required report key {key}"
+        );
+    }
+}
+
 #[test]
 #[ignore = "report-only performance guardrail; CI records metrics without enforcing budgets yet"]
 fn lsp_large_workspace_performance_report() {
@@ -977,6 +1277,7 @@ fn lsp_large_workspace_performance_report() {
         return;
     }
 
+    let fixture_perf = collect_fixture_perf(&root);
     let root_uri = url::Url::from_file_path(&root).expect("large workspace root uri");
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");
@@ -992,10 +1293,8 @@ fn lsp_large_workspace_performance_report() {
             "rootUri": root_uri.as_str(),
             "capabilities": {},
             "initializationOptions": {
-                "spec42": {
-                    "performanceLogging": { "enabled": true },
-                    "workspace": { "maxFilesPerPattern": 1000 }
-                }
+                "performanceLogging": { "enabled": true },
+                "workspace": { "maxFilesPerPattern": 1000 }
             },
             "clientInfo": { "name": "perf-report", "version": "0.1.0" }
         }
@@ -1006,102 +1305,211 @@ fn lsp_large_workspace_performance_report() {
         &mut stdin,
         &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
     );
-    std::thread::sleep(Duration::from_millis(1200));
 
-    let workspace_index_start = Instant::now();
-    let workspace_model_id = next_id();
-    let workspace_model_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": workspace_model_id,
-        "method": "sysml/model",
-        "params": {
-            "textDocument": { "uri": root_uri.as_str() },
-            "scope": ["graph", "workspaceVisualization"]
-        }
+    let workspace_model_params = serde_json::json!({
+        "textDocument": { "uri": root_uri.as_str() },
+        "scope": ["graph", "workspaceVisualization"]
     });
-    send_message(&mut stdin, &workspace_model_req.to_string());
-    let workspace_model_resp =
-        read_response(&mut stdout, workspace_model_id).expect("workspace sysml/model response");
-    let workspace_index_ms = workspace_index_start.elapsed().as_millis();
-    let workspace_model_json: serde_json::Value =
-        serde_json::from_str(&workspace_model_resp).expect("parse workspace sysml/model response");
-    let indexed_documents = workspace_model_json["result"]["workspaceModel"]["summary"]
-        ["loadedFiles"]
-        .as_u64()
-        .unwrap_or(0) as usize;
-    let workspace_graph_nodes = workspace_model_json["result"]["graph"]["nodes"]
-        .as_array()
-        .map(Vec::len)
-        .unwrap_or(0);
+    let workspace_model_capture = {
+        let wait_start = Instant::now();
+        loop {
+            let capture = request_with_perf_capture(
+                &mut stdin,
+                &mut stdout,
+                "sysml/model",
+                workspace_model_params.clone(),
+            );
+            let loaded_files = workspace_loaded_files(&capture.json);
+            let graph_nodes = graph_node_count(&capture.json);
+            if loaded_files > 0 && graph_nodes > 0 {
+                break capture;
+            }
+            if wait_start.elapsed() >= Duration::from_secs(20) {
+                panic!(
+                    "workspace model did not become ready within 20s; last response: {:#?}",
+                    capture.json
+                );
+            }
+            std::thread::sleep(Duration::from_millis(250));
+        }
+    };
+    let mut perf_events = workspace_model_capture.perf_events.clone();
+    let workspace_model_json = &workspace_model_capture.json;
+    let indexed_documents = workspace_loaded_files(workspace_model_json);
+    let workspace_graph_nodes = graph_node_count(workspace_model_json);
+    let workspace_graph_edges = graph_edge_count(workspace_model_json);
 
     let alpha_uri = url::Url::from_file_path(root.join("Alpha.sysml")).expect("alpha uri");
-    let model_start = Instant::now();
-    let model_id = next_id();
-    let model_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": model_id,
-        "method": "sysml/model",
-        "params": {
+    let model_capture = request_with_perf_capture(
+        &mut stdin,
+        &mut stdout,
+        "sysml/model",
+        serde_json::json!({
             "textDocument": { "uri": alpha_uri.as_str() },
             "scope": ["graph", "stats"]
-        }
-    });
-    send_message(&mut stdin, &model_req.to_string());
-    let model_resp = read_response(&mut stdout, model_id).expect("document sysml/model response");
-    let model_ms = model_start.elapsed().as_millis();
-    let model_json: serde_json::Value =
-        serde_json::from_str(&model_resp).expect("parse sysml/model response");
-    let graph_nodes = model_json["result"]["graph"]["nodes"]
-        .as_array()
-        .map(Vec::len)
-        .unwrap_or(0);
-    let graph_edges = model_json["result"]["graph"]["edges"]
-        .as_array()
-        .map(Vec::len)
-        .unwrap_or(0);
+        }),
+    );
+    perf_events.extend(model_capture.perf_events.clone());
+    let model_json = &model_capture.json;
+    let graph_nodes = graph_node_count(model_json);
+    let graph_edges = graph_edge_count(model_json);
 
-    let visualization_start = Instant::now();
-    let visualization_id = next_id();
-    let visualization_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": visualization_id,
-        "method": "sysml/visualization",
-        "params": {
+    let visualization_capture = request_with_perf_capture(
+        &mut stdin,
+        &mut stdout,
+        "sysml/visualization",
+        serde_json::json!({
             "workspaceRootUri": root_uri.as_str(),
             "view": "general-view"
-        }
-    });
-    send_message(&mut stdin, &visualization_req.to_string());
-    let visualization_resp =
-        read_response(&mut stdout, visualization_id).expect("sysml/visualization response");
-    let visualization_ms = visualization_start.elapsed().as_millis();
-    let visualization_json: serde_json::Value =
-        serde_json::from_str(&visualization_resp).expect("parse visualization response");
-    let view_candidates = visualization_json["result"]["views"]
+        }),
+    );
+    perf_events.extend(visualization_capture.perf_events.clone());
+    let post_visualization_barrier = request_with_perf_capture(
+        &mut stdin,
+        &mut stdout,
+        "workspace/symbol",
+        serde_json::json!({ "query": "" }),
+    );
+    perf_events.extend(post_visualization_barrier.perf_events.clone());
+    let visualization_json = &visualization_capture.json;
+    let view_candidates = visualization_json["result"]["viewCandidates"]
         .as_array()
         .map(Vec::len)
         .unwrap_or(0);
 
-    eprintln!(
-        "SPEC42_PERF_REPORT {}",
-        serde_json::json!({
-            "fixture": "vscode/testFixture/workspaces/large-workspace",
-            "workspaceIndexMs": workspace_index_ms,
-            "sysmlModelMs": model_ms,
-            "visualizationMs": visualization_ms,
+    let startup_event = latest_perf_event(&perf_events, "backend:startupScanPhases");
+    let workspace_response_event = latest_perf_event(
+        &workspace_model_capture.perf_events,
+        "backend:buildSysmlModelResponse",
+    );
+    let document_response_event = latest_perf_event(
+        &model_capture.perf_events,
+        "backend:buildSysmlModelResponse",
+    );
+    let visualization_event = latest_perf_event(&perf_events, "backend:sysmlVisualizationRequest");
+
+    let mut phases = HashMap::new();
+    phases.insert("fixtureScan", fixture_perf.scan_ms);
+    phases.insert("fixtureReadTotal", fixture_perf.read.total_ms);
+    phases.insert("fixtureParseTotal", fixture_perf.parse.total_ms);
+    phases.insert(
+        "startupDiscoverRead",
+        value_ms(startup_event, "discoverReadMs"),
+    );
+    phases.insert(
+        "startupParseWorkers",
+        value_ms(startup_event, "parseWorkersMs"),
+    );
+    phases.insert("startupIngest", value_ms(startup_event, "ingestMs"));
+    phases.insert("relinkTotal", value_ms(startup_event, "relinkTotalMs"));
+    phases.insert(
+        "relinkRebuildGraphs",
+        value_ms(startup_event, "relinkRebuildGraphsMs"),
+    );
+    phases.insert(
+        "relinkCrossEdgeResolution",
+        value_ms(startup_event, "relinkCrossEdgeResolutionMs"),
+    );
+    phases.insert(
+        "relinkWorkspaceRelationshipLinking",
+        value_ms(startup_event, "relinkWorkspaceRelationshipLinkingMs"),
+    );
+    phases.insert(
+        "relinkPendingRelationshipResolution",
+        value_ms(startup_event, "relinkPendingRelationshipResolutionMs"),
+    );
+    phases.insert(
+        "relinkExpressionEvaluation",
+        value_ms(startup_event, "relinkExpressionEvaluationMs"),
+    );
+    phases.insert(
+        "relinkRefreshSymbols",
+        value_ms(startup_event, "relinkRefreshSymbolsMs"),
+    );
+    phases.insert("diagnostics", value_ms(startup_event, "diagnosticsMs"));
+    phases.insert("workspaceModelRequest", workspace_model_capture.elapsed_ms);
+    phases.insert("documentModelRequest", model_capture.elapsed_ms);
+    phases.insert("visualizationRequest", visualization_capture.elapsed_ms);
+
+    let report = serde_json::json!({
+        "schemaVersion": 1,
+        "fixture": {
+            "name": "large-workspace",
+            "path": "vscode/testFixture/workspaces/large-workspace",
+            "files": fixture_perf.files,
+            "totalBytes": fixture_perf.total_bytes,
+            "localScanParse": fixture_perf.clone(),
+        },
+        "context": {
+            "os": std::env::consts::OS,
+            "arch": std::env::consts::ARCH,
+            "ci": std::env::var_os("CI").is_some(),
+            "profile": "debug-test"
+        },
+        "phases": {
+            "startup": startup_event.cloned().unwrap_or_else(|| serde_json::json!({})),
+            "fixtureScanParse": {
+                "scanMs": phases["fixtureScan"],
+                "readTotalMs": phases["fixtureReadTotal"],
+                "parseTotalMs": phases["fixtureParseTotal"],
+                "readP95Ms": fixture_perf.read.p95_ms,
+                "parseP95Ms": fixture_perf.parse.p95_ms
+            },
+            "modelResponse": {
+                "workspace": workspace_response_event.cloned().unwrap_or_else(|| serde_json::json!({})),
+                "document": document_response_event.cloned().unwrap_or_else(|| serde_json::json!({}))
+            }
+        },
+        "modelRequests": {
+            "workspace": {
+                "elapsedMs": workspace_model_capture.elapsed_ms,
+                "responseBytes": workspace_model_capture.raw.len(),
+                "loadedFiles": indexed_documents,
+                "graphNodes": workspace_graph_nodes,
+                "graphEdges": workspace_graph_edges
+            },
+            "document": {
+                "elapsedMs": model_capture.elapsed_ms,
+                "responseBytes": model_capture.raw.len(),
+                "graphNodes": graph_nodes,
+                "graphEdges": graph_edges
+            }
+        },
+        "visualization": {
+            "elapsedMs": visualization_capture.elapsed_ms,
+            "responseBytes": visualization_capture.raw.len(),
+            "viewCandidates": view_candidates,
+            "event": visualization_event.cloned().unwrap_or_else(|| serde_json::json!({}))
+        },
+        "counts": {
             "indexedDocuments": indexed_documents,
             "workspaceGraphNodes": workspace_graph_nodes,
+            "workspaceGraphEdges": workspace_graph_edges,
             "graphNodes": graph_nodes,
             "graphEdges": graph_edges,
             "viewCandidates": view_candidates,
-            "budgets": {
-                "mode": "report-only",
-                "workspaceIndexMs": 5000,
-                "sysmlModelMs": 2500,
-                "visualizationMs": 1500
-            }
-        })
+            "perfEvents": perf_events.len()
+        },
+        "budgets": {
+            "mode": "report-only",
+            "workspaceModelRequestMs": 5000,
+            "documentModelRequestMs": 2500,
+            "visualizationRequestMs": 1500
+        },
+        "bottlenecks": {
+            "slowestPhases": slowest_phase_entries(&phases),
+            "slowestFilesByParse": fixture_perf.slowest_files_by_parse.clone(),
+            "largestFiles": fixture_perf.largest_files.clone()
+        },
+        "events": perf_events.clone()
+    });
+    let output_path = write_perf_report(&report);
+
+    eprintln!(
+        "SPEC42_PERF_REPORT {}",
+        serde_json::to_string(&report).expect("serialize perf report line")
     );
+    eprintln!("SPEC42_PERF_REPORT_PATH {}", output_path.display());
 
     assert!(
         indexed_documents > 0 || workspace_graph_nodes > 0,
