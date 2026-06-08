@@ -363,9 +363,50 @@ pub(super) fn walk_requirement_def_body(
                 for line in require_constraint_display_lines(&rc.value.body) {
                     append_string_list_attribute(g, parent_id, REQUIREMENT_CONSTRAINTS_ATTR, line);
                 }
-                if let Some(constraint) = require_constraint_structured(uri, &rc.value.body) {
-                    append_json_list_attribute(g, parent_id, ANALYSIS_CONSTRAINTS_ATTR, constraint);
+                let structured = require_constraint_structured(uri, &rc.value.body);
+                if let Some(ref constraint) = structured {
+                    append_json_list_attribute(
+                        g,
+                        parent_id,
+                        ANALYSIS_CONSTRAINTS_ATTR,
+                        constraint.clone(),
+                    );
                 }
+                let constraint_index = g
+                    .get_node(parent_id)
+                    .map(|parent| {
+                        g.children_of(parent)
+                            .iter()
+                            .filter(|child| child.element_kind == "require constraint")
+                            .count()
+                    })
+                    .unwrap_or(0);
+                let constraint_name = format!("_requireConstraint_{constraint_index}");
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    &constraint_name,
+                    "require constraint",
+                );
+                let mut attrs = HashMap::new();
+                if let Some(constraint) = structured {
+                    if let Some(obj) = constraint.as_object() {
+                        for (key, value) in obj {
+                            attrs.insert(key.clone(), value.clone());
+                        }
+                    }
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "require constraint",
+                    constraint_name,
+                    span_to_range(&rc.span),
+                    attrs,
+                    Some(parent_id),
+                );
             }
             RequirementDefBodyElement::Frame(f) => {
                 let frame = &f.value;

@@ -49,6 +49,8 @@ pub use semantic::source::{
 };
 pub use semantic::text_span::{TextPosition, TextRange};
 pub use semantic::visualization_entry::build_sysml_visualization_from_graph;
+pub use semantic::activity_graph::enrich_activity_diagrams_from_graph;
+pub use semantic::extracted_model::extract_activity_diagrams;
 pub use semantic::visualization_workspace::{
     attach_ibd_package_container_groups, build_ibd_package_container_groups,
     build_package_groups_from_graph, build_sysml_visualization_from_graph_and_documents,

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Graph depth P1** — Action/interface/requirement body projection: `ActionDefBody` and `ActionUsageBody` walked (`then action`, nested actions, assign/ref/state/for); interface ends expose `portType` with end-typing `Connection` wiring; requirement `verify` and `subject` members emit graph nodes and `Subject` edges. Integration tests: `action_body_semantics`, `interface_body_semantics`, `requirement_body_semantics`.
+- **Graph depth P2** — Action-flow graph enrichment for activity diagrams; semantic token recursion for action/requirement bodies; `item def`/`individual def` `AttributeBody` projection; `require constraint` child graph nodes. Integration tests: `activity_graph_semantics`, `item_def_body_semantics`, `action_definitions`.
 
 ## [0.29.0] - 2026-06-08
 

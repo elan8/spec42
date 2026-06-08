@@ -144,5 +144,13 @@ fn requirement_require_constraint_stays_on_analysis_constraints_attr() {
         !constraints.is_empty(),
         "expected analysisConstraints on requirement def"
     );
+
+    assert!(
+        graph
+            .children_of(&req)
+            .iter()
+            .any(|child| child.element_kind == "require constraint"),
+        "expected require constraint child node on requirement def"
+    );
     let _ = uri;
 }

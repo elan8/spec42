@@ -14,6 +14,7 @@ use crate::semantic::dto::{
     SysmlVisualizationResultDto, WorkspaceFileModelDto, WorkspaceModelDto,
     WorkspaceModelSummaryDto,
 };
+use crate::semantic::activity_graph::enrich_activity_diagrams_from_graph;
 use crate::semantic::explicit_views;
 use crate::semantic::extracted_model::{
     extract_activity_diagrams, ActivityDiagramDto, SequenceDiagramDto,
@@ -1262,8 +1263,13 @@ pub fn build_sysml_visualization_workspace(
             .collect(),
     );
     let viz_docs = workspace_parsed_documents_for_uris(documents, &workspace_uris);
-    let full_activity_diagrams =
+    let mut full_activity_diagrams =
         build_workspace_activity_diagrams(&viz_docs, &workspace_uris, None);
+    enrich_activity_diagrams_from_graph(
+        &mut full_activity_diagrams,
+        semantic_graph,
+        &workspace_uris,
+    );
     let full_sequence_diagrams = build_workspace_sequence_diagrams(semantic_graph, &workspace_uris);
     let catalog = explicit_views::build_view_catalog(&workspace_uris, &viz_docs);
 

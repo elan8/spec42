@@ -12,6 +12,7 @@ use crate::semantic::model::{NodeId, SemanticNode};
 
 mod action;
 mod analysis_case;
+mod attribute_body;
 mod expressions;
 mod interface_def;
 mod metadata_def;

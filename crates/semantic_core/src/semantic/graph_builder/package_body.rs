@@ -21,6 +21,7 @@ use crate::semantic::relationships::{
 
 use super::action;
 use super::analysis_case;
+use super::attribute_body;
 use super::expressions;
 use super::modeled_kerml_name::extract_modeled_decl_name;
 use super::package_packages;
@@ -820,6 +821,14 @@ pub(super) fn build_from_package_body_element(
                     container_prefix,
                     item_node.specializes.as_deref(),
                 );
+                let node_id = NodeId::new(uri, &qualified);
+                attribute_body::build_from_attribute_body(
+                    &item_node.body,
+                    uri,
+                    Some(&qualified),
+                    &node_id,
+                    g,
+                );
             }
         }
         PBE::IndividualDef(ind_node) => {
@@ -845,6 +854,14 @@ pub(super) fn build_from_package_body_element(
                     &qualified,
                     container_prefix,
                     ind_node.specializes.as_deref(),
+                );
+                let node_id = NodeId::new(uri, &qualified);
+                attribute_body::build_from_attribute_body(
+                    &ind_node.body,
+                    uri,
+                    Some(&qualified),
+                    &node_id,
+                    g,
                 );
             }
         }

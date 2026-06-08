@@ -12,14 +12,15 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 | Import / qualified package id | Yes | Yes | Namespace | P0 |
 | `ref` + `Reference` edges (part def + usage) | Yes | Yes | Partial | P0 |
 | `InterfaceDefBodyElement` | Yes | Partial | Partial | P1 |
-| `ActionDefBody` / `ActionUsageBody` | Yes | Partial | Brace stub | P1 |
+| `ActionDefBody` / `ActionUsageBody` | Yes | Partial | Yes | P1 |
 | `StateDefBody` (`Transition.accept`, `is_initial`, `FinalState`) | Yes (0.19.0) | Partial | Partial | P0 |
-| `RequirementDefBody` (`Stakeholder`, `Purpose`, `TextualRep`, `#keyword`) | Mostly | Partial | Partial | P1 |
+| `RequirementDefBody` (`Stakeholder`, `Purpose`, `TextualRep`, `#keyword`) | Yes | Partial | Mostly | P1 |
 | `MetadataKeywordUsage` in part/state/requirement bodies | Yes (0.19.0) | Partial | Partial | P1 |
 | `ActionUsage.send` / `PayloadClause` accept | Yes (0.19.0) | Partial | Partial | P1 |
-| `RequirementDefBody` / constraint bodies | Mostly | Partial | Partial | P1 |
-| `AttributeBody` on `metadata def` / `metadata` usage | Partial (inner attributes) | Partial | Def span | P1 |
-| `AttributeBody` / `DefinitionBody` (item, flow, other defs) | Shell node only | Name only | Def span | Defer |
+| `RequirementDefBody` / constraint bodies | Yes | Partial | Mostly | P1 |
+| `AttributeBody` on `metadata def` / `metadata` usage | Yes | Partial | Def span | P1 |
+| `AttributeBody` on `item def` / `individual def` | Yes | Partial | Def span | P1 |
+| `AttributeBody` / `DefinitionBody` (flow, occurrence, other defs) | Shell node only | Name only | Def span | Defer |
 | View `expose` feature chains (§7.6.6) | Yes (0.18.0 parser + view eval) | N/A | N/A | P0 |
 | `Error` / `Other` / `OpaqueMember` | Ignored | Ignored | Ignored | N/A |
 | Doc / annotation members | Ignored | Ignored | Ignored | WONTFIX 1.0 |
@@ -29,6 +30,13 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 1. **Compile:** exhaustive `match` on body-element enums; no-op `Error` / doc / opaque members.
 2. **Graph:** implement when a **shipped workflow** needs it (LSP navigation, `spec42 check`, IBD/general/action/state/sequence views).
 3. **Tokens:** extend `sysml_semantic_tokens` `ast_ranges` for editor-visible identifiers in tested fixtures.
+
+## Recent changes (graph depth P2)
+
+- **Action-flow view** — `enrich_activity_diagrams_from_graph` merges graph action children and `Flow`/`Perform` edges into activity diagrams; covered by [`activity_graph_semantics.rs`](../../crates/semantic_core/tests/activity_graph_semantics.rs).
+- **Semantic tokens** — `ActionDefBody` and `RequirementDefBody` recurse in [`ast_ranges.rs`](../../crates/sysml_semantic_tokens/src/ast_ranges.rs); covered by [`action_definitions.rs`](../../crates/sysml_semantic_tokens/tests/action_definitions.rs).
+- **Item / individual defs** — shared [`attribute_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/attribute_body.rs) walks inner attributes; covered by [`item_def_body_semantics.rs`](../../crates/semantic_core/tests/item_def_body_semantics.rs).
+- **Require constraint nodes** — `require constraint` projected as child nodes while retaining `analysisConstraints` for diagnostics.
 
 ## Recent changes (graph depth P1)
 
@@ -63,5 +71,4 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 
 ## Backlog (P1+)
 
-- Deeper `AttributeBodyElement` inside `item def` and other definition families beyond metadata.
 - `DefinitionBodyElement` for occurrence/rendering/flow families when general view projection needs compartment detail beyond the definition shell.
