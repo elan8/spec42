@@ -15,7 +15,9 @@ use crate::semantic::model::NodeId;
 use crate::semantic::relationships::add_typing_edge_if_exists;
 
 use super::expressions::expression_to_debug_string;
+use super::metadata_keyword::add_metadata_keyword_node;
 use super::{add_node_and_recurse, qualified_name_for_node};
+use crate::semantic::ast_util::identification_name;
 
 const REQUIREMENT_CONSTRAINTS_ATTR: &str = "requirementConstraints";
 const ANALYSIS_CONSTRAINTS_ATTR: &str = "analysisConstraints";
@@ -405,8 +407,91 @@ pub(super) fn walk_requirement_def_body(
                     Some(parent_id),
                 );
             }
+            RequirementDefBodyElement::MetadataKeywordUsage(mk_node) => {
+                add_metadata_keyword_node(
+                    g,
+                    uri,
+                    parent_id,
+                    &mk_node.value,
+                    &mk_node.span,
+                );
+            }
+            RequirementDefBodyElement::Stakeholder(stakeholder) => {
+                let s = &stakeholder.value;
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    &format!("_stakeholder_{}", s.target),
+                    "stakeholder",
+                );
+                let mut attrs = HashMap::new();
+                attrs.insert("refTarget".to_string(), serde_json::json!(&s.target));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "stakeholder",
+                    s.target.clone(),
+                    span_to_range(&stakeholder.span),
+                    attrs,
+                    Some(parent_id),
+                );
+            }
+            RequirementDefBodyElement::Purpose(purpose) => {
+                let p = &purpose.value;
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    &format!("_purpose_{}", p.target),
+                    "purpose",
+                );
+                let mut attrs = HashMap::new();
+                attrs.insert("refTarget".to_string(), serde_json::json!(&p.target));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "purpose",
+                    p.target.clone(),
+                    span_to_range(&purpose.span),
+                    attrs,
+                    Some(parent_id),
+                );
+            }
+            RequirementDefBodyElement::TextualRep(t) => {
+                let tr = &t.value;
+                let name = tr
+                    .rep_identification
+                    .as_ref()
+                    .map(identification_name)
+                    .filter(|s| !s.is_empty())
+                    .unwrap_or_else(|| "_textualRep".to_string());
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    &name,
+                    "textualRep",
+                );
+                let mut attrs = HashMap::new();
+                attrs.insert("language".to_string(), serde_json::json!(&tr.language));
+                attrs.insert("text".to_string(), serde_json::json!(&tr.text));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "textualRep",
+                    name,
+                    span_to_range(&t.span),
+                    attrs,
+                    Some(parent_id),
+                );
+            }
             RequirementDefBodyElement::Doc(_)
             | RequirementDefBodyElement::Annotation(_)
+            | RequirementDefBodyElement::MetadataAnnotation(_)
             | RequirementDefBodyElement::VerifyRequirement(_)
             | RequirementDefBodyElement::Error(_)
             | RequirementDefBodyElement::Other(_) => {}

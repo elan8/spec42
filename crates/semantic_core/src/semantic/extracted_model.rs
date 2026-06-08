@@ -49,11 +49,13 @@ fn expr_to_string(n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>) -> Str
             format!(
                 "({} {} {})",
                 expr_to_string(left),
-                op,
+                op.as_str(),
                 expr_to_string(right)
             )
         }
-        Expression::UnaryOp { op, operand } => format!("({}{})", op, expr_to_string(operand)),
+        Expression::UnaryOp { op, operand } => {
+            format!("({}{})", op.as_str(), expr_to_string(operand))
+        }
         Expression::Invocation { callee, args } => {
             let rendered = args
                 .iter()
@@ -712,8 +714,8 @@ fn extract_activity_from_action(
                 ActionDefBodyElement::ActionUsage(usage) => {
                     let u = usage.as_ref();
                     let mut inputs = Vec::new();
-                    if let Some((ref accept_name, _accept_type)) = &u.accept {
-                        inputs.push(accept_name.clone());
+                    if let Some(ref accept) = &u.accept {
+                        inputs.push(accept.name.clone());
                     }
                     actions.push(ActivityActionDto {
                         id: Some(format!(

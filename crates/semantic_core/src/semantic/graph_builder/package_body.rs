@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 
 use sysml_v2_parser::ast::{
-    ActionDefBody, ActionDefBodyElement, ActionUsage, CalcDefBody, CalcDefBodyElement,
+    ActionDefBody, ActionDefBodyElement, CalcDefBody, CalcDefBodyElement,
     ConnectionDefBody, ConstraintDefBody, ConstraintDefBodyElement, InOut, InterfaceDefBody,
     PackageBodyElement, PartDefBody, PartUsageBody, PortDefBody, RequirementDefBody, StateDefBody,
     UseCaseDefBody, ViewBody, ViewBodyElement, ViewDefBody, ViewDefBodyElement, ViewRenderingUsage,
@@ -23,6 +23,7 @@ use super::analysis_case;
 use super::expressions;
 use super::modeled_kerml_name::extract_modeled_decl_name;
 use super::package_packages;
+use super::payload::insert_action_payload_attrs;
 use super::verification;
 use super::{add_node_and_recurse, qualified_name_for_node};
 use super::{interface_def, part_def, part_usage, port_def, state, stubs, use_case};
@@ -32,27 +33,6 @@ fn direction_to_str(direction: &InOut) -> &'static str {
         InOut::In => "in",
         InOut::Out => "out",
         InOut::InOut => "inout",
-    }
-}
-
-fn insert_action_payload_attrs(attrs: &mut HashMap<String, serde_json::Value>, action: &ActionUsage) {
-    if let Some((accept_name, accept_type)) = &action.accept {
-        attrs.insert("acceptName".to_string(), serde_json::json!(accept_name));
-        attrs.insert("acceptType".to_string(), serde_json::json!(accept_type));
-        attrs.insert("actionKind".to_string(), serde_json::json!("accept"));
-        attrs.insert("payloadName".to_string(), serde_json::json!(accept_name));
-        attrs.insert("payloadType".to_string(), serde_json::json!(accept_type));
-    } else {
-        let name = action.name.to_ascii_lowercase();
-        if name == "send" || name == "accept" {
-            attrs.insert("actionKind".to_string(), serde_json::json!(name));
-            if !action.type_name.trim().is_empty() {
-                attrs.insert(
-                    "payloadType".to_string(),
-                    serde_json::json!(action.type_name.as_str()),
-                );
-            }
-        }
     }
 }
 

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Parser 0.19.0 graph projection** - `PayloadClause` on actions/transitions, `FinalState`, `MetadataKeywordUsage`, viewpoint `stakeholder`/`purpose`/`TextualRep`; `multiple_final_states` diagnostic; parser-wave fixtures and `p2_diagnostics_semantics` coverage.
+
+### Changed
+
+- **Parser dependency** - Bumped `sysml-v2-parser` to **0.19.0** on [crates.io](https://crates.io/crates/sysml-v2-parser) (`PayloadClause`, `TransitionAccept`, `FinalState`, metadata keywords, viewpoint members).
+
 ## [0.28.0] - 2026-06-08
 
 ### Added

@@ -379,7 +379,17 @@ pub(super) fn build_from_verification_body(
             | UseCaseDefBodyElement::FirstSuccession(_)
             | UseCaseDefBodyElement::ThenUseCaseUsage(_)
             | UseCaseDefBodyElement::RefRedefinition(_)
-            | UseCaseDefBodyElement::ForLoop(_) => {}
+            | UseCaseDefBodyElement::ForLoop(_)
+            | UseCaseDefBodyElement::Annotation(_) => {}
+            UseCaseDefBodyElement::MetadataKeywordUsage(mk_node) => {
+                super::metadata_keyword::add_metadata_keyword_node(
+                    g,
+                    uri,
+                    parent_id,
+                    &mk_node.value,
+                    &mk_node.span,
+                );
+            }
         }
     }
 

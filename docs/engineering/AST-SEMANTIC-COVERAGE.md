@@ -1,6 +1,6 @@
 # AST semantic coverage matrix
 
-Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.18.0** (crates.io; local patch during cross-repo dev).
+Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.19.0** ([crates.io](https://crates.io/crates/sysml-v2-parser)).
 
 | Parser surface | Graph (`semantic_core`) | Symbols / hover | Semantic tokens | Priority |
 |----------------|-------------------------|-----------------|-----------------|----------|
@@ -13,7 +13,10 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 | `ref` + `Reference` edges (part def + usage) | Yes | Yes | Partial | P0 |
 | `InterfaceDefBodyElement` | Partial | Partial | Partial | P1 |
 | `ActionDefBody` / `ActionUsageBody` | Partial | Partial | Brace stub | P1 |
-| `StateDefBody` | Partial | Partial | Partial | P1 |
+| `StateDefBody` (`Transition.accept`, `is_initial`, `FinalState`) | Yes (0.19.0) | Partial | Partial | P0 |
+| `RequirementDefBody` (`Stakeholder`, `Purpose`, `TextualRep`, `#keyword`) | Partial | Partial | Partial | P1 |
+| `MetadataKeywordUsage` in part/state/requirement bodies | Yes (0.19.0) | Partial | Partial | P1 |
+| `ActionUsage.send` / `PayloadClause` accept | Yes (0.19.0) | Partial | Partial | P1 |
 | `RequirementDefBody` / constraint bodies | Partial | Partial | Partial | P1 |
 | `AttributeBody` on `metadata def` / `metadata` usage | Partial (inner attributes) | Partial | Def span | P1 |
 | `AttributeBody` / `DefinitionBody` (item, flow, other defs) | Shell node only | Name only | Def span | Defer |
@@ -27,7 +30,14 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 2. **Graph:** implement when a **shipped workflow** needs it (LSP navigation, `spec42 check`, IBD/general/action/state/sequence views).
 3. **Tokens:** extend `sysml_semantic_tokens` `ast_ranges` for editor-visible identifiers in tested fixtures.
 
-## Recent changes (0.18.0 follow-through)
+## Recent changes (0.19.0 follow-through)
+
+- `Transition.accept` / `TransitionAccept`, `is_initial`, and `FinalState` projected in [`state.rs`](../../crates/semantic_core/src/semantic/graph_builder/state.rs); `PayloadClause` on actions via [`payload.rs`](../../crates/semantic_core/src/semantic/graph_builder/payload.rs).
+- `MetadataKeywordUsage` (`#keyword`) on part/state/requirement/verification bodies via [`metadata_keyword.rs`](../../crates/semantic_core/src/semantic/graph_builder/metadata_keyword.rs).
+- Viewpoint `stakeholder` / `purpose` / `TextualRep` in [`requirement_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/requirement_body.rs).
+- Parser-wave fixtures under [`tests/fixtures/parser_wave/`](../../crates/semantic_core/tests/fixtures/parser_wave/) and integration tests in [`p2_diagnostics_semantics.rs`](../../crates/semantic_core/tests/p2_diagnostics_semantics.rs).
+
+## Prior release (0.18.0 follow-through)
 
 - `metadata def` and package-level `metadata` usage bodies walk `AttributeBodyElement` in [`metadata_def.rs`](../../crates/semantic_core/src/semantic/graph_builder/metadata_def.rs); covered by [`metadata_semantics.rs`](../../crates/semantic_core/tests/metadata_semantics.rs).
 - Parser 0.18.0 accepts dot feature chains in `expose` targets; view evaluation resolves normalized chains in [`explicit_views.rs`](../../crates/semantic_core/src/semantic/explicit_views.rs); covered by [`expose_feature_chains.rs`](../../crates/semantic_core/tests/expose_feature_chains.rs).

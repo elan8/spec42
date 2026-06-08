@@ -299,6 +299,15 @@ pub(super) fn build_from_part_usage_body_element(
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
         }
+        PUBE::MetadataKeywordUsage(mk_node) => {
+            super::metadata_keyword::add_metadata_keyword_node(
+                g,
+                uri,
+                parent_id,
+                &mk_node.value,
+                &mk_node.span,
+            );
+        }
         PUBE::EnumerationUsage(_) | PUBE::Annotation(_) | PUBE::Error(_) | PUBE::Doc(_) => {}
     }
 }

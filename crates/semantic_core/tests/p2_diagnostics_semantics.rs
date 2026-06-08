@@ -407,6 +407,130 @@ fn duplicate_metadata_def_emits_collision_diagnostic() {
 }
 
 #[test]
+fn transition_typed_accept_wrong_kind_emits_diagnostic() {
+    let doc = workspace_doc(
+        "transition_accept.sysml",
+        r#"package Demo {
+  part def WrongKind;
+  state def Operating {
+    then idle;
+    state idle;
+    state running;
+    transition typed_accept first idle accept evt : WrongKind then running;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "accept_payload_incompatible"),
+        "expected accept_payload_incompatible, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn send_payload_wrong_kind_emits_diagnostic() {
+    let doc = workspace_doc(
+        "send_payload.sysml",
+        r#"package Demo {
+  part def WrongKind;
+  action def Notify {
+    send message : WrongKind;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "send_payload_incompatible"),
+        "expected send_payload_incompatible, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn multiple_final_states_emit_cardinality_diagnostic() {
+    let doc = workspace_doc(
+        "final_state.sysml",
+        r#"package Demo {
+  state def DoneStates {
+    then idle;
+    state idle;
+    final expired;
+    final state completed;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "multiple_final_states"),
+        "expected multiple_final_states, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn metadata_keyword_usage_unresolved_emits_diagnostic() {
+    let doc = workspace_doc(
+        "metadata_keyword.sysml",
+        r#"package Demo {
+  part def Widget {
+    #UnknownMeta;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "metadata_keyword_unresolved"),
+        "expected metadata_keyword_unresolved, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn viewpoint_stakeholder_unresolved_emits_reference_diagnostic() {
+    let doc = workspace_doc(
+        "viewpoint_stakeholder.sysml",
+        r#"package Demo {
+  viewpoint def SafetyView {
+    stakeholder SafetyConcern;
+    purpose ReliabilityPurpose;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "viewpoint_reference_unresolved"),
+        "expected viewpoint_reference_unresolved, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
 fn metadata_usage_with_valid_type_has_no_annotation_diagnostic() {
     let doc = workspace_doc(
         "metadata_ok.sysml",

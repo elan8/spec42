@@ -164,7 +164,8 @@ Spec areas: 7.17-7.18, 8.3.17-8.3.18, 8.4.13-8.4.14.
 - Done: `transition_guard_non_boolean` — transition guard expression must be Boolean-valued.
 - Done: `initial_state_invalid_target` — initial transition target must be a state usage.
 - Done: `multiple_initial_states` / `missing_initial_state` — initial transition cardinality on state definitions.
-- Deferred: explicit `final state` syntax (parser gap); sink-state heuristic not implemented.
+- Done: `multiple_final_states` — more than one `final` state in a state definition (parser 0.19.0 + graph `final state` nodes).
+- Done: transition `accept_payload_incompatible` when typed `Transition.accept` payload is on the graph.
 - Done: `succession_endpoint_invalid` — behavior flow endpoints must be action-like.
 
 ### P2: requirements, cases, verification, use cases
@@ -186,12 +187,11 @@ Spec areas: 7.26-7.27, 8.3.26, 8.4.22-8.4.23.
 - Done: `view_rendering_invalid_target` — view rendering membership target kind validation.
 - Done: `view_expose_empty` — view body without expose members.
 - Done: `view_filter_non_boolean` — view body filter expression Boolean validation.
-- Done: `viewpoint_reference_unresolved` / `viewpoint_rep_language_unresolved` — viewpoint frame/import targets and missing rep language.
-- Deferred: viewpoint `stakeholder` / `purpose` (AST gap).
+- Done: `viewpoint_reference_unresolved` / `viewpoint_rep_language_unresolved` — viewpoint frame/import/stakeholder/purpose targets and missing rep language.
 - Done: `metadata_annotation_unresolved` — metadata annotation target resolution when untyped.
 - Done: metadata/rendering/subject typing via extended `kind_rules` + `incompatible_type_kind`.
 - Done: `metadata_keyword_collision` — duplicate metadata def short names in one document.
-- Deferred: `metadata_keyword_unresolved` for `#keyword` annotations (not yet modeled on the semantic graph); user-defined modeled keywords are checked on `feature decl` / `classifier decl` when present.
+- Done: `metadata_keyword_unresolved` — `#keyword` usages on the graph (`metadata keyword` nodes) and user-defined `feature decl` / `classifier decl` keywords.
 
 ## Suggested implementation order
 

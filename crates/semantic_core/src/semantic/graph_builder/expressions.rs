@@ -345,12 +345,12 @@ pub(super) fn expression_to_debug_string(
             format!(
                 "({} {} {})",
                 expression_to_debug_string(left),
-                op,
+                op.as_str(),
                 expression_to_debug_string(right)
             )
         }
         Expression::UnaryOp { op, operand } => {
-            format!("({}{})", op, expression_to_debug_string(operand))
+            format!("({}{})", op.as_str(), expression_to_debug_string(operand))
         }
         Expression::Invocation { callee, args } => {
             let rendered = args

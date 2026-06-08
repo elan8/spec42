@@ -9,6 +9,8 @@ use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
 use super::expressions;
+use super::metadata_keyword::add_metadata_keyword_node;
+use super::payload::insert_transition_accept_attrs;
 use super::requirement_body::walk_requirement_def_body;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
@@ -20,6 +22,9 @@ pub(super) fn build_from_state_body(
     g: &mut SemanticGraph,
 ) {
     use sysml_v2_parser::ast::StateDefBodyElement as SDBE;
+    let has_explicit_then = elements
+        .iter()
+        .any(|node| matches!(node.value, SDBE::Then(_)));
     for node in elements {
         match &node.value {
             SDBE::StateUsage(state_node) => {
@@ -103,6 +108,9 @@ pub(super) fn build_from_state_body(
                         serde_json::json!(expressions::expression_to_debug_string(effect)),
                     );
                 }
+                if let Some(ref accept) = t.accept {
+                    insert_transition_accept_attrs(&mut attrs, accept);
+                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -114,6 +122,48 @@ pub(super) fn build_from_state_body(
                     Some(parent_id),
                 );
                 add_edge_if_both_exist(g, uri, &src, &tgt, RelationshipKind::Transition);
+                if t.is_initial && !has_explicit_then {
+                    add_edge_if_both_exist(
+                        g,
+                        uri,
+                        &parent_id.qualified_name,
+                        &src,
+                        RelationshipKind::InitialState,
+                    );
+                }
+            }
+            SDBE::FinalState(final_node) => {
+                let fs = &final_node.value;
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    &format!("final_{}", fs.state_name),
+                    "final state",
+                );
+                let mut attrs = HashMap::new();
+                attrs.insert("stateName".to_string(), serde_json::json!(&fs.state_name));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "final state",
+                    fs.state_name.clone(),
+                    span_to_range(&final_node.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                if let Some(state_def_node) = g.get_node_mut(parent_id) {
+                    let count = state_def_node
+                        .attributes
+                        .get("finalStateCount")
+                        .and_then(|v| v.as_u64())
+                        .unwrap_or(0)
+                        .saturating_add(1);
+                    state_def_node
+                        .attributes
+                        .insert("finalStateCount".to_string(), serde_json::json!(count));
+                }
             }
             SDBE::Then(then_node) => {
                 let state_name = &then_node.value.state_name;
@@ -215,6 +265,15 @@ pub(super) fn build_from_state_body(
                     &qualified,
                     &node_id,
                     &ru_node.body,
+                );
+            }
+            SDBE::MetadataKeywordUsage(mk_node) => {
+                add_metadata_keyword_node(
+                    g,
+                    uri,
+                    parent_id,
+                    &mk_node.value,
+                    &mk_node.span,
                 );
             }
             SDBE::Error(_) | SDBE::Doc(_) | SDBE::Annotation(_) | SDBE::Other(_) => {}

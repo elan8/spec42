@@ -442,6 +442,15 @@ pub(super) fn build_from_part_def_body_element(
                 }
             }
         }
+        PDBE::MetadataKeywordUsage(mk_node) => {
+            super::metadata_keyword::add_metadata_keyword_node(
+                g,
+                uri,
+                parent_id,
+                &mk_node.value,
+                &mk_node.span,
+            );
+        }
         // Compatibility-only members introduced by newer parser versions are intentionally ignored.
         PDBE::EnumerationUsage(_)
         | PDBE::Annotation(_)

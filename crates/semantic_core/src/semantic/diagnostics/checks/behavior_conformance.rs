@@ -338,7 +338,12 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "action" || is_synthetic(node) {
+        if is_synthetic(node) {
+            continue;
+        }
+        let is_action = node.element_kind == "action";
+        let is_transition = node.element_kind == "transition";
+        if !is_action && !is_transition {
             continue;
         }
         let payload_type = node
@@ -356,6 +361,9 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
             .get("actionKind")
             .and_then(|v| v.as_str())
             .unwrap_or("accept");
+        if is_transition && action_kind != "accept" {
+            continue;
+        }
         let code = if action_kind == "send" {
             "send_payload_incompatible"
         } else {
@@ -377,6 +385,13 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         if !seen.insert(key) {
             continue;
         }
+        let subject_label = if is_transition {
+            "Transition"
+        } else if action_kind == "send" {
+            "Send"
+        } else {
+            "Accept"
+        };
         diagnostics.push(diag(
             uri,
             diagnostic_range(graph, node, Some(target_node)),
@@ -384,15 +399,51 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
             "semantic",
             code,
             format!(
-                "{} payload type '{}' on action '{}' resolves to incompatible kind '{}'.",
-                if action_kind == "send" {
-                    "Send"
-                } else {
-                    "Accept"
-                },
+                "{} payload type '{}' on '{}' resolves to incompatible kind '{}'.",
+                subject_label,
                 normalize_declared_type_ref(payload_type),
                 node.name,
                 target_node.element_kind
+            ),
+        ));
+    }
+
+    let mut final_states_by_container: HashMap<String, usize> = HashMap::new();
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "final state" || is_synthetic(node) {
+            continue;
+        }
+        let container = node
+            .parent_id
+            .as_ref()
+            .and_then(|id| graph.get_node(id))
+            .and_then(|parent| state_def_ancestor(graph, parent))
+            .or_else(|| node.parent_id.as_ref().map(|id| id.qualified_name.clone()));
+        let Some(container) = container else {
+            continue;
+        };
+        *final_states_by_container.entry(container).or_insert(0) += 1;
+    }
+    for (container, count) in final_states_by_container {
+        if count <= 1 {
+            continue;
+        }
+        let key = format!("final_multi|{container}");
+        if !seen.insert(key) {
+            continue;
+        }
+        let Some(container_node) = graph.get_node(&crate::NodeId::new(uri, container.clone())) else {
+            continue;
+        };
+        diagnostics.push(diag(
+            uri,
+            diagnostic_range(graph, container_node, None),
+            DiagnosticSeverity::Warning,
+            "semantic",
+            "multiple_final_states",
+            format!(
+                "State definition '{}' declares {count} final states; only one is expected.",
+                container.rsplit("::").next().unwrap_or(container.as_str())
             ),
         ));
     }

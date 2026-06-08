@@ -529,6 +529,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "multiple_final_states",
+        severity: "warning",
+        meaning: "A state definition declares more than one final state.",
+        typical_fix: "Keep a single `final` state per state definition.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "accept_payload_incompatible",
         severity: "warning",
         meaning: "An accept action payload type resolves to an incompatible definition kind.",
@@ -676,6 +683,7 @@ mod tests {
         ("metadata_keyword_unresolved", "warning"),
         ("missing_initial_state", "information"),
         ("missing_library_context", "information"),
+        ("multiple_final_states", "warning"),
         ("multiple_initial_states", "warning"),
         ("non_boolean_expression", "warning"),
         ("objective_binding_unresolved", "warning"),

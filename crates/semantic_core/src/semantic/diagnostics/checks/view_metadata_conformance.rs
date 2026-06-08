@@ -133,34 +133,77 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "import" || is_synthetic(node) {
+        if is_synthetic(node) {
             continue;
         }
-        let Some(parent) = node
-            .parent_id
-            .as_ref()
-            .and_then(|id| graph.get_node(id))
-        else {
+        let (target, key_prefix) = if node.element_kind == "import" {
+            let Some(parent) = node
+                .parent_id
+                .as_ref()
+                .and_then(|id| graph.get_node(id))
+            else {
+                continue;
+            };
+            if !matches!(
+                parent.element_kind.as_str(),
+                "viewpoint" | "viewpoint def" | "frame"
+            ) {
+                continue;
+            }
+            if import_target_resolves(graph, node) {
+                continue;
+            }
+            let target = node
+                .attributes
+                .get("importTarget")
+                .and_then(|v| v.as_str())
+                .unwrap_or("import");
+            (target.to_string(), "viewpoint_import")
+        } else if matches!(node.element_kind.as_str(), "stakeholder" | "purpose") {
+            let Some(parent) = node
+                .parent_id
+                .as_ref()
+                .and_then(|id| graph.get_node(id))
+            else {
+                continue;
+            };
+            if !matches!(parent.element_kind.as_str(), "viewpoint" | "viewpoint def") {
+                continue;
+            }
+            let Some(target) = node
+                .attributes
+                .get("refTarget")
+                .and_then(|v| v.as_str())
+                .map(str::trim)
+                .filter(|value| !value.is_empty())
+            else {
+                continue;
+            };
+            if resolve_type_target_in_workspace(
+                graph,
+                node,
+                target,
+                &[
+                    "requirement def",
+                    "concern",
+                    "concern def",
+                    "requirement",
+                    "part def",
+                    "part",
+                ],
+            )
+            .is_some()
+            {
+                continue;
+            }
+            (target.to_string(), "viewpoint_ref")
+        } else {
             continue;
         };
-        if !matches!(
-            parent.element_kind.as_str(),
-            "viewpoint" | "viewpoint def" | "frame"
-        ) {
-            continue;
-        }
-        if import_target_resolves(graph, node) {
-            continue;
-        }
-        let key = format!("viewpoint_import|{}", node.id.qualified_name);
+        let key = format!("{key_prefix}|{}", node.id.qualified_name);
         if !seen.insert(key) {
             continue;
         }
-        let target = node
-            .attributes
-            .get("importTarget")
-            .and_then(|v| v.as_str())
-            .unwrap_or("import");
         diagnostics.push(diag(
             uri,
             diagnostic_range(graph, node, None),
@@ -168,7 +211,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
             "semantic",
             "viewpoint_reference_unresolved",
             format!(
-                "Viewpoint import target '{}' does not resolve in the current workspace.",
+                "Viewpoint reference target '{}' does not resolve in the current workspace.",
                 target
             ),
         ));
@@ -218,19 +261,31 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if !matches!(node.element_kind.as_str(), "feature decl" | "classifier decl")
-            || is_synthetic(node)
-        {
+        if is_synthetic(node) {
             continue;
         }
-        let Some(keyword) = node.attributes.get("keyword").and_then(|v| v.as_str()) else {
+        let keyword = if matches!(node.element_kind.as_str(), "feature decl" | "classifier decl") {
+            let Some(keyword) = node.attributes.get("keyword").and_then(|v| v.as_str()) else {
+                continue;
+            };
+            let keyword = keyword.trim();
+            if keyword.is_empty() || !is_user_defined_modeled_keyword(keyword) {
+                continue;
+            }
+            keyword.to_string()
+        } else if node.element_kind == "metadata keyword" {
+            let Some(keyword) = node.attributes.get("keyword").and_then(|v| v.as_str()) else {
+                continue;
+            };
+            let keyword = keyword.trim();
+            if keyword.is_empty() {
+                continue;
+            }
+            keyword.to_string()
+        } else {
             continue;
         };
-        let keyword = keyword.trim();
-        if keyword.is_empty() || !is_user_defined_modeled_keyword(keyword) {
-            continue;
-        }
-        if resolve_type_target_in_workspace(graph, node, keyword, &["metadata def"]).is_some() {
+        if resolve_type_target_in_workspace(graph, node, &keyword, &["metadata def"]).is_some() {
             continue;
         }
         let diag_key = format!("metadata_kw|{}", node.id.qualified_name);
