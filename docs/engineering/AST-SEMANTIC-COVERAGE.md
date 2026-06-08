@@ -11,13 +11,13 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 | `PartDefBodyElement` (connect, ref, interface, …) | Mostly | Partial | Partial | P0 |
 | Import / qualified package id | Yes | Yes | Namespace | P0 |
 | `ref` + `Reference` edges (part def + usage) | Yes | Yes | Partial | P0 |
-| `InterfaceDefBodyElement` | Partial | Partial | Partial | P1 |
-| `ActionDefBody` / `ActionUsageBody` | Partial | Partial | Brace stub | P1 |
+| `InterfaceDefBodyElement` | Yes | Partial | Partial | P1 |
+| `ActionDefBody` / `ActionUsageBody` | Yes | Partial | Brace stub | P1 |
 | `StateDefBody` (`Transition.accept`, `is_initial`, `FinalState`) | Yes (0.19.0) | Partial | Partial | P0 |
-| `RequirementDefBody` (`Stakeholder`, `Purpose`, `TextualRep`, `#keyword`) | Partial | Partial | Partial | P1 |
+| `RequirementDefBody` (`Stakeholder`, `Purpose`, `TextualRep`, `#keyword`) | Mostly | Partial | Partial | P1 |
 | `MetadataKeywordUsage` in part/state/requirement bodies | Yes (0.19.0) | Partial | Partial | P1 |
 | `ActionUsage.send` / `PayloadClause` accept | Yes (0.19.0) | Partial | Partial | P1 |
-| `RequirementDefBody` / constraint bodies | Partial | Partial | Partial | P1 |
+| `RequirementDefBody` / constraint bodies | Mostly | Partial | Partial | P1 |
 | `AttributeBody` on `metadata def` / `metadata` usage | Partial (inner attributes) | Partial | Def span | P1 |
 | `AttributeBody` / `DefinitionBody` (item, flow, other defs) | Shell node only | Name only | Def span | Defer |
 | View `expose` feature chains (§7.6.6) | Yes (0.18.0 parser + view eval) | N/A | N/A | P0 |
@@ -29,6 +29,12 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 1. **Compile:** exhaustive `match` on body-element enums; no-op `Error` / doc / opaque members.
 2. **Graph:** implement when a **shipped workflow** needs it (LSP navigation, `spec42 check`, IBD/general/action/state/sequence views).
 3. **Tokens:** extend `sysml_semantic_tokens` `ast_ranges` for editor-visible identifiers in tested fixtures.
+
+## Recent changes (graph depth P1)
+
+- **Action bodies** — `ActionDefBody` and `ActionUsageBody` walked in [`action.rs`](../../crates/semantic_core/src/semantic/graph_builder/action.rs): nested `action` usages, `then action` chains (`Perform` / `Flow`), `assign`, `ref`, `state usage`, `for` loops; covered by [`action_body_semantics.rs`](../../crates/semantic_core/tests/action_body_semantics.rs).
+- **Interface bodies** — `interface end` nodes carry `portType` alongside `endType`; end-typing post-pass wires `Connection` edges on plain `interface def` builds; covered by [`interface_body_semantics.rs`](../../crates/semantic_core/tests/interface_body_semantics.rs).
+- **Requirement bodies** — `verify` members and `subject` declarations emit `verified requirement` nodes and `Subject` edges in [`requirement_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/requirement_body.rs); covered by [`requirement_body_semantics.rs`](../../crates/semantic_core/tests/requirement_body_semantics.rs).
 
 ## Recent changes (0.19.0 follow-through)
 

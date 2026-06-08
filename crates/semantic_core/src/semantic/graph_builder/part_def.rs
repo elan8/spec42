@@ -298,15 +298,13 @@ pub(super) fn build_from_part_def_body_element(
             );
             let iface_id = NodeId::new(uri, &qualified);
             if let InterfaceDefBody::Brace { elements } = &id_node.body {
-                for el in elements {
-                    interface_def::build_from_interface_def_body_element(
-                        el,
-                        uri,
-                        Some(&qualified),
-                        &iface_id,
-                        g,
-                    );
-                }
+                interface_def::build_from_interface_def_body(
+                    elements,
+                    uri,
+                    Some(&qualified),
+                    &iface_id,
+                    g,
+                );
             }
         }
         PDBE::Connection(connection_usage) => {

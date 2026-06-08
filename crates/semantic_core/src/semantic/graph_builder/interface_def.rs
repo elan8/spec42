@@ -29,6 +29,7 @@ fn add_end_decl(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &n.name, "interface end");
     let mut attrs = HashMap::new();
     attrs.insert("endType".to_string(), serde_json::json!(&n.type_name));
+    attrs.insert("portType".to_string(), serde_json::json!(&n.type_name));
     add_node_and_recurse(
         g,
         uri,
@@ -94,7 +95,11 @@ fn maybe_add_derivation_edge(g: &mut SemanticGraph, uri: &Url, parent_id: &NodeI
     try_wire_derivation_connection(g, uri, parent_id);
 }
 
-fn add_connection_edges_from_end_typing(g: &mut SemanticGraph, uri: &Url, parent_id: &NodeId) {
+pub(super) fn add_connection_edges_from_end_typing(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    parent_id: &NodeId,
+) {
     let Some(parent) = g.get_node(parent_id) else {
         return;
     };
@@ -141,6 +146,19 @@ fn add_connection_edges_from_end_typing(g: &mut SemanticGraph, uri: &Url, parent
     for target in end_targets.into_iter().skip(1) {
         let _ = add_edge_if_both_exist(g, uri, &source, &target, RelationshipKind::Connection);
     }
+}
+
+pub(super) fn build_from_interface_def_body(
+    elements: &[sysml_v2_parser::Node<InterfaceDefBodyElement>],
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    g: &mut SemanticGraph,
+) {
+    for element in elements {
+        build_from_interface_def_body_element(element, uri, container_prefix, parent_id, g);
+    }
+    add_connection_edges_from_end_typing(g, uri, parent_id);
 }
 
 pub(super) fn build_from_interface_def_body_element(

@@ -5,14 +5,15 @@ use std::fs;
 
 use sysml_v2_parser::ast::{
     ConstraintDefBodyElement, InOut, InOutDecl, RequireConstraintBody, RequirementDefBody,
-    RequirementDefBodyElement,
+    RequirementDefBodyElement, VerifyRequirementMember,
 };
 use url::Url;
 
 use crate::semantic::ast_util::{span_to_range, text_range_to_json};
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::NodeId;
-use crate::semantic::relationships::add_typing_edge_if_exists;
+use crate::semantic::model::{NodeId, RelationshipKind};
+use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
+use crate::semantic::text_span::TextRange;
 
 use super::expressions::expression_to_debug_string;
 use super::metadata_keyword::add_metadata_keyword_node;
@@ -185,6 +186,80 @@ fn require_constraint_structured(
     })
 }
 
+pub(super) fn verify_requirement_target(member: &VerifyRequirementMember) -> Option<String> {
+    if let Some(requirement) = member.requirement.as_ref() {
+        if let Some(type_name) = requirement.value.type_name.as_deref() {
+            let normalized = type_name.trim();
+            if !normalized.is_empty() {
+                return Some(normalized.to_string());
+            }
+        }
+        return Some(requirement.value.name.clone());
+    }
+    member.target.clone().and_then(|target| {
+        let normalized = target.trim();
+        if normalized.is_empty() {
+            None
+        } else {
+            Some(normalized.to_string())
+        }
+    })
+}
+
+pub(super) fn add_verified_requirement_node(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    requirement_ref: &str,
+    explicit_requirement_keyword: bool,
+    span: TextRange,
+) {
+    let qualified = qualified_name_for_node(
+        g,
+        uri,
+        Some(parent_id.qualified_name.as_str()),
+        requirement_ref,
+        "verified requirement",
+    );
+    let mut attrs = HashMap::new();
+    attrs.insert(
+        "verifiedRequirement".to_string(),
+        serde_json::json!(requirement_ref),
+    );
+    attrs.insert(
+        "explicitRequirementKeyword".to_string(),
+        serde_json::json!(explicit_requirement_keyword),
+    );
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "verified requirement",
+        requirement_ref.to_string(),
+        span,
+        attrs,
+        Some(parent_id),
+    );
+    add_typing_edge_if_exists(g, uri, &qualified, requirement_ref, container_prefix);
+    let requirement_target = if requirement_ref.contains("::") {
+        requirement_ref.to_string()
+    } else {
+        parent_id
+            .qualified_name
+            .rsplit_once("::")
+            .map(|(owner, _)| format!("{owner}::{requirement_ref}"))
+            .unwrap_or_else(|| requirement_ref.to_string())
+    };
+    add_edge_if_both_exist(
+        g,
+        uri,
+        &parent_id.qualified_name,
+        &requirement_target,
+        RelationshipKind::Subject,
+    );
+}
+
 pub(super) fn import_member_label(target: &str) -> String {
     let t = target.trim();
     if t.is_empty() {
@@ -243,6 +318,13 @@ pub(super) fn walk_requirement_def_body(
                     &qualified,
                     sd.value.type_name.as_str(),
                     type_resolution_prefix,
+                );
+                add_edge_if_both_exist(
+                    g,
+                    uri,
+                    &parent_id.qualified_name,
+                    &qualified,
+                    RelationshipKind::Subject,
                 );
             }
             RequirementDefBodyElement::RequirementActorDecl(ad) => {
@@ -495,10 +577,22 @@ pub(super) fn walk_requirement_def_body(
                     Some(parent_id),
                 );
             }
+            RequirementDefBodyElement::VerifyRequirement(verify_node) => {
+                if let Some(requirement_ref) = verify_requirement_target(&verify_node.value) {
+                    add_verified_requirement_node(
+                        g,
+                        uri,
+                        type_resolution_prefix,
+                        parent_id,
+                        &requirement_ref,
+                        verify_node.value.explicit_requirement_keyword,
+                        span_to_range(&verify_node.span),
+                    );
+                }
+            }
             RequirementDefBodyElement::Doc(_)
             | RequirementDefBodyElement::Annotation(_)
             | RequirementDefBodyElement::MetadataAnnotation(_)
-            | RequirementDefBodyElement::VerifyRequirement(_)
             | RequirementDefBodyElement::Error(_)
             | RequirementDefBodyElement::Other(_) => {}
         }

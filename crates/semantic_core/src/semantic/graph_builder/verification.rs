@@ -2,10 +2,10 @@ use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
     RequirementDefBody, RequirementDefBodyElement, UseCaseDefBody, UseCaseDefBodyElement,
-    VerifyRequirementMember,
 };
 use url::Url;
 
+use super::requirement_body::{add_verified_requirement_node, verify_requirement_target};
 use super::use_case::add_include_use_case_node;
 use super::{add_node_and_recurse, qualified_name_for_node};
 use crate::semantic::ast_util::span_to_range;
@@ -13,82 +13,6 @@ use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
 use crate::semantic::model::RelationshipKind;
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
-use crate::semantic::text_span::TextRange;
-
-fn verify_requirement_target(member: &VerifyRequirementMember) -> Option<String> {
-    if let Some(requirement) = member.requirement.as_ref() {
-        if let Some(type_name) = requirement.value.type_name.as_deref() {
-            let normalized = type_name.trim();
-            if !normalized.is_empty() {
-                return Some(normalized.to_string());
-            }
-        }
-        return Some(requirement.value.name.clone());
-    }
-    member.target.clone().and_then(|target| {
-        let normalized = target.trim();
-        if normalized.is_empty() {
-            None
-        } else {
-            Some(normalized.to_string())
-        }
-    })
-}
-
-fn add_verified_requirement_node(
-    g: &mut SemanticGraph,
-    uri: &Url,
-    container_prefix: Option<&str>,
-    parent_id: &NodeId,
-    requirement_ref: &str,
-    explicit_requirement_keyword: bool,
-    span: TextRange,
-) {
-    let qualified = qualified_name_for_node(
-        g,
-        uri,
-        Some(parent_id.qualified_name.as_str()),
-        requirement_ref,
-        "verified requirement",
-    );
-    let mut attrs = HashMap::new();
-    attrs.insert(
-        "verifiedRequirement".to_string(),
-        serde_json::json!(requirement_ref),
-    );
-    attrs.insert(
-        "explicitRequirementKeyword".to_string(),
-        serde_json::json!(explicit_requirement_keyword),
-    );
-    add_node_and_recurse(
-        g,
-        uri,
-        &qualified,
-        "verified requirement",
-        requirement_ref.to_string(),
-        span,
-        attrs,
-        Some(parent_id),
-    );
-    add_typing_edge_if_exists(g, uri, &qualified, requirement_ref, container_prefix);
-    let requirement_target = if requirement_ref.contains("::") {
-        requirement_ref.to_string()
-    } else {
-        parent_id
-            .qualified_name
-            .rsplit_once("::")
-            .map(|(owner, _)| format!("{owner}::{requirement_ref}"))
-            .unwrap_or_else(|| requirement_ref.to_string())
-    };
-    add_edge_if_both_exist(
-        g,
-        uri,
-        &parent_id.qualified_name,
-        &requirement_target,
-        RelationshipKind::Subject,
-    );
-}
-
 fn extract_verdict_kind_token(body_text: &str) -> Option<String> {
     let marker = "VerdictKind::";
     let start = body_text.find(marker)?;

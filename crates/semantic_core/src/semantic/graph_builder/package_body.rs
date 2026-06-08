@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 
 use sysml_v2_parser::ast::{
-    ActionDefBody, ActionDefBodyElement, CalcDefBody, CalcDefBodyElement,
+    CalcDefBody, CalcDefBodyElement,
     ConnectionDefBody, ConstraintDefBody, ConstraintDefBodyElement, InOut, InterfaceDefBody,
     PackageBodyElement, PartDefBody, PartUsageBody, PortDefBody, RequirementDefBody, StateDefBody,
     UseCaseDefBody, ViewBody, ViewBodyElement, ViewDefBody, ViewDefBodyElement, ViewRenderingUsage,
@@ -15,15 +15,15 @@ use crate::semantic::ast_util::{identification_name, span_to_range, text_range_t
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{
-    add_edge_if_both_exist, add_specializes_edge_if_exists, add_typing_edge_if_exists,
+    add_specializes_edge_if_exists, add_typing_edge_if_exists,
     try_wire_derivation_connection,
 };
 
+use super::action;
 use super::analysis_case;
 use super::expressions;
 use super::modeled_kerml_name::extract_modeled_decl_name;
 use super::package_packages;
-use super::payload::insert_action_payload_attrs;
 use super::verification;
 use super::{add_node_and_recurse, qualified_name_for_node};
 use super::{interface_def, part_def, part_usage, port_def, state, stubs, use_case};
@@ -516,15 +516,13 @@ pub(super) fn build_from_package_body_element(
             );
             let node_id = NodeId::new(uri, &qualified);
             if let InterfaceDefBody::Brace { elements } = &id_node.body {
-                for el in elements {
-                    interface_def::build_from_interface_def_body_element(
-                        el,
-                        uri,
-                        Some(&qualified),
-                        &node_id,
-                        g,
-                    );
-                }
+                interface_def::build_from_interface_def_body(
+                    elements,
+                    uri,
+                    Some(&qualified),
+                    &node_id,
+                    g,
+                );
             }
             wire_def_specialization_edge(
                 g,
@@ -559,203 +557,15 @@ pub(super) fn build_from_package_body_element(
         }
         PBE::ActionDef(ad_node) => {
             let name = identification_name(&ad_node.identification);
-            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "action def");
-            let range = span_to_range(&ad_node.span);
-            let action_id = NodeId::new(uri, &qualified);
-            let mut attrs = HashMap::new();
-            insert_def_specialization_attr(&mut attrs, ad_node.specializes.as_deref());
-            add_node_and_recurse(
+            let qualified = action::materialize_action_def(
                 g,
                 uri,
-                &qualified,
-                "action def",
-                name.clone(),
-                range,
-                attrs,
+                container_prefix,
                 parent_id,
+                ad_node,
+                &name,
+                ad_node.specializes.as_deref(),
             );
-            if let ActionDefBody::Brace { elements } = &ad_node.body {
-                for element in elements {
-                    match &element.value {
-                        ActionDefBodyElement::InOutDecl(in_out) => {
-                            let parameter = &in_out.value;
-                            let child_qualified = qualified_name_for_node(
-                                g,
-                                uri,
-                                Some(&qualified),
-                                &parameter.name,
-                                "in out parameter",
-                            );
-                            let mut attrs = HashMap::new();
-                            attrs.insert(
-                                "direction".to_string(),
-                                serde_json::json!(match parameter.direction {
-                                    InOut::In => "in",
-                                    InOut::Out => "out",
-                                    InOut::InOut => "inout",
-                                }),
-                            );
-                            attrs.insert(
-                                "parameterType".to_string(),
-                                serde_json::json!(&parameter.type_name),
-                            );
-                            add_node_and_recurse(
-                                g,
-                                uri,
-                                &child_qualified,
-                                "in out parameter",
-                                parameter.name.clone(),
-                                span_to_range(&in_out.span),
-                                attrs,
-                                Some(&action_id),
-                            );
-                            add_typing_edge_if_exists(
-                                g,
-                                uri,
-                                &child_qualified,
-                                &parameter.type_name,
-                                Some(&qualified),
-                            );
-                        }
-                        ActionDefBodyElement::Perform(perform) => {
-                            let step_name = if perform.value.action_name.trim().is_empty() {
-                                perform
-                                    .value
-                                    .type_name
-                                    .clone()
-                                    .unwrap_or_else(|| "perform".to_string())
-                            } else {
-                                perform.value.action_name.clone()
-                            };
-                            let child_qualified = qualified_name_for_node(
-                                g,
-                                uri,
-                                Some(&qualified),
-                                &step_name,
-                                "perform",
-                            );
-                            let mut attrs = HashMap::new();
-                            if let Some(ref action_type) = perform.value.type_name {
-                                attrs.insert(
-                                    "actionType".to_string(),
-                                    serde_json::json!(action_type),
-                                );
-                            }
-                            add_node_and_recurse(
-                                g,
-                                uri,
-                                &child_qualified,
-                                "perform",
-                                step_name,
-                                span_to_range(&perform.span),
-                                attrs,
-                                Some(&action_id),
-                            );
-                            if let Some(ref action_type) = perform.value.type_name {
-                                add_typing_edge_if_exists(
-                                    g,
-                                    uri,
-                                    &child_qualified,
-                                    action_type,
-                                    Some(&qualified),
-                                );
-                            }
-                        }
-                        ActionDefBodyElement::Bind(bind) => {
-                            expressions::add_expression_edge_if_both_exist(
-                                g,
-                                uri,
-                                Some(&qualified),
-                                &bind.value.left,
-                                &bind.value.right,
-                                RelationshipKind::Bind,
-                            );
-                        }
-                        ActionDefBodyElement::Flow(flow) => {
-                            expressions::add_expression_edge_if_both_exist(
-                                g,
-                                uri,
-                                Some(&qualified),
-                                &flow.value.from,
-                                &flow.value.to,
-                                RelationshipKind::Flow,
-                            );
-                        }
-                        ActionDefBodyElement::FirstStmt(first) => {
-                            expressions::add_expression_edge_if_both_exist(
-                                g,
-                                uri,
-                                Some(&qualified),
-                                &first.value.first,
-                                &first.value.then,
-                                RelationshipKind::Flow,
-                            );
-                        }
-                        ActionDefBodyElement::MergeStmt(merge) => {
-                            let merge_target =
-                                expressions::expression_to_debug_string(&merge.value.merge);
-                            let child_qualified = qualified_name_for_node(
-                                g,
-                                uri,
-                                Some(&qualified),
-                                &merge_target,
-                                "merge",
-                            );
-                            let mut attrs = HashMap::new();
-                            attrs
-                                .insert("mergeTarget".to_string(), serde_json::json!(merge_target));
-                            add_node_and_recurse(
-                                g,
-                                uri,
-                                &child_qualified,
-                                "merge",
-                                "merge".to_string(),
-                                span_to_range(&merge.span),
-                                attrs,
-                                Some(&action_id),
-                            );
-                        }
-                        ActionDefBodyElement::ActionUsage(action_usage) => {
-                            let au_node = action_usage.as_ref();
-                            let name = &au_node.name;
-                            let child_qualified =
-                                qualified_name_for_node(g, uri, Some(&qualified), name, "action");
-                            let mut attrs = HashMap::new();
-                            attrs.insert(
-                                "actionType".to_string(),
-                                serde_json::json!(&au_node.type_name),
-                            );
-                            insert_action_payload_attrs(&mut attrs, au_node);
-                            add_node_and_recurse(
-                                g,
-                                uri,
-                                &child_qualified,
-                                "action",
-                                name.clone(),
-                                span_to_range(&au_node.span),
-                                attrs,
-                                Some(&action_id),
-                            );
-                            add_typing_edge_if_exists(
-                                g,
-                                uri,
-                                &child_qualified,
-                                &au_node.type_name,
-                                Some(&qualified),
-                            );
-                            add_edge_if_both_exist(
-                                g,
-                                uri,
-                                &action_id.qualified_name,
-                                &child_qualified,
-                                RelationshipKind::Perform,
-                            );
-                        }
-                        ActionDefBodyElement::Doc(_) | ActionDefBodyElement::Error(_) => {}
-                        _ => {}
-                    }
-                }
-            }
             wire_def_specialization_edge(
                 g,
                 uri,
@@ -765,26 +575,7 @@ pub(super) fn build_from_package_body_element(
             );
         }
         PBE::ActionUsage(au_node) => {
-            let name = &au_node.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "action");
-            let range = span_to_range(&au_node.span);
-            let mut attrs = HashMap::new();
-            attrs.insert(
-                "actionType".to_string(),
-                serde_json::json!(&au_node.type_name),
-            );
-            insert_action_payload_attrs(&mut attrs, au_node);
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "action",
-                name.clone(),
-                range,
-                attrs,
-                parent_id,
-            );
-            add_typing_edge_if_exists(g, uri, &qualified, &au_node.type_name, container_prefix);
+            action::materialize_top_level_action_usage(g, uri, container_prefix, parent_id, au_node);
         }
         PBE::AliasDef(alias_node) => {
             let mut name = identification_name(&alias_node.identification);
