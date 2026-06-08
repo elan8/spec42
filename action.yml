@@ -1,4 +1,4 @@
-name: Spec42
+name: Spec42 SysML Check
 description: Validate SysML v2 and KerML models with the Spec42 CLI.
 author: Elan8
 
