@@ -418,7 +418,7 @@ fn lsp_workspace_scan_clears_unresolved_for_wildcard_imported_workspace_types() 
 /// Validates workspace awareness against the official OMG SysML v2 repo.
 const SYSML_V2_RELEASE_DIR_ENV: &str = "SYSML_V2_RELEASE_DIR";
 const SYSML_STD_LIB_DIR_ENV: &str = "SYSML_STD_LIB_DIR";
-const PINNED_STDLIB_CONFIG_RAW: &str = include_str!("../../../config/standard-library.json");
+const PINNED_STDLIB_CONFIG_RAW: &str = include_str!("../../../../config/standard-library.json");
 
 fn is_si_sysml_path(path: &str) -> bool {
     path.ends_with("/Domain%20Libraries/Quantities%20and%20Units/SI.sysml")
@@ -571,11 +571,14 @@ fn lsp_library_search_si_file_has_rich_symbol_coverage() {
     let library_root = match resolve_sysml_library_root_for_tests() {
         Some(v) => v,
         None => {
+            let fallback = legacy_vscode_stdlib_fallback_path()
+                .map(|p| p.display().to_string())
+                .unwrap_or_else(|| "<not available>".to_string());
             eprintln!(
                 "Skipping lsp_library_search_si_file_has_rich_symbol_coverage: set {} (sysml.library root) or {} (SysML-v2-Release root); fallback path not found: {}",
                 SYSML_STD_LIB_DIR_ENV,
                 SYSML_V2_RELEASE_DIR_ENV,
-                DEFAULT_STD_LIB_DIR
+                fallback
             );
             return;
         }
