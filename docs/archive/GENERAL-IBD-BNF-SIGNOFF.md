@@ -2,7 +2,7 @@
 
 Generated: 2026-06-01
 
-Normative figures: `SysML-v2-Release/bnf/images/`. Implementation: [`shared/diagram-renderer`](../shared/diagram-renderer).
+Normative figures: `SysML-v2-Release/bnf/images/`. Implementation: [`shared/diagram-renderer`](../../shared/diagram-renderer).
 
 **Shipped-element coverage:** 35 / 104 primary notations marked **shared** (34%). Compartment-only rows count as partial notation.
 

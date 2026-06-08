@@ -4,13 +4,13 @@ This document records the current SysML visualizer renderer contract. Spec42 now
 
 Related docs:
 
-- [`shared/diagram-renderer/README.md`](../shared/diagram-renderer/README.md)
-- [`docs/SUPPORTED-WORKFLOWS.md`](SUPPORTED-WORKFLOWS.md)
-- [`docs/SHARED-RENDERER-PARITY.md`](SHARED-RENDERER-PARITY.md)
-- [`docs/GENERAL-VIEW-ELEMENT-AUDIT.md`](GENERAL-VIEW-ELEMENT-AUDIT.md)
-- [`docs/SYSML-NOTATION-INVENTORY.md`](SYSML-NOTATION-INVENTORY.md)
-- [`docs/GENERAL-IBD-BNF-SIGNOFF.md`](GENERAL-IBD-BNF-SIGNOFF.md)
-- [`docs/LEGACY-RENDERER-SUNSET.md`](LEGACY-RENDERER-SUNSET.md)
+- [`shared/diagram-renderer/README.md`](../../shared/diagram-renderer/README.md)
+- [`docs/user/SUPPORTED-WORKFLOWS.md`](../user/SUPPORTED-WORKFLOWS.md)
+- [`docs/archive/SHARED-RENDERER-PARITY.md`](../archive/SHARED-RENDERER-PARITY.md)
+- [`docs/archive/GENERAL-VIEW-ELEMENT-AUDIT.md`](../archive/GENERAL-VIEW-ELEMENT-AUDIT.md)
+- [`docs/reference/SYSML-NOTATION-INVENTORY.md`](../reference/SYSML-NOTATION-INVENTORY.md)
+- [`docs/archive/GENERAL-IBD-BNF-SIGNOFF.md`](../archive/GENERAL-IBD-BNF-SIGNOFF.md)
+- [`docs/archive/LEGACY-RENDERER-SUNSET.md`](../archive/LEGACY-RENDERER-SUNSET.md)
 
 ## Current Renderer Contract
 

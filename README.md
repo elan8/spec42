@@ -85,7 +85,7 @@ jobs:
           warnings-as-errors: true
 ```
 
-See [docs/GITHUB-ACTION.md](docs/GITHUB-ACTION.md) for inputs, SARIF upload behavior, and advanced usage.
+See [docs/user/GITHUB-ACTION.md](docs/user/GITHUB-ACTION.md) for inputs, SARIF upload behavior, and advanced usage.
 
 ## What It Can Do
 
@@ -95,7 +95,7 @@ See [docs/GITHUB-ACTION.md](docs/GITHUB-ACTION.md) for inputs, SARIF upload beha
 - **Stay productive across real workspaces** with analysis across `.sysml` and `.kerml` files plus configured library roots.
 - **Onboard reliably across environments** with embedded standard-library support and robust resolution behavior.
 - **Troubleshoot environment issues quickly** with resolved runtime, config, and library diagnostics when setups differ.
-- **Track conformance transparently** through the generated [`docs/CONFORMANCE-MATRIX.md`](docs/CONFORMANCE-MATRIX.md).
+- **Track conformance transparently** through the generated [`docs/reference/CONFORMANCE-MATRIX.md`](docs/reference/CONFORMANCE-MATRIX.md).
 - **Export diagrams headlessly** as JSON payloads or SVG; General, Interconnection, Action Flow, and State Transition SVG use ELK routing, while Sequence, Browser, Grid, and Geometry remain deterministic native exports.
 
 ### Supported SysML v2 Views (Current)
@@ -157,7 +157,7 @@ cd zed
 cargo build --target wasm32-wasip2 --release
 ```
 
-For development details, see [DEVELOPMENT.md](DEVELOPMENT.md). For troubleshooting, see [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md). For extension usage and settings, see [vscode/README.md](vscode/README.md).
+For development details, see [DEVELOPMENT.md](DEVELOPMENT.md). For troubleshooting, see [docs/user/TROUBLESHOOTING.md](docs/user/TROUBLESHOOTING.md). For extension usage and settings, see [vscode/README.md](vscode/README.md).
 
 ## License
 

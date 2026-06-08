@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Diagnostic roadmap** - Added [docs/DIAGNOSTIC-CHECKS-ROADMAP.md](docs/DIAGNOSTIC-CHECKS-ROADMAP.md) to document status and rollout sequencing for diagnostic quality checks.
+- **Diagnostic roadmap** - Added [docs/engineering/DIAGNOSTIC-CHECKS-ROADMAP.md](docs/engineering/DIAGNOSTIC-CHECKS-ROADMAP.md) to document status and rollout sequencing for diagnostic quality checks.
 - **Regression coverage** - Expanded integration and unit tests for unresolved-reference diagnostics, rename/reference behavior, and startup/update flow gating.
 
 ### Changed
@@ -99,7 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Nested port semantics tests** - Integration tests for nested port bodies in port definitions and part usages.
 - **CLI check workspace-root smoke coverage** - Added server smoke coverage that validates `perform_check` behavior with an explicit `workspace_root`, matching common `spec42 check` workspace invocations.
 - **Semantic index ready notification** - LSP clients receive `spec42/semanticIndexReady` after workspace indexing so startup diagnostics filtering and Model Explorer can align with graph readiness.
-- **Docs** - [AST-SEMANTIC-COVERAGE.md](docs/AST-SEMANTIC-COVERAGE.md) prioritization matrix and [LEGACY-RENDERER-SUNSET.md](docs/LEGACY-RENDERER-SUNSET.md) removal plan for legacy webview renderers.
+- **Docs** - [AST-SEMANTIC-COVERAGE.md](docs/engineering/AST-SEMANTIC-COVERAGE.md) prioritization matrix and [LEGACY-RENDERER-SUNSET.md](docs/archive/LEGACY-RENDERER-SUNSET.md) removal plan for legacy webview renderers.
 
 ### Changed
 
@@ -159,7 +159,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **MCP server** - Added `spec42-mcp` stdio server with `spec42_check` tool exposing the same validation pipeline as the CLI for AI assistant workflows.
 - **`software-architecture` crate** - Promoted software-architecture support from an in-tree plugin to a dedicated crate with custom RPC provider wiring.
 - **Graph-first diagnostics engine** - Added neutral diagnostics collection in `semantic_core` with kernel/LSP adapter integration.
-- **Semantic core architecture guide** - Added `docs/SEMANTIC_CORE_ARCHITECTURE.md` documenting module layout and graph-first visualization/diagnostics flows.
+- **Semantic core architecture guide** - Added `docs/architecture/SEMANTIC_CORE_ARCHITECTURE.md` documenting module layout and graph-first visualization/diagnostics flows.
 - **Content submodule helper** - Added `scripts/update-content-submodules.ps1` for updating `domain-libraries` and `examples` submodules.
 
 ### Changed

@@ -124,7 +124,7 @@ Cross-repo notes for real-model diagnostic quality live in the parser repo: [`do
 
 Large repositories may truncate file discovery per folder pattern. The VS Code setting `spec42.workspace.maxFilesPerPattern` (default in `vscode/package.json`) caps how many `.sysml` / `.kerml` files are indexed per glob pass. When truncation applies, go-to-definition and workspace symbols may be incomplete for files that were not indexed.
 
-- **User docs:** [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) (increase the cap for large repos).
+- **User docs:** [docs/user/TROUBLESHOOTING.md](docs/user/TROUBLESHOOTING.md) (increase the cap for large repos).
 - **Fixture:** [vscode/testFixture/workspaces/large-workspace](vscode/testFixture/workspaces/large-workspace) sets `maxFilesPerPattern: 2` for manual truncation testing.
 - **Integration:** `crates/kernel/tests/integration/workspace.rs` (large-workspace / perf paths pass a higher cap via LSP `initializationOptions`).
 
@@ -244,13 +244,13 @@ Package staging copies the example and domain-library content into the extension
 
 Spec42 emits structured performance logs when `spec42.performanceLogging.enabled` is true. CI also runs a report-only large-workspace performance step so changes can be tracked before budgets become hard gates.
 
-Current report-only budgets are documented in `docs/PERFORMANCE-GUARDRAILS.md`. Treat regressions there as release-risk signals even while the CI step remains non-blocking.
+Current report-only budgets are documented in `docs/engineering/PERFORMANCE-GUARDRAILS.md`. Treat regressions there as release-risk signals while the nightly step remains non-blocking.
 
 ## AI assistants
 
 **VS Code extension (Copilot Agent):** requires `engines.vscode` **^1.99.0** for Language Model Tools. Four tools in `vscode/package.json` `contributes.languageModelTools` are registered from `vscode/src/lmTools/` and invoke the same `spec42` binary as the LSP (`check`, `doctor`, `explain-diagnostic`, `model-summary` with `--format json`). No extra MCP config in VS Code for these tools.
 
-**MCP and HTTP API:** `spec42-mcp` and `spec42 api serve` expose the same validation and semantic projections as the CLI. Setup: [`docs/AI-ASSISTANTS.md`](docs/AI-ASSISTANTS.md), HTTP design: [`docs/adr/0001-read-only-systems-modeling-http-api.md`](docs/adr/0001-read-only-systems-modeling-http-api.md).
+**MCP and HTTP API:** `spec42-mcp` and `spec42 api serve` expose the same validation and semantic projections as the CLI. Setup: [`docs/user/AI-ASSISTANTS.md`](docs/user/AI-ASSISTANTS.md), HTTP design: [`docs/adr/0001-read-only-systems-modeling-http-api.md`](docs/adr/0001-read-only-systems-modeling-http-api.md).
 
 Tests (see [Running Tests](#running-tests) → agent/API surfaces):
 

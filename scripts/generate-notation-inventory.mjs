@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * Generates docs/SYSML-NOTATION-INVENTORY.md from SysML v2 BNF SVG filenames.
+ * Generates docs/reference/SYSML-NOTATION-INVENTORY.md from SysML v2 BNF SVG filenames.
  * Set SYSML_V2_RELEASE_DIR to the SysML-v2-Release repo root (optional).
- * Also writes docs/GENERAL-IBD-BNF-SIGNOFF.md for shipped general + interconnection views.
+ * Also writes docs/archive/GENERAL-IBD-BNF-SIGNOFF.md for shipped general + interconnection views.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -166,7 +166,7 @@ const lines = [
   "",
   `Source: \`${imagesDir}\` (${files.length} entries)`,
   "",
-  "Shipped product views: **general-view**, **interconnection-view** (+ behavior views). See [GENERAL-IBD-BNF-SIGNOFF.md](GENERAL-IBD-BNF-SIGNOFF.md) for sign-off checklist.",
+  "Shipped product views: **general-view**, **interconnection-view** (+ behavior views). See [GENERAL-IBD-BNF-SIGNOFF.md](../archive/GENERAL-IBD-BNF-SIGNOFF.md) for sign-off checklist.",
   "",
   "| SVG | Inferred views | Status | Code pointer |",
   "|-----|----------------|--------|--------------|",
@@ -188,7 +188,7 @@ lines.push("node scripts/generate-notation-inventory.mjs");
 lines.push("```");
 lines.push("");
 
-const outPath = path.join(repoRoot, "docs", "SYSML-NOTATION-INVENTORY.md");
+const outPath = path.join(repoRoot, "docs", "reference", "SYSML-NOTATION-INVENTORY.md");
 fs.writeFileSync(outPath, lines.join("\n"), "utf8");
 console.log(`Wrote ${outPath} (${files.length} rows)`);
 
@@ -221,7 +221,7 @@ const signoffLines = [
   "",
   `Generated: ${new Date().toISOString().slice(0, 10)}`,
   "",
-  "Normative figures: `SysML-v2-Release/bnf/images/`. Implementation: [`shared/diagram-renderer`](../shared/diagram-renderer).",
+  "Normative figures: `SysML-v2-Release/bnf/images/`. Implementation: [`shared/diagram-renderer`](../../shared/diagram-renderer).",
   "",
   `**Shipped-element coverage:** ${shippedImplemented} / ${shippedTotal} primary notations marked **shared** (${coveragePct}%). Compartment-only rows count as partial notation.`,
   "",
@@ -247,6 +247,6 @@ signoffLines.push("- General: `sysml/src/validation/.../01-Parts Tree/1d-Parts T
 signoffLines.push("- Interconnection: KitchenTimer workspace fixture; connected-blocks / webshop models");
 signoffLines.push("");
 
-const signoffPath = path.join(repoRoot, "docs", "GENERAL-IBD-BNF-SIGNOFF.md");
+const signoffPath = path.join(repoRoot, "docs", "archive", "GENERAL-IBD-BNF-SIGNOFF.md");
 fs.writeFileSync(signoffPath, signoffLines.join("\n"), "utf8");
 console.log(`Wrote ${signoffPath} (${signoffRows.length} rows, ${coveragePct}% shared)`);

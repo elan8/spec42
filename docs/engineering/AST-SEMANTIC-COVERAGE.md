@@ -29,20 +29,20 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 
 ## Recent changes (0.18.0 follow-through)
 
-- `metadata def` and package-level `metadata` usage bodies walk `AttributeBodyElement` in [`metadata_def.rs`](../crates/semantic_core/src/semantic/graph_builder/metadata_def.rs); covered by [`metadata_semantics.rs`](../crates/semantic_core/tests/metadata_semantics.rs).
-- Parser 0.18.0 accepts dot feature chains in `expose` targets; view evaluation resolves normalized chains in [`explicit_views.rs`](../crates/semantic_core/src/semantic/explicit_views.rs); covered by [`expose_feature_chains.rs`](../crates/semantic_core/tests/expose_feature_chains.rs).
-- `unresolved_specializes_reference` (RULE7) includes case and metadata definition kinds via shared [`SPECIALIZES_TARGET_KINDS`](../crates/semantic_core/src/semantic/relationships.rs); analysis def `:>` regression in kernel integration diagnostics.
+- `metadata def` and package-level `metadata` usage bodies walk `AttributeBodyElement` in [`metadata_def.rs`](../../crates/semantic_core/src/semantic/graph_builder/metadata_def.rs); covered by [`metadata_semantics.rs`](../../crates/semantic_core/tests/metadata_semantics.rs).
+- Parser 0.18.0 accepts dot feature chains in `expose` targets; view evaluation resolves normalized chains in [`explicit_views.rs`](../../crates/semantic_core/src/semantic/explicit_views.rs); covered by [`expose_feature_chains.rs`](../../crates/semantic_core/tests/expose_feature_chains.rs).
+- `unresolved_specializes_reference` (RULE7) includes case and metadata definition kinds via shared [`SPECIALIZES_TARGET_KINDS`](../../crates/semantic_core/src/semantic/relationships.rs); analysis def `:>` regression in kernel integration diagnostics.
 
 ## Prior release (0.17.0 follow-through)
 
-- `AttributeUsage` / `PortUsage` usage-header operators (`:>`, `::>`, `=>`) are stored on graph nodes as `subsetsFeature`, `referencesFeature`, and `crossesFeature` in [`part_def.rs`](../crates/semantic_core/src/semantic/graph_builder/part_def.rs), [`part_usage.rs`](../crates/semantic_core/src/semantic/graph_builder/part_usage.rs), and [`port_def.rs`](../crates/semantic_core/src/semantic/graph_builder/port_def.rs).
+- `AttributeUsage` / `PortUsage` usage-header operators (`:>`, `::>`, `=>`) are stored on graph nodes as `subsetsFeature`, `referencesFeature`, and `crossesFeature` in [`part_def.rs`](../../crates/semantic_core/src/semantic/graph_builder/part_def.rs), [`part_usage.rs`](../../crates/semantic_core/src/semantic/graph_builder/part_usage.rs), and [`port_def.rs`](../../crates/semantic_core/src/semantic/graph_builder/port_def.rs).
 
 ## Prior release (0.16.0 follow-through)
 
-- `RequirementActorDecl` in requirement bodies is wired in [`requirement_body.rs`](../crates/semantic_core/src/semantic/graph_builder/requirement_body.rs) (distinct from use-case `ActorDecl`).
+- `RequirementActorDecl` in requirement bodies is wired in [`requirement_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/requirement_body.rs) (distinct from use-case `ActorDecl`).
 - `EnumerationUsage` in part def/usage bodies is accepted in the graph builder (ignored like other deferred usage members until a workflow needs graph nodes).
-- Nested `PortBody` members are walked in [`port_def.rs`](../crates/semantic_core/src/semantic/graph_builder/port_def.rs) and covered by [`nested_port_body_semantics.rs`](../crates/semantic_core/tests/nested_port_body_semantics.rs).
-- Token ranges recurse port bodies in [`ast_ranges.rs`](../crates/sysml_semantic_tokens/src/ast_ranges.rs).
+- Nested `PortBody` members are walked in [`port_def.rs`](../../crates/semantic_core/src/semantic/graph_builder/port_def.rs) and covered by [`nested_port_body_semantics.rs`](../../crates/semantic_core/tests/nested_port_body_semantics.rs).
+- Token ranges recurse port bodies in [`ast_ranges.rs`](../../crates/sysml_semantic_tokens/src/ast_ranges.rs).
 
 ## Backlog (P1+)
 

@@ -1,10 +1,10 @@
 # General view element audit (Phase 2.1)
 
-**Phase 2 status:** Done (2026-06-01) — BNF sign-off in [GENERAL-IBD-BNF-SIGNOFF.md](GENERAL-IBD-BNF-SIGNOFF.md); annotations (2.3) WONTFIX for 1.0. See [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md#phase-2--general-view-completeness).
+**Historical status:** Done (2026-06-01) — BNF sign-off in [GENERAL-IBD-BNF-SIGNOFF.md](GENERAL-IBD-BNF-SIGNOFF.md); annotations were deferred for 1.0. Current renderer contract: [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](../architecture/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md).
 
 Maps SysML v2 **general-view** element kinds to Spec42 canvas behavior. Normative figures: `SysML-v2-Release/bnf/images/` (e.g. `part-def.svg`, `part.svg`, `part-ref.svg`).
 
-**Pipeline:** `semantic_core` → `canonical_general_view_graph` ([`model_projection.rs`](../crates/semantic_core/src/semantic/model_projection.rs)) → `prepareGraph` ([`prepare.ts`](../shared/diagram-renderer/src/prepare.ts)) → shared `renderer.ts`.
+**Pipeline:** `semantic_core` → `canonical_general_view_graph` ([`model_projection.rs`](../../crates/semantic_core/src/semantic/model_projection.rs)) → `prepareGraph` ([`prepare.ts`](../../shared/diagram-renderer/src/prepare.ts)) → shared `renderer.ts`.
 
 | Element kind (examples) | Canvas node | Compartment-only | Omitted | Filter owner |
 |-------------------------|-------------|------------------|---------|--------------|
@@ -23,7 +23,7 @@ Maps SysML v2 **general-view** element kinds to Spec42 canvas behavior. Normativ
 
 ## Relationship edges (general view)
 
-Rendered via `applyEdgeMarker` in shared renderer. See [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md) Phase 2.2.
+Rendered via `applyEdgeMarker` in shared renderer. See [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](../architecture/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md).
 
 | Edge kind | Status |
 |-----------|--------|

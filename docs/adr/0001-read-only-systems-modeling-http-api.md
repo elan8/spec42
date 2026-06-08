@@ -20,7 +20,7 @@ These surfaces work well for editing, automation, and agent workflows. They are 
 
 The OMG **Systems Modeling API and Services** specification defines the industry-standard interoperability layer for SysML v2. It includes a Platform Independent Model (PIM) and REST/HTTP and OSLC platform-specific models (PSMs). The reference implementation ([SysML-v2-API-Services](https://github.com/Systems-Modeling/SysML-v2-API-Services)) is repository-centric: projects, branches, commits, element CRUD, and persistent identity.
 
-Spec42's product wedge is **open, local-first tooling** (see [COMPETITIVE-ROADMAP.md](../COMPETITIVE-ROADMAP.md)): bundled server, file-based workspaces, no cloud dependency. A full OMG-conformant repository API would overlap heavily with collaborative products (for example Babel42) and is out of scope for the near term.
+Spec42's product wedge is **open, local-first tooling** (see [COMPETITIVE-ROADMAP.md](../engineering/COMPETITIVE-ROADMAP.md)): bundled server, file-based workspaces, no cloud dependency. A full OMG-conformant repository API would overlap heavily with collaborative products (for example Babel42) and is out of scope for the near term.
 
 At the same time, `semantic_core` and `kernel` already produce rich read projections — validation reports, semantic graphs, visualization DTOs, diagram exports — reused by LSP custom methods, CLI, and MCP. A thin HTTP layer on top of those projections would unlock interoperability without changing Spec42's local-first identity.
 
@@ -256,7 +256,7 @@ Global flags (`--library-path`, `--config`, `--stdlib-path`, `--no-stdlib`) appl
 
 - OpenAPI 3.1 spec: [docs/api/spec42-readonly-v1.openapi.yaml](../api/spec42-readonly-v1.openapi.yaml)
 - User guide section in README / DEVELOPMENT.md (post-implementation)
-- Link from [AI-ASSISTANTS.md](../AI-ASSISTANTS.md) as an alternative to MCP for non-agent HTTP clients
+- Link from [AI-ASSISTANTS.md](../user/AI-ASSISTANTS.md) as an alternative to MCP for non-agent HTTP clients
 
 ## Implementation plan
 
@@ -328,6 +328,6 @@ Global flags (`--library-path`, `--config`, `--stdlib-path`, `--no-stdlib`) appl
 - [OMG Systems Modeling API and Services](https://www.omg.org/spec/SystemsModelingAPI/1.0/)
 - [SysML-v2-API-Services (reference implementation)](https://github.com/Systems-Modeling/SysML-v2-API-Services)
 - [SysML-v2-API-Cookbook](https://github.com/Systems-Modeling/SysML-v2-API-Cookbook)
-- [SEMANTIC_CORE_ARCHITECTURE.md](../SEMANTIC_CORE_ARCHITECTURE.md)
-- [AI-ASSISTANTS.md](../AI-ASSISTANTS.md)
-- [COMPETITIVE-ROADMAP.md](../COMPETITIVE-ROADMAP.md)
+- [SEMANTIC_CORE_ARCHITECTURE.md](../architecture/SEMANTIC_CORE_ARCHITECTURE.md)
+- [AI-ASSISTANTS.md](../user/AI-ASSISTANTS.md)
+- [COMPETITIVE-ROADMAP.md](../engineering/COMPETITIVE-ROADMAP.md)

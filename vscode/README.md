@@ -133,13 +133,13 @@ spec42 check path/to/model-or-workspace
 - If the server cannot start, check `spec42.serverPath` and open `SysML: Show SysML Output (Logs)`.
 - If libraries do not resolve, validate `spec42.libraryPaths` and compare with `spec42 doctor`.
 - If you want a CLI view of the same environment problems, run `spec42 doctor`.
-- For broader troubleshooting guidance, see [`docs/TROUBLESHOOTING.md`](../docs/TROUBLESHOOTING.md).
+- For broader troubleshooting guidance, see [`docs/user/TROUBLESHOOTING.md`](../docs/user/TROUBLESHOOTING.md).
 
 ## AI assistants (Copilot, Cursor, …)
 
 **VS Code 1.99+ with Copilot Agent:** four Spec42 **Language Model Tools** ship with this extension (`#spec42Check`, `#spec42Doctor`, `#spec42ModelSummary`, `#spec42ExplainDiagnostic`). No `mcp.json` required — tools call the bundled `spec42` CLI.
 
-**Cursor and other hosts:** use the **`spec42-mcp`** stdio server. See [`docs/AI-ASSISTANTS.md`](../docs/AI-ASSISTANTS.md) and [`docs/examples/mcp-vscode.json`](../docs/examples/mcp-vscode.json).
+**Cursor and other hosts:** use the **`spec42-mcp`** stdio server. See [`docs/user/AI-ASSISTANTS.md`](../docs/user/AI-ASSISTANTS.md) and [`docs/examples/mcp-vscode.json`](../docs/examples/mcp-vscode.json).
 
 ## Links
 

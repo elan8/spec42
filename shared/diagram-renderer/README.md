@@ -15,7 +15,7 @@ Shared D3 + ELK renderer for Spec42 **SysML visualizer views** (`SYSML_ENABLED_V
 
 Browser, Grid, and Geometry are exposed as provisional standard-view renderers until the upstream graphical notation gaps are closed. Filtered standard views such as case/requirement-style views are projected through `general-view` with filters preserved by the backend.
 
-For the full picture (legacy vs shared vs SysML v2 spec) and the conformance roadmap, see [`docs/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md`](../../docs/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md).
+For the full picture (legacy vs shared vs SysML v2 spec) and the conformance roadmap, see [`docs/architecture/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md`](../../docs/architecture/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md).
 
 ## Notation-neutral theme
 

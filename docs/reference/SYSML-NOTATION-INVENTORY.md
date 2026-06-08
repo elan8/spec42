@@ -4,7 +4,7 @@ Generated: 2026-06-01
 
 Source: `C:\Git\SysML-v2-Release\bnf\images` (284 entries)
 
-Shipped product views: **general-view**, **interconnection-view** (+ behavior views). See [GENERAL-IBD-BNF-SIGNOFF.md](GENERAL-IBD-BNF-SIGNOFF.md) for sign-off checklist.
+Shipped product views: **general-view**, **interconnection-view** (+ behavior views). See [GENERAL-IBD-BNF-SIGNOFF.md](../archive/GENERAL-IBD-BNF-SIGNOFF.md) for sign-off checklist.
 
 | SVG | Inferred views | Status | Code pointer |
 |-----|----------------|--------|--------------|
