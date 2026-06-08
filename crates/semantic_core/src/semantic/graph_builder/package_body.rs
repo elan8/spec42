@@ -1154,6 +1154,14 @@ pub(super) fn build_from_package_body_element(
                     container_prefix,
                     alloc_node.specializes.as_deref(),
                 );
+                let node_id = NodeId::new(uri, &qualified);
+                definition_body::build_from_definition_body(
+                    &alloc_node.body,
+                    uri,
+                    Some(&qualified),
+                    &node_id,
+                    g,
+                );
             }
         }
         PBE::Dependency(dep_node) => {

@@ -3,8 +3,9 @@
 use sysml_v2_parser::ast::{
     ActionDefBody, ActionDefBodyElement, ActionUsage, ActionUsageBody, ActionUsageBodyElement,
     AttributeBody, AttributeBodyElement, CalcDefBody, ConnectionDefBody, ConnectionDefBodyElement,
-    ConstraintDefBodyElement, InterfaceDefBody, InterfaceDefBodyElement, MetadataKeywordUsage,
-    OccurrenceBodyElement, OccurrenceUsageBody, PackageBody, PackageBodyElement, PartDefBody,
+    ConstraintDefBodyElement, DefinitionBody, DefinitionBodyElement, InterfaceDefBody,
+    InterfaceDefBodyElement, MetadataKeywordUsage, OccurrenceBodyElement, OccurrenceUsageBody,
+    PackageBody, PackageBodyElement, PartDefBody,
     PartDefBodyElement, PartUsageBody, PartUsageBodyElement, PortBody, PortBodyElement,
     PortDefBody, PortDefBodyElement, RequireConstraintBody, RequirementDefBody,
     RequirementDefBodyElement, RootElement,
@@ -215,7 +216,48 @@ fn collect_semantic_ranges_package_body_element(
             }
             collect_semantic_ranges_attribute_body(&md_node.value.body, out);
         }
+        PBE::OccurrenceDef(occ_node) => {
+            out.push((span_to_source_range(&occ_node.span), TYPE_CLASS));
+            if let Some(ref s) = occ_node.value.specializes_span {
+                out.push((span_to_source_range(s), TYPE_TYPE));
+            }
+            collect_semantic_ranges_definition_body(&occ_node.value.body, out);
+        }
+        PBE::FlowDef(flow_node) => {
+            out.push((span_to_source_range(&flow_node.span), TYPE_INTERFACE));
+            if let Some(ref s) = flow_node.value.specializes_span {
+                out.push((span_to_source_range(s), TYPE_TYPE));
+            }
+            collect_semantic_ranges_definition_body(&flow_node.value.body, out);
+        }
+        PBE::FlowUsage(flow_node) => {
+            out.push((span_to_source_range(&flow_node.span), TYPE_PROPERTY));
+            collect_semantic_ranges_definition_body(&flow_node.value.body, out);
+        }
+        PBE::AllocationDef(alloc_node) => {
+            out.push((span_to_source_range(&alloc_node.span), TYPE_INTERFACE));
+            if let Some(ref s) = alloc_node.value.specializes_span {
+                out.push((span_to_source_range(s), TYPE_TYPE));
+            }
+            collect_semantic_ranges_definition_body(&alloc_node.value.body, out);
+        }
         _ => {}
+    }
+}
+
+fn collect_semantic_ranges_definition_body(body: &DefinitionBody, out: &mut Vec<(SourceRange, u32)>) {
+    let DefinitionBody::Brace { elements } = body else {
+        return;
+    };
+    for node in elements {
+        match &node.value {
+            DefinitionBodyElement::OccurrenceMember(member) => {
+                collect_semantic_ranges_occurrence_body_element(member, out);
+            }
+            DefinitionBodyElement::Doc(_)
+            | DefinitionBodyElement::Error(_)
+            | DefinitionBodyElement::Other(_) => {}
+        }
     }
 }
 

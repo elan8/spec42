@@ -619,6 +619,57 @@ mod tests {
     }
 
     #[test]
+    fn canonical_general_view_graph_filters_require_constraint_child_nodes() {
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::Req".to_string(),
+                    element_type: "requirement def".to_string(),
+                    name: "Req".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: range(),
+                    attributes: serde_json::json!({
+                        "requirementConstraints": ["  flightTime >= 25 min."]
+                    })
+                    .as_object()
+                    .unwrap()
+                    .iter()
+                    .map(|(k, v)| (k.clone(), v.clone()))
+                    .collect(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Req::_requireConstraint_0".to_string(),
+                    element_type: "require constraint".to_string(),
+                    name: "_requireConstraint_0".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::Req".to_string()),
+                    range: range(),
+                    attributes: Default::default(),
+                },
+            ],
+            edges: vec![],
+        };
+
+        let canonical = canonical_general_view_graph(&graph, false);
+        assert_eq!(
+            canonical.nodes.len(),
+            1,
+            "require constraint children should be filtered from General View"
+        );
+        let owner = &canonical.nodes[0];
+        assert_eq!(owner.id, "Pkg::Req");
+        assert_eq!(
+            owner.attributes.get("generalViewDirectAttributes"),
+            Some(&serde_json::json!([{
+                "name": "flightTime >= 25 min.",
+                "displayText": "flightTime >= 25 min."
+            }])),
+            "inline constraint summary should remain on the requirement owner"
+        );
+    }
+
+    #[test]
     fn strip_synthetic_nodes_removes_auto_expanded_instantiation_content() {
         let graph = SysmlGraphDto {
             nodes: vec![

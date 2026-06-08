@@ -1,6 +1,6 @@
 # AST semantic coverage matrix
 
-Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.19.0** ([crates.io](https://crates.io/crates/sysml-v2-parser)).
+Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.20.0** ([crates.io](https://crates.io/crates/sysml-v2-parser)).
 
 | Parser surface | Graph (`semantic_core`) | Symbols / hover | Semantic tokens | Priority |
 |----------------|-------------------------|-----------------|-----------------|----------|
@@ -20,7 +20,7 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 | `RequirementDefBody` / constraint bodies | Yes | Partial | Mostly | P1 |
 | `AttributeBody` on `metadata def` / `metadata` usage | Yes | Partial | Def span | P1 |
 | `AttributeBody` on `item def` / `individual def` / `metadata def` | Yes | Partial | Mostly | P1 |
-| `AttributeBody` / `DefinitionBody` (flow, occurrence, other defs) | Mostly | Partial | Def span | P1 |
+| `AttributeBody` / `DefinitionBody` (flow, occurrence, other defs) | Yes | Partial | Mostly | P1 |
 | View `expose` feature chains (§7.6.6) | Yes (0.18.0 parser + view eval) | N/A | N/A | P0 |
 | `Error` / `Other` | Ignored | Ignored | Ignored | N/A |
 | `OpaqueMember` | Minimal node | Partial | Ignored | P1 |
@@ -32,9 +32,16 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 2. **Graph:** implement when a **shipped workflow** needs it (LSP navigation, `spec42 check`, IBD/general/action/state/sequence views).
 3. **Tokens:** extend `sysml_semantic_tokens` `ast_ranges` for editor-visible identifiers in tested fixtures.
 
+## Recent changes (graph depth P4a)
+
+- **Parser 0.20.0** — flow/allocation `DefinitionBody` members parse as `OccurrenceMember`; Spec42 bump unlocks semantics and token tests.
+- **DefinitionBody semantics** — flow def, flow usage, and allocation def inner `attribute`/`part` members materialize on graph; covered by [`definition_body_semantics.rs`](../../crates/semantic_core/tests/definition_body_semantics.rs).
+- **Semantic tokens** — `FlowDef`/`FlowUsage`/`AllocationDef`/`OccurrenceDef` recurse `DefinitionBody` in [`ast_ranges.rs`](../../crates/sysml_semantic_tokens/src/ast_ranges.rs); covered by [`flow_def_tokens.rs`](../../crates/sysml_semantic_tokens/tests/flow_def_tokens.rs).
+- **General View** — `require constraint` child nodes filtered from `generalViewGraph` while `requirementConstraints` inline on owner; unit test in [`model_projection.rs`](../../crates/semantic_core/src/semantic/model_projection.rs).
+
 ## Recent changes (graph depth P3)
 
-- **DefinitionBody** — [`definition_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/definition_body.rs) and [`occurrence_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/occurrence_body.rs) walk occurrence-level members on `occurrence def`, `flow def`, and `flow usage` shells; flow def bodies remain parser doc-only until generic definition bodies grow.
+- **DefinitionBody** — [`definition_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/definition_body.rs) and [`occurrence_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/occurrence_body.rs) walk occurrence-level members on `occurrence def`, `flow def`, and `flow usage` shells.
 - **PartDefBody** — `EnumerationUsage`, `ItemUsage` `AttributeBody`, `OpaqueMember`, and `OccurrenceUsage` brace bodies projected in [`part_def.rs`](../../crates/semantic_core/src/semantic/graph_builder/part_def.rs); covered by [`part_def_body_semantics.rs`](../../crates/semantic_core/tests/part_def_body_semantics.rs) and [`definition_body_semantics.rs`](../../crates/semantic_core/tests/definition_body_semantics.rs).
 - **Semantic tokens** — `ItemDef`/`IndividualDef`/`MetadataDef` inner attributes and expanded `PartDefBodyElement` coverage in [`ast_ranges.rs`](../../crates/sysml_semantic_tokens/src/ast_ranges.rs); requirement `RequirementActorDecl`, `TextualRep` `language_span`, and `#keyword` members; covered by [`part_def_tokens.rs`](../../crates/sysml_semantic_tokens/tests/part_def_tokens.rs).
 - **Hover / symbols** — signatures and `SymbolKind` for `require constraint`, `enumeration`, `opaque member`, `individual def`, `stakeholder`, `purpose`, and `verified requirement` in [`hover.rs`](../../crates/kernel/src/semantic/presentation/hover.rs) and [`symbol_entries.rs`](../../crates/kernel/src/semantic/presentation/symbol_entries.rs).
