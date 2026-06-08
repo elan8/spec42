@@ -7,7 +7,7 @@ import {
     getFixturePath,
     getTestWorkspaceFolder,
     integrationHookTimeoutMs,
-    triggerVisualizerExportForTest,
+    triggerDiagramExportAndWait,
     waitForLanguageServerReady,
     waitForVisualizerOpen,
 } from "./testUtils";
@@ -196,7 +196,6 @@ describe("Interconnection Visualization Drone", () => {
         await waitForVisualizerOpen();
 
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
-        await new Promise((r) => setTimeout(r, 2600));
 
         const uri = getDiagramExportUri(workspaceFolder.uri, "interconnection-view");
         try {
@@ -204,11 +203,16 @@ describe("Interconnection Visualization Drone", () => {
         } catch {
             // Ignore if there is no previous export yet.
         }
-        await triggerVisualizerExportForTest();
-        await new Promise((r) => setTimeout(r, 1500));
-
-        const bytes = await vscode.workspace.fs.readFile(uri);
-        const svgText = Buffer.from(bytes).toString("utf8");
+        const { svgText } = await triggerDiagramExportAndWait(
+            workspaceFolder.uri,
+            "interconnection-view",
+            (text) =>
+                (text.includes("ibd-connector") || text.includes("diagram-edge")) &&
+                text.includes("telemetryOut") &&
+                text.includes("videoIn") &&
+                text.includes("regulated5V"),
+            45000
+        );
 
         assert.ok(svgText.includes("<svg"), "drone interconnection export should contain svg markup");
         assert.ok(

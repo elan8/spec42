@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
 import {
+  closeAllEditorsForTests,
   configureServerForTests,
   getFixturePath,
   getTestWorkspaceFolder,
@@ -31,12 +32,11 @@ describe("Multi-file VS Code Flows", () => {
   });
 
   afterEach(async () => {
-    await vscode.commands.executeCommand("workbench.action.closeAllEditors");
+    await closeAllEditorsForTests();
   });
 
   after(async () => {
-    await vscode.commands.executeCommand("workbench.action.closeAllEditors");
-    await new Promise((r) => setTimeout(r, 250));
+    await closeAllEditorsForTests();
   });
 
   it("finds references across files", async function () {

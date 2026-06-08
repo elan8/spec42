@@ -1,4 +1,4 @@
-# CI: build, test, and (optional) run SysML v2 validation suite
+# CI: required fast checks plus targeted integration smoke tests.
 name: CI
 
 on:
@@ -10,9 +10,12 @@ on:
 permissions:
   contents: read
 
+env:
+  VSCODE_TEST_VERSION: "1.99.0"
+
 jobs:
-  rust-fast:
-    name: Rust fast checks
+  rust-core:
+    name: Rust core checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -57,17 +60,16 @@ jobs:
       - name: Conformance matrix is current
         run: node scripts/generate-conformance-matrix.mjs --check
 
-      - name: cargo test (core workspace, fast path)
-        run: |
-          cargo test --workspace --exclude spec42
-          cargo test -p spec42 --lib
-          cargo test -p spec42 --test multi_file_check
-
-      - name: requirements slice integration checks
+      - name: Requirements slice integration checks
         run: |
           cargo test -p kernel --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file
           cargo test -p kernel --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_cross_file
           cargo test -p kernel --test lsp_integration integration::diagnostics::unresolved_satisfy_reference_emits_semantic_diagnostic
+
+      - name: cargo test (core workspace)
+        run: |
+          cargo test --workspace --exclude spec42
+          cargo test -p spec42 --lib
 
       - name: Large workspace performance report (non-blocking)
         continue-on-error: true
@@ -89,10 +91,10 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           exit 0
 
-      - name: cargo clippy (required fast path)
+      - name: cargo clippy
         run: cargo clippy --workspace --all-targets -- -W clippy::all
 
-  rust-agent-surfaces:
+  rust-surfaces:
     name: Rust agent/API surfaces
     runs-on: ubuntu-latest
     steps:
@@ -138,16 +140,64 @@ jobs:
             --test cli_ai_tools \
             --test mcp_protocol \
             --test mcp_binary \
-            --test kitchen_timer_check
+            --test kitchen_timer_check \
+            --test multi_file_check
 
       - name: Build spec42-mcp binary
         run: cargo build -p spec42 --bin spec42-mcp
 
-  extension-tests:
-    name: VS Code extension tests
+  frontend-unit:
+    name: Frontend unit checks
     runs-on: ubuntu-latest
-    env:
-      VSCODE_TEST_VERSION: "1.99.0"
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: |
+            shared/diagram-renderer/package-lock.json
+            vscode/package-lock.json
+
+      - name: npm ci (diagram renderer)
+        run: cd shared/diagram-renderer && npm ci
+
+      - name: npm test (diagram renderer)
+        run: cd shared/diagram-renderer && npm test
+
+      - name: npm ci (vscode)
+        run: cd vscode && npm ci
+
+      - name: Typecheck extension
+        run: cd vscode && npm run typecheck
+
+      - name: LM CLI argv unit tests
+        run: cd vscode && npm run test:lm-cli-unit
+
+      - name: Library view model unit tests
+        run: cd vscode && npm run test:library-unit
+
+      - name: UX unit tests
+        run: cd vscode && xvfb-run -a npm run test:ux-unit
+
+      - name: Upload frontend failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-unit-artifacts
+          if-no-files-found: ignore
+          path: |
+            vscode/.vscode-test/**
+            vscode/test-output/**
+            /tmp/spec42-vscode-test-exports/**
+
+  vscode-smoke:
+    name: VS Code smoke tests
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
@@ -190,47 +240,26 @@ jobs:
       - name: Build server (debug for extension test host)
         run: cargo build -p spec42
 
-      - name: Build server (release for packaging parity)
-        run: cargo build --release -p spec42
-
-      - name: Add server to PATH
+      - name: Configure server path
         run: |
           echo "${{ github.workspace }}/target/debug" >> $GITHUB_PATH
-          echo "${{ github.workspace }}/target/release" >> $GITHUB_PATH
-          # Ensure VS Code extension tests use the in-repo server binary (avoid PATH/order flakiness).
-          # Prefer debug (built for the test host), fallback to release.
           if [ -x "${{ github.workspace }}/target/debug/spec42" ]; then
             chmod +x "${{ github.workspace }}/target/debug/spec42" || true
             echo "SPEC42_SERVER_PATH=${{ github.workspace }}/target/debug/spec42" >> $GITHUB_ENV
             echo "SPEC42_SERVER_PATH set to debug binary"
-          elif [ -x "${{ github.workspace }}/target/release/spec42" ]; then
-            chmod +x "${{ github.workspace }}/target/release/spec42" || true
-            echo "SPEC42_SERVER_PATH=${{ github.workspace }}/target/release/spec42" >> $GITHUB_ENV
-            echo "SPEC42_SERVER_PATH set to release binary"
           else
-            echo "WARNING: spec42 binary not found in target/{debug,release}"
-            ls -la "${{ github.workspace }}/target" || true
+            echo "spec42 debug binary not found"
             ls -la "${{ github.workspace }}/target/debug" || true
-            ls -la "${{ github.workspace }}/target/release" || true
+            exit 1
           fi
 
-      - name: Diagnose server binary (CI)
+      - name: Diagnose server binary
         run: |
           echo "SPEC42_SERVER_PATH=${SPEC42_SERVER_PATH:-"(unset)"}"
-          if [ -n "${SPEC42_SERVER_PATH:-}" ]; then
-            ls -la "${SPEC42_SERVER_PATH}" || true
-            file "${SPEC42_SERVER_PATH}" || true
-            ldd "${SPEC42_SERVER_PATH}" || true
-            "${SPEC42_SERVER_PATH}" --version || true
-            "${SPEC42_SERVER_PATH}" --help || true
-          fi
-
-      - name: Diagnose fixture serverPath settings (CI)
-        run: |
-          echo "single-file settings.json:"
-          cat "${{ github.workspace }}/vscode/testFixture/workspaces/single-file/.vscode/settings.json" || true
-          echo "large-workspace settings.json:"
-          cat "${{ github.workspace }}/vscode/testFixture/workspaces/large-workspace/.vscode/settings.json" || true
+          ls -la "${SPEC42_SERVER_PATH}"
+          file "${SPEC42_SERVER_PATH}" || true
+          ldd "${SPEC42_SERVER_PATH}" || true
+          "${SPEC42_SERVER_PATH}" --version || true
 
       - name: npm ci (vscode)
         run: cd vscode && npm ci
@@ -238,8 +267,92 @@ jobs:
       - name: Build extension and webview
         run: cd vscode && npm run build:webview-assets && npm run build:webview && npm run compile
 
-      - name: LM CLI argv unit tests
-        run: cd vscode && npm run test:lm-cli-unit
+      - name: npm test (extension smoke)
+        run: cd vscode && xvfb-run -a npm test
+
+      - name: npm test (multi-file smoke)
+        run: cd vscode && xvfb-run -a npm run test:multi-file
+
+      - name: npm test (workspace smoke)
+        run: cd vscode && xvfb-run -a npm run test:workspace-smoke
+
+      - name: Upload VS Code smoke failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vscode-smoke-artifacts
+          if-no-files-found: ignore
+          path: |
+            vscode/.vscode-test/**
+            vscode/test-output/**
+            /tmp/spec42-vscode-test-exports/**
+
+  package-smoke:
+    name: VSIX package smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: vscode/package-lock.json
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Prepare SysML stdlib bundle
+        run: |
+          VERSION=$(node -p "require('./config/standard-library.json').version")
+          echo "SPEC42_STDLIB_VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "SPEC42_STDLIB_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-v2-release-${VERSION}.zip" >> $GITHUB_ENV
+
+      - name: Restore SysML stdlib bundle cache
+        uses: actions/cache/restore@v4
+        id: stdlib-cache
+        with:
+          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
+
+      - name: Fetch SysML stdlib bundle
+        if: steps.stdlib-cache.outputs.cache-hit != 'true'
+        run: bash scripts/fetch-stdlib-bundle.sh
+
+      - name: Save SysML stdlib bundle cache
+        if: steps.stdlib-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
+
+      - name: Build server (release for packaging)
+        run: cargo build --release -p spec42
+
+      - name: Configure packaged server path
+        run: |
+          echo "${{ github.workspace }}/target/release" >> $GITHUB_PATH
+          if [ -x "${{ github.workspace }}/target/release/spec42" ]; then
+            chmod +x "${{ github.workspace }}/target/release/spec42" || true
+            echo "SPEC42_SERVER_PATH=${{ github.workspace }}/target/release/spec42" >> $GITHUB_ENV
+            echo "SPEC42_SERVER_PATH set to release binary"
+          else
+            echo "spec42 release binary not found"
+            ls -la "${{ github.workspace }}/target/release" || true
+            exit 1
+          fi
+
+      - name: npm ci (vscode)
+        run: cd vscode && npm ci
+
+      - name: Build extension and webview
+        run: cd vscode && npm run build:webview-assets && npm run build:webview && npm run compile
+
+      - name: Verify package layout
+        run: cd vscode && npm run verify:package-layout
 
       - name: Package VSIX
         run: cd vscode && npm run package
@@ -253,17 +366,17 @@ jobs:
             --doc "testFixture/workspaces/single-file/SurveillanceDrone.sysml" \
             --server-path "${SPEC42_SERVER_PATH}"
 
-      - name: npm test (extension tests)
-        run: cd vscode && xvfb-run -a npm test
-
-      - name: npm test (multi-file)
-        run: cd vscode && xvfb-run -a npm run test:multi-file
-
-      - name: npm test (workspace smoke)
-        run: cd vscode && xvfb-run -a npm run test:workspace-smoke
-
-      - name: npm test (interconnection)
-        run: cd vscode && xvfb-run -a npm run test:interconnection
+      - name: Upload package smoke failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-smoke-artifacts
+          if-no-files-found: ignore
+          path: |
+            vscode/*.vsix
+            vscode/.vscode-test/**
+            vscode/test-output/**
+            /tmp/spec42-vscode-test-exports/**
 
   zed-extension:
     name: Zed extension build

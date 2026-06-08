@@ -9,8 +9,7 @@ import {
     getDiagramExportUri,
     getTestWorkspaceFolder,
     selectVisualizerPackage,
-    triggerVisualizerExportForTest,
-    waitForDiagramExport,
+    triggerDiagramExportAndWait,
     waitForExtensionServerReady,
     waitForLanguageServerReady,
     waitForVisualizerOpen,
@@ -173,19 +172,13 @@ describe("Interconnection Visualization", () => {
         await waitForVisualizerOpen();
 
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
-        // CI runners can take longer to settle after view changes before export is ready.
-        await new Promise((r) => setTimeout(r, 3000));
         const exportUri = getDiagramExportUri(workspaceFolder.uri, "interconnection-view");
         try {
             await vscode.workspace.fs.delete(exportUri, { useTrash: false });
         } catch {
             // Ignore if there is no previous export yet.
         }
-        await triggerVisualizerExportForTest();
-        // Retry one more trigger for slower Linux CI hosts where first post can race.
-        await new Promise((r) => setTimeout(r, 800));
-        await triggerVisualizerExportForTest();
-        const { svgText } = await waitForDiagramExport(
+        const { svgText } = await triggerDiagramExportAndWait(
             workspaceFolder.uri,
             "interconnection-view",
             (text) => text.includes("ibd-connector"),
@@ -305,15 +298,13 @@ describe("Interconnection Visualization", () => {
 
         await clearVisualizerPackageSelection();
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
-        await new Promise((r) => setTimeout(r, 2600));
         const exportUri = getDiagramExportUri(workspaceFolder.uri, "interconnection-view");
         try {
             await vscode.workspace.fs.delete(exportUri, { useTrash: false });
         } catch {
             // Ignore if there is no previous export yet.
         }
-        await triggerVisualizerExportForTest();
-        const { svgText } = await waitForDiagramExport(
+        const { svgText } = await triggerDiagramExportAndWait(
             workspaceFolder.uri,
             "interconnection-view",
             (text) => text.includes("ibd-connector"),
@@ -339,15 +330,13 @@ describe("Interconnection Visualization", () => {
 
         await selectVisualizerPackage("ConnectedBlocks");
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
-        await new Promise((r) => setTimeout(r, 2600));
         const exportUri = getDiagramExportUri(workspaceFolder.uri, "interconnection-view");
         try {
             await vscode.workspace.fs.delete(exportUri, { useTrash: false });
         } catch {
             // Ignore if there is no previous export yet.
         }
-        await triggerVisualizerExportForTest();
-        const { svgText } = await waitForDiagramExport(
+        const { svgText } = await triggerDiagramExportAndWait(
             workspaceFolder.uri,
             "interconnection-view",
             (text) => text.includes("ibd-connector"),

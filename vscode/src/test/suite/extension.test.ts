@@ -7,6 +7,7 @@ import {
   type ElementPresentationContext,
 } from "../../explorer/modelExplorerProvider";
 import {
+  closeAllEditorsForTests,
   configureServerForTests,
   disposeVisualizer,
   type ExtensionDebugState,
@@ -59,13 +60,12 @@ describe("Extension Test Suite", () => {
 
   afterEach(async () => {
     await disposeVisualizer();
-    await vscode.commands.executeCommand("workbench.action.closeAllEditors");
+    await closeAllEditorsForTests();
   });
 
   after(async () => {
     await disposeVisualizer();
-    await vscode.commands.executeCommand("workbench.action.closeAllEditors");
-    await new Promise((r) => setTimeout(r, 250));
+    await closeAllEditorsForTests();
   });
 
   it("Extension should be present", () => {

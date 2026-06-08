@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
 import {
+  closeAllEditorsForTests,
   configureServerForTests,
   getTestWorkspaceFolder,
   getFixturePath,
@@ -34,8 +35,7 @@ describe("Workspace Indexing Smoke Test", () => {
   });
 
   after(async () => {
-    await vscode.commands.executeCommand("workbench.action.closeAllEditors");
-    await new Promise((r) => setTimeout(r, 250));
+    await closeAllEditorsForTests();
   });
 
   it("loads workspace model automatically when semantic index is ready", async function () {

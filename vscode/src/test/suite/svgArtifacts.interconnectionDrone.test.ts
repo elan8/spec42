@@ -9,7 +9,7 @@ import {
   getDiagramExportUri,
   getTestWorkspaceFolder,
   integrationHookTimeoutMs,
-  waitForDiagramExport,
+  triggerDiagramExportAndWait,
   waitForLanguageServerReady,
   waitForVisualizerOpen,
 } from "./testUtils";
@@ -74,10 +74,7 @@ describe("SVG artifacts (SurveillanceDrone, elkjs)", () => {
       } catch {
         // ignore
       }
-      await vscode.commands.executeCommand("sysml.debug.exportVisualizerDiagramForTest");
-      await new Promise((r) => setTimeout(r, 800));
-      await vscode.commands.executeCommand("sysml.debug.exportVisualizerDiagramForTest");
-      const { svgText } = await waitForDiagramExport(
+      const { svgText } = await triggerDiagramExportAndWait(
         workspaceFolder.uri,
         viewId,
         (text) => {

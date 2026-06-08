@@ -66,6 +66,45 @@ export async function triggerVisualizerExportForTest(): Promise<void> {
   await vscode.commands.executeCommand("sysml.debug.exportVisualizerDiagramForTest");
 }
 
+export async function getVisualizationForTests(
+  workspaceRootUri: vscode.Uri,
+  viewId: string,
+  selectedView?: string
+): Promise<any> {
+  return await vscode.commands.executeCommand<any>(
+    "sysml.debug.getVisualizationForTests",
+    workspaceRootUri.toString(),
+    viewId,
+    selectedView
+  );
+}
+
+export async function waitForVisualizationModel(
+  workspaceRootUri: vscode.Uri,
+  viewId: string,
+  isReady: (visualization: any) => boolean,
+  timeoutMs = visualizationPanelTimeoutMs
+): Promise<any> {
+  return await waitFor(
+    `${viewId} visualization model`,
+    () => getVisualizationForTests(workspaceRootUri, viewId),
+    (value) => Boolean(value && isReady(value)),
+    timeoutMs,
+    300
+  );
+}
+
+export async function closeAllEditorsForTests(): Promise<void> {
+  await vscode.commands.executeCommand("workbench.action.closeAllEditors");
+  await waitFor(
+    "all editors closed",
+    async () => vscode.window.visibleTextEditors.length,
+    (count) => count === 0,
+    10000,
+    100
+  );
+}
+
 export async function clearVisualizerPackageSelection(): Promise<void> {
   await vscode.commands.executeCommand("sysml.debug.clearVisualizerPackageSelection");
 }
@@ -303,6 +342,29 @@ export async function waitForDiagramExport(
     },
     timeoutMs,
     200
+  );
+  return { uri, svgText };
+}
+
+export async function triggerDiagramExportAndWait(
+  workspaceUri: vscode.Uri,
+  viewId: string,
+  isReady: (svgText: string) => boolean,
+  timeoutMs = diagramExportTimeoutMs
+): Promise<{ uri: vscode.Uri; svgText: string }> {
+  const uri = getDiagramExportUri(workspaceUri, viewId);
+  const svgText = await waitFor(
+    `${viewId} triggered svg export`,
+    async () => {
+      await triggerVisualizerExportForTest();
+      return (await tryReadWorkspaceText(uri)) ?? "";
+    },
+    (value) => {
+      const text = value ?? "";
+      return text.includes("<svg") && isReady(text);
+    },
+    timeoutMs,
+    500
   );
   return { uri, svgText };
 }

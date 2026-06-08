@@ -7,8 +7,7 @@ import {
     getFixturePath,
     getTestWorkspaceFolder,
     integrationHookTimeoutMs,
-    triggerVisualizerExportForTest,
-    waitForDiagramExport,
+    triggerDiagramExportAndWait,
     waitFor,
     waitForLanguageServerReady,
     waitForVisualizerOpen,
@@ -80,11 +79,7 @@ describe("State Transition Visualization", () => {
             // Ignore if there is no previous export yet.
         }
 
-        await triggerVisualizerExportForTest();
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        await triggerVisualizerExportForTest();
-
-        const { svgText } = await waitForDiagramExport(
+        const { svgText } = await triggerDiagramExportAndWait(
             workspaceFolder.uri,
             "state-transition-view",
             (text) =>

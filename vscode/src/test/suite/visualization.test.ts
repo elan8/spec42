@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
 import {
+    closeAllEditorsForTests,
     configureServerForTests,
     disposeVisualizer,
     getFixturePath,
@@ -8,10 +9,10 @@ import {
     getTestWorkspaceFolder,
     integrationHookTimeoutMs,
     isCi,
-    triggerVisualizerExportForTest,
-    waitForDiagramExport,
+    triggerDiagramExportAndWait,
     waitForExtensionServerReady,
     waitForLanguageServerReady,
+    waitForVisualizationModel,
     waitForVisualizerClosed,
     waitForVisualizerOpen,
 } from "./testUtils";
@@ -33,13 +34,12 @@ describe("Visualization Diagram Views", () => {
 
     afterEach(async () => {
         await disposeVisualizer();
-        await vscode.commands.executeCommand("workbench.action.closeAllEditors");
+        await closeAllEditorsForTests();
     });
 
     after(async () => {
         await disposeVisualizer();
-        await vscode.commands.executeCommand("workbench.action.closeAllEditors");
-        await new Promise((r) => setTimeout(r, 250));
+        await closeAllEditorsForTests();
     });
 
     it("exports SVG for all views", async function () {
@@ -58,18 +58,23 @@ describe("Visualization Diagram Views", () => {
             await vscode.commands.executeCommand("sysml.showVisualizer");
             await waitForVisualizerOpen();
             await vscode.commands.executeCommand("sysml.changeVisualizerView", viewId);
+            await waitForVisualizationModel(
+                workspaceFolder.uri,
+                viewId,
+                (visualization) =>
+                    viewId !== "general-view" ||
+                    visualization?.graph?.nodes?.some(
+                        (node: any) => node?.name === "SurveillanceQuadrotorDrone"
+                    ) === true,
+                isCi ? 45000 : 20000
+            );
             const exportUri = getDiagramExportUri(workspaceFolder.uri, viewId);
             try {
                 await vscode.workspace.fs.delete(exportUri, { useTrash: false });
             } catch {
                 // Ignore if there is no previous export yet.
             }
-            await new Promise((r) => setTimeout(r, 2000)); // Wait for render
-            await triggerVisualizerExportForTest();
-            await new Promise((r) => setTimeout(r, 800));
-            await triggerVisualizerExportForTest();
-
-            const { svgText } = await waitForDiagramExport(
+            const { svgText } = await triggerDiagramExportAndWait(
                 workspaceFolder.uri,
                 viewId,
                 (text) =>
