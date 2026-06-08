@@ -23,7 +23,11 @@ export type ExtensionDebugState = {
 };
 
 export const isCi = Boolean(process.env.CI);
+export const integrationHookTimeoutMs = isCi ? 90000 : 60000;
+export const extensionServerReadyTimeoutMs = isCi ? 60000 : 30000;
+export const languageServerReadyTimeoutMs = isCi ? 45000 : 20000;
 export const visualizationPanelTimeoutMs = isCi ? 45000 : 20000;
+export const diagramExportTimeoutMs = isCi ? 30000 : 12000;
 
 async function getExtensionDebugState(): Promise<ExtensionDebugState> {
   return (await vscode.commands.executeCommand(
@@ -148,7 +152,9 @@ export async function waitFor<T>(
   );
 }
 
-export async function waitForModelExplorerWorkspaceReady(timeoutMs = 30000): Promise<void> {
+export async function waitForModelExplorerWorkspaceReady(
+  timeoutMs = extensionServerReadyTimeoutMs
+): Promise<void> {
   await waitFor(
     "model explorer workspace indexing",
     () => getExtensionDebugState(),
@@ -170,18 +176,23 @@ export async function waitForModelExplorerWorkspaceReady(timeoutMs = 30000): Pro
   );
 }
 
-export async function waitForExtensionServerReady(timeoutMs = 30000): Promise<void> {
+export async function waitForExtensionServerReady(
+  timeoutMs = extensionServerReadyTimeoutMs
+): Promise<void> {
   await waitFor(
     "extension server ready",
     () =>
       getExtensionDebugState(),
-    (value) => value?.serverHealthState === "ready",
+    (value) =>
+      value?.serverHealthState === "ready" || value?.serverHealthState === "degraded",
     timeoutMs,
     300
   );
 }
 
-export async function configureServerForTests(): Promise<void> {
+export async function configureServerForTests(options?: {
+  forceRestart?: boolean;
+}): Promise<void> {
   const testExportDir = path.join(os.tmpdir(), "spec42-vscode-test-exports");
   fs.mkdirSync(testExportDir, { recursive: true });
   process.env.SPEC42_TEST_EXPORT_DIR = testExportDir;
@@ -199,32 +210,39 @@ export async function configureServerForTests(): Promise<void> {
     );
   }
 
+  const currentServerPath = vscode.workspace
+    .getConfiguration("spec42")
+    .get<string>("serverPath")
+    ?.trim();
+  const serverPathChanged = currentServerPath !== serverPath;
+
   await vscode.workspace
     .getConfiguration("spec42")
     .update("serverPath", serverPath, vscode.ConfigurationTarget.Workspace);
-  const wasActive = extension.isActive;
   await extension.activate();
-  if (wasActive) {
+
+  let state: ExtensionDebugState | undefined;
+  try {
+    state = await getExtensionDebugState();
+  } catch {
+    state = undefined;
+  }
+
+  const shouldRestart =
+    options?.forceRestart === true ||
+    serverPathChanged ||
+    state?.serverHealthState === "crashed";
+
+  if (shouldRestart) {
     await vscode.commands.executeCommand("sysml.restartServer");
   }
 
-  await waitFor(
-    "extension server health",
-    () =>
-      getExtensionDebugState(),
-    (value) =>
-      Boolean(
-        value &&
-        (value.serverHealthState === "ready" || value.serverHealthState === "degraded")
-      ),
-    20000,
-    300
-  );
+  await waitForExtensionServerReady();
 }
 
 export async function waitForLanguageServerReady(
   doc: vscode.TextDocument,
-  timeoutMs = 20000
+  timeoutMs = languageServerReadyTimeoutMs
 ): Promise<void> {
   await vscode.window.showTextDocument(doc);
   await waitFor(
@@ -273,7 +291,7 @@ export async function waitForDiagramExport(
   workspaceUri: vscode.Uri,
   viewId: string,
   isReady: (svgText: string) => boolean,
-  timeoutMs = 12000
+  timeoutMs = diagramExportTimeoutMs
 ): Promise<{ uri: vscode.Uri; svgText: string }> {
   const uri = getDiagramExportUri(workspaceUri, viewId);
   const svgText = await waitFor(

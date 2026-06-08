@@ -2085,6 +2085,21 @@ export function activate(context: vscode.ExtensionContext): void {
       }
     ),
 
+    vscode.commands.registerCommand(
+      "sysml.debug.getVisualizationForTests",
+      async (
+        workspaceRootUri: string,
+        view: string,
+        selectedView?: string
+      ) => {
+        return await lspModelProvider.getVisualization(
+          workspaceRootUri,
+          view,
+          selectedView
+        );
+      }
+    ),
+
     vscode.commands.registerCommand("sysml.debugDumpGraphForGeneralView", async () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor || !isSysmlDoc(editor.document)) {

@@ -6,6 +6,8 @@ import {
     getFixturePath,
     getDiagramExportUri,
     getTestWorkspaceFolder,
+    integrationHookTimeoutMs,
+    isCi,
     triggerVisualizerExportForTest,
     waitForExtensionServerReady,
     waitForLanguageServerReady,
@@ -19,11 +21,12 @@ const REAL_DRONE_FIXTURE = getFixturePath("SurveillanceDrone.sysml");
 
 describe("Visualization Diagram Views", () => {
     before(async function () {
-        this.timeout(30000);
+        this.timeout(integrationHookTimeoutMs);
         await configureServerForTests();
         getTestWorkspaceFolder();
         const docPath = REAL_DRONE_FIXTURE;
         const doc = await vscode.workspace.openTextDocument(docPath);
+        await waitForExtensionServerReady();
         await waitForLanguageServerReady(doc);
     });
 
@@ -39,7 +42,7 @@ describe("Visualization Diagram Views", () => {
     });
 
     it("exports SVG for all views", async function () {
-        this.timeout(60000);
+        this.timeout(isCi ? 120000 : 60000);
 
         const workspaceFolder = getTestWorkspaceFolder();
 

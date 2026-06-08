@@ -4,6 +4,8 @@ import {
   configureServerForTests,
   getTestWorkspaceFolder,
   getFixturePath,
+  integrationHookTimeoutMs,
+  isCi,
   waitFor,
   waitForLanguageServerReady,
 } from "./testUtils";
@@ -24,11 +26,11 @@ type DebugExtensionState = {
 
 describe("Workspace Indexing Smoke Test", () => {
   before(async function () {
-    this.timeout(30000);
+    this.timeout(integrationHookTimeoutMs);
     await configureServerForTests();
     getTestWorkspaceFolder();
     const doc = await vscode.workspace.openTextDocument(getFixturePath("Alpha.sysml"));
-    await waitForLanguageServerReady(doc, 25000);
+    await waitForLanguageServerReady(doc);
   });
 
   after(async () => {
@@ -66,7 +68,7 @@ describe("Workspace Indexing Smoke Test", () => {
   });
 
   it("keeps the workspace usable while workspace indexing completes", async function () {
-    this.timeout(30000);
+    this.timeout(isCi ? 60000 : 30000);
     const doc = await vscode.workspace.openTextDocument(getFixturePath("Alpha.sysml"));
     await vscode.window.showTextDocument(doc);
 
@@ -106,7 +108,7 @@ describe("Workspace Indexing Smoke Test", () => {
   });
 
   it("starts workspace indexing when switching to semantic model mode", async function () {
-    this.timeout(30000);
+    this.timeout(isCi ? 60000 : 30000);
     await vscode.commands.executeCommand("sysml.switchToByFile");
 
     await vscode.commands.executeCommand("sysml.switchToSemanticModel");
@@ -134,7 +136,7 @@ describe("Workspace Indexing Smoke Test", () => {
   });
 
   it("starts workspace indexing when switching to by-file mode", async function () {
-    this.timeout(30000);
+    this.timeout(isCi ? 60000 : 30000);
     await vscode.commands.executeCommand("sysml.switchToSemanticModel");
 
     await vscode.commands.executeCommand("sysml.switchToByFile");

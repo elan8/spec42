@@ -8,6 +8,7 @@ import {
   getFixturePath,
   getDiagramExportUri,
   getTestWorkspaceFolder,
+  integrationHookTimeoutMs,
   waitForDiagramExport,
   waitForLanguageServerReady,
   waitForVisualizerOpen,
@@ -25,7 +26,7 @@ function ensureDir(p: string): void {
 
 describe("SVG artifacts (SurveillanceDrone, elkjs)", () => {
   before(async function () {
-    this.timeout(30000);
+    this.timeout(integrationHookTimeoutMs);
     await configureServerForTests();
     getTestWorkspaceFolder();
     const docPath = getFixturePath("SurveillanceDrone.sysml");

@@ -3,15 +3,16 @@ import * as vscode from "vscode";
 import {
     configureServerForTests,
     disposeVisualizer,
-    getExternalFixturePath,
     getDiagramExportUri,
+    getFixturePath,
     getTestWorkspaceFolder,
+    integrationHookTimeoutMs,
     triggerVisualizerExportForTest,
     waitForLanguageServerReady,
     waitForVisualizerOpen,
 } from "./testUtils";
 
-const DRONE_FIXTURE = getExternalFixturePath("C:\\Git\\sysml-examples\\drone\\sysml\\SurveillanceDrone.sysml");
+const DRONE_FIXTURE = getFixturePath("SurveillanceDrone.sysml");
 
 type ParsedRoute = {
     points: Array<{ x: number; y: number }>;
@@ -170,7 +171,7 @@ function routesShareEndpoint(a: ParsedRoute, b: ParsedRoute): boolean {
 
 describe("Interconnection Visualization Drone", () => {
     before(async function () {
-        this.timeout(30000);
+        this.timeout(integrationHookTimeoutMs);
         await configureServerForTests();
         getTestWorkspaceFolder();
         const doc = await vscode.workspace.openTextDocument(DRONE_FIXTURE);

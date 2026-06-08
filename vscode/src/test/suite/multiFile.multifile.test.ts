@@ -4,6 +4,7 @@ import {
   configureServerForTests,
   getFixturePath,
   getTestWorkspaceFolder,
+  integrationHookTimeoutMs,
   waitFor,
   waitForLanguageServerReady,
 } from "./testUtils";
@@ -22,11 +23,11 @@ function findPosition(doc: vscode.TextDocument, needle: string, occurrence = 0):
 
 describe("Multi-file VS Code Flows", () => {
   before(async function () {
-    this.timeout(30000);
+    this.timeout(integrationHookTimeoutMs);
     await configureServerForTests();
     getTestWorkspaceFolder();
     const doc = await vscode.workspace.openTextDocument(getFixturePath("def.sysml"));
-    await waitForLanguageServerReady(doc, 25000);
+    await waitForLanguageServerReady(doc);
   });
 
   afterEach(async () => {

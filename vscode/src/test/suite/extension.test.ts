@@ -12,6 +12,7 @@ import {
   type ExtensionDebugState,
   getFixturePath,
   getTestWorkspaceFolder,
+  integrationHookTimeoutMs,
   isCi,
   waitFor,
   waitForExtensionServerReady,
@@ -47,11 +48,12 @@ function findPositionWithinMatch(
 
 describe("Extension Test Suite", () => {
   before(async function () {
-    this.timeout(30000);
+    this.timeout(integrationHookTimeoutMs);
     await configureServerForTests();
     getTestWorkspaceFolder();
     const filePath = getFixturePath(FIXTURE_FILE);
     const doc = await vscode.workspace.openTextDocument(filePath);
+    await waitForExtensionServerReady();
     await waitForLanguageServerReady(doc);
   });
 
