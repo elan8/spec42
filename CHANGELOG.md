@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.28.0] - 2026-06-08
+
+### Added
+
+- **Read-only HTTP API** - `spec42 api serve` exposes workspace validation, doctor, model summary, and diagram export over loopback HTTP; documented in [docs/api/README.md](docs/api/README.md) and [docs/adr/0001-read-only-systems-modeling-http-api.md](docs/adr/0001-read-only-systems-modeling-http-api.md).
+- **P2 semantic diagnostics** - Behavior, expression, requirement/case, and view/metadata conformance checks (for example `transition_guard_non_boolean`, `accept_payload_incompatible`, `assignment_value_incompatible`, `view_filter_non_boolean`, `verification_case_invalid_shape`, `viewpoint_reference_unresolved`, `metadata_keyword_collision`); catalog entries and integration tests in `p2_diagnostics_semantics`.
+- **Diagnostic pipeline modularization** - Dedicated collectors for behavior, requirement/case, and view/metadata conformance; shared Boolean filter helpers; graph-builder facts for transition guards, view filters, viewpoint bodies, send/accept payloads, and case shape counters.
+- **Unit suffix handling** - Quantity/unit suffix validation and richer hover for attributed values with units.
+- **Inherited analysis results** - Analysis-case objectives can inherit `analysis result` bindings from specializing definitions.
+- **Documentation index** - [docs/README.md](docs/README.md) with user, engineering, architecture, reference, and archive folders; legacy top-level doc paths updated.
+- **CodeQL** - `.github/workflows/codeql.yml` for security analysis of the Rust codebase.
+
+### Changed
+
+- **Parser dependency** - Bumped `sysml-v2-parser` to **0.18.0** (metadata definition bodies, `expose` feature chains, port body depth, and related graph-builder follow-through).
+- **GitHub Action Marketplace name** - Renamed action listing to `Spec42 SysML Check` so the Marketplace `name` does not collide with the GitHub user `spec42`.
+- **CI workflows** - Refactored standard-library bundle handling, integration-test timeouts, performance metrics logging, and Tool42-driven Rust test orchestration.
+- **Release surface alignment** - Rust workspace, `spec42` server, VS Code extension, and Zed extension versions aligned at `0.28.0`.
+
+### Fixed
+
+- **Standard library test configuration** - Corrected stdlib path resolution and error handling in integration tests.
+- **Model Explorer selection sync** - Retry path for editor-to-explorer selection under concurrent refresh (carried forward from post-0.27.1 work).
+
 ## [0.27.1] - 2026-06-05
 
 ### Added
@@ -538,6 +562,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.28.0]: https://github.com/elan8/spec42/releases/tag/v0.28.0
 [0.27.1]: https://github.com/elan8/spec42/releases/tag/v0.27.1
 [0.27.0]: https://github.com/elan8/spec42/releases/tag/v0.27.0
 [0.26.3]: https://github.com/elan8/spec42/releases/tag/v0.26.3
