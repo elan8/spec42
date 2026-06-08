@@ -180,6 +180,7 @@ fn is_general_view_inline_detail(node: &GraphNodeDto) -> bool {
     is_port_like(&lower)
         || is_attribute_like(&lower)
         || is_parameter_like(&lower)
+        || lower == "require constraint"
         // Anonymous redefinition stubs like `part :>> engines[5] = (...)` should not
         // surface as standalone structure nodes in General View.
         || is_anonymous_redefinition_stub(node)

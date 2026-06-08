@@ -1150,11 +1150,21 @@ fn lsp_sysml_model_general_view_graph_inlines_requirement_constraints_into_owner
         .as_array()
         .expect("generalViewGraph nodes array");
 
+    let constraint = graph_nodes
+        .iter()
+        .find(|node| node["type"].as_str() == Some("require constraint"))
+        .expect("full graph should include require constraint child nodes");
+    assert_eq!(
+        constraint["parentId"].as_str(),
+        Some("P::EnduranceReq"),
+        "require constraint should be parented under the owning requirement"
+    );
+
     assert!(
-        graph_nodes
+        gv_nodes
             .iter()
             .all(|node| node["type"].as_str() != Some("require constraint")),
-        "full graph should not keep standalone require constraint nodes: {graph_nodes:#?}"
+        "general view should inline require constraints instead of standalone nodes: {gv_nodes:#?}"
     );
 
     let req = gv_nodes
