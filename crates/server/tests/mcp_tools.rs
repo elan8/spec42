@@ -157,6 +157,10 @@ fn mcp_spec42_explain_diagnostic_catalog() {
             Some("unresolved_type_reference")
         );
         assert!(catalog.get("typical_fix").is_some());
+        assert_eq!(
+            catalog.get("alignment").and_then(|v| v.as_str()),
+            Some("spec_constraint")
+        );
     });
 }
 

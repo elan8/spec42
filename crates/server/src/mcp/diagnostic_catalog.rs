@@ -517,22 +517,29 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
     DiagnosticCatalogEntry {
         code: "multiple_initial_states",
         severity: "warning",
-        meaning: "A state definition declares more than one initial transition.",
-        typical_fix: "Keep a single `first` initial transition per state definition.",
+        meaning: "Modeling guidance: a state definition declares more than one unguarded initial transition (SysML 7.18.2 allows multiple guarded conditionals).",
+        typical_fix: "Keep a single unguarded `then` or `first` initial transition; use guarded `if ... then` for conditional entry.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
         code: "missing_initial_state",
         severity: "information",
-        meaning: "A state definition has state usages but no initial transition.",
-        typical_fix: "Add a `first` transition to designate the initial state.",
+        meaning: "Modeling guidance: a state definition has state usages but no initial transition (including guarded entry successions).",
+        typical_fix: "Add a `then` or `first` transition from entry to designate how execution enters the state machine.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
         code: "multiple_final_states",
         severity: "warning",
-        meaning: "A state definition declares more than one final state.",
-        typical_fix: "Keep a single `final` state per state definition.",
+        meaning: "Modeling guidance: a state definition declares more than one explicit `final`/`final state` marker (not counting `then done` transitions per SysML 7.18.3).",
+        typical_fix: "Keep a single explicit `final` marker, or express finality with transitions to `done`.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "missing_final_state",
+        severity: "information",
+        meaning: "Modeling guidance: a state definition has state usages but no finality indicator (`final`/`final state` or a transition to `done` per SysML 7.18.3).",
+        typical_fix: "Add a transition to `done` from a terminal state, or an explicit `final` marker if your tooling uses that extension.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
@@ -628,6 +635,30 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
     },
 ];
 
+/// Diagnostics that reflect modeling/tooling guidance rather than normative SysML constraints.
+const MODELING_GUIDANCE_CODES: &[&str] = &[
+    "analysis_evaluation_incomplete",
+    "duplicate_connection",
+    "missing_final_state",
+    "missing_initial_state",
+    "missing_library_context",
+    "multiple_final_states",
+    "multiple_initial_states",
+    "semantic_diagnostic",
+    "unconnected_port",
+    "untyped_part_usage",
+    "view_expose_empty",
+];
+
+/// Whether a diagnostic code reflects a normative SysML constraint or modeling/tooling guidance.
+pub fn alignment(code: &str) -> &'static str {
+    if MODELING_GUIDANCE_CODES.contains(&code) {
+        "modeling_guidance"
+    } else {
+        "spec_constraint"
+    }
+}
+
 pub fn lookup(code: &str) -> Option<&'static DiagnosticCatalogEntry> {
     CATALOG.iter().find(|entry| entry.code == code)
 }
@@ -681,6 +712,7 @@ mod tests {
         ("metadata_annotation_unresolved", "warning"),
         ("metadata_keyword_collision", "warning"),
         ("metadata_keyword_unresolved", "warning"),
+        ("missing_final_state", "information"),
         ("missing_initial_state", "information"),
         ("missing_library_context", "information"),
         ("multiple_final_states", "warning"),
@@ -772,5 +804,11 @@ mod tests {
                 "catalog severity for {code} must match current emitted severity"
             );
         }
+    }
+
+    #[test]
+    fn alignment_classifies_state_cardinality_as_modeling_guidance() {
+        assert_eq!(super::alignment("missing_final_state"), "modeling_guidance");
+        assert_eq!(super::alignment("transition_guard_non_boolean"), "spec_constraint");
     }
 }

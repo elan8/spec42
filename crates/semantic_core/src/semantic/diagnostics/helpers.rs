@@ -55,6 +55,25 @@ pub(super) fn is_synthetic(node: &SemanticNode) -> bool {
         .unwrap_or(false)
 }
 
+pub(super) fn parse_attribute_text_range(
+    node: &SemanticNode,
+    key: &str,
+) -> Option<TextRange> {
+    let entry = node.attributes.get(key)?;
+    let start = entry.get("start")?;
+    let end = entry.get("end")?;
+    Some(TextRange {
+        start: TextPosition {
+            line: start.get("line")?.as_u64()? as u32,
+            character: start.get("character")?.as_u64()? as u32,
+        },
+        end: TextPosition {
+            line: end.get("line")?.as_u64()? as u32,
+            character: end.get("character")?.as_u64()? as u32,
+        },
+    })
+}
+
 pub(super) fn parse_origin_range(node: &SemanticNode) -> Option<TextRange> {
     let origin = node.attributes.get("originRange")?;
     let start = origin.get("start")?;
@@ -515,6 +534,17 @@ pub(super) fn declared_type_ref(node: &SemanticNode) -> Option<&str> {
             .map(str::trim)
             .filter(|s| !s.is_empty())
     })
+}
+
+pub(super) fn condition_expression_is_boolean(node: &SemanticNode, condition: &str) -> bool {
+    if let Some(is_boolean) = node
+        .attributes
+        .get("conditionIsBoolean")
+        .and_then(|v| v.as_bool())
+    {
+        return is_boolean;
+    }
+    is_booleanish_filter_expression(condition)
 }
 
 pub(super) fn is_booleanish_filter_expression(condition: &str) -> bool {

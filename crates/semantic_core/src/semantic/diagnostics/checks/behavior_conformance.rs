@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use url::Url;
 
 use crate::semantic::diagnostics::helpers::{
-    diag, diagnostic_range, is_booleanish_filter_expression, is_synthetic,
+    condition_expression_is_boolean, diag, diagnostic_range, is_synthetic,
     normalize_declared_type_ref,
 };
 use crate::semantic::diagnostics::kind_rules::{allowed_typing_target_kinds, is_compatible_kind};
@@ -19,6 +19,75 @@ fn is_action_like(kind: &str) -> bool {
 
 fn is_state_like(kind: &str) -> bool {
     matches!(kind, "state" | "state def")
+}
+
+fn state_def_contains_node(graph: &SemanticGraph, state_def_qn: &str, node: &SemanticNode) -> bool {
+    if node.id.qualified_name == state_def_qn {
+        return true;
+    }
+    let mut current = node.parent_id.as_ref();
+    while let Some(parent_id) = current {
+        if parent_id.qualified_name == state_def_qn {
+            return true;
+        }
+        current = graph
+            .get_node(parent_id)
+            .and_then(|parent| parent.parent_id.as_ref());
+    }
+    false
+}
+
+fn state_def_has_initial_transition(
+    graph: &SemanticGraph,
+    uri: &Url,
+    state_def: &SemanticNode,
+) -> bool {
+    let state_def_qn = state_def.id.qualified_name.as_str();
+    if graph.edges_for_uri_as_strings(uri).iter().any(|(source, _, kind, _)| {
+        *kind == RelationshipKind::InitialState
+            && (source == state_def_qn
+                || graph
+                    .get_node(&crate::NodeId::new(uri, source.clone()))
+                    .and_then(|source_node| state_def_ancestor(graph, source_node))
+                    .as_ref()
+                    == Some(&state_def.id.qualified_name))
+    }) {
+        return true;
+    }
+    graph.nodes_for_uri(uri).into_iter().any(|node| {
+        node.element_kind == "transition"
+            && !is_synthetic(node)
+            && node
+                .attributes
+                .get("isInitial")
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false)
+            && state_def_contains_node(graph, state_def_qn, node)
+    })
+}
+
+fn state_def_has_final_indicator(graph: &SemanticGraph, state_def: &SemanticNode) -> bool {
+    let final_state_count = state_def
+        .attributes
+        .get("finalStateCount")
+        .and_then(|v| v.as_u64())
+        .unwrap_or(0);
+    if final_state_count > 0 {
+        return true;
+    }
+    if state_def
+        .attributes
+        .get("doneTransitionCount")
+        .and_then(|v| v.as_u64())
+        .unwrap_or(0)
+        > 0
+    {
+        return true;
+    }
+    graph
+        .children_of(state_def)
+        .into_iter()
+        .any(|child| child.element_kind == "final state")
 }
 
 fn state_def_ancestor(graph: &SemanticGraph, node: &SemanticNode) -> Option<String> {
@@ -241,7 +310,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         else {
             continue;
         };
-        if is_booleanish_filter_expression(guard) {
+        if condition_expression_is_boolean(node, guard) {
             continue;
         }
         let key = format!("guard|{}", node.id.qualified_name);
@@ -261,7 +330,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         ));
     }
 
-    let mut initial_states_by_container: HashMap<String, usize> = HashMap::new();
+    let mut unguarded_initial_by_container: HashMap<String, usize> = HashMap::new();
     for (source_qn, _target_qn, kind, _) in graph.edges_for_uri_as_strings(uri) {
         if kind != RelationshipKind::InitialState {
             continue;
@@ -271,9 +340,9 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
             .get_node(&source_id)
             .and_then(|node| state_def_ancestor(graph, node))
             .unwrap_or(source_qn);
-        *initial_states_by_container.entry(container).or_insert(0) += 1;
+        *unguarded_initial_by_container.entry(container).or_insert(0) += 1;
     }
-    for (container, count) in initial_states_by_container {
+    for (container, count) in unguarded_initial_by_container {
         if count <= 1 {
             continue;
         }
@@ -291,7 +360,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
             "semantic",
             "multiple_initial_states",
             format!(
-                "State definition '{}' declares {count} initial transitions; only one is expected.",
+                "State definition '{}' declares {count} unguarded initial transitions; only one is expected (guarded conditionals per SysML 7.18.2 are allowed).",
                 container.rsplit("::").next().unwrap_or(container.as_str())
             ),
         ));
@@ -308,16 +377,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         if !has_state_children {
             continue;
         }
-        let has_initial = graph.edges_for_uri_as_strings(uri).iter().any(|(source, _, kind, _)| {
-            *kind == RelationshipKind::InitialState
-                && (source == &node.id.qualified_name
-                    || graph
-                        .get_node(&crate::NodeId::new(uri, source.clone()))
-                        .and_then(|source_node| state_def_ancestor(graph, source_node))
-                        .as_ref()
-                        == Some(&node.id.qualified_name))
-        });
-        if has_initial {
+        if state_def_has_initial_transition(graph, uri, node) {
             continue;
         }
         let key = format!("missing_initial|{}", node.id.qualified_name);
@@ -332,6 +392,37 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
             "missing_initial_state",
             format!(
                 "State definition '{}' has state usages but no initial transition.",
+                node.name
+            ),
+        ));
+    }
+
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "state def" || is_synthetic(node) {
+            continue;
+        }
+        let has_state_children = graph
+            .children_of(node)
+            .into_iter()
+            .any(|child| child.element_kind == "state");
+        if !has_state_children {
+            continue;
+        }
+        if state_def_has_final_indicator(graph, node) {
+            continue;
+        }
+        let key = format!("missing_final|{}", node.id.qualified_name);
+        if !seen.insert(key) {
+            continue;
+        }
+        diagnostics.push(diag(
+            uri,
+            diagnostic_range(graph, node, None),
+            DiagnosticSeverity::Information,
+            "semantic",
+            "missing_final_state",
+            format!(
+                "State definition '{}' has state usages but no finality indicator (`final`/`final state` or a transition to `done` per SysML 7.18.3).",
                 node.name
             ),
         ));
@@ -442,7 +533,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
             "semantic",
             "multiple_final_states",
             format!(
-                "State definition '{}' declares {count} final states; only one is expected.",
+                "State definition '{}' declares {count} `final`/`final state` markers; only one explicit marker is expected (transitions to `done` are separate per SysML 7.18.3).",
                 container.rsplit("::").next().unwrap_or(container.as_str())
             ),
         ));

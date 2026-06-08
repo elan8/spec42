@@ -165,7 +165,9 @@ Spec areas: 7.17-7.18, 8.3.17-8.3.18, 8.4.13-8.4.14.
 - Done: `initial_state_invalid_target` — initial transition target must be a state usage.
 - Done: `multiple_initial_states` / `missing_initial_state` — initial transition cardinality on state definitions.
 - Done: `multiple_final_states` — more than one `final` state in a state definition (parser 0.19.0 + graph `final state` nodes).
+- Done: `missing_final_state` — state definition with state usages but no `final` state.
 - Done: transition `accept_payload_incompatible` when typed `Transition.accept` payload is on the graph.
+- Done: transition/view/import filter Boolean checks use AST `conditionIsBoolean` when graph-built (fallback string heuristic).
 - Done: `succession_endpoint_invalid` — behavior flow endpoints must be action-like.
 
 ### P2: requirements, cases, verification, use cases

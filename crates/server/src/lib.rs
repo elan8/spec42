@@ -503,6 +503,7 @@ fn print_explain_diagnostic(response: &ai_tools::ExplainDiagnosticResponse) {
     println!("code: {}", response.code);
     if let Some(catalog) = &response.catalog {
         println!("severity: {}", catalog.severity);
+        println!("alignment: {}", catalog.alignment);
         println!("meaning: {}", catalog.meaning);
         println!("typical fix: {}", catalog.typical_fix);
     } else {

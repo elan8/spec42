@@ -117,7 +117,7 @@ function formatExplainResult(data: unknown): string {
   const lines: string[] = [`Diagnostic code: ${root?.code ?? "(unknown)"}`];
   if (catalog) {
     lines.push(
-      `${catalog.severity}: ${catalog.meaning}`,
+      `${catalog.severity} (${catalog.alignment ?? "spec_constraint"}): ${catalog.meaning}`,
       `Typical fix: ${catalog.typical_fix}`
     );
   } else {

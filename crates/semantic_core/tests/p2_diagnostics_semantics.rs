@@ -138,6 +138,32 @@ fn include_missing_use_case_emits_invalid_target() {
 }
 
 #[test]
+fn transition_comparison_guard_has_no_non_boolean_diagnostic() {
+    let doc = workspace_doc(
+        "guard_comparison.sysml",
+        r#"package Demo {
+  state def Operating {
+    then off;
+    state off;
+    state on;
+    transition power_up first off if off == on then on;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        !has_code(&diagnostics, "transition_guard_non_boolean"),
+        "unexpected transition_guard_non_boolean: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
 fn transition_non_boolean_guard_emits_diagnostic() {
     let doc = workspace_doc(
         "guard_invalid.sysml",
@@ -476,6 +502,111 @@ fn multiple_final_states_emit_cardinality_diagnostic() {
     assert!(
         has_code(&diagnostics, "multiple_final_states"),
         "expected multiple_final_states, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn state_def_without_final_state_emits_information() {
+    let doc = workspace_doc(
+        "final_missing.sysml",
+        r#"package Demo {
+  state def Operating {
+    then off;
+    state off;
+    state on;
+    transition t off then on;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "missing_final_state"),
+        "expected missing_final_state, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn state_def_with_final_state_has_no_missing_final_diagnostic() {
+    let doc = workspace_doc(
+        "final_present.sysml",
+        r#"package Demo {
+  state def Operating {
+    then off;
+    state off;
+    final done;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        !has_code(&diagnostics, "missing_final_state"),
+        "unexpected missing_final_state: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn state_def_with_done_transition_has_no_missing_final_diagnostic() {
+    let doc = workspace_doc(
+        "final_done.sysml",
+        r#"package Demo {
+  state def OnOff {
+    then off;
+    state off;
+    state on;
+    transition to_done first on then done;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        !has_code(&diagnostics, "missing_final_state"),
+        "unexpected missing_final_state: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn guarded_initial_transitions_do_not_emit_multiple_initial_states() {
+    let doc = workspace_doc(
+        "initial_guarded.sysml",
+        r#"package Demo {
+  state def OperationalStates {
+    in attribute isStarting : Boolean;
+    entry action initial;
+    transition first initial if not isStarting then off;
+    transition first initial if isStarting then starting;
+    state off;
+    state starting;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        !has_code(&diagnostics, "multiple_initial_states"),
+        "unexpected multiple_initial_states: {:?}",
         diagnostics
             .iter()
             .map(|d| (&d.code, &d.message))

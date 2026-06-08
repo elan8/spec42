@@ -116,6 +116,14 @@ fn view_filter_non_boolean_points_at_filter() {
 }
 
 #[test]
+fn viewpoint_rep_language_unresolved_points_at_language_token() {
+    let content =
+        "package Demo {\n  viewpoint def ArchitectureViewpoint {\n    rep language \"\" /* */;\n  }\n}\n";
+    let range = diagnostic_range_for(content, "viewpoint_rep_language_unresolved");
+    assert_range_text(content, range, "\"\"");
+}
+
+#[test]
 fn viewpoint_reference_unresolved_points_at_import() {
     let content = "package Demo {\n  viewpoint def ArchitectureViewpoint {\n    import MissingPackage::*;\n  }\n}\n";
     let range = diagnostic_range_for(content, "viewpoint_reference_unresolved");

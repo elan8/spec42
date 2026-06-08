@@ -30,6 +30,8 @@ pub struct ModelSummaryArgs {
 pub struct CatalogInfo {
     pub code: String,
     pub severity: String,
+    /// `spec_constraint` (normative SysML) or `modeling_guidance` (heuristic/tooling hint).
+    pub alignment: String,
     pub meaning: String,
     pub typical_fix: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -59,6 +61,7 @@ pub fn perform_explain_diagnostic(
     let catalog = diagnostic_catalog::lookup(&args.code).map(|entry| CatalogInfo {
         code: entry.code.to_string(),
         severity: entry.severity.to_string(),
+        alignment: diagnostic_catalog::alignment(entry.code).to_string(),
         meaning: entry.meaning.to_string(),
         typical_fix: entry.typical_fix.to_string(),
         editor_quick_fixes: entry

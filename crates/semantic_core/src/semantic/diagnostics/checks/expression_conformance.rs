@@ -4,7 +4,7 @@ use url::Url;
 
 use crate::semantic::diagnostics::helpers::{
     attribute_value_is_string_literal, declared_type_ref, diag, diagnostic_range,
-    is_booleanish_filter_expression, is_boolean_literal_value, is_synthetic,
+    condition_expression_is_boolean, is_boolean_literal_value, is_synthetic,
     normalize_declared_type_ref, resolves_to_enum_def,
 };
 use crate::semantic::reference_resolution::resolve_expression_endpoint_strict;
@@ -195,7 +195,7 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
             let Some(condition) = node.attributes.get("condition").and_then(|v| v.as_str()) else {
                 continue;
             };
-            if is_booleanish_filter_expression(condition) {
+            if condition_expression_is_boolean(node, condition) {
                 continue;
             }
             let key = format!("view_filter|{}", node.id.qualified_name);

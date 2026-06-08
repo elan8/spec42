@@ -11,7 +11,7 @@ use sysml_v2_parser::RootNamespace;
 use url::Url;
 
 use super::requirement_body::{import_member_label, walk_requirement_def_body};
-use crate::semantic::ast_util::{identification_name, span_to_range};
+use crate::semantic::ast_util::{identification_name, span_to_range, text_range_to_json};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{
@@ -54,6 +54,12 @@ fn add_view_filter_node(
     attrs.insert(
         "condition".to_string(),
         serde_json::json!(expressions::expression_to_debug_string(
+            &filter.value.condition
+        )),
+    );
+    attrs.insert(
+        "conditionIsBoolean".to_string(),
+        serde_json::json!(expressions::expression_is_boolean_valued(
             &filter.value.condition
         )),
     );
@@ -1863,6 +1869,12 @@ pub(super) fn build_from_package_body_element(
                 let mut attrs = HashMap::new();
                 attrs.insert("language".to_string(), serde_json::json!(&tr.language));
                 attrs.insert("text".to_string(), serde_json::json!(&tr.text));
+                if let Some(ref language_span) = tr.language_span {
+                    attrs.insert(
+                        "languageSpan".to_string(),
+                        text_range_to_json(span_to_range(language_span)),
+                    );
+                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -1883,6 +1895,12 @@ pub(super) fn build_from_package_body_element(
                 attrs.insert(
                     "condition".to_string(),
                     serde_json::json!(expressions::expression_to_debug_string(&f.value.condition)),
+                );
+                attrs.insert(
+                    "conditionIsBoolean".to_string(),
+                    serde_json::json!(expressions::expression_is_boolean_valued(
+                        &f.value.condition
+                    )),
                 );
                 if let Some(vis) = &f.value.visibility {
                     attrs.insert(

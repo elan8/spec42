@@ -3,7 +3,9 @@ use std::collections::{HashMap, HashSet};
 use url::Url;
 
 use crate::semantic::diagnostics::checks::import_resolution::import_target_resolves;
-use crate::semantic::diagnostics::helpers::{diag, diagnostic_range, is_synthetic};
+use crate::semantic::diagnostics::helpers::{
+    diag, diagnostic_range, is_synthetic, is_unknown_range, parse_attribute_text_range,
+};
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::relationships::resolve_type_target_in_workspace;
 use crate::{SemanticDiagnostic, SemanticGraph};
@@ -247,9 +249,12 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
         if !seen.insert(key) {
             continue;
         }
+        let range = parse_attribute_text_range(node, "languageSpan")
+            .filter(|range| !is_unknown_range(*range))
+            .unwrap_or_else(|| diagnostic_range(graph, node, None));
         diagnostics.push(diag(
             uri,
-            diagnostic_range(graph, node, None),
+            range,
             DiagnosticSeverity::Warning,
             "semantic",
             "viewpoint_rep_language_unresolved",

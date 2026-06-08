@@ -6,7 +6,7 @@ use crate::semantic::diagnostics::checks::import_resolution::{
     import_target, import_target_resolves,
 };
 use crate::semantic::diagnostics::helpers::{
-    diag, diagnostic_range, is_booleanish_filter_expression, reference_token_range,
+    condition_expression_is_boolean, diag, diagnostic_range, reference_token_range,
 };
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::{SemanticDiagnostic, SemanticGraph};
@@ -193,7 +193,7 @@ pub(in crate::semantic::diagnostics) fn collect_import_conformance_diagnostics(
         else {
             continue;
         };
-        if is_booleanish_filter_expression(condition) {
+        if condition_expression_is_boolean(node, condition) {
             continue;
         }
         let key = format!("filter|{}", node.id.qualified_name);

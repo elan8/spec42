@@ -13,6 +13,19 @@ pub fn span_to_range(span: &Span) -> TextRange {
     )
 }
 
+pub fn text_range_to_json(range: TextRange) -> serde_json::Value {
+    serde_json::json!({
+        "start": {
+            "line": range.start.line,
+            "character": range.start.character,
+        },
+        "end": {
+            "line": range.end.line,
+            "character": range.end.character,
+        },
+    })
+}
+
 /// Returns the display name from Identification (name, or short_name, or empty string).
 pub fn identification_name(ident: &Identification) -> String {
     ident

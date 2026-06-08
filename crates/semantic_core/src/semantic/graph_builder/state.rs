@@ -14,6 +14,32 @@ use super::payload::insert_transition_accept_attrs;
 use super::requirement_body::walk_requirement_def_body;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
+fn transition_target_is_done(target: &str) -> bool {
+    target
+        .rsplit("::")
+        .next()
+        .unwrap_or(target)
+        .eq_ignore_ascii_case("done")
+}
+
+fn increment_state_def_counter(
+    g: &mut SemanticGraph,
+    parent_id: &NodeId,
+    attribute: &str,
+) {
+    if let Some(state_def_node) = g.get_node_mut(parent_id) {
+        let count = state_def_node
+            .attributes
+            .get(attribute)
+            .and_then(|v| v.as_u64())
+            .unwrap_or(0)
+            .saturating_add(1);
+        state_def_node
+            .attributes
+            .insert(attribute.to_string(), serde_json::json!(count));
+    }
+}
+
 pub(super) fn build_from_state_body(
     elements: &[sysml_v2_parser::Node<StateDefBodyElement>],
     uri: &Url,
@@ -59,6 +85,7 @@ pub(super) fn build_from_state_body(
                 if tgt_rel.is_empty() {
                     continue;
                 }
+                let target_is_done = transition_target_is_done(&tgt_rel);
                 let tgt = if let Some(prefix) = container_prefix {
                     format!("{}::{}", prefix, tgt_rel)
                 } else {
@@ -101,6 +128,10 @@ pub(super) fn build_from_state_body(
                         "guardExpression".to_string(),
                         serde_json::json!(expressions::expression_to_debug_string(guard)),
                     );
+                    attrs.insert(
+                        "conditionIsBoolean".to_string(),
+                        serde_json::json!(expressions::expression_is_boolean_valued(guard)),
+                    );
                 }
                 if let Some(effect) = &t.effect {
                     attrs.insert(
@@ -110,6 +141,13 @@ pub(super) fn build_from_state_body(
                 }
                 if let Some(ref accept) = t.accept {
                     insert_transition_accept_attrs(&mut attrs, accept);
+                }
+                if t.is_initial {
+                    attrs.insert("isInitial".to_string(), serde_json::json!(true));
+                }
+                if target_is_done {
+                    attrs.insert("targetIsDone".to_string(), serde_json::json!(true));
+                    increment_state_def_counter(g, parent_id, "doneTransitionCount");
                 }
                 add_node_and_recurse(
                     g,
@@ -122,7 +160,7 @@ pub(super) fn build_from_state_body(
                     Some(parent_id),
                 );
                 add_edge_if_both_exist(g, uri, &src, &tgt, RelationshipKind::Transition);
-                if t.is_initial && !has_explicit_then {
+                if t.is_initial && t.guard.is_none() && !has_explicit_then {
                     add_edge_if_both_exist(
                         g,
                         uri,

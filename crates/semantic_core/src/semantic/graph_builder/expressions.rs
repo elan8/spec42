@@ -310,6 +310,37 @@ pub(super) fn add_expression_edge_if_both_exist(
     }
 }
 
+/// Whether an expression is intended to evaluate to Boolean (conservative).
+pub(super) fn expression_is_boolean_valued(
+    n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
+) -> bool {
+    use sysml_v2_parser::Expression;
+    match &n.value {
+        Expression::LiteralBoolean(_) => true,
+        Expression::UnaryOp { op, operand } => {
+            op.as_str() == "not" && expression_is_boolean_valued(operand)
+        }
+        Expression::BinaryOp { op, left, right } => match op.as_str() {
+            "==" | "!=" | "===" | "!==" | "<" | "<=" | ">" | ">=" => true,
+            "&&" | "||" | "xor" | "implies" => {
+                expression_is_boolean_valued(left) && expression_is_boolean_valued(right)
+            }
+            _ => false,
+        },
+        Expression::Bracket(inner) => expression_is_boolean_valued(inner),
+        Expression::LiteralInteger(_)
+        | Expression::LiteralReal(_)
+        | Expression::LiteralString(_)
+        | Expression::FeatureRef(_)
+        | Expression::MemberAccess(_, _)
+        | Expression::Index { .. }
+        | Expression::LiteralWithUnit { .. }
+        | Expression::Invocation { .. }
+        | Expression::Tuple(_)
+        | Expression::Null => false,
+    }
+}
+
 /// Best-effort display of an expression for attributes and diagnostics (not a full SysML text serializer).
 pub(super) fn expression_to_debug_string(
     n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
@@ -573,7 +604,7 @@ mod expr_string_tests {
     };
     use crate::semantic::relationships::add_cross_document_edges_for_uri;
     use crate::{build_graph_from_doc, ResolveResult};
-    use sysml_v2_parser::ast::{Expression, Node};
+    use sysml_v2_parser::ast::{BinaryOperator, Expression, Node};
     use sysml_v2_parser::Span;
     use url::Url;
 
@@ -609,7 +640,7 @@ mod expr_string_tests {
     #[test]
     fn debug_string_covers_binary_op() {
         let e = node(Expression::BinaryOp {
-            op: "+".into(),
+            op: BinaryOperator::from_token("+"),
             left: Box::new(node(Expression::LiteralInteger(1))),
             right: Box::new(node(Expression::LiteralInteger(2))),
         });

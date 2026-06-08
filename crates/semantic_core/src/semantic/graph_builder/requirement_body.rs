@@ -9,7 +9,7 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::span_to_range;
+use crate::semantic::ast_util::{span_to_range, text_range_to_json};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
 use crate::semantic::relationships::add_typing_edge_if_exists;
@@ -478,6 +478,12 @@ pub(super) fn walk_requirement_def_body(
                 let mut attrs = HashMap::new();
                 attrs.insert("language".to_string(), serde_json::json!(&tr.language));
                 attrs.insert("text".to_string(), serde_json::json!(&tr.text));
+                if let Some(ref language_span) = tr.language_span {
+                    attrs.insert(
+                        "languageSpan".to_string(),
+                        text_range_to_json(span_to_range(language_span)),
+                    );
+                }
                 add_node_and_recurse(
                     g,
                     uri,

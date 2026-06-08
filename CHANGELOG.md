@@ -7,13 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.29.0] - 2026-06-08
+
 ### Added
 
-- **Parser 0.19.0 graph projection** - `PayloadClause` on actions/transitions, `FinalState`, `MetadataKeywordUsage`, viewpoint `stakeholder`/`purpose`/`TextualRep`; `multiple_final_states` diagnostic; parser-wave fixtures and `p2_diagnostics_semantics` coverage.
+- **Parser 0.19.0 graph projection** - `PayloadClause` on actions/transitions, `FinalState`, `MetadataKeywordUsage`, viewpoint `stakeholder`/`purpose`/`TextualRep`; parser-wave fixtures and extended `p2_diagnostics_semantics` coverage.
+- **`missing_final_state`** - Information diagnostic when a state definition has state usages but no `final` state.
+- **AST-based Boolean classification** - Transition guards and view/import filters set `conditionIsBoolean` at graph-build time (replaces string heuristics when available).
+- **Verification case `attribute def`** - Local attribute definitions in verification bodies are projected on the semantic graph.
 
 ### Changed
 
 - **Parser dependency** - Bumped `sysml-v2-parser` to **0.19.0** on [crates.io](https://crates.io/crates/sysml-v2-parser) (`PayloadClause`, `TransitionAccept`, `FinalState`, metadata keywords, viewpoint members).
+- **`viewpoint_rep_language_unresolved`** - Diagnostic range prefers parser `language_span` on `textualRep` nodes when present.
+- **Release surface alignment** - Rust workspace, `spec42` server, VS Code extension, Zed extension, and GitHub Action examples aligned at `0.29.0`.
 
 ## [0.28.0] - 2026-06-08
 
@@ -570,6 +577,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.29.0]: https://github.com/elan8/spec42/releases/tag/v0.29.0
 [0.28.0]: https://github.com/elan8/spec42/releases/tag/v0.28.0
 [0.27.1]: https://github.com/elan8/spec42/releases/tag/v0.27.1
 [0.27.0]: https://github.com/elan8/spec42/releases/tag/v0.27.0

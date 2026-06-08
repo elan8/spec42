@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: elan8/spec42@v0.28.0
+      - uses: elan8/spec42@v0.29.0
         with:
           path: examples/timer/KitchenTimer.sysml
           format: sarif
@@ -36,7 +36,7 @@ When `format` is `sarif`, the Action writes `spec42.sarif`, uploads it to GitHub
 
 | Input | Default | Description |
 | --- | --- | --- |
-| `version` | Action ref (`github.action_ref`, e.g. `v0.28.0`) | Spec42 release tag to install. Omit to use the `@vX.Y.Z` ref from `uses:`. |
+| `version` | Action ref (`github.action_ref`, e.g. `v0.29.0`) | Spec42 release tag to install. Omit to use the `@vX.Y.Z` ref from `uses:`. |
 | `path` | required | File or workspace path to validate. |
 | `workspace-root` | | Optional workspace root passed to `spec42 check`. |
 | `format` | `sarif` | Output format: `text`, `json`, `sarif`, or `junit`. |
@@ -56,7 +56,7 @@ The Action exposes the installed binary path as `executable-path`, so workflows 
 
 ```yaml
 - id: spec42
-  uses: elan8/spec42@v0.28.0
+  uses: elan8/spec42@v0.29.0
   with:
     path: examples/office
     format: text
@@ -72,7 +72,7 @@ The Action exposes the installed binary path as `executable-path`, so workflows 
 ## Requirements and pitfalls
 
 - **Pin a version tag** — Use `elan8/spec42@vX.Y.Z`, not `@main`. The install step downloads `spec42-X.Y.Z-<platform>` from GitHub Releases; branch refs have no matching archive.
-- **Action ref vs CLI** — `uses: elan8/spec42@v0.28.0` selects the Action code at that tag; the CLI is downloaded for the same ref unless you override `version`. Keep them aligned.
+- **Action ref vs CLI** — `uses: elan8/spec42@v0.29.0` selects the Action code at that tag; the CLI is downloaded for the same ref unless you override `version`. Keep them aligned.
 - **Checkout first** — The Action does not check out your repository; add `actions/checkout` before Spec42.
 - **Permissions** — SARIF upload needs `security-events: write`. On pull requests from forks, upload often fails even when validation passes; the Action uploads with `continue-on-error` so the job still fails only on `spec42 check` results.
 - **`warnings-as-errors`** — When `true`, any warning fails the job. Large example repos may need `false` or a narrower `path` while tuning models.

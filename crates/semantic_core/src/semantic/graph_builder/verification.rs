@@ -369,10 +369,41 @@ pub(super) fn build_from_verification_body(
                     container_prefix,
                 );
             }
+            UseCaseDefBodyElement::AttributeDef(attribute) => {
+                let value = &attribute.value;
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    &value.name,
+                    "attribute def",
+                );
+                let mut attrs = HashMap::new();
+                if let Some(ref typing) = value.typing {
+                    attrs.insert("attributeType".to_string(), serde_json::json!(typing));
+                }
+                if let Some(expr_node) = &value.value {
+                    let rendered = super::expressions::expression_to_debug_string(expr_node);
+                    attrs.insert("value".to_string(), serde_json::json!(rendered));
+                    attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "attribute def",
+                    value.name.clone(),
+                    span_to_range(&attribute.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                if let Some(ref typing) = value.typing {
+                    add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
+                }
+            }
             UseCaseDefBodyElement::Error(_)
             | UseCaseDefBodyElement::Doc(_)
             | UseCaseDefBodyElement::Other(_)
-            | UseCaseDefBodyElement::AttributeDef(_)
             | UseCaseDefBodyElement::SubjectRef(_)
             | UseCaseDefBodyElement::ActorUsage(_)
             | UseCaseDefBodyElement::ActorRedefinitionAssignment(_)
