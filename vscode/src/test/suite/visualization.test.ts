@@ -9,6 +9,7 @@ import {
     integrationHookTimeoutMs,
     isCi,
     triggerVisualizerExportForTest,
+    waitForDiagramExport,
     waitForExtensionServerReady,
     waitForLanguageServerReady,
     waitForVisualizerClosed,
@@ -57,27 +58,31 @@ describe("Visualization Diagram Views", () => {
             await vscode.commands.executeCommand("sysml.showVisualizer");
             await waitForVisualizerOpen();
             await vscode.commands.executeCommand("sysml.changeVisualizerView", viewId);
+            const exportUri = getDiagramExportUri(workspaceFolder.uri, viewId);
+            try {
+                await vscode.workspace.fs.delete(exportUri, { useTrash: false });
+            } catch {
+                // Ignore if there is no previous export yet.
+            }
             await new Promise((r) => setTimeout(r, 2000)); // Wait for render
             await triggerVisualizerExportForTest();
-            await new Promise((r) => setTimeout(r, 1200)); // Wait for export + file write
-        }
+            await new Promise((r) => setTimeout(r, 800));
+            await triggerVisualizerExportForTest();
 
-        for (const viewId of VIEW_IDS) {
-            const uri = getDiagramExportUri(workspaceFolder.uri, viewId);
-            try {
-                const stat = await vscode.workspace.fs.stat(uri);
-                assert.ok(stat.size >= 0, `${viewId}.svg should exist`);
-                const bytes = await vscode.workspace.fs.readFile(uri);
-                const svgText = Buffer.from(bytes).toString("utf8");
-                assert.ok(svgText.includes("<svg"), `${viewId}.svg should contain svg markup`);
-                if (viewId === "general-view") {
-                    assert.ok(
-                        svgText.includes("SurveillanceQuadrotorDrone"),
-                        "general-view export should include the main drone node"
-                    );
-                }
-            } catch {
-                assert.fail(`${viewId}.svg was not created in the test export directory`);
+            const { svgText } = await waitForDiagramExport(
+                workspaceFolder.uri,
+                viewId,
+                (text) =>
+                    viewId !== "general-view" ||
+                    text.includes("SurveillanceQuadrotorDrone"),
+                isCi ? 45000 : 20000
+            );
+            assert.ok(svgText.includes("<svg"), `${viewId}.svg should contain svg markup`);
+            if (viewId === "general-view") {
+                assert.ok(
+                    svgText.includes("SurveillanceQuadrotorDrone"),
+                    "general-view export should include the main drone node"
+                );
             }
         }
     });

@@ -30,6 +30,7 @@ import {
   metadataForExample,
 } from "./examples/examplesViewProvider";
 import { LibraryWebviewViewProvider } from "./library/libraryWebviewViewProvider";
+import { STANDARD_LIBRARY_DEFAULTS } from "./generated/standardLibraryDefaults";
 import type { SysandStatusViewModel } from "./library/libraryStatusViewModel";
 import type {
   GraphNodeDTO,
@@ -127,9 +128,10 @@ function getStartupWorkspaceIndexingMode(): StartupWorkspaceIndexingMode {
 function getStandardLibraryConfig(): StandardLibraryConfig {
   return {
     enabled: getConfigBoolean("standardLibrary.enabled", true),
-    version: getConfigString("standardLibrary.version") ?? "2026-03",
-    repo: getConfigString("standardLibrary.repo") ?? "Systems-Modeling/SysML-v2-Release",
-    contentPath: getConfigString("standardLibrary.contentPath") ?? "sysml.library",
+    version: getConfigString("standardLibrary.version") ?? STANDARD_LIBRARY_DEFAULTS.version,
+    repo: getConfigString("standardLibrary.repo") ?? STANDARD_LIBRARY_DEFAULTS.repo,
+    contentPath:
+      getConfigString("standardLibrary.contentPath") ?? STANDARD_LIBRARY_DEFAULTS.contentPath,
   };
 }
 
@@ -949,7 +951,8 @@ export function activate(context: vscode.ExtensionContext): void {
     lspModelProvider,
     {
       getStdlibHeading: () => ({
-        pinnedVersion: getConfigString("standardLibrary.version") ?? "2026-03",
+        pinnedVersion:
+          getConfigString("standardLibrary.version") ?? STANDARD_LIBRARY_DEFAULTS.version,
       }),
       getConfiguredLibraryPaths: () => libraryPaths,
       getMissingLibraryPaths: () => missingLibraryPaths,

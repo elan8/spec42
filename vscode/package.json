@@ -535,7 +535,9 @@
               "description": "Optional 0-based line number to filter instances."
             }
           },
-          "required": ["code"]
+          "required": [
+            "code"
+          ]
         }
       }
     ],
@@ -572,7 +574,7 @@
         },
         "spec42.standardLibrary.version": {
           "type": "string",
-          "default": "2026-03",
+          "default": "2026-04",
           "description": "Display-only: SysML v2 release tag that matches the bundled standard library in this extension."
         },
         "spec42.standardLibrary.repo": {
@@ -608,7 +610,11 @@
         },
         "spec42.startup.workspaceIndexing": {
           "type": "string",
-          "enum": ["lazy", "background", "eager"],
+          "enum": [
+            "lazy",
+            "background",
+            "eager"
+          ],
           "default": "background",
           "description": "Control when the Model Explorer indexes the full workspace at startup. 'lazy' loads only the active document until workspace mode is requested, 'background' starts indexing after a short delay (default), and 'eager' starts indexing immediately."
         },

@@ -1,7 +1,7 @@
 ﻿{
   "workspace_root": "\\\\?\\C:\\Git\\apollo-11-sysml-v2",
   "resolved_library_paths": [
-    "C:\\Users\\jeroe\\AppData\\Local\\Elan8\\spec42\\data\\standard-library\\versions\\2026-03\\sysml.library",
+    "C:\\Users\\jeroe\\AppData\\Local\\Elan8\\spec42\\data\\standard-library\\versions\\2026-04\\sysml.library",
     "\\\\?\\C:\\Git\\spec42\\domain-libraries"
   ],
   "documents": [

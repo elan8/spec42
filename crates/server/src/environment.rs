@@ -646,8 +646,8 @@ mod tests {
         let install_path = paths
             .managed_root
             .join("versions")
-            .join("2026-03")
-            .join("sysml.library");
+            .join(crate::stdlib::DEFAULT_STDLIB_VERSION)
+            .join(crate::stdlib::DEFAULT_STDLIB_CONTENT_PATH);
         std::fs::create_dir_all(&install_path).expect("create install path");
         std::fs::write(
             install_path.join("ScalarValues.sysml"),
@@ -657,11 +657,11 @@ mod tests {
         save_managed_metadata(
             &paths,
             &crate::stdlib::StandardLibraryMetadata {
-                installed_version: "2026-03".to_string(),
+                installed_version: crate::stdlib::DEFAULT_STDLIB_VERSION.to_string(),
                 install_path: install_path.display().to_string(),
                 installed_at: "0".to_string(),
-                repo: "Systems-Modeling/SysML-v2-Release".to_string(),
-                content_path: "sysml.library".to_string(),
+                repo: crate::stdlib::DEFAULT_STDLIB_REPO.to_string(),
+                content_path: crate::stdlib::DEFAULT_STDLIB_CONTENT_PATH.to_string(),
             },
         )
         .expect("save metadata");

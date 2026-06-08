@@ -58,24 +58,33 @@ The binary is at `target/release/spec42`. Put it on your `PATH` or set the exten
 
 The `spec42` crate embeds the SysML v2 standard library by default. Builds are deterministic and do not download this archive implicitly.
 
-For normal embedded builds, provide the full SysML v2 Release `2026-03` zip in one of these ways:
+The pinned standard-library release is defined once in `config/standard-library.json`.
+After changing that file, run:
+
+```bash
+node scripts/sync-standard-library-config.mjs
+```
+
+For normal embedded builds, provide the full SysML v2 Release zip for the pinned tag in one of these ways:
 
 ```powershell
-$env:SPEC42_STDLIB_BUNDLE_ZIP = 'C:\path\to\SysML-v2-Release-2026-03.zip'
+$env:SPEC42_STDLIB_BUNDLE_ZIP = 'C:\path\to\SysML-v2-Release-<version>.zip'
 cargo build -p spec42
 ```
 
 or place the zip at:
 
 ```text
-crates/server/cache/sysml-v2-release-2026-03.zip
+crates/server/cache/sysml-v2-release-<version>.zip
 ```
 
 Maintainers can refresh that cache from:
 
 ```text
-https://github.com/Systems-Modeling/SysML-v2-Release/archive/refs/tags/2026-03.zip
+https://github.com/<repo>/archive/refs/tags/<version>.zip
 ```
+
+Use the `version` and `repo` values from `config/standard-library.json`.
 
 For development checks that do not need the embedded library:
 

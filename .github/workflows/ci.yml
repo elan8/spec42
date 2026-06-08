@@ -10,10 +10,6 @@ on:
 permissions:
   contents: read
 
-env:
-  SPEC42_STDLIB_BUNDLE_ZIP: ${{ github.workspace }}/.cache/sysml-v2-release-2026-03.zip
-  SPEC42_STDLIB_BUNDLE_URL: https://github.com/Systems-Modeling/SysML-v2-Release/archive/refs/tags/2026-03.zip
-
 jobs:
   rust-fast:
     name: Rust fast checks
@@ -30,6 +26,16 @@ jobs:
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
+
+      - name: Standard library config is current
+        run: node scripts/sync-standard-library-config.mjs --check
+
+      - name: Resolve stdlib bundle paths
+        run: |
+          VERSION=$(node -p "require('./config/standard-library.json').version")
+          REPO=$(node -p "require('./config/standard-library.json').repo")
+          echo "SPEC42_STDLIB_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-v2-release-${VERSION}.zip" >> $GITHUB_ENV
+          echo "SPEC42_STDLIB_BUNDLE_URL=https://github.com/${REPO}/archive/refs/tags/${VERSION}.zip" >> $GITHUB_ENV
 
       - name: Fetch SysML stdlib bundle
         run: |
@@ -88,6 +94,13 @@ jobs:
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
 
+      - name: Resolve stdlib bundle paths
+        run: |
+          VERSION=$(node -p "require('./config/standard-library.json').version")
+          REPO=$(node -p "require('./config/standard-library.json').repo")
+          echo "SPEC42_STDLIB_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-v2-release-${VERSION}.zip" >> $GITHUB_ENV
+          echo "SPEC42_STDLIB_BUNDLE_URL=https://github.com/${REPO}/archive/refs/tags/${VERSION}.zip" >> $GITHUB_ENV
+
       - name: Fetch SysML stdlib bundle
         run: |
           mkdir -p "$(dirname "$SPEC42_STDLIB_BUNDLE_ZIP")"
@@ -125,6 +138,13 @@ jobs:
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Resolve stdlib bundle paths
+        run: |
+          VERSION=$(node -p "require('./config/standard-library.json').version")
+          REPO=$(node -p "require('./config/standard-library.json').repo")
+          echo "SPEC42_STDLIB_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-v2-release-${VERSION}.zip" >> $GITHUB_ENV
+          echo "SPEC42_STDLIB_BUNDLE_URL=https://github.com/${REPO}/archive/refs/tags/${VERSION}.zip" >> $GITHUB_ENV
 
       - name: Fetch SysML stdlib bundle
         run: |

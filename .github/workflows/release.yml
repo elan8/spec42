@@ -18,8 +18,6 @@ env:
   BINARY_NAME: spec42
   MCP_BINARY_NAME: spec42-mcp
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-  SPEC42_STDLIB_BUNDLE_ZIP: ${{ github.workspace }}/.cache/sysml-v2-release-2026-03.zip
-  SPEC42_STDLIB_BUNDLE_URL: https://github.com/Systems-Modeling/SysML-v2-Release/archive/refs/tags/2026-03.zip
 
 jobs:
   preflight:
@@ -37,6 +35,16 @@ jobs:
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
+
+      - name: Standard library config is current
+        run: node scripts/sync-standard-library-config.mjs --check
+
+      - name: Resolve stdlib bundle paths
+        run: |
+          VERSION=$(node -p "require('./config/standard-library.json').version")
+          REPO=$(node -p "require('./config/standard-library.json').repo")
+          echo "SPEC42_STDLIB_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-v2-release-${VERSION}.zip" >> $GITHUB_ENV
+          echo "SPEC42_STDLIB_BUNDLE_URL=https://github.com/${REPO}/archive/refs/tags/${VERSION}.zip" >> $GITHUB_ENV
 
       - name: Fetch SysML stdlib bundle
         run: |
@@ -113,6 +121,14 @@ jobs:
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
+
+      - name: Resolve stdlib bundle paths
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('./config/standard-library.json').version")
+          REPO=$(node -p "require('./config/standard-library.json').repo")
+          echo "SPEC42_STDLIB_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-v2-release-${VERSION}.zip" >> $GITHUB_ENV
+          echo "SPEC42_STDLIB_BUNDLE_URL=https://github.com/${REPO}/archive/refs/tags/${VERSION}.zip" >> $GITHUB_ENV
 
       - name: Fetch SysML stdlib bundle
         shell: bash

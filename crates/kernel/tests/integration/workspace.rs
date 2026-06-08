@@ -418,8 +418,7 @@ fn lsp_workspace_scan_clears_unresolved_for_wildcard_imported_workspace_types() 
 /// Validates workspace awareness against the official OMG SysML v2 repo.
 const SYSML_V2_RELEASE_DIR_ENV: &str = "SYSML_V2_RELEASE_DIR";
 const SYSML_STD_LIB_DIR_ENV: &str = "SYSML_STD_LIB_DIR";
-const DEFAULT_STD_LIB_DIR: &str =
-    "C:/Users/jeroe/AppData/Roaming/Code/User/globalStorage/elan8.spec42/standard-library/2026-03/sysml.library";
+const PINNED_STDLIB_CONFIG_RAW: &str = include_str!("../../../config/standard-library.json");
 
 fn is_si_sysml_path(path: &str) -> bool {
     path.ends_with("/Domain%20Libraries/Quantities%20and%20Units/SI.sysml")
@@ -458,11 +457,34 @@ fn resolve_sysml_library_root_for_tests() -> Option<PathBuf> {
         }
     }
 
-    let default_path = PathBuf::from(DEFAULT_STD_LIB_DIR);
-    if default_path.is_dir() {
-        return Some(default_path);
+    if let Some(default_path) = legacy_vscode_stdlib_fallback_path() {
+        if default_path.is_dir() {
+            return Some(default_path);
+        }
     }
     None
+}
+
+fn legacy_vscode_stdlib_fallback_path() -> Option<PathBuf> {
+    #[derive(serde::Deserialize)]
+    struct PinnedStdlibConfig {
+        version: String,
+        #[serde(rename = "contentPath")]
+        content_path: String,
+    }
+
+    let config: PinnedStdlibConfig = serde_json::from_str(PINNED_STDLIB_CONFIG_RAW).ok()?;
+    let app_data = std::env::var_os("APPDATA")?;
+    Some(
+        PathBuf::from(app_data)
+            .join("Code")
+            .join("User")
+            .join("globalStorage")
+            .join("elan8.spec42")
+            .join("standard-library")
+            .join(config.version)
+            .join(config.content_path),
+    )
 }
 
 #[test]

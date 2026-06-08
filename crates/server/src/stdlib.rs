@@ -7,9 +7,9 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 
-pub const DEFAULT_STDLIB_VERSION: &str = "2026-03";
-pub const DEFAULT_STDLIB_REPO: &str = "Systems-Modeling/SysML-v2-Release";
-pub const DEFAULT_STDLIB_CONTENT_PATH: &str = "sysml.library";
+pub const DEFAULT_STDLIB_VERSION: &str = env!("SPEC42_STDLIB_VERSION");
+pub const DEFAULT_STDLIB_REPO: &str = env!("SPEC42_STDLIB_REPO");
+pub const DEFAULT_STDLIB_CONTENT_PATH: &str = env!("SPEC42_STDLIB_CONTENT_PATH");
 /// Recorded in `metadata.toml` when the tree was materialized from the binary-embedded zip.
 pub const EMBEDDED_STDLIB_REPO: &str = "embedded";
 
@@ -541,14 +541,15 @@ mod tests {
     fn extract_archive_subset_only_extracts_requested_content_path() {
         let temp = tempfile::tempdir().expect("temp dir");
         let archive_path = temp.path().join("archive.zip");
+        let release_prefix = format!("release-{DEFAULT_STDLIB_VERSION}");
         {
             let file = fs::File::create(&archive_path).expect("create zip");
             let mut zip = zip::ZipWriter::new(file);
             let options = zip::write::SimpleFileOptions::default();
-            zip.start_file("release-2026-03/sysml.library/A.sysml", options)
+            zip.start_file(format!("{release_prefix}/sysml.library/A.sysml"), options)
                 .expect("start file");
             zip.write_all(b"package A {}").expect("write file");
-            zip.start_file("release-2026-03/other/B.sysml", options)
+            zip.start_file(format!("{release_prefix}/other/B.sysml"), options)
                 .expect("start other");
             zip.write_all(b"package B {}").expect("write other");
             zip.finish().expect("finish zip");
@@ -567,11 +568,15 @@ mod tests {
         let temp = tempfile::tempdir().expect("temp dir");
         let paths = standard_library_paths_from_data_dir(temp.path().to_path_buf());
         let archive_path = temp.path().join("archive.zip");
+        let release_prefix = format!("release-{DEFAULT_STDLIB_VERSION}");
         {
             let file = fs::File::create(&archive_path).expect("create zip");
             let mut zip = zip::ZipWriter::new(file);
             let options = zip::write::SimpleFileOptions::default();
-            zip.start_file("release-2026-03/sysml.library/ScalarValues.sysml", options)
+            zip.start_file(
+                format!("{release_prefix}/sysml.library/ScalarValues.sysml"),
+                options,
+            )
                 .expect("start file");
             zip.write_all(b"standard library package ScalarValues { attribute def Real; }")
                 .expect("write file");
@@ -638,11 +643,15 @@ mod tests {
         let temp = tempfile::tempdir().expect("temp dir");
         let paths = standard_library_paths_from_data_dir(temp.path().to_path_buf());
         let archive_path = temp.path().join("archive.zip");
+        let release_prefix = format!("release-{DEFAULT_STDLIB_VERSION}");
         {
             let file = fs::File::create(&archive_path).expect("create zip");
             let mut zip = zip::ZipWriter::new(file);
             let options = zip::write::SimpleFileOptions::default();
-            zip.start_file("release-2026-03/sysml.library/ScalarValues.sysml", options)
+            zip.start_file(
+                format!("{release_prefix}/sysml.library/ScalarValues.sysml"),
+                options,
+            )
                 .expect("start file");
             zip.write_all(b"standard library package ScalarValues { attribute def Real; }")
                 .expect("write file");
@@ -667,11 +676,15 @@ mod tests {
         fs::write(&paths.managed_root, "not a directory").expect("write blocking file");
 
         let archive_path = temp.path().join("archive.zip");
+        let release_prefix = format!("release-{DEFAULT_STDLIB_VERSION}");
         {
             let file = fs::File::create(&archive_path).expect("create zip");
             let mut zip = zip::ZipWriter::new(file);
             let options = zip::write::SimpleFileOptions::default();
-            zip.start_file("release-2026-03/sysml.library/ScalarValues.sysml", options)
+            zip.start_file(
+                format!("{release_prefix}/sysml.library/ScalarValues.sysml"),
+                options,
+            )
                 .expect("start file");
             zip.write_all(b"standard library package ScalarValues { attribute def Real; }")
                 .expect("write file");

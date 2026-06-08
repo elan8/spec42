@@ -5,6 +5,7 @@ import {
   flattenLibrarySearchResults,
   summarizeLibrarySearch,
 } from "../../library/libraryStatusViewModel";
+import { STANDARD_LIBRARY_DEFAULTS } from "../../generated/standardLibraryDefaults";
 
 describe("libraryStatusViewModel", () => {
   it("summarizes standard and custom library packages", () => {
@@ -84,7 +85,7 @@ describe("libraryStatusViewModel", () => {
 
   it("builds dashboard status with missing custom paths", () => {
     const status = buildLibraryDashboardStatus({
-      pinnedVersion: "2026-03",
+      pinnedVersion: STANDARD_LIBRARY_DEFAULTS.version,
       configuredPaths: ["C:/libs/domain"],
       missingPaths: ["C:/libs/missing"],
       summary: {

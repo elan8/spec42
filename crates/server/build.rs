@@ -10,19 +10,35 @@ use std::io::Cursor;
 use std::path::{Path, PathBuf};
 use std::process;
 
+use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use zip::read::ZipArchive;
 use zip::write::{SimpleFileOptions, ZipWriter};
 
-const DEFAULT_TAG: &str = "2026-03";
 /// Single top-level folder prefix inside the embedded zip (must match `extract_archive_subset` in stdlib.rs).
 const EMBED_ROOT: &str = "bundled-sysml-release";
-const LOCAL_CACHE_RELATIVE_PATH: &str = "cache/sysml-v2-release-2026-03.zip";
+
+#[derive(Debug, Deserialize)]
+struct StandardLibraryConfig {
+    version: String,
+    repo: String,
+    #[serde(rename = "contentPath")]
+    content_path: String,
+}
 
 fn main() {
+    let config = load_stdlib_config();
+    println!("cargo:rustc-env=SPEC42_STDLIB_VERSION={}", config.version);
+    println!("cargo:rustc-env=SPEC42_STDLIB_REPO={}", config.repo);
+    println!(
+        "cargo:rustc-env=SPEC42_STDLIB_CONTENT_PATH={}",
+        config.content_path
+    );
     println!("cargo:rerun-if-env-changed=SPEC42_STDLIB_BUNDLE_ZIP");
     println!("cargo:rerun-if-changed=build.rs");
-    println!("cargo:rerun-if-changed={LOCAL_CACHE_RELATIVE_PATH}");
+
+    let local_cache_relative_path = format!("cache/sysml-v2-release-{}.zip", config.version);
+    println!("cargo:rerun-if-changed={local_cache_relative_path}");
 
     let out_dir = std::env::var("OUT_DIR").expect("OUT_DIR");
     let out_zip = Path::new(&out_dir).join("sysml.library.embedded.zip");
@@ -36,7 +52,7 @@ fn main() {
         return;
     }
 
-    let Some(local_zip) = resolve_local_stdlib_zip() else {
+    let Some(local_zip) = resolve_local_stdlib_zip(&local_cache_relative_path) else {
         if out_zip.exists() {
             if embedded_archive_is_usable(&out_zip) {
                 eprintln!(
@@ -68,10 +84,16 @@ fn main() {
         }
 
         eprintln!(
-            "spec42 build: embedded stdlib requires a local SysML v2 Release {DEFAULT_TAG} zip."
+            "spec42 build: embedded stdlib requires a local SysML v2 Release {} zip.",
+            config.version
         );
-        eprintln!("spec42 build: set SPEC42_STDLIB_BUNDLE_ZIP to the full release zip path, or place it at crates/server/{LOCAL_CACHE_RELATIVE_PATH}.");
-        eprintln!("spec42 build: download URL: https://github.com/Systems-Modeling/SysML-v2-Release/archive/refs/tags/{DEFAULT_TAG}.zip");
+        eprintln!(
+            "spec42 build: set SPEC42_STDLIB_BUNDLE_ZIP to the full release zip path, or place it at crates/server/{local_cache_relative_path}."
+        );
+        eprintln!(
+            "spec42 build: download URL: https://github.com/{}/archive/refs/tags/{}.zip",
+            config.repo, config.version
+        );
         eprintln!("spec42 build: for development without embedded stdlib, run `cargo test -p spec42 --no-default-features`.");
         process::exit(1);
     };
@@ -94,7 +116,28 @@ fn main() {
     let _embedded_digest = format!("{:x}", Sha256::digest(fs::read(&out_zip).unwrap()));
 }
 
-fn resolve_local_stdlib_zip() -> Option<PathBuf> {
+fn load_stdlib_config() -> StandardLibraryConfig {
+    let manifest_dir =
+        PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"));
+    let config_path = manifest_dir.join("../../config/standard-library.json");
+    println!("cargo:rerun-if-changed={}", config_path.display());
+    let raw = fs::read_to_string(&config_path).unwrap_or_else(|e| {
+        eprintln!(
+            "spec42 build: failed to read {}: {e}",
+            config_path.display()
+        );
+        process::exit(1);
+    });
+    serde_json::from_str(&raw).unwrap_or_else(|e| {
+        eprintln!(
+            "spec42 build: failed to parse {}: {e}",
+            config_path.display()
+        );
+        process::exit(1);
+    })
+}
+
+fn resolve_local_stdlib_zip(local_cache_relative_path: &str) -> Option<PathBuf> {
     if let Ok(path) = std::env::var("SPEC42_STDLIB_BUNDLE_ZIP") {
         let trimmed = path.trim();
         if !trimmed.is_empty() {
@@ -104,7 +147,7 @@ fn resolve_local_stdlib_zip() -> Option<PathBuf> {
 
     let manifest_dir =
         PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"));
-    let cached = manifest_dir.join(LOCAL_CACHE_RELATIVE_PATH);
+    let cached = manifest_dir.join(local_cache_relative_path);
     cached.exists().then_some(cached)
 }
 
