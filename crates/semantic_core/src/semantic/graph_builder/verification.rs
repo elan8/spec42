@@ -118,10 +118,14 @@ pub(super) fn build_from_verification_body(
     let mut previous_then_action: Option<String> = None;
     let mut case_subject_qualified: Option<String> = None;
     let mut objective_node_ids: Vec<NodeId> = Vec::new();
+    let mut has_subject = false;
+    let mut verdict_count = 0usize;
+    let mut then_action_count = 0usize;
 
     for node in elements {
         match &node.value {
             UseCaseDefBodyElement::SubjectDecl(sd) => {
+                has_subject = true;
                 let name = sd.value.name.clone();
                 let qualified = qualified_name_for_node(
                     g,
@@ -217,6 +221,7 @@ pub(super) fn build_from_verification_body(
                 }
             }
             UseCaseDefBodyElement::ThenAction(then_action) => {
+                then_action_count += 1;
                 let action = &then_action.value.action.value;
                 let action_qualified = qualified_name_for_node(
                     g,
@@ -290,6 +295,7 @@ pub(super) fn build_from_verification_body(
                 );
             }
             UseCaseDefBodyElement::ThenDone(done) => {
+                verdict_count += 1;
                 let qualified = qualified_name_for_node(
                     g,
                     uri,
@@ -309,6 +315,7 @@ pub(super) fn build_from_verification_body(
                 );
             }
             UseCaseDefBodyElement::ReturnRef(return_ref) => {
+                verdict_count += 1;
                 let value = &return_ref.value;
                 let qualified = qualified_name_for_node(
                     g,
@@ -376,13 +383,33 @@ pub(super) fn build_from_verification_body(
         }
     }
 
+    let objective_count = objective_node_ids.len();
     if let Some(bound_to) = case_subject_qualified.as_ref() {
-        for objective_id in objective_node_ids {
-            if let Some(objective_node) = g.get_node_mut(&objective_id) {
+        for objective_id in &objective_node_ids {
+            if let Some(objective_node) = g.get_node_mut(objective_id) {
                 objective_node
                     .attributes
                     .insert("objectiveBoundTo".to_string(), serde_json::json!(bound_to));
             }
         }
+    }
+
+    if let Some(parent_node) = g.get_node_mut(parent_id) {
+        parent_node.attributes.insert(
+            "hasSubject".to_string(),
+            serde_json::json!(has_subject),
+        );
+        parent_node.attributes.insert(
+            "objectiveCount".to_string(),
+            serde_json::json!(objective_count),
+        );
+        parent_node.attributes.insert(
+            "verdictCount".to_string(),
+            serde_json::json!(verdict_count),
+        );
+        parent_node.attributes.insert(
+            "thenActionCount".to_string(),
+            serde_json::json!(then_action_count),
+        );
     }
 }

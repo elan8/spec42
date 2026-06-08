@@ -1,11 +1,16 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use url::Url;
 
-use crate::semantic::diagnostics::helpers::{diag, diagnostic_range, is_synthetic};
+use crate::semantic::diagnostics::helpers::{
+    diag, diagnostic_range, is_booleanish_filter_expression, is_synthetic,
+    normalize_declared_type_ref,
+};
+use crate::semantic::diagnostics::kind_rules::{allowed_typing_target_kinds, is_compatible_kind};
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::model::RelationshipKind;
 use crate::semantic::reference_resolution::resolve_expression_endpoint_strict;
+use crate::semantic::relationships::{resolve_type_target_in_workspace, TYPING_TARGET_KINDS};
 use crate::{ResolveResult, SemanticDiagnostic, SemanticGraph, SemanticNode};
 
 fn is_action_like(kind: &str) -> bool {
@@ -218,6 +223,175 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
                 source_node.name,
                 target_node.name,
                 source_node.element_kind,
+                target_node.element_kind
+            ),
+        ));
+    }
+
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "transition" || is_synthetic(node) {
+            continue;
+        }
+        let Some(guard) = node
+            .attributes
+            .get("guardExpression")
+            .and_then(|v| v.as_str())
+            .map(str::trim)
+            .filter(|value| !value.is_empty())
+        else {
+            continue;
+        };
+        if is_booleanish_filter_expression(guard) {
+            continue;
+        }
+        let key = format!("guard|{}", node.id.qualified_name);
+        if !seen.insert(key) {
+            continue;
+        }
+        diagnostics.push(diag(
+            uri,
+            diagnostic_range(graph, node, None),
+            DiagnosticSeverity::Warning,
+            "semantic",
+            "transition_guard_non_boolean",
+            format!(
+                "Transition '{}' guard expression must be Boolean-valued.",
+                node.name
+            ),
+        ));
+    }
+
+    let mut initial_states_by_container: HashMap<String, usize> = HashMap::new();
+    for (source_qn, _target_qn, kind, _) in graph.edges_for_uri_as_strings(uri) {
+        if kind != RelationshipKind::InitialState {
+            continue;
+        }
+        let source_id = crate::NodeId::new(uri, source_qn.clone());
+        let container = graph
+            .get_node(&source_id)
+            .and_then(|node| state_def_ancestor(graph, node))
+            .unwrap_or(source_qn);
+        *initial_states_by_container.entry(container).or_insert(0) += 1;
+    }
+    for (container, count) in initial_states_by_container {
+        if count <= 1 {
+            continue;
+        }
+        let key = format!("initial_multi|{container}");
+        if !seen.insert(key) {
+            continue;
+        }
+        let Some(container_node) = graph.get_node(&crate::NodeId::new(uri, container.clone())) else {
+            continue;
+        };
+        diagnostics.push(diag(
+            uri,
+            diagnostic_range(graph, container_node, None),
+            DiagnosticSeverity::Warning,
+            "semantic",
+            "multiple_initial_states",
+            format!(
+                "State definition '{}' declares {count} initial transitions; only one is expected.",
+                container.rsplit("::").next().unwrap_or(container.as_str())
+            ),
+        ));
+    }
+
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "state def" || is_synthetic(node) {
+            continue;
+        }
+        let has_state_children = graph
+            .children_of(node)
+            .into_iter()
+            .any(|child| child.element_kind == "state");
+        if !has_state_children {
+            continue;
+        }
+        let has_initial = graph.edges_for_uri_as_strings(uri).iter().any(|(source, _, kind, _)| {
+            *kind == RelationshipKind::InitialState
+                && (source == &node.id.qualified_name
+                    || graph
+                        .get_node(&crate::NodeId::new(uri, source.clone()))
+                        .and_then(|source_node| state_def_ancestor(graph, source_node))
+                        .as_ref()
+                        == Some(&node.id.qualified_name))
+        });
+        if has_initial {
+            continue;
+        }
+        let key = format!("missing_initial|{}", node.id.qualified_name);
+        if !seen.insert(key) {
+            continue;
+        }
+        diagnostics.push(diag(
+            uri,
+            diagnostic_range(graph, node, None),
+            DiagnosticSeverity::Information,
+            "semantic",
+            "missing_initial_state",
+            format!(
+                "State definition '{}' has state usages but no initial transition.",
+                node.name
+            ),
+        ));
+    }
+
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "action" || is_synthetic(node) {
+            continue;
+        }
+        let payload_type = node
+            .attributes
+            .get("payloadType")
+            .or_else(|| node.attributes.get("acceptType"))
+            .and_then(|v| v.as_str())
+            .map(str::trim)
+            .filter(|value| !value.is_empty());
+        let Some(payload_type) = payload_type else {
+            continue;
+        };
+        let action_kind = node
+            .attributes
+            .get("actionKind")
+            .and_then(|v| v.as_str())
+            .unwrap_or("accept");
+        let code = if action_kind == "send" {
+            "send_payload_incompatible"
+        } else {
+            "accept_payload_incompatible"
+        };
+        let allowed = allowed_typing_target_kinds("action");
+        let Some(target_id) =
+            resolve_type_target_in_workspace(graph, node, payload_type, TYPING_TARGET_KINDS)
+        else {
+            continue;
+        };
+        let Some(target_node) = graph.get_node(&target_id) else {
+            continue;
+        };
+        if is_compatible_kind(&target_node.element_kind, allowed) {
+            continue;
+        }
+        let key = format!("{code}|{}", node.id.qualified_name);
+        if !seen.insert(key) {
+            continue;
+        }
+        diagnostics.push(diag(
+            uri,
+            diagnostic_range(graph, node, Some(target_node)),
+            DiagnosticSeverity::Warning,
+            "semantic",
+            code,
+            format!(
+                "{} payload type '{}' on action '{}' resolves to incompatible kind '{}'.",
+                if action_kind == "send" {
+                    "Send"
+                } else {
+                    "Accept"
+                },
+                normalize_declared_type_ref(payload_type),
+                node.name,
                 target_node.element_kind
             ),
         ));

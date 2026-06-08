@@ -138,6 +138,275 @@ fn include_missing_use_case_emits_invalid_target() {
 }
 
 #[test]
+fn transition_non_boolean_guard_emits_diagnostic() {
+    let doc = workspace_doc(
+        "guard_invalid.sysml",
+        r#"package Demo {
+  state def Operating {
+    state off;
+    state on;
+    transition power_up first off if 42 then on;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "transition_guard_non_boolean"),
+        "expected transition_guard_non_boolean, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn multiple_initial_transitions_emit_cardinality_diagnostic() {
+    let doc = workspace_doc(
+        "initial_multi.sysml",
+        r#"package Demo {
+  state def Operating {
+    state off;
+    state on;
+    state paused;
+    then off;
+    then paused;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "multiple_initial_states"),
+        "expected multiple_initial_states, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn state_def_without_initial_transition_emits_information() {
+    let doc = workspace_doc(
+        "initial_missing.sysml",
+        r#"package Demo {
+  state def Operating {
+    state off;
+    state on;
+    transition t off then on;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "missing_initial_state"),
+        "expected missing_initial_state, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn accept_payload_with_wrong_kind_emits_diagnostic() {
+    let doc = workspace_doc(
+        "accept_invalid.sysml",
+        r#"package Demo {
+  part def WrongKind;
+  action wait accept evt : WrongKind;
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "accept_payload_incompatible"),
+        "expected accept_payload_incompatible, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn view_filter_non_boolean_emits_diagnostic() {
+    let doc = workspace_doc(
+        "view_filter.sysml",
+        r#"package Demo {
+  view def StructuralView;
+  view structure : StructuralView {
+    filter @MissingType;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "view_filter_non_boolean"),
+        "expected view_filter_non_boolean, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn verification_assignment_value_mismatch_emits_diagnostic() {
+    let doc = workspace_doc(
+        "assign_value.sysml",
+        r#"package Demo {
+  part def System {
+    attribute count : Integer;
+  }
+  verification def VerifyCount {
+    subject system : System;
+    assign system.count := "text";
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "assignment_value_incompatible"),
+        "expected assignment_value_incompatible, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn requirement_constraint_bad_parameter_emits_membership_diagnostic() {
+    let doc = workspace_doc(
+        "constraint_bad.sysml",
+        r#"package Demo {
+  requirement def EnduranceReq {
+    require constraint {
+      in x;
+      x > 0
+    }
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "requirement_constraint_invalid_membership"),
+        "expected requirement_constraint_invalid_membership, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn verification_then_action_without_verdict_emits_shape_diagnostic() {
+    let doc = workspace_doc(
+        "verify_shape.sysml",
+        r#"package Demo {
+  action def Step;
+  verification def BadVerify {
+    then action step : Step;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "verification_case_invalid_shape"),
+        "expected verification_case_invalid_shape, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn verification_without_subject_emits_case_subject_diagnostic() {
+    let doc = workspace_doc(
+        "case_subject.sysml",
+        r#"package Demo {
+  requirement def ReqA;
+  verification def BadVerify {
+    objective { verify ReqA; }
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "case_subject_missing"),
+        "expected case_subject_missing, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn viewpoint_unresolved_import_emits_reference_diagnostic() {
+    let doc = workspace_doc(
+        "viewpoint_import.sysml",
+        r#"package Demo {
+  viewpoint def ArchitectureViewpoint {
+    import MissingPackage::*;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "viewpoint_reference_unresolved"),
+        "expected viewpoint_reference_unresolved, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn duplicate_metadata_def_emits_collision_diagnostic() {
+    let doc = workspace_doc(
+        "metadata_collision.sysml",
+        r#"package Demo {
+  metadata def Tag;
+  metadata def Tag;
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "metadata_keyword_collision"),
+        "expected metadata_keyword_collision, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
 fn metadata_usage_with_valid_type_has_no_annotation_diagnostic() {
     let doc = workspace_doc(
         "metadata_ok.sysml",

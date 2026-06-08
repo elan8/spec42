@@ -24,10 +24,12 @@ pub(super) fn build_from_analysis_body(
 
     let mut analysis_result_qualified: Option<String> = None;
     let mut objective_node_ids: Vec<NodeId> = Vec::new();
+    let mut has_subject = false;
 
     for node in elements {
         match &node.value {
             UseCaseDefBodyElement::SubjectDecl(sd) => {
+                has_subject = true;
                 let name = sd.value.name.clone();
                 let qualified = qualified_name_for_node(
                     g,
@@ -244,12 +246,13 @@ pub(super) fn build_from_analysis_body(
         }
     }
 
+    let objective_count = objective_node_ids.len();
     let had_local_result = analysis_result_qualified.is_some();
     let bound_to =
         analysis_result_qualified.or_else(|| inherited_analysis_result_qualified(g, parent_id));
     if let Some(bound_to) = bound_to.as_ref() {
-        for objective_id in objective_node_ids {
-            if let Some(objective_node) = g.get_node_mut(&objective_id) {
+        for objective_id in &objective_node_ids {
+            if let Some(objective_node) = g.get_node_mut(objective_id) {
                 objective_node
                     .attributes
                     .insert("objectiveBoundTo".to_string(), serde_json::json!(bound_to));
@@ -267,6 +270,30 @@ pub(super) fn build_from_analysis_body(
                 );
             }
         }
+    }
+
+    let analysis_result_count = g
+        .get_node(parent_id)
+        .map(|parent| {
+            g.children_of(parent)
+                .into_iter()
+                .filter(|child| child.element_kind == "analysis result")
+                .count()
+        })
+        .unwrap_or(0);
+    if let Some(parent_node) = g.get_node_mut(parent_id) {
+        parent_node.attributes.insert(
+            "hasSubject".to_string(),
+            serde_json::json!(has_subject),
+        );
+        parent_node.attributes.insert(
+            "objectiveCount".to_string(),
+            serde_json::json!(objective_count),
+        );
+        parent_node.attributes.insert(
+            "analysisResultCount".to_string(),
+            serde_json::json!(analysis_result_count),
+        );
     }
 }
 

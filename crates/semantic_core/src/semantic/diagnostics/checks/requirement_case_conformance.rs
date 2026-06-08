@@ -194,5 +194,259 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
         ));
     }
 
+    for node in graph.nodes_for_uri(uri) {
+        if !matches!(node.element_kind.as_str(), "requirement" | "requirement def")
+            || is_synthetic(node)
+        {
+            continue;
+        }
+        let Some(constraints) = node.attributes.get("analysisConstraints") else {
+            continue;
+        };
+        let items = match constraints {
+            serde_json::Value::Array(items) => items,
+            _ => continue,
+        };
+        for item in items {
+            let Some(kind) = item.get("kind").and_then(|v| v.as_str()) else {
+                continue;
+            };
+            if kind != "require_constraint" {
+                continue;
+            }
+            let expression = item
+                .get("expression")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .trim();
+            if expression.is_empty() {
+                let key = format!("constraint_expr|{}", node.id.qualified_name);
+                if seen.insert(key) {
+                    diagnostics.push(diag(
+                        uri,
+                        diagnostic_range(graph, node, None),
+                        DiagnosticSeverity::Warning,
+                        "semantic",
+                        "requirement_constraint_invalid_membership",
+                        format!(
+                            "Requirement '{}' has a require constraint without an expression body.",
+                            node.name
+                        ),
+                    ));
+                }
+                continue;
+            }
+            if let Some(params) = item.get("params").and_then(|v| v.as_array()) {
+                for param in params {
+                    let direction = param
+                        .get("direction")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("");
+                    let param_type = param
+                        .get("type")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("")
+                        .trim();
+                    if !matches!(direction, "in" | "out" | "inout") || param_type.is_empty() {
+                        let key = format!(
+                            "constraint_param|{}|{}",
+                            node.id.qualified_name,
+                            param.get("name").and_then(|v| v.as_str()).unwrap_or("")
+                        );
+                        if seen.insert(key) {
+                            diagnostics.push(diag(
+                                uri,
+                                diagnostic_range(graph, node, None),
+                                DiagnosticSeverity::Warning,
+                                "semantic",
+                                "requirement_constraint_invalid_membership",
+                                format!(
+                                    "Requirement '{}' require constraint parameter is missing direction or type.",
+                                    node.name
+                                ),
+                            ));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "verification def" && node.element_kind != "verification" {
+            continue;
+        }
+        let verdict_count = node
+            .attributes
+            .get("verdictCount")
+            .and_then(|v| v.as_u64())
+            .unwrap_or(0) as usize;
+        let then_action_count = node
+            .attributes
+            .get("thenActionCount")
+            .and_then(|v| v.as_u64())
+            .unwrap_or(0) as usize;
+        let objective_count = node
+            .attributes
+            .get("objectiveCount")
+            .and_then(|v| v.as_u64())
+            .unwrap_or(0) as usize;
+        let verified_count = graph
+            .children_of(node)
+            .into_iter()
+            .filter(|child| child.element_kind == "verified requirement")
+            .count();
+
+        if verdict_count > 1 {
+            let key = format!("verdict_multi|{}", node.id.qualified_name);
+            if seen.insert(key) {
+                diagnostics.push(diag(
+                    uri,
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "verification_case_invalid_shape",
+                    format!(
+                        "Verification case '{}' declares multiple verdict/return clauses.",
+                        node.name
+                    ),
+                ));
+            }
+        }
+        if then_action_count > 0 && verdict_count == 0 {
+            let key = format!("verdict_missing|{}", node.id.qualified_name);
+            if seen.insert(key) {
+                diagnostics.push(diag(
+                    uri,
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "verification_case_invalid_shape",
+                    format!(
+                        "Verification case '{}' has then-actions but no verdict/return clause.",
+                        node.name
+                    ),
+                ));
+            }
+        }
+        if verified_count > 0 && objective_count == 0 {
+            let key = format!("objective_missing|{}", node.id.qualified_name);
+            if seen.insert(key) {
+                diagnostics.push(diag(
+                    uri,
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "verification_case_invalid_shape",
+                    format!(
+                        "Verification case '{}' verifies requirements but declares no objective.",
+                        node.name
+                    ),
+                ));
+            }
+        }
+    }
+
+    for node in graph.nodes_for_uri(uri) {
+        if !matches!(
+            node.element_kind.as_str(),
+            "verification def" | "verification" | "analysis def" | "analysis"
+        ) {
+            continue;
+        }
+        let has_subject = node
+            .attributes
+            .get("hasSubject")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        let subject_count = graph
+            .children_of(node)
+            .into_iter()
+            .filter(|child| child.element_kind == "subject")
+            .count();
+        let objectives: Vec<_> = graph
+            .children_of(node)
+            .into_iter()
+            .filter(|child| child.element_kind == "objective")
+            .collect();
+
+        let needs_subject = objectives.iter().any(|objective| {
+            objective
+                .attributes
+                .get("objectiveBindingKind")
+                .and_then(|v| v.as_str())
+                == Some("verification_subject")
+        });
+        if needs_subject && !has_subject {
+            let key = format!("case_subject|{}", node.id.qualified_name);
+            if seen.insert(key) {
+                diagnostics.push(diag(
+                    uri,
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "case_subject_missing",
+                    format!(
+                        "Case '{}' has objectives bound to a subject but no subject is declared.",
+                        node.name
+                    ),
+                ));
+            }
+        }
+        if needs_subject && subject_count > 1 {
+            let key = format!("case_subject_multi|{}", node.id.qualified_name);
+            if seen.insert(key) {
+                diagnostics.push(diag(
+                    uri,
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "case_objective_binding_cardinality",
+                    format!(
+                        "Case '{}' declares {subject_count} subjects but objectives expect a single subject.",
+                        node.name
+                    ),
+                ));
+            }
+        }
+
+        let needs_analysis_result = objectives.iter().any(|objective| {
+            objective
+                .attributes
+                .get("objectiveBindingKind")
+                .and_then(|v| v.as_str())
+                == Some("analysis_result")
+        });
+        if needs_analysis_result {
+            let analysis_result_count = node
+                .attributes
+                .get("analysisResultCount")
+                .and_then(|v| v.as_u64())
+                .unwrap_or(0);
+            let local_results = graph
+                .children_of(node)
+                .into_iter()
+                .filter(|child| child.element_kind == "analysis result")
+                .count();
+            let total = analysis_result_count.max(local_results as u64);
+            if total == 0 {
+                let key = format!("analysis_result|{}", node.id.qualified_name);
+                if seen.insert(key) {
+                    diagnostics.push(diag(
+                        uri,
+                        diagnostic_range(graph, node, None),
+                        DiagnosticSeverity::Warning,
+                        "semantic",
+                        "case_objective_binding_cardinality",
+                        format!(
+                            "Analysis case '{}' has objectives bound to analysis result but no return ref is declared.",
+                            node.name
+                        ),
+                    ));
+                }
+            }
+        }
+    }
+
     diagnostics
 }

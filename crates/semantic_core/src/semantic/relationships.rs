@@ -18,7 +18,7 @@ pub use crate::semantic::resolution::naming::{
 };
 use crate::semantic::root_element::root_element_body;
 
-const TYPING_TARGET_KINDS: &[&str] = &[
+pub(crate) const TYPING_TARGET_KINDS: &[&str] = &[
     "part def",
     "port def",
     "interface",

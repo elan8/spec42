@@ -5,7 +5,9 @@ use url::Url;
 use crate::semantic::diagnostics::checks::import_resolution::{
     import_target, import_target_resolves,
 };
-use crate::semantic::diagnostics::helpers::{diag, diagnostic_range, reference_token_range};
+use crate::semantic::diagnostics::helpers::{
+    diag, diagnostic_range, is_booleanish_filter_expression, reference_token_range,
+};
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::{SemanticDiagnostic, SemanticGraph};
 
@@ -66,23 +68,6 @@ fn resolve_import_target_kind(
         .find(|id| id.qualified_name == lookup)
         .and_then(|id| graph.get_node(id))
         .map(|node| node.element_kind.clone())
-}
-
-fn is_booleanish_filter(condition: &str) -> bool {
-    let trimmed = condition.trim();
-    if trimmed.is_empty() {
-        return false;
-    }
-    matches!(
-        trimmed.to_ascii_lowercase().as_str(),
-        "true" | "false" | "not" | "and" | "or" | "xor"
-    ) || trimmed.contains("==")
-        || trimmed.contains("!=")
-        || trimmed.contains(">")
-        || trimmed.contains("<")
-        || trimmed.contains("not ")
-        || trimmed.contains(" and ")
-        || trimmed.contains(" or ")
 }
 
 pub(in crate::semantic::diagnostics) fn collect_import_conformance_diagnostics(
@@ -208,7 +193,7 @@ pub(in crate::semantic::diagnostics) fn collect_import_conformance_diagnostics(
         else {
             continue;
         };
-        if is_booleanish_filter(condition) {
+        if is_booleanish_filter_expression(condition) {
             continue;
         }
         let key = format!("filter|{}", node.id.qualified_name);

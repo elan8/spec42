@@ -156,14 +156,15 @@ Spec areas: 7.12-7.16, 8.3.12-8.3.16, 8.4.8-8.4.12.
 Spec areas: 7.17-7.18, 8.3.17-8.3.18, 8.4.13-8.4.14.
 
 - Done: `perform_target_invalid_kind` — perform relationship target must be action-like.
-- Open: send/accept payload compatibility (needs stronger payload typing on graph).
+- Done: `accept_payload_incompatible` / `send_payload_incompatible` — when payload type is on the graph and resolves to an incompatible kind.
 - Done: `assignment_target_unresolved` — verification assign lhs must resolve.
-- Open: assignment value compatibility (needs expression typing).
+- Done: `assignment_value_incompatible` — verification assign rhs literal incompatible with resolved lhs scalar type.
 - Done: `transition_endpoint_invalid_state` — transition endpoints must resolve to state usages.
 - Done: `transition_endpoint_invalid_context` — transition endpoints must share a state-def context.
-- Open: guards should be Boolean (transition guard not yet on semantic graph).
+- Done: `transition_guard_non_boolean` — transition guard expression must be Boolean-valued.
 - Done: `initial_state_invalid_target` — initial transition target must be a state usage.
-- Open: initial/final state cardinality sanity.
+- Done: `multiple_initial_states` / `missing_initial_state` — initial transition cardinality on state definitions.
+- Deferred: explicit `final state` syntax (parser gap); sink-state heuristic not implemented.
 - Done: `succession_endpoint_invalid` — behavior flow endpoints must be action-like.
 
 ### P2: requirements, cases, verification, use cases
@@ -171,12 +172,12 @@ Spec areas: 7.17-7.18, 8.3.17-8.3.18, 8.4.13-8.4.14.
 Spec areas: 7.21-7.25, 8.3.21-8.3.25, 8.4.17-8.4.21.
 
 - Done: subject typing via extended `declared_type_ref` + `incompatible_type_kind` for `subject` nodes.
-- Open: requirement constraint membership kind validation.
+- Done: `requirement_constraint_invalid_membership` — require constraint parameter direction/type and expression body.
 - Done: `satisfy_invalid_endpoint_kind` — requirement/use-case satisfy kind compatibility (view→viewpoint still uses viewpoint conformance checks).
 - Done: `verified_requirement_invalid_target` — verification verified-requirement membership resolution.
-- Open: verification method/result shape validation beyond `invalid_verdict_value`.
+- Done: `verification_case_invalid_shape` — verdict/then-action/objective shape on verification cases.
 - Done: `use_case_include_invalid_target` — include use case target resolution and kind validation.
-- Open: case subject/objective binding cardinality checks beyond `objective_binding_unresolved`.
+- Done: `case_subject_missing` / `case_objective_binding_cardinality` — subject and analysis-result binding cardinality.
 
 ### P2: views, viewpoints, renderings, metadata
 
@@ -184,11 +185,13 @@ Spec areas: 7.26-7.27, 8.3.26, 8.4.22-8.4.23.
 
 - Done: `view_rendering_invalid_target` — view rendering membership target kind validation.
 - Done: `view_expose_empty` — view body without expose members.
-- Open: view expose/import filter expression Boolean validation as diagnostics.
-- Open: viewpoint concern/stakeholder/language/purpose reference resolution.
+- Done: `view_filter_non_boolean` — view body filter expression Boolean validation.
+- Done: `viewpoint_reference_unresolved` / `viewpoint_rep_language_unresolved` — viewpoint frame/import targets and missing rep language.
+- Deferred: viewpoint `stakeholder` / `purpose` (AST gap).
 - Done: `metadata_annotation_unresolved` — metadata annotation target resolution when untyped.
 - Done: metadata/rendering/subject typing via extended `kind_rules` + `incompatible_type_kind`.
-- Open: user-defined keyword collision or unresolved metadata definition.
+- Done: `metadata_keyword_collision` — duplicate metadata def short names in one document.
+- Deferred: `metadata_keyword_unresolved` for `#keyword` annotations (not yet modeled on the semantic graph); user-defined modeled keywords are checked on `feature decl` / `classifier decl` when present.
 
 ## Suggested implementation order
 

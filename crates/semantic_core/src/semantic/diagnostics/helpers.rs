@@ -517,6 +517,30 @@ pub(super) fn declared_type_ref(node: &SemanticNode) -> Option<&str> {
     })
 }
 
+pub(super) fn is_booleanish_filter_expression(condition: &str) -> bool {
+    let trimmed = condition.trim();
+    if trimmed.is_empty() {
+        return false;
+    }
+    matches!(
+        trimmed.to_ascii_lowercase().as_str(),
+        "true" | "false" | "not" | "and" | "or" | "xor"
+    ) || trimmed.contains("==")
+        || trimmed.contains("!=")
+        || trimmed.contains(">")
+        || trimmed.contains("<")
+        || trimmed.contains("not ")
+        || trimmed.contains(" and ")
+        || trimmed.contains(" or ")
+}
+
+pub(super) fn is_boolean_literal_value(value: &str) -> bool {
+    matches!(
+        value.trim().to_ascii_lowercase().as_str(),
+        "true" | "false"
+    )
+}
+
 pub(super) fn declared_specializes_refs(node: &SemanticNode) -> Vec<String> {
     let Some(raw) = node.attributes.get("specializes") else {
         return Vec::new();

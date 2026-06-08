@@ -3,9 +3,12 @@ use std::collections::HashSet;
 use url::Url;
 
 use crate::semantic::diagnostics::helpers::{
-    attribute_value_is_string_literal, declared_type_ref, diag, diagnostic_range, is_synthetic,
+    attribute_value_is_string_literal, declared_type_ref, diag, diagnostic_range,
+    is_booleanish_filter_expression, is_boolean_literal_value, is_synthetic,
     normalize_declared_type_ref, resolves_to_enum_def,
 };
+use crate::semantic::reference_resolution::resolve_expression_endpoint_strict;
+use crate::ResolveResult;
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::UnitRegistry;
 use crate::{SemanticDiagnostic, SemanticGraph};
@@ -173,6 +176,96 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
                             format!(
                                 "Constraint/assert on '{}' must evaluate to Boolean.",
                                 node.name
+                            ),
+                        ));
+                    }
+                }
+            }
+        }
+
+        if node.element_kind == "filter" {
+            let owner_kind = node
+                .attributes
+                .get("filterOwnerKind")
+                .and_then(|v| v.as_str())
+                .unwrap_or("");
+            if !matches!(owner_kind, "view" | "view def") {
+                continue;
+            }
+            let Some(condition) = node.attributes.get("condition").and_then(|v| v.as_str()) else {
+                continue;
+            };
+            if is_booleanish_filter_expression(condition) {
+                continue;
+            }
+            let key = format!("view_filter|{}", node.id.qualified_name);
+            if seen.insert(key) {
+                diagnostics.push(diag(
+                    uri,
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "view_filter_non_boolean",
+                    format!(
+                        "View filter expression '{}' must be Boolean-valued.",
+                        condition.trim()
+                    ),
+                ));
+            }
+        }
+
+        if node.element_kind == "verify" {
+            let Some(lhs) = node.attributes.get("lhs").and_then(|v| v.as_str()) else {
+                continue;
+            };
+            let Some(rhs) = node.attributes.get("rhs").and_then(|v| v.as_str()) else {
+                continue;
+            };
+            let lhs = lhs.trim();
+            let rhs = rhs.trim();
+            if lhs.is_empty() || rhs.is_empty() {
+                continue;
+            }
+            let prefix = node
+                .parent_id
+                .as_ref()
+                .and_then(|id| graph.get_node(id))
+                .and_then(|parent| {
+                    parent
+                        .id
+                        .qualified_name
+                        .rsplit_once("::")
+                        .map(|(p, _)| p)
+                });
+            let ResolveResult::Resolved(target_id) =
+                resolve_expression_endpoint_strict(graph, uri, prefix, lhs)
+            else {
+                continue;
+            };
+            let Some(target) = graph.get_node(&target_id) else {
+                continue;
+            };
+            if let Some(scalar_kind) = resolved_scalar_kind(graph, target) {
+                let incompatible = match scalar_kind {
+                    "Boolean" => !is_boolean_literal_value(rhs) && !rhs.contains("::"),
+                    "Real" | "Integer" => {
+                        attribute_value_is_string_literal(rhs)
+                            || is_boolean_literal_value(rhs)
+                    }
+                    _ => false,
+                };
+                if incompatible {
+                    let key = format!("assign_val|{}", node.id.qualified_name);
+                    if seen.insert(key) {
+                        diagnostics.push(diag(
+                            uri,
+                            diagnostic_range(graph, node, Some(target)),
+                            DiagnosticSeverity::Warning,
+                            "semantic",
+                            "assignment_value_incompatible",
+                            format!(
+                                "Assignment to '{}' expects {scalar_kind} but was assigned '{}'.",
+                                lhs, rhs
                             ),
                         ));
                     }

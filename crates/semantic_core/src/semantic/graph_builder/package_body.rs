@@ -2,10 +2,10 @@ use std::collections::HashMap;
 use std::fs;
 
 use sysml_v2_parser::ast::{
-    ActionDefBody, ActionDefBodyElement, CalcDefBody, CalcDefBodyElement, ConnectionDefBody,
-    ConstraintDefBody, ConstraintDefBodyElement, InOut, InterfaceDefBody, PackageBodyElement,
-    PartDefBody, PartUsageBody, PortDefBody, StateDefBody, UseCaseDefBody, ViewBody,
-    ViewBodyElement, ViewRenderingUsage,
+    ActionDefBody, ActionDefBodyElement, ActionUsage, CalcDefBody, CalcDefBodyElement,
+    ConnectionDefBody, ConstraintDefBody, ConstraintDefBodyElement, InOut, InterfaceDefBody,
+    PackageBodyElement, PartDefBody, PartUsageBody, PortDefBody, RequirementDefBody, StateDefBody,
+    UseCaseDefBody, ViewBody, ViewBodyElement, ViewDefBody, ViewDefBodyElement, ViewRenderingUsage,
 };
 use sysml_v2_parser::RootNamespace;
 use url::Url;
@@ -33,6 +33,64 @@ fn direction_to_str(direction: &InOut) -> &'static str {
         InOut::Out => "out",
         InOut::InOut => "inout",
     }
+}
+
+fn insert_action_payload_attrs(attrs: &mut HashMap<String, serde_json::Value>, action: &ActionUsage) {
+    if let Some((accept_name, accept_type)) = &action.accept {
+        attrs.insert("acceptName".to_string(), serde_json::json!(accept_name));
+        attrs.insert("acceptType".to_string(), serde_json::json!(accept_type));
+        attrs.insert("actionKind".to_string(), serde_json::json!("accept"));
+        attrs.insert("payloadName".to_string(), serde_json::json!(accept_name));
+        attrs.insert("payloadType".to_string(), serde_json::json!(accept_type));
+    } else {
+        let name = action.name.to_ascii_lowercase();
+        if name == "send" || name == "accept" {
+            attrs.insert("actionKind".to_string(), serde_json::json!(name));
+            if !action.type_name.trim().is_empty() {
+                attrs.insert(
+                    "payloadType".to_string(),
+                    serde_json::json!(action.type_name.as_str()),
+                );
+            }
+        }
+    }
+}
+
+fn add_view_filter_node(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    parent_id: &NodeId,
+    filter: &sysml_v2_parser::Node<sysml_v2_parser::ast::FilterMember>,
+    filter_owner_kind: &str,
+) {
+    let qualified = qualified_name_for_node(
+        g,
+        uri,
+        Some(parent_id.qualified_name.as_str()),
+        "_filter",
+        "filter",
+    );
+    let mut attrs = HashMap::new();
+    attrs.insert(
+        "condition".to_string(),
+        serde_json::json!(expressions::expression_to_debug_string(
+            &filter.value.condition
+        )),
+    );
+    attrs.insert("filterOwnerKind".to_string(), serde_json::json!(filter_owner_kind));
+    if let Some(vis) = &filter.value.visibility {
+        attrs.insert("visibility".to_string(), serde_json::json!(format!("{vis:?}")));
+    }
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "filter",
+        "_filter".to_string(),
+        span_to_range(&filter.span),
+        attrs,
+        Some(parent_id),
+    );
 }
 
 fn add_view_rendering_node(
@@ -95,10 +153,12 @@ fn annotate_view_usage_body(
             ViewBodyElement::ViewRendering(rendering) => {
                 add_view_rendering_node(g, uri, view_id, rendering);
             }
+            ViewBodyElement::Filter(filter) => {
+                add_view_filter_node(g, uri, view_id, filter, "view");
+            }
             ViewBodyElement::Error(_)
             | ViewBodyElement::Other(_)
             | ViewBodyElement::Doc(_)
-            | ViewBodyElement::Filter(_)
             | ViewBodyElement::Satisfy(_) => {}
         }
     }
@@ -679,16 +739,7 @@ pub(super) fn build_from_package_body_element(
                                 "actionType".to_string(),
                                 serde_json::json!(&au_node.type_name),
                             );
-                            if let Some((ref accept_name, ref accept_type)) = au_node.accept {
-                                attrs.insert(
-                                    "acceptName".to_string(),
-                                    serde_json::json!(accept_name),
-                                );
-                                attrs.insert(
-                                    "acceptType".to_string(),
-                                    serde_json::json!(accept_type),
-                                );
-                            }
+                            insert_action_payload_attrs(&mut attrs, au_node);
                             add_node_and_recurse(
                                 g,
                                 uri,
@@ -736,6 +787,7 @@ pub(super) fn build_from_package_body_element(
                 "actionType".to_string(),
                 serde_json::json!(&au_node.type_name),
             );
+            insert_action_payload_attrs(&mut attrs, au_node);
             add_node_and_recurse(
                 g,
                 uri,
@@ -1621,6 +1673,22 @@ pub(super) fn build_from_package_body_element(
                 attrs,
                 parent_id,
             );
+            let view_def_id = NodeId::new(uri, &qualified);
+            if let ViewDefBody::Brace { elements } = &vd_node.body {
+                for element in elements {
+                    match &element.value {
+                        ViewDefBodyElement::Filter(filter) => {
+                            add_view_filter_node(g, uri, &view_def_id, filter, "view def");
+                        }
+                        ViewDefBodyElement::ViewRendering(rendering) => {
+                            add_view_rendering_node(g, uri, &view_def_id, rendering);
+                        }
+                        ViewDefBodyElement::Error(_)
+                        | ViewDefBodyElement::Other(_)
+                        | ViewDefBodyElement::Doc(_) => {}
+                    }
+                }
+            }
             wire_def_specialization_edge(
                 g,
                 uri,
@@ -1646,6 +1714,17 @@ pub(super) fn build_from_package_body_element(
                 attrs,
                 parent_id,
             );
+            let viewpoint_def_id = NodeId::new(uri, &qualified);
+            if let RequirementDefBody::Brace { .. } = &vpd_node.body {
+                walk_requirement_def_body(
+                    g,
+                    uri,
+                    container_prefix,
+                    &qualified,
+                    &viewpoint_def_id,
+                    &vpd_node.body,
+                );
+            }
             wire_def_specialization_edge(
                 g,
                 uri,
@@ -1728,6 +1807,15 @@ pub(super) fn build_from_package_body_element(
                 &qualified,
                 vpu_node.type_name.as_str(),
                 container_prefix,
+            );
+            let viewpoint_id = NodeId::new(uri, &qualified);
+            walk_requirement_def_body(
+                g,
+                uri,
+                container_prefix,
+                &qualified,
+                &viewpoint_id,
+                &vpu_node.body,
             );
         }
         PBE::RenderingUsage(ru_node) => {

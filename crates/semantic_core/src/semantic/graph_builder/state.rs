@@ -91,6 +91,18 @@ pub(super) fn build_from_state_body(
                 let mut attrs = HashMap::new();
                 attrs.insert("source".to_string(), serde_json::json!(&src));
                 attrs.insert("target".to_string(), serde_json::json!(&tgt));
+                if let Some(guard) = &t.guard {
+                    attrs.insert(
+                        "guardExpression".to_string(),
+                        serde_json::json!(expressions::expression_to_debug_string(guard)),
+                    );
+                }
+                if let Some(effect) = &t.effect {
+                    attrs.insert(
+                        "effectExpression".to_string(),
+                        serde_json::json!(expressions::expression_to_debug_string(effect)),
+                    );
+                }
                 add_node_and_recurse(
                     g,
                     uri,
