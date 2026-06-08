@@ -175,6 +175,12 @@ pub(crate) fn signature_from_node(node: &SemanticNode) -> Option<String> {
                 .unwrap_or_default();
             format!("item def {}{specializes};", node.name)
         }
+        "individual def" => {
+            let specializes = attr_str(node, "specializes")
+                .map(|base| format!(" :> {}", base))
+                .unwrap_or_default();
+            format!("individual def {}{specializes};", node.name)
+        }
         "item" => {
             let type_part = attr_str(node, "itemType")
                 .map(|t| format!(" : {}", t))
@@ -187,6 +193,27 @@ pub(crate) fn signature_from_node(node: &SemanticNode) -> Option<String> {
                 .unwrap_or_default();
             format!("actor def {}{};", node.name, type_part)
         }
+        "enumeration" => {
+            let type_part = first_attr_str(node, &["enumerationType", "type"])
+                .map(|t| format!(" : {}", t))
+                .unwrap_or_default();
+            format!("enum {}{}{};", node.name, type_part, multiplicity)
+        }
+        "opaque member" => {
+            let keyword = attr_str(node, "keyword").unwrap_or("opaque");
+            format!("{} {};", keyword, node.name)
+        }
+        "require constraint" => {
+            let expression = attr_str(node, "expression").unwrap_or("");
+            if expression.trim().is_empty() {
+                "require constraint {};".to_string()
+            } else {
+                format!("require constraint {{ {} }};", expression.trim())
+            }
+        }
+        "stakeholder" => format!("stakeholder {};", node.name),
+        "purpose" => format!("purpose {};", node.name),
+        "verified requirement" => format!("verify requirement {};", node.name),
         "action def" | "requirement def" | "requirement" | "concern" | "use case def"
         | "use case" | "interface" | "frame" | "state" => {
             format!("{} {};", kind, node.name)
@@ -286,4 +313,87 @@ pub fn hover_markdown_for_node(
     }
 
     md
+}
+
+#[cfg(test)]
+mod tests {
+    use tower_lsp::lsp_types::Url;
+
+    use sysml_v2_parser::parse;
+
+    use crate::semantic::build_graph_from_doc;
+
+    use super::{hover_markdown_for_node, signature_from_node};
+
+    fn graph_node<'a>(
+        graph: &'a crate::semantic::SemanticGraph,
+        uri: &Url,
+        kind: &str,
+        name: &str,
+    ) -> &'a crate::semantic::SemanticNode {
+        graph
+            .nodes_for_uri(uri)
+            .into_iter()
+            .find(|node| node.element_kind == kind && node.name == name)
+            .unwrap_or_else(|| panic!("expected {kind} node named {name}"))
+    }
+
+    #[test]
+    fn require_constraint_signature_contains_keyword() {
+        let input = r#"package P {
+  requirement def Safety {
+    require constraint { speed <= 120 }
+  }
+}"#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///req.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let constraint = graph_node(&graph, &uri, "require constraint", "_requireConstraint_0");
+        let signature = signature_from_node(constraint).expect("signature");
+        assert!(
+            signature.contains("require constraint"),
+            "signature should mention require constraint: {signature}"
+        );
+    }
+
+    #[test]
+    fn stakeholder_hover_includes_kind_line() {
+        let input = r#"package P {
+  requirement def Safety {
+    stakeholder auditor;
+  }
+}"#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///req.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let stakeholder = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == "stakeholder")
+            .expect("stakeholder node");
+        let hover = hover_markdown_for_node(&graph, stakeholder, false);
+        assert!(
+            hover.contains("stakeholder"),
+            "hover should include stakeholder kind: {hover}"
+        );
+    }
+
+    #[test]
+    fn enumeration_signature_uses_enum_keyword() {
+        let input = r#"package P {
+  enum def Status;
+  part def Vehicle {
+    enum status : Status;
+  }
+}"#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///enum.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let enumeration = graph_node(&graph, &uri, "enumeration", "status");
+        let signature = signature_from_node(enumeration).expect("signature");
+        assert!(
+            signature.starts_with("enum status"),
+            "enumeration signature should use enum keyword: {signature}"
+        );
+    }
 }

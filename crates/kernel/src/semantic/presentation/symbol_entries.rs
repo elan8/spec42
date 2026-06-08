@@ -49,6 +49,10 @@ fn element_kind_to_symbol_kind(kind: &str) -> SymbolKind {
         "state" => SymbolKind::ENUM_MEMBER,
         "use case def" => SymbolKind::EVENT,
         "actor def" => SymbolKind::CONSTRUCTOR,
+        "require constraint" => SymbolKind::FUNCTION,
+        "opaque member" => SymbolKind::PROPERTY,
+        "enumeration" => SymbolKind::ENUM_MEMBER,
+        "stakeholder" | "purpose" | "verified requirement" => SymbolKind::STRING,
         _ => SymbolKind::NULL,
     }
 }

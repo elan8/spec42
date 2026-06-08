@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-use sysml_v2_parser::ast::{CalcDefBody, InterfaceDefBody, PartDefBodyElement, PartUsageBody};
+use sysml_v2_parser::ast::{
+    CalcDefBody, InterfaceDefBody, OccurrenceUsageBody, PartDefBodyElement, PartUsageBody,
+};
 use url::Url;
 
 use crate::semantic::ast_util::{identification_name, span_to_range};
@@ -8,8 +10,10 @@ use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
+use super::attribute_body;
 use super::expressions;
 use super::interface_def;
+use super::occurrence_body;
 use super::part_usage;
 use super::port_def::materialize_port_usage;
 use super::requirement_body::walk_requirement_def_body;
@@ -196,6 +200,18 @@ pub(super) fn build_from_part_def_body_element(
             if let Some(ref t) = occ_node.type_name {
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
+            let node_id = NodeId::new(uri, &qualified);
+            if let OccurrenceUsageBody::Brace { elements } = &occ_node.body {
+                for child in elements {
+                    occurrence_body::build_from_occurrence_body_element(
+                        child,
+                        uri,
+                        Some(&qualified),
+                        &node_id,
+                        g,
+                    );
+                }
+            }
         }
         PDBE::ItemUsage(item_node) => {
             let name = &item_node.name;
@@ -221,6 +237,14 @@ pub(super) fn build_from_part_def_body_element(
             if let Some(ref t) = item_node.type_name {
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
+            let node_id = NodeId::new(uri, &qualified);
+            attribute_body::build_from_attribute_body(
+                &item_node.body,
+                uri,
+                Some(&qualified),
+                &node_id,
+                g,
+            );
         }
         PDBE::RequirementUsage(ru_node) => {
             let name = &ru_node.name;
@@ -449,13 +473,73 @@ pub(super) fn build_from_part_def_body_element(
                 &mk_node.span,
             );
         }
-        // Compatibility-only members introduced by newer parser versions are intentionally ignored.
-        PDBE::EnumerationUsage(_)
-        | PDBE::Annotation(_)
+        PDBE::EnumerationUsage(enum_node) => {
+            let name = &enum_node.name;
+            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "enumeration");
+            let range = span_to_range(&enum_node.span);
+            let mut attrs = HashMap::new();
+            if let Some(ref t) = enum_node.type_name {
+                attrs.insert("enumerationType".to_string(), serde_json::json!(t));
+            }
+            if let Some(ref m) = enum_node.multiplicity {
+                attrs.insert("multiplicity".to_string(), serde_json::json!(m));
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "enumeration",
+                name.clone(),
+                range,
+                attrs,
+                Some(parent_id),
+            );
+            if let Some(ref t) = enum_node.type_name {
+                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            }
+            let node_id = NodeId::new(uri, &qualified);
+            attribute_body::build_from_attribute_body(
+                &enum_node.body,
+                uri,
+                Some(&qualified),
+                &node_id,
+                g,
+            );
+        }
+        PDBE::OpaqueMember(opaque_node) => {
+            let opaque = &opaque_node.value;
+            let name = if opaque.name.trim().is_empty() {
+                format!("_opaque_{}", opaque.keyword)
+            } else {
+                opaque.name.clone()
+            };
+            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "opaque member");
+            let mut attrs = HashMap::new();
+            attrs.insert("keyword".to_string(), serde_json::json!(opaque.keyword));
+            attrs.insert("text".to_string(), serde_json::json!(opaque.text));
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "opaque member",
+                name,
+                span_to_range(&opaque_node.span),
+                attrs,
+                Some(parent_id),
+            );
+            let node_id = NodeId::new(uri, &qualified);
+            attribute_body::build_from_attribute_body(
+                &opaque.body,
+                uri,
+                Some(&qualified),
+                &node_id,
+                g,
+            );
+        }
+        PDBE::Annotation(_)
         | PDBE::Error(_)
         | PDBE::Doc(_)
         | PDBE::Comment(_)
-        | PDBE::Other(_)
-        | PDBE::OpaqueMember(_) => {}
+        | PDBE::Other(_) => {}
     }
 }

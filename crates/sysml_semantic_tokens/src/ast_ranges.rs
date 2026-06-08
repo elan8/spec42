@@ -2,10 +2,12 @@
 
 use sysml_v2_parser::ast::{
     ActionDefBody, ActionDefBodyElement, ActionUsage, ActionUsageBody, ActionUsageBodyElement,
-    ConstraintDefBodyElement, InterfaceDefBody, InterfaceDefBodyElement, RequireConstraintBody,
-    PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
-    PartUsageBodyElement, PortBody, PortBodyElement, PortDefBody, PortDefBodyElement,
-    RequirementDefBody, RequirementDefBodyElement, RootElement,
+    AttributeBody, AttributeBodyElement, CalcDefBody, ConnectionDefBody, ConnectionDefBodyElement,
+    ConstraintDefBodyElement, InterfaceDefBody, InterfaceDefBodyElement, MetadataKeywordUsage,
+    OccurrenceBodyElement, OccurrenceUsageBody, PackageBody, PackageBodyElement, PartDefBody,
+    PartDefBodyElement, PartUsageBody, PartUsageBodyElement, PortBody, PortBodyElement,
+    PortDefBody, PortDefBodyElement, RequireConstraintBody, RequirementDefBody,
+    RequirementDefBodyElement, RootElement,
 };
 use sysml_v2_parser::RootNamespace;
 
@@ -192,7 +194,114 @@ fn collect_semantic_ranges_package_body_element(
         PBE::RenderingUsage(ru_node) => {
             out.push((span_to_source_range(&ru_node.span), TYPE_PROPERTY));
         }
+        PBE::ItemDef(id_node) => {
+            out.push((span_to_source_range(&id_node.span), TYPE_CLASS));
+            if let Some(ref s) = id_node.value.specializes_span {
+                out.push((span_to_source_range(s), TYPE_TYPE));
+            }
+            collect_semantic_ranges_attribute_body(&id_node.value.body, out);
+        }
+        PBE::IndividualDef(id_node) => {
+            out.push((span_to_source_range(&id_node.span), TYPE_CLASS));
+            if let Some(ref s) = id_node.value.specializes_span {
+                out.push((span_to_source_range(s), TYPE_TYPE));
+            }
+            collect_semantic_ranges_attribute_body(&id_node.value.body, out);
+        }
+        PBE::MetadataDef(md_node) => {
+            out.push((span_to_source_range(&md_node.span), TYPE_CLASS));
+            if let Some(ref s) = md_node.value.specializes_span {
+                out.push((span_to_source_range(s), TYPE_TYPE));
+            }
+            collect_semantic_ranges_attribute_body(&md_node.value.body, out);
+        }
         _ => {}
+    }
+}
+
+fn collect_semantic_ranges_attribute_body(body: &AttributeBody, out: &mut Vec<(SourceRange, u32)>) {
+    let AttributeBody::Brace { elements } = body else {
+        return;
+    };
+    for node in elements {
+        match &node.value {
+            AttributeBodyElement::AttributeDef(attribute) => {
+                out.push((span_to_source_range(&attribute.span), TYPE_PROPERTY));
+            }
+            AttributeBodyElement::AttributeUsage(attribute) => {
+                out.push((span_to_source_range(&attribute.span), TYPE_PROPERTY));
+            }
+            AttributeBodyElement::Doc(_)
+            | AttributeBodyElement::Error(_)
+            | AttributeBodyElement::Other(_) => {}
+        }
+    }
+}
+
+fn collect_semantic_ranges_metadata_keyword_usage(
+    node: &sysml_v2_parser::Node<MetadataKeywordUsage>,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    out.push((span_to_source_range(&node.value.keyword_span), TYPE_PROPERTY));
+    if let Some(ref span) = node.value.type_span {
+        out.push((span_to_source_range(span), TYPE_TYPE));
+    }
+}
+
+fn collect_semantic_ranges_occurrence_body_element(
+    node: &sysml_v2_parser::Node<OccurrenceBodyElement>,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    use OccurrenceBodyElement as OBE;
+    match &node.value {
+        OBE::AttributeUsage(attribute) => {
+            out.push((span_to_source_range(&attribute.span), TYPE_PROPERTY));
+        }
+        OBE::PartUsage(part_usage) => {
+            if let Some(ref span) = part_usage.value.name_span {
+                out.push((span_to_source_range(span), TYPE_PROPERTY));
+            }
+            if let Some(ref span) = part_usage.value.type_ref_span {
+                out.push((span_to_source_range(span), TYPE_TYPE));
+            }
+            if let PartUsageBody::Brace { elements } = &part_usage.body {
+                for child in elements {
+                    collect_semantic_ranges_part_usage_body_element(child, out);
+                }
+            }
+        }
+        OBE::OccurrenceUsage(occurrence_usage) => {
+            out.push((span_to_source_range(&occurrence_usage.span), TYPE_PROPERTY));
+            if let OccurrenceUsageBody::Brace { elements } = &occurrence_usage.body {
+                for child in elements {
+                    collect_semantic_ranges_occurrence_body_element(child, out);
+                }
+            }
+        }
+        OBE::Doc(_)
+        | OBE::Error(_)
+        | OBE::Annotation(_)
+        | OBE::AssertConstraint(_)
+        | OBE::Other(_) => {}
+    }
+}
+
+fn collect_semantic_ranges_connection_def_body_element(
+    node: &sysml_v2_parser::Node<ConnectionDefBodyElement>,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    use ConnectionDefBodyElement as CDBE;
+    match &node.value {
+        CDBE::EndDecl(end_decl) => {
+            if let Some(ref span) = end_decl.name_span {
+                out.push((span_to_source_range(span), TYPE_PROPERTY));
+            }
+            if let Some(ref span) = end_decl.type_ref_span {
+                out.push((span_to_source_range(span), TYPE_TYPE));
+            }
+        }
+        CDBE::RefDecl(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
+        CDBE::ConnectStmt(_) => {}
     }
 }
 
@@ -203,7 +312,65 @@ fn collect_semantic_ranges_part_def_body_element(
     use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
     match &node.value {
         PDBE::AttributeDef(n) => out.push((span_to_source_range(&n.span), TYPE_PROPERTY)),
+        PDBE::AttributeUsage(n) => out.push((span_to_source_range(&n.span), TYPE_PROPERTY)),
         PDBE::PortUsage(n) => collect_semantic_ranges_port_usage(n, out),
+        PDBE::PartUsage(pu_node) => {
+            if let Some(ref span) = pu_node.value.name_span {
+                out.push((span_to_source_range(span), TYPE_PROPERTY));
+            }
+            if let Some(ref span) = pu_node.value.type_ref_span {
+                out.push((span_to_source_range(span), TYPE_TYPE));
+            }
+            if let PartUsageBody::Brace { elements } = &pu_node.body {
+                for child in elements {
+                    collect_semantic_ranges_part_usage_body_element(child, out);
+                }
+            }
+        }
+        PDBE::Ref(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
+        PDBE::ItemUsage(item_node) => {
+            out.push((span_to_source_range(&item_node.span), TYPE_PROPERTY));
+            collect_semantic_ranges_attribute_body(&item_node.body, out);
+        }
+        PDBE::OccurrenceUsage(occurrence_usage) => {
+            out.push((span_to_source_range(&occurrence_usage.span), TYPE_PROPERTY));
+            if let OccurrenceUsageBody::Brace { elements } = &occurrence_usage.body {
+                for child in elements {
+                    collect_semantic_ranges_occurrence_body_element(child, out);
+                }
+            }
+        }
+        PDBE::InterfaceDef(id_node) => {
+            out.push((span_to_source_range(&id_node.span), TYPE_INTERFACE));
+            if let InterfaceDefBody::Brace { elements } = &id_node.body {
+                for element in elements {
+                    collect_semantic_ranges_interface_def_body_element(element, out);
+                }
+            }
+        }
+        PDBE::Connection(connection_usage) => {
+            out.push((span_to_source_range(&connection_usage.span), TYPE_PROPERTY));
+            if let ConnectionDefBody::Brace { elements } = &connection_usage.value.body {
+                for element in elements {
+                    collect_semantic_ranges_connection_def_body_element(element, out);
+                }
+            }
+        }
+        PDBE::Perform(perform) => out.push((span_to_source_range(&perform.span), TYPE_FUNCTION)),
+        PDBE::ExhibitState(state_usage) => {
+            out.push((span_to_source_range(&state_usage.span), TYPE_PROPERTY));
+        }
+        PDBE::CalcUsage(calc_node) => {
+            out.push((span_to_source_range(&calc_node.span), TYPE_FUNCTION));
+            if let CalcDefBody::Brace { .. } = &calc_node.value.body {}
+        }
+        PDBE::EnumerationUsage(enum_node) => {
+            out.push((span_to_source_range(&enum_node.span), TYPE_PROPERTY));
+            collect_semantic_ranges_attribute_body(&enum_node.body, out);
+        }
+        PDBE::MetadataKeywordUsage(mk_node) => {
+            collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
+        }
         PDBE::RequirementUsage(ru_node) => {
             out.push((span_to_source_range(&ru_node.span), TYPE_PROPERTY));
             match &ru_node.body {
@@ -215,7 +382,15 @@ fn collect_semantic_ranges_part_def_body_element(
                 RequirementDefBody::Semicolon => {}
             }
         }
-        _ => {}
+        PDBE::Connect(_)
+        | PDBE::InterfaceUsage(_)
+        | PDBE::Allocate(_)
+        | PDBE::OpaqueMember(_)
+        | PDBE::Annotation(_)
+        | PDBE::Error(_)
+        | PDBE::Doc(_)
+        | PDBE::Comment(_)
+        | PDBE::Other(_) => {}
     }
 }
 
@@ -409,14 +584,23 @@ fn collect_semantic_ranges_requirement_def_body_element(
             }
         }
         RDBE::Import(import) => out.push((span_to_source_range(&import.span), TYPE_NAMESPACE)),
-        RDBE::TextualRep(textual) => out.push((span_to_source_range(&textual.span), TYPE_PROPERTY)),
+        RDBE::TextualRep(textual) => {
+            if let Some(ref span) = textual.value.language_span {
+                out.push((span_to_source_range(span), TYPE_STRING));
+            }
+            out.push((span_to_source_range(&textual.span), TYPE_PROPERTY));
+        }
+        RDBE::MetadataKeywordUsage(mk_node) => {
+            collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
+        }
+        RDBE::RequirementActorDecl(actor) => {
+            out.push((span_to_source_range(&actor.span), TYPE_PROPERTY));
+        }
         RDBE::Doc(_)
         | RDBE::Error(_)
         | RDBE::Other(_)
         | RDBE::Annotation(_)
-        | RDBE::MetadataAnnotation(_)
-        | RDBE::MetadataKeywordUsage(_)
-        | RDBE::RequirementActorDecl(_) => {}
+        | RDBE::MetadataAnnotation(_) => {}
     }
 }
 

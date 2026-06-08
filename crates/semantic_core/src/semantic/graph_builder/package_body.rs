@@ -22,6 +22,7 @@ use crate::semantic::relationships::{
 use super::action;
 use super::analysis_case;
 use super::attribute_body;
+use super::definition_body;
 use super::expressions;
 use super::modeled_kerml_name::extract_modeled_decl_name;
 use super::package_packages;
@@ -978,6 +979,14 @@ pub(super) fn build_from_package_body_element(
                     container_prefix,
                     occ_node.specializes.as_deref(),
                 );
+                let node_id = NodeId::new(uri, &qualified);
+                definition_body::build_from_definition_body(
+                    &occ_node.body,
+                    uri,
+                    Some(&qualified),
+                    &node_id,
+                    g,
+                );
             }
         }
         PBE::OccurrenceUsage(occ_node) => {
@@ -1082,6 +1091,14 @@ pub(super) fn build_from_package_body_element(
                     container_prefix,
                     flow_node.specializes.as_deref(),
                 );
+                let node_id = NodeId::new(uri, &qualified);
+                definition_body::build_from_definition_body(
+                    &flow_node.body,
+                    uri,
+                    Some(&qualified),
+                    &node_id,
+                    g,
+                );
             }
         }
         PBE::FlowUsage(flow_node) => {
@@ -1104,6 +1121,14 @@ pub(super) fn build_from_package_body_element(
             if let Some(ref t) = flow_node.type_name {
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
+            let node_id = NodeId::new(uri, &qualified);
+            definition_body::build_from_definition_body(
+                &flow_node.body,
+                uri,
+                Some(&qualified),
+                &node_id,
+                g,
+            );
         }
         PBE::AllocationDef(alloc_node) => {
             let name = identification_name(&alloc_node.identification);
