@@ -372,19 +372,47 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="${{ steps.version.outputs.tag }}"
-          cat > RELEASE_NOTES.txt <<EOF
-          Release ${TAG}.
-          The VS Code extension (.vsix) includes the language server. The Zed extension downloads the matching spec42 server binary automatically, and its source bundle is attached here for convenience.
+          VERSION="${{ steps.version.outputs.version }}"
 
-          GitHub Action: use \`elan8/spec42@${TAG}\` in workflows to install this release's CLI and run \`spec42 check\` (see docs/GITHUB-ACTION.md).
+          awk -v version="$VERSION" '
+            $0 ~ "^## \\[" version "\\]" { capture = 1; next }
+            capture && $0 ~ "^## \\[" { exit }
+            capture { print }
+          ' CHANGELOG.md > CHANGELOG_RELEASE_SECTION.md
 
-          Each platform archive includes `spec42` and `spec42-mcp`: the MCP binary is a stdio server exposing `spec42_check`, matching `spec42 check`.
+          {
+            echo "## Spec42 ${TAG}"
+            echo
+            if [ -s CHANGELOG_RELEASE_SECTION.md ]; then
+              cat CHANGELOG_RELEASE_SECTION.md
+            else
+              echo "Release notes for ${TAG}. See CHANGELOG.md for project history."
+            fi
+            cat <<EOF
 
-          Zed install notes:
-          - Download and extract the attached spec42-zed bundle.
-          - In Zed, use "Install Dev Extension" and select the extracted zed directory.
-          - If no configured or PATH-installed spec42 binary is found, the extension downloads the matching release asset automatically.
+          ## Installation
+
+          - VS Code: install the attached .vsix, or install **SysML v2 Editor** from the Visual Studio Marketplace.
+          - CLI: download the platform archive for your OS and put \`spec42\` on your PATH.
+          - GitHub Action: use \`elan8/spec42@${TAG}\` in workflows to install this release and run \`spec42 check\`.
+          - Zed: download and extract the attached spec42-zed bundle, then use **Install Dev Extension** and select the extracted \`zed\` directory.
+
+          ## Included Artifacts
+
+          - Platform archives include \`spec42\` and \`spec42-mcp\`.
+          - \`spec42-mcp\` is a stdio MCP server exposing validation and model-inspection tools for assistant workflows.
+          - The VS Code .vsix includes the matching language server binary.
+          - The Zed extension can download the matching server binary automatically when no configured or PATH-installed \`spec42\` binary is found.
+          - \`SHA256SUMS.txt\` contains checksums for all attached artifacts.
+
+          ## Documentation
+
+          - GitHub Action usage: docs/user/GITHUB-ACTION.md
+          - Assistant and MCP setup: docs/user/AI-ASSISTANTS.md
+          - Troubleshooting: docs/user/TROUBLESHOOTING.md
           EOF
+          } > RELEASE_NOTES.txt
+
           gh release create "$TAG" \
             --title "Release $TAG" \
             --notes-file RELEASE_NOTES.txt \
