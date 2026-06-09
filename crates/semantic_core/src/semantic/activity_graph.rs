@@ -70,6 +70,7 @@ fn flow_guard_for_kind(kind: &RelationshipKind) -> &'static str {
     match kind {
         RelationshipKind::Flow => "flow",
         RelationshipKind::Perform => "perform",
+        RelationshipKind::Bind => "bind",
         _ => "flow",
     }
 }
@@ -119,7 +120,9 @@ fn merge_graph_flows(
 
     for node in step_nodes.values() {
         for (target, kind) in graph.outgoing_relationships(node) {
-            if kind == RelationshipKind::Flow && step_nodes.contains_key(&target.name) {
+            if (kind == RelationshipKind::Flow || kind == RelationshipKind::Bind)
+                && step_nodes.contains_key(&target.name)
+            {
                 push_flow(
                     &node.name,
                     &target.name,
@@ -176,6 +179,54 @@ fn enrich_diagram(diagram: &mut ActivityDiagramDto, graph: &SemanticGraph) {
     let mut step_nodes: HashMap<String, &SemanticNode> = HashMap::new();
     collect_action_step_nodes(graph, action_def, &mut step_nodes);
     merge_graph_flows(diagram, action_def, &step_nodes, graph);
+    propagate_interface_parameters(diagram, action_def, graph);
+}
+
+fn propagate_interface_parameters(
+    diagram: &mut ActivityDiagramDto,
+    action_def: &SemanticNode,
+    graph: &SemanticGraph,
+) {
+    let mut inputs = diagram
+        .interface
+        .as_ref()
+        .map(|interface| interface.inputs.clone())
+        .unwrap_or_default();
+    let mut outputs = diagram
+        .interface
+        .as_ref()
+        .map(|interface| interface.outputs.clone())
+        .unwrap_or_default();
+    for child in graph.children_of(action_def) {
+        if child.element_kind != "in out parameter" {
+            continue;
+        }
+        let direction = child
+            .attributes
+            .get("direction")
+            .and_then(|value| value.as_str())
+            .unwrap_or_default();
+        match direction {
+            "in" => inputs.push(child.name.clone()),
+            "out" => outputs.push(child.name.clone()),
+            "inout" => {
+                inputs.push(child.name.clone());
+                outputs.push(child.name.clone());
+            }
+            _ => {}
+        }
+    }
+    inputs.sort();
+    inputs.dedup();
+    outputs.sort();
+    outputs.dedup();
+    if inputs.is_empty() && outputs.is_empty() {
+        return;
+    }
+    diagram.interface = Some(crate::semantic::extracted_model::ActivityInterfaceDto {
+        inputs,
+        outputs,
+    });
 }
 
 /// Merges graph-backed action steps and control flows into AST-extracted activity diagrams.

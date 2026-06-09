@@ -154,6 +154,7 @@ pub(crate) fn build_sysml_visualization_response(
         workspace_model: None,
         activity_diagrams: None,
         sequence_diagrams: None,
+        state_machines: None,
         ibd: None,
         stats: Some(SysmlModelStatsDto {
             total_elements: 0,

@@ -17,6 +17,7 @@ pub mod relationships;
 pub mod resolution;
 pub mod root_element;
 pub mod sequence_views;
+pub mod state_views;
 pub mod source;
 pub mod text_span;
 pub mod visualization_entry;

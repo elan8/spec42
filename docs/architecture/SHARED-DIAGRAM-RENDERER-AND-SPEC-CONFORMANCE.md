@@ -27,8 +27,8 @@ The removed `spec42.visualization.useSharedRenderer` setting must not be reintro
 |---------|--------------------|----------|--------|
 | `general-view` | General View | `renderer.ts` + `sysml-node-builder.ts` | Complete for shipped structural workflows |
 | `interconnection-view` | Interconnection View | `renderer.ts` IBD path | Complete for shipped structural workflows |
-| `action-flow-view` | Action Flow View | `views/action-flow.ts` | Shared behavior renderer with perform-action, parameter, and final-node notation |
-| `state-transition-view` | State Transition View | `views/state-transition.ts` | Shared behavior renderer with composite regions, entry/do/exit actions, terminate/final, and self-loop support |
+| `action-flow-view` | Action Flow View | `views/action-flow.ts` | Partial — graph-first `ActivityDiagramDto` with then-action AST and graph enrichment; see [ACTION-STATE-BNF-SIGNOFF.md](../archive/ACTION-STATE-BNF-SIGNOFF.md) |
+| `state-transition-view` | State Transition View | `views/state-transition.ts` | Partial — graph-first `StateMachineDto` on LSP payload; see [ACTION-STATE-BNF-SIGNOFF.md](../archive/ACTION-STATE-BNF-SIGNOFF.md) |
 | `sequence-view` | Sequence View | `views/sequence.ts` | Shared behavior renderer with lifelines, messages, activations, fragments, return messages, and self messages |
 | `browser-view` | Browser View | `views/standard-views.ts` | Provisional standard-view renderer |
 | `grid-view` | Grid View | `views/standard-views.ts` | Provisional standard-view renderer |

@@ -695,6 +695,44 @@ export function prepareDataForView(data: VisualizationDataDto | Record<string, a
         }
 
         case 'state-transition-view': {
+            const serverStateMachines = Array.isArray(data.stateMachines)
+                ? data.stateMachines.filter((machine: any) => machine && typeof machine === 'object')
+                : [];
+            if (serverStateMachines.length > 0) {
+                const stateMachines = serverStateMachines
+                    .map((machine: any) => ({
+                        ...machine,
+                        label: machine.label ?? buildSelectorLabel(
+                            String(machine.name || 'State Machine'),
+                            String(machine.packagePath || machine.package_path || lookupElementMeta(machine, machine.id).packagePath || ''),
+                        ),
+                        packagePath: machine.packagePath ?? machine.package_path,
+                    }))
+                    .sort((a: any, b: any) => {
+                        const stateCountDelta = (b.states?.length ?? 0) - (a.states?.length ?? 0);
+                        if (stateCountDelta !== 0) return stateCountDelta;
+                        const transitionCountDelta = (b.transitions?.length ?? 0) - (a.transitions?.length ?? 0);
+                        if (transitionCountDelta !== 0) return transitionCountDelta;
+                        return String(a.label || a.name).localeCompare(String(b.label || b.name));
+                    });
+                const flatStates = stateMachines.flatMap((machine: any) => machine.states ?? []);
+                const flatTransitions = stateMachines.flatMap((machine: any) => machine.transitions ?? []);
+                return {
+                    ...data,
+                    stateMachines,
+                    stateMachineCandidates: stateMachines.map((machine: any) => ({
+                        id: machine.id,
+                        name: machine.name,
+                        label: machine.label,
+                        packagePath: machine.packagePath,
+                        stateCount: countWithFallback(machine.states),
+                        transitionCount: countWithFallback(machine.transitions),
+                    })),
+                    states: flatStates,
+                    transitions: flatTransitions,
+                };
+            }
+
             const typeLower = (value: any) => String(value || '').toLowerCase();
             const normalizeKey = (value: any) => String(value || '').replace(/::/g, '.').trim();
             const lastSegment = (value: any) => {

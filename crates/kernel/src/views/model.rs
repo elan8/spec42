@@ -412,6 +412,7 @@ pub async fn build_sysml_model_response(
     let want_stats = scope.is_empty() || scope.iter().any(|s| s == "stats");
     let want_activity_diagrams = scope.is_empty() || scope.iter().any(|s| s == "activityDiagrams");
     let want_sequence_diagrams = scope.is_empty() || scope.iter().any(|s| s == "sequenceDiagrams");
+    let want_state_machines = scope.is_empty() || scope.iter().any(|s| s == "stateMachines");
     let want_ibd = ibd_requested(scope);
     let scope_eval_ms = request_phase_start.elapsed().as_millis().max(1);
 
@@ -495,10 +496,17 @@ pub async fn build_sysml_model_response(
     let doc = parsed;
     let activity_diagrams_start = Instant::now();
     let activity_diagrams = if want_activity_diagrams {
-        Some(
-            doc.map(model::extract_activity_diagrams)
-                .unwrap_or_default(),
-        )
+        let mut diagrams = doc
+            .map(model::extract_activity_diagrams)
+            .unwrap_or_default();
+        if !diagrams.is_empty() {
+            semantic_core::enrich_activity_diagrams_from_graph(
+                &mut diagrams,
+                semantic_graph,
+                std::slice::from_ref(uri),
+            );
+        }
+        Some(diagrams)
     } else {
         None
     };
@@ -516,6 +524,19 @@ pub async fn build_sysml_model_response(
         None
     };
     let sequence_diagrams_ms = sequence_diagrams_start.elapsed().as_millis().max(1);
+
+    let state_machines_start = Instant::now();
+    let state_machines = if want_state_machines {
+        Some(
+            semantic_core::semantic::state_views::build_workspace_state_machines(
+                semantic_graph,
+                std::slice::from_ref(uri),
+            ),
+        )
+    } else {
+        None
+    };
+    let state_machines_ms = state_machines_start.elapsed().as_millis().max(1);
 
     let stats_start = Instant::now();
     let stats = if want_stats {
@@ -613,6 +634,7 @@ pub async fn build_sysml_model_response(
             ("workspaceModelMs", workspace_model_ms.to_string()),
             ("activityDiagramsMs", activity_diagrams_ms.to_string()),
             ("sequenceDiagramsMs", sequence_diagrams_ms.to_string()),
+            ("stateMachinesMs", state_machines_ms.to_string()),
             ("statsMs", stats_ms.to_string()),
             ("ibdMs", ibd_ms.to_string()),
             ("graphNodes", node_count.to_string()),
@@ -633,6 +655,7 @@ pub async fn build_sysml_model_response(
         stats,
         activity_diagrams,
         sequence_diagrams,
+        state_machines,
         ibd,
     }
 }

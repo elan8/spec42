@@ -175,9 +175,16 @@ export async function renderStateTransitionView(ctx: BehaviorSceneContext): Prom
     const selfLoop = Boolean(edge.attributes?.selfLoop) || edge.source === edge.target;
     const fallback = selfLoop ? buildSelfLoopPath(source) : fallbackEdgePath(source, target, horizontal);
     const path = selfLoop ? fallback.path : (pathFromSections(sections) || fallback.path);
+    const edgeAttrs = (edge.attributes ?? {}) as Record<string, unknown>;
+    const guard = String(edgeAttrs.guard ?? "").trim();
+    const effect = String(edgeAttrs.effect ?? "").trim();
+    const accept = String(edgeAttrs.accept ?? "").trim();
     edgeLayer
       .append("path")
       .attr("class", "state-transition-edge")
+      .attr("data-guard", guard || undefined)
+      .attr("data-effect", effect || undefined)
+      .attr("data-accept", accept || undefined)
       .attr("d", path)
       .style("fill", "none")
       .style("stroke", ctx.theme.edge.default)

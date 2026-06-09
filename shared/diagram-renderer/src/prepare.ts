@@ -498,11 +498,13 @@ function prepareActivity(visualization: VisualizationPayload): PreparedView {
       const edge = asRecord(edgeRaw);
       const source = resolveActivityNodeRef(edge.from ?? edge.source ?? edge.sourceId, aliases);
       const target = resolveActivityNodeRef(edge.to ?? edge.target ?? edge.targetId, aliases);
+      const guard = asString(edge.guard ?? edge.type, "");
       return {
         id: asString(edge.id, `flow-${index}`),
         source,
         target,
-        label: asString(edge.name ?? edge.label ?? edge.guard ?? edge.type, ""),
+        label: asString(edge.name ?? edge.label ?? guard, ""),
+        attributes: guard ? { guard } : undefined,
       };
     })
     .filter(
@@ -549,9 +551,13 @@ function collectStateMachineNodes(machine: UnknownRecord): PreparedNode[] {
       range: element.range ?? state.range,
       uri: element.uri ?? state.uri ?? element.sourcePath ?? state.sourcePath,
       qualifiedName: state.qualifiedName ?? element.qualifiedName ?? state.id,
+      entry: state.entry ?? element.entry,
+      do: state.do ?? element.do,
+      exit: state.exit ?? element.exit,
+      parentId: state.parentId ?? state.parent_id ?? element.parentId,
     };
     const kind = asString(state.kind ?? state.type ?? element.type, "state").toLowerCase();
-    return buildBehaviorNode(asRecord(merged), index, {
+    const behaviorNode = buildBehaviorNode(asRecord(merged), index, {
       id: `state-${index}`,
       label: "State",
       kind: kind.includes("initial")
@@ -562,6 +568,18 @@ function collectStateMachineNodes(machine: UnknownRecord): PreparedNode[] {
             ? "composite"
             : "state",
     });
+    const entry = asString(merged.entry, "");
+    const doAction = asString(merged.do, "");
+    const exit = asString(merged.exit, "");
+    if (entry || doAction || exit) {
+      behaviorNode.attributes = {
+        ...(behaviorNode.attributes ?? {}),
+        ...(entry ? { entry } : {}),
+        ...(doAction ? { do: doAction } : {}),
+        ...(exit ? { exit } : {}),
+      };
+    }
+    return behaviorNode;
   });
 }
 
@@ -574,14 +592,24 @@ function prepareStateMachine(machine: UnknownRecord, visualization: Visualizatio
       const edge = asRecord(edgeRaw);
       const source = resolveActivityNodeRef(edge.source ?? edge.sourceName ?? edge.from, aliases);
       const target = resolveActivityNodeRef(edge.target ?? edge.targetName ?? edge.to, aliases);
-      const label = asString(edge.label ?? edge.name ?? edge.guard, "");
+      const labelParts = [
+        asString(edge.label, ""),
+        asString(edge.guard, ""),
+        asString(edge.effect, ""),
+        asString(edge.accept, ""),
+        asString(edge.name, ""),
+      ].filter((part) => part && part.toLowerCase() !== "entry");
+      const label = Array.from(new Set(labelParts)).join(" / ");
       return {
         id: asString(edge.id, `transition-${index}`),
         source,
         target,
-        label: label === "entry" ? "" : label,
+        label,
         attributes: {
           selfLoop: Boolean(edge.selfLoop ?? source === target),
+          guard: edge.guard,
+          effect: edge.effect,
+          accept: edge.accept,
         },
       };
     })

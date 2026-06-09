@@ -17,9 +17,9 @@
   "views": [
     { "id": "general-view", "renderer": "shared", "status": "complete", "notes": "General structural view with shared renderer; expose targets accept feature chains (parser 0.18.0)." },
     { "id": "interconnection-view", "renderer": "shared", "status": "complete", "notes": "Connection-focused shared renderer." },
-    { "id": "action-flow-view", "renderer": "shared", "status": "complete", "notes": "Behavior flow renderer with perform action and parameter notation." },
+    { "id": "action-flow-view", "renderer": "shared", "status": "partial", "notes": "Graph-first activity DTO with then-action AST extraction and bind/perform enrichment; succession notation and full control-node BNF remain in progress." },
     { "id": "sequence-view", "renderer": "shared", "status": "complete", "notes": "Sequence renderer with fragments, activations, self and return messages." },
-    { "id": "state-transition-view", "renderer": "shared", "status": "complete", "notes": "State renderer with regions, entry/do/exit, terminate/final distinctions." },
+    { "id": "state-transition-view", "renderer": "shared", "status": "partial", "notes": "Rust StateMachineDto from semantic graph; client uses server payload on primary path; full transition/region BNF sign-off in progress." },
     { "id": "browser-view", "renderer": "shared", "status": "provisional", "notes": "Standard-view renderer while graphical notation details settle." },
     { "id": "grid-view", "renderer": "shared", "status": "provisional", "notes": "Standard-view renderer while graphical notation details settle." },
     { "id": "geometry-view", "renderer": "shared", "status": "provisional", "notes": "Standard-view renderer while graphical notation details settle." }

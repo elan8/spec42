@@ -80,11 +80,46 @@ export type SequenceDiagramDto = {
     activations?: unknown[];
 };
 
-export type StateMachineDto = {
-    id?: string;
+export type StateNodeDto = {
+    id: string;
+    name: string;
+    kind: string;
+    parentId?: string;
+    entry?: string;
+    do?: string;
+    exit?: string;
+    element?: {
+        id?: string;
+        name?: string;
+        type?: string;
+        uri?: string;
+        range?: { start: { line: number; character: number }; end: { line: number; character: number } };
+    };
+};
+
+export type StateTransitionDto = {
+    id: string;
+    source: string;
+    target: string;
     name?: string;
-    states?: GraphNodeDto[];
-    transitions?: GraphEdgeDto[];
+    label?: string;
+    guard?: string;
+    effect?: string;
+    accept?: string;
+    selfLoop?: boolean;
+    uri?: string;
+    range?: { start: { line: number; character: number }; end: { line: number; character: number } };
+};
+
+export type StateMachineDto = {
+    id: string;
+    name: string;
+    packagePath?: string;
+    uri?: string;
+    states: StateNodeDto[];
+    transitions: StateTransitionDto[];
+    range?: { start: { line: number; character: number }; end: { line: number; character: number } };
+    label?: string;
 };
 
 export type VisualizationDataDto = {

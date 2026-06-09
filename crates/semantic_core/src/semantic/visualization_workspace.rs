@@ -17,7 +17,7 @@ use crate::semantic::dto::{
 use crate::semantic::activity_graph::enrich_activity_diagrams_from_graph;
 use crate::semantic::explicit_views;
 use crate::semantic::extracted_model::{
-    extract_activity_diagrams, ActivityDiagramDto, SequenceDiagramDto,
+    extract_activity_diagrams, ActivityDiagramDto, SequenceDiagramDto, StateMachineDto,
 };
 use crate::semantic::ibd::{
     self, IbdDataDto, IbdPackageContainerGroupDto, IbdPartDto, IbdRootViewDto,
@@ -25,6 +25,9 @@ use crate::semantic::ibd::{
 use crate::semantic::model_projection::{self, canonical_general_view_graph};
 use crate::semantic::sequence_views::{
     build_workspace_sequence_diagrams, filter_sequence_diagrams_by_exposed_ids,
+};
+use crate::semantic::state_views::{
+    build_workspace_state_machines, filter_state_machines_by_exposed_ids,
 };
 use crate::semantic::workspace_graph::WorkspaceParsedDocument;
 use crate::SemanticGraph;
@@ -1271,6 +1274,7 @@ pub fn build_sysml_visualization_workspace(
         &workspace_uris,
     );
     let full_sequence_diagrams = build_workspace_sequence_diagrams(semantic_graph, &workspace_uris);
+    let full_state_machines = build_workspace_state_machines(semantic_graph, &workspace_uris);
     let catalog = explicit_views::build_view_catalog(&workspace_uris, &viz_docs);
 
     if catalog.usages.is_empty() {
@@ -1292,6 +1296,7 @@ pub fn build_sysml_visualization_workspace(
             )),
             activity_diagrams: Some(Vec::new()),
             sequence_diagrams: Some(Vec::new()),
+            state_machines: Some(Vec::new()),
             ibd: Some(filter_ibd_by_visible_ids(&full_ibd, &HashSet::new())),
             stats: Some(SysmlModelStatsDto {
                 total_elements: 0,
@@ -1308,6 +1313,7 @@ pub fn build_sysml_visualization_workspace(
     let mut projected_graphs: HashMap<&str, SysmlGraphDto> = HashMap::new();
     let mut projected_activity_diagrams: HashMap<&str, Vec<ActivityDiagramDto>> = HashMap::new();
     let mut projected_sequence_diagrams: HashMap<&str, Vec<SequenceDiagramDto>> = HashMap::new();
+    let mut projected_state_machines: HashMap<&str, Vec<StateMachineDto>> = HashMap::new();
     for evaluated in &evaluated_views {
         let projected_ids =
             explicit_views::renderer_view_for_view_type(evaluated.effective_view_type.as_deref())
@@ -1321,9 +1327,18 @@ pub fn build_sysml_visualization_workspace(
             &full_sequence_diagrams,
             &evaluated.exposed_ids,
         );
+        let state_machines = filter_state_machines_by_exposed_ids(
+            &full_state_machines,
+            &explicit_views::project_ids_for_renderer(
+                evaluated,
+                &graph,
+                "state-transition-view",
+            ),
+        );
         projected_graphs.insert(evaluated.id.as_str(), projected_graph);
         projected_activity_diagrams.insert(evaluated.id.as_str(), diagrams);
         projected_sequence_diagrams.insert(evaluated.id.as_str(), sequence_diagrams);
+        projected_state_machines.insert(evaluated.id.as_str(), state_machines);
     }
 
     let view_candidates = explicit_views::build_view_candidates(
@@ -1366,6 +1381,7 @@ pub fn build_sysml_visualization_workspace(
             )),
             activity_diagrams: Some(Vec::new()),
             sequence_diagrams: Some(Vec::new()),
+            state_machines: Some(Vec::new()),
             ibd: Some(filter_ibd_by_visible_ids(&full_ibd, &HashSet::new())),
             stats: Some(SysmlModelStatsDto {
                 total_elements: 0,
@@ -1400,6 +1416,7 @@ pub fn build_sysml_visualization_workspace(
             )),
             activity_diagrams: Some(Vec::new()),
             sequence_diagrams: Some(Vec::new()),
+            state_machines: Some(Vec::new()),
             ibd: Some(filter_ibd_by_visible_ids(&full_ibd, &HashSet::new())),
             stats: Some(SysmlModelStatsDto {
                 total_elements: 0,
@@ -1463,6 +1480,9 @@ pub fn build_sysml_visualization_workspace(
     let sequence_diagrams = projected_sequence_diagrams
         .remove(selected_view_id.as_str())
         .unwrap_or_default();
+    let state_machines = projected_state_machines
+        .remove(selected_view_id.as_str())
+        .unwrap_or_default();
 
     Ok(SysmlVisualizationResultDto {
         version: 0,
@@ -1479,6 +1499,7 @@ pub fn build_sysml_visualization_workspace(
         workspace_model: Some(workspace_model),
         activity_diagrams: Some(activity_diagrams),
         sequence_diagrams: Some(sequence_diagrams),
+        state_machines: Some(state_machines),
         ibd: Some(filtered_ibd),
         stats: Some(SysmlModelStatsDto {
             total_elements: selected_graph.nodes.len() as u32,

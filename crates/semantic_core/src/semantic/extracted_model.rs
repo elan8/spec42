@@ -281,6 +281,70 @@ pub struct SequenceFragmentDto {
     pub range: RangeDto,
 }
 
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StateMachineDto {
+    pub id: String,
+    pub name: String,
+    pub package_path: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
+    pub states: Vec<StateNodeDto>,
+    pub transitions: Vec<StateTransitionDto>,
+    pub range: RangeDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StateNodeDto {
+    pub id: String,
+    pub name: String,
+    pub kind: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parent_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub entry: Option<String>,
+    #[serde(rename = "do", skip_serializing_if = "Option::is_none")]
+    pub do_action: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub exit: Option<String>,
+    pub element: StateNodeElementDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StateNodeElementDto {
+    pub id: String,
+    pub name: String,
+    #[serde(rename = "type")]
+    pub element_type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
+    pub range: RangeDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StateTransitionDto {
+    pub id: String,
+    pub source: String,
+    pub target: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub guard: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub effect: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub accept: Option<String>,
+    pub self_loop: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
+    pub range: RangeDto,
+}
+
 // ---------------------------------------------------------------------------
 // Extraction
 // ---------------------------------------------------------------------------
@@ -668,6 +732,7 @@ fn extract_activity_from_action(
     let mut states = Vec::new();
     let mut interface_inputs = Vec::new();
     let mut interface_outputs = Vec::new();
+    let mut previous_then_action: Option<String> = None;
     if let ActionDefBody::Brace { elements } = &node.body {
         for (i, element) in elements.iter().enumerate() {
             match &element.value {
@@ -787,6 +852,45 @@ fn extract_activity_from_action(
                         },
                         state_type: "merge".to_string(),
                         range: span_to_range_dto(&merge.span),
+                    });
+                }
+                ActionDefBodyElement::ThenAction(then_action) => {
+                    let action = &then_action.value.action.value;
+                    let perform_name = if action.name.trim().is_empty() {
+                        format!("then_action_{}", i)
+                    } else {
+                        action.name.clone()
+                    };
+                    if let Some(previous) = previous_then_action.take() {
+                        flows.push(ControlFlowDto {
+                            from: previous,
+                            to: perform_name.clone(),
+                            condition: None,
+                            guard: Some("flow".to_string()),
+                            range: span_to_range_dto(&then_action.span),
+                        });
+                    }
+                    actions.push(ActivityActionDto {
+                        id: Some(format!(
+                            "{}::{}",
+                            join_segments(&qualified_segments),
+                            perform_name
+                        )),
+                        name: perform_name.clone(),
+                        action_type: "action".to_string(),
+                        kind: Some("action".to_string()),
+                        inputs: None,
+                        outputs: None,
+                        range: Some(span_to_range_dto(&then_action.span)),
+                        uri: None,
+                    });
+                    previous_then_action = Some(perform_name);
+                }
+                ActionDefBodyElement::StateUsage(state_usage) => {
+                    states.push(ActivityStateDto {
+                        name: state_usage.value.name.clone(),
+                        state_type: "state".to_string(),
+                        range: span_to_range_dto(&state_usage.span),
                     });
                 }
                 ActionDefBodyElement::Error(_) | ActionDefBodyElement::Doc(_) => {}
@@ -1199,5 +1303,42 @@ mod tests {
         assert_eq!(diagram.source_kind, "actionDef");
         assert_eq!(diagram.package_path, "Mission::Control");
         assert_eq!(diagram.id, "Mission::Control::ExecuteMission::actionDef");
+    }
+
+    #[test]
+    fn extract_activity_diagrams_then_action_chain_adds_actions_and_flows() {
+        let input = r#"
+            package P {
+                action def A;
+                action def B;
+                action def Pipeline {
+                    then action step1 : A;
+                    then action step2 : B;
+                }
+            }
+        "#;
+
+        let root = parse(input).expect("parse");
+        let diagrams = extract_activity_diagrams(&root);
+        let diagram = diagrams
+            .iter()
+            .find(|diagram| diagram.name == "Pipeline")
+            .expect("Pipeline diagram");
+
+        assert!(
+            diagram.actions.iter().any(|action| action.name == "step1"),
+            "expected step1 action from then action"
+        );
+        assert!(
+            diagram.actions.iter().any(|action| action.name == "step2"),
+            "expected step2 action from then action"
+        );
+        assert!(
+            diagram.flows.iter().any(|flow| {
+                flow.guard.as_deref() == Some("flow") && flow.from == "step1" && flow.to == "step2"
+            }),
+            "expected flow edge step1 -> step2; flows={:?}",
+            diagram.flows
+        );
     }
 }

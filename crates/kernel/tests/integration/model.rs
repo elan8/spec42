@@ -354,6 +354,46 @@ fn lsp_sysml_model_state_transition_view() {
             .collect::<Vec<_>>()
     );
 
+    let machines_id = next_id();
+    let machines_req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": machines_id,
+        "method": "sysml/model",
+        "params": {
+            "textDocument": { "uri": uri },
+            "scope": ["stateMachines"]
+        }
+    });
+    send_message(&mut stdin, &machines_req.to_string());
+    let machines_resp = read_response(&mut stdout, machines_id).expect("stateMachines response");
+    let machines_json: serde_json::Value =
+        serde_json::from_str(&machines_resp).expect("parse stateMachines response");
+    let machines = machines_json["result"]["stateMachines"]
+        .as_array()
+        .expect("stateMachines array should be present");
+    assert!(
+        machines.iter().any(|machine| machine["name"].as_str() == Some("M")),
+        "stateMachines should include machine M, got: {machines:#?}"
+    );
+    let machine_m = machines
+        .iter()
+        .find(|machine| machine["name"].as_str() == Some("M"))
+        .expect("machine M");
+    let machine_states = machine_m["states"]
+        .as_array()
+        .expect("machine states");
+    assert!(
+        machine_states.len() >= 2,
+        "machine M should expose state usages, got: {machine_states:#?}"
+    );
+    let machine_transitions = machine_m["transitions"]
+        .as_array()
+        .expect("machine transitions");
+    assert!(
+        !machine_transitions.is_empty(),
+        "machine M should expose transitions, got: {machine_transitions:#?}"
+    );
+
     let _ = child.kill();
 }
 

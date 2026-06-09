@@ -667,7 +667,92 @@ fn build_activity_elk_source(payload: &SysmlVisualizationResultDto) -> Result<El
 }
 
 fn build_state_elk_source(payload: &SysmlVisualizationResultDto) -> Result<ElkSource, String> {
-    build_graph_elk_source(payload)
+    let Some(machine) = payload
+        .state_machines
+        .as_ref()
+        .and_then(|machines| machines.first())
+    else {
+        return build_graph_elk_source(payload);
+    };
+
+    let mut children = Vec::new();
+    let mut nodes = std::collections::HashMap::new();
+    for state in &machine.states {
+        children.push(ElkNode {
+            id: state.id.clone(),
+            width: 220.0,
+            height: if state.kind == "composite" { 120.0 } else { 84.0 },
+            x: 0.0,
+            y: 0.0,
+            children: Vec::new(),
+            ports: Vec::new(),
+            edges: Vec::new(),
+            layout_options: std::collections::BTreeMap::new(),
+        });
+        nodes.insert(
+            state.id.clone(),
+            SvgNodeMeta {
+                id: state.id.clone(),
+                name: state.name.clone(),
+                element_type: state.element.element_type.clone(),
+                qualified_name: state.id.clone(),
+                uri: state.element.uri.clone(),
+                range: None,
+            },
+        );
+    }
+
+    let state_ids: std::collections::HashSet<&str> =
+        nodes.keys().map(String::as_str).collect();
+    let mut edges = Vec::new();
+    let mut edge_meta = std::collections::HashMap::new();
+    for (index, transition) in machine.transitions.iter().enumerate() {
+        if !state_ids.contains(transition.source.as_str())
+            || !state_ids.contains(transition.target.as_str())
+        {
+            continue;
+        }
+        let id = transition.id.clone();
+        let edge_id = if id.is_empty() {
+            format!("transition-{index}")
+        } else {
+            id.clone()
+        };
+        edges.push(ElkEdge {
+            id: edge_id.clone(),
+            sources: vec![transition.source.clone()],
+            targets: vec![transition.target.clone()],
+            sections: Vec::new(),
+        });
+        edge_meta.insert(
+            edge_id.clone(),
+            SvgEdgeMeta {
+                id: edge_id,
+                label: transition
+                    .label
+                    .clone()
+                    .or_else(|| transition.guard.clone())
+                    .or_else(|| transition.accept.clone()),
+                rel_type: "transition".to_string(),
+            },
+        );
+    }
+
+    Ok(ElkSource {
+        graph: ElkGraph {
+            id: "spec42-state-root".to_string(),
+            width: None,
+            height: None,
+            x: None,
+            y: None,
+            children,
+            edges,
+            ports: Vec::new(),
+            layout_options: elk_layout_options("state-transition-view"),
+        },
+        nodes,
+        edges: edge_meta,
+    })
 }
 
 fn empty_elk_source(id: &str, view: &str) -> ElkSource {
@@ -1030,6 +1115,7 @@ mod tests {
             workspace_model: None,
             activity_diagrams: None,
             sequence_diagrams: None,
+            state_machines: None,
             ibd: None,
             stats: None,
         };

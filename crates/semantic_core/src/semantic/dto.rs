@@ -3,7 +3,9 @@
 use crate::semantic::text_span::TextRange;
 use serde::{Deserialize, Serialize};
 
-use crate::semantic::extracted_model::{ActivityDiagramDto, SequenceDiagramDto};
+use crate::semantic::extracted_model::{
+    ActivityDiagramDto, SequenceDiagramDto, StateMachineDto,
+};
 use crate::semantic::ibd::IbdDataDto;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -174,6 +176,8 @@ pub struct SysmlVisualizationResultDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sequence_diagrams: Option<Vec<SequenceDiagramDto>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub state_machines: Option<Vec<StateMachineDto>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub ibd: Option<IbdDataDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stats: Option<SysmlModelStatsDto>,
@@ -208,6 +212,7 @@ pub fn visualization_model_not_ready(
         workspace_model: None,
         activity_diagrams: None,
         sequence_diagrams: None,
+        state_machines: None,
         ibd: None,
         stats: None,
     }

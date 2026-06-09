@@ -28,13 +28,19 @@ function isFork(kind: string): boolean {
   return kind.includes("fork") || kind.includes("join");
 }
 
+function activityNodeKind(node: PreparedNode): string {
+  const attrs = (node.attributes ?? {}) as Record<string, unknown>;
+  const typed = String(attrs.stateType ?? attrs.kind ?? node.kind ?? "").toLowerCase();
+  return typed || nodeKind(node);
+}
+
 function drawActionNode(
   group: d3.Selection<SVGGElement, unknown, null, undefined>,
   node: PreparedNode,
   layout: { x: number; y: number; width: number; height: number },
   theme: DiagramTheme,
 ): d3.Selection<SVGGElement, unknown, null, undefined> {
-  const kind = nodeKind(node);
+  const kind = activityNodeKind(node);
   const attrs = (node.attributes ?? {}) as Record<string, unknown>;
   const inputs = Array.isArray(attrs.inputs) ? attrs.inputs : Array.isArray(attrs.inputParameters) ? attrs.inputParameters : [];
   const outputs = Array.isArray(attrs.outputs) ? attrs.outputs : Array.isArray(attrs.outputParameters) ? attrs.outputParameters : [];
@@ -187,9 +193,12 @@ export async function renderActionFlowView(ctx: BehaviorSceneContext): Promise<{
     if (!source || !target) continue;
     const sections = layout.edgeSectionsById.get(edge.id);
     const fallback = fallbackEdgePath(source, target, horizontal);
+    const edgeAttrs = (edge.attributes ?? {}) as Record<string, unknown>;
+    const guard = String(edgeAttrs.guard ?? edge.label ?? "").toLowerCase();
+    const succession = guard === "flow" || guard === "first" || guard === "succession";
     flowLayer
       .append("path")
-      .attr("class", "activity-flow action-flow-edge")
+      .attr("class", succession ? "activity-flow action-flow-edge aflow-succession" : "activity-flow action-flow-edge")
       .attr("d", pathFromSections(sections) || fallback.path)
       .style("fill", "none")
       .style("stroke", ctx.theme.edge.default)
