@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
-    InOut, InOutDecl, PortBody, PortBodyElement, PortDefBodyElement, PortUsage,
+    InOut, InOutDecl, ItemUsage, PortBody, PortBodyElement, PortDefBodyElement, PortUsage,
 };
 use sysml_v2_parser::Node;
 use url::Url;
@@ -11,6 +11,7 @@ use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
 use crate::semantic::relationships::add_typing_edge_if_exists;
 
+use super::attribute_body;
 use super::expressions;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
@@ -239,9 +240,56 @@ pub(super) fn build_from_port_def_body_element(
                 }
             }
         }
+        PDBE::ItemUsage(n) => {
+            materialize_port_def_item_usage(n, uri, container_prefix, parent_id, g);
+        }
         PDBE::PortUsage(n) => {
             materialize_port_usage(n, uri, container_prefix, parent_id, g);
         }
         PDBE::Error(_) => {}
     }
+}
+
+fn materialize_port_def_item_usage(
+    n: &Node<ItemUsage>,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    g: &mut SemanticGraph,
+) {
+    let name = &n.name;
+    let qualified = qualified_name_for_node(g, uri, container_prefix, name, "item");
+    let range = span_to_range(&n.span);
+    let mut attrs = HashMap::new();
+    if let Some(direction) = n.direction {
+        attrs.insert(
+            "direction".to_string(),
+            serde_json::json!(match direction {
+                InOut::In => "in",
+                InOut::Out => "out",
+                InOut::InOut => "inout",
+            }),
+        );
+    }
+    if let Some(ref t) = n.type_name {
+        attrs.insert("itemType".to_string(), serde_json::json!(t));
+    }
+    if let Some(ref m) = n.multiplicity {
+        attrs.insert("multiplicity".to_string(), serde_json::json!(m));
+    }
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "item",
+        name.clone(),
+        range,
+        attrs,
+        Some(parent_id),
+    );
+    if let Some(ref t) = n.type_name {
+        add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+    }
+    let node_id = NodeId::new(uri, &qualified);
+    attribute_body::build_from_attribute_body(&n.body, uri, Some(&qualified), &node_id, g);
 }

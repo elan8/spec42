@@ -86,6 +86,32 @@ fn requirement_def_id_dialect_does_not_emit_duplicate_namespace_member() {
 }
 
 #[test]
+fn use_case_subject_and_then_action_same_name_do_not_emit_duplicate() {
+    let input = r#"
+        package P {
+            part def Robot;
+            action def DoClean;
+            use case def Vacuming {
+                subject roboticVacuumCleaner : Robot;
+                first start;
+                then action roboticVacuumCleaner : DoClean;
+                then done;
+            }
+        }
+    "#;
+    let diags = diags_for(input);
+    assert!(
+        !has_code(&diags, "duplicate_namespace_member"),
+        "subject and then action with the same name are different feature kinds, got {:?}",
+        diags
+            .iter()
+            .filter(|d| d.code == "duplicate_namespace_member")
+            .map(|d| &d.message)
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
 fn emits_duplicate_namespace_member() {
     let input = r#"
         package P {

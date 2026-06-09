@@ -108,7 +108,7 @@ The references below point to sections in `SysML_v2.txt` rather than quoting nor
 Spec areas: 7.5, 8.3.5, 8.4.2.
 
 - Done: `ambiguous_name_reference` — unqualified reference is ambiguous only when type/specializes resolution fails.
-- Done: `duplicate_namespace_member` — duplicate visible member names in a namespace.
+- Done: `duplicate_namespace_member` — duplicate visible member names in a namespace (counts by `(name, element_kind)` so subject vs `then action` reuse is allowed).
 - Done: `invalid_qualified_name_segment` — intermediate qualified-name segment is not a namespace.
 - Done: `import_kind_mismatch` — namespace vs membership import target mismatch.
 - Done: `invalid_recursive_import` — recursive import targets a non-namespace.

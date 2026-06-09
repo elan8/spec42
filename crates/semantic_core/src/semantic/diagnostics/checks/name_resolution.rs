@@ -161,7 +161,7 @@ fn collect_duplicate_namespace_members(
         ) {
             continue;
         }
-        let mut counts: HashMap<String, usize> = HashMap::new();
+        let mut counts: HashMap<(String, String), usize> = HashMap::new();
         for child in graph.children_of(node) {
             if matches!(
                 child.element_kind.as_str(),
@@ -175,13 +175,15 @@ fn collect_duplicate_namespace_members(
             if child.element_kind == "alias" {
                 continue;
             }
-            *counts.entry(child.name.clone()).or_default() += 1;
+            *counts
+                .entry((child.name.clone(), child.element_kind.clone()))
+                .or_default() += 1;
         }
-        for (name, count) in counts {
+        for ((name, kind), count) in counts {
             if count < 2 {
                 continue;
             }
-            let key = format!("{}|{}|{}", node.id.qualified_name, name, count);
+            let key = format!("{}|{}|{}|{}", node.id.qualified_name, name, kind, count);
             if !seen.insert(key) {
                 continue;
             }
@@ -192,8 +194,8 @@ fn collect_duplicate_namespace_members(
                 "semantic",
                 "duplicate_namespace_member",
                 format!(
-                    "Namespace '{}' declares '{}' {} times; member names must be unique within a namespace.",
-                    node.name, name, count
+                    "Namespace '{}' declares '{}' ({}) {} times; member names must be unique within a namespace.",
+                    node.name, name, kind, count
                 ),
             ));
         }

@@ -54,6 +54,25 @@ fn resolve_context_node_for_prefix<'a>(
         .min_by_key(|node| node.id.qualified_name.len())
 }
 
+fn narrow_matches_to_container_prefix<'a>(
+    matches: Vec<&'a NodeId>,
+    container_prefix: &str,
+) -> Vec<&'a NodeId> {
+    let scoped_marker = format!("{container_prefix}::");
+    let scoped: Vec<&NodeId> = matches
+        .iter()
+        .copied()
+        .filter(|id| {
+            id.qualified_name == container_prefix || id.qualified_name.starts_with(&scoped_marker)
+        })
+        .collect();
+    if scoped.is_empty() {
+        matches
+    } else {
+        scoped
+    }
+}
+
 /// Resolve an endpoint expression (e.g. `a.b`, `A::B`) to a node id.
 pub fn resolve_expression_endpoint_strict(
     g: &SemanticGraph,
@@ -92,8 +111,20 @@ pub fn resolve_expression_endpoint_strict(
                 {
                     return ResolveResult::Resolved(member_id);
                 }
-                let imported_matches =
+                let mut imported_matches =
                     resolve_imported_node_ids_for_simple_name(g, owner, expression);
+                if imported_matches.len() > 1 {
+                    let narrowed = narrow_matches_to_container_prefix(
+                        imported_matches.iter().collect(),
+                        prefix,
+                    );
+                    if narrowed.len() == 1 {
+                        return ResolveResult::Resolved(narrowed[0].clone());
+                    }
+                    if narrowed.len() < imported_matches.len() {
+                        imported_matches = narrowed.into_iter().cloned().collect();
+                    }
+                }
                 if imported_matches.len() == 1 {
                     return ResolveResult::Resolved(imported_matches[0].clone());
                 }
@@ -155,6 +186,11 @@ pub fn resolve_expression_endpoint_strict(
         .collect();
     matches.sort_by_key(|node_id| node_id.qualified_name.len());
     matches.dedup_by(|a, b| a.qualified_name == b.qualified_name);
+    if matches.len() > 1 {
+        if let Some(prefix) = container_prefix {
+            matches = narrow_matches_to_container_prefix(matches, prefix);
+        }
+    }
     if matches.len() == 1 {
         ResolveResult::Resolved(matches[0].clone())
     } else if matches.len() > 1 {

@@ -94,3 +94,35 @@ fn apollo_style_interface_connect_resolves_individual_and_inherited_features() {
         "unexpected pending connection diagnostics: {diagnostics:?}"
     );
 }
+
+#[test]
+fn homonymous_imported_port_defs_resolve_to_local_port_under_container() {
+    let doc = workspace_doc(
+        "homonym_ports.sysml",
+        r#"package PortPkgA {
+  port def homonym;
+}
+package PortPkgB {
+  port def homonym;
+}
+package Use {
+  private import PortPkgA::*;
+  private import PortPkgB::*;
+  part def Robot {
+    port homonym : PortPkgA::homonym;
+  }
+}"#,
+    );
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let uri = Url::parse("memory://apollo/homonym_ports.sysml").expect("uri");
+    match resolve_expression_endpoint_strict(&graph, &uri, Some("Use::Robot"), "homonym") {
+        ResolveResult::Resolved(id) => {
+            assert!(
+                id.qualified_name.ends_with("::Robot::homonym"),
+                "expected local port under container, got {}",
+                id.qualified_name
+            );
+        }
+        other => panic!("expected resolved local homonym port, got {other:?}"),
+    }
+}

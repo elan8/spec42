@@ -58,6 +58,57 @@ fn port_def_brace_body_materializes_nested_port_usages() {
 }
 
 #[test]
+fn port_def_directed_item_inout_materializes_nested_attributes() {
+    let doc = workspace_doc(
+        "debris_port.sysml",
+        r#"package P {
+  port def DebrisPort {
+    inout item debris {
+      attribute vol;
+      attribute mass;
+    }
+  }
+}"#,
+    );
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
+
+    let port_def = graph
+        .nodes_named("DebrisPort")
+        .into_iter()
+        .find(|node| node.element_kind == "port def")
+        .expect("debris port def");
+
+    let item = graph
+        .child_named(&port_def.id, "debris")
+        .into_iter()
+        .find(|node| node.element_kind == "item")
+        .expect("directed item usage under port def");
+    assert_eq!(
+        item.attributes.get("direction").and_then(|v| v.as_str()),
+        Some("inout")
+    );
+
+    for name in ["vol", "mass"] {
+        let under_item = graph
+            .children_of(&item)
+            .iter()
+            .any(|node| {
+                (node.element_kind == "attribute" || node.element_kind == "attribute def")
+                    && node.name == name
+            });
+        assert!(
+            under_item,
+            "expected nested attribute '{name}' under item; item children: {:?}",
+            graph
+                .children_of(&item)
+                .iter()
+                .map(|node| (&node.name, &node.element_kind))
+                .collect::<Vec<_>>()
+        );
+    }
+}
+
+#[test]
 fn part_usage_nested_port_brace_body_materializes_child_ports() {
     let doc = workspace_doc(
         "vehicle.sysml",

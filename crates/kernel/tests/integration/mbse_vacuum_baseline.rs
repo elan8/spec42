@@ -84,9 +84,33 @@ fn mbse_vacuum_example_diagnostic_baseline() {
         0,
         "use-case first/then succession must resolve without pending flow edges"
     );
+    let subject_action_false_positive_dupes = report
+        .documents
+        .iter()
+        .flat_map(|document| document.diagnostics.iter())
+        .filter(|diagnostic| {
+            matches!(
+                &diagnostic.code,
+                Some(NumberOrString::String(code)) if code == "duplicate_namespace_member"
+            ) && diagnostic.message.contains("roboticVacuumCleaner")
+                && !diagnostic.message.contains("(action)")
+        })
+        .count();
+    assert_eq!(
+        subject_action_false_positive_dupes, 0,
+        "subject and then action with the same name must not collide as duplicate_namespace_member"
+    );
+    assert_eq!(
+        code_counts
+            .get("missing_closing_brace")
+            .copied()
+            .unwrap_or(0),
+        0,
+        "port def inout item bodies must parse without brace cascade errors"
+    );
     assert!(
-        report.summary.error_count <= 15,
-        "expected error_count <= 15, got {} (warnings={})",
+        report.summary.error_count <= 12,
+        "expected error_count <= 12, got {} (warnings={})",
         report.summary.error_count,
         report.summary.warning_count
     );
