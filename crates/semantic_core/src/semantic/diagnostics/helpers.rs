@@ -364,32 +364,12 @@ fn effective_port_features(
             continue;
         }
         for child in graph.children_of(typed) {
-            if child.element_kind != "in out parameter" {
-                continue;
+            if let Some(mut feature) = port_feature_from_child(child) {
+                if conjugated {
+                    feature.direction = conjugated_direction(feature.direction);
+                }
+                features.push(feature);
             }
-            let Some(direction) = child
-                .attributes
-                .get("direction")
-                .and_then(|v| v.as_str())
-                .and_then(parse_feature_direction)
-            else {
-                continue;
-            };
-            let Some(parameter_type) = child
-                .attributes
-                .get("parameterType")
-                .and_then(|v| v.as_str())
-            else {
-                continue;
-            };
-            let mut effective_direction = direction;
-            if conjugated {
-                effective_direction = conjugated_direction(effective_direction);
-            }
-            features.push(PortFeature {
-                direction: effective_direction,
-                normalized_type: normalize_declared_type_ref(parameter_type),
-            });
         }
     }
     features.sort_by(|a, b| {
@@ -399,6 +379,23 @@ fn effective_port_features(
     });
     features.dedup();
     features
+}
+
+fn port_feature_from_child(child: &SemanticNode) -> Option<PortFeature> {
+    let direction = child
+        .attributes
+        .get("direction")
+        .and_then(|v| v.as_str())
+        .and_then(parse_feature_direction)?;
+    let type_ref = match child.element_kind.as_str() {
+        "in out parameter" => child.attributes.get("parameterType")?.as_str()?,
+        "item" => child.attributes.get("itemType")?.as_str()?,
+        _ => return None,
+    };
+    Some(PortFeature {
+        direction,
+        normalized_type: normalize_declared_type_ref(type_ref),
+    })
 }
 
 fn parse_feature_direction(raw: &str) -> Option<FeatureDirection> {
