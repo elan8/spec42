@@ -1,5 +1,6 @@
 use semantic_core::{
-    build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind,
+    build_semantic_graph_from_documents, collect_diagnostics_from_graph, DiagnosticsOptions,
+    RelationshipKind, SysmlDocument, SysmlDocumentSourceKind,
 };
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
@@ -250,6 +251,7 @@ fn use_case_def_body_materializes_first_succession_and_then_use_case() {
   }
 }"#,
     );
+    let uri = doc.uri.clone();
     let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
     let use_case_def = graph
         .nodes_named("Mission")
@@ -271,11 +273,97 @@ fn use_case_def_body_materializes_first_succession_and_then_use_case() {
         Some("start")
     );
     assert!(
+        child_with_kind(&graph, &use_case_def, "succession", "start").is_some(),
+        "expected materialized start succession node"
+    );
+    assert!(
         graph
             .children_of(&use_case_def)
             .iter()
             .any(|child| child.element_kind == "use case" && child.name == "step"),
         "expected then use case child"
+    );
+    assert!(
+        graph.pending_relationships.is_empty(),
+        "expected no pending relationships after first/then use case wiring"
+    );
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        !diagnostics
+            .iter()
+            .any(|d| d.code == "unresolved_pending_relationship"),
+        "unexpected unresolved_pending_relationship: {:?}",
+        diagnostics
+            .iter()
+            .filter(|d| d.code == "unresolved_pending_relationship")
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn use_case_def_vacuum_succession_chain_resolves_flow_edges() {
+    let doc = workspace_doc(
+        "vacuum_use_case.sysml",
+        r#"package P {
+  use case def Vacuming {
+    first start;
+    then action doCheckSuctionChamber;
+    then action doCheckBatteryCharge;
+    then done;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let use_case_def = graph
+        .nodes_named("Vacuming")
+        .into_iter()
+        .find(|node| node.element_kind == "use case def")
+        .expect("use case def");
+
+    assert!(
+        child_with_kind(&graph, &use_case_def, "succession", "start").is_some(),
+        "expected start succession node"
+    );
+    assert!(
+        child_with_kind(&graph, &use_case_def, "action", "doCheckSuctionChamber").is_some()
+    );
+    assert!(
+        child_with_kind(&graph, &use_case_def, "action", "doCheckBatteryCharge").is_some()
+    );
+    assert!(child_with_kind(&graph, &use_case_def, "verdict", "done").is_some());
+
+    let has_edge = |source_suffix: &str, target_suffix: &str, kind: RelationshipKind| {
+        graph.edges_for_uri_as_strings(&uri).iter().any(|(src, tgt, k, _)| {
+            *k == kind && src.ends_with(source_suffix) && tgt.ends_with(target_suffix)
+        })
+    };
+    assert!(
+        has_edge("::Vacuming", "::start", RelationshipKind::Flow),
+        "expected Flow from use case def to start"
+    );
+    assert!(
+        has_edge("::start", "::doCheckSuctionChamber", RelationshipKind::Flow),
+        "expected Flow from start to first action"
+    );
+    assert!(
+        has_edge(
+            "::doCheckSuctionChamber",
+            "::doCheckBatteryCharge",
+            RelationshipKind::Flow
+        ),
+        "expected Flow between then actions"
+    );
+    assert!(
+        has_edge("::doCheckBatteryCharge", "::_verdict", RelationshipKind::Flow),
+        "expected Flow from last action to done verdict"
+    );
+    assert!(graph.pending_relationships.is_empty());
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        !diagnostics
+            .iter()
+            .any(|d| d.code == "unresolved_pending_relationship")
     );
 }
 

@@ -156,38 +156,88 @@ pub(super) fn build_from_port_def_body_element(
             }
         }
         PDBE::AttributeUsage(n) => {
-            let name = &n.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute");
-            let range = span_to_range(&n.span);
-            let mut attrs = HashMap::new();
-            if let Some(ref s) = n.subsets {
-                attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
-            }
-            if let Some(ref r) = n.references {
-                attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
-            }
-            if let Some(ref c) = n.crosses {
-                attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
-            }
-            if let Some(ref r) = n.redefines {
-                attrs.insert("redefines".to_string(), serde_json::json!(r));
-            }
-            if let Some(ref v) = n.value.value {
+            if let Some(direction) = n.direction {
+                let name = &n.name;
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, name, "in out parameter");
+                let range = span_to_range(&n.span);
+                let mut attrs = HashMap::new();
                 attrs.insert(
-                    "value".to_string(),
-                    serde_json::json!(expressions::expression_to_debug_string(v)),
+                    "direction".to_string(),
+                    serde_json::json!(match direction {
+                        InOut::In => "in",
+                        InOut::Out => "out",
+                        InOut::InOut => "inout",
+                    }),
                 );
+                let parameter_type = n
+                    .typing
+                    .as_deref()
+                    .or(n.subsets.as_deref())
+                    .unwrap_or_default();
+                if !parameter_type.is_empty() {
+                    attrs.insert(
+                        "parameterType".to_string(),
+                        serde_json::json!(parameter_type),
+                    );
+                }
+                if let Some(ref r) = n.redefines {
+                    attrs.insert("redefines".to_string(), serde_json::json!(r));
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "in out parameter",
+                    name.clone(),
+                    range,
+                    attrs,
+                    Some(parent_id),
+                );
+                if !parameter_type.is_empty() {
+                    add_typing_edge_if_exists(g, uri, &qualified, parameter_type, container_prefix);
+                }
+            } else {
+                let name = &n.name;
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, name, "attribute");
+                let range = span_to_range(&n.span);
+                let mut attrs = HashMap::new();
+                if let Some(ref t) = n.typing {
+                    attrs.insert("attributeType".to_string(), serde_json::json!(t));
+                }
+                if let Some(ref s) = n.subsets {
+                    attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
+                }
+                if let Some(ref r) = n.references {
+                    attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
+                }
+                if let Some(ref c) = n.crosses {
+                    attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
+                }
+                if let Some(ref r) = n.redefines {
+                    attrs.insert("redefines".to_string(), serde_json::json!(r));
+                }
+                if let Some(ref v) = n.value.value {
+                    attrs.insert(
+                        "value".to_string(),
+                        serde_json::json!(expressions::expression_to_debug_string(v)),
+                    );
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "attribute",
+                    name.clone(),
+                    range,
+                    attrs,
+                    Some(parent_id),
+                );
+                if let Some(ref t) = n.typing {
+                    add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+                }
             }
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "attribute",
-                name.clone(),
-                range,
-                attrs,
-                Some(parent_id),
-            );
         }
         PDBE::PortUsage(n) => {
             materialize_port_usage(n, uri, container_prefix, parent_id, g);

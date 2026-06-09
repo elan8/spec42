@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
     ActorRedefinitionAssignment, ActorUsage, FirstSuccession, IncludeUseCase, RefRedefinition,
-    ThenUseCaseUsage, UseCaseDefBody,
+    ThenAction, ThenDone, ThenUseCaseUsage, UseCaseDefBody,
 };
 use url::Url;
 
@@ -11,6 +11,204 @@ use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
+
+/// Tracks `first` / `then` succession steps for use-case and verification bodies.
+pub(super) struct CaseSuccessionChain {
+    previous: Option<String>,
+}
+
+impl CaseSuccessionChain {
+    pub fn new() -> Self {
+        Self { previous: None }
+    }
+
+    pub fn materialize_first_succession(
+        &mut self,
+        g: &mut SemanticGraph,
+        uri: &Url,
+        parent_id: &NodeId,
+        succession: &FirstSuccession,
+        span: &sysml_v2_parser::Span,
+    ) {
+        let target_name = &succession.target;
+        let qualified = qualified_name_for_node(
+            g,
+            uri,
+            Some(parent_id.qualified_name.as_str()),
+            target_name,
+            "succession",
+        );
+        let mut attrs = HashMap::new();
+        attrs.insert("successionKind".to_string(), serde_json::json!("first"));
+        add_node_and_recurse(
+            g,
+            uri,
+            &qualified,
+            "succession",
+            target_name.clone(),
+            span_to_range(span),
+            attrs,
+            Some(parent_id),
+        );
+        add_edge_if_both_exist(
+            g,
+            uri,
+            &parent_id.qualified_name,
+            &qualified,
+            RelationshipKind::Flow,
+        );
+        if let Some(parent_node) = g.get_node_mut(parent_id) {
+            parent_node.attributes.insert(
+                "firstSuccessionTarget".to_string(),
+                serde_json::json!(target_name.as_str()),
+            );
+        }
+        self.previous = Some(qualified);
+    }
+
+    pub fn chain_then_action(
+        &mut self,
+        g: &mut SemanticGraph,
+        uri: &Url,
+        container_prefix: Option<&str>,
+        parent_id: &NodeId,
+        then_action: &sysml_v2_parser::Node<ThenAction>,
+    ) {
+        let action = &then_action.value.action.value;
+        let action_qualified = qualified_name_for_node(
+            g,
+            uri,
+            Some(parent_id.qualified_name.as_str()),
+            &action.name,
+            "action",
+        );
+        let mut attrs = HashMap::new();
+        attrs.insert(
+            "actionType".to_string(),
+            serde_json::json!(action.type_name.as_str()),
+        );
+        add_node_and_recurse(
+            g,
+            uri,
+            &action_qualified,
+            "action",
+            action.name.clone(),
+            span_to_range(&then_action.span),
+            attrs,
+            Some(parent_id),
+        );
+        if !action.type_name.is_empty() {
+            add_typing_edge_if_exists(
+                g,
+                uri,
+                &action_qualified,
+                action.type_name.as_str(),
+                container_prefix,
+            );
+        }
+        add_edge_if_both_exist(
+            g,
+            uri,
+            &parent_id.qualified_name,
+            &action_qualified,
+            RelationshipKind::Perform,
+        );
+        if let Some(previous_step) = self.previous.as_ref() {
+            add_edge_if_both_exist(
+                g,
+                uri,
+                previous_step,
+                &action_qualified,
+                RelationshipKind::Flow,
+            );
+        }
+        self.previous = Some(action_qualified);
+    }
+
+    pub fn chain_then_done(
+        &mut self,
+        g: &mut SemanticGraph,
+        uri: &Url,
+        parent_id: &NodeId,
+        done: &sysml_v2_parser::Node<ThenDone>,
+    ) {
+        let qualified = qualified_name_for_node(
+            g,
+            uri,
+            Some(parent_id.qualified_name.as_str()),
+            "_verdict",
+            "verdict",
+        );
+        add_node_and_recurse(
+            g,
+            uri,
+            &qualified,
+            "verdict",
+            "done".to_string(),
+            span_to_range(&done.span),
+            HashMap::new(),
+            Some(parent_id),
+        );
+        if let Some(previous_step) = self.previous.as_ref() {
+            add_edge_if_both_exist(
+                g,
+                uri,
+                previous_step,
+                &qualified,
+                RelationshipKind::Flow,
+            );
+        }
+        self.previous = Some(qualified);
+    }
+
+    pub fn chain_then_use_case(
+        &mut self,
+        g: &mut SemanticGraph,
+        uri: &Url,
+        parent_id: &NodeId,
+        then_use_case: &ThenUseCaseUsage,
+        span: &sysml_v2_parser::Span,
+        container_prefix: Option<&str>,
+    ) {
+        let use_case = &then_use_case.use_case;
+        let name = &use_case.value.name;
+        let qualified = qualified_name_for_node(
+            g,
+            uri,
+            Some(parent_id.qualified_name.as_str()),
+            name,
+            "use case",
+        );
+        let mut attrs = HashMap::new();
+        if let Some(ref typing) = use_case.value.type_name {
+            attrs.insert("useCaseType".to_string(), serde_json::json!(typing));
+        }
+        attrs.insert("isThen".to_string(), serde_json::json!(true));
+        add_node_and_recurse(
+            g,
+            uri,
+            &qualified,
+            "use case",
+            name.clone(),
+            span_to_range(span),
+            attrs,
+            Some(parent_id),
+        );
+        let node_id = NodeId::new(uri, &qualified);
+        if let Some(ref typing) = use_case.value.type_name {
+            add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
+        }
+        if let UseCaseDefBody::Brace { elements } = &use_case.value.body {
+            build_from_use_case_body(elements, uri, Some(&qualified), &node_id, g);
+        }
+        let flow_from = self
+            .previous
+            .as_deref()
+            .unwrap_or(parent_id.qualified_name.as_str());
+        add_edge_if_both_exist(g, uri, flow_from, &qualified, RelationshipKind::Flow);
+        self.previous = Some(qualified);
+    }
+}
 
 pub(super) fn add_include_use_case_node(
     g: &mut SemanticGraph,
@@ -151,81 +349,6 @@ pub(super) fn add_ref_redefinition_node(
     );
 }
 
-pub(super) fn add_first_succession_flow(
-    g: &mut SemanticGraph,
-    uri: &Url,
-    parent_id: &NodeId,
-    succession: &FirstSuccession,
-    container_prefix: Option<&str>,
-) {
-    let target = if let Some(prefix) = container_prefix {
-        format!("{}::{}", prefix, succession.target)
-    } else {
-        succession.target.clone()
-    };
-    add_edge_if_both_exist(
-        g,
-        uri,
-        &parent_id.qualified_name,
-        &target,
-        RelationshipKind::Flow,
-    );
-    if let Some(parent_node) = g.get_node_mut(parent_id) {
-        parent_node.attributes.insert(
-            "firstSuccessionTarget".to_string(),
-            serde_json::json!(succession.target.as_str()),
-        );
-    }
-}
-
-pub(super) fn add_then_use_case_usage_node(
-    g: &mut SemanticGraph,
-    uri: &Url,
-    parent_id: &NodeId,
-    then_use_case: &ThenUseCaseUsage,
-    span: &sysml_v2_parser::Span,
-    container_prefix: Option<&str>,
-) {
-    let use_case = &then_use_case.use_case;
-    let name = &use_case.value.name;
-    let qualified = qualified_name_for_node(
-        g,
-        uri,
-        Some(parent_id.qualified_name.as_str()),
-        name,
-        "use case",
-    );
-    let mut attrs = HashMap::new();
-    if let Some(ref typing) = use_case.value.type_name {
-        attrs.insert("useCaseType".to_string(), serde_json::json!(typing));
-    }
-    attrs.insert("isThen".to_string(), serde_json::json!(true));
-    add_node_and_recurse(
-        g,
-        uri,
-        &qualified,
-        "use case",
-        name.clone(),
-        span_to_range(span),
-        attrs,
-        Some(parent_id),
-    );
-    let node_id = NodeId::new(uri, &qualified);
-    if let Some(ref typing) = use_case.value.type_name {
-        add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
-    }
-    if let UseCaseDefBody::Brace { elements } = &use_case.value.body {
-        build_from_use_case_body(elements, uri, Some(&qualified), &node_id, g);
-    }
-    add_edge_if_both_exist(
-        g,
-        uri,
-        &parent_id.qualified_name,
-        &qualified,
-        RelationshipKind::Flow,
-    );
-}
-
 /// Wire case-body elements shared across use-case, analysis, and verification walkers.
 pub(super) fn wire_extended_case_body_element(
     g: &mut SemanticGraph,
@@ -233,6 +356,7 @@ pub(super) fn wire_extended_case_body_element(
     parent_id: &NodeId,
     node: &sysml_v2_parser::Node<sysml_v2_parser::ast::UseCaseDefBodyElement>,
     container_prefix: Option<&str>,
+    chain: Option<&mut CaseSuccessionChain>,
 ) -> bool {
     use sysml_v2_parser::ast::UseCaseDefBodyElement as UCBE;
     match &node.value {
@@ -266,24 +390,28 @@ pub(super) fn wire_extended_case_body_element(
             false
         }
         UCBE::FirstSuccession(succession) => {
-            add_first_succession_flow(
-                g,
-                uri,
-                parent_id,
-                &succession.value,
-                container_prefix,
-            );
+            if let Some(chain) = chain {
+                chain.materialize_first_succession(
+                    g,
+                    uri,
+                    parent_id,
+                    &succession.value,
+                    &succession.span,
+                );
+            }
             false
         }
         UCBE::ThenUseCaseUsage(then_use_case) => {
-            add_then_use_case_usage_node(
-                g,
-                uri,
-                parent_id,
-                &then_use_case.value,
-                &then_use_case.span,
-                container_prefix,
-            );
+            if let Some(chain) = chain {
+                chain.chain_then_use_case(
+                    g,
+                    uri,
+                    parent_id,
+                    &then_use_case.value,
+                    &then_use_case.span,
+                    container_prefix,
+                );
+            }
             false
         }
         _ => false,
@@ -298,8 +426,17 @@ pub(super) fn build_from_use_case_body(
     g: &mut SemanticGraph,
 ) {
     use sysml_v2_parser::ast::UseCaseDefBodyElement as UCBE;
+    let mut chain = CaseSuccessionChain::new();
+    let mut then_action_count = 0usize;
     for node in elements {
-        if wire_extended_case_body_element(g, uri, parent_id, node, container_prefix) {
+        if wire_extended_case_body_element(
+            g,
+            uri,
+            parent_id,
+            node,
+            container_prefix,
+            Some(&mut chain),
+        ) {
             continue;
         }
         match &node.value {
@@ -309,6 +446,13 @@ pub(super) fn build_from_use_case_body(
             | UCBE::FirstSuccession(_)
             | UCBE::ThenUseCaseUsage(_)
             | UCBE::SubjectRef(_) => continue,
+            UCBE::ThenAction(then_action) => {
+                then_action_count += 1;
+                chain.chain_then_action(g, uri, container_prefix, parent_id, then_action);
+            }
+            UCBE::ThenDone(done) => {
+                chain.chain_then_done(g, uri, parent_id, done);
+            }
             UCBE::SubjectDecl(sd) => {
                 let name = sd.value.name.clone();
                 let qualified = qualified_name_for_node(
@@ -394,6 +538,14 @@ pub(super) fn build_from_use_case_body(
             }
             UCBE::Error(_) | UCBE::Doc(_) | UCBE::Other(_) | UCBE::Annotation(_) => {}
             _ => {}
+        }
+    }
+    if then_action_count > 0 {
+        if let Some(parent_node) = g.get_node_mut(parent_id) {
+            parent_node.attributes.insert(
+                "thenActionCount".to_string(),
+                serde_json::json!(then_action_count),
+            );
         }
     }
 }

@@ -102,7 +102,7 @@ npm run compile
 
 ## Parser Dependency Policy
 
-The workspace pins `sysml-v2-parser` in the root `Cargo.toml` as a **crates.io** version (currently **0.20.4**). CI and default local builds resolve from the registry. To work against a sibling checkout, use the `[patch.crates-io]` block in [`.cargo/config.toml`](.cargo/config.toml).
+The workspace pins `sysml-v2-parser` in the root `Cargo.toml` as a **crates.io** version (currently **0.21.0**). CI and default local builds resolve from the registry. To work against a sibling checkout, use the `[patch.crates-io]` block in [`.cargo/config.toml`](.cargo/config.toml).
 
 When updating parser behavior:
 

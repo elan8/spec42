@@ -26,9 +26,17 @@ pub(super) fn build_from_analysis_body(
     let mut analysis_result_qualified: Option<String> = None;
     let mut objective_node_ids: Vec<NodeId> = Vec::new();
     let mut has_subject = false;
+    let mut chain = use_case::CaseSuccessionChain::new();
 
     for node in elements {
-        if use_case::wire_extended_case_body_element(g, uri, parent_id, node, container_prefix) {
+        if use_case::wire_extended_case_body_element(
+            g,
+            uri,
+            parent_id,
+            node,
+            container_prefix,
+            Some(&mut chain),
+        ) {
             has_subject = true;
             continue;
         }

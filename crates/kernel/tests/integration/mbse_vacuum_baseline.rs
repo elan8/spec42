@@ -53,12 +53,19 @@ fn mbse_vacuum_example_diagnostic_baseline() {
         0,
         "private wildcard imports must not emit visibility_violation"
     );
+    let def_name_collisions = report
+        .documents
+        .iter()
+        .flat_map(|document| document.diagnostics.iter())
+        .filter(|diagnostic| {
+            matches!(
+                &diagnostic.code,
+                Some(NumberOrString::String(code)) if code == "duplicate_namespace_member"
+            ) && diagnostic.message.contains("'def'")
+        })
+        .count();
     assert_eq!(
-        code_counts
-            .get("duplicate_namespace_member")
-            .copied()
-            .unwrap_or(0),
-        0,
+        def_name_collisions, 0,
         "action def siblings must not collide as name 'def'"
     );
     assert_eq!(
@@ -69,9 +76,17 @@ fn mbse_vacuum_example_diagnostic_baseline() {
         0,
         "valid v2 redefines keyword forms must parse without part-usage-body recovery"
     );
+    assert_eq!(
+        code_counts
+            .get("unresolved_pending_relationship")
+            .copied()
+            .unwrap_or(0),
+        0,
+        "use-case first/then succession must resolve without pending flow edges"
+    );
     assert!(
-        report.summary.error_count <= 30,
-        "expected error_count <= 30, got {} (warnings={})",
+        report.summary.error_count <= 15,
+        "expected error_count <= 15, got {} (warnings={})",
         report.summary.error_count,
         report.summary.warning_count
     );

@@ -11,8 +11,7 @@ use super::{add_node_and_recurse, qualified_name_for_node};
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
-use crate::semantic::model::RelationshipKind;
-use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
+use crate::semantic::relationships::add_typing_edge_if_exists;
 fn extract_verdict_kind_token(body_text: &str) -> Option<String> {
     let marker = "VerdictKind::";
     let start = body_text.find(marker)?;
@@ -39,7 +38,7 @@ pub(super) fn build_from_verification_body(
         return;
     };
 
-    let mut previous_then_action: Option<String> = None;
+    let mut chain = use_case::CaseSuccessionChain::new();
     let mut case_subject_qualified: Option<String> = None;
     let mut objective_node_ids: Vec<NodeId> = Vec::new();
     let mut has_subject = false;
@@ -47,7 +46,14 @@ pub(super) fn build_from_verification_body(
     let mut then_action_count = 0usize;
 
     for node in elements {
-        if use_case::wire_extended_case_body_element(g, uri, parent_id, node, container_prefix) {
+        if use_case::wire_extended_case_body_element(
+            g,
+            uri,
+            parent_id,
+            node,
+            container_prefix,
+            Some(&mut chain),
+        ) {
             has_subject = true;
             continue;
         }
@@ -150,53 +156,7 @@ pub(super) fn build_from_verification_body(
             }
             UseCaseDefBodyElement::ThenAction(then_action) => {
                 then_action_count += 1;
-                let action = &then_action.value.action.value;
-                let action_qualified = qualified_name_for_node(
-                    g,
-                    uri,
-                    Some(parent_id.qualified_name.as_str()),
-                    &action.name,
-                    "action",
-                );
-                let mut attrs = HashMap::new();
-                attrs.insert(
-                    "actionType".to_string(),
-                    serde_json::json!(action.type_name.as_str()),
-                );
-                add_node_and_recurse(
-                    g,
-                    uri,
-                    &action_qualified,
-                    "action",
-                    action.name.clone(),
-                    span_to_range(&then_action.span),
-                    attrs,
-                    Some(parent_id),
-                );
-                add_typing_edge_if_exists(
-                    g,
-                    uri,
-                    &action_qualified,
-                    action.type_name.as_str(),
-                    container_prefix,
-                );
-                add_edge_if_both_exist(
-                    g,
-                    uri,
-                    &parent_id.qualified_name,
-                    &action_qualified,
-                    RelationshipKind::Perform,
-                );
-                if let Some(previous_action) = previous_then_action.as_ref() {
-                    add_edge_if_both_exist(
-                        g,
-                        uri,
-                        previous_action,
-                        &action_qualified,
-                        RelationshipKind::Flow,
-                    );
-                }
-                previous_then_action = Some(action_qualified);
+                chain.chain_then_action(g, uri, container_prefix, parent_id, then_action);
             }
             UseCaseDefBodyElement::Assign(assign) => {
                 let value = &assign.value;
@@ -229,23 +189,7 @@ pub(super) fn build_from_verification_body(
             }
             UseCaseDefBodyElement::ThenDone(done) => {
                 verdict_count += 1;
-                let qualified = qualified_name_for_node(
-                    g,
-                    uri,
-                    Some(parent_id.qualified_name.as_str()),
-                    "_verdict",
-                    "verdict",
-                );
-                add_node_and_recurse(
-                    g,
-                    uri,
-                    &qualified,
-                    "verdict",
-                    "done".to_string(),
-                    span_to_range(&done.span),
-                    HashMap::new(),
-                    Some(parent_id),
-                );
+                chain.chain_then_done(g, uri, parent_id, done);
             }
             UseCaseDefBodyElement::ReturnRef(return_ref) => {
                 verdict_count += 1;
