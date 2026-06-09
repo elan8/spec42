@@ -30,8 +30,10 @@ jobs:
             build-mode: none
           - language: javascript-typescript
             build-mode: none
+          # Rust supports build-mode none only (not autobuild). See:
+          # https://docs.github.com/en/code-security/reference/code-scanning/codeql/build-options-for-compiled-languages#building-rust
           - language: rust
-            build-mode: autobuild
+            build-mode: none
 
     steps:
       - name: Checkout repository
@@ -39,15 +41,15 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Install Rust
+        if: matrix.language == 'rust'
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
-
-      - name: Autobuild
-        if: matrix.build-mode == 'autobuild'
-        uses: github/codeql-action/autobuild@v4
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
