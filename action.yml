@@ -92,13 +92,13 @@ runs:
           if [[ "$VERSION" =~ ^[0-9]+(\.[0-9]+){1,2}([+-][A-Za-z0-9.-]+)?$ ]]; then
             VERSION="v$VERSION"
           else
-            echo "Spec42 version must be a release tag like v0.29.0 (got: $VERSION)." >&2
+            echo "Spec42 version must be a release tag like vX.Y.Z (got: $VERSION)." >&2
             echo "Pin uses: elan8/spec42@vX.Y.Z or set inputs.version explicitly." >&2
             exit 1
           fi
         fi
         if [[ ! "$VERSION" =~ ^v[0-9]+(\.[0-9]+){1,2}([+-][A-Za-z0-9.-]+)?$ ]]; then
-          echo "Spec42 version must be a semver release tag like v0.29.0 (got: $VERSION)." >&2
+          echo "Spec42 version must be a semver release tag like vX.Y.Z (got: $VERSION)." >&2
           echo "Do not use branch refs such as @main; they have no matching release archive." >&2
           exit 1
         fi

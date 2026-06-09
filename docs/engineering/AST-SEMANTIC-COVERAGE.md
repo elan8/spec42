@@ -1,6 +1,6 @@
 # AST semantic coverage matrix
 
-Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.20.0** ([crates.io](https://crates.io/crates/sysml-v2-parser)).
+Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.20.1** ([crates.io](https://crates.io/crates/sysml-v2-parser)).
 
 | Parser surface | Graph (`semantic_core`) | Symbols / hover | Semantic tokens | Priority |
 |----------------|-------------------------|-----------------|-----------------|----------|
@@ -84,6 +84,14 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 - Nested `PortBody` members are walked in [`port_def.rs`](../../crates/semantic_core/src/semantic/graph_builder/port_def.rs) and covered by [`nested_port_body_semantics.rs`](../../crates/semantic_core/tests/nested_port_body_semantics.rs).
 - Token ranges recurse port bodies in [`ast_ranges.rs`](../../crates/sysml_semantic_tokens/src/ast_ranges.rs).
 
+## Recent changes (graph depth P4b–P8)
+
+- **RenderingDef** body walks filter/rendering members; **OccurrenceUsage** brace bodies recurse occurrence members.
+- **Case bodies** wire `SubjectRef`, `FirstSuccession`, `ThenUseCaseUsage`, `RefRedefinition`, and actor redefinition via shared `use_case` helpers.
+- **MetadataAnnotation** in action and requirement bodies projects `metadata usage` nodes (`metadata_def::add_metadata_annotation_node`).
+- Parser **0.20.1**: `AttributeDef.value_span`, literal-with-unit spans; Spec42 stores `valueIsBoolean` / `rhsIsBoolean` on verification/analysis nodes.
+
 ## Backlog (P1+)
 
-- `DefinitionBodyElement` for occurrence/rendering/flow families when general view projection needs compartment detail beyond the definition shell.
+- `DefinitionBodyElement` for occurrence/rendering families when general view projection needs compartment detail beyond the definition shell.
+- Remaining parser `advance_to_closing_brace` sites in action ref bodies, in-out defaults, and satisfy connect bodies.

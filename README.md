@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: elan8/spec42@v0.29.0
+      - uses: elan8/spec42@vX.Y.Z
         with:
           path: examples/timer/KitchenTimer.sysml
           format: sarif

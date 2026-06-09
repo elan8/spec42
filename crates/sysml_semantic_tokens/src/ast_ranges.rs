@@ -3,12 +3,14 @@
 use sysml_v2_parser::ast::{
     ActionDefBody, ActionDefBodyElement, ActionUsage, ActionUsageBody, ActionUsageBodyElement,
     AttributeBody, AttributeBodyElement, CalcDefBody, ConnectionDefBody, ConnectionDefBodyElement,
-    ConstraintDefBodyElement, DefinitionBody, DefinitionBodyElement, InterfaceDefBody,
-    InterfaceDefBodyElement, MetadataKeywordUsage, OccurrenceBodyElement, OccurrenceUsageBody,
-    PackageBody, PackageBodyElement, PartDefBody,
-    PartDefBodyElement, PartUsageBody, PartUsageBodyElement, PortBody, PortBodyElement,
-    PortDefBody, PortDefBodyElement, RequireConstraintBody, RequirementDefBody,
-    RequirementDefBodyElement, RootElement,
+    ConstraintDefBodyElement, DefinitionBody, DefinitionBodyElement, FinalState, InterfaceDefBody,
+    InterfaceDefBodyElement, MetadataAnnotation, MetadataKeywordUsage, OccurrenceBodyElement,
+    OccurrenceUsageBody,
+    PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
+    PartUsageBodyElement, PayloadClause, PortBody, PortBodyElement, PortDefBody,
+    PortDefBodyElement, RequireConstraintBody, RequirementDefBody, RequirementDefBodyElement,
+    RootElement, StateDefBody, StateDefBodyElement, StateUsage, ThenStmt, Transition,
+    TransitionAccept,
 };
 use sysml_v2_parser::RootNamespace;
 
@@ -241,6 +243,28 @@ fn collect_semantic_ranges_package_body_element(
             }
             collect_semantic_ranges_definition_body(&alloc_node.value.body, out);
         }
+        PBE::StateDef(sd_node) => {
+            out.push((span_to_source_range(&sd_node.span), TYPE_CLASS));
+            if let Some(ref s) = sd_node.value.specializes_span {
+                out.push((span_to_source_range(s), TYPE_TYPE));
+            }
+            if let StateDefBody::Brace { elements } = &sd_node.body {
+                for element in elements {
+                    collect_semantic_ranges_state_def_body_element(element, out);
+                }
+            }
+        }
+        PBE::StateUsage(su_node) => {
+            collect_semantic_ranges_state_usage(su_node, out);
+        }
+        PBE::ConnectionDef(conn_node) => {
+            out.push((span_to_source_range(&conn_node.span), TYPE_INTERFACE));
+            if let ConnectionDefBody::Brace { elements } = &conn_node.body {
+                for element in elements {
+                    collect_semantic_ranges_connection_def_body_element(element, out);
+                }
+            }
+        }
         _ => {}
     }
 }
@@ -287,6 +311,91 @@ fn collect_semantic_ranges_metadata_keyword_usage(
     out.push((span_to_source_range(&node.value.keyword_span), TYPE_PROPERTY));
     if let Some(ref span) = node.value.type_span {
         out.push((span_to_source_range(span), TYPE_TYPE));
+    }
+}
+
+fn collect_semantic_ranges_metadata_annotation(
+    node: &sysml_v2_parser::Node<MetadataAnnotation>,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    if let Some(ref span) = node.value.head_span {
+        out.push((span_to_source_range(span), TYPE_PROPERTY));
+    }
+    if let Some(ref span) = node.value.type_span {
+        out.push((span_to_source_range(span), TYPE_TYPE));
+    }
+}
+
+fn collect_semantic_ranges_payload_clause(clause: &PayloadClause, out: &mut Vec<(SourceRange, u32)>) {
+    out.push((span_to_source_range(&clause.name_span), TYPE_PROPERTY));
+    if let Some(ref span) = clause.type_span {
+        out.push((span_to_source_range(span), TYPE_TYPE));
+    }
+}
+
+fn collect_semantic_ranges_transition_accept(
+    accept: &TransitionAccept,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    match accept {
+        TransitionAccept::Payload(clause) => collect_semantic_ranges_payload_clause(clause, out),
+        TransitionAccept::Shorthand(expr) => {
+            out.push((span_to_source_range(&expr.span), TYPE_PROPERTY));
+        }
+    }
+}
+
+fn collect_semantic_ranges_then_stmt(then_stmt: &ThenStmt, out: &mut Vec<(SourceRange, u32)>) {
+    if let Some(ref span) = then_stmt.name_span {
+        out.push((span_to_source_range(span), TYPE_PROPERTY));
+    }
+}
+
+fn collect_semantic_ranges_final_state(final_state: &FinalState, out: &mut Vec<(SourceRange, u32)>) {
+    out.push((span_to_source_range(&final_state.name_span), TYPE_PROPERTY));
+}
+
+fn collect_semantic_ranges_transition(
+    transition: &sysml_v2_parser::Node<Transition>,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    out.push((span_to_source_range(&transition.span), TYPE_PROPERTY));
+    let value = &transition.value;
+    if let Some(ref accept) = value.accept {
+        collect_semantic_ranges_transition_accept(accept, out);
+    }
+    out.push((span_to_source_range(&value.target.span), TYPE_PROPERTY));
+}
+
+fn collect_semantic_ranges_state_def_body_element(
+    node: &sysml_v2_parser::Node<StateDefBodyElement>,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    use StateDefBodyElement as SDBE;
+    match &node.value {
+        SDBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(state_usage, out),
+        SDBE::Transition(transition) => collect_semantic_ranges_transition(transition, out),
+        SDBE::Then(then_stmt) => collect_semantic_ranges_then_stmt(&then_stmt.value, out),
+        SDBE::FinalState(final_state) => {
+            collect_semantic_ranges_final_state(&final_state.value, out)
+        }
+        SDBE::Ref(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
+        SDBE::MetadataKeywordUsage(mk_node) => {
+            collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
+        }
+        SDBE::RequirementUsage(ru_node) => {
+            out.push((span_to_source_range(&ru_node.span), TYPE_PROPERTY));
+            if let RequirementDefBody::Brace { elements } = &ru_node.body {
+                for element in elements {
+                    collect_semantic_ranges_requirement_def_body_element(element, out);
+                }
+            }
+        }
+        SDBE::Entry(_)
+        | SDBE::Doc(_)
+        | SDBE::Error(_)
+        | SDBE::Annotation(_)
+        | SDBE::Other(_) => {}
     }
 }
 
@@ -450,6 +559,11 @@ fn collect_semantic_ranges_part_usage_body_element(
             if let Some(ref s) = n.value.type_ref_span {
                 out.push((span_to_source_range(s), TYPE_TYPE));
             }
+            if let PartUsageBody::Brace { elements } = &n.body {
+                for child in elements {
+                    collect_semantic_ranges_part_usage_body_element(child, out);
+                }
+            }
         }
         PUBE::PortUsage(n) => collect_semantic_ranges_port_usage(n, out),
         PUBE::Ref(n) => {
@@ -544,6 +658,12 @@ fn collect_semantic_ranges_action_usage(usage: &ActionUsage, out: &mut Vec<(Sour
     if let Some(ref span) = usage.type_ref_span {
         out.push((span_to_source_range(span), TYPE_TYPE));
     }
+    if let Some(ref accept) = usage.accept {
+        collect_semantic_ranges_payload_clause(accept, out);
+    }
+    if let Some(ref send) = usage.send {
+        collect_semantic_ranges_payload_clause(send, out);
+    }
     if let ActionUsageBody::Brace { elements } = &usage.body {
         for element in elements {
             collect_semantic_ranges_action_usage_body_element(element, out);
@@ -567,10 +687,15 @@ fn collect_semantic_ranges_ref_decl(
 }
 
 fn collect_semantic_ranges_state_usage(
-    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::StateUsage>,
+    node: &sysml_v2_parser::Node<StateUsage>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     out.push((span_to_source_range(&node.span), TYPE_PROPERTY));
+    if let StateDefBody::Brace { elements } = &node.value.body {
+        for element in elements {
+            collect_semantic_ranges_state_def_body_element(element, out);
+        }
+    }
 }
 
 fn collect_semantic_ranges_requirement_def_body_element(
@@ -641,8 +766,8 @@ fn collect_semantic_ranges_requirement_def_body_element(
         RDBE::Doc(_)
         | RDBE::Error(_)
         | RDBE::Other(_)
-        | RDBE::Annotation(_)
-        | RDBE::MetadataAnnotation(_) => {}
+        | RDBE::Annotation(_) => {}
+        RDBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
     }
 }
 
@@ -670,6 +795,7 @@ fn collect_semantic_ranges_action_def_body_element(
         | ADBE::Error(_)
         | ADBE::Doc(_)
         | ADBE::Annotation(_) => {}
+        ADBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
     }
 }
 
@@ -696,5 +822,6 @@ fn collect_semantic_ranges_action_usage_body_element(
         | AUBE::Doc(_)
         | AUBE::Annotation(_)
         | AUBE::Decl(_) => {}
+        AUBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
     }
 }

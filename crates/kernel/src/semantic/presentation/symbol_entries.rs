@@ -53,6 +53,13 @@ fn element_kind_to_symbol_kind(kind: &str) -> SymbolKind {
         "opaque member" => SymbolKind::PROPERTY,
         "enumeration" => SymbolKind::ENUM_MEMBER,
         "stakeholder" | "purpose" | "verified requirement" => SymbolKind::STRING,
+        "view rendering" | "rendering def" => SymbolKind::OBJECT,
+        "ref redefinition" | "actor redefinition" => SymbolKind::PROPERTY,
+        "include use case" => SymbolKind::EVENT,
+        "filter" => SymbolKind::OPERATOR,
+        "verdict" | "verify" => SymbolKind::ENUM_MEMBER,
+        "interface end" => SymbolKind::INTERFACE,
+        "assert constraint" => SymbolKind::FUNCTION,
         _ => SymbolKind::NULL,
     }
 }

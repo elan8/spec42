@@ -7,16 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.29.1] - 2026-06-09
+
 ### Added
 
+- **Graph depth P4b–P8 (semantic depth)** — RenderingDef and OccurrenceUsage body walks; shared case-body wiring (`SubjectRef`, `FirstSuccession`, `ThenUseCaseUsage`, `RefRedefinition`); `MetadataAnnotation` in action/requirement bodies; typed graph facts (`valueIsBoolean`, `rhsIsBoolean`); state/interface/payload semantic tokens; hover signatures for view rendering, ref redefinition, filters, and verdicts.
 - **Graph depth P1** — Action/interface/requirement body projection: `ActionDefBody` and `ActionUsageBody` walked (`then action`, nested actions, assign/ref/state/for); interface ends expose `portType` with end-typing `Connection` wiring; requirement `verify` and `subject` members emit graph nodes and `Subject` edges. Integration tests: `action_body_semantics`, `interface_body_semantics`, `requirement_body_semantics`.
 - **Graph depth P2** — Action-flow graph enrichment for activity diagrams; semantic token recursion for action/requirement bodies; `item def`/`individual def` `AttributeBody` projection; `require constraint` child graph nodes. Integration tests: `activity_graph_semantics`, `item_def_body_semantics`, `action_definitions`.
 - **Graph depth P3** — `definition_body`/`occurrence_body` walkers for occurrence and flow definitions; `PartDefBody` completion (`enum`/`item` usages, opaque members, occurrence brace bodies); semantic token expansion for part/item/metadata inner identifiers and requirement body gaps; hover and symbol kinds for P3 node kinds. Integration tests: `definition_body_semantics`, `part_def_body_semantics`, `part_def_tokens`.
-- **Graph depth P4a** — Bump `sysml-v2-parser` to **0.20.0**; flow/allocation `DefinitionBody` semantics and semantic tokens; General View filters `require constraint` child nodes while preserving inline constraint text. Integration tests: `definition_body_semantics`, `flow_def_tokens`, `model_projection`.
+- **Graph depth P4a** — Flow/allocation `DefinitionBody` semantics and semantic tokens; General View filters `require constraint` child nodes while preserving inline constraint text. Integration tests: `definition_body_semantics`, `flow_def_tokens`, `model_projection`.
 
 ### Changed
 
-- **Parser dependency** — Bumped `sysml-v2-parser` to **0.20.0** (flow/allocation definition bodies parse occurrence-style members).
+- **Parser dependency** — Bumped `sysml-v2-parser` to **0.20.1** on [crates.io](https://crates.io/crates/sysml-v2-parser/0.20.1) (flow/allocation definition bodies, `MetadataAnnotation` in action bodies, `AttributeDef.value_span`, literal-with-unit spans).
+- **Release surface alignment** — Rust workspace, `spec42` server, VS Code extension, Zed extension, and GitHub Action examples aligned at `0.29.1`.
 
 ## [0.29.0] - 2026-06-08
 
@@ -588,6 +592,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.29.1]: https://github.com/elan8/spec42/releases/tag/v0.29.1
 [0.29.0]: https://github.com/elan8/spec42/releases/tag/v0.29.0
 [0.28.0]: https://github.com/elan8/spec42/releases/tag/v0.28.0
 [0.27.1]: https://github.com/elan8/spec42/releases/tag/v0.27.1

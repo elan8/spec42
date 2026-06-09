@@ -214,6 +214,48 @@ pub(crate) fn signature_from_node(node: &SemanticNode) -> Option<String> {
         "stakeholder" => format!("stakeholder {};", node.name),
         "purpose" => format!("purpose {};", node.name),
         "verified requirement" => format!("verify requirement {};", node.name),
+        "view rendering" => {
+            let type_part = attr_str(node, "renderingType")
+                .map(|t| format!(" : {}", t))
+                .unwrap_or_default();
+            format!("render {}{};", node.name, type_part)
+        }
+        "ref redefinition" => {
+            let body = attr_str(node, "body").unwrap_or("{}");
+            format!("ref :>> {} {{ {} }};", node.name, body.trim())
+        }
+        "actor redefinition" => {
+            let rhs = attr_str(node, "rhs").unwrap_or("");
+            format!("actor :>> {} = {};", node.name, rhs.trim())
+        }
+        "include use case" => {
+            let target = attr_str(node, "includeTarget").unwrap_or(node.name.as_str());
+            format!("include {};", target)
+        }
+        "filter" => {
+            let condition = attr_str(node, "condition").unwrap_or("");
+            if condition.trim().is_empty() {
+                "filter {};".to_string()
+            } else {
+                format!("filter {};", condition.trim())
+            }
+        }
+        "verdict" => {
+            let token = attr_str(node, "rawVerdictToken").unwrap_or("done");
+            format!("return {} {};", node.name, token)
+        }
+        "occurrence" => {
+            let type_part = attr_str(node, "occurrenceType")
+                .map(|t| format!(" : {}", t))
+                .unwrap_or_default();
+            format!("occurrence {}{};", node.name, type_part)
+        }
+        "flow" => {
+            let type_part = attr_str(node, "flowType")
+                .map(|t| format!(" : {}", t))
+                .unwrap_or_default();
+            format!("flow {}{};", node.name, type_part)
+        }
         "action def" | "requirement def" | "requirement" | "concern" | "use case def"
         | "use case" | "interface" | "frame" | "state" => {
             format!("{} {};", kind, node.name)

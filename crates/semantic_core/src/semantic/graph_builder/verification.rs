@@ -6,7 +6,7 @@ use sysml_v2_parser::ast::{
 use url::Url;
 
 use super::requirement_body::{add_verified_requirement_node, verify_requirement_target};
-use super::use_case::add_include_use_case_node;
+use super::use_case::{self, add_include_use_case_node};
 use super::{add_node_and_recurse, qualified_name_for_node};
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
@@ -47,6 +47,10 @@ pub(super) fn build_from_verification_body(
     let mut then_action_count = 0usize;
 
     for node in elements {
+        if use_case::wire_extended_case_body_element(g, uri, parent_id, node, container_prefix) {
+            has_subject = true;
+            continue;
+        }
         match &node.value {
             UseCaseDefBodyElement::SubjectDecl(sd) => {
                 has_subject = true;
@@ -207,6 +211,11 @@ pub(super) fn build_from_verification_body(
                 attrs.insert("lhs".to_string(), serde_json::json!(value.lhs.as_str()));
                 attrs.insert("rhs".to_string(), serde_json::json!(value.rhs.as_str()));
                 attrs.insert("isThen".to_string(), serde_json::json!(value.is_then));
+                let rhs_trimmed = value.rhs.trim();
+                attrs.insert(
+                    "rhsIsBoolean".to_string(),
+                    serde_json::json!(matches!(rhs_trimmed, "true" | "false")),
+                );
                 add_node_and_recurse(
                     g,
                     uri,
@@ -310,6 +319,18 @@ pub(super) fn build_from_verification_body(
                     let rendered = super::expressions::expression_to_debug_string(expr_node);
                     attrs.insert("value".to_string(), serde_json::json!(rendered));
                     attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
+                    attrs.insert(
+                        "valueIsBoolean".to_string(),
+                        serde_json::json!(super::expressions::expression_is_boolean_valued(
+                            expr_node
+                        )),
+                    );
+                }
+                if let Some(span) = value.value_span.as_ref() {
+                    attrs.insert(
+                        "valueSpan".to_string(),
+                        serde_json::json!(crate::semantic::ast_util::span_to_range(span)),
+                    );
                 }
                 add_node_and_recurse(
                     g,
@@ -325,15 +346,15 @@ pub(super) fn build_from_verification_body(
                     add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
                 }
             }
-            UseCaseDefBodyElement::Error(_)
-            | UseCaseDefBodyElement::Doc(_)
-            | UseCaseDefBodyElement::Other(_)
-            | UseCaseDefBodyElement::SubjectRef(_)
-            | UseCaseDefBodyElement::ActorUsage(_)
+            UseCaseDefBodyElement::ActorUsage(_)
             | UseCaseDefBodyElement::ActorRedefinitionAssignment(_)
             | UseCaseDefBodyElement::FirstSuccession(_)
             | UseCaseDefBodyElement::ThenUseCaseUsage(_)
             | UseCaseDefBodyElement::RefRedefinition(_)
+            | UseCaseDefBodyElement::SubjectRef(_) => {}
+            UseCaseDefBodyElement::Error(_)
+            | UseCaseDefBodyElement::Doc(_)
+            | UseCaseDefBodyElement::Other(_)
             | UseCaseDefBodyElement::ForLoop(_)
             | UseCaseDefBodyElement::Annotation(_) => {}
             UseCaseDefBodyElement::MetadataKeywordUsage(mk_node) => {

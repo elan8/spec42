@@ -4,8 +4,9 @@ use std::fs;
 use sysml_v2_parser::ast::{
     CalcDefBody, CalcDefBodyElement,
     ConnectionDefBody, ConstraintDefBody, ConstraintDefBodyElement, InOut, InterfaceDefBody,
-    PackageBodyElement, PartDefBody, PartUsageBody, PortDefBody, RequirementDefBody, StateDefBody,
-    UseCaseDefBody, ViewBody, ViewBodyElement, ViewDefBody, ViewDefBodyElement, ViewRenderingUsage,
+    OccurrenceUsageBody, PackageBodyElement, PartDefBody, PartUsageBody, PortDefBody,
+    RenderingDefBody, RenderingDefBodyElement, RequirementDefBody, StateDefBody, UseCaseDefBody,
+    ViewBody, ViewBodyElement, ViewDefBody, ViewDefBodyElement, ViewRenderingUsage,
 };
 use sysml_v2_parser::RootNamespace;
 use url::Url;
@@ -24,6 +25,7 @@ use super::analysis_case;
 use super::attribute_body;
 use super::definition_body;
 use super::expressions;
+use super::occurrence_body;
 use super::modeled_kerml_name::extract_modeled_decl_name;
 use super::package_packages;
 use super::verification;
@@ -117,6 +119,30 @@ fn add_view_rendering_node(
             rendering_type,
             Some(parent_id.qualified_name.as_str()),
         );
+    }
+}
+
+fn annotate_rendering_def_body(
+    g: &mut SemanticGraph,
+    rendering_def_id: &NodeId,
+    body: &RenderingDefBody,
+    uri: &Url,
+) {
+    let RenderingDefBody::Brace { elements } = body else {
+        return;
+    };
+    for element in elements {
+        match &element.value {
+            RenderingDefBodyElement::Filter(filter) => {
+                add_view_filter_node(g, uri, rendering_def_id, filter, "rendering def");
+            }
+            RenderingDefBodyElement::ViewRendering(rendering) => {
+                add_view_rendering_node(g, uri, rendering_def_id, rendering);
+            }
+            RenderingDefBodyElement::Error(_)
+            | RenderingDefBodyElement::Other(_)
+            | RenderingDefBodyElement::Doc(_) => {}
+        }
     }
 }
 
@@ -1009,6 +1035,18 @@ pub(super) fn build_from_package_body_element(
             if let Some(ref t) = occ_node.type_name {
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
+            let node_id = NodeId::new(uri, &qualified);
+            if let OccurrenceUsageBody::Brace { elements } = &occ_node.body {
+                for child in elements {
+                    occurrence_body::build_from_occurrence_body_element(
+                        child,
+                        uri,
+                        Some(&qualified),
+                        &node_id,
+                        g,
+                    );
+                }
+            }
         }
         PBE::ConnectionDef(conn_node) => {
             let name = identification_name(&conn_node.identification);
@@ -1584,6 +1622,8 @@ pub(super) fn build_from_package_body_element(
                 container_prefix,
                 rd_node.specializes.as_deref(),
             );
+            let rendering_def_id = NodeId::new(uri, &qualified);
+            annotate_rendering_def_body(g, &rendering_def_id, &rd_node.body, uri);
         }
         PBE::ViewUsage(vu_node) => {
             let name = &vu_node.name;

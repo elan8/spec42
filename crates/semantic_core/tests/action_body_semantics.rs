@@ -84,6 +84,35 @@ fn action_def_then_action_chain_emits_flow_edges() {
 }
 
 #[test]
+fn action_def_body_materializes_metadata_annotation() {
+    let doc = workspace_doc(
+        "action_metadata.sysml",
+        r#"package P {
+  metadata def SafetyTag;
+  action def Pipeline {
+    @safetyTag : SafetyTag;
+    action step1 :> Pipeline;
+  }
+}"#,
+    );
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let pipeline = graph
+        .nodes_named("Pipeline")
+        .into_iter()
+        .find(|node| node.element_kind == "action def")
+        .expect("pipeline action def");
+    assert!(
+        graph
+            .children_of(&pipeline)
+            .iter()
+            .any(|child| {
+                child.element_kind == "metadata usage" && child.name == "safetyTag"
+            }),
+        "expected metadata usage child under action def body"
+    );
+}
+
+#[test]
 fn action_def_flow_still_emits_succession_invalid_for_bad_target() {
     let doc = workspace_doc(
         "flow_invalid.sysml",

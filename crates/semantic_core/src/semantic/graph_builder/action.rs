@@ -486,6 +486,16 @@ pub(super) fn build_from_action_def_body(
             ActionDefBodyElement::Decl(decl) => {
                 add_action_body_decl(g, uri, container_prefix, parent_id, decl);
             }
+            ActionDefBodyElement::MetadataAnnotation(meta) => {
+                super::metadata_def::add_metadata_annotation_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    &meta.value,
+                    &meta.span,
+                );
+            }
             ActionDefBodyElement::Doc(_)
             | ActionDefBodyElement::Error(_)
             | ActionDefBodyElement::Annotation(_) => {}
@@ -587,6 +597,16 @@ pub(super) fn build_from_action_usage_body(
             }
             ActionUsageBodyElement::Decl(decl) => {
                 add_action_body_decl(g, uri, container_prefix, parent_id, decl);
+            }
+            ActionUsageBodyElement::MetadataAnnotation(meta) => {
+                super::metadata_def::add_metadata_annotation_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    &meta.value,
+                    &meta.span,
+                );
             }
             ActionUsageBodyElement::Doc(_)
             | ActionUsageBodyElement::Error(_)

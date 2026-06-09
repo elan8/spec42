@@ -72,3 +72,36 @@ fn metadata_def_and_usage_with_attribute_bindings_have_no_semantic_diagnostics()
         "unexpected semantic diagnostics: {semantic_codes:?}"
     );
 }
+
+#[test]
+fn requirement_body_metadata_annotation_materializes_on_graph() {
+    let doc = SysmlDocument::from_memory_path(
+        "metadata-requirement",
+        "requirement_metadata.sysml",
+        r#"package P {
+  metadata def ReviewTag;
+  requirement def R1 {
+    @reviewTag : ReviewTag;
+    doc /* tagged requirement */
+  }
+}"#
+        .to_string(),
+        SysmlDocumentSourceKind::Workspace,
+        None,
+        None,
+    )
+    .expect("document uri");
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let requirement = graph
+        .nodes_named("R1")
+        .into_iter()
+        .find(|node| node.element_kind == "requirement def")
+        .expect("requirement def");
+    assert!(
+        graph
+            .children_of(&requirement)
+            .iter()
+            .any(|child| child.element_kind == "metadata usage" && child.name == "reviewTag"),
+        "expected metadata usage under requirement def body"
+    );
+}

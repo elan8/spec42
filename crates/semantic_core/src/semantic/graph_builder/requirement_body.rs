@@ -631,9 +631,18 @@ pub(super) fn walk_requirement_def_body(
                     );
                 }
             }
+            RequirementDefBodyElement::MetadataAnnotation(meta) => {
+                super::metadata_def::add_metadata_annotation_node(
+                    g,
+                    uri,
+                    type_resolution_prefix,
+                    parent_id,
+                    &meta.value,
+                    &meta.span,
+                );
+            }
             RequirementDefBodyElement::Doc(_)
             | RequirementDefBodyElement::Annotation(_)
-            | RequirementDefBodyElement::MetadataAnnotation(_)
             | RequirementDefBodyElement::Error(_)
             | RequirementDefBodyElement::Other(_) => {}
         }
