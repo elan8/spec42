@@ -87,6 +87,76 @@ fn part_def_item_usage_materializes_inner_attribute() {
 }
 
 #[test]
+fn part_def_nested_item_def_materializes_as_child_of_part_def() {
+    let doc = workspace_doc(
+        "accumulator.sysml",
+        r#"package P {
+  part def Accumulator {
+    item def Energy;
+    attribute mass : Real;
+  }
+}"#,
+    );
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let accumulator = graph
+        .nodes_named("Accumulator")
+        .into_iter()
+        .find(|node| node.element_kind == "part def")
+        .expect("part def");
+    let energy = graph
+        .children_of(&accumulator)
+        .into_iter()
+        .find(|child| child.element_kind == "item def" && child.name == "Energy")
+        .expect("nested item def");
+    assert_eq!(energy.parent_id.as_ref(), Some(&accumulator.id));
+    assert!(
+        graph
+            .children_of(&accumulator)
+            .iter()
+            .any(|child| {
+                (child.element_kind == "attribute" || child.element_kind == "attribute def")
+                    && child.name == "mass"
+            }),
+        "expected mass attribute as sibling of nested item def"
+    );
+}
+
+#[test]
+fn part_def_nested_item_def_body_materializes_inner_attribute() {
+    let doc = workspace_doc(
+        "energy.sysml",
+        r#"package P {
+  part def Accumulator {
+    item def Energy {
+      attribute density : Real;
+    }
+  }
+}"#,
+    );
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let accumulator = graph
+        .nodes_named("Accumulator")
+        .into_iter()
+        .find(|node| node.element_kind == "part def")
+        .expect("part def");
+    let energy = graph
+        .children_of(&accumulator)
+        .into_iter()
+        .find(|child| child.element_kind == "item def" && child.name == "Energy")
+        .expect("nested item def");
+    assert!(
+        graph
+            .children_of(&energy)
+            .iter()
+            .any(|child| {
+                (child.element_kind == "attribute" || child.element_kind == "attribute def")
+                    && child.name == "density"
+            }),
+        "expected attribute under nested item def body"
+    );
+}
+
+#[test]
 fn part_def_occurrence_usage_brace_body_materializes_attribute() {
     let doc = workspace_doc(
         "occurrence_part.sysml",

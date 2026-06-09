@@ -479,6 +479,13 @@ fn collect_semantic_ranges_part_def_body_element(
             }
         }
         PDBE::Ref(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
+        PDBE::ItemDef(id_node) => {
+            out.push((span_to_source_range(&id_node.span), TYPE_CLASS));
+            if let Some(ref s) = id_node.value.specializes_span {
+                out.push((span_to_source_range(s), TYPE_TYPE));
+            }
+            collect_semantic_ranges_attribute_body(&id_node.value.body, out);
+        }
         PDBE::ItemUsage(item_node) => {
             out.push((span_to_source_range(&item_node.span), TYPE_PROPERTY));
             collect_semantic_ranges_attribute_body(&item_node.body, out);

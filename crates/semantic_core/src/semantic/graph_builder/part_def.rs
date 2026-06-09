@@ -8,7 +8,9 @@ use url::Url;
 use crate::semantic::ast_util::{identification_name, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
-use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
+use crate::semantic::relationships::{
+    add_edge_if_both_exist, add_specializes_edge_if_exists, add_typing_edge_if_exists,
+};
 
 use super::attribute_body;
 use super::expressions;
@@ -211,6 +213,38 @@ pub(super) fn build_from_part_def_body_element(
                         g,
                     );
                 }
+            }
+        }
+        PDBE::ItemDef(item_node) => {
+            let name = identification_name(&item_node.identification);
+            if !name.is_empty() {
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "item def");
+                let mut attrs = HashMap::new();
+                if let Some(ref s) = item_node.specializes {
+                    attrs.insert("specializes".to_string(), serde_json::json!(s));
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "item def",
+                    name,
+                    span_to_range(&item_node.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                if let Some(ref s) = item_node.specializes {
+                    add_specializes_edge_if_exists(g, uri, &qualified, s, container_prefix);
+                }
+                let node_id = NodeId::new(uri, &qualified);
+                attribute_body::build_from_attribute_body(
+                    &item_node.body,
+                    uri,
+                    Some(&qualified),
+                    &node_id,
+                    g,
+                );
             }
         }
         PDBE::ItemUsage(item_node) => {
