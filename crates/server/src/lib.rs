@@ -44,6 +44,7 @@ pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, St
             workspace_root: args.workspace_root.clone(),
             library_paths: environment.library_paths.clone(),
             parallel_enabled: true,
+            strict_diagnostics: args.strict_diagnostics,
         },
     )?;
     if references_stdlib
@@ -101,6 +102,7 @@ pub fn perform_check_with_semantics(
             workspace_root: args.workspace_root.clone(),
             library_paths: environment.library_paths.clone(),
             parallel_enabled: true,
+            strict_diagnostics: args.strict_diagnostics,
         },
     )?;
     if references_stdlib

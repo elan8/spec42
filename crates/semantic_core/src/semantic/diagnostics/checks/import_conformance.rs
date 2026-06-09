@@ -159,27 +159,6 @@ pub(in crate::semantic::diagnostics) fn collect_import_conformance_diagnostics(
             }
         }
 
-        let visibility = node
-            .attributes
-            .get("visibility")
-            .and_then(|value| value.as_str())
-            .unwrap_or("Private");
-        if visibility.contains("Private") && import_is_all(node) {
-            let key = format!("visibility|{}", node.id.qualified_name);
-            if seen.insert(key) {
-                diagnostics.push(diag(
-                    uri,
-                    range,
-                    DiagnosticSeverity::Warning,
-                    "semantic",
-                    "visibility_violation",
-                    format!(
-                        "Import of '{}' is private but re-exports an entire namespace; use public import when exposing imported members.",
-                        target
-                    ),
-                ));
-            }
-        }
     }
 
     for node in graph.nodes_for_uri(uri) {

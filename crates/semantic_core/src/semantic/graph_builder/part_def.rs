@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
-    CalcDefBody, InterfaceDefBody, OccurrenceUsageBody, PartDefBodyElement, PartUsageBody,
+    CalcDefBody, InterfaceDefBody, OccurrenceUsageBody, PartDefBody, PartDefBodyElement,
+    PartUsageBody,
 };
 use url::Url;
 
@@ -20,6 +21,7 @@ use super::part_usage;
 use super::port_def::materialize_port_usage;
 use super::requirement_body::walk_requirement_def_body;
 use super::state;
+use super::stubs;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
 pub(super) fn build_from_part_def_body_element(
@@ -128,6 +130,50 @@ pub(super) fn build_from_part_def_body_element(
         }
         PDBE::PortUsage(n) => {
             materialize_port_usage(n, uri, container_prefix, parent_id, g);
+        }
+        PDBE::PartDef(pd_node) => {
+            let name = identification_name(&pd_node.identification);
+            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "part def");
+            let range = span_to_range(&pd_node.span);
+            let mut attrs = HashMap::new();
+            if let Some(ref p) = pd_node.definition_prefix {
+                attrs.insert(
+                    "definitionPrefix".to_string(),
+                    serde_json::json!(match p {
+                        sysml_v2_parser::ast::DefinitionPrefix::Abstract => "abstract",
+                        sysml_v2_parser::ast::DefinitionPrefix::Variation => "variation",
+                    }),
+                );
+            }
+            if let Some(ref s) = pd_node.specializes {
+                attrs.insert("specializes".to_string(), serde_json::json!(s));
+            }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "part def",
+                name.clone(),
+                range,
+                attrs,
+                Some(parent_id),
+            );
+            let node_id = NodeId::new(uri, &qualified);
+            stubs::relationships_from_part_def(pd_node, uri, container_prefix, &qualified, g);
+            if let PartDefBody::Brace { elements } = &pd_node.body {
+                for child in elements {
+                    build_from_part_def_body_element(
+                        child,
+                        uri,
+                        Some(&qualified),
+                        &node_id,
+                        g,
+                    );
+                }
+            }
+            if let Some(ref s) = pd_node.specializes {
+                add_specializes_edge_if_exists(g, uri, &qualified, s, container_prefix);
+            }
         }
         PDBE::PartUsage(n) => {
             let name = &n.name;

@@ -21,14 +21,8 @@ pub(super) fn extract_modeled_decl_name(
         .collect();
     let kw = bnf_production.trim();
     if let Some(pos) = tokens.iter().position(|tok| tok.eq_ignore_ascii_case(kw)) {
-        if pos + 1 < tokens.len() {
-            let name = &tokens[pos + 1];
-            if !name.is_empty() && !name.eq_ignore_ascii_case("specializes") {
-                let s = sanitize_identifier(name);
-                if !s.is_empty() {
-                    return s;
-                }
-            }
+        if let Some(name) = name_after_definition_header(&tokens, pos) {
+            return name;
         }
     }
     const SKIP: &[&str] = &[
@@ -39,6 +33,9 @@ pub(super) fn extract_modeled_decl_name(
         "inv",
         "specializes",
         "subsets",
+        "def",
+        "id",
+        "case",
     ];
     for tok in &tokens {
         if SKIP.iter().any(|s| tok.eq_ignore_ascii_case(s)) {
@@ -56,6 +53,43 @@ fn sanitize_identifier(s: &str) -> String {
     s.chars()
         .filter(|c| c.is_alphanumeric() || *c == '_')
         .collect()
+}
+
+/// Skip `def`, legacy `id '…'`, and `use case` prefixes before the declared name.
+fn name_after_definition_header(tokens: &[String], kw_pos: usize) -> Option<String> {
+    let mut i = kw_pos + 1;
+    while i < tokens.len() {
+        let tok = &tokens[i];
+        if tok.eq_ignore_ascii_case("def") {
+            i += 1;
+            continue;
+        }
+        if tok.eq_ignore_ascii_case("id") {
+            i += 1;
+            continue;
+        }
+        if tok.eq_ignore_ascii_case("case")
+            && tokens
+                .get(kw_pos)
+                .is_some_and(|kw| kw.eq_ignore_ascii_case("use"))
+        {
+            i += 1;
+            continue;
+        }
+        if tok.starts_with('\'') {
+            i += 1;
+            continue;
+        }
+        if tok.eq_ignore_ascii_case("specializes") {
+            return None;
+        }
+        let s = sanitize_identifier(tok);
+        if !s.is_empty() {
+            return Some(s);
+        }
+        break;
+    }
+    None
 }
 
 #[cfg(test)]
@@ -85,5 +119,25 @@ mod tests {
     #[test]
     fn fallback_when_no_match() {
         assert_eq!(extract_modeled_decl_name("unknown", "???;", "_fb"), "_fb");
+    }
+
+    #[test]
+    fn requirement_def_id_dialect_uses_declaration_name() {
+        assert_eq!(
+            extract_modeled_decl_name(
+                "requirement",
+                "requirement def id 'Req001' MaximaleMasse { doc /* x */ }",
+                "_x"
+            ),
+            "MaximaleMasse"
+        );
+    }
+
+    #[test]
+    fn keyword_def_name_skips_def_token() {
+        assert_eq!(
+            extract_modeled_decl_name("action", "action def DoNavigate { }", "_x"),
+            "DoNavigate"
+        );
     }
 }

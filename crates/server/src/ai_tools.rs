@@ -77,6 +77,7 @@ pub fn perform_explain_diagnostic(
             format: OutputFormat::Json,
             warnings_as_errors: false,
             baseline: None,
+            strict_diagnostics: false,
         };
         let report = perform_check(cli, &check_args)?;
         for doc in &report.documents {
@@ -124,6 +125,7 @@ pub fn perform_model_summary(
         format: OutputFormat::Json,
         warnings_as_errors: false,
         baseline: None,
+        strict_diagnostics: false,
     };
     let report = perform_check_with_semantics(cli, &check_args)?;
     Ok(build_model_summary(report, args.max_nodes))

@@ -87,6 +87,42 @@ fn part_def_item_usage_materializes_inner_attribute() {
 }
 
 #[test]
+fn part_def_nested_part_def_materializes_as_child_of_part_def() {
+    let doc = workspace_doc(
+        "accumulator_part.sysml",
+        r#"package P {
+  part def Accumulator {
+    part def Cell {
+      attribute capacity : Real;
+    }
+  }
+}"#,
+    );
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let accumulator = graph
+        .nodes_named("Accumulator")
+        .into_iter()
+        .find(|node| node.element_kind == "part def")
+        .expect("part def");
+    let cell = graph
+        .children_of(&accumulator)
+        .into_iter()
+        .find(|child| child.element_kind == "part def" && child.name == "Cell")
+        .expect("nested part def");
+    assert_eq!(cell.parent_id.as_ref(), Some(&accumulator.id));
+    assert!(
+        graph
+            .children_of(&cell)
+            .iter()
+            .any(|child| {
+                (child.element_kind == "attribute" || child.element_kind == "attribute def")
+                    && child.name == "capacity"
+            }),
+        "expected capacity attribute under nested part def"
+    );
+}
+
+#[test]
 fn part_def_nested_item_def_materializes_as_child_of_part_def() {
     let doc = workspace_doc(
         "accumulator.sysml",

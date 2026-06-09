@@ -15,6 +15,8 @@ pub struct ValidationRequest {
     pub workspace_root: Option<PathBuf>,
     pub library_paths: Vec<PathBuf>,
     pub parallel_enabled: bool,
+    /// When true, skip semantic checks after parse errors and suppress shadowed semantic warnings (legacy `spec42 check` behavior).
+    pub strict_diagnostics: bool,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -149,6 +151,7 @@ package RiskTrace {
                 workspace_root: None,
                 library_paths: Vec::new(),
                 parallel_enabled: false,
+                strict_diagnostics: false,
             },
         )
         .expect("semantic validation report");
@@ -199,6 +202,7 @@ package UseLibrary {
                 workspace_root: None,
                 library_paths: vec![library_root],
                 parallel_enabled: false,
+                strict_diagnostics: false,
             },
         )
         .expect("semantic validation report");
@@ -228,6 +232,7 @@ package UseLibrary {
                 workspace_root: None,
                 library_paths: Vec::new(),
                 parallel_enabled: false,
+                strict_diagnostics: false,
             },
         )
         .expect("validation report");
@@ -275,6 +280,7 @@ package UseLibrary {
                 workspace_root: None,
                 library_paths: vec![stdlib_root],
                 parallel_enabled: false,
+                strict_diagnostics: false,
             },
         )
         .expect("validation report");

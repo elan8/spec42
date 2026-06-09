@@ -7,12 +7,14 @@ use tower_lsp::lsp_types::{
 #[derive(Debug, Clone, Copy)]
 pub struct DiagnosticsPostprocessOptions {
     pub suppress_semantic_after_parse_error: bool,
+    pub skip_semantic_on_parse_error: bool,
 }
 
 impl Default for DiagnosticsPostprocessOptions {
     fn default() -> Self {
         Self {
-            suppress_semantic_after_parse_error: true,
+            suppress_semantic_after_parse_error: false,
+            skip_semantic_on_parse_error: false,
         }
     }
 }
@@ -393,6 +395,7 @@ mod tests {
             diagnostics,
             DiagnosticsPostprocessOptions {
                 suppress_semantic_after_parse_error: false,
+                skip_semantic_on_parse_error: false,
             },
         );
         assert_eq!(out.len(), 1);

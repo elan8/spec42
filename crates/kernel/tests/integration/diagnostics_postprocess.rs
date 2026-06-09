@@ -26,6 +26,7 @@ part def Carrier {
             workspace_root: Some(temp.path().to_path_buf()),
             library_paths: Vec::new(),
             parallel_enabled: false,
+            strict_diagnostics: false,
         },
     )
     .expect("validation report");
@@ -52,6 +53,47 @@ part def Carrier {
             )
         }),
         "expected a root parse diagnostic: {:?}",
+        report.documents[0].diagnostics
+    );
+}
+
+#[test]
+fn check_keeps_semantic_warnings_after_parse_error_by_default() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let path = temp.path().join("mixed.sysml");
+    fs::write(
+        &path,
+        r#"package P {
+  part def Broken {
+    part a : MissingType
+    attribute label : UnknownType;
+  }
+}"#,
+    )
+    .expect("write");
+
+    let config = Arc::new(default_server_config());
+    let report = validate_paths(
+        &config,
+        ValidationRequest {
+            targets: vec![path],
+            workspace_root: Some(temp.path().to_path_buf()),
+            library_paths: Vec::new(),
+            parallel_enabled: false,
+            strict_diagnostics: false,
+        },
+    )
+    .expect("validation report");
+
+    assert!(
+        report.documents[0]
+            .diagnostics
+            .iter()
+            .any(|d| matches!(
+                &d.code,
+                Some(NumberOrString::String(code)) if code == "unresolved_type_reference"
+            )),
+        "expected semantic unresolved_type_reference after parse error by default: {:?}",
         report.documents[0].diagnostics
     );
 }

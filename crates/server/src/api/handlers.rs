@@ -98,6 +98,7 @@ pub async fn validate(
         format: OutputFormat::Json,
         warnings_as_errors: body.warnings_as_errors,
         baseline: None,
+        strict_diagnostics: false,
     };
     let report = tokio::task::spawn_blocking(move || perform_check(&cli, &args))
         .await
@@ -146,6 +147,7 @@ pub async fn model_projection(
                 format: OutputFormat::Json,
                 warnings_as_errors: false,
                 baseline: None,
+                strict_diagnostics: false,
             },
         )
     })
@@ -339,6 +341,7 @@ async fn load_projection(
                 format: OutputFormat::Json,
                 warnings_as_errors: false,
                 baseline: None,
+                strict_diagnostics: false,
             },
         )
     })

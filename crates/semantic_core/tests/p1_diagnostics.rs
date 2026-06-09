@@ -31,6 +31,61 @@ fn emits_incompatible_type_kind_for_part_typed_as_port_def() {
 }
 
 #[test]
+fn private_wildcard_import_does_not_emit_visibility_violation() {
+    let input = r#"
+        package P {
+            private import ScalarValues::*;
+            part def Device {
+                attribute mass : Real;
+            }
+        }
+    "#;
+    let diags = diags_for(input);
+    assert!(
+        !has_code(&diags, "visibility_violation"),
+        "private wildcard import for internal use must not warn, got {:?}",
+        diags.iter().map(|d| (&d.code, &d.message)).collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn action_defs_in_part_body_do_not_emit_duplicate_namespace_member() {
+    let input = r#"
+        package P {
+            part def Navigation {
+                action def DoNavigate;
+                action def FindHome;
+            }
+        }
+    "#;
+    let diags = diags_for(input);
+    assert!(
+        !has_code(&diags, "duplicate_namespace_member"),
+        "action def siblings must not collide as name 'def', got {:?}",
+        diags.iter().map(|d| (&d.code, &d.message)).collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn requirement_def_id_dialect_does_not_emit_duplicate_namespace_member() {
+    let input = r#"
+        package P {
+            package Requirements {
+                requirement def id 'Req001' MaximaleMasse { doc /* x */ }
+                requirement def id 'Req002' Lenken { }
+                requirement def id 'Req003' Beschleunigen { }
+            }
+        }
+    "#;
+    let diags = diags_for(input);
+    assert!(
+        !has_code(&diags, "duplicate_namespace_member"),
+        "legacy requirement def id dialect must not collide as name 'def', got {:?}",
+        diags.iter().map(|d| (&d.code, &d.message)).collect::<Vec<_>>()
+    );
+}
+
+#[test]
 fn emits_duplicate_namespace_member() {
     let input = r#"
         package P {

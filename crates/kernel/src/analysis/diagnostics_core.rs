@@ -68,8 +68,10 @@ pub(crate) fn collect_document_diagnostics(
 
     let allow_semantic_checks = if block_on_any_parse_issue {
         result.errors.is_empty()
-    } else {
+    } else if postprocess.skip_semantic_on_parse_error {
         !has_parse_error
+    } else {
+        true
     };
 
     if allow_semantic_checks {
@@ -99,15 +101,17 @@ pub(crate) fn collect_document_diagnostics(
     postprocess_document_diagnostics(uri, diagnostics, postprocess)
 }
 
-pub(crate) fn validation_postprocess_options() -> DiagnosticsPostprocessOptions {
+pub(crate) fn validation_postprocess_options(strict: bool) -> DiagnosticsPostprocessOptions {
     DiagnosticsPostprocessOptions {
-        suppress_semantic_after_parse_error: true,
+        suppress_semantic_after_parse_error: strict,
+        skip_semantic_on_parse_error: strict,
     }
 }
 
 pub(crate) fn lsp_postprocess_options() -> DiagnosticsPostprocessOptions {
     DiagnosticsPostprocessOptions {
         suppress_semantic_after_parse_error: false,
+        skip_semantic_on_parse_error: false,
     }
 }
 

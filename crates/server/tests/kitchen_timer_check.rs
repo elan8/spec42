@@ -36,6 +36,7 @@ fn kitchen_timer_example_validates_body() {
         format: OutputFormat::Json,
         warnings_as_errors: false,
         baseline: None,
+        strict_diagnostics: false,
     };
 
     let report = perform_check(&cli, &args).expect("validation should run");
@@ -77,6 +78,7 @@ fn kitchen_timer_example_validates_with_explicit_workspace_root_body() {
         format: OutputFormat::Json,
         warnings_as_errors: false,
         baseline: None,
+        strict_diagnostics: false,
     };
 
     let report = perform_check(&cli, &args).expect("validation should run");

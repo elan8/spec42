@@ -64,6 +64,12 @@ pub struct CheckArgs {
     pub warnings_as_errors: bool,
     #[arg(long = "baseline")]
     pub baseline: Option<PathBuf>,
+    #[arg(
+        long = "strict-diagnostics",
+        default_value_t = false,
+        help = "Legacy check mode: skip semantic diagnostics after parse errors and suppress shadowed unresolved warnings"
+    )]
+    pub strict_diagnostics: bool,
 }
 
 #[derive(Debug, Clone, Args)]

@@ -120,6 +120,7 @@ mod tests {
             workspace_root: None,
             library_paths: Vec::<PathBuf>::new(),
             parallel_enabled: false,
+            strict_diagnostics: false,
         };
         let resolved = resolve_workspace_root(&request)
             .expect("resolve")

@@ -277,13 +277,6 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
-        code: "visibility_violation",
-        severity: "warning",
-        meaning: "An import or reference violates visibility across namespace boundaries.",
-        typical_fix: "Use public imports/exports or reference members from an accessible scope.",
-        editor_quick_fixes: None,
-    },
-    DiagnosticCatalogEntry {
         code: "invalid_import_filter",
         severity: "warning",
         meaning: "An import filter expression is not Boolean-valued.",
@@ -761,7 +754,6 @@ mod tests {
         ("view_expose_empty", "information"),
         ("view_rendering_invalid_target", "warning"),
         ("viewpoint_conformance_invalid_target_kind", "warning"),
-        ("visibility_violation", "warning"),
     ];
 
     #[test]

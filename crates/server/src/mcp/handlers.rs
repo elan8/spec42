@@ -24,6 +24,7 @@ pub fn handle_spec42_check(arguments: Value) -> Result<Value, String> {
         format: OutputFormat::Json,
         warnings_as_errors: false,
         baseline: None,
+        strict_diagnostics: false,
     };
 
     if params.include_semantic_model {

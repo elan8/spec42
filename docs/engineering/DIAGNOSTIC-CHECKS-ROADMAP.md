@@ -112,7 +112,7 @@ Spec areas: 7.5, 8.3.5, 8.4.2.
 - Done: `invalid_qualified_name_segment` — intermediate qualified-name segment is not a namespace.
 - Done: `import_kind_mismatch` — namespace vs membership import target mismatch.
 - Done: `invalid_recursive_import` — recursive import targets a non-namespace.
-- Done: `visibility_violation` — private wildcard import re-export warning.
+- Removed: `visibility_violation` — previously warned on all `private import …::*`; private wildcard imports are valid for internal use in SysML v2.
 - Done: `invalid_import_filter` — import filter expression is not Boolean-valued.
 
 ### P1: typing, specialization, subsetting, redefinition

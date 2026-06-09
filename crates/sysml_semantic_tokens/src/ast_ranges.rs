@@ -490,6 +490,17 @@ fn collect_semantic_ranges_part_def_body_element(
             out.push((span_to_source_range(&item_node.span), TYPE_PROPERTY));
             collect_semantic_ranges_attribute_body(&item_node.body, out);
         }
+        PDBE::PartDef(pd_node) => {
+            out.push((span_to_source_range(&pd_node.span), TYPE_CLASS));
+            if let Some(ref s) = pd_node.value.specializes_span {
+                out.push((span_to_source_range(s), TYPE_TYPE));
+            }
+            if let PartDefBody::Brace { elements } = &pd_node.body {
+                for element in elements {
+                    collect_semantic_ranges_part_def_body_element(element, out);
+                }
+            }
+        }
         PDBE::OccurrenceUsage(occurrence_usage) => {
             out.push((span_to_source_range(&occurrence_usage.span), TYPE_PROPERTY));
             if let OccurrenceUsageBody::Brace { elements } = &occurrence_usage.body {

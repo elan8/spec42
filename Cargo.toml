@@ -22,4 +22,4 @@ clap = { version = "4", features = ["derive"] }
 rmcp = { version = "0.9", features = ["server"] }
 schemars = { version = "1.1", features = ["derive"] }
 petgraph = "0.8"
-sysml-v2-parser = { path = "../sysml-v2-parser", version = "0.20.2" }
+sysml-v2-parser = "0.20.4"

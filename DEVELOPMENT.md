@@ -102,7 +102,7 @@ npm run compile
 
 ## Parser Dependency Policy
 
-The workspace pins `sysml-v2-parser` in the root `Cargo.toml` as a **crates.io** version (currently **0.19.0**). CI and default local builds resolve from the registry. To work against a sibling checkout, use the `[patch.crates-io]` block in [`.cargo/config.toml`](.cargo/config.toml).
+The workspace pins `sysml-v2-parser` in the root `Cargo.toml` as a **crates.io** version (currently **0.20.4**). CI and default local builds resolve from the registry. To work against a sibling checkout, use the `[patch.crates-io]` block in [`.cargo/config.toml`](.cargo/config.toml).
 
 When updating parser behavior:
 
@@ -116,9 +116,9 @@ Cross-repo notes for real-model diagnostic quality live in the parser repo: [`do
 
 ## Diagnostic quality workflow
 
-- `spec42 check` post-processes diagnostics: deduplication, one root parse error per file (cascades in `relatedInformation`), and suppression of misleading semantic warnings after the first parse error in a file.
+- `spec42 check` post-processes diagnostics: deduplication and one root parse error per file (cascades in `relatedInformation`). By default, semantic checks still run on files with parse errors; use `--strict-diagnostics` for the legacy mode that skips semantic checks after a parse error and suppresses shadowed `unresolved_*` warnings.
 - Parser-side cascade suppression and dialect-specific codes come from `sysml-v2-parser`; post-processing lives in `crates/kernel/src/analysis/diagnostics_postprocess.rs`.
-- Optional corpus regression: set `MBSE_VACUUM_EXAMPLE_DIR` to a checkout of the public vacuum-cleaner example and run `cargo test -p kernel --test lsp_integration mbse_vacuum -- --ignored`.
+- Corpus regression: set `MBSE_VACUUM_EXAMPLE_DIR` to a checkout of the public vacuum-cleaner example and run `cargo test -p kernel --test lsp_integration mbse_vacuum -- --ignored`. See [docs/engineering/MBSE-VACUUM-CHECK-ANALYSIS.md](docs/engineering/MBSE-VACUUM-CHECK-ANALYSIS.md).
 
 ## Workspace indexing limits
 

@@ -18,6 +18,7 @@ fn validate_inline_sysml(filename: &str, content: &str) -> Vec<tower_lsp::lsp_ty
             workspace_root: Some(temp_dir.path().to_path_buf()),
             library_paths: Vec::new(),
             parallel_enabled: false,
+            strict_diagnostics: false,
         },
     )
     .expect("validate paths");

@@ -61,7 +61,7 @@ pub(super) fn validate_paths_with_semantics(
     );
     rebuild_all_document_links(&mut state);
 
-    let documents = collect_target_documents(&state, config, &target_files)?;
+    let documents = collect_target_documents(&state, config, &target_files, request.strict_diagnostics)?;
     let summary = summarize(&documents);
     let advice = build_advice(&documents, request.library_paths.is_empty());
     let target_urls = target_file_urls(&target_files)?;
@@ -152,6 +152,7 @@ fn collect_target_documents(
     state: &ServerState,
     config: &Arc<Spec42Config>,
     target_files: &[std::path::PathBuf],
+    strict_diagnostics: bool,
 ) -> Result<Vec<ValidatedDocument>, String> {
     let target_urls = target_file_urls(target_files)?;
 
@@ -159,7 +160,8 @@ fn collect_target_documents(
         .into_iter()
         .map(|uri| {
             let text = indexed_text_or_empty(state, &uri);
-            let diagnostics = collect_diagnostics_for_document(state, config, &uri, &text);
+            let diagnostics =
+                collect_diagnostics_for_document(state, config, &uri, &text, strict_diagnostics);
             ValidatedDocument {
                 uri: uri.to_string(),
                 diagnostics,
@@ -231,6 +233,7 @@ fn collect_diagnostics_for_document(
     config: &Arc<Spec42Config>,
     uri: &Url,
     text: &str,
+    strict_diagnostics: bool,
 ) -> Vec<Diagnostic> {
     diagnostics_core::collect_document_diagnostics(
         &state.semantic_graph,
@@ -239,6 +242,6 @@ fn collect_diagnostics_for_document(
         uri,
         text,
         false,
-        diagnostics_core::validation_postprocess_options(),
+        diagnostics_core::validation_postprocess_options(strict_diagnostics),
     )
 }

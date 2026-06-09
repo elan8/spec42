@@ -42,6 +42,7 @@ fn multi_file_workspace_validates_with_explicit_workspace_root() {
         format: OutputFormat::Json,
         warnings_as_errors: false,
         baseline: None,
+        strict_diagnostics: false,
     };
 
     let report = perform_check(&cli, &args).expect("validation should run");
@@ -89,6 +90,7 @@ fn multi_file_workspace_validates_when_checking_single_file_with_root() {
         format: OutputFormat::Json,
         warnings_as_errors: false,
         baseline: None,
+        strict_diagnostics: false,
     };
 
     let report = perform_check(&cli, &args).expect("validation should run");
