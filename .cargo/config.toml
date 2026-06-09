@@ -2,6 +2,6 @@
 # [build]
 # rustflags = ["-D", "warnings"]
 
-# Local parser checkout (disable before release commits that pin crates.io 0.22.0).
-[patch.crates-io]
-sysml-v2-parser = { path = "../sysml-v2-parser" }
+# To test against a sibling parser checkout before publish, uncomment:
+# [patch.crates-io]
+# sysml-v2-parser = { path = "../sysml-v2-parser" }

@@ -2,13 +2,13 @@
 
 **Corpus:** `C:\Git\MBSE_AG_vacuum-cleaner-robot-example`  
 **Command:** `spec42 check` (workspace scan, embedded standard library, default diagnostics)  
-**Parser:** `sysml-v2-parser` **0.22.0** (local patch; not yet on crates.io)  
+**Parser:** `sysml-v2-parser` **0.22.0** ([crates.io](https://crates.io/crates/sysml-v2-parser/0.22.0))  
 **Date:** June 2026 (after WP1 diagnostic fidelity + legacy parse coverage)  
 **Documents checked:** 52  
 
 ## Executive summary
 
-| Severity | Original run | Mid run (0.21.0) | Latest run (0.22.0 local) |
+| Severity | Original run | Mid run (0.21.0) | Latest run (0.22.0) |
 |----------|-------------:|-----------------:|--------------------------:|
 | Error | 20 | 13 | **12** |
 | Warning | 136 | 310 | **305** |
@@ -145,14 +145,13 @@
 | `redefines` keyword parsing (0.20.4) | Done |
 | Use-case succession graph (`CaseSuccessionChain`) | Done |
 | `directed_attribute_usage` in port def bodies (0.21.0) | Done |
-| `directed_item_usage` in port def bodies (0.22.0) | Done (local) |
+| `directed_item_usage` in port def bodies (0.22.0) | Done |
 | Vacuum baseline (`error_count ≤ 12`, `missing_closing_brace == 0`) | Done |
 
 ## Remaining follow-ups (corpus / optional tooling)
 
 1. **Corpus fixes** — boundary ports on `RoboticVacuumCleaner`, complete `Engine` def, state entry action syntax.
-2. **Publish parser 0.22.0** to crates.io and pin spec42 after local validation.
-3. **Connection ambiguity** — vacuum still has 4× `ambiguous_connection_endpoint`; needs model qualification or richer import disambiguation.
+2. **Connection ambiguity** — vacuum still has 4× `ambiguous_connection_endpoint`; needs model qualification or richer import disambiguation.
 
 ---
 
