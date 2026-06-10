@@ -110,9 +110,9 @@ fn transition_guard_non_boolean_points_at_transition() {
 
 #[test]
 fn view_filter_non_boolean_points_at_filter() {
-    let content = "package Demo {\n  view def StructuralView;\n  view structure : StructuralView {\n    filter @MissingType;\n  }\n}\n";
+    let content = "package Demo {\n  view def StructuralView;\n  view structure : StructuralView {\n    filter 42;\n  }\n}\n";
     let range = diagnostic_range_for(content, "view_filter_non_boolean");
-    assert_range_text(content, range, "filter @MissingType;");
+    assert_range_text(content, range, "filter 42;");
 }
 
 #[test]

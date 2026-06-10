@@ -43,7 +43,7 @@
 | `succession_endpoint_invalid` | 5 | **Model issue** | Action-like endpoint mismatch |
 | `invalid_bare_identifier_in_state_body` | 4 | **Invalid syntax** | Not in `ActionBodyItem` / `StateBodyItem` BNF |
 | `ambiguous_connection_endpoint` | 4 | **Model issue** | Multiple homonymous ports under composite |
-| `incompatible_type_kind` | 4 | **Valid check** | Actor typed by part def (BNF: `ActorUsage`) |
+| `incompatible_type_kind` | 0 | **Fixed (was false positive)** | Actor typed by part/item def is valid per §7.11.2 / §7.22.2 (`ActorUsage : PartUsage`) |
 | `analysis_evaluation_unresolved` | 4 | **Expected** | Analysis not executed in `check` |
 | `duplicate_namespace_member` | 1 | **Valid** | Two `then action roboticVacuumCleaner` in same use case |
 | `unresolved_connection_segment` | 3 | **Model issue** | Broken connection paths |
@@ -51,6 +51,8 @@
 | `unresolved_satisfy_target` | 1 | **Model issue** | |
 
 **Eliminated since 0.21.0 run:** `missing_closing_brace` (1→0), `duplicate_namespace_member` false positives for subject/action reuse (4→1 true positive only).
+
+**Eliminated since spec-alignment fix (0.29.x):** `incompatible_type_kind` on `actor … : RoboticVacuumCleaner` (4→0); `view_filter_non_boolean` / `invalid_import_filter` on `@SysML::…` metaclass filters.
 
 **Eliminated since original run:** `visibility_violation` (75→0), `recovered_part_usage_body_element` (7→0), `unresolved_pending_relationship` (4→0), `'def'` duplicate collisions (3→0).
 

@@ -1,10 +1,13 @@
 //! Kind-compatibility tables for P1 typing, specialization, and redefinition checks.
 
+/// Part-like usage kinds (ActorUsage / StakeholderUsage are PartUsages per SysML §7.21–7.22).
+const PART_LIKE_TYPING_TARGETS: &[&str] = &["part def", "item def", "occurrence def"];
+
 pub fn allowed_typing_target_kinds(usage_kind: &str) -> &'static [&'static str] {
     match usage_kind {
-        "part" => &["part def", "occurrence def"],
+        "part" => &["part def", "item def", "occurrence def"],
         "port" => &["port def"],
-        "item" => &["item def"],
+        "item" => &["item def", "part def"],
         "attribute" => &["attribute def", "enum def"],
         "action" => &["action def"],
         "state" => &["state def"],
@@ -15,7 +18,7 @@ pub fn allowed_typing_target_kinds(usage_kind: &str) -> &'static [&'static str] 
         "view" => &["view def"],
         "viewpoint" => &["viewpoint def"],
         "concern" => &["concern def"],
-        "actor" => &["actor def"],
+        "actor" | "stakeholder" => PART_LIKE_TYPING_TARGETS,
         "flow" => &["flow def"],
         "allocation" => &["allocation def"],
         "interface" => &["interface"],
@@ -31,7 +34,6 @@ pub fn allowed_typing_target_kinds(usage_kind: &str) -> &'static [&'static str] 
             "attribute def",
             "requirement def",
             "action def",
-            "actor def",
             "occurrence def",
             "flow def",
             "allocation def",
@@ -55,7 +57,6 @@ pub fn allowed_typing_target_kinds(usage_kind: &str) -> &'static [&'static str] 
             "view def",
             "viewpoint def",
             "concern def",
-            "actor def",
             "flow def",
             "allocation def",
             "interface",
@@ -81,7 +82,6 @@ pub fn allowed_specializes_target_kinds(def_kind: &str) -> &'static [&'static st
         "view def" => &["view def"],
         "viewpoint def" => &["viewpoint def"],
         "concern def" => &["concern def"],
-        "actor def" => &["actor def"],
         "flow def" => &["flow def"],
         "allocation def" => &["allocation def"],
         "enum def" => &["enum def"],
@@ -96,11 +96,20 @@ pub fn allowed_subset_redefine_target_kinds(usage_kind: &str) -> &'static [&'sta
     match usage_kind {
         "part" | "port" | "item" | "attribute" | "action" | "state" | "requirement"
         | "use case" | "analysis" | "verification" | "view" | "viewpoint" | "concern" | "actor"
-        | "flow" | "allocation" | "interface" => allowed_typing_target_kinds(usage_kind),
+        | "stakeholder" | "flow" | "allocation" | "interface" => {
+            allowed_typing_target_kinds(usage_kind)
+        }
         _ => &[],
     }
 }
 
 pub fn is_compatible_kind(target_kind: &str, allowed: &[&str]) -> bool {
     allowed.contains(&target_kind)
+}
+
+pub fn expected_typing_definition_label(usage_kind: &str) -> String {
+    match usage_kind {
+        "actor" | "stakeholder" => "part or item".to_string(),
+        _ => usage_kind.trim_end_matches(" def").to_string(),
+    }
 }

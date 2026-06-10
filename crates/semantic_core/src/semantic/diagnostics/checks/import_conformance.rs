@@ -165,6 +165,14 @@ pub(in crate::semantic::diagnostics) fn collect_import_conformance_diagnostics(
         if node.element_kind != "filter" {
             continue;
         }
+        let owner_kind = node
+            .attributes
+            .get("filterOwnerKind")
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
+        if matches!(owner_kind, "view" | "view def" | "rendering def") {
+            continue;
+        }
         let Some(condition) = node
             .attributes
             .get("condition")

@@ -10,7 +10,7 @@ use crate::semantic::diagnostics::helpers::{
 };
 use crate::semantic::diagnostics::kind_rules::{
     allowed_specializes_target_kinds, allowed_subset_redefine_target_kinds,
-    allowed_typing_target_kinds, is_compatible_kind,
+    allowed_typing_target_kinds, expected_typing_definition_label, is_compatible_kind,
 };
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::relationships::SPECIALIZES_TARGET_KINDS;
@@ -166,7 +166,9 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
 
         if let Some(type_ref) = declared_type_ref(node) {
             let normalized = normalize_declared_type_ref(type_ref);
-            if !is_builtin_type_ref(&normalized) {
+            if !is_builtin_type_ref(&normalized)
+                && !matches!(node.element_kind.as_str(), "subject" | "ref")
+            {
                 for target in graph.outgoing_typing_or_specializes_targets(node) {
                     let allowed = allowed_typing_target_kinds(&node.element_kind);
                     if !allowed.is_empty() && !is_compatible_kind(&target.element_kind, allowed) {
@@ -177,6 +179,8 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
                         if seen.insert(key) {
                             let range = unresolved_type_diagnostic_range(node, type_ref)
                                 .unwrap_or_else(|| diagnostic_range(graph, node, None));
+                            let expected =
+                                expected_typing_definition_label(&node.element_kind);
                             diagnostics.push(diag(
                                 uri,
                                 range,
@@ -188,7 +192,7 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
                                     node.element_kind,
                                     node.name,
                                     type_ref,
-                                    node.element_kind.trim_end_matches(" def")
+                                    expected
                                 ),
                             ));
                         }

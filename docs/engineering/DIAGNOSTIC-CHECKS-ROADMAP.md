@@ -209,3 +209,39 @@ Spec areas: 7.26-7.27, 8.3.26, 8.4.22-8.4.23.
 - Keep checks generic SysML v2 unless a domain library explicitly owns the rule.
 - Prefer checks over the semantic graph when possible, but use parser AST/ranges for token-precise diagnostics.
 - Each new diagnostic should include a fixture, LSP/CLI coverage, catalog entry, and quick-fix metadata when the fix is mechanical.
+
+## Spec alignment notes (June 2026)
+
+Fixes applied against `SysML_v2.txt` after drone-example and vacuum-corpus audits:
+
+### Kind compatibility (`incompatible_type_kind`)
+
+| Usage kind | Spec rule | Fix |
+|---|---|---|
+| `actor`, `stakeholder` | `ActorUsage` / `StakeholderUsage` are `PartUsage`; typed by part or item definitions (§7.11.2, §7.21.2, §7.22.2) | Allow `part def`, `item def`, `occurrence def`; removed non-spec `actor def` target |
+| `part` | Part usages may use item definitions (§7.11.2) | Added `item def` |
+| `item` | Item usages may use part definitions (part defs are item defs) | Added `part def` |
+| `subject`, `ref` | `ReferenceUsage` may reference any Classifier (§8.3.6.3) | Skip kind check when typing resolves |
+
+### Boolean filter expressions
+
+| Code | Spec rule | Fix |
+|---|---|---|
+| `view_filter_non_boolean`, `invalid_import_filter` | Filter conditions are Boolean-valued; `@SysML::Metaclass` classification is valid (§7.5.4, §7.26.2) | Treat `@`-prefixed refs and logical combinations as Boolean; dedupe view vs package filter ownership |
+
+### Regression coverage
+
+- `crates/semantic_core/tests/drone_diagnostics.rs` — drone actor + view filter fixtures
+- `crates/semantic_core/tests/p1_diagnostics.rs` — actor/part/subject typing
+- `crates/semantic_core/tests/p2_diagnostics_semantics.rs` — metaclass filter expressions
+
+### Remaining limitations (deferred)
+
+- Parser `ClassificationExpression` AST for `istype` / `hastype` / `meta` (see `sysml-v2-parser/docs/SPEC42-DIAGNOSTICS-PARSER-IMPROVEMENTS.md`)
+- Typed `stakeholder name : Type` in requirement bodies (parser gap; kind rule ready when AST adds typing)
+- KerML classifier targets in kind tables (`kermlDecl`) — add when library typing is indexed
+- Internal graph kind `"actor def"` from legacy package-body path — not a SysML v2 construct; quarantined from typing checks
+
+### Catalog audit (other codes)
+
+Spot-checked against spec examples and the MBSE vacuum corpus. No additional systematic false positives found beyond the fixes above. Connection, port, flow, import-resolution, and state-machine hint diagnostics remain as documented in `MBSE-VACUUM-CHECK-ANALYSIS.md`.

@@ -31,6 +31,73 @@ fn emits_incompatible_type_kind_for_part_typed_as_port_def() {
 }
 
 #[test]
+fn actor_typed_by_item_def_does_not_emit_incompatible_type_kind() {
+    let input = r#"
+        package P {
+            item def Operator;
+            use case def Patrol {
+                subject drone;
+                actor pilot : Operator;
+            }
+        }
+    "#;
+    let diags = diags_for(input);
+    assert!(
+        !has_code(&diags, "incompatible_type_kind"),
+        "actor typed by item def is valid per SysML §7.11.2 / §7.22.2, got {:?}",
+        diags
+            .iter()
+            .filter(|d| d.code == "incompatible_type_kind")
+            .map(|d| &d.message)
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn part_typed_by_item_def_does_not_emit_incompatible_type_kind() {
+    let input = r#"
+        package P {
+            item def Person;
+            part def Vehicle {
+                part driver : Person;
+            }
+        }
+    "#;
+    let diags = diags_for(input);
+    assert!(
+        !has_code(&diags, "incompatible_type_kind"),
+        "part typed by item def is valid per SysML §7.11.2, got {:?}",
+        diags
+            .iter()
+            .filter(|d| d.code == "incompatible_type_kind")
+            .map(|d| &d.message)
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn subject_typed_by_resolved_analysis_def_does_not_emit_incompatible_type_kind() {
+    let input = r#"
+        package P {
+            analysis def TradeStudy;
+            verification def VerifyTrade {
+                subject study : TradeStudy;
+            }
+        }
+    "#;
+    let diags = diags_for(input);
+    assert!(
+        !has_code(&diags, "incompatible_type_kind"),
+        "subject ReferenceUsage may reference any resolved Classifier per §8.3.6.3, got {:?}",
+        diags
+            .iter()
+            .filter(|d| d.code == "incompatible_type_kind")
+            .map(|d| &d.message)
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
 fn private_wildcard_import_does_not_emit_visibility_violation() {
     let input = r#"
         package P {

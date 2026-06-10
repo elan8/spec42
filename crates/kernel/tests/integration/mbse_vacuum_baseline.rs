@@ -108,6 +108,11 @@ fn mbse_vacuum_example_diagnostic_baseline() {
         0,
         "port def inout item bodies must parse without brace cascade errors"
     );
+    assert_eq!(
+        code_counts.get("incompatible_type_kind").copied().unwrap_or(0),
+        0,
+        "actor typed by part/item def must not emit incompatible_type_kind (SysML §7.11.2 / §7.22.2)"
+    );
     assert!(
         report.summary.error_count <= 12,
         "expected error_count <= 12, got {} (warnings={})",

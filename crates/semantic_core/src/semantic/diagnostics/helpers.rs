@@ -534,12 +534,13 @@ pub(super) fn declared_type_ref(node: &SemanticNode) -> Option<&str> {
 }
 
 pub(super) fn condition_expression_is_boolean(node: &SemanticNode, condition: &str) -> bool {
-    if let Some(is_boolean) = node
+    if node
         .attributes
         .get("conditionIsBoolean")
         .and_then(|v| v.as_bool())
+        == Some(true)
     {
-        return is_boolean;
+        return true;
     }
     is_booleanish_filter_expression(condition)
 }
@@ -548,6 +549,9 @@ pub(super) fn is_booleanish_filter_expression(condition: &str) -> bool {
     let trimmed = condition.trim();
     if trimmed.is_empty() {
         return false;
+    }
+    if trimmed.starts_with('@') {
+        return true;
     }
     matches!(
         trimmed.to_ascii_lowercase().as_str(),
@@ -559,6 +563,7 @@ pub(super) fn is_booleanish_filter_expression(condition: &str) -> bool {
         || trimmed.contains("not ")
         || trimmed.contains(" and ")
         || trimmed.contains(" or ")
+        || trimmed.contains('@')
 }
 
 pub(super) fn is_boolean_literal_value(value: &str) -> bool {

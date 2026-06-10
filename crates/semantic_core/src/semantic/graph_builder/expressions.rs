@@ -310,6 +310,10 @@ pub(super) fn add_expression_edge_if_both_exist(
     }
 }
 
+fn feature_ref_is_classification(s: &str) -> bool {
+    s.starts_with('@')
+}
+
 /// Whether an expression is intended to evaluate to Boolean (conservative).
 pub(super) fn expression_is_boolean_valued(
     n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
@@ -322,16 +326,16 @@ pub(super) fn expression_is_boolean_valued(
         }
         Expression::BinaryOp { op, left, right } => match op.as_str() {
             "==" | "!=" | "===" | "!==" | "<" | "<=" | ">" | ">=" => true,
-            "&&" | "||" | "xor" | "implies" => {
-                expression_is_boolean_valued(left) && expression_is_boolean_valued(right)
+            "&&" | "||" | "and" | "or" | "xor" | "implies" => {
+                expression_is_boolean_valued(left) || expression_is_boolean_valued(right)
             }
             _ => false,
         },
         Expression::Bracket(inner) => expression_is_boolean_valued(inner),
+        Expression::FeatureRef(s) => feature_ref_is_classification(s),
         Expression::LiteralInteger(_)
         | Expression::LiteralReal(_)
         | Expression::LiteralString(_)
-        | Expression::FeatureRef(_)
         | Expression::MemberAccess(_, _)
         | Expression::Index { .. }
         | Expression::LiteralWithUnit { .. }
