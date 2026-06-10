@@ -132,6 +132,10 @@ pub(super) fn build_from_state_body(
                         "conditionIsBoolean".to_string(),
                         serde_json::json!(expressions::expression_is_boolean_valued(guard)),
                     );
+                    attrs.insert(
+                        "exprClass".to_string(),
+                        serde_json::json!(expressions::classify_expression(guard).as_str()),
+                    );
                 }
                 if let Some(effect) = &t.effect {
                     attrs.insert(
@@ -312,6 +316,16 @@ pub(super) fn build_from_state_body(
                     parent_id,
                     &mk_node.value,
                     &mk_node.span,
+                );
+            }
+            SDBE::MetadataAnnotation(meta) => {
+                super::metadata_def::add_metadata_annotation_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    &meta.value,
+                    &meta.span,
                 );
             }
             SDBE::Error(_) | SDBE::Doc(_) | SDBE::Annotation(_) | SDBE::Other(_) => {}

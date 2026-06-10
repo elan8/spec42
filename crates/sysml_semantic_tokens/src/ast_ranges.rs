@@ -383,6 +383,7 @@ fn collect_semantic_ranges_state_def_body_element(
         SDBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
         }
+        SDBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
         SDBE::RequirementUsage(ru_node) => {
             out.push((span_to_source_range(&ru_node.span), TYPE_PROPERTY));
             if let RequirementDefBody::Brace { elements } = &ru_node.body {
@@ -540,6 +541,7 @@ fn collect_semantic_ranges_part_def_body_element(
         PDBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
         }
+        PDBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
         PDBE::RequirementUsage(ru_node) => {
             out.push((span_to_source_range(&ru_node.span), TYPE_PROPERTY));
             match &ru_node.body {
@@ -727,7 +729,7 @@ fn collect_semantic_ranges_requirement_def_body_element(
         }
         RDBE::Stakeholder(stakeholder) => {
             out.push((
-                span_to_source_range(&stakeholder.value.target_span),
+                span_to_source_range(&stakeholder.value.name_span),
                 TYPE_PROPERTY,
             ));
         }

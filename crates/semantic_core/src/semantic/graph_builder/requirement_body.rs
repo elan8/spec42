@@ -541,25 +541,57 @@ pub(super) fn walk_requirement_def_body(
             }
             RequirementDefBodyElement::Stakeholder(stakeholder) => {
                 let s = &stakeholder.value;
-                let qualified = qualified_name_for_node(
-                    g,
-                    uri,
-                    Some(parent_id.qualified_name.as_str()),
-                    &format!("_stakeholder_{}", s.target),
-                    "stakeholder",
-                );
-                let mut attrs = HashMap::new();
-                attrs.insert("refTarget".to_string(), serde_json::json!(&s.target));
-                add_node_and_recurse(
-                    g,
-                    uri,
-                    &qualified,
-                    "stakeholder",
-                    s.target.clone(),
-                    span_to_range(&stakeholder.span),
-                    attrs,
-                    Some(parent_id),
-                );
+                if let Some(ref type_name) = s.type_name {
+                    let qualified = qualified_name_for_node(
+                        g,
+                        uri,
+                        Some(parent_id.qualified_name.as_str()),
+                        &s.name,
+                        "stakeholder",
+                    );
+                    let mut attrs = HashMap::new();
+                    attrs.insert(
+                        "stakeholderType".to_string(),
+                        serde_json::json!(type_name),
+                    );
+                    add_node_and_recurse(
+                        g,
+                        uri,
+                        &qualified,
+                        "stakeholder",
+                        s.name.clone(),
+                        span_to_range(&stakeholder.span),
+                        attrs,
+                        Some(parent_id),
+                    );
+                    add_typing_edge_if_exists(
+                        g,
+                        uri,
+                        &qualified,
+                        type_name,
+                        type_resolution_prefix,
+                    );
+                } else {
+                    let qualified = qualified_name_for_node(
+                        g,
+                        uri,
+                        Some(parent_id.qualified_name.as_str()),
+                        &format!("_stakeholder_{}", s.name),
+                        "stakeholder",
+                    );
+                    let mut attrs = HashMap::new();
+                    attrs.insert("refTarget".to_string(), serde_json::json!(&s.name));
+                    add_node_and_recurse(
+                        g,
+                        uri,
+                        &qualified,
+                        "stakeholder",
+                        s.name.clone(),
+                        span_to_range(&stakeholder.span),
+                        attrs,
+                        Some(parent_id),
+                    );
+                }
             }
             RequirementDefBodyElement::Purpose(purpose) => {
                 let p = &purpose.value;

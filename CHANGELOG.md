@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Parser dependency** — Bumped `sysml-v2-parser` to **0.23.0** on [crates.io](https://crates.io/crates/sysml-v2-parser/0.23.0) (`Expression::Classification` for `@`-filters, `TypeCheck`, typed `stakeholder`, structured action/requirement brace recovery, `MetadataAnnotation` in part/state bodies). Graph stores `exprClass`/`conditionIsBoolean` from AST classification walk.
+
 ## [0.29.1] - 2026-06-09
 
 ### Added

@@ -69,6 +69,28 @@ fn expr_to_string(n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>) -> Str
             .map(expr_to_string)
             .collect::<Vec<_>>()
             .join(", "),
+        Expression::Classification { metaclass } => format!("@{metaclass}"),
+        Expression::TypeCheck {
+            kind,
+            operand,
+            type_name,
+        } => {
+            let op = match kind {
+                sysml_v2_parser::TypeCheckKind::Istype => "istype",
+                sysml_v2_parser::TypeCheckKind::Hastype => "hastype",
+                sysml_v2_parser::TypeCheckKind::As => "as",
+            };
+            match operand {
+                Some(operand) => format!("{} {op} {type_name}", expr_to_string(operand)),
+                None => format!("{op} {type_name}"),
+            }
+        }
+        Expression::Select { base, selector } => {
+            format!("{}.?{selector}", expr_to_string(base))
+        }
+        Expression::Collect { base, selector } => {
+            format!("{}.**{selector}", expr_to_string(base))
+        }
         Expression::Null => String::new(),
     }
 }

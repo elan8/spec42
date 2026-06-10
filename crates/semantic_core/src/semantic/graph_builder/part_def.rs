@@ -616,6 +616,16 @@ pub(super) fn build_from_part_def_body_element(
                 g,
             );
         }
+        PDBE::MetadataAnnotation(meta) => {
+            super::metadata_def::add_metadata_annotation_node(
+                g,
+                uri,
+                container_prefix,
+                parent_id,
+                &meta.value,
+                &meta.span,
+            );
+        }
         PDBE::Annotation(_)
         | PDBE::Error(_)
         | PDBE::Doc(_)

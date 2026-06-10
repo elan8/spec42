@@ -67,6 +67,10 @@ fn add_view_filter_node(
             &filter.value.condition
         )),
     );
+    attrs.insert(
+        "exprClass".to_string(),
+        serde_json::json!(expressions::classify_expression(&filter.value.condition).as_str()),
+    );
     attrs.insert("filterOwnerKind".to_string(), serde_json::json!(filter_owner_kind));
     if let Some(vis) = &filter.value.visibility {
         attrs.insert("visibility".to_string(), serde_json::json!(format!("{vis:?}")));
@@ -1782,6 +1786,12 @@ pub(super) fn build_from_package_body_element(
                     serde_json::json!(expressions::expression_is_boolean_valued(
                         &f.value.condition
                     )),
+                );
+                attrs.insert(
+                    "exprClass".to_string(),
+                    serde_json::json!(
+                        expressions::classify_expression(&f.value.condition).as_str()
+                    ),
                 );
                 if let Some(vis) = &f.value.visibility {
                     attrs.insert(

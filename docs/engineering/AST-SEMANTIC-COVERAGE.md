@@ -1,10 +1,10 @@
 # AST semantic coverage matrix
 
-Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.20.1** ([crates.io](https://crates.io/crates/sysml-v2-parser)).
+Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.23.0** ([crates.io](https://crates.io/crates/sysml-v2-parser/0.23.0); `Expression::Classification`, `TypeCheck`, `Select`/`Collect`).
 
 | Parser surface | Graph (`semantic_core`) | Symbols / hover | Semantic tokens | Priority |
 |----------------|-------------------------|-----------------|-----------------|----------|
-| `PackageBodyElement` (core defs/usages) | Yes | Partial | Partial | P0 |
+| `Expression` (filters, guards, constraints) | Yes — `exprClass`, `conditionIsBoolean` from AST walk (0.23.0) | N/A | N/A | P0 |
 | `PartUsageBody::Brace` | Yes | Partial | Partial | P0 |
 | `PortBody::Brace` / `PortBodyElement` | Yes (2026-06-03) | Partial | Yes (nested ports) | P0 |
 | `PortDefBodyElement` (+ `InOutDecl`, `Error`) | Yes | Partial | Yes (`InOutDecl` span) | P0 |

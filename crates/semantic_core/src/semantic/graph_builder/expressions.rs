@@ -314,34 +314,104 @@ fn feature_ref_is_classification(s: &str) -> bool {
     s.starts_with('@')
 }
 
+/// Structured expression classification for diagnostics and graph attributes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ExprClass {
+    Boolean,
+    Classification,
+    TypeCheck,
+    Comparison,
+    Logical,
+    FeatureRef,
+    Literal,
+    Unknown,
+}
+
+impl ExprClass {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Boolean => "boolean",
+            Self::Classification => "classification",
+            Self::TypeCheck => "typeCheck",
+            Self::Comparison => "comparison",
+            Self::Logical => "logical",
+            Self::FeatureRef => "featureRef",
+            Self::Literal => "literal",
+            Self::Unknown => "unknown",
+        }
+    }
+}
+
+pub(super) fn classify_expression(
+    n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
+) -> ExprClass {
+    use sysml_v2_parser::Expression;
+    match &n.value {
+        Expression::LiteralBoolean(_) => ExprClass::Boolean,
+        Expression::Classification { .. } => ExprClass::Classification,
+        Expression::TypeCheck { .. } => ExprClass::TypeCheck,
+        Expression::UnaryOp { op, operand } => {
+            if op.as_str() == "not" {
+                let inner = classify_expression(operand);
+                if matches!(
+                    inner,
+                    ExprClass::Boolean
+                        | ExprClass::Classification
+                        | ExprClass::TypeCheck
+                        | ExprClass::Comparison
+                        | ExprClass::Logical
+                ) {
+                    return ExprClass::Boolean;
+                }
+            }
+            ExprClass::Unknown
+        }
+        Expression::BinaryOp { op, left, right } => {
+            if sysml_v2_parser::Expression::binary_op_is_comparison(op) {
+                return ExprClass::Comparison;
+            }
+            if sysml_v2_parser::Expression::binary_op_is_logical(op) {
+                return ExprClass::Logical;
+            }
+            let left_class = classify_expression(left);
+            let right_class = classify_expression(right);
+            if matches!(left_class, ExprClass::Boolean | ExprClass::Classification | ExprClass::TypeCheck | ExprClass::Comparison | ExprClass::Logical)
+                || matches!(right_class, ExprClass::Boolean | ExprClass::Classification | ExprClass::TypeCheck | ExprClass::Comparison | ExprClass::Logical)
+            {
+                return ExprClass::Boolean;
+            }
+            ExprClass::Unknown
+        }
+        Expression::FeatureRef(s) if feature_ref_is_classification(s) => ExprClass::Classification,
+        Expression::FeatureRef(_) => ExprClass::FeatureRef,
+        Expression::LiteralInteger(_)
+        | Expression::LiteralReal(_)
+        | Expression::LiteralString(_)
+        | Expression::LiteralWithUnit { .. } => ExprClass::Literal,
+        Expression::Bracket(inner) => classify_expression(inner),
+        Expression::MemberAccess(_, _)
+        | Expression::Index { .. }
+        | Expression::Invocation { .. }
+        | Expression::Tuple(_)
+        | Expression::Select { .. }
+        | Expression::Collect { .. }
+        | Expression::Null => ExprClass::Unknown,
+    }
+}
+
 /// Whether an expression is intended to evaluate to Boolean (conservative).
 pub(super) fn expression_is_boolean_valued(
     n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
 ) -> bool {
     use sysml_v2_parser::Expression;
-    match &n.value {
-        Expression::LiteralBoolean(_) => true,
-        Expression::UnaryOp { op, operand } => {
-            op.as_str() == "not" && expression_is_boolean_valued(operand)
-        }
-        Expression::BinaryOp { op, left, right } => match op.as_str() {
-            "==" | "!=" | "===" | "!==" | "<" | "<=" | ">" | ">=" => true,
-            "&&" | "||" | "and" | "or" | "xor" | "implies" => {
-                expression_is_boolean_valued(left) || expression_is_boolean_valued(right)
-            }
-            _ => false,
-        },
-        Expression::Bracket(inner) => expression_is_boolean_valued(inner),
-        Expression::FeatureRef(s) => feature_ref_is_classification(s),
-        Expression::LiteralInteger(_)
-        | Expression::LiteralReal(_)
-        | Expression::LiteralString(_)
-        | Expression::MemberAccess(_, _)
-        | Expression::Index { .. }
-        | Expression::LiteralWithUnit { .. }
-        | Expression::Invocation { .. }
-        | Expression::Tuple(_)
-        | Expression::Null => false,
+    match classify_expression(n) {
+        ExprClass::Boolean | ExprClass::Classification | ExprClass::TypeCheck => true,
+        ExprClass::Comparison | ExprClass::Logical => true,
+        ExprClass::FeatureRef => matches!(
+            &n.value,
+            Expression::FeatureRef(s) if feature_ref_is_classification(s)
+        ),
+        ExprClass::Literal | ExprClass::Unknown => false,
     }
 }
 
@@ -355,6 +425,33 @@ pub(super) fn expression_to_debug_string(
         Expression::LiteralReal(s) => s.clone(),
         Expression::LiteralString(s) => format!("{s:?}"),
         Expression::LiteralBoolean(b) => b.to_string(),
+        Expression::Classification { metaclass } => format!("@{metaclass}"),
+        Expression::TypeCheck {
+            kind,
+            operand,
+            type_name,
+        } => {
+            let op = match kind {
+                sysml_v2_parser::TypeCheckKind::Istype => "istype",
+                sysml_v2_parser::TypeCheckKind::Hastype => "hastype",
+                sysml_v2_parser::TypeCheckKind::As => "as",
+            };
+            match operand {
+                Some(operand) => format!(
+                    "{} {op} {type_name}",
+                    expression_to_debug_string(operand)
+                ),
+                None => format!("{op} {type_name}"),
+            }
+        }
+        Expression::Select { base, selector } => format!(
+            "{}.?{selector}",
+            expression_to_debug_string(base)
+        ),
+        Expression::Collect { base, selector } => format!(
+            "{}.**{selector}",
+            expression_to_debug_string(base)
+        ),
         Expression::FeatureRef(s) => s.clone(),
         Expression::MemberAccess(box_base, member) => {
             format!("{}.{}", expression_to_debug_string(box_base), member)
@@ -460,6 +557,10 @@ pub(super) fn expr_node_to_qualified_string(
         | Expression::UnaryOp { .. }
         | Expression::Invocation { .. }
         | Expression::Tuple(_)
+        | Expression::Classification { .. }
+        | Expression::TypeCheck { .. }
+        | Expression::Select { .. }
+        | Expression::Collect { .. }
         | Expression::Null => String::new(),
     }
 }
