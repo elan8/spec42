@@ -6,6 +6,11 @@ export type VisualizationServerHealthState =
     | "restarting"
     | "crashed";
 
+import {
+    getLifecycleMessage,
+    getWorkspaceLifecycle,
+} from "../activation/workspaceLifecycle";
+
 export type VisualizationReadiness = {
     ready: boolean;
     message?: string;
@@ -30,19 +35,19 @@ export function evaluateClientVisualizationReadiness(): VisualizationReadiness {
     if (!languageClientReady) {
         return {
             ready: false,
-            message: "Starting SysML language server...",
+            message: getLifecycleMessage("visualizer", "serverStarting"),
         };
     }
     switch (serverHealthState) {
         case "starting":
             return {
                 ready: false,
-                message: "Starting SysML language server...",
+                message: getLifecycleMessage("visualizer", "serverStarting"),
             };
         case "indexing":
             return {
                 ready: false,
-                message: "Indexing SysML workspace...",
+                message: getLifecycleMessage("visualizer", "buildingWorkspaceModel"),
             };
         case "restarting":
             return {
@@ -55,8 +60,20 @@ export function evaluateClientVisualizationReadiness(): VisualizationReadiness {
                 message: "SysML language server is not available.",
             };
         case "degraded":
-        case "ready":
+        case "ready": {
+            const lifecycle = getWorkspaceLifecycle();
+            if (
+                lifecycle.phase === "validatingFiles" ||
+                lifecycle.phase === "buildingWorkspaceModel" ||
+                lifecycle.phase === "degraded"
+            ) {
+                return {
+                    ready: false,
+                    message: getLifecycleMessage("visualizer", lifecycle.phase, lifecycle.detail),
+                };
+            }
             return { ready: true };
+        }
         default:
             return { ready: true };
     }

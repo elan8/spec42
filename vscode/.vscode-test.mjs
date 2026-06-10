@@ -21,6 +21,7 @@ export default defineConfig({
     "out/test/suite/baseVisualizationPanelController.test.js",
     "out/test/suite/updateFlow.test.js",
     "out/test/suite/visualizationGate.test.js",
+    "out/test/suite/workspaceLifecycle.test.js",
     "out/test/suite/dtoAdapter.test.js",
   ],
   extensionDevelopmentPath: __dirname,

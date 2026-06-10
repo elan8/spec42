@@ -18,6 +18,7 @@ import { runSpec42Json } from "../lmTools/spec42Cli";
 import type { SysandStatusViewModel } from "../library/libraryStatusViewModel";
 import { LspModelProvider } from "../providers/lspModelProvider";
 import { VisualizationPanel } from "../visualization/visualizationPanel";
+import { notifyWorkspaceLifecycleChanged } from "./workspaceLifecycle";
 import { setVisualizationGateState } from "../visualization/visualizationGate";
 import {
   getConfigBoolean,
@@ -390,6 +391,7 @@ export function startLanguageClient(
         crashDialogShown = false;
         setVisualizationGateState({ languageClientReady: true });
         setServerHealth(context, "ready", "SysML language server is ready.");
+        notifyWorkspaceLifecycleChanged();
       } else if (newState === State.Stopped && !manualStopInProgress) {
         setServerHealth(context, "crashed", "SysML language server is stopped.");
       }
@@ -404,6 +406,7 @@ export function startLanguageClient(
       languageClientReady = true;
       setVisualizationGateState({ languageClientReady: true });
       setServerHealth(context, "ready", "SysML language server is ready.");
+      notifyWorkspaceLifecycleChanged();
       log("Language client ready, waiting for semantic index before workspace model load");
       logStartupPhase("languageClient:ready");
       onClientReady();

@@ -1,6 +1,8 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
+import { registerWorkspaceLifecycleSnapshotProvider } from "../../activation/workspaceLifecycle";
 import { ModelExplorerProvider, ModelTreeItem } from "../../explorer/modelExplorerProvider";
+import { closeAllEditorsForTests } from "./testUtils";
 import type { SysMLElementDTO, SysMLModelResult } from "../../providers/sysmlModelTypes";
 
 function createModelResult(id: string, name = "Drone"): SysMLModelResult {
@@ -80,6 +82,18 @@ function createWorkspaceModelResult(
 }
 
 describe("ModelExplorerProvider", () => {
+  beforeEach(async () => {
+    await closeAllEditorsForTests();
+    registerWorkspaceLifecycleSnapshotProvider(() => ({
+      languageClientReady: true,
+      serverHealthState: "ready",
+      hasWorkspaceFolder: true,
+      semanticIndexReady: true,
+      workspaceLoadState: "ready",
+      hasWorkspaceData: false,
+    }));
+  });
+
   it("sets package context and open-location command for tree actions", () => {
     const uri = vscode.Uri.file("C:/workspace/Drone.sysml");
     const item = new ModelTreeItem(createElement("Pkg::Drone", "Drone", uri.toString()), uri);
@@ -267,6 +281,40 @@ describe("ModelExplorerProvider", () => {
     const items = await provider.getChildren();
     assert.strictEqual(items[0]?.label, "Workspace indexing scheduled");
     assert.ok(provider.isWorkspaceBacked());
+  });
+
+  it("shows validating-files info before workspace indexing starts", async () => {
+    registerWorkspaceLifecycleSnapshotProvider(() => ({
+      languageClientReady: true,
+      serverHealthState: "ready",
+      hasWorkspaceFolder: true,
+      semanticIndexReady: false,
+      workspaceLoadState: "idle",
+      hasWorkspaceData: false,
+    }));
+    const provider = new ModelExplorerProvider({
+      getModel: async () => createModelResult("WorkspaceRoot"),
+    } as any);
+    provider.setWorkspaceLoadStatus({
+      state: "idle",
+      scannedFiles: 0,
+      loadedFiles: 0,
+      cancelled: false,
+      failures: 0,
+      truncated: false,
+    });
+    const document = await vscode.workspace.openTextDocument({
+      language: "sysml",
+      content: "package Drone {}",
+    });
+    await vscode.window.showTextDocument(document);
+
+    const items = await provider.getChildren();
+    assert.strictEqual(
+      items[0]?.label,
+      "Validating files — workspace model not built yet"
+    );
+    assert.ok(String(items[0]?.tooltip).includes("Problems in the editor update per file"));
   });
 
   it("does not show document tree while workspace indexing is pending", async () => {

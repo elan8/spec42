@@ -26,7 +26,8 @@ export interface VisualizationPanelVariantConfig<TRestoreState extends BaseVisua
     defaultTitle: string;
     enabledViews: readonly string[];
     defaultView: string;
-    loadingMessage: string;
+    loadingMessage?: string;
+    getLoadingMessage?: () => string;
     getRuntimeState: () => VisualizationPanelRuntimeState;
     updateCurrentView: (view: string) => void;
     updateSelectedView?: (selectedView?: string) => void;
@@ -130,6 +131,7 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
                 selectedView: this._config.getRuntimeState().selectedView,
             }),
             loadingMessage: this._config.loadingMessage,
+            getLoadingMessage: this._config.getLoadingMessage,
         });
 
         this._requestCurrentViewTimer = setTimeout(() => {

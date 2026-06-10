@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { getWorkspaceLifecycle } from "../activation/workspaceLifecycle";
 import { log, logError, logPerfEvent, logStartupEvent } from "../logger";
 import type { LspModelProvider } from "../providers/lspModelProvider";
 import type {
@@ -641,6 +642,10 @@ export class ModelExplorerProvider
     return this.workspaceFileData.size > 0 || this.workspaceSemanticElements.length > 0;
   }
 
+  getWorkspaceLoadStatus(): Readonly<WorkspaceLoadStatus> {
+    return this.workspaceLoadStatus;
+  }
+
   setWorkspaceLoadStatus(status: Partial<WorkspaceLoadStatus>): void {
     this.workspaceLoadStatus = {
       ...this.workspaceLoadStatus,
@@ -996,6 +1001,23 @@ export class ModelExplorerProvider
 
   private getWorkspaceInfoItems(): ExplorerInfoItem[] {
     const status = this.workspaceLoadStatus;
+    const lifecycle = getWorkspaceLifecycle();
+
+    if (
+      lifecycle.phase === "validatingFiles" &&
+      status.state === "idle" &&
+      !this.hasWorkspaceData()
+    ) {
+      return [
+        new ExplorerInfoItem(
+          "Validating files — workspace model not built yet",
+          "File checks in progress",
+          "Problems in the editor update per file. The full model tree appears after workspace indexing completes.",
+          "sync"
+        ),
+      ];
+    }
+
     if (status.state === "idle" || status.state === "ready") {
       return [];
     }
@@ -1006,7 +1028,7 @@ export class ModelExplorerProvider
         new ExplorerInfoItem(
           "Workspace indexing scheduled",
           "Starting soon",
-          "The full workspace model will load in the background. The tree updates when indexing completes.",
+          "The full workspace model will load in the background. This usually follows initial file validation.",
           "sync"
         ),
       ];
@@ -1149,6 +1171,21 @@ export class ModelExplorerProvider
     const startedAt = Date.now();
 
     const infoItems = this.getWorkspaceInfoItems();
+    if (this.documentLoadState === "loading") {
+      this.rootItemsCache = [
+        new ExplorerInfoItem(
+          "Loading model...",
+          "Parsing and indexing",
+          "The language server is building the semantic model.",
+          "sync"
+        ),
+      ];
+      logPerf("modelExplorer:buildTreeCache", {
+        mode: "document-loading",
+        totalMs: Date.now() - startedAt,
+      });
+      return this.rootItemsCache;
+    }
     if (
       infoItems.length > 0 &&
       this.isWorkspaceIndexingInProgress() &&
@@ -1238,32 +1275,28 @@ export class ModelExplorerProvider
     }
 
     if (this.hasWorkspaceFolder() && !this.hasWorkspaceData()) {
-      this.rootItemsCache = [
-        new ExplorerInfoItem(
-          "Workspace model not loaded yet",
-          "Indexing not started",
-          "Workspace indexing will load the full model. Open this view or switch to a SysML file to start indexing.",
-          "info"
-        ),
-      ];
+      const lifecycle = getWorkspaceLifecycle();
+      if (lifecycle.phase === "validatingFiles") {
+        this.rootItemsCache = [
+          new ExplorerInfoItem(
+            "Validating files — workspace model not built yet",
+            "File checks in progress",
+            "Problems in the editor update per file. The full model tree appears after workspace indexing completes.",
+            "sync"
+          ),
+        ];
+      } else {
+        this.rootItemsCache = [
+          new ExplorerInfoItem(
+            "Workspace model not loaded yet",
+            "Indexing not started",
+            "Workspace indexing will load the full model. Open this view or switch to a SysML file to start indexing.",
+            "info"
+          ),
+        ];
+      }
       logPerf("modelExplorer:buildTreeCache", {
         mode: "workspace-not-loaded",
-        totalMs: Date.now() - startedAt,
-      });
-      return this.rootItemsCache;
-    }
-
-    if (!this.hasWorkspaceFolder() && this.documentLoadState === "loading") {
-      this.rootItemsCache = [
-        new ExplorerInfoItem(
-          "Loading model...",
-          "Parsing and indexing",
-          "The language server is building the semantic model.",
-          "sync"
-        ),
-      ];
-      logPerf("modelExplorer:buildTreeCache", {
-        mode: "document-loading",
         totalMs: Date.now() - startedAt,
       });
       return this.rootItemsCache;

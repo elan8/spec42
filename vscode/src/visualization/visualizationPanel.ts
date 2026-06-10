@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { getVisualizerLoadingMessage } from '../activation/workspaceLifecycle';
 import { LspModelProvider } from '../providers/lspModelProvider';
 import { fetchModelData, type FetchModelParams } from './modelFetcher';
 import type { GraphNodeDTO } from '../providers/sysmlModelTypes';
@@ -59,7 +60,7 @@ function createVariantConfig(runtimeState: VisualizationPanelRuntimeState): Visu
         defaultTitle: 'SysML Model Visualizer',
         enabledViews: SYSML_ENABLED_VIEWS,
         defaultView: 'general-view',
-        loadingMessage: 'Parsing SysML model...',
+        getLoadingMessage: () => getVisualizerLoadingMessage(),
         getRuntimeState: () => runtimeState,
         updateCurrentView: (view) => {
             runtimeState.currentView = view;

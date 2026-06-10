@@ -1,4 +1,5 @@
 import * as assert from "assert";
+import { registerWorkspaceLifecycleSnapshotProvider } from "../../activation/workspaceLifecycle";
 import {
   evaluateClientVisualizationReadiness,
   setVisualizationGateState,
@@ -10,6 +11,14 @@ describe("visualizationGate", () => {
       languageClientReady: true,
       serverHealthState: "ready",
     });
+    registerWorkspaceLifecycleSnapshotProvider(() => ({
+      languageClientReady: true,
+      serverHealthState: "ready",
+      hasWorkspaceFolder: true,
+      semanticIndexReady: true,
+      workspaceLoadState: "ready",
+      hasWorkspaceData: true,
+    }));
   });
 
   it("blocks when language client is not ready", () => {
@@ -23,6 +32,20 @@ describe("visualizationGate", () => {
     setVisualizationGateState({ serverHealthState: "indexing" });
     const readiness = evaluateClientVisualizationReadiness();
     assert.strictEqual(readiness.ready, false);
-    assert.match(readiness.message ?? "", /indexing/i);
+    assert.match(readiness.message ?? "", /building workspace model/i);
+  });
+
+  it("blocks while files are validating before workspace model is ready", () => {
+    registerWorkspaceLifecycleSnapshotProvider(() => ({
+      languageClientReady: true,
+      serverHealthState: "ready",
+      hasWorkspaceFolder: true,
+      semanticIndexReady: false,
+      workspaceLoadState: "idle",
+      hasWorkspaceData: false,
+    }));
+    const readiness = evaluateClientVisualizationReadiness();
+    assert.strictEqual(readiness.ready, false);
+    assert.match(readiness.message ?? "", /validating sysml files/i);
   });
 });

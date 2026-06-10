@@ -32,6 +32,12 @@ import {
   setWorkspaceIndexSummary,
   updateStatusBar,
 } from "./statusBar";
+import {
+  notifyWorkspaceLifecycleChanged,
+  onWorkspaceLifecycleChanged,
+  registerWorkspaceLifecycleSnapshotProvider,
+  type WorkspaceLifecycleInput,
+} from "./workspaceLifecycle";
 
 type WorkspaceLoadRun = {
   runId: string;
@@ -56,6 +62,31 @@ let lastSemanticIndexReadyWorkspaceFileCount: number | undefined;
 let activeWorkspaceLoadRun: WorkspaceLoadRun | undefined;
 let nextWorkspaceLoadRunId = 0;
 let modelExplorerRefreshTimer: ReturnType<typeof setTimeout> | undefined;
+
+function collectWorkspaceLifecycleInput(): WorkspaceLifecycleInput {
+  const provider = modelExplorerProvider;
+  const loadStatus = provider?.getWorkspaceLoadStatus();
+  return {
+    languageClientReady: isLanguageClientReady(),
+    serverHealthState: getServerHealthState(),
+    hasWorkspaceFolder: hasWorkspaceFolder(),
+    semanticIndexReady: lastSemanticIndexReadyWorkspaceFileCount !== undefined,
+    workspaceLoadState: loadStatus?.state ?? "idle",
+    hasWorkspaceData: provider?.hasWorkspaceData() ?? false,
+    workspaceLoadFailures: loadStatus?.failures,
+    workspaceLoadCancelled: loadStatus?.cancelled,
+    workspaceLoadTruncated: loadStatus?.truncated,
+  };
+}
+
+function refreshWorkspaceLifecycleSurfaces(): void {
+  const context = extensionContext;
+  if (context) {
+    updateStatusBar(context);
+  }
+  modelExplorerProvider?.refresh();
+  VisualizationPanel.currentPanel?.refresh();
+}
 
 export type DebugExtensionState = {
   serverHealthState: import("../statusBar/statusBarViewModel").ServerHealthState;
@@ -196,7 +227,7 @@ function scheduleWorkspaceExplorerPending(provider: ModelExplorerProvider): void
     cancelled: false,
     failures: 0,
   });
-  provider.refresh();
+  refreshWorkspaceLifecycleSurfaces();
 }
 
 export function scheduleActiveDocumentExplorerRefresh(
@@ -319,6 +350,7 @@ async function loadWorkspaceSysMLFiles(
     cancelled: false,
     failures: 0,
   });
+  notifyWorkspaceLifecycleChanged();
   await vscode.window.withProgress(
     {
       location: vscode.ProgressLocation.Window,
@@ -448,8 +480,7 @@ async function loadWorkspaceSysMLFiles(
   finishWorkspaceLoad(run, {
     workspaceViewMode: provider.getWorkspaceViewMode(),
   });
-  VisualizationPanel.currentPanel?.refresh();
-  updateStatusBar(context);
+  refreshWorkspaceLifecycleSurfaces();
 }
 
 async function reloadWorkspaceExplorerModel(
@@ -469,6 +500,7 @@ async function reloadWorkspaceExplorerModel(
     return;
   }
   lastSemanticIndexReadyWorkspaceFileCount = params.workspaceFileCount;
+  notifyWorkspaceLifecycleChanged();
   log(
     "reloadWorkspaceExplorerModel: semantic index ready",
     "version=",
@@ -617,6 +649,9 @@ export function registerWorkspaceIndexing(
   lspModelProvider = handles.lspModelProvider;
   logStartupPhaseFn = logStartupPhase;
   logPerfFn = logPerf;
+
+  registerWorkspaceLifecycleSnapshotProvider(collectWorkspaceLifecycleInput);
+  onWorkspaceLifecycleChanged(refreshWorkspaceLifecycleSurfaces);
 
   const semanticIndexReadyNotification = new NotificationType<SemanticIndexReadyParams>(
     "spec42/semanticIndexReady"

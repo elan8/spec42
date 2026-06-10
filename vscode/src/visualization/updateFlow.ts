@@ -19,6 +19,7 @@ export interface UpdateFlowDeps {
     setNeedsUpdateWhenVisible: (value: boolean) => void;
     fetchUpdateMessage?: () => Promise<UpdateMessage | null>;
     loadingMessage?: string;
+    getLoadingMessage?: () => string;
 }
 
 function logPerf(event: string, extra?: Record<string, unknown>): void {
@@ -63,6 +64,7 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
         setNeedsUpdateWhenVisible,
         fetchUpdateMessage,
         loadingMessage,
+        getLoadingMessage,
     } = deps;
     let bootstrapCompleted = false;
     let inFlightUpdate:
@@ -252,7 +254,10 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                 isBootstrap: !bootstrapCompleted,
                 currentView: getCurrentView(),
             });
-            panel.webview.postMessage({ command: 'showLoading', message: loadingMessage ?? 'Loading visualization...' });
+            panel.webview.postMessage({
+                command: 'showLoading',
+                message: getLoadingMessage?.() ?? loadingMessage ?? 'Loading visualization...',
+            });
             await new Promise(resolve => setTimeout(resolve, 0));
             const startedAt = Date.now();
             try {

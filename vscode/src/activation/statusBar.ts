@@ -13,6 +13,7 @@ import {
   formatSpec42StatusBar,
   ServerHealthState,
 } from "../statusBar/statusBarViewModel";
+import { getWorkspaceLifecycle } from "./workspaceLifecycle";
 import {
   getConfigBoolean,
   getConfigStringArray,
@@ -128,13 +129,15 @@ export function updateStatusBar(context: vscode.ExtensionContext): void {
     doc && isSysmlDoc(doc) ? summarizeActiveFileSysmlDiagnostics(doc) : undefined;
   const errors = workspaceSummary?.errors ?? activeSummary?.errors ?? 0;
   const warnings = workspaceSummary?.warnings ?? activeSummary?.warnings ?? 0;
+  const lifecycle = getWorkspaceLifecycle();
   const status = formatSpec42StatusBar(
     serverHealthState,
     serverHealthDetail,
     errors,
     warnings,
     workspaceSummary,
-    activeSummary
+    activeSummary,
+    lifecycle.phase
   );
   item.text = status.text;
   const baseTooltip = status.baseTooltip;

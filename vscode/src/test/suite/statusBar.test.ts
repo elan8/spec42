@@ -29,4 +29,35 @@ describe("statusBar", () => {
     assert.ok(vm.baseTooltip.includes("3 workspace file"));
     assert.ok(vm.baseTooltip.includes("Click for Spec42 actions."));
   });
+
+  it("shows compound status while validating files with diagnostics", () => {
+    const vm = formatSpec42StatusBar(
+      "ready",
+      "",
+      3,
+      1,
+      { errors: 3, warnings: 1, filesWithIssues: 2, totalFiles: 6 },
+      undefined,
+      "validatingFiles"
+    );
+
+    assert.strictEqual(vm.text, "$(sync~spin) Validating files · 3E 1W");
+    assert.ok(vm.baseTooltip.includes("Problems reflect open files"));
+    assert.ok(vm.baseTooltip.includes("Model Explorer and diagrams update"));
+  });
+
+  it("shows compound status while building workspace model", () => {
+    const vm = formatSpec42StatusBar(
+      "indexing",
+      "Building workspace model",
+      0,
+      0,
+      undefined,
+      undefined,
+      "buildingWorkspaceModel"
+    );
+
+    assert.strictEqual(vm.text, "$(sync~spin) Building workspace model");
+    assert.ok(vm.baseTooltip.includes("cross-file workspace model"));
+  });
 });
