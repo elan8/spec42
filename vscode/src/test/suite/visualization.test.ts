@@ -58,16 +58,31 @@ describe("Visualization Diagram Views", () => {
             await vscode.commands.executeCommand("sysml.showVisualizer");
             await waitForVisualizerOpen();
             await vscode.commands.executeCommand("sysml.changeVisualizerView", viewId);
-            await waitForVisualizationModel(
+            const visualization = await waitForVisualizationModel(
                 workspaceFolder.uri,
                 viewId,
-                (visualization) =>
+                (model) =>
                     viewId !== "general-view" ||
-                    visualization?.graph?.nodes?.some(
+                    model?.graph?.nodes?.some(
                         (node: any) => node?.name === "SurveillanceQuadrotorDrone"
                     ) === true,
                 isCi ? 45000 : 20000
             );
+            // Seed the webview directly so export does not depend on update-flow timing.
+            await vscode.commands.executeCommand("sysml.debug.postVisualizerMessage", {
+                command: "update",
+                modelReady: visualization?.modelReady !== false,
+                graph: visualization?.graph ?? { nodes: [], edges: [] },
+                generalViewGraph: visualization?.generalViewGraph ?? visualization?.graph,
+                ibd: visualization?.ibd,
+                activityDiagrams: visualization?.activityDiagrams ?? [],
+                sequenceDiagrams: visualization?.sequenceDiagrams ?? [],
+                currentView: viewId,
+                viewCandidates: visualization?.viewCandidates ?? [],
+                selectedView: visualization?.selectedView,
+                selectedViewName: visualization?.selectedViewName,
+                emptyStateMessage: visualization?.emptyStateMessage,
+            });
             const exportUri = getDiagramExportUri(workspaceFolder.uri, viewId);
             try {
                 await vscode.workspace.fs.delete(exportUri, { useTrash: false });

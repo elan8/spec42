@@ -7,6 +7,7 @@ import {
 import { hasWorkspaceFolder } from "../providers/lspModelProvider";
 import type { LspModelProvider } from "../providers/lspModelProvider";
 import { setVisualizationGateState } from "../visualization/visualizationGate";
+import { VisualizationPanel } from "../visualization/visualizationPanel";
 import { log } from "../logger";
 import {
   formatSpec42StatusBar,
@@ -85,10 +86,18 @@ export function setServerHealth(
   state: ServerHealthState,
   detail = ""
 ): void {
+  const previousState = serverHealthState;
   serverHealthState = state;
   serverHealthDetail = detail;
   setVisualizationGateState({ serverHealthState: state });
   log("Server health:", state, detail);
+  if (
+    VisualizationPanel.currentPanel &&
+    (state === "ready" || state === "degraded") &&
+    (previousState === "starting" || previousState === "indexing" || previousState === "restarting")
+  ) {
+    VisualizationPanel.currentPanel.refresh();
+  }
   updateStatusBar(context);
 }
 

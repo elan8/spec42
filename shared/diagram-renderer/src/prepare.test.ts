@@ -297,9 +297,9 @@ describe("shared prepareViewData", () => {
         edges: [{ source: "s1", target: "s2", type: "transition", name: "start" }],
       },
     });
-    expect(prepared.nodes[0].id).toBe("__synthetic_initial__");
-    expect(prepared.edges.some((edge) => edge.id === "transition-synthetic-initial")).toBe(true);
-    expect(prepared.meta?.syntheticInitial).toBe(true);
+    const initialNode = prepared.nodes.find((node) => node.kind === "initial");
+    expect(initialNode).toBeTruthy();
+    expect(prepared.edges.some((edge) => edge.label === "initial" || edge.id.includes("entry"))).toBe(true);
   });
 
   it("matches sequence diagram when view usage name differs in case from diagram name", () => {

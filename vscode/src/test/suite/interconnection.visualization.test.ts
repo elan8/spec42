@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
-import { prepareDataForView } from "../../visualization/prepareData";
+import { buildSharedRendererInput } from "../../visualization/dtoAdapter";
 import {
     clearVisualizerPackageSelection,
     configureServerForTests,
@@ -132,7 +132,7 @@ function routesShareEndpoint(a: ParsedRoute, b: ParsedRoute): boolean {
 
 describe("Interconnection Visualization", () => {
     it("uses the backend-provided interconnection payload as-is", () => {
-        const prepared = prepareDataForView(
+        const prepared = buildSharedRendererInput(
             {
                 ibd: {
                     parts: [{ id: "Drone", name: "Drone" }],
@@ -142,9 +142,10 @@ describe("Interconnection Visualization", () => {
             },
             "interconnection-view"
         );
-        assert.strictEqual(prepared.parts.length, 1);
-        assert.strictEqual(prepared.ports.length, 1);
-        assert.strictEqual(prepared.connectors.length, 1);
+        const ibd = prepared?.ibd as { parts: unknown[]; ports: unknown[]; connectors: unknown[] };
+        assert.strictEqual(ibd.parts.length, 1);
+        assert.strictEqual(ibd.ports.length, 1);
+        assert.strictEqual(ibd.connectors.length, 1);
     });
 
     before(async function () {

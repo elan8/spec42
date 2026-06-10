@@ -12,6 +12,7 @@ import {
     type VisualizationPanelRuntimeState,
     type VisualizationPanelVariantConfig,
 } from './baseVisualizationPanelController';
+import { getVisualizerLocalResourceRoots } from './htmlBuilder';
 
 export const RESTORE_STATE_KEY = 'sysmlVisualizerRestoreState';
 const VISUALIZER_OPEN_CONTEXT_KEY = 'sysml.visualizerOpen';
@@ -168,7 +169,7 @@ export class VisualizationPanel {
             {
                 enableScripts: true,
                 retainContextWhenHidden: true,
-                localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media')],
+                localResourceRoots: getVisualizerLocalResourceRoots(extensionUri),
             }
         );
         panel.iconPath = getVisualizerTabIcon(extensionUri);

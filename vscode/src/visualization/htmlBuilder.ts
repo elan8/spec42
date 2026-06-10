@@ -7,6 +7,25 @@ import { DEFAULT_ENABLED_VIEWS, PROVISIONAL_STANDARD_VIEWS } from './webview/con
 
 const EXPERIMENTAL_VIEW_IDS: string[] = Array.from(PROVISIONAL_STANDARD_VIEWS);
 
+/** Roots from which the visualizer webview may load scripts, styles, and workers. */
+export function getVisualizerLocalResourceRoots(extensionUri: vscode.Uri): vscode.Uri[] {
+    return [
+        extensionUri,
+        vscode.Uri.joinPath(extensionUri, 'media'),
+    ];
+}
+
+/**
+ * Configure webview security roots before assigning HTML.
+ * Required for restored panels (serializer) and whenever HTML is rebuilt.
+ */
+export function configureVisualizerWebview(webview: vscode.Webview, extensionUri: vscode.Uri): void {
+    webview.options = {
+        enableScripts: true,
+        localResourceRoots: getVisualizerLocalResourceRoots(extensionUri),
+    };
+}
+
 function getNonce(): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let nonce = '';

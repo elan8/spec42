@@ -12,7 +12,7 @@ Normative figures: `SysML-v2-Release/bnf/images/`. Implementation: [`shared/diag
 | state-transition-compartment.svg | partial | `views/state-transition.ts` entry/do/exit compartments | `shared/diagram-renderer/src/prepare.test.ts` |
 | transition.svg | partial | `StateMachineDto` transitions with guard/effect/accept | `state_views/graph_extractor.rs`, `state_machine_semantics.rs` |
 
-**Graph-first path:** `build_workspace_state_machines` → `SysmlVisualizationResultDto.stateMachines` → thin `prepareData.ts` selector → `prepareState`.
+**Graph-first path:** `build_workspace_state_machines` → `SysmlVisualizationResultDto.stateMachines` → `dtoAdapter.buildSharedRendererInput` → `shared/diagram-renderer` `prepareState` (extension `prepareData.ts` normalization is being consolidated into shared prepare; see shared renderer debt plan).
 
 **Open gaps:** composite region nesting from nested state hierarchy only (no separate region DTO yet); terminate vs final distinction; full accept/send payload notation on edges.
 

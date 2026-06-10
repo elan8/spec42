@@ -67,12 +67,6 @@ const NOTATION_THEME_VSCODE: Omit<DiagramTheme, "colorScheme"> = {
   },
 };
 
-/** @deprecated Use resolveDiagramTheme() — kept for test imports during migration. */
-export const DEFAULT_DIAGRAM_THEME: DiagramTheme = {
-  ...NOTATION_THEME_LIGHT,
-  colorScheme: "light",
-};
-
 export function detectColorScheme(host?: HTMLElement | null): DiagramColorScheme {
   if (typeof host !== "undefined" && host !== null) {
     const svg = host.closest?.(".sysml-viz-svg");
@@ -117,12 +111,3 @@ export function strokeColorForEdge(_kind: string, theme: DiagramTheme): string {
   return theme.edge.default;
 }
 
-/** @deprecated Use strokeColorForNode(theme) */
-export function nodeColorForKind(_kind: string, theme: DiagramTheme): string {
-  return strokeColorForNode(theme);
-}
-
-/** @deprecated Use strokeColorForEdge(kind, theme) */
-export function edgeColorForKind(kind: string, theme: DiagramTheme): string {
-  return strokeColorForEdge(kind, theme);
-}

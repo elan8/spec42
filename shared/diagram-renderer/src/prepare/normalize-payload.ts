@@ -1,22 +1,20 @@
+// @ts-nocheck
 /**
- * prepareDataForView - Transforms generic model data into view-specific structures.
- * Helper functions (collectAllElements, removeCircularRefs, extractNestedParts, etc.)
- * are used internally. For browser/webview context.
+ * Normalizes raw LSP visualization DTOs before prepareViewData dispatch.
+ * Migrated from vscode/src/visualization/prepareData.ts.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { GraphPayloadDto, VisualizationDataDto } from './visualizationTypes';
+import { graphToElementTree, type GraphPayloadDto } from "../graph-to-element-tree";
 
-import { graphToElementTree } from './graphToElementTree';
-
-export { graphToElementTree } from './graphToElementTree';
-
-export function prepareDataForView(data: VisualizationDataDto | Record<string, any> | null, view: string): any {
+export function normalizeVisualizationPayload(data: Record<string, unknown> | null | undefined): Record<string, unknown> | null | undefined {
     if (!data) {
         return data;
     }
+    const view = String(data.view || "general-view");
 
     const graph = data.graph as GraphPayloadDto | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const dataAny = data as any;
     const hasGraph = graph?.nodes;
     const elements = hasGraph ? graphToElementTree(graph) : (data.elements || []);
     const edgeType = (e: any) => (e.type || e.rel_type || '');

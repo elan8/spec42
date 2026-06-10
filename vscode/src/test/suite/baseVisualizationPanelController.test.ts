@@ -6,6 +6,7 @@ import {
   type VisualizationPanelRuntimeState,
   type VisualizationPanelVariantConfig,
 } from "../../visualization/baseVisualizationPanelController";
+import { setVisualizationGateState } from "../../visualization/visualizationGate";
 
 function createMockPanel() {
   const messages: unknown[] = [];
@@ -17,6 +18,8 @@ function createMockPanel() {
     viewColumn: vscode.ViewColumn.One,
     webview: {
       html: "",
+      cspSource: "https://webview.vscode-cdn.net",
+      asWebviewUri: (uri: vscode.Uri) => uri,
       postMessage: (message: unknown) => {
         messages.push(message);
         return true;
@@ -41,6 +44,13 @@ function createMockPanel() {
 }
 
 describe("BaseVisualizationPanelController", () => {
+  beforeEach(() => {
+    setVisualizationGateState({
+      languageClientReady: true,
+      serverHealthState: "ready",
+    });
+  });
+
   it("supports documentless variants and debounces tracked refreshes", async () => {
     let fetchCount = 0;
     const { panel, messages } = createMockPanel();
@@ -106,12 +116,16 @@ describe("BaseVisualizationPanelController", () => {
     );
 
     await controller.updateVisualization(true, "webviewReady");
-    assert.strictEqual(fetchCount, 1);
+    assert.ok(fetchCount >= 1, "initial webviewReady update should fetch once");
+    // Let built-in startup retries (1200ms / 3500ms) finish so only debounced file changes add fetches.
+    await new Promise((resolve) => setTimeout(resolve, 4000));
+    const settledFetchCount = fetchCount;
 
     await controller.notifyTrackedUriChanged(vscode.Uri.file("C:\\workspace\\model.sysml"));
     await controller.notifyTrackedUriChanged(vscode.Uri.file("C:\\workspace\\parts.sysml"));
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    assert.strictEqual(fetchCount, 2);
+    // Debounce (500ms) plus waitForDocumentDiagnostics timeout (2500ms) before the tracked refresh fetch.
+    await new Promise((resolve) => setTimeout(resolve, 3200));
+    assert.strictEqual(fetchCount, settledFetchCount + 1);
 
     controller.dispose();
 

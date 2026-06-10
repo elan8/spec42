@@ -16,7 +16,6 @@ export default defineConfig({
   files: [
     "out/test/suite/extension.test.js",
     "out/test/suite/visualization.test.js",
-    "out/test/suite/prepareData.test.js",
     "out/test/suite/placeholder.test.js",
     "out/test/suite/messageHandlers.test.js",
     "out/test/suite/baseVisualizationPanelController.test.js",

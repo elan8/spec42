@@ -81,11 +81,10 @@ export function registerMessageRouter(ctx: VisualizerContext): void {
                     });
 
                     updateActiveViewButton(ctx, ctx.currentView);
-                    try {
-                        void ctx.renderVisualization(ctx.currentView);
-                    } catch (e) {
+                    void ctx.renderVisualization(ctx.currentView).catch((e) => {
                         console.error('Error in renderVisualization:', e);
-                    }
+                        ctx.hideLoading();
+                    });
                 }
                 break;
             case 'changeView':
@@ -131,10 +130,16 @@ export function registerMessageRouter(ctx: VisualizerContext): void {
                 });
                 break;
             case 'exportDiagramForTest': {
-                const maxAttempts = 60;
+                const maxAttempts = 120;
                 let attempts = 0;
                 const tryExportWhenReady = () => {
+                    const exportPreview = ctx.exportHandler.getSvgStringForExport();
+                    const hasExportableSvg =
+                        typeof exportPreview === 'string' && exportPreview.includes('<svg');
                     const hasContent = (() => {
+                        if (hasExportableSvg) {
+                            return true;
+                        }
                         const svgElement = document.querySelector('#visualization svg');
                         const groupElement = svgElement?.querySelector('g');
                         return !!(svgElement && groupElement && groupElement.childElementCount > 0);
@@ -147,7 +152,7 @@ export function registerMessageRouter(ctx: VisualizerContext): void {
                         setTimeout(tryExportWhenReady, 150);
                         return;
                     }
-                    const svgString = ctx.exportHandler.getSvgStringForExport();
+                    const svgString = exportPreview ?? ctx.exportHandler.getSvgStringForExport();
                     ctx.vscode.postMessage({
                         command: 'testDiagramExported',
                         viewId: ctx.currentView,

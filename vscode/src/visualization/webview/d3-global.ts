@@ -14,3 +14,11 @@ if (!lib) {
 }
 
 export default lib;
+
+// Named re-exports so `import * as d3 from "d3"` in the bundled shared renderer resolves.
+export const select = lib.select;
+export const zoom = lib.zoom;
+export const zoomIdentity = lib.zoomIdentity;
+export const pointer = lib.pointer;
+export const zoomTransform = lib.zoomTransform;
+export const line = lib.line;

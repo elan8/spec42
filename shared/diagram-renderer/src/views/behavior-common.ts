@@ -215,7 +215,7 @@ export async function layoutBehaviorGraph(
     edges,
   };
 
-  const laidOut = await behaviorElk.layout(graph);
+  const laidOut = await behaviorElk.layout(graph as Parameters<typeof behaviorElk.layout>[0]);
   for (const child of laidOut.children ?? []) {
     positions.set(String(child.id), {
       x: child.x ?? 0,

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src {{CSP_SOURCE}} 'unsafe-inline'; script-src 'nonce-{{NONCE}}'; img-src {{CSP_SOURCE}} data:; font-src {{CSP_SOURCE}}; worker-src blob:;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src {{CSP_SOURCE}} 'unsafe-inline'; script-src 'nonce-{{NONCE}}' {{CSP_SOURCE}}; img-src {{CSP_SOURCE}} data:; font-src {{CSP_SOURCE}}; worker-src blob: {{CSP_SOURCE}};">
 <title>SysML Model Visualizer</title>
 <link rel="stylesheet" href="{{CODICONS_CSS_URI}}">
 <script nonce="{{NONCE}}" src="{{D3_URI}}"></script>

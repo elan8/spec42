@@ -303,7 +303,7 @@ describe("shared renderer", () => {
       title: "General",
       view: "general-view" as const,
       nodes: [{ id: "a", label: "A", kind: "part def" }],
-      edges: [] as const,
+      edges: [],
     };
     await renderVisualization(lightTarget, payload, { theme: { colorScheme: "light" } });
     await renderVisualization(darkTarget, payload, { theme: { colorScheme: "dark" } });
@@ -1274,10 +1274,10 @@ describe("shared renderer", () => {
         { id: "b", label: "B", kind: "part", attributes: { ports: ["p2"] } },
       ],
       edges: [
-        { id: "flow-e", source: "a", target: "b", edgeKind: "flow", attributes: { relationType: "flow", sourceId: "A.p1", targetId: "B.p2" } },
-        { id: "iface-e", source: "a", target: "b", edgeKind: "interface", attributes: { relationType: "interface-connection", sourceId: "A.p1", targetId: "B.p2" } },
-        { id: "bind-e", source: "a", target: "b", edgeKind: "bind", attributes: { relationType: "binding-connection", sourceId: "A.p1", targetId: "B.p2" } },
-        { id: "conn-e", source: "a", target: "b", edgeKind: "connection", attributes: { relationType: "connection", sourceId: "A.p1", targetId: "B.p2" } },
+        { id: "flow-e", source: "a", target: "b", label: "", edgeKind: "flow", attributes: { relationType: "flow", sourceId: "A.p1", targetId: "B.p2" } },
+        { id: "iface-e", source: "a", target: "b", label: "", edgeKind: "interface", attributes: { relationType: "interface-connection", sourceId: "A.p1", targetId: "B.p2" } },
+        { id: "bind-e", source: "a", target: "b", label: "", edgeKind: "bind", attributes: { relationType: "binding-connection", sourceId: "A.p1", targetId: "B.p2" } },
+        { id: "conn-e", source: "a", target: "b", label: "", edgeKind: "connection", attributes: { relationType: "connection", sourceId: "A.p1", targetId: "B.p2" } },
       ],
     });
 

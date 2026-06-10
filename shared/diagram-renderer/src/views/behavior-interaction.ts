@@ -58,7 +58,7 @@ export function attachBehaviorNodeClick(
   root: Selection<SVGGElement, unknown, null, undefined>,
 ): void {
   nodeGroup
-    .style("cursor", options.onNodeClick && nodeSupportsSourceNavigation(node) ? "pointer" : null)
+    .style("cursor", options.onNodeClick && nodeSupportsSourceNavigation(node) ? "pointer" : "")
     .on("click", (event: Event) => {
       if (!options.onNodeClick || !nodeSupportsSourceNavigation(node)) {
         return;

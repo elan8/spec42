@@ -25,6 +25,28 @@ function logPerf(event: string, extra?: Record<string, unknown>): void {
     logPerfEvent(event, extra);
 }
 
+/** Workspace semantic trees may contain parent/child cycles; omit from webview payloads. */
+function toWebviewUpdateMessage(msg: UpdateMessage): UpdateMessage {
+    const { elements: _elements, ...safe } = msg;
+    try {
+        return JSON.parse(JSON.stringify(safe)) as UpdateMessage;
+    } catch (error) {
+        logError('updateFlow:webviewSerializeFailed', error);
+        return {
+            command: 'update',
+            modelReady: false,
+            modelStatusMessage: 'Diagram data could not be sent to the visualizer.',
+            graph: { nodes: [], edges: [] },
+            generalViewGraph: { nodes: [], edges: [] },
+            activityDiagrams: [],
+            sequenceDiagrams: [],
+            currentView: safe.currentView,
+            viewCandidates: [],
+            emptyStateMessage: 'Diagram data could not be sent to the visualizer.',
+        };
+    }
+}
+
 export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (force: boolean, triggerSource?: string) => Promise<void> } {
     const {
         panel,
@@ -149,13 +171,21 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                     graphNodes: msg.graph?.nodes?.length || 0,
                     graphEdges: msg.graph?.edges?.length || 0,
                 });
-                const delivered = await panel.webview.postMessage(msg);
+                const webviewMsg = toWebviewUpdateMessage(msg);
+                const delivered = await panel.webview.postMessage(webviewMsg);
                 logPerf('visualizer:webviewPostMessageCompleted', {
                     command: msg.command,
                     currentView: msg.currentView,
                     delivered,
                     totalMs: Date.now() - postStartedAt,
                 });
+                if (!delivered) {
+                    logError('updateFlow:webviewPostMessageRejected', new Error('webview postMessage returned false'));
+                    await panel.webview.postMessage({
+                        command: 'modelNotReady',
+                        message: 'Visualizer could not receive diagram data. Try closing and reopening the panel.',
+                    });
+                }
             } else {
                 log('updateVisualization: no model data available, hiding loading state');
                 await panel.webview.postMessage({ command: 'hideLoading' });

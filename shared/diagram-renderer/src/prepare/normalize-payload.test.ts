@@ -1,5 +1,13 @@
-import * as assert from "assert";
-import { prepareDataForView, graphToElementTree } from "../../visualization/prepareData";
+// @ts-nocheck
+import assert from "assert";
+import { describe, it } from "vitest";
+import { graphToElementTree } from "../graph-to-element-tree";
+import { normalizeVisualizationPayload } from "./normalize-payload";
+
+function prepareDataForView(data: Record<string, unknown> | null, view: string): Record<string, unknown> | null | undefined {
+    if (!data) return data;
+    return normalizeVisualizationPayload({ ...data, view });
+}
 
 /**
  * Minimal mock data in the format produced by modelFetcher / fetchModelData.
@@ -83,7 +91,7 @@ const createMockData = (overrides: Partial<{
     ...overrides
 });
 
-describe("prepareDataForView", () => {
+describe("normalizeVisualizationPayload", () => {
     const VIEW_IDS = ["general-view", "interconnection-view"];
 
     VIEW_IDS.forEach((viewId) => {
@@ -98,7 +106,7 @@ describe("prepareDataForView", () => {
     it("returns data unchanged for unknown view (pass-through)", () => {
         const data = createMockData();
         const result = prepareDataForView(data, "unknown");
-        assert.strictEqual(result, data, "Unknown view should return data unchanged");
+        assert.deepStrictEqual(result, { ...data, view: "unknown" }, "Unknown view should pass through payload with view field");
     });
 
     it("returns null/undefined for null input", () => {

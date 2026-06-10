@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { LspModelProvider } from '../providers/lspModelProvider';
-import { getWebviewHtml } from './htmlBuilder';
+import { configureVisualizerWebview, getWebviewHtml } from './htmlBuilder';
 import { createMessageDispatcher } from './messageHandlers';
 import { type UpdateMessage, type FetchModelParams } from './modelFetcher';
 import { waitForDocumentDiagnostics } from './documentQuiescence';
@@ -98,6 +98,7 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
             }
         }, null, this._disposables);
 
+        configureVisualizerWebview(this._panel.webview, extensionUri);
         this._panel.webview.html = getWebviewHtml(
             this._panel.webview,
             extensionUri,

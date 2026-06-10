@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
 import { createUpdateVisualizationFlow } from "../../visualization/updateFlow";
+import { setVisualizationGateState } from "../../visualization/visualizationGate";
 
 function createMockDocument(uri: string): vscode.TextDocument {
   return {
@@ -26,6 +27,13 @@ function createMockPanel() {
 }
 
 describe("createUpdateVisualizationFlow", () => {
+  beforeEach(() => {
+    setVisualizationGateState({
+      languageClientReady: true,
+      serverHealthState: "ready",
+    });
+  });
+
   it("deduplicates repeated webviewReady startup updates", async () => {
     let getVisualizationCount = 0;
     const { panel } = createMockPanel();
@@ -118,7 +126,6 @@ describe("createUpdateVisualizationFlow", () => {
       },
     });
 
-    const { setVisualizationGateState } = await import("../../visualization/visualizationGate");
     setVisualizationGateState({ languageClientReady: false, serverHealthState: "starting" });
 
     await flow.update(true, "webviewReady");

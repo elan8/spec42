@@ -182,9 +182,9 @@ export async function renderStateTransitionView(ctx: BehaviorSceneContext): Prom
     edgeLayer
       .append("path")
       .attr("class", "state-transition-edge")
-      .attr("data-guard", guard || undefined)
-      .attr("data-effect", effect || undefined)
-      .attr("data-accept", accept || undefined)
+      .attr("data-guard", guard || null)
+      .attr("data-effect", effect || null)
+      .attr("data-accept", accept || null)
       .attr("d", path)
       .style("fill", "none")
       .style("stroke", ctx.theme.edge.default)

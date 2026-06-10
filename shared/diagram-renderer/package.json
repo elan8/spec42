@@ -3,23 +3,30 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "test": "vitest run"
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "d3": "^7.9.0",
     "elkjs": "^0.11.1"
   },
   "devDependencies": {
+    "@types/d3": "^7.4.3",
     "@vitest/coverage-v8": "^4.0.15",
     "jsdom": "^26.1.0",
+    "typescript": "^5.9.3",
     "vitest": "^4.0.15"
   },
   "exports": {
     "./graph-normalization": "./src/graph-normalization.ts",
+    "./graph-to-element-tree": "./src/graph-to-element-tree.ts",
     "./contract": "./src/contract.ts",
     "./prepare": "./src/prepare.ts",
     "./theme": "./src/theme.ts",
     "./node-notation": "./src/node-notation.ts",
-    "./renderer": "./src/renderer.ts"
+    "./renderer": "./src/renderer.ts",
+    "./sysml-node-builder": "./src/sysml-node-builder.ts",
+    "./behavior-interaction": "./src/views/behavior-interaction.ts"
   }
 }

@@ -11,7 +11,7 @@ import {
   VisualizerRestoreState,
 } from "../../visualization/visualizationPanel";
 import { SYSML_ENABLED_VIEWS } from "../../visualization/webview/constants";
-import { getWebviewHtml } from "../../visualization/htmlBuilder";
+import { configureVisualizerWebview, getWebviewHtml } from "../../visualization/htmlBuilder";
 import { getConfigNumber, isSysmlDoc } from "../configBridge";
 import { getLanguageClient, isLanguageClientReady, type LspClientHandles } from "../lspClient";
 import { getModelExplorerProvider } from "../workspaceIndexing";
@@ -49,6 +49,7 @@ export function registerVisualizerPanelSerializer(
           vscode.extensions.getExtension(EXTENSION_ID)?.packageJSON?.version ??
           "0.0.0";
         if (!saved?.workspaceRootUri) {
+          configureVisualizerWebview(panel.webview, context.extensionUri);
           panel.webview.html = getWebviewHtml(
             panel.webview,
             context.extensionUri,
@@ -66,6 +67,7 @@ export function registerVisualizerPanelSerializer(
           );
         } catch (err) {
           logError("Failed to restore visualization panel", err);
+          configureVisualizerWebview(panel.webview, context.extensionUri);
           panel.webview.html = getWebviewHtml(
             panel.webview,
             context.extensionUri,

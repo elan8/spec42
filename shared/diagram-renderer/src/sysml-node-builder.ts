@@ -25,30 +25,46 @@ export interface SysMLNodeCompartments {
   parts: SysMLNodeDetailItem[];
   ports: SysMLNodeDetailItem[];
   collapsibleSections?: SysMLNodeSection[];
+  other?: Array<{ title: string; lines: string[] }>;
 }
 
 export interface SysMLNodeConfig {
+  showHeader?: boolean;
   showAttributes?: boolean;
   showParts?: boolean;
   showPorts?: boolean;
+  showOther?: boolean;
   maxLinesPerCompartment?: number;
 }
 
 export const LINE_HEIGHT = 12;
-const COMPARTMENT_LABEL_HEIGHT = 14;
-const COMPARTMENT_GAP = 2;
-const COMPARTMENT_PADDING = 4;
-const HEADER_COMPARTMENT_HEIGHT = 44;
-const TYPED_BY_HEIGHT = 14;
-const PADDING = 6;
+export const COMPARTMENT_LABEL_HEIGHT = 14;
+export const COMPARTMENT_GAP = 2;
+export const COMPARTMENT_PADDING = 4;
+export const HEADER_COMPARTMENT_HEIGHT = 44;
+export const TYPED_BY_HEIGHT = 14;
+export const PADDING = 6;
 const SHOW_MORE_LINE_HEIGHT = 12;
 
-const DEFAULT_CONFIG: Required<SysMLNodeConfig> = {
+export const IBD_NODE_CONFIG: SysMLNodeConfig = {
+  showHeader: true,
+  showAttributes: false,
+  showParts: true,
+  showPorts: true,
+  showOther: false,
+  maxLinesPerCompartment: 6,
+};
+
+export const DEFAULT_SYSML_NODE_CONFIG: Required<SysMLNodeConfig> = {
+  showHeader: true,
   showAttributes: true,
   showParts: true,
   showPorts: true,
+  showOther: true,
   maxLinesPerCompartment: 8,
 };
+
+const DEFAULT_CONFIG = DEFAULT_SYSML_NODE_CONFIG;
 
 type D3Selection = {
   append: (name: string) => D3Selection;
@@ -98,6 +114,170 @@ function detailItems(attributes: Record<string, unknown>, key: string): SysMLNod
   return asArray(attributes[key])
     .map((item) => normalizeDetailItem(item))
     .filter((item): item is SysMLNodeDetailItem => Boolean(item));
+}
+
+function readAttributeBagValue(element: unknown, key: string): unknown[] {
+  if (!element || typeof element !== "object") return [];
+  const record = element as Record<string, unknown>;
+  const attrs = record.attributes;
+  let rawValue: unknown;
+  if (attrs && typeof attrs === "object" && "get" in attrs && typeof (attrs as { get: (k: string) => unknown }).get === "function") {
+    rawValue = (attrs as { get: (k: string) => unknown }).get(key);
+  } else if (attrs && typeof attrs === "object") {
+    rawValue = (attrs as Record<string, unknown>)[key];
+  }
+  return Array.isArray(rawValue) ? rawValue : [];
+}
+
+function detailItemsFromElementBag(element: unknown, key: string): SysMLNodeDetailItem[] {
+  return readAttributeBagValue(element, key)
+    .map((item) => normalizeDetailItem(item))
+    .filter((item): item is SysMLNodeDetailItem => Boolean(item));
+}
+
+export function lineToDetailItem(line: string): SysMLNodeDetailItem {
+  const text = normalizeUnitBrackets(line.trim());
+  return { name: text, displayText: text };
+}
+
+/** Collect compartments from general-view element graph nodes. */
+export function collectCompartmentsFromElement(element: unknown): SysMLNodeCompartments {
+  const el = (element && typeof element === "object" ? element : {}) as Record<string, unknown>;
+  const headerName = asString(el.name ?? el.elementName ?? el.label, "Unnamed");
+  const result: SysMLNodeCompartments = {
+    header: { stereotype: asString(el.type, "element").toLowerCase(), name: headerName },
+    typedByName: null,
+    attributes: [],
+    parts: [],
+    ports: [],
+    collapsibleSections: [],
+    other: [],
+  };
+
+  const attrs = el.attributes;
+  if (attrs && typeof attrs === "object" && "get" in attrs && typeof (attrs as { get: (k: string) => unknown }).get === "function") {
+    const bag = attrs as { get: (k: string) => unknown };
+    result.typedByName =
+      asString(bag.get("partType") || bag.get("type") || bag.get("typedBy")) || null;
+  } else if (attrs && typeof attrs === "object") {
+    const bag = attrs as Record<string, unknown>;
+    result.typedByName = asString(bag.partType ?? bag.type ?? bag.typedBy) || null;
+  }
+  if (!result.typedByName && el.partType) {
+    result.typedByName = asString(el.partType);
+  }
+  const typings = el.typings;
+  if (!result.typedByName && Array.isArray(typings) && typings.length > 0) {
+    result.typedByName = asString(typings[0]).replace(/^[:~]+/, "").trim();
+  }
+  if (!result.typedByName && el.typing) {
+    result.typedByName = asString(el.typing).replace(/^[:~]+/, "").trim();
+  }
+
+  result.attributes = detailItemsFromElementBag(el, "generalViewDirectAttributes");
+  result.parts = detailItemsFromElementBag(el, "generalViewDirectParts");
+  result.ports = detailItemsFromElementBag(el, "generalViewDirectPorts");
+
+  const inheritedAttributes = detailItemsFromElementBag(el, "generalViewInheritedAttributes");
+  if (inheritedAttributes.length > 0) {
+    result.collapsibleSections!.push({
+      key: "inherited-attributes",
+      title: "Inherited Attributes",
+      items: inheritedAttributes,
+      collapsed: true,
+      showAll: false,
+    });
+  }
+  const inheritedParts = detailItemsFromElementBag(el, "generalViewInheritedParts");
+  if (inheritedParts.length > 0) {
+    result.collapsibleSections!.push({
+      key: "inherited-parts",
+      title: "Inherited Parts",
+      items: inheritedParts,
+      collapsed: true,
+      showAll: false,
+    });
+  }
+
+  return result;
+}
+
+/** Collect compartments from IBD part nodes. */
+export function collectCompartmentsFromPart(part: unknown, ports: unknown[]): SysMLNodeCompartments {
+  const p = (part && typeof part === "object" ? part : {}) as Record<string, unknown>;
+  const result: SysMLNodeCompartments = {
+    header: { stereotype: asString(p.type, "part").toLowerCase(), name: asString(p.name, "Unnamed") },
+    typedByName: null,
+    attributes: [],
+    parts: [],
+    ports: [],
+    collapsibleSections: [],
+    other: [],
+  };
+
+  const attrs = p.attributes;
+  if (attrs && typeof attrs === "object" && "get" in attrs && typeof (attrs as { get: (k: string) => unknown }).get === "function") {
+    const bag = attrs as { get: (k: string) => unknown };
+    result.typedByName = asString(bag.get("partType") || bag.get("type") || bag.get("typedBy")) || null;
+  }
+  if (!result.typedByName && p.partType) {
+    result.typedByName = asString(p.partType);
+  }
+
+  const partName = asString(p.name);
+  const partId = asString(p.id);
+  const partQn = asString(p.qualifiedName);
+  const partPorts = ports.filter((port) => {
+    if (!port || typeof port !== "object") return false;
+    const pr = port as Record<string, unknown>;
+    const parentId = asString(pr.parentId);
+    return parentId === partName || parentId === partId || parentId === partQn;
+  });
+  for (const port of partPorts) {
+    const pr = port as Record<string, unknown>;
+    const name = asString(pr.name);
+    if (!name) continue;
+    const portAttrs = pr.attributes;
+    let portType: string | null = null;
+    if (portAttrs && typeof portAttrs === "object" && "get" in portAttrs) {
+      portType = asString((portAttrs as { get: (k: string) => unknown }).get("portType")) || null;
+    } else if (portAttrs && typeof portAttrs === "object") {
+      portType = asString((portAttrs as Record<string, unknown>).portType) || null;
+    }
+    const normalizedPortType = portType ? normalizeUnitBrackets(portType) : null;
+    result.ports.push({
+      name,
+      typeName: normalizedPortType,
+      displayText: (name + (normalizedPortType ? ` : ${normalizedPortType}` : "")).trim(),
+    });
+  }
+
+  for (const child of asArray(p.children)) {
+    if (!child || typeof child !== "object") continue;
+    const c = child as Record<string, unknown>;
+    const childName = asString(c.name);
+    const childType = asString(c.type);
+    if (!childName || !childType) continue;
+    if (childType === "part") {
+      result.parts.push({ name: childName, displayText: childName });
+    } else if (childType === "port") {
+      const childAttrs = c.attributes;
+      let portType: string | null = null;
+      if (childAttrs && typeof childAttrs === "object" && "get" in childAttrs) {
+        portType = asString((childAttrs as { get: (k: string) => unknown }).get("portType")) || null;
+      } else if (childAttrs && typeof childAttrs === "object") {
+        portType = asString((childAttrs as Record<string, unknown>).portType) || null;
+      }
+      const normalizedPortType = portType ? normalizeUnitBrackets(portType) : null;
+      result.ports.push({
+        name: childName,
+        typeName: normalizedPortType,
+        displayText: (childName + (normalizedPortType ? ` : ${normalizedPortType}` : "")).trim(),
+      });
+    }
+  }
+
+  return result;
 }
 
 function fallbackDetailItems(attributes: Record<string, unknown>, key: string): SysMLNodeDetailItem[] {
@@ -175,10 +355,23 @@ export function collectCompartments(node: {
   };
 }
 
-export function computeNodeHeight(compartments: SysMLNodeCompartments, config: SysMLNodeConfig): number {
+export function computeNodeHeight(compartments: SysMLNodeCompartments, config: SysMLNodeConfig = {}): number {
   const cfg = { ...DEFAULT_CONFIG, ...config };
-  let height = PADDING * 2 + HEADER_COMPARTMENT_HEIGHT;
-  if (compartments.typedByName) height += TYPED_BY_HEIGHT;
+  let height = PADDING * 2;
+
+  if (cfg.showHeader) {
+    height += HEADER_COMPARTMENT_HEIGHT;
+    if (compartments.typedByName) height += TYPED_BY_HEIGHT;
+  }
+  const hasBodyCompartments =
+    (cfg.showAttributes && compartments.attributes.length > 0) ||
+    (cfg.showParts && compartments.parts.length > 0) ||
+    (cfg.showPorts && compartments.ports.length > 0) ||
+    !!compartments.collapsibleSections?.some((section) => section.items.length > 0) ||
+    (cfg.showOther && !!compartments.other?.some((section) => section.lines.length > 0));
+  if (cfg.showHeader && hasBodyCompartments) {
+    height += COMPARTMENT_PADDING;
+  }
 
   const addCompartment = (items: SysMLNodeDetailItem[]) => {
     if (items.length === 0) return;
@@ -189,16 +382,44 @@ export function computeNodeHeight(compartments: SysMLNodeCompartments, config: S
     }
   };
 
+  const addCollapsibleSection = (section: SysMLNodeSection) => {
+    if (section.items.length === 0) return;
+    height += COMPARTMENT_PADDING * 2 + COMPARTMENT_LABEL_HEIGHT + COMPARTMENT_GAP;
+    if (!section.collapsed) {
+      const shown =
+        section.showAll || !cfg.maxLinesPerCompartment
+          ? section.items.length
+          : Math.min(section.items.length, cfg.maxLinesPerCompartment);
+      height += shown * LINE_HEIGHT;
+      if (cfg.maxLinesPerCompartment && section.items.length > cfg.maxLinesPerCompartment) {
+        height += SHOW_MORE_LINE_HEIGHT;
+      }
+    }
+  };
+
   if (cfg.showAttributes) addCompartment(compartments.attributes);
   if (cfg.showParts) addCompartment(compartments.parts);
   if (cfg.showPorts) addCompartment(compartments.ports);
   for (const section of compartments.collapsibleSections ?? []) {
-    if (section.items.length > 0) {
-      height += COMPARTMENT_PADDING * 2 + COMPARTMENT_LABEL_HEIGHT + COMPARTMENT_GAP;
-      if (!section.collapsed) height += section.items.length * LINE_HEIGHT;
+    addCollapsibleSection(section);
+  }
+  if (cfg.showOther && compartments.other?.length) {
+    for (const section of compartments.other) {
+      const shown = cfg.maxLinesPerCompartment
+        ? Math.min(section.lines.length, cfg.maxLinesPerCompartment)
+        : section.lines.length;
+      height += COMPARTMENT_PADDING * 2 + COMPARTMENT_LABEL_HEIGHT + shown * LINE_HEIGHT + COMPARTMENT_GAP;
     }
   }
-  return Math.max(70, height);
+  return Math.max(60, height);
+}
+
+export function computeNodeHeightFromCompartments(
+  compartments: SysMLNodeCompartments,
+  config: SysMLNodeConfig,
+  _nodeWidth?: number,
+): number {
+  return computeNodeHeight(compartments, config);
 }
 
 function truncate(value: string, max: number): string {

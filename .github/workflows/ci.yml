@@ -146,8 +146,14 @@ jobs:
       - name: npm ci (diagram renderer)
         run: cd shared/diagram-renderer && npm ci
 
+      - name: npm typecheck (diagram renderer)
+        run: cd shared/diagram-renderer && npm run typecheck
+
       - name: npm test (diagram renderer)
         run: cd shared/diagram-renderer && npm test
+
+      - name: npm test:coverage (diagram renderer)
+        run: cd shared/diagram-renderer && npm run test:coverage
 
       - name: npm ci (vscode)
         run: cd vscode && npm ci
