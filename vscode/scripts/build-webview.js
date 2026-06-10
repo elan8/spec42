@@ -21,6 +21,31 @@ async function build() {
                 'process.env.NODE_ENV': '"production"',
             },
             alias: {
+                '@spec42/diagram-renderer/prepare': path.join(
+                    rootDir,
+                    '..',
+                    'shared',
+                    'diagram-renderer',
+                    'src',
+                    'prepare.ts',
+                ),
+                '@spec42/diagram-renderer/renderer': path.join(
+                    rootDir,
+                    '..',
+                    'shared',
+                    'diagram-renderer',
+                    'src',
+                    'renderer.ts',
+                ),
+                '@spec42/diagram-renderer/behavior-interaction': path.join(
+                    rootDir,
+                    '..',
+                    'shared',
+                    'diagram-renderer',
+                    'src',
+                    'views',
+                    'behavior-interaction.ts',
+                ),
                 // Use the same d3 instance as orchestrator (script tag), not a second bundled copy.
                 d3: path.join(rootDir, 'src', 'visualization', 'webview', 'd3-global.ts'),
                 // diagram-renderer imports elkjs; resolve via vscode's dependency (CI only runs npm ci here).

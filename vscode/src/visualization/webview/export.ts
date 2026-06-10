@@ -10,6 +10,8 @@ export interface ExportHandlerOpts {
     getCurrentData: () => any;
     getViewState: () => { currentView: string };
     postMessage: (msg: unknown) => void;
+    /** Prefer shared renderer export when the diagram is rendered via adapter. */
+    getExportSvg?: () => string | null;
 }
 
 export function prepareSvgForExport(svgElement: SVGSVGElement | null): SVGSVGElement | null {
@@ -201,7 +203,7 @@ export function prepareSvgForExport(svgElement: SVGSVGElement | null): SVGSVGEle
 }
 
 export function createExportHandler(opts: ExportHandlerOpts) {
-    const { getCurrentData, getViewState, postMessage } = opts;
+    const { getCurrentData, getViewState, postMessage, getExportSvg } = opts;
 
     function exportJSON(): void {
         const currentData = getCurrentData();
@@ -291,6 +293,11 @@ export function createExportHandler(opts: ExportHandlerOpts) {
      * Returns null if no SVG is available (e.g. placeholder or loading).
      */
     function getSvgStringForExport(): string | null {
+        const fromController = getExportSvg?.();
+        if (fromController && fromController.trim().length > 0) {
+            return fromController;
+        }
+
         const svgElement = document.querySelector('#visualization svg') as SVGSVGElement | null;
         if (!svgElement) return null;
 

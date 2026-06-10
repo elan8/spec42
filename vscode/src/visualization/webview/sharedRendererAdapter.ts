@@ -2,12 +2,15 @@ import {
     prepareViewData,
     type PreparedNode,
     type PreparedView
-} from "../../../../shared/diagram-renderer/src/prepare";
+} from "@spec42/diagram-renderer/prepare";
 import {
     renderVisualization,
     type RenderController
-} from "../../../../shared/diagram-renderer/src/renderer";
-import { jumpPayloadFromNode } from "../../../../shared/diagram-renderer/src/views/behavior-interaction";
+} from "@spec42/diagram-renderer/renderer";
+import {
+    jumpPayloadFromNode,
+    nodeSupportsSourceNavigation,
+} from "@spec42/diagram-renderer/behavior-interaction";
 
 /**
  * Thin adapter around the shared renderer package to keep Spec42's

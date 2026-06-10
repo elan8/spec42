@@ -256,6 +256,15 @@ jobs:
       - name: npm test (workspace smoke)
         run: cd vscode && xvfb-run -a npm run test:workspace-smoke
 
+      - name: npm test (state view integration)
+        run: cd vscode && xvfb-run -a npm run test:state-view
+
+      - name: npm test (interconnection integration)
+        run: cd vscode && xvfb-run -a npm run test:interconnection
+
+      - name: npm test (interconnection drone integration)
+        run: cd vscode && xvfb-run -a npm run test:interconnection-drone
+
       - name: Upload VS Code smoke failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4

@@ -1,6 +1,6 @@
 /**
  * SysML compartment collection and height math (extension + tests).
- * DOM rendering lives in webview/renderers/sysmlNodeBuilder.ts.
+ * DOM rendering lives in shared/diagram-renderer (sysml-node-builder.ts).
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

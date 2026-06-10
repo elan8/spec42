@@ -6,29 +6,11 @@ import type {
   RelationshipDTO,
   RangeDTO,
 } from "../providers/sysmlModelTypes";
-import { graphToElementTree } from "../visualization/prepareData";
+import { graphToElementTree } from "../visualization/graphToElementTree";
+import { rangeContainsPosition, rangeSpanScore } from "../utils/range";
 
 function logPerf(event: string, extra?: Record<string, unknown>): void {
   logPerfEvent(event, extra);
-}
-
-function rangeContainsPosition(range: RangeDTO, position: vscode.Position): boolean {
-  const afterStart =
-    position.line > range.start.line ||
-    (position.line === range.start.line &&
-      position.character >= range.start.character);
-  const beforeEnd =
-    position.line < range.end.line ||
-    (position.line === range.end.line &&
-      position.character <= range.end.character);
-  return afterStart && beforeEnd;
-}
-
-function rangeSpanScore(range: RangeDTO): number {
-  return (
-    (range.end.line - range.start.line) * 10000 +
-    (range.end.character - range.start.character)
-  );
 }
 
 /** Helper to convert RangeDTO to vscode.Range for openLocation. */

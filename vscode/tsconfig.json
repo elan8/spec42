@@ -2,10 +2,16 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "ES2020",
-    "lib": ["ES2020"],
+    "lib": ["ES2020", "DOM"],
     "types": ["node", "mocha"],
     "outDir": "out",
     "rootDir": "src",
+    "baseUrl": ".",
+    "paths": {
+      "@spec42/diagram-renderer/prepare": ["src/visualization/webview/shims/diagram-renderer-prepare.ts"],
+      "@spec42/diagram-renderer/renderer": ["src/visualization/webview/shims/diagram-renderer-renderer.ts"],
+      "@spec42/diagram-renderer/behavior-interaction": ["src/visualization/webview/shims/diagram-renderer-behavior-interaction.ts"]
+    },
     "strict": true,
     "sourceMap": true,
     "declaration": true,

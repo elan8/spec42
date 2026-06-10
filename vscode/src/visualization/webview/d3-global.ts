@@ -13,4 +13,4 @@ if (!lib) {
     throw new Error("d3 global is required; load the d3 script before visualizer.js");
 }
 
-export = lib;
+export default lib;

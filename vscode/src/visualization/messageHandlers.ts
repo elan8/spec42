@@ -47,27 +47,6 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
             case 'export':
                 handlers.handleExport(message.format, message.data);
                 break;
-            case 'executeCommand':
-                if (message.args && message.args.length > 0) {
-                    const cmd = message.args[0];
-                    const allowedCommands: string[] = [];
-                    if (!allowedCommands.includes(cmd)) {
-                        // eslint-disable-next-line no-console
-                        console.warn(`[SysML Visualizer] Blocked disallowed command: ${cmd}`);
-                        break;
-                    }
-                    if (cmd === 'sysml.showModelDashboard') {
-                        if (!document) {
-                            break;
-                        }
-                        const dashboardUri = document.uri;
-                        setTimeout(() => vscode.commands.executeCommand(cmd, dashboardUri), 100);
-                    } else {
-                        const cmdArgs = message.args.slice(1);
-                        setTimeout(() => vscode.commands.executeCommand(cmd, ...cmdArgs), 100);
-                    }
-                }
-                break;
             case 'viewChanged':
                 setCurrentView(message.view ?? '');
                 setLastContentHash('');

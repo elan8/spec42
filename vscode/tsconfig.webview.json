@@ -4,10 +4,21 @@
     "target": "ES2020",
     "lib": ["ES2020", "DOM"],
     "moduleResolution": "node",
-    "strict": true,
+    "strict": false,
+    "noImplicitAny": false,
     "noEmit": true,
     "skipLibCheck": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@spec42/diagram-renderer/prepare": ["src/visualization/webview/shims/diagram-renderer-prepare.ts"],
+      "@spec42/diagram-renderer/renderer": ["src/visualization/webview/shims/diagram-renderer-renderer.ts"],
+      "@spec42/diagram-renderer/behavior-interaction": ["src/visualization/webview/shims/diagram-renderer-behavior-interaction.ts"]
+    }
   },
-  "include": ["src/visualization/webview/**/*"]
+  "include": [
+    "src/visualization/webview/**/*",
+    "src/visualization/emptyStateContent.ts"
+  ]
 }

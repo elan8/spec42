@@ -668,7 +668,7 @@
     "extract-styles": "node scripts/extract-styles.js",
     "compile": "npm run typecheck && tsc -p ./ && npm run build:extension",
     "test:lm-cli-unit": "tsc -p ./ && node --test out/test/suite/spec42Cli.test.js",
-    "typecheck": "tsc -p ./ --noEmit",
+    "typecheck": "tsc -p ./ --noEmit && tsc -p ./tsconfig.webview.json --noEmit",
     "watch": "tsc -watch -p ./",
     "test": "vscode-test",
     "test:ux-unit": "vscode-test --config .vscode-test.ux-unit.mjs",
@@ -682,6 +682,7 @@
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.8",
+    "@types/d3": "^7.4.3",
     "@types/mocha": "^10.0.0",
     "@types/node": "^22.0.0",
     "@types/vscode": "^1.99.0",

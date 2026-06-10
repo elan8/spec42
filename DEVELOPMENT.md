@@ -224,11 +224,16 @@ Extension tests run inside a downloaded VS Code instance. Tests that require the
 Useful focused suites:
 
 ```bash
-npm run test:state-view
-npm run test:interconnection
-npm run test:multi-file
+npm run test:state-view          # state-transition-view integration + SVG export
+npm run test:interconnection     # interconnection-view integration
+npm run test:interconnection-drone
+npm run test:multi-file          # multi-file workspace smoke
 npm run test:workspace-smoke
+npm run test:ux-unit             # status bar, snippets, examples provider
+npm run test:library-unit        # library status view model
 ```
+
+Default `npm test` (`.vscode-test.mjs`) runs extension smoke, visualization export, `prepareData` unit tests, placeholder/empty-state tests, message handler tests, panel controller/update-flow/gate tests, and shared-renderer adapter smoke tests. CI `vscode-smoke` also runs the view integration suites above.
 
 ### Packaging Checks
 

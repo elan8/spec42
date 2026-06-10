@@ -71,16 +71,16 @@ export const VIEW_OPTIONS: Record<string, { label: string; shortLabel: string; i
     'geometry-view': { label: 'Geometry View', shortLabel: 'Geometry', icon: 'symbol-ruler' },
 };
 
-/** Documentation: rendering technology per view. All views use D3 + ELK. */
+/** Documentation: rendering stack per view (shared diagram-renderer + ELK where routed). */
 export const VIEW_RENDERER_TECH: Record<string, string> = {
-    'general-view': 'D3+ELK',
-    'interconnection-view': 'D3+ELK',
-    'action-flow-view': 'D3+ELK',
-    'sequence-view': 'D3',
-    'state-transition-view': 'D3+ELK',
-    'browser-view': 'D3',
-    'grid-view': 'D3',
-    'geometry-view': 'D3',
+    'general-view': 'shared-renderer+ELK',
+    'interconnection-view': 'shared-renderer+ELK',
+    'action-flow-view': 'shared-renderer+ELK',
+    'sequence-view': 'shared-renderer',
+    'state-transition-view': 'shared-renderer+ELK',
+    'browser-view': 'shared-renderer',
+    'grid-view': 'shared-renderer',
+    'geometry-view': 'shared-renderer',
 };
 
 /**
