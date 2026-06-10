@@ -53,6 +53,29 @@ import { postJumpToElement } from './jumpToElement';
 import { RenderScheduler } from './renderScheduler';
 import { setupVisualizerControls } from './uiControls';
 import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './sharedRendererAdapter';
+import { resolveEmptyStateTitle } from '../emptyStateContent';
+import { renderVisualizationEmptyState } from './renderers/placeholder';
+
+function emptyStateTitleForData(data: unknown, rendererView: string): string {
+    const payload = data as {
+        viewCandidates?: unknown[];
+        selectedViewName?: string | null;
+    } | null | undefined;
+    return resolveEmptyStateTitle({
+        viewCandidates: payload?.viewCandidates,
+        selectedViewName: payload?.selectedViewName,
+        rendererViewLabel: VIEW_OPTIONS[rendererView]?.label || null,
+    });
+}
+
+function resolveEmptyStateMessage(data: unknown): string | null {
+    const message = (data as { emptyStateMessage?: unknown } | null | undefined)?.emptyStateMessage;
+    if (typeof message !== 'string') {
+        return null;
+    }
+    const trimmed = message.trim();
+    return trimmed.length > 0 ? trimmed : null;
+}
 
     let vscode: { postMessage: (msg: unknown) => void };
 
@@ -379,6 +402,18 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
         const viewCandidates = Array.isArray(currentData?.viewCandidates)
             ? currentData.viewCandidates
             : [];
+        if (viewCandidates.length === 0) {
+            const item = document.createElement('button');
+            item.className = 'view-dropdown-item';
+            item.disabled = true;
+            item.style.opacity = '0.7';
+            item.style.cursor = 'default';
+            item.textContent = 'No model-defined views';
+            item.title = resolveEmptyStateMessage(currentData)
+                || 'Define a SysML view with expose (and optional filter) to use the visualizer.';
+            viewDropdownMenu.appendChild(item);
+            return;
+        }
         viewCandidates.forEach((candidate: any) => {
             const option = candidate?.rendererView
                 ? (VIEW_OPTIONS[candidate.rendererView] || VIEW_OPTIONS['general-view'])
@@ -492,6 +527,8 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
                     generalViewGraph: message.generalViewGraph,
                     ibd: message.ibd,
                     selectedView: message.selectedView,
+                    emptyStateMessage: message.emptyStateMessage,
+                    currentView: message.currentView,
                 });
 
                 if (message.modelReady === false) {
@@ -541,6 +578,7 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
 
                 const effectiveView = message.currentView || currentView;
                 updateActiveViewButton(currentView); // Highlight current view
+                populateViewDropdown();
                 try {
                     renderVisualization(currentView);
                 } catch (e) {
@@ -1603,8 +1641,29 @@ import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './
         }
 
         if (isSysmlSharedView) {
-            if (!sharedPrepared || !vizElement) {
-                renderPlaceholderView(width, height, 'Shared Renderer', 'Unable to prepare shared view data.', dataToRender);
+            const emptyStateMessage =
+                resolveEmptyStateMessage(dataForPrepare) ?? resolveEmptyStateMessage(currentData);
+            if (!vizElement) {
+                finishRender();
+                return;
+            }
+            if (emptyStateMessage) {
+                renderVisualizationEmptyState(emptyStateMessage, {
+                    viewLabel: emptyStateTitleForData(currentData, view),
+                    data: currentData,
+                });
+                setTimeout(() => {
+                    updateDimensionsDisplay();
+                    finishRender();
+                }, 100);
+                lastView = view;
+                return;
+            }
+            if (!sharedPrepared) {
+                renderVisualizationEmptyState('Unable to prepare shared view data.', {
+                    viewLabel: VIEW_OPTIONS[view]?.label || 'Shared Renderer',
+                    data: dataToRender,
+                });
                 setTimeout(() => {
                     updateDimensionsDisplay();
                     finishRender();

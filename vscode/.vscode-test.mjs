@@ -17,6 +17,7 @@ export default defineConfig({
     "out/test/suite/extension.test.js",
     "out/test/suite/visualization.test.js",
     "out/test/suite/prepareData.test.js",
+    "out/test/suite/placeholder.test.js",
   ],
   extensionDevelopmentPath: __dirname,
   workspaceFolder: path.resolve(__dirname, "testFixture", "workspaces", "single-file"),
