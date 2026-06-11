@@ -117,6 +117,33 @@ pub const TYPE_REFERENCE_ATTR_KEYS: &[&str] = &[
     "analysisType",
     "verificationType",
     "metadataType",
+    "keywordType",
+];
+
+/// Element kinds that may appear as metadata `about` / `annotatedElement` targets.
+pub const ANNOTATED_ELEMENT_TARGET_KINDS: &[&str] = &[
+    "part def",
+    "part",
+    "port def",
+    "port",
+    "action def",
+    "action",
+    "state def",
+    "state",
+    "requirement def",
+    "requirement",
+    "use case def",
+    "use case",
+    "concern def",
+    "concern",
+    "item def",
+    "item",
+    "interface",
+    "metadata def",
+    "metadata usage",
+    "constraint def",
+    "constraint",
+    "package",
 ];
 
 /// Canonical set of #kind suffixes that `qualified_name_for_node` may append.
@@ -663,6 +690,46 @@ pub fn add_semantic_edge_once(
     }
     g.graph.add_edge(src_idx, tgt_idx, edge);
     AddSemanticEdgeResult::Added
+}
+
+/// Wire `annotatedElement` links from a metadata usage to its explicit `about` targets or owner.
+pub fn wire_metadata_annotated_elements(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    metadata_id: &NodeId,
+    owner_id: &NodeId,
+    about_targets: &[String],
+) {
+    let Some(metadata_node) = g.get_node(metadata_id).cloned() else {
+        return;
+    };
+    if about_targets.is_empty() {
+        add_semantic_edge_once(
+            g,
+            metadata_id,
+            owner_id,
+            SemanticEdge::plain(RelationshipKind::Annotation),
+        );
+        let _ = uri;
+        return;
+    }
+    for target_ref in about_targets {
+        let Some(target_id) = resolve_type_target_in_workspace(
+            g,
+            &metadata_node,
+            target_ref,
+            ANNOTATED_ELEMENT_TARGET_KINDS,
+        ) else {
+            continue;
+        };
+        add_semantic_edge_once(
+            g,
+            metadata_id,
+            &target_id,
+            SemanticEdge::plain(RelationshipKind::Annotation),
+        );
+    }
+    let _ = uri;
 }
 
 /// Adds a typing edge if source exists and target can be resolved. Tries type_ref as-is,

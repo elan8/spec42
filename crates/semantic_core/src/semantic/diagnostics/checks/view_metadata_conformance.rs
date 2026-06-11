@@ -7,7 +7,10 @@ use crate::semantic::diagnostics::helpers::{
     diag, diagnostic_range, is_synthetic, is_unknown_range, parse_attribute_text_range,
 };
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
-use crate::semantic::relationships::resolve_type_target_in_workspace;
+use crate::semantic::model::RelationshipKind;
+use crate::semantic::relationships::{
+    resolve_type_target_in_workspace, ANNOTATED_ELEMENT_TARGET_KINDS,
+};
 use crate::{SemanticDiagnostic, SemanticGraph};
 
 const BUILTIN_MODELED_DECL_KEYWORDS: &[&str] = &[
@@ -346,5 +349,210 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
         ));
     }
 
+    for node in graph.nodes_for_uri(uri) {
+        if !matches!(node.element_kind.as_str(), "metadata usage" | "metadata keyword")
+            || is_synthetic(node)
+        {
+            continue;
+        }
+        let Some(targets) = node
+            .attributes
+            .get("aboutTargets")
+            .and_then(|v| v.as_array())
+        else {
+            continue;
+        };
+        for target in targets {
+            let Some(target_ref) = target.as_str().map(str::trim).filter(|s| !s.is_empty()) else {
+                continue;
+            };
+            if resolve_type_target_in_workspace(
+                graph,
+                node,
+                target_ref,
+                ANNOTATED_ELEMENT_TARGET_KINDS,
+            )
+            .is_some()
+            {
+                continue;
+            }
+            let key = format!("about|{}|{}", node.id.qualified_name, target_ref);
+            if !seen.insert(key) {
+                continue;
+            }
+            diagnostics.push(diag(
+                uri,
+                diagnostic_range(graph, node, None),
+                DiagnosticSeverity::Warning,
+                "semantic",
+                "metadata_about_unresolved",
+                format!(
+                    "Metadata '{}' about target '{}' does not resolve to a model element.",
+                    node.name, target_ref
+                ),
+            ));
+        }
+    }
+
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "metadata usage" || is_synthetic(node) {
+            continue;
+        }
+        let Some(def_node) = graph
+            .outgoing_targets_by_kind(node, RelationshipKind::Typing)
+            .into_iter()
+            .find(|target| target.element_kind == "metadata def")
+        else {
+            continue;
+        };
+        let required: HashSet<String> = graph
+            .children_of(def_node)
+            .into_iter()
+            .filter(|child| child.element_kind == "attribute def")
+            .map(|child| child.name.clone())
+            .collect();
+        if required.is_empty() {
+            continue;
+        }
+        let bound: HashSet<String> = graph
+            .children_of(node)
+            .into_iter()
+            .filter(|child| child.element_kind == "attribute")
+            .map(|child| child.name.clone())
+            .collect();
+        for name in required.difference(&bound) {
+            let key = format!("binding_missing|{}|{}", node.id.qualified_name, name);
+            if !seen.insert(key) {
+                continue;
+            }
+            diagnostics.push(diag(
+                uri,
+                diagnostic_range(graph, node, None),
+                DiagnosticSeverity::Warning,
+                "semantic",
+                "metadata_binding_missing",
+                format!(
+                    "Metadata usage '{}' is missing binding for attribute '{}'.",
+                    node.name, name
+                ),
+            ));
+        }
+        for name in bound.difference(&required) {
+            let key = format!("binding_unknown|{}|{}", node.id.qualified_name, name);
+            if !seen.insert(key) {
+                continue;
+            }
+            diagnostics.push(diag(
+                uri,
+                diagnostic_range(graph, node, None),
+                DiagnosticSeverity::Warning,
+                "semantic",
+                "metadata_binding_unknown",
+                format!(
+                    "Metadata usage '{}' binds unknown attribute '{}'.",
+                    node.name, name
+                ),
+            ));
+        }
+    }
+
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "metadata def" || is_synthetic(node) {
+            continue;
+        }
+        let specializes_semantic = graph
+            .outgoing_targets_by_kind(node, RelationshipKind::Specializes)
+            .into_iter()
+            .any(|target| target.name == "SemanticMetadata");
+        if !specializes_semantic {
+            continue;
+        }
+        let restrictions: Vec<String> = graph
+            .children_of(node)
+            .into_iter()
+            .filter_map(annotated_element_restriction_type)
+            .collect();
+        if restrictions.is_empty() {
+            continue;
+        }
+        for usage in graph.nodes_for_uri(uri) {
+            if usage.element_kind != "metadata usage" || is_synthetic(usage) {
+                continue;
+            }
+            let typed_to_def = graph
+                .outgoing_targets_by_kind(usage, RelationshipKind::Typing)
+                .into_iter()
+                .any(|target| target.id == node.id);
+            if !typed_to_def {
+                continue;
+            }
+            for annotated in graph.outgoing_targets_by_kind(usage, RelationshipKind::Annotation) {
+                let compatible = restrictions.iter().any(|restriction| {
+                    annotated_element_matches_restriction(&annotated.element_kind, restriction)
+                });
+                if compatible {
+                    continue;
+                }
+                let key = format!(
+                    "annotated_incompatible|{}|{}",
+                    usage.id.qualified_name, annotated.id.qualified_name
+                );
+                if !seen.insert(key) {
+                    continue;
+                }
+                diagnostics.push(diag(
+                    uri,
+                    diagnostic_range(graph, usage, None),
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "metadata_annotated_element_incompatible",
+                    format!(
+                        "Metadata usage '{}' annotates '{}' which is incompatible with SemanticMetadata restrictions.",
+                        usage.name, annotated.name
+                    ),
+                ));
+            }
+        }
+    }
+
     diagnostics
+}
+
+fn annotated_element_restriction_type(child: &crate::semantic::model::SemanticNode) -> Option<String> {
+    if child.element_kind != "attribute" {
+        return None;
+    }
+    let is_annotated_element_restriction = child
+        .attributes
+        .get("redefines")
+        .and_then(|v| v.as_str())
+        .is_some_and(|r| r.contains("annotatedElement"))
+        || child
+            .attributes
+            .get("subsetsFeature")
+            .and_then(|v| v.as_str())
+            .is_some_and(|r| r.contains("annotatedElement"))
+        || child.name == "annotatedElement";
+    if !is_annotated_element_restriction {
+        return None;
+    }
+    child
+        .attributes
+        .get("attributeType")
+        .and_then(|v| v.as_str())
+        .map(str::to_string)
+}
+
+fn annotated_element_matches_restriction(element_kind: &str, restriction: &str) -> bool {
+    let local = restriction.rsplit("::").next().unwrap_or(restriction);
+    let normalized = local
+        .trim_end_matches("Definition")
+        .trim_end_matches("Usage")
+        .to_ascii_lowercase();
+    if normalized.is_empty() {
+        return true;
+    }
+    element_kind
+        .to_ascii_lowercase()
+        .contains(normalized.as_str())
 }

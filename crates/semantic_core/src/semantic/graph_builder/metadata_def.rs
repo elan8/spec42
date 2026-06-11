@@ -1,17 +1,85 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
-    AttributeBody, ConstraintDefBody, ConstraintDefBodyElement, MetadataAnnotation, Node,
+    AttributeBody, ConstraintDefBody, ConstraintDefBodyElement, MetadataAnnotation, MetadataUsage,
+    Node,
 };
 use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
-use crate::semantic::relationships::add_typing_edge_if_exists;
+use crate::semantic::relationships::{
+    add_typing_edge_if_exists, wire_metadata_annotated_elements,
+};
 
 use super::attribute_body::build_from_attribute_body;
 use super::{add_node_and_recurse, qualified_name_for_node};
+
+fn insert_metadata_usage_attrs(
+    attrs: &mut HashMap<String, serde_json::Value>,
+    name: &str,
+    type_name: Option<&str>,
+    about_targets: &[String],
+) {
+    attrs.insert("annotationName".to_string(), serde_json::json!(name));
+    if let Some(t) = type_name.filter(|value| !value.trim().is_empty()) {
+        attrs.insert("metadataType".to_string(), serde_json::json!(t));
+    }
+    if !about_targets.is_empty() {
+        attrs.insert(
+            "aboutTargets".to_string(),
+            serde_json::json!(about_targets),
+        );
+    }
+}
+
+fn project_metadata_usage_body(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    qualified: &str,
+    body: &AttributeBody,
+) {
+    let node_id = NodeId::new(uri, qualified);
+    build_from_metadata_attribute_body(body, uri, Some(qualified), &node_id, g);
+    let _ = container_prefix;
+}
+
+pub(super) fn add_package_metadata_usage_node(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    mu: &MetadataUsage,
+    span: &sysml_v2_parser::Span,
+) {
+    let qualified =
+        qualified_name_for_node(g, uri, container_prefix, &mu.name, "metadata usage");
+    let mut attrs = HashMap::new();
+    insert_metadata_usage_attrs(
+        &mut attrs,
+        &mu.name,
+        mu.type_name.as_deref(),
+        &mu.about_targets,
+    );
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "metadata usage",
+        mu.name.clone(),
+        span_to_range(span),
+        attrs,
+        Some(parent_id),
+    );
+    if let Some(ref t) = mu.type_name {
+        add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+    }
+    project_metadata_usage_body(g, uri, container_prefix, &qualified, &mu.body);
+    let metadata_id = NodeId::new(uri, &qualified);
+    wire_metadata_annotated_elements(g, uri, &metadata_id, parent_id, &mu.about_targets);
+}
 
 pub(super) fn add_metadata_annotation_node(
     g: &mut SemanticGraph,
@@ -23,10 +91,12 @@ pub(super) fn add_metadata_annotation_node(
 ) {
     let qualified = qualified_name_for_node(g, uri, container_prefix, &meta.name, "metadata usage");
     let mut attrs = HashMap::new();
-    attrs.insert("annotationName".to_string(), serde_json::json!(&meta.name));
-    if let Some(ref t) = meta.type_name {
-        attrs.insert("metadataType".to_string(), serde_json::json!(t));
-    }
+    insert_metadata_usage_attrs(
+        &mut attrs,
+        &meta.name,
+        meta.type_name.as_deref(),
+        &meta.about_targets,
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -40,6 +110,9 @@ pub(super) fn add_metadata_annotation_node(
     if let Some(ref t) = meta.type_name {
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
+    project_metadata_usage_body(g, uri, container_prefix, &qualified, &meta.body);
+    let metadata_id = NodeId::new(uri, &qualified);
+    wire_metadata_annotated_elements(g, uri, &metadata_id, parent_id, &meta.about_targets);
 }
 
 pub(super) fn wire_constraint_body_metadata(

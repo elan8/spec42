@@ -932,33 +932,16 @@ pub(super) fn build_from_package_body_element(
             }
         }
         PBE::MetadataUsage(mu_node) => {
-            let qualified =
-                qualified_name_for_node(g, uri, container_prefix, &mu_node.name, "metadata usage");
-            let mut attrs = HashMap::new();
-            if let Some(ref t) = mu_node.type_name {
-                attrs.insert("metadataType".to_string(), serde_json::json!(t));
+            if let Some(parent_id) = parent_id {
+                super::metadata_def::add_package_metadata_usage_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    &mu_node,
+                    &mu_node.span,
+                );
             }
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "metadata usage",
-                mu_node.name.clone(),
-                span_to_range(&mu_node.span),
-                attrs,
-                parent_id,
-            );
-            let node_id = NodeId::new(uri, &qualified);
-            if let Some(ref t) = mu_node.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
-            super::metadata_def::build_from_metadata_attribute_body(
-                &mu_node.body,
-                uri,
-                Some(&qualified),
-                &node_id,
-                g,
-            );
         }
         PBE::EnumDef(enum_node) => {
             let name = identification_name(&enum_node.identification);

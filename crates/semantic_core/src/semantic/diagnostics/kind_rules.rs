@@ -23,6 +23,7 @@ pub fn allowed_typing_target_kinds(usage_kind: &str) -> &'static [&'static str] 
         "allocation" => &["allocation def"],
         "interface" => &["interface"],
         "metadata usage" => &["metadata def"],
+        "metadata keyword" => &["metadata def"],
         "rendering" => &["rendering def"],
         "view rendering" => &["rendering def", "rendering"],
         "perform" => &["action def", "action"],

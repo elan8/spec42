@@ -70,6 +70,9 @@ fn expr_to_string(n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>) -> Str
             .collect::<Vec<_>>()
             .join(", "),
         Expression::Classification { metaclass } => format!("@{metaclass}"),
+        Expression::MetaCast { base, metaclass } => {
+            format!("{} meta {metaclass}", expr_to_string(base))
+        }
         Expression::TypeCheck {
             kind,
             operand,

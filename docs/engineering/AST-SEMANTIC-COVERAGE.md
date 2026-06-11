@@ -1,6 +1,6 @@
 # AST semantic coverage matrix
 
-Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.24.0** ([crates.io](https://crates.io/crates/sysml-v2-parser/0.24.0); constraint `MetadataAnnotation`, case-body `ReturnRef.return_expression`, structured state/part-usage ref bodies).
+Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.25.1** (structured `@` / `#` metadata bodies, `metadata def` body shorthand `:>` / `:>>`, `about` targets, `meta` cast expressions).
 
 | Parser surface | Graph (`semantic_core`) | Symbols / hover | Semantic tokens | Priority |
 |----------------|-------------------------|-----------------|-----------------|----------|
@@ -15,7 +15,10 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 | `ActionDefBody` / `ActionUsageBody` | Yes | Partial | Yes | P1 |
 | `StateDefBody` (`Transition.accept`, `is_initial`, `FinalState`) | Yes (0.19.0) | Partial | Partial | P0 |
 | `RequirementDefBody` (`Stakeholder`, `Purpose`, `TextualRep`, `#keyword`) | Yes | Partial | Yes | P1 |
-| `MetadataKeywordUsage` in part/state/requirement bodies | Yes (0.19.0) | Partial | Partial | P1 |
+| `MetadataKeywordUsage` in part/state/requirement/action/use-case bodies | Yes (0.25.0) | Partial | Partial | P1 |
+| `MetadataAnnotation` / `#keyword` brace bodies (`AttributeBody`) | Yes (0.25.0) | Partial | Partial | P1 |
+| `metadata` / `@` `about` targets + `RelationshipKind::Annotation` | Yes (0.25.0) | N/A | N/A | P1 |
+| `SemanticMetadata` restrictions (`baseType`, `annotatedElement`) | Yes (0.25.1) | N/A | N/A | P1 |
 | `ActionUsage.send` / `PayloadClause` accept | Yes (0.19.0) | Partial | Partial | P1 |
 | `RequirementDefBody` / constraint bodies | Yes | Partial | Mostly | P1 |
 | `AttributeBody` on `metadata def` / `metadata` usage | Yes | Partial | Def span | P1 |
@@ -31,6 +34,14 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 1. **Compile:** exhaustive `match` on body-element enums; no-op `Error` / doc / opaque members.
 2. **Graph:** implement when a **shipped workflow** needs it (LSP navigation, `spec42 check`, IBD/general/action/state/sequence views).
 3. **Tokens:** extend `sysml_semantic_tokens` `ast_ranges` for editor-visible identifiers in tested fixtures.
+
+## Recent changes (metadata §7.27, parser 0.25.1)
+
+- **Metadata def body shorthand** — `:> annotatedElement : Type;` and `:>> baseType = expr meta Type;` parse via `metadata_body` / `metadata_binding` in sysml-v2-parser; projected as `attribute` children with `subsetsFeature`, `redefines`, and `attributeType` in [`attribute_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/attribute_body.rs); covered by [`metadata_semantics.rs`](../../crates/semantic_core/tests/metadata_semantics.rs) (`requirement_metadata_def_shorthand_projects_restriction_attributes`).
+- **Inline metadata bodies** — `@` / `#` annotations walk `AttributeBody` members via [`metadata_def.rs`](../../crates/semantic_core/src/semantic/graph_builder/metadata_def.rs) and [`metadata_keyword.rs`](../../crates/semantic_core/src/semantic/graph_builder/metadata_keyword.rs); covered by [`metadata_semantics.rs`](../../crates/semantic_core/tests/metadata_semantics.rs).
+- **`about` targets** — package-level and inline metadata store `aboutTargets` and emit `RelationshipKind::Annotation` edges in [`relationships.rs`](../../crates/semantic_core/src/semantic/relationships.rs).
+- **Diagnostics** — `metadata_about_unresolved`, `metadata_binding_missing`, `metadata_binding_unknown`, `metadata_annotated_element_incompatible` in [`view_metadata_conformance.rs`](../../crates/semantic_core/src/semantic/diagnostics/checks/view_metadata_conformance.rs).
+- **Action / use-case `#keyword`** — wired in [`action.rs`](../../crates/semantic_core/src/semantic/graph_builder/action.rs) and [`use_case.rs`](../../crates/semantic_core/src/semantic/graph_builder/use_case.rs).
 
 ## Recent changes (graph depth P4a)
 

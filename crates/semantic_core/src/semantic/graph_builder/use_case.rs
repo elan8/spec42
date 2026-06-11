@@ -536,6 +536,15 @@ pub(super) fn build_from_use_case_body(
                     container_prefix,
                 );
             }
+            UCBE::MetadataKeywordUsage(mk_node) => {
+                super::metadata_keyword::add_metadata_keyword_node(
+                    g,
+                    uri,
+                    parent_id,
+                    &mk_node.value,
+                    &mk_node.span,
+                );
+            }
             UCBE::Error(_) | UCBE::Doc(_) | UCBE::Other(_) | UCBE::Annotation(_) => {}
             _ => {}
         }

@@ -254,28 +254,14 @@ pub(super) fn build_from_part_usage_body_element(
             }
         }
         PUBE::MetadataAnnotation(meta) => {
-            let m = &meta.value;
-            let qualified =
-                qualified_name_for_node(g, uri, container_prefix, &m.name, "metadata usage");
-            let range = span_to_range(&meta.span);
-            let mut attrs = HashMap::new();
-            attrs.insert("annotationName".to_string(), serde_json::json!(&m.name));
-            if let Some(ref t) = m.type_name {
-                attrs.insert("metadataType".to_string(), serde_json::json!(t));
-            }
-            add_node_and_recurse(
+            super::metadata_def::add_metadata_annotation_node(
                 g,
                 uri,
-                &qualified,
-                "metadata usage",
-                m.name.clone(),
-                range,
-                attrs,
-                Some(parent_id),
+                container_prefix,
+                parent_id,
+                &meta.value,
+                &meta.span,
             );
-            if let Some(ref t) = m.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
         }
         PUBE::OccurrenceUsage(occ_node) => {
             let qualified =

@@ -349,6 +349,7 @@ pub(super) fn classify_expression(
     match &n.value {
         Expression::LiteralBoolean(_) => ExprClass::Boolean,
         Expression::Classification { .. } => ExprClass::Classification,
+        Expression::MetaCast { .. } => ExprClass::FeatureRef,
         Expression::TypeCheck { .. } => ExprClass::TypeCheck,
         Expression::UnaryOp { op, operand } => {
             if op.as_str() == "not" {
@@ -426,6 +427,10 @@ pub(super) fn expression_to_debug_string(
         Expression::LiteralString(s) => format!("{s:?}"),
         Expression::LiteralBoolean(b) => b.to_string(),
         Expression::Classification { metaclass } => format!("@{metaclass}"),
+        Expression::MetaCast { base, metaclass } => format!(
+            "{} meta {metaclass}",
+            expression_to_debug_string(base)
+        ),
         Expression::TypeCheck {
             kind,
             operand,
@@ -558,6 +563,7 @@ pub(super) fn expr_node_to_qualified_string(
         | Expression::Invocation { .. }
         | Expression::Tuple(_)
         | Expression::Classification { .. }
+        | Expression::MetaCast { .. }
         | Expression::TypeCheck { .. }
         | Expression::Select { .. }
         | Expression::Collect { .. }

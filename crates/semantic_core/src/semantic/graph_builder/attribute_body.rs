@@ -56,6 +56,12 @@ pub(super) fn build_from_attribute_body(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &value.name, "attribute");
                 let mut attrs = HashMap::new();
+                if let Some(ref typing) = value.typing {
+                    attrs.insert("attributeType".to_string(), serde_json::json!(typing));
+                }
+                if let Some(ref s) = value.subsets {
+                    attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
+                }
                 if let Some(ref r) = value.redefines {
                     attrs.insert("redefines".to_string(), serde_json::json!(r));
                 }
@@ -75,6 +81,9 @@ pub(super) fn build_from_attribute_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(ref typing) = value.typing {
+                    add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
+                }
             }
             AttributeBodyElement::Doc(_)
             | AttributeBodyElement::Error(_)

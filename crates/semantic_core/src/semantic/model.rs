@@ -41,6 +41,8 @@ pub enum RelationshipKind {
     Transition,
     /// `then` initial state in a state composite (`transition` without `first` uses the same resolution path with [`RelationshipKind::Transition`]).
     InitialState,
+    /// Metadata usage annotates a model element (`annotatedElement` per SysML §7.27).
+    Annotation,
 }
 
 /// Optional metadata when a `Connection` edge came from a resolved `connect` statement.
@@ -93,6 +95,7 @@ impl RelationshipKind {
             RelationshipKind::Derivation => "derivation",
             RelationshipKind::Transition => "transition",
             RelationshipKind::InitialState => "initialState",
+            RelationshipKind::Annotation => "annotation",
         }
     }
 
@@ -111,6 +114,7 @@ impl RelationshipKind {
             "reference" => Some(RelationshipKind::Reference),
             "derivation" => Some(RelationshipKind::Derivation),
             "transition" | "initialstate" => Some(RelationshipKind::Transition),
+            "annotation" => Some(RelationshipKind::Annotation),
             _ => None,
         }
     }

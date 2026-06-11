@@ -496,6 +496,15 @@ pub(super) fn build_from_action_def_body(
                     &meta.span,
                 );
             }
+            ActionDefBodyElement::MetadataKeywordUsage(mk_node) => {
+                super::metadata_keyword::add_metadata_keyword_node(
+                    g,
+                    uri,
+                    parent_id,
+                    &mk_node.value,
+                    &mk_node.span,
+                );
+            }
             ActionDefBodyElement::Doc(_)
             | ActionDefBodyElement::Error(_)
             | ActionDefBodyElement::Annotation(_) => {}
@@ -606,6 +615,15 @@ pub(super) fn build_from_action_usage_body(
                     parent_id,
                     &meta.value,
                     &meta.span,
+                );
+            }
+            ActionUsageBodyElement::MetadataKeywordUsage(mk_node) => {
+                super::metadata_keyword::add_metadata_keyword_node(
+                    g,
+                    uri,
+                    parent_id,
+                    &mk_node.value,
+                    &mk_node.span,
                 );
             }
             ActionUsageBodyElement::Doc(_)

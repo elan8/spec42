@@ -768,3 +768,54 @@ fn invalid_verdict_value_uses_return_expression_span() {
         verdict_node.range
     );
 }
+
+#[test]
+fn metadata_about_unresolved_emits_diagnostic() {
+    let doc = workspace_doc(
+        "metadata_about_unresolved.sysml",
+        r#"package Demo {
+  metadata def Tag;
+  metadata note : Tag about MissingTarget;
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "metadata_about_unresolved"),
+        "expected metadata_about_unresolved, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn metadata_binding_missing_emits_diagnostic() {
+    let doc = workspace_doc(
+        "metadata_binding_missing.sysml",
+        r#"package Demo {
+  metadata def ApprovalAnnotation {
+    attribute approved;
+    attribute approver;
+  }
+  part def Design {
+    @ApprovalAnnotation : ApprovalAnnotation {
+      approved = true;
+    }
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "metadata_binding_missing"),
+        "expected metadata_binding_missing, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
