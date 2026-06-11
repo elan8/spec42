@@ -49,7 +49,10 @@ fn mbse_vacuum_example_diagnostic_baseline() {
     let code_counts = diagnostic_code_counts(&report);
 
     assert_eq!(
-        code_counts.get("visibility_violation").copied().unwrap_or(0),
+        code_counts
+            .get("visibility_violation")
+            .copied()
+            .unwrap_or(0),
         0,
         "private wildcard imports must not emit visibility_violation"
     );

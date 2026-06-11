@@ -22,11 +22,7 @@ fn transition_target_is_done(target: &str) -> bool {
         .eq_ignore_ascii_case("done")
 }
 
-fn increment_state_def_counter(
-    g: &mut SemanticGraph,
-    parent_id: &NodeId,
-    attribute: &str,
-) {
+fn increment_state_def_counter(g: &mut SemanticGraph, parent_id: &NodeId, attribute: &str) {
     if let Some(state_def_node) = g.get_node_mut(parent_id) {
         let count = state_def_node
             .attributes
@@ -310,13 +306,7 @@ pub(super) fn build_from_state_body(
                 );
             }
             SDBE::MetadataKeywordUsage(mk_node) => {
-                add_metadata_keyword_node(
-                    g,
-                    uri,
-                    parent_id,
-                    &mk_node.value,
-                    &mk_node.span,
-                );
+                add_metadata_keyword_node(g, uri, parent_id, &mk_node.value, &mk_node.span);
             }
             SDBE::MetadataAnnotation(meta) => {
                 super::metadata_def::add_metadata_annotation_node(

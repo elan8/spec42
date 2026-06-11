@@ -59,11 +59,7 @@ fn build_graph(source: &str) -> semantic_core::SemanticGraph {
     graph
 }
 
-fn node_attr(
-    graph: &semantic_core::SemanticGraph,
-    qualified: &str,
-    key: &str,
-) -> Option<String> {
+fn node_attr(graph: &semantic_core::SemanticGraph, qualified: &str, key: &str) -> Option<String> {
     graph
         .node_ids_by_qualified_name
         .get(qualified)?
@@ -102,7 +98,11 @@ fn assert_constraint_projects_to_analysis_constraints_and_passes_when_true() {
         .and_then(|value| value.as_array())
         .cloned()
         .unwrap_or_default();
-    assert_eq!(constraints.len(), 1, "expected one aggregated assert constraint");
+    assert_eq!(
+        constraints.len(),
+        1,
+        "expected one aggregated assert constraint"
+    );
     assert_eq!(
         node_attr(&graph, "Grid::Feeder", "analysisEvaluationStatus"),
         Some("ok".to_string())

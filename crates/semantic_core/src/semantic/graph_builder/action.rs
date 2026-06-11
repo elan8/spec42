@@ -155,13 +155,7 @@ fn add_perform_step(
     } else {
         perform.value.action_name.clone()
     };
-    let child_qualified = qualified_name_for_node(
-        g,
-        uri,
-        container_prefix,
-        &step_name,
-        "perform",
-    );
+    let child_qualified = qualified_name_for_node(g, uri, container_prefix, &step_name, "perform");
     let mut attrs = HashMap::new();
     if let Some(ref action_type) = perform.value.type_name {
         attrs.insert("actionType".to_string(), serde_json::json!(action_type));
@@ -348,7 +342,10 @@ fn materialize_nested_action_usage(
     let name = &au_node.name;
     let child_qualified = qualified_name_for_node(g, uri, container_prefix, name, "action");
     let mut attrs = HashMap::new();
-    attrs.insert("actionType".to_string(), serde_json::json!(&au_node.type_name));
+    attrs.insert(
+        "actionType".to_string(),
+        serde_json::json!(&au_node.type_name),
+    );
     insert_action_payload_attrs(&mut attrs, au_node);
     add_node_and_recurse(
         g,
@@ -436,13 +433,8 @@ pub(super) fn build_from_action_def_body(
             }
             ActionDefBodyElement::MergeStmt(merge) => {
                 let merge_target = expressions::expression_to_debug_string(&merge.value.merge);
-                let child_qualified = qualified_name_for_node(
-                    g,
-                    uri,
-                    container_prefix,
-                    &merge_target,
-                    "merge",
-                );
+                let child_qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &merge_target, "merge");
                 let mut attrs = HashMap::new();
                 attrs.insert("mergeTarget".to_string(), serde_json::json!(merge_target));
                 add_node_and_recurse(
@@ -557,13 +549,8 @@ pub(super) fn build_from_action_usage_body(
             }
             ActionUsageBodyElement::MergeStmt(merge) => {
                 let merge_target = expressions::expression_to_debug_string(&merge.value.merge);
-                let child_qualified = qualified_name_for_node(
-                    g,
-                    uri,
-                    container_prefix,
-                    &merge_target,
-                    "merge",
-                );
+                let child_qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &merge_target, "merge");
                 let mut attrs = HashMap::new();
                 attrs.insert("mergeTarget".to_string(), serde_json::json!(merge_target));
                 add_node_and_recurse(
@@ -693,13 +680,7 @@ pub(super) fn materialize_action_def(
         parent_id,
     );
     if let ActionDefBody::Brace { elements } = &ad_node.body {
-        build_from_action_def_body(
-            elements,
-            uri,
-            Some(&qualified),
-            &action_id,
-            g,
-        );
+        build_from_action_def_body(elements, uri, Some(&qualified), &action_id, g);
     }
     qualified
 }

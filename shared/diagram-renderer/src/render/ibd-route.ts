@@ -88,15 +88,48 @@ export function routeEndpointError(
   return Math.hypot(start.x - source.x, start.y - source.y) + Math.hypot(end.x - target.x, end.y - target.y);
 }
 
+function samePoint(a: { x: number; y: number }, b: { x: number; y: number }): boolean {
+  return Math.abs(a.x - b.x) < 1e-6 && Math.abs(a.y - b.y) < 1e-6;
+}
+
+function isOrthogonalSegment(a: { x: number; y: number }, b: { x: number; y: number }): boolean {
+  return Math.abs(a.x - b.x) < 1e-6 || Math.abs(a.y - b.y) < 1e-6;
+}
+
+function stitchOrthogonalEndpoint(
+  endpoint: { x: number; y: number },
+  routePoint: { x: number; y: number },
+): Array<{ x: number; y: number }> {
+  if (samePoint(endpoint, routePoint)) return [{ x: endpoint.x, y: endpoint.y }];
+  if (isOrthogonalSegment(endpoint, routePoint)) {
+    return [
+      { x: endpoint.x, y: endpoint.y },
+      { x: routePoint.x, y: routePoint.y },
+    ];
+  }
+  return [
+    { x: endpoint.x, y: endpoint.y },
+    { x: routePoint.x, y: endpoint.y },
+    { x: routePoint.x, y: routePoint.y },
+  ];
+}
+
 export function snapRouteEndpoints(
   points: Array<{ x: number; y: number }>,
   source?: { x: number; y: number } | null,
   target?: { x: number; y: number } | null,
 ): Array<{ x: number; y: number }> {
   if (points.length < 2) return points;
-  const route = points.map((point) => ({ x: point.x, y: point.y }));
-  if (source) route[0] = { x: source.x, y: source.y };
-  if (target) route[route.length - 1] = { x: target.x, y: target.y };
+  let route = points.map((point) => ({ x: point.x, y: point.y }));
+
+  if (source) {
+    route = [...stitchOrthogonalEndpoint(source, route[0]), ...route.slice(1)];
+  }
+  if (target) {
+    const lastRoutePoint = route[route.length - 1];
+    const targetStitch = stitchOrthogonalEndpoint(target, lastRoutePoint).reverse();
+    route = [...route.slice(0, -1), ...targetStitch];
+  }
   return pruneRoutePoints(route);
 }
 

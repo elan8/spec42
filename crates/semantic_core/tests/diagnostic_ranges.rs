@@ -105,7 +105,11 @@ fn unresolved_viewpoint_target_points_at_endpoint_token() {
 fn transition_guard_non_boolean_points_at_transition() {
     let content = "package Demo {\n  state def Operating {\n    state off;\n    state on;\n    transition power_up first off if 42 then on;\n  }\n}\n";
     let range = diagnostic_range_for(content, "transition_guard_non_boolean");
-    assert_range_text(content, range, "transition power_up first off if 42 then on;");
+    assert_range_text(
+        content,
+        range,
+        "transition power_up first off if 42 then on;",
+    );
 }
 
 #[test]

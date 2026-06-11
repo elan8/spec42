@@ -1187,7 +1187,9 @@ impl<'a> EvalEngine<'a> {
         let mut prefixes = scope_prefixes(self.graph, current);
         prefixes.insert(0, current.id.qualified_name.clone());
         prefixes.extend(typed_case_definition_scope_prefixes(self.graph, current));
-        prefixes.extend(typed_requirement_definition_scope_prefixes(self.graph, current));
+        prefixes.extend(typed_requirement_definition_scope_prefixes(
+            self.graph, current,
+        ));
         for scope_prefix in prefixes {
             let qualified = format!("{scope_prefix}::{identifier}");
             candidates.extend(self.lookup_qualified_candidates(&qualified));

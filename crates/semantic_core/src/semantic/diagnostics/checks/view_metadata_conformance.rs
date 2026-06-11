@@ -8,9 +8,7 @@ use crate::semantic::diagnostics::helpers::{
 };
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::model::RelationshipKind;
-use crate::semantic::reference_resolution::{
-    resolve_expose_target, ExposeTargetResolution,
-};
+use crate::semantic::reference_resolution::{resolve_expose_target, ExposeTargetResolution};
 use crate::semantic::relationships::{
     resolve_type_target_in_workspace, ANNOTATED_ELEMENT_TARGET_KINDS,
 };
@@ -92,7 +90,10 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
                 continue;
             };
             let range = expose_target_entry_range(node, target);
-            let key = format!("expose_unresolved|{}|{}", node.id.qualified_name, target_text);
+            let key = format!(
+                "expose_unresolved|{}|{}",
+                node.id.qualified_name, target_text
+            );
             match resolve_expose_target(graph, Some(uri), container_prefix, target_text) {
                 ExposeTargetResolution::Unresolved => {
                     if !seen.insert(key) {
@@ -222,11 +223,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
             continue;
         }
         let (target, key_prefix) = if node.element_kind == "import" {
-            let Some(parent) = node
-                .parent_id
-                .as_ref()
-                .and_then(|id| graph.get_node(id))
-            else {
+            let Some(parent) = node.parent_id.as_ref().and_then(|id| graph.get_node(id)) else {
                 continue;
             };
             if !matches!(
@@ -245,11 +242,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
                 .unwrap_or("import");
             (target.to_string(), "viewpoint_import")
         } else if matches!(node.element_kind.as_str(), "stakeholder" | "purpose") {
-            let Some(parent) = node
-                .parent_id
-                .as_ref()
-                .and_then(|id| graph.get_node(id))
-            else {
+            let Some(parent) = node.parent_id.as_ref().and_then(|id| graph.get_node(id)) else {
                 continue;
             };
             if !matches!(parent.element_kind.as_str(), "viewpoint" | "viewpoint def") {
@@ -306,11 +299,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
         if node.element_kind != "textualRep" || is_synthetic(node) {
             continue;
         }
-        let Some(parent) = node
-            .parent_id
-            .as_ref()
-            .and_then(|id| graph.get_node(id))
-        else {
+        let Some(parent) = node.parent_id.as_ref().and_then(|id| graph.get_node(id)) else {
             continue;
         };
         if !matches!(
@@ -352,7 +341,10 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
         if is_synthetic(node) {
             continue;
         }
-        let keyword = if matches!(node.element_kind.as_str(), "feature decl" | "classifier decl") {
+        let keyword = if matches!(
+            node.element_kind.as_str(),
+            "feature decl" | "classifier decl"
+        ) {
             let Some(keyword) = node.attributes.get("keyword").and_then(|v| v.as_str()) else {
                 continue;
             };
@@ -430,8 +422,10 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if !matches!(node.element_kind.as_str(), "metadata usage" | "metadata keyword")
-            || is_synthetic(node)
+        if !matches!(
+            node.element_kind.as_str(),
+            "metadata usage" | "metadata keyword"
+        ) || is_synthetic(node)
         {
             continue;
         }
@@ -598,7 +592,9 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
     diagnostics
 }
 
-fn annotated_element_restriction_type(child: &crate::semantic::model::SemanticNode) -> Option<String> {
+fn annotated_element_restriction_type(
+    child: &crate::semantic::model::SemanticNode,
+) -> Option<String> {
     if child.element_kind != "attribute" {
         return None;
     }
@@ -623,7 +619,10 @@ fn annotated_element_restriction_type(child: &crate::semantic::model::SemanticNo
         .map(str::to_string)
 }
 
-fn expose_target_entry_range(node: &crate::semantic::model::SemanticNode, entry: &serde_json::Value) -> TextRange {
+fn expose_target_entry_range(
+    node: &crate::semantic::model::SemanticNode,
+    entry: &serde_json::Value,
+) -> TextRange {
     if let Some(range) = entry.get("range") {
         let start = range.get("start");
         let end = range.get("end");

@@ -7,9 +7,10 @@ use serde::{Deserialize, Serialize};
 use crate::cli::Cli;
 use crate::domain_libraries::{
     domain_libraries_paths_from_data_dir, install_embedded_domain_libraries,
-    load_managed_metadata as load_domain_libraries_metadata, managed_install_path as domain_managed_install_path,
-    managed_status as domain_managed_status, DomainLibrariesConfig, DomainLibrariesPaths,
-    DomainLibrariesStatus, EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE, EMBEDDED_DOMAIN_LIBRARIES_REPO,
+    load_managed_metadata as load_domain_libraries_metadata,
+    managed_install_path as domain_managed_install_path, managed_status as domain_managed_status,
+    DomainLibrariesConfig, DomainLibrariesPaths, DomainLibrariesStatus,
+    EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE, EMBEDDED_DOMAIN_LIBRARIES_REPO,
 };
 use crate::stdlib::{
     install_embedded_standard_library, legacy_vscode_stdlib_path, load_managed_metadata,
@@ -129,11 +130,8 @@ fn resolve_environment_with_dirs(
         &standard_library,
         &standard_library_paths,
     )?;
-    let domain_libraries_resolution = resolve_domain_libraries_path(
-        cli,
-        &domain_libraries,
-        &domain_libraries_paths,
-    )?;
+    let domain_libraries_resolution =
+        resolve_domain_libraries_path(cli, &domain_libraries, &domain_libraries_paths)?;
 
     let sysand = detect_sysand_status();
     let sysand_dependency_roots = dependency_roots_from_status(&sysand);
@@ -655,17 +653,11 @@ mod tests {
             command: None,
         };
         let paths = domain_libraries_paths_from_data_dir(temp.path().join("data"));
-        let resolution = resolve_domain_libraries_path(
-            &cli,
-            &DomainLibrariesConfig::default(),
-            &paths,
-        )
-        .expect("resolve domain libraries");
+        let resolution =
+            resolve_domain_libraries_path(&cli, &DomainLibrariesConfig::default(), &paths)
+                .expect("resolve domain libraries");
         assert_eq!(resolution.source.as_deref(), Some("flag"));
-        assert_eq!(
-            resolution.path,
-            Some(canonicalize_lossy(&root))
-        );
+        assert_eq!(resolution.path, Some(canonicalize_lossy(&root)));
     }
 
     #[test]
@@ -964,7 +956,10 @@ mod tests {
         let environment =
             resolve_environment_with_dirs(&cli, config_dir, data_dir).expect("environment");
 
-        assert_eq!(environment.domain_libraries_source.as_deref(), Some("bundled"));
+        assert_eq!(
+            environment.domain_libraries_source.as_deref(),
+            Some("bundled")
+        );
         assert!(environment.domain_libraries_path.is_some());
         assert!(environment
             .library_paths

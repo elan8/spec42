@@ -23,7 +23,9 @@ fn stedin_grid_structure_general_view_is_not_empty() {
         let content = std::fs::read_to_string(path).expect("read stedin model");
         let doc = SysmlDocument::from_memory_path(
             "stedin",
-            path.file_name().and_then(|n| n.to_str()).unwrap_or("model.sysml"),
+            path.file_name()
+                .and_then(|n| n.to_str())
+                .unwrap_or("model.sysml"),
             content,
             SysmlDocumentSourceKind::Workspace,
             None,

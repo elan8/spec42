@@ -61,7 +61,8 @@ pub(super) fn validate_paths_with_semantics(
     );
     rebuild_all_document_links(&mut state);
 
-    let documents = collect_target_documents(&state, config, &target_files, request.strict_diagnostics)?;
+    let documents =
+        collect_target_documents(&state, config, &target_files, request.strict_diagnostics)?;
     let summary = summarize(&documents);
     let advice = build_advice(&documents, request.library_paths.is_empty());
     let target_urls = target_file_urls(&target_files)?;

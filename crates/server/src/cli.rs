@@ -330,10 +330,7 @@ mod tests {
                 command: ApiCommand::Serve(args),
             }) => {
                 assert_eq!(args.workspace_root, PathBuf::from("workspace"));
-                assert_eq!(
-                    args.bind,
-                    "127.0.0.1:9999".parse().expect("socket addr")
-                );
+                assert_eq!(args.bind, "127.0.0.1:9999".parse().expect("socket addr"));
                 assert!(!args.allow_remote);
             }
             other => panic!("expected api serve command, got {other:?}"),

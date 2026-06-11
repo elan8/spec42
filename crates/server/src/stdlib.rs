@@ -577,7 +577,7 @@ mod tests {
                 format!("{release_prefix}/sysml.library/ScalarValues.sysml"),
                 options,
             )
-                .expect("start file");
+            .expect("start file");
             zip.write_all(b"standard library package ScalarValues { attribute def Real; }")
                 .expect("write file");
             zip.finish().expect("finish zip");
@@ -652,7 +652,7 @@ mod tests {
                 format!("{release_prefix}/sysml.library/ScalarValues.sysml"),
                 options,
             )
-                .expect("start file");
+            .expect("start file");
             zip.write_all(b"standard library package ScalarValues { attribute def Real; }")
                 .expect("write file");
             zip.finish().expect("finish zip");
@@ -685,7 +685,7 @@ mod tests {
                 format!("{release_prefix}/sysml.library/ScalarValues.sysml"),
                 options,
             )
-                .expect("start file");
+            .expect("start file");
             zip.write_all(b"standard library package ScalarValues { attribute def Real; }")
                 .expect("write file");
             zip.finish().expect("finish zip");

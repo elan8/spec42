@@ -53,15 +53,12 @@ pub fn router(state: Arc<ApiServerState>) -> Router {
 pub async fn run_api_serve(cli: Cli, args: ApiServeArgs) -> Result<(), String> {
     validate_bind_address(&args)?;
 
-    let workspace_root = args
-        .workspace_root
-        .canonicalize()
-        .map_err(|err| {
-            format!(
-                "Workspace root does not exist or is not accessible: {} ({err})",
-                args.workspace_root.display()
-            )
-        })?;
+    let workspace_root = args.workspace_root.canonicalize().map_err(|err| {
+        format!(
+            "Workspace root does not exist or is not accessible: {} ({err})",
+            args.workspace_root.display()
+        )
+    })?;
     if !workspace_root.is_dir() {
         return Err(format!(
             "Workspace root is not a directory: {}",
@@ -71,7 +68,8 @@ pub async fn run_api_serve(cli: Cli, args: ApiServeArgs) -> Result<(), String> {
 
     let environment = resolve_environment(&cli)?;
     let config = Arc::new(
-        kernel::default_server_config().with_default_library_paths(environment.library_paths.clone()),
+        kernel::default_server_config()
+            .with_default_library_paths(environment.library_paths.clone()),
     );
 
     let mut router = router(Arc::new(ApiServerState {

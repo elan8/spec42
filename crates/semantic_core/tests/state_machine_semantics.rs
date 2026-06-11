@@ -28,7 +28,9 @@ fn state_machine_demo_fixture_projects_states_and_transitions() {
         .map(|node| node.name.clone())
         .collect();
     assert!(
-        state_def_names.iter().any(|name| name == "TimerStateMachine"),
+        state_def_names
+            .iter()
+            .any(|name| name == "TimerStateMachine"),
         "expected TimerStateMachine state def in graph, found {state_def_names:?}"
     );
     let machines = build_workspace_state_machines(&graph, &[uri]);
@@ -40,7 +42,11 @@ fn state_machine_demo_fixture_projects_states_and_transitions() {
                 "TimerStateMachine not in extracted machines: {:?}",
                 machines
                     .iter()
-                    .map(|machine| (&machine.name, machine.states.len(), machine.transitions.len()))
+                    .map(|machine| (
+                        &machine.name,
+                        machine.states.len(),
+                        machine.transitions.len()
+                    ))
                     .collect::<Vec<_>>()
             );
         });

@@ -859,6 +859,9 @@ mod tests {
     #[test]
     fn alignment_classifies_state_cardinality_as_modeling_guidance() {
         assert_eq!(super::alignment("missing_final_state"), "modeling_guidance");
-        assert_eq!(super::alignment("transition_guard_non_boolean"), "spec_constraint");
+        assert_eq!(
+            super::alignment("transition_guard_non_boolean"),
+            "spec_constraint"
+        );
     }
 }

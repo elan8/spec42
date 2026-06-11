@@ -75,11 +75,7 @@ fn build_graph(source: &str) -> semantic_core::SemanticGraph {
     graph
 }
 
-fn node_attr(
-    graph: &semantic_core::SemanticGraph,
-    qualified: &str,
-    key: &str,
-) -> Option<String> {
+fn node_attr(graph: &semantic_core::SemanticGraph, qualified: &str, key: &str) -> Option<String> {
     graph
         .node_ids_by_qualified_name
         .get(qualified)?

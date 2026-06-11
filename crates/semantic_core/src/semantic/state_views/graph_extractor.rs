@@ -115,7 +115,8 @@ fn initial_state_targets(graph: &SemanticGraph, root: &SemanticNode) -> HashSet<
             .unwrap_or(false)
         {
             if let Some(source) = attr_str(child, "source") {
-                if let Some(resolved) = resolve_state_id_in_machine(graph, root, &source, &HashSet::new())
+                if let Some(resolved) =
+                    resolve_state_id_in_machine(graph, root, &source, &HashSet::new())
                 {
                     targets.insert(resolved);
                 }
@@ -133,16 +134,22 @@ fn apply_initial_state_kinds(
     if initial_targets.is_empty() {
         return;
     }
-    let incoming_count = transitions.iter().fold(HashMap::new(), |mut counts, transition| {
-        *counts.entry(transition.target.clone()).or_insert(0) += 1;
-        counts
-    });
-    if let Some(initial) = states.iter_mut().filter(|state| initial_targets.contains(&state.id)).min_by_key(|state| {
-        (
-            incoming_count.get(&state.id).copied().unwrap_or(0),
-            state.name.clone(),
-        )
-    }) {
+    let incoming_count = transitions
+        .iter()
+        .fold(HashMap::new(), |mut counts, transition| {
+            *counts.entry(transition.target.clone()).or_insert(0) += 1;
+            counts
+        });
+    if let Some(initial) = states
+        .iter_mut()
+        .filter(|state| initial_targets.contains(&state.id))
+        .min_by_key(|state| {
+            (
+                incoming_count.get(&state.id).copied().unwrap_or(0),
+                state.name.clone(),
+            )
+        })
+    {
         initial.kind = "initial".to_string();
     }
 }
@@ -162,9 +169,10 @@ fn collect_state_nodes(
                 if !state_ids.insert(id.clone()) {
                     continue;
                 }
-                let has_nested_states = graph.children_of(child).iter().any(|node| {
-                    matches!(node.element_kind.as_str(), "state" | "final state")
-                });
+                let has_nested_states = graph
+                    .children_of(child)
+                    .iter()
+                    .any(|node| matches!(node.element_kind.as_str(), "state" | "final state"));
                 let kind = if child.element_kind == "final state" {
                     "final".to_string()
                 } else if has_nested_states {
@@ -248,9 +256,7 @@ fn collect_transition_nodes(
 ) {
     for child in graph.children_of(parent) {
         if child.element_kind == "transition" {
-            if let Some(transition) =
-                transition_from_node(graph, machine_root, child, state_ids)
-            {
+            if let Some(transition) = transition_from_node(graph, machine_root, child, state_ids) {
                 if seen.insert(transition.id.clone()) {
                     out.push(transition);
                 }
@@ -427,10 +433,7 @@ mod tests {
             .expect("DoneStates machine");
         assert_eq!(machine.states.len(), 2);
         assert!(
-            machine
-                .states
-                .iter()
-                .all(|state| state.kind == "final"),
+            machine.states.iter().all(|state| state.kind == "final"),
             "fixture only declares final states; states={:?}",
             machine
                 .states

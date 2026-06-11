@@ -4,11 +4,11 @@ pub mod ai_tools;
 pub mod api;
 pub mod cli;
 pub mod diagrams;
+pub mod domain_libraries;
 pub mod elk_layout;
 pub mod environment;
 pub mod mcp;
 pub mod reports;
-pub mod domain_libraries;
 pub mod stdlib;
 pub mod sysand;
 
@@ -20,8 +20,8 @@ use cli::{
     CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, DomainLibrariesCommand,
     ExplainDiagnosticArgs, ModelSummaryArgs, OutputFormat, StdlibCommand, SysandCommand,
 };
-use environment::{build_doctor_report, resolve_environment};
 pub use environment::DoctorReport;
+use environment::{build_doctor_report, resolve_environment};
 use kernel::{
     validate_paths, validate_paths_with_semantics, SemanticModelNode, SemanticModelProjection,
     SemanticModelRelationship, SemanticValidationReport, ValidationReport, ValidationRequest,
@@ -358,10 +358,7 @@ fn run_diagrams(cli: &Cli, command: &DiagramsCommand) -> Result<ExitCode, String
     }
 }
 
-fn run_domain_libraries(
-    cli: &Cli,
-    command: &DomainLibrariesCommand,
-) -> Result<ExitCode, String> {
+fn run_domain_libraries(cli: &Cli, command: &DomainLibrariesCommand) -> Result<ExitCode, String> {
     let environment = resolve_environment(cli)?;
     let mut config = environment.domain_libraries.clone();
     match command {
@@ -406,7 +403,8 @@ fn run_domain_libraries(
             );
         }
         DomainLibrariesCommand::ClearCache => {
-            let removed = domain_libraries::remove_domain_libraries(&environment.domain_libraries_paths)?;
+            let removed =
+                domain_libraries::remove_domain_libraries(&environment.domain_libraries_paths)?;
             if removed {
                 println!(
                     "Cleared materialized domain libraries data from the spec42 data directory."

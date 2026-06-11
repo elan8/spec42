@@ -111,7 +111,10 @@ fn private_wildcard_import_does_not_emit_visibility_violation() {
     assert!(
         !has_code(&diags, "visibility_violation"),
         "private wildcard import for internal use must not warn, got {:?}",
-        diags.iter().map(|d| (&d.code, &d.message)).collect::<Vec<_>>()
+        diags
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
     );
 }
 
@@ -129,7 +132,10 @@ fn action_defs_in_part_body_do_not_emit_duplicate_namespace_member() {
     assert!(
         !has_code(&diags, "duplicate_namespace_member"),
         "action def siblings must not collide as name 'def', got {:?}",
-        diags.iter().map(|d| (&d.code, &d.message)).collect::<Vec<_>>()
+        diags
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
     );
 }
 
@@ -148,7 +154,10 @@ fn requirement_def_id_dialect_does_not_emit_duplicate_namespace_member() {
     assert!(
         !has_code(&diags, "duplicate_namespace_member"),
         "legacy requirement def id dialect must not collide as name 'def', got {:?}",
-        diags.iter().map(|d| (&d.code, &d.message)).collect::<Vec<_>>()
+        diags
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
     );
 }
 

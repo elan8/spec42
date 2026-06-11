@@ -50,7 +50,9 @@ fn find_action_def_for_diagram<'a>(
         return candidates.into_iter().next();
     }
     let qualified_suffix = format!("{package}::{}", diagram.name);
-    candidates.into_iter().find(|node| node.id.qualified_name == qualified_suffix)
+    candidates
+        .into_iter()
+        .find(|node| node.id.qualified_name == qualified_suffix)
 }
 
 fn collect_action_step_nodes<'a>(
@@ -158,11 +160,12 @@ fn enrich_diagram(diagram: &mut ActivityDiagramDto, graph: &SemanticGraph) {
         })
         .collect();
 
-    let graph_action_names: HashSet<String> = graph_actions.iter().map(|a| a.name.clone()).collect();
+    let graph_action_names: HashSet<String> =
+        graph_actions.iter().map(|a| a.name.clone()).collect();
 
-    diagram.actions.retain(|action| {
-        action.range.is_some() || !graph_action_names.contains(&action.name)
-    });
+    diagram
+        .actions
+        .retain(|action| action.range.is_some() || !graph_action_names.contains(&action.name));
 
     for graph_action in graph_actions {
         if let Some(existing) = diagram
@@ -223,10 +226,8 @@ fn propagate_interface_parameters(
     if inputs.is_empty() && outputs.is_empty() {
         return;
     }
-    diagram.interface = Some(crate::semantic::extracted_model::ActivityInterfaceDto {
-        inputs,
-        outputs,
-    });
+    diagram.interface =
+        Some(crate::semantic::extracted_model::ActivityInterfaceDto { inputs, outputs });
 }
 
 /// Merges graph-backed action steps and control flows into AST-extracted activity diagrams.

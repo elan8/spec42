@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
-    Expression, RequirementDefBody, RequirementDefBodyElement, UseCaseDefBody, UseCaseDefBodyElement,
+    Expression, RequirementDefBody, RequirementDefBodyElement, UseCaseDefBody,
+    UseCaseDefBodyElement,
 };
 use url::Url;
 
@@ -380,18 +381,16 @@ pub(super) fn build_from_verification_body(
     }
 
     if let Some(parent_node) = g.get_node_mut(parent_id) {
-        parent_node.attributes.insert(
-            "hasSubject".to_string(),
-            serde_json::json!(has_subject),
-        );
+        parent_node
+            .attributes
+            .insert("hasSubject".to_string(), serde_json::json!(has_subject));
         parent_node.attributes.insert(
             "objectiveCount".to_string(),
             serde_json::json!(objective_count),
         );
-        parent_node.attributes.insert(
-            "verdictCount".to_string(),
-            serde_json::json!(verdict_count),
-        );
+        parent_node
+            .attributes
+            .insert("verdictCount".to_string(), serde_json::json!(verdict_count));
         parent_node.attributes.insert(
             "thenActionCount".to_string(),
             serde_json::json!(then_action_count),

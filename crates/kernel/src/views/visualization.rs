@@ -536,8 +536,8 @@ mod tests {
 
     #[test]
     fn webshop_sequence_view_includes_sequence_diagrams() {
-        let workspace_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("../../examples/webshop");
+        let workspace_path =
+            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/webshop");
         let response = build_sysml_visualization_for_paths(
             &workspace_path,
             Some(&workspace_path),
@@ -559,8 +559,8 @@ mod tests {
 
     #[test]
     fn semantic_core_graph_first_output_matches_kernel_on_core_view_metadata() {
-        let workspace_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("../../examples/webshop");
+        let workspace_path =
+            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/webshop");
         let requested_view = "general-view";
         let requested_selected_view = Some("GeneralView");
 

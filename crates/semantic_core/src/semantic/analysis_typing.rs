@@ -4,9 +4,7 @@ use std::collections::HashSet;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
-use crate::semantic::relationships::{
-    resolve_type_target_in_workspace, SPECIALIZES_TARGET_KINDS,
-};
+use crate::semantic::relationships::{resolve_type_target_in_workspace, SPECIALIZES_TARGET_KINDS};
 
 const ANALYSIS_EXPRESSION_KEY: &str = "analysisExpression";
 const ANALYSIS_CONSTRAINTS_KEY: &str = "analysisConstraints";
@@ -53,11 +51,7 @@ pub fn propagate_typed_requirement_context(graph: &mut SemanticGraph) {
         let Some(def_node) = graph.get_node(&def_id).cloned() else {
             continue;
         };
-        let Some(constraints) = def_node
-            .attributes
-            .get(ANALYSIS_CONSTRAINTS_KEY)
-            .cloned()
-        else {
+        let Some(constraints) = def_node.attributes.get(ANALYSIS_CONSTRAINTS_KEY).cloned() else {
             continue;
         };
         if let Some(usage_mut) = graph.get_node_mut(&node_id) {
@@ -404,10 +398,7 @@ pub fn aggregate_assert_constraints(graph: &mut SemanticGraph) {
             .unwrap_or_default()
             .into_iter()
             .filter(|entry| {
-                entry
-                    .get("kind")
-                    .and_then(|value| value.as_str())
-                    != Some("assert_constraint")
+                entry.get("kind").and_then(|value| value.as_str()) != Some("assert_constraint")
             })
             .collect();
         merged.extend(assert_constraints);

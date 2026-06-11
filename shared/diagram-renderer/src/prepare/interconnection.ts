@@ -244,13 +244,18 @@ function portsForPart(ports: UnknownRecord[], part: UnknownRecord): Array<Record
 
 export function prepareInterconnection(visualization: VisualizationPayload): PreparedView {
   const ibd = asRecord(visualization.ibd);
-  const selectedName = asString(visualization.selectedViewName ?? ibd.defaultRoot);
   const rootViews = asRecord(ibd.rootViews);
   const rootKeys = Object.keys(rootViews);
+  const selectedIbdRoot = asString(visualization.selectedIbdRoot);
+  const selectedViewName = asString(visualization.selectedViewName);
+  const hasExplicitSysmlView = Boolean(asString(visualization.selectedView));
+  const selectedName = selectedIbdRoot ||
+    (selectedViewName && (rootKeys.length === 0 || rootViews[selectedViewName]) ? selectedViewName : "") ||
+    (!hasExplicitSysmlView ? asString(ibd.defaultRoot) : "");
   const scopedName =
     selectedName && rootViews[selectedName]
       ? selectedName
-      : rootKeys.length > 0
+      : !hasExplicitSysmlView && rootKeys.length > 0
         ? rootKeys[0]
         : selectedName;
   const scoped = scopedName && rootViews[scopedName] ? asRecord(rootViews[scopedName]) : ibd;

@@ -59,9 +59,7 @@ fn engineering_prefixed_units_resolve_from_indexed_qudv_catalog() {
     let catalog_doc = SysmlDocument {
         uri: catalog_uri.clone(),
         content: catalog_content.clone(),
-        path_hint: Some(
-            "Domain Libraries/Quantities and Units/SI.sysml".to_string(),
-        ),
+        path_hint: Some("Domain Libraries/Quantities and Units/SI.sysml".to_string()),
         source_kind: SysmlDocumentSourceKind::Library,
         sha256: None,
         byte_size: None,
@@ -78,8 +76,8 @@ fn engineering_prefixed_units_resolve_from_indexed_qudv_catalog() {
     let usage_uri = usage_doc.uri.clone();
 
     let indexed_sources = [(&catalog_uri, catalog_content.as_str())];
-    let (graph, _) = build_semantic_graph_from_documents(&[catalog_doc, usage_doc])
-        .expect("semantic graph");
+    let (graph, _) =
+        build_semantic_graph_from_documents(&[catalog_doc, usage_doc]).expect("semantic graph");
 
     let registry = UnitRegistry::build_unified(&graph, &indexed_sources, &[]);
     for unit in ["kV", "MW", "MVA", "MWh", "km", "SI::s"] {
@@ -116,9 +114,7 @@ fn mismatched_unit_dimension_emits_incompatible_not_unknown() {
     let catalog_doc = SysmlDocument {
         uri: catalog_uri.clone(),
         content: catalog_content.clone(),
-        path_hint: Some(
-            "Domain Libraries/Quantities and Units/SI.sysml".to_string(),
-        ),
+        path_hint: Some("Domain Libraries/Quantities and Units/SI.sysml".to_string()),
         source_kind: SysmlDocumentSourceKind::Library,
         sha256: None,
         byte_size: None,
@@ -145,8 +141,8 @@ fn mismatched_unit_dimension_emits_incompatible_not_unknown() {
     .expect("usage doc");
     let usage_uri = usage_doc.uri.clone();
     let indexed_sources = [(&catalog_uri, catalog_content.as_str())];
-    let (graph, _) = build_semantic_graph_from_documents(&[catalog_doc, usage_doc])
-        .expect("semantic graph");
+    let (graph, _) =
+        build_semantic_graph_from_documents(&[catalog_doc, usage_doc]).expect("semantic graph");
     let diagnostics = collect_diagnostics_from_graph(
         &graph,
         &usage_uri,
@@ -162,7 +158,9 @@ fn mismatched_unit_dimension_emits_incompatible_not_unknown() {
         "expected incompatible_unit_dimension for PowerValue with [km]"
     );
     assert!(
-        !diagnostics.iter().any(|diag| diag.code == "unknown_unit_symbol"),
+        !diagnostics
+            .iter()
+            .any(|diag| diag.code == "unknown_unit_symbol"),
         "km should be recognized: {diagnostics:?}"
     );
 }
@@ -170,9 +168,8 @@ fn mismatched_unit_dimension_emits_incompatible_not_unknown() {
 #[test]
 fn sysml_powersystems_check_has_no_engineering_unit_catalog_warnings_when_stdlib_present() {
     let powersystems_root = Path::new(r"C:\Git\sysml-powersystems\sysml");
-    let stdlib_root = Path::new(
-        r"C:\Git\sysml-v2-release\sysml.library\Domain Libraries\Quantities and Units",
-    );
+    let stdlib_root =
+        Path::new(r"C:\Git\sysml-v2-release\sysml.library\Domain Libraries\Quantities and Units");
     if !powersystems_root.is_dir() || !stdlib_root.is_dir() {
         return;
     }
@@ -206,7 +203,9 @@ fn sysml_powersystems_check_has_no_engineering_unit_catalog_warnings_when_stdlib
         let content = std::fs::read_to_string(path).expect("read workspace");
         let doc = SysmlDocument::from_memory_path(
             "powersystems",
-            path.file_name().and_then(|n| n.to_str()).unwrap_or("model.sysml"),
+            path.file_name()
+                .and_then(|n| n.to_str())
+                .unwrap_or("model.sysml"),
             content,
             SysmlDocumentSourceKind::Workspace,
             None,
@@ -223,8 +222,7 @@ fn sysml_powersystems_check_has_no_engineering_unit_catalog_warnings_when_stdlib
         return;
     };
 
-    let (graph, _) =
-        build_semantic_graph_from_documents(&documents).expect("powersystems graph");
+    let (graph, _) = build_semantic_graph_from_documents(&documents).expect("powersystems graph");
     let indexed_refs: Vec<(&Url, &str)> = documents
         .iter()
         .map(|doc| (&doc.uri, doc.content.as_str()))

@@ -10,7 +10,8 @@ use crate::stdlib::install_path_is_ready;
 
 pub const DEFAULT_DOMAIN_LIBRARIES_VERSION: &str = env!("SPEC42_DOMAIN_LIBRARIES_VERSION");
 pub const DEFAULT_DOMAIN_LIBRARIES_REPO: &str = env!("SPEC42_DOMAIN_LIBRARIES_REPO");
-pub const DEFAULT_DOMAIN_LIBRARIES_CONTENT_PATH: &str = env!("SPEC42_DOMAIN_LIBRARIES_CONTENT_PATH");
+pub const DEFAULT_DOMAIN_LIBRARIES_CONTENT_PATH: &str =
+    env!("SPEC42_DOMAIN_LIBRARIES_CONTENT_PATH");
 pub const EMBEDDED_DOMAIN_LIBRARIES_REPO: &str = "embedded";
 
 #[cfg(feature = "embed-domain-libraries")]
@@ -191,9 +192,7 @@ pub fn install_embedded_domain_libraries(
 ) -> Result<DomainLibrariesMetadata, String> {
     #[allow(clippy::const_is_empty)]
     if EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE.is_empty() {
-        return Err(
-            "This spec42 binary was built without embedded domain libraries.".to_string(),
-        );
+        return Err("This spec42 binary was built without embedded domain libraries.".to_string());
     }
     let mut cfg = config.clone();
     cfg.repo = EMBEDDED_DOMAIN_LIBRARIES_REPO.to_string();

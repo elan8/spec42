@@ -147,10 +147,7 @@ pub(super) fn build_from_occurrence_body_element(
         OBE::AssertConstraint(assert_node) => {
             add_assert_constraint_member(g, uri, parent_id, assert_node);
         }
-        OBE::Doc(_)
-        | OBE::Error(_)
-        | OBE::Annotation(_)
-        | OBE::Other(_) => {}
+        OBE::Doc(_) | OBE::Error(_) | OBE::Annotation(_) | OBE::Other(_) => {}
     }
 }
 

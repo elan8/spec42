@@ -376,9 +376,21 @@ pub(super) fn classify_expression(
             }
             let left_class = classify_expression(left);
             let right_class = classify_expression(right);
-            if matches!(left_class, ExprClass::Boolean | ExprClass::Classification | ExprClass::TypeCheck | ExprClass::Comparison | ExprClass::Logical)
-                || matches!(right_class, ExprClass::Boolean | ExprClass::Classification | ExprClass::TypeCheck | ExprClass::Comparison | ExprClass::Logical)
-            {
+            if matches!(
+                left_class,
+                ExprClass::Boolean
+                    | ExprClass::Classification
+                    | ExprClass::TypeCheck
+                    | ExprClass::Comparison
+                    | ExprClass::Logical
+            ) || matches!(
+                right_class,
+                ExprClass::Boolean
+                    | ExprClass::Classification
+                    | ExprClass::TypeCheck
+                    | ExprClass::Comparison
+                    | ExprClass::Logical
+            ) {
                 return ExprClass::Boolean;
             }
             ExprClass::Unknown
@@ -427,10 +439,9 @@ pub(super) fn expression_to_debug_string(
         Expression::LiteralString(s) => format!("{s:?}"),
         Expression::LiteralBoolean(b) => b.to_string(),
         Expression::Classification { metaclass } => format!("@{metaclass}"),
-        Expression::MetaCast { base, metaclass } => format!(
-            "{} meta {metaclass}",
-            expression_to_debug_string(base)
-        ),
+        Expression::MetaCast { base, metaclass } => {
+            format!("{} meta {metaclass}", expression_to_debug_string(base))
+        }
         Expression::TypeCheck {
             kind,
             operand,
@@ -442,21 +453,18 @@ pub(super) fn expression_to_debug_string(
                 sysml_v2_parser::TypeCheckKind::As => "as",
             };
             match operand {
-                Some(operand) => format!(
-                    "{} {op} {type_name}",
-                    expression_to_debug_string(operand)
-                ),
+                Some(operand) => {
+                    format!("{} {op} {type_name}", expression_to_debug_string(operand))
+                }
                 None => format!("{op} {type_name}"),
             }
         }
-        Expression::Select { base, selector } => format!(
-            "{}.?{selector}",
-            expression_to_debug_string(base)
-        ),
-        Expression::Collect { base, selector } => format!(
-            "{}.**{selector}",
-            expression_to_debug_string(base)
-        ),
+        Expression::Select { base, selector } => {
+            format!("{}.?{selector}", expression_to_debug_string(base))
+        }
+        Expression::Collect { base, selector } => {
+            format!("{}.**{selector}", expression_to_debug_string(base))
+        }
         Expression::FeatureRef(s) => s.clone(),
         Expression::MemberAccess(box_base, member) => {
             format!("{}.{}", expression_to_debug_string(box_base), member)

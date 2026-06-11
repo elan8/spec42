@@ -5,12 +5,12 @@ use url::Url;
 
 use super::use_case;
 use super::{add_node_and_recurse, expressions, qualified_name_for_node};
-use crate::semantic::ast_util::span_to_range;
-use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::NodeId;
 use crate::semantic::analysis_typing::{
     inherited_case_expression, inherited_case_result_qualified, strip_analysis_return_body,
 };
+use crate::semantic::ast_util::span_to_range;
+use crate::semantic::graph::SemanticGraph;
+use crate::semantic::model::NodeId;
 use crate::semantic::relationships::add_typing_edge_if_exists;
 
 pub(super) fn build_from_analysis_body(
@@ -321,10 +321,9 @@ pub(super) fn build_from_analysis_body(
         })
         .unwrap_or(0);
     if let Some(parent_node) = g.get_node_mut(parent_id) {
-        parent_node.attributes.insert(
-            "hasSubject".to_string(),
-            serde_json::json!(has_subject),
-        );
+        parent_node
+            .attributes
+            .insert("hasSubject".to_string(), serde_json::json!(has_subject));
         parent_node.attributes.insert(
             "objectiveCount".to_string(),
             serde_json::json!(objective_count),

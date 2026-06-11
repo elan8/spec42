@@ -139,8 +139,7 @@ fn embed_domain_libraries() {
     println!("cargo:rerun-if-env-changed=SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP");
     println!("cargo:rerun-if-env-changed=SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR");
 
-    let local_cache_relative_path =
-        format!("cache/sysml-domain-libraries-{}.zip", config.version);
+    let local_cache_relative_path = format!("cache/sysml-domain-libraries-{}.zip", config.version);
     println!("cargo:rerun-if-changed={local_cache_relative_path}");
 
     let out_dir = std::env::var("OUT_DIR").expect("OUT_DIR");
@@ -164,12 +163,11 @@ fn embed_domain_libraries() {
     }
 
     if let Some(source_dir) = resolve_domain_libraries_source_dir() {
-        repack_domain_libraries_from_dir(&source_dir, &config.content_path, &out_zip).unwrap_or_else(
-            |e| {
+        repack_domain_libraries_from_dir(&source_dir, &config.content_path, &out_zip)
+            .unwrap_or_else(|e| {
                 eprintln!("spec42 build: failed to repack domain libraries from directory: {e}");
                 process::exit(1);
-            },
-        );
+            });
         return;
     }
 
@@ -196,9 +194,7 @@ fn embed_domain_libraries() {
         eprintln!(
             "spec42 build: set SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP, SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR, place a bundle at crates/server/{local_cache_relative_path}, or check out ../sysml-domain-libraries next to the repo."
         );
-        eprintln!(
-            "spec42 build: download via scripts/fetch-domain-libraries-bundle.sh"
-        );
+        eprintln!("spec42 build: download via scripts/fetch-domain-libraries-bundle.sh");
         eprintln!(
             "spec42 build: for development without embedded domain libraries, run `cargo test -p spec42 --no-default-features`."
         );
@@ -213,12 +209,11 @@ fn embed_domain_libraries() {
         process::exit(1);
     });
 
-    repack_domain_libraries_from_zip(&full_zip_bytes, &config.content_path, &out_zip).unwrap_or_else(
-        |e| {
+    repack_domain_libraries_from_zip(&full_zip_bytes, &config.content_path, &out_zip)
+        .unwrap_or_else(|e| {
             eprintln!("spec42 build: failed to repack domain libraries: {e}");
             process::exit(1);
-        },
-    );
+        });
 }
 
 fn load_stdlib_config() -> StandardLibraryConfig {
@@ -434,7 +429,8 @@ fn repack_domain_libraries_from_zip(
     out_path: &Path,
 ) -> Result<(), String> {
     let cursor = Cursor::new(full_zip_bytes);
-    let mut archive = ZipArchive::new(cursor).map_err(|e| format!("open domain bundle zip: {e}"))?;
+    let mut archive =
+        ZipArchive::new(cursor).map_err(|e| format!("open domain bundle zip: {e}"))?;
     if archive.is_empty() {
         return Err("domain bundle zip is empty".to_string());
     }
@@ -497,7 +493,14 @@ fn repack_domain_libraries_from_dir(
     let options = SimpleFileOptions::default();
     let out_prefix = format!("{DOMAIN_EMBED_ROOT}/{content_path}/");
     let mut count = 0usize;
-    collect_domain_files(source_dir, source_dir, &out_prefix, &mut writer, options, &mut count)?;
+    collect_domain_files(
+        source_dir,
+        source_dir,
+        &out_prefix,
+        &mut writer,
+        options,
+        &mut count,
+    )?;
     writer.finish().map_err(|e| format!("finish zip: {e}"))?;
     if count == 0 {
         return Err(format!(
@@ -516,7 +519,8 @@ fn collect_domain_files(
     options: SimpleFileOptions,
     count: &mut usize,
 ) -> Result<(), String> {
-    for entry in fs::read_dir(current).map_err(|e| format!("read_dir {}: {e}", current.display()))?
+    for entry in
+        fs::read_dir(current).map_err(|e| format!("read_dir {}: {e}", current.display()))?
     {
         let entry = entry.map_err(|e| format!("dir entry: {e}"))?;
         let path = entry.path();
@@ -539,8 +543,7 @@ fn collect_domain_files(
         writer
             .start_file(&out_name, options)
             .map_err(|e| format!("start_file {out_name}: {e}"))?;
-        let mut file =
-            File::open(&path).map_err(|e| format!("open {}: {e}", path.display()))?;
+        let mut file = File::open(&path).map_err(|e| format!("open {}: {e}", path.display()))?;
         std::io::copy(&mut file, writer).map_err(|e| format!("copy {out_name}: {e}"))?;
         *count += 1;
     }

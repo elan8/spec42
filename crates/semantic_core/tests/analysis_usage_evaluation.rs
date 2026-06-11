@@ -78,18 +78,13 @@ fn build_graph() -> semantic_core::SemanticGraph {
         None,
     )
     .expect("consumer uri");
-    let (mut graph, _) =
-        build_semantic_graph_from_documents(&[architecture, library, consumer])
-            .expect("semantic graph");
+    let (mut graph, _) = build_semantic_graph_from_documents(&[architecture, library, consumer])
+        .expect("semantic graph");
     evaluate_expressions(&mut graph);
     graph
 }
 
-fn node_attr(
-    graph: &semantic_core::SemanticGraph,
-    qualified: &str,
-    key: &str,
-) -> Option<String> {
+fn node_attr(graph: &semantic_core::SemanticGraph, qualified: &str, key: &str) -> Option<String> {
     graph
         .node_ids_by_qualified_name
         .get(qualified)?
@@ -126,11 +121,19 @@ fn typed_analysis_usage_inherits_expression_and_evaluates_successfully() {
         "expected propagated analysis expression on usage"
     );
     assert_eq!(
-        node_attr(&graph, "AnalysisCases::powerRun", "analysisEvaluationStatus"),
+        node_attr(
+            &graph,
+            "AnalysisCases::powerRun",
+            "analysisEvaluationStatus"
+        ),
         Some("ok".to_string())
     );
     assert_eq!(
-        node_attr(&graph, "AnalysisCases::powerRun", "analysisConstraintPassed"),
+        node_attr(
+            &graph,
+            "AnalysisCases::powerRun",
+            "analysisConstraintPassed"
+        ),
         Some("true".to_string())
     );
 }

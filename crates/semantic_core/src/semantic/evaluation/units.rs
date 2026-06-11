@@ -592,8 +592,7 @@ fn parse_linear_unit_def(line: &str) -> Option<UnitDef> {
 
 fn is_qudv_catalog_path_hint(path: &str) -> bool {
     let normalized = path.replace('\\', "/");
-    normalized.contains("Quantities%20and%20Units")
-        || normalized.contains("Quantities and Units")
+    normalized.contains("Quantities%20and%20Units") || normalized.contains("Quantities and Units")
 }
 
 fn should_ingest_unit_library_file(path: &Path) -> bool {

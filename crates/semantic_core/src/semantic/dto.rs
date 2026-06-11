@@ -3,9 +3,7 @@
 use crate::semantic::text_span::TextRange;
 use serde::{Deserialize, Serialize};
 
-use crate::semantic::extracted_model::{
-    ActivityDiagramDto, SequenceDiagramDto, StateMachineDto,
-};
+use crate::semantic::extracted_model::{ActivityDiagramDto, SequenceDiagramDto, StateMachineDto};
 use crate::semantic::ibd::IbdDataDto;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

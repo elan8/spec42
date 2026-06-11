@@ -23,11 +23,7 @@ pub struct DiagnosticsHostContext<'a> {
 pub trait SemanticCheckProvider: Send + Sync {
     /// Returns LSP diagnostics for the given document using the semantic graph.
     fn compute_diagnostics(&self, graph: &SemanticGraph, uri: &Url) -> Vec<Diagnostic> {
-        self.compute_diagnostics_with_context(
-            graph,
-            uri,
-            DiagnosticsHostContext::default(),
-        )
+        self.compute_diagnostics_with_context(graph, uri, DiagnosticsHostContext::default())
     }
 
     /// Returns LSP diagnostics with optional in-memory indexed sources for unit catalogs.

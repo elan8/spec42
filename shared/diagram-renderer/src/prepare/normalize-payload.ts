@@ -233,11 +233,12 @@ export function normalizeVisualizationPayload(data: Record<string, unknown> | nu
                 const explicitSelection = (typeof data.selectedIbdRoot === 'string' && data.selectedIbdRoot.trim().length > 0)
                     ? data.selectedIbdRoot
                     : null;
+                const allowImplicitIbdRootSelection = !data.selectedView;
                 const selectedRoot = explicitSelection && rootViews[explicitSelection]
                     ? explicitSelection
-                    : (ibd.defaultRoot && availableRoots.includes(ibd.defaultRoot) && rootViews[ibd.defaultRoot]
+                    : (allowImplicitIbdRootSelection && ibd.defaultRoot && availableRoots.includes(ibd.defaultRoot) && rootViews[ibd.defaultRoot]
                         ? ibd.defaultRoot
-                        : (availableRoots[0] || null));
+                        : (allowImplicitIbdRootSelection ? (availableRoots[0] || null) : null));
                 const selectedRootView = selectedRoot ? rootViews[selectedRoot] : null;
                 const selectedParts = Array.isArray(selectedRootView?.parts) ? selectedRootView.parts : ibdParts;
                 const selectedPorts = Array.isArray(selectedRootView?.ports) ? selectedRootView.ports : ibdPorts;

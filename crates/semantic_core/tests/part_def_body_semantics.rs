@@ -1,6 +1,4 @@
-use semantic_core::{
-    build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind,
-};
+use semantic_core::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind};
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
     SysmlDocument::from_memory_path(
@@ -39,13 +37,10 @@ fn part_def_enum_usage_materializes_inner_attribute() {
         .find(|child| child.element_kind == "enumeration" && child.name == "status")
         .expect("enumeration usage");
     assert!(
-        graph
-            .children_of(enum_usage)
-            .iter()
-            .any(|child| {
-                (child.element_kind == "attribute" || child.element_kind == "attribute def")
-                    && child.name == "code"
-            }),
+        graph.children_of(enum_usage).iter().any(|child| {
+            (child.element_kind == "attribute" || child.element_kind == "attribute def")
+                && child.name == "code"
+        }),
         "expected attribute under enumeration usage"
     );
 }
@@ -75,13 +70,10 @@ fn part_def_item_usage_materializes_inner_attribute() {
         .find(|child| child.element_kind == "item" && child.name == "cargo")
         .expect("item usage");
     assert!(
-        graph
-            .children_of(item_usage)
-            .iter()
-            .any(|child| {
-                (child.element_kind == "attribute" || child.element_kind == "attribute def")
-                    && child.name == "weight"
-            }),
+        graph.children_of(item_usage).iter().any(|child| {
+            (child.element_kind == "attribute" || child.element_kind == "attribute def")
+                && child.name == "weight"
+        }),
         "expected attribute under item usage"
     );
 }
@@ -111,13 +103,10 @@ fn part_def_nested_part_def_materializes_as_child_of_part_def() {
         .expect("nested part def");
     assert_eq!(cell.parent_id.as_ref(), Some(&accumulator.id));
     assert!(
-        graph
-            .children_of(&cell)
-            .iter()
-            .any(|child| {
-                (child.element_kind == "attribute" || child.element_kind == "attribute def")
-                    && child.name == "capacity"
-            }),
+        graph.children_of(&cell).iter().any(|child| {
+            (child.element_kind == "attribute" || child.element_kind == "attribute def")
+                && child.name == "capacity"
+        }),
         "expected capacity attribute under nested part def"
     );
 }
@@ -146,13 +135,10 @@ fn part_def_nested_item_def_materializes_as_child_of_part_def() {
         .expect("nested item def");
     assert_eq!(energy.parent_id.as_ref(), Some(&accumulator.id));
     assert!(
-        graph
-            .children_of(&accumulator)
-            .iter()
-            .any(|child| {
-                (child.element_kind == "attribute" || child.element_kind == "attribute def")
-                    && child.name == "mass"
-            }),
+        graph.children_of(&accumulator).iter().any(|child| {
+            (child.element_kind == "attribute" || child.element_kind == "attribute def")
+                && child.name == "mass"
+        }),
         "expected mass attribute as sibling of nested item def"
     );
 }
@@ -181,13 +167,10 @@ fn part_def_nested_item_def_body_materializes_inner_attribute() {
         .find(|child| child.element_kind == "item def" && child.name == "Energy")
         .expect("nested item def");
     assert!(
-        graph
-            .children_of(&energy)
-            .iter()
-            .any(|child| {
-                (child.element_kind == "attribute" || child.element_kind == "attribute def")
-                    && child.name == "density"
-            }),
+        graph.children_of(&energy).iter().any(|child| {
+            (child.element_kind == "attribute" || child.element_kind == "attribute def")
+                && child.name == "density"
+        }),
         "expected attribute under nested item def body"
     );
 }

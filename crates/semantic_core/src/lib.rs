@@ -1,5 +1,6 @@
 pub mod semantic;
 
+pub use semantic::activity_graph::enrich_activity_diagrams_from_graph;
 pub use semantic::diagnostics::{
     collect_diagnostics_from_graph, collect_untyped_part_usage_diagnostics,
     missing_library_context_diagnostic, DiagnosticRelatedInfo, DiagnosticSeverity,
@@ -20,11 +21,10 @@ pub use semantic::explicit_views::{
     renderer_view_for_view_type, EvaluatedView, ExposeSpec, FilterExpr, ViewCatalog,
     ViewDefinitionSpec, ViewUsageSpec,
 };
+pub use semantic::extracted_model::extract_activity_diagrams;
 pub use semantic::graph::{PendingExpressionRelationship, PendingRelationship, SemanticGraph};
 pub use semantic::graph_builder::build_graph_from_doc;
-pub use semantic::ibd::{
-    build_ibd_for_uri, finalize_merged_ibd_connectors, merge_ibd_payloads,
-};
+pub use semantic::ibd::{build_ibd_for_uri, finalize_merged_ibd_connectors, merge_ibd_payloads};
 pub use semantic::import_resolution::{
     resolve_imported_node_ids_for_simple_name, resolve_type_reference_targets,
 };
@@ -50,11 +50,9 @@ pub use semantic::source::providers::filesystem::FileSystemDocumentProvider;
 pub use semantic::source::{
     InMemoryDocumentProvider, SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind,
 };
+pub use semantic::state_views::build_workspace_state_machines;
 pub use semantic::text_span::{TextPosition, TextRange};
 pub use semantic::visualization_entry::build_sysml_visualization_from_graph;
-pub use semantic::activity_graph::enrich_activity_diagrams_from_graph;
-pub use semantic::extracted_model::extract_activity_diagrams;
-pub use semantic::state_views::build_workspace_state_machines;
 pub use semantic::visualization_workspace::{
     attach_ibd_package_container_groups, build_ibd_package_container_groups,
     build_package_groups_from_graph, build_sysml_visualization_from_graph_and_documents,

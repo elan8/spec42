@@ -43,15 +43,19 @@ fn state_def_has_initial_transition(
     state_def: &SemanticNode,
 ) -> bool {
     let state_def_qn = state_def.id.qualified_name.as_str();
-    if graph.edges_for_uri_as_strings(uri).iter().any(|(source, _, kind, _)| {
-        *kind == RelationshipKind::InitialState
-            && (source == state_def_qn
-                || graph
-                    .get_node(&crate::NodeId::new(uri, source.clone()))
-                    .and_then(|source_node| state_def_ancestor(graph, source_node))
-                    .as_ref()
-                    == Some(&state_def.id.qualified_name))
-    }) {
+    if graph
+        .edges_for_uri_as_strings(uri)
+        .iter()
+        .any(|(source, _, kind, _)| {
+            *kind == RelationshipKind::InitialState
+                && (source == state_def_qn
+                    || graph
+                        .get_node(&crate::NodeId::new(uri, source.clone()))
+                        .and_then(|source_node| state_def_ancestor(graph, source_node))
+                        .as_ref()
+                        == Some(&state_def.id.qualified_name))
+        })
+    {
         return true;
     }
     graph.nodes_for_uri(uri).into_iter().any(|node| {
@@ -196,9 +200,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         }
         let source_context = state_def_ancestor(graph, &source_node);
         let target_context = state_def_ancestor(graph, &target_node);
-        if source_context.is_some()
-            && target_context.is_some()
-            && source_context != target_context
+        if source_context.is_some() && target_context.is_some() && source_context != target_context
         {
             let key = format!("transition|{}|context", node.id.qualified_name);
             if seen.insert(key) {
@@ -350,7 +352,8 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         if !seen.insert(key) {
             continue;
         }
-        let Some(container_node) = graph.get_node(&crate::NodeId::new(uri, container.clone())) else {
+        let Some(container_node) = graph.get_node(&crate::NodeId::new(uri, container.clone()))
+        else {
             continue;
         };
         diagnostics.push(diag(
@@ -523,7 +526,8 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         if !seen.insert(key) {
             continue;
         }
-        let Some(container_node) = graph.get_node(&crate::NodeId::new(uri, container.clone())) else {
+        let Some(container_node) = graph.get_node(&crate::NodeId::new(uri, container.clone()))
+        else {
             continue;
         };
         diagnostics.push(diag(

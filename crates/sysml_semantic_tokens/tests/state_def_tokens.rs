@@ -48,7 +48,10 @@ fn state_def_body_tokenizes_final_state_and_transition_target() {
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(token_text(content, &decoded, "done"), "final state name");
-    assert!(token_text(content, &decoded, "off"), "transition source/target");
+    assert!(
+        token_text(content, &decoded, "off"),
+        "transition source/target"
+    );
 }
 
 #[test]

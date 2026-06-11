@@ -40,15 +40,19 @@ fn requirement_subject_decl_emits_subject_edge() {
         .find(|child| child.element_kind == "subject")
         .expect("subject child");
 
-    let has_subject_edge = graph
-        .edges_for_uri_as_strings(&uri)
-        .iter()
-        .any(|(src, tgt, kind, _)| {
-            *kind == RelationshipKind::Subject
-                && src == &req.id.qualified_name
-                && tgt == &subject.id.qualified_name
-        });
-    assert!(has_subject_edge, "expected Subject edge from requirement to subject usage");
+    let has_subject_edge =
+        graph
+            .edges_for_uri_as_strings(&uri)
+            .iter()
+            .any(|(src, tgt, kind, _)| {
+                *kind == RelationshipKind::Subject
+                    && src == &req.id.qualified_name
+                    && tgt == &subject.id.qualified_name
+            });
+    assert!(
+        has_subject_edge,
+        "expected Subject edge from requirement to subject usage"
+    );
 }
 
 #[test]
@@ -79,11 +83,15 @@ fn requirement_verify_member_materializes_verified_requirement_node() {
         "expected verified requirement child on requirement def"
     );
 
-    let has_subject_to_runtime = graph.edges_for_uri_as_strings(&uri).iter().any(|(src, tgt, kind, _)| {
-        *kind == RelationshipKind::Subject
-            && src.ends_with("::VerifyPack")
-            && tgt.ends_with("::BatteryRuntime")
-    });
+    let has_subject_to_runtime =
+        graph
+            .edges_for_uri_as_strings(&uri)
+            .iter()
+            .any(|(src, tgt, kind, _)| {
+                *kind == RelationshipKind::Subject
+                    && src.ends_with("::VerifyPack")
+                    && tgt.ends_with("::BatteryRuntime")
+            });
     assert!(
         has_subject_to_runtime,
         "expected Subject edge from verify requirement to verified target"

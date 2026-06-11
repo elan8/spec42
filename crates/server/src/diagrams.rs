@@ -109,9 +109,7 @@ fn export_model_views(
     library_paths: &[PathBuf],
 ) -> Result<DiagramExportSummary, String> {
     if args.selected_view.is_some() {
-        return Err(
-            "--selected-view cannot be combined with --view model-views".to_string(),
-        );
+        return Err("--selected-view cannot be combined with --view model-views".to_string());
     }
     let probe = build_sysml_visualization_for_paths(
         args.path.as_path(),
@@ -145,9 +143,9 @@ fn export_model_views(
             renderer_view,
             Some(candidate.name.as_str()),
         )?;
-        let output_path = args
-            .output
-            .join(format!("{}.{}", safe_file_stem(&candidate.name), extension));
+        let output_path =
+            args.output
+                .join(format!("{}.{}", safe_file_stem(&candidate.name), extension));
         let (body, _) = render_diagram(&payload, args.format)?;
         std::fs::write(&output_path, body)
             .map_err(|err| format!("Failed to write {}: {err}", output_path.display()))?;
@@ -769,7 +767,11 @@ fn build_state_elk_source(payload: &SysmlVisualizationResultDto) -> Result<ElkSo
         children.push(ElkNode {
             id: state.id.clone(),
             width: 220.0,
-            height: if state.kind == "composite" { 120.0 } else { 84.0 },
+            height: if state.kind == "composite" {
+                120.0
+            } else {
+                84.0
+            },
             x: 0.0,
             y: 0.0,
             children: Vec::new(),
@@ -790,8 +792,7 @@ fn build_state_elk_source(payload: &SysmlVisualizationResultDto) -> Result<ElkSo
         );
     }
 
-    let state_ids: std::collections::HashSet<&str> =
-        nodes.keys().map(String::as_str).collect();
+    let state_ids: std::collections::HashSet<&str> = nodes.keys().map(String::as_str).collect();
     let mut edges = Vec::new();
     let mut edge_meta = std::collections::HashMap::new();
     for (index, transition) in machine.transitions.iter().enumerate() {

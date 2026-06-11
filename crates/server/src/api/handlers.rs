@@ -5,6 +5,7 @@ use axum::http::{header, HeaderMap, HeaderValue, StatusCode};
 use axum::response::{IntoResponse, Response};
 use axum::Json;
 
+use crate::ai_tools::perform_explain_diagnostic;
 use crate::ai_tools::{ExplainDiagnosticArgs, ModelSummaryArgs};
 use crate::api::error::{ApiError, ApiResult};
 use crate::api::paths::resolve_workspace_path;
@@ -18,7 +19,6 @@ use crate::api::ApiServerState;
 use crate::cli::{CheckArgs, OutputFormat};
 use crate::diagrams;
 use crate::mcp::diagnostic_catalog;
-use crate::ai_tools::perform_explain_diagnostic;
 use crate::{
     perform_check, perform_check_with_semantics, perform_doctor, perform_model_summary,
     SemanticModelNode, SemanticModelProjection, SemanticModelRelationship,
@@ -76,7 +76,9 @@ pub async fn meta(State(state): State<Arc<ApiServerState>>) -> Json<MetaResponse
     })
 }
 
-pub async fn doctor(State(state): State<Arc<ApiServerState>>) -> ApiResult<Json<DoctorHttpResponse>> {
+pub async fn doctor(
+    State(state): State<Arc<ApiServerState>>,
+) -> ApiResult<Json<DoctorHttpResponse>> {
     let cli = state.cli.clone();
     let report = tokio::task::spawn_blocking(move || perform_doctor(&cli))
         .await
@@ -256,9 +258,7 @@ pub async fn element_by_name(
         .find(|node| node.qualified_name == qualified_name)
         .cloned()
         .ok_or_else(|| {
-            ApiError::not_found(format!(
-                "No element with qualified name '{qualified_name}'"
-            ))
+            ApiError::not_found(format!("No element with qualified name '{qualified_name}'"))
         })?;
 
     let incoming: Vec<SemanticModelRelationship> = projection
@@ -307,10 +307,7 @@ pub async fn diagrams_export(
     .map_err(ApiError::from_string)?;
 
     let mut headers = HeaderMap::new();
-    headers.insert(
-        header::CONTENT_TYPE,
-        HeaderValue::from_static(content_type),
-    );
+    headers.insert(header::CONTENT_TYPE, HeaderValue::from_static(content_type));
     Ok((StatusCode::OK, headers, body_text).into_response())
 }
 

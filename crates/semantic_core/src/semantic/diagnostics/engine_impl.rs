@@ -12,8 +12,8 @@ use crate::semantic::diagnostics::checks::{
 };
 use crate::semantic::diagnostics::helpers::*;
 use crate::semantic::diagnostics::relationship_endpoint_messages::builder_relationship_diagnostic_to_emit;
-use crate::semantic::diagnostics::types::{DiagnosticRelatedInfo, DiagnosticSeverity};
 use crate::semantic::diagnostics::types::DiagnosticsOptions;
+use crate::semantic::diagnostics::types::{DiagnosticRelatedInfo, DiagnosticSeverity};
 use crate::{
     resolve_inherited_member_via_type, RelationshipKind, ResolveResult, SemanticDiagnostic,
     SemanticGraph, UnitRegistry,
@@ -37,8 +37,7 @@ pub fn compute_semantic_diagnostics(
     let mut diagnostics = Vec::new();
     let total_start = Instant::now();
     let mut section_timings = Vec::<(String, u128, usize)>::new();
-    let unit_registry =
-        UnitRegistry::build_unified(graph, options.indexed_sources, &[]);
+    let unit_registry = UnitRegistry::build_unified(graph, options.indexed_sources, &[]);
     // 0) Explicit builder diagnostics (e.g. ambiguous endpoint resolution).
     let t0 = Instant::now();
     let d0 = diagnostics.len();
@@ -664,9 +663,13 @@ pub fn compute_semantic_diagnostics(
     // 15) P1 expression/value/unit conformance.
     let t15 = Instant::now();
     let d15 = diagnostics.len();
-    diagnostics.extend(expression_conformance::collect_expression_conformance_diagnostics(
-        graph, uri, &unit_registry,
-    ));
+    diagnostics.extend(
+        expression_conformance::collect_expression_conformance_diagnostics(
+            graph,
+            uri,
+            &unit_registry,
+        ),
+    );
     section_timings.push((
         "15_expression_conformance".to_string(),
         t15.elapsed().as_millis(),
@@ -676,9 +679,7 @@ pub fn compute_semantic_diagnostics(
     // 16) P2 behavior conformance (perform, transitions, succession).
     let t16 = Instant::now();
     let d16 = diagnostics.len();
-    diagnostics.extend(behavior_conformance::collect_behavior_conformance_diagnostics(
-        graph, uri,
-    ));
+    diagnostics.extend(behavior_conformance::collect_behavior_conformance_diagnostics(graph, uri));
     section_timings.push((
         "16_behavior_conformance".to_string(),
         t16.elapsed().as_millis(),
@@ -689,9 +690,7 @@ pub fn compute_semantic_diagnostics(
     let t17 = Instant::now();
     let d17 = diagnostics.len();
     diagnostics.extend(
-        requirement_case_conformance::collect_requirement_case_conformance_diagnostics(
-            graph, uri,
-        ),
+        requirement_case_conformance::collect_requirement_case_conformance_diagnostics(graph, uri),
     );
     section_timings.push((
         "17_requirement_case_conformance".to_string(),
@@ -702,9 +701,9 @@ pub fn compute_semantic_diagnostics(
     // 18) P2 view/metadata conformance.
     let t18 = Instant::now();
     let d18 = diagnostics.len();
-    diagnostics.extend(view_metadata_conformance::collect_view_metadata_conformance_diagnostics(
-        graph, uri,
-    ));
+    diagnostics.extend(
+        view_metadata_conformance::collect_view_metadata_conformance_diagnostics(graph, uri),
+    );
     section_timings.push((
         "18_view_metadata_conformance".to_string(),
         t18.elapsed().as_millis(),

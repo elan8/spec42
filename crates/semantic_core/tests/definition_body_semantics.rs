@@ -89,13 +89,10 @@ fn flow_def_body_materializes_inner_attribute() {
         .find(|node| node.element_kind == "flow def")
         .expect("flow def");
     assert!(
-        graph
-            .children_of(&flow_def)
-            .iter()
-            .any(|child| {
-                (child.element_kind == "attribute" || child.element_kind == "attribute def")
-                    && child.name == "rate"
-            }),
+        graph.children_of(&flow_def).iter().any(|child| {
+            (child.element_kind == "attribute" || child.element_kind == "attribute def")
+                && child.name == "rate"
+        }),
         "expected attribute child under flow def"
     );
 }
@@ -140,13 +137,10 @@ fn allocation_def_body_materializes_inner_attribute() {
         .find(|node| node.element_kind == "allocation def")
         .expect("allocation def");
     assert!(
-        graph
-            .children_of(&allocation_def)
-            .iter()
-            .any(|child| {
-                (child.element_kind == "attribute" || child.element_kind == "attribute def")
-                    && child.name == "id"
-            }),
+        graph.children_of(&allocation_def).iter().any(|child| {
+            (child.element_kind == "attribute" || child.element_kind == "attribute def")
+                && child.name == "id"
+        }),
         "expected attribute child under allocation def"
     );
 }
@@ -169,13 +163,10 @@ fn flow_usage_brace_body_materializes_inner_attribute() {
         .find(|node| node.element_kind == "flow")
         .expect("flow usage");
     assert!(
-        graph
-            .children_of(&flow_usage)
-            .iter()
-            .any(|child| {
-                (child.element_kind == "attribute" || child.element_kind == "attribute def")
-                    && child.name == "weight"
-            }),
+        graph.children_of(&flow_usage).iter().any(|child| {
+            (child.element_kind == "attribute" || child.element_kind == "attribute def")
+                && child.name == "weight"
+        }),
         "expected attribute child under flow usage brace body"
     );
 }
@@ -198,13 +189,10 @@ fn occurrence_usage_brace_body_materializes_inner_attribute() {
         .find(|node| node.element_kind == "occurrence")
         .expect("occurrence usage");
     assert!(
-        graph
-            .children_of(&occurrence_usage)
-            .iter()
-            .any(|child| {
-                (child.element_kind == "attribute" || child.element_kind == "attribute def")
-                    && child.name == "id"
-            }),
+        graph.children_of(&occurrence_usage).iter().any(|child| {
+            (child.element_kind == "attribute" || child.element_kind == "attribute def")
+                && child.name == "id"
+        }),
         "expected attribute child under occurrence usage brace body"
     );
 }
@@ -325,18 +313,17 @@ fn use_case_def_vacuum_succession_chain_resolves_flow_edges() {
         child_with_kind(&graph, &use_case_def, "succession", "start").is_some(),
         "expected start succession node"
     );
-    assert!(
-        child_with_kind(&graph, &use_case_def, "action", "doCheckSuctionChamber").is_some()
-    );
-    assert!(
-        child_with_kind(&graph, &use_case_def, "action", "doCheckBatteryCharge").is_some()
-    );
+    assert!(child_with_kind(&graph, &use_case_def, "action", "doCheckSuctionChamber").is_some());
+    assert!(child_with_kind(&graph, &use_case_def, "action", "doCheckBatteryCharge").is_some());
     assert!(child_with_kind(&graph, &use_case_def, "verdict", "done").is_some());
 
     let has_edge = |source_suffix: &str, target_suffix: &str, kind: RelationshipKind| {
-        graph.edges_for_uri_as_strings(&uri).iter().any(|(src, tgt, k, _)| {
-            *k == kind && src.ends_with(source_suffix) && tgt.ends_with(target_suffix)
-        })
+        graph
+            .edges_for_uri_as_strings(&uri)
+            .iter()
+            .any(|(src, tgt, k, _)| {
+                *k == kind && src.ends_with(source_suffix) && tgt.ends_with(target_suffix)
+            })
     };
     assert!(
         has_edge("::Vacuming", "::start", RelationshipKind::Flow),
@@ -355,16 +342,18 @@ fn use_case_def_vacuum_succession_chain_resolves_flow_edges() {
         "expected Flow between then actions"
     );
     assert!(
-        has_edge("::doCheckBatteryCharge", "::_verdict", RelationshipKind::Flow),
+        has_edge(
+            "::doCheckBatteryCharge",
+            "::_verdict",
+            RelationshipKind::Flow
+        ),
         "expected Flow from last action to done verdict"
     );
     assert!(graph.pending_relationships.is_empty());
     let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
-    assert!(
-        !diagnostics
-            .iter()
-            .any(|d| d.code == "unresolved_pending_relationship")
-    );
+    assert!(!diagnostics
+        .iter()
+        .any(|d| d.code == "unresolved_pending_relationship"));
 }
 
 #[test]
@@ -387,12 +376,9 @@ fn analysis_def_body_materializes_ref_redefinition() {
         .find(|node| node.element_kind == "analysis def")
         .expect("analysis def");
     assert!(
-        graph
-            .children_of(&analysis_def)
-            .iter()
-            .any(|child| {
-                child.element_kind == "ref redefinition" && child.name == "withinBudget"
-            }),
+        graph.children_of(&analysis_def).iter().any(|child| {
+            child.element_kind == "ref redefinition" && child.name == "withinBudget"
+        }),
         "expected ref redefinition child under analysis def"
     );
 }

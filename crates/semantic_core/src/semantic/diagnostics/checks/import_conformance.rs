@@ -158,7 +158,6 @@ pub(in crate::semantic::diagnostics) fn collect_import_conformance_diagnostics(
                 }
             }
         }
-
     }
 
     for node in graph.nodes_for_uri(uri) {

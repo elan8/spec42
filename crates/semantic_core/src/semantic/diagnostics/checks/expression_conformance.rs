@@ -3,13 +3,13 @@ use std::collections::HashSet;
 use url::Url;
 
 use crate::semantic::diagnostics::helpers::{
-    attribute_value_is_string_literal, declared_type_ref, diag, diagnostic_range,
-    condition_expression_is_boolean, is_boolean_literal_value, is_synthetic,
-    normalize_declared_type_ref, resolves_to_enum_def,
+    attribute_value_is_string_literal, condition_expression_is_boolean, declared_type_ref, diag,
+    diagnostic_range, is_boolean_literal_value, is_synthetic, normalize_declared_type_ref,
+    resolves_to_enum_def,
 };
+use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::reference_resolution::resolve_expression_endpoint_strict;
 use crate::ResolveResult;
-use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::UnitRegistry;
 use crate::{SemanticDiagnostic, SemanticGraph};
 
@@ -195,9 +195,7 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
                     let expected_dimension = quantity_type_names_for_attribute(graph, node)
                         .iter()
                         .find_map(|type_name| expected_unit_dimension_for_type(type_name));
-                    if let (Some(expected), Some(actual)) =
-                        (expected_dimension, actual_dimension)
-                    {
+                    if let (Some(expected), Some(actual)) = (expected_dimension, actual_dimension) {
                         if !unit_dimensions_compatible(&expected, &actual) {
                             let key = format!("unit_dim|{}", node.id.qualified_name);
                             if seen.insert(key) {
@@ -297,13 +295,7 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
                 .parent_id
                 .as_ref()
                 .and_then(|id| graph.get_node(id))
-                .and_then(|parent| {
-                    parent
-                        .id
-                        .qualified_name
-                        .rsplit_once("::")
-                        .map(|(p, _)| p)
-                });
+                .and_then(|parent| parent.id.qualified_name.rsplit_once("::").map(|(p, _)| p));
             let ResolveResult::Resolved(target_id) =
                 resolve_expression_endpoint_strict(graph, uri, prefix, lhs)
             else {
@@ -316,8 +308,7 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
                 let incompatible = match scalar_kind {
                     "Boolean" => !is_boolean_literal_value(rhs) && !rhs.contains("::"),
                     "Real" | "Integer" => {
-                        attribute_value_is_string_literal(rhs)
-                            || is_boolean_literal_value(rhs)
+                        attribute_value_is_string_literal(rhs) || is_boolean_literal_value(rhs)
                     }
                     _ => false,
                 };

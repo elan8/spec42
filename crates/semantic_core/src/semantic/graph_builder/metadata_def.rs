@@ -9,9 +9,7 @@ use url::Url;
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
-use crate::semantic::relationships::{
-    add_typing_edge_if_exists, wire_metadata_annotated_elements,
-};
+use crate::semantic::relationships::{add_typing_edge_if_exists, wire_metadata_annotated_elements};
 
 use super::attribute_body::build_from_attribute_body;
 use super::{add_node_and_recurse, qualified_name_for_node};
@@ -27,10 +25,7 @@ fn insert_metadata_usage_attrs(
         attrs.insert("metadataType".to_string(), serde_json::json!(t));
     }
     if !about_targets.is_empty() {
-        attrs.insert(
-            "aboutTargets".to_string(),
-            serde_json::json!(about_targets),
-        );
+        attrs.insert("aboutTargets".to_string(), serde_json::json!(about_targets));
     }
 }
 
@@ -54,8 +49,7 @@ pub(super) fn add_package_metadata_usage_node(
     mu: &MetadataUsage,
     span: &sysml_v2_parser::Span,
 ) {
-    let qualified =
-        qualified_name_for_node(g, uri, container_prefix, &mu.name, "metadata usage");
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &mu.name, "metadata usage");
     let mut attrs = HashMap::new();
     insert_metadata_usage_attrs(
         &mut attrs,

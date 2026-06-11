@@ -55,10 +55,7 @@ pub(super) fn is_synthetic(node: &SemanticNode) -> bool {
         .unwrap_or(false)
 }
 
-pub(super) fn parse_attribute_text_range(
-    node: &SemanticNode,
-    key: &str,
-) -> Option<TextRange> {
+pub(super) fn parse_attribute_text_range(node: &SemanticNode, key: &str) -> Option<TextRange> {
     let entry = node.attributes.get(key)?;
     let start = entry.get("start")?;
     let end = entry.get("end")?;
@@ -567,10 +564,7 @@ pub(super) fn is_booleanish_filter_expression(condition: &str) -> bool {
 }
 
 pub(super) fn is_boolean_literal_value(value: &str) -> bool {
-    matches!(
-        value.trim().to_ascii_lowercase().as_str(),
-        "true" | "false"
-    )
+    matches!(value.trim().to_ascii_lowercase().as_str(), "true" | "false")
 }
 
 pub(super) fn declared_specializes_refs(node: &SemanticNode) -> Vec<String> {

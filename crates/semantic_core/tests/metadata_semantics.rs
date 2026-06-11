@@ -206,10 +206,7 @@ fn metadata_keyword_usage_resolves_with_typing_edge() {
         .find(|child| child.element_kind == "metadata keyword")
         .expect("metadata keyword");
     assert_eq!(
-        keyword
-            .attributes
-            .get("keyword")
-            .and_then(|v| v.as_str()),
+        keyword.attributes.get("keyword").and_then(|v| v.as_str()),
         Some("Tag")
     );
     let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());

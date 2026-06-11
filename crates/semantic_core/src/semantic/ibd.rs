@@ -866,19 +866,23 @@ fn remap_connector_via_mapping(
     def_dot: &str,
     instance_dot: &str,
 ) -> Option<IbdConnectorDto> {
-    let source_id = map_container_endpoint_to_instance(&connector.source_id, def_dot, instance_dot)?;
-    let target_id = map_container_endpoint_to_instance(&connector.target_id, def_dot, instance_dot)?;
+    let source_id =
+        map_container_endpoint_to_instance(&connector.source_id, def_dot, instance_dot)?;
+    let target_id =
+        map_container_endpoint_to_instance(&connector.target_id, def_dot, instance_dot)?;
     if source_id == connector.source_id && target_id == connector.target_id {
         return None;
     }
     let mut remapped = connector.clone();
     remapped.source_id = source_id.clone();
     remapped.target_id = target_id.clone();
-    if remapped.source.replace("::", ".") == remapped.source_id || remapped.source == remapped.source_id
+    if remapped.source.replace("::", ".") == remapped.source_id
+        || remapped.source == remapped.source_id
     {
         remapped.source = source_id;
     }
-    if remapped.target.replace("::", ".") == remapped.target_id || remapped.target == remapped.target_id
+    if remapped.target.replace("::", ".") == remapped.target_id
+        || remapped.target == remapped.target_id
     {
         remapped.target = target_id;
     }
@@ -1339,9 +1343,10 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         if !visiting.insert(def_key) {
             return false;
         }
-        let direct = graph.children_of(def_node).iter().any(|child| {
-            is_part_like(&child.element_kind) || is_port_like(&child.element_kind)
-        });
+        let direct = graph
+            .children_of(def_node)
+            .iter()
+            .any(|child| is_part_like(&child.element_kind) || is_port_like(&child.element_kind));
         let inherited = graph
             .outgoing_typing_or_specializes_targets(def_node)
             .into_iter()
@@ -1371,6 +1376,58 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
     }
 
     #[allow(clippy::too_many_arguments)]
+    fn expand_part_usage_subtree(
+        graph: &SemanticGraph,
+        usage_node: &SemanticNode,
+        parent_dot: &str,
+        parts_out: &mut Vec<IbdPartDto>,
+        ports_out: &mut Vec<IbdPortDto>,
+        existing_part_qn_dot: &mut std::collections::HashSet<String>,
+        existing_ports: &mut std::collections::HashSet<(String, String)>,
+        visiting_defs: &mut std::collections::HashSet<String>,
+    ) {
+        for part_child in graph.children_of(usage_node) {
+            if !is_part_like(&part_child.element_kind) {
+                continue;
+            }
+            let expanded_dot = format!("{parent_dot}.{}", part_child.name);
+            if existing_part_qn_dot.insert(expanded_dot.clone()) {
+                parts_out.push(IbdPartDto {
+                    id: expanded_dot.clone(),
+                    name: part_child.name.clone(),
+                    qualified_name: expanded_dot.clone(),
+                    uri: Some(part_child.id.uri.as_str().to_string()),
+                    container_id: Some(parent_dot.to_string()),
+                    element_type: part_child.element_kind.clone(),
+                    attributes: part_child.attributes.clone(),
+                });
+            }
+            expand_part_usage_subtree(
+                graph,
+                part_child,
+                &expanded_dot,
+                parts_out,
+                ports_out,
+                existing_part_qn_dot,
+                existing_ports,
+                visiting_defs,
+            );
+            if let Some(grand_def) = first_typed_part_shape(graph, part_child) {
+                expand_def_subtree(
+                    graph,
+                    grand_def,
+                    &expanded_dot,
+                    parts_out,
+                    ports_out,
+                    existing_part_qn_dot,
+                    existing_ports,
+                    visiting_defs,
+                );
+            }
+        }
+    }
+
+    #[allow(clippy::too_many_arguments)]
     fn expand_def_subtree(
         graph: &SemanticGraph,
         def_node: &SemanticNode,
@@ -1385,13 +1442,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         if !visiting_defs.insert(def_key.clone()) {
             return;
         }
-        add_inherited_ports_from_definition(
-            graph,
-            def_node,
-            parent_dot,
-            ports_out,
-            existing_ports,
-        );
+        add_inherited_ports_from_definition(graph, def_node, parent_dot, ports_out, existing_ports);
         for part_child in graph.children_of(def_node) {
             if !is_part_like(&part_child.element_kind) {
                 continue;
@@ -1410,6 +1461,16 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 element_type: part_child.element_kind.clone(),
                 attributes: part_child.attributes.clone(),
             });
+            expand_part_usage_subtree(
+                graph,
+                part_child,
+                &expanded_dot,
+                parts_out,
+                ports_out,
+                existing_part_qn_dot,
+                existing_ports,
+                visiting_defs,
+            );
             if let Some(grand_def) = first_typed_part_shape(graph, part_child) {
                 expand_def_subtree(
                     graph,
@@ -1967,7 +2028,8 @@ pub fn finalize_merged_ibd_connectors(
     mappings.sort_by_key(|mapping| std::cmp::Reverse(mapping.0.len()));
     mappings.dedup_by(|left, right| left.0 == right.0 && left.1 == right.1);
 
-    ibd.connectors = remap_connectors_to_typed_instances(std::mem::take(&mut ibd.connectors), &mappings);
+    ibd.connectors =
+        remap_connectors_to_typed_instances(std::mem::take(&mut ibd.connectors), &mappings);
     for view in ibd.root_views.values_mut() {
         view.connectors =
             remap_connectors_to_typed_instances(std::mem::take(&mut view.connectors), &mappings);
@@ -2407,20 +2469,109 @@ mod tests {
         )
         .expect("project uri");
         let uris = [architecture.uri.clone(), project.uri.clone()];
-        let (graph, _) = build_semantic_graph_from_documents(&[architecture, project]).expect("graph");
+        let (graph, _) =
+            build_semantic_graph_from_documents(&[architecture, project]).expect("graph");
         let mut merged = super::merge_ibd_payloads(
-            uris
-                .iter()
+            uris.iter()
                 .map(|uri| super::build_ibd_for_uri(&graph, uri))
                 .collect(),
         );
         super::finalize_merged_ibd_connectors(&graph, &uris, &mut merged);
         assert!(
             merged.connectors.iter().any(|connector| {
-                connector.source_id.contains("rijnmondExpansionProject.architecture.feederNorth")
-                    && connector.target_id.contains("rijnmondExpansionProject.architecture.cable01")
+                connector
+                    .source_id
+                    .contains("rijnmondExpansionProject.architecture.feederNorth")
+                    && connector
+                        .target_id
+                        .contains("rijnmondExpansionProject.architecture.cable01")
             }),
             "expected definition-level connect mirrored to project architecture instance, got {:?}",
+            merged.connectors
+        );
+    }
+
+    #[test]
+    fn build_ibd_materializes_inline_children_of_typed_part_usage_on_instance() {
+        let architecture = SysmlDocument::from_memory_path(
+            "workspace",
+            "Architecture.sysml",
+            r#"package GridArchitecture {
+    part def Segment {
+        port a;
+        port b;
+    }
+    part def TiePoint {
+        port incoming;
+        port outgoing;
+    }
+    part def Ring;
+    part def System {
+        part ring : Ring {
+            part segment : Segment;
+            part tie : TiePoint;
+        }
+        connect ring.segment.b to ring.tie.incoming;
+    }
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("architecture uri");
+        let project = SysmlDocument::from_memory_path(
+            "workspace",
+            "Project.sysml",
+            r#"package Project {
+    import GridArchitecture::*;
+    part system : System;
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("project uri");
+        let uris = [architecture.uri.clone(), project.uri.clone()];
+        let (graph, _) =
+            build_semantic_graph_from_documents(&[architecture, project]).expect("graph");
+        let mut merged = super::merge_ibd_payloads(
+            uris.iter()
+                .map(|uri| super::build_ibd_for_uri(&graph, uri))
+                .collect(),
+        );
+        super::finalize_merged_ibd_connectors(&graph, &uris, &mut merged);
+
+        assert!(
+            merged
+                .parts
+                .iter()
+                .any(|part| part.qualified_name == "Project.system.ring.segment"),
+            "expected inline nested segment materialized under instance path, got {:?}",
+            merged.parts
+        );
+        assert!(
+            merged
+                .parts
+                .iter()
+                .any(|part| part.qualified_name == "Project.system.ring.tie"),
+            "expected inline nested tie materialized under instance path, got {:?}",
+            merged.parts
+        );
+        assert!(
+            merged.ports.iter().any(|port| {
+                port.parent_id == "Project.system.ring.segment" && port.name == "b"
+            }),
+            "expected segment ports under instance path, got {:?}",
+            merged.ports
+        );
+        assert!(
+            merged.connectors.iter().any(|connector| {
+                connector.source_id == "Project.system.ring.segment.b"
+                    && connector.target_id == "Project.system.ring.tie.incoming"
+            }),
+            "expected connector to instance inline nested ports, got {:?}",
             merged.connectors
         );
     }
@@ -2561,9 +2712,9 @@ mod tests {
                 ibd.connectors
             );
             assert!(
-                ibd.connectors.iter().any(|connector| {
-                    connector.target_id.ends_with(&format!("{unit}.pwr"))
-                }),
+                ibd.connectors
+                    .iter()
+                    .any(|connector| { connector.target_id.ends_with(&format!("{unit}.pwr")) }),
                 "expected power connector to {unit}, got {:?}",
                 ibd.connectors
             );

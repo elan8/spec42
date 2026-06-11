@@ -1,6 +1,4 @@
-use semantic_core::{
-    build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind,
-};
+use semantic_core::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind};
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
     SysmlDocument::from_memory_path(
@@ -73,13 +71,10 @@ fn individual_def_body_materializes_attribute_usage() {
         .expect("individual def");
 
     assert!(
-        graph
-            .children_of(&individual)
-            .iter()
-            .any(|child| {
-                (child.element_kind == "attribute" || child.element_kind == "attribute def")
-                    && child.name == "name"
-            }),
+        graph.children_of(&individual).iter().any(|child| {
+            (child.element_kind == "attribute" || child.element_kind == "attribute def")
+                && child.name == "name"
+        }),
         "expected attribute member child on individual def"
     );
 }

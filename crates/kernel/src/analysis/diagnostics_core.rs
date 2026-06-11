@@ -76,9 +76,7 @@ pub(crate) fn collect_document_diagnostics(
     };
 
     if allow_semantic_checks {
-        let host_ctx = DiagnosticsHostContext {
-            indexed_sources,
-        };
+        let host_ctx = DiagnosticsHostContext { indexed_sources };
         for provider in check_providers {
             diagnostics.extend(provider.compute_diagnostics_with_context(
                 semantic_graph,

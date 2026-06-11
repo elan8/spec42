@@ -86,13 +86,10 @@ fn check_keeps_semantic_warnings_after_parse_error_by_default() {
     .expect("validation report");
 
     assert!(
-        report.documents[0]
-            .diagnostics
-            .iter()
-            .any(|d| matches!(
-                &d.code,
-                Some(NumberOrString::String(code)) if code == "unresolved_type_reference"
-            )),
+        report.documents[0].diagnostics.iter().any(|d| matches!(
+            &d.code,
+            Some(NumberOrString::String(code)) if code == "unresolved_type_reference"
+        )),
         "expected semantic unresolved_type_reference after parse error by default: {:?}",
         report.documents[0].diagnostics
     );

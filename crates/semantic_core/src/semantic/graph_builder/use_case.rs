@@ -150,13 +150,7 @@ impl CaseSuccessionChain {
             Some(parent_id),
         );
         if let Some(previous_step) = self.previous.as_ref() {
-            add_edge_if_both_exist(
-                g,
-                uri,
-                previous_step,
-                &qualified,
-                RelationshipKind::Flow,
-            );
+            add_edge_if_both_exist(g, uri, previous_step, &qualified, RelationshipKind::Flow);
         }
         self.previous = Some(qualified);
     }
@@ -276,10 +270,7 @@ pub(super) fn add_actor_usage_node(
     );
     let range = span_to_range(span);
     let mut attrs = HashMap::new();
-    attrs.insert(
-        "actorType".to_string(),
-        serde_json::json!(&actor.type_name),
-    );
+    attrs.insert("actorType".to_string(), serde_json::json!(&actor.type_name));
     add_node_and_recurse(
         g,
         uri,
@@ -308,7 +299,10 @@ pub(super) fn add_actor_redefinition_assignment_node(
         "actor redefinition",
     );
     let mut attrs = HashMap::new();
-    attrs.insert("rhs".to_string(), serde_json::json!(assignment.rhs.as_str()));
+    attrs.insert(
+        "rhs".to_string(),
+        serde_json::json!(assignment.rhs.as_str()),
+    );
     add_node_and_recurse(
         g,
         uri,

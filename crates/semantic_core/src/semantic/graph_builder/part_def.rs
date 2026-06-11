@@ -162,13 +162,7 @@ pub(super) fn build_from_part_def_body_element(
             stubs::relationships_from_part_def(pd_node, uri, container_prefix, &qualified, g);
             if let PartDefBody::Brace { elements } = &pd_node.body {
                 for child in elements {
-                    build_from_part_def_body_element(
-                        child,
-                        uri,
-                        Some(&qualified),
-                        &node_id,
-                        g,
-                    );
+                    build_from_part_def_body_element(child, uri, Some(&qualified), &node_id, g);
                 }
             }
             if let Some(ref s) = pd_node.specializes {
@@ -593,7 +587,8 @@ pub(super) fn build_from_part_def_body_element(
             } else {
                 opaque.name.clone()
             };
-            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "opaque member");
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &name, "opaque member");
             let mut attrs = HashMap::new();
             attrs.insert("keyword".to_string(), serde_json::json!(opaque.keyword));
             attrs.insert("text".to_string(), serde_json::json!(opaque.text));
@@ -626,10 +621,7 @@ pub(super) fn build_from_part_def_body_element(
                 &meta.span,
             );
         }
-        PDBE::Annotation(_)
-        | PDBE::Error(_)
-        | PDBE::Doc(_)
-        | PDBE::Comment(_)
-        | PDBE::Other(_) => {}
+        PDBE::Annotation(_) | PDBE::Error(_) | PDBE::Doc(_) | PDBE::Comment(_) | PDBE::Other(_) => {
+        }
     }
 }

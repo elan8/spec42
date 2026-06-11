@@ -322,8 +322,10 @@ mod tests {
 
     #[test]
     fn library_source_label_classifies_bundled_roots() {
-        let stdlib = Url::parse("file:///tmp/data/standard-library/versions/2026-04/sysml.library/ScalarValues.sysml")
-            .expect("url");
+        let stdlib = Url::parse(
+            "file:///tmp/data/standard-library/versions/2026-04/sysml.library/ScalarValues.sysml",
+        )
+        .expect("url");
         let domain = Url::parse("file:///tmp/data/domain-libraries/versions/dc378a9/tree/generic/RequirementMetadata.sysml")
             .expect("url");
         let custom = Url::parse("file:///workspace/libs/Domain.sysml").expect("url");

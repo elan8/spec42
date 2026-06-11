@@ -547,13 +547,7 @@ pub(super) fn walk_requirement_def_body(
                 );
             }
             RequirementDefBodyElement::MetadataKeywordUsage(mk_node) => {
-                add_metadata_keyword_node(
-                    g,
-                    uri,
-                    parent_id,
-                    &mk_node.value,
-                    &mk_node.span,
-                );
+                add_metadata_keyword_node(g, uri, parent_id, &mk_node.value, &mk_node.span);
             }
             RequirementDefBodyElement::Stakeholder(stakeholder) => {
                 let s = &stakeholder.value;
@@ -566,10 +560,7 @@ pub(super) fn walk_requirement_def_body(
                         "stakeholder",
                     );
                     let mut attrs = HashMap::new();
-                    attrs.insert(
-                        "stakeholderType".to_string(),
-                        serde_json::json!(type_name),
-                    );
+                    attrs.insert("stakeholderType".to_string(), serde_json::json!(type_name));
                     add_node_and_recurse(
                         g,
                         uri,

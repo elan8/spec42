@@ -2,11 +2,11 @@ use std::collections::HashMap;
 use std::fs;
 
 use sysml_v2_parser::ast::{
-    CalcDefBody, CalcDefBodyElement,
-    ConnectionDefBody, ConstraintDefBody, ConstraintDefBodyElement, InOut, InterfaceDefBody,
-    OccurrenceUsageBody, PackageBodyElement, PartDefBody, PartUsageBody, PortDefBody,
-    RenderingDefBody, RenderingDefBodyElement, RequirementDefBody, StateDefBody, UseCaseDefBody,
-    ViewBody, ViewBodyElement, ViewDefBody, ViewDefBodyElement, ViewRenderingUsage,
+    CalcDefBody, CalcDefBodyElement, ConnectionDefBody, ConstraintDefBody,
+    ConstraintDefBodyElement, InOut, InterfaceDefBody, OccurrenceUsageBody, PackageBodyElement,
+    PartDefBody, PartUsageBody, PortDefBody, RenderingDefBody, RenderingDefBodyElement,
+    RequirementDefBody, StateDefBody, UseCaseDefBody, ViewBody, ViewBodyElement, ViewDefBody,
+    ViewDefBodyElement, ViewRenderingUsage,
 };
 use sysml_v2_parser::RootNamespace;
 use url::Url;
@@ -16,8 +16,7 @@ use crate::semantic::ast_util::{identification_name, span_to_range, text_range_t
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{
-    add_specializes_edge_if_exists, add_typing_edge_if_exists,
-    try_wire_derivation_connection,
+    add_specializes_edge_if_exists, add_typing_edge_if_exists, try_wire_derivation_connection,
 };
 
 use super::action;
@@ -25,8 +24,8 @@ use super::analysis_case;
 use super::attribute_body;
 use super::definition_body;
 use super::expressions;
-use super::occurrence_body;
 use super::modeled_kerml_name::extract_modeled_decl_name;
+use super::occurrence_body;
 use super::package_packages;
 use super::verification;
 use super::{add_node_and_recurse, qualified_name_for_node};
@@ -71,9 +70,15 @@ fn add_view_filter_node(
         "exprClass".to_string(),
         serde_json::json!(expressions::classify_expression(&filter.value.condition).as_str()),
     );
-    attrs.insert("filterOwnerKind".to_string(), serde_json::json!(filter_owner_kind));
+    attrs.insert(
+        "filterOwnerKind".to_string(),
+        serde_json::json!(filter_owner_kind),
+    );
     if let Some(vis) = &filter.value.visibility {
-        attrs.insert("visibility".to_string(), serde_json::json!(format!("{vis:?}")));
+        attrs.insert(
+            "visibility".to_string(),
+            serde_json::json!(format!("{vis:?}")),
+        );
     }
     add_node_and_recurse(
         g,
@@ -103,7 +108,10 @@ fn add_view_rendering_node(
     );
     let mut attrs = HashMap::new();
     if let Some(ref rendering_type) = vr.type_name {
-        attrs.insert("renderingType".to_string(), serde_json::json!(rendering_type));
+        attrs.insert(
+            "renderingType".to_string(),
+            serde_json::json!(rendering_type),
+        );
     }
     add_node_and_recurse(
         g,
@@ -150,12 +158,7 @@ fn annotate_rendering_def_body(
     }
 }
 
-fn annotate_view_usage_body(
-    g: &mut SemanticGraph,
-    view_id: &NodeId,
-    body: &ViewBody,
-    uri: &Url,
-) {
+fn annotate_view_usage_body(g: &mut SemanticGraph, view_id: &NodeId, body: &ViewBody, uri: &Url) {
     let ViewBody::Brace { elements } = body else {
         return;
     };
@@ -630,7 +633,13 @@ pub(super) fn build_from_package_body_element(
             );
         }
         PBE::ActionUsage(au_node) => {
-            action::materialize_top_level_action_usage(g, uri, container_prefix, parent_id, au_node);
+            action::materialize_top_level_action_usage(
+                g,
+                uri,
+                container_prefix,
+                parent_id,
+                au_node,
+            );
         }
         PBE::AliasDef(alias_node) => {
             let mut name = identification_name(&alias_node.identification);

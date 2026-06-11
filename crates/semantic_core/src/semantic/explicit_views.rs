@@ -299,10 +299,7 @@ pub fn evaluate_views(
                         .and_then(|node| node.uri.clone())
                 })
                 .and_then(|uri| url::Url::parse(&uri).ok());
-            let container_prefix = usage
-                .id
-                .rsplit_once("::")
-                .map(|(prefix, _)| prefix);
+            let container_prefix = usage.id.rsplit_once("::").map(|(prefix, _)| prefix);
 
             let mut exposed_ids = HashSet::new();
             for expose in &usage.exposes {
@@ -326,10 +323,7 @@ pub fn evaluate_views(
                         }
                     }
                     crate::semantic::reference_resolution::ExposeTargetResolution::Ambiguous => {
-                        issues.push(format!(
-                            "Expose target '{}' is ambiguous.",
-                            expose.target
-                        ));
+                        issues.push(format!("Expose target '{}' is ambiguous.", expose.target));
                     }
                     crate::semantic::reference_resolution::ExposeTargetResolution::Unresolved => {
                         issues.push(format!(

@@ -5,9 +5,8 @@ use sysml_v2_parser::ast::{
     AttributeBody, AttributeBodyElement, CalcDefBody, ConnectionDefBody, ConnectionDefBodyElement,
     ConstraintDefBodyElement, DefinitionBody, DefinitionBodyElement, FinalState, InterfaceDefBody,
     InterfaceDefBodyElement, MetadataAnnotation, MetadataKeywordUsage, OccurrenceBodyElement,
-    OccurrenceUsageBody,
-    PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
-    PartUsageBodyElement, PayloadClause, PortBody, PortBodyElement, PortDefBody,
+    OccurrenceUsageBody, PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement,
+    PartUsageBody, PartUsageBodyElement, PayloadClause, PortBody, PortBodyElement, PortDefBody,
     PortDefBodyElement, RequireConstraintBody, RequirementDefBody, RequirementDefBodyElement,
     RootElement, StateDefBody, StateDefBodyElement, StateUsage, ThenStmt, Transition,
     TransitionAccept,
@@ -269,7 +268,10 @@ fn collect_semantic_ranges_package_body_element(
     }
 }
 
-fn collect_semantic_ranges_definition_body(body: &DefinitionBody, out: &mut Vec<(SourceRange, u32)>) {
+fn collect_semantic_ranges_definition_body(
+    body: &DefinitionBody,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
     let DefinitionBody::Brace { elements } = body else {
         return;
     };
@@ -308,7 +310,10 @@ fn collect_semantic_ranges_metadata_keyword_usage(
     node: &sysml_v2_parser::Node<MetadataKeywordUsage>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
-    out.push((span_to_source_range(&node.value.keyword_span), TYPE_PROPERTY));
+    out.push((
+        span_to_source_range(&node.value.keyword_span),
+        TYPE_PROPERTY,
+    ));
     if let Some(ref span) = node.value.type_span {
         out.push((span_to_source_range(span), TYPE_TYPE));
     }
@@ -326,7 +331,10 @@ fn collect_semantic_ranges_metadata_annotation(
     }
 }
 
-fn collect_semantic_ranges_payload_clause(clause: &PayloadClause, out: &mut Vec<(SourceRange, u32)>) {
+fn collect_semantic_ranges_payload_clause(
+    clause: &PayloadClause,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
     out.push((span_to_source_range(&clause.name_span), TYPE_PROPERTY));
     if let Some(ref span) = clause.type_span {
         out.push((span_to_source_range(span), TYPE_TYPE));
@@ -351,7 +359,10 @@ fn collect_semantic_ranges_then_stmt(then_stmt: &ThenStmt, out: &mut Vec<(Source
     }
 }
 
-fn collect_semantic_ranges_final_state(final_state: &FinalState, out: &mut Vec<(SourceRange, u32)>) {
+fn collect_semantic_ranges_final_state(
+    final_state: &FinalState,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
     out.push((span_to_source_range(&final_state.name_span), TYPE_PROPERTY));
 }
 
@@ -392,11 +403,7 @@ fn collect_semantic_ranges_state_def_body_element(
                 }
             }
         }
-        SDBE::Entry(_)
-        | SDBE::Doc(_)
-        | SDBE::Error(_)
-        | SDBE::Annotation(_)
-        | SDBE::Other(_) => {}
+        SDBE::Entry(_) | SDBE::Doc(_) | SDBE::Error(_) | SDBE::Annotation(_) | SDBE::Other(_) => {}
     }
 }
 
@@ -789,10 +796,7 @@ fn collect_semantic_ranges_requirement_def_body_element(
         RDBE::RequirementActorDecl(actor) => {
             out.push((span_to_source_range(&actor.span), TYPE_PROPERTY));
         }
-        RDBE::Doc(_)
-        | RDBE::Error(_)
-        | RDBE::Other(_)
-        | RDBE::Annotation(_) => {}
+        RDBE::Doc(_) | RDBE::Error(_) | RDBE::Other(_) | RDBE::Annotation(_) => {}
         RDBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
     }
 }

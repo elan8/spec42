@@ -172,8 +172,7 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
         else {
             continue;
         };
-        let targets =
-            resolve_type_reference_targets(graph, node, include_target, &allowed);
+        let targets = resolve_type_reference_targets(graph, node, include_target, &allowed);
         if !targets.is_empty() {
             continue;
         }
@@ -195,8 +194,10 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if !matches!(node.element_kind.as_str(), "requirement" | "requirement def")
-            || is_synthetic(node)
+        if !matches!(
+            node.element_kind.as_str(),
+            "requirement" | "requirement def"
+        ) || is_synthetic(node)
         {
             continue;
         }
@@ -428,10 +429,7 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
                 .into_iter()
                 .filter(|child| child.element_kind == "analysis result")
                 .count();
-            let has_inherited_result = node
-                .attributes
-                .get("analysisExpression")
-                .is_some()
+            let has_inherited_result = node.attributes.get("analysisExpression").is_some()
                 || objectives.iter().any(|objective| {
                     objective
                         .attributes

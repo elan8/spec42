@@ -5,18 +5,16 @@ mod common;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use clap::Parser;
 use axum::body::Body;
 use axum::http::{Request, StatusCode};
+use clap::Parser;
 use common::with_isolated_data_dir_async;
 use http_body_util::BodyExt;
 use serde_json::Value;
 use spec42::api::{router, ApiServerState};
 use spec42::cli::Cli;
 use spec42::environment::resolve_environment;
-use spec42::mcp::handlers::{
-    handle_spec42_explain_diagnostic, handle_spec42_model_summary,
-};
+use spec42::mcp::handlers::{handle_spec42_explain_diagnostic, handle_spec42_model_summary};
 use tower::ServiceExt;
 
 fn kitchen_timer_path() -> PathBuf {
@@ -54,13 +52,17 @@ async fn request_json(app: &axum::Router, uri: &str) -> (StatusCode, Value) {
         .await
         .expect("response");
     let status = response.status();
-    let bytes = response.into_body().collect().await.expect("body").to_bytes();
+    let bytes = response
+        .into_body()
+        .collect()
+        .await
+        .expect("body")
+        .to_bytes();
     let value = if bytes.is_empty() {
         Value::Null
     } else {
-        serde_json::from_slice(&bytes).unwrap_or_else(|_| {
-            Value::String(String::from_utf8_lossy(&bytes).to_string())
-        })
+        serde_json::from_slice(&bytes)
+            .unwrap_or_else(|_| Value::String(String::from_utf8_lossy(&bytes).to_string()))
     };
     (status, value)
 }
@@ -79,7 +81,12 @@ async fn post_json(app: &axum::Router, uri: &str, body: Value) -> (StatusCode, V
         .await
         .expect("response");
     let status = response.status();
-    let bytes = response.into_body().collect().await.expect("body").to_bytes();
+    let bytes = response
+        .into_body()
+        .collect()
+        .await
+        .expect("body")
+        .to_bytes();
     let value = serde_json::from_slice(&bytes).expect("json body");
     (status, value)
 }
@@ -212,10 +219,7 @@ async fn api_openapi_json_loads() {
         let app = router(state);
         let (status, body) = request_json(&app, "/openapi.json").await;
         assert_eq!(status, StatusCode::OK);
-        assert_eq!(
-            body.get("openapi").and_then(|v| v.as_str()),
-            Some("3.1.0")
-        );
+        assert_eq!(body.get("openapi").and_then(|v| v.as_str()), Some("3.1.0"));
     })
     .await;
 }

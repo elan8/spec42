@@ -34,7 +34,10 @@ pub fn resolve_workspace_path(workspace_root: &Path, relative: &str) -> Result<P
 
     let canonical_joined = if joined.exists() {
         joined.canonicalize().map_err(|err| {
-            ApiError::invalid_path(format!("Path is not accessible: {} ({err})", joined.display()))
+            ApiError::invalid_path(format!(
+                "Path is not accessible: {} ({err})",
+                joined.display()
+            ))
         })?
     } else {
         // Allow validating paths that do not exist yet (same as CLI) while still
@@ -79,8 +82,7 @@ mod tests {
     #[test]
     fn resolve_rejects_parent_dir() {
         let workspace = TempDir::new().expect("tempdir");
-        let err = resolve_workspace_path(workspace.path(), "../outside")
-            .expect_err("parent dir");
+        let err = resolve_workspace_path(workspace.path(), "../outside").expect_err("parent dir");
         assert_eq!(err.code(), "invalid_path");
     }
 

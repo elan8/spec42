@@ -136,6 +136,74 @@ describe("shared prepareViewData", () => {
     expect(prepared.meta?.selectedRoot).toBe("Root");
   });
 
+  it("prefers selectedIbdRoot over the SysML view name for interconnection scoping", () => {
+    const prepared = prepareViewData({
+      view: "interconnection-view",
+      selectedViewName: "gridConnections",
+      selectedIbdRoot: "architecture",
+      ibd: {
+        defaultRoot: "architecture",
+        rootCandidates: ["tinyRoot", "architecture"],
+        rootViews: {
+          tinyRoot: {
+            parts: [{ id: "tiny", name: "tinyRoot", qualifiedName: "Pkg.tinyRoot", type: "part" }],
+            connectors: [],
+            ports: [],
+          },
+          architecture: {
+            parts: [
+              { id: "feeder", name: "feederNorth", qualifiedName: "Pkg.architecture.feederNorth", type: "part" },
+              { id: "cable", name: "cable01", qualifiedName: "Pkg.architecture.cable01", type: "part" },
+            ],
+            connectors: [
+              { id: "c1", sourcePartId: "feeder", targetPartId: "cable", name: "connect" },
+            ],
+            ports: [],
+          },
+        },
+        parts: [],
+        connectors: [],
+        ports: [],
+      },
+    });
+
+    expect(prepared.meta?.selectedRoot).toBe("architecture");
+    expect(prepared.nodes.map((node) => node.id).sort()).toEqual(["cable", "feeder"]);
+    expect(prepared.edges.map((edge) => edge.id)).toEqual(["c1"]);
+  });
+
+  it("does not auto-scope an explicit SysML interconnection view to the IBD default root", () => {
+    const prepared = prepareViewData({
+      view: "interconnection-view",
+      selectedView: "StedinRijnmondGridExpansion::Views::gridConnections",
+      selectedViewName: "gridConnections",
+      ibd: {
+        defaultRoot: "batteryA",
+        rootCandidates: ["batteryA"],
+        rootViews: {
+          batteryA: {
+            parts: [],
+            connectors: [],
+            ports: [],
+          },
+        },
+        parts: [
+          { id: "feeder", name: "feederNorth", qualifiedName: "Pkg.architecture.feederNorth", type: "part" },
+          { id: "cable", name: "cable01", qualifiedName: "Pkg.architecture.cable01", type: "part" },
+        ],
+        connectors: [
+          { id: "c1", sourcePartId: "feeder", targetPartId: "cable", name: "connect" },
+        ],
+        ports: [],
+      },
+    });
+
+    expect(prepared.title).toBe("Interconnection View");
+    expect(prepared.meta?.selectedRoot).toBeNull();
+    expect(prepared.nodes.map((node) => node.id).sort()).toEqual(["cable", "feeder"]);
+    expect(prepared.edges.map((edge) => edge.id)).toEqual(["c1"]);
+  });
+
   it("keeps interconnection container metadata for renderer parity", () => {
     const prepared = prepareViewData({
       view: "interconnection-view",

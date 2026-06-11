@@ -68,9 +68,12 @@ fn action_def_then_action_chain_emits_flow_edges() {
     let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
 
     let has_edge = |source_suffix: &str, target_suffix: &str, kind: RelationshipKind| {
-        graph.edges_for_uri_as_strings(&uri).iter().any(|(src, tgt, k, _)| {
-            *k == kind && src.ends_with(source_suffix) && tgt.ends_with(target_suffix)
-        })
+        graph
+            .edges_for_uri_as_strings(&uri)
+            .iter()
+            .any(|(src, tgt, k, _)| {
+                *k == kind && src.ends_with(source_suffix) && tgt.ends_with(target_suffix)
+            })
     };
 
     assert!(
@@ -105,9 +108,7 @@ fn action_def_body_materializes_metadata_annotation() {
         graph
             .children_of(&pipeline)
             .iter()
-            .any(|child| {
-                child.element_kind == "metadata usage" && child.name == "safetyTag"
-            }),
+            .any(|child| { child.element_kind == "metadata usage" && child.name == "safetyTag" }),
         "expected metadata usage child under action def body"
     );
 }

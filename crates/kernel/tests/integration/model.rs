@@ -372,16 +372,16 @@ fn lsp_sysml_model_state_transition_view() {
         .as_array()
         .expect("stateMachines array should be present");
     assert!(
-        machines.iter().any(|machine| machine["name"].as_str() == Some("M")),
+        machines
+            .iter()
+            .any(|machine| machine["name"].as_str() == Some("M")),
         "stateMachines should include machine M, got: {machines:#?}"
     );
     let machine_m = machines
         .iter()
         .find(|machine| machine["name"].as_str() == Some("M"))
         .expect("machine M");
-    let machine_states = machine_m["states"]
-        .as_array()
-        .expect("machine states");
+    let machine_states = machine_m["states"].as_array().expect("machine states");
     assert!(
         machine_states.len() >= 2,
         "machine M should expose state usages, got: {machine_states:#?}"

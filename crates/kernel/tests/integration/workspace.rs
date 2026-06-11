@@ -1631,6 +1631,45 @@ fn lsp_workspace_visualization_returns_workspace_model_payload_for_workspace_roo
 }
 
 #[test]
+fn lsp_stedin_parent_workspace_root_grid_connections_has_ibd_content() {
+    let repo_root = PathBuf::from(r"C:\Git\sysml-powersystems");
+    if !repo_root.is_dir() {
+        eprintln!(
+            "Skipping lsp_stedin_parent_workspace_root_grid_connections_has_ibd_content: {} is not a directory",
+            repo_root.display()
+        );
+        return;
+    }
+
+    let response = kernel::views::build_sysml_visualization_for_paths(
+        &repo_root,
+        Some(&repo_root),
+        &[],
+        "interconnection-view",
+        Some("gridConnections"),
+    )
+    .expect("build stedin visualization");
+
+    assert_eq!(
+        response.selected_view_name.as_deref(),
+        Some("gridConnections")
+    );
+    let ibd = response.ibd.expect("ibd payload");
+    assert!(
+        ibd.parts.len() >= 10,
+        "expected gridConnections to keep architecture parts, got {}: {:#?}",
+        ibd.parts.len(),
+        ibd
+    );
+    assert!(
+        ibd.connectors.len() >= 15,
+        "expected gridConnections to keep architecture connectors, got {}: {:#?}",
+        ibd.connectors.len(),
+        ibd
+    );
+}
+
+#[test]
 fn lsp_workspace_visualization_model_includes_all_sysml_examples_packages_when_configured() {
     let examples_root = std::env::var_os("SYSML_EXAMPLES_DIR")
         .map(PathBuf::from)

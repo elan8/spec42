@@ -8,13 +8,13 @@ use std::time::Instant;
 
 use url::Url;
 
+use crate::semantic::activity_graph::enrich_activity_diagrams_from_graph;
 use crate::semantic::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, RelationshipDto, SysmlElementDto, SysmlGraphDto,
     SysmlModelStatsDto, SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto,
     SysmlVisualizationResultDto, WorkspaceFileModelDto, WorkspaceModelDto,
     WorkspaceModelSummaryDto,
 };
-use crate::semantic::activity_graph::enrich_activity_diagrams_from_graph;
 use crate::semantic::explicit_views;
 use crate::semantic::extracted_model::{
     extract_activity_diagrams, ActivityDiagramDto, SequenceDiagramDto, StateMachineDto,
@@ -1330,11 +1330,7 @@ pub fn build_sysml_visualization_workspace(
         );
         let state_machines = filter_state_machines_by_exposed_ids(
             &full_state_machines,
-            &explicit_views::project_ids_for_renderer(
-                evaluated,
-                &graph,
-                "state-transition-view",
-            ),
+            &explicit_views::project_ids_for_renderer(evaluated, &graph, "state-transition-view"),
         );
         projected_graphs.insert(evaluated.id.as_str(), projected_graph);
         projected_activity_diagrams.insert(evaluated.id.as_str(), diagrams);
