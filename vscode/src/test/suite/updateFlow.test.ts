@@ -1,6 +1,11 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
+import { resetVisualizerRenderTracker } from "../../visualization/renderTracker";
 import { createUpdateVisualizationFlow } from "../../visualization/updateFlow";
+import {
+  setVisualizerBootstrapCompleted,
+  setVisualizerUpdateInFlight,
+} from "../../visualization/visualizerReadiness";
 import { setVisualizationGateState } from "../../visualization/visualizationGate";
 
 function createMockDocument(uri: string): vscode.TextDocument {
@@ -32,6 +37,9 @@ describe("createUpdateVisualizationFlow", () => {
       languageClientReady: true,
       serverHealthState: "ready",
     });
+    setVisualizerBootstrapCompleted(false);
+    setVisualizerUpdateInFlight(false);
+    resetVisualizerRenderTracker();
   });
 
   it("deduplicates repeated webviewReady startup updates", async () => {
@@ -214,6 +222,56 @@ describe("createUpdateVisualizationFlow", () => {
 
     assert.strictEqual(getVisualizationCount, 2);
     assert.deepStrictEqual(requests, [{ view: "general-view" }, { view: "action-flow-view" }]);
+  });
+
+  it("suppresses loading and modelNotReady flashes for lifecycle updates after bootstrap", async () => {
+    let getVisualizationCount = 0;
+    let lastContentHash = "";
+    const { panel, messages } = createMockPanel();
+    const document = createMockDocument("file:///drone.sysml");
+
+    const flow = createUpdateVisualizationFlow({
+      panel,
+      getDocument: () => document,
+      getWorkspaceRootUri: () => "file:///workspace",
+      getCurrentView: () => "general-view",
+      getSelectedView: () => undefined,
+      setCurrentView: () => {},
+      getIsNavigating: () => false,
+      getNeedsUpdateWhenVisible: () => false,
+      getLastContentHash: () => lastContentHash,
+      setLastContentHash: (hash) => { lastContentHash = hash; },
+      setNeedsUpdateWhenVisible: () => {},
+      fetchUpdateMessage: async () => {
+        getVisualizationCount += 1;
+        return {
+          command: "update",
+          modelReady: true,
+          graph: { nodes: [], edges: [] },
+          generalViewGraph: { nodes: [], edges: [] },
+          activityDiagrams: [],
+          sequenceDiagrams: [],
+          currentView: "general-view",
+          viewCandidates: [],
+          emptyStateMessage: "No SysML views are defined in this workspace.",
+        };
+      },
+    });
+
+    await flow.update(true, "webviewReady");
+    setVisualizationGateState({ serverHealthState: "indexing" });
+    lastContentHash = "";
+    await flow.update(false, "lifecycleChanged");
+
+    assert.strictEqual(getVisualizationCount, 1);
+    assert.strictEqual(
+      messages.filter((message) => (message as { command?: string }).command === "showLoading").length,
+      1
+    );
+    assert.strictEqual(
+      messages.filter((message) => (message as { command?: string }).command === "modelNotReady").length,
+      0
+    );
   });
 
   it("skips unchanged startup retries after the first successful render", async () => {

@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { getVisualizerLoadingMessage } from '../activation/workspaceLifecycle';
+import { evaluateClientVisualizationReadiness } from './visualizationGate';
 import { LspModelProvider } from '../providers/lspModelProvider';
 import { fetchModelData, type FetchModelParams } from './modelFetcher';
 import type { GraphNodeDTO } from '../providers/sysmlModelTypes';
@@ -81,6 +82,7 @@ function createVariantConfig(runtimeState: VisualizationPanelRuntimeState): Visu
             workspaceRootUri: state.workspaceRootUri,
             currentView: state.currentView,
             selectedView: state.selectedView ?? null,
+            clientVisualizationReady: evaluateClientVisualizationReadiness().ready,
         }),
         normalizeView: (viewId) => new Set<string>(SYSML_ENABLED_VIEWS).has(viewId) ? viewId : 'general-view',
         shouldTrackUri: (uri, state) => {
@@ -277,6 +279,20 @@ export class VisualizationPanel {
 
     public refresh(): void {
         this._controller.refresh();
+    }
+
+    public notifyWorkspaceLifecycleChanged(): void {
+        this._controller.notifyWorkspaceLifecycleChanged();
+    }
+
+    public requestUpdate(triggerSource = 'testSeed'): void {
+        this._controller.requestUpdate(triggerSource);
+    }
+
+    public prepareViewForTests(viewId: string, selectedView?: string): void {
+        this._runtimeState.currentView = this._controller.normalizeView(viewId);
+        this._runtimeState.selectedView = selectedView;
+        this._controller.requestUpdate('testSeed');
     }
 
     public dispose(): void {

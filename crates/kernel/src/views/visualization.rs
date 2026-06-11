@@ -631,4 +631,33 @@ mod tests {
             "semantic_core graph-first API should align with kernel view candidates"
         );
     }
+
+    #[test]
+    fn interconnection_fixture_with_views_returns_ibd_connectors() {
+        let workspace_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../vscode/testFixture/workspaces/interconnection-drone");
+        let response = build_sysml_visualization_for_paths(
+            &workspace_path,
+            Some(&workspace_path),
+            &[],
+            "interconnection-view",
+            Some("Views::droneConnections"),
+        )
+        .expect("build interconnection visualization");
+
+        assert!(
+            response.empty_state_message.is_none(),
+            "expected views in fixture, got empty state: {:?}",
+            response.empty_state_message
+        );
+        assert_eq!(
+            response.selected_view.as_deref(),
+            Some("Views::droneConnections")
+        );
+        let ibd = response.ibd.expect("ibd payload");
+        assert!(
+            !ibd.connectors.is_empty(),
+            "expected SurveillanceDrone IBD connectors, got: {ibd:#?}"
+        );
+    }
 }

@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { quickHash } from './shared';
 import { highlightElementInVisualization } from './selectionSync';
+import { replayLastRenderComplete } from './renderComplete';
 import { destroySharedRenderController } from './zoomController';
 import type { VisualizerContext } from './visualizerContext';
 import { updateActiveViewButton } from './viewControls';
@@ -35,6 +36,9 @@ export function registerMessageRouter(ctx: VisualizerContext): void {
                     viewCandidates: message.viewCandidates?.length || 0,
                 });
                 {
+                    if (typeof message.updateId === 'string' && message.updateId.length > 0) {
+                        ctx.lastUpdateId = message.updateId;
+                    }
                     const newHash = quickHash({
                         graph: message.graph,
                         generalViewGraph: message.generalViewGraph,
@@ -61,11 +65,14 @@ export function registerMessageRouter(ctx: VisualizerContext): void {
                             currentView: ctx.currentView,
                         });
                         ctx.hideLoading();
+                        replayLastRenderComplete(ctx, message.currentView || ctx.currentView);
                         return;
                     }
                     ctx.renderScheduler.dataHash = newHash;
 
-                    ctx.showLoading('Rendering diagram...');
+                    if (!message.emptyStateMessage) {
+                        ctx.showLoading('Rendering diagram...');
+                    }
 
                     ctx.currentData = message;
                     ctx.filteredData = null;
@@ -130,36 +137,23 @@ export function registerMessageRouter(ctx: VisualizerContext): void {
                 });
                 break;
             case 'exportDiagramForTest': {
-                const maxAttempts = 120;
-                let attempts = 0;
-                const tryExportWhenReady = () => {
-                    const exportPreview = ctx.exportHandler.getSvgStringForExport();
-                    const hasExportableSvg =
-                        typeof exportPreview === 'string' && exportPreview.includes('<svg');
-                    const hasContent = (() => {
-                        if (hasExportableSvg) {
-                            return true;
-                        }
-                        const svgElement = document.querySelector('#visualization svg');
-                        const groupElement = svgElement?.querySelector('g');
-                        return !!(svgElement && groupElement && groupElement.childElementCount > 0);
-                    })();
-                    if (!ctx.renderScheduler.isRendering && !hasContent && ctx.currentData) {
-                        void ctx.renderVisualization(ctx.currentView);
-                    }
-                    if ((ctx.renderScheduler.isRendering || !hasContent) && attempts < maxAttempts) {
-                        attempts += 1;
-                        setTimeout(tryExportWhenReady, 150);
-                        return;
-                    }
-                    const svgString = exportPreview ?? ctx.exportHandler.getSvgStringForExport();
+                const exportNow = () => {
+                    const svgString = ctx.exportHandler.getSvgStringForExport() ?? '';
                     ctx.vscode.postMessage({
                         command: 'testDiagramExported',
                         viewId: ctx.currentView,
-                        svgString: svgString ?? '',
+                        svgString,
                     });
                 };
-                tryExportWhenReady();
+                if (ctx.renderScheduler.isRendering) {
+                    setTimeout(exportNow, 50);
+                    break;
+                }
+                if (ctx.lastRenderOutcome === 'diagram' && ctx.lastRenderHasExportableSvg) {
+                    exportNow();
+                    break;
+                }
+                exportNow();
                 break;
             }
         }

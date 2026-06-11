@@ -12,6 +12,7 @@ import type { GraphNodeDTO, SemanticIndexReadyParams } from "../providers/sysmlM
 import {
   ModelExplorerProvider,
 } from "../explorer/modelExplorerProvider";
+import { getLastVisualizerRender } from "../visualization/renderTracker";
 import { VisualizationPanel } from "../visualization/visualizationPanel";
 import { rangeContainsPosition, rangeSpanScore } from "../utils/range";
 import {
@@ -85,7 +86,7 @@ function refreshWorkspaceLifecycleSurfaces(): void {
     updateStatusBar(context);
   }
   modelExplorerProvider?.refresh();
-  VisualizationPanel.currentPanel?.refresh();
+  VisualizationPanel.currentPanel?.notifyWorkspaceLifecycleChanged();
 }
 
 export type DebugExtensionState = {
@@ -99,6 +100,13 @@ export type DebugExtensionState = {
     pendingWorkspaceLoadRunId?: string;
   };
   visualizerOpen?: boolean;
+  lastVisualizerRender?: {
+    view: string;
+    outcome: string;
+    graphNodes: number;
+    hasExportableSvg: boolean;
+    timestampMs: number;
+  };
 };
 
 function graphNodesForDocumentUri(
@@ -909,6 +917,7 @@ export function deactivateWorkspaceIndexing(): void {
 }
 
 export function getDebugExtensionState(): DebugExtensionState {
+  const lastRender = getLastVisualizerRender();
   return {
     serverHealthState: getServerHealthState(),
     serverHealthDetail: getServerHealthDetail(),
@@ -922,6 +931,15 @@ export function getDebugExtensionState(): DebugExtensionState {
         modelExplorerProvider?.getDebugState().pendingWorkspaceLoadRunId,
     },
     visualizerOpen: VisualizationPanel.currentPanel !== undefined,
+    lastVisualizerRender: lastRender
+      ? {
+          view: lastRender.view,
+          outcome: lastRender.outcome,
+          graphNodes: lastRender.graphNodes,
+          hasExportableSvg: lastRender.hasExportableSvg,
+          timestampMs: lastRender.timestampMs,
+        }
+      : undefined,
   };
 }
 

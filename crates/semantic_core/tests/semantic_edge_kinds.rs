@@ -40,6 +40,36 @@ fn typing_and_connection_edges_can_coexist_between_same_node_pair() {
 }
 
 #[test]
+fn fan_out_connect_statements_with_distinct_targets_add_parallel_connection_edges() {
+    let uri = Url::parse("memory://workspace/fanout_connect.sysml").expect("uri");
+    let (mut graph, a, b) = port_nodes(&uri, "Pkg::MotorCmd", "Pkg::UnitCmd");
+    let connect = |target: &str| ConnectStatementDetail {
+        declaring_uri: uri.clone(),
+        range: TextRange::new(TextPosition::new(1, 0), TextPosition::new(1, 1)),
+        source_expression: "flightController.motorCmd".to_string(),
+        target_expression: target.to_string(),
+        container_prefix: Some("Pkg::Drone".to_string()),
+    };
+    for target in [
+        "propulsion.propulsionUnit1.cmd",
+        "propulsion.propulsionUnit2.cmd",
+        "propulsion.propulsionUnit3.cmd",
+        "propulsion.propulsionUnit4.cmd",
+    ] {
+        assert_eq!(
+            add_semantic_edge_once(
+                &mut graph,
+                &a,
+                &b,
+                SemanticEdge::connection_with_connect(connect(target)),
+            ),
+            AddSemanticEdgeResult::Added
+        );
+    }
+    assert_eq!(graph.graph.edge_count(), 4);
+}
+
+#[test]
 fn duplicate_connect_on_existing_connection_pair_is_rejected() {
     let uri = Url::parse("memory://workspace/dup_connect.sysml").expect("uri");
     let (mut graph, a, b) = port_nodes(&uri, "Pkg::A", "Pkg::B");

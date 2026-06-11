@@ -4,6 +4,8 @@ import { configureVisualizerWebview, getWebviewHtml } from './htmlBuilder';
 import { createMessageDispatcher } from './messageHandlers';
 import { type UpdateMessage, type FetchModelParams } from './modelFetcher';
 import { waitForDocumentDiagnostics } from './documentQuiescence';
+import { resetVisualizerRenderTracker } from './renderTracker';
+import { setVisualizerBootstrapCompleted } from './visualizerReadiness';
 import { createUpdateVisualizationFlow } from './updateFlow';
 
 export interface BaseVisualizerRestoreState {
@@ -70,6 +72,7 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
     private _fileChangeDebounceTimer: ReturnType<typeof setTimeout> | undefined;
     private _requestCurrentViewTimer: ReturnType<typeof setTimeout> | undefined;
     private _startupRetryTimers: Array<ReturnType<typeof setTimeout>> = [];
+    private _lifecycleDebounceTimer: ReturnType<typeof setTimeout> | undefined;
     private _lastContentHash = '';
     private _needsUpdateWhenVisible = false;
     private _lastViewColumn: vscode.ViewColumn | undefined;
@@ -132,6 +135,7 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
             }),
             loadingMessage: this._config.loadingMessage,
             getLoadingMessage: this._config.getLoadingMessage,
+            isDisposed: () => this._disposed,
         });
 
         this._requestCurrentViewTimer = setTimeout(() => {
@@ -142,16 +146,12 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
                 // ignore teardown races
             }
         }, 100);
-        // Startup/restore race guard: if initial updates arrive before webview/LSP is
-        // fully ready, schedule a couple of forced retries so the panel doesn't stay empty.
-        [1200, 3500].forEach((delayMs) => {
-            const timer = setTimeout(() => {
-                if (this._disposed) return;
-                this._lastContentHash = '';
-                void this.updateVisualization(true, 'startupRetry');
-            }, delayMs);
-            this._startupRetryTimers.push(timer);
-        });
+        // Startup/restore race guard: one safety retry if bootstrap never completed.
+        const startupRetryTimer = setTimeout(() => {
+            if (this._disposed) return;
+            void this.updateVisualization(true, 'startupRetry');
+        }, 2000);
+        this._startupRetryTimers.push(startupRetryTimer);
 
         const dispatch = createMessageDispatcher({
             panel: this._panel,
@@ -221,7 +221,15 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
     }
 
     async updateVisualization(forceUpdate = false, triggerSource = 'unknown'): Promise<void> {
+        if (this._disposed) {
+            return;
+        }
         await this._updateFlow.update(forceUpdate, triggerSource);
+    }
+
+    requestUpdate(triggerSource = 'testSeed'): void {
+        this._lastContentHash = '';
+        void this.updateVisualization(true, triggerSource);
     }
 
     changeView(viewId: string): void {
@@ -258,6 +266,19 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
         void this.updateVisualization(true, 'manualRefresh');
     }
 
+    notifyWorkspaceLifecycleChanged(): void {
+        if (this._lifecycleDebounceTimer) {
+            clearTimeout(this._lifecycleDebounceTimer);
+        }
+        this._lifecycleDebounceTimer = setTimeout(() => {
+            this._lifecycleDebounceTimer = undefined;
+            if (this._disposed) {
+                return;
+            }
+            void this.updateVisualization(false, 'lifecycleChanged');
+        }, 250);
+    }
+
     persistRestoreState(): void {
         if (!this._context) {
             return;
@@ -275,6 +296,8 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
             return;
         }
         this._disposed = true;
+        resetVisualizerRenderTracker();
+        setVisualizerBootstrapCompleted(false);
         this.clearRestoreState();
         if (this._requestCurrentViewTimer) {
             clearTimeout(this._requestCurrentViewTimer);
@@ -287,6 +310,10 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
         if (this._fileChangeDebounceTimer) {
             clearTimeout(this._fileChangeDebounceTimer);
             this._fileChangeDebounceTimer = undefined;
+        }
+        if (this._lifecycleDebounceTimer) {
+            clearTimeout(this._lifecycleDebounceTimer);
+            this._lifecycleDebounceTimer = undefined;
         }
         this._panel.dispose();
         while (this._disposables.length) {

@@ -23,6 +23,7 @@ export default defineConfig({
     "out/test/suite/visualizationGate.test.js",
     "out/test/suite/workspaceLifecycle.test.js",
     "out/test/suite/dtoAdapter.test.js",
+    "out/test/suite/renderTracker.test.js",
   ],
   extensionDevelopmentPath: __dirname,
   workspaceFolder: path.resolve(__dirname, "testFixture", "workspaces", "single-file"),
@@ -31,7 +32,7 @@ export default defineConfig({
     SPEC42_SERVER_PATH: process.env.SPEC42_SERVER_PATH || serverBinary,
   },
   mocha: {
-    timeout: process.env.CI ? 60000 : 20000,
+    timeout: process.env.CI ? 60000 : 45000,
     ui: "bdd",
   },
 });

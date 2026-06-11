@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Selection, ZoomBehavior } from 'd3';
+import type { RenderOutcome } from '../renderContract';
 import type { RenderScheduler } from './renderScheduler';
 import type { createExportHandler } from './export';
 
@@ -39,6 +40,9 @@ export interface VisualizerContext {
     resizeTimeout: ReturnType<typeof setTimeout> | undefined;
     lastRenderedWidth: number;
     lastRenderedHeight: number;
+    lastUpdateId: string | null;
+    lastRenderOutcome: RenderOutcome | null;
+    lastRenderHasExportableSvg: boolean;
 
     webviewPerf: (event: string, data?: Record<string, unknown>) => void;
     webviewLog: (level: 'info' | 'warn' | 'error', ...args: any[]) => void;

@@ -9,6 +9,8 @@ import { renderVisualizationEmptyState } from './renderers/placeholder';
 import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './sharedRendererAdapter';
 import { clearVisualHighlights } from './selectionSync';
 import type { VisualizerContext } from './visualizerContext';
+import { postRenderComplete } from './renderComplete';
+import type { RenderOutcome } from '../renderContract';
 import {
     attachCanvasClickHandler,
     bindSharedCanvasRefs,
@@ -83,6 +85,7 @@ export async function renderVisualization(
     ctx.showLoading('Rendering ' + (VIEW_OPTIONS[view]?.label || view) + '...');
 
     let didFinishRender = false;
+    let renderOutcome: RenderOutcome = 'error';
     const finishRender = () => {
         if (didFinishRender) return;
         didFinishRender = true;
@@ -92,6 +95,7 @@ export async function renderVisualization(
             renderRequestId,
         );
         ctx.hideLoading();
+        postRenderComplete(ctx, view, renderOutcome, supersededByNewerRequest);
         ctx.webviewPerf(
             supersededByNewerRequest
                 ? 'visualizer:webviewRenderSuperseded'
@@ -100,6 +104,7 @@ export async function renderVisualization(
                 view,
                 prepareMs,
                 totalMs: Date.now() - renderStartedAt,
+                outcome: supersededByNewerRequest ? 'cancelled' : renderOutcome,
             },
         );
         if (nextRequest) {
@@ -162,6 +167,7 @@ export async function renderVisualization(
                 return;
             }
             if (emptyStateMessage) {
+                renderOutcome = 'empty';
                 renderVisualizationEmptyState(emptyStateMessage, {
                     viewLabel: emptyStateTitleForData(ctx.currentData, view),
                     data: ctx.currentData,
@@ -174,6 +180,7 @@ export async function renderVisualization(
                 return;
             }
             if (!sharedPrepared) {
+                renderOutcome = 'error';
                 renderVisualizationEmptyState('Unable to prepare shared view data.', {
                     viewLabel: VIEW_OPTIONS[view]?.label || 'Shared Renderer',
                     data: dataForPrepare,
@@ -209,6 +216,7 @@ export async function renderVisualization(
             bindSharedCanvasRefs(ctx, ctx.vizElement);
             ensureSharedCanvasZoom(ctx, ctx.sharedRenderController.getFitTransform());
             attachCanvasClickHandler(ctx);
+            renderOutcome = 'diagram';
             setTimeout(() => {
                 if (isStaleRender()) {
                     finishRender();
@@ -220,6 +228,7 @@ export async function renderVisualization(
             ctx.lastView = view;
             return;
         } else {
+            renderOutcome = 'empty';
             renderVisualizationEmptyState('The selected view is not yet implemented.', {
                 viewLabel: 'Unknown View',
                 data: dataForPrepare,
@@ -236,6 +245,7 @@ export async function renderVisualization(
             finishRender();
             return;
         }
+        renderOutcome = 'error';
         ctx.webviewPerf('visualizer:webviewRenderFailed', {
             view,
             prepareMs,

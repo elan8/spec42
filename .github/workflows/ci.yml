@@ -268,8 +268,8 @@ jobs:
       - name: npm test (interconnection integration)
         run: cd vscode && xvfb-run -a npm run test:interconnection
 
-      - name: npm test (interconnection drone integration)
-        run: cd vscode && xvfb-run -a npm run test:interconnection-drone
+      - name: npm test (server restart smoke)
+        run: cd vscode && xvfb-run -a npm run test:server-restart
 
       - name: Upload VS Code smoke failure artifacts
         if: failure()

@@ -944,17 +944,17 @@ fn lsp_sysml_model_connected_blocks_fixture_exposes_interconnection_view_source_
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///connected_blocks_fixture_test.sysml";
+    let uri = "file:///surveillance_drone_fixture_test.sysml";
     let content = std::fs::read_to_string(
         std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("../..")
             .join("vscode")
             .join("testFixture")
             .join("workspaces")
-            .join("interconnection")
-            .join("ConnectedBlocks.sysml"),
+            .join("interconnection-drone")
+            .join("SurveillanceDrone.sysml"),
     )
-    .expect("read connected blocks fixture");
+    .expect("read surveillance drone fixture");
 
     let init_id = next_id();
     let init_req = serde_json::json!({

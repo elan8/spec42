@@ -382,27 +382,4 @@ describe("Extension Test Suite", () => {
 
     await vscode.commands.executeCommand("workbench.action.files.revert");
   });
-
-  it("Server recovers after manual restart", async function () {
-    this.timeout(isCi ? 60000 : 20000);
-    const filePath = getFixturePath(FIXTURE_FILE);
-    const doc = await vscode.workspace.openTextDocument(filePath);
-    await vscode.window.showTextDocument(doc);
-
-    await vscode.commands.executeCommand("sysml.restartServer");
-    await waitForExtensionServerReady(isCi ? 45000 : 20000);
-
-    const hovers = await waitFor(
-      "hover after manual restart",
-      () =>
-        vscode.commands.executeCommand<vscode.Hover[]>(
-          "vscode.executeHoverProvider",
-          doc.uri,
-          findPosition(doc, "part def Airframe")
-        ),
-      (value) => Array.isArray(value) && value.length > 0,
-      isCi ? 45000 : 15000
-    );
-    assert.ok(hovers.length > 0, "Server should recover after manual restart");
-  });
 });

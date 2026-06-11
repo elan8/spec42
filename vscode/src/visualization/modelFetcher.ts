@@ -16,6 +16,7 @@ export interface FetchModelParams {
 
 export interface UpdateMessage {
     command: 'update';
+    updateId?: string;
     modelReady?: boolean;
     modelStatusMessage?: string;
     graph?: SysMLGraphDTO;

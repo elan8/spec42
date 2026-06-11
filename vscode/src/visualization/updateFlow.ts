@@ -1,7 +1,12 @@
 import * as vscode from 'vscode';
 import { hashContent, type UpdateMessage } from './modelFetcher';
-import { evaluateClientVisualizationReadiness } from './visualizationGate';
+import { createUpdateId } from './renderContract';
 import { isVerboseLoggingEnabled, log, logError, logPerfEvent } from '../logger';
+import {
+    getVisualizerReadinessSnapshot,
+    setVisualizerBootstrapCompleted,
+    setVisualizerUpdateInFlight,
+} from './visualizerReadiness';
 
 export interface UpdateFlowDeps {
     panel: vscode.WebviewPanel;
@@ -20,14 +25,37 @@ export interface UpdateFlowDeps {
     fetchUpdateMessage?: () => Promise<UpdateMessage | null>;
     loadingMessage?: string;
     getLoadingMessage?: () => string;
+    isDisposed?: () => boolean;
 }
 
 function logPerf(event: string, extra?: Record<string, unknown>): void {
     logPerfEvent(event, extra);
 }
 
+function isWebviewDisposedError(error: unknown): boolean {
+    return error instanceof Error && error.message.includes('Webview is disposed');
+}
+
+async function safePostMessage(
+    panel: vscode.WebviewPanel,
+    message: unknown,
+    isDisposed?: () => boolean,
+): Promise<boolean> {
+    if (isDisposed?.()) {
+        return false;
+    }
+    try {
+        return await panel.webview.postMessage(message);
+    } catch (error) {
+        if (!isWebviewDisposedError(error)) {
+            throw error;
+        }
+        return false;
+    }
+}
+
 /** Workspace semantic trees may contain parent/child cycles; omit from webview payloads. */
-function toWebviewUpdateMessage(msg: UpdateMessage): UpdateMessage {
+export function toWebviewUpdateMessage(msg: UpdateMessage): UpdateMessage {
     const { elements: _elements, ...safe } = msg;
     try {
         return JSON.parse(JSON.stringify(safe)) as UpdateMessage;
@@ -65,6 +93,7 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
         fetchUpdateMessage,
         loadingMessage,
         getLoadingMessage,
+        isDisposed,
     } = deps;
     let bootstrapCompleted = false;
     let inFlightUpdate:
@@ -85,17 +114,19 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
         });
     }
 
-    async function doUpdateVisualization(): Promise<void> {
+    async function doUpdateVisualization(triggerSource: string): Promise<void> {
         const document = getDocument?.();
         const workspaceRootUri = getWorkspaceRootUri();
         const updateStartedAt = Date.now();
-        const clientReadiness = evaluateClientVisualizationReadiness();
-        if (!clientReadiness.ready) {
-            log('updateFlow:modelNotReady', clientReadiness.message ?? 'waiting');
-            await panel.webview.postMessage({
-                command: 'modelNotReady',
-                message: clientReadiness.message ?? 'Waiting for SysML model...',
-            });
+        const readiness = getVisualizerReadinessSnapshot(triggerSource);
+        if (!readiness.fetchAllowed) {
+            log('updateFlow:modelNotReady', readiness.loadingMessage ?? 'waiting');
+            if (!readiness.suppressNotReadyFlash) {
+                await safePostMessage(panel, {
+                    command: 'modelNotReady',
+                    message: readiness.loadingMessage ?? 'Waiting for SysML model...',
+                }, isDisposed);
+            }
             return;
         }
         try {
@@ -132,10 +163,12 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
             if (msg) {
                 if (msg.modelReady === false) {
                     log('updateFlow:serverModelNotReady', msg.modelStatusMessage ?? '');
-                    await panel.webview.postMessage({
-                        command: 'modelNotReady',
-                        message: msg.modelStatusMessage ?? 'Waiting for SysML model...',
-                    });
+                    if (!readiness.suppressNotReadyFlash) {
+                        await safePostMessage(panel, {
+                            command: 'modelNotReady',
+                            message: msg.modelStatusMessage ?? 'Waiting for SysML model...',
+                        }, isDisposed);
+                    }
                     return;
                 }
                 if (msg.currentView && msg.currentView !== getCurrentView()) {
@@ -167,39 +200,44 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                     }
                 }
                 const postStartedAt = Date.now();
+                const updateId = createUpdateId();
                 logPerf('visualizer:webviewPostMessageStarted', {
                     command: msg.command,
                     currentView: msg.currentView,
                     graphNodes: msg.graph?.nodes?.length || 0,
                     graphEdges: msg.graph?.edges?.length || 0,
+                    updateId,
                 });
-                const webviewMsg = toWebviewUpdateMessage(msg);
-                const delivered = await panel.webview.postMessage(webviewMsg);
+                const webviewMsg = toWebviewUpdateMessage({ ...msg, updateId });
+                const delivered = await safePostMessage(panel, webviewMsg, isDisposed);
                 logPerf('visualizer:webviewPostMessageCompleted', {
                     command: msg.command,
                     currentView: msg.currentView,
                     delivered,
+                    updateId,
                     totalMs: Date.now() - postStartedAt,
                 });
                 if (!delivered) {
                     logError('updateFlow:webviewPostMessageRejected', new Error('webview postMessage returned false'));
-                    await panel.webview.postMessage({
+                    await safePostMessage(panel, {
                         command: 'modelNotReady',
                         message: 'Visualizer could not receive diagram data. Try closing and reopening the panel.',
-                    });
+                    }, isDisposed);
                 }
             } else {
                 log('updateVisualization: no model data available, hiding loading state');
-                await panel.webview.postMessage({ command: 'hideLoading' });
+                await safePostMessage(panel, { command: 'hideLoading' }, isDisposed);
             }
         } catch (error) {
-            logError('updateVisualization failed', error);
-            await panel.webview.postMessage({ command: 'hideLoading' });
+            if (!isWebviewDisposedError(error)) {
+                logError('updateVisualization failed', error);
+            }
+            await safePostMessage(panel, { command: 'hideLoading' }, isDisposed);
         }
     }
 
     async function update(forceUpdate: boolean = false, triggerSource = 'unknown'): Promise<void> {
-        if (getIsNavigating()) {
+        if (isDisposed?.() || getIsNavigating()) {
             return;
         }
 
@@ -215,9 +253,6 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
             return await inFlightUpdate.promise;
         }
 
-        // During session restore the panel may exist but not yet be considered
-        // visible. Allow forced updates (initial render / webviewReady) to run
-        // so the visualizer doesn't get stuck in the loading state.
         if (!panel.visible && !forceUpdate) {
             setNeedsUpdateWhenVisible(true);
             return;
@@ -235,6 +270,7 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
         const contentHash = hashContent(contentHashSource);
 
         const contentUnchanged = contentHash === getLastContentHash();
+        const readiness = getVisualizerReadinessSnapshot(triggerSource);
         const isRedundantStartupRetry = triggerSource === 'startupRetry'
             && bootstrapCompleted
             && contentUnchanged;
@@ -249,20 +285,28 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
         });
         setLastContentHash(contentHash);
         const promise = (async () => {
+            setVisualizerUpdateInFlight(true);
             logPerf('visualizer:updateStarted', {
                 triggerSource,
                 isBootstrap: !bootstrapCompleted,
                 currentView: getCurrentView(),
+                suppressLoadingFlash: readiness.suppressLoadingFlash,
             });
-            panel.webview.postMessage({
-                command: 'showLoading',
-                message: getLoadingMessage?.() ?? loadingMessage ?? 'Loading visualization...',
-            });
+            if (!readiness.suppressLoadingFlash) {
+                await safePostMessage(panel, {
+                    command: 'showLoading',
+                    message: readiness.loadingMessage
+                        ?? getLoadingMessage?.()
+                        ?? loadingMessage
+                        ?? 'Loading visualization...',
+                }, isDisposed);
+            }
             await new Promise(resolve => setTimeout(resolve, 0));
             const startedAt = Date.now();
             try {
-                await doUpdateVisualization();
+                await doUpdateVisualization(triggerSource);
                 bootstrapCompleted = true;
+                setVisualizerBootstrapCompleted(true);
                 logPerf('visualizer:updateCompleted', {
                     triggerSource,
                     isBootstrap: isBootstrapTrigger,
@@ -270,6 +314,7 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                     totalMs: Date.now() - startedAt,
                 });
             } finally {
+                setVisualizerUpdateInFlight(false);
                 if (inFlightUpdate?.key === key) {
                     inFlightUpdate = undefined;
                 }

@@ -3,6 +3,8 @@ import * as vscode from 'vscode';
 import { getOutputChannel, isVerboseLoggingEnabled, logPerfEvent } from '../logger';
 import { LspModelProvider, toVscodeRange } from '../providers/lspModelProvider';
 import type { SysMLElement } from '../types/sysmlTypes';
+import type { RenderOutcome } from './renderContract';
+import { onRenderComplete } from './renderTracker';
 
 export interface MessageHandlerContext {
     panel: vscode.WebviewPanel;
@@ -76,6 +78,16 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
             case 'webviewReady':
                 setLastContentHash('');
                 updateVisualization(true, 'webviewReady');
+                break;
+            case 'renderComplete':
+                onRenderComplete({
+                    updateId: typeof message.updateId === 'string' ? message.updateId : undefined,
+                    view: typeof message.view === 'string' ? message.view : '',
+                    dataHash: typeof message.dataHash === 'string' ? message.dataHash : '',
+                    outcome: message.outcome as RenderOutcome,
+                    graphNodes: typeof message.graphNodes === 'number' ? message.graphNodes : 0,
+                    hasExportableSvg: message.hasExportableSvg === true,
+                });
                 break;
             case 'testDiagramExported':
                 handleTestDiagramExported(message.viewId, message.svgString).catch(err =>

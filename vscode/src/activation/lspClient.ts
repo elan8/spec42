@@ -410,7 +410,7 @@ export function startLanguageClient(
       log("Language client ready, waiting for semantic index before workspace model load");
       logStartupPhase("languageClient:ready");
       onClientReady();
-      VisualizationPanel.currentPanel?.refresh();
+      VisualizationPanel.currentPanel?.notifyWorkspaceLifecycleChanged();
     })
     .catch((error) => {
       const detail =

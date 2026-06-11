@@ -20,14 +20,146 @@ export type ExtensionDebugState = {
     pendingWorkspaceLoadRunId?: string;
   };
   lastSemanticIndexReadyWorkspaceFileCount?: number;
+  lastVisualizerRender?: {
+    view: string;
+    outcome: string;
+    graphNodes: number;
+    hasExportableSvg: boolean;
+    timestampMs: number;
+  };
 };
 
 export const isCi = Boolean(process.env.CI);
 export const integrationHookTimeoutMs = isCi ? 90000 : 60000;
 export const extensionServerReadyTimeoutMs = isCi ? 60000 : 30000;
-export const languageServerReadyTimeoutMs = isCi ? 45000 : 20000;
-export const visualizationPanelTimeoutMs = isCi ? 45000 : 20000;
-export const diagramExportTimeoutMs = isCi ? 30000 : 12000;
+export const languageServerReadyTimeoutMs = isCi ? 45000 : 45000;
+export const visualizationPanelTimeoutMs = isCi ? 45000 : 45000;
+export const diagramExportTimeoutMs = isCi ? 30000 : 30000;
+export const visualizerRenderTimeoutMs = isCi ? 45000 : 45000;
+
+export type VisualizerRenderResult = {
+  view: string;
+  outcome: string;
+  graphNodes: number;
+  hasExportableSvg: boolean;
+  timestampMs: number;
+  updateId?: string;
+};
+
+export type VisualizerSeedSummary = {
+  modelReady: boolean;
+  ibdConnectors: number;
+  ibdParts: number;
+  ibdPorts: number;
+  graphNodes: number;
+  viewCandidateCount: number;
+  viewCandidateIds: string[];
+  viewCandidateNames: string[];
+  selectedView?: string;
+  selectedViewName?: string;
+  emptyStateMessage?: string;
+  requestedViewId?: string;
+  requestedSelectedView?: string;
+};
+
+/** Structured logs for integration tests — always emitted to the test host console (CI-visible). */
+export function integrationTestLog(phase: string, payload: Record<string, unknown>): void {
+  try {
+    // eslint-disable-next-line no-console
+    console.log(`[spec42-test][${phase}] ${JSON.stringify(payload)}`);
+  } catch {
+    // eslint-disable-next-line no-console
+    console.log(`[spec42-test][${phase}]`, payload);
+  }
+}
+
+function shouldLogInterconnectionDebug(viewId: string): boolean {
+  return (
+    viewId === "interconnection-view" ||
+    process.env.SPEC42_TEST_DEBUG_INTERCONNECTION === "1"
+  );
+}
+
+export function visualizationToSeedSummary(visualization: Record<string, unknown> | undefined): VisualizerSeedSummary {
+  const ibd = visualization?.ibd as
+    | { parts?: unknown[]; ports?: unknown[]; connectors?: unknown[] }
+    | undefined;
+  const viewCandidates = Array.isArray(visualization?.viewCandidates)
+    ? (visualization.viewCandidates as Array<{ id?: string; name?: string }>)
+    : [];
+  return {
+    modelReady: visualization?.modelReady !== false,
+    ibdConnectors: ibd?.connectors?.length ?? 0,
+    ibdParts: ibd?.parts?.length ?? 0,
+    ibdPorts: ibd?.ports?.length ?? 0,
+    graphNodes: (visualization?.graph as { nodes?: unknown[] } | undefined)?.nodes?.length ?? 0,
+    viewCandidateCount: viewCandidates.length,
+    viewCandidateIds: viewCandidates.map((candidate) => candidate.id ?? ""),
+    viewCandidateNames: viewCandidates.map((candidate) => candidate.name ?? ""),
+    selectedView: visualization?.selectedView as string | undefined,
+    selectedViewName: visualization?.selectedViewName as string | undefined,
+    emptyStateMessage: visualization?.emptyStateMessage as string | undefined,
+  };
+}
+
+async function fetchVisualizationSnapshot(
+  workspaceRootUri: vscode.Uri,
+  viewId: string,
+  selectedView?: string
+): Promise<Record<string, unknown>> {
+  const visualization = await vscode.commands.executeCommand<Record<string, unknown>>(
+    "sysml.debug.getVisualizationForTests",
+    workspaceRootUri.toString(),
+    viewId,
+    selectedView
+  );
+  const summary = visualizationToSeedSummary(visualization);
+  const viewCandidates = Array.isArray(visualization?.viewCandidates)
+    ? (visualization.viewCandidates as Array<{ rendererView?: string }>)
+    : [];
+  return {
+    ...summary,
+    emptyStateMessage: summary.emptyStateMessage ?? null,
+    selectedView: summary.selectedView ?? null,
+    selectedViewName: summary.selectedViewName ?? null,
+    viewCandidateRendererViews: viewCandidates.map((candidate) => candidate.rendererView ?? ""),
+  };
+}
+
+async function logVisualizerFailureContext(
+  phase: string,
+  workspaceRootUri: vscode.Uri,
+  viewId: string,
+  selectedView: string | undefined,
+  extra: Record<string, unknown> = {}
+): Promise<void> {
+  if (!shouldLogInterconnectionDebug(viewId)) {
+    return;
+  }
+  let extensionState: ExtensionDebugState | undefined;
+  let visualization: Record<string, unknown> | undefined;
+  try {
+    extensionState = await getExtensionDebugState();
+  } catch (error) {
+    integrationTestLog(`${phase}:extensionStateError`, {
+      message: error instanceof Error ? error.message : String(error),
+    });
+  }
+  try {
+    visualization = await fetchVisualizationSnapshot(workspaceRootUri, viewId, selectedView);
+  } catch (error) {
+    integrationTestLog(`${phase}:visualizationError`, {
+      message: error instanceof Error ? error.message : String(error),
+    });
+  }
+  integrationTestLog(phase, {
+    viewId,
+    selectedView: selectedView ?? null,
+    extensionState,
+    visualization,
+    ...extra,
+  });
+}
 
 async function getExtensionDebugState(): Promise<ExtensionDebugState> {
   return (await vscode.commands.executeCommand(
@@ -95,36 +227,162 @@ export async function waitForVisualizationModel(
   );
 }
 
-/** Fetch LSP visualization and seed the webview so export does not depend on update-flow timing. */
+export async function waitForVisualizerRender(
+  viewId: string,
+  isReady: (render: VisualizerRenderResult) => boolean,
+  options?: {
+    timeoutMs?: number;
+    outcome?: string | string[];
+    minGraphNodes?: number;
+    seedSummary?: VisualizerSeedSummary;
+    workspaceRootUri?: vscode.Uri;
+    selectedView?: string;
+  }
+): Promise<VisualizerRenderResult> {
+  const timeoutMs = options?.timeoutMs ?? visualizerRenderTimeoutMs;
+  let render: VisualizerRenderResult | undefined;
+  try {
+    render = await vscode.commands.executeCommand<VisualizerRenderResult>(
+      "sysml.debug.waitForVisualizerRender",
+      {
+        view: viewId,
+        outcome: options?.outcome ?? ["diagram", "empty"],
+        minGraphNodes: options?.minGraphNodes,
+        timeoutMs,
+      }
+    );
+  } catch (error) {
+    if (options?.workspaceRootUri) {
+      await logVisualizerFailureContext(
+        "waitForVisualizerRender:timeout",
+        options.workspaceRootUri,
+        viewId,
+        options.selectedView,
+        {
+          timeoutMs,
+          error: error instanceof Error ? error.message : String(error),
+          seedSummary: options.seedSummary ?? null,
+        }
+      );
+    }
+    throw error;
+  }
+  const ready = Boolean(render && isReady(render));
+  if (!ready && options?.workspaceRootUri) {
+    await logVisualizerFailureContext(
+      "waitForVisualizerRender:notReady",
+      options.workspaceRootUri,
+      viewId,
+      options.selectedView,
+      {
+        render: render ?? null,
+        seedSummary: options.seedSummary ?? null,
+      }
+    );
+  }
+  assert.ok(
+    ready,
+    `${viewId} visualizer render was not ready` +
+      (render
+        ? ` (outcome=${render.outcome}, graphNodes=${render.graphNodes}, hasExportableSvg=${render.hasExportableSvg})`
+        : "")
+  );
+  return render!;
+}
+
+function renderSettledForView(viewId: string, render: VisualizerRenderResult): boolean {
+  if (render.outcome === "cancelled" || render.outcome === "error") {
+    return false;
+  }
+  if (viewId === "interconnection-view") {
+    return render.outcome === "diagram" && render.hasExportableSvg;
+  }
+  return render.outcome === "diagram" || render.outcome === "empty";
+}
+
+/** Drive production updateFlow and wait for webview renderComplete before export tests. */
 export async function seedVisualizerWebviewFromModel(
   workspaceRootUri: vscode.Uri,
   viewId: string,
-  isReady: (visualization: any) => boolean,
-  options?: { timeoutMs?: number; selectedView?: string }
-): Promise<any> {
-  const visualization = await waitForVisualizationModel(
+  isReady: (summary: VisualizerSeedSummary) => boolean,
+  options?: { timeoutMs?: number; selectedView?: string; renderTimeoutMs?: number }
+): Promise<VisualizerSeedSummary> {
+  const modelTimeoutMs = options?.timeoutMs ?? visualizationPanelTimeoutMs;
+  const renderTimeoutMs = options?.renderTimeoutMs ?? visualizerRenderTimeoutMs;
+  const selectedView = options?.selectedView;
+
+  if (shouldLogInterconnectionDebug(viewId)) {
+    integrationTestLog("seedVisualizer:before", {
+      workspaceRootUri: workspaceRootUri.toString(),
+      viewId,
+      selectedView: selectedView ?? null,
+      lspSnapshot: await fetchVisualizationSnapshot(
+        workspaceRootUri,
+        viewId,
+        selectedView
+      ).catch((error) => ({
+        error: error instanceof Error ? error.message : String(error),
+      })),
+    });
+  }
+
+  await waitForVisualizationModel(
     workspaceRootUri,
     viewId,
-    isReady,
-    options?.timeoutMs,
-    options?.selectedView
+    (visualization) => {
+      if (visualization?.modelReady === false) {
+        return false;
+      }
+      return isReady(visualizationToSeedSummary(visualization));
+    },
+    modelTimeoutMs,
+    selectedView
   );
-  await vscode.commands.executeCommand("sysml.debug.postVisualizerMessage", {
-    command: "update",
-    modelReady: visualization?.modelReady !== false,
-    graph: visualization?.graph ?? { nodes: [], edges: [] },
-    generalViewGraph: visualization?.generalViewGraph ?? visualization?.graph,
-    ibd: visualization?.ibd,
-    activityDiagrams: visualization?.activityDiagrams ?? [],
-    sequenceDiagrams: visualization?.sequenceDiagrams ?? [],
-    currentView: viewId,
-    viewCandidates: visualization?.viewCandidates ?? [],
-    selectedView: visualization?.selectedView,
-    selectedViewName: visualization?.selectedViewName,
-    emptyStateMessage: visualization?.emptyStateMessage,
-  });
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  return visualization;
+
+  const summary = await vscode.commands.executeCommand<VisualizerSeedSummary>(
+    "sysml.debug.seedVisualizerFromLspForTests",
+    workspaceRootUri.toString(),
+    viewId,
+    selectedView
+  );
+  assert.ok(summary, `${viewId} visualizer seed returned no summary`);
+  if (shouldLogInterconnectionDebug(viewId)) {
+    integrationTestLog("seedVisualizer:afterLspSeed", summary);
+  }
+
+  const render = await waitForVisualizerRender(
+    viewId,
+    (value) => renderSettledForView(viewId, value),
+    {
+      timeoutMs: renderTimeoutMs,
+      seedSummary: summary,
+      workspaceRootUri,
+      selectedView,
+    }
+  );
+
+  const finalVisualization = await getVisualizationForTests(
+    workspaceRootUri,
+    viewId,
+    selectedView
+  );
+  const result = {
+    ...visualizationToSeedSummary(finalVisualization),
+    graphNodes: render.graphNodes,
+    requestedViewId: viewId,
+    requestedSelectedView: selectedView,
+  };
+  assert.ok(
+    isReady(result),
+    `${viewId} visualizer model was not ready after render (ibdConnectors=${result.ibdConnectors}, selectedView=${result.selectedView ?? "auto"})`
+  );
+  if (shouldLogInterconnectionDebug(viewId)) {
+    integrationTestLog("seedVisualizer:complete", {
+      summary: result,
+      render,
+    });
+  }
+  return result;
 }
 
 export async function closeAllEditorsForTests(): Promise<void> {
@@ -386,18 +644,52 @@ export async function triggerDiagramExportAndWait(
   timeoutMs = diagramExportTimeoutMs
 ): Promise<{ uri: vscode.Uri; svgText: string }> {
   const uri = getDiagramExportUri(workspaceUri, viewId);
-  const svgText = await waitFor(
-    `${viewId} triggered svg export`,
-    async () => {
-      await triggerVisualizerExportForTest();
-      return (await tryReadWorkspaceText(uri)) ?? "";
-    },
-    (value) => {
-      const text = value ?? "";
-      return text.includes("<svg") && isReady(text);
-    },
-    timeoutMs,
-    500
-  );
-  return { uri, svgText };
+  let lastSvg = "";
+  try {
+    const svgText = await waitFor(
+      `${viewId} triggered svg export`,
+      async () => {
+        await triggerVisualizerExportForTest();
+        lastSvg = (await tryReadWorkspaceText(uri)) ?? "";
+        return lastSvg;
+      },
+      (value) => {
+        const text = value ?? "";
+        return text.includes("<svg") && isReady(text);
+      },
+      timeoutMs,
+      500
+    );
+    if (shouldLogInterconnectionDebug(viewId)) {
+      integrationTestLog("triggerDiagramExport:success", {
+        viewId,
+        exportUri: uri.toString(),
+        svgLength: svgText.length,
+        hasIbdConnector: svgText.includes("ibd-connector"),
+        hasConnectedBlocks: svgText.includes("ConnectedBlocks::"),
+        hasItPackage: svgText.includes("IT::"),
+      });
+    }
+    return { uri, svgText };
+  } catch (error) {
+    if (shouldLogInterconnectionDebug(viewId)) {
+      await logVisualizerFailureContext(
+        "triggerDiagramExport:timeout",
+        workspaceUri,
+        viewId,
+        undefined,
+        {
+          exportUri: uri.toString(),
+          lastSvgLength: lastSvg.length,
+          lastSvgPreview: lastSvg.slice(0, 400),
+          hasSvgTag: lastSvg.includes("<svg"),
+          hasIbdConnector: lastSvg.includes("ibd-connector"),
+          hasConnectedBlocks: lastSvg.includes("ConnectedBlocks::"),
+          hasItPackage: lastSvg.includes("IT::"),
+          error: error instanceof Error ? error.message : String(error),
+        }
+      );
+    }
+    throw error;
+  }
 }

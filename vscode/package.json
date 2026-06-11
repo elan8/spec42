@@ -675,9 +675,10 @@
     "test:library-unit": "node ./node_modules/mocha/bin/mocha out/test/suite/libraryStatusViewModel.test.js",
     "test:state-view": "vscode-test --config .vscode-test.state-view.mjs",
     "test:interconnection": "vscode-test --config .vscode-test.interconnection.mjs",
-    "test:interconnection-drone": "vscode-test --config .vscode-test.interconnection-drone.mjs",
+    "test:interconnection-drone": "npm run test:interconnection",
     "test:multi-file": "vscode-test --config .vscode-test.multi-file.mjs",
     "test:workspace-smoke": "vscode-test --config .vscode-test.workspace-smoke.mjs",
+    "test:server-restart": "vscode-test --config .vscode-test.server-restart.mjs",
     "package": "vsce package"
   },
   "devDependencies": {

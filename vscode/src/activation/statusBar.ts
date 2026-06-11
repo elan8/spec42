@@ -94,10 +94,10 @@ export function setServerHealth(
   log("Server health:", state, detail);
   if (
     VisualizationPanel.currentPanel &&
-    (state === "ready" || state === "degraded") &&
-    (previousState === "starting" || previousState === "indexing" || previousState === "restarting")
+    (state === "ready" || state === "degraded" || state === "indexing") &&
+    state !== previousState
   ) {
-    VisualizationPanel.currentPanel.refresh();
+    VisualizationPanel.currentPanel.notifyWorkspaceLifecycleChanged();
   }
   updateStatusBar(context);
 }

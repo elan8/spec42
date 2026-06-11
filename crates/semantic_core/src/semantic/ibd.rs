@@ -2367,6 +2367,23 @@ mod tests {
             "expected motor command connector under drone instance, got {:?}",
             ibd.connectors
         );
+        for unit in ["propulsionUnit2", "propulsionUnit3", "propulsionUnit4"] {
+            assert!(
+                ibd.connectors.iter().any(|connector| {
+                    connector.source_id.ends_with("flightController.motorCmd")
+                        && connector.target_id.ends_with(&format!("{unit}.cmd"))
+                }),
+                "expected motor command connector to {unit}, got {:?}",
+                ibd.connectors
+            );
+            assert!(
+                ibd.connectors.iter().any(|connector| {
+                    connector.target_id.ends_with(&format!("{unit}.pwr"))
+                }),
+                "expected power connector to {unit}, got {:?}",
+                ibd.connectors
+            );
+        }
 
         let default_root = ibd.default_root.as_deref().expect("default root");
         let root_view = ibd.root_views.get(default_root).expect("default root view");

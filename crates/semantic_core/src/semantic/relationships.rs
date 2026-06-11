@@ -600,7 +600,12 @@ pub enum AddSemanticEdgeResult {
 
 /// Adds an edge when no same-kind edge exists between the pair.
 /// For `Connection` edges with connect metadata, returns [`AddSemanticEdgeResult::DuplicateConnect`]
-/// when a connection edge already exists (keeps the first edge's metadata).
+/// when an identical connect statement already exists.
+///
+/// Fan-out/fan-in to the same resolved port node (for example four `connect` statements from
+/// `flightController.motorCmd` to `propulsion.propulsionUnitN.cmd` that all resolve through
+/// inherited definition ports) still records separate parallel connection edges so each
+/// statement keeps its own endpoint expressions for interconnection rendering.
 pub fn add_semantic_edge_once(
     g: &mut SemanticGraph,
     source_id: &NodeId,
@@ -613,12 +618,14 @@ pub fn add_semantic_edge_once(
     ) else {
         return AddSemanticEdgeResult::SkippedSameKind;
     };
-    for existing in g.graph.edges_connecting(src_idx, tgt_idx) {
-        if existing.weight().kind != edge.kind {
-            continue;
-        }
-        if edge.kind == RelationshipKind::Connection {
-            if let Some(connect) = edge.connect.clone() {
+    if edge.kind == RelationshipKind::Connection {
+        if let Some(connect) = edge.connect.clone() {
+            let mut saw_connection = false;
+            for existing in g.graph.edges_connecting(src_idx, tgt_idx) {
+                if existing.weight().kind != RelationshipKind::Connection {
+                    continue;
+                }
+                saw_connection = true;
                 if existing.weight().connect.is_none() {
                     if let Some(weight) = g.graph.edge_weight_mut(existing.id()) {
                         weight.connect = Some(connect);
@@ -633,10 +640,26 @@ pub fn add_semantic_edge_once(
                         return AddSemanticEdgeResult::DuplicateConnect;
                     }
                 }
+            }
+            if saw_connection {
+                g.graph.add_edge(src_idx, tgt_idx, edge);
+                return AddSemanticEdgeResult::Added;
+            }
+            g.graph.add_edge(src_idx, tgt_idx, edge);
+            return AddSemanticEdgeResult::Added;
+        }
+        for existing in g.graph.edges_connecting(src_idx, tgt_idx) {
+            if existing.weight().kind == edge.kind {
                 return AddSemanticEdgeResult::SkippedSameKind;
             }
         }
-        return AddSemanticEdgeResult::SkippedSameKind;
+        g.graph.add_edge(src_idx, tgt_idx, edge);
+        return AddSemanticEdgeResult::Added;
+    }
+    for existing in g.graph.edges_connecting(src_idx, tgt_idx) {
+        if existing.weight().kind == edge.kind {
+            return AddSemanticEdgeResult::SkippedSameKind;
+        }
     }
     g.graph.add_edge(src_idx, tgt_idx, edge);
     AddSemanticEdgeResult::Added

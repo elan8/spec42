@@ -12,6 +12,8 @@ import {
 } from "../../visualization/visualizationPanel";
 import { SYSML_ENABLED_VIEWS } from "../../visualization/webview/constants";
 import { configureVisualizerWebview, getWebviewHtml } from "../../visualization/htmlBuilder";
+import { waitForVisualizerRender } from "../../visualization/renderTracker";
+import type { RenderOutcome } from "../../visualization/renderContract";
 import { getConfigNumber, isSysmlDoc } from "../configBridge";
 import { getLanguageClient, isLanguageClientReady, type LspClientHandles } from "../lspClient";
 import { getModelExplorerProvider } from "../workspaceIndexing";
@@ -495,6 +497,71 @@ export function registerVisualizerCommands(
           view,
           selectedView
         );
+      }
+    ),
+
+    vscode.commands.registerCommand(
+      "sysml.debug.seedVisualizerFromLspForTests",
+      async (
+        workspaceRootUri: string,
+        viewId: string,
+        selectedView?: string
+      ) => {
+        const panel = VisualizationPanel.currentPanel;
+        if (!panel) {
+          throw new Error("Visualizer panel is not open");
+        }
+        panel.prepareViewForTests(viewId, selectedView);
+        const visualization = await lspModelProvider.getVisualization(
+          workspaceRootUri,
+          viewId,
+          selectedView
+        );
+        const viewCandidates = visualization.viewCandidates ?? [];
+        const summary = {
+          modelReady: visualization.modelReady !== false,
+          ibdConnectors: visualization.ibd?.connectors?.length ?? 0,
+          ibdParts: visualization.ibd?.parts?.length ?? 0,
+          ibdPorts: visualization.ibd?.ports?.length ?? 0,
+          graphNodes: visualization.graph?.nodes?.length ?? 0,
+          viewCandidateCount: viewCandidates.length,
+          viewCandidateIds: viewCandidates.map((candidate) => candidate.id),
+          viewCandidateNames: viewCandidates.map((candidate) => candidate.name),
+          selectedView: visualization.selectedView,
+          selectedViewName: visualization.selectedViewName,
+          emptyStateMessage: visualization.emptyStateMessage,
+          requestedViewId: viewId,
+          requestedSelectedView: selectedView,
+        };
+        try {
+          // eslint-disable-next-line no-console
+          console.log(
+            `[spec42-test][seedVisualizerFromLsp] ${JSON.stringify(summary)}`
+          );
+        } catch {
+          // ignore serialization issues in test logging
+        }
+        return summary;
+      }
+    ),
+
+    vscode.commands.registerCommand(
+      "sysml.debug.waitForVisualizerRender",
+      async (options?: {
+        view?: string;
+        outcome?: string | string[];
+        minGraphNodes?: number;
+        updateId?: string;
+        timeoutMs?: number;
+      }) => {
+        const outcome = options?.outcome;
+        return await waitForVisualizerRender({
+          view: options?.view,
+          outcome: outcome as RenderOutcome | RenderOutcome[] | undefined,
+          minGraphNodes: options?.minGraphNodes,
+          updateId: options?.updateId,
+          timeoutMs: options?.timeoutMs,
+        });
       }
     ),
 
