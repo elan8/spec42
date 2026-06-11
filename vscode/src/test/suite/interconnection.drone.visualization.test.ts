@@ -7,11 +7,14 @@ import {
     getFixturePath,
     getTestWorkspaceFolder,
     integrationHookTimeoutMs,
+    isCi,
+    seedVisualizerWebviewFromModel,
     triggerDiagramExportAndWait,
     waitForLanguageServerReady,
     waitForVisualizerOpen,
 } from "./testUtils";
 
+const interconnectionExportTimeoutMs = isCi ? 45000 : 30000;
 const DRONE_FIXTURE = getFixturePath("SurveillanceDrone.sysml");
 
 type ParsedRoute = {
@@ -196,6 +199,12 @@ describe("Interconnection Visualization Drone", () => {
         await waitForVisualizerOpen();
 
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
+        await seedVisualizerWebviewFromModel(
+            workspaceFolder.uri,
+            "interconnection-view",
+            (model) => (model?.ibd?.connectors?.length ?? 0) > 0,
+            { timeoutMs: interconnectionExportTimeoutMs }
+        );
 
         const uri = getDiagramExportUri(workspaceFolder.uri, "interconnection-view");
         try {
@@ -211,7 +220,7 @@ describe("Interconnection Visualization Drone", () => {
                 text.includes("telemetryOut") &&
                 text.includes("videoIn") &&
                 text.includes("regulated5V"),
-            45000
+            interconnectionExportTimeoutMs
         );
 
         assert.ok(svgText.includes("<svg"), "drone interconnection export should contain svg markup");

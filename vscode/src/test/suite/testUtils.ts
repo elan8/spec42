@@ -83,15 +83,48 @@ export async function waitForVisualizationModel(
   workspaceRootUri: vscode.Uri,
   viewId: string,
   isReady: (visualization: any) => boolean,
-  timeoutMs = visualizationPanelTimeoutMs
+  timeoutMs = visualizationPanelTimeoutMs,
+  selectedView?: string
 ): Promise<any> {
   return await waitFor(
     `${viewId} visualization model`,
-    () => getVisualizationForTests(workspaceRootUri, viewId),
+    () => getVisualizationForTests(workspaceRootUri, viewId, selectedView),
     (value) => Boolean(value && isReady(value)),
     timeoutMs,
     300
   );
+}
+
+/** Fetch LSP visualization and seed the webview so export does not depend on update-flow timing. */
+export async function seedVisualizerWebviewFromModel(
+  workspaceRootUri: vscode.Uri,
+  viewId: string,
+  isReady: (visualization: any) => boolean,
+  options?: { timeoutMs?: number; selectedView?: string }
+): Promise<any> {
+  const visualization = await waitForVisualizationModel(
+    workspaceRootUri,
+    viewId,
+    isReady,
+    options?.timeoutMs,
+    options?.selectedView
+  );
+  await vscode.commands.executeCommand("sysml.debug.postVisualizerMessage", {
+    command: "update",
+    modelReady: visualization?.modelReady !== false,
+    graph: visualization?.graph ?? { nodes: [], edges: [] },
+    generalViewGraph: visualization?.generalViewGraph ?? visualization?.graph,
+    ibd: visualization?.ibd,
+    activityDiagrams: visualization?.activityDiagrams ?? [],
+    sequenceDiagrams: visualization?.sequenceDiagrams ?? [],
+    currentView: viewId,
+    viewCandidates: visualization?.viewCandidates ?? [],
+    selectedView: visualization?.selectedView,
+    selectedViewName: visualization?.selectedViewName,
+    emptyStateMessage: visualization?.emptyStateMessage,
+  });
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  return visualization;
 }
 
 export async function closeAllEditorsForTests(): Promise<void> {

@@ -8,12 +8,20 @@ import {
     getFixturePath,
     getDiagramExportUri,
     getTestWorkspaceFolder,
+    isCi,
+    seedVisualizerWebviewFromModel,
     selectVisualizerPackage,
     triggerDiagramExportAndWait,
     waitForExtensionServerReady,
     waitForLanguageServerReady,
     waitForVisualizerOpen,
 } from "./testUtils";
+
+function interconnectionModelReady(model: any): boolean {
+    return (model?.ibd?.connectors?.length ?? 0) > 0;
+}
+
+const interconnectionExportTimeoutMs = isCi ? 45000 : 30000;
 
 const INTERCONNECTION_FIXTURE = "ConnectedBlocks.sysml";
 const CONTAINER_PORTS_FIXTURE = "ContainerPorts.sysml";
@@ -173,6 +181,12 @@ describe("Interconnection Visualization", () => {
         await waitForVisualizerOpen();
 
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
+        await seedVisualizerWebviewFromModel(
+            workspaceFolder.uri,
+            "interconnection-view",
+            interconnectionModelReady,
+            { timeoutMs: interconnectionExportTimeoutMs }
+        );
         const exportUri = getDiagramExportUri(workspaceFolder.uri, "interconnection-view");
         try {
             await vscode.workspace.fs.delete(exportUri, { useTrash: false });
@@ -183,7 +197,7 @@ describe("Interconnection Visualization", () => {
             workspaceFolder.uri,
             "interconnection-view",
             (text) => text.includes("ibd-connector"),
-            30000
+            interconnectionExportTimeoutMs
         );
 
         assert.ok(svgText.includes("<svg"), "interconnection-view export should contain svg markup");
@@ -299,6 +313,12 @@ describe("Interconnection Visualization", () => {
 
         await clearVisualizerPackageSelection();
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
+        await seedVisualizerWebviewFromModel(
+            workspaceFolder.uri,
+            "interconnection-view",
+            interconnectionModelReady,
+            { timeoutMs: interconnectionExportTimeoutMs }
+        );
         const exportUri = getDiagramExportUri(workspaceFolder.uri, "interconnection-view");
         try {
             await vscode.workspace.fs.delete(exportUri, { useTrash: false });
@@ -309,7 +329,7 @@ describe("Interconnection Visualization", () => {
             workspaceFolder.uri,
             "interconnection-view",
             (text) => text.includes("ibd-connector"),
-            45000
+            interconnectionExportTimeoutMs
         );
 
         assert.ok(
@@ -331,6 +351,12 @@ describe("Interconnection Visualization", () => {
 
         await selectVisualizerPackage("ConnectedBlocks");
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
+        await seedVisualizerWebviewFromModel(
+            workspaceFolder.uri,
+            "interconnection-view",
+            interconnectionModelReady,
+            { timeoutMs: interconnectionExportTimeoutMs, selectedView: "ConnectedBlocks" }
+        );
         const exportUri = getDiagramExportUri(workspaceFolder.uri, "interconnection-view");
         try {
             await vscode.workspace.fs.delete(exportUri, { useTrash: false });
@@ -341,7 +367,7 @@ describe("Interconnection Visualization", () => {
             workspaceFolder.uri,
             "interconnection-view",
             (text) => text.includes("ibd-connector"),
-            45000
+            interconnectionExportTimeoutMs
         );
 
         assert.ok(
