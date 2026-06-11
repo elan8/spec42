@@ -1259,12 +1259,13 @@ pub fn build_sysml_visualization_workspace(
         nodes: Vec::new(),
         edges: Vec::new(),
     };
-    let full_ibd = ibd::merge_ibd_payloads(
+    let mut full_ibd = ibd::merge_ibd_payloads(
         workspace_uris
             .iter()
             .map(|workspace_uri| ibd::build_ibd_for_uri(semantic_graph, workspace_uri))
             .collect(),
     );
+    ibd::finalize_merged_ibd_connectors(semantic_graph, &workspace_uris, &mut full_ibd);
     let viz_docs = workspace_parsed_documents_for_uris(documents, &workspace_uris);
     let mut full_activity_diagrams =
         build_workspace_activity_diagrams(&viz_docs, &workspace_uris, None);

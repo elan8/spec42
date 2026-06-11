@@ -29,20 +29,23 @@ pub fn build_diagram_payload(
     workspace_root: Option<&Path>,
     library_paths: &[PathBuf],
     view: &str,
+    selected_view: Option<&str>,
 ) -> Result<SysmlVisualizationResultDto, String> {
-    let views = requested_views(view)?;
-    let export_view = views
-        .first()
-        .copied()
-        .ok_or_else(|| format!("No view resolved for '{view}'"))?;
-    build_sysml_visualization_for_paths(path, workspace_root, library_paths, export_view, None)
+    let export_view = resolve_renderer_view(view)?;
+    build_sysml_visualization_for_paths(
+        path,
+        workspace_root,
+        library_paths,
+        export_view,
+        selected_view,
+    )
 }
 
 pub fn render_diagram(
     payload: &SysmlVisualizationResultDto,
-    export_view: &str,
     format: DiagramExportFormat,
 ) -> Result<(String, &'static str), String> {
+    let export_view = payload.view.as_str();
     match format {
         DiagramExportFormat::Json => {
             let raw = serde_json::to_string_pretty(payload)
@@ -65,21 +68,11 @@ pub fn render_diagram_for_path(
     workspace_root: Option<&Path>,
     library_paths: &[PathBuf],
     view: &str,
+    selected_view: Option<&str>,
     format: DiagramExportFormat,
 ) -> Result<(String, &'static str), String> {
-    let views = requested_views(view)?;
-    let export_view = views
-        .first()
-        .copied()
-        .ok_or_else(|| format!("No view resolved for '{view}'"))?;
-    let payload = build_sysml_visualization_for_paths(
-        path,
-        workspace_root,
-        library_paths,
-        export_view,
-        None,
-    )?;
-    render_diagram(&payload, export_view, format)
+    let payload = build_diagram_payload(path, workspace_root, library_paths, view, selected_view)?;
+    render_diagram(&payload, format)
 }
 
 pub fn export_diagrams(
@@ -88,24 +81,74 @@ pub fn export_diagrams(
 ) -> Result<DiagramExportSummary, String> {
     std::fs::create_dir_all(&args.output)
         .map_err(|err| format!("Failed to create {}: {err}", args.output.display()))?;
-    let views = requested_views(args.view.as_str())?;
+    if args.view == "model-views" {
+        return export_model_views(args, library_paths);
+    }
+    if args.selected_view.is_some() {
+        return export_single_diagram(
+            args,
+            library_paths,
+            args.view.as_str(),
+            args.selected_view.as_deref(),
+        );
+    }
+    let views = requested_renderer_views(args.view.as_str())?;
     let mut exported = 0;
     for view in views {
+        export_single_diagram(args, library_paths, view, None)?;
+        exported += 1;
+    }
+    Ok(DiagramExportSummary {
+        output_dir: args.output.clone(),
+        exported,
+    })
+}
+
+fn export_model_views(
+    args: &DiagramExportArgs,
+    library_paths: &[PathBuf],
+) -> Result<DiagramExportSummary, String> {
+    if args.selected_view.is_some() {
+        return Err(
+            "--selected-view cannot be combined with --view model-views".to_string(),
+        );
+    }
+    let probe = build_sysml_visualization_for_paths(
+        args.path.as_path(),
+        args.workspace_root.as_deref(),
+        library_paths,
+        "general-view",
+        None,
+    )?;
+    let candidates: Vec<_> = probe
+        .view_candidates
+        .iter()
+        .filter(|candidate| candidate.supported)
+        .collect();
+    if candidates.is_empty() {
+        return Err("No supported explicit model views were found in the workspace".to_string());
+    }
+    let extension = match args.format {
+        DiagramExportFormat::Json => "json",
+        DiagramExportFormat::Svg => "svg",
+    };
+    let mut exported = 0;
+    for candidate in candidates {
+        let renderer_view = candidate
+            .renderer_view
+            .as_deref()
+            .ok_or_else(|| format!("View '{}' has no renderer mapping", candidate.name))?;
         let payload = build_sysml_visualization_for_paths(
             args.path.as_path(),
             args.workspace_root.as_deref(),
             library_paths,
-            view,
-            None,
+            renderer_view,
+            Some(candidate.name.as_str()),
         )?;
-        let extension = match args.format {
-            DiagramExportFormat::Json => "json",
-            DiagramExportFormat::Svg => "svg",
-        };
         let output_path = args
             .output
-            .join(format!("{}.{}", safe_file_stem(view), extension));
-        let (body, _) = render_diagram(&payload, view, args.format)?;
+            .join(format!("{}.{}", safe_file_stem(&candidate.name), extension));
+        let (body, _) = render_diagram(&payload, args.format)?;
         std::fs::write(&output_path, body)
             .map_err(|err| format!("Failed to write {}: {err}", output_path.display()))?;
         exported += 1;
@@ -116,7 +159,52 @@ pub fn export_diagrams(
     })
 }
 
-fn requested_views(view: &str) -> Result<Vec<&'static str>, String> {
+fn export_single_diagram(
+    args: &DiagramExportArgs,
+    library_paths: &[PathBuf],
+    view: &str,
+    selected_view: Option<&str>,
+) -> Result<DiagramExportSummary, String> {
+    let payload = build_diagram_payload(
+        args.path.as_path(),
+        args.workspace_root.as_deref(),
+        library_paths,
+        view,
+        selected_view,
+    )?;
+    let extension = match args.format {
+        DiagramExportFormat::Json => "json",
+        DiagramExportFormat::Svg => "svg",
+    };
+    let file_stem = payload
+        .selected_view_name
+        .as_deref()
+        .map(safe_file_stem)
+        .unwrap_or_else(|| safe_file_stem(payload.view.as_str()));
+    let output_path = args.output.join(format!("{file_stem}.{extension}"));
+    let (body, _) = render_diagram(&payload, args.format)?;
+    std::fs::write(&output_path, body)
+        .map_err(|err| format!("Failed to write {}: {err}", output_path.display()))?;
+    Ok(DiagramExportSummary {
+        output_dir: args.output.clone(),
+        exported: 1,
+    })
+}
+
+fn resolve_renderer_view(view: &str) -> Result<&'static str, String> {
+    if view == "model-views" {
+        return Err(
+            "Use diagrams export --view model-views without --selected-view to export all explicit views"
+                .to_string(),
+        );
+    }
+    requested_renderer_views(view)?
+        .into_iter()
+        .next()
+        .ok_or_else(|| format!("No renderer view resolved for '{view}'"))
+}
+
+fn requested_renderer_views(view: &str) -> Result<Vec<&'static str>, String> {
     if view == "all" {
         return Ok(EXPORTABLE_VIEWS.to_vec());
     }
@@ -127,7 +215,7 @@ fn requested_views(view: &str) -> Result<Vec<&'static str>, String> {
         .map(|view| vec![view])
         .ok_or_else(|| {
             format!(
-                "Unsupported export view '{view}'. Expected one of: all, {}",
+                "Unsupported export view '{view}'. Expected one of: all, model-views, {}",
                 EXPORTABLE_VIEWS.join(", ")
             )
         })
@@ -1126,8 +1214,8 @@ mod tests {
     }
 
     #[test]
-    fn requested_views_rejects_unknown_view() {
-        let err = requested_views("unknown").expect_err("unknown view should fail");
+    fn requested_renderer_views_rejects_unknown_view() {
+        let err = requested_renderer_views("unknown").expect_err("unknown view should fail");
         assert!(err.contains("Unsupported export view"));
     }
 }

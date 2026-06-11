@@ -289,6 +289,7 @@ pub async fn diagrams_export(
     let library_paths = state.environment.library_paths.clone();
     let workspace_root = state.workspace_root.clone();
     let view = body.view.clone();
+    let selected_view = body.selected_view.clone();
     let format = body.format;
 
     let (body_text, content_type) = tokio::task::spawn_blocking(move || {
@@ -297,6 +298,7 @@ pub async fn diagrams_export(
             Some(workspace_root.as_path()),
             &library_paths,
             &view,
+            selected_view.as_deref(),
             format,
         )
     })

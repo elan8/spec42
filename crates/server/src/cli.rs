@@ -171,6 +171,9 @@ pub struct DiagramExportArgs {
     pub workspace_root: Option<PathBuf>,
     #[arg(long = "view", default_value = "all")]
     pub view: String,
+    /// Explicit SysML view usage name (for example `gridStructure` or `StedinRijnmondGridExpansion::Views::gridStructure`).
+    #[arg(long = "selected-view")]
+    pub selected_view: Option<String>,
     #[arg(long = "format", value_enum, default_value_t = DiagramExportFormat::Svg)]
     pub format: DiagramExportFormat,
     #[arg(long = "output")]
@@ -346,6 +349,8 @@ mod tests {
             "models",
             "--view",
             "general-view",
+            "--selected-view",
+            "gridStructure",
             "--format",
             "json",
             "--output",
@@ -357,6 +362,7 @@ mod tests {
             }) => {
                 assert_eq!(args.path, PathBuf::from("models"));
                 assert_eq!(args.view, "general-view");
+                assert_eq!(args.selected_view.as_deref(), Some("gridStructure"));
                 assert_eq!(args.format, DiagramExportFormat::Json);
                 assert_eq!(args.output, PathBuf::from("out"));
             }

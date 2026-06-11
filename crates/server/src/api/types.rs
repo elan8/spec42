@@ -49,6 +49,8 @@ pub struct ModelProjectionRequest {
 pub struct DiagramExportRequest {
     pub path: String,
     pub view: String,
+    #[serde(default)]
+    pub selected_view: Option<String>,
     pub format: DiagramExportFormat,
 }
 

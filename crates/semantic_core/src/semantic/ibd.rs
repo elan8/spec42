@@ -237,6 +237,106 @@ pub fn qualified_name_to_dot(qn: &str) -> String {
     qn.replace("::", ".")
 }
 
+fn graph_node_for_ibd_part<'a>(
+    graph: &'a SemanticGraph,
+    uri: &Url,
+    part: &IbdPartDto,
+) -> Option<&'a SemanticNode> {
+    if let Some(node) = graph.get_node(&NodeId::new(uri, &part.id)) {
+        return Some(node);
+    }
+    let colon_id = part.id.replace('.', "::");
+    if colon_id != part.id {
+        if let Some(node) = graph.get_node(&NodeId::new(uri, &colon_id)) {
+            return Some(node);
+        }
+    }
+    let colon_qn = part.qualified_name.replace('.', "::");
+    graph
+        .node_ids_for_qualified_name(&colon_qn)
+        .and_then(|ids| {
+            ids.iter()
+                .find(|id| id.uri == *uri)
+                .or_else(|| ids.first())
+                .cloned()
+        })
+        .and_then(|id| graph.get_node(&id))
+}
+
+fn push_inherited_ports_from_definition(
+    graph: &SemanticGraph,
+    def_node: &SemanticNode,
+    parent_dot: &str,
+    ports_out: &mut Vec<IbdPortDto>,
+    existing_ports: &mut std::collections::HashSet<(String, String)>,
+    visiting: &mut std::collections::HashSet<String>,
+) {
+    let def_key = def_node.id.qualified_name.clone();
+    if !visiting.insert(def_key) {
+        return;
+    }
+    for generalization in graph.outgoing_typing_or_specializes_targets(def_node) {
+        if is_part_like(&generalization.element_kind) {
+            push_inherited_ports_from_definition(
+                graph,
+                generalization,
+                parent_dot,
+                ports_out,
+                existing_ports,
+                visiting,
+            );
+        }
+    }
+    for child in graph.children_of(def_node) {
+        if !is_port_like(&child.element_kind) {
+            continue;
+        }
+        let key = (parent_dot.to_string(), child.name.clone());
+        if existing_ports.contains(&key) {
+            continue;
+        }
+        existing_ports.insert(key);
+        let direction = child
+            .attributes
+            .get("direction")
+            .and_then(|v| v.as_str())
+            .map(String::from);
+        let port_type = child
+            .attributes
+            .get("portType")
+            .and_then(|v| v.as_str())
+            .map(String::from);
+        let port_side = infer_port_side(&child.name, direction.as_deref(), port_type.as_deref());
+        ports_out.push(IbdPortDto {
+            id: format!("{parent_dot}.{}", child.name),
+            name: child.name.clone(),
+            parent_id: parent_dot.to_string(),
+            direction,
+            port_type,
+            port_side,
+        });
+    }
+    visiting.remove(&def_node.id.qualified_name);
+}
+
+fn add_inherited_ports_from_definition(
+    graph: &SemanticGraph,
+    def_node: &SemanticNode,
+    parent_dot: &str,
+    ports_out: &mut Vec<IbdPortDto>,
+    existing_ports: &mut std::collections::HashSet<(String, String)>,
+) {
+    let mut visiting = std::collections::HashSet::new();
+    push_inherited_ports_from_definition(
+        graph,
+        def_node,
+        parent_dot,
+        ports_out,
+        existing_ports,
+        &mut visiting,
+    );
+}
+
 fn infer_port_side(
     name: &str,
     direction: Option<&str>,
@@ -675,9 +775,6 @@ fn build_instance_def_mappings(
 ) -> Vec<(String, String)> {
     let mut mappings: Vec<(String, String)> = Vec::new();
     for part in parts {
-        if !part.id.contains("::") {
-            continue;
-        }
         if let Some(mapping) = instance_def_mapping_for_part(graph, uri, part) {
             mappings.push(mapping);
         }
@@ -715,8 +812,7 @@ fn instance_def_mapping_for_part(
     uri: &Url,
     part: &IbdPartDto,
 ) -> Option<(String, String)> {
-    let node_id = NodeId::new(uri, &part.id);
-    let node = graph.get_node(&node_id)?;
+    let node = graph_node_for_ibd_part(graph, uri, part)?;
     let def_node = graph
         .outgoing_typing_or_specializes_targets(node)
         .into_iter()
@@ -765,51 +861,52 @@ fn extend_instance_def_mappings_with_specializations(
     mappings.dedup_by(|left, right| left.0 == right.0 && left.1 == right.1);
 }
 
-fn remap_endpoint_via_instance_mappings(endpoint: &str, mappings: &[(String, String)]) -> String {
-    for (def_dot, instance_dot) in mappings {
-        if let Some(remapped) = map_container_endpoint_to_instance(endpoint, def_dot, instance_dot)
-        {
-            return remapped;
-        }
+fn remap_connector_via_mapping(
+    connector: &IbdConnectorDto,
+    def_dot: &str,
+    instance_dot: &str,
+) -> Option<IbdConnectorDto> {
+    let source_id = map_container_endpoint_to_instance(&connector.source_id, def_dot, instance_dot)?;
+    let target_id = map_container_endpoint_to_instance(&connector.target_id, def_dot, instance_dot)?;
+    if source_id == connector.source_id && target_id == connector.target_id {
+        return None;
     }
-    endpoint.to_string()
+    let mut remapped = connector.clone();
+    remapped.source_id = source_id.clone();
+    remapped.target_id = target_id.clone();
+    if remapped.source.replace("::", ".") == remapped.source_id || remapped.source == remapped.source_id
+    {
+        remapped.source = source_id;
+    }
+    if remapped.target.replace("::", ".") == remapped.target_id || remapped.target == remapped.target_id
+    {
+        remapped.target = target_id;
+    }
+    Some(remapped)
 }
 
 fn remap_connectors_to_typed_instances(
-    connectors: &mut [IbdConnectorDto],
+    connectors: Vec<IbdConnectorDto>,
     mappings: &[(String, String)],
-) {
+) -> Vec<IbdConnectorDto> {
     if mappings.is_empty() {
-        return;
+        return connectors;
     }
 
-    const MAX_PASSES: usize = 8;
-    for _ in 0..MAX_PASSES {
-        let mut changed = false;
-        for connector in connectors.iter_mut() {
-            let source_id = remap_endpoint_via_instance_mappings(&connector.source_id, mappings);
-            let target_id = remap_endpoint_via_instance_mappings(&connector.target_id, mappings);
-            if source_id == connector.source_id && target_id == connector.target_id {
-                continue;
+    let mut expanded = Vec::with_capacity(connectors.len());
+    for connector in &connectors {
+        let mut remapped_any = false;
+        for (def_dot, instance_dot) in mappings {
+            if let Some(remapped) = remap_connector_via_mapping(connector, def_dot, instance_dot) {
+                expanded.push(remapped);
+                remapped_any = true;
             }
-            connector.source_id = source_id.clone();
-            connector.target_id = target_id.clone();
-            if connector.source.replace("::", ".") == connector.source_id
-                || connector.source == connector.source_id
-            {
-                connector.source = source_id.clone();
-            }
-            if connector.target.replace("::", ".") == connector.target_id
-                || connector.target == connector.target_id
-            {
-                connector.target = target_id.clone();
-            }
-            changed = true;
         }
-        if !changed {
-            break;
+        if !remapped_any {
+            expanded.push(connector.clone());
         }
     }
+    dedupe_connectors(expanded)
 }
 
 fn enrich_connector_part_ids(connectors: &mut [IbdConnectorDto], parts: &[IbdPartDto]) {
@@ -1224,37 +1321,37 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
          parent_dot: &str,
          ports_out: &mut Vec<IbdPortDto>,
          existing_ports: &mut std::collections::HashSet<(String, String)>| {
-            for child in graph.children_of(def_node) {
-                if !is_port_like(&child.element_kind) {
-                    continue;
-                }
-                let key = (parent_dot.to_string(), child.name.clone());
-                if existing_ports.contains(&key) {
-                    continue;
-                }
-                existing_ports.insert(key);
-                let direction = child
-                    .attributes
-                    .get("direction")
-                    .and_then(|v| v.as_str())
-                    .map(String::from);
-                let port_type = child
-                    .attributes
-                    .get("portType")
-                    .and_then(|v| v.as_str())
-                    .map(String::from);
-                let port_side =
-                    infer_port_side(&child.name, direction.as_deref(), port_type.as_deref());
-                ports_out.push(IbdPortDto {
-                    id: format!("{parent_dot}.{}", child.name),
-                    name: child.name.clone(),
-                    parent_id: parent_dot.to_string(),
-                    direction,
-                    port_type,
-                    port_side,
-                });
-            }
+            add_inherited_ports_from_definition(
+                graph,
+                def_node,
+                parent_dot,
+                ports_out,
+                existing_ports,
+            );
         };
+
+    fn part_def_has_materialized_shape(
+        graph: &SemanticGraph,
+        def_node: &SemanticNode,
+        visiting: &mut std::collections::HashSet<String>,
+    ) -> bool {
+        let def_key = def_node.id.qualified_name.clone();
+        if !visiting.insert(def_key) {
+            return false;
+        }
+        let direct = graph.children_of(def_node).iter().any(|child| {
+            is_part_like(&child.element_kind) || is_port_like(&child.element_kind)
+        });
+        let inherited = graph
+            .outgoing_typing_or_specializes_targets(def_node)
+            .into_iter()
+            .any(|generalization| {
+                is_part_like(&generalization.element_kind)
+                    && part_def_has_materialized_shape(graph, generalization, visiting)
+            });
+        visiting.remove(&def_node.id.qualified_name);
+        direct || inherited
+    }
 
     fn first_typed_part_shape<'a>(
         graph: &'a SemanticGraph,
@@ -1263,14 +1360,13 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         graph
             .outgoing_typing_or_specializes_targets(node)
             .into_iter()
-            .find(|t| {
-                if !is_part_like(&t.element_kind) {
-                    return false;
-                }
-                let children = graph.children_of(t);
-                children
-                    .iter()
-                    .any(|c| is_part_like(&c.element_kind) || is_port_like(&c.element_kind))
+            .find(|typed_def| {
+                is_part_like(&typed_def.element_kind)
+                    && part_def_has_materialized_shape(
+                        graph,
+                        typed_def,
+                        &mut std::collections::HashSet::new(),
+                    )
             })
     }
 
@@ -1289,36 +1385,13 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         if !visiting_defs.insert(def_key.clone()) {
             return;
         }
-        for port_child in graph.children_of(def_node) {
-            if !is_port_like(&port_child.element_kind) {
-                continue;
-            }
-            let key = (parent_dot.to_string(), port_child.name.clone());
-            if existing_ports.contains(&key) {
-                continue;
-            }
-            existing_ports.insert(key);
-            let direction = port_child
-                .attributes
-                .get("direction")
-                .and_then(|v| v.as_str())
-                .map(String::from);
-            let port_type = port_child
-                .attributes
-                .get("portType")
-                .and_then(|v| v.as_str())
-                .map(String::from);
-            let port_side =
-                infer_port_side(&port_child.name, direction.as_deref(), port_type.as_deref());
-            ports_out.push(IbdPortDto {
-                id: format!("{parent_dot}.{}", port_child.name),
-                name: port_child.name.clone(),
-                parent_id: parent_dot.to_string(),
-                direction,
-                port_type,
-                port_side,
-            });
-        }
+        add_inherited_ports_from_definition(
+            graph,
+            def_node,
+            parent_dot,
+            ports_out,
+            existing_ports,
+        );
         for part_child in graph.children_of(def_node) {
             if !is_part_like(&part_child.element_kind) {
                 continue;
@@ -1355,11 +1428,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
 
     let parts_snapshot = parts.clone();
     for p in &parts_snapshot {
-        if !p.id.contains("::") {
-            continue;
-        }
-        let node_id = NodeId::new(uri, &p.id);
-        let Some(node) = graph.get_node(&node_id) else {
+        let Some(node) = graph_node_for_ibd_part(graph, uri, p) else {
             continue;
         };
         let Some(def_node) = first_typed_part_shape(graph, node) else {
@@ -1453,7 +1522,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
     }
 
     let instance_def_mappings = build_instance_def_mappings(graph, uri, &parts);
-    remap_connectors_to_typed_instances(&mut connectors, &instance_def_mappings);
+    connectors = remap_connectors_to_typed_instances(connectors, &instance_def_mappings);
 
     for connector in &mut connectors {
         connector.source_id =
@@ -1475,11 +1544,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         .map(|c| (c.source_id.clone(), c.target_id.clone(), c.rel_type.clone()))
         .collect();
     for p in &parts_snapshot {
-        if !p.id.contains("::") {
-            continue;
-        }
-        let node_id = NodeId::new(uri, &p.id);
-        let Some(node) = graph.get_node(&node_id) else {
+        let Some(node) = graph_node_for_ibd_part(graph, uri, p) else {
             continue;
         };
         let Some(def_node) = first_typed_part_shape(graph, node) else {
@@ -1542,7 +1607,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         }
     }
 
-    remap_connectors_to_typed_instances(&mut connectors, &instance_def_mappings);
+    connectors = remap_connectors_to_typed_instances(connectors, &instance_def_mappings);
     for connector in &mut connectors {
         connector.source_id =
             expand_relative_endpoint_to_part_path(&connector.source_id, &parts, &ports);
@@ -1555,7 +1620,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             connector.target = connector.target_id.clone();
         }
     }
-    remap_connectors_to_typed_instances(&mut connectors, &instance_def_mappings);
+    connectors = remap_connectors_to_typed_instances(connectors, &instance_def_mappings);
     let mut connectors = dedupe_connectors(connectors);
     enrich_connector_part_ids(&mut connectors, &parts);
 
@@ -1885,6 +1950,34 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
         root_candidates: root_candidates.into_iter().collect(),
         default_root,
         root_views,
+    }
+}
+
+/// After merging per-document IBD payloads, remap definition-path connectors onto typed
+/// instance paths using workspace-wide part typings.
+pub fn finalize_merged_ibd_connectors(
+    graph: &SemanticGraph,
+    workspace_uris: &[Url],
+    ibd: &mut IbdDataDto,
+) {
+    let mut mappings = Vec::new();
+    for uri in workspace_uris {
+        mappings.extend(build_instance_def_mappings(graph, uri, &ibd.parts));
+    }
+    mappings.sort_by_key(|mapping| std::cmp::Reverse(mapping.0.len()));
+    mappings.dedup_by(|left, right| left.0 == right.0 && left.1 == right.1);
+
+    ibd.connectors = remap_connectors_to_typed_instances(std::mem::take(&mut ibd.connectors), &mappings);
+    for view in ibd.root_views.values_mut() {
+        view.connectors =
+            remap_connectors_to_typed_instances(std::mem::take(&mut view.connectors), &mappings);
+    }
+
+    ibd.connectors = dedupe_connectors(std::mem::take(&mut ibd.connectors));
+    enrich_connector_part_ids(&mut ibd.connectors, &ibd.parts);
+    for view in ibd.root_views.values_mut() {
+        view.connectors = dedupe_connectors(std::mem::take(&mut view.connectors));
+        enrich_connector_part_ids(&mut view.connectors, &view.parts);
     }
 }
 
@@ -2277,6 +2370,97 @@ mod tests {
             }),
             "expected mirrored storefront→gateway connector, got {:?}",
             root_view.connectors
+        );
+    }
+
+    #[test]
+    fn finalize_merged_ibd_remapped_definition_connects_to_typed_instance() {
+        let architecture = SysmlDocument::from_memory_path(
+            "stedin",
+            "Architecture.sysml",
+            r#"package StedinRijnmondGridExpansion::Architecture {
+    part def RijnmondGridArchitecture {
+        part feederNorth { port outgoing; }
+        part cable01 { port a; port b; }
+        connect feederNorth.outgoing to cable01.a;
+    }
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("architecture uri");
+        let project = SysmlDocument::from_memory_path(
+            "stedin",
+            "Project.sysml",
+            r#"package StedinRijnmondGridExpansion {
+    public import StedinRijnmondGridExpansion::Architecture::*;
+    part rijnmondExpansionProject {
+        part architecture : RijnmondGridArchitecture;
+    }
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("project uri");
+        let uris = [architecture.uri.clone(), project.uri.clone()];
+        let (graph, _) = build_semantic_graph_from_documents(&[architecture, project]).expect("graph");
+        let mut merged = super::merge_ibd_payloads(
+            uris
+                .iter()
+                .map(|uri| super::build_ibd_for_uri(&graph, uri))
+                .collect(),
+        );
+        super::finalize_merged_ibd_connectors(&graph, &uris, &mut merged);
+        assert!(
+            merged.connectors.iter().any(|connector| {
+                connector.source_id.contains("rijnmondExpansionProject.architecture.feederNorth")
+                    && connector.target_id.contains("rijnmondExpansionProject.architecture.cable01")
+            }),
+            "expected definition-level connect mirrored to project architecture instance, got {:?}",
+            merged.connectors
+        );
+    }
+
+    #[test]
+    fn build_ibd_includes_ports_inherited_from_generalized_part_def() {
+        let doc = SysmlDocument::from_memory_path(
+            "workspace",
+            "model.sysml",
+            r#"package Grid {
+    part def MediumVoltageFeeder {
+        port source;
+        port outgoing;
+    }
+    part def DutchMVFeeder :> MediumVoltageFeeder;
+    part def System {
+        part feederNorth : DutchMVFeeder;
+    }
+    part system : System;
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("document uri");
+        let uri = doc.uri.clone();
+        let (graph, _) =
+            build_semantic_graph_from_documents(&[doc]).expect("semantic graph should build");
+        let ibd = super::build_ibd_for_uri(&graph, &uri);
+        let feeder_ports: Vec<_> = ibd
+            .ports
+            .iter()
+            .filter(|port| port.parent_id.contains("feederNorth"))
+            .map(|port| port.name.as_str())
+            .collect();
+        assert!(
+            feeder_ports.contains(&"source") && feeder_ports.contains(&"outgoing"),
+            "expected inherited feeder ports on instance path, got {:?}",
+            feeder_ports
         );
     }
 
