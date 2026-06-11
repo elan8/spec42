@@ -1100,7 +1100,8 @@ fn unresolved_specializes_reference_is_emitted_for_multi_base_with_missing_targe
             serde_json::json!(["RobotPlatform", "MissingBase", "MissionProfile"]),
         );
     kernel::semantic::add_cross_document_edges_for_uri(&mut graph, &uri);
-    let diagnostics = kernel::compute_semantic_diagnostics(&graph, &uri);
+    let diagnostics =
+        kernel::compute_semantic_diagnostics(&graph, &uri, kernel::DiagnosticsHostContext::default());
     let found_unresolved_specializes = diagnostics.iter().any(|diagnostic| {
         diagnostic.source.as_deref() == Some("semantic")
             && diagnostic.code.as_ref()

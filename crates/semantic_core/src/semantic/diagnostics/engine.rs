@@ -12,9 +12,9 @@ use super::types::{DiagnosticsOptions, SemanticDiagnostic};
 pub fn collect_diagnostics_from_graph(
     graph: &SemanticGraph,
     uri: &Url,
-    _options: DiagnosticsOptions,
+    options: DiagnosticsOptions<'_>,
 ) -> Vec<SemanticDiagnostic> {
-    compute_semantic_diagnostics(graph, uri)
+    compute_semantic_diagnostics(graph, uri, options)
 }
 
 #[cfg(test)]

@@ -114,7 +114,7 @@ fn unit_registry_for_hover(state: &ServerState) -> UnitRegistry {
         .iter()
         .map(|(uri, entry)| (uri, entry.content.as_str()))
         .collect();
-    UnitRegistry::from_semantic_graph_with_indexed_sources(&state.semantic_graph, &indexed_sources)
+    UnitRegistry::build_unified(&state.semantic_graph, &indexed_sources, &[])
 }
 
 fn unit_literal_hover_markdown(state: &ServerState, text: &str, pos: Position) -> Option<String> {

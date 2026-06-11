@@ -428,8 +428,19 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
                 .into_iter()
                 .filter(|child| child.element_kind == "analysis result")
                 .count();
+            let has_inherited_result = node
+                .attributes
+                .get("analysisExpression")
+                .is_some()
+                || objectives.iter().any(|objective| {
+                    objective
+                        .attributes
+                        .get("objectiveBoundTo")
+                        .and_then(|v| v.as_str())
+                        .is_some_and(|value| !value.trim().is_empty())
+                });
             let total = analysis_result_count.max(local_results as u64);
-            if total == 0 {
+            if total == 0 && !has_inherited_result {
                 let key = format!("analysis_result|{}", node.id.qualified_name);
                 if seen.insert(key) {
                     diagnostics.push(diag(

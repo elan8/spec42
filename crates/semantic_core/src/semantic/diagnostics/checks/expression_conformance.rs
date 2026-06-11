@@ -53,13 +53,52 @@ fn enum_contains_value(graph: &SemanticGraph, enum_type_ref: &str, literal: &str
         .any(|child| child.name == literal || child.name.ends_with(&format!("::{literal}")))
 }
 
+fn expected_unit_dimension_for_type(type_name: &str) -> Option<String> {
+    let base = type_name.rsplit("::").next()?.trim();
+    if base.ends_with("Value") {
+        Some(format!("{}Unit", &base[..base.len() - "Value".len()]))
+    } else {
+        None
+    }
+}
+
+fn quantity_type_names_for_attribute(
+    graph: &SemanticGraph,
+    node: &crate::SemanticNode,
+) -> Vec<String> {
+    let mut names = Vec::new();
+    if let Some(type_ref) = declared_type_ref(node) {
+        names.push(normalize_declared_type_ref(type_ref));
+    }
+    for target in graph.outgoing_typing_or_specializes_targets(node) {
+        if let Some(type_ref) = declared_type_ref(target) {
+            names.push(normalize_declared_type_ref(type_ref));
+        }
+        names.push(target.name.clone());
+    }
+    names
+}
+
+fn unit_dimensions_compatible(expected: &str, actual: &str) -> bool {
+    if expected == actual {
+        return true;
+    }
+    const ALIASES: &[(&str, &str)] = &[
+        ("ElectricPotentialDifferenceUnit", "ElectricPotentialUnit"),
+        ("ElectricPotentialUnit", "ElectricPotentialDifferenceUnit"),
+    ];
+    ALIASES
+        .iter()
+        .any(|(left, right)| expected == *left && actual == *right)
+}
+
 pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnostics(
     graph: &SemanticGraph,
     uri: &Url,
+    units: &UnitRegistry,
 ) -> Vec<SemanticDiagnostic> {
     let mut diagnostics = Vec::new();
     let mut seen = HashSet::new();
-    let units = UnitRegistry::from_semantic_graph(graph);
 
     for node in graph.nodes_for_uri(uri) {
         if is_synthetic(node) {
@@ -132,20 +171,48 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
             if let Some(unit_start) = value.find('[') {
                 if let Some(unit_end) = value[unit_start + 1..].find(']') {
                     let unit_expr = value[unit_start + 1..unit_start + 1 + unit_end].trim();
-                    if !unit_expr.is_empty() && !units.is_recognized_unit_expression(unit_expr) {
-                        let key = format!("unit|{}", node.id.qualified_name);
+                    if unit_expr.is_empty() {
+                        continue;
+                    }
+                    if !units.is_recognized_unit_expression(unit_expr) {
+                        let key = format!("unknown_unit|{}", node.id.qualified_name);
                         if seen.insert(key) {
                             diagnostics.push(diag(
                                 uri,
                                 diagnostic_range(graph, node, None),
                                 DiagnosticSeverity::Warning,
                                 "semantic",
-                                "incompatible_unit_dimension",
+                                "unknown_unit_symbol",
                                 format!(
                                     "Attribute '{}' value uses unit '[{}]' which is not in indexed quantity/unit catalogs.",
                                     node.name, unit_expr
                                 ),
                             ));
+                        }
+                        continue;
+                    }
+                    let actual_dimension = units.unit_expression_dimension(unit_expr);
+                    let expected_dimension = quantity_type_names_for_attribute(graph, node)
+                        .iter()
+                        .find_map(|type_name| expected_unit_dimension_for_type(type_name));
+                    if let (Some(expected), Some(actual)) =
+                        (expected_dimension, actual_dimension)
+                    {
+                        if !unit_dimensions_compatible(&expected, &actual) {
+                            let key = format!("unit_dim|{}", node.id.qualified_name);
+                            if seen.insert(key) {
+                                diagnostics.push(diag(
+                                    uri,
+                                    diagnostic_range(graph, node, None),
+                                    DiagnosticSeverity::Warning,
+                                    "semantic",
+                                    "incompatible_unit_dimension",
+                                    format!(
+                                        "Attribute '{}' expects quantity unit dimension '{}' but value unit '[{}]' has dimension '{}'.",
+                                        node.name, expected, unit_expr, actual
+                                    ),
+                                ));
+                            }
                         }
                     }
                 }

@@ -143,10 +143,16 @@ async fn collect_diagnostics_for_document(
 ) -> Vec<Diagnostic> {
     let uri_norm = util::normalize_file_uri(uri);
     let locked = state.read().await;
+    let indexed_sources: Vec<(&Url, &str)> = locked
+        .index
+        .iter()
+        .map(|(indexed_uri, entry)| (indexed_uri, entry.content.as_str()))
+        .collect();
     let mut diagnostics = diagnostics_core::collect_document_diagnostics(
         &locked.semantic_graph,
         &locked.library_paths,
         &config.check_providers,
+        &indexed_sources,
         &uri_norm,
         text,
         false,

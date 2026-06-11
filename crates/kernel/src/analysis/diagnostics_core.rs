@@ -7,13 +7,14 @@ use crate::analysis::diagnostics_postprocess::{
     postprocess_document_diagnostics, DiagnosticsPostprocessOptions,
 };
 use crate::common::util;
-use crate::host::config::SemanticCheckProvider;
+use crate::host::config::{DiagnosticsHostContext, SemanticCheckProvider};
 use crate::semantic::SemanticGraph;
 
 pub(crate) fn collect_document_diagnostics(
     semantic_graph: &SemanticGraph,
     library_paths: &[Url],
     check_providers: &[Arc<dyn SemanticCheckProvider>],
+    indexed_sources: &[(&Url, &str)],
     uri: &Url,
     text: &str,
     block_on_any_parse_issue: bool,
@@ -75,8 +76,15 @@ pub(crate) fn collect_document_diagnostics(
     };
 
     if allow_semantic_checks {
+        let host_ctx = DiagnosticsHostContext {
+            indexed_sources,
+        };
         for provider in check_providers {
-            diagnostics.extend(provider.compute_diagnostics(semantic_graph, uri));
+            diagnostics.extend(provider.compute_diagnostics_with_context(
+                semantic_graph,
+                uri,
+                host_ctx,
+            ));
         }
 
         let has_unresolved_type_reference =

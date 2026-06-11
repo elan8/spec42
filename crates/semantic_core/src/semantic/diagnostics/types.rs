@@ -28,8 +28,10 @@ pub struct SemanticDiagnostic {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub struct DiagnosticsOptions {
+pub struct DiagnosticsOptions<'a> {
     pub include_hints: bool,
+    /// In-memory workspace/library sources (e.g. QUDV catalog files from library closure).
+    pub indexed_sources: &'a [(&'a Url, &'a str)],
 }
 
 impl SemanticDiagnostic {

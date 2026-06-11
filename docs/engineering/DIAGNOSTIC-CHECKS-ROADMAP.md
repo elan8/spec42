@@ -133,7 +133,8 @@ Spec areas: 7.7, 7.8, 7.19, 7.20, 8.4.3, 8.4.4, 8.4.15, 8.4.16, 9.2.
 
 - Done: `attribute_value_type_mismatch` — scalar literal incompatible with declared attribute type.
 - Done: `invalid_enumeration_value` — string literal not declared on enum type.
-- Done: `incompatible_unit_dimension` — unit suffix not in indexed quantity/unit catalogs.
+- Done: `unknown_unit_symbol` — unit suffix not in indexed quantity/unit catalogs.
+- Done: `incompatible_unit_dimension` — recognized unit suffix incompatible with attribute quantity type dimension.
 - Done: `non_boolean_expression` — constraint/assert/filter not Boolean-typed (when evaluation reports it).
 - Done: `calculation_binding_mismatch` — invocation arity below declared parameter count (when graph captures arg count).
 - Done: `redefinition_multiplicity_widened` — multiplicity conformance across redefinition (see typing section).

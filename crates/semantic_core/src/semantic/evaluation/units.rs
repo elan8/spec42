@@ -54,17 +54,12 @@ impl CanonicalUnitExpr {
 }
 
 impl UnitRegistry {
-    /// Builds a registry from OMG QUDM files on disk (when present on `file://` graph URIs)
-    /// plus optional supplemental SysML unit catalog text (e.g. platform library sources).
-    pub fn build_for_evaluation(graph: &SemanticGraph, extra_unit_catalogs: &[&str]) -> Self {
-        let mut registry = Self::from_semantic_graph(graph);
-        for catalog in extra_unit_catalogs {
-            registry.ingest_unit_catalog(catalog);
-        }
-        registry
-    }
-
-    pub fn from_semantic_graph(graph: &SemanticGraph) -> Self {
+    /// Unified builder for diagnostics, hover, and expression evaluation.
+    pub fn build_unified(
+        graph: &SemanticGraph,
+        indexed_sources: &[(&Url, &str)],
+        extra_unit_catalogs: &[&str],
+    ) -> Self {
         let mut registry = UnitRegistry::default();
         let mut candidate_files = HashSet::new();
         for uri in graph.nodes_by_uri.keys() {
@@ -86,8 +81,26 @@ impl UnitRegistry {
                 registry.ingest_file_contents(&contents);
             }
         }
+        for (uri, content) in indexed_sources {
+            if Self::is_unit_library_uri(uri) {
+                registry.ingest_file_contents(content);
+            }
+        }
+        for catalog in extra_unit_catalogs {
+            registry.ingest_file_contents(catalog);
+        }
         registry.finalize_ingest();
         registry
+    }
+
+    /// Builds a registry from OMG QUDM files on disk (when present on `file://` graph URIs)
+    /// plus optional supplemental SysML unit catalog text (e.g. platform library sources).
+    pub fn build_for_evaluation(graph: &SemanticGraph, extra_unit_catalogs: &[&str]) -> Self {
+        Self::build_unified(graph, &[], extra_unit_catalogs)
+    }
+
+    pub fn from_semantic_graph(graph: &SemanticGraph) -> Self {
+        Self::build_unified(graph, &[], &[])
     }
 
     /// Builds a registry from graph file URIs plus in-memory workspace/library sources
@@ -96,17 +109,13 @@ impl UnitRegistry {
         graph: &SemanticGraph,
         indexed_sources: &[(&Url, &str)],
     ) -> Self {
-        let mut registry = Self::from_semantic_graph(graph);
-        for (uri, content) in indexed_sources {
-            if Self::is_unit_library_uri(uri) {
-                registry.ingest_file_contents(content);
-            }
-        }
-        registry.finalize_ingest();
-        registry
+        Self::build_unified(graph, indexed_sources, &[])
     }
 
     pub fn is_unit_library_uri(uri: &Url) -> bool {
+        if is_qudv_catalog_path_hint(&uri.path()) {
+            return true;
+        }
         uri_to_path(uri).is_some_and(|path| should_ingest_unit_library_file(&path))
     }
 
@@ -160,6 +169,14 @@ impl UnitRegistry {
     /// Returns true when every factor in a unit expression resolves against indexed catalogs.
     pub fn is_recognized_unit_expression(&self, raw_unit: &str) -> bool {
         self.canonicalize_unit_expr(Some(raw_unit)).is_ok()
+    }
+
+    /// Returns the quantity-unit dimension string for a recognized unit expression (e.g. `PowerUnit`).
+    pub fn unit_expression_dimension(&self, raw_unit: &str) -> Option<String> {
+        let factors = parse_unit_expression(raw_unit).ok()?;
+        let (first_symbol, _) = factors.first()?;
+        let reduced = self.reduce_to_root(first_symbol).ok()?;
+        Some(reduced.dimension)
     }
 
     pub fn convert_value(&self, value: f64, from: &str, to: &str) -> Result<f64, UnitError> {
@@ -561,9 +578,14 @@ fn parse_linear_unit_def(line: &str) -> Option<UnitDef> {
     })
 }
 
+fn is_qudv_catalog_path_hint(path: &str) -> bool {
+    let normalized = path.replace('\\', "/");
+    normalized.contains("Quantities%20and%20Units")
+        || normalized.contains("Quantities and Units")
+}
+
 fn should_ingest_unit_library_file(path: &Path) -> bool {
-    let normalized = path.to_string_lossy().replace('\\', "/");
-    normalized.contains("Quantities and Units")
+    is_qudv_catalog_path_hint(&path.to_string_lossy())
 }
 
 fn uri_to_path(uri: &Url) -> Option<PathBuf> {
@@ -681,7 +703,7 @@ fn parse_unit_expression(raw: &str) -> Result<Vec<(String, i32)>, UnitError> {
         } else {
             (token.as_str(), None)
         };
-        let symbol = normalize_symbol(symbol_raw);
+        let symbol = unit_token_symbol(symbol_raw);
         if symbol.is_empty() || symbol == "1" {
             continue;
         }
@@ -732,6 +754,15 @@ fn format_canonical_unit_expr(expr: &CanonicalUnitExpr) -> Option<String> {
 
 fn normalize_symbol(value: &str) -> String {
     strip_quotes(value.trim())
+}
+
+/// Strips optional package qualification (`SI::s` → `s`).
+fn unit_token_symbol(token: &str) -> String {
+    let normalized = normalize_symbol(token);
+    normalized
+        .rsplit_once("::")
+        .map(|(_, symbol)| normalize_symbol(symbol))
+        .unwrap_or(normalized)
 }
 
 fn strip_quotes(value: &str) -> String {
@@ -836,6 +867,14 @@ mod tests {
         assert_eq!(def.dimension, "LengthUnit");
         assert_eq!(def.reference_unit.as_deref(), Some("m"));
         assert!((def.conversion_factor - 1E3).abs() < 1e-9);
+    }
+
+    #[test]
+    fn resolves_qualified_si_unit_literals() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents("attribute <s> second : DurationUnit;");
+        registry.finalize_ingest();
+        assert!(registry.is_recognized_unit_expression("SI::s"));
     }
 
     #[test]

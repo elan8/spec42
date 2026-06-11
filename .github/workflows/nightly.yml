@@ -32,6 +32,11 @@ jobs:
           SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
         run: cargo test -p kernel lsp_workspace_scan_sysml_release -- --nocapture
 
+      - name: Engineering unit catalog regression
+        env:
+          SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
+        run: cargo test -p semantic_core engineering_prefixed_units mismatched_unit_dimension_emits -- --nocapture
+
   vscode-visualization-deep:
     name: VS Code visualization deep tests (informational)
     runs-on: ubuntu-latest

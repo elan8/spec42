@@ -17,8 +17,9 @@ pub(crate) mod workspace;
 // Host contract exports (intended stable composition surface for edition hosts).
 pub use host::config::{
     CapabilityAugmenter, CapabilityMetadata, CapabilityProvider, CheckProvider,
-    CustomMethodProvider, CustomRpcContext, CustomRpcProvider, PipelineHook, SemanticCheckProvider,
-    Spec42Config, ValidationPipelineHook, KERNEL_INTERFACE_VERSION,
+    CustomMethodProvider, CustomRpcContext, CustomRpcProvider, DiagnosticsHostContext,
+    PipelineHook, SemanticCheckProvider, Spec42Config, ValidationPipelineHook,
+    KERNEL_INTERFACE_VERSION,
 };
 pub use host::default_config::default_config as default_server_config;
 pub use lsp_runtime::run as run_lsp;
@@ -27,7 +28,8 @@ pub use lsp_runtime::run as run_lsp;
 pub use analysis::{
     add_cross_document_edges_for_uri, ast_semantic_ranges, build_graph_from_doc,
     compute_semantic_diagnostics, legend, semantic_tokens_full, semantic_tokens_range,
-    DefaultSemanticChecks, NodeId, RelationshipKind, SemanticGraph, SemanticNode, SymbolEntry,
+    DefaultSemanticChecks, NodeId, RelationshipKind, SemanticGraph,
+    SemanticNode, SymbolEntry,
 };
 pub use common::util::{merge_host_and_client_library_paths, parse_library_paths_from_value};
 pub use syntax::ast_util::{identification_name, span_to_range, span_to_source_range, SourceRange};

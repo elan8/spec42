@@ -72,4 +72,10 @@ fn specialized_analysis_def_inherits_parent_return_ref_for_objective_binding() {
             .any(|diag| diag.code == "objective_binding_unresolved"),
         "unexpected objective_binding_unresolved: {diagnostics:?}"
     );
+    assert!(
+        !diagnostics
+            .iter()
+            .any(|diag| diag.code == "case_objective_binding_cardinality"),
+        "specialized analysis def should inherit parent return ref: {diagnostics:?}"
+    );
 }

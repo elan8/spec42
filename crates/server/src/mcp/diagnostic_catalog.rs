@@ -396,10 +396,17 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "unknown_unit_symbol",
+        severity: "warning",
+        meaning: "A value unit suffix is not present in indexed quantity/unit catalogs.",
+        typical_fix: "Use a unit from the loaded QUDV/SI libraries or fix the unit symbol.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "incompatible_unit_dimension",
         severity: "warning",
-        meaning: "A value unit suffix is not compatible with indexed quantity/unit catalogs.",
-        typical_fix: "Use a unit from the loaded quantity libraries or fix the unit symbol.",
+        meaning: "A recognized unit suffix has a quantity dimension incompatible with the attribute type.",
+        typical_fix: "Use a unit whose dimension matches the declared quantity value type.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
@@ -719,6 +726,7 @@ mod tests {
         ("incompatible_specializes_kind", "warning"),
         ("incompatible_subset_redefine_kind", "warning"),
         ("incompatible_type_kind", "warning"),
+        ("unknown_unit_symbol", "warning"),
         ("incompatible_unit_dimension", "warning"),
         ("inherited_attribute_value_type_mismatch", "error"),
         ("interface_end_invalid", "warning"),

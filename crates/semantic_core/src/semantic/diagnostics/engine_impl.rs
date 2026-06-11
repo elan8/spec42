@@ -13,9 +13,10 @@ use crate::semantic::diagnostics::checks::{
 use crate::semantic::diagnostics::helpers::*;
 use crate::semantic::diagnostics::relationship_endpoint_messages::builder_relationship_diagnostic_to_emit;
 use crate::semantic::diagnostics::types::{DiagnosticRelatedInfo, DiagnosticSeverity};
+use crate::semantic::diagnostics::types::DiagnosticsOptions;
 use crate::{
     resolve_inherited_member_via_type, RelationshipKind, ResolveResult, SemanticDiagnostic,
-    SemanticGraph,
+    SemanticGraph, UnitRegistry,
 };
 
 fn is_view_kind(kind: &str) -> bool {
@@ -28,10 +29,16 @@ fn is_viewpoint_kind(kind: &str) -> bool {
 
 /// Returns LSP diagnostics for semantic rules in the given document.
 /// Only runs when the document has been parsed and merged into the graph.
-pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<SemanticDiagnostic> {
+pub fn compute_semantic_diagnostics(
+    graph: &SemanticGraph,
+    uri: &Url,
+    options: DiagnosticsOptions<'_>,
+) -> Vec<SemanticDiagnostic> {
     let mut diagnostics = Vec::new();
     let total_start = Instant::now();
     let mut section_timings = Vec::<(String, u128, usize)>::new();
+    let unit_registry =
+        UnitRegistry::build_unified(graph, options.indexed_sources, &[]);
     // 0) Explicit builder diagnostics (e.g. ambiguous endpoint resolution).
     let t0 = Instant::now();
     let d0 = diagnostics.len();
@@ -657,8 +664,9 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Sem
     // 15) P1 expression/value/unit conformance.
     let t15 = Instant::now();
     let d15 = diagnostics.len();
-    diagnostics
-        .extend(expression_conformance::collect_expression_conformance_diagnostics(graph, uri));
+    diagnostics.extend(expression_conformance::collect_expression_conformance_diagnostics(
+        graph, uri, &unit_registry,
+    ));
     section_timings.push((
         "15_expression_conformance".to_string(),
         t15.elapsed().as_millis(),

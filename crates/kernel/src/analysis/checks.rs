@@ -1,15 +1,23 @@
 use tower_lsp::lsp_types::{Diagnostic, Url};
 
 use crate::analysis::diagnostics_adapter::semantic_to_lsp_diagnostic;
+use crate::host::config::DiagnosticsHostContext;
 use crate::semantic::SemanticGraph;
 
 /// Returns LSP diagnostics for semantic rules in the given document.
 /// Semantic rule evaluation is owned by semantic_core.
-pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Diagnostic> {
+pub fn compute_semantic_diagnostics(
+    graph: &SemanticGraph,
+    uri: &Url,
+    ctx: DiagnosticsHostContext<'_>,
+) -> Vec<Diagnostic> {
     semantic_core::collect_diagnostics_from_graph(
         graph,
         uri,
-        semantic_core::DiagnosticsOptions::default(),
+        semantic_core::DiagnosticsOptions {
+            include_hints: false,
+            indexed_sources: ctx.indexed_sources,
+        },
     )
     .into_iter()
     .map(semantic_to_lsp_diagnostic)
@@ -21,7 +29,12 @@ pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Dia
 pub struct DefaultSemanticChecks;
 
 impl crate::host::config::SemanticCheckProvider for DefaultSemanticChecks {
-    fn compute_diagnostics(&self, graph: &SemanticGraph, uri: &Url) -> Vec<Diagnostic> {
-        compute_semantic_diagnostics(graph, uri)
+    fn compute_diagnostics_with_context(
+        &self,
+        graph: &SemanticGraph,
+        uri: &Url,
+        ctx: DiagnosticsHostContext<'_>,
+    ) -> Vec<Diagnostic> {
+        compute_semantic_diagnostics(graph, uri, ctx)
     }
 }
