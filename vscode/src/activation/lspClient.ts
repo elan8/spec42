@@ -39,6 +39,11 @@ type RawSysandStatus = {
   warnings?: string[];
 };
 
+type RawDoctorReport = {
+  resolved_domain_libraries_path?: string;
+  domain_libraries_source_kind?: string;
+};
+
 export type LspClientHandles = {
   client: LanguageClient;
   lspModelProvider: LspModelProvider;
@@ -48,6 +53,10 @@ export type LspClientHandles = {
   missingLibraryPaths: string[];
   workspaceRoot: string;
   readSysandStatus: () => Promise<SysandStatusViewModel>;
+  readDomainLibrariesStatus: () => Promise<{
+    resolvedPath?: string;
+    sourceKind: string;
+  }>;
 };
 
 let client: LanguageClient | undefined;
@@ -266,6 +275,21 @@ export function startLanguageClient(
     return normalizeSysandStatus(status);
   };
 
+  const readDomainLibrariesStatus = async (): Promise<{
+    resolvedPath?: string;
+    sourceKind: string;
+  }> => {
+    const report = (await runSpec42Json(
+      serverCommand,
+      ["doctor", "--format", "json"],
+      workspaceRoot
+    )) as RawDoctorReport;
+    return {
+      resolvedPath: report.resolved_domain_libraries_path,
+      sourceKind: report.domain_libraries_source_kind ?? "none",
+    };
+  };
+
   log("Server command:", serverCommand, "args:", serverArgs, "libraryPaths:", libraryPaths);
   registerSpec42LmTools(context, {
     serverCommand,
@@ -439,6 +463,7 @@ export function startLanguageClient(
     missingLibraryPaths,
     workspaceRoot,
     readSysandStatus,
+    readDomainLibrariesStatus,
   };
 }
 

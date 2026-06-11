@@ -5,6 +5,12 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use crate::cli::Cli;
+use crate::domain_libraries::{
+    domain_libraries_paths_from_data_dir, install_embedded_domain_libraries,
+    load_managed_metadata as load_domain_libraries_metadata, managed_install_path as domain_managed_install_path,
+    managed_status as domain_managed_status, DomainLibrariesConfig, DomainLibrariesPaths,
+    DomainLibrariesStatus, EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE, EMBEDDED_DOMAIN_LIBRARIES_REPO,
+};
 use crate::stdlib::{
     install_embedded_standard_library, legacy_vscode_stdlib_path, load_managed_metadata,
     managed_status, project_dirs, standard_library_paths_from_data_dir, StandardLibraryConfig,
@@ -32,9 +38,12 @@ pub struct ResolvedEnvironment {
     pub stdlib_source: Option<String>,
     pub used_legacy_vscode_fallback: bool,
     pub domain_libraries_path: Option<PathBuf>,
+    pub domain_libraries_source: Option<String>,
     pub sysand: SysandStatus,
     pub standard_library: StandardLibraryConfig,
     pub standard_library_paths: StandardLibraryPaths,
+    pub domain_libraries: DomainLibrariesConfig,
+    pub domain_libraries_paths: DomainLibrariesPaths,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -49,8 +58,11 @@ pub struct DoctorReport {
     pub stdlib_source_kind: String,
     pub used_legacy_vscode_fallback: bool,
     pub resolved_domain_libraries_path: Option<String>,
+    pub domain_libraries_source: Option<String>,
+    pub domain_libraries_source_kind: String,
     pub sysand: SysandStatus,
     pub standard_library_status: StandardLibraryStatus,
+    pub domain_libraries_status: DomainLibrariesStatus,
     pub library_paths: Vec<DoctorPathStatus>,
 }
 
@@ -81,6 +93,7 @@ fn resolve_environment_with_dirs(
     let project_dirs = project_dirs()?;
     let _ = project_dirs;
     let standard_library_paths = standard_library_paths_from_data_dir(data_dir.clone());
+    let domain_libraries_paths = domain_libraries_paths_from_data_dir(data_dir.clone());
 
     let explicit_config_path = cli
         .config_path
@@ -108,6 +121,7 @@ fn resolve_environment_with_dirs(
     };
 
     let standard_library = resolve_standard_library_config(cli, &explicit_config, &default_config);
+    let domain_libraries = resolve_domain_libraries_config(cli, &explicit_config, &default_config);
     let stdlib_resolution = resolve_stdlib_path(
         cli,
         &explicit_config,
@@ -115,8 +129,12 @@ fn resolve_environment_with_dirs(
         &standard_library,
         &standard_library_paths,
     )?;
+    let domain_libraries_resolution = resolve_domain_libraries_path(
+        cli,
+        &domain_libraries,
+        &domain_libraries_paths,
+    )?;
 
-    let domain_libraries_path = discover_domain_libraries_path();
     let sysand = detect_sysand_status();
     let sysand_dependency_roots = dependency_roots_from_status(&sysand);
     let library_paths = resolve_library_paths(
@@ -125,7 +143,7 @@ fn resolve_environment_with_dirs(
         &default_config,
         &sysand_dependency_roots,
         stdlib_resolution.path.as_ref(),
-        domain_libraries_path.as_ref(),
+        domain_libraries_resolution.path.as_ref(),
     );
 
     Ok(ResolvedEnvironment {
@@ -136,10 +154,13 @@ fn resolve_environment_with_dirs(
         stdlib_path: stdlib_resolution.path,
         stdlib_source: stdlib_resolution.source,
         used_legacy_vscode_fallback: stdlib_resolution.used_legacy_vscode_fallback,
-        domain_libraries_path,
+        domain_libraries_path: domain_libraries_resolution.path,
+        domain_libraries_source: domain_libraries_resolution.source,
         sysand,
         standard_library,
         standard_library_paths,
+        domain_libraries,
+        domain_libraries_paths,
     })
 }
 
@@ -169,6 +190,27 @@ pub fn build_doctor_report(
             status.is_installed = status.is_installed && stdlib_path.is_dir();
         }
     }
+    let mut domain_status = domain_managed_status(
+        &environment.domain_libraries_paths,
+        &environment.domain_libraries,
+    )?;
+    if domain_status.install_path.is_none() {
+        domain_status.install_path = environment
+            .domain_libraries_path
+            .as_ref()
+            .map(|path| path.display().to_string());
+    }
+    if domain_status.source.is_none() {
+        domain_status.source = environment.domain_libraries_source.clone();
+    }
+    if let Some(domain_path) = &environment.domain_libraries_path {
+        if environment.domain_libraries_source.as_deref() != Some("flag")
+            && environment.domain_libraries_source.as_deref() != Some("env")
+        {
+            domain_status.is_installed = domain_status.is_installed && domain_path.is_dir();
+        }
+    }
+
     Ok(DoctorReport {
         version: env!("CARGO_PKG_VERSION").to_string(),
         mode: mode.to_string(),
@@ -199,8 +241,23 @@ pub fn build_doctor_report(
             .domain_libraries_path
             .as_ref()
             .map(|path| path.display().to_string()),
+        domain_libraries_source: environment.domain_libraries_source.clone(),
+        domain_libraries_source_kind: if environment.domain_libraries_source.as_deref()
+            == Some("bundled")
+        {
+            "bundled".to_string()
+        } else if environment.domain_libraries_source.as_deref() == Some("managed") {
+            "canonical-managed".to_string()
+        } else if environment.domain_libraries_source.as_deref() == Some("flag")
+            || environment.domain_libraries_source.as_deref() == Some("env")
+        {
+            "override".to_string()
+        } else {
+            "none".to_string()
+        },
         sysand: environment.sysand.clone(),
         standard_library_status: status,
+        domain_libraries_status: domain_status,
         library_paths: environment
             .library_paths
             .iter()
@@ -300,48 +357,72 @@ fn resolve_library_paths(
         .collect()
 }
 
-fn discover_domain_libraries_path() -> Option<PathBuf> {
-    if let Ok(raw) = std::env::var("SPEC42_DOMAIN_LIBRARIES_PATH") {
-        let trimmed = raw.trim();
-        if !trimmed.is_empty() {
-            let configured = canonicalize_lossy(Path::new(trimmed));
-            if configured.is_dir() {
-                return Some(configured);
-            }
-            let nested = configured.join("domain-libraries");
-            if nested.is_dir() {
-                return Some(canonicalize_lossy(&nested));
-            }
-        }
-    }
-
-    let mut roots = Vec::new();
-    if let Ok(cwd) = std::env::current_dir() {
-        roots.push(cwd);
-    }
-    if let Ok(exe) = std::env::current_exe() {
-        if let Some(parent) = exe.parent() {
-            roots.push(parent.to_path_buf());
-        }
-    }
-    discover_domain_libraries_path_from_roots(&roots)
+struct DomainLibrariesResolution {
+    path: Option<PathBuf>,
+    source: Option<String>,
 }
 
-fn discover_domain_libraries_path_from_roots(roots: &[PathBuf]) -> Option<PathBuf> {
-    let mut seen = std::collections::BTreeSet::new();
-    for root in roots {
-        for ancestor in root.ancestors() {
-            let key = ancestor.display().to_string();
-            if !seen.insert(key) {
-                continue;
-            }
-            let candidate = ancestor.join("domain-libraries");
-            if candidate.is_dir() {
-                return Some(canonicalize_lossy(&candidate));
-            }
+fn resolve_domain_libraries_path(
+    cli: &Cli,
+    domain_libraries: &DomainLibrariesConfig,
+    domain_libraries_paths: &DomainLibrariesPaths,
+) -> Result<DomainLibrariesResolution, String> {
+    if let Some(path) = cli.domain_libraries_path.as_ref() {
+        return Ok(DomainLibrariesResolution {
+            path: Some(canonicalize_lossy(path)),
+            source: Some("flag".to_string()),
+        });
+    }
+    if let Some(value) = std::env::var_os("SPEC42_DOMAIN_LIBRARIES_PATH") {
+        return Ok(DomainLibrariesResolution {
+            path: Some(canonicalize_lossy(&PathBuf::from(value))),
+            source: Some("env".to_string()),
+        });
+    }
+
+    if let Some(metadata) = load_domain_libraries_metadata(domain_libraries_paths)? {
+        let managed_path = PathBuf::from(&metadata.install_path);
+        let expected_path = domain_managed_install_path(domain_libraries_paths, domain_libraries);
+        let metadata_is_current = metadata.installed_version == domain_libraries.version
+            && canonicalize_lossy(&managed_path) == canonicalize_lossy(&expected_path);
+        if metadata_is_current && crate::stdlib::install_path_is_ready(&managed_path) {
+            let source = if metadata.repo == EMBEDDED_DOMAIN_LIBRARIES_REPO {
+                "bundled".to_string()
+            } else {
+                "managed".to_string()
+            };
+            return Ok(DomainLibrariesResolution {
+                path: Some(managed_path),
+                source: Some(source),
+            });
         }
     }
-    None
+
+    #[allow(clippy::const_is_empty)]
+    if !EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE.is_empty() {
+        return match install_embedded_domain_libraries(domain_libraries_paths, domain_libraries) {
+            Ok(metadata) => Ok(DomainLibrariesResolution {
+                path: Some(PathBuf::from(metadata.install_path)),
+                source: Some("bundled".to_string()),
+            }),
+            Err(e) => Err(format!(
+                "Failed to materialize embedded domain libraries: {e}"
+            )),
+        };
+    }
+
+    Ok(DomainLibrariesResolution {
+        path: None,
+        source: None,
+    })
+}
+
+fn resolve_domain_libraries_config(
+    _cli: &Cli,
+    _explicit_config: &ConfigFile,
+    _default_config: &ConfigFile,
+) -> DomainLibrariesConfig {
+    DomainLibrariesConfig::default()
 }
 
 struct StdlibResolution {
@@ -543,6 +624,7 @@ mod tests {
             config_path: None,
             library_paths: vec![PathBuf::from("C:/models/lib")],
             stdlib_path: None,
+            domain_libraries_path: None,
             no_stdlib: false,
             stdio: false,
             command: None,
@@ -559,16 +641,31 @@ mod tests {
     }
 
     #[test]
-    fn discover_domain_libraries_from_ancestor_root() {
+    fn explicit_domain_libraries_path_flag() {
         let temp = tempfile::tempdir().expect("temp dir");
-        let repo = temp.path().join("repo");
-        let nested = repo.join("a").join("b");
-        let domain_libraries = repo.join("domain-libraries");
-        std::fs::create_dir_all(&nested).expect("create nested");
-        std::fs::create_dir_all(&domain_libraries).expect("create domain-libraries");
-
-        let discovered = discover_domain_libraries_path_from_roots(std::slice::from_ref(&nested));
-        assert_eq!(discovered, Some(canonicalize_lossy(&domain_libraries)));
+        let root = temp.path().join("domain-lib-root");
+        std::fs::create_dir_all(&root).expect("create domain root");
+        let cli = Cli {
+            config_path: None,
+            library_paths: Vec::new(),
+            stdlib_path: None,
+            domain_libraries_path: Some(root.clone()),
+            no_stdlib: false,
+            stdio: false,
+            command: None,
+        };
+        let paths = domain_libraries_paths_from_data_dir(temp.path().join("data"));
+        let resolution = resolve_domain_libraries_path(
+            &cli,
+            &DomainLibrariesConfig::default(),
+            &paths,
+        )
+        .expect("resolve domain libraries");
+        assert_eq!(resolution.source.as_deref(), Some("flag"));
+        assert_eq!(
+            resolution.path,
+            Some(canonicalize_lossy(&root))
+        );
     }
 
     #[test]
@@ -577,6 +674,7 @@ mod tests {
             config_path: None,
             library_paths: Vec::new(),
             stdlib_path: None,
+            domain_libraries_path: None,
             no_stdlib: true,
             stdio: false,
             command: None,
@@ -612,6 +710,7 @@ mod tests {
             config_path: None,
             library_paths: Vec::new(),
             stdlib_path: None,
+            domain_libraries_path: None,
             no_stdlib: true,
             stdio: false,
             command: None,
@@ -670,6 +769,7 @@ mod tests {
             config_path: None,
             library_paths: Vec::new(),
             stdlib_path: None,
+            domain_libraries_path: None,
             no_stdlib: false,
             stdio: false,
             command: None,
@@ -717,6 +817,7 @@ mod tests {
             config_path: None,
             library_paths: Vec::new(),
             stdlib_path: None,
+            domain_libraries_path: None,
             no_stdlib: false,
             stdio: false,
             command: None,
@@ -764,6 +865,7 @@ mod tests {
             config_path: None,
             library_paths: Vec::new(),
             stdlib_path: None,
+            domain_libraries_path: None,
             no_stdlib: false,
             stdio: false,
             command: None,
@@ -817,6 +919,7 @@ mod tests {
             config_path: None,
             library_paths: Vec::new(),
             stdlib_path: None,
+            domain_libraries_path: None,
             no_stdlib: false,
             stdio: false,
             command: None,
@@ -838,5 +941,38 @@ mod tests {
         assert_eq!(resolution.source.as_deref(), Some("bundled"));
         assert!(!resolution.used_legacy_vscode_fallback);
         assert!(resolution.path.is_some());
+    }
+
+    #[cfg(feature = "embed-domain-libraries")]
+    #[test]
+    fn resolve_environment_materializes_embedded_domain_libraries() {
+        let temp = tempfile::tempdir().expect("temp dir");
+        let config_dir = temp.path().join("config");
+        let data_dir = temp.path().join("data");
+        std::fs::create_dir_all(&config_dir).expect("create config dir");
+        std::fs::create_dir_all(&data_dir).expect("create data dir");
+
+        let cli = Cli {
+            config_path: None,
+            library_paths: Vec::new(),
+            stdlib_path: None,
+            domain_libraries_path: None,
+            no_stdlib: true,
+            stdio: false,
+            command: None,
+        };
+        let environment =
+            resolve_environment_with_dirs(&cli, config_dir, data_dir).expect("environment");
+
+        assert_eq!(environment.domain_libraries_source.as_deref(), Some("bundled"));
+        assert!(environment.domain_libraries_path.is_some());
+        assert!(environment
+            .library_paths
+            .iter()
+            .any(|path| environment.domain_libraries_path.as_ref() == Some(path)));
+        let doctor = build_doctor_report("doctor", &environment).expect("doctor");
+        assert_eq!(doctor.domain_libraries_source_kind, "bundled");
+        assert!(doctor.resolved_domain_libraries_path.is_some());
+        assert!(doctor.domain_libraries_status.is_installed);
     }
 }

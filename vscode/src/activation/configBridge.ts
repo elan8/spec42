@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { DOMAIN_LIBRARIES_DEFAULTS } from "../generated/domainLibrariesDefaults";
 import { STANDARD_LIBRARY_DEFAULTS } from "../generated/standardLibraryDefaults";
 
 const CONFIG_SECTION = "spec42";
@@ -8,6 +9,12 @@ export type StartupWorkspaceIndexingMode = "lazy" | "background" | "eager";
 
 export type StandardLibraryConfig = {
   enabled: boolean;
+  version: string;
+  repo: string;
+  contentPath: string;
+};
+
+export type DomainLibrariesConfig = {
   version: string;
   repo: string;
   contentPath: string;
@@ -63,6 +70,17 @@ export function getStandardLibraryConfig(): StandardLibraryConfig {
     contentPath:
       getConfigString("standardLibrary.contentPath") ??
       STANDARD_LIBRARY_DEFAULTS.contentPath,
+  };
+}
+
+export function getDomainLibrariesConfig(): DomainLibrariesConfig {
+  return {
+    version:
+      getConfigString("domainLibraries.version") ??
+      DOMAIN_LIBRARIES_DEFAULTS.version,
+    repo:
+      getConfigString("domainLibraries.repo") ?? DOMAIN_LIBRARIES_DEFAULTS.repo,
+    contentPath: DOMAIN_LIBRARIES_DEFAULTS.contentPath,
   };
 }
 

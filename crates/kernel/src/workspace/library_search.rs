@@ -199,6 +199,8 @@ pub(crate) fn library_source_label(uri: &Url) -> &'static str {
     let path = uri.path().to_ascii_lowercase();
     if path.contains("/standard-library/") {
         "standard"
+    } else if path.contains("/domain-libraries/") {
+        "domain"
     } else {
         "custom"
     }
@@ -301,7 +303,8 @@ fn fuzzy_subsequence_score(text: &str, query: &str) -> Option<i64> {
 
 #[cfg(test)]
 mod tests {
-    use super::{extract_declared_name_from_line, library_search_score};
+    use super::{extract_declared_name_from_line, library_search_score, library_source_label};
+    use tower_lsp::lsp_types::Url;
 
     #[test]
     fn extract_declared_name_handles_specialization_line() {
@@ -315,5 +318,17 @@ mod tests {
         let exact = library_search_score("Engine", "engine").expect("score");
         let fuzzy = library_search_score("EngineController", "engine").expect("score");
         assert!(exact > fuzzy, "exact matches should score higher");
+    }
+
+    #[test]
+    fn library_source_label_classifies_bundled_roots() {
+        let stdlib = Url::parse("file:///tmp/data/standard-library/versions/2026-04/sysml.library/ScalarValues.sysml")
+            .expect("url");
+        let domain = Url::parse("file:///tmp/data/domain-libraries/versions/dc378a9/tree/generic/RequirementMetadata.sysml")
+            .expect("url");
+        let custom = Url::parse("file:///workspace/libs/Domain.sysml").expect("url");
+        assert_eq!(library_source_label(&stdlib), "standard");
+        assert_eq!(library_source_label(&domain), "domain");
+        assert_eq!(library_source_label(&custom), "custom");
     }
 }

@@ -5,7 +5,7 @@ const path = require("path");
 const vscodeDir = path.join(__dirname, "..");
 const repoRoot = path.join(vscodeDir, "..");
 
-const contentDirs = ["examples", "domain-libraries"];
+const contentDirs = ["examples"];
 
 function removeIfExists(targetPath) {
   if (fs.existsSync(targetPath)) {
@@ -31,7 +31,7 @@ function stageContent() {
 
 function main() {
   stageContent();
-  console.log("Staged extension package content: examples, domain-libraries");
+  console.log("Staged extension package content: examples");
 }
 
 main();

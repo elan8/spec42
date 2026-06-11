@@ -5,10 +5,11 @@ import {
   flattenLibrarySearchResults,
   summarizeLibrarySearch,
 } from "../../library/libraryStatusViewModel";
+import { DOMAIN_LIBRARIES_DEFAULTS } from "../../generated/domainLibrariesDefaults";
 import { STANDARD_LIBRARY_DEFAULTS } from "../../generated/standardLibraryDefaults";
 
 describe("libraryStatusViewModel", () => {
-  it("summarizes standard and custom library packages", () => {
+  it("summarizes standard, domain, and custom library packages", () => {
     const summary = summarizeLibrarySearch({
       sources: [
         {
@@ -16,6 +17,14 @@ describe("libraryStatusViewModel", () => {
           packages: [
             { name: "ScalarValues", path: "stdlib", source: "standard", symbols: [
               { name: "Real", kind: "part def", uri: "file:///stdlib.sysml", range: {}, source: "standard" },
+            ] },
+          ],
+        },
+        {
+          source: "domain",
+          packages: [
+            { name: "RequirementMetadata", path: "domain", source: "domain", symbols: [
+              { name: "RequirementMetadata", kind: "metadata def", uri: "file:///domain.sysml", range: {}, source: "domain" },
             ] },
           ],
         },
@@ -33,6 +42,8 @@ describe("libraryStatusViewModel", () => {
 
     assert.strictEqual(summary.standardPackages, 1);
     assert.strictEqual(summary.standardSymbols, 1);
+    assert.strictEqual(summary.domainPackages, 1);
+    assert.strictEqual(summary.domainSymbols, 1);
     assert.strictEqual(summary.customPackages, 1);
     assert.strictEqual(summary.customSymbols, 2);
   });
@@ -83,17 +94,22 @@ describe("libraryStatusViewModel", () => {
     assert.strictEqual(rows[0].importStatement, "public import Domain::Vehicle;");
   });
 
-  it("builds dashboard status with missing custom paths", () => {
+  it("builds dashboard status with domain section and missing custom paths", () => {
     const status = buildLibraryDashboardStatus({
       pinnedVersion: STANDARD_LIBRARY_DEFAULTS.version,
+      domainPinnedVersion: DOMAIN_LIBRARIES_DEFAULTS.version,
+      domainResolvedPath: "C:/data/domain-libraries/versions/dc378a9/tree",
+      domainSourceKind: "bundled",
       configuredPaths: ["C:/libs/domain"],
       missingPaths: ["C:/libs/missing"],
       summary: {
         standardPackages: 1,
         standardSymbols: 10,
+        domainPackages: 3,
+        domainSymbols: 12,
         customPackages: 2,
         customSymbols: 5,
-        totalSymbols: 15,
+        totalSymbols: 27,
       },
       sysand: {
         installed: true,
@@ -105,6 +121,10 @@ describe("libraryStatusViewModel", () => {
     });
 
     assert.strictEqual(status.stdlib.available, true);
+    assert.strictEqual(status.domain.pinnedVersion, DOMAIN_LIBRARIES_DEFAULTS.version);
+    assert.strictEqual(status.domain.available, true);
+    assert.strictEqual(status.domain.packageCount, 3);
+    assert.strictEqual(status.domain.symbolCount, 12);
     assert.strictEqual(status.custom.packageCount, 2);
     assert.deepStrictEqual(status.custom.missingPaths, ["C:/libs/missing"]);
     assert.strictEqual(status.sysand.lockPresent, true);

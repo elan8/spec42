@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Domain libraries bundled like stdlib** — Removed the `domain-libraries` git submodule. Elan8 domain libraries are embedded in the Spec42 server binary, materialized under the data directory on first use, and shown in the VS Code Library dashboard next to the standard library. Local dev auto-detects a sibling `../sysml-domain-libraries` checkout or uses `SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR`.
 - **Parser dependency** — Bumped `sysml-v2-parser` to **0.24.0** on [crates.io](https://crates.io/crates/sysml-v2-parser/0.24.0): `MetadataAnnotation` in constraint bodies; structured recovery for state `ref` and part-usage bind/ref brace bodies; case-body `ref :>>` and `ReturnRef.return_expression` (verdict spans from AST). Graph wires constraint-body metadata; verification reads `rawVerdictToken` from parsed return expressions.
 
 ## [0.29.1] - 2026-06-09

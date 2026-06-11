@@ -1,3 +1,5 @@
+export type LibrarySourceKind = "standard" | "domain" | "custom";
+
 export type LibrarySearchItemLike = {
   name: string;
   kind: string;
@@ -5,19 +7,19 @@ export type LibrarySearchItemLike = {
   uri: string;
   range: unknown;
   score?: number;
-  source: "standard" | "custom";
+  source: LibrarySourceKind;
   path?: string;
 };
 
 export type LibrarySearchPackageLike = {
   name: string;
   path: string;
-  source: "standard" | "custom";
+  source: LibrarySourceKind;
   symbols: LibrarySearchItemLike[];
 };
 
 export type LibrarySearchSourceLike = {
-  source: "standard" | "custom";
+  source: LibrarySourceKind;
   packages: LibrarySearchPackageLike[];
 };
 
@@ -38,11 +40,21 @@ export type SysandStatusViewModel = {
   warnings: string[];
 };
 
+export type DomainLibrariesStatusViewModel = {
+  pinnedVersion: string;
+  available: boolean;
+  resolvedPath?: string;
+  sourceKind: string;
+  packageCount: number;
+  symbolCount: number;
+};
+
 export type LibraryDashboardStatus = {
   stdlib: {
     pinnedVersion: string;
     available: boolean;
   };
+  domain: DomainLibrariesStatusViewModel;
   custom: {
     configuredPaths: string[];
     missingPaths: string[];
@@ -55,6 +67,8 @@ export type LibraryDashboardStatus = {
 export type LibrarySummary = {
   standardPackages: number;
   standardSymbols: number;
+  domainPackages: number;
+  domainSymbols: number;
   customPackages: number;
   customSymbols: number;
   totalSymbols: number;
@@ -65,7 +79,7 @@ export type LibraryResultRow = {
   kind: string;
   packageName: string;
   container?: string;
-  source: "standard" | "custom";
+  source: LibrarySourceKind;
   path?: string;
   uri: string;
   range: unknown;
@@ -78,6 +92,8 @@ export function summarizeLibrarySearch(result: LibrarySearchResultLike): Library
   const summary: LibrarySummary = {
     standardPackages: 0,
     standardSymbols: 0,
+    domainPackages: 0,
+    domainSymbols: 0,
     customPackages: 0,
     customSymbols: 0,
     totalSymbols: 0,
@@ -88,6 +104,9 @@ export function summarizeLibrarySearch(result: LibrarySearchResultLike): Library
       if (source.source === "standard") {
         summary.standardPackages += 1;
         summary.standardSymbols += symbolCount;
+      } else if (source.source === "domain") {
+        summary.domainPackages += 1;
+        summary.domainSymbols += symbolCount;
       } else {
         summary.customPackages += 1;
         summary.customSymbols += symbolCount;
@@ -204,15 +223,28 @@ export function flattenLibrarySearchResults(
 
 export function buildLibraryDashboardStatus(params: {
   pinnedVersion: string;
+  domainPinnedVersion: string;
+  domainResolvedPath?: string;
+  domainSourceKind: string;
   configuredPaths: string[];
   missingPaths: string[];
   summary: LibrarySummary;
   sysand: SysandStatusViewModel;
 }): LibraryDashboardStatus {
+  const domainAvailable =
+    !!params.domainResolvedPath || params.domainSourceKind === "bundled";
   return {
     stdlib: {
       pinnedVersion: params.pinnedVersion,
       available: true,
+    },
+    domain: {
+      pinnedVersion: params.domainPinnedVersion,
+      available: domainAvailable,
+      resolvedPath: params.domainResolvedPath,
+      sourceKind: params.domainSourceKind,
+      packageCount: params.summary.domainPackages,
+      symbolCount: params.summary.domainSymbols,
     },
     custom: {
       configuredPaths: params.configuredPaths,

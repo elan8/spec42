@@ -8,6 +8,7 @@ pub mod elk_layout;
 pub mod environment;
 pub mod mcp;
 pub mod reports;
+pub mod domain_libraries;
 pub mod stdlib;
 pub mod sysand;
 
@@ -16,8 +17,8 @@ use std::sync::Arc;
 
 use ai_tools::{perform_explain_diagnostic, perform_model_summary};
 use cli::{
-    CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, ExplainDiagnosticArgs, ModelSummaryArgs,
-    OutputFormat, StdlibCommand, SysandCommand,
+    CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, DomainLibrariesCommand,
+    ExplainDiagnosticArgs, ModelSummaryArgs, OutputFormat, StdlibCommand, SysandCommand,
 };
 use environment::{build_doctor_report, resolve_environment};
 pub use environment::DoctorReport;
@@ -75,6 +76,7 @@ pub fn cli_from_global(global: &Spec42GlobalParams) -> Cli {
             .map(PathBuf::from)
             .collect(),
         stdlib_path: global.stdlib_path.as_ref().map(PathBuf::from),
+        domain_libraries_path: None,
         no_stdlib: global.no_stdlib,
         stdio: false,
         command: None,
@@ -197,6 +199,7 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
         Some(Command::ModelSummary(args)) => run_model_summary(&cli, args),
         Some(Command::Sysand { command }) => run_sysand(command),
         Some(Command::Stdlib { command }) => run_stdlib(&cli, command),
+        Some(Command::DomainLibraries { command }) => run_domain_libraries(&cli, command),
         Some(Command::Diagrams { command }) => run_diagrams(&cli, command),
         Some(Command::Api { .. }) => unreachable!("api command handled above"),
     }
@@ -355,6 +358,67 @@ fn run_diagrams(cli: &Cli, command: &DiagramsCommand) -> Result<ExitCode, String
     }
 }
 
+fn run_domain_libraries(
+    cli: &Cli,
+    command: &DomainLibrariesCommand,
+) -> Result<ExitCode, String> {
+    let environment = resolve_environment(cli)?;
+    let mut config = environment.domain_libraries.clone();
+    match command {
+        DomainLibrariesCommand::Status(args) => {
+            if let Some(version) = &args.version {
+                config.version = version.clone();
+            }
+            if let Some(repo) = &args.repo {
+                config.repo = repo.clone();
+            }
+            if let Some(content_path) = &args.content_path {
+                config.content_path = content_path.clone();
+            }
+            let status =
+                domain_libraries::managed_status(&environment.domain_libraries_paths, &config)?;
+            print_domain_libraries_status(&status);
+        }
+        DomainLibrariesCommand::Path(args) => {
+            if let Some(version) = &args.version {
+                config.version = version.clone();
+            }
+            if let Some(repo) = &args.repo {
+                config.repo = repo.clone();
+            }
+            if let Some(content_path) = &args.content_path {
+                config.content_path = content_path.clone();
+            }
+            if let Some(path) = environment.domain_libraries_path.clone() {
+                println!("{}", path.display());
+                return Ok(ExitCode::SUCCESS);
+            }
+            let status =
+                domain_libraries::managed_status(&environment.domain_libraries_paths, &config)?;
+            if status.is_installed {
+                if let Some(path) = status.install_path {
+                    println!("{path}");
+                    return Ok(ExitCode::SUCCESS);
+                }
+            }
+            return Err(
+                "No domain libraries path is currently configured or installed.".to_string(),
+            );
+        }
+        DomainLibrariesCommand::ClearCache => {
+            let removed = domain_libraries::remove_domain_libraries(&environment.domain_libraries_paths)?;
+            if removed {
+                println!(
+                    "Cleared materialized domain libraries data from the spec42 data directory."
+                );
+            } else {
+                println!("No materialized domain libraries data was found.");
+            }
+        }
+    }
+    Ok(ExitCode::SUCCESS)
+}
+
 fn run_stdlib(cli: &Cli, command: &StdlibCommand) -> Result<ExitCode, String> {
     let environment = resolve_environment(cli)?;
     let mut config = environment.standard_library.clone();
@@ -445,6 +509,28 @@ fn print_doctor_report(report: &environment::DoctorReport) {
             .unwrap_or("(none)")
     );
     println!(
+        "domain libraries source: {}",
+        report
+            .domain_libraries_source
+            .as_deref()
+            .unwrap_or("(none)")
+    );
+    println!(
+        "domain libraries source kind: {}",
+        report.domain_libraries_source_kind
+    );
+    println!(
+        "managed domain libraries ready: {}",
+        if report.domain_libraries_status.is_installed {
+            "yes"
+        } else {
+            "no"
+        }
+    );
+    if let Some(message) = &report.domain_libraries_status.status_message {
+        println!("managed domain libraries status: {message}");
+    }
+    println!(
         "managed stdlib ready: {}",
         if report.standard_library_status.is_installed {
             "yes"
@@ -473,6 +559,31 @@ fn print_doctor_report(report: &environment::DoctorReport) {
     );
     if let Some(root) = &report.sysand.project_root {
         println!("sysand project: {root}");
+    }
+}
+
+fn print_domain_libraries_status(status: &domain_libraries::DomainLibrariesStatus) {
+    println!("pinned version: {}", status.pinned_version);
+    println!(
+        "installed version: {}",
+        status.installed_version.as_deref().unwrap_or("(none)")
+    );
+    println!(
+        "install path: {}",
+        status.install_path.as_deref().unwrap_or("(none)")
+    );
+    println!("ready: {}", if status.is_installed { "yes" } else { "no" });
+    println!("source: {}", status.source.as_deref().unwrap_or("(none)"));
+    println!(
+        "canonical managed: {}",
+        if status.is_canonical_managed {
+            "yes"
+        } else {
+            "no"
+        }
+    );
+    if let Some(message) = &status.status_message {
+        println!("status: {message}");
     }
 }
 

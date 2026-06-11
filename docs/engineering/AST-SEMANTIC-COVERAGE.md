@@ -29,6 +29,10 @@ Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prior
 | `OpaqueMember` | Minimal node | Partial | Ignored | P1 |
 | Doc / annotation members | Ignored | Ignored | Ignored | WONTFIX 1.0 |
 
+## Library content
+
+The OMG standard library and Elan8 domain libraries ship **inside the Spec42 server binary** and materialize under the data directory on first use. Domain-library fixtures (for example `RequirementMetadata` in systems-engineering examples) resolve from the bundled tree without a git submodule checkout.
+
 ## Policy
 
 1. **Compile:** exhaustive `match` on body-element enums; no-op `Error` / doc / opaque members.

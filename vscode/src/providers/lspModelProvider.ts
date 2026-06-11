@@ -80,19 +80,19 @@ export interface LibrarySearchItem {
   uri: string;
   range: { start: PositionDTO; end: PositionDTO };
   score: number;
-  source: "standard" | "custom";
+  source: "standard" | "domain" | "custom";
   path?: string;
 }
 
 export interface LibrarySearchPackage {
   name: string;
   path: string;
-  source: "standard" | "custom";
+  source: "standard" | "domain" | "custom";
   symbols: LibrarySearchItem[];
 }
 
 export interface LibrarySearchSource {
-  source: "standard" | "custom";
+  source: "standard" | "domain" | "custom";
   packages: LibrarySearchPackage[];
 }
 

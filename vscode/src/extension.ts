@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { ModelExplorerProvider } from "./explorer/modelExplorerProvider";
 import { LibraryWebviewViewProvider } from "./library/libraryWebviewViewProvider";
+import { DOMAIN_LIBRARIES_DEFAULTS } from "./generated/domainLibrariesDefaults";
 import { STANDARD_LIBRARY_DEFAULTS } from "./generated/standardLibraryDefaults";
 import { log, logPerfEvent, logStartupEvent } from "./logger";
 import { getConfigString } from "./activation/configBridge";
@@ -91,6 +92,11 @@ export function activate(context: vscode.ExtensionContext): void {
         pinnedVersion:
           getConfigString("standardLibrary.version") ?? STANDARD_LIBRARY_DEFAULTS.version,
       }),
+      getDomainLibrariesHeading: () => ({
+        pinnedVersion:
+          getConfigString("domainLibraries.version") ?? DOMAIN_LIBRARIES_DEFAULTS.version,
+      }),
+      getDomainLibrariesStatus: handles.readDomainLibrariesStatus,
       getConfiguredLibraryPaths: () => handles.libraryPaths,
       getMissingLibraryPaths: () => handles.missingLibraryPaths,
       getSysandStatus: handles.readSysandStatus,

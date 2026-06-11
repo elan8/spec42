@@ -1,4 +1,4 @@
-# Updates the examples and domain-libraries git submodules to the latest commit on each
+# Updates the examples git submodule to the latest commit on the remote default branch.
 # remote's default branch.
 #
 # Run from repo root:  powershell -File scripts/update-content-submodules.ps1
@@ -15,7 +15,7 @@ $env:GIT_TERMINAL_PROMPT = '0'
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 Set-Location $repoRoot
 
-$submodules = @('examples', 'domain-libraries')
+$submodules = @('examples')
 
 function Get-OriginDefaultBranch {
     param([string]$SubmodulePath)

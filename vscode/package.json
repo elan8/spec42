@@ -162,6 +162,12 @@
         "category": "Spec42"
       },
       {
+        "command": "sysml.library.showDomainLibrariesStatus",
+        "title": "Library: Domain Libraries Information",
+        "icon": "$(info)",
+        "category": "Spec42"
+      },
+      {
         "command": "sysml.sysand.showStatus",
         "title": "Sysand: Show Status",
         "icon": "$(package)",
@@ -411,6 +417,9 @@
         },
         {
           "command": "sysml.library.showStdLibStatus"
+        },
+        {
+          "command": "sysml.library.showDomainLibrariesStatus"
         }
       ]
     },
@@ -544,7 +553,7 @@
     "viewsWelcome": [
       {
         "view": "spec42Library",
-        "contents": "The SysML standard library is bundled with the Spec42 language server.\\n\\n- Run [Manage Custom Libraries](command:sysml.library.managePaths)\\n- Run [Standard Library Information](command:sysml.library.showStdLibStatus)"
+        "contents": "The SysML standard library and Elan8 domain libraries are bundled with the Spec42 language server.\\n\\n- Run [Manage Custom Libraries](command:sysml.library.managePaths)\\n- Run [Standard Library Information](command:sysml.library.showStdLibStatus)\\n- Run [Domain Libraries Information](command:sysml.library.showDomainLibrariesStatus)"
       },
       {
         "view": "sysmlModelExplorer",
@@ -586,6 +595,16 @@
           "type": "string",
           "default": "sysml.library",
           "description": "Legacy: folder name inside the official release (bundled by the server)."
+        },
+        "spec42.domainLibraries.version": {
+          "type": "string",
+          "default": "dc378a9",
+          "description": "Display-only: pinned revision of the bundled Elan8 domain libraries."
+        },
+        "spec42.domainLibraries.repo": {
+          "type": "string",
+          "default": "elan8/sysml-domain-libraries",
+          "description": "Display-only: source repository for bundled domain libraries."
         },
         "spec42.statusBar.enabled": {
           "type": "boolean",

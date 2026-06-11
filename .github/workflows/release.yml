@@ -39,6 +39,9 @@ jobs:
       - name: Standard library config is current
         run: node scripts/sync-standard-library-config.mjs --check
 
+      - name: Domain libraries config is current
+        run: node scripts/sync-domain-libraries-config.mjs --check
+
       - name: Prepare SysML stdlib bundle
         run: |
           VERSION=$(node -p "require('./config/standard-library.json').version")
@@ -62,6 +65,30 @@ jobs:
         with:
           path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
+
+      - name: Prepare domain libraries bundle
+        run: |
+          VERSION=$(node -p "require('./config/domain-libraries.json').version")
+          echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-domain-libraries-${VERSION}.zip" >> $GITHUB_ENV
+
+      - name: Restore domain libraries bundle cache
+        uses: actions/cache/restore@v4
+        id: domain-libraries-cache
+        with:
+          path: .cache/sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.zip
+          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
+
+      - name: Fetch domain libraries bundle
+        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
+        run: bash scripts/fetch-domain-libraries-bundle.sh
+
+      - name: Save domain libraries bundle cache
+        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.zip
+          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Rust tests
         run: |
@@ -159,6 +186,32 @@ jobs:
         with:
           path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
+
+      - name: Prepare domain libraries bundle
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('./config/domain-libraries.json').version")
+          echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-domain-libraries-${VERSION}.zip" >> $GITHUB_ENV
+
+      - name: Restore domain libraries bundle cache
+        uses: actions/cache/restore@v4
+        id: domain-libraries-cache
+        with:
+          path: .cache/sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.zip
+          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
+
+      - name: Fetch domain libraries bundle
+        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: bash scripts/fetch-domain-libraries-bundle.sh
+
+      - name: Save domain libraries bundle cache
+        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.zip
+          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Build release binary
         run: cargo build --release -p spec42 --target ${{ matrix.target }}

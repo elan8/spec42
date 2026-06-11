@@ -1,6 +1,3 @@
 [submodule "examples"]
 	path = examples
 	url = https://github.com/elan8/sysml-examples
-[submodule "domain-libraries"]
-	path = domain-libraries
-	url = https://github.com/elan8/sysml-domain-libraries

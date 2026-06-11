@@ -12,6 +12,15 @@ type StdlibHeading = {
   pinnedVersion: string;
 };
 
+type DomainLibrariesHeading = {
+  pinnedVersion: string;
+};
+
+type DomainLibrariesDoctorStatus = {
+  resolvedPath?: string;
+  sourceKind: string;
+};
+
 type OpenRangeMessage = {
   uri: string;
   range: {
@@ -22,6 +31,8 @@ type OpenRangeMessage = {
 
 type LibraryWebviewOptions = {
   getStdlibHeading: () => StdlibHeading;
+  getDomainLibrariesHeading: () => DomainLibrariesHeading;
+  getDomainLibrariesStatus: () => Promise<DomainLibrariesDoctorStatus>;
   getConfiguredLibraryPaths: () => string[];
   getMissingLibraryPaths: () => string[];
   getSysandStatus: () => Promise<SysandStatusViewModel>;
@@ -90,6 +101,11 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
         return;
       }
 
+      if (message?.type === "showDomainLibrariesInfo") {
+        await vscode.commands.executeCommand("sysml.library.showDomainLibrariesStatus");
+        return;
+      }
+
       if (message?.type === "showSysandStatus") {
         await vscode.commands.executeCommand("sysml.sysand.showStatus");
         return;
@@ -137,11 +153,12 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
   private async postDashboard(): Promise<void> {
     this.post({ type: "dashboardLoading" });
     try {
-      const [summaryResult, sysand] = await Promise.all([
+      const [summaryResult, sysand, domainDoctor] = await Promise.all([
         this.lspModelProvider.searchLibraries("", 50),
         this.options.getSysandStatus(),
+        this.options.getDomainLibrariesStatus(),
       ]);
-      const status = this.dashboardStatus(summaryResult, sysand);
+      const status = this.dashboardStatus(summaryResult, sysand, domainDoctor);
       this.post({ type: "dashboard", payload: status });
     } catch (error) {
       this.post({
@@ -153,10 +170,14 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
 
   private dashboardStatus(
     result: SysMLLibrarySearchResult,
-    sysand: SysandStatusViewModel
+    sysand: SysandStatusViewModel,
+    domainDoctor: DomainLibrariesDoctorStatus
   ): LibraryDashboardStatus {
     return buildLibraryDashboardStatus({
       pinnedVersion: this.options.getStdlibHeading().pinnedVersion,
+      domainPinnedVersion: this.options.getDomainLibrariesHeading().pinnedVersion,
+      domainResolvedPath: domainDoctor.resolvedPath,
+      domainSourceKind: domainDoctor.sourceKind,
       configuredPaths: this.options.getConfiguredLibraryPaths(),
       missingPaths: this.options.getMissingLibraryPaths(),
       summary: summarizeLibrarySearch(result),
@@ -313,6 +334,25 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       std.appendChild(stdActions);
       nodes.push(std);
 
+      const domain = status?.domain || {};
+      const domainSection = el('div', 'section');
+      const domainHead = el('div', 'section-head');
+      domainHead.appendChild(el('div', 'title', 'Domain Libraries'));
+      const domainPillClass = domain.available ? 'ok' : 'warning';
+      const domainPillLabel = domain.sourceKind === 'bundled' || domain.available ? 'bundled' : 'unavailable';
+      domainHead.appendChild(el('span', 'pill ' + domainPillClass, domainPillLabel));
+      domainSection.appendChild(domainHead);
+      const domainDetail = 'Revision ' + (domain.pinnedVersion || 'unknown') + ' is bundled with the Spec42 language server.';
+      domainSection.appendChild(el('div', 'detail', domainDetail));
+      if (domain.resolvedPath) {
+        domainSection.appendChild(el('div', 'detail', 'Resolved path: ' + domain.resolvedPath));
+      }
+      domainSection.appendChild(el('div', 'detail', String(domain.packageCount || 0) + ' package(s), ' + String(domain.symbolCount || 0) + ' symbol(s) indexed.'));
+      const domainActions = el('div', 'actions');
+      domainActions.appendChild(button('Show domain libraries information', 'info', 'showDomainLibrariesInfo'));
+      domainSection.appendChild(domainActions);
+      nodes.push(domainSection);
+
       const custom = status?.custom || {};
       const customSection = el('div', 'section');
       const customHead = el('div', 'section-head');
@@ -407,7 +447,12 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       details.appendChild(summary);
       sources.forEach(source => {
         const sourceNode = el('details', 'tree-package');
-        sourceNode.appendChild(el('summary', 'muted', (source.source === 'standard' ? 'Standard Library' : 'Custom Libraries')));
+        const sourceLabel = source.source === 'standard'
+          ? 'Standard Library'
+          : source.source === 'domain'
+            ? 'Domain Libraries'
+            : 'Custom Libraries';
+        sourceNode.appendChild(el('summary', 'muted', sourceLabel));
         (source.packages || []).forEach(pkg => {
           const pkgNode = el('details', 'tree-package');
           pkgNode.appendChild(el('summary', 'muted', String(pkg.name || '(package)') + ' (' + String((pkg.symbols || []).length) + ')'));

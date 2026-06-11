@@ -11,6 +11,8 @@ pub struct Cli {
     pub library_paths: Vec<PathBuf>,
     #[arg(long = "stdlib-path", global = true)]
     pub stdlib_path: Option<PathBuf>,
+    #[arg(long = "domain-libraries-path", global = true)]
+    pub domain_libraries_path: Option<PathBuf>,
     #[arg(long = "no-stdlib", global = true, default_value_t = false)]
     pub no_stdlib: bool,
     #[arg(long = "stdio", global = true, hide = true, default_value_t = false)]
@@ -35,6 +37,10 @@ pub enum Command {
     Stdlib {
         #[command(subcommand)]
         command: StdlibCommand,
+    },
+    DomainLibraries {
+        #[command(subcommand)]
+        command: DomainLibrariesCommand,
     },
     Diagrams {
         #[command(subcommand)]
@@ -127,6 +133,16 @@ pub enum StdlibCommand {
     /// Print the resolved standard library directory path.
     Path(StdlibStatusArgs),
     /// Delete materialized standard-library files from the data directory (they are re-created from the embedded copy on next use).
+    ClearCache,
+}
+
+#[derive(Debug, Clone, Subcommand)]
+pub enum DomainLibrariesCommand {
+    /// Show pinned vs installed domain libraries metadata.
+    Status(StdlibStatusArgs),
+    /// Print the resolved domain libraries directory path.
+    Path(StdlibStatusArgs),
+    /// Delete materialized domain-library files from the data directory (they are re-created from the embedded copy on next use).
     ClearCache,
 }
 

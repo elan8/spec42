@@ -822,6 +822,9 @@ fn collect_semantic_ranges_action_def_body_element(
         | ADBE::Doc(_)
         | ADBE::Annotation(_) => {}
         ADBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
+        ADBE::MetadataKeywordUsage(mk_node) => {
+            collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
+        }
     }
 }
 
@@ -849,5 +852,8 @@ fn collect_semantic_ranges_action_usage_body_element(
         | AUBE::Annotation(_)
         | AUBE::Decl(_) => {}
         AUBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
+        AUBE::MetadataKeywordUsage(mk_node) => {
+            collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
+        }
     }
 }
