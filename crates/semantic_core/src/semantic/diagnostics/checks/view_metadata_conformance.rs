@@ -8,9 +8,13 @@ use crate::semantic::diagnostics::helpers::{
 };
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::model::RelationshipKind;
+use crate::semantic::reference_resolution::{
+    resolve_expose_target, ExposeTargetResolution,
+};
 use crate::semantic::relationships::{
     resolve_type_target_in_workspace, ANNOTATED_ELEMENT_TARGET_KINDS,
 };
+use crate::semantic::text_span::TextRange;
 use crate::{SemanticDiagnostic, SemanticGraph};
 
 const BUILTIN_MODELED_DECL_KEYWORDS: &[&str] = &[
@@ -65,6 +69,82 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
                 node.name
             ),
         ));
+    }
+
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "view" || is_synthetic(node) {
+            continue;
+        }
+        let Some(targets) = node
+            .attributes
+            .get("exposeTargets")
+            .and_then(|value| value.as_array())
+        else {
+            continue;
+        };
+        let container_prefix = node
+            .id
+            .qualified_name
+            .rsplit_once("::")
+            .map(|(prefix, _)| prefix);
+        for target in targets {
+            let Some(target_text) = target.get("target").and_then(|value| value.as_str()) else {
+                continue;
+            };
+            let range = expose_target_entry_range(node, target);
+            let key = format!("expose_unresolved|{}|{}", node.id.qualified_name, target_text);
+            match resolve_expose_target(graph, Some(uri), container_prefix, target_text) {
+                ExposeTargetResolution::Unresolved => {
+                    if !seen.insert(key) {
+                        continue;
+                    }
+                    diagnostics.push(diag(
+                        uri,
+                        range,
+                        DiagnosticSeverity::Warning,
+                        "semantic",
+                        "view_expose_unresolved",
+                        format!(
+                            "View '{}' expose target '{}' does not resolve to any element.",
+                            node.name, target_text
+                        ),
+                    ));
+                }
+                ExposeTargetResolution::Ambiguous => {
+                    if !seen.insert(key) {
+                        continue;
+                    }
+                    diagnostics.push(diag(
+                        uri,
+                        range,
+                        DiagnosticSeverity::Warning,
+                        "semantic",
+                        "view_expose_unresolved",
+                        format!(
+                            "View '{}' expose target '{}' is ambiguous.",
+                            node.name, target_text
+                        ),
+                    ));
+                }
+                ExposeTargetResolution::Resolved(names) if names.is_empty() => {
+                    if !seen.insert(key) {
+                        continue;
+                    }
+                    diagnostics.push(diag(
+                        uri,
+                        range,
+                        DiagnosticSeverity::Warning,
+                        "semantic",
+                        "view_expose_unresolved",
+                        format!(
+                            "View '{}' expose target '{}' does not resolve to any element.",
+                            node.name, target_text
+                        ),
+                    ));
+                }
+                ExposeTargetResolution::Resolved(_) => {}
+            }
+        }
     }
 
     for node in graph.nodes_for_uri(uri) {
@@ -541,6 +621,33 @@ fn annotated_element_restriction_type(child: &crate::semantic::model::SemanticNo
         .get("attributeType")
         .and_then(|v| v.as_str())
         .map(str::to_string)
+}
+
+fn expose_target_entry_range(node: &crate::semantic::model::SemanticNode, entry: &serde_json::Value) -> TextRange {
+    if let Some(range) = entry.get("range") {
+        let start = range.get("start");
+        let end = range.get("end");
+        if let (Some(start), Some(end)) = (start, end) {
+            if let (Some(start_line), Some(start_character), Some(end_line), Some(end_character)) = (
+                start.get("line").and_then(|v| v.as_u64()),
+                start.get("character").and_then(|v| v.as_u64()),
+                end.get("line").and_then(|v| v.as_u64()),
+                end.get("character").and_then(|v| v.as_u64()),
+            ) {
+                return TextRange {
+                    start: crate::semantic::text_span::TextPosition::new(
+                        start_line as u32,
+                        start_character as u32,
+                    ),
+                    end: crate::semantic::text_span::TextPosition::new(
+                        end_line as u32,
+                        end_character as u32,
+                    ),
+                };
+            }
+        }
+    }
+    node.range
 }
 
 fn annotated_element_matches_restriction(element_kind: &str, restriction: &str) -> bool {

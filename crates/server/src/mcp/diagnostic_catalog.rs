@@ -494,6 +494,20 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "view_expose_unresolved",
+        severity: "warning",
+        meaning: "A view expose target or feature chain does not resolve to any element.",
+        typical_fix: "Point expose at a resolvable usage, namespace, or feature chain segment.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "view_expose_empty_result",
+        severity: "information",
+        meaning: "A view expose target resolves, but view filters remove all exposed elements.",
+        typical_fix: "Relax or adjust view filters, or expose additional elements.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "view_rendering_invalid_target",
         severity: "warning",
         meaning: "A view rendering member does not resolve to a rendering definition or usage.",
@@ -676,6 +690,8 @@ const MODELING_GUIDANCE_CODES: &[&str] = &[
     "unconnected_port",
     "untyped_part_usage",
     "view_expose_empty",
+    "view_expose_empty_result",
+    "view_expose_unresolved",
 ];
 
 /// Whether a diagnostic code reflects a normative SysML constraint or modeling/tooling guidance.
@@ -792,6 +808,8 @@ mod tests {
         ("use_case_include_invalid_target", "warning"),
         ("verified_requirement_invalid_target", "warning"),
         ("view_expose_empty", "information"),
+        ("view_expose_empty_result", "information"),
+        ("view_expose_unresolved", "warning"),
         ("view_rendering_invalid_target", "warning"),
         ("viewpoint_conformance_invalid_target_kind", "warning"),
     ];

@@ -346,6 +346,142 @@ pub fn resolve_member_via_type(
     resolve_inherited_member_via_type(g, owner, member)
 }
 
+/// How an expose target suffix expands after the root element resolves.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ExposeExpandMode {
+    /// Expose only the resolved root element.
+    Exact,
+    /// Expose direct owned members (`::*`), not the root.
+    DirectMembers,
+    /// Expose the root and all transitive owned descendants (`::**`).
+    Recursive,
+}
+
+/// Result of resolving a view `expose` target against the semantic graph.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ExposeTargetResolution {
+    Resolved(HashSet<String>),
+    Ambiguous,
+    Unresolved,
+}
+
+/// Parse `expose` target suffixes (`::**`, `::*`) into a base path and expansion mode.
+pub fn parse_expose_target_suffix(target: &str) -> (String, ExposeExpandMode) {
+    let normalized = target.replace('.', "::").trim().to_string();
+    if normalized.ends_with("::**") {
+        (
+            normalized.trim_end_matches("::**").to_string(),
+            ExposeExpandMode::Recursive,
+        )
+    } else if normalized.ends_with("::*") {
+        (
+            normalized.trim_end_matches("::*").to_string(),
+            ExposeExpandMode::DirectMembers,
+        )
+    } else {
+        (normalized, ExposeExpandMode::Exact)
+    }
+}
+
+fn resolve_expose_root(
+    g: &SemanticGraph,
+    uri: Option<&Url>,
+    container_prefix: Option<&str>,
+    base: &str,
+) -> ResolveResult<NodeId> {
+    if let Some(uri) = uri {
+        match resolve_expression_endpoint_strict(g, uri, container_prefix, base) {
+            ResolveResult::Resolved(id) => return ResolveResult::Resolved(id),
+            ResolveResult::Ambiguous => return ResolveResult::Ambiguous,
+            ResolveResult::Unresolved => {}
+        }
+    }
+    match resolve_workspace_member_chain(g, base) {
+        ResolveResult::Resolved(id) => return ResolveResult::Resolved(id),
+        ResolveResult::Ambiguous => return ResolveResult::Ambiguous,
+        ResolveResult::Unresolved => {}
+    }
+    resolve_expression_endpoint_workspace(g, base)
+}
+
+fn is_part_like_kind(kind: &str) -> bool {
+    kind.to_lowercase().contains("part")
+}
+
+fn collect_expose_members(
+    g: &SemanticGraph,
+    root: &SemanticNode,
+    mode: ExposeExpandMode,
+) -> HashSet<String> {
+    let mut out = HashSet::new();
+    match mode {
+        ExposeExpandMode::Exact => {
+            out.insert(root.id.qualified_name.clone());
+        }
+        ExposeExpandMode::DirectMembers => {
+            for child in g.children_of(root) {
+                if child.element_kind != "import" {
+                    out.insert(child.id.qualified_name.clone());
+                }
+            }
+            if is_part_like_kind(&root.element_kind) {
+                for typed in g.outgoing_typing_or_specializes_targets(root) {
+                    for child in g.children_of(typed) {
+                        if child.element_kind != "import" {
+                            out.insert(child.id.qualified_name.clone());
+                        }
+                    }
+                }
+            }
+        }
+        ExposeExpandMode::Recursive => {
+            let mut stack = vec![root.id.clone()];
+            while let Some(current_id) = stack.pop() {
+                let Some(current) = g.get_node(&current_id) else {
+                    continue;
+                };
+                if !out.insert(current.id.qualified_name.clone()) {
+                    continue;
+                }
+                for child in g.children_of(current) {
+                    if child.element_kind != "import" {
+                        stack.push(child.id.clone());
+                    }
+                }
+                if is_part_like_kind(&current.element_kind) {
+                    for typed in g.outgoing_typing_or_specializes_targets(current) {
+                        stack.push(typed.id.clone());
+                    }
+                }
+            }
+        }
+    }
+    out
+}
+
+/// Resolve a view `expose` target to qualified graph node names (import-style membership set).
+pub fn resolve_expose_target(
+    g: &SemanticGraph,
+    uri: Option<&Url>,
+    container_prefix: Option<&str>,
+    target: &str,
+) -> ExposeTargetResolution {
+    let (base, mode) = parse_expose_target_suffix(target);
+    if base.is_empty() {
+        return ExposeTargetResolution::Unresolved;
+    }
+    match resolve_expose_root(g, uri, container_prefix, &base) {
+        ResolveResult::Resolved(root_id) => {
+            let Some(root) = g.get_node(&root_id) else {
+                return ExposeTargetResolution::Unresolved;
+            };
+            ExposeTargetResolution::Resolved(collect_expose_members(g, root, mode))
+        }
+        ResolveResult::Ambiguous => ExposeTargetResolution::Ambiguous,
+        ResolveResult::Unresolved => ExposeTargetResolution::Unresolved,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use url::Url;

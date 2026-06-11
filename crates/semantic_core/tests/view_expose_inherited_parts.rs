@@ -3,28 +3,26 @@ use semantic_core::{
     evaluate_views, project_ids_for_renderer, SysmlDocument, SysmlDocumentSourceKind,
 };
 
-const EXPOSE_FEATURE_CHAIN_SYSML: &str = r#"
-package StedinRijnmondGridExpansion {
-    part def Architecture;
-
-    part rijnmondExpansionProject {
-        part architecture : Architecture;
+const INHERITED_PARTS_SYSML: &str = r#"
+package P {
+    part def Vehicle {
+        part engine;
+        part cabin;
     }
-
-    view def GridStructureView;
-
-    view expansionStructure : GridStructureView {
-        expose StedinRijnmondGridExpansion::rijnmondExpansionProject.architecture;
+    part vehicle : Vehicle;
+    view v : GeneralView {
+        expose P::vehicle;
+        filter @SysML::PartUsage;
     }
 }
 "#;
 
 #[test]
-fn expose_feature_chain_resolves_nested_usage_in_view_projection() {
+fn expose_typed_usage_projects_inherited_definition_parts() {
     let doc = SysmlDocument::from_memory_path(
-        "grid-expansion",
-        "grid.sysml",
-        EXPOSE_FEATURE_CHAIN_SYSML.to_string(),
+        "workspace",
+        "model.sysml",
+        INHERITED_PARTS_SYSML.to_string(),
         SysmlDocumentSourceKind::Workspace,
         None,
         None,
@@ -43,20 +41,24 @@ fn expose_feature_chain_resolves_nested_usage_in_view_projection() {
     let evaluated = evaluate_views(&catalog, &graph, &graph_dto);
     let view = evaluated
         .iter()
-        .find(|view| view.name == "expansionStructure")
+        .find(|view| view.name == "v")
         .expect("evaluated view usage");
 
     assert!(
-        view.exposed_ids
-            .contains("StedinRijnmondGridExpansion::rijnmondExpansionProject::architecture"),
-        "feature-chain expose should resolve nested architecture usage, got: {:?}",
+        view.exposed_ids.contains("P::vehicle"),
+        "expose should resolve vehicle usage, got: {:?}",
         view.exposed_ids
     );
 
     let projected = project_ids_for_renderer(view, &graph_dto, "general-view");
     assert!(
-        !projected.is_empty(),
-        "general-view projection should include exposed architecture, got: {:?}",
+        projected.iter().any(|id| id.contains("engine")),
+        "general-view should include inherited engine, got: {:?}",
+        projected
+    );
+    assert!(
+        projected.iter().any(|id| id.contains("cabin")),
+        "general-view should include inherited cabin, got: {:?}",
         projected
     );
 }

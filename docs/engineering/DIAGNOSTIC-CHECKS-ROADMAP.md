@@ -197,6 +197,8 @@ Spec areas: 7.26-7.27, 8.3.26, 8.4.22-8.4.23.
 
 - Done: `view_rendering_invalid_target` — view rendering membership target kind validation.
 - Done: `view_expose_empty` — view body without expose members.
+- Done: `view_expose_unresolved` — expose target/feature chain does not resolve.
+- Done: `view_expose_empty_result` — reserved for filters removing all exposed elements (catalog entry; emit when filter-aware evaluation is wired in diagnostics).
 - Done: `view_filter_non_boolean` — view body filter expression Boolean validation.
 - Done: `viewpoint_reference_unresolved` / `viewpoint_rep_language_unresolved` — viewpoint frame/import/stakeholder/purpose targets and missing rep language.
 - Done: `metadata_annotation_unresolved` — metadata annotation target resolution when untyped.

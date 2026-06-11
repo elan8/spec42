@@ -33,8 +33,9 @@ pub use semantic::model::{
     ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
 };
 pub use semantic::reference_resolution::{
-    resolve_expression_endpoint_strict, resolve_inherited_member_via_type, resolve_member_via_type,
-    ResolveResult,
+    parse_expose_target_suffix, resolve_expose_target, resolve_expression_endpoint_strict,
+    resolve_expression_endpoint_workspace, resolve_inherited_member_via_type,
+    resolve_member_via_type, ExposeExpandMode, ExposeTargetResolution, ResolveResult,
 };
 pub use semantic::relationships::{
     add_cross_document_edges_for_uri, link_workspace_relationships,

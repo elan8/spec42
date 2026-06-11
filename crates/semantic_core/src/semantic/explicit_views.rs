@@ -30,6 +30,7 @@ pub struct ViewDefinitionSpec {
 pub struct ExposeSpec {
     pub target: String,
     pub filter: Option<FilterExpr>,
+    pub range: RangeDto,
 }
 
 #[derive(Debug, Clone)]
@@ -194,6 +195,7 @@ fn walk_package_body(
                             ViewBodyElement::Expose(expose) => exposes.push(ExposeSpec {
                                 target: expose.target.clone(),
                                 filter: parse_expose_filter(content, &member.span),
+                                range: span_to_range_dto(&member.span),
                             }),
                             _ => {}
                         }
@@ -254,6 +256,7 @@ fn resolve_definition_id(
 
 pub fn evaluate_views(
     catalog: &ViewCatalog,
+    semantic_graph: &crate::semantic::graph::SemanticGraph,
     graph: &crate::semantic::dto::SysmlGraphDto,
 ) -> Vec<EvaluatedView> {
     let node_by_id: HashMap<&str, &crate::semantic::dto::GraphNodeDto> = graph
@@ -270,18 +273,6 @@ pub fn evaluate_views(
                 .map(|parent| (node.id.as_str(), parent))
         })
         .collect();
-    let children_by_parent: HashMap<&str, Vec<&str>> = {
-        let mut map = HashMap::new();
-        for node in &graph.nodes {
-            if let Some(parent_id) = node.parent_id.as_deref() {
-                map.entry(parent_id)
-                    .or_insert_with(Vec::new)
-                    .push(node.id.as_str());
-            }
-        }
-        map
-    };
-
     catalog
         .usages
         .iter()
@@ -301,12 +292,50 @@ pub fn evaluate_views(
                 }
             }
 
+            let view_uri = uri_for_qualified_name(semantic_graph, &usage.id)
+                .or_else(|| {
+                    node_by_id
+                        .get(usage.id.as_str())
+                        .and_then(|node| node.uri.clone())
+                })
+                .and_then(|uri| url::Url::parse(&uri).ok());
+            let container_prefix = usage
+                .id
+                .rsplit_once("::")
+                .map(|(prefix, _)| prefix);
+
             let mut exposed_ids = HashSet::new();
             for expose in &usage.exposes {
-                let exposed = resolve_expose_targets(graph, expose, &children_by_parent);
-                for node_id in exposed {
-                    if node_matches_expose_filter(node_id, &node_by_id, expose.filter.as_ref()) {
-                        exposed_ids.insert(node_id.to_string());
+                match crate::semantic::reference_resolution::resolve_expose_target(
+                    semantic_graph,
+                    view_uri.as_ref(),
+                    container_prefix,
+                    &expose.target,
+                ) {
+                    crate::semantic::reference_resolution::ExposeTargetResolution::Resolved(
+                        names,
+                    ) => {
+                        for node_id in names {
+                            if node_matches_expose_filter(
+                                node_id.as_str(),
+                                &node_by_id,
+                                expose.filter.as_ref(),
+                            ) {
+                                exposed_ids.insert(node_id);
+                            }
+                        }
+                    }
+                    crate::semantic::reference_resolution::ExposeTargetResolution::Ambiguous => {
+                        issues.push(format!(
+                            "Expose target '{}' is ambiguous.",
+                            expose.target
+                        ));
+                    }
+                    crate::semantic::reference_resolution::ExposeTargetResolution::Unresolved => {
+                        issues.push(format!(
+                            "Expose target '{}' does not resolve to any element.",
+                            expose.target
+                        ));
                     }
                 }
             }
@@ -418,50 +447,15 @@ pub fn project_ids_for_renderer(
     with_ancestors(filtered_ids, &parent_by_id)
 }
 
-fn resolve_expose_targets<'a>(
-    graph: &'a crate::semantic::dto::SysmlGraphDto,
-    expose: &ExposeSpec,
-    children_by_parent: &HashMap<&'a str, Vec<&'a str>>,
-) -> HashSet<&'a str> {
-    let target = normalize_path(&expose.target);
-    let recursive = target.ends_with("::**");
-    let direct_namespace = target.ends_with("::*");
-    let base = target
-        .trim_end_matches("::**")
-        .trim_end_matches("::*")
-        .trim_end_matches("::*");
-
-    let mut matches = HashSet::new();
-    for node in &graph.nodes {
-        let qualified = normalize_path(&node.id);
-        if qualified == base || qualified.ends_with(&format!("::{base}")) {
-            if recursive {
-                collect_descendants(node.id.as_str(), children_by_parent, &mut matches);
-                matches.insert(node.id.as_str());
-            } else if direct_namespace {
-                if let Some(children) = children_by_parent.get(node.id.as_str()) {
-                    matches.extend(children.iter().copied());
-                }
-            } else {
-                matches.insert(node.id.as_str());
-            }
-        }
-    }
-    matches
-}
-
-fn collect_descendants<'a>(
-    node_id: &'a str,
-    children_by_parent: &HashMap<&'a str, Vec<&'a str>>,
-    out: &mut HashSet<&'a str>,
-) {
-    if let Some(children) = children_by_parent.get(node_id) {
-        for child in children {
-            if out.insert(child) {
-                collect_descendants(child, children_by_parent, out);
-            }
-        }
-    }
+fn uri_for_qualified_name(
+    semantic_graph: &crate::semantic::graph::SemanticGraph,
+    qualified_name: &str,
+) -> Option<String> {
+    semantic_graph
+        .graph
+        .node_weights()
+        .find(|node| node.id.qualified_name == qualified_name)
+        .map(|node| node.id.uri.as_str().to_string())
 }
 
 fn expand_descendants(
@@ -600,6 +594,8 @@ fn map_sysml_kind_alias(wanted: &str) -> String {
         "actionusage" => "action".to_string(),
         "actiondefinition" | "actiondef" => "action def".to_string(),
         "portusage" => "port".to_string(),
+        "portdefinition" | "portdef" => "port def".to_string(),
+        "connectiondefinition" | "connectiondef" => "connection def".to_string(),
         "stateusage" => "state".to_string(),
         "statedefinition" | "statedef" => "state def".to_string(),
         other => other.to_string(),

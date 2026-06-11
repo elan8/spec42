@@ -165,9 +165,18 @@ fn annotate_view_usage_body(
             .insert("hasViewBody".to_string(), serde_json::json!(true));
     }
     let mut has_expose = false;
+    let mut expose_targets = Vec::new();
     for element in elements {
         match &element.value {
-            ViewBodyElement::Expose(_) => has_expose = true,
+            ViewBodyElement::Expose(expose) => {
+                has_expose = true;
+                expose_targets.push(serde_json::json!({
+                    "target": expose.target,
+                    "range": crate::semantic::ast_util::text_range_to_json(
+                        crate::semantic::ast_util::span_to_range(&element.span),
+                    ),
+                }));
+            }
             ViewBodyElement::ViewRendering(rendering) => {
                 add_view_rendering_node(g, uri, view_id, rendering);
             }
@@ -185,6 +194,10 @@ fn annotate_view_usage_body(
             view_node
                 .attributes
                 .insert("hasExpose".to_string(), serde_json::json!(true));
+            view_node.attributes.insert(
+                "exposeTargets".to_string(),
+                serde_json::json!(expose_targets),
+            );
         }
     }
 }
@@ -407,6 +420,15 @@ pub(super) fn build_from_package_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "part");
             let range = span_to_range(&pu_node.span);
             let mut attrs = HashMap::new();
+            if let Some(ref prefix) = pu_node.usage_prefix {
+                attrs.insert(
+                    "usagePrefix".to_string(),
+                    serde_json::json!(match prefix {
+                        sysml_v2_parser::ast::DefinitionPrefix::Abstract => "abstract",
+                        sysml_v2_parser::ast::DefinitionPrefix::Variation => "variation",
+                    }),
+                );
+            }
             attrs.insert(
                 "partType".to_string(),
                 serde_json::json!(&pu_node.type_name),

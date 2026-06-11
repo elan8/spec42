@@ -85,7 +85,7 @@ The OMG standard library and Elan8 domain libraries ship **inside the Spec42 ser
 ## Prior release (0.18.0 follow-through)
 
 - `metadata def` and package-level `metadata` usage bodies walk `AttributeBodyElement` in [`metadata_def.rs`](../../crates/semantic_core/src/semantic/graph_builder/metadata_def.rs); covered by [`metadata_semantics.rs`](../../crates/semantic_core/tests/metadata_semantics.rs).
-- Parser 0.18.0 accepts dot feature chains in `expose` targets; view evaluation resolves normalized chains in [`explicit_views.rs`](../../crates/semantic_core/src/semantic/explicit_views.rs); covered by [`expose_feature_chains.rs`](../../crates/semantic_core/tests/expose_feature_chains.rs).
+- Parser accepts dot feature chains in `expose` targets; view evaluation resolves feature chains and import-style membership via [`resolve_expose_target`](../../crates/semantic_core/src/semantic/reference_resolution.rs) in [`explicit_views.rs`](../../crates/semantic_core/src/semantic/explicit_views.rs); covered by [`expose_feature_chains.rs`](../../crates/semantic_core/tests/expose_feature_chains.rs), [`view_expose_inherited_parts.rs`](../../crates/semantic_core/tests/view_expose_inherited_parts.rs), and [`VIEW-EXPOSE-ROADMAP.md`](VIEW-EXPOSE-ROADMAP.md).
 - `unresolved_specializes_reference` (RULE7) includes case and metadata definition kinds via shared [`SPECIALIZES_TARGET_KINDS`](../../crates/semantic_core/src/semantic/relationships.rs); analysis def `:>` regression in kernel integration diagnostics.
 
 ## Prior release (0.17.0 follow-through)

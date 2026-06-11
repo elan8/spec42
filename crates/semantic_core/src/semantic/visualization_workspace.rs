@@ -1309,7 +1309,7 @@ pub fn build_sysml_visualization_workspace(
         });
     }
 
-    let evaluated_views = explicit_views::evaluate_views(&catalog, &graph);
+    let evaluated_views = explicit_views::evaluate_views(&catalog, semantic_graph, &graph);
     let mut projected_graphs: HashMap<&str, SysmlGraphDto> = HashMap::new();
     let mut projected_activity_diagrams: HashMap<&str, Vec<ActivityDiagramDto>> = HashMap::new();
     let mut projected_sequence_diagrams: HashMap<&str, Vec<SequenceDiagramDto>> = HashMap::new();

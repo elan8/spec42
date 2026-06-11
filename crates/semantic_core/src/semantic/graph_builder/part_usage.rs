@@ -68,6 +68,15 @@ pub(super) fn build_from_part_usage_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "part");
             let range = span_to_range(&n.span);
             let mut attrs = HashMap::new();
+            if let Some(ref prefix) = n.usage_prefix {
+                attrs.insert(
+                    "usagePrefix".to_string(),
+                    serde_json::json!(match prefix {
+                        sysml_v2_parser::ast::DefinitionPrefix::Abstract => "abstract",
+                        sysml_v2_parser::ast::DefinitionPrefix::Variation => "variation",
+                    }),
+                );
+            }
             attrs.insert("partType".to_string(), serde_json::json!(&n.type_name));
             if let Some(ref m) = n.multiplicity {
                 attrs.insert("multiplicity".to_string(), serde_json::json!(m));
@@ -292,6 +301,21 @@ pub(super) fn build_from_part_usage_body_element(
                 parent_id,
                 &mk_node.value,
                 &mk_node.span,
+            );
+        }
+        PUBE::VariantUsage(variant) => {
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &variant.name, "variant");
+            let range = span_to_range(&variant.span);
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "variant",
+                variant.name.clone(),
+                range,
+                HashMap::new(),
+                Some(parent_id),
             );
         }
         PUBE::EnumerationUsage(_) | PUBE::Annotation(_) | PUBE::Error(_) | PUBE::Doc(_) => {}
