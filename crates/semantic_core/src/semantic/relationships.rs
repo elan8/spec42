@@ -34,6 +34,8 @@ pub(crate) const TYPING_TARGET_KINDS: &[&str] = &[
     "requirement",
     "use case def",
     "concern def",
+    "analysis def",
+    "verification def",
     "view def",
     "viewpoint def",
     "rendering def",
@@ -62,6 +64,7 @@ const SUBJECT_TYPE_TARGET_KINDS: &[&str] = &[
     "state def",
     "use case def",
     "concern def",
+    "analysis def",
 ];
 
 /// Definitional kinds that may appear as the target of `:>` / `specializes` on definitions.
@@ -164,6 +167,8 @@ const DISAMBIGUATION_SUFFIX_KINDS: &[&str] = &[
     "occurrence_def",
     "interface",
     "concern_def",
+    "analysis_def",
+    "verification_def",
     "alias",
     "kermlDecl",
 ];

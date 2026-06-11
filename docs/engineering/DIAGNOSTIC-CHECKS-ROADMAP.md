@@ -81,6 +81,14 @@ Some relationship diagnostics are emitted by graph-builder diagnostic nodes and 
 - `invalid_verdict_value`
 - `objective_binding_unresolved`
 
+**Expression evaluation (June 2026):** `semantic_core::evaluation` now propagates typed
+`analysis` / `verification` usage context after workspace linking, aggregates `assert
+constraint` bodies onto owners, evaluates `require constraint` on requirement defs and
+usages (including `[MW]`-style unit literals via the embedded engineering unit catalog),
+and rolls up `sum(child.feature)` across sibling `part` usages when no explicit
+collection binding exists. `constraint def` / `calc def` remain templates (invocation
+only). KerML `if` / `let` / lambda in constraints remain deferred.
+
 ### Catalog coverage
 
 `crates/server/src/mcp/diagnostic_catalog.rs` is the current user-facing catalog for `spec42 explain-diagnostic` and the MCP diagnostic explanation surface.

@@ -53,6 +53,17 @@ impl CanonicalUnitExpr {
     }
 }
 
+/// Base SI/engineering units used to derive prefixed literals such as `[MW]` and `[kV]`
+/// when a full OMG library is not indexed on the workspace graph.
+const MINIMAL_ENGINEERING_UNIT_CATALOG: &str = r#"
+attribute <V> volt : ElectricPotentialUnit;
+attribute <W> watt : PowerUnit;
+attribute <A> ampere : ElectricCurrentUnit;
+attribute <VA> voltampere : ApparentPowerUnit;
+attribute <h> hour : DurationUnit;
+attribute <m> metre : LengthUnit;
+"#;
+
 impl UnitRegistry {
     /// Unified builder for diagnostics, hover, and expression evaluation.
     pub fn build_unified(
@@ -89,6 +100,7 @@ impl UnitRegistry {
         for catalog in extra_unit_catalogs {
             registry.ingest_file_contents(catalog);
         }
+        registry.ingest_file_contents(MINIMAL_ENGINEERING_UNIT_CATALOG);
         registry.finalize_ingest();
         registry
     }

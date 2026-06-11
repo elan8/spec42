@@ -491,7 +491,13 @@ pub(super) fn walk_requirement_def_body(
                 if let Some(ref typing) = attr_def.value.typing {
                     attrs.insert("attributeType".to_string(), serde_json::json!(typing));
                 }
-                if let Some(initializer) =
+                if let Some(value_expr) = &attr_def.value.value {
+                    let rendered = expression_to_debug_string(value_expr);
+                    if !rendered.is_empty() {
+                        attrs.insert("value".to_string(), serde_json::json!(rendered));
+                        attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
+                    }
+                } else if let Some(initializer) =
                     extract_attribute_initializer_from_span(uri, &attr_def.span)
                 {
                     attrs.insert("defaultValue".to_string(), serde_json::json!(initializer));

@@ -27,6 +27,8 @@ const RULE6_ALLOWED_KINDS: &[&str] = &[
     "requirement def",
     "use case def",
     "concern def",
+    "analysis def",
+    "verification def",
     "enum def",
     "alias",
     "kermlDecl",

@@ -1035,6 +1035,28 @@ fn unresolved_specializes_reference_is_not_emitted_when_base_resolves() {
 }
 
 #[test]
+fn analysis_usage_typed_by_imported_analysis_def_does_not_emit_unresolved_type_reference() {
+    let content = r#"
+        package GridAnalysis {
+            analysis def LoadFlowAnalysis {
+                return ref loadFlowComplete {
+                    return true;
+                }
+            }
+        }
+        package AnalysisCases {
+            private import GridAnalysis::*;
+            analysis loadFlowRun : LoadFlowAnalysis;
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("analysis_usage_typing.sysml", content);
+    assert!(
+        !has_diag_code(&diagnostics, "semantic", "unresolved_type_reference"),
+        "expected imported analysis def typing to resolve, got: {diagnostics:#?}"
+    );
+}
+
+#[test]
 fn unresolved_specializes_reference_is_not_emitted_for_sibling_analysis_def_specialization() {
     let content = r#"
         package PowerAnalysis {

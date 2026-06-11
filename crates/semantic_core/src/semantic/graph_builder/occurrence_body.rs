@@ -30,7 +30,12 @@ fn constraint_body_expression(body: &ConstraintDefBody) -> Option<String> {
             }
         }
     }
-    let expression = fragments.join(" ").trim().to_string();
+    let expression = fragments
+        .join(" ")
+        .trim()
+        .trim_end_matches(';')
+        .trim()
+        .to_string();
     if expression.is_empty() {
         None
     } else {

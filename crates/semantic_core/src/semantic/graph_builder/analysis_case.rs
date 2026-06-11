@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{UseCaseDefBody, UseCaseDefBodyElement};
 use url::Url;
@@ -8,9 +8,10 @@ use super::{add_node_and_recurse, expressions, qualified_name_for_node};
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
-use crate::semantic::relationships::{
-    add_typing_edge_if_exists, resolve_type_target_in_workspace, SPECIALIZES_TARGET_KINDS,
+use crate::semantic::analysis_typing::{
+    inherited_case_expression, inherited_case_result_qualified, strip_analysis_return_body,
 };
+use crate::semantic::relationships::add_typing_edge_if_exists;
 
 pub(super) fn build_from_analysis_body(
     body: &UseCaseDefBody,
@@ -287,7 +288,7 @@ pub(super) fn build_from_analysis_body(
     let objective_count = objective_node_ids.len();
     let had_local_result = analysis_result_qualified.is_some();
     let bound_to =
-        analysis_result_qualified.or_else(|| inherited_analysis_result_qualified(g, parent_id));
+        analysis_result_qualified.or_else(|| inherited_case_result_qualified(g, parent_id));
     if let Some(bound_to) = bound_to.as_ref() {
         for objective_id in &objective_node_ids {
             if let Some(objective_node) = g.get_node_mut(objective_id) {
@@ -299,7 +300,7 @@ pub(super) fn build_from_analysis_body(
     }
     if !had_local_result {
         if let Some(inherited_expression) =
-            inherited_analysis_expression(g, parent_id, bound_to.as_deref())
+            inherited_case_expression(g, parent_id, bound_to.as_deref())
         {
             if let Some(parent_node) = g.get_node_mut(parent_id) {
                 parent_node.attributes.insert(
@@ -333,113 +334,6 @@ pub(super) fn build_from_analysis_body(
             serde_json::json!(analysis_result_count),
         );
     }
-}
-
-/// Walks `:>` on analysis definitions and returns the first inherited `analysis result`.
-fn inherited_analysis_result_qualified(
-    g: &SemanticGraph,
-    analysis_def_id: &NodeId,
-) -> Option<String> {
-    let mut current_id = analysis_def_id.clone();
-    let mut seen = HashSet::new();
-    loop {
-        let specializes_ref = g
-            .get_node(&current_id)?
-            .attributes
-            .get("specializes")
-            .and_then(|value| value.as_str())
-            .map(str::trim)
-            .filter(|value| !value.is_empty())?;
-        if !seen.insert(current_id.clone()) {
-            return None;
-        }
-        let current = g.get_node(&current_id)?.clone();
-        let target_id = resolve_type_target_in_workspace(
-            g,
-            &current,
-            specializes_ref,
-            SPECIALIZES_TARGET_KINDS,
-        )?;
-        let target = g.get_node(&target_id)?;
-        if target.element_kind != "analysis def" {
-            return None;
-        }
-        for child in g.children_of(target) {
-            if child.element_kind == "analysis result" {
-                return Some(child.id.qualified_name.clone());
-            }
-        }
-        current_id = target_id;
-    }
-}
-
-fn inherited_analysis_expression(
-    g: &SemanticGraph,
-    analysis_def_id: &NodeId,
-    inherited_result_qualified: Option<&str>,
-) -> Option<String> {
-    if let Some(result_qualified) = inherited_result_qualified {
-        let result_id = NodeId::new(&analysis_def_id.uri, result_qualified);
-        if let Some(result_node) = g.get_node(&result_id) {
-            if let Some(body) = result_node
-                .attributes
-                .get("returnBody")
-                .and_then(|value| value.as_str())
-            {
-                let expression = strip_analysis_return_body(body);
-                if !expression.is_empty() {
-                    return Some(expression);
-                }
-            }
-        }
-    }
-    let mut current_id = analysis_def_id.clone();
-    let mut seen = HashSet::new();
-    loop {
-        let specializes_ref = g
-            .get_node(&current_id)?
-            .attributes
-            .get("specializes")
-            .and_then(|value| value.as_str())
-            .map(str::trim)
-            .filter(|value| !value.is_empty())?;
-        if !seen.insert(current_id.clone()) {
-            return None;
-        }
-        let current = g.get_node(&current_id)?.clone();
-        let target_id = resolve_type_target_in_workspace(
-            g,
-            &current,
-            specializes_ref,
-            SPECIALIZES_TARGET_KINDS,
-        )?;
-        let target = g.get_node(&target_id)?;
-        if target.element_kind != "analysis def" {
-            return None;
-        }
-        if let Some(expression) = target
-            .attributes
-            .get("analysisExpression")
-            .and_then(|value| value.as_str())
-            .map(str::trim)
-            .filter(|value| !value.is_empty())
-        {
-            return Some(expression.to_string());
-        }
-        current_id = target_id;
-    }
-}
-
-fn strip_analysis_return_body(body: &str) -> String {
-    let mut trimmed = body.trim();
-    if trimmed.starts_with('{') && trimmed.ends_with('}') {
-        trimmed = trimmed[1..trimmed.len() - 1].trim();
-    }
-    let without_return = trimmed
-        .strip_prefix("return")
-        .map(str::trim)
-        .unwrap_or(trimmed);
-    without_return.trim_end_matches(';').trim().to_string()
 }
 
 #[derive(Debug, Clone)]

@@ -1,4 +1,5 @@
 pub mod activity_graph;
+pub mod analysis_typing;
 pub mod ast_util;
 pub mod diagnostics;
 pub mod dto;

@@ -3,6 +3,7 @@ use std::time::Instant;
 use sysml_v2_parser::RootNamespace;
 use url::Url;
 
+use crate::semantic::analysis_typing::prepare_analysis_evaluation_context;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::build_graph_from_doc;
 use crate::semantic::relationships::{
@@ -45,6 +46,7 @@ pub fn build_semantic_graph_from_documents(
     }
 
     link_workspace_relationships(&mut graph);
+    prepare_analysis_evaluation_context(&mut graph);
     resolve_workspace_pending_relationships(&mut graph);
 
     Ok((graph, parsed_docs))

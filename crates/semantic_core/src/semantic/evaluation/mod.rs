@@ -2,6 +2,9 @@ use std::collections::{HashMap, HashSet};
 
 use serde_json::Value;
 
+use crate::semantic::analysis_typing::{
+    typed_case_definition_scope_prefixes, typed_requirement_definition_scope_prefixes,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, SemanticNode};
 use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
@@ -141,6 +144,7 @@ pub fn evaluate_expressions_with_unit_catalogs(
     graph: &mut SemanticGraph,
     extra_unit_catalogs: &[&str],
 ) {
+    crate::semantic::analysis_typing::prepare_analysis_evaluation_context(graph);
     let units = UnitRegistry::build_for_evaluation(graph, extra_unit_catalogs);
     let outcomes = {
         let mut engine = EvalEngine::new(graph, units.clone());
@@ -1180,7 +1184,11 @@ impl<'a> EvalEngine<'a> {
 
     fn scoped_candidates(&self, current: &SemanticNode, identifier: &str) -> Vec<NodeId> {
         let mut candidates = Vec::new();
-        for scope_prefix in scope_prefixes(self.graph, current) {
+        let mut prefixes = scope_prefixes(self.graph, current);
+        prefixes.insert(0, current.id.qualified_name.clone());
+        prefixes.extend(typed_case_definition_scope_prefixes(self.graph, current));
+        prefixes.extend(typed_requirement_definition_scope_prefixes(self.graph, current));
+        for scope_prefix in prefixes {
             let qualified = format!("{scope_prefix}::{identifier}");
             candidates.extend(self.lookup_qualified_candidates(&qualified));
         }
@@ -1332,6 +1340,44 @@ impl<'a> EvalEngine<'a> {
         Ok(best)
     }
 
+    fn collect_member_paths_for_sum_projection(
+        &self,
+        context_id: &NodeId,
+        head: &str,
+        rest: &str,
+    ) -> Vec<String> {
+        let Some(context) = self.graph.get_node(context_id) else {
+            return Vec::new();
+        };
+        let part_child_names: Vec<String> = self
+            .graph
+            .children_of(context)
+            .into_iter()
+            .filter(|child| child.element_kind == "part")
+            .map(|child| child.name.clone())
+            .collect();
+        let named_matches: Vec<_> = part_child_names
+            .iter()
+            .filter(|name| name.as_str() == head)
+            .collect();
+        if named_matches.len() == 1 {
+            return vec![format!("{head}.{rest}")];
+        }
+        if named_matches.len() > 1 {
+            return named_matches
+                .iter()
+                .map(|name| format!("{name}.{rest}"))
+                .collect();
+        }
+        if part_child_names.len() > 1 {
+            return part_child_names
+                .iter()
+                .map(|name| format!("{name}.{rest}"))
+                .collect();
+        }
+        Vec::new()
+    }
+
     fn evaluate_builtin_sum(
         &mut self,
         context_id: &NodeId,
@@ -1348,6 +1394,19 @@ impl<'a> EvalEngine<'a> {
                     for item in items {
                         let projected = format!("{item}.{rest}");
                         let q = self.resolve_identifier_quantity(context_id, &projected)?;
+                        acc = Some(match acc {
+                            None => q,
+                            Some(prev) => add_quantities_with_units(&self.units, prev, q)?,
+                        });
+                    }
+                    return acc.ok_or(EvalStatus::Unsupported);
+                }
+                let member_paths =
+                    self.collect_member_paths_for_sum_projection(context_id, head, rest);
+                if !member_paths.is_empty() {
+                    let mut acc: Option<Quantity> = None;
+                    for path in member_paths {
+                        let q = self.resolve_identifier_quantity(context_id, &path)?;
                         acc = Some(match acc {
                             None => q,
                             Some(prev) => add_quantities_with_units(&self.units, prev, q)?,
