@@ -1,6 +1,6 @@
 # AST semantic coverage matrix
 
-Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.23.0** ([crates.io](https://crates.io/crates/sysml-v2-parser/0.23.0); `Expression::Classification`, `TypeCheck`, `Select`/`Collect`).
+Maps **sysml-v2-parser** body/member enums to Spec42 surfaces. This is a **prioritization** tool, not a commitment to 100% AST-to-graph mapping. Parser version: **0.24.0** ([crates.io](https://crates.io/crates/sysml-v2-parser/0.24.0); constraint `MetadataAnnotation`, case-body `ReturnRef.return_expression`, structured state/part-usage ref bodies).
 
 | Parser surface | Graph (`semantic_core`) | Symbols / hover | Semantic tokens | Priority |
 |----------------|-------------------------|-----------------|-----------------|----------|

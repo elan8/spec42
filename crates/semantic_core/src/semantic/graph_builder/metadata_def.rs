@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-use sysml_v2_parser::ast::{AttributeBody, MetadataAnnotation};
+use sysml_v2_parser::ast::{
+    AttributeBody, ConstraintDefBody, ConstraintDefBodyElement, MetadataAnnotation, Node,
+};
 use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
@@ -37,6 +39,53 @@ pub(super) fn add_metadata_annotation_node(
     );
     if let Some(ref t) = meta.type_name {
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+    }
+}
+
+pub(super) fn wire_constraint_body_metadata(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    body: &ConstraintDefBody,
+) {
+    let ConstraintDefBody::Brace { elements } = body else {
+        return;
+    };
+    wire_constraint_body_metadata_elements(g, uri, container_prefix, parent_id, elements);
+}
+
+pub(super) fn wire_require_constraint_body_metadata(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    body: &sysml_v2_parser::ast::RequireConstraintBody,
+) {
+    let sysml_v2_parser::ast::RequireConstraintBody::Brace { elements } = body else {
+        return;
+    };
+    wire_constraint_body_metadata_elements(g, uri, container_prefix, parent_id, elements);
+}
+
+fn wire_constraint_body_metadata_elements(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    elements: &[Node<ConstraintDefBodyElement>],
+) {
+    for element in elements {
+        if let ConstraintDefBodyElement::MetadataAnnotation(meta) = &element.value {
+            add_metadata_annotation_node(
+                g,
+                uri,
+                container_prefix,
+                parent_id,
+                &meta.value,
+                &meta.span,
+            );
+        }
     }
 }
 

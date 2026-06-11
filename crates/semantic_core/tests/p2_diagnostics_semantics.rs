@@ -735,3 +735,36 @@ fn metadata_usage_with_valid_type_has_no_annotation_diagnostic() {
             .collect::<Vec<_>>()
     );
 }
+
+#[test]
+fn invalid_verdict_value_uses_return_expression_span() {
+    let doc = workspace_doc(
+        "invalid_verdict_value.sysml",
+        r#"package P {
+  verification def VerifyRuntime {
+    return ref verdictResult { return VerdictKind::unknown; }
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "invalid_verdict_value"),
+        "expected invalid_verdict_value, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message, d.range))
+            .collect::<Vec<_>>()
+    );
+    let verdict_node = graph
+        .nodes_for_uri(&uri)
+        .into_iter()
+        .find(|node| node.element_kind == "verdict")
+        .expect("verdict node");
+    assert!(
+        verdict_node.range.start.line >= 2,
+        "verdict node range should come from parsed return expression, got {:?}",
+        verdict_node.range
+    );
+}

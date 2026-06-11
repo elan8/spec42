@@ -187,4 +187,12 @@ fn add_assert_constraint_member(
         attrs,
         Some(parent_id),
     );
+    let assert_id = NodeId::new(uri, &qualified);
+    super::metadata_def::wire_constraint_body_metadata(
+        g,
+        uri,
+        Some(parent_id.qualified_name.as_str()),
+        &assert_id,
+        &assert_node.value.body,
+    );
 }

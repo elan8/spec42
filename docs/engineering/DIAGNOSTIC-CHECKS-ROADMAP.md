@@ -237,10 +237,15 @@ Fixes applied against `SysML_v2.txt` after drone-example and vacuum-corpus audit
 
 ### Remaining limitations (deferred)
 
-- Parser `ClassificationExpression` AST for `istype` / `hastype` / `meta` (see `sysml-v2-parser/docs/SPEC42-DIAGNOSTICS-PARSER-IMPROVEMENTS.md`)
-- Typed `stakeholder name : Type` in requirement bodies (parser gap; kind rule ready when AST adds typing)
 - KerML classifier targets in kind tables (`kermlDecl`) — add when library typing is indexed
 - Internal graph kind `"actor def"` from legacy package-body path — not a SysML v2 construct; quarantined from typing checks
+- Full KerML `OwnedExpression` (`if`, `let`, lambda) — incremental tranches only; `@Metaclass` / `istype` / `hastype` / `as` covered in parser **0.23.0** with Spec42 `exprClass` + AST boolean walk
+
+### Shipped in parser 0.23.0 (no longer deferred)
+
+- `Expression::Classification` for `@SysML::Metaclass` filters; `TypeCheck` for `istype` / `hastype` / `as`
+- Typed `stakeholder name : Type` in requirement/viewpoint bodies
+- Filter/guard Boolean checks use graph `conditionIsBoolean` + `exprClass` from AST walk (not string re-parse)
 
 ### Catalog audit (other codes)
 

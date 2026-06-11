@@ -753,8 +753,14 @@ fn collect_semantic_ranges_requirement_def_body_element(
         RDBE::RequireConstraint(constraint) => {
             if let RequireConstraintBody::Brace { elements } = &constraint.value.body {
                 for element in elements {
-                    if let ConstraintDefBodyElement::InOutDecl(param) = &element.value {
-                        out.push((span_to_source_range(&param.span), TYPE_PROPERTY));
+                    match &element.value {
+                        ConstraintDefBodyElement::InOutDecl(param) => {
+                            out.push((span_to_source_range(&param.span), TYPE_PROPERTY));
+                        }
+                        ConstraintDefBodyElement::MetadataAnnotation(meta) => {
+                            collect_semantic_ranges_metadata_annotation(meta, out);
+                        }
+                        _ => {}
                     }
                 }
             }

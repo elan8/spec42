@@ -127,6 +127,7 @@ fn require_constraint_display_lines(body: &RequireConstraintBody) -> Vec<String>
                         lines.push(format_constraint_parameter_line(&param.value));
                     }
                     ConstraintDefBodyElement::Error(_) | ConstraintDefBodyElement::Other(_) => {}
+                    ConstraintDefBodyElement::MetadataAnnotation(_) => {}
                 }
             }
             if lines.is_empty() {
@@ -170,6 +171,7 @@ fn require_constraint_structured(
             }
             ConstraintDefBodyElement::Doc(_)
             | ConstraintDefBodyElement::Error(_)
+            | ConstraintDefBodyElement::MetadataAnnotation(_)
             | ConstraintDefBodyElement::Other(_) => {}
         }
     }
@@ -406,6 +408,14 @@ pub(super) fn walk_requirement_def_body(
                     span_to_range(&rc.span),
                     attrs,
                     Some(parent_id),
+                );
+                let constraint_id = NodeId::new(uri, &qualified);
+                super::metadata_def::wire_require_constraint_body_metadata(
+                    g,
+                    uri,
+                    type_resolution_prefix,
+                    &constraint_id,
+                    &rc.value.body,
                 );
             }
             RequirementDefBodyElement::Frame(f) => {

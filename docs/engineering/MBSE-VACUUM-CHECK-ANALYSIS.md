@@ -2,7 +2,7 @@
 
 **Corpus:** `C:\Git\MBSE_AG_vacuum-cleaner-robot-example`  
 **Command:** `spec42 check` (workspace scan, embedded standard library, default diagnostics)  
-**Parser:** `sysml-v2-parser` **0.22.0** ([crates.io](https://crates.io/crates/sysml-v2-parser/0.22.0))  
+**Parser:** `sysml-v2-parser` **0.24.0** ([crates.io](https://crates.io/crates/sysml-v2-parser/0.24.0))  
 **Date:** June 2026 (after WP1 diagnostic fidelity + legacy parse coverage)  
 **Documents checked:** 52  
 

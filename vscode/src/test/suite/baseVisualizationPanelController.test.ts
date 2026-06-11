@@ -1,4 +1,5 @@
 import * as assert from "assert";
+import * as path from "path";
 import * as vscode from "vscode";
 import {
   BaseVisualizationPanelController,
@@ -102,9 +103,14 @@ describe("BaseVisualizationPanelController", () => {
       shouldTrackUri: (uri) => uri.fsPath.toLowerCase().endsWith(".sysml"),
     };
 
+    const extension = vscode.extensions.all.find(
+      (entry) => entry.packageJSON?.name === "spec42"
+    );
+    assert.ok(extension, "SysML Language Server extension should be installed");
+
     const controller = new BaseVisualizationPanelController(
       panel,
-      vscode.Uri.file("C:\\Git\\spec42\\vscode"),
+      vscode.Uri.file(extension.extensionPath),
       {
         workspaceState: {
           update: async (key: string, value: unknown) => {
@@ -121,8 +127,12 @@ describe("BaseVisualizationPanelController", () => {
     await new Promise((resolve) => setTimeout(resolve, 4000));
     const settledFetchCount = fetchCount;
 
-    await controller.notifyTrackedUriChanged(vscode.Uri.file("C:\\workspace\\model.sysml"));
-    await controller.notifyTrackedUriChanged(vscode.Uri.file("C:\\workspace\\parts.sysml"));
+    await controller.notifyTrackedUriChanged(
+      vscode.Uri.file(path.join("/workspace", "model.sysml"))
+    );
+    await controller.notifyTrackedUriChanged(
+      vscode.Uri.file(path.join("/workspace", "parts.sysml"))
+    );
     // Debounce (500ms) plus waitForDocumentDiagnostics timeout (2500ms) before the tracked refresh fetch.
     await new Promise((resolve) => setTimeout(resolve, 3200));
     assert.strictEqual(fetchCount, settledFetchCount + 1);

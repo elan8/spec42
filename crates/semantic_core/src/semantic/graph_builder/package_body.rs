@@ -257,6 +257,7 @@ fn extract_constraint_metadata(
                 }
                 ConstraintDefBodyElement::Error(_)
                 | ConstraintDefBodyElement::Doc(_)
+                | ConstraintDefBodyElement::MetadataAnnotation(_)
                 | ConstraintDefBodyElement::Other(_) => {}
             }
         }
@@ -1260,6 +1261,14 @@ pub(super) fn build_from_package_body_element(
                     &qualified,
                     container_prefix,
                     c_node.specializes.as_deref(),
+                );
+                let constraint_id = NodeId::new(uri, &qualified);
+                super::metadata_def::wire_constraint_body_metadata(
+                    g,
+                    uri,
+                    container_prefix,
+                    &constraint_id,
+                    &c_node.body,
                 );
             }
         }

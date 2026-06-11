@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
-    RequirementDefBody, RequirementDefBodyElement, UseCaseDefBody, UseCaseDefBodyElement,
+    Expression, RequirementDefBody, RequirementDefBodyElement, UseCaseDefBody, UseCaseDefBodyElement,
 };
 use url::Url;
 
@@ -25,6 +25,43 @@ fn extract_verdict_kind_token(body_text: &str) -> Option<String> {
     } else {
         Some(token.to_ascii_lowercase())
     }
+}
+
+fn extract_verdict_kind_from_expression(expr: &Expression) -> Option<String> {
+    match expr {
+        Expression::MemberAccess(base, member) => {
+            if let Expression::FeatureRef(prefix) = &base.value {
+                if prefix == "VerdictKind" {
+                    return Some(member.to_ascii_lowercase());
+                }
+            }
+            None
+        }
+        Expression::FeatureRef(name) => {
+            let marker = "VerdictKind::";
+            let rest = name.strip_prefix(marker)?;
+            let token = rest
+                .split(|ch: char| !ch.is_ascii_alphanumeric() && ch != '_')
+                .next()
+                .unwrap_or_default()
+                .trim();
+            if token.is_empty() {
+                None
+            } else {
+                Some(token.to_ascii_lowercase())
+            }
+        }
+        _ => None,
+    }
+}
+
+fn extract_verdict_kind_from_return_ref(
+    body: &str,
+    return_expression: Option<&Expression>,
+) -> Option<String> {
+    return_expression
+        .and_then(extract_verdict_kind_from_expression)
+        .or_else(|| extract_verdict_kind_token(body))
 }
 
 pub(super) fn build_from_verification_body(
@@ -209,19 +246,27 @@ pub(super) fn build_from_verification_body(
                 if let Some(multiplicity) = value.multiplicity.as_deref() {
                     attrs.insert("multiplicity".to_string(), serde_json::json!(multiplicity));
                 }
-                if let Some(verdict_token) = extract_verdict_kind_token(value.body.as_str()) {
+                let return_expr = value.return_expression.as_ref().map(|node| &node.value);
+                if let Some(verdict_token) =
+                    extract_verdict_kind_from_return_ref(value.body.as_str(), return_expr)
+                {
                     attrs.insert(
                         "rawVerdictToken".to_string(),
                         serde_json::json!(verdict_token),
                     );
                 }
+                let verdict_range = value
+                    .return_expression
+                    .as_ref()
+                    .map(|expr| span_to_range(&expr.span))
+                    .unwrap_or_else(|| span_to_range(&return_ref.span));
                 add_node_and_recurse(
                     g,
                     uri,
                     &qualified,
                     "verdict",
                     value.name.clone(),
-                    span_to_range(&return_ref.span),
+                    verdict_range,
                     attrs,
                     Some(parent_id),
                 );
