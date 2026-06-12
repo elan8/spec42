@@ -143,6 +143,11 @@ export function resolveIbdRoutePoints(edge: LaidOutEdge): Array<{ x: number; y: 
   const attrs = (edge.attributes ?? {}) as Record<string, unknown>;
   const sourcePort = (attrs._sourcePortCenter ?? null) as { x: number; y: number } | null;
   const targetPort = (attrs._targetPortCenter ?? null) as { x: number; y: number } | null;
+  if (attrs.canonicalScene === true) {
+    const points = pointsFromElkSections(sections, { x: 0, y: 0 });
+    if (points.length < 2) return null;
+    return snapRouteEndpoints(points, sourcePort, targetPort);
+  }
   const lcaOffset = edge.layout?.lcaOffset ?? { x: 0, y: 0 };
   const edgeOwnerOffset = edge.layout?.edgeOwnerOffset ?? { x: 0, y: 0 };
   const candidates = uniqueOffsets([{ x: 0, y: 0 }, edgeOwnerOffset, lcaOffset]);

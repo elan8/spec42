@@ -8,6 +8,13 @@ const outFile = path.join(rootDir, "out", "extension.js");
 
 async function build() {
   try {
+    const diagramRendererSrc = path.join(
+      rootDir,
+      "..",
+      "shared",
+      "diagram-renderer",
+      "src",
+    );
     await esbuild.build({
       entryPoints: [entryPoint],
       outfile: outFile,
@@ -18,6 +25,16 @@ async function build() {
       sourcemap: false,
       minify: true,
       external: ["vscode"],
+      alias: {
+        "@spec42/diagram-renderer/pipeline-export": path.join(
+          diagramRendererSrc,
+          "pipeline-export.ts",
+        ),
+        "@spec42/diagram-renderer/prepare": path.join(
+          diagramRendererSrc,
+          "prepare.ts",
+        ),
+      },
       logLevel: "info",
     });
     console.log(`Extension bundle written to ${outFile}`);

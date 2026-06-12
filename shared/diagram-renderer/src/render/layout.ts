@@ -139,6 +139,13 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
   }
 
   const sanitizeId = (value: string) => value.replace(/[^A-Za-z0-9_.-]/g, "_");
+  const elkIdFor = (preparedNodeId: string) => sanitizeId(preparedNodeId);
+  const preparedIdForElkId = new Map<string, string>();
+  const registerElkId = (preparedId: string) => {
+    const elkId = elkIdFor(preparedId);
+    preparedIdForElkId.set(elkId, preparedId);
+    return elkId;
+  };
   const portIdFor = (nodeId: string, portName: string) => `${sanitizeId(nodeId)}__port__${sanitizeId(portName)}`;
   const portDetailsFor = (node: PreparedNode): PreparedPort[] => {
     const attrs = (node.attributes ?? {}) as Record<string, unknown>;
@@ -302,7 +309,7 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
       },
     });
     return {
-      id: node.id,
+      id: registerElkId(node.id),
       width,
       height,
       ports: [
@@ -338,8 +345,8 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
       const targetPortName = connectorPortName(targetNode, targetEndpoint);
       return {
         id: edge.id,
-        sources: [sourcePortName ? portIdFor(sourceNode.id, sourcePortName) : sourceNode.id],
-        targets: [targetPortName ? portIdFor(targetNode.id, targetPortName) : targetNode.id],
+        sources: [sourcePortName ? portIdFor(sourceNode.id, sourcePortName) : elkIdFor(sourceNode.id)],
+        targets: [targetPortName ? portIdFor(targetNode.id, targetPortName) : elkIdFor(targetNode.id)],
         sourcePortId: sourcePortName ? portIdFor(sourceNode.id, sourcePortName) : undefined,
         targetPortId: targetPortName ? portIdFor(targetNode.id, targetPortName) : undefined,
       };
@@ -404,7 +411,8 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
     const visit = (elkNode: any, ox: number, oy: number, depth: number) => {
       const absX = ox + (elkNode.x ?? 0);
       const absY = oy + (elkNode.y ?? 0);
-      const base = nodesById.get(String(elkNode.id));
+      const preparedId = preparedIdForElkId.get(String(elkNode.id)) ?? String(elkNode.id);
+      const base = nodesById.get(preparedId);
       for (const port of elkNode.ports ?? []) {
         const pw = port.width ?? 10;
         const ph = port.height ?? 10;
@@ -471,7 +479,16 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
         });
       }
     };
-    collectElkEdgesWithOffsets(laidOut, { x: 0, y: 0 });
+    const rootElkEdges = laidOut.edges ?? [];
+    if (rootElkEdges.length > 0) {
+      for (const elkEdge of rootElkEdges) {
+        const edgeId = String(elkEdge?.id ?? "");
+        if (!edgeId) continue;
+        edgeLayout.set(edgeId, { edge: elkEdge, offset: { x: 0, y: 0 } });
+      }
+    } else {
+      collectElkEdgesWithOffsets(laidOut, { x: 0, y: 0 });
+    }
 
     const nodes = prepared.nodes
       .map((node) => laidOutNodes.get(node.id))
@@ -502,14 +519,16 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
         layout: layoutRecord?.edge.sections?.length
           ? {
               sections: layoutRecord.edge.sections as EdgeSection[],
-              edgeOwnerOffset: layoutRecord.offset,
-              lcaOffset: (() => {
-                const sourceNode = laidOutNodes.get(edge.source);
-                const targetNode = laidOutNodes.get(edge.target);
-                return sourceNode && targetNode
-                  ? lcaOffsetForNodes(sourceNode, targetNode, laidOutNodes)
-                  : { x: 0, y: 0 };
-              })(),
+              edgeOwnerOffset: prepared.meta?.canonicalScene ? { x: 0, y: 0 } : layoutRecord.offset,
+              lcaOffset: prepared.meta?.canonicalScene
+                ? { x: 0, y: 0 }
+                : (() => {
+                    const sourceNode = laidOutNodes.get(edge.source);
+                    const targetNode = laidOutNodes.get(edge.target);
+                    return sourceNode && targetNode
+                      ? lcaOffsetForNodes(sourceNode, targetNode, laidOutNodes)
+                      : { x: 0, y: 0 };
+                  })(),
             }
           : {
               sections: fallbackEdgeSections(sourceNode, targetNode, sourcePortCenter, targetPortCenter),

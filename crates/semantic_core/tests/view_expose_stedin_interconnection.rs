@@ -199,8 +199,14 @@ fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
             "tennetConnection.connection",
             "primarySubstation.hvConnection",
         ),
-        ("primarySubstation.mvBus", "northFeederBay.incoming"),
-        ("primarySubstation.mvBus", "southFeederBay.incoming"),
+        (
+            "primarySubstation.mvBusbar.northFeederTap",
+            "northFeederBay.incoming",
+        ),
+        (
+            "primarySubstation.mvBusbar.southFeederTap",
+            "southFeederBay.incoming",
+        ),
         ("northFeederBay.outgoing", "feederNorth.source"),
         ("southFeederBay.outgoing", "feederSouth.source"),
         ("feederNorth.outgoing", "cable01.a"),
@@ -233,7 +239,10 @@ fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
             .connectors
             .iter()
             .find(|connector| {
-                connector.source_id.ends_with(source_suffix)
+                connector.source_id.contains("rijnmondExpansionProject.architecture")
+                    && !connector.source_id.contains(".Variants.")
+                    && !connector.source_id.contains(".expansionAlternatives.")
+                    && connector.source_id.ends_with(source_suffix)
                     && connector.target_id.ends_with(target_suffix)
             })
             .unwrap_or_else(|| {
@@ -262,15 +271,16 @@ fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
 
     let scene = build_interconnection_scene(
         &system_ibd,
-        &view.id,
-        &view.name,
+        &system_context.id,
+        &system_context.name,
         &["Stedin.architecture".to_string()],
         None,
     );
     assert_eq!(scene.schema_version, 1);
     assert!(
         scene.edges.len() >= expected_paths.len(),
-        "scene should include all systemContext connectors, got {}",
+        "systemContext scene should expose at least {} connectors, got {}",
+        expected_paths.len(),
         scene.edges.len()
     );
     assert!(
@@ -282,4 +292,84 @@ fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
         }),
         "scene should route nested ring segment endpoints to the nested owner"
     );
+}
+
+#[test]
+fn export_stedin_system_context_scene() {
+    let workspace_root = Path::new(r"C:\Git\sysml-powersystems\sysml");
+    if !workspace_root.is_dir() {
+        return;
+    }
+
+    let mut documents = Vec::new();
+    let mut uris = Vec::new();
+    for entry in walkdir::WalkDir::new(workspace_root)
+        .into_iter()
+        .filter_map(Result::ok)
+        .filter(|e| e.path().extension().is_some_and(|ext| ext == "sysml"))
+    {
+        let path = entry.path();
+        let content = std::fs::read_to_string(path).expect("read stedin model");
+        let doc = SysmlDocument::from_memory_path(
+            "stedin",
+            path.file_name()
+                .and_then(|n| n.to_str())
+                .unwrap_or("model.sysml"),
+            content,
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("document uri");
+        uris.push(doc.uri.clone());
+        documents.push(doc);
+    }
+
+    let (graph, parsed) =
+        build_semantic_graph_from_documents(&documents).expect("semantic graph should build");
+    let mut full_ibd = merge_ibd_payloads(
+        uris.iter()
+            .map(|uri| build_ibd_for_uri(&graph, uri))
+            .collect(),
+    );
+    finalize_merged_ibd_connectors(&graph, &uris, &mut full_ibd);
+    let catalog = build_view_catalog(&uris, &parsed);
+    let graph_dto = build_workspace_graph_dto_for_uris(&graph, &uris);
+    let evaluated = evaluate_views(&catalog, &graph, &graph_dto);
+    let system_context = evaluated
+        .iter()
+        .find(|view| view.name == "systemContext")
+        .expect("systemContext view");
+    let system_projected =
+        project_ids_for_renderer(system_context, &graph_dto, "interconnection-view");
+    let system_ibd = select_interconnection_ibd_scope(
+        &full_ibd,
+        &system_projected,
+        Some(&system_context.exposed_ids),
+    );
+    let scene = build_interconnection_scene(
+        &system_ibd,
+        &system_context.id,
+        &system_context.name,
+        &["Stedin.architecture".to_string()],
+        None,
+    );
+
+    let fixture_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("..")
+        .join("..")
+        .join("shared")
+        .join("diagram-renderer")
+        .join("test-fixtures")
+        .join("interconnection")
+        .join("stedin-system-context-scene.json");
+    if let Some(parent) = fixture_path.parent() {
+        std::fs::create_dir_all(parent).expect("create fixture directory");
+    }
+    std::fs::write(
+        &fixture_path,
+        serde_json::to_string_pretty(&scene).expect("serialize scene"),
+    )
+    .expect("write stedin scene fixture");
+    eprintln!("wrote {}", fixture_path.display());
 }

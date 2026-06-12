@@ -460,17 +460,102 @@ fn endpoint_matches_root_prefix(endpoint: &str, root_prefix: &str) -> bool {
     endpoint == root_prefix || endpoint.starts_with(&format!("{root_prefix}."))
 }
 
+fn is_variant_or_alternative_endpoint(endpoint: &str) -> bool {
+    endpoint.contains(".Variants.") || endpoint.contains(".expansionAlternatives.")
+}
+
+fn enrich_root_prefixes_for_interconnection(
+    ibd: &crate::semantic::ibd::IbdDataDto,
+    root_prefixes: &HashSet<String>,
+) -> HashSet<String> {
+    let mut enriched: HashSet<String> = root_prefixes
+        .iter()
+        .map(|id| id.replace("::", "."))
+        .collect();
+    let mappings = crate::semantic::ibd::infer_def_instance_scope_mappings_for_ibd(ibd);
+    for prefix in root_prefixes {
+        let dot = prefix.replace("::", ".");
+        for (def_root, instance_root) in &mappings {
+            if endpoint_matches_root_prefix(&dot, def_root) {
+                let remainder = dot
+                    .strip_prefix(def_root)
+                    .and_then(|value| value.strip_prefix('.'))
+                    .unwrap_or("");
+                let instance_prefix = if remainder.is_empty() {
+                    instance_root.clone()
+                } else {
+                    format!("{instance_root}.{remainder}")
+                };
+                enriched.insert(instance_prefix);
+            } else if endpoint_matches_root_prefix(&dot, instance_root) {
+                let remainder = dot
+                    .strip_prefix(instance_root)
+                    .and_then(|value| value.strip_prefix('.'))
+                    .unwrap_or("");
+                let def_prefix = if remainder.is_empty() {
+                    def_root.clone()
+                } else {
+                    format!("{def_root}.{remainder}")
+                };
+                enriched.insert(def_prefix);
+            }
+        }
+    }
+    enriched
+}
+
+fn architecture_scope_prefix(root_prefixes: &HashSet<String>) -> Option<String> {
+    let mut scopes: HashSet<String> = HashSet::new();
+    for prefix in root_prefixes {
+        if let Some(pos) = prefix.find(".architecture.") {
+            scopes.insert(prefix[..pos + ".architecture".len()].to_string());
+        } else if prefix.ends_with(".architecture") {
+            scopes.insert(prefix.clone());
+        }
+    }
+    if scopes.len() == 1 {
+        scopes.into_iter().next()
+    } else {
+        None
+    }
+}
+
 fn filter_ibd_by_root_prefixes(ibd: &IbdDataDto, root_prefixes: &HashSet<String>) -> IbdDataDto {
+    let strict_part_expose = root_prefixes.len() > 1;
+    let architecture_scope = architecture_scope_prefix(root_prefixes);
     let matches_any_root = |endpoint: &str| {
         root_prefixes
             .iter()
             .any(|prefix| endpoint_matches_root_prefix(endpoint, prefix))
     };
+    let endpoint_in_architecture_scope = |endpoint: &str| {
+        architecture_scope
+            .as_ref()
+            .is_none_or(|scope| endpoint.starts_with(scope))
+    };
+    let connector_in_scope = |connector: &crate::semantic::ibd::IbdConnectorDto| {
+        if is_variant_or_alternative_endpoint(&connector.source_id)
+            || is_variant_or_alternative_endpoint(&connector.target_id)
+        {
+            return false;
+        }
+        if !endpoint_in_architecture_scope(&connector.source_id)
+            || !endpoint_in_architecture_scope(&connector.target_id)
+        {
+            return false;
+        }
+        if strict_part_expose {
+            return matches_any_root(&connector.source_id) && matches_any_root(&connector.target_id);
+        }
+        matches_any_root(&connector.source_id) || matches_any_root(&connector.target_id)
+    };
 
     let parts: Vec<_> = ibd
         .parts
         .iter()
-        .filter(|part| matches_any_root(&part.qualified_name))
+        .filter(|part| {
+            endpoint_in_architecture_scope(&part.qualified_name) && matches_any_root(&part.qualified_name)
+        })
         .cloned()
         .collect();
     let part_ids: HashSet<_> = parts.iter().map(|part| part.id.as_str()).collect();
@@ -497,14 +582,16 @@ fn filter_ibd_by_root_prefixes(ibd: &IbdDataDto, root_prefixes: &HashSet<String>
         .connectors
         .iter()
         .filter(|connector| {
-            matches_any_root(&connector.source_id)
-                || matches_any_root(&connector.target_id)
-                || port_ids.contains(connector.source.as_str())
+            if !connector_in_scope(connector) {
+                return false;
+            }
+            port_ids.contains(connector.source.as_str())
                 || port_ids.contains(connector.target.as_str())
                 || port_dot_ids.contains(&connector.source_id)
                 || port_dot_ids.contains(&connector.target_id)
                 || part_qualified_names.contains(connector.source_id.as_str())
                 || part_qualified_names.contains(connector.target_id.as_str())
+                || connector_in_scope(connector)
         })
         .cloned()
         .collect();
@@ -653,7 +740,7 @@ pub fn select_interconnection_ibd_scope_with_trace(
 
     let visible_scope_ibd = filter_ibd_by_visible_ids(full_ibd, selected_ids);
     let root_prefixes: HashSet<String> = selected_exposed_ids
-        .map(|exposed_ids| exposed_ids.iter().map(|id| id.replace("::", ".")).collect())
+        .map(|exposed_ids| enrich_root_prefixes_for_interconnection(full_ibd, exposed_ids))
         .unwrap_or_default();
     if root_prefixes.is_empty() {
         let label = if visible_scope_ibd.parts.is_empty() && visible_scope_ibd.connectors.is_empty()
@@ -680,7 +767,14 @@ pub fn select_interconnection_ibd_scope_with_trace(
         };
         return (chosen, trace_result);
     }
-    let root_scoped_ibd = filter_ibd_by_root_prefixes(full_ibd, &root_prefixes);
+    let mut scoped_source = full_ibd.clone();
+    crate::semantic::ibd::normalize_ibd_to_instance_paths(&mut scoped_source);
+    let mut root_scoped_ibd = filter_ibd_by_root_prefixes(&scoped_source, &root_prefixes);
+    crate::semantic::ibd::enrich_connector_endpoint_refs(
+        &mut root_scoped_ibd.connectors,
+        &root_scoped_ibd.parts,
+        &root_scoped_ibd.ports,
+    );
     if !root_scoped_ibd.parts.is_empty() || !root_scoped_ibd.connectors.is_empty() {
         let trace_result = trace("root_prefixes", &visible_scope_ibd, &root_scoped_ibd);
         return (root_scoped_ibd, trace_result);

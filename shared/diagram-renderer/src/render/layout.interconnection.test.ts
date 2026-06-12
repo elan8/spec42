@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -45,5 +45,22 @@ describe("interconnection layout fixtures", () => {
     const prepared = prepareViewData(loadFixture("nested-ring-minimal.json"));
     expect(prepared.edges).toHaveLength(1);
     expect(prepared.edges[0].target).toBe("ringSegment");
+  });
+
+  it("passes route quality checks for Stedin systemContext scene fixture", async () => {
+    const fixtureName = "stedin-system-context-scene.json";
+    if (!existsSync(join(fixtureDir, fixtureName))) {
+      return;
+    }
+    const prepared = prepareViewData({
+      view: "interconnection-view",
+      interconnectionScene: loadFixture(fixtureName),
+    });
+    expect(prepared.meta?.canonicalScene).toBe(true);
+    expect(prepared.edges.length).toBeGreaterThanOrEqual(17);
+    const layout = await layoutInterconnectionPrepared(prepared);
+    const report = assessRouteQuality(layout.edges, layout.nodes, { maxLengthRatio: 8 });
+    expect(layout.edges.length).toBeGreaterThanOrEqual(17);
+    expect(report.passed, report.violations.join("; ")).toBe(true);
   });
 });

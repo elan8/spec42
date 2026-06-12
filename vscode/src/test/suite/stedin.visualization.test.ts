@@ -215,8 +215,8 @@ describe("Stedin Interconnection Visualization", () => {
         });
         const expectedPaths: Array<[string, string]> = [
             ["tennetConnection.connection", "primarySubstation.hvConnection"],
-            ["primarySubstation.mvBus", "northFeederBay.incoming"],
-            ["primarySubstation.mvBus", "southFeederBay.incoming"],
+            ["primarySubstation.mvBusbar.northFeederTap", "northFeederBay.incoming"],
+            ["primarySubstation.mvBusbar.southFeederTap", "southFeederBay.incoming"],
             ["northFeederBay.outgoing", "feederNorth.source"],
             ["southFeederBay.outgoing", "feederSouth.source"],
             ["feederNorth.outgoing", "cable01.a"],
