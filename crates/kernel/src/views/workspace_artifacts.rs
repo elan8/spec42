@@ -55,6 +55,16 @@ fn response_cache_valid(
         && workspace_root_matches(&entry.workspace_root_uri, root)
 }
 
+fn visualization_response_is_cacheable(response: &semantic_core::SysmlVisualizationResultDto) -> bool {
+    if !response.model_ready {
+        return false;
+    }
+    if response.view == "interconnection-view" && response.interconnection_scene.is_none() {
+        return false;
+    }
+    true
+}
+
 pub(crate) fn clear_workspace_viz_caches(state: &mut ServerState) {
     state.workspace_viz_caches.clear();
 }
@@ -126,13 +136,15 @@ pub(crate) fn build_visualization_with_cache(
     if let Some(entry) = state.workspace_viz_caches.responses.as_ref() {
         if response_cache_valid(entry, semantic_state_version, &workspace_root_uri) {
             if let Some(cached) = entry.entries.get(&cache_key) {
-                return Ok(VisualizationBuildOutcome {
-                    response: cached.clone(),
-                    meta: VisualizationBuildMeta {
-                        cache_hit: true,
-                        ..VisualizationBuildMeta::default()
-                    },
-                });
+                if visualization_response_is_cacheable(cached) {
+                    return Ok(VisualizationBuildOutcome {
+                        response: cached.clone(),
+                        meta: VisualizationBuildMeta {
+                            cache_hit: true,
+                            ..VisualizationBuildMeta::default()
+                        },
+                    });
+                }
             }
         }
     }
@@ -174,13 +186,15 @@ pub(crate) fn build_visualization_with_cache(
             entries: HashMap::new(),
         });
     }
-    state
-        .workspace_viz_caches
-        .responses
-        .as_mut()
-        .expect("response cache initialized")
-        .entries
-        .insert(cache_key, response.clone());
+    if visualization_response_is_cacheable(&response) {
+        state
+            .workspace_viz_caches
+            .responses
+            .as_mut()
+            .expect("response cache initialized")
+            .entries
+            .insert(cache_key, response.clone());
+    }
 
     Ok(VisualizationBuildOutcome {
         response,

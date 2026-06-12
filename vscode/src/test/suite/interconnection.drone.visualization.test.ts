@@ -13,6 +13,7 @@ import {
     triggerDiagramExportAndWait,
     waitForExtensionServerReady,
     waitForLanguageServerReady,
+    waitForVisualizationModel,
     waitForVisualizerOpen,
 } from "./testUtils";
 
@@ -222,10 +223,16 @@ describe("Interconnection Visualization", () => {
         await waitForVisualizerOpen();
 
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
-        const snapshot = await vscode.commands.executeCommand<Record<string, unknown>>(
-            "sysml.debug.getVisualizationForTests",
-            workspaceFolder.uri.toString(),
+        const snapshot = await waitForVisualizationModel(
+            workspaceFolder.uri,
             "interconnection-view",
+            (visualization) => {
+                const scene = visualization?.interconnectionScene as
+                    | { schemaVersion?: number; edges?: unknown[] }
+                    | undefined;
+                return scene?.schemaVersion === 1 && (scene.edges?.length ?? 0) > 0;
+            },
+            interconnectionExportTimeoutMs,
             DRONE_INTERCONNECTION_VIEW
         );
         const scene = snapshot?.interconnectionScene as { schemaVersion?: number; edges?: unknown[] } | undefined;

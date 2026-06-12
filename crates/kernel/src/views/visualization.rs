@@ -670,5 +670,13 @@ mod tests {
             !ibd.connectors.is_empty(),
             "expected SurveillanceDrone IBD connectors, got: {ibd:#?}"
         );
+        let scene = response
+            .interconnection_scene
+            .expect("interconnection scene for droneConnections");
+        assert_eq!(scene.schema_version, 1);
+        assert!(
+            !scene.edges.is_empty(),
+            "expected interconnection scene edges, got: {scene:#?}"
+        );
     }
 }
