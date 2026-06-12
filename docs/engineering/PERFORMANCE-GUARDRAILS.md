@@ -2,7 +2,9 @@
 
 Spec42 tracks large-workspace performance as a release-readiness signal. The nightly performance job is intentionally report-only while baselines settle; it records metrics but does not fail pull requests.
 
-## Reported Scenario
+## Reported Scenarios
+
+### Large workspace (nightly CI)
 
 The report uses `vscode/testFixture/workspaces/large-workspace` and measures:
 
@@ -11,6 +13,18 @@ The report uses `vscode/testFixture/workspaces/large-workspace` and measures:
 - `sysml/visualization` for `general-view`
 
 The nightly step prints one `SPEC42_PERF_REPORT` JSON line, writes `target/spec42-perf/large-workspace-performance.json`, uploads both the raw log and JSON report as artifacts, and appends a compact bottleneck summary to the GitHub step summary.
+
+### Stedin / power systems drill-down (local)
+
+For the real-world `sysml-powersystems` workspace and `systemContext` diagram:
+
+```powershell
+cargo test -p kernel --test lsp_integration integration::stedin_performance::stedin_system_context_performance_report -- --ignored --nocapture
+```
+
+Set `STEDIN_REPO` when the checkout is not at `C:\Git\sysml-powersystems`. Output: `target/spec42-perf/stedin-system-context-performance.json`.
+
+See [STEDIN-PERFORMANCE-ANALYSIS.md](./STEDIN-PERFORMANCE-ANALYSIS.md) for findings and improvement plan.
 
 ## Initial Budgets
 

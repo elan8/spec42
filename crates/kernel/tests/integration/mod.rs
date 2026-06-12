@@ -23,4 +23,6 @@ mod quality_gates;
 mod references;
 mod rename;
 mod semantic_tokens;
+mod perf_report;
+mod stedin_performance;
 mod workspace;
