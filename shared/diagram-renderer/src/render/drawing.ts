@@ -499,17 +499,13 @@ function drawIbdPorts(
 ): void {
   const attrs = (node.attributes ?? {}) as Record<string, unknown>;
   const details = Array.isArray(attrs.portDetails) ? attrs.portDetails as PreparedPort[] : [];
-  const drawOrder = layoutNode?.portDrawOrder
-    ?? ((attrs._portDrawOrder && typeof attrs._portDrawOrder === "object"
-      ? attrs._portDrawOrder
-      : null) as { west?: string[]; east?: string[] } | null);
+  const drawOrder = layoutNode?.portDrawOrder ?? null;
   const portNames = drawOrder
     ? [...(drawOrder.west ?? []), ...(drawOrder.east ?? [])]
     : details.length > 0
       ? details.map((port) => port.name)
       : Array.isArray(attrs.ports) ? (attrs.ports as unknown[]).map((port) => String(port)) : [];
-  const anchors = layoutNode?.portAnchors
-    ?? ((attrs._portAnchors && typeof attrs._portAnchors === "object" ? attrs._portAnchors : {}) as Record<string, { x: number; y: number; side: string }>);
+  const anchors = layoutNode?.portAnchors ?? {};
   const portSize = 10;
   const fallbackSpacing = 26;
   const drawPort = (name: string, sideIndex: number, side: "WEST" | "EAST") => {
@@ -736,12 +732,8 @@ export function pathForIbdEdge(
   layoutLookup?: InterconnectionLayoutLookup,
 ): string | null {
   const layoutEdge = layoutLookup?.edgesById.get(edge.id);
-  if (layoutEdge && layoutEdge.routePoints.length >= 2) {
-    return pointsToPathD(layoutEdge.routePoints);
-  }
-  const layoutRoutePoints = (edge.attributes as Record<string, unknown> | undefined)?.layoutRoutePoints;
-  const points = Array.isArray(layoutRoutePoints) && layoutRoutePoints.length >= 2
-    ? layoutRoutePoints as Array<{ x: number; y: number }>
+  const points = layoutEdge && layoutEdge.routePoints.length >= 2
+    ? layoutEdge.routePoints
     : resolveIbdRoutePoints(edge);
   if (!points || points.length < 2) return null;
   return pointsToPathD(points);

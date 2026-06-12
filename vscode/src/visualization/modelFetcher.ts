@@ -2,6 +2,7 @@ import type { LspModelProvider } from '../providers/lspModelProvider';
 import { isVerboseLoggingEnabled, log, logError, logPerfEvent } from '../logger';
 import type {
     IbdDataDTO,
+    InterconnectionSceneDTO,
     SysMLElementDTO,
     SysMLGraphDTO,
     VisualizationViewCandidateDTO,
@@ -23,6 +24,7 @@ export interface UpdateMessage {
     elements?: SysMLElementDTO[];
     generalViewGraph?: SysMLGraphDTO;
     ibd?: IbdDataDTO;
+    interconnectionScene?: InterconnectionSceneDTO;
     activityDiagrams: unknown[];
     sequenceDiagrams: unknown[];
     currentView: string;
@@ -88,6 +90,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
             elements: result.workspaceModel?.semantic,
             generalViewGraph: result.generalViewGraph ?? result.graph,
             ibd: result.ibd,
+            interconnectionScene: result.interconnectionScene,
             activityDiagrams: result.activityDiagrams ?? [],
             sequenceDiagrams: result.sequenceDiagrams ?? [],
             currentView: result.view ?? currentView,

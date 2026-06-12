@@ -1,8 +1,6 @@
-import { prepareInterconnectionLegacy } from "./interconnection-legacy";
 import { prepareInterconnectionScene } from "./interconnection-scene";
 import type { PreparedView, VisualizationPayload } from "./types";
 
-export { prepareInterconnectionLegacy } from "./interconnection-legacy";
 export { prepareInterconnectionScene } from "./interconnection-scene";
 
 export function prepareInterconnection(visualization: VisualizationPayload): PreparedView {
@@ -10,5 +8,19 @@ export function prepareInterconnection(visualization: VisualizationPayload): Pre
   if (scene && scene.schemaVersion >= 1) {
     return prepareInterconnectionScene(scene, visualization);
   }
-  return prepareInterconnectionLegacy(visualization);
+  return {
+    title: String(visualization.selectedViewName || "Interconnection View"),
+    view: "interconnection-view",
+    nodes: [],
+    edges: [],
+    meta: {
+      diagnostics: [
+        {
+          severity: "error",
+          code: "missing_interconnection_scene",
+          message: "Interconnection view requires interconnectionScene from the language server.",
+        },
+      ],
+    },
+  };
 }

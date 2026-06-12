@@ -43,6 +43,7 @@ export function registerMessageRouter(ctx: VisualizerContext): void {
                         graph: message.graph,
                         generalViewGraph: message.generalViewGraph,
                         ibd: message.ibd,
+                        interconnectionScene: message.interconnectionScene,
                         selectedView: message.selectedView,
                         emptyStateMessage: message.emptyStateMessage,
                         currentView: message.currentView,

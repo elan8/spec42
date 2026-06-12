@@ -10,21 +10,49 @@
   },
   "nodes": [
     {
-      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA",
-      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA",
-      "name": "solarParkA",
+      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection",
+      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection",
+      "name": "tennetConnection",
       "kind": "part",
-      "typeName": "SolarPark",
+      "typeName": "DutchHVConnection",
       "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
     },
     {
-      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture",
-      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture",
-      "name": "architecture",
+      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC",
+      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC",
+      "name": "txStationC",
       "kind": "part",
-      "typeName": "RijnmondGridArchitecture"
+      "typeName": "DutchMVLVStation",
+      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
+    },
+    {
+      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
+      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
+      "name": "ringSegmentBtoC",
+      "kind": "part",
+      "typeName": "DutchMsRingSegment",
+      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing"
+    },
+    {
+      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay",
+      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay",
+      "name": "southFeederBay",
+      "kind": "part",
+      "typeName": "Switchgear",
+      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
+    },
+    {
+      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
+      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
+      "name": "feederNorth",
+      "kind": "part",
+      "typeName": "DutchMVFeeder",
+      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
     },
     {
       "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth",
@@ -45,22 +73,21 @@
       "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing"
     },
     {
-      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection",
-      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection",
-      "name": "tennetConnection",
+      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture",
+      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture",
+      "name": "architecture",
       "kind": "part",
-      "typeName": "DutchHVConnection",
-      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
+      "typeName": "RijnmondGridArchitecture"
     },
     {
-      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar",
-      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar",
-      "name": "mvBusbar",
+      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA",
+      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA",
+      "name": "residentialAreaA",
       "kind": "part",
-      "typeName": "Busbar",
-      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation"
+      "typeName": "ResidentialLoadCluster",
+      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
     },
     {
       "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing",
@@ -69,24 +96,6 @@
       "name": "northSouthRing",
       "kind": "part",
       "typeName": "DutchMsRing",
-      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
-    },
-    {
-      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA",
-      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA",
-      "name": "txStationA",
-      "kind": "part",
-      "typeName": "DutchMVLVStation",
-      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
-    },
-    {
-      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC",
-      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC",
-      "name": "txStationC",
-      "kind": "part",
-      "typeName": "DutchMVLVStation",
       "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
     },
     {
@@ -99,39 +108,12 @@
       "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
     },
     {
-      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03",
-      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03",
-      "name": "cable03",
-      "kind": "part",
-      "typeName": "Cable",
-      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
-    },
-    {
       "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB",
       "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB",
       "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB",
       "name": "txStationB",
       "kind": "part",
       "typeName": "DutchMVLVStation",
-      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
-    },
-    {
-      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub",
-      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub",
-      "name": "futureEvChargingHub",
-      "kind": "part",
-      "typeName": "DutchEVFastChargingHub",
-      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
-    },
-    {
-      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay",
-      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay",
-      "name": "northFeederBay",
-      "kind": "part",
-      "typeName": "Switchgear",
       "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
     },
     {
@@ -144,40 +126,13 @@
       "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
     },
     {
-      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA",
-      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA",
-      "name": "batteryA",
+      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer",
+      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer",
+      "name": "transformer",
       "kind": "part",
-      "typeName": "BatteryEnergyStorageSystem",
-      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
-    },
-    {
-      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA",
-      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA",
-      "name": "residentialAreaA",
-      "kind": "part",
-      "typeName": "ResidentialLoadCluster",
-      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
-    },
-    {
-      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
-      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
-      "name": "feederNorth",
-      "kind": "part",
-      "typeName": "DutchMVFeeder",
-      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
-    },
-    {
-      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
-      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
-      "name": "ringSegmentBtoC",
-      "kind": "part",
-      "typeName": "DutchMsRingSegment",
-      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing"
+      "typeName": "HvMvTransformer",
+      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation"
     },
     {
       "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02",
@@ -207,55 +162,76 @@
       "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
     },
     {
-      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay",
-      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay",
-      "name": "southFeederBay",
+      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar",
+      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar",
+      "name": "mvBusbar",
+      "kind": "part",
+      "typeName": "Busbar",
+      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation"
+    },
+    {
+      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub",
+      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub",
+      "name": "futureEvChargingHub",
+      "kind": "part",
+      "typeName": "DutchEVFastChargingHub",
+      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
+    },
+    {
+      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA",
+      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA",
+      "name": "batteryA",
+      "kind": "part",
+      "typeName": "BatteryEnergyStorageSystem",
+      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
+    },
+    {
+      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03",
+      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03",
+      "name": "cable03",
+      "kind": "part",
+      "typeName": "Cable",
+      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
+    },
+    {
+      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA",
+      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA",
+      "name": "solarParkA",
+      "kind": "part",
+      "typeName": "SolarPark",
+      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
+    },
+    {
+      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay",
+      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay",
+      "name": "northFeederBay",
       "kind": "part",
       "typeName": "Switchgear",
       "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
     },
     {
-      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer",
-      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer",
-      "name": "transformer",
+      "id": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA",
+      "qualifiedName": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA",
+      "name": "txStationA",
       "kind": "part",
-      "typeName": "HvMvTransformer",
-      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation"
+      "typeName": "DutchMVLVStation",
+      "parentId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
     }
   ],
   "ports": [
     {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.a",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.a",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01",
-      "name": "a",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaB.gridConnection",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaB.gridConnection",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaB",
-      "name": "gridConnection",
-      "typeName": "ACLowVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection.connection",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection.connection",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection",
-      "name": "connection",
-      "typeName": "ACHighVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.lvConnection",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.lvConnection",
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.mvConnection",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.mvConnection",
       "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA",
-      "name": "lvConnection",
-      "typeName": "ACLowVoltagePort",
+      "name": "mvConnection",
+      "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
@@ -267,30 +243,6 @@
       "sideHint": "auto"
     },
     {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub.mvGridConnection",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub.mvGridConnection",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub",
-      "name": "mvGridConnection",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer.primary",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer.primary",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer",
-      "name": "primary",
-      "typeName": "ACHighVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
-      "name": "b",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "auto"
-    },
-    {
       "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.southFeederTap",
       "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.southFeederTap",
       "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar",
@@ -298,81 +250,9 @@
       "sideHint": "auto"
     },
     {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.source",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.source",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth",
-      "name": "source",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "east"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.mvConnection",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.mvConnection",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB",
-      "name": "mvConnection",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
-      "name": "outgoing",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.outgoing",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.outgoing",
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.incoming",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.incoming",
       "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay",
-      "name": "outgoing",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.lvConnection",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.lvConnection",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC",
-      "name": "lvConnection",
-      "typeName": "ACLowVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth",
-      "name": "outgoing",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA.gridConnection",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA.gridConnection",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA",
-      "name": "gridConnection",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.industrialClusterA.gridConnection",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.industrialClusterA.gridConnection",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.industrialClusterA",
-      "name": "gridConnection",
-      "typeName": "ACLowVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.a",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.a",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02",
-      "name": "a",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.incoming",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.incoming",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay",
       "name": "incoming",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
@@ -386,11 +266,18 @@
       "sideHint": "auto"
     },
     {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.b",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.b",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02",
-      "name": "b",
-      "typeName": "ACMediumVoltagePort",
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar",
+      "name": "northFeederTap",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.lvConnection",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.lvConnection",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA",
+      "name": "lvConnection",
+      "typeName": "ACLowVoltagePort",
       "sideHint": "auto"
     },
     {
@@ -402,11 +289,11 @@
       "sideHint": "auto"
     },
     {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.b",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.b",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01",
-      "name": "b",
-      "typeName": "ACMediumVoltagePort",
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.lvConnection",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.lvConnection",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC",
+      "name": "lvConnection",
+      "typeName": "ACLowVoltagePort",
       "sideHint": "auto"
     },
     {
@@ -418,97 +305,10 @@
       "sideHint": "auto"
     },
     {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.lvConnection",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.lvConnection",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB",
-      "name": "lvConnection",
-      "typeName": "ACLowVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA.gridConnection",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA.gridConnection",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA",
-      "name": "gridConnection",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub.dcChargingOutlet",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub.dcChargingOutlet",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub",
-      "name": "dcChargingOutlet",
-      "typeName": "DCChargingPort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.a",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.a",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03",
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.a",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.a",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02",
       "name": "a",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
-      "name": "a",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.source",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.source",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
-      "name": "source",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "east"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint.outgoing",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint.outgoing",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint",
-      "name": "outgoing",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar",
-      "name": "northFeederTap",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA.gridConnection",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA.gridConnection",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA",
-      "name": "gridConnection",
-      "typeName": "ACLowVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.feederTap",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.feederTap",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar",
-      "name": "feederTap",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.mvConnection",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.mvConnection",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA",
-      "name": "mvConnection",
-      "typeName": "ACMediumVoltagePort",
-      "sideHint": "auto"
-    },
-    {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.b",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.b",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03",
-      "name": "b",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
@@ -521,10 +321,10 @@
       "sideHint": "auto"
     },
     {
-      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.incoming",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.incoming",
-      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay",
-      "name": "incoming",
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
+      "name": "a",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
@@ -535,56 +335,229 @@
       "name": "incoming",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint.outgoing",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint.outgoing",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint",
+      "name": "outgoing",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.b",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.b",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03",
+      "name": "b",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.b",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.b",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02",
+      "name": "b",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.a",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.a",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03",
+      "name": "a",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA.gridConnection",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA.gridConnection",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA",
+      "name": "gridConnection",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.feederTap",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.feederTap",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar",
+      "name": "feederTap",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.incoming",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.incoming",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay",
+      "name": "incoming",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaB.gridConnection",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaB.gridConnection",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaB",
+      "name": "gridConnection",
+      "typeName": "ACLowVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
+      "name": "outgoing",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
+      "name": "b",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA.gridConnection",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA.gridConnection",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA",
+      "name": "gridConnection",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.mvConnection",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.mvConnection",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB",
+      "name": "mvConnection",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub.dcChargingOutlet",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub.dcChargingOutlet",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub",
+      "name": "dcChargingOutlet",
+      "typeName": "DCChargingPort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.outgoing",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.outgoing",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay",
+      "name": "outgoing",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA.gridConnection",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA.gridConnection",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA",
+      "name": "gridConnection",
+      "typeName": "ACLowVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.a",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.a",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01",
+      "name": "a",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection.connection",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection.connection",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection",
+      "name": "connection",
+      "typeName": "ACHighVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub.mvGridConnection",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub.mvGridConnection",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.futureEvChargingHub",
+      "name": "mvGridConnection",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.b",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.b",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01",
+      "name": "b",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.industrialClusterA.gridConnection",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.industrialClusterA.gridConnection",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.industrialClusterA",
+      "name": "gridConnection",
+      "typeName": "ACLowVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.source",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.source",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth",
+      "name": "source",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "east"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth",
+      "name": "outgoing",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.source",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.source",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
+      "name": "source",
+      "typeName": "ACMediumVoltagePort",
+      "sideHint": "east"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.lvConnection",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.lvConnection",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB",
+      "name": "lvConnection",
+      "typeName": "ACLowVoltagePort",
+      "sideHint": "auto"
+    },
+    {
+      "id": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer.primary",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer.primary",
+      "ownerNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer",
+      "name": "primary",
+      "typeName": "ACHighVoltagePort",
+      "sideHint": "auto"
     }
   ],
   "edges": [
     {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint.incoming:0",
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.a:0",
       "kind": "connection",
-      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b",
-      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint.incoming",
-      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
-      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint.incoming"
+      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing",
+      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.a",
+      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth",
+      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.a"
     },
     {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.b->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.mvConnection:1",
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.b->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.mvConnection:1",
       "kind": "connection",
-      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.b",
-      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.mvConnection",
-      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01",
-      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.b->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.mvConnection"
+      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.b",
+      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.mvConnection",
+      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02",
+      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.b->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.mvConnection"
     },
     {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.a:2",
-      "kind": "connection",
-      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing",
-      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.a",
-      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
-      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.a"
-    },
-    {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA.gridConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing:3",
-      "kind": "connection",
-      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA.gridConnection",
-      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing",
-      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA",
-      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA.gridConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing"
-    },
-    {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer.secondary->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.incoming:4",
-      "kind": "connection",
-      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer.secondary",
-      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.incoming",
-      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer",
-      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer.secondary->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.incoming"
-    },
-    {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.mvConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a:5",
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.mvConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a:2",
       "kind": "connection",
       "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.mvConnection",
       "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a",
@@ -593,52 +566,7 @@
       "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.mvConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a"
     },
     {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection.connection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.hvConnection:6",
-      "kind": "connection",
-      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection.connection",
-      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.hvConnection",
-      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection",
-      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection.connection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.hvConnection"
-    },
-    {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA.gridConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing:7",
-      "kind": "connection",
-      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA.gridConnection",
-      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing",
-      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA",
-      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA.gridConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing"
-    },
-    {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.lvConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.industrialClusterA.gridConnection:8",
-      "kind": "connection",
-      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.lvConnection",
-      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.industrialClusterA.gridConnection",
-      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC",
-      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.industrialClusterA",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.lvConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.industrialClusterA.gridConnection"
-    },
-    {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.source:9",
-      "kind": "connection",
-      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.outgoing",
-      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.source",
-      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay",
-      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.source"
-    },
-    {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.a:10",
-      "kind": "connection",
-      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing",
-      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.a",
-      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
-      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.a"
-    },
-    {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer.primary->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.hvConnection:11",
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer.primary->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.hvConnection:3",
       "kind": "connection",
       "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer.primary",
       "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.hvConnection",
@@ -647,22 +575,94 @@
       "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer.primary->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.hvConnection"
     },
     {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.source:12",
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.source:4",
       "kind": "connection",
-      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.outgoing",
-      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.source",
-      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay",
-      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.source"
+      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.outgoing",
+      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.source",
+      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay",
+      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.source"
     },
     {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.lvConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA.gridConnection:13",
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.lvConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaB.gridConnection:5",
+      "kind": "connection",
+      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.lvConnection",
+      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaB.gridConnection",
+      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB",
+      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaB",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.lvConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaB.gridConnection"
+    },
+    {
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint.incoming:6",
+      "kind": "connection",
+      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b",
+      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint.incoming",
+      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
+      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint.incoming"
+    },
+    {
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.lvConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA.gridConnection:7",
       "kind": "connection",
       "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.lvConnection",
       "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA.gridConnection",
       "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA",
       "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA",
       "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.lvConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaA.gridConnection"
+    },
+    {
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.b->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.mvConnection:8",
+      "kind": "connection",
+      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.b",
+      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.mvConnection",
+      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01",
+      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.b->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationA.mvConnection"
+    },
+    {
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA.gridConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing:9",
+      "kind": "connection",
+      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA.gridConnection",
+      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing",
+      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA",
+      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.solarParkA.gridConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing"
+    },
+    {
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.lvConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.industrialClusterA.gridConnection:10",
+      "kind": "connection",
+      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.lvConnection",
+      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.industrialClusterA.gridConnection",
+      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC",
+      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.industrialClusterA",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.lvConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.industrialClusterA.gridConnection"
+    },
+    {
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer.secondary->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.incoming:11",
+      "kind": "connection",
+      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer.secondary",
+      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.incoming",
+      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer",
+      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.transformer.secondary->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.incoming"
+    },
+    {
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection.connection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.hvConnection:12",
+      "kind": "connection",
+      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection.connection",
+      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.hvConnection",
+      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection",
+      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.tennetConnection.connection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.hvConnection"
+    },
+    {
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA.gridConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing:13",
+      "kind": "connection",
+      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA.gridConnection",
+      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing",
+      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA",
+      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.batteryA.gridConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing"
     },
     {
       "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.southFeederTap->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.incoming:14",
@@ -674,34 +674,7 @@
       "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.southFeederTap->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.incoming"
     },
     {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.incoming:15",
-      "kind": "connection",
-      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap",
-      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.incoming",
-      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar",
-      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.incoming"
-    },
-    {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.b->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.mvConnection:16",
-      "kind": "connection",
-      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.b",
-      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.mvConnection",
-      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02",
-      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.b->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.mvConnection"
-    },
-    {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.a:17",
-      "kind": "connection",
-      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing",
-      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.a",
-      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth",
-      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.a"
-    },
-    {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.b->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.mvConnection:18",
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.b->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.mvConnection:15",
       "kind": "connection",
       "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.b",
       "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.mvConnection",
@@ -710,22 +683,49 @@
       "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable03.b->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.mvConnection"
     },
     {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.mvConnection:19",
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.incoming:16",
+      "kind": "connection",
+      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap",
+      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.incoming",
+      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar",
+      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northFeederBay.incoming"
+    },
+    {
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.a:17",
+      "kind": "connection",
+      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing",
+      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.a",
+      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
+      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable01.a"
+    },
+    {
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.source:18",
+      "kind": "connection",
+      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.outgoing",
+      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.source",
+      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay",
+      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.southFeederBay.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederSouth.source"
+    },
+    {
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.a:19",
+      "kind": "connection",
+      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing",
+      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.a",
+      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
+      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02",
+      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.cable02.a"
+    },
+    {
+      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.mvConnection:20",
       "kind": "connection",
       "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint.outgoing",
       "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.mvConnection",
       "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint",
       "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC",
       "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.northSouthRing.noTiePoint.outgoing->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationC.mvConnection"
-    },
-    {
-      "id": "edge:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.lvConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaB.gridConnection:20",
-      "kind": "connection",
-      "sourcePortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.lvConnection",
-      "targetPortId": "port:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaB.gridConnection",
-      "sourceNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB",
-      "targetNodeId": "node:StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaB",
-      "semanticId": "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.txStationB.lvConnection->StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.residentialAreaB.gridConnection"
     }
   ],
   "containers": [

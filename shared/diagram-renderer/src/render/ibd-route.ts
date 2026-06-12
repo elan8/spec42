@@ -45,7 +45,7 @@ function containerChain(node: LaidOutNode, nodesById: Map<string, LaidOutNode>):
   let current: LaidOutNode | undefined = node;
   while (current) {
     chain.push(current.id);
-    const parentId: string = String((current.attributes as Record<string, unknown> | undefined)?.containerId ?? "");
+    const parentId = String((current.attributes as Record<string, unknown> | undefined)?.containerId ?? "");
     const parentNode = parentId && nodesById.has(parentId) ? nodesById.get(parentId) : undefined;
     current = parentNode;
   }
@@ -133,31 +133,37 @@ export function snapRouteEndpoints(
   return pruneRoutePoints(route);
 }
 
+function resolveRouteOffsetCandidates(edge: LaidOutEdge): Array<{ x: number; y: number }> {
+  const edgeOwnerOffset = edge.layout?.edgeOwnerOffset ?? { x: 0, y: 0 };
+  const lcaOffset = edge.layout?.lcaOffset ?? { x: 0, y: 0 };
+  return uniqueOffsets([
+    { x: 0, y: 0 },
+    edgeOwnerOffset,
+    lcaOffset,
+    { x: edgeOwnerOffset.x + lcaOffset.x, y: edgeOwnerOffset.y + lcaOffset.y },
+  ]);
+}
+
 export function resolveIbdRoutePoints(edge: LaidOutEdge): Array<{ x: number; y: number }> | null {
   const sections = edge.layout?.sections;
   if (!sections?.length) return null;
-  const sourceNode = edge.sourceNode;
-  const targetNode = edge.targetNode;
-  if (!sourceNode || !targetNode) return null;
 
   const attrs = (edge.attributes ?? {}) as Record<string, unknown>;
   const sourcePort = (attrs._sourcePortCenter ?? null) as { x: number; y: number } | null;
   const targetPort = (attrs._targetPortCenter ?? null) as { x: number; y: number } | null;
-  if (attrs.canonicalScene === true) {
-    const points = pointsFromElkSections(sections, { x: 0, y: 0 });
-    if (points.length < 2) return null;
-    return snapRouteEndpoints(points, sourcePort, targetPort);
-  }
-  const lcaOffset = edge.layout?.lcaOffset ?? { x: 0, y: 0 };
-  const edgeOwnerOffset = edge.layout?.edgeOwnerOffset ?? { x: 0, y: 0 };
-  const candidates = uniqueOffsets([{ x: 0, y: 0 }, edgeOwnerOffset, lcaOffset]);
+  const candidates = resolveRouteOffsetCandidates(edge);
 
   let bestPoints: Array<{ x: number; y: number }> | null = null;
   let bestError = Number.POSITIVE_INFINITY;
   for (const offset of candidates) {
     const points = pointsFromElkSections(sections, offset);
     if (points.length < 2) continue;
-    const error = sourcePort && targetPort ? routeEndpointError(points, sourcePort, targetPort) : 0;
+    const error =
+      sourcePort && targetPort
+        ? routeEndpointError(points, sourcePort, targetPort)
+        : offset.x === 0 && offset.y === 0
+          ? 0
+          : Math.hypot(offset.x, offset.y);
     if (error < bestError) {
       bestError = error;
       bestPoints = points;

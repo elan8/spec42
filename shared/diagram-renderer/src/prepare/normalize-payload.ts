@@ -117,153 +117,9 @@ export function normalizeVisualizationPayload(data: Record<string, unknown> | nu
         case 'general-view':
             return data;
         case 'interconnection-view': {
-            if (data.ibd && Array.isArray(data.ibd.parts)) {
-                const isLikelyInstanceRoot = (name: string): boolean => {
-                    const n = String(name || '');
-                    return /instance$/i.test(n) || /inst$/i.test(n);
-                };
-                const typeNameFromPart = (part: any): string | null => {
-                    const attrs = part?.attributes;
-                    const raw = attrs?.partType || attrs?.type || attrs?.typedBy;
-                    if (!raw) return null;
-                    const text = String(raw).trim().replace(/^~/, '');
-                    const segments = text.split(/::|\./);
-                    return segments[segments.length - 1] || text;
-                };
-                const rootDisplayScore = (name: string): number => {
-                    const rootView = rootViews[name] || {};
-                    const rootPart = ibdParts.find((part: any) => part?.name === name && !part?.containerId) || null;
-                    const partCount = Array.isArray(rootView.parts) ? rootView.parts.length : 0;
-                    const portCount = Array.isArray(rootView.ports) ? rootView.ports.length : 0;
-                    const connectorCount = Array.isArray(rootView.connectors) ? rootView.connectors.length : 0;
-                    const isPartDef = String(rootPart?.type || '').toLowerCase().includes('part def');
-                    const isInstance = isLikelyInstanceRoot(name);
-                    return (
-                        connectorCount * 1000
-                        + portCount * 100
-                        + partCount * 10
-                        + (isInstance ? 50 : 0)
-                        - (isPartDef ? 5 : 0)
-                    );
-                };
-                const ibd = data.ibd as {
-                    parts: any[];
-                    ports?: any[];
-                    connectors?: any[];
-                    containerGroups?: any[];
-                    packageContainerGroups?: any[];
-                    rootCandidates?: string[];
-                    defaultRoot?: string;
-                    rootViews?: Record<string, {
-                        parts?: any[];
-                        ports?: any[];
-                        connectors?: any[];
-                        containerGroups?: any[];
-                        packageContainerGroups?: any[];
-                    }>;
-                };
-                const ibdParts = Array.isArray(ibd.parts) ? ibd.parts : [];
-                const ibdPorts = Array.isArray(ibd.ports) ? ibd.ports : [];
-                const ibdConnectors = Array.isArray(ibd.connectors) ? ibd.connectors : [];
-                const ibdContainerGroups = Array.isArray(ibd.containerGroups) ? ibd.containerGroups : [];
-                const ibdPackageContainerGroups = Array.isArray(ibd.packageContainerGroups) ? ibd.packageContainerGroups : [];
-                const ibdRootCandidates = Array.isArray(ibd.rootCandidates) ? ibd.rootCandidates : [];
-                const rootViews = (ibd.rootViews && typeof ibd.rootViews === 'object') ? ibd.rootViews : {};
-                if (ibdRootCandidates.length === 0 || Object.keys(rootViews).length === 0) {
-                    return {
-                        ...data,
-                        elements: ibdParts,
-                        parts: ibdParts,
-                        ports: ibdPorts,
-                        connectors: ibdConnectors,
-                        containerGroups: ibdContainerGroups,
-                        packageContainerGroups: ibdPackageContainerGroups,
-                        ibdRootCandidates: [],
-                        ibdRootSummaries: [],
-                        selectedIbdRoot: null,
-                    };
-                }
-                const availableRootsRaw = ibdRootCandidates.filter((name) => rootViews[name]);
-                const hasAnyLikelyInstance = availableRootsRaw.some((name) => isLikelyInstanceRoot(name));
-                const topLevelRootPartByName = new Map<string, any>(
-                    ibdParts
-                        .filter((part: any) => !part?.containerId)
-                        .map((part: any) => [String(part?.name || ''), part])
-                );
-                const representedNestedTypes = new Set(
-                    ibdParts
-                        .filter((part: any) => !!part?.containerId)
-                        .map((part: any) => typeNameFromPart(part))
-                        .filter(Boolean)
-                );
-                const availableRoots = availableRootsRaw
-                    .filter((name) => {
-                        const part = topLevelRootPartByName.get(name);
-                        if (!part) return true;
-                        const isPartDef = String(part?.type || '').toLowerCase().includes('part def');
-                        if (!isPartDef) return true;
-                        if (representedNestedTypes.has(name) && !hasAnyLikelyInstance) {
-                            return false;
-                        }
-                        return true;
-                    })
-                    .slice()
-                    .sort((a, b) => {
-                        const scoreDelta = rootDisplayScore(b) - rootDisplayScore(a);
-                        if (scoreDelta !== 0) return scoreDelta;
-                        return a.localeCompare(b);
-                    });
-                const ibdRootSummaries = availableRoots.map((name) => {
-                    const rootView = rootViews[name] || {};
-                    const rootPart =
-                        topLevelRootPartByName.get(name)
-                        || (Array.isArray(rootView.parts) ? rootView.parts.find((part: any) => !part?.containerId) : null)
-                        || null;
-                    const meta = lookupElementMeta(rootPart, name);
-                    return {
-                        id: meta.stableId || name,
-                        name,
-                        label: buildSelectorLabel(name, meta.packagePath),
-                        packagePath: meta.packagePath,
-                        partCount: countWithFallback(rootView.parts),
-                        portCount: countWithFallback(rootView.ports),
-                        connectorCount: countWithFallback(rootView.connectors),
-                    };
-                });
-                const explicitSelection = (typeof data.selectedIbdRoot === 'string' && data.selectedIbdRoot.trim().length > 0)
-                    ? data.selectedIbdRoot
-                    : null;
-                const allowImplicitIbdRootSelection = !data.selectedView && !data.interconnectionScene;
-                const selectedRoot = explicitSelection && rootViews[explicitSelection]
-                    ? explicitSelection
-                    : (allowImplicitIbdRootSelection && ibd.defaultRoot && availableRoots.includes(ibd.defaultRoot) && rootViews[ibd.defaultRoot]
-                        ? ibd.defaultRoot
-                        : (allowImplicitIbdRootSelection ? (availableRoots[0] || null) : null));
-                const selectedRootView = selectedRoot ? rootViews[selectedRoot] : null;
-                const selectedParts = Array.isArray(selectedRootView?.parts) ? selectedRootView.parts : ibdParts;
-                const selectedPorts = Array.isArray(selectedRootView?.ports) ? selectedRootView.ports : ibdPorts;
-                const selectedConnectors = Array.isArray(selectedRootView?.connectors) ? selectedRootView.connectors : ibdConnectors;
-                const selectedContainerGroups = Array.isArray(selectedRootView?.containerGroups) && selectedRootView.containerGroups.length > 0
-                    ? selectedRootView.containerGroups
-                    : ibdContainerGroups;
-                const selectedPackageContainerGroups = Array.isArray(selectedRootView?.packageContainerGroups) && selectedRootView.packageContainerGroups.length > 0
-                    ? selectedRootView.packageContainerGroups
-                    : ibdPackageContainerGroups;
-                return {
-                    ...data,
-                    elements: selectedParts,
-                    parts: selectedParts,
-                    ports: selectedPorts,
-                    connectors: selectedConnectors,
-                    containerGroups: selectedContainerGroups,
-                    packageContainerGroups: selectedPackageContainerGroups,
-                    ibdRootCandidates: ibdRootSummaries,
-                    ibdRootSummaries,
-                    selectedIbdRoot: selectedRoot,
-                };
+            if (data.interconnectionScene && typeof data.interconnectionScene === 'object') {
+                return data;
             }
-
-            // No interconnection scene payload available from the server.
             return {
                 ...data,
                 elements: [],
@@ -272,8 +128,6 @@ export function normalizeVisualizationPayload(data: Record<string, unknown> | nu
                 connectors: [],
                 containerGroups: [],
                 packageContainerGroups: [],
-                ibdRootCandidates: [],
-                selectedIbdRoot: null,
             };
         }
 

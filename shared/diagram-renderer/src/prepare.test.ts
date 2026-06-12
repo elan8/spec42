@@ -115,357 +115,57 @@ describe("shared prepareViewData", () => {
     expect(prepared.nodes.map((n) => n.id)).toEqual(["canonical"]);
   });
 
-  it("maps interconnection payload and filters invalid connectors", () => {
+  it("prepares interconnection from canonical scene fixture", () => {
     const prepared = prepareViewData({
       view: "interconnection-view",
-      selectedViewName: "Root",
-      ibd: {
-        parts: [
-          { id: "p1", name: "Engine", type: "part" },
-          { id: "p2", name: "Controller", type: "part" },
-        ],
-        connectors: [
-          { id: "c1", sourcePartId: "p1", targetPartId: "p2", name: "connect" },
-          { id: "c2", sourcePartId: "p1", targetPartId: "missing", name: "bad" },
-        ],
-      },
-    });
-    expect(prepared.nodes).toHaveLength(2);
-    expect(prepared.edges).toHaveLength(1);
-    expect(prepared.edges[0].id).toBe("c1");
-    expect(prepared.meta?.selectedRoot).toBe("Root");
-  });
-
-  it("prefers selectedIbdRoot over the SysML view name for interconnection scoping", () => {
-    const prepared = prepareViewData({
-      view: "interconnection-view",
-      selectedViewName: "gridConnections",
-      selectedIbdRoot: "architecture",
-      ibd: {
-        defaultRoot: "architecture",
-        rootCandidates: ["tinyRoot", "architecture"],
-        rootViews: {
-          tinyRoot: {
-            parts: [{ id: "tiny", name: "tinyRoot", qualifiedName: "Pkg.tinyRoot", type: "part" }],
-            connectors: [],
-            ports: [],
-          },
-          architecture: {
-            parts: [
-              { id: "feeder", name: "feederNorth", qualifiedName: "Pkg.architecture.feederNorth", type: "part" },
-              { id: "cable", name: "cable01", qualifiedName: "Pkg.architecture.cable01", type: "part" },
-            ],
-            connectors: [
-              { id: "c1", sourcePartId: "feeder", targetPartId: "cable", name: "connect" },
-            ],
-            ports: [],
-          },
+      interconnectionScene: {
+        schemaVersion: 1,
+        view: {
+          id: "fixture-two-part",
+          name: "TwoPartChain",
+          type: "InterconnectionView",
+          rootIds: [],
         },
-        parts: [],
-        connectors: [],
-        ports: [],
-      },
-    });
-
-    expect(prepared.meta?.selectedRoot).toBe("architecture");
-    expect(prepared.nodes.map((node) => node.id).sort()).toEqual(["cable", "feeder"]);
-    expect(prepared.edges.map((edge) => edge.id)).toEqual(["c1"]);
-  });
-
-  it("does not auto-scope an explicit SysML interconnection view to the IBD default root", () => {
-    const prepared = prepareViewData({
-      view: "interconnection-view",
-      selectedView: "StedinRijnmondGridExpansion::Views::gridConnections",
-      selectedViewName: "gridConnections",
-      ibd: {
-        defaultRoot: "batteryA",
-        rootCandidates: ["batteryA"],
-        rootViews: {
-          batteryA: {
-            parts: [],
-            connectors: [],
-            ports: [],
-          },
-        },
-        parts: [
-          { id: "feeder", name: "feederNorth", qualifiedName: "Pkg.architecture.feederNorth", type: "part" },
-          { id: "cable", name: "cable01", qualifiedName: "Pkg.architecture.cable01", type: "part" },
-        ],
-        connectors: [
-          { id: "c1", sourcePartId: "feeder", targetPartId: "cable", name: "connect" },
-        ],
-        ports: [],
-      },
-    });
-
-    expect(prepared.title).toBe("Interconnection View");
-    expect(prepared.meta?.selectedRoot).toBeNull();
-    expect(prepared.nodes.map((node) => node.id).sort()).toEqual(["cable", "feeder"]);
-    expect(prepared.edges.map((edge) => edge.id)).toEqual(["c1"]);
-  });
-
-  it("keeps interconnection container metadata for renderer parity", () => {
-    const prepared = prepareViewData({
-      view: "interconnection-view",
-      selectedViewName: "ConnectedBlocks",
-      ibd: {
-        rootCandidates: ["ConnectedBlocks", "IT"],
-        packageContainerGroups: [
-          { id: "pkg1", name: "ConnectedBlocks", memberIds: ["Pkg.Engine", "Pkg.Controller"] },
-        ],
-        parts: [
-          { id: "p1", name: "Engine", qualifiedName: "Pkg.Engine", type: "part" },
-          { id: "p2", name: "Controller", qualifiedName: "Pkg.Controller", type: "part" },
-        ],
-        connectors: [
-          { id: "c1", sourcePartId: "p1", targetPartId: "p2", sourceId: "Engine.out", targetId: "Controller.in", type: "flow" },
-        ],
-      },
-    });
-    expect(prepared.meta?.rootCandidates).toEqual(["ConnectedBlocks", "IT"]);
-    expect(Array.isArray(prepared.meta?.packageContainerGroups)).toBe(true);
-    expect(prepared.nodes.some((node) => node.id === "pkg1")).toBe(true);
-    expect(prepared.nodes.find((node) => node.id === "p1")?.attributes?.containerId).toBe("pkg1");
-    expect(prepared.edges[0].attributes?.relationType).toBe("flow");
-  });
-
-  it("normalizes interconnection containment aliases for compound layout", () => {
-    const prepared = prepareViewData({
-      view: "interconnection-view",
-      ibd: {
-        parts: [
-          { id: "root-id", name: "Drone", qualifiedName: "Pkg.Drone", type: "part def" },
-          { id: "controller-id", name: "flightController", qualifiedName: "Pkg.Drone.flightController", containerId: "Pkg.Drone", type: "part" },
-          { id: "gps-id", name: "gps", qualifiedName: "Pkg.Drone.flightController.gps", containerId: "Pkg.Drone.flightController", type: "part" },
-        ],
-      },
-    });
-
-    expect(prepared.nodes.find((node) => node.id === "controller-id")?.attributes?.containerId).toBe("root-id");
-    expect(prepared.nodes.find((node) => node.id === "gps-id")?.attributes?.containerId).toBe("controller-id");
-  });
-
-  it("drops empty synthetic interconnection containers", () => {
-    const prepared = prepareViewData({
-      view: "interconnection-view",
-      ibd: {
-        packageContainerGroups: [
-          { id: "empty-root", label: "SurveillanceDrone", memberIds: ["missing.member"] },
-        ],
-        parts: [
-          { id: "airframe", name: "airframe", qualifiedName: "Pkg.SurveillanceDrone.airframe", type: "part" },
-        ],
-      },
-    });
-
-    expect(prepared.nodes.map((node) => node.id)).toEqual(["airframe"]);
-  });
-
-  it("collapses package wrapper when scoped to an instance root", () => {
-    const prepared = prepareViewData({
-      view: "interconnection-view",
-      selectedViewName: "droneInstance",
-      ibd: {
-        defaultRoot: "droneInstance",
-        rootViews: {
-          droneInstance: {
-            parts: [
-              {
-                id: "inst",
-                name: "droneInstance",
-                qualifiedName: "SurveillanceDrone.droneInstance",
-                type: "part",
-              },
-              {
-                id: "power",
-                name: "power",
-                qualifiedName: "SurveillanceDrone.droneInstance.power",
-                containerId: "SurveillanceDrone.droneInstance",
-                type: "part",
-              },
-            ],
-            connectors: [],
-            ports: [],
-            containerGroups: [
-              {
-                id: "container:SurveillanceDrone",
-                label: "SurveillanceDrone",
-                qualifiedName: "SurveillanceDrone",
-                memberPartIds: ["inst", "power"],
-              },
-            ],
-          },
-        },
-      },
-    });
-
-    expect(
-      prepared.nodes.some(
-        (node) => node.label === "SurveillanceDrone" && node.attributes?.isSyntheticContainer,
-      ),
-    ).toBe(false);
-    expect(prepared.nodes.find((node) => node.id === "inst")?.attributes?.containerId).toBeFalsy();
-    expect(prepared.nodes.find((node) => node.id === "inst")?.attributes?.isDiagramRoot).toBe(true);
-    expect(prepared.nodes.find((node) => node.id === "power")?.attributes?.containerId).toBe("inst");
-  });
-
-  it("normalizes IBD connector semantics for notation rendering", () => {
-    const prepared = prepareViewData({
-      view: "interconnection-view",
-      ibd: {
-        parts: [
-          { id: "tank", name: "tank", qualifiedName: "Vehicle.tank", type: "part" },
-          { id: "engine", name: "engine", qualifiedName: "Vehicle.engine", type: "part" },
-          { id: "controller", name: "controller", qualifiedName: "Vehicle.controller", type: "part" },
-        ],
-        connectors: [
-          {
-            id: "fuel-flow",
-            source: "Vehicle.tank.fuelOut",
-            target: "Vehicle.engine.fuelIn",
-            name: "flow",
-            itemType: "Fuel",
-          },
-          {
-            id: "control-interface",
-            sourcePartId: "controller",
-            targetPartId: "engine",
-            type: "interface",
-            interfaceName: "EngineControl",
-          },
-          {
-            id: "engine-reference",
-            sourcePartId: "controller",
-            targetPartId: "engine",
-            type: "reference",
-          },
-        ],
-      },
-    });
-
-    expect(prepared.edges.find((edge) => edge.id === "fuel-flow")?.edgeKind).toBe("flow");
-    expect(prepared.edges.find((edge) => edge.id === "fuel-flow")?.label).toBe("Fuel");
-    expect(prepared.edges.find((edge) => edge.id === "fuel-flow")?.source).toBe("tank");
-    expect(prepared.edges.find((edge) => edge.id === "fuel-flow")?.target).toBe("engine");
-    expect(prepared.edges.find((edge) => edge.id === "control-interface")?.edgeKind).toBe("interface");
-    expect(prepared.edges.find((edge) => edge.id === "control-interface")?.attributes?.interfaceName).toBe("EngineControl");
-    expect(prepared.edges.find((edge) => edge.id === "engine-reference")?.edgeKind).toBe("reference");
-  });
-
-  it("maps interconnection connectors from backend snake_case endpoint fields", () => {
-    const prepared = prepareViewData({
-      view: "interconnection-view",
-      selectedView: "StedinRijnmondGridExpansion::Views::systemContext",
-      selectedViewName: "systemContext",
-      ibd: {
-        parts: [
-          {
-            id: "tennet",
-            name: "tennetConnection",
-            qualifiedName: "Stedin.Architecture.RijnmondGridArchitecture.tennetConnection",
-            type: "part",
-          },
-          {
-            id: "substation",
-            name: "primarySubstation",
-            qualifiedName: "Stedin.Architecture.RijnmondGridArchitecture.primarySubstation",
-            type: "part",
-          },
-          {
-            id: "station-a",
-            name: "txStationA",
-            qualifiedName: "Stedin.Architecture.RijnmondGridArchitecture.txStationA",
-            type: "part",
-          },
-          {
-            id: "area-a",
-            name: "residentialAreaA",
-            qualifiedName: "Stedin.Architecture.RijnmondGridArchitecture.residentialAreaA",
-            type: "part",
-          },
-        ],
-        connectors: [
-          {
-            id: "hv",
-            source_id: "Stedin.architecture.tennetConnection.connection",
-            target_id: "Stedin.architecture.primarySubstation.hvConnection",
-            source_part_id: "Stedin.architecture.tennetConnection",
-            target_part_id: "Stedin.architecture.primarySubstation",
-            source_port_id: "Stedin.architecture.tennetConnection.connection",
-            target_port_id: "Stedin.architecture.primarySubstation.hvConnection",
-            rel_type: "connection",
-          },
-          {
-            id: "lv",
-            source_id: "Stedin.architecture.txStationA.lvConnection",
-            target_id: "Stedin.architecture.residentialAreaA.gridConnection",
-            rel_type: "connection",
-          },
-          {
-            id: "lv-variant",
-            source_id: "Stedin.Variants.baseVariant.txStationA.lvConnection",
-            target_id: "Stedin.Variants.baseVariant.residentialAreaA.gridConnection",
-            rel_type: "connection",
-          },
-        ],
-      },
-    });
-
-    expect(prepared.edges.map((edge) => [edge.id, edge.source, edge.target])).toEqual([
-      ["hv", "tennet", "substation"],
-      ["lv", "station-a", "area-a"],
-    ]);
-    expect(prepared.edges[0].attributes?.sourceId).toBe("Stedin.architecture.tennetConnection.connection");
-    expect(prepared.edges[0].attributes?.sourcePartId).toBe("Stedin.architecture.tennetConnection");
-    expect(prepared.edges[0].attributes?.sourcePortId).toBe("Stedin.architecture.tennetConnection.connection");
-    expect(prepared.edges[0].attributes?.targetPortId).toBe("Stedin.architecture.primarySubstation.hvConnection");
-  });
-
-  it("uses nested endpoint owner instead of container part id for interconnection connectors", () => {
-    const prepared = prepareViewData({
-      view: "interconnection-view",
-      ibd: {
-        parts: [
-          {
-            id: "ring",
-            name: "northSouthRing",
-            qualifiedName: "Grid.northSouthRing",
-            type: "part",
-          },
-          {
-            id: "ringSegment",
-            name: "ringSegmentBtoC",
-            qualifiedName: "Grid.northSouthRing.ringSegmentBtoC",
-            containerId: "ring",
-            type: "part",
-          },
-          {
-            id: "station",
-            name: "txStationB",
-            qualifiedName: "Grid.txStationB",
-            type: "part",
-          },
+        nodes: [
+          { id: "node:Demo.Source", semanticId: "Demo.Source", qualifiedName: "Demo.Source", name: "Source", kind: "part" },
+          { id: "node:Demo.Target", semanticId: "Demo.Target", qualifiedName: "Demo.Target", name: "Target", kind: "part" },
         ],
         ports: [
-          { id: "a", name: "a", parentId: "Grid.northSouthRing.ringSegmentBtoC" },
-          { id: "mvConnection", name: "mvConnection", parentId: "Grid.txStationB" },
+          { id: "port:Demo.Source.out", semanticId: "Demo.Source.out", ownerNodeId: "node:Demo.Source", name: "out", direction: "out", sideHint: "east" },
+          { id: "port:Demo.Target.in", semanticId: "Demo.Target.in", ownerNodeId: "node:Demo.Target", name: "in", direction: "in", sideHint: "west" },
         ],
-        connectors: [
+        edges: [
           {
-            id: "ring-feed",
-            sourceId: "Grid.txStationB.mvConnection",
-            targetId: "Grid.northSouthRing.ringSegmentBtoC.a",
-            sourcePartId: "Grid.txStationB",
-            targetPartId: "Grid.northSouthRing",
-            type: "connection",
+            id: "edge:Demo.Source.out->Demo.Target.in:0",
+            kind: "connection",
+            sourcePortId: "port:Demo.Source.out",
+            targetPortId: "port:Demo.Target.in",
+            sourceNodeId: "node:Demo.Source",
+            targetNodeId: "node:Demo.Target",
           },
         ],
+        containers: [],
+        diagnostics: [],
       },
     });
-
+    expect(prepared.meta?.canonicalScene).toBe(true);
+    expect(prepared.nodes).toHaveLength(2);
     expect(prepared.edges).toHaveLength(1);
-    expect(prepared.edges[0].source).toBe("station");
-    expect(prepared.edges[0].target).toBe("ringSegment");
+    expect(prepared.edges[0].target).toBe("node:Demo.Target");
+  });
+
+  it("returns empty prepared view when interconnectionScene is missing", () => {
+    const prepared = prepareViewData({
+      view: "interconnection-view",
+      ibd: {
+        parts: [{ id: "p1", name: "Engine", type: "part" }],
+        connectors: [],
+      },
+    });
+    expect(prepared.nodes).toHaveLength(0);
+    expect(prepared.edges).toHaveLength(0);
+    const diagnostics = prepared.meta?.diagnostics as Array<{ code?: string }> | undefined;
+    expect(diagnostics?.some((item) => item.code === "missing_interconnection_scene")).toBe(true);
   });
 
   it("adds synthetic initial state when missing", () => {

@@ -1,61 +1,68 @@
 {
   "view": "interconnection-view",
   "selectedView": "systemContext",
-  "ibd": {
-    "parts": [
+  "interconnectionScene": {
+    "schemaVersion": 1,
+    "view": {
+      "id": "fixture-nested-ring",
+      "name": "systemContext",
+      "type": "InterconnectionView",
+      "rootIds": ["node:Grid.northSouthRing"]
+    },
+    "nodes": [
       {
-        "id": "ring",
-        "nodeId": "Grid.northSouthRing",
-        "name": "northSouthRing",
+        "id": "node:Grid.northSouthRing",
+        "semanticId": "Grid.northSouthRing",
         "qualifiedName": "Grid.northSouthRing",
-        "type": "part"
+        "name": "northSouthRing",
+        "kind": "part"
       },
       {
-        "id": "ringSegment",
-        "nodeId": "Grid.northSouthRing.ringSegmentBtoC",
-        "name": "ringSegmentBtoC",
+        "id": "node:Grid.northSouthRing.ringSegmentBtoC",
+        "semanticId": "Grid.northSouthRing.ringSegmentBtoC",
         "qualifiedName": "Grid.northSouthRing.ringSegmentBtoC",
-        "containerId": "Grid.northSouthRing",
-        "type": "part"
+        "name": "ringSegmentBtoC",
+        "kind": "part",
+        "parentId": "node:Grid.northSouthRing"
       },
       {
-        "id": "station",
-        "nodeId": "Grid.txStationB",
-        "name": "txStationB",
+        "id": "node:Grid.txStationB",
+        "semanticId": "Grid.txStationB",
         "qualifiedName": "Grid.txStationB",
-        "type": "part"
+        "name": "txStationB",
+        "kind": "part"
       }
     ],
     "ports": [
       {
-        "id": "Grid.northSouthRing.ringSegmentBtoC.a",
-        "portId": "Grid.northSouthRing.ringSegmentBtoC.a",
+        "id": "port:Grid.northSouthRing.ringSegmentBtoC.a",
+        "semanticId": "Grid.northSouthRing.ringSegmentBtoC.a",
+        "ownerNodeId": "node:Grid.northSouthRing.ringSegmentBtoC",
         "name": "a",
-        "parentId": "Grid.northSouthRing.ringSegmentBtoC",
-        "direction": "in"
+        "direction": "in",
+        "sideHint": "west"
       },
       {
-        "id": "Grid.txStationB.mvConnection",
-        "portId": "Grid.txStationB.mvConnection",
+        "id": "port:Grid.txStationB.mvConnection",
+        "semanticId": "Grid.txStationB.mvConnection",
+        "ownerNodeId": "node:Grid.txStationB",
         "name": "mvConnection",
-        "parentId": "Grid.txStationB",
-        "direction": "out"
+        "direction": "out",
+        "sideHint": "east"
       }
     ],
-    "connectors": [
+    "edges": [
       {
-        "id": "ring-feed",
-        "sourceId": "Grid.txStationB.mvConnection",
-        "targetId": "Grid.northSouthRing.ringSegmentBtoC.a",
-        "sourcePartId": "Grid.txStationB",
-        "targetPartId": "Grid.northSouthRing.ringSegmentBtoC",
-        "sourcePortId": "Grid.txStationB.mvConnection",
-        "targetPortId": "Grid.northSouthRing.ringSegmentBtoC.a",
-        "type": "connection"
+        "id": "edge:ring-feed",
+        "kind": "connection",
+        "sourcePortId": "port:Grid.txStationB.mvConnection",
+        "targetPortId": "port:Grid.northSouthRing.ringSegmentBtoC.a",
+        "sourceNodeId": "node:Grid.txStationB",
+        "targetNodeId": "node:Grid.northSouthRing.ringSegmentBtoC",
+        "semanticId": "ring-feed"
       }
     ],
-    "containerGroups": [],
-    "packageContainerGroups": [],
-    "rootCandidates": ["Grid.northSouthRing"]
+    "containers": [],
+    "diagnostics": []
   }
 }

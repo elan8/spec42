@@ -177,21 +177,20 @@ function routesShareEndpoint(a: ParsedRoute, b: ParsedRoute): boolean {
 }
 
 describe("Interconnection Visualization", () => {
-    it("uses the backend-provided interconnection payload as-is", () => {
-        const prepared = buildSharedRendererInput(
-            {
-                ibd: {
-                    parts: [{ id: "Drone", name: "Drone" }],
-                    ports: [{ id: "telemetryOut", name: "telemetryOut", parentId: "Drone" }],
-                    connectors: [{ id: "conn1", sourceId: "telemetryOut", targetId: "telemetryIn", type: "connection" }],
-                },
-            },
-            "interconnection-view"
-        );
-        const ibd = prepared?.ibd as { parts: unknown[]; ports: unknown[]; connectors: unknown[] };
-        assert.strictEqual(ibd.parts.length, 1);
-        assert.strictEqual(ibd.ports.length, 1);
-        assert.strictEqual(ibd.connectors.length, 1);
+    it("passes interconnectionScene through the shared renderer input adapter", () => {
+        const scene = {
+            schemaVersion: 1,
+            view: { id: "v1", name: "droneConnections", type: "InterconnectionView", rootIds: [] },
+            nodes: [],
+            ports: [],
+            edges: [{ id: "edge:1" }],
+            containers: [],
+            diagnostics: [],
+        };
+        const prepared = buildSharedRendererInput({ interconnectionScene: scene }, "interconnection-view");
+        const attached = prepared?.interconnectionScene as { schemaVersion?: number; edges?: unknown[] } | undefined;
+        assert.strictEqual(attached?.schemaVersion, 1);
+        assert.strictEqual(attached?.edges?.length, 1);
     });
 
     before(async function () {
@@ -223,6 +222,18 @@ describe("Interconnection Visualization", () => {
         await waitForVisualizerOpen();
 
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
+        const snapshot = await vscode.commands.executeCommand<Record<string, unknown>>(
+            "sysml.debug.getVisualizationForTests",
+            workspaceFolder.uri.toString(),
+            "interconnection-view",
+            DRONE_INTERCONNECTION_VIEW
+        );
+        const scene = snapshot?.interconnectionScene as { schemaVersion?: number; edges?: unknown[] } | undefined;
+        assert.strictEqual(scene?.schemaVersion, 1, "expected interconnectionScene schemaVersion 1 for droneConnections");
+        assert.ok(
+            (scene?.edges?.length ?? 0) > 0,
+            `expected interconnectionScene edges for droneConnections, got ${scene?.edges?.length ?? 0}`
+        );
         await seedVisualizerWebviewFromModel(
             workspaceFolder.uri,
             "interconnection-view",

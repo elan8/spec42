@@ -10,11 +10,12 @@ Phases 0–2 are largely complete for Stedin `systemContext` and `gridConnection
 
 - **`InterconnectionSceneDto`** — built in Rust ([interconnection_scene.rs](../crates/semantic_core/src/semantic/interconnection_scene.rs)), attached to LSP visualization payloads.
 - **Instance-centric scoping** — `normalize_ibd_to_instance_paths`, architecture-scope filtering, variant/alternative exclusion ([visualization_workspace.rs](../crates/semantic_core/src/semantic/visualization_workspace.rs)).
-- **Canonical prepare path** — [interconnection-scene.ts](../shared/diagram-renderer/src/prepare/interconnection-scene.ts); legacy fallback remains in [interconnection-legacy.ts](../shared/diagram-renderer/src/prepare/interconnection-legacy.ts).
+- **Canonical prepare path** — [interconnection-scene.ts](../shared/diagram-renderer/src/prepare/interconnection-scene.ts); [interconnection.ts](../shared/diagram-renderer/src/prepare/interconnection.ts) requires `interconnectionScene` from the language server.
 - **Layout fixes** — ELK node ID sanitization, `edgeCoords: ROOT` without nested offset guessing, canonical single-offset routing ([layout.ts](../shared/diagram-renderer/src/render/layout.ts), [ibd-route.ts](../shared/diagram-renderer/src/render/ibd-route.ts)).
 - **Debug export** — `sysml.debug.exportInterconnectionPipeline` (VS Code) and [pipeline-export.ts](../shared/diagram-renderer/src/pipeline-export.ts).
 - **Fixtures** — `stedin-system-context-scene.json`, `stedin-grid-connections-scene.json` (regenerate via `cargo test -p semantic_core --test view_expose_stedin_interconnection export_stedin -- --nocapture`).
 - **Phase 4 core (drawing)** — canonical scenes build `InterconnectionLayoutDto` during ELK layout ([interconnection-layout-dto.ts](../shared/diagram-renderer/src/render/interconnection-layout-dto.ts)); [drawing.ts](../shared/diagram-renderer/src/render/drawing.ts) reads port anchors and route points from `layout.interconnectionLayout` instead of `_portAnchors` / `layoutRoutePoints` on attributes.
+- **Phase 5 (frontend)** — [interconnection.ts](../shared/diagram-renderer/src/prepare/interconnection.ts) requires `interconnectionScene`; [interconnection-legacy.ts](../shared/diagram-renderer/src/prepare/interconnection-legacy.ts) deleted; IBD root-selection heuristics removed from [normalize-payload.ts](../shared/diagram-renderer/src/prepare/normalize-payload.ts); layout/routing collapsed to canonical-only path.
 
 ### CI contract (primary gate)
 
@@ -30,8 +31,8 @@ Local pipeline debug: `node shared/diagram-renderer/scripts/diagnose-stedin-scen
 
 ### Deferred (next plans)
 
-- **Phase 4 remainder** — Webview diagnostics panel for `scene.diagnostics` and layout warnings; container boxes in `InterconnectionLayoutDto`; legacy path still uses `_portAnchors` on attributes until Phase 5.
-- **Phase 5** — Require `interconnectionScene` on all interconnection views; delete [interconnection-legacy.ts](../shared/diagram-renderer/src/prepare/interconnection-legacy.ts) and frontend root-selection heuristics in [normalize-payload.ts](../shared/diagram-renderer/src/prepare/normalize-payload.ts).
+- **Phase 4 remainder** — Webview diagnostics panel for `scene.diagnostics` and layout warnings; container boxes in `InterconnectionLayoutDto`.
+- **Server native SVG** — [diagrams.rs](../crates/server/src/diagrams.rs) `build_interconnection_elk_source` still uses raw `ibd`; align with `interconnectionScene` or document as CLI-only parity path.
 - **Backend ELK** — Keep production layout in ELK.js; optional parity tests via [elk_layout.rs](../crates/server/src/elk_layout.rs) only.
 
 ---

@@ -71,8 +71,8 @@ describe("route quality helpers", () => {
           target: "b",
           label: "link",
           attributes: {
-            _sourcePortCenter: { x: 0, y: 0 },
-            _targetPortCenter: { x: 100, y: 0 },
+            sourcePortId: "port:a",
+            targetPortId: "port:b",
           },
           layout: {
             sections: [

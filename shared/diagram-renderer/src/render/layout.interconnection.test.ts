@@ -75,7 +75,17 @@ describe("interconnection layout fixtures", () => {
   it("prepares nested ring fixture with resolved nested target owner", () => {
     const prepared = prepareViewData(loadFixture("nested-ring-minimal.json"));
     expect(prepared.edges).toHaveLength(1);
-    expect(prepared.edges[0].target).toBe("ringSegment");
+    expect(prepared.edges[0].target).toBe("node:Grid.northSouthRing.ringSegmentBtoC");
+  });
+
+  it("passes route quality checks for nested ring scene fixture", async () => {
+    const prepared = prepareViewData(loadFixture("nested-ring-minimal.json"));
+    const layout = await layoutPrepared(prepared);
+    const report = assessRouteQuality(layout.edges, layout.nodes, { maxLengthRatio: 6 });
+    expect(layout.edges).toHaveLength(1);
+    expect(assertNoDetachedEndpoints(report), report.violations.join("; ")).toEqual([]);
+    expect(assertWithinBounds(report), report.violations.join("; ")).toEqual([]);
+    expect(report.passed, report.violations.join("; ")).toBe(true);
   });
 
   it("passes route quality checks for Stedin systemContext scene fixture", async () => {

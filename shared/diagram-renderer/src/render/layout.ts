@@ -98,8 +98,7 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
 }
 
 export async function layoutInterconnectionPrepared(prepared: PreparedView): Promise<LayoutResult> {
-  const canonicalScene = Boolean(prepared.meta?.canonicalScene);
-  const layoutBuildState = canonicalScene ? createInterconnectionLayoutBuildState() : null;
+  const layoutBuildState = createInterconnectionLayoutBuildState();
   const nodesById = new Map(prepared.nodes.map((node) => [node.id, node]));
   const childrenByParent = new Map<string, PreparedNode[]>();
   const roots: PreparedNode[] = [];
@@ -420,30 +419,23 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
         const portAnchors = nodePortAnchors.get(base.id) ?? {};
         const laidOutWidth = elkNode.width ?? ibdNodeWidth;
         const laidOutHeight = elkNode.height ?? ibdNodeHeight;
-        if (layoutBuildState) {
-          recordInterconnectionLayoutNode(
-            layoutBuildState,
-            { id: base.id, x: absX, y: absY, width: laidOutWidth, height: laidOutHeight },
-            portAnchors,
-            portDrawOrder,
-          );
-        }
-        const layoutAttributes: Record<string, unknown> = {
-          ...(base.attributes ?? {}),
-          _isLayoutContainer: hasLayoutChildren,
-          _layoutDepth: depth,
-        };
-        if (!canonicalScene) {
-          layoutAttributes._portAnchors = portAnchors;
-          layoutAttributes._portDrawOrder = portDrawOrder;
-        }
+        recordInterconnectionLayoutNode(
+          layoutBuildState,
+          { id: base.id, x: absX, y: absY, width: laidOutWidth, height: laidOutHeight },
+          portAnchors,
+          portDrawOrder,
+        );
         laidOutNodes.set(base.id, {
           ...base,
           x: absX,
           y: absY,
           width: laidOutWidth,
           height: laidOutHeight,
-          attributes: layoutAttributes,
+          attributes: {
+            ...(base.attributes ?? {}),
+            _isLayoutContainer: hasLayoutChildren,
+            _layoutDepth: depth,
+          },
         });
       }
       for (const child of elkNode.children ?? []) {
@@ -472,15 +464,11 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
         });
       }
     };
-    const rootElkEdges = laidOut.edges ?? [];
-    if (rootElkEdges.length > 0) {
-      for (const elkEdge of rootElkEdges) {
-        const edgeId = String(elkEdge?.id ?? "");
-        if (!edgeId) continue;
-        edgeLayout.set(edgeId, { edge: elkEdge, offset: { x: 0, y: 0 } });
-      }
-    } else {
-      collectElkEdgesWithOffsets(laidOut, { x: 0, y: 0 });
+    collectElkEdgesWithOffsets(laidOut, { x: 0, y: 0 });
+    for (const elkEdge of laidOut.edges ?? []) {
+      const edgeId = String(elkEdge?.id ?? "");
+      if (!edgeId) continue;
+      edgeLayout.set(edgeId, { edge: elkEdge, offset: { x: 0, y: 0 } });
     }
 
     const nodes = prepared.nodes
@@ -495,15 +483,12 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
       const sourcePortCenter = elkEdge?.sourcePortId ? portCenters.get(elkEdge.sourcePortId) : undefined;
       const targetPortCenter = elkEdge?.targetPortId ? portCenters.get(elkEdge.targetPortId) : undefined;
       if (
-        prepared.meta?.canonicalScene &&
         (edge.attributes?.sourcePortId || edge.attributes?.targetPortId) &&
         (!sourcePortCenter || !targetPortCenter)
       ) {
-        console.warn("[spec42][interconnection-layout] node-boundary fallback", {
-          edgeId: edge.id,
-          sourcePortId: edge.attributes?.sourcePortId,
-          targetPortId: edge.attributes?.targetPortId,
-        });
+        layoutBuildState.diagnostics.push(
+          `node-boundary fallback for edge ${edge.id}`,
+        );
       }
       return {
         ...edge,
@@ -512,16 +497,11 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
         layout: layoutRecord?.edge.sections?.length
           ? {
               sections: layoutRecord.edge.sections as EdgeSection[],
-              edgeOwnerOffset: prepared.meta?.canonicalScene ? { x: 0, y: 0 } : layoutRecord.offset,
-              lcaOffset: prepared.meta?.canonicalScene
-                ? { x: 0, y: 0 }
-                : (() => {
-                    const sourceNode = laidOutNodes.get(edge.source);
-                    const targetNode = laidOutNodes.get(edge.target);
-                    return sourceNode && targetNode
-                      ? lcaOffsetForNodes(sourceNode, targetNode, laidOutNodes)
-                      : { x: 0, y: 0 };
-                  })(),
+              edgeOwnerOffset: layoutRecord.offset,
+              lcaOffset:
+                sourceNode && targetNode
+                  ? lcaOffsetForNodes(sourceNode, targetNode, laidOutNodes)
+                  : { x: 0, y: 0 },
             }
           : {
               sections: fallbackEdgeSections(sourceNode, targetNode, sourcePortCenter, targetPortCenter),
@@ -536,14 +516,11 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
       } satisfies LaidOutEdge;
     });
 
-    if (layoutBuildState) {
-      return {
-        nodes,
-        edges,
-        interconnectionLayout: finalizeInterconnectionLayoutDto(layoutBuildState, edges),
-      };
-    }
-    return { nodes, edges };
+    return {
+      nodes,
+      edges,
+      interconnectionLayout: finalizeInterconnectionLayoutDto(layoutBuildState, edges),
+    };
   } catch {
     // Interconnection notation must not degrade into a heuristic layout if ELK fails.
     return { nodes: [], edges: [] };

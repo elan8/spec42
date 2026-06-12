@@ -17,10 +17,17 @@ const VIEW_FIXTURES: Array<{ view: string; data: Record<string, unknown> }> = [
     view: "interconnection-view",
     data: {
       view: "interconnection-view",
-      ibd: {
-        parts: [{ id: "p1", name: "Part1", type: "part" }],
-        connectors: [],
-        rootCandidates: [],
+      interconnectionScene: {
+        schemaVersion: 1,
+        view: { id: "fixture-two-part", name: "TwoPartChain", type: "InterconnectionView", rootIds: [] },
+        nodes: [
+          { id: "node:Demo.Source", semanticId: "Demo.Source", qualifiedName: "Demo.Source", name: "Source", kind: "part" },
+          { id: "node:Demo.Target", semanticId: "Demo.Target", qualifiedName: "Demo.Target", name: "Target", kind: "part" },
+        ],
+        ports: [],
+        edges: [],
+        containers: [],
+        diagnostics: [],
       },
     },
   },

@@ -38,7 +38,6 @@ export interface SharedVisualizationPayload {
   view: string;
   selectedView?: string;
   selectedViewName?: string;
-  selectedIbdRoot?: string | null;
   emptyStateMessage?: string;
   viewCandidates?: SharedViewCandidate[];
   graph?: {
