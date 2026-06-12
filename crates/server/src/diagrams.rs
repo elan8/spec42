@@ -1,7 +1,9 @@
 use std::path::{Path, PathBuf};
 
 use kernel::build_sysml_visualization_for_paths;
-use semantic_core::{GraphNodeDto, RangeDto, SysmlGraphDto, SysmlVisualizationResultDto};
+use semantic_core::{
+    build_elk_graph_from_scene, GraphNodeDto, RangeDto, SysmlGraphDto, SysmlVisualizationResultDto,
+};
 use serde::{Deserialize, Serialize};
 
 use crate::cli::{DiagramExportArgs, DiagramExportFormat};
@@ -532,144 +534,73 @@ fn build_graph_elk_source(payload: &SysmlVisualizationResultDto) -> Result<ElkSo
     })
 }
 
+fn sanitize_elk_id(value: &str) -> String {
+    value
+        .chars()
+        .map(|ch| {
+            if ch.is_ascii_alphanumeric() || ch == '_' || ch == '.' || ch == '-' {
+                ch
+            } else {
+                '_'
+            }
+        })
+        .collect()
+}
+
 fn build_interconnection_elk_source(
     payload: &SysmlVisualizationResultDto,
 ) -> Result<ElkSource, String> {
-    let ibd = payload
-        .ibd
-        .as_ref()
-        .ok_or_else(|| "ELK-backed interconnection export requires IBD payload".to_string())?;
-    let root_view = ibd
-        .default_root
-        .as_ref()
-        .and_then(|root| ibd.root_views.get(root));
-    let parts = root_view
-        .map(|view| view.parts.as_slice())
-        .unwrap_or(ibd.parts.as_slice());
-    let ports = root_view
-        .map(|view| view.ports.as_slice())
-        .unwrap_or(ibd.ports.as_slice());
-    let connectors = root_view
-        .map(|view| view.connectors.as_slice())
-        .unwrap_or(ibd.connectors.as_slice());
+    let scene = payload.interconnection_scene.as_ref().ok_or_else(|| {
+        "ELK-backed interconnection export requires interconnectionScene on the visualization payload"
+            .to_string()
+    })?;
+    let graph: ElkGraph = serde_json::from_value(build_elk_graph_from_scene(scene))
+        .map_err(|err| format!("Failed to decode interconnection ELK graph: {err}"))?;
     let mut nodes = std::collections::HashMap::new();
-    let ports_by_parent = ports.iter().fold(
-        std::collections::HashMap::<String, Vec<_>>::new(),
-        |mut acc, port| {
-            acc.entry(port.parent_id.clone()).or_default().push(port);
-            acc
-        },
-    );
-    let mut children = Vec::new();
-    for part in parts {
-        let mut elk_ports = Vec::new();
-        for port in ports_by_parent
-            .get(&part.qualified_name)
-            .into_iter()
-            .flat_map(|ports| ports.iter())
-        {
-            let side = match port.port_side.as_deref().unwrap_or("east") {
-                "left" | "west" => "WEST",
-                "top" | "north" => "NORTH",
-                "bottom" | "south" => "SOUTH",
-                _ => "EAST",
-            };
-            elk_ports.push(ElkPort {
-                id: port.id.clone(),
-                width: 12.0,
-                height: 12.0,
-                x: 0.0,
-                y: 0.0,
-                layout_options: std::collections::BTreeMap::from([(
-                    "org.eclipse.elk.port.side".to_string(),
-                    side.to_string(),
-                )]),
-            });
-        }
-        children.push(ElkNode {
-            id: part.qualified_name.clone(),
-            width: 220.0,
-            height: 96.0 + (elk_ports.len() as f64 * 10.0),
-            x: 0.0,
-            y: 0.0,
-            children: Vec::new(),
-            ports: elk_ports,
-            edges: Vec::new(),
-            layout_options: std::collections::BTreeMap::from([(
-                "org.eclipse.elk.portConstraints".to_string(),
-                "FIXED_SIDE".to_string(),
-            )]),
-        });
+    for node in &scene.nodes {
+        let elk_id = sanitize_elk_id(&node.id);
         nodes.insert(
-            part.qualified_name.clone(),
+            elk_id,
             SvgNodeMeta {
-                id: part.qualified_name.clone(),
-                name: part.name.clone(),
-                element_type: part.element_type.clone(),
-                qualified_name: part.qualified_name.clone(),
-                uri: part.uri.clone(),
+                id: node.id.clone(),
+                name: node.name.clone(),
+                element_type: node.kind.clone(),
+                qualified_name: node.qualified_name.clone(),
+                uri: None,
                 range: None,
             },
         );
     }
-    let part_ids: std::collections::HashSet<&str> = parts
-        .iter()
-        .map(|part| part.qualified_name.as_str())
-        .collect();
-    let port_ids: std::collections::HashSet<&str> =
-        ports.iter().map(|port| port.id.as_str()).collect();
-    let mut edge_meta = std::collections::HashMap::new();
-    let mut edges = Vec::new();
-    for (index, connector) in connectors.iter().enumerate() {
-        let source = connector
-            .source_part_id
-            .as_deref()
-            .unwrap_or(connector.source.as_str());
-        let target = connector
-            .target_part_id
-            .as_deref()
-            .unwrap_or(connector.target.as_str());
-        if !part_ids.contains(source) || !part_ids.contains(target) {
-            continue;
-        }
-        let source_endpoint = if port_ids.contains(connector.source_id.as_str()) {
-            connector.source_id.clone()
-        } else {
-            source.to_string()
-        };
-        let target_endpoint = if port_ids.contains(connector.target_id.as_str()) {
-            connector.target_id.clone()
-        } else {
-            target.to_string()
-        };
-        let id = format!("connector-{index}");
-        edges.push(ElkEdge {
-            id: id.clone(),
-            sources: vec![source_endpoint],
-            targets: vec![target_endpoint],
-            sections: Vec::new(),
-        });
-        edge_meta.insert(
-            id.clone(),
-            SvgEdgeMeta {
-                id,
-                label: None,
-                rel_type: connector.rel_type.clone(),
+    for container in &scene.containers {
+        let elk_id = sanitize_elk_id(&container.id);
+        nodes.insert(
+            elk_id,
+            SvgNodeMeta {
+                id: container.id.clone(),
+                name: container.label.clone(),
+                element_type: "package".to_string(),
+                qualified_name: container.label.clone(),
+                uri: None,
+                range: None,
             },
         );
     }
+    let edge_meta = scene
+        .edges
+        .iter()
+        .map(|edge| {
+            (
+                edge.id.clone(),
+                SvgEdgeMeta {
+                    id: edge.id.clone(),
+                    label: edge.label.clone(),
+                    rel_type: edge.kind.clone(),
+                },
+            )
+        })
+        .collect();
     Ok(ElkSource {
-        graph: ElkGraph {
-            id: "spec42-interconnection-root".to_string(),
-            width: None,
-            height: None,
-            x: None,
-            y: None,
-            children,
-            edges,
-            ports: Vec::new(),
-            layout_options: elk_layout_options("interconnection-view"),
-        },
+        graph,
         nodes,
         edges: edge_meta,
     })
@@ -881,6 +812,7 @@ fn elk_layout_options(view: &str) -> std::collections::BTreeMap<String, String> 
     ]);
     match view {
         "interconnection-view" => {
+            options.insert("elk.hierarchyHandling".to_string(), "INCLUDE_CHILDREN".to_string());
             options.insert("elk.direction".to_string(), "RIGHT".to_string());
             options.insert("elk.spacing.nodeNode".to_string(), "150".to_string());
             options.insert(
@@ -890,12 +822,20 @@ fn elk_layout_options(view: &str) -> std::collections::BTreeMap<String, String> 
             options.insert("elk.spacing.edgeNode".to_string(), "110".to_string());
             options.insert("elk.spacing.edgeEdge".to_string(), "90".to_string());
             options.insert(
+                "elk.layered.crossingMinimization.strategy".to_string(),
+                "LAYER_SWEEP".to_string(),
+            );
+            options.insert(
                 "elk.padding".to_string(),
                 "[top=70,left=70,bottom=70,right=70]".to_string(),
             );
             options.insert(
                 "org.eclipse.elk.portConstraints".to_string(),
                 "FIXED_ORDER".to_string(),
+            );
+            options.insert(
+                "org.eclipse.elk.portAlignment.default".to_string(),
+                "CENTER".to_string(),
             );
         }
         "action-flow-view" => {
@@ -1160,7 +1100,9 @@ fn xml_escape(value: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use semantic_core::{GraphNodeDto, PositionDto, RangeDto, SysmlGraphDto};
+    use semantic_core::{
+        GraphNodeDto, InterconnectionSceneDto, PositionDto, RangeDto, SysmlGraphDto,
+    };
     use std::collections::HashMap;
 
     fn zero_range() -> RangeDto {
@@ -1219,5 +1161,44 @@ mod tests {
     fn requested_renderer_views_rejects_unknown_view() {
         let err = requested_renderer_views("unknown").expect_err("unknown view should fail");
         assert!(err.contains("Unsupported export view"));
+    }
+
+    #[test]
+    fn interconnection_elk_svg_from_scene_fixture() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../shared/diagram-renderer/test-fixtures/interconnection/scene-two-part-chain.json"
+        ))
+        .expect("parse scene fixture");
+        let scene: InterconnectionSceneDto = serde_json::from_value(
+            fixture
+                .get("interconnectionScene")
+                .cloned()
+                .expect("interconnectionScene"),
+        )
+        .expect("deserialize scene");
+        let payload = SysmlVisualizationResultDto {
+            version: 1,
+            view: "interconnection-view".to_string(),
+            workspace_root_uri: "file:///demo".to_string(),
+            model_ready: true,
+            view_candidates: Vec::new(),
+            selected_view: None,
+            selected_view_name: Some("TwoPartChain".to_string()),
+            empty_state_message: None,
+            package_groups: None,
+            graph: None,
+            general_view_graph: None,
+            workspace_model: None,
+            activity_diagrams: None,
+            sequence_diagrams: None,
+            state_machines: None,
+            ibd: None,
+            interconnection_scene: Some(scene),
+            stats: None,
+        };
+        let svg = elk_svg(&payload, "interconnection-view").expect("interconnection svg");
+        assert!(!svg.is_empty());
+        assert!(svg.contains("diagram-edge"));
+        assert!(svg.contains("data-layout-engine=\"elkjs-quickjs\""));
     }
 }

@@ -1,0 +1,75 @@
+{
+  "id": "root",
+  "layoutOptions": {
+    "elk.algorithm": "layered",
+    "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+    "elk.direction": "RIGHT",
+    "elk.spacing.nodeNode": "150",
+    "elk.layered.spacing.nodeNodeBetweenLayers": "220",
+    "elk.spacing.edgeNode": "110",
+    "elk.spacing.edgeEdge": "90",
+    "elk.edgeRouting": "ORTHOGONAL",
+    "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
+    "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+    "elk.separateConnectedComponents": "true",
+    "elk.padding": "[top=70,left=70,bottom=70,right=70]",
+    "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+    "org.eclipse.elk.portAlignment.default": "CENTER",
+    "org.eclipse.elk.json.edgeCoords": "ROOT"
+  },
+  "children": [
+    {
+      "id": "node_Demo.Source",
+      "width": 280,
+      "height": 140,
+      "ports": [
+        {
+          "id": "node_Demo.Source__port__out",
+          "width": 10,
+          "height": 10,
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER"
+      }
+    },
+    {
+      "id": "node_Demo.Target",
+      "width": 280,
+      "height": 140,
+      "ports": [
+        {
+          "id": "node_Demo.Target__port__in",
+          "width": 10,
+          "height": 10,
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "WEST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge:Demo.Source.out->Demo.Target.in:0",
+      "sources": [
+        "node_Demo.Source__port__out"
+      ],
+      "targets": [
+        "node_Demo.Target__port__in"
+      ]
+    }
+  ]
+}

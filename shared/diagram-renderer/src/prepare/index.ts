@@ -7,7 +7,19 @@ import { prepareBrowser, prepareGeometry, prepareGrid } from "./standard-views";
 import type { PreparedEdge, PreparedNode, PreparedView, VisualizationPayload } from "./types";
 import { asRecord } from "./util";
 
-export type { PreparedEdge, PreparedNode, PreparedView } from "./types";
+export type {
+  InterconnectionPreparedEdge,
+  InterconnectionPreparedNode,
+  InterconnectionPreparedView,
+  PreparedEdge,
+  PreparedNode,
+  PreparedView,
+} from "./types";
+export {
+  asInterconnectionPrepared,
+  interconnectionPreparedForLayout,
+  isInterconnectionPreparedView,
+} from "./types";
 export { isDefinitionKind, isReferenceKind, resolveNodeChrome } from "../node-notation";
 
 /** Structure-only CSS classes (definition / usage / reference / container); no per-kind color. */

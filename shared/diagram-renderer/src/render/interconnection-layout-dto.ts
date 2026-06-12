@@ -1,4 +1,5 @@
 import type {
+  InterconnectionLayoutContainerDto,
   InterconnectionLayoutDto,
   InterconnectionLayoutNodeDto,
   InterconnectionLayoutPortDrawOrder,
@@ -8,11 +9,19 @@ import type { LaidOutEdge } from "./types";
 
 export interface InterconnectionLayoutBuildState {
   nodes: Map<string, InterconnectionLayoutNodeDto>;
+  containers: InterconnectionLayoutContainerDto[];
   diagnostics: string[];
 }
 
 export function createInterconnectionLayoutBuildState(): InterconnectionLayoutBuildState {
-  return { nodes: new Map(), diagnostics: [] };
+  return { nodes: new Map(), containers: [], diagnostics: [] };
+}
+
+export function recordInterconnectionLayoutContainer(
+  state: InterconnectionLayoutBuildState,
+  container: InterconnectionLayoutContainerDto,
+): void {
+  state.containers.push(container);
 }
 
 export function recordInterconnectionLayoutNode(
@@ -46,6 +55,7 @@ export function finalizeInterconnectionLayoutDto(
       sourcePortId: String(edge.attributes?.sourcePortId ?? ""),
       targetPortId: String(edge.attributes?.targetPortId ?? ""),
     })),
+    containers: [...state.containers],
     diagnostics: [...state.diagnostics],
   };
 }

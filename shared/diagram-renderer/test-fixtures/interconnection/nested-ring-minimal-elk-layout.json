@@ -1,0 +1,23 @@
+[
+  {
+    "id": "node:Grid.northSouthRing",
+    "x": 585,
+    "y": 70,
+    "width": 338,
+    "height": 212
+  },
+  {
+    "id": "node:Grid.northSouthRing.ringSegmentBtoC",
+    "x": 619,
+    "y": 118,
+    "width": 280,
+    "height": 140
+  },
+  {
+    "id": "node:Grid.txStationB",
+    "x": 70,
+    "y": 118,
+    "width": 280,
+    "height": 140
+  }
+]

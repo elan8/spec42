@@ -154,6 +154,100 @@ fn layout_elk_graph_inner(graph_json: &str) -> Result<String, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde_json::Value;
+    use std::collections::HashMap;
+    use std::fs;
+    use std::path::PathBuf;
+
+    fn fixture_path(name: &str) -> PathBuf {
+        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../shared/diagram-renderer/test-fixtures/interconnection")
+            .join(name)
+    }
+
+    fn sanitize_elk_id(value: &str) -> String {
+        value
+            .chars()
+            .map(|ch| {
+                if ch.is_ascii_alphanumeric() || ch == '_' || ch == '.' || ch == '-' {
+                    ch
+                } else {
+                    '_'
+                }
+            })
+            .collect()
+    }
+
+    fn collect_layout_positions(
+        node: &Value,
+        offset_x: f64,
+        offset_y: f64,
+        out: &mut HashMap<String, (f64, f64, f64, f64)>,
+    ) {
+        let x = offset_x + node.get("x").and_then(Value::as_f64).unwrap_or(0.0);
+        let y = offset_y + node.get("y").and_then(Value::as_f64).unwrap_or(0.0);
+        if let Some(id) = node.get("id").and_then(Value::as_str) {
+            if node.get("width").is_some() {
+                let width = node.get("width").and_then(Value::as_f64).unwrap_or(0.0);
+                let height = node.get("height").and_then(Value::as_f64).unwrap_or(0.0);
+                out.insert(id.to_string(), (x, y, width, height));
+            }
+        }
+        if let Some(children) = node.get("children").and_then(Value::as_array) {
+            for child in children {
+                collect_layout_positions(child, x, y, out);
+            }
+        }
+    }
+
+    #[test]
+    fn interconnection_elk_layout_matches_typescript_golden_when_present() {
+        for fixture_base in ["scene-two-part-chain", "nested-ring-minimal"] {
+            let golden_path = fixture_path(&format!("{fixture_base}-elk-layout.json"));
+            let elk_input_path = fixture_path(&format!("{fixture_base}-elk-input.json"));
+            if !golden_path.exists() || !elk_input_path.exists() {
+                continue;
+            }
+            let elk_input = fs::read_to_string(elk_input_path).expect("read elk input");
+            let layouted_json =
+                layout_elk_graph(&elk_input).expect("layout elk input from golden fixture");
+            let layouted: Value =
+                serde_json::from_str(&layouted_json).expect("parse layouted elk graph");
+            let mut rust_positions = HashMap::new();
+            if let Some(children) = layouted.get("children").and_then(Value::as_array) {
+                for child in children {
+                    collect_layout_positions(child, 0.0, 0.0, &mut rust_positions);
+                }
+            }
+            let golden: Vec<Value> =
+                serde_json::from_str(&fs::read_to_string(golden_path).expect("read layout golden"))
+                    .expect("parse layout golden");
+            for entry in golden {
+                let prepared_id = entry
+                    .get("id")
+                    .and_then(Value::as_str)
+                    .expect("layout golden id");
+                let elk_id = sanitize_elk_id(prepared_id);
+                let actual = rust_positions
+                    .get(&elk_id)
+                    .unwrap_or_else(|| panic!("missing laid-out node {elk_id}"));
+                for key in ["x", "y", "width", "height"] {
+                    let expected = entry.get(key).and_then(Value::as_f64).unwrap_or(0.0);
+                    let got = match key {
+                        "x" => actual.0,
+                        "y" => actual.1,
+                        "width" => actual.2,
+                        "height" => actual.3,
+                        _ => 0.0,
+                    };
+                    assert!(
+                        (expected - got).abs() <= 2.0,
+                        "{fixture_base} {prepared_id}.{key}: expected {expected}, got {got}"
+                    );
+                }
+            }
+        }
+    }
 
     #[test]
     fn layouts_tiny_graph() {

@@ -4,42 +4,64 @@ Date: 2026-06-12
 
 ## Progress (2026-06-12)
 
-Phases 0–2 are largely complete for Stedin `systemContext` and `gridConnections`. The CI contract is fixture-based route quality in `shared/diagram-renderer`, backed by Rust scene export tests when the Stedin workspace is present.
+**Status:** Phases **0–5 are complete** for the VS Code / webview interconnection path (`systemContext`, `gridConnections`, drone fixtures). The production pipeline is: Rust `InterconnectionSceneDto` → extension fetch → shared prepare → ELK layout → `InterconnectionLayoutDto` → SVG. Legacy ibd-only prepare and attribute-based route fallbacks are removed.
+
+Post–Phase 5 stabilization (same day):
+
+- **Extension plumbing** — [modelFetcher.ts](../vscode/src/visualization/modelFetcher.ts) forwards `interconnectionScene` to the webview (Phase 5 had made the renderer scene-only, but the field was dropped on the update message).
+- **Nested-port routing** — [ibd-route.ts](../shared/diagram-renderer/src/render/ibd-route.ts) restores port-center–driven offset selection (`edgeOwnerOffset`, `lcaOffset`) for ELK sections that arrive in container-local coordinates; [layout.ts](../shared/diagram-renderer/src/render/layout.ts) collects edges from the full ELK tree and stores owner/LCA offsets. Orthogonal endpoint stitching fixed for non-axis-aligned port joins.
 
 ### Landed
 
 - **`InterconnectionSceneDto`** — built in Rust ([interconnection_scene.rs](../crates/semantic_core/src/semantic/interconnection_scene.rs)), attached to LSP visualization payloads.
 - **Instance-centric scoping** — `normalize_ibd_to_instance_paths`, architecture-scope filtering, variant/alternative exclusion ([visualization_workspace.rs](../crates/semantic_core/src/semantic/visualization_workspace.rs)).
 - **Canonical prepare path** — [interconnection-scene.ts](../shared/diagram-renderer/src/prepare/interconnection-scene.ts); [interconnection.ts](../shared/diagram-renderer/src/prepare/interconnection.ts) requires `interconnectionScene` from the language server.
-- **Layout fixes** — ELK node ID sanitization, `edgeCoords: ROOT` without nested offset guessing, canonical single-offset routing ([layout.ts](../shared/diagram-renderer/src/render/layout.ts), [ibd-route.ts](../shared/diagram-renderer/src/render/ibd-route.ts)).
+- **Layout** — ELK node ID sanitization, `edgeCoords: ROOT`, `InterconnectionLayoutDto` built during layout ([interconnection-layout-dto.ts](../shared/diagram-renderer/src/render/interconnection-layout-dto.ts), [layout.ts](../shared/diagram-renderer/src/render/layout.ts), [ibd-route.ts](../shared/diagram-renderer/src/render/ibd-route.ts)). Offset candidates are confined to layout (not semantic inference): pick the offset that best aligns ELK sections with resolved port centers.
 - **Debug export** — `sysml.debug.exportInterconnectionPipeline` (VS Code) and [pipeline-export.ts](../shared/diagram-renderer/src/pipeline-export.ts).
-- **Fixtures** — `stedin-system-context-scene.json`, `stedin-grid-connections-scene.json` (regenerate via `cargo test -p semantic_core --test view_expose_stedin_interconnection export_stedin -- --nocapture`).
-- **Phase 4 core (drawing)** — canonical scenes build `InterconnectionLayoutDto` during ELK layout ([interconnection-layout-dto.ts](../shared/diagram-renderer/src/render/interconnection-layout-dto.ts)); [drawing.ts](../shared/diagram-renderer/src/render/drawing.ts) reads port anchors and route points from `layout.interconnectionLayout` instead of `_portAnchors` / `layoutRoutePoints` on attributes.
-- **Phase 5 (frontend)** — [interconnection.ts](../shared/diagram-renderer/src/prepare/interconnection.ts) requires `interconnectionScene`; [interconnection-legacy.ts](../shared/diagram-renderer/src/prepare/interconnection-legacy.ts) deleted; IBD root-selection heuristics removed from [normalize-payload.ts](../shared/diagram-renderer/src/prepare/normalize-payload.ts); layout/routing collapsed to canonical-only path.
+- **Fixtures** — `stedin-system-context-scene.json`, `stedin-grid-connections-scene.json`, `nested-ring-minimal.json` (scene). Regenerate Stedin scenes: `cargo test -p semantic_core --test view_expose_stedin_interconnection export_stedin -- --nocapture`.
+- **Phase 4 core (drawing)** — [drawing.ts](../shared/diagram-renderer/src/render/drawing.ts) reads port anchors and route points from `layout.interconnectionLayout` (no `_portAnchors` / `layoutRoutePoints` on attributes).
+- **Phase 5 (frontend)** — [interconnection-legacy.ts](../shared/diagram-renderer/src/prepare/interconnection-legacy.ts) deleted; IBD root-selection heuristics removed from [normalize-payload.ts](../shared/diagram-renderer/src/prepare/normalize-payload.ts); layout/routing collapsed to canonical-only path.
 
 ### CI contract (primary gate)
 
 | Test | Location | What it guards |
 |------|----------|----------------|
-| `layout.interconnection.test.ts` | `shared/diagram-renderer` | ELK input + `assessRouteQuality` + `interconnectionLayout` shape on scene fixtures |
+| `layout.interconnection.test.ts` | `shared/diagram-renderer` | ELK input + layout DTO `containers[]` + `assessRouteQuality`; Stedin scenes + nested-ring |
+| `ibd-route.test.ts` | `shared/diagram-renderer` | Orthogonal endpoint snap; container-offset selection for nested ports |
 | `drawing.interconnection.test.ts` | `shared/diagram-renderer` | Edge paths resolve from layout DTO without attribute fallback |
 | `route-quality.test.ts` | `shared/diagram-renderer` | Detached endpoints, bounds, node-boundary fallback detection |
+| `modelFetcher.test.ts` | `vscode` | `interconnectionScene` forwarded from LSP result to webview update message |
+| `interconnection_elk` (unit) | `semantic_core` | Rust `build_elk_graph_from_scene` structural parity vs TS ELK input goldens |
+| `interconnection_elk_svg_from_scene_fixture` | `server` | CLI/API interconnection SVG from `interconnectionScene` (no ibd heuristic fallback) |
+| `interconnection_elk_layout_matches_typescript_golden_when_present` | `server` | Rust ELK.js layout positions within ±2px of TS goldens (when `*-elk-layout.json` present) |
 | `view_expose_stedin_interconnection` | `semantic_core` | Semantic scoping, connector invariants, scene export (skipped if Stedin repo absent) |
 | `stedin.visualization.test.ts` | `vscode` | LSP scene + `exportInterconnectionPipeline` route summary (optional soak; requires Stedin workspace) |
 
-Local pipeline debug: `node shared/diagram-renderer/scripts/diagnose-stedin-scene.mjs [scene.json]`.
+Local pipeline debug: `sysml.debug.exportInterconnectionPipeline` in VS Code, or `npm test` in `shared/diagram-renderer` against scene fixtures.
 
-### Deferred (next plans)
+Regenerate ELK input goldens: `UPDATE_ELK_FIXTURES=1 npm test -- layout.interconnection` in `shared/diagram-renderer`.  
+Regenerate layout position goldens: `UPDATE_LAYOUT_FIXTURES=1 npm test -- layout.interconnection` in `shared/diagram-renderer`.
 
-- **Phase 4 remainder** — Webview diagnostics panel for `scene.diagnostics` and layout warnings; container boxes in `InterconnectionLayoutDto`.
-- **Server native SVG** — [diagrams.rs](../crates/server/src/diagrams.rs) `build_interconnection_elk_source` still uses raw `ibd`; align with `interconnectionScene` or document as CLI-only parity path.
-- **Backend ELK** — Keep production layout in ELK.js; optional parity tests via [elk_layout.rs](../crates/server/src/elk_layout.rs) only.
+### Remainder completed (2026-06-12)
+
+- **Layout DTO containers** — `InterconnectionLayoutDto.containers[]` populated during ELK visit; [drawing.ts](../shared/diagram-renderer/src/render/drawing.ts) `drawInterconnectionContainers` reads layout only (legacy `packageContainerGroups` fallback for non-canonical tests).
+- **Interconnection typing** — `InterconnectionPreparedView` / `InterconnectionPreparedNode` / `Port` / `Edge` in [types.ts](../shared/diagram-renderer/src/prepare/types.ts); [interconnection-scene.ts](../shared/diagram-renderer/src/prepare/interconnection-scene.ts) returns typed view; layout path uses `asInterconnectionPrepared`.
+- **Server native SVG** — [diagrams.rs](../crates/server/src/diagrams.rs) `build_interconnection_elk_source` requires `interconnectionScene` and calls [interconnection_elk.rs](../crates/semantic_core/src/semantic/interconnection_elk.rs) `build_elk_graph_from_scene`; ELK options aligned with TS.
+- **ELK input parity** — TS `buildInterconnectionElkGraphInput` + Rust `build_elk_graph_from_scene` + `*-elk-input.json` goldens.
+- **Layout parity (optional gate)** — Rust `layout_elk_graph` vs TS positions on scene fixtures when `*-elk-layout.json` goldens exist.
+
+### Out of scope / optional future
+
+- **Diagnostics UI** — Not planned; `scene.diagnostics` and layout warnings may surface later via banner or LSP Problems only.
+- **Moving production layout to Rust** — VS Code/webview keeps ELK.js; Rust ELK is for CLI SVG and parity tests via [elk_layout.rs](../crates/server/src/elk_layout.rs).
 
 ---
 
 ## Executive Summary
 
-The current IBD / Interconnection View pipeline has accumulated enough tactical fixes that it is no longer a reliable architecture. The visible symptoms in `systemContext` are connector routes that appear to run through unrelated areas, attach to surprising sides of parts, or change shape after small fixes. The deeper issue is not only ELK.js routing. It is that semantic ownership, endpoint identity, view scoping, port identity, port side selection, container hierarchy, layout construction, and SVG drawing are all partially inferred in multiple places.
+> **Update (2026-06-12):** The VS Code interconnection path now follows the target architecture below (canonical `InterconnectionSceneDto`, thin prepare, `InterconnectionLayoutDto` drawing). The remainder of this document records the pre-migration analysis and migration plan for context.
+
+The IBD / Interconnection View pipeline had accumulated enough tactical fixes that it was no longer a reliable architecture. The visible symptoms in `systemContext` are connector routes that appear to run through unrelated areas, attach to surprising sides of parts, or change shape after small fixes. The deeper issue is not only ELK.js routing. It is that semantic ownership, endpoint identity, view scoping, port identity, port side selection, container hierarchy, layout construction, and SVG drawing are all partially inferred in multiple places.
 
 The most important recommendation is to make the backend produce a canonical, typed interconnection scene and make the frontend a mostly dumb renderer. The frontend should not be responsible for resolving connector endpoint owners, guessing whether a connector target is a nested part or a container, deciding SysML endpoint identity from suffixes, or repairing ELK coordinate spaces after the fact.
 
@@ -52,10 +74,10 @@ The pipeline is roughly:
 1. Rust semantic graph construction builds the workspace semantic graph.
 2. Rust IBD extraction builds `IbdDataDto` in [crates/semantic_core/src/semantic/ibd.rs](../crates/semantic_core/src/semantic/ibd.rs).
 3. Rust visualization workspace selection evaluates SysML views and scopes IBD payloads in [crates/semantic_core/src/semantic/visualization_workspace.rs](../crates/semantic_core/src/semantic/visualization_workspace.rs).
-4. The VS Code extension fetches visualization DTOs in [vscode/src/visualization/modelFetcher.ts](../vscode/src/visualization/modelFetcher.ts).
-5. The webview passes the DTO almost unchanged through [vscode/src/visualization/dtoAdapter.ts](../vscode/src/visualization/dtoAdapter.ts).
-6. The shared renderer normalizes DTOs in [shared/diagram-renderer/src/prepare/normalize-payload.ts](../shared/diagram-renderer/src/prepare/normalize-payload.ts).
-7. Interconnection preparation maps raw IBD objects into `PreparedNode` / `PreparedEdge` in [shared/diagram-renderer/src/prepare/interconnection.ts](../shared/diagram-renderer/src/prepare/interconnection.ts).
+4. The VS Code extension fetches visualization DTOs (including `interconnectionScene`) in [vscode/src/visualization/modelFetcher.ts](../vscode/src/visualization/modelFetcher.ts).
+5. The webview passes the update message through [vscode/src/visualization/dtoAdapter.ts](../vscode/src/visualization/dtoAdapter.ts) into the shared renderer.
+6. For interconnection views, [shared/diagram-renderer/src/prepare/interconnection.ts](../shared/diagram-renderer/src/prepare/interconnection.ts) requires `interconnectionScene`; [normalize-payload.ts](../shared/diagram-renderer/src/prepare/normalize-payload.ts) no longer rebuilds ibd scope for this view.
+7. Interconnection preparation adapts `InterconnectionSceneDto` into `PreparedNode` / `PreparedEdge` in [interconnection-scene.ts](../shared/diagram-renderer/src/prepare/interconnection-scene.ts).
 8. Layout builds a compound ELK graph, infers ports and port sides, invokes ELK.js, converts coordinates, and stores route metadata in [shared/diagram-renderer/src/render/layout.ts](../shared/diagram-renderer/src/render/layout.ts).
 9. Route correction snaps and offsets ELK edge sections in [shared/diagram-renderer/src/render/ibd-route.ts](../shared/diagram-renderer/src/render/ibd-route.ts).
 10. Drawing emits SVG nodes, ports, containers, and paths in [shared/diagram-renderer/src/render/drawing.ts](../shared/diagram-renderer/src/render/drawing.ts).
@@ -291,39 +313,35 @@ Goal: turn `prepareInterconnection` into a mechanical adapter.
 - Stop frontend root-view selection when `selectedView` is explicit.
 - Define typed `InterconnectionPreparedNode`, `InterconnectionPreparedPort`, and `InterconnectionPreparedEdge` instead of open `attributes`.
 
-### Phase 3: Isolate ELK Integration
+### Phase 3: Isolate ELK Integration — **done (VS Code path)**
 
 Goal: make layout deterministic and testable.
 
-- Create a dedicated layout contract with canonical nodes, ports, edges, and containers.
-- Keep all ELK coordinate conversion in one file.
-- Remove candidate offset guessing from route rendering.
-- Make ELK edge coordinate mode explicit and covered by tests.
-- Add snapshot tests for ELK input graph on representative diagrams.
-- Consider using backend `crates/server/src/elk_layout.rs` for parity/CLI tests, but do not maintain two divergent production layout paths.
+- Dedicated layout contract: `InterconnectionLayoutDto` built during ELK layout.
+- ELK coordinate conversion isolated in [layout.ts](../shared/diagram-renderer/src/render/layout.ts) and [ibd-route.ts](../shared/diagram-renderer/src/render/ibd-route.ts).
+- `edgeCoords: ROOT` plus a small set of layout offsets (`edgeOwnerOffset`, `lcaOffset`) chosen by port-center fit — not semantic string guessing. Required for routes to nested ports inside compound ELK nodes.
+- Snapshot / route-quality tests on scene fixtures (Stedin, nested-ring, two-part chain).
+- Backend `elk_layout.rs` remains optional parity only; production layout stays in ELK.js.
 
-### Phase 4: Draw a Resolved Scene
+### Phase 4: Draw a Resolved Scene — **core done; remainder deferred**
 
 Goal: make the frontend renderer boring.
 
-- Drawing consumes `InterconnectionLayoutDto`.
-- SVG paths come from layout edge routes directly.
-- Port rectangles come from layout port anchors directly.
-- Containers come from layout container boxes directly.
-- No `_portAnchors`, `_portDrawOrder`, or semantic hidden fields inside generic node attributes.
+- **Done:** Drawing consumes `InterconnectionLayoutDto`; SVG paths and port rectangles come from layout DTO fields; no `_portAnchors` / `layoutRoutePoints` on node attributes.
+- **Deferred:** Container boxes in `InterconnectionLayoutDto` (still use `packageContainerGroups`); webview diagnostics panel for scene/layout warnings.
 
-### Phase 5: Delete Compatibility Heuristics
+### Phase 5: Delete Compatibility Heuristics — **done**
 
 Goal: pay down the debt after migration.
 
-Remove:
+Removed from the interconnection path:
 
 - suffix-based endpoint owner matching in TypeScript;
-- frontend connector owner inference;
-- frontend port side usage matching by labels;
-- root selection heuristics in `normalize-payload.ts`;
-- fallback route sections except as explicit error-state diagnostics;
-- open-ended semantic fields in `PreparedNode.attributes` for IBD.
+- frontend connector owner inference and ibd-only prepare ([interconnection-legacy.ts](../shared/diagram-renderer/src/prepare/interconnection-legacy.ts));
+- root selection heuristics in `normalize-payload.ts` for interconnection-view;
+- attribute fallbacks for ports/routes in drawing.
+
+**Still open:** open-ended `PreparedNode.attributes` for IBD (Phase 2 typing); heuristic port-side hints in layout for `sideHint: auto` (layout-only, not owner resolution).
 
 ## Concrete Near-Term Fixes
 
@@ -350,17 +368,20 @@ These are worth doing before the full migration:
 
 ## Proposed Success Criteria
 
-The rewrite should be considered successful when:
-
-- `systemContext` and `gridConnections` render without frontend semantic heuristics.
-- The backend DTO contains canonical IDs for all nodes, ports, and connector endpoints.
-- TypeScript no longer parses qualified SysML names to determine edge owners.
-- ELK input graph can be snapshot-tested independently of SVG.
-- SVG export can be audited mechanically for route sanity.
-- Rendering a selected `InterconnectionView` is deterministic across reloads.
+| Criterion | Status |
+|-----------|--------|
+| `systemContext` and `gridConnections` render without frontend semantic heuristics | **Met** (VS Code path) |
+| Backend DTO contains canonical IDs for nodes, ports, and connector endpoints | **Met** (`InterconnectionSceneDto`) |
+| TypeScript no longer parses qualified SysML names to determine edge owners | **Met** (prepare is mechanical) |
+| ELK input graph snapshot-tested independently of SVG | **Met** (scene fixtures + `buildInterconnectionElkGraph`) |
+| SVG export auditable for route sanity | **Met** (`assessRouteQuality`, pipeline export) |
+| Deterministic rendering across reloads | **Met** (canonical scene + layout DTO) |
+| Typed prepared nodes/ports/edges (no open `attributes` for IBD) | **Open** |
+| Server CLI SVG uses same scene contract | **Open** |
+| Webview shows scene/layout diagnostics | **Open** |
 
 ## Recommendation
 
-Do not keep patching individual `systemContext` route shapes. The current pipeline makes every local fix risky because the same semantic information is re-derived several times. The next serious investment should be a canonical backend-owned interconnection scene DTO, followed by a thinner renderer and an isolated ELK layout adapter.
+The canonical scene migration for VS Code is **complete enough to stop tactical route patching**. Further work should focus on deferred items (diagnostics UI, layout-DTO containers, server SVG parity, stricter TypeScript types) rather than re-expanding frontend semantic inference.
 
-The immediate tactical fixes can reduce the worst symptoms, but they should be treated as stabilizers, not the final architecture.
+If route quality regresses, use `sysml.debug.exportInterconnectionPipeline` and the scene fixtures before changing prepare or layout heuristics.

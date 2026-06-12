@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::semantic::ibd::{
     enrich_connector_endpoint_refs, qualified_name_to_dot, resolve_owner_part_qn_for_endpoint,
@@ -6,7 +6,7 @@ use crate::semantic::ibd::{
 };
 use crate::semantic::visualization_workspace::IbdScopeTrace;
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InterconnectionSceneViewDto {
     pub id: String,
@@ -16,7 +16,7 @@ pub struct InterconnectionSceneViewDto {
     pub root_ids: Vec<String>,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InterconnectionNodeDto {
     pub id: String,
@@ -30,7 +30,7 @@ pub struct InterconnectionNodeDto {
     pub parent_id: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InterconnectionPortDto {
     pub id: String,
@@ -44,7 +44,7 @@ pub struct InterconnectionPortDto {
     pub side_hint: String,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InterconnectionEdgeDto {
     pub id: String,
@@ -59,7 +59,7 @@ pub struct InterconnectionEdgeDto {
     pub label: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InterconnectionContainerDto {
     pub id: String,
@@ -69,7 +69,7 @@ pub struct InterconnectionContainerDto {
     pub depth: usize,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InterconnectionSceneDiagnosticDto {
     pub severity: String,
@@ -79,7 +79,7 @@ pub struct InterconnectionSceneDiagnosticDto {
     pub connector_id: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InterconnectionSceneDto {
     pub schema_version: u32,

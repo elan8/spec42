@@ -1,11 +1,11 @@
 import { normalizeEdgeKind } from "../graph-normalization";
 import { isDefinitionKind, isReferenceKind } from "../node-notation";
 import type {
+  InterconnectionPreparedEdge,
+  InterconnectionPreparedNode,
+  InterconnectionPreparedView,
   InterconnectionSceneDto,
   InterconnectionScenePortDto,
-  PreparedEdge,
-  PreparedNode,
-  PreparedView,
   VisualizationPayload,
 } from "./types";
 import { asString } from "./util";
@@ -35,9 +35,9 @@ function mapPortDetail(port: InterconnectionScenePortDto) {
 export function prepareInterconnectionScene(
   scene: InterconnectionSceneDto,
   visualization: VisualizationPayload,
-): PreparedView {
+): InterconnectionPreparedView {
   const nodeIds = new Set(scene.nodes.map((node) => node.id));
-  const nodes: PreparedNode[] = scene.nodes.map((node) => {
+  const nodes: InterconnectionPreparedNode[] = scene.nodes.map((node) => {
     const nodePorts = portsForNode(node.id, scene.ports);
     const portDetails = nodePorts.map(mapPortDetail);
     return {
@@ -75,7 +75,7 @@ export function prepareInterconnectionScene(
     nodeIds.add(container.id);
   }
 
-  const edges: PreparedEdge[] = scene.edges
+  const edges: InterconnectionPreparedEdge[] = scene.edges
     .filter((edge) => nodeIds.has(edge.sourceNodeId) && nodeIds.has(edge.targetNodeId))
     .map((edge) => ({
       id: edge.id,

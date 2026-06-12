@@ -1,10 +1,10 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { prepareViewData } from "../prepare";
-import { buildInterconnectionElkGraph } from "./interconnection-layout";
+import { buildInterconnectionElkGraph, buildInterconnectionElkGraphInput } from "./interconnection-layout";
 import { layoutInterconnectionPrepared, layoutPrepared } from "./layout";
 import {
   assertNoDetachedEndpoints,
@@ -30,9 +30,77 @@ function prepareStedinSceneFixture(name: string) {
 }
 
 // Regenerate fixtures: cargo test -p semantic_core --test view_expose_stedin_interconnection export_stedin -- --nocapture
-// Local pipeline debug: node shared/diagram-renderer/scripts/diagnose-stedin-scene.mjs
+// Regenerate ELK input goldens: UPDATE_ELK_FIXTURES=1 npm test -- layout.interconnection
+
+function maybeWriteElkGolden(fixtureBaseName: string, payload: unknown): void {
+  if (process.env.UPDATE_ELK_FIXTURES !== "1") {
+    return;
+  }
+  const prepared = prepareViewData(payload);
+  const elkInput = buildInterconnectionElkGraphInput(prepared);
+  writeFileSync(
+    join(fixtureDir, `${fixtureBaseName}-elk-input.json`),
+    `${JSON.stringify(elkInput, null, 2)}\n`,
+    "utf8",
+  );
+}
+
+async function maybeWriteLayoutGolden(fixtureBaseName: string, payload: unknown): Promise<void> {
+  if (process.env.UPDATE_LAYOUT_FIXTURES !== "1") {
+    return;
+  }
+  const prepared = prepareViewData(payload);
+  const layout = await layoutPrepared(prepared);
+  const positions = (layout.interconnectionLayout?.nodes ?? []).map((node) => ({
+    id: node.id,
+    x: node.x,
+    y: node.y,
+    width: node.width,
+    height: node.height,
+  }));
+  writeFileSync(
+    join(fixtureDir, `${fixtureBaseName}-elk-layout.json`),
+    `${JSON.stringify(positions, null, 2)}\n`,
+    "utf8",
+  );
+}
+
+function edgeSignatures(graph: Record<string, unknown>): Array<[string, string, string]> {
+  const edges = Array.isArray(graph.edges) ? graph.edges : [];
+  return edges.map((edge) => {
+    const record = edge as { id?: string; sources?: string[]; targets?: string[] };
+    return [
+      String(record.id ?? ""),
+      String(record.sources?.[0] ?? ""),
+      String(record.targets?.[0] ?? ""),
+    ];
+  });
+}
 
 describe("interconnection layout fixtures", () => {
+  it("exports ELK input golden fixtures when UPDATE_ELK_FIXTURES=1", () => {
+    maybeWriteElkGolden("scene-two-part-chain", loadFixture("scene-two-part-chain.json"));
+    maybeWriteElkGolden("nested-ring-minimal", loadFixture("nested-ring-minimal.json"));
+    expect(true).toBe(true);
+  });
+
+  it("exports ELK layout position golden fixtures when UPDATE_LAYOUT_FIXTURES=1", async () => {
+    await maybeWriteLayoutGolden("scene-two-part-chain", loadFixture("scene-two-part-chain.json"));
+    await maybeWriteLayoutGolden("nested-ring-minimal", loadFixture("nested-ring-minimal.json"));
+    expect(true).toBe(true);
+  });
+
+  it("matches ELK input golden for nested ring when present", () => {
+    const fixturePath = join(fixtureDir, "nested-ring-minimal-elk-input.json");
+    if (!existsSync(fixturePath)) {
+      return;
+    }
+    const golden = JSON.parse(readFileSync(fixturePath, "utf8")) as Record<string, unknown>;
+    const prepared = prepareViewData(loadFixture("nested-ring-minimal.json"));
+    const elkInput = buildInterconnectionElkGraphInput(prepared);
+    expect(edgeSignatures(elkInput)).toEqual(edgeSignatures(golden));
+  });
+
   it("snapshots ELK input graph for canonical scene fixture", () => {
     const prepared = prepareViewData(loadFixture("scene-two-part-chain.json"));
     expect(prepared.meta?.canonicalScene).toBe(true);
@@ -81,6 +149,7 @@ describe("interconnection layout fixtures", () => {
   it("passes route quality checks for nested ring scene fixture", async () => {
     const prepared = prepareViewData(loadFixture("nested-ring-minimal.json"));
     const layout = await layoutPrepared(prepared);
+    expect(layout.interconnectionLayout?.containers.length).toBeGreaterThan(0);
     const report = assessRouteQuality(layout.edges, layout.nodes, { maxLengthRatio: 6 });
     expect(layout.edges).toHaveLength(1);
     expect(assertNoDetachedEndpoints(report), report.violations.join("; ")).toEqual([]);

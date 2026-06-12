@@ -627,8 +627,38 @@ export function drawInterconnectionContainers(
   prepared: PreparedView,
   nodes: LaidOutNode[],
   theme: DiagramTheme,
+  layoutDto?: InterconnectionLayoutDto,
 ): void {
-  if (prepared.nodes.some((node) => Boolean((node.attributes ?? {}).isSyntheticContainer))) return;
+  const layoutContainers = layoutDto?.containers ?? [];
+  if (layoutContainers.length > 0) {
+    const layer = root.append("g").attr("class", "ibd-containers");
+    for (const container of layoutContainers) {
+      const label = container.label;
+      const groupG = layer
+        .append("g")
+        .attr("class", "ibd-part ibd-container")
+        .attr("transform", `translate(${container.x},${container.y})`)
+        .attr("data-element-name", label);
+      groupG
+        .append("rect")
+        .attr("width", container.width)
+        .attr("height", container.height)
+        .attr("rx", 14)
+        .attr("fill", "none")
+        .attr("stroke", theme.nodeBorder)
+        .attr("stroke-width", 1.4)
+        .attr("stroke-dasharray", "6,4")
+        .attr("opacity", 0.7);
+      groupG
+        .append("text")
+        .attr("x", 12)
+        .attr("y", 20)
+        .attr("fill", theme.textSecondary)
+        .attr("font-size", 11)
+        .text(label);
+    }
+    return;
+  }
   const packageGroups = ((prepared.meta?.packageContainerGroups as unknown[]) || []) as Array<Record<string, unknown>>;
   if (packageGroups.length === 0) return;
   const nodeById = new Map(nodes.map((node) => [node.id, node]));

@@ -1,5 +1,5 @@
 import { prepareViewData } from "./prepare";
-import { buildInterconnectionElkGraph, layoutInterconnectionScene } from "./render/interconnection-layout";
+import { buildInterconnectionElkGraphInput, layoutInterconnectionScene } from "./render/interconnection-layout";
 import { summarizeRoutes } from "./render/route-quality";
 import type { UnknownRecord } from "./prepare/types";
 
@@ -15,7 +15,7 @@ export async function exportInterconnectionPipeline(
   payload: UnknownRecord,
 ): Promise<InterconnectionPipelineExport> {
   const prepared = prepareViewData({ ...payload, view: "interconnection-view" });
-  const elkInput = buildInterconnectionElkGraph(prepared);
+  const elkInput = buildInterconnectionElkGraphInput(prepared);
   let elkOutput: UnknownRecord | null = null;
   let routeSummary: Record<string, unknown> = { passed: false, violations: ["layout not run"] };
   try {
@@ -23,6 +23,7 @@ export async function exportInterconnectionPipeline(
     elkOutput = {
       nodes: layoutDto.nodes,
       edges: layoutDto.edges,
+      diagnostics: layoutDto.diagnostics,
     };
     routeSummary = summarizeRoutes(layout.edges, layout.nodes);
   } catch (error) {

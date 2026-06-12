@@ -1,8 +1,10 @@
 import type { InterconnectionLayoutDto, PreparedView } from "../prepare/types";
-import { buildInterconnectionElkGraph, layoutInterconnectionPrepared } from "./layout";
+import { buildInterconnectionElkGraph } from "./layout";
+import { buildInterconnectionElkGraphInput } from "./interconnection-elk-input";
+import { layoutInterconnectionPrepared } from "./layout";
 import type { LayoutResult } from "./types";
 
-export { buildInterconnectionElkGraph };
+export { buildInterconnectionElkGraph, buildInterconnectionElkGraphInput };
 
 export async function layoutInterconnectionScene(
   prepared: PreparedView,
@@ -11,6 +13,7 @@ export async function layoutInterconnectionScene(
   const layoutDto = layout.interconnectionLayout ?? {
     nodes: [],
     edges: [],
+    containers: [],
     diagnostics: ["interconnectionLayout missing for canonical scene"],
   };
   return { layout, layoutDto };

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "node:Demo.Source",
+    "x": 70,
+    "y": 70,
+    "width": 280,
+    "height": 140
+  },
+  {
+    "id": "node:Demo.Target",
+    "x": 590,
+    "y": 70,
+    "width": 280,
+    "height": 140
+  }
+]

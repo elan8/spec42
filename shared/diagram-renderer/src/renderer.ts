@@ -130,7 +130,7 @@ export async function renderVisualization(
       if (shouldDrawIbdViewFrame(prepared)) {
         drawIbdViewFrame(root, prepared, contentBounds(layout), theme);
       }
-      drawInterconnectionContainers(root, prepared, layout.nodes, theme);
+      drawInterconnectionContainers(root, prepared, layout.nodes, theme, layout.interconnectionLayout);
       drawNodes(root, layout.nodes, options, isInterconnectionView, theme, layout.interconnectionLayout);
       drawEdges(root, layout.edges, isInterconnectionView, theme, layout.interconnectionLayout);
     } else {
