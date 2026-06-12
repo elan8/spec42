@@ -156,6 +156,7 @@ pub(crate) fn build_sysml_visualization_response(
         sequence_diagrams: None,
         state_machines: None,
         ibd: None,
+        interconnection_scene: None,
         stats: Some(SysmlModelStatsDto {
             total_elements: 0,
             resolved_elements: 0,

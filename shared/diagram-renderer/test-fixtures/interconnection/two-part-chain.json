@@ -1,0 +1,54 @@
+{
+  "view": "interconnection-view",
+  "ibd": {
+    "parts": [
+      {
+        "id": "source",
+        "nodeId": "Demo.Source",
+        "name": "Source",
+        "qualifiedName": "Demo.Source",
+        "type": "part"
+      },
+      {
+        "id": "target",
+        "nodeId": "Demo.Target",
+        "name": "Target",
+        "qualifiedName": "Demo.Target",
+        "type": "part"
+      }
+    ],
+    "ports": [
+      {
+        "id": "Demo.Source.out",
+        "portId": "Demo.Source.out",
+        "name": "out",
+        "parentId": "Demo.Source",
+        "direction": "out",
+        "portSide": "right"
+      },
+      {
+        "id": "Demo.Target.in",
+        "portId": "Demo.Target.in",
+        "name": "in",
+        "parentId": "Demo.Target",
+        "direction": "in",
+        "portSide": "left"
+      }
+    ],
+    "connectors": [
+      {
+        "id": "link",
+        "sourceId": "Demo.Source.out",
+        "targetId": "Demo.Target.in",
+        "sourcePartId": "Demo.Source",
+        "targetPartId": "Demo.Target",
+        "sourcePortId": "Demo.Source.out",
+        "targetPortId": "Demo.Target.in",
+        "type": "connection"
+      }
+    ],
+    "containerGroups": [],
+    "packageContainerGroups": [],
+    "rootCandidates": []
+  }
+}

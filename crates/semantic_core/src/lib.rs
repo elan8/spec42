@@ -25,6 +25,9 @@ pub use semantic::extracted_model::extract_activity_diagrams;
 pub use semantic::graph::{PendingExpressionRelationship, PendingRelationship, SemanticGraph};
 pub use semantic::graph_builder::build_graph_from_doc;
 pub use semantic::ibd::{build_ibd_for_uri, finalize_merged_ibd_connectors, merge_ibd_payloads};
+pub use semantic::interconnection_scene::{
+    build_interconnection_scene, InterconnectionSceneDto,
+};
 pub use semantic::import_resolution::{
     resolve_imported_node_ids_for_simple_name, resolve_type_reference_targets,
 };

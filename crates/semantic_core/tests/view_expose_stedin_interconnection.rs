@@ -1,10 +1,10 @@
 use std::path::Path;
 
 use semantic_core::{
-    build_ibd_for_uri, build_semantic_graph_from_documents, build_view_catalog,
-    build_workspace_graph_dto_for_uris, evaluate_views, finalize_merged_ibd_connectors,
-    merge_ibd_payloads, project_ids_for_renderer, select_interconnection_ibd_scope, SysmlDocument,
-    SysmlDocumentSourceKind,
+    build_ibd_for_uri, build_interconnection_scene, build_semantic_graph_from_documents,
+    build_view_catalog, build_workspace_graph_dto_for_uris, evaluate_views,
+    finalize_merged_ibd_connectors, merge_ibd_payloads, project_ids_for_renderer,
+    select_interconnection_ibd_scope, SysmlDocument, SysmlDocumentSourceKind,
 };
 
 #[test]
@@ -259,4 +259,27 @@ fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
             connector
         );
     }
+
+    let scene = build_interconnection_scene(
+        &system_ibd,
+        &view.id,
+        &view.name,
+        &["Stedin.architecture".to_string()],
+        None,
+    );
+    assert_eq!(scene.schema_version, 1);
+    assert!(
+        scene.edges.len() >= expected_paths.len(),
+        "scene should include all systemContext connectors, got {}",
+        scene.edges.len()
+    );
+    assert!(
+        scene.edges.iter().any(|edge| {
+            edge.target_node_id.ends_with("ringSegmentBtoC")
+                || edge.semantic_id
+                    .as_deref()
+                    .is_some_and(|id| id.contains("ringSegmentBtoC.a"))
+        }),
+        "scene should route nested ring segment endpoints to the nested owner"
+    );
 }

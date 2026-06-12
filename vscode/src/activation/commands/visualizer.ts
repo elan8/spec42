@@ -501,6 +501,28 @@ export function registerVisualizerCommands(
     ),
 
     vscode.commands.registerCommand(
+      "sysml.debug.exportInterconnectionPipeline",
+      async (
+        workspaceRootUri: string,
+        view: string,
+        selectedView?: string
+      ) => {
+        const visualization = await lspModelProvider.getVisualization(
+          workspaceRootUri,
+          view,
+          selectedView
+        );
+        const { exportInterconnectionPipeline } = await import(
+          "@spec42/diagram-renderer/pipeline-export"
+        );
+        return exportInterconnectionPipeline({
+          ...visualization,
+          view,
+        } as Record<string, unknown>);
+      }
+    ),
+
+    vscode.commands.registerCommand(
       "sysml.debug.seedVisualizerFromLspForTests",
       async (
         workspaceRootUri: string,

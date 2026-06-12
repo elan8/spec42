@@ -714,7 +714,10 @@ function pathFromSimpleSection(section: EdgeSection | undefined): string | null 
 }
 
 function pathForIbdEdge(edge: LaidOutEdge): string | null {
-  const points = resolveIbdRoutePoints(edge);
+  const layoutRoutePoints = (edge.attributes as Record<string, unknown> | undefined)?.layoutRoutePoints;
+  const points = Array.isArray(layoutRoutePoints) && layoutRoutePoints.length >= 2
+    ? layoutRoutePoints as Array<{ x: number; y: number }>
+    : resolveIbdRoutePoints(edge);
   if (!points || points.length < 2) return null;
   return pointsToPathD(points);
 }

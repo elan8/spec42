@@ -1,0 +1,58 @@
+{
+  "view": "interconnection-view",
+  "interconnectionScene": {
+    "schemaVersion": 1,
+    "view": {
+      "id": "fixture-two-part",
+      "name": "TwoPartChain",
+      "type": "InterconnectionView",
+      "rootIds": []
+    },
+    "nodes": [
+      {
+        "id": "node:Demo.Source",
+        "semanticId": "Demo.Source",
+        "qualifiedName": "Demo.Source",
+        "name": "Source",
+        "kind": "part"
+      },
+      {
+        "id": "node:Demo.Target",
+        "semanticId": "Demo.Target",
+        "qualifiedName": "Demo.Target",
+        "name": "Target",
+        "kind": "part"
+      }
+    ],
+    "ports": [
+      {
+        "id": "port:Demo.Source.out",
+        "semanticId": "Demo.Source.out",
+        "ownerNodeId": "node:Demo.Source",
+        "name": "out",
+        "direction": "out",
+        "sideHint": "east"
+      },
+      {
+        "id": "port:Demo.Target.in",
+        "semanticId": "Demo.Target.in",
+        "ownerNodeId": "node:Demo.Target",
+        "name": "in",
+        "direction": "in",
+        "sideHint": "west"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge:Demo.Source.out->Demo.Target.in:0",
+        "kind": "connection",
+        "sourcePortId": "port:Demo.Source.out",
+        "targetPortId": "port:Demo.Target.in",
+        "sourceNodeId": "node:Demo.Source",
+        "targetNodeId": "node:Demo.Target"
+      }
+    ],
+    "containers": [],
+    "diagnostics": []
+  }
+}

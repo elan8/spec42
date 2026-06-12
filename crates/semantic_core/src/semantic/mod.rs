@@ -9,6 +9,7 @@ pub mod extracted_model;
 pub mod graph;
 pub mod graph_builder;
 pub mod ibd;
+pub mod interconnection_scene;
 pub mod import_resolution;
 pub mod library_loader;
 pub mod model;

@@ -235,6 +235,12 @@ describe("Stedin Interconnection Visualization", () => {
         for (const [sourceSuffix, targetSuffix] of expectedPaths) {
             assertConnectorEndpoint(snapshotConnectors, sourceSuffix, targetSuffix);
         }
+        const scene = (snapshot?.interconnectionScene as { schemaVersion?: number; edges?: unknown[] } | undefined);
+        assert.equal(scene?.schemaVersion, 1, "expected interconnectionScene schemaVersion 1");
+        assert.ok(
+            (scene?.edges?.length ?? 0) >= expectedPaths.length,
+            `expected interconnectionScene edges for systemContext, got ${scene?.edges?.length ?? 0}`
+        );
         await vscode.commands.executeCommand("sysml.showVisualizer");
         await waitForVisualizerOpen(stedinTimeoutMs);
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");

@@ -414,7 +414,7 @@ fn endpoint_matches_part(endpoint: &str, part_qn_dot: &str) -> bool {
     endpoint == part_qn_dot || endpoint.starts_with(&format!("{part_qn_dot}."))
 }
 
-fn resolve_owner_part_qn_for_endpoint(endpoint: &str, parts: &[IbdPartDto]) -> Option<String> {
+pub(crate) fn resolve_owner_part_qn_for_endpoint(endpoint: &str, parts: &[IbdPartDto]) -> Option<String> {
     let endpoint = qualified_name_to_dot(endpoint);
     parts
         .iter()
@@ -423,7 +423,7 @@ fn resolve_owner_part_qn_for_endpoint(endpoint: &str, parts: &[IbdPartDto]) -> O
         .map(|part| part.qualified_name.clone())
 }
 
-fn resolve_port_id_for_endpoint(endpoint: &str, ports: &[IbdPortDto]) -> Option<String> {
+pub(crate) fn resolve_port_id_for_endpoint(endpoint: &str, ports: &[IbdPortDto]) -> Option<String> {
     let endpoint_dot = qualified_name_to_dot(endpoint);
     ports
         .iter()
@@ -943,7 +943,7 @@ fn remap_connectors_to_typed_instances(
     dedupe_connectors(expanded)
 }
 
-fn enrich_connector_endpoint_refs(
+pub(crate) fn enrich_connector_endpoint_refs(
     connectors: &mut [IbdConnectorDto],
     parts: &[IbdPartDto],
     ports: &[IbdPortDto],

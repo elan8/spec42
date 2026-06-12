@@ -1206,6 +1206,7 @@ mod tests {
             sequence_diagrams: None,
             state_machines: None,
             ibd: None,
+            interconnection_scene: None,
             stats: None,
         };
         let svg = native_svg(&payload, "general-view");

@@ -1,4 +1,4 @@
-import type { PreparedNode } from "../prepare";
+import type { InterconnectionLayoutDto, PreparedNode } from "../prepare/types";
 import type { DiagramThemeOverrides } from "../theme";
 import { collectCompartments } from "../sysml-node-builder";
 
@@ -47,6 +47,7 @@ export interface LaidOutEdge {
 export interface LayoutResult {
   nodes: LaidOutNode[];
   edges: LaidOutEdge[];
+  interconnectionLayout?: InterconnectionLayoutDto;
 }
 
 export interface ContentBounds {

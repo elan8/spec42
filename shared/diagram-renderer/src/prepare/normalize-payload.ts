@@ -233,7 +233,7 @@ export function normalizeVisualizationPayload(data: Record<string, unknown> | nu
                 const explicitSelection = (typeof data.selectedIbdRoot === 'string' && data.selectedIbdRoot.trim().length > 0)
                     ? data.selectedIbdRoot
                     : null;
-                const allowImplicitIbdRootSelection = !data.selectedView;
+                const allowImplicitIbdRootSelection = !data.selectedView && !data.interconnectionScene;
                 const selectedRoot = explicitSelection && rootViews[explicitSelection]
                     ? explicitSelection
                     : (allowImplicitIbdRootSelection && ibd.defaultRoot && availableRoots.includes(ibd.defaultRoot) && rootViews[ibd.defaultRoot]

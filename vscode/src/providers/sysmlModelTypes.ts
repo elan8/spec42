@@ -149,6 +149,7 @@ export interface IbdRootViewDTO {
 }
 
 export interface IbdDataDTO {
+  schemaVersion?: number;
   parts: IbdPartDTO[];
   ports: IbdPortDTO[];
   connectors: IbdConnectorDTO[];
@@ -157,6 +158,69 @@ export interface IbdDataDTO {
   rootCandidates: string[];
   rootViews?: Record<string, IbdRootViewDTO>;
   defaultRoot?: string;
+}
+
+export interface InterconnectionSceneViewDTO {
+  id: string;
+  name: string;
+  type: string;
+  rootIds: string[];
+}
+
+export interface InterconnectionSceneNodeDTO {
+  id: string;
+  semanticId: string;
+  qualifiedName: string;
+  name: string;
+  kind: string;
+  typeName?: string;
+  parentId?: string;
+}
+
+export interface InterconnectionScenePortDTO {
+  id: string;
+  semanticId: string;
+  ownerNodeId: string;
+  name: string;
+  typeName?: string;
+  direction?: string;
+  sideHint: string;
+}
+
+export interface InterconnectionSceneEdgeDTO {
+  id: string;
+  kind: string;
+  sourcePortId: string;
+  targetPortId: string;
+  sourceNodeId: string;
+  targetNodeId: string;
+  semanticId?: string;
+  label?: string;
+}
+
+export interface InterconnectionSceneContainerDTO {
+  id: string;
+  label: string;
+  parentId?: string;
+  memberNodeIds: string[];
+  depth: number;
+}
+
+export interface InterconnectionSceneDiagnosticDTO {
+  severity: string;
+  code: string;
+  message: string;
+  connectorId?: string;
+}
+
+export interface InterconnectionSceneDTO {
+  schemaVersion: number;
+  view: InterconnectionSceneViewDTO;
+  nodes: InterconnectionSceneNodeDTO[];
+  ports: InterconnectionScenePortDTO[];
+  edges: InterconnectionSceneEdgeDTO[];
+  containers: InterconnectionSceneContainerDTO[];
+  diagnostics: InterconnectionSceneDiagnosticDTO[];
 }
 
 export interface SysMLModelResult {
@@ -200,6 +264,7 @@ export interface SysMLVisualizationResult {
   activityDiagrams?: ActivityDiagramDTO[];
   sequenceDiagrams?: SequenceDiagramDTO[];
   ibd?: IbdDataDTO;
+  interconnectionScene?: InterconnectionSceneDTO;
   stats?: SysMLModelStatsDTO;
 }
 

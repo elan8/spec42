@@ -22,6 +22,7 @@ use crate::semantic::extracted_model::{
 use crate::semantic::ibd::{
     self, IbdDataDto, IbdPackageContainerGroupDto, IbdPartDto, IbdRootViewDto,
 };
+use crate::semantic::interconnection_scene::build_interconnection_scene;
 use crate::semantic::model_projection::{self, canonical_general_view_graph};
 use crate::semantic::sequence_views::{
     build_workspace_sequence_diagrams, filter_sequence_diagrams_by_exposed_ids,
@@ -1299,6 +1300,7 @@ pub fn build_sysml_visualization_workspace(
             sequence_diagrams: Some(Vec::new()),
             state_machines: Some(Vec::new()),
             ibd: Some(filter_ibd_by_visible_ids(&full_ibd, &HashSet::new())),
+            interconnection_scene: None,
             stats: Some(SysmlModelStatsDto {
                 total_elements: 0,
                 resolved_elements: 0,
@@ -1380,6 +1382,7 @@ pub fn build_sysml_visualization_workspace(
             sequence_diagrams: Some(Vec::new()),
             state_machines: Some(Vec::new()),
             ibd: Some(filter_ibd_by_visible_ids(&full_ibd, &HashSet::new())),
+            interconnection_scene: None,
             stats: Some(SysmlModelStatsDto {
                 total_elements: 0,
                 resolved_elements: 0,
@@ -1415,6 +1418,7 @@ pub fn build_sysml_visualization_workspace(
             sequence_diagrams: Some(Vec::new()),
             state_machines: Some(Vec::new()),
             ibd: Some(filter_ibd_by_visible_ids(&full_ibd, &HashSet::new())),
+            interconnection_scene: None,
             stats: Some(SysmlModelStatsDto {
                 total_elements: 0,
                 resolved_elements: 0,
@@ -1454,6 +1458,7 @@ pub fn build_sysml_visualization_workspace(
     let selected_evaluated = evaluated_views
         .iter()
         .find(|evaluated| evaluated.id == selected_view_id);
+    let mut interconnection_scope_trace: Option<IbdScopeTrace> = None;
     let filtered_ibd = attach_ibd_package_container_groups(
         if resolved_view == "interconnection-view" {
             let (scoped, scope_trace) = select_interconnection_ibd_scope_with_trace(
@@ -1464,6 +1469,7 @@ pub fn build_sysml_visualization_workspace(
             if ibd_scope_trace_enabled() {
                 log_ibd_scope_trace(&scope_trace);
             }
+            interconnection_scope_trace = Some(scope_trace);
             scoped
         } else {
             filter_ibd_by_visible_ids(&full_ibd, &selected_ids)
@@ -1471,6 +1477,27 @@ pub fn build_sysml_visualization_workspace(
         &package_candidates,
         None,
     );
+    let interconnection_scene = if resolved_view == "interconnection-view" {
+        let root_ids = selected_evaluated
+            .map(|evaluated| {
+                evaluated
+                    .exposed_ids
+                    .iter()
+                    .map(|id| id.replace("::", "."))
+                    .collect::<Vec<_>>()
+            })
+            .filter(|ids| !ids.is_empty())
+            .unwrap_or_else(|| filtered_ibd.root_candidates.clone());
+        Some(build_interconnection_scene(
+            &filtered_ibd,
+            &selected_view_id,
+            selected_view_name.as_deref().unwrap_or(""),
+            &root_ids,
+            interconnection_scope_trace.as_ref(),
+        ))
+    } else {
+        None
+    };
     let activity_diagrams = projected_activity_diagrams
         .remove(selected_view_id.as_str())
         .unwrap_or_default();
@@ -1498,6 +1525,7 @@ pub fn build_sysml_visualization_workspace(
         sequence_diagrams: Some(sequence_diagrams),
         state_machines: Some(state_machines),
         ibd: Some(filtered_ibd),
+        interconnection_scene,
         stats: Some(SysmlModelStatsDto {
             total_elements: selected_graph.nodes.len() as u32,
             resolved_elements: 0,

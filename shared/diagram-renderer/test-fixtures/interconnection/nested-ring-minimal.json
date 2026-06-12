@@ -1,0 +1,61 @@
+{
+  "view": "interconnection-view",
+  "selectedView": "systemContext",
+  "ibd": {
+    "parts": [
+      {
+        "id": "ring",
+        "nodeId": "Grid.northSouthRing",
+        "name": "northSouthRing",
+        "qualifiedName": "Grid.northSouthRing",
+        "type": "part"
+      },
+      {
+        "id": "ringSegment",
+        "nodeId": "Grid.northSouthRing.ringSegmentBtoC",
+        "name": "ringSegmentBtoC",
+        "qualifiedName": "Grid.northSouthRing.ringSegmentBtoC",
+        "containerId": "Grid.northSouthRing",
+        "type": "part"
+      },
+      {
+        "id": "station",
+        "nodeId": "Grid.txStationB",
+        "name": "txStationB",
+        "qualifiedName": "Grid.txStationB",
+        "type": "part"
+      }
+    ],
+    "ports": [
+      {
+        "id": "Grid.northSouthRing.ringSegmentBtoC.a",
+        "portId": "Grid.northSouthRing.ringSegmentBtoC.a",
+        "name": "a",
+        "parentId": "Grid.northSouthRing.ringSegmentBtoC",
+        "direction": "in"
+      },
+      {
+        "id": "Grid.txStationB.mvConnection",
+        "portId": "Grid.txStationB.mvConnection",
+        "name": "mvConnection",
+        "parentId": "Grid.txStationB",
+        "direction": "out"
+      }
+    ],
+    "connectors": [
+      {
+        "id": "ring-feed",
+        "sourceId": "Grid.txStationB.mvConnection",
+        "targetId": "Grid.northSouthRing.ringSegmentBtoC.a",
+        "sourcePartId": "Grid.txStationB",
+        "targetPartId": "Grid.northSouthRing.ringSegmentBtoC",
+        "sourcePortId": "Grid.txStationB.mvConnection",
+        "targetPortId": "Grid.northSouthRing.ringSegmentBtoC.a",
+        "type": "connection"
+      }
+    ],
+    "containerGroups": [],
+    "packageContainerGroups": [],
+    "rootCandidates": ["Grid.northSouthRing"]
+  }
+}
