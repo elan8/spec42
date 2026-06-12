@@ -2,6 +2,38 @@
 
 Date: 2026-06-12
 
+## Progress (2026-06-12)
+
+Phases 0–2 are largely complete for Stedin `systemContext` and `gridConnections`. The CI contract is fixture-based route quality in `shared/diagram-renderer`, backed by Rust scene export tests when the Stedin workspace is present.
+
+### Landed
+
+- **`InterconnectionSceneDto`** — built in Rust ([interconnection_scene.rs](../crates/semantic_core/src/semantic/interconnection_scene.rs)), attached to LSP visualization payloads.
+- **Instance-centric scoping** — `normalize_ibd_to_instance_paths`, architecture-scope filtering, variant/alternative exclusion ([visualization_workspace.rs](../crates/semantic_core/src/semantic/visualization_workspace.rs)).
+- **Canonical prepare path** — [interconnection-scene.ts](../shared/diagram-renderer/src/prepare/interconnection-scene.ts); legacy fallback remains in [interconnection-legacy.ts](../shared/diagram-renderer/src/prepare/interconnection-legacy.ts).
+- **Layout fixes** — ELK node ID sanitization, `edgeCoords: ROOT` without nested offset guessing, canonical single-offset routing ([layout.ts](../shared/diagram-renderer/src/render/layout.ts), [ibd-route.ts](../shared/diagram-renderer/src/render/ibd-route.ts)).
+- **Debug export** — `sysml.debug.exportInterconnectionPipeline` (VS Code) and [pipeline-export.ts](../shared/diagram-renderer/src/pipeline-export.ts).
+- **Fixtures** — `stedin-system-context-scene.json`, `stedin-grid-connections-scene.json` (regenerate via `cargo test -p semantic_core --test view_expose_stedin_interconnection export_stedin -- --nocapture`).
+
+### CI contract (primary gate)
+
+| Test | Location | What it guards |
+|------|----------|----------------|
+| `layout.interconnection.test.ts` | `shared/diagram-renderer` | ELK input + `assessRouteQuality` on scene fixtures (two-part chain, Stedin systemContext, Stedin gridConnections) |
+| `route-quality.test.ts` | `shared/diagram-renderer` | Detached endpoints, bounds, node-boundary fallback detection |
+| `view_expose_stedin_interconnection` | `semantic_core` | Semantic scoping, connector invariants, scene export (skipped if Stedin repo absent) |
+| `stedin.visualization.test.ts` | `vscode` | LSP scene + `exportInterconnectionPipeline` route summary (optional soak; requires Stedin workspace) |
+
+Local pipeline debug: `node shared/diagram-renderer/scripts/diagnose-stedin-scene.mjs [scene.json]`.
+
+### Deferred (next plans)
+
+- **Phase 4** — Drawing consumes `InterconnectionLayoutDto` only; remove `_portAnchors` / `_portDrawOrder` from `PreparedNode.attributes`; webview diagnostics panel for `scene.diagnostics`.
+- **Phase 5** — Require `interconnectionScene` on all interconnection views; delete [interconnection-legacy.ts](../shared/diagram-renderer/src/prepare/interconnection-legacy.ts) and frontend root-selection heuristics in [normalize-payload.ts](../shared/diagram-renderer/src/prepare/normalize-payload.ts).
+- **Backend ELK** — Keep production layout in ELK.js; optional parity tests via [elk_layout.rs](../crates/server/src/elk_layout.rs) only.
+
+---
+
 ## Executive Summary
 
 The current IBD / Interconnection View pipeline has accumulated enough tactical fixes that it is no longer a reliable architecture. The visible symptoms in `systemContext` are connector routes that appear to run through unrelated areas, attach to surprising sides of parts, or change shape after small fixes. The deeper issue is not only ELK.js routing. It is that semantic ownership, endpoint identity, view scoping, port identity, port side selection, container hierarchy, layout construction, and SVG drawing are all partially inferred in multiple places.

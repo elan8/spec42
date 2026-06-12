@@ -82,6 +82,37 @@ function ibdConnectorDebug(snapshot: Record<string, unknown> | undefined): Recor
     };
 }
 
+type InterconnectionPipelineExport = {
+    routeSummary?: {
+        passed?: boolean;
+        violations?: string[];
+        violationCount?: number;
+    };
+};
+
+async function assertInterconnectionPipelineRouteQuality(
+    workspaceRootUri: string,
+    selectedView: string,
+    label: string
+): Promise<void> {
+    const report = await vscode.commands.executeCommand<InterconnectionPipelineExport>(
+        "sysml.debug.exportInterconnectionPipeline",
+        workspaceRootUri,
+        "interconnection-view",
+        selectedView
+    );
+    integrationTestLog(`stedin:${label}:pipelineExport`, {
+        passed: report?.routeSummary?.passed,
+        violationCount: report?.routeSummary?.violationCount,
+        violations: report?.routeSummary?.violations,
+    });
+    assert.equal(
+        report?.routeSummary?.passed,
+        true,
+        `expected ${label} route summary to pass, got violations: ${JSON.stringify(report?.routeSummary?.violations)}`
+    );
+}
+
 function assertConnectorEndpoint(
     connectors: IbdConnectorSnapshot[],
     sourceSuffix: string,
@@ -148,7 +179,20 @@ describe("Stedin Interconnection Visualization", () => {
             ibdConnectors: (snapshot?.ibd as { connectors?: unknown[] } | undefined)?.connectors?.length ?? 0,
             rootCandidates: (snapshot?.ibd as { rootCandidates?: unknown[] } | undefined)?.rootCandidates,
             defaultRoot: (snapshot?.ibd as { defaultRoot?: unknown } | undefined)?.defaultRoot,
+            interconnectionSceneEdges:
+                (snapshot?.interconnectionScene as { edges?: unknown[] } | undefined)?.edges?.length ?? 0,
         });
+        const gridScene = snapshot?.interconnectionScene as { schemaVersion?: number; edges?: unknown[] } | undefined;
+        assert.equal(gridScene?.schemaVersion, 1, "expected interconnectionScene schemaVersion 1 for gridConnections");
+        assert.ok(
+            (gridScene?.edges?.length ?? 0) >= 15,
+            `expected interconnectionScene edges for gridConnections, got ${gridScene?.edges?.length ?? 0}`
+        );
+        await assertInterconnectionPipelineRouteQuality(
+            workspaceFolder.uri.toString(),
+            GRID_CONNECTIONS_VIEW,
+            "gridConnections"
+        );
 
         await vscode.commands.executeCommand("sysml.showVisualizer");
         await waitForVisualizerOpen(stedinTimeoutMs);
@@ -240,6 +284,11 @@ describe("Stedin Interconnection Visualization", () => {
         assert.ok(
             (scene?.edges?.length ?? 0) >= expectedPaths.length,
             `expected interconnectionScene edges for systemContext, got ${scene?.edges?.length ?? 0}`
+        );
+        await assertInterconnectionPipelineRouteQuality(
+            workspaceFolder.uri.toString(),
+            SYSTEM_CONTEXT_VIEW,
+            "systemContext"
         );
         await vscode.commands.executeCommand("sysml.showVisualizer");
         await waitForVisualizerOpen(stedinTimeoutMs);

@@ -173,6 +173,24 @@ export function assessRouteQuality(
   };
 }
 
+export function detachedEndpointViolations(report: RouteQualityReport): string[] {
+  return report.edges
+    .filter((edge) => edge.detachedSource || edge.detachedTarget)
+    .map((edge) => `${edge.edgeId}: detached route endpoint`);
+}
+
+export function outOfBoundsViolations(report: RouteQualityReport): string[] {
+  return report.edges
+    .filter((edge) => edge.outsideBounds)
+    .map((edge) => `${edge.edgeId}: route outside content bounds`);
+}
+
+/** Returns detached-endpoint violations; empty when all endpoints snap to ports. */
+export const assertNoDetachedEndpoints = detachedEndpointViolations;
+
+/** Returns out-of-bounds violations; empty when routes stay inside the layout bounds. */
+export const assertWithinBounds = outOfBoundsViolations;
+
 export function summarizeRoutes(edges: LaidOutEdge[], nodes: LaidOutNode[]): Record<string, unknown> {
   const report = assessRouteQuality(edges, nodes);
   return {

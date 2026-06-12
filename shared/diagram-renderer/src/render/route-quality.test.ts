@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  assertNoDetachedEndpoints,
+  assertWithinBounds,
   assessRouteQuality,
   endpointDetached,
   manhattanDistance,
@@ -58,5 +60,36 @@ describe("route quality helpers", () => {
       { maxLengthRatio: 10 },
     );
     expect(report.violations.some((item) => item.includes("node-boundary fallback"))).toBe(true);
+  });
+
+  it("collects detached endpoint and out-of-bounds violations separately", () => {
+    const report = assessRouteQuality(
+      [
+        {
+          id: "e1",
+          source: "a",
+          target: "b",
+          label: "link",
+          attributes: {
+            _sourcePortCenter: { x: 0, y: 0 },
+            _targetPortCenter: { x: 100, y: 0 },
+          },
+          layout: {
+            sections: [
+              {
+                startPoint: { x: 50, y: 0 },
+                endPoint: { x: 100, y: 0 },
+              },
+            ],
+            edgeOwnerOffset: { x: 0, y: 0 },
+            lcaOffset: { x: 0, y: 0 },
+          },
+        },
+      ],
+      [{ id: "a", label: "A", kind: "part", x: 0, y: 0, width: 40, height: 40 }],
+      { maxLengthRatio: 10, maxDetachedDistance: 2 },
+    );
+    expect(assertNoDetachedEndpoints(report)).toEqual(["e1: detached route endpoint"]);
+    expect(assertWithinBounds(report)).toEqual([]);
   });
 });

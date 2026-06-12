@@ -547,6 +547,9 @@ fn filter_ibd_by_root_prefixes(ibd: &IbdDataDto, root_prefixes: &HashSet<String>
         if strict_part_expose {
             return matches_any_root(&connector.source_id) && matches_any_root(&connector.target_id);
         }
+        if architecture_scope.is_some() {
+            return true;
+        }
         matches_any_root(&connector.source_id) || matches_any_root(&connector.target_id)
     };
 
@@ -567,9 +570,10 @@ fn filter_ibd_by_root_prefixes(ibd: &IbdDataDto, root_prefixes: &HashSet<String>
         .ports
         .iter()
         .filter(|port| {
-            matches_any_root(&port.parent_id)
-                || part_ids.contains(port.parent_id.as_str())
-                || part_qualified_names.contains(port.parent_id.as_str())
+            endpoint_in_architecture_scope(&port.parent_id)
+                && (matches_any_root(&port.parent_id)
+                    || part_ids.contains(port.parent_id.as_str())
+                    || part_qualified_names.contains(port.parent_id.as_str()))
         })
         .cloned()
         .collect();
@@ -775,11 +779,14 @@ pub fn select_interconnection_ibd_scope_with_trace(
         &root_scoped_ibd.parts,
         &root_scoped_ibd.ports,
     );
+    let architecture_scoped = architecture_scope_prefix(&root_prefixes).is_some();
     if !root_scoped_ibd.parts.is_empty() || !root_scoped_ibd.connectors.is_empty() {
         let trace_result = trace("root_prefixes", &visible_scope_ibd, &root_scoped_ibd);
         return (root_scoped_ibd, trace_result);
     }
-    if !visible_scope_ibd.parts.is_empty() || !visible_scope_ibd.connectors.is_empty() {
+    if !architecture_scoped
+        && (!visible_scope_ibd.parts.is_empty() || !visible_scope_ibd.connectors.is_empty())
+    {
         let trace_result = trace("visible_ids_fallback", &visible_scope_ibd, &root_scoped_ibd);
         return (visible_scope_ibd, trace_result);
     }
