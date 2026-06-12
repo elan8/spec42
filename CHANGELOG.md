@@ -7,10 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.30.0] - 2026-06-12
+
+### Added
+
+- **Canonical interconnection pipeline** — Language server emits `interconnectionScene` (schema version 1) for Interconnection views; shared `@spec42/diagram-renderer` prepares and lays out scenes with ELK; VS Code and export paths consume the same pipeline.
+- **IBD and interconnection scope** — Merged workspace IBD, scoped interconnection filtering, package container groups, and diagram export improvements for internal block diagrams.
+- **Visualization performance** — Lazy single-view projection, workspace visualization artifact cache (shared by Model Explorer and visualizer), per-diagram response cache, and slimmer interconnection LSP payloads. Documented in [docs/engineering/STEDIN-PERFORMANCE-ANALYSIS.md](docs/engineering/STEDIN-PERFORMANCE-ANALYSIS.md) with `stedin_system_context_performance_report` integration test.
+- **Domain libraries bundled like stdlib** — Removed the `domain-libraries` git submodule. Elan8 domain libraries are embedded in the Spec42 server binary, materialized under the data directory on first use, and shown in the VS Code Library dashboard next to the standard library. Local dev auto-detects a sibling `../sysml-domain-libraries` checkout or uses `SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR`.
+- **Workspace lifecycle feedback** — Clear indexing/ready states for semantic queries; visualizer and Model Explorer respect lifecycle before building diagrams.
+- **Analysis typing and evaluation** — Richer analysis usage typing, inherited analysis results, and conformance-matrix updates for metadata and quantities.
+- **Diagnostics** — Engineering-units validation, SysML kind-compatibility checks, and improved reference resolution messaging.
+
 ### Changed
 
-- **Domain libraries bundled like stdlib** — Removed the `domain-libraries` git submodule. Elan8 domain libraries are embedded in the Spec42 server binary, materialized under the data directory on first use, and shown in the VS Code Library dashboard next to the standard library. Local dev auto-detects a sibling `../sysml-domain-libraries` checkout or uses `SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR`.
-- **Parser dependency** — Bumped `sysml-v2-parser` to **0.24.0** on [crates.io](https://crates.io/crates/sysml-v2-parser/0.24.0): `MetadataAnnotation` in constraint bodies; structured recovery for state `ref` and part-usage bind/ref brace bodies; case-body `ref :>>` and `ReturnRef.return_expression` (verdict spans from AST). Graph wires constraint-body metadata; verification reads `rawVerdictToken` from parsed return expressions.
+- **Parser dependency** — Bumped `sysml-v2-parser` to **0.25.2** on [crates.io](https://crates.io/crates/sysml-v2-parser): metadata in constraint bodies, structured recovery for state `ref` and part-usage bind/ref bodies, case-body `ref :>>` and verdict spans, expression classification, and related graph/diagnostic follow-through since 0.29.1.
+- **Interconnection visualization** — Legacy interconnection webview paths removed; layout, routing, and drawing consolidated in the shared renderer.
+- **LSP perf logging** — `backend:sysmlVisualizationRequest` includes `cacheHit`, `ibdMs`, `viewEvalMs`, and `sceneMs`.
+- **Release surface alignment** — Rust workspace, `spec42` server, VS Code extension, Zed extension, and GitHub Action examples aligned at `0.30.0`.
+
+### Fixed
+
+- **Visualization response cache** — Do not cache or serve incomplete `interconnection-view` responses (avoids stale empty scenes in integration tests and after fast view switches).
+- **Extension build** — Resolve `elkjs` when bundling `diagram-renderer` into the VS Code extension host.
+- **Interconnection integration tests** — Poll until `interconnectionScene` is ready before asserting drone/Stedin diagram invariants.
 
 ## [0.29.1] - 2026-06-09
 
@@ -597,6 +617,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.30.0]: https://github.com/elan8/spec42/releases/tag/v0.30.0
 [0.29.1]: https://github.com/elan8/spec42/releases/tag/v0.29.1
 [0.29.0]: https://github.com/elan8/spec42/releases/tag/v0.29.0
 [0.28.0]: https://github.com/elan8/spec42/releases/tag/v0.28.0

@@ -2,7 +2,7 @@
 
 Implementation notes for SysML v2-conformant view `expose` resolution (§7.6.6, §7.26.2).
 
-## Status (Spec42 0.29.1+)
+## Status (Spec42 0.30.0+)
 
 - **Done:** Semantic expose resolution via [`reference_resolution::resolve_expose_target`](../../crates/semantic_core/src/semantic/reference_resolution.rs) (feature chains, `::**` / `::*`, typing-aware recursive closure).
 - **Done:** `evaluate_views` uses `SemanticGraph` + DTO projection (`expand_structural_scope` for inherited definition members).
