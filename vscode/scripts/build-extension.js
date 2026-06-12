@@ -34,6 +34,14 @@ async function build() {
           diagramRendererSrc,
           "prepare.ts",
         ),
+        // pipeline-export pulls layout.ts; resolve via vscode's elkjs (npm ci in vscode/).
+        "elkjs/lib/elk.bundled.js": path.join(
+          rootDir,
+          "node_modules",
+          "elkjs",
+          "lib",
+          "elk.bundled.js",
+        ),
       },
       logLevel: "info",
     });
