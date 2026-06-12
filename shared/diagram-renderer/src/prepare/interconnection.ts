@@ -242,6 +242,23 @@ function portsForPart(ports: UnknownRecord[], part: UnknownRecord): Array<Record
     .filter((port) => Boolean(port.name));
 }
 
+function normalizedEndpoint(value: unknown): string {
+  return asString(value).replace(/::/g, ".").trim();
+}
+
+function firstEndpoint(...values: unknown[]): string {
+  for (const value of values) {
+    const endpoint = normalizedEndpoint(value);
+    if (endpoint) return endpoint;
+  }
+  return "";
+}
+
+function endpointMatchesNamedPart(endpoint: string, partName: string): boolean {
+  if (!endpoint || !partName) return false;
+  return endpoint === partName || endpoint.endsWith(`.${partName}`) || endpoint.includes(`.${partName}.`);
+}
+
 export function prepareInterconnection(visualization: VisualizationPayload): PreparedView {
   const ibd = asRecord(visualization.ibd);
   const rootViews = asRecord(ibd.rootViews);
@@ -303,47 +320,45 @@ export function prepareInterconnection(visualization: VisualizationPayload): Pre
   const nodeIds = new Set(nodes.map((node) => node.id));
   const nodeById = new Map(nodes.map((node) => [node.id, node]));
   const concreteNodes = nodes.filter((node) => !asRecord(node.attributes).isSyntheticContainer);
-  const resolveEndpointPartId = (explicit: unknown, endpoint: unknown): string => {
-    const explicitText = asString(explicit).replace(/::/g, ".").trim();
-    if (explicitText) {
-      const directById = concreteNodes.find((node) => {
-        const attrs = asRecord(node.attributes);
-        const aliases = [node.id, node.label, asString(attrs.qualifiedName)]
-          .filter(Boolean)
-          .map((alias) => alias.replace(/::/g, "."));
-        return aliases.includes(explicitText);
-      });
-      if (directById) return directById.id;
-      if (nodeIds.has(explicitText)) return explicitText;
-    }
-    const endpointText = asString(endpoint).replace(/::/g, ".").trim();
-    if (!endpointText) return explicitText;
-    const direct = concreteNodes.find((node) => {
+  const endpointOwnerCandidates = concreteNodes
+    .flatMap((node) => {
       const attrs = asRecord(node.attributes);
-      return [node.id, node.label, asString(attrs.qualifiedName).replace(/::/g, ".")]
+      return [node.id, node.label, asString(attrs.qualifiedName)]
+        .map((alias) => normalizedEndpoint(alias))
         .filter(Boolean)
-        .includes(endpointText);
-    });
-    if (direct) return direct.id;
-    const best = concreteNodes
-      .map((node) => {
-        const qn = asString(asRecord(node.attributes).qualifiedName, node.label).replace(/::/g, ".").trim();
-        const aliases = [qn, node.label, node.id].filter(Boolean);
-        const matched = aliases
-          .filter((alias) => endpointText === alias || endpointText.startsWith(`${alias}.`))
-          .sort((a, b) => b.length - a.length)[0];
-        return matched ? { node, score: matched.length } : null;
-      })
-      .filter((value): value is { node: (typeof nodes)[number]; score: number } => Boolean(value))
-      .sort((a, b) => b.score - a.score)[0];
-    return best?.node.id ?? explicitText;
+        .map((alias) => ({ node, alias }));
+    })
+    .sort((a, b) => b.alias.length - a.alias.length);
+  const uniqueLabelCandidates = concreteNodes
+    .map((node) => ({ node, label: normalizedEndpoint(node.label) }))
+    .filter(({ label }) => Boolean(label))
+    .filter(({ label }, _index, candidates) => candidates.filter((candidate) => candidate.label === label).length === 1);
+  const resolveEndpointPartId = (explicit: unknown, endpoint: unknown): string => {
+    const explicitText = normalizedEndpoint(explicit);
+    if (explicitText) {
+      if (nodeIds.has(explicitText)) return explicitText;
+      const directById = endpointOwnerCandidates.find(({ alias }) => alias === explicitText);
+      if (directById) return directById.node.id;
+      const nestedOwner = endpointOwnerCandidates.find(({ alias }) => explicitText.startsWith(`${alias}.`));
+      if (nestedOwner) return nestedOwner.node.id;
+      const namedOwner = uniqueLabelCandidates.find(({ label }) => endpointMatchesNamedPart(explicitText, label));
+      if (namedOwner) return namedOwner.node.id;
+    }
+    const endpointText = normalizedEndpoint(endpoint);
+    if (!endpointText) return explicitText;
+    const best = endpointOwnerCandidates.find(({ alias }) => endpointText === alias || endpointText.startsWith(`${alias}.`));
+    if (best) return best.node.id;
+    const namedOwner = uniqueLabelCandidates.find(({ label }) => endpointMatchesNamedPart(endpointText, label));
+    return namedOwner?.node.id ?? explicitText;
   };
   const edges = connectors
     .map((connector, index) => {
-      const sourceEndpoint = firstPresent(connector.sourceId, connector.source);
-      const targetEndpoint = firstPresent(connector.targetId, connector.target);
-      const source = resolveEndpointPartId(firstPresent(connector.sourcePartId, connector.sourcePortPartId), sourceEndpoint);
-      const target = resolveEndpointPartId(firstPresent(connector.targetPartId, connector.targetPortPartId), targetEndpoint);
+      const sourceEndpoint = firstEndpoint(connector.sourceId, connector.source_id, connector.source);
+      const targetEndpoint = firstEndpoint(connector.targetId, connector.target_id, connector.target);
+      const sourcePart = firstEndpoint(connector.sourcePartId, connector.source_part_id, connector.sourcePortPartId, connector.source_port_part_id);
+      const targetPart = firstEndpoint(connector.targetPartId, connector.target_part_id, connector.targetPortPartId, connector.target_port_part_id);
+      const source = resolveEndpointPartId(sourcePart, sourceEndpoint);
+      const target = resolveEndpointPartId(targetPart, targetEndpoint);
       const type = ibdConnectorKind(connector);
       const label = ibdConnectorLabel(connector, type);
       return {
@@ -354,15 +369,27 @@ export function prepareInterconnection(visualization: VisualizationPayload): Pre
         edgeKind: normalizeEdgeKind(type),
         attributes: {
           ...asRecord(connector.attributes),
-          sourceId: asString(sourceEndpoint),
-          targetId: asString(targetEndpoint),
+          sourceId: sourceEndpoint,
+          targetId: targetEndpoint,
+          sourcePartId: sourcePart,
+          targetPartId: targetPart,
           itemType: asString(connector.itemType),
           interfaceName: asString(connector.interfaceName ?? connector.interfaceType ?? connector.interfaceDefinition),
           relationType: type,
         },
       };
     })
-    .filter((edge) => nodeById.has(edge.source) && nodeById.has(edge.target));
+    .filter((edge) => nodeById.has(edge.source) && nodeById.has(edge.target))
+    .filter((edge, index, allEdges) => {
+      const sourcePort = asString(edge.attributes.sourceId).split(".").pop() ?? "";
+      const targetPort = asString(edge.attributes.targetId).split(".").pop() ?? "";
+      const key = [edge.source, sourcePort, edge.target, targetPort, edge.edgeKind].join("\u0000");
+      return allEdges.findIndex((candidate) => {
+        const candidateSourcePort = asString(candidate.attributes.sourceId).split(".").pop() ?? "";
+        const candidateTargetPort = asString(candidate.attributes.targetId).split(".").pop() ?? "";
+        return [candidate.source, candidateSourcePort, candidate.target, candidateTargetPort, candidate.edgeKind].join("\u0000") === key;
+      }) === index;
+    });
   const rootCandidates = asArray(ibd.rootCandidates).map((value) => asString(value)).filter(Boolean);
   return {
     title: scopedName || selectedName || "Interconnection View",

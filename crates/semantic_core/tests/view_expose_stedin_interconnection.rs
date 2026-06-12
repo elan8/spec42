@@ -158,4 +158,40 @@ fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
         "noTiePoint should expose inherited switchgear ports, got ports: {:?}",
         ibd.ports
     );
+
+    let system_context = evaluated
+        .iter()
+        .find(|view| view.name == "systemContext")
+        .expect("systemContext view");
+    let system_projected =
+        project_ids_for_renderer(system_context, &graph_dto, "interconnection-view");
+    let system_ibd = select_interconnection_ibd_scope(
+        &full_ibd,
+        &system_projected,
+        Some(&system_context.exposed_ids),
+    );
+    assert!(
+        system_ibd.connectors.iter().any(|connector| {
+            connector.source_id.contains("tennetConnection")
+                && connector.target_id.contains("primarySubstation")
+        }),
+        "systemContext should include tennetConnection -> primarySubstation connector, got {:?}",
+        system_ibd.connectors
+    );
+    assert!(
+        system_ibd.connectors.iter().any(|connector| {
+            connector.source_id.contains("txStationA")
+                && connector.target_id.contains("residentialAreaA")
+        }),
+        "systemContext should include txStationA -> residentialAreaA connector, got {:?}",
+        system_ibd.connectors
+    );
+    assert!(
+        system_ibd.connectors.iter().any(|connector| {
+            connector.source_id.contains("txStationC")
+                && connector.target_id.contains("industrialClusterA")
+        }),
+        "systemContext should include txStationC -> industrialClusterA connector, got {:?}",
+        system_ibd.connectors
+    );
 }

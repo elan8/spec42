@@ -635,6 +635,72 @@ describe("shared renderer", () => {
     expect(svg).toContain("SurveillanceDrone");
   });
 
+  it("renders context connectors when ELK omits edge sections for nested containers", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 900, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Interconnection View",
+      view: "interconnection-view",
+      nodes: [
+        {
+          id: "architecture",
+          label: "RijnmondGridArchitecture",
+          kind: "package",
+          attributes: { isSyntheticContainer: true },
+        },
+        {
+          id: "primarySubstation",
+          label: "primarySubstation",
+          kind: "part",
+          attributes: {
+            containerId: "architecture",
+            qualifiedName: "Stedin.architecture.primarySubstation",
+            portDetails: [{ id: "Stedin.architecture.primarySubstation.hvConnection", name: "hvConnection" }],
+          },
+        },
+        {
+          id: "transformer",
+          label: "transformer",
+          kind: "part",
+          attributes: {
+            containerId: "primarySubstation",
+            qualifiedName: "Stedin.architecture.primarySubstation.transformer",
+          },
+        },
+        {
+          id: "tennetConnection",
+          label: "tennetConnection",
+          kind: "part",
+          attributes: {
+            containerId: "architecture",
+            qualifiedName: "Stedin.architecture.tennetConnection",
+            portDetails: [{ id: "Stedin.architecture.tennetConnection.connection", name: "connection" }],
+          },
+        },
+      ],
+      edges: [
+        {
+          id: "hv-connection",
+          source: "tennetConnection",
+          target: "primarySubstation",
+          label: "connection",
+          edgeKind: "connection",
+          attributes: {
+            sourceId: "Stedin.architecture.tennetConnection.connection",
+            targetId: "Stedin.architecture.primarySubstation.hvConnection",
+            relationType: "connection",
+          },
+        },
+      ],
+    });
+
+    const connector = target.querySelector('[data-connector-id="hv-connection"]') as SVGPathElement | null;
+    expect(connector).toBeTruthy();
+    expect(connector?.getAttribute("d")).toMatch(/^M/);
+  });
+
   it("keeps nested IBD parts spatially inside parent containers", async () => {
     const target = document.createElement("div");
     Object.defineProperty(target, "clientWidth", { value: 1600, configurable: true });

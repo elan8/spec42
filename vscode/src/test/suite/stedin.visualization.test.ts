@@ -16,6 +16,7 @@ import {
 const STEDIN_REPO = "C:\\Git\\sysml-powersystems";
 const STEDIN_VIEWS = `${STEDIN_REPO}\\sysml\\projects\\stedin-rijnmond-grid-expansion\\Views.sysml`;
 const GRID_CONNECTIONS_VIEW = "gridConnections";
+const SYSTEM_CONTEXT_VIEW = "systemContext";
 const stedinTimeoutMs = 180000;
 
 function parsePartNames(svgText: string): string[] {
@@ -38,6 +39,9 @@ function parseSvgDebug(svgText: string): Record<string, unknown> {
         hasFeederNorth: svgText.includes("feederNorth"),
         hasCable01: svgText.includes("cable01"),
         hasPrimarySubstation: svgText.includes("primarySubstation"),
+        hasTennetConnection: svgText.includes("tennetConnection"),
+        hasResidentialAreaA: svgText.includes("residentialAreaA"),
+        hasTxStationA: svgText.includes("txStationA"),
     };
 }
 
@@ -121,6 +125,68 @@ describe("Stedin Interconnection Visualization", () => {
         assert.ok(
             Number(debug.connectorCount) >= 15,
             `expected at least 15 connector paths, got ${debug.connectorCount}`
+        );
+    });
+
+    it("renders systemContext connectors from the parent workspace root", async function () {
+        this.timeout(stedinTimeoutMs);
+
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+        assert.ok(workspaceFolder, "expected the Stedin workspace folder to be open");
+
+        const doc = await vscode.workspace.openTextDocument(STEDIN_VIEWS);
+        await vscode.window.showTextDocument(doc, { preserveFocus: false, preview: false });
+        await waitForLanguageServerReady(doc, stedinTimeoutMs);
+
+        const snapshot = await vscode.commands.executeCommand<Record<string, unknown>>(
+            "sysml.debug.getVisualizationForTests",
+            workspaceFolder.uri.toString(),
+            "interconnection-view",
+            SYSTEM_CONTEXT_VIEW
+        );
+        integrationTestLog("stedin:systemContext:lspSnapshot", {
+            selectedView: snapshot?.selectedView,
+            selectedViewName: snapshot?.selectedViewName,
+            ibdParts: (snapshot?.ibd as { parts?: unknown[] } | undefined)?.parts?.length ?? 0,
+            ibdConnectors: (snapshot?.ibd as { connectors?: unknown[] } | undefined)?.connectors?.length ?? 0,
+        });
+        await vscode.commands.executeCommand("sysml.showVisualizer");
+        await waitForVisualizerOpen(stedinTimeoutMs);
+        await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
+        await seedVisualizerWebviewFromModel(
+            workspaceFolder.uri,
+            "interconnection-view",
+            (summary) => summary.ibdConnectors >= 4 && summary.ibdParts >= 10,
+            {
+                timeoutMs: stedinTimeoutMs,
+                renderTimeoutMs: stedinTimeoutMs,
+                selectedView: SYSTEM_CONTEXT_VIEW,
+            }
+        );
+
+        const uri = getDiagramExportUri(workspaceFolder.uri, "interconnection-view");
+        try {
+            await vscode.workspace.fs.delete(uri, { useTrash: false });
+        } catch {
+            // Ignore if no previous export exists.
+        }
+
+        const { svgText } = await triggerDiagramExportAndWait(
+            workspaceFolder.uri,
+            "interconnection-view",
+            (text) => text.includes("ibd-connector") && text.includes("tennetConnection"),
+            stedinTimeoutMs
+        );
+        const debug = parseSvgDebug(svgText);
+        integrationTestLog("stedin:systemContext:svgDebug", debug);
+
+        assert.ok(debug.hasTennetConnection, "expected tennetConnection in rendered SVG");
+        assert.ok(debug.hasPrimarySubstation, "expected primarySubstation in rendered SVG");
+        assert.ok(debug.hasTxStationA, "expected txStationA in rendered SVG");
+        assert.ok(debug.hasResidentialAreaA, "expected residentialAreaA in rendered SVG");
+        assert.ok(
+            Number(debug.connectorCount) >= 4,
+            `expected at least 4 connector paths, got ${debug.connectorCount}`
         );
     });
 });

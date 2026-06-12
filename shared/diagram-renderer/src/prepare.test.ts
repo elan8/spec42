@@ -352,6 +352,71 @@ describe("shared prepareViewData", () => {
     expect(prepared.edges.find((edge) => edge.id === "engine-reference")?.edgeKind).toBe("reference");
   });
 
+  it("maps interconnection connectors from backend snake_case endpoint fields", () => {
+    const prepared = prepareViewData({
+      view: "interconnection-view",
+      selectedView: "StedinRijnmondGridExpansion::Views::systemContext",
+      selectedViewName: "systemContext",
+      ibd: {
+        parts: [
+          {
+            id: "tennet",
+            name: "tennetConnection",
+            qualifiedName: "Stedin.Architecture.RijnmondGridArchitecture.tennetConnection",
+            type: "part",
+          },
+          {
+            id: "substation",
+            name: "primarySubstation",
+            qualifiedName: "Stedin.Architecture.RijnmondGridArchitecture.primarySubstation",
+            type: "part",
+          },
+          {
+            id: "station-a",
+            name: "txStationA",
+            qualifiedName: "Stedin.Architecture.RijnmondGridArchitecture.txStationA",
+            type: "part",
+          },
+          {
+            id: "area-a",
+            name: "residentialAreaA",
+            qualifiedName: "Stedin.Architecture.RijnmondGridArchitecture.residentialAreaA",
+            type: "part",
+          },
+        ],
+        connectors: [
+          {
+            id: "hv",
+            source_id: "Stedin.architecture.tennetConnection.connection",
+            target_id: "Stedin.architecture.primarySubstation.hvConnection",
+            source_part_id: "Stedin.architecture.tennetConnection",
+            target_part_id: "Stedin.architecture.primarySubstation",
+            rel_type: "connection",
+          },
+          {
+            id: "lv",
+            source_id: "Stedin.architecture.txStationA.lvConnection",
+            target_id: "Stedin.architecture.residentialAreaA.gridConnection",
+            rel_type: "connection",
+          },
+          {
+            id: "lv-variant",
+            source_id: "Stedin.Variants.baseVariant.txStationA.lvConnection",
+            target_id: "Stedin.Variants.baseVariant.residentialAreaA.gridConnection",
+            rel_type: "connection",
+          },
+        ],
+      },
+    });
+
+    expect(prepared.edges.map((edge) => [edge.id, edge.source, edge.target])).toEqual([
+      ["hv", "tennet", "substation"],
+      ["lv", "station-a", "area-a"],
+    ]);
+    expect(prepared.edges[0].attributes?.sourceId).toBe("Stedin.architecture.tennetConnection.connection");
+    expect(prepared.edges[0].attributes?.sourcePartId).toBe("Stedin.architecture.tennetConnection");
+  });
+
   it("adds synthetic initial state when missing", () => {
     const prepared = prepareViewData({
       view: "state-transition-view",

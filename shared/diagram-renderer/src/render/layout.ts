@@ -279,6 +279,32 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
     })
     .filter((edge): edge is NonNullable<typeof edge> => Boolean(edge));
 
+  const nodeBoundaryPoint = (node: LaidOutNode, role: "source" | "target"): { x: number; y: number } => ({
+    x: (node.x ?? 0) + (role === "source" ? (node.width ?? ibdNodeWidth) : 0),
+    y: (node.y ?? 0) + (node.height ?? ibdNodeHeight) / 2,
+  });
+  const fallbackEdgeSections = (
+    sourceNode: LaidOutNode | undefined,
+    targetNode: LaidOutNode | undefined,
+    sourcePortCenter?: { x: number; y: number },
+    targetPortCenter?: { x: number; y: number },
+  ): EdgeSection[] | undefined => {
+    if (!sourceNode || !targetNode) return undefined;
+    const startPoint = sourcePortCenter ?? nodeBoundaryPoint(sourceNode, "source");
+    const endPoint = targetPortCenter ?? nodeBoundaryPoint(targetNode, "target");
+    const midX = (startPoint.x + endPoint.x) / 2;
+    return [
+      {
+        startPoint,
+        bendPoints: [
+          { x: midX, y: startPoint.y },
+          { x: midX, y: endPoint.y },
+        ],
+        endPoint,
+      },
+    ];
+  };
+
   const graph = {
     id: "root",
     layoutOptions: {
@@ -387,11 +413,15 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
     const edges = prepared.edges.map((edge) => {
       const layoutRecord = edgeLayout.get(edge.id);
       const elkEdge = elkEdges.find((item) => item.id === edge.id);
+      const sourceNode = laidOutNodes.get(edge.source);
+      const targetNode = laidOutNodes.get(edge.target);
+      const sourcePortCenter = elkEdge?.sourcePortId ? portCenters.get(elkEdge.sourcePortId) : undefined;
+      const targetPortCenter = elkEdge?.targetPortId ? portCenters.get(elkEdge.targetPortId) : undefined;
       return {
         ...edge,
-        sourceNode: laidOutNodes.get(edge.source),
-        targetNode: laidOutNodes.get(edge.target),
-        layout: layoutRecord
+        sourceNode,
+        targetNode,
+        layout: layoutRecord?.edge.sections?.length
           ? {
               sections: layoutRecord.edge.sections as EdgeSection[],
               edgeOwnerOffset: layoutRecord.offset,
@@ -403,11 +433,15 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
                   : { x: 0, y: 0 };
               })(),
             }
-          : undefined,
+          : {
+              sections: fallbackEdgeSections(sourceNode, targetNode, sourcePortCenter, targetPortCenter),
+              edgeOwnerOffset: { x: 0, y: 0 },
+              lcaOffset: { x: 0, y: 0 },
+            },
         attributes: {
           ...(edge.attributes ?? {}),
-          _sourcePortCenter: elkEdge?.sourcePortId ? portCenters.get(elkEdge.sourcePortId) : undefined,
-          _targetPortCenter: elkEdge?.targetPortId ? portCenters.get(elkEdge.targetPortId) : undefined,
+          _sourcePortCenter: sourcePortCenter,
+          _targetPortCenter: targetPortCenter,
         },
       } satisfies LaidOutEdge;
     });
