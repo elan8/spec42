@@ -33,5 +33,6 @@ glob = "0.3"
 [dev-dependencies]
 # Used by LSP integration tests when constructing `file://` URIs.
 url = "2"
+spec42 = { path = "../server" }
 
 

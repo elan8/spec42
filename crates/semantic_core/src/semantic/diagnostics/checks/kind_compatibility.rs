@@ -245,24 +245,7 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
             .and_then(|value| value.as_str())
             .map(str::trim)
             .filter(|value| !value.is_empty())
-            .map(str::to_string)
-            .or_else(|| {
-                if node.attributes.contains_key("value")
-                    && node
-                        .parent_id
-                        .as_ref()
-                        .and_then(|id| graph.get_node(id))
-                        .is_some_and(|owner| {
-                            !graph
-                                .outgoing_typing_or_specializes_targets(owner)
-                                .is_empty()
-                        })
-                {
-                    Some(node.name.clone())
-                } else {
-                    None
-                }
-            });
+            .map(str::to_string);
         if let Some(trimmed) = redefines_target {
             if trimmed == node.id.qualified_name {
                 continue;

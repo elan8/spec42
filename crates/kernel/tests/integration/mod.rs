@@ -17,6 +17,7 @@ mod harness;
 mod hover;
 mod lifecycle;
 mod mbse_vacuum_baseline;
+mod robot_vacuum_baseline;
 mod model;
 mod model_graph;
 mod quality_gates;

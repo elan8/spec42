@@ -12,7 +12,10 @@ use url::Url;
 use crate::semantic::ast_util::{span_to_range, text_range_to_json};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
+use crate::semantic::import_resolution::resolve_type_reference_targets;
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
+
+const VERIFIED_REQUIREMENT_TARGET_KINDS: &[&str] = &["requirement def", "requirement"];
 use crate::semantic::text_span::TextRange;
 
 use super::expressions::expression_to_debug_string;
@@ -188,6 +191,18 @@ fn require_constraint_structured(
     })
 }
 
+fn fallback_verified_requirement_target(parent_id: &NodeId, requirement_ref: &str) -> String {
+    if requirement_ref.contains("::") {
+        requirement_ref.to_string()
+    } else {
+        parent_id
+            .qualified_name
+            .rsplit_once("::")
+            .map(|(owner, _)| format!("{owner}::{requirement_ref}"))
+            .unwrap_or_else(|| requirement_ref.to_string())
+    }
+}
+
 pub(super) fn verify_requirement_target(member: &VerifyRequirementMember) -> Option<String> {
     if let Some(requirement) = member.requirement.as_ref() {
         if let Some(type_name) = requirement.value.type_name.as_deref() {
@@ -244,14 +259,19 @@ pub(super) fn add_verified_requirement_node(
         Some(parent_id),
     );
     add_typing_edge_if_exists(g, uri, &qualified, requirement_ref, container_prefix);
-    let requirement_target = if requirement_ref.contains("::") {
-        requirement_ref.to_string()
+    let requirement_target = if let Some(parent) = g.get_node(parent_id) {
+        resolve_type_reference_targets(
+            g,
+            parent,
+            requirement_ref,
+            VERIFIED_REQUIREMENT_TARGET_KINDS,
+        )
+        .into_iter()
+        .next()
+        .map(|id| id.qualified_name.clone())
+        .unwrap_or_else(|| fallback_verified_requirement_target(parent_id, requirement_ref))
     } else {
-        parent_id
-            .qualified_name
-            .rsplit_once("::")
-            .map(|(owner, _)| format!("{owner}::{requirement_ref}"))
-            .unwrap_or_else(|| requirement_ref.to_string())
+        fallback_verified_requirement_target(parent_id, requirement_ref)
     };
     add_edge_if_both_exist(
         g,

@@ -99,6 +99,58 @@ fn requirement_verify_member_materializes_verified_requirement_node() {
 }
 
 #[test]
+fn cross_package_verify_requirement_resolves_via_import() {
+    let requirements = workspace_doc(
+        "SystemRequirements.sysml",
+        r#"package SystemRequirements {
+  requirement coverFloor;
+}"#,
+    );
+    let verification = workspace_doc(
+        "Verification.sysml",
+        r#"package Verification {
+  private import SystemRequirements::*;
+  requirement def VerifyCoverage {
+    verify requirement coverFloor;
+  }
+}"#,
+    );
+    let uri = verification.uri.clone();
+    let (graph, _parsed) =
+        build_semantic_graph_from_documents(&[requirements, verification]).expect("semantic graph");
+
+    let diagnostics = semantic_core::collect_diagnostics_from_graph(
+        &graph,
+        &uri,
+        semantic_core::DiagnosticsOptions::default(),
+    );
+    assert!(
+        !diagnostics
+            .iter()
+            .any(|diag| diag.code == "unresolved_pending_relationship"),
+        "cross-package verify should resolve via import, got: {:?}",
+        diagnostics
+            .iter()
+            .filter(|diag| diag.code == "unresolved_pending_relationship")
+            .map(|diag| &diag.message)
+            .collect::<Vec<_>>()
+    );
+
+    let has_subject_to_requirement = graph
+        .edges_for_uri_as_strings(&uri)
+        .iter()
+        .any(|(src, tgt, kind, _)| {
+            *kind == RelationshipKind::Subject
+                && src.ends_with("::VerifyCoverage")
+                && tgt.ends_with("::coverFloor")
+        });
+    assert!(
+        has_subject_to_requirement,
+        "expected Subject edge from verify requirement to imported requirement"
+    );
+}
+
+#[test]
 fn viewpoint_body_materializes_stakeholder_and_purpose_nodes() {
     let fixture = include_str!("fixtures/parser_wave/viewpoint-stakeholder-purpose.sysml");
     let doc = workspace_doc("viewpoint-stakeholder-purpose.sysml", fixture);

@@ -1012,6 +1012,7 @@ dependencies = [
  "semantic_core",
  "serde",
  "serde_json",
+ "spec42",
  "sysml-v2-parser",
  "sysml_semantic_tokens",
  "tempfile",
@@ -2008,9 +2009,7 @@ dependencies = [
 
 [[package]]
 name = "sysml-v2-parser"
-version = "0.25.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e0455c7dd417efeb0fa8942d929ac1b8447dee8f9f824cdccdb9104a1485905"
+version = "0.25.3"
 dependencies = [
  "log",
  "nom",

@@ -125,7 +125,8 @@ impl UnitRegistry {
     }
 
     pub fn is_unit_library_uri(uri: &Url) -> bool {
-        if is_qudv_catalog_path_hint(&uri.path()) {
+        let path_hint = uri.path();
+        if is_qudv_catalog_path_hint(path_hint) || is_domain_unit_catalog_path_hint(path_hint) {
             return true;
         }
         uri_to_path(uri).is_some_and(|path| should_ingest_unit_library_file(&path))
@@ -595,8 +596,16 @@ fn is_qudv_catalog_path_hint(path: &str) -> bool {
     normalized.contains("Quantities%20and%20Units") || normalized.contains("Quantities and Units")
 }
 
+fn is_domain_unit_catalog_path_hint(path: &str) -> bool {
+    let normalized = path.replace('\\', "/");
+    normalized.contains("MonetaryUnits")
+        || normalized.contains("generic/units")
+        || normalized.contains("generic%2Funits")
+}
+
 fn should_ingest_unit_library_file(path: &Path) -> bool {
-    is_qudv_catalog_path_hint(&path.to_string_lossy())
+    let path_str = path.to_string_lossy();
+    is_qudv_catalog_path_hint(&path_str) || is_domain_unit_catalog_path_hint(&path_str)
 }
 
 fn uri_to_path(uri: &Url) -> Option<PathBuf> {

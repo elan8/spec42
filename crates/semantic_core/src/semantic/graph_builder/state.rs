@@ -160,7 +160,8 @@ pub(super) fn build_from_state_body(
                     Some(parent_id),
                 );
                 add_edge_if_both_exist(g, uri, &src, &tgt, RelationshipKind::Transition);
-                if t.is_initial && t.guard.is_none() && !has_explicit_then {
+                let is_unnamed = t.name.as_deref().unwrap_or("").trim().is_empty();
+                if t.is_initial && t.guard.is_none() && !has_explicit_then && is_unnamed {
                     add_edge_if_both_exist(
                         g,
                         uri,

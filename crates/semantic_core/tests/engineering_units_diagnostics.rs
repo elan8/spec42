@@ -107,6 +107,72 @@ fn engineering_prefixed_units_resolve_from_indexed_qudv_catalog() {
     );
 }
 
+const MONETARY_UNITS_CATALOG: &str = r#"
+package MonetaryUnits {
+    attribute def MonetaryAmount :> Real;
+    attribute def MonetaryUnit;
+    attribute <EUR> 'euro' : MonetaryUnit;
+    attribute <USD> 'US dollar' : MonetaryUnit;
+}
+"#;
+
+#[test]
+fn domain_monetary_units_resolve_from_indexed_catalog() {
+    let catalog_uri =
+        Url::parse("file:///domain-libraries/generic/units/MonetaryUnits.sysml").expect("uri");
+    let catalog_content = MONETARY_UNITS_CATALOG.to_string();
+    let catalog_doc = SysmlDocument {
+        uri: catalog_uri.clone(),
+        content: catalog_content.clone(),
+        path_hint: Some("generic/units/MonetaryUnits.sysml".to_string()),
+        source_kind: SysmlDocumentSourceKind::Library,
+        sha256: None,
+        byte_size: None,
+    };
+    let usage_doc = SysmlDocument::from_memory_path(
+        "monetary-usage",
+        "Architecture.sysml",
+        r#"
+            package Architecture {
+                private import MonetaryUnits::*;
+                part def Robot {
+                    attribute bomCost : MonetaryAmount = 120 [EUR];
+                }
+            }
+        "#
+        .to_string(),
+        SysmlDocumentSourceKind::Workspace,
+        None,
+        None,
+    )
+    .expect("usage doc");
+    let usage_uri = usage_doc.uri.clone();
+    let indexed_sources = [(&catalog_uri, catalog_content.as_str())];
+    let (graph, _) =
+        build_semantic_graph_from_documents(&[catalog_doc, usage_doc]).expect("semantic graph");
+
+    let registry = UnitRegistry::build_unified(&graph, &indexed_sources, &[]);
+    assert!(
+        registry.is_recognized_unit_expression("EUR"),
+        "EUR should be indexed from MonetaryUnits catalog"
+    );
+
+    let diagnostics = collect_diagnostics_from_graph(
+        &graph,
+        &usage_uri,
+        DiagnosticsOptions {
+            include_hints: false,
+            indexed_sources: &indexed_sources,
+        },
+    );
+    assert!(
+        !diagnostics
+            .iter()
+            .any(|diag| diag.code == "unknown_unit_symbol"),
+        "unexpected unknown_unit_symbol for [EUR]: {diagnostics:#?}"
+    );
+}
+
 #[test]
 fn mismatched_unit_dimension_emits_incompatible_not_unknown() {
     let catalog_uri = catalog_uri();

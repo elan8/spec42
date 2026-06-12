@@ -256,6 +256,12 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph, units: UnitRegistry)
                 }
             } else if let Some(expr) = single_expression.as_deref() {
                 evaluated = true;
+                if let Some(verdict_token) = resolve_verdict_kind_token(graph, &node_id, expr) {
+                    let is_pass = verdict_token == "pass";
+                    status = STATUS_OK.to_string();
+                    value = Some(Value::Bool(is_pass));
+                    passed = Some(is_pass);
+                } else {
                 limit = evaluate_analysis_limit_quantity(&mut engine, &node_id, expr);
                 match evaluate_analysis_expression(&mut engine, &node_id, expr) {
                     Ok(bool_value) => {
@@ -272,6 +278,7 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph, units: UnitRegistry)
                         status = err.status.as_str().to_string();
                         error = Some(err.message);
                     }
+                }
                 }
             }
 
@@ -403,6 +410,45 @@ fn evaluate_analysis_display_quantity(
 
 fn is_definition_only_analysis_node(node: &SemanticNode) -> bool {
     matches!(node.element_kind.as_str(), "constraint def" | "calc def")
+}
+
+fn parse_verdict_kind_token(expression: &str) -> Option<String> {
+    let trimmed = expression.trim();
+    let rest = trimmed.strip_prefix("VerdictKind::")?;
+    let token = rest
+        .split(|ch: char| !ch.is_ascii_alphanumeric() && ch != '_')
+        .next()
+        .unwrap_or_default()
+        .trim()
+        .to_ascii_lowercase();
+    if token.is_empty() {
+        None
+    } else {
+        Some(token)
+    }
+}
+
+fn resolve_verdict_kind_token(
+    graph: &SemanticGraph,
+    node_id: &NodeId,
+    expression: &str,
+) -> Option<String> {
+    if let Some(token) = parse_verdict_kind_token(expression) {
+        return Some(token);
+    }
+    let node = graph.get_node(node_id)?;
+    graph
+        .children_of(node)
+        .into_iter()
+        .filter(|child| child.element_kind == "verdict")
+        .find_map(|child| {
+            child
+                .attributes
+                .get("rawVerdictToken")
+                .and_then(|value| value.as_str())
+                .map(|token| token.trim().to_ascii_lowercase())
+                .filter(|token| !token.is_empty())
+        })
 }
 
 fn evaluate_analysis_expression(

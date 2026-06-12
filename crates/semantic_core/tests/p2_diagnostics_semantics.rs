@@ -819,3 +819,83 @@ fn metadata_binding_missing_emits_diagnostic() {
             .collect::<Vec<_>>()
     );
 }
+
+#[test]
+fn named_transitions_with_first_source_do_not_emit_multiple_initial_states() {
+    let doc = workspace_doc(
+        "named_transitions.sysml",
+        r#"package BehaviorStates {
+  state def RobotOperatingBehavior {
+    state idle;
+    state mapping;
+    state cleaning;
+    transition start_mission first idle then mapping;
+    transition mapping_complete first mapping then cleaning;
+    transition user_pause first cleaning then idle;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        !has_code(&diagnostics, "multiple_initial_states"),
+        "unexpected multiple_initial_states: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn verification_then_done_chain_does_not_emit_succession_invalid() {
+    let doc = workspace_doc(
+        "verify_then_done.sysml",
+        r#"package Demo {
+  action def Step;
+  verification def GoodVerify {
+    then action step : Step;
+    then done;
+    return ref verdictResult { return VerdictKind::pass; }
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        !has_code(&diagnostics, "succession_endpoint_invalid"),
+        "unexpected succession_endpoint_invalid: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn cyclic_state_machine_without_final_state_does_not_emit_missing_final() {
+    let doc = workspace_doc(
+        "cyclic_states.sysml",
+        r#"package BehaviorStates {
+  state def RobotOperatingBehavior {
+    state idle;
+    state charging;
+    transition to_charging first idle then charging;
+    transition charged first charging then idle;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        !has_code(&diagnostics, "missing_final_state"),
+        "unexpected missing_final_state for cyclic machine: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}

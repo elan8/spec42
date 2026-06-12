@@ -206,6 +206,24 @@ Spec areas: 7.26-7.27, 8.3.26, 8.4.22-8.4.23.
 - Done: `metadata_keyword_collision` — duplicate metadata def short names in one document.
 - Done: `metadata_keyword_unresolved` — `#keyword` usages on the graph (`metadata keyword` nodes) and user-defined `feature decl` / `classifier decl` keywords.
 
+## Robot vacuum showcase regressions (June 2026)
+
+External validation report: `C:\Git\sysml-robot-vacuum-cleaner\docs\SPEC42_VALIDATION_REPORT.md`.
+
+Tracked limitations (`S42-LIM-*`) addressed in this cycle:
+
+- `S42-LIM-001`: cross-package `verify requirement` resolves via imports (`requirement_body.rs`, `relationships.rs`).
+- `S42-LIM-002`: `then done` succession accepts `verdict` endpoints (`behavior_conformance.rs`).
+- `S42-LIM-004`: `VerdictKind::pass` evaluates to `analysisEvaluationStatus = ok` (`evaluation/mod.rs`).
+- `S42-LIM-007`: named `transition … first source then target` no longer counts as initial (`sysml-v2-parser` + `state.rs`).
+- `S42-LIM-008`: cyclic state machines suppress `missing_final_state` guidance (`behavior_conformance.rs`).
+- `S42-LIM-009`: bundled `MonetaryUnits` indexed for `[EUR]` (`evaluation/units.rs`).
+- `S42-LIM-010`: remove implicit redefines heuristic false positives (`kind_compatibility.rs`).
+
+Optional env-gated integration baseline: `SYSML_ROBOT_VACUUM_DIR` → `robot_vacuum_baseline.rs`.
+
+Deferred: `S42-LIM-005` (`flow` in `part def` bodies) — model uses typed ports until parser support lands.
+
 ## Suggested implementation order
 
 1. Normalize diagnostic metadata first: catalog completeness, severity alignment, tests that emitted codes are cataloged.

@@ -14,7 +14,10 @@ use crate::semantic::relationships::{resolve_type_target_in_workspace, TYPING_TA
 use crate::{ResolveResult, SemanticDiagnostic, SemanticGraph, SemanticNode};
 
 fn is_action_like(kind: &str) -> bool {
-    matches!(kind, "action" | "action def" | "perform" | "merge")
+    matches!(
+        kind,
+        "action" | "action def" | "perform" | "merge" | "verdict"
+    )
 }
 
 fn is_state_like(kind: &str) -> bool {
@@ -92,6 +95,77 @@ fn state_def_has_final_indicator(graph: &SemanticGraph, state_def: &SemanticNode
         .children_of(state_def)
         .into_iter()
         .any(|child| child.element_kind == "final state")
+}
+
+fn state_def_is_cyclic(graph: &SemanticGraph, state_def: &SemanticNode) -> bool {
+    let mut adjacency: HashMap<String, Vec<String>> = HashMap::new();
+    for child in graph.children_of(state_def) {
+        if child.element_kind != "transition" || is_synthetic(child) {
+            continue;
+        }
+        let Some(source) = child
+            .attributes
+            .get("source")
+            .and_then(|value| value.as_str())
+            .map(str::trim)
+            .filter(|value| !value.is_empty())
+        else {
+            continue;
+        };
+        let Some(target) = child
+            .attributes
+            .get("target")
+            .and_then(|value| value.as_str())
+            .map(str::trim)
+            .filter(|value| !value.is_empty())
+        else {
+            continue;
+        };
+        adjacency
+            .entry(source.to_string())
+            .or_default()
+            .push(target.to_string());
+    }
+    let nodes: HashSet<String> = adjacency
+        .keys()
+        .cloned()
+        .chain(adjacency.values().flatten().cloned())
+        .collect();
+    for start in nodes {
+        let mut visiting = HashSet::new();
+        let mut visited = HashSet::new();
+        if state_graph_has_cycle(&start, &adjacency, &mut visiting, &mut visited) {
+            return true;
+        }
+    }
+    false
+}
+
+fn state_graph_has_cycle(
+    node: &str,
+    adjacency: &HashMap<String, Vec<String>>,
+    visiting: &mut HashSet<String>,
+    visited: &mut HashSet<String>,
+) -> bool {
+    if !visiting.insert(node.to_string()) {
+        return true;
+    }
+    if visited.contains(node) {
+        visiting.remove(node);
+        return false;
+    }
+    let mut found = false;
+    if let Some(neighbors) = adjacency.get(node) {
+        for neighbor in neighbors {
+            if state_graph_has_cycle(neighbor, adjacency, visiting, visited) {
+                found = true;
+                break;
+            }
+        }
+    }
+    visiting.remove(node);
+    visited.insert(node.to_string());
+    found
 }
 
 fn state_def_ancestor(graph: &SemanticGraph, node: &SemanticNode) -> Option<String> {
@@ -412,6 +486,9 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
             continue;
         }
         if state_def_has_final_indicator(graph, node) {
+            continue;
+        }
+        if state_def_is_cyclic(graph, node) {
             continue;
         }
         let key = format!("missing_final|{}", node.id.qualified_name);

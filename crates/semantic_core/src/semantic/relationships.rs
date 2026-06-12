@@ -439,7 +439,31 @@ pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
             continue;
         }
         let source_id = NodeId::new(uri, &pending_edge.source_qualified);
-        let target_id = NodeId::new(uri, &pending_edge.target_qualified);
+        let mut target_id = NodeId::new(uri, &pending_edge.target_qualified);
+        if g.node_index_by_id.get(&target_id).is_none() {
+            if let Some(ids) = g.node_ids_for_qualified_name(&pending_edge.target_qualified) {
+                if ids.len() == 1 {
+                    target_id = ids[0].clone();
+                }
+            }
+        }
+        if g.node_index_by_id.get(&target_id).is_none() {
+            if let Some(source_node) = g.get_node(&source_id) {
+                let simple_name = pending_edge
+                    .target_qualified
+                    .rsplit("::")
+                    .next()
+                    .unwrap_or(pending_edge.target_qualified.as_str());
+                let imported = crate::semantic::import_resolution::resolve_imported_node_ids_for_simple_name(
+                    g,
+                    source_node,
+                    simple_name,
+                );
+                if imported.len() == 1 {
+                    target_id = imported[0].clone();
+                }
+            }
+        }
         let (Some(_), Some(tgt_node), Some(_)) = (
             g.node_index_by_id.get(&source_id),
             g.get_node(&target_id),

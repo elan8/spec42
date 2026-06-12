@@ -269,3 +269,28 @@ fn emits_unresolved_redefines_target() {
     let diags = diags_for(input);
     assert!(has_code(&diags, "unresolved_redefines_target"));
 }
+
+#[test]
+fn specialized_part_local_typed_attributes_do_not_emit_unresolved_redefines_target() {
+    let input = r#"
+        package Architecture {
+            attribute def PowerValue :> Real;
+            part def BaseSubsystem {
+                attribute drivePowerW : PowerValue;
+            }
+            part def DriveSubsystem :> BaseSubsystem {
+                attribute drivePowerW : PowerValue = 28;
+            }
+        }
+    "#;
+    let diags = diags_for(input);
+    assert!(
+        !has_code(&diags, "unresolved_redefines_target"),
+        "local typed attributes without :>> must not be treated as redefines, got {:?}",
+        diags
+            .iter()
+            .filter(|d| d.code == "unresolved_redefines_target")
+            .map(|d| &d.message)
+            .collect::<Vec<_>>()
+    );
+}
