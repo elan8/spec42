@@ -215,6 +215,48 @@ fn emits_attribute_value_type_mismatch_for_boolean_on_real() {
 }
 
 #[test]
+fn part_feature_redefinition_does_not_emit_subset_kind_warnings() {
+    let input = r#"
+        package DutchGridProfile {
+            part def DutchOperatorProfile {
+                attribute operator : Integer;
+                attribute defaultMvVoltageClass : Integer;
+                attribute dominantMvVoltages : String;
+            }
+            part def DutchGridExpansionProject {
+                part operatorProfile : DutchOperatorProfile;
+            }
+            part rijnmondExpansionProject : DutchGridExpansionProject {
+                part :>> operatorProfile {
+                    attribute :>> operator = 1;
+                    attribute :>> defaultMvVoltageClass = 2;
+                    attribute :>> dominantMvVoltages = "10 kV";
+                }
+            }
+        }
+    "#;
+    let diags = diags_for(input);
+    assert!(
+        !has_code(&diags, "incompatible_subset_redefine_kind"),
+        "part :>> operatorProfile should be valid, got {:?}",
+        diags
+            .iter()
+            .filter(|d| d.code == "incompatible_subset_redefine_kind")
+            .map(|d| &d.message)
+            .collect::<Vec<_>>()
+    );
+    assert!(
+        !has_code(&diags, "unresolved_redefines_target"),
+        "nested attribute redefines should resolve via DutchOperatorProfile, got {:?}",
+        diags
+            .iter()
+            .filter(|d| d.code == "unresolved_redefines_target")
+            .map(|d| &d.message)
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
 fn emits_unresolved_redefines_target() {
     let input = r#"
         package P {

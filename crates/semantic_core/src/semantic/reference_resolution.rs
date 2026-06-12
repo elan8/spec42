@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashSet, VecDeque};
 
 use url::Url;
 
@@ -288,6 +288,48 @@ pub fn resolve_workspace_member_chain(
 
 /// Resolve `member` declared on a supertype of `owner` (does not match direct children of `owner`).
 ///
+/// Typing/specialization roots for inherited-member lookup, including types implied by `:>>` redefinitions.
+fn effective_typing_or_specializes_target_ids(
+    g: &SemanticGraph,
+    owner: &SemanticNode,
+) -> Vec<NodeId> {
+    let direct: Vec<NodeId> = g
+        .outgoing_typing_or_specializes_targets(owner)
+        .into_iter()
+        .map(|n| n.id.clone())
+        .collect();
+    if !direct.is_empty() {
+        return direct;
+    }
+    let Some(redefines) = owner
+        .attributes
+        .get("redefines")
+        .and_then(|value| value.as_str())
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+    else {
+        return Vec::new();
+    };
+    let Some(parent_id) = owner.parent_id.as_ref() else {
+        return Vec::new();
+    };
+    let Some(parent) = g.get_node(parent_id) else {
+        return Vec::new();
+    };
+    match resolve_inherited_member_via_type(g, parent, redefines) {
+        ResolveResult::Resolved(feature_id) => g
+            .get_node(&feature_id)
+            .map(|feature| {
+                g.outgoing_typing_or_specializes_targets(feature)
+                    .into_iter()
+                    .map(|node| node.id.clone())
+                    .collect()
+            })
+            .unwrap_or_default(),
+        _ => Vec::new(),
+    }
+}
+
 /// Walks the typing/specialization chain from the nearest type outward and returns the first
 /// matching member so redefinitions on a specialized `part def` win over inherited declarations.
 pub fn resolve_inherited_member_via_type(
@@ -295,14 +337,9 @@ pub fn resolve_inherited_member_via_type(
     owner: &SemanticNode,
     member: &str,
 ) -> ResolveResult<NodeId> {
-    use std::collections::VecDeque;
-
     let mut visited: HashSet<NodeId> = HashSet::new();
-    let mut queue: VecDeque<NodeId> = g
-        .outgoing_typing_or_specializes_targets(owner)
-        .into_iter()
-        .map(|n| n.id.clone())
-        .collect();
+    let mut queue: VecDeque<NodeId> =
+        effective_typing_or_specializes_target_ids(g, owner).into_iter().collect();
 
     while let Some(type_id) = queue.pop_front() {
         if !visited.insert(type_id.clone()) {

@@ -93,13 +93,44 @@ pub fn allowed_specializes_target_kinds(def_kind: &str) -> &'static [&'static st
     }
 }
 
+/// Subsetting/redefinition resolves to inherited *features* (usage kinds) as well as typed definitions.
+const PART_SUBSET_TARGETS: &[&str] = &["part", "part def", "item def", "occurrence def"];
+const PORT_SUBSET_TARGETS: &[&str] = &["port", "port def"];
+const ITEM_SUBSET_TARGETS: &[&str] = &["item", "item def", "part def"];
+const ATTRIBUTE_SUBSET_TARGETS: &[&str] = &["attribute", "attribute def", "enum def"];
+const ACTION_SUBSET_TARGETS: &[&str] = &["action", "action def"];
+const STATE_SUBSET_TARGETS: &[&str] = &["state", "state def"];
+const REQUIREMENT_SUBSET_TARGETS: &[&str] = &["requirement", "requirement def"];
+const USE_CASE_SUBSET_TARGETS: &[&str] = &["use case", "use case def"];
+const ANALYSIS_SUBSET_TARGETS: &[&str] = &["analysis", "analysis def"];
+const VERIFICATION_SUBSET_TARGETS: &[&str] = &["verification", "verification def"];
+const VIEW_SUBSET_TARGETS: &[&str] = &["view", "view def"];
+const VIEWPOINT_SUBSET_TARGETS: &[&str] = &["viewpoint", "viewpoint def"];
+const CONCERN_SUBSET_TARGETS: &[&str] = &["concern", "concern def"];
+const ACTOR_SUBSET_TARGETS: &[&str] = &["actor", "part", "part def", "item def", "occurrence def"];
+const FLOW_SUBSET_TARGETS: &[&str] = &["flow", "flow def"];
+const ALLOCATION_SUBSET_TARGETS: &[&str] = &["allocation", "allocation def"];
+const INTERFACE_SUBSET_TARGETS: &[&str] = &["interface"];
+
 pub fn allowed_subset_redefine_target_kinds(usage_kind: &str) -> &'static [&'static str] {
     match usage_kind {
-        "part" | "port" | "item" | "attribute" | "action" | "state" | "requirement"
-        | "use case" | "analysis" | "verification" | "view" | "viewpoint" | "concern" | "actor"
-        | "stakeholder" | "flow" | "allocation" | "interface" => {
-            allowed_typing_target_kinds(usage_kind)
-        }
+        "part" => PART_SUBSET_TARGETS,
+        "port" => PORT_SUBSET_TARGETS,
+        "item" => ITEM_SUBSET_TARGETS,
+        "attribute" => ATTRIBUTE_SUBSET_TARGETS,
+        "action" => ACTION_SUBSET_TARGETS,
+        "state" => STATE_SUBSET_TARGETS,
+        "requirement" => REQUIREMENT_SUBSET_TARGETS,
+        "use case" => USE_CASE_SUBSET_TARGETS,
+        "analysis" => ANALYSIS_SUBSET_TARGETS,
+        "verification" => VERIFICATION_SUBSET_TARGETS,
+        "view" => VIEW_SUBSET_TARGETS,
+        "viewpoint" => VIEWPOINT_SUBSET_TARGETS,
+        "concern" => CONCERN_SUBSET_TARGETS,
+        "actor" | "stakeholder" => ACTOR_SUBSET_TARGETS,
+        "flow" => FLOW_SUBSET_TARGETS,
+        "allocation" => ALLOCATION_SUBSET_TARGETS,
+        "interface" => INTERFACE_SUBSET_TARGETS,
         _ => &[],
     }
 }
