@@ -17,8 +17,9 @@ use semantic_core::semantic::extracted_model as model;
 use semantic_core::semantic::ibd;
 use semantic_core::semantic::model_projection;
 use semantic_core::{
-    range_to_dto, GraphEdgeDto, GraphNodeDto, RelationshipDto, SysmlElementDto, SysmlGraphDto,
-    SysmlModelStatsDto, WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
+    range_to_dto, GraphEdgeDto, GraphNodeDto, IbdDataDto, RelationshipDto, SysmlElementDto,
+    SysmlGraphDto, SysmlModelStatsDto, WorkspaceFileModelDto, WorkspaceModelDto,
+    WorkspaceModelSummaryDto,
 };
 
 pub fn parse_sysml_model_params(v: &serde_json::Value) -> Result<(Url, Vec<String>)> {
@@ -311,7 +312,7 @@ fn workspace_visualization_enabled(scope: &[String]) -> bool {
     model_projection::workspace_visualization_enabled(scope)
 }
 
-fn ibd_requested(scope: &[String]) -> bool {
+pub fn ibd_requested(scope: &[String]) -> bool {
     scope.is_empty() || scope.iter().any(|s| s == "graph" || s == "ibd")
 }
 
@@ -401,6 +402,7 @@ pub async fn build_sysml_model_response(
     build_start: Instant,
     perf_logging_enabled: bool,
     client: &Client,
+    cached_workspace_ibd: Option<&IbdDataDto>,
 ) -> SysmlModelResultDto {
     let request_phase_start = Instant::now();
     let want_graph = scope.is_empty()
@@ -584,33 +586,15 @@ pub async fn build_sysml_model_response(
 
     let ibd_start = Instant::now();
     let ibd = if want_ibd && want_graph && graph.is_some() && workspace_viz {
-        let workspace_uris = semantic_graph.workspace_uris_excluding_libraries(library_paths);
-        let worker_count = std::thread::available_parallelism()
-            .map(|count| count.get())
-            .unwrap_or(1)
-            .min(workspace_uris.len())
-            .max(1);
-
-        let ibds = std::thread::scope(|s| {
-            let mut buckets: Vec<Vec<Url>> = (0..worker_count).map(|_| Vec::new()).collect();
-            for (i, uri) in workspace_uris.into_iter().enumerate() {
-                buckets[i % worker_count].push(uri);
-            }
-            let mut handles = Vec::with_capacity(worker_count);
-            for bucket in buckets {
-                handles.push(s.spawn(move || {
-                    bucket
-                        .iter()
-                        .map(|uri| ibd::build_ibd_for_uri(semantic_graph, uri))
-                        .collect::<Vec<_>>()
-                }));
-            }
-            handles
-                .into_iter()
-                .flat_map(|h| h.join().unwrap())
-                .collect::<Vec<_>>()
-        });
-        Some(ibd::merge_ibd_payloads(ibds))
+        cached_workspace_ibd
+            .cloned()
+            .or_else(|| {
+                let workspace_uris = semantic_graph.workspace_uris_excluding_libraries(library_paths);
+                Some(semantic_core::build_merged_workspace_ibd(
+                    semantic_graph,
+                    &workspace_uris,
+                ))
+            })
     } else if want_ibd && want_graph && graph.is_some() {
         Some(ibd::build_ibd_for_uri(semantic_graph, uri))
     } else {

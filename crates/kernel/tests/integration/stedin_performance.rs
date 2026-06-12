@@ -22,7 +22,7 @@ use super::harness::{next_id, read_message, send_message, spawn_server};
 use super::perf_report::{
     collect_fixture_perf, emit_perf_report, graph_edge_count, graph_node_count,
     latest_perf_event, request_with_perf_capture, slowest_phase_entries, value_ms,
-    visualization_model_build_time_ms, workspace_loaded_files,
+    visualization_model_build_time_ms, wait_for_startup_scan, workspace_loaded_files,
 };
 
 fn stedin_repo_root() -> PathBuf {
@@ -272,6 +272,12 @@ fn stedin_system_context_performance_report() {
     };
 
     let mut perf_events = workspace_model_capture.perf_events.clone();
+    perf_events.extend(wait_for_startup_scan(
+        &mut stdin,
+        &mut stdout,
+        &perf_events,
+        Duration::from_secs(120),
+    ));
     let visualization_capture = request_with_perf_capture(
         &mut stdin,
         &mut stdout,
@@ -284,12 +290,41 @@ fn stedin_system_context_performance_report() {
     );
     perf_events.extend(visualization_capture.perf_events.clone());
 
+    let warm_visualization_capture = request_with_perf_capture(
+        &mut stdin,
+        &mut stdout,
+        "sysml/visualization",
+        serde_json::json!({
+            "workspaceRootUri": root_uri.as_str(),
+            "view": "interconnection-view",
+            "selectedView": "systemContext"
+        }),
+    );
+    perf_events.extend(warm_visualization_capture.perf_events.clone());
+    let warm_visualization_event =
+        latest_perf_event(&warm_visualization_capture.perf_events, "backend:sysmlVisualizationRequest");
+    assert!(
+        warm_visualization_event
+            .and_then(|event| event.get("cacheHit"))
+            .and_then(|value| value.as_bool())
+            .unwrap_or(false),
+        "expected warm sysml/visualization cache hit, got {warm_visualization_event:#?}"
+    );
+    assert!(
+        warm_visualization_capture.elapsed_ms < 500,
+        "expected warm visualization request under 500ms, got {}ms",
+        warm_visualization_capture.elapsed_ms
+    );
+
     let startup_event = latest_perf_event(&perf_events, "backend:startupScanPhases");
     let workspace_response_event = latest_perf_event(
         &workspace_model_capture.perf_events,
         "backend:buildSysmlModelResponse",
     );
-    let visualization_event = latest_perf_event(&perf_events, "backend:sysmlVisualizationRequest");
+    let visualization_event = latest_perf_event(
+        &visualization_capture.perf_events,
+        "backend:sysmlVisualizationRequest",
+    );
 
     let visualization_result = &visualization_capture.json["result"];
     let ibd_parts = visualization_result["ibd"]["parts"]
@@ -419,6 +454,12 @@ fn stedin_system_context_performance_report() {
             "ibdConnectors": ibd_connectors,
             "sceneEdges": scene_edges,
             "event": visualization_event.cloned().unwrap_or_else(|| serde_json::json!({}))
+        },
+        "visualizationWarm": {
+            "elapsedMs": warm_visualization_capture.elapsed_ms,
+            "responseBytes": warm_visualization_capture.raw.len(),
+            "modelBuildTimeMs": visualization_model_build_time_ms(&warm_visualization_capture.json),
+            "event": warm_visualization_event.cloned().unwrap_or_else(|| serde_json::json!({}))
         },
         "counts": {
             "indexedDocuments": workspace_loaded_files(&workspace_model_capture.json),

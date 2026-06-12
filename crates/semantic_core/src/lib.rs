@@ -24,7 +24,9 @@ pub use semantic::explicit_views::{
 pub use semantic::extracted_model::extract_activity_diagrams;
 pub use semantic::graph::{PendingExpressionRelationship, PendingRelationship, SemanticGraph};
 pub use semantic::graph_builder::build_graph_from_doc;
-pub use semantic::ibd::{build_ibd_for_uri, finalize_merged_ibd_connectors, merge_ibd_payloads};
+pub use semantic::ibd::{
+    build_ibd_for_uri, finalize_merged_ibd_connectors, merge_ibd_payloads, IbdDataDto,
+};
 pub use semantic::interconnection_elk::build_elk_graph_from_scene;
 pub use semantic::interconnection_scene::{
     build_interconnection_scene, InterconnectionSceneDto,
@@ -59,11 +61,14 @@ pub use semantic::text_span::{TextPosition, TextRange};
 pub use semantic::visualization_entry::build_sysml_visualization_from_graph;
 pub use semantic::visualization_workspace::{
     attach_ibd_package_container_groups, build_ibd_package_container_groups,
-    build_package_groups_from_graph, build_sysml_visualization_from_graph_and_documents,
-    build_sysml_visualization_workspace, build_workspace_activity_diagrams,
-    build_workspace_graph_dto_for_uris, filter_ibd_by_visible_ids,
+    build_merged_workspace_ibd, build_package_groups_from_graph,
+    build_sysml_visualization_from_artifacts, build_sysml_visualization_from_graph_and_documents,
+    build_sysml_visualization_workspace, build_sysml_visualization_workspace_with_meta,
+    build_workspace_activity_diagrams, build_workspace_graph_dto_for_uris,
+    build_workspace_visualization_artifacts, filter_ibd_by_visible_ids,
     select_interconnection_ibd_scope, select_interconnection_ibd_scope_with_trace, uri_under_root,
-    workspace_uris_for_root, IbdScopeTrace,
+    workspace_uris_for_root, IbdScopeTrace, VisualizationBuildMeta, VisualizationBuildOptions,
+    WorkspaceVisualizationArtifacts,
 };
 pub use semantic::workspace_graph::{
     build_semantic_graph_from_documents, build_semantic_graph_with_provider,

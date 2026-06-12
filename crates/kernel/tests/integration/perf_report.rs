@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use super::harness::{next_id, read_message, send_message};
 use serde::Serialize;
@@ -208,6 +208,45 @@ pub fn latest_perf_event<'a>(
         .iter()
         .rev()
         .find(|event| event["event"].as_str() == Some(event_name))
+}
+
+/// Block until startup indexing finishes so `semantic_state_version` is stable for cache tests.
+pub fn wait_for_startup_scan(
+    stdin: &mut std::process::ChildStdin,
+    stdout: &mut std::process::ChildStdout,
+    existing_events: &[serde_json::Value],
+    deadline: Duration,
+) -> Vec<serde_json::Value> {
+    use std::time::Instant;
+
+    if latest_perf_event(existing_events, "backend:startupScanPhases").is_some() {
+        return Vec::new();
+    }
+
+    let wait_start = Instant::now();
+    let mut perf_events = Vec::new();
+    loop {
+        if latest_perf_event(&perf_events, "backend:startupScanPhases").is_some() {
+            return perf_events;
+        }
+        if wait_start.elapsed() >= deadline {
+            panic!(
+                "startup scan did not complete within {}s",
+                deadline.as_secs()
+            );
+        }
+        let capture = request_with_perf_capture(
+            stdin,
+            stdout,
+            "workspace/symbol",
+            serde_json::json!({ "query": "" }),
+        );
+        perf_events.extend(capture.perf_events);
+        if latest_perf_event(&perf_events, "backend:startupScanPhases").is_some() {
+            return perf_events;
+        }
+        std::thread::sleep(Duration::from_millis(100));
+    }
 }
 
 pub fn value_ms(event: Option<&serde_json::Value>, key: &str) -> u128 {

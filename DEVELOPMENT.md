@@ -52,7 +52,15 @@ From the repository root:
 cargo build --release
 ```
 
-The binary is at `target/release/spec42`. Put it on your `PATH` or set the extension setting `spec42.serverPath` to its path. Legacy `sysml-language-server.*` settings are still read for compatibility.
+The binary is at `target/release/spec42` (Windows: `target/release/spec42.exe`). Put it on your `PATH` or set the extension setting `spec42.serverPath` to its path. Legacy `sysml-language-server.*` settings are still read for compatibility.
+
+**F5 performance:** Launch Extension uses `target/debug/spec42.exe` by default, which is 3–5× slower on visualization and IBD work. For day-to-day extension development on large workspaces (e.g. power systems), point `spec42.serverPath` at the release binary after `cargo build --release`:
+
+```json
+"spec42.serverPath": "c:\\Git\\spec42\\target\\release\\spec42.exe"
+```
+
+See [docs/engineering/STEDIN-PERFORMANCE-ANALYSIS.md](docs/engineering/STEDIN-PERFORMANCE-ANALYSIS.md) for measured impact.
 
 ### Embedded standard library bundle
 

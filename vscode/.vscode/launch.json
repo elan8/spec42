@@ -2,6 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
+      // For faster LSP on large workspaces, set spec42.serverPath to target/release/spec42.exe (see DEVELOPMENT.md).
       "name": "Launch Extension",
       "type": "extensionHost",
       "request": "launch",

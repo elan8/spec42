@@ -63,6 +63,16 @@ Requires `C:\Git\sysml-powersystems` (override with `STEDIN_REPO` or `SYSML_POWE
 
 | Step | ms | Notes |
 |------|---:|-------|
+| Startup relink | 446 | cross-doc edges, relationships |
+| Startup diagnostics | 2,924 | all workspace files (debug test profile) |
+| `sysml/model` (Model Explorer) | 2,943 | **1 ms IBD** (artifact cache hit); **3.2 MB** response |
+| `sysml/visualization` (`systemContext`, first) | 151 | **147 ms** model build; **680 KB** response (slim payload) |
+| `sysml/visualization` (`systemContext`, cache hit) | 2 | response cache; **47 ms** LSP round-trip |
+
+### Pre-change baseline (March 2026, for comparison)
+
+| Step | ms | Notes |
+|------|---:|-------|
 | Startup relink | 481 | cross-doc edges, relationships |
 | Startup diagnostics | 612 | all workspace files |
 | `sysml/model` (Model Explorer) | 1,196 | includes **855 ms IBD**; **3.0 MB** response |
@@ -99,14 +109,19 @@ flowchart TB
     startup --> viz
 ```
 
-`build_sysml_visualization_workspace` always:
+**Before optimization**, `build_sysml_visualization_workspace` always:
 
-1. Builds the full workspace graph DTO (251 nodes for the selected view projection; 1,086 nodes for workspace model).
-2. Builds and merges IBD for **every** workspace URI.
-3. Evaluates and projects **all 8** explicit views.
-4. Builds activity/sequence/state payloads even when only interconnection is requested.
+1. Built the full workspace graph DTO (251 nodes for the selected view projection; 1,086 nodes for workspace model).
+2. Built and merged IBD for **every** workspace URI.
+3. Evaluated and projected **all 8** explicit views.
+4. Built activity/sequence/state payloads even when only interconnection was requested.
 
-The LSP caches the **semantic graph** after indexing, but **does not cache** visualization DTOs. Each `sysml/visualization` call recomputes from scratch.
+**After optimization (June 2026)**:
+
+1. **Workspace artifact cache** (`WorkspaceVizCaches` on `ServerState`): graph + merged IBD + evaluated views + view candidates, keyed by `semantic_state_version` and normalized workspace root. Shared by `sysml/model` and `sysml/visualization`.
+2. **Lazy single-view projection**: only the selected view is projected; activity/sequence/state are skipped for interconnection-only paths.
+3. **Visualization response cache**: per `(version, root, view, selectedView)`; warm repeat requests return in ~2 ms Rust work.
+4. **Slim interconnection payload**: omits `workspace_model` and unused diagram families (~680 KB vs ~911 KB).
 
 ## Bottleneck ranking
 
@@ -119,22 +134,22 @@ The LSP caches the **semantic graph** after indexing, but **does not cache** vis
 
 ## Improvement plan
 
-### P0 — Quick wins (days)
+### P0 — Quick wins (days) — **implemented**
 
-| # | Change | Expected impact | Effort |
-|---|--------|-----------------|--------|
-| 1 | Document `spec42.serverPath` → release binary for dev | 3–5× faster Rust in F5 | Trivial |
-| 2 | **Cache visualization result** in LSP keyed by `(semantic_state_version, view, selectedView)` | Avoid ~3.6 s repeat on refresh/reopen | Small |
-| 3 | **Skip IBD in `sysml/visualization`** when response already has `interconnectionScene` from cache | Same as #2 for steady state | Small (part of #2) |
+| # | Change | Status |
+|---|--------|--------|
+| 1 | Document `spec42.serverPath` → release binary for dev | Done — see [DEVELOPMENT.md](../../DEVELOPMENT.md) and F5 `launch.json` comment |
+| 2 | **Cache visualization result** in LSP keyed by `(semantic_state_version, view, selectedView)` | Done — `build_visualization_with_cache` |
+| 3 | **Skip IBD in `sysml/visualization`** when response already has `interconnectionScene` from cache | Done — response cache |
 
-### P1 — Structural (1–2 weeks)
+### P1 — Structural (1–2 weeks) — **implemented**
 
-| # | Change | Expected impact | Effort |
-|---|--------|-----------------|--------|
-| 4 | **Lazy view pipeline**: build graph + IBD once per `semantic_state_version`; project only the selected view | Cut visualization from ~3.6 s → ~0.5–1 s (scene is 4 ms) | Medium |
-| 5 | **Share IBD between `sysml/model` and `sysml/visualization`** via server-side cache | Remove duplicate ~855 ms–3 s IBD work | Medium |
-| 6 | **Slim visualization payload**: omit full workspace graph / unused view candidates for interconnection path | Faster LSP transfer + extension JSON clone | Medium |
-| 7 | Add **phase timing** to `backend:sysmlVisualizationRequest` (`ibdMs`, `viewEvalMs`, `sceneMs`) | Better production profiling | Small |
+| # | Change | Status |
+|---|--------|--------|
+| 4 | **Lazy view pipeline**: build graph + IBD once per `semantic_state_version`; project only the selected view | Done — `build_sysml_visualization_from_artifacts` |
+| 5 | **Share IBD between `sysml/model` and `sysml/visualization`** via server-side cache | Done — `ensure_workspace_artifacts` |
+| 6 | **Slim visualization payload**: omit full workspace graph / unused view candidates for interconnection path | Done — `VisualizationBuildOptions::slim_interconnection_payload` |
+| 7 | Add **phase timing** to `backend:sysmlVisualizationRequest` (`ibdMs`, `viewEvalMs`, `sceneMs`, `cacheHit`) | Done |
 
 ### P2 — Broader (backlog)
 
@@ -147,11 +162,12 @@ The LSP caches the **semantic graph** after indexing, but **does not cache** vis
 
 ### Success criteria
 
-| Metric | Current (release) | Target |
-|--------|------------------:|-------:|
-| `sysml/visualization` `systemContext` (warm, indexed) | ~3.6 s debug-test / ~8.5 s cold CLI | &lt;1.5 s |
-| VS Code open folder → rendered diagram (release server) | ~15–25 s | &lt;5 s |
-| Visualization response bytes | ~900 KB | &lt;200 KB |
+| Metric | Before | After (debug test profile) | Target |
+|--------|-------:|---------------------------:|-------:|
+| `sysml/visualization` `systemContext` (warm, indexed) | ~3.6 s | **~150 ms** first / **~2 ms** cache hit | &lt;1.5 s |
+| `sysml/visualization` repeat (response cache) | ~3.6 s | **~2 ms** Rust / **~50 ms** LSP | &lt;200 ms |
+| Visualization response bytes | ~911 KB | **~680 KB** | &lt;200 KB (partial; further slimming possible) |
+| VS Code open folder → rendered diagram (release server) | ~15–25 s | not re-measured in VS Code yet | &lt;5 s |
 
 ## Profiling in VS Code
 
@@ -186,4 +202,5 @@ Open **View → Output → SysML** and correlate:
 
 ## Changelog
 
+- **2026-06-12**: Implemented lazy visualization pipeline, workspace artifact cache, response cache, slim interconnection payload, and extended perf logging. Post-implementation LSP numbers recorded above.
 - **2026-06-12**: Initial analysis; added `stedin_system_context_performance_report` test and phase breakdown.

@@ -4,6 +4,7 @@ pub(crate) mod library_search;
 pub(crate) mod scan;
 pub(crate) mod services;
 pub(crate) mod state;
+pub(crate) mod viz_cache;
 
 pub(crate) use scan::scan_sysml_files;
 pub(crate) use services::{

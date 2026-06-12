@@ -1342,111 +1342,165 @@ fn workspace_parsed_documents_for_uris(
         .collect()
 }
 
-/// Full visualization response aligned with the Spec42 LSP kernel.
-pub fn build_sysml_visualization_workspace(
+fn renderer_uses_activity_diagrams(renderer: &str) -> bool {
+    renderer == "action-flow-view"
+}
+
+fn renderer_uses_sequence_diagrams(renderer: &str) -> bool {
+    renderer == "sequence-view"
+}
+
+fn renderer_uses_state_machines(renderer: &str) -> bool {
+    renderer == "state-transition-view"
+}
+
+/// Options for visualization response assembly (LSP / webview).
+#[derive(Debug, Clone, Default)]
+pub struct VisualizationBuildOptions {
+    /// Omit workspace model and unused diagram families for interconnection responses.
+    pub slim_interconnection_payload: bool,
+}
+
+/// Timing breakdown for visualization perf logging.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct VisualizationBuildMeta {
+    pub cache_hit: bool,
+    pub ibd_ms: u32,
+    pub view_eval_ms: u32,
+    pub scene_ms: u32,
+}
+
+/// Expensive workspace inputs shared across model explorer and visualization requests.
+#[derive(Debug, Clone)]
+pub struct WorkspaceVisualizationArtifacts {
+    pub workspace_root_uri: String,
+    pub workspace_uris: Vec<Url>,
+    pub graph: SysmlGraphDto,
+    pub full_ibd: IbdDataDto,
+    pub evaluated_views: Vec<explicit_views::EvaluatedView>,
+    pub view_candidates: Vec<crate::semantic::dto::SysmlVisualizationViewCandidateDto>,
+}
+
+/// Build and merge IBD for all workspace URIs (parallel when multiple files).
+pub fn build_merged_workspace_ibd(
+    semantic_graph: &SemanticGraph,
+    workspace_uris: &[Url],
+) -> IbdDataDto {
+    if workspace_uris.is_empty() {
+        return IbdDataDto {
+            parts: Vec::new(),
+            ports: Vec::new(),
+            connectors: Vec::new(),
+            container_groups: Vec::new(),
+            package_container_groups: Vec::new(),
+            root_candidates: Vec::new(),
+            default_root: None,
+            root_views: HashMap::new(),
+        };
+    }
+    let worker_count = std::thread::available_parallelism()
+        .map(|count| count.get())
+        .unwrap_or(1)
+        .min(workspace_uris.len())
+        .max(1);
+    let ibds = std::thread::scope(|scope| {
+        let mut buckets: Vec<Vec<Url>> = (0..worker_count).map(|_| Vec::new()).collect();
+        for (index, uri) in workspace_uris.iter().cloned().enumerate() {
+            buckets[index % worker_count].push(uri);
+        }
+        let mut handles = Vec::with_capacity(worker_count);
+        for bucket in buckets {
+            handles.push(scope.spawn(move || {
+                bucket
+                    .iter()
+                    .map(|uri| ibd::build_ibd_for_uri(semantic_graph, uri))
+                    .collect::<Vec<_>>()
+            }));
+        }
+        handles
+            .into_iter()
+            .flat_map(|handle| handle.join().expect("ibd worker"))
+            .collect::<Vec<_>>()
+    });
+    let mut full_ibd = ibd::merge_ibd_payloads(ibds);
+    ibd::finalize_merged_ibd_connectors(semantic_graph, workspace_uris, &mut full_ibd);
+    full_ibd
+}
+
+/// Build graph, IBD, evaluated views, and view candidates once per workspace snapshot.
+pub fn build_workspace_visualization_artifacts(
     semantic_graph: &SemanticGraph,
     documents: &[WorkspaceParsedDocument],
     library_paths: &[Url],
     workspace_root_uri: &Url,
-    view: &str,
-    selected_view: Option<&str>,
-    build_start: Instant,
-) -> Result<SysmlVisualizationResultDto, String> {
+) -> Result<WorkspaceVisualizationArtifacts, String> {
     let workspace_uris = workspace_uris_for_root(semantic_graph, library_paths, workspace_root_uri);
     let graph = model_projection::strip_synthetic_nodes(&build_workspace_graph_dto_for_uris(
         semantic_graph,
         &workspace_uris,
     ));
-    let empty_graph = SysmlGraphDto {
-        nodes: Vec::new(),
-        edges: Vec::new(),
-    };
-    let mut full_ibd = ibd::merge_ibd_payloads(
-        workspace_uris
-            .iter()
-            .map(|workspace_uri| ibd::build_ibd_for_uri(semantic_graph, workspace_uri))
-            .collect(),
-    );
-    ibd::finalize_merged_ibd_connectors(semantic_graph, &workspace_uris, &mut full_ibd);
+    let full_ibd = build_merged_workspace_ibd(semantic_graph, &workspace_uris);
     let viz_docs = workspace_parsed_documents_for_uris(documents, &workspace_uris);
-    let mut full_activity_diagrams =
-        build_workspace_activity_diagrams(&viz_docs, &workspace_uris, None);
-    enrich_activity_diagrams_from_graph(
-        &mut full_activity_diagrams,
-        semantic_graph,
-        &workspace_uris,
-    );
-    let full_sequence_diagrams = build_workspace_sequence_diagrams(semantic_graph, &workspace_uris);
-    let full_state_machines = build_workspace_state_machines(semantic_graph, &workspace_uris);
     let catalog = explicit_views::build_view_catalog(&workspace_uris, &viz_docs);
-
-    if catalog.usages.is_empty() {
-        return Ok(SysmlVisualizationResultDto {
-            version: 0,
-            model_ready: true,
-            view: view.to_string(),
-            workspace_root_uri: workspace_root_uri.as_str().to_string(),
-            view_candidates: Vec::new(),
-            selected_view: None,
-            selected_view_name: None,
-            empty_state_message: Some(no_defined_views_message()),
-            package_groups: Some(Vec::new()),
-            graph: Some(empty_graph.clone()),
-            general_view_graph: Some(empty_graph.clone()),
-            workspace_model: Some(build_workspace_model_dto_from_graph(
-                &empty_graph,
-                &workspace_uris,
-            )),
-            activity_diagrams: Some(Vec::new()),
-            sequence_diagrams: Some(Vec::new()),
-            state_machines: Some(Vec::new()),
-            ibd: Some(filter_ibd_by_visible_ids(&full_ibd, &HashSet::new())),
-            interconnection_scene: None,
-            stats: Some(SysmlModelStatsDto {
-                total_elements: 0,
-                resolved_elements: 0,
-                unresolved_elements: 0,
-                parse_time_ms: 0,
-                model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
-                parse_cached: false,
-            }),
-        });
-    }
-
-    let evaluated_views = explicit_views::evaluate_views(&catalog, semantic_graph, &graph);
-    let mut projected_graphs: HashMap<&str, SysmlGraphDto> = HashMap::new();
-    let mut projected_activity_diagrams: HashMap<&str, Vec<ActivityDiagramDto>> = HashMap::new();
-    let mut projected_sequence_diagrams: HashMap<&str, Vec<SequenceDiagramDto>> = HashMap::new();
-    let mut projected_state_machines: HashMap<&str, Vec<StateMachineDto>> = HashMap::new();
-    for evaluated in &evaluated_views {
-        let projected_ids =
-            explicit_views::renderer_view_for_view_type(evaluated.effective_view_type.as_deref())
-                .map(|renderer_view| {
-                    explicit_views::project_ids_for_renderer(evaluated, &graph, renderer_view)
-                })
-                .unwrap_or_default();
-        let projected_graph = project_graph_by_ids(&graph, &projected_ids);
-        let diagrams = filter_activity_diagrams_by_graph(&full_activity_diagrams, &projected_graph);
-        let sequence_diagrams = filter_sequence_diagrams_by_exposed_ids(
-            &full_sequence_diagrams,
-            &evaluated.exposed_ids,
-        );
-        let state_machines = filter_state_machines_by_exposed_ids(
-            &full_state_machines,
-            &explicit_views::project_ids_for_renderer(evaluated, &graph, "state-transition-view"),
-        );
-        projected_graphs.insert(evaluated.id.as_str(), projected_graph);
-        projected_activity_diagrams.insert(evaluated.id.as_str(), diagrams);
-        projected_sequence_diagrams.insert(evaluated.id.as_str(), sequence_diagrams);
-        projected_state_machines.insert(evaluated.id.as_str(), state_machines);
-    }
-
+    let evaluated_views = if catalog.usages.is_empty() {
+        Vec::new()
+    } else {
+        explicit_views::evaluate_views(&catalog, semantic_graph, &graph)
+    };
     let view_candidates = explicit_views::build_view_candidates(
         &evaluated_views,
-        &projected_activity_diagrams,
-        &projected_graphs,
+        &HashMap::new(),
+        &HashMap::new(),
     );
-    let selected_candidate = selected_view
+    Ok(WorkspaceVisualizationArtifacts {
+        workspace_root_uri: workspace_root_uri.as_str().to_string(),
+        workspace_uris,
+        graph,
+        full_ibd,
+        evaluated_views,
+        view_candidates,
+    })
+}
+
+fn build_activity_diagrams_for_view(
+    semantic_graph: &SemanticGraph,
+    documents: &[WorkspaceParsedDocument],
+    workspace_uris: &[Url],
+    selected_graph: &SysmlGraphDto,
+) -> Vec<ActivityDiagramDto> {
+    let viz_docs = workspace_parsed_documents_for_uris(documents, workspace_uris);
+    let mut diagrams = build_workspace_activity_diagrams(&viz_docs, workspace_uris, None);
+    enrich_activity_diagrams_from_graph(&mut diagrams, semantic_graph, workspace_uris);
+    filter_activity_diagrams_by_graph(&diagrams, selected_graph)
+}
+
+fn build_sequence_diagrams_for_view(
+    semantic_graph: &SemanticGraph,
+    workspace_uris: &[Url],
+    exposed_ids: &HashSet<String>,
+) -> Vec<SequenceDiagramDto> {
+    let full_sequence_diagrams = build_workspace_sequence_diagrams(semantic_graph, workspace_uris);
+    filter_sequence_diagrams_by_exposed_ids(&full_sequence_diagrams, exposed_ids)
+}
+
+fn build_state_machines_for_view(
+    semantic_graph: &SemanticGraph,
+    graph: &SysmlGraphDto,
+    evaluated: &explicit_views::EvaluatedView,
+    workspace_uris: &[Url],
+) -> Vec<StateMachineDto> {
+    let state_ids =
+        explicit_views::project_ids_for_renderer(evaluated, graph, "state-transition-view");
+    let full_state_machines = build_workspace_state_machines(semantic_graph, workspace_uris);
+    filter_state_machines_by_exposed_ids(&full_state_machines, &state_ids)
+}
+
+fn select_view_candidate<'a>(
+    view_candidates: &'a [crate::semantic::dto::SysmlVisualizationViewCandidateDto],
+    view: &str,
+    selected_view: Option<&str>,
+) -> Option<&'a crate::semantic::dto::SysmlVisualizationViewCandidateDto> {
+    selected_view
         .and_then(|selected| {
             view_candidates.iter().find(|candidate| {
                 candidate.id == selected
@@ -1460,75 +1514,147 @@ pub fn build_sysml_visualization_workspace(
             })
         })
         .or_else(|| view_candidates.iter().find(|candidate| candidate.supported))
-        .or_else(|| view_candidates.first());
+        .or_else(|| view_candidates.first())
+}
 
-    let Some(selected_candidate) = selected_candidate else {
-        return Ok(SysmlVisualizationResultDto {
-            version: 0,
-            model_ready: true,
-            view: view.to_string(),
-            workspace_root_uri: workspace_root_uri.as_str().to_string(),
-            view_candidates,
-            selected_view: None,
-            selected_view_name: None,
-            empty_state_message: Some(renderer_empty_state_message(view)),
-            package_groups: Some(Vec::new()),
-            graph: Some(empty_graph.clone()),
-            general_view_graph: Some(empty_graph.clone()),
-            workspace_model: Some(build_workspace_model_dto_from_graph(
-                &empty_graph,
-                &workspace_uris,
-            )),
-            activity_diagrams: Some(Vec::new()),
-            sequence_diagrams: Some(Vec::new()),
-            state_machines: Some(Vec::new()),
-            ibd: Some(filter_ibd_by_visible_ids(&full_ibd, &HashSet::new())),
-            interconnection_scene: None,
-            stats: Some(SysmlModelStatsDto {
-                total_elements: 0,
-                resolved_elements: 0,
-                unresolved_elements: 0,
-                parse_time_ms: 0,
-                model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
-                parse_cached: false,
-            }),
-        });
+/// Build a visualization response from precomputed workspace artifacts (lazy single-view projection).
+pub fn build_sysml_visualization_from_artifacts(
+    semantic_graph: &SemanticGraph,
+    documents: &[WorkspaceParsedDocument],
+    artifacts: &WorkspaceVisualizationArtifacts,
+    view: &str,
+    selected_view: Option<&str>,
+    build_start: Instant,
+    options: VisualizationBuildOptions,
+) -> Result<(SysmlVisualizationResultDto, VisualizationBuildMeta), String> {
+    let mut meta = VisualizationBuildMeta::default();
+    let workspace_root_uri = artifacts.workspace_root_uri.as_str();
+    let workspace_uris = &artifacts.workspace_uris;
+    let graph = &artifacts.graph;
+    let full_ibd = &artifacts.full_ibd;
+    let evaluated_views = &artifacts.evaluated_views;
+    let view_candidates = artifacts.view_candidates.clone();
+    let empty_graph = SysmlGraphDto {
+        nodes: Vec::new(),
+        edges: Vec::new(),
     };
+
+    if view_candidates.is_empty() {
+        return Ok((
+            SysmlVisualizationResultDto {
+                version: 0,
+                model_ready: true,
+                view: view.to_string(),
+                workspace_root_uri: workspace_root_uri.to_string(),
+                view_candidates: Vec::new(),
+                selected_view: None,
+                selected_view_name: None,
+                empty_state_message: Some(no_defined_views_message()),
+                package_groups: Some(Vec::new()),
+                graph: Some(empty_graph.clone()),
+                general_view_graph: Some(empty_graph.clone()),
+                workspace_model: Some(build_workspace_model_dto_from_graph(
+                    &empty_graph,
+                    workspace_uris,
+                )),
+                activity_diagrams: Some(Vec::new()),
+                sequence_diagrams: Some(Vec::new()),
+                state_machines: Some(Vec::new()),
+                ibd: Some(filter_ibd_by_visible_ids(full_ibd, &HashSet::new())),
+                interconnection_scene: None,
+                stats: Some(SysmlModelStatsDto {
+                    total_elements: 0,
+                    resolved_elements: 0,
+                    unresolved_elements: 0,
+                    parse_time_ms: 0,
+                    model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
+                    parse_cached: false,
+                }),
+            },
+            meta,
+        ));
+    }
+
+    let view_eval_start = Instant::now();
+    let Some(selected_candidate) =
+        select_view_candidate(&view_candidates, view, selected_view)
+    else {
+        return Ok((
+            SysmlVisualizationResultDto {
+                version: 0,
+                model_ready: true,
+                view: view.to_string(),
+                workspace_root_uri: workspace_root_uri.to_string(),
+                view_candidates,
+                selected_view: None,
+                selected_view_name: None,
+                empty_state_message: Some(renderer_empty_state_message(view)),
+                package_groups: Some(Vec::new()),
+                graph: Some(empty_graph.clone()),
+                general_view_graph: Some(empty_graph.clone()),
+                workspace_model: Some(build_workspace_model_dto_from_graph(
+                    &empty_graph,
+                    workspace_uris,
+                )),
+                activity_diagrams: Some(Vec::new()),
+                sequence_diagrams: Some(Vec::new()),
+                state_machines: Some(Vec::new()),
+                ibd: Some(filter_ibd_by_visible_ids(full_ibd, &HashSet::new())),
+                interconnection_scene: None,
+                stats: Some(SysmlModelStatsDto {
+                    total_elements: 0,
+                    resolved_elements: 0,
+                    unresolved_elements: 0,
+                    parse_time_ms: 0,
+                    model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
+                    parse_cached: false,
+                }),
+            },
+            meta,
+        ));
+    };
+    meta.view_eval_ms = view_eval_start.elapsed().as_millis().max(1) as u32;
+
     let selected_view_id = selected_candidate.id.clone();
     let selected_view_name = Some(selected_candidate.name.clone());
     let selected_view_type = selected_candidate.view_type.clone();
 
     if !selected_candidate.supported {
-        return Ok(SysmlVisualizationResultDto {
-            version: 0,
-            model_ready: true,
-            view: view.to_string(),
-            workspace_root_uri: workspace_root_uri.as_str().to_string(),
-            view_candidates,
-            selected_view: Some(selected_view_id),
-            selected_view_name,
-            empty_state_message: Some(unsupported_view_type_message(selected_view_type.as_deref())),
-            package_groups: Some(Vec::new()),
-            graph: Some(empty_graph.clone()),
-            general_view_graph: Some(empty_graph.clone()),
-            workspace_model: Some(build_workspace_model_dto_from_graph(
-                &empty_graph,
-                &workspace_uris,
-            )),
-            activity_diagrams: Some(Vec::new()),
-            sequence_diagrams: Some(Vec::new()),
-            state_machines: Some(Vec::new()),
-            ibd: Some(filter_ibd_by_visible_ids(&full_ibd, &HashSet::new())),
-            interconnection_scene: None,
-            stats: Some(SysmlModelStatsDto {
-                total_elements: 0,
-                resolved_elements: 0,
-                unresolved_elements: 0,
-                parse_time_ms: 0,
-                model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
-                parse_cached: false,
-            }),
-        });
+        return Ok((
+            SysmlVisualizationResultDto {
+                version: 0,
+                model_ready: true,
+                view: view.to_string(),
+                workspace_root_uri: workspace_root_uri.to_string(),
+                view_candidates,
+                selected_view: Some(selected_view_id),
+                selected_view_name,
+                empty_state_message: Some(unsupported_view_type_message(
+                    selected_view_type.as_deref(),
+                )),
+                package_groups: Some(Vec::new()),
+                graph: Some(empty_graph.clone()),
+                general_view_graph: Some(empty_graph.clone()),
+                workspace_model: Some(build_workspace_model_dto_from_graph(
+                    &empty_graph,
+                    workspace_uris,
+                )),
+                activity_diagrams: Some(Vec::new()),
+                sequence_diagrams: Some(Vec::new()),
+                state_machines: Some(Vec::new()),
+                ibd: Some(filter_ibd_by_visible_ids(full_ibd, &HashSet::new())),
+                interconnection_scene: None,
+                stats: Some(SysmlModelStatsDto {
+                    total_elements: 0,
+                    resolved_elements: 0,
+                    unresolved_elements: 0,
+                    parse_time_ms: 0,
+                    model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
+                    parse_cached: false,
+                }),
+            },
+            meta,
+        ));
     }
 
     let resolved_view = selected_candidate
@@ -1536,13 +1662,18 @@ pub fn build_sysml_visualization_workspace(
         .clone()
         .unwrap_or_else(|| view.to_string());
 
-    let selected_graph = projected_graphs
-        .get(selected_view_id.as_str())
-        .cloned()
-        .unwrap_or_else(|| empty_graph.clone());
+    let selected_evaluated = evaluated_views
+        .iter()
+        .find(|evaluated| evaluated.id == selected_view_id);
+    let projected_ids = selected_evaluated
+        .map(|evaluated| {
+            explicit_views::project_ids_for_renderer(evaluated, graph, resolved_view.as_str())
+        })
+        .unwrap_or_default();
+    let selected_graph = project_graph_by_ids(graph, &projected_ids);
     let general_view_graph = canonical_general_view_graph(&selected_graph, true);
     let package_groups = Some(build_package_groups_from_graph(&general_view_graph));
-    let workspace_model = build_workspace_model_dto_from_graph(&selected_graph, &workspace_uris);
+    let workspace_model = build_workspace_model_dto_from_graph(&selected_graph, workspace_uris);
     let mut package_candidates = Vec::new();
     let mut seen_packages = HashSet::new();
     collect_package_candidates(
@@ -1556,14 +1687,11 @@ pub fn build_sysml_visualization_workspace(
         .iter()
         .map(|node| node.id.clone())
         .collect();
-    let selected_evaluated = evaluated_views
-        .iter()
-        .find(|evaluated| evaluated.id == selected_view_id);
     let mut interconnection_scope_trace: Option<IbdScopeTrace> = None;
     let filtered_ibd = attach_ibd_package_container_groups(
         if resolved_view == "interconnection-view" {
             let (scoped, scope_trace) = select_interconnection_ibd_scope_with_trace(
-                &full_ibd,
+                full_ibd,
                 &selected_ids,
                 selected_evaluated.map(|evaluated| &evaluated.exposed_ids),
             );
@@ -1573,11 +1701,12 @@ pub fn build_sysml_visualization_workspace(
             interconnection_scope_trace = Some(scope_trace);
             scoped
         } else {
-            filter_ibd_by_visible_ids(&full_ibd, &selected_ids)
+            filter_ibd_by_visible_ids(full_ibd, &selected_ids)
         },
         &package_candidates,
         None,
     );
+    let scene_start = Instant::now();
     let interconnection_scene = if resolved_view == "interconnection-view" {
         let root_ids = selected_evaluated
             .map(|evaluated| {
@@ -1599,43 +1728,156 @@ pub fn build_sysml_visualization_workspace(
     } else {
         None
     };
-    let activity_diagrams = projected_activity_diagrams
-        .remove(selected_view_id.as_str())
-        .unwrap_or_default();
-    let sequence_diagrams = projected_sequence_diagrams
-        .remove(selected_view_id.as_str())
-        .unwrap_or_default();
-    let state_machines = projected_state_machines
-        .remove(selected_view_id.as_str())
-        .unwrap_or_default();
+    meta.scene_ms = scene_start.elapsed().as_millis().max(1) as u32;
 
-    Ok(SysmlVisualizationResultDto {
-        version: 0,
-        model_ready: true,
-        view: resolved_view,
-        workspace_root_uri: workspace_root_uri.as_str().to_string(),
-        view_candidates,
-        selected_view: Some(selected_view_id),
-        selected_view_name,
-        empty_state_message: None,
-        package_groups,
-        graph: Some(selected_graph.clone()),
-        general_view_graph: Some(general_view_graph),
-        workspace_model: Some(workspace_model),
-        activity_diagrams: Some(activity_diagrams),
-        sequence_diagrams: Some(sequence_diagrams),
-        state_machines: Some(state_machines),
-        ibd: Some(filtered_ibd),
-        interconnection_scene,
-        stats: Some(SysmlModelStatsDto {
-            total_elements: selected_graph.nodes.len() as u32,
-            resolved_elements: 0,
-            unresolved_elements: 0,
-            parse_time_ms: 0,
-            model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
-            parse_cached: false,
-        }),
-    })
+    let activity_diagrams = if renderer_uses_activity_diagrams(resolved_view.as_str()) {
+        build_activity_diagrams_for_view(
+            semantic_graph,
+            documents,
+            workspace_uris,
+            &selected_graph,
+        )
+    } else {
+        Vec::new()
+    };
+    let sequence_diagrams = if renderer_uses_sequence_diagrams(resolved_view.as_str()) {
+        selected_evaluated
+            .map(|evaluated| {
+                build_sequence_diagrams_for_view(
+                    semantic_graph,
+                    workspace_uris,
+                    &evaluated.exposed_ids,
+                )
+            })
+            .unwrap_or_default()
+    } else {
+        Vec::new()
+    };
+    let state_machines = if renderer_uses_state_machines(resolved_view.as_str()) {
+        selected_evaluated
+            .map(|evaluated| {
+                build_state_machines_for_view(
+                    semantic_graph,
+                    graph,
+                    evaluated,
+                    workspace_uris,
+                )
+            })
+            .unwrap_or_default()
+    } else {
+        Vec::new()
+    };
+
+    let slim = options.slim_interconnection_payload
+        && resolved_view == "interconnection-view"
+        && interconnection_scene.is_some();
+
+    Ok((
+        SysmlVisualizationResultDto {
+            version: 0,
+            model_ready: true,
+            view: resolved_view,
+            workspace_root_uri: workspace_root_uri.to_string(),
+            view_candidates,
+            selected_view: Some(selected_view_id),
+            selected_view_name,
+            empty_state_message: None,
+            package_groups,
+            graph: Some(selected_graph.clone()),
+            general_view_graph: Some(general_view_graph),
+            workspace_model: if slim { None } else { Some(workspace_model) },
+            activity_diagrams: if slim || activity_diagrams.is_empty() {
+                None
+            } else {
+                Some(activity_diagrams)
+            },
+            sequence_diagrams: if slim || sequence_diagrams.is_empty() {
+                None
+            } else {
+                Some(sequence_diagrams)
+            },
+            state_machines: if slim || state_machines.is_empty() {
+                None
+            } else {
+                Some(state_machines)
+            },
+            ibd: Some(filtered_ibd),
+            interconnection_scene,
+            stats: Some(SysmlModelStatsDto {
+                total_elements: selected_graph.nodes.len() as u32,
+                resolved_elements: 0,
+                unresolved_elements: 0,
+                parse_time_ms: 0,
+                model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
+                parse_cached: false,
+            }),
+        },
+        meta,
+    ))
+}
+
+/// Full visualization response aligned with the Spec42 LSP kernel.
+pub fn build_sysml_visualization_workspace(
+    semantic_graph: &SemanticGraph,
+    documents: &[WorkspaceParsedDocument],
+    library_paths: &[Url],
+    workspace_root_uri: &Url,
+    view: &str,
+    selected_view: Option<&str>,
+    build_start: Instant,
+) -> Result<SysmlVisualizationResultDto, String> {
+    let artifacts = build_workspace_visualization_artifacts(
+        semantic_graph,
+        documents,
+        library_paths,
+        workspace_root_uri,
+    )?;
+    let (response, _meta) = build_sysml_visualization_from_artifacts(
+        semantic_graph,
+        documents,
+        &artifacts,
+        view,
+        selected_view,
+        build_start,
+        VisualizationBuildOptions::default(),
+    )?;
+    Ok(response)
+}
+
+/// Full visualization response with perf metadata (tests and LSP).
+pub fn build_sysml_visualization_workspace_with_meta(
+    semantic_graph: &SemanticGraph,
+    documents: &[WorkspaceParsedDocument],
+    library_paths: &[Url],
+    workspace_root_uri: &Url,
+    view: &str,
+    selected_view: Option<&str>,
+    build_start: Instant,
+    options: VisualizationBuildOptions,
+) -> Result<(SysmlVisualizationResultDto, VisualizationBuildMeta), String> {
+    let ibd_start = Instant::now();
+    let artifacts = build_workspace_visualization_artifacts(
+        semantic_graph,
+        documents,
+        library_paths,
+        workspace_root_uri,
+    )?;
+    let mut meta = VisualizationBuildMeta {
+        ibd_ms: ibd_start.elapsed().as_millis().max(1) as u32,
+        ..VisualizationBuildMeta::default()
+    };
+    let (response, build_meta) = build_sysml_visualization_from_artifacts(
+        semantic_graph,
+        documents,
+        &artifacts,
+        view,
+        selected_view,
+        build_start,
+        options,
+    )?;
+    meta.view_eval_ms = build_meta.view_eval_ms;
+    meta.scene_ms = build_meta.scene_ms;
+    Ok((response, meta))
 }
 
 /// Graph-first visualization when callers do not have an explicit workspace root URI.

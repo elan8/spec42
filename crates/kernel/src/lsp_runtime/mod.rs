@@ -344,10 +344,10 @@ impl Backend {
     async fn sysml_model(&self, params: serde_json::Value) -> Result<dto::SysmlModelResultDto> {
         let request_start = Instant::now();
         let read_lock_wait_start = Instant::now();
-        let state = self.state.read().await;
+        let mut state = self.state.write().await;
         let read_lock_wait_ms = read_lock_wait_start.elapsed().as_millis().max(1);
         let (response, parse_cached_uri) =
-            sysml_model_result(&self.client, &state, &self.config, params).await?;
+            sysml_model_result(&self.client, &mut state, &self.config, params).await?;
         drop(state);
 
         let cache_mark_lock_wait_start = Instant::now();
@@ -411,9 +411,9 @@ impl Backend {
         params: serde_json::Value,
     ) -> Result<SysmlVisualizationResultDto> {
         let request_start = Instant::now();
-        let state = self.state.read().await;
+        let mut state = self.state.write().await;
         let perf_logging_enabled = state.perf_logging_enabled;
-        let response = sysml_visualization_result(&state, params)?;
+        let (response, build_meta) = sysml_visualization_result(&mut state, params)?;
         drop(state);
         if perf_logging_enabled {
             let graph_nodes = response
@@ -436,14 +436,24 @@ impl Backend {
                 .as_ref()
                 .map(|graph| graph.edges.len())
                 .unwrap_or(0);
+            let model_build_time_ms = response
+                .stats
+                .as_ref()
+                .map(|stats| stats.model_build_time_ms)
+                .unwrap_or(0);
             self.client
                 .log_message(
                     MessageType::INFO,
                     format!(
-                        "[SysML][perf] {{\"event\":\"backend:sysmlVisualizationRequest\",\"view\":\"{}\",\"modelReady\":{},\"totalMs\":{},\"graphNodes\":{},\"graphEdges\":{},\"generalViewNodes\":{},\"generalViewEdges\":{},\"viewCandidates\":{}}}",
+                        "[SysML][perf] {{\"event\":\"backend:sysmlVisualizationRequest\",\"view\":\"{}\",\"modelReady\":{},\"totalMs\":{},\"cacheHit\":{},\"ibdMs\":{},\"viewEvalMs\":{},\"sceneMs\":{},\"modelBuildTimeMs\":{},\"graphNodes\":{},\"graphEdges\":{},\"generalViewNodes\":{},\"generalViewEdges\":{},\"viewCandidates\":{}}}",
                         response.view,
                         response.model_ready,
                         request_start.elapsed().as_millis().max(1),
+                        build_meta.cache_hit,
+                        build_meta.ibd_ms,
+                        build_meta.view_eval_ms,
+                        build_meta.scene_ms,
+                        model_build_time_ms,
                         graph_nodes,
                         graph_edges,
                         general_view_nodes,

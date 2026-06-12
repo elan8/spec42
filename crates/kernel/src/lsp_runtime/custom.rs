@@ -27,7 +27,7 @@ async fn log_perf(client: &Client, enabled: bool, event: &str, fields: Vec<(&str
 
 pub(crate) async fn sysml_model_result(
     client: &Client,
-    state: &ServerState,
+    state: &mut ServerState,
     _config: &Spec42Config,
     params: serde_json::Value,
 ) -> Result<(dto::SysmlModelResultDto, Option<Url>)> {
@@ -41,6 +41,23 @@ pub(crate) async fn sysml_model_result(
     if workspace_visualization_requested && !state.semantic_lifecycle.supports_semantic_queries() {
         return Ok((crate::views::empty_model_response(build_start), None));
     }
+    if workspace_visualization_requested && crate::views::ibd_requested(&scope) {
+        if let Some(root) = crate::views::workspace_artifacts::primary_workspace_root(state) {
+            if crate::views::workspace_artifacts::cached_merged_ibd(state, &root).is_none() {
+                let _ =
+                    crate::views::workspace_artifacts::ensure_workspace_artifacts(state, &root);
+            }
+        }
+    }
+    let cached_workspace_ibd = if workspace_visualization_requested
+        && crate::views::ibd_requested(&scope)
+    {
+        crate::views::workspace_artifacts::primary_workspace_root(state).and_then(|root| {
+            crate::views::workspace_artifacts::cached_merged_ibd(state, &root)
+        })
+    } else {
+        None
+    };
     let index_lookup_start = Instant::now();
     let (effective_uri, entry) = match state.index.get(&uri) {
         Some(e) => (uri.clone(), e),
@@ -148,6 +165,7 @@ pub(crate) async fn sysml_model_result(
         build_start,
         state.perf_logging_enabled,
         client,
+        cached_workspace_ibd.as_ref(),
     )
     .await;
     let response_build_ms = response_build_start.elapsed().as_millis().max(1);
@@ -227,9 +245,9 @@ pub(crate) fn sysml_feature_inspector_result(
 }
 
 pub(crate) fn sysml_visualization_result(
-    state: &ServerState,
+    state: &mut ServerState,
     params: serde_json::Value,
-) -> Result<SysmlVisualizationResultDto> {
+) -> Result<(SysmlVisualizationResultDto, semantic_core::VisualizationBuildMeta)> {
     let (workspace_root_uri, view, selected_view) =
         crate::views::parse_sysml_visualization_params(&params)?;
     if !state.semantic_lifecycle.supports_semantic_queries() {
@@ -245,21 +263,34 @@ pub(crate) fn sysml_visualization_result(
             }
             SemanticLifecycle::Ready => "SysML model is not ready.",
         };
-        return Ok(visualization_model_not_ready(
-            workspace_root_uri.as_str(),
-            &view,
-            message,
+        return Ok((
+            visualization_model_not_ready(
+                workspace_root_uri.as_str(),
+                &view,
+                message,
+            ),
+            semantic_core::VisualizationBuildMeta::default(),
         ));
     }
-    Ok(crate::views::build_sysml_visualization_response(
-        &state.semantic_graph,
-        &state.index,
+    let build_start = Instant::now();
+    let outcome = crate::views::workspace_artifacts::build_visualization_with_cache(
+        state,
         &workspace_root_uri,
-        &state.library_paths,
         &view,
         selected_view.as_deref(),
-        Instant::now(),
-    ))
+        build_start,
+        semantic_core::VisualizationBuildOptions {
+            slim_interconnection_payload: true,
+        },
+    )
+    .map_err(|error| {
+        tower_lsp::jsonrpc::Error {
+            code: tower_lsp::jsonrpc::ErrorCode::InternalError,
+            message: error.into(),
+            data: None,
+        }
+    })?;
+    Ok((outcome.response, outcome.meta))
 }
 
 pub(crate) fn sysml_library_search_result(
@@ -367,6 +398,7 @@ pub(crate) fn sysml_server_stats_result(
 pub(crate) fn sysml_clear_cache_result(state: &mut ServerState) -> dto::SysmlClearCacheResultDto {
     let docs = state.index.len();
     let syms = state.symbol_table.len();
+    crate::views::workspace_artifacts::clear_workspace_viz_caches(state);
     state.index.clear();
     state.symbol_table.clear();
     state.semantic_graph = crate::semantic::SemanticGraph::default();
