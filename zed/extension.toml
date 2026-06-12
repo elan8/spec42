@@ -8,7 +8,7 @@ repository = "https://github.com/elan8/spec42"
 
 [grammars.sysml]
 repository = "https://gitlab.com/nomograph/tree-sitter-sysml"
-rev = "07a94a38c3090a0f730dc2b3ecdcd025d63226be"
+rev = "2376b6ebe4955b3430ea0aeeb01f1bbd67cdc0bd"
 
 [language_servers.spec42]
 name = "spec42"

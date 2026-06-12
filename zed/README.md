@@ -6,7 +6,7 @@ It is useful if you want lightweight editing, diagnostics, and navigation backed
 ## Current scope
 
 - `.sysml` language registration
-- Tree-sitter grammar registration for SysML v2
+- Tree-sitter grammar ([`tree-sitter-sysml`](https://gitlab.com/nomograph/tree-sitter-sysml)) pinned to `main` (2026 OMG constructs; see `extension.toml`)
 - Launching the existing `spec42` language server over stdio
 - Automatic download of the matching `spec42` release binary when Zed cannot find one locally
 - Forwarding Zed `lsp.spec42` settings to the server
