@@ -364,6 +364,9 @@ pub(super) fn build_from_part_def_body_element(
                 RelationshipKind::Connection,
             );
         }
+        PDBE::FlowUsage(flow) => {
+            super::flow_usage::materialize_flow_usage(flow, uri, container_prefix, parent_id, g);
+        }
         PDBE::InterfaceUsage(interface_usage) => {
             use sysml_v2_parser::ast::InterfaceUsage;
             match &interface_usage.value {

@@ -144,6 +144,9 @@ pub(super) fn build_from_occurrence_body_element(
                 }
             }
         }
+        OBE::FlowUsage(flow) => {
+            super::flow_usage::materialize_flow_usage(flow, uri, container_prefix, parent_id, g);
+        }
         OBE::AssertConstraint(assert_node) => {
             add_assert_constraint_member(g, uri, parent_id, assert_node);
         }

@@ -131,6 +131,9 @@ pub(super) fn build_from_part_usage_body_element(
                 RelationshipKind::Connection,
             );
         }
+        PUBE::FlowUsage(flow) => {
+            super::flow_usage::materialize_flow_usage(flow, uri, container_prefix, parent_id, g);
+        }
         PUBE::Bind(b) => {
             expressions::add_expression_edge_if_both_exist(
                 g,

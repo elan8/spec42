@@ -437,6 +437,10 @@ fn collect_semantic_ranges_occurrence_body_element(
                 }
             }
         }
+        OBE::FlowUsage(flow) => {
+            out.push((span_to_source_range(&flow.span), TYPE_PROPERTY));
+            collect_semantic_ranges_definition_body(&flow.value.body, out);
+        }
         OBE::Doc(_)
         | OBE::Error(_)
         | OBE::Annotation(_)
@@ -559,6 +563,10 @@ fn collect_semantic_ranges_part_def_body_element(
                 }
                 RequirementDefBody::Semicolon => {}
             }
+        }
+        PDBE::FlowUsage(flow) => {
+            out.push((span_to_source_range(&flow.span), TYPE_PROPERTY));
+            collect_semantic_ranges_definition_body(&flow.value.body, out);
         }
         PDBE::Connect(_)
         | PDBE::InterfaceUsage(_)
@@ -818,7 +826,7 @@ fn collect_semantic_ranges_action_def_body_element(
         ADBE::Assign(assign) => out.push((span_to_source_range(&assign.span), TYPE_PROPERTY)),
         ADBE::ForLoop(for_loop) => out.push((span_to_source_range(&for_loop.span), TYPE_PROPERTY)),
         ADBE::Bind(_)
-        | ADBE::Flow(_)
+        | ADBE::FlowUsage(_)
         | ADBE::FirstStmt(_)
         | ADBE::MergeStmt(_)
         | ADBE::Decl(_)
@@ -848,7 +856,7 @@ fn collect_semantic_ranges_action_usage_body_element(
         AUBE::Assign(assign) => out.push((span_to_source_range(&assign.span), TYPE_PROPERTY)),
         AUBE::ForLoop(for_loop) => out.push((span_to_source_range(&for_loop.span), TYPE_PROPERTY)),
         AUBE::Bind(_)
-        | AUBE::Flow(_)
+        | AUBE::FlowUsage(_)
         | AUBE::FirstStmt(_)
         | AUBE::MergeStmt(_)
         | AUBE::Error(_)

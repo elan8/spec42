@@ -411,15 +411,8 @@ pub(super) fn build_from_action_def_body(
                     RelationshipKind::Bind,
                 );
             }
-            ActionDefBodyElement::Flow(flow) => {
-                expressions::add_expression_edge_if_both_exist(
-                    g,
-                    uri,
-                    container_prefix,
-                    &flow.value.from,
-                    &flow.value.to,
-                    RelationshipKind::Flow,
-                );
+            ActionDefBodyElement::FlowUsage(flow) => {
+                super::flow_usage::materialize_flow_usage(flow, uri, container_prefix, parent_id, g);
             }
             ActionDefBodyElement::FirstStmt(first) => {
                 expressions::add_expression_edge_if_both_exist(
@@ -527,15 +520,8 @@ pub(super) fn build_from_action_usage_body(
                     RelationshipKind::Bind,
                 );
             }
-            ActionUsageBodyElement::Flow(flow) => {
-                expressions::add_expression_edge_if_both_exist(
-                    g,
-                    uri,
-                    container_prefix,
-                    &flow.value.from,
-                    &flow.value.to,
-                    RelationshipKind::Flow,
-                );
+            ActionUsageBodyElement::FlowUsage(flow) => {
+                super::flow_usage::materialize_flow_usage(flow, uri, container_prefix, parent_id, g);
             }
             ActionUsageBodyElement::FirstStmt(first) => {
                 expressions::add_expression_edge_if_both_exist(

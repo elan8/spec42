@@ -357,6 +357,9 @@ pub(super) fn build_from_verification_body(
             | UseCaseDefBodyElement::Other(_)
             | UseCaseDefBodyElement::ForLoop(_)
             | UseCaseDefBodyElement::Annotation(_) => {}
+            UseCaseDefBodyElement::FlowUsage(flow) => {
+                super::flow_usage::materialize_flow_usage(flow, uri, container_prefix, parent_id, g);
+            }
             UseCaseDefBodyElement::MetadataKeywordUsage(mk_node) => {
                 super::metadata_keyword::add_metadata_keyword_node(
                     g,

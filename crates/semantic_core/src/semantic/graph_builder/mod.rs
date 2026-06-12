@@ -15,6 +15,7 @@ mod analysis_case;
 mod attribute_body;
 mod definition_body;
 mod expressions;
+mod flow_usage;
 mod interface_def;
 mod metadata_def;
 mod metadata_keyword;

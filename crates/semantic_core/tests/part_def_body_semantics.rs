@@ -1,3 +1,4 @@
+use semantic_core::semantic::model::RelationshipKind;
 use semantic_core::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind};
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
@@ -206,4 +207,98 @@ fn part_def_occurrence_usage_brace_body_materializes_attribute() {
             .any(|child| child.element_kind == "attribute" && child.name == "label"),
         "expected attribute under occurrence usage brace body"
     );
+}
+
+#[test]
+fn part_def_anonymous_flow_emits_flow_edge() {
+    let doc = workspace_doc(
+        "flow.sysml",
+        r#"package P {
+  part def Robot {
+    part mobility;
+    part navigation;
+    flow mobility to navigation;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let has_flow = graph.edges_for_uri_as_strings(&uri).iter().any(|(_, _, k, _)| {
+        *k == RelationshipKind::Flow
+    });
+    assert!(has_flow, "expected Flow edge from anonymous part-def flow usage");
+}
+
+#[test]
+fn package_named_flow_emits_flow_edge() {
+    let doc = workspace_doc(
+        "pkg_flow.sysml",
+        r#"package P {
+  part src;
+  part dst;
+  flow transfer from src to dst;
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let flow_node = graph
+        .nodes_named("transfer")
+        .into_iter()
+        .find(|n| n.element_kind == "flow")
+        .expect("named flow node");
+    assert_eq!(
+        flow_node
+            .attributes
+            .get("flowKind")
+            .and_then(|v| v.as_str()),
+        Some("flow")
+    );
+    let has_flow = graph.edges_for_uri_as_strings(&uri).iter().any(|(_, _, k, _)| {
+        *k == RelationshipKind::Flow
+    });
+    assert!(has_flow, "expected Flow edge for named package flow");
+}
+
+#[test]
+fn robot_vacuum_style_nested_feature_flow_builds_graph() {
+    let doc = workspace_doc(
+        "robot_flow.sysml",
+        r#"package Arch {
+  part def Robot {
+    part mobility;
+    part navigation;
+    flow mobility.wheelOdometry to navigation.odometry;
+  }
+}"#,
+    );
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let robot = graph
+        .nodes_named("Robot")
+        .into_iter()
+        .find(|n| n.element_kind == "part def")
+        .expect("part def Robot");
+    assert!(
+        graph.children_of(&robot).iter().any(|c| c.element_kind == "part"),
+        "expected nested parts under Robot"
+    );
+}
+
+#[test]
+fn occurrence_def_body_flow_emits_flow_edge() {
+    let doc = workspace_doc(
+        "occ_flow.sysml",
+        r#"package P {
+  occurrence def O {
+    part a;
+    part b;
+    flow a to b;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let has_flow = graph.edges_for_uri_as_strings(&uri).iter().any(|(_, _, k, _)| {
+        *k == RelationshipKind::Flow
+    });
+    assert!(has_flow, "expected Flow edge from occurrence def body flow");
 }

@@ -1159,33 +1159,15 @@ pub(super) fn build_from_package_body_element(
             }
         }
         PBE::FlowUsage(flow_node) => {
-            let qualified =
-                qualified_name_for_node(g, uri, container_prefix, &flow_node.name, "flow");
-            let mut attrs = HashMap::new();
-            if let Some(ref t) = flow_node.type_name {
-                attrs.insert("flowType".to_string(), serde_json::json!(t.clone()));
+            if let Some(parent_id) = parent_id {
+                super::flow_usage::materialize_flow_usage(
+                    flow_node,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    g,
+                );
             }
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "flow",
-                flow_node.name.clone(),
-                span_to_range(&flow_node.span),
-                attrs,
-                parent_id,
-            );
-            if let Some(ref t) = flow_node.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
-            let node_id = NodeId::new(uri, &qualified);
-            definition_body::build_from_definition_body(
-                &flow_node.body,
-                uri,
-                Some(&qualified),
-                &node_id,
-                g,
-            );
         }
         PBE::AllocationDef(alloc_node) => {
             let name = identification_name(&alloc_node.identification);

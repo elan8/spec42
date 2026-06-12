@@ -222,7 +222,7 @@ Tracked limitations (`S42-LIM-*`) addressed in this cycle:
 
 Optional env-gated integration baseline: `SYSML_ROBOT_VACUUM_DIR` → `robot_vacuum_baseline.rs`.
 
-Deferred: `S42-LIM-005` (`flow` in `part def` bodies) — model uses typed ports until parser support lands.
+Done: `S42-LIM-005` — generic `FlowUsage` in parser and semantic graph (`flow` / `message` / `succession flow` in structure-usage bodies including part def/usage, package, occurrence def, action, use case).
 
 ## Suggested implementation order
 

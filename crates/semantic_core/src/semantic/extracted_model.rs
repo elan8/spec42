@@ -841,17 +841,19 @@ fn extract_activity_from_action(
                         });
                     }
                 }
-                ActionDefBodyElement::Flow(flow) => {
-                    let from = expr_to_string(&flow.value.from);
-                    let to = expr_to_string(&flow.value.to);
-                    if !from.is_empty() && !to.is_empty() {
-                        flows.push(ControlFlowDto {
-                            from,
-                            to,
-                            condition: None,
-                            guard: Some("flow".to_string()),
-                            range: span_to_range_dto(&flow.span),
-                        });
+                ActionDefBodyElement::FlowUsage(flow) => {
+                    if let (Some(from_expr), Some(to_expr)) = (&flow.value.from, &flow.value.to) {
+                        let from = expr_to_string(from_expr);
+                        let to = expr_to_string(to_expr);
+                        if !from.is_empty() && !to.is_empty() {
+                            flows.push(ControlFlowDto {
+                                from,
+                                to,
+                                condition: None,
+                                guard: Some("flow".to_string()),
+                                range: span_to_range_dto(&flow.span),
+                            });
+                        }
                     }
                 }
                 ActionDefBodyElement::FirstStmt(first) => {
