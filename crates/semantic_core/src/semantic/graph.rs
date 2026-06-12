@@ -98,11 +98,40 @@ impl SemanticGraph {
 
     /// Merges nodes and edges from another graph (built from a single document).
     pub fn merge(&mut self, other: SemanticGraph) {
+        self.merge_inner(other, None);
+    }
+
+    /// Merges another graph but skips nodes already declared in the workspace.
+    ///
+    /// Skips a library node when its qualified name already exists, or when it
+    /// belongs to a package name declared in `shadowed_packages` (workspace wins).
+    pub fn merge_skip_existing_qualified_names(
+        &mut self,
+        other: SemanticGraph,
+        shadowed_packages: &std::collections::HashSet<String>,
+    ) {
+        self.merge_inner(other, Some(shadowed_packages));
+    }
+
+    fn merge_inner(
+        &mut self,
+        other: SemanticGraph,
+        shadowed_packages: Option<&std::collections::HashSet<String>>,
+    ) {
         self.pending_relationships
             .extend(other.pending_relationships.iter().cloned());
         self.pending_expression_relationships
             .extend(other.pending_expression_relationships.iter().cloned());
         for (id, node) in other.iter_nodes() {
+            if let Some(shadowed) = shadowed_packages {
+                if self
+                    .node_ids_by_qualified_name
+                    .contains_key(&id.qualified_name)
+                    || Self::qualified_name_under_packages(&id.qualified_name, shadowed)
+                {
+                    continue;
+                }
+            }
             let idx = self.graph.add_node(node.clone());
             self.node_index_by_id.insert(id.clone(), idx);
             self.nodes_by_uri
@@ -123,6 +152,15 @@ impl SemanticGraph {
             }
         }
         self.clear_import_lookup_cache();
+    }
+
+    fn qualified_name_under_packages(
+        qualified_name: &str,
+        packages: &std::collections::HashSet<String>,
+    ) -> bool {
+        packages.iter().any(|pkg| {
+            qualified_name == pkg.as_str() || qualified_name.starts_with(&format!("{pkg}::"))
+        })
     }
 
     pub(crate) fn clear_import_lookup_cache(&self) {

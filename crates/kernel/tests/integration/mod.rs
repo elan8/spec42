@@ -25,4 +25,5 @@ mod rename;
 mod semantic_tokens;
 mod perf_report;
 mod stedin_performance;
+mod webshop_library_closure;
 mod workspace;

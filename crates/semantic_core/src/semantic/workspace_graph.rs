@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::time::Instant;
 
 use sysml_v2_parser::RootNamespace;
@@ -5,11 +6,12 @@ use url::Url;
 
 use crate::semantic::analysis_typing::prepare_analysis_evaluation_context;
 use crate::semantic::graph::SemanticGraph;
+use crate::semantic::library_loader::declared_packages_in_content;
 use crate::semantic::graph_builder::build_graph_from_doc;
 use crate::semantic::relationships::{
     link_workspace_relationships, resolve_workspace_pending_relationships,
 };
-use crate::semantic::source::{SysmlDocument, SysmlDocumentProvider};
+use crate::semantic::source::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
 
 #[derive(Debug, Clone)]
 pub struct WorkspaceParsedDocument {
@@ -29,13 +31,37 @@ pub fn build_semantic_graph_from_documents(
     let mut graph = SemanticGraph::new();
     let mut parsed_docs = Vec::new();
 
+    let mut workspace_docs = Vec::new();
+    let mut library_docs = Vec::new();
     for document in documents {
+        match document.source_kind {
+            SysmlDocumentSourceKind::Library => library_docs.push(document),
+            SysmlDocumentSourceKind::Workspace | SysmlDocumentSourceKind::External => {
+                workspace_docs.push(document)
+            }
+        }
+    }
+
+    let mut workspace_packages = HashSet::new();
+    for document in &workspace_docs {
+        workspace_packages.extend(declared_packages_in_content(&document.content));
+    }
+
+    for document in workspace_docs
+        .into_iter()
+        .chain(library_docs.into_iter())
+    {
         let parse_start = Instant::now();
         let Ok(parsed) = sysml_v2_parser::parse(&document.content) else {
             continue;
         };
         let parse_time_ms = parse_start.elapsed().as_millis().max(1) as u32;
-        graph.merge(build_graph_from_doc(&parsed, &document.uri));
+        let doc_graph = build_graph_from_doc(&parsed, &document.uri);
+        if document.source_kind == SysmlDocumentSourceKind::Library {
+            graph.merge_skip_existing_qualified_names(doc_graph, &workspace_packages);
+        } else {
+            graph.merge(doc_graph);
+        }
         parsed_docs.push(WorkspaceParsedDocument {
             uri: document.uri.clone(),
             content: document.content.clone(),
@@ -99,6 +125,49 @@ mod tests {
                 .node_ids_by_qualified_name
                 .contains_key("L::ExternalThing"),
             "custom-scheme declaration should be present"
+        );
+    }
+
+    #[test]
+    fn workspace_declarations_win_over_library_qualified_names() {
+        let workspace_doc = SysmlDocument::from_memory_path(
+            "workspace",
+            "Demo.sysml",
+            r#"
+package Demo {
+    part def workspacePart;
+}
+"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("workspace doc");
+        let library_doc = SysmlDocument::from_memory_path(
+            "library",
+            "Demo.sysml",
+            "package Demo { part def libraryPart; }".to_string(),
+            SysmlDocumentSourceKind::Library,
+            None,
+            None,
+        )
+        .expect("library doc");
+
+        let (graph, _) = build_semantic_graph_from_documents(&[workspace_doc, library_doc])
+            .expect("graph should build");
+        assert_eq!(
+            graph
+                .node_ids_for_qualified_name("Demo::workspacePart")
+                .map(|ids| ids.len())
+                .unwrap_or(0),
+            1
+        );
+        assert!(
+            graph
+                .node_ids_for_qualified_name("Demo::libraryPart")
+                .is_none(),
+            "library duplicate qualified names must not override workspace declarations"
         );
     }
 

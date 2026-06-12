@@ -414,11 +414,31 @@ pub(crate) fn remove_document(state: &mut ServerState, uri_norm: &Url) {
 }
 
 fn semantic_graph_uris(index: &std::collections::HashMap<Url, IndexEntry>) -> Vec<Url> {
-    index
-        .iter()
-        .filter(|(_, entry)| entry.include_in_semantic_graph)
-        .map(|(uri, _)| uri.clone())
-        .collect()
+    let (workspace, library) = semantic_graph_uris_split(index, &[]);
+    let mut uris = workspace;
+    uris.extend(library);
+    uris
+}
+
+fn semantic_graph_uris_split(
+    index: &std::collections::HashMap<Url, IndexEntry>,
+    library_paths: &[Url],
+) -> (Vec<Url>, Vec<Url>) {
+    let mut workspace = Vec::new();
+    let mut library = Vec::new();
+    for (uri, entry) in index {
+        if !entry.include_in_semantic_graph {
+            continue;
+        }
+        if util::uri_under_any_library(uri, library_paths) {
+            library.push(uri.clone());
+        } else {
+            workspace.push(uri.clone());
+        }
+    }
+    workspace.sort();
+    library.sort();
+    (workspace, library)
 }
 
 /// Scan configured library roots for `sysml/librarySearch` without merging the full tree into the semantic graph.
@@ -669,19 +689,15 @@ pub(crate) fn rebuild_all_document_links(
     }
 }
 
-/// A staged version of rebuild_all_document_links that operates on a consistent snapshot
-/// and returns the results to be committed. This allows the heavy lifting (parsing,
-/// graph building, relinking) to happen WITHOUT holding a write lock on ServerState.
-pub(crate) fn rebuild_semantic_graph_staged(
+fn merge_document_graphs_into(
+    semantic_graph: &mut semantic::SemanticGraph,
     index: &std::collections::HashMap<Url, IndexEntry>,
-    _library_paths: &[Url],
-) -> (
-    semantic::SemanticGraph,
-    Vec<crate::language::SymbolEntry>,
-    RebuildAllDocumentLinksMetrics,
+    uris: &[Url],
+    shadowed_packages: Option<&std::collections::HashSet<String>>,
 ) {
-    let total_start = Instant::now();
-    let uris: Vec<Url> = semantic_graph_uris(index);
+    if uris.is_empty() {
+        return;
+    }
     let parsed_docs: Vec<(Url, RootNamespace)> = uris
         .iter()
         .filter_map(|uri| {
@@ -692,22 +708,16 @@ pub(crate) fn rebuild_semantic_graph_staged(
                 .map(|parsed| (uri.clone(), parsed))
         })
         .collect();
-
-    let mut semantic_graph = semantic::SemanticGraph::new();
-
-    let rebuild_graphs_start = Instant::now();
     let worker_count = std::thread::available_parallelism()
         .map(|count| count.get())
         .unwrap_or(1)
         .min(parsed_docs.len())
         .max(1);
-
     let mut buckets: Vec<Vec<(Url, RootNamespace)>> =
         (0..worker_count).map(|_| Vec::new()).collect();
     for (i, item) in parsed_docs.into_iter().enumerate() {
         buckets[i % worker_count].push(item);
     }
-
     let mut handles = Vec::with_capacity(worker_count);
     for bucket in buckets {
         handles.push(std::thread::spawn(move || {
@@ -717,17 +727,56 @@ pub(crate) fn rebuild_semantic_graph_staged(
                 .collect::<Vec<_>>()
         }));
     }
-
     for handle in handles {
         let batch = handle.join().unwrap_or_default();
-        for (_uri, g) in batch {
-            semantic_graph.merge(g);
+        for (_uri, graph) in batch {
+            if let Some(shadowed) = shadowed_packages {
+                semantic_graph.merge_skip_existing_qualified_names(graph, shadowed);
+            } else {
+                semantic_graph.merge(graph);
+            }
         }
     }
+}
+
+/// A staged version of rebuild_all_document_links that operates on a consistent snapshot
+/// and returns the results to be committed. This allows the heavy lifting (parsing,
+/// graph building, relinking) to happen WITHOUT holding a write lock on ServerState.
+pub(crate) fn rebuild_semantic_graph_staged(
+    index: &std::collections::HashMap<Url, IndexEntry>,
+    library_paths: &[Url],
+) -> (
+    semantic::SemanticGraph,
+    Vec<crate::language::SymbolEntry>,
+    RebuildAllDocumentLinksMetrics,
+) {
+    let total_start = Instant::now();
+    let (workspace_uris, library_uris) = semantic_graph_uris_split(index, library_paths);
+    let uris: Vec<Url> = workspace_uris.iter().chain(library_uris.iter()).cloned().collect();
+
+    let rebuild_graphs_start = Instant::now();
+    let mut semantic_graph = semantic::SemanticGraph::new();
+    let workspace_packages: std::collections::HashSet<String> = workspace_uris
+        .iter()
+        .filter_map(|uri| index.get(uri))
+        .flat_map(|entry| semantic::declared_packages_in_content(&entry.content))
+        .collect();
+    merge_document_graphs_into(&mut semantic_graph, index, &workspace_uris, None);
+    merge_document_graphs_into(
+        &mut semantic_graph,
+        index,
+        &library_uris,
+        Some(&workspace_packages),
+    );
     let rebuild_graphs_ms = elapsed_ms(rebuild_graphs_start);
 
     let cross_document_edges_start = Instant::now();
     let cross_edge_resolution_start = Instant::now();
+    let worker_count = std::thread::available_parallelism()
+        .map(|count| count.get())
+        .unwrap_or(1)
+        .min(uris.len())
+        .max(1);
     let mut uri_buckets: Vec<Vec<Url>> = (0..worker_count).map(|_| Vec::new()).collect();
     for (i, uri) in uris.iter().enumerate() {
         uri_buckets[i % worker_count].push(uri.clone());

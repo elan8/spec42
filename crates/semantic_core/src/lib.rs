@@ -35,7 +35,8 @@ pub use semantic::import_resolution::{
     resolve_imported_node_ids_for_simple_name, resolve_type_reference_targets,
 };
 pub use semantic::library_loader::{
-    resolve_library_closure, LibraryClosureOptions, LoadedLibraryFile, WorkspaceSource,
+    declared_packages_in_content, resolve_library_closure, LibraryClosureOptions,
+    LoadedLibraryFile, WorkspaceSource,
 };
 pub use semantic::model::{
     ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
