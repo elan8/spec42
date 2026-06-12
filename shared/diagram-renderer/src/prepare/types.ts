@@ -145,7 +145,7 @@ export interface InterconnectionPreparedPortDetail {
   };
 }
 
-export interface InterconnectionPreparedNodeAttributes {
+export interface InterconnectionPreparedNodeAttributes extends Record<string, unknown> {
   containerId?: string | null;
   qualifiedName?: string;
   semanticId?: string;
@@ -167,7 +167,7 @@ export interface InterconnectionPreparedNode extends Omit<PreparedNode, "attribu
   attributes: InterconnectionPreparedNodeAttributes;
 }
 
-export interface InterconnectionPreparedEdgeAttributes {
+export interface InterconnectionPreparedEdgeAttributes extends Record<string, unknown> {
   sourceId?: string;
   targetId?: string;
   sourcePortId?: string;
@@ -183,7 +183,7 @@ export interface InterconnectionPreparedEdge extends Omit<PreparedEdge, "attribu
   attributes: InterconnectionPreparedEdgeAttributes;
 }
 
-export interface InterconnectionPreparedMeta {
+export interface InterconnectionPreparedMeta extends Record<string, unknown> {
   canonicalScene: boolean;
   schemaVersion?: number;
   selectedRoot?: string | null;
@@ -192,10 +192,10 @@ export interface InterconnectionPreparedMeta {
   packageContainerGroups?: unknown[];
 }
 
-export interface InterconnectionPreparedView extends Omit<PreparedView, "nodes" | "edges" | "meta"> {
+export interface InterconnectionPreparedView extends PreparedView {
   nodes: InterconnectionPreparedNode[];
   edges: InterconnectionPreparedEdge[];
-  meta: InterconnectionPreparedMeta;
+  meta?: InterconnectionPreparedMeta;
 }
 
 export function isInterconnectionPreparedView(
@@ -213,7 +213,7 @@ export function asInterconnectionPrepared(prepared: PreparedView): Interconnecti
 
 /** Layout/drawing path: canonical scene or legacy test fixtures with open attributes. */
 export function interconnectionPreparedForLayout(prepared: PreparedView): InterconnectionPreparedView {
-  return prepared as InterconnectionPreparedView;
+  return prepared as unknown as InterconnectionPreparedView;
 }
 
 export type UnknownRecord = Record<string, unknown>;

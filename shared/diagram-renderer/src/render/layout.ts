@@ -129,7 +129,7 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
   };
 
   try {
-    const laidOut = await elk.layout(elkGraphInput);
+    const laidOut = await elk.layout(elkGraphInput as unknown as Parameters<typeof elk.layout>[0]);
     const laidOutNodes = new Map<string, LaidOutNode>();
     const portCenters = new Map<string, { x: number; y: number }>();
     const nodePortAnchors = new Map<string, Record<string, { x: number; y: number; side: string }>>();

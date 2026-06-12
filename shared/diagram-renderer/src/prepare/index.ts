@@ -8,6 +8,7 @@ import type { PreparedEdge, PreparedNode, PreparedView, VisualizationPayload } f
 import { asRecord } from "./util";
 
 export type {
+  InterconnectionLayoutDto,
   InterconnectionPreparedEdge,
   InterconnectionPreparedNode,
   InterconnectionPreparedView,

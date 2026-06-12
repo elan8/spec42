@@ -45,8 +45,9 @@ function containerChain(node: LaidOutNode, nodesById: Map<string, LaidOutNode>):
   let current: LaidOutNode | undefined = node;
   while (current) {
     chain.push(current.id);
-    const parentId = String((current.attributes as Record<string, unknown> | undefined)?.containerId ?? "");
-    const parentNode = parentId && nodesById.has(parentId) ? nodesById.get(parentId) : undefined;
+    const parentId: string = String((current.attributes as Record<string, unknown> | undefined)?.containerId ?? "");
+    const parentNode: LaidOutNode | undefined =
+      parentId && nodesById.has(parentId) ? nodesById.get(parentId) : undefined;
     current = parentNode;
   }
   return chain;

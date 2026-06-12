@@ -29,15 +29,15 @@ export interface InterconnectionPortDrawOrder {
 export interface InterconnectionElkBuild {
   elkGraphInput: Record<string, unknown>;
   elkEdges: InterconnectionElkEdgeSpec[];
-  nodesById: Map<string, PreparedNode>;
+  nodesById: Map<string, InterconnectionPreparedNode>;
   preparedIdForElkId: Map<string, string>;
-  portDrawOrderFor: (node: PreparedNode) => InterconnectionPortDrawOrder;
+  portDrawOrderFor: (node: InterconnectionPreparedNode) => InterconnectionPortDrawOrder;
 }
 
 export function buildInterconnectionElkBuild(prepared: InterconnectionPreparedView): InterconnectionElkBuild {
   const nodesById = new Map(prepared.nodes.map((node) => [node.id, node]));
-  const childrenByParent = new Map<string, PreparedNode[]>();
-  const roots: PreparedNode[] = [];
+  const childrenByParent = new Map<string, InterconnectionPreparedNode[]>();
+  const roots: InterconnectionPreparedNode[] = [];
 
   for (const node of prepared.nodes) {
     const attrs = (node.attributes ?? {}) as Record<string, unknown>;
@@ -264,7 +264,7 @@ export function buildInterconnectionElkBuild(prepared: InterconnectionPreparedVi
         targetPortId: targetPortName ? portIdFor(targetNode.id, targetPortName) : undefined,
       };
     })
-    .filter((edge): edge is InterconnectionElkEdgeSpec => Boolean(edge));
+    .filter((edge): edge is NonNullable<typeof edge> => edge !== null);
 
   const elkGraphInput = {
     id: "root",

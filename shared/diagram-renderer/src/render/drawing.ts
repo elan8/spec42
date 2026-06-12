@@ -540,8 +540,8 @@ function drawIbdPorts(
   };
 
   if (drawOrder) {
-    (drawOrder.west ?? []).forEach((name, index) => drawPort(name, index, "WEST"));
-    (drawOrder.east ?? []).forEach((name, index) => drawPort(name, index, "EAST"));
+    (drawOrder.west ?? []).forEach((name: string, index: number) => drawPort(name, index, "WEST"));
+    (drawOrder.east ?? []).forEach((name: string, index: number) => drawPort(name, index, "EAST"));
     return;
   }
 
