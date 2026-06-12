@@ -417,6 +417,53 @@ describe("shared prepareViewData", () => {
     expect(prepared.edges[0].attributes?.sourcePartId).toBe("Stedin.architecture.tennetConnection");
   });
 
+  it("uses nested endpoint owner instead of container part id for interconnection connectors", () => {
+    const prepared = prepareViewData({
+      view: "interconnection-view",
+      ibd: {
+        parts: [
+          {
+            id: "ring",
+            name: "northSouthRing",
+            qualifiedName: "Grid.northSouthRing",
+            type: "part",
+          },
+          {
+            id: "ringSegment",
+            name: "ringSegmentBtoC",
+            qualifiedName: "Grid.northSouthRing.ringSegmentBtoC",
+            containerId: "ring",
+            type: "part",
+          },
+          {
+            id: "station",
+            name: "txStationB",
+            qualifiedName: "Grid.txStationB",
+            type: "part",
+          },
+        ],
+        ports: [
+          { id: "a", name: "a", parentId: "Grid.northSouthRing.ringSegmentBtoC" },
+          { id: "mvConnection", name: "mvConnection", parentId: "Grid.txStationB" },
+        ],
+        connectors: [
+          {
+            id: "ring-feed",
+            sourceId: "Grid.txStationB.mvConnection",
+            targetId: "Grid.northSouthRing.ringSegmentBtoC.a",
+            sourcePartId: "Grid.txStationB",
+            targetPartId: "Grid.northSouthRing",
+            type: "connection",
+          },
+        ],
+      },
+    });
+
+    expect(prepared.edges).toHaveLength(1);
+    expect(prepared.edges[0].source).toBe("station");
+    expect(prepared.edges[0].target).toBe("ringSegment");
+  });
+
   it("adds synthetic initial state when missing", () => {
     const prepared = prepareViewData({
       view: "state-transition-view",

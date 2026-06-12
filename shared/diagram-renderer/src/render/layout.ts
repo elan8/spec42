@@ -124,10 +124,11 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
       : [];
   };
   const normalizeEndpoint = (value: unknown): string => String(value ?? "").replace(/::/g, ".").trim();
-  const portLayoutKey = (node: PreparedNode, port: PreparedPort): string => {
+  const portLayoutKeys = (node: PreparedNode, port: PreparedPort): string[] => {
     const attrs = (node.attributes ?? {}) as Record<string, unknown>;
+    const keys: string[] = [];
     const explicit = normalizeEndpoint(port.id);
-    if (explicit) return explicit;
+    if (explicit) keys.push(explicit);
     const parent = normalizeEndpoint(
       port.attributes?.parentId ??
         (port as unknown as Record<string, unknown>).parentId ??
@@ -135,7 +136,9 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
         node.id ??
         node.label,
     );
-    return parent ? `${parent}.${port.name}` : normalizeEndpoint(port.name);
+    if (parent) keys.push(`${parent}.${port.name}`);
+    keys.push(normalizeEndpoint(port.name));
+    return [...new Set(keys.filter(Boolean))];
   };
   const portUsage = new Map<string, { sourceCount: number; targetCount: number }>();
   const bumpPortUsage = (endpoint: unknown, role: "sourceCount" | "targetCount") => {
@@ -150,13 +153,36 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
     bumpPortUsage(edge.attributes?.targetId ?? edge.target, "targetCount");
   }
   const usageForPort = (node: PreparedNode, port: PreparedPort): { sourceCount: number; targetCount: number } => {
-    const key = portLayoutKey(node, port);
-    const explicit = portUsage.get(key);
-    if (explicit) return explicit;
+    for (const key of portLayoutKeys(node, port)) {
+      const explicit = portUsage.get(key);
+      if (explicit) return explicit;
+    }
     const attrs = (node.attributes ?? {}) as Record<string, unknown>;
     const parent = normalizeEndpoint(attrs.qualifiedName ?? node.id ?? node.label);
     const fallback = portUsage.get(`${parent}.${normalizeEndpoint(port.name)}`);
-    return fallback ?? { sourceCount: 0, targetCount: 0 };
+    if (fallback) return fallback;
+
+    const aliases = [
+      normalizeEndpoint(node.id),
+      normalizeEndpoint(node.label),
+      normalizeEndpoint(attrs.qualifiedName),
+    ].filter(Boolean);
+    const portName = normalizeEndpoint(port.name);
+    const usage = { sourceCount: 0, targetCount: 0 };
+    for (const [endpoint, counts] of portUsage) {
+      if (!endpoint.endsWith(`.${portName}`) && endpoint !== portName) continue;
+      const owner = endpoint === portName ? "" : endpoint.slice(0, -portName.length - 1);
+      const matchesOwner = aliases.some((alias) =>
+        owner === alias ||
+        owner.endsWith(`.${alias}`) ||
+        alias.endsWith(`.${owner}`) ||
+        owner.endsWith(`.${node.label}`),
+      );
+      if (!matchesOwner) continue;
+      usage.sourceCount += counts.sourceCount;
+      usage.targetCount += counts.targetCount;
+    }
+    return usage;
   };
   const connectorPortName = (node: PreparedNode, endpoint: unknown): string | null => {
     const endpointText = String(endpoint ?? "").trim();

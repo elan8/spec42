@@ -907,6 +907,102 @@ describe("shared renderer", () => {
     expect(distributionPort?.getAttribute("data-port-side")).toBe("WEST");
   });
 
+  it("matches qualified connector endpoints to local IBD port ids when choosing sides", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Interconnection",
+      view: "interconnection-view",
+      nodes: [
+        {
+          id: "source",
+          label: "source",
+          kind: "part",
+          attributes: { qualifiedName: "System.source", portDetails: [{ id: "out", name: "out" }] },
+        },
+        {
+          id: "sink",
+          label: "sink",
+          kind: "part",
+          attributes: { qualifiedName: "System.sink", portDetails: [{ id: "gridConnection", name: "gridConnection" }] },
+        },
+      ],
+      edges: [
+        {
+          id: "connection",
+          source: "source",
+          target: "sink",
+          label: "connection",
+          edgeKind: "connection",
+          attributes: {
+            sourceId: "System.source.out",
+            targetId: "System.sink.gridConnection",
+            relationType: "connection",
+          },
+        },
+      ],
+    });
+
+    const sourcePort = target.querySelector('[data-node-id="source"] .port-icon');
+    const sinkPort = target.querySelector('[data-node-id="sink"] .port-icon');
+
+    expect(sourcePort?.getAttribute("data-port-side")).toBe("EAST");
+    expect(sinkPort?.getAttribute("data-port-side")).toBe("WEST");
+  });
+
+  it("matches IBD port usage when endpoint and part qualified prefixes differ", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Interconnection",
+      view: "interconnection-view",
+      nodes: [
+        {
+          id: "txStationB",
+          label: "txStationB",
+          kind: "part",
+          attributes: {
+            qualifiedName: "Stedin.Architecture.RijnmondGridArchitecture.txStationB",
+            portDetails: [{ id: "lvConnection", name: "lvConnection" }],
+          },
+        },
+        {
+          id: "residentialAreaB",
+          label: "residentialAreaB",
+          kind: "part",
+          attributes: {
+            qualifiedName: "Stedin.Architecture.RijnmondGridArchitecture.residentialAreaB",
+            portDetails: [{ id: "gridConnection", name: "gridConnection" }],
+          },
+        },
+      ],
+      edges: [
+        {
+          id: "lv",
+          source: "txStationB",
+          target: "residentialAreaB",
+          label: "connection",
+          edgeKind: "connection",
+          attributes: {
+            sourceId: "Stedin.rijnmondExpansionProject.architecture.txStationB.lvConnection",
+            targetId: "Stedin.rijnmondExpansionProject.architecture.residentialAreaB.gridConnection",
+            relationType: "connection",
+          },
+        },
+      ],
+    });
+
+    const txPort = target.querySelector('[data-node-id="txStationB"] .port-icon');
+    const loadPort = target.querySelector('[data-node-id="residentialAreaB"] .port-icon');
+
+    expect(txPort?.getAttribute("data-port-side")).toBe("EAST");
+    expect(loadPort?.getAttribute("data-port-side")).toBe("WEST");
+  });
+
   it("renders SysML IBD edge kinds with distinct notation styles and meaningful labels", async () => {
     const target = document.createElement("div");
     Object.defineProperty(target, "clientWidth", { value: 1600, configurable: true });

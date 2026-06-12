@@ -333,23 +333,45 @@ export function prepareInterconnection(visualization: VisualizationPayload): Pre
     .map((node) => ({ node, label: normalizedEndpoint(node.label) }))
     .filter(({ label }) => Boolean(label))
     .filter(({ label }, _index, candidates) => candidates.filter((candidate) => candidate.label === label).length === 1);
+  const endpointOwnerFromEndpoint = (endpointText: string): PreparedNode | undefined => {
+    if (!endpointText) return undefined;
+    const best = endpointOwnerCandidates.find(({ alias }) => endpointText === alias || endpointText.startsWith(`${alias}.`));
+    if (best) return best.node;
+    const namedOwner = uniqueLabelCandidates.find(({ label }) => endpointMatchesNamedPart(endpointText, label));
+    return namedOwner?.node;
+  };
   const resolveEndpointPartId = (explicit: unknown, endpoint: unknown): string => {
     const explicitText = normalizedEndpoint(explicit);
+    const endpointText = normalizedEndpoint(endpoint);
+    const endpointOwner = endpointOwnerFromEndpoint(endpointText);
     if (explicitText) {
-      if (nodeIds.has(explicitText)) return explicitText;
+      if (nodeIds.has(explicitText)) {
+        if (
+          endpointOwner &&
+          endpointOwner.id !== explicitText &&
+          endpointOwnerCandidates.some(({ node, alias }) => node.id === explicitText && endpointText.startsWith(`${alias}.`))
+        ) {
+          return endpointOwner.id;
+        }
+        return explicitText;
+      }
       const directById = endpointOwnerCandidates.find(({ alias }) => alias === explicitText);
+      if (
+        endpointOwner &&
+        directById &&
+        endpointOwner.id !== directById.node.id &&
+        endpointOwnerCandidates.some(({ node, alias }) => node.id === directById.node.id && endpointText.startsWith(`${alias}.`))
+      ) {
+        return endpointOwner.id;
+      }
       if (directById) return directById.node.id;
       const nestedOwner = endpointOwnerCandidates.find(({ alias }) => explicitText.startsWith(`${alias}.`));
       if (nestedOwner) return nestedOwner.node.id;
       const namedOwner = uniqueLabelCandidates.find(({ label }) => endpointMatchesNamedPart(explicitText, label));
       if (namedOwner) return namedOwner.node.id;
     }
-    const endpointText = normalizedEndpoint(endpoint);
     if (!endpointText) return explicitText;
-    const best = endpointOwnerCandidates.find(({ alias }) => endpointText === alias || endpointText.startsWith(`${alias}.`));
-    if (best) return best.node.id;
-    const namedOwner = uniqueLabelCandidates.find(({ label }) => endpointMatchesNamedPart(endpointText, label));
-    return namedOwner?.node.id ?? explicitText;
+    return endpointOwner?.id ?? explicitText;
   };
   const edges = connectors
     .map((connector, index) => {
