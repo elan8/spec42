@@ -131,8 +131,8 @@ export async function renderVisualization(
         drawIbdViewFrame(root, prepared, contentBounds(layout), theme);
       }
       drawInterconnectionContainers(root, prepared, layout.nodes, theme);
-      drawNodes(root, layout.nodes, options, isInterconnectionView, theme);
-      drawEdges(root, layout.edges, isInterconnectionView, theme);
+      drawNodes(root, layout.nodes, options, isInterconnectionView, theme, layout.interconnectionLayout);
+      drawEdges(root, layout.edges, isInterconnectionView, theme, layout.interconnectionLayout);
     } else {
       drawGeneralPackageContainers(root, prepared, layout.nodes, theme);
       drawEdges(root, layout.edges, isInterconnectionView, theme);

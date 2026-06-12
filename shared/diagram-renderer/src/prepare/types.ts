@@ -94,6 +94,11 @@ export interface InterconnectionLayoutPortAnchor {
   side: string;
 }
 
+export interface InterconnectionLayoutPortDrawOrder {
+  west: string[];
+  east: string[];
+}
+
 export interface InterconnectionLayoutNodeDto {
   id: string;
   x: number;
@@ -101,6 +106,7 @@ export interface InterconnectionLayoutNodeDto {
   width: number;
   height: number;
   portAnchors: Record<string, InterconnectionLayoutPortAnchor>;
+  portDrawOrder?: InterconnectionLayoutPortDrawOrder;
 }
 
 export interface InterconnectionLayoutEdgeDto {

@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import { prepareViewData } from "../prepare";
 import { buildInterconnectionElkGraph } from "./interconnection-layout";
-import { layoutInterconnectionPrepared } from "./layout";
+import { layoutInterconnectionPrepared, layoutPrepared } from "./layout";
 import {
   assertNoDetachedEndpoints,
   assertWithinBounds,
@@ -52,7 +52,20 @@ describe("interconnection layout fixtures", () => {
 
   it("passes route quality checks for canonical two-part chain", async () => {
     const prepared = prepareViewData(loadFixture("scene-two-part-chain.json"));
-    const layout = await layoutInterconnectionPrepared(prepared);
+    const layout = await layoutPrepared(prepared);
+    expect(layout.interconnectionLayout).toBeDefined();
+    const layoutDto = layout.interconnectionLayout!;
+    expect(layoutDto.nodes.length).toBeGreaterThanOrEqual(2);
+    expect(layoutDto.edges).toHaveLength(1);
+    expect(layoutDto.edges[0]?.routePoints.length).toBeGreaterThanOrEqual(2);
+    for (const node of layoutDto.nodes) {
+      expect(node.portDrawOrder).toBeDefined();
+      expect(Object.keys(node.portAnchors).length).toBeGreaterThan(0);
+    }
+    for (const node of layout.nodes) {
+      expect((node.attributes as Record<string, unknown> | undefined)?._portAnchors).toBeUndefined();
+      expect((node.attributes as Record<string, unknown> | undefined)?._portDrawOrder).toBeUndefined();
+    }
     const report = assessRouteQuality(layout.edges, layout.nodes, { maxLengthRatio: 6 });
     expect(layout.nodes.length).toBeGreaterThanOrEqual(2);
     expect(layout.edges.length).toBe(1);
@@ -73,7 +86,17 @@ describe("interconnection layout fixtures", () => {
     const prepared = prepareStedinSceneFixture(fixtureName);
     expect(prepared.meta?.canonicalScene).toBe(true);
     expect(prepared.edges.length).toBeGreaterThanOrEqual(17);
-    const layout = await layoutInterconnectionPrepared(prepared);
+    const layout = await layoutPrepared(prepared);
+    expect(layout.interconnectionLayout).toBeDefined();
+    const layoutDto = layout.interconnectionLayout!;
+    for (const edge of layoutDto.edges) {
+      expect(edge.routePoints.length).toBeGreaterThanOrEqual(2);
+    }
+    for (const node of layoutDto.nodes) {
+      if (Object.keys(node.portAnchors).length > 0) {
+        expect(node.portDrawOrder).toBeDefined();
+      }
+    }
     const report = assessRouteQuality(layout.edges, layout.nodes, { maxLengthRatio: 8 });
     expect(layout.edges.length).toBeGreaterThanOrEqual(17);
     expect(assertNoDetachedEndpoints(report), report.violations.join("; ")).toEqual([]);
@@ -95,7 +118,12 @@ describe("interconnection layout fixtures", () => {
         return !semanticId.includes(".Variants.") && !semanticId.includes(".expansionAlternatives.");
       }),
     ).toBe(true);
-    const layout = await layoutInterconnectionPrepared(prepared);
+    const layout = await layoutPrepared(prepared);
+    expect(layout.interconnectionLayout).toBeDefined();
+    const layoutDto = layout.interconnectionLayout!;
+    for (const edge of layoutDto.edges) {
+      expect(edge.routePoints.length).toBeGreaterThanOrEqual(2);
+    }
     const report = assessRouteQuality(layout.edges, layout.nodes, { maxLengthRatio: 8 });
     expect(layout.edges.length).toBeGreaterThanOrEqual(15);
     expect(assertNoDetachedEndpoints(report), report.violations.join("; ")).toEqual([]);

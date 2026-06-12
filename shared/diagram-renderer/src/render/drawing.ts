@@ -3,8 +3,10 @@ import { normalizeEdgeKind } from "../graph-normalization";
 import { nodeBodyChromeStyle, resolveNodeChrome } from "../node-notation";
 import { collectCompartments, computeNodeHeight, renderSysMLNode } from "../sysml-node-builder";
 import { strokeColorForEdge, strokeColorForNode, type DiagramTheme } from "../theme";
+import type { InterconnectionLayoutDto } from "../prepare";
 import type { PreparedView } from "../prepare";
 import { nodeSupportsSourceNavigation } from "../views/behavior-interaction";
+import { buildInterconnectionLayoutLookup, type InterconnectionLayoutLookup } from "./interconnection-layout-dto";
 import { resolveIbdRoutePoints } from "./ibd-route";
 import {
   ibdNodeHeight,
@@ -29,11 +31,15 @@ export function drawEdges(
   edges: LaidOutEdge[],
   isInterconnectionView: boolean,
   theme: DiagramTheme,
+  layoutDto?: InterconnectionLayoutDto,
 ): void {
+  const layoutLookup = layoutDto ? buildInterconnectionLayoutLookup(layoutDto) : undefined;
   const group = root.append("g").attr("class", "viz-edges");
   for (const edge of edges) {
     if (!edge.sourceNode || !edge.targetNode) continue;
-    const path = isInterconnectionView ? pathForIbdEdge(edge) : pathFromSimpleSection(edge.layout?.sections?.[0]);
+    const path = isInterconnectionView
+      ? pathForIbdEdge(edge, layoutLookup)
+      : pathFromSimpleSection(edge.layout?.sections?.[0]);
     if (!path) continue;
     const edgeKind = edge.edgeKind ?? normalizeEdgeKind(edge.label);
     const displayLabel = edgeDisplayLabel(edge, edgeKind, isInterconnectionView);
@@ -53,7 +59,7 @@ export function drawEdges(
       .style("opacity", 0.9);
     applyEdgeMarker(pathSelection, edgeKind, isInterconnectionView, theme);
     if (shouldRenderEdgeLabel(edge, edgeKind, isInterconnectionView)) {
-      const midpoint = edgeMidpoint(edge, isInterconnectionView);
+      const midpoint = edgeMidpoint(edge, isInterconnectionView, layoutLookup);
       group
         .append("text")
         .attr("class", `viz-edge-label viz-edge-label--${edgeKind}`)
@@ -128,7 +134,9 @@ export function drawNodes(
   options: RenderOptions,
   isInterconnectionView: boolean,
   theme: DiagramTheme,
+  layoutDto?: InterconnectionLayoutDto,
 ): void {
+  const layoutLookup = layoutDto ? buildInterconnectionLayoutLookup(layoutDto) : undefined;
   const renderNodes = isInterconnectionView ? orderIbdNodesForPaint(nodes) : nodes;
   const groups = root
     .append("g")
@@ -202,7 +210,13 @@ export function drawNodes(
     const group = d3.select(this);
     group.selectAll("*").remove();
     try {
-      renderIbdNode(group as any, d, Boolean(options.selectedNodeId && d.id === options.selectedNodeId), theme);
+      renderIbdNode(
+        group as any,
+        d,
+        Boolean(options.selectedNodeId && d.id === options.selectedNodeId),
+        theme,
+        layoutLookup?.nodesById.get(d.id),
+      );
     } catch (error) {
       console.error("[IBD] failed to render node", d.id, error);
     }
@@ -365,6 +379,7 @@ function renderIbdNode(
   node: LaidOutNode,
   selected: boolean,
   theme: DiagramTheme,
+  layoutNode?: InterconnectionLayoutDto["nodes"][number],
 ): void {
   const attrs = (node.attributes ?? {}) as Record<string, unknown>;
   const kind = (node.kind || "part").toLowerCase();
@@ -416,7 +431,7 @@ function renderIbdNode(
       .style("font-size", "11px")
       .style("font-weight", "bold")
       .style("fill", theme.textPrimary);
-    drawIbdPorts(group, node, width, headerHeight, theme);
+    drawIbdPorts(group, node, width, headerHeight, theme, layoutNode);
     return;
   }
 
@@ -471,7 +486,7 @@ function renderIbdNode(
       .style("fill", theme.textSecondary);
   });
 
-  drawIbdPorts(group, node, width, contentStartY + 20, theme);
+  drawIbdPorts(group, node, width, contentStartY + 20, theme, layoutNode);
 }
 
 function drawIbdPorts(
@@ -480,18 +495,21 @@ function drawIbdPorts(
   width: number,
   fallbackStartY: number,
   theme: DiagramTheme,
+  layoutNode?: InterconnectionLayoutDto["nodes"][number],
 ): void {
   const attrs = (node.attributes ?? {}) as Record<string, unknown>;
   const details = Array.isArray(attrs.portDetails) ? attrs.portDetails as PreparedPort[] : [];
-  const drawOrder = (attrs._portDrawOrder && typeof attrs._portDrawOrder === "object"
-    ? attrs._portDrawOrder
-    : null) as { west?: string[]; east?: string[] } | null;
+  const drawOrder = layoutNode?.portDrawOrder
+    ?? ((attrs._portDrawOrder && typeof attrs._portDrawOrder === "object"
+      ? attrs._portDrawOrder
+      : null) as { west?: string[]; east?: string[] } | null);
   const portNames = drawOrder
     ? [...(drawOrder.west ?? []), ...(drawOrder.east ?? [])]
     : details.length > 0
       ? details.map((port) => port.name)
       : Array.isArray(attrs.ports) ? (attrs.ports as unknown[]).map((port) => String(port)) : [];
-  const anchors = (attrs._portAnchors && typeof attrs._portAnchors === "object" ? attrs._portAnchors : {}) as Record<string, { x: number; y: number; side: string }>;
+  const anchors = layoutNode?.portAnchors
+    ?? ((attrs._portAnchors && typeof attrs._portAnchors === "object" ? attrs._portAnchors : {}) as Record<string, { x: number; y: number; side: string }>);
   const portSize = 10;
   const fallbackSpacing = 26;
   const drawPort = (name: string, sideIndex: number, side: "WEST" | "EAST") => {
@@ -713,7 +731,14 @@ function pathFromSimpleSection(section: EdgeSection | undefined): string | null 
   return pointsToPathD(points);
 }
 
-function pathForIbdEdge(edge: LaidOutEdge): string | null {
+export function pathForIbdEdge(
+  edge: LaidOutEdge,
+  layoutLookup?: InterconnectionLayoutLookup,
+): string | null {
+  const layoutEdge = layoutLookup?.edgesById.get(edge.id);
+  if (layoutEdge && layoutEdge.routePoints.length >= 2) {
+    return pointsToPathD(layoutEdge.routePoints);
+  }
   const layoutRoutePoints = (edge.attributes as Record<string, unknown> | undefined)?.layoutRoutePoints;
   const points = Array.isArray(layoutRoutePoints) && layoutRoutePoints.length >= 2
     ? layoutRoutePoints as Array<{ x: number; y: number }>
@@ -722,9 +747,16 @@ function pathForIbdEdge(edge: LaidOutEdge): string | null {
   return pointsToPathD(points);
 }
 
-function edgeMidpoint(edge: LaidOutEdge, isInterconnectionView: boolean): { x: number; y: number } {
+function edgeMidpoint(
+  edge: LaidOutEdge,
+  isInterconnectionView: boolean,
+  layoutLookup?: InterconnectionLayoutLookup,
+): { x: number; y: number } {
   if (isInterconnectionView) {
-    const routePoints = resolveIbdRoutePoints(edge);
+    const layoutEdge = layoutLookup?.edgesById.get(edge.id);
+    const routePoints = layoutEdge?.routePoints?.length
+      ? layoutEdge.routePoints
+      : resolveIbdRoutePoints(edge);
     if (routePoints && routePoints.length > 0) {
       const index = Math.floor((routePoints.length - 1) / 2);
       return routePoints[index];

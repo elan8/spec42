@@ -1,8 +1,13 @@
 import ELK from "elkjs/lib/elk.bundled.js";
 import { isOverviewVisualElementType, normalizeEdgeKind } from "../graph-normalization";
 import { collectCompartments, computeNodeHeight } from "../sysml-node-builder";
-import type { InterconnectionLayoutDto, PreparedNode, PreparedView } from "../prepare";
-import { lcaOffsetForNodes, pointsFromElkSections, resolveIbdRoutePoints } from "./ibd-route";
+import type { PreparedNode, PreparedView } from "../prepare";
+import { lcaOffsetForNodes } from "./ibd-route";
+import {
+  createInterconnectionLayoutBuildState,
+  finalizeInterconnectionLayoutDto,
+  recordInterconnectionLayoutNode,
+} from "./interconnection-layout-dto";
 import {
   computeIbdLeafHeight,
   ibdNodeHeight,
@@ -33,36 +38,7 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
     return { nodes: [], edges: [] };
   }
   if (isInterconnectionView) {
-    const layout = await layoutInterconnectionPrepared(prepared);
-    if (prepared.meta?.canonicalScene) {
-      const layoutDto: InterconnectionLayoutDto = {
-        nodes: layout.nodes.map((node) => ({
-          id: node.id,
-          x: node.x ?? 0,
-          y: node.y ?? 0,
-          width: node.width ?? 0,
-          height: node.height ?? 0,
-          portAnchors:
-            ((node.attributes ?? {})._portAnchors as Record<string, { x: number; y: number; side: string }>) ??
-            {},
-        })),
-        edges: layout.edges.map((edge) => ({
-          id: edge.id,
-          routePoints: resolveIbdRoutePoints(edge) ?? [],
-          sourcePortId: String(edge.attributes?.sourcePortId ?? ""),
-          targetPortId: String(edge.attributes?.targetPortId ?? ""),
-        })),
-        diagnostics: [],
-      };
-      for (const edge of layout.edges) {
-        const routePoints = layoutDto.edges.find((item) => item.id === edge.id)?.routePoints;
-        if (routePoints?.length) {
-          edge.attributes = { ...(edge.attributes ?? {}), layoutRoutePoints: routePoints };
-        }
-      }
-      return { ...layout, interconnectionLayout: layoutDto };
-    }
-    return layout;
+    return layoutInterconnectionPrepared(prepared);
   }
   const diagramNodes = prepared.nodes.filter((node) => isOverviewVisualElementType(node.kind));
   const visibleIds = new Set(diagramNodes.map((node) => node.id));
@@ -122,6 +98,8 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
 }
 
 export async function layoutInterconnectionPrepared(prepared: PreparedView): Promise<LayoutResult> {
+  const canonicalScene = Boolean(prepared.meta?.canonicalScene);
+  const layoutBuildState = canonicalScene ? createInterconnectionLayoutBuildState() : null;
   const nodesById = new Map(prepared.nodes.map((node) => [node.id, node]));
   const childrenByParent = new Map<string, PreparedNode[]>();
   const roots: PreparedNode[] = [];
@@ -434,23 +412,38 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
       }
       if (base) {
         const hasLayoutChildren = Array.isArray(elkNode.children) && elkNode.children.length > 0;
+        const portDrawOrder = (() => {
+          const ports = portDetailsFor(base);
+          const { west, east } = splitIbdPortsBySide(base, ports, sideForPort, usageForPort);
+          return { west: west.map((port) => port.name), east: east.map((port) => port.name) };
+        })();
+        const portAnchors = nodePortAnchors.get(base.id) ?? {};
+        const laidOutWidth = elkNode.width ?? ibdNodeWidth;
+        const laidOutHeight = elkNode.height ?? ibdNodeHeight;
+        if (layoutBuildState) {
+          recordInterconnectionLayoutNode(
+            layoutBuildState,
+            { id: base.id, x: absX, y: absY, width: laidOutWidth, height: laidOutHeight },
+            portAnchors,
+            portDrawOrder,
+          );
+        }
+        const layoutAttributes: Record<string, unknown> = {
+          ...(base.attributes ?? {}),
+          _isLayoutContainer: hasLayoutChildren,
+          _layoutDepth: depth,
+        };
+        if (!canonicalScene) {
+          layoutAttributes._portAnchors = portAnchors;
+          layoutAttributes._portDrawOrder = portDrawOrder;
+        }
         laidOutNodes.set(base.id, {
           ...base,
           x: absX,
           y: absY,
-          width: elkNode.width ?? ibdNodeWidth,
-          height: elkNode.height ?? ibdNodeHeight,
-          attributes: {
-            ...(base.attributes ?? {}),
-            _isLayoutContainer: hasLayoutChildren,
-            _layoutDepth: depth,
-            _portAnchors: nodePortAnchors.get(base.id),
-            _portDrawOrder: (() => {
-              const ports = portDetailsFor(base);
-              const { west, east } = splitIbdPortsBySide(base, ports, sideForPort, usageForPort);
-              return { west: west.map((port) => port.name), east: east.map((port) => port.name) };
-            })(),
-          },
+          width: laidOutWidth,
+          height: laidOutHeight,
+          attributes: layoutAttributes,
         });
       }
       for (const child of elkNode.children ?? []) {
@@ -543,6 +536,13 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
       } satisfies LaidOutEdge;
     });
 
+    if (layoutBuildState) {
+      return {
+        nodes,
+        edges,
+        interconnectionLayout: finalizeInterconnectionLayoutDto(layoutBuildState, edges),
+      };
+    }
     return { nodes, edges };
   } catch {
     // Interconnection notation must not degrade into a heuristic layout if ELK fails.
