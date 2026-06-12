@@ -1541,6 +1541,7 @@ mod interconnection_scope_tests {
         IbdDataDto {
             parts: vec![IbdPartDto {
                 id: "Pkg::droneInstance".to_string(),
+                node_id: "Pkg.droneInstance".to_string(),
                 name: "droneInstance".to_string(),
                 qualified_name: "Pkg.droneInstance".to_string(),
                 uri: None,
@@ -1556,6 +1557,8 @@ mod interconnection_scope_tests {
                 target_id: "Pkg.droneInstance.portB".to_string(),
                 source_part_id: None,
                 target_part_id: None,
+                source_port_id: None,
+                target_port_id: None,
                 rel_type: "connection".to_string(),
             }],
             container_groups: Vec::new(),

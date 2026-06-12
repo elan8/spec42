@@ -391,6 +391,8 @@ describe("shared prepareViewData", () => {
             target_id: "Stedin.architecture.primarySubstation.hvConnection",
             source_part_id: "Stedin.architecture.tennetConnection",
             target_part_id: "Stedin.architecture.primarySubstation",
+            source_port_id: "Stedin.architecture.tennetConnection.connection",
+            target_port_id: "Stedin.architecture.primarySubstation.hvConnection",
             rel_type: "connection",
           },
           {
@@ -415,6 +417,8 @@ describe("shared prepareViewData", () => {
     ]);
     expect(prepared.edges[0].attributes?.sourceId).toBe("Stedin.architecture.tennetConnection.connection");
     expect(prepared.edges[0].attributes?.sourcePartId).toBe("Stedin.architecture.tennetConnection");
+    expect(prepared.edges[0].attributes?.sourcePortId).toBe("Stedin.architecture.tennetConnection.connection");
+    expect(prepared.edges[0].attributes?.targetPortId).toBe("Stedin.architecture.primarySubstation.hvConnection");
   });
 
   it("uses nested endpoint owner instead of container part id for interconnection connectors", () => {

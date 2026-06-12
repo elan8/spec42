@@ -146,6 +146,7 @@ fn part_tree_size_inner(
 #[serde(rename_all = "camelCase")]
 pub struct IbdPartDto {
     pub id: String,
+    pub node_id: String,
     pub name: String,
     pub qualified_name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -161,6 +162,7 @@ pub struct IbdPartDto {
 #[serde(rename_all = "camelCase")]
 pub struct IbdPortDto {
     pub id: String,
+    pub port_id: String,
     pub name: String,
     pub parent_id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -182,6 +184,10 @@ pub struct IbdConnectorDto {
     pub source_part_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub target_part_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_port_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target_port_id: Option<String>,
     #[serde(rename = "type")]
     pub rel_type: String,
 }
@@ -235,6 +241,15 @@ pub struct IbdRootViewDto {
 /// Qualified name with "::" converted to "." for client path matching (e.g. "pkg::A::b" -> "A.b" when root is "A").
 pub fn qualified_name_to_dot(qn: &str) -> String {
     qn.replace("::", ".")
+}
+
+fn canonical_port_id(parent_id: &str, port_name: &str) -> String {
+    let parent = qualified_name_to_dot(parent_id);
+    if parent.is_empty() {
+        port_name.to_string()
+    } else {
+        format!("{parent}.{port_name}")
+    }
 }
 
 fn graph_node_for_ibd_part<'a>(
@@ -308,7 +323,8 @@ fn push_inherited_ports_from_definition(
             .map(String::from);
         let port_side = infer_port_side(&child.name, direction.as_deref(), port_type.as_deref());
         ports_out.push(IbdPortDto {
-            id: format!("{parent_dot}.{}", child.name),
+            id: canonical_port_id(parent_dot, &child.name),
+            port_id: canonical_port_id(parent_dot, &child.name),
             name: child.name.clone(),
             parent_id: parent_dot.to_string(),
             direction,
@@ -399,11 +415,24 @@ fn endpoint_matches_part(endpoint: &str, part_qn_dot: &str) -> bool {
 }
 
 fn resolve_owner_part_qn_for_endpoint(endpoint: &str, parts: &[IbdPartDto]) -> Option<String> {
+    let endpoint = qualified_name_to_dot(endpoint);
     parts
         .iter()
-        .filter(|part| endpoint_matches_part(endpoint, &part.qualified_name))
+        .filter(|part| endpoint_matches_part(&endpoint, &part.qualified_name))
         .max_by_key(|part| part.qualified_name.len())
         .map(|part| part.qualified_name.clone())
+}
+
+fn resolve_port_id_for_endpoint(endpoint: &str, ports: &[IbdPortDto]) -> Option<String> {
+    let endpoint_dot = qualified_name_to_dot(endpoint);
+    ports
+        .iter()
+        .find(|port| {
+            endpoint_dot == qualified_name_to_dot(&port.id)
+                || endpoint_dot == qualified_name_to_dot(&port.port_id)
+                || endpoint_dot == canonical_port_id(&port.parent_id, &port.name)
+        })
+        .map(|port| port.port_id.clone())
 }
 
 /// Drops unrelated assemblies, but keeps every part nested under a composite that
@@ -551,6 +580,7 @@ fn ensure_endpoint_parts_present(
         decorate_ibd_part_attributes(&element_type, &mut attributes);
         parts.push(IbdPartDto {
             id: node.id.qualified_name.clone(),
+            node_id: qualified_name.clone(),
             name: node.name.clone(),
             qualified_name,
             uri: Some(node.id.uri.as_str().to_string()),
@@ -913,10 +943,16 @@ fn remap_connectors_to_typed_instances(
     dedupe_connectors(expanded)
 }
 
-fn enrich_connector_part_ids(connectors: &mut [IbdConnectorDto], parts: &[IbdPartDto]) {
+fn enrich_connector_endpoint_refs(
+    connectors: &mut [IbdConnectorDto],
+    parts: &[IbdPartDto],
+    ports: &[IbdPortDto],
+) {
     for connector in connectors.iter_mut() {
         connector.source_part_id = resolve_owner_part_qn_for_endpoint(&connector.source_id, parts);
         connector.target_part_id = resolve_owner_part_qn_for_endpoint(&connector.target_id, parts);
+        connector.source_port_id = resolve_port_id_for_endpoint(&connector.source_id, ports);
+        connector.target_port_id = resolve_port_id_for_endpoint(&connector.target_id, ports);
     }
 }
 
@@ -1013,6 +1049,8 @@ fn mirror_connectors_from_definition_document(
             target_id,
             source_part_id: None,
             target_part_id: None,
+            source_port_id: None,
+            target_port_id: None,
             rel_type: "connection".to_string(),
         });
     };
@@ -1278,6 +1316,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             });
             parts.push(IbdPartDto {
                 id: qn.clone(),
+                node_id: qualified_name_to_dot(&qn),
                 name: node.name.clone(),
                 qualified_name: qualified_name_to_dot(&qn),
                 uri: Some(node.id.uri.as_str().to_string()),
@@ -1303,6 +1342,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             let port_side = infer_port_side(&node.name, direction.as_deref(), port_type.as_deref());
             ports.push(IbdPortDto {
                 id: node.id.qualified_name.clone(),
+                port_id: canonical_port_id(&parent_id, &node.name),
                 name: node.name.clone(),
                 parent_id,
                 direction,
@@ -1394,6 +1434,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             if existing_part_qn_dot.insert(expanded_dot.clone()) {
                 parts_out.push(IbdPartDto {
                     id: expanded_dot.clone(),
+                    node_id: expanded_dot.clone(),
                     name: part_child.name.clone(),
                     qualified_name: expanded_dot.clone(),
                     uri: Some(part_child.id.uri.as_str().to_string()),
@@ -1454,6 +1495,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             existing_part_qn_dot.insert(expanded_dot.clone());
             parts_out.push(IbdPartDto {
                 id: expanded_dot.clone(),
+                node_id: expanded_dot.clone(),
                 name: part_child.name.clone(),
                 qualified_name: expanded_dot.clone(),
                 uri: Some(part_child.id.uri.as_str().to_string()),
@@ -1552,6 +1594,8 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             target_id,
             source_part_id: None,
             target_part_id: None,
+            source_port_id: None,
+            target_port_id: None,
             rel_type: "connection".to_string(),
         });
     }
@@ -1578,6 +1622,8 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             target_id,
             source_part_id: None,
             target_part_id: None,
+            source_port_id: None,
+            target_port_id: None,
             rel_type: "connection".to_string(),
         });
     }
@@ -1663,6 +1709,8 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 target_id,
                 source_part_id: None,
                 target_part_id: None,
+                source_port_id: None,
+                target_port_id: None,
                 rel_type: "connection".to_string(),
             });
         }
@@ -1683,7 +1731,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
     }
     connectors = remap_connectors_to_typed_instances(connectors, &instance_def_mappings);
     let mut connectors = dedupe_connectors(connectors);
-    enrich_connector_part_ids(&mut connectors, &parts);
+    enrich_connector_endpoint_refs(&mut connectors, &parts, &ports);
 
     ensure_endpoint_parts_present(&mut parts, &connectors, graph, uri);
 
@@ -1691,7 +1739,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         prune_interconnection_definition_parts(parts, ports, connectors);
     let (parts, ports, connectors) = prune_ibd_payload_to_connected_scope(parts, ports, connectors);
     let mut connectors = connectors;
-    enrich_connector_part_ids(&mut connectors, &parts);
+    enrich_connector_endpoint_refs(&mut connectors, &parts, &ports);
     let container_groups = build_container_groups(&parts);
 
     let top_level_parts: Vec<_> = parts
@@ -1969,16 +2017,19 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
 
     let parts: Vec<IbdPartDto> = parts_by_id.into_values().collect();
     let ports: Vec<IbdPortDto> = ports_by_key.into_values().collect();
-    let mut connectors: Vec<IbdConnectorDto> = connectors_by_key.into_values().collect();
-    enrich_connector_part_ids(&mut connectors, &parts);
+    let connectors: Vec<IbdConnectorDto> = connectors_by_key.into_values().collect();
     let (parts, ports, connectors) =
         prune_interconnection_definition_parts(parts, ports, connectors);
+    let mut connectors = connectors;
+    enrich_connector_endpoint_refs(&mut connectors, &parts, &ports);
     for view in root_views.values_mut() {
         let (view_parts, view_ports, view_connectors) = prune_interconnection_definition_parts(
             std::mem::take(&mut view.parts),
             std::mem::take(&mut view.ports),
             std::mem::take(&mut view.connectors),
         );
+        let mut view_connectors = view_connectors;
+        enrich_connector_endpoint_refs(&mut view_connectors, &view_parts, &view_ports);
         view.parts = view_parts;
         view.ports = view_ports;
         view.connectors = view_connectors;
@@ -2036,10 +2087,10 @@ pub fn finalize_merged_ibd_connectors(
     }
 
     ibd.connectors = dedupe_connectors(std::mem::take(&mut ibd.connectors));
-    enrich_connector_part_ids(&mut ibd.connectors, &ibd.parts);
+    enrich_connector_endpoint_refs(&mut ibd.connectors, &ibd.parts, &ibd.ports);
     for view in ibd.root_views.values_mut() {
         view.connectors = dedupe_connectors(std::mem::take(&mut view.connectors));
-        enrich_connector_part_ids(&mut view.connectors, &view.parts);
+        enrich_connector_endpoint_refs(&mut view.connectors, &view.parts, &view.ports);
     }
 }
 
@@ -2057,6 +2108,51 @@ mod tests {
         prune_interconnection_definition_parts, prune_redundant_top_level_roots, IbdConnectorDto,
         IbdPartDto, IbdPortDto,
     };
+
+    fn test_part(
+        id: &str,
+        name: &str,
+        qualified_name: &str,
+        container_id: Option<&str>,
+        element_type: &str,
+    ) -> IbdPartDto {
+        IbdPartDto {
+            id: id.to_string(),
+            node_id: qualified_name.to_string(),
+            name: name.to_string(),
+            qualified_name: qualified_name.to_string(),
+            uri: None,
+            container_id: container_id.map(String::from),
+            element_type: element_type.to_string(),
+            attributes: HashMap::new(),
+        }
+    }
+
+    fn test_port(id: &str, name: &str, parent_id: &str) -> IbdPortDto {
+        IbdPortDto {
+            id: id.to_string(),
+            port_id: format!("{parent_id}.{name}"),
+            name: name.to_string(),
+            parent_id: parent_id.to_string(),
+            direction: None,
+            port_type: None,
+            port_side: None,
+        }
+    }
+
+    fn test_connector(source_id: &str, target_id: &str) -> IbdConnectorDto {
+        IbdConnectorDto {
+            source: source_id.to_string(),
+            target: target_id.to_string(),
+            source_id: source_id.to_string(),
+            target_id: target_id.to_string(),
+            source_part_id: None,
+            target_part_id: None,
+            source_port_id: None,
+            target_port_id: None,
+            rel_type: "connection".to_string(),
+        }
+    }
 
     #[test]
     fn infer_port_side_prefers_direction() {
@@ -2102,70 +2198,34 @@ mod tests {
     #[test]
     fn prune_ibd_keeps_unconnected_parts_under_same_composite() {
         let parts = vec![
-            IbdPartDto {
-                id: "O::Desk".to_string(),
-                name: "desk".to_string(),
-                qualified_name: "O.Desk".to_string(),
-                uri: None,
-                container_id: None,
-                element_type: "part".to_string(),
-                attributes: HashMap::new(),
-            },
-            IbdPartDto {
-                id: "O::Desk::connected".to_string(),
-                name: "connected".to_string(),
-                qualified_name: "O.Desk.connected".to_string(),
-                uri: None,
-                container_id: Some("O.Desk".to_string()),
-                element_type: "part".to_string(),
-                attributes: HashMap::new(),
-            },
-            IbdPartDto {
-                id: "O::Desk::orphan".to_string(),
-                name: "orphan".to_string(),
-                qualified_name: "O.Desk.orphan".to_string(),
-                uri: None,
-                container_id: Some("O.Desk".to_string()),
-                element_type: "part".to_string(),
-                attributes: HashMap::new(),
-            },
-            IbdPartDto {
-                id: "O::Desk::orphan::nested".to_string(),
-                name: "nested".to_string(),
-                qualified_name: "O.Desk.orphan.nested".to_string(),
-                uri: None,
-                container_id: Some("O.Desk.orphan".to_string()),
-                element_type: "part".to_string(),
-                attributes: HashMap::new(),
-            },
+            test_part("O::Desk", "desk", "O.Desk", None, "part"),
+            test_part(
+                "O::Desk::connected",
+                "connected",
+                "O.Desk.connected",
+                Some("O.Desk"),
+                "part",
+            ),
+            test_part(
+                "O::Desk::orphan",
+                "orphan",
+                "O.Desk.orphan",
+                Some("O.Desk"),
+                "part",
+            ),
+            test_part(
+                "O::Desk::orphan::nested",
+                "nested",
+                "O.Desk.orphan.nested",
+                Some("O.Desk.orphan"),
+                "part",
+            ),
         ];
         let ports = vec![
-            IbdPortDto {
-                id: "O.Desk.connected.p1".to_string(),
-                name: "p1".to_string(),
-                parent_id: "O.Desk.connected".to_string(),
-                direction: None,
-                port_type: None,
-                port_side: None,
-            },
-            IbdPortDto {
-                id: "O.Desk.connected.p2".to_string(),
-                name: "p2".to_string(),
-                parent_id: "O.Desk.connected".to_string(),
-                direction: None,
-                port_type: None,
-                port_side: None,
-            },
+            test_port("O.Desk.connected.p1", "p1", "O.Desk.connected"),
+            test_port("O.Desk.connected.p2", "p2", "O.Desk.connected"),
         ];
-        let connectors = vec![IbdConnectorDto {
-            source: "O::Desk::connected::p1".to_string(),
-            target: "O::Desk::connected::p2".to_string(),
-            source_id: "O.Desk.connected.p1".to_string(),
-            target_id: "O.Desk.connected.p2".to_string(),
-            source_part_id: None,
-            target_part_id: None,
-            rel_type: "connection".to_string(),
-        }];
+        let connectors = vec![test_connector("O.Desk.connected.p1", "O.Desk.connected.p2")];
 
         let (parts, _ports, _connectors) =
             prune_ibd_payload_to_connected_scope(parts, ports, connectors);
@@ -2186,24 +2246,8 @@ mod tests {
     #[test]
     fn container_groups_are_derived_from_part_qualified_names() {
         let parts = vec![
-            IbdPartDto {
-                id: "P::Inner::a".to_string(),
-                name: "a".to_string(),
-                qualified_name: "P.Inner.a".to_string(),
-                uri: None,
-                container_id: None,
-                element_type: "part".to_string(),
-                attributes: HashMap::new(),
-            },
-            IbdPartDto {
-                id: "P::Inner::b".to_string(),
-                name: "b".to_string(),
-                qualified_name: "P.Inner.b".to_string(),
-                uri: None,
-                container_id: None,
-                element_type: "part".to_string(),
-                attributes: HashMap::new(),
-            },
+            test_part("P::Inner::a", "a", "P.Inner.a", None, "part"),
+            test_part("P::Inner::b", "b", "P.Inner.b", None, "part"),
         ];
         let groups = build_container_groups(&parts);
         assert!(groups
@@ -2215,10 +2259,76 @@ mod tests {
     }
 
     #[test]
+    fn connector_endpoint_refs_use_nested_port_owner() {
+        let parts = vec![
+            test_part(
+                "Grid::northSouthRing",
+                "northSouthRing",
+                "Grid.northSouthRing",
+                None,
+                "part",
+            ),
+            test_part(
+                "Grid::northSouthRing::ringSegmentBtoC",
+                "ringSegmentBtoC",
+                "Grid.northSouthRing.ringSegmentBtoC",
+                Some("Grid.northSouthRing"),
+                "part",
+            ),
+            test_part(
+                "Grid::txStationB",
+                "txStationB",
+                "Grid.txStationB",
+                None,
+                "part",
+            ),
+        ];
+        let ports = vec![
+            test_port(
+                "Grid.northSouthRing.ringSegmentBtoC.a",
+                "a",
+                "Grid.northSouthRing.ringSegmentBtoC",
+            ),
+            test_port(
+                "Grid.txStationB.mvConnection",
+                "mvConnection",
+                "Grid.txStationB",
+            ),
+        ];
+        let mut connectors = vec![IbdConnectorDto {
+            source: "Grid.txStationB.mvConnection".to_string(),
+            target: "Grid.northSouthRing.ringSegmentBtoC.a".to_string(),
+            source_id: "Grid.txStationB.mvConnection".to_string(),
+            target_id: "Grid.northSouthRing.ringSegmentBtoC.a".to_string(),
+            source_part_id: Some("Grid.txStationB".to_string()),
+            target_part_id: Some("Grid.northSouthRing".to_string()),
+            source_port_id: None,
+            target_port_id: None,
+            rel_type: "connection".to_string(),
+        }];
+
+        super::enrich_connector_endpoint_refs(&mut connectors, &parts, &ports);
+
+        assert_eq!(
+            connectors[0].target_part_id.as_deref(),
+            Some("Grid.northSouthRing.ringSegmentBtoC")
+        );
+        assert_eq!(
+            connectors[0].target_port_id.as_deref(),
+            Some("Grid.northSouthRing.ringSegmentBtoC.a")
+        );
+        assert_eq!(
+            connectors[0].source_port_id.as_deref(),
+            Some("Grid.txStationB.mvConnection")
+        );
+    }
+
+    #[test]
     fn redundant_top_level_roots_are_pruned_when_already_represented() {
         let parts = vec![
             IbdPartDto {
                 id: "Pkg::Vehicle".to_string(),
+                node_id: "Pkg.Vehicle".to_string(),
                 name: "Vehicle".to_string(),
                 qualified_name: "Pkg.Vehicle".to_string(),
                 uri: None,
@@ -2228,6 +2338,7 @@ mod tests {
             },
             IbdPartDto {
                 id: "Pkg::Vehicle::controller".to_string(),
+                node_id: "Pkg.Vehicle.controller".to_string(),
                 name: "controller".to_string(),
                 qualified_name: "Pkg.Vehicle.controller".to_string(),
                 uri: None,
@@ -2240,6 +2351,7 @@ mod tests {
             },
             IbdPartDto {
                 id: "Pkg::Controller".to_string(),
+                node_id: "Pkg.Controller".to_string(),
                 name: "Controller".to_string(),
                 qualified_name: "Pkg.Controller".to_string(),
                 uri: None,
@@ -2249,6 +2361,7 @@ mod tests {
             },
             IbdPartDto {
                 id: "Pkg::Controller::sensor".to_string(),
+                node_id: "Pkg.Controller.sensor".to_string(),
                 name: "sensor".to_string(),
                 qualified_name: "Pkg.Controller.sensor".to_string(),
                 uri: None,
@@ -2258,6 +2371,7 @@ mod tests {
             },
             IbdPartDto {
                 id: "Pkg::Vehicle::controller::sensor".to_string(),
+                node_id: "Pkg.Vehicle.controller.sensor".to_string(),
                 name: "sensor".to_string(),
                 qualified_name: "Pkg.Vehicle.controller.sensor".to_string(),
                 uri: None,
@@ -2267,6 +2381,7 @@ mod tests {
             },
             IbdPartDto {
                 id: "Pkg::VehicleInst".to_string(),
+                node_id: "Pkg.vehicleInst".to_string(),
                 name: "vehicleInst".to_string(),
                 qualified_name: "Pkg.vehicleInst".to_string(),
                 uri: None,
@@ -2281,6 +2396,7 @@ mod tests {
         let ports = vec![
             IbdPortDto {
                 id: "Pkg.Vehicle.controller.out".to_string(),
+                port_id: "Pkg.Vehicle.controller.out".to_string(),
                 name: "out".to_string(),
                 parent_id: "Pkg.Vehicle.controller".to_string(),
                 direction: None,
@@ -2289,6 +2405,7 @@ mod tests {
             },
             IbdPortDto {
                 id: "Pkg.Vehicle.controller.sensor.in".to_string(),
+                port_id: "Pkg.Vehicle.controller.sensor.in".to_string(),
                 name: "in".to_string(),
                 parent_id: "Pkg.Vehicle.controller.sensor".to_string(),
                 direction: None,
@@ -2297,6 +2414,7 @@ mod tests {
             },
             IbdPortDto {
                 id: "Pkg.Controller.sensor.in".to_string(),
+                port_id: "Pkg.Controller.sensor.in".to_string(),
                 name: "in".to_string(),
                 parent_id: "Pkg.Controller.sensor".to_string(),
                 direction: None,
@@ -2305,6 +2423,7 @@ mod tests {
             },
             IbdPortDto {
                 id: "Pkg.vehicleInst.out".to_string(),
+                port_id: "Pkg.vehicleInst.out".to_string(),
                 name: "out".to_string(),
                 parent_id: "Pkg.vehicleInst".to_string(),
                 direction: None,
@@ -2320,6 +2439,8 @@ mod tests {
                 target_id: "Pkg.Vehicle.controller.sensor.in".to_string(),
                 source_part_id: None,
                 target_part_id: None,
+                source_port_id: None,
+                target_port_id: None,
                 rel_type: "connection".to_string(),
             },
             IbdConnectorDto {
@@ -2329,6 +2450,8 @@ mod tests {
                 target_id: "Pkg.Controller.sensor.out".to_string(),
                 source_part_id: None,
                 target_part_id: None,
+                source_port_id: None,
+                target_port_id: None,
                 rel_type: "connection".to_string(),
             },
             IbdConnectorDto {
@@ -2338,6 +2461,8 @@ mod tests {
                 target_id: "Pkg.vehicleInst.in".to_string(),
                 source_part_id: None,
                 target_part_id: None,
+                source_port_id: None,
+                target_port_id: None,
                 rel_type: "connection".to_string(),
             },
         ];
@@ -2794,6 +2919,7 @@ mod tests {
     fn prune_interconnection_definition_parts_normalizes_reference_metadata() {
         let parts = vec![IbdPartDto {
             id: "PartsTree::sharedBranch".to_string(),
+            node_id: "PartsTree.sharedBranch".to_string(),
             name: "sharedBranch".to_string(),
             qualified_name: "PartsTree.sharedBranch".to_string(),
             uri: None,

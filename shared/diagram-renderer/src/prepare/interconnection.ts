@@ -377,6 +377,8 @@ export function prepareInterconnection(visualization: VisualizationPayload): Pre
     .map((connector, index) => {
       const sourceEndpoint = firstEndpoint(connector.sourceId, connector.source_id, connector.source);
       const targetEndpoint = firstEndpoint(connector.targetId, connector.target_id, connector.target);
+      const sourcePort = firstEndpoint(connector.sourcePortId, connector.source_port_id);
+      const targetPort = firstEndpoint(connector.targetPortId, connector.target_port_id);
       const sourcePart = firstEndpoint(connector.sourcePartId, connector.source_part_id, connector.sourcePortPartId, connector.source_port_part_id);
       const targetPart = firstEndpoint(connector.targetPartId, connector.target_part_id, connector.targetPortPartId, connector.target_port_part_id);
       const source = resolveEndpointPartId(sourcePart, sourceEndpoint);
@@ -393,6 +395,8 @@ export function prepareInterconnection(visualization: VisualizationPayload): Pre
           ...asRecord(connector.attributes),
           sourceId: sourceEndpoint,
           targetId: targetEndpoint,
+          sourcePortId: sourcePort,
+          targetPortId: targetPort,
           sourcePartId: sourcePart,
           targetPartId: targetPart,
           itemType: asString(connector.itemType),

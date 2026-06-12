@@ -194,4 +194,69 @@ fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
         "systemContext should include txStationC -> industrialClusterA connector, got {:?}",
         system_ibd.connectors
     );
+    let expected_paths = [
+        (
+            "tennetConnection.connection",
+            "primarySubstation.hvConnection",
+        ),
+        ("primarySubstation.mvBus", "northFeederBay.incoming"),
+        ("primarySubstation.mvBus", "southFeederBay.incoming"),
+        ("northFeederBay.outgoing", "feederNorth.source"),
+        ("southFeederBay.outgoing", "feederSouth.source"),
+        ("feederNorth.outgoing", "cable01.a"),
+        ("cable01.b", "txStationA.mvConnection"),
+        ("feederNorth.outgoing", "cable02.a"),
+        ("cable02.b", "txStationB.mvConnection"),
+        ("feederSouth.outgoing", "cable03.a"),
+        ("cable03.b", "txStationC.mvConnection"),
+        (
+            "txStationB.mvConnection",
+            "northSouthRing.ringSegmentBtoC.a",
+        ),
+        (
+            "northSouthRing.ringSegmentBtoC.b",
+            "northSouthRing.noTiePoint.incoming",
+        ),
+        (
+            "northSouthRing.noTiePoint.outgoing",
+            "txStationC.mvConnection",
+        ),
+        ("txStationA.lvConnection", "residentialAreaA.gridConnection"),
+        ("txStationB.lvConnection", "residentialAreaB.gridConnection"),
+        (
+            "txStationC.lvConnection",
+            "industrialClusterA.gridConnection",
+        ),
+    ];
+    for (source_suffix, target_suffix) in expected_paths {
+        let connector = system_ibd
+            .connectors
+            .iter()
+            .find(|connector| {
+                connector.source_id.ends_with(source_suffix)
+                    && connector.target_id.ends_with(target_suffix)
+            })
+            .unwrap_or_else(|| {
+                panic!(
+                    "systemContext missing expected connector {source_suffix} -> {target_suffix}; got {:?}",
+                    system_ibd.connectors
+                )
+            });
+        assert!(
+            connector
+                .source_port_id
+                .as_deref()
+                .is_some_and(|id| id.ends_with(source_suffix)),
+            "expected sourcePortId for {source_suffix} -> {target_suffix}, got {:?}",
+            connector
+        );
+        assert!(
+            connector
+                .target_port_id
+                .as_deref()
+                .is_some_and(|id| id.ends_with(target_suffix)),
+            "expected targetPortId for {source_suffix} -> {target_suffix}, got {:?}",
+            connector
+        );
+    }
 }

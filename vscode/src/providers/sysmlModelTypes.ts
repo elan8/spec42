@@ -92,6 +92,7 @@ export interface SysMLModelParams {
 
 export interface IbdPartDTO {
   id: string;
+  nodeId?: string;
   name: string;
   qualifiedName: string;
   uri?: string;
@@ -102,6 +103,7 @@ export interface IbdPartDTO {
 
 export interface IbdPortDTO {
   id: string;
+  portId?: string;
   name: string;
   parentId: string;
   direction?: string;
@@ -114,6 +116,10 @@ export interface IbdConnectorDTO {
   target: string;
   sourceId: string;
   targetId: string;
+  sourcePartId?: string;
+  targetPartId?: string;
+  sourcePortId?: string;
+  targetPortId?: string;
   type: string;
 }
 

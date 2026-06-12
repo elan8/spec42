@@ -202,6 +202,7 @@ mod tests {
         let full_ibd = IbdDataDto {
             parts: vec![IbdPartDto {
                 id: "WebShopArchitecture::WebShopSystem::checkoutService".to_string(),
+                node_id: "WebShopArchitecture.WebShopSystem.checkoutService".to_string(),
                 name: "checkoutService".to_string(),
                 qualified_name: "WebShopArchitecture.WebShopSystem.checkoutService".to_string(),
                 uri: None,
@@ -212,6 +213,7 @@ mod tests {
             ports: vec![
                 semantic_core::semantic::ibd::IbdPortDto {
                     id: "WebShopArchitecture::WebShopSystem::checkoutService::apiIn".to_string(),
+                    port_id: "WebShopArchitecture.WebShopSystem.checkoutService.apiIn".to_string(),
                     name: "apiIn".to_string(),
                     parent_id: "WebShopArchitecture.WebShopSystem.checkoutService".to_string(),
                     direction: None,
@@ -220,6 +222,8 @@ mod tests {
                 },
                 semantic_core::semantic::ibd::IbdPortDto {
                     id: "WebShopArchitecture::WebShopSystem::apiGateway::checkoutApiOut"
+                        .to_string(),
+                    port_id: "WebShopArchitecture.WebShopSystem.apiGateway.checkoutApiOut"
                         .to_string(),
                     name: "checkoutApiOut".to_string(),
                     parent_id: "WebShopArchitecture.WebShopSystem.apiGateway".to_string(),
@@ -237,6 +241,8 @@ mod tests {
                     .to_string(),
                 source_part_id: None,
                 target_part_id: None,
+                source_port_id: None,
+                target_port_id: None,
                 rel_type: "connection".to_string(),
             }],
             container_groups: Vec::new(),
@@ -432,6 +438,7 @@ mod tests {
         let parts = vec![
             IbdPartDto {
                 id: "Drone::Vehicle".to_string(),
+                node_id: "Drone.Vehicle".to_string(),
                 name: "Vehicle".to_string(),
                 qualified_name: "Drone.Vehicle".to_string(),
                 uri: None,
@@ -441,6 +448,7 @@ mod tests {
             },
             IbdPartDto {
                 id: "Timer::TimerSystem".to_string(),
+                node_id: "Timer.TimerSystem".to_string(),
                 name: "TimerSystem".to_string(),
                 qualified_name: "Timer.TimerSystem".to_string(),
                 uri: None,
@@ -479,6 +487,7 @@ mod tests {
         let payload = IbdDataDto {
             parts: vec![IbdPartDto {
                 id: "Drone::Vehicle".to_string(),
+                node_id: "Drone.Vehicle".to_string(),
                 name: "Vehicle".to_string(),
                 qualified_name: "Drone.Vehicle".to_string(),
                 uri: None,
@@ -497,6 +506,7 @@ mod tests {
                 IbdRootViewDto {
                     parts: vec![IbdPartDto {
                         id: "Drone::Vehicle".to_string(),
+                        node_id: "Drone.Vehicle".to_string(),
                         name: "Vehicle".to_string(),
                         qualified_name: "Drone.Vehicle".to_string(),
                         uri: None,

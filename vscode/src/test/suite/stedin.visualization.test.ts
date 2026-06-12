@@ -45,6 +45,66 @@ function parseSvgDebug(svgText: string): Record<string, unknown> {
     };
 }
 
+type IbdConnectorSnapshot = {
+    sourceId?: string;
+    targetId?: string;
+    sourcePartId?: string;
+    targetPartId?: string;
+    sourcePortId?: string;
+    targetPortId?: string;
+};
+
+function normalizeEndpoint(value: unknown): string {
+    return typeof value === "string" ? value.replace(/::/g, ".") : "";
+}
+
+function ownerFromEndpoint(endpoint: string): string {
+    const lastDot = endpoint.lastIndexOf(".");
+    return lastDot >= 0 ? endpoint.slice(0, lastDot) : endpoint;
+}
+
+function ibdConnectorDebug(snapshot: Record<string, unknown> | undefined): Record<string, unknown> {
+    const connectors = ((snapshot?.ibd as { connectors?: IbdConnectorSnapshot[] } | undefined)?.connectors ?? []);
+    const missingEndpointIds = connectors.filter((connector) => !connector.sourcePortId || !connector.targetPortId);
+    const ownerMismatches = connectors.filter((connector) => {
+        const sourceId = normalizeEndpoint(connector.sourceId);
+        const targetId = normalizeEndpoint(connector.targetId);
+        return (
+            (connector.sourcePartId ? normalizeEndpoint(connector.sourcePartId) !== ownerFromEndpoint(sourceId) : false) ||
+            (connector.targetPartId ? normalizeEndpoint(connector.targetPartId) !== ownerFromEndpoint(targetId) : false)
+        );
+    });
+    return {
+        missingCanonicalEndpointIds: missingEndpointIds.length,
+        ownerMismatchCount: ownerMismatches.length,
+        missingEndpointSamples: missingEndpointIds.slice(0, 5),
+        ownerMismatchSamples: ownerMismatches.slice(0, 5),
+    };
+}
+
+function assertConnectorEndpoint(
+    connectors: IbdConnectorSnapshot[],
+    sourceSuffix: string,
+    targetSuffix: string
+): void {
+    const match = connectors.find((connector) => {
+        const sourceId = normalizeEndpoint(connector.sourceId);
+        const targetId = normalizeEndpoint(connector.targetId);
+        return sourceId.endsWith(sourceSuffix) && targetId.endsWith(targetSuffix);
+    });
+    assert.ok(match, `expected connector ${sourceSuffix} -> ${targetSuffix}`);
+    assert.ok(
+        normalizeEndpoint(match.sourcePortId).endsWith(sourceSuffix),
+        `expected sourcePortId for ${sourceSuffix} -> ${targetSuffix}, got ${match.sourcePortId}`
+    );
+    assert.ok(
+        normalizeEndpoint(match.targetPortId).endsWith(targetSuffix),
+        `expected targetPortId for ${sourceSuffix} -> ${targetSuffix}, got ${match.targetPortId}`
+    );
+    assert.strictEqual(normalizeEndpoint(match.sourcePartId), ownerFromEndpoint(normalizeEndpoint(match.sourceId)));
+    assert.strictEqual(normalizeEndpoint(match.targetPartId), ownerFromEndpoint(normalizeEndpoint(match.targetId)));
+}
+
 describe("Stedin Interconnection Visualization", () => {
     before(async function () {
         this.timeout(stedinTimeoutMs);
@@ -144,12 +204,37 @@ describe("Stedin Interconnection Visualization", () => {
             "interconnection-view",
             SYSTEM_CONTEXT_VIEW
         );
+        const snapshotConnectors =
+            (snapshot?.ibd as { connectors?: IbdConnectorSnapshot[] } | undefined)?.connectors ?? [];
         integrationTestLog("stedin:systemContext:lspSnapshot", {
             selectedView: snapshot?.selectedView,
             selectedViewName: snapshot?.selectedViewName,
             ibdParts: (snapshot?.ibd as { parts?: unknown[] } | undefined)?.parts?.length ?? 0,
-            ibdConnectors: (snapshot?.ibd as { connectors?: unknown[] } | undefined)?.connectors?.length ?? 0,
+            ibdConnectors: snapshotConnectors.length,
+            ...ibdConnectorDebug(snapshot),
         });
+        const expectedPaths: Array<[string, string]> = [
+            ["tennetConnection.connection", "primarySubstation.hvConnection"],
+            ["primarySubstation.mvBus", "northFeederBay.incoming"],
+            ["primarySubstation.mvBus", "southFeederBay.incoming"],
+            ["northFeederBay.outgoing", "feederNorth.source"],
+            ["southFeederBay.outgoing", "feederSouth.source"],
+            ["feederNorth.outgoing", "cable01.a"],
+            ["cable01.b", "txStationA.mvConnection"],
+            ["feederNorth.outgoing", "cable02.a"],
+            ["cable02.b", "txStationB.mvConnection"],
+            ["feederSouth.outgoing", "cable03.a"],
+            ["cable03.b", "txStationC.mvConnection"],
+            ["txStationB.mvConnection", "northSouthRing.ringSegmentBtoC.a"],
+            ["northSouthRing.ringSegmentBtoC.b", "northSouthRing.noTiePoint.incoming"],
+            ["northSouthRing.noTiePoint.outgoing", "txStationC.mvConnection"],
+            ["txStationA.lvConnection", "residentialAreaA.gridConnection"],
+            ["txStationB.lvConnection", "residentialAreaB.gridConnection"],
+            ["txStationC.lvConnection", "industrialClusterA.gridConnection"],
+        ];
+        for (const [sourceSuffix, targetSuffix] of expectedPaths) {
+            assertConnectorEndpoint(snapshotConnectors, sourceSuffix, targetSuffix);
+        }
         await vscode.commands.executeCommand("sysml.showVisualizer");
         await waitForVisualizerOpen(stedinTimeoutMs);
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
