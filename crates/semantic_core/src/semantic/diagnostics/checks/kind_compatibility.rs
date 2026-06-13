@@ -9,7 +9,7 @@ use crate::semantic::diagnostics::helpers::{
     resolves_to_enum_def, unresolved_type_diagnostic_range,
 };
 use crate::semantic::diagnostics::kind_rules::{
-    allowed_specializes_target_kinds, allowed_subset_redefine_target_kinds,
+    allowed_subset_redefine_target_kinds, is_compatible_specializes_target,
     allowed_typing_target_kinds, expected_typing_definition_label, is_compatible_kind,
 };
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
@@ -168,6 +168,7 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
             let normalized = normalize_declared_type_ref(type_ref);
             if !is_builtin_type_ref(&normalized)
                 && !matches!(node.element_kind.as_str(), "subject" | "ref")
+                && !node.attributes.contains_key("subsetsFeature")
             {
                 for target in graph.outgoing_typing_or_specializes_targets(node) {
                     let allowed = allowed_typing_target_kinds(&node.element_kind);
@@ -214,8 +215,7 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
             .into_iter()
             .filter_map(|id| graph.get_node(&id))
             {
-                let allowed = allowed_specializes_target_kinds(&node.element_kind);
-                if !allowed.is_empty() && !is_compatible_kind(&target.element_kind, allowed) {
+                if !is_compatible_specializes_target(&node.element_kind, target) {
                     let key = format!(
                         "specializes|{}|{}|{}",
                         node.id.qualified_name, specializes_ref, target.element_kind
@@ -368,6 +368,17 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
                     }
                 }
                 ResolveResult::Ambiguous | ResolveResult::Unresolved => {
+                    if node.name == "baseType"
+                        && trimmed == "baseType"
+                        && owner.element_kind == "metadata def"
+                        && owner
+                            .attributes
+                            .get("specializes")
+                            .and_then(|value| value.as_str())
+                            .is_some_and(|value| value.contains("SemanticMetadata"))
+                    {
+                        continue;
+                    }
                     let key = format!("redefines|{}", node.id.qualified_name);
                     if seen.insert(key) {
                         diagnostics.push(diag(

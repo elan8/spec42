@@ -139,6 +139,16 @@ pub fn is_compatible_kind(target_kind: &str, allowed: &[&str]) -> bool {
     allowed.contains(&target_kind)
 }
 
+/// KerML `SemanticMetadata` metaclass is a valid supertype for SysML `metadata def` specializations.
+pub fn is_compatible_specializes_target(def_kind: &str, target: &crate::SemanticNode) -> bool {
+    if is_compatible_kind(&target.element_kind, allowed_specializes_target_kinds(def_kind)) {
+        return true;
+    }
+    def_kind == "metadata def"
+        && target.element_kind == "kermlDecl"
+        && target.name == "SemanticMetadata"
+}
+
 pub fn expected_typing_definition_label(usage_kind: &str) -> String {
     match usage_kind {
         "actor" | "stakeholder" => "part or item".to_string(),

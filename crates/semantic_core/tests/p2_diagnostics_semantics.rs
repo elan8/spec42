@@ -46,14 +46,68 @@ fn action_flow_to_part_def_emits_succession_invalid() {
 }
 
 #[test]
+fn requirement_satisfy_by_part_def_is_valid() {
+    let doc = workspace_doc(
+        "satisfy_part.sysml",
+        r#"package Demo {
+  requirement def ReqA;
+  part def System;
+  requirement r1 : ReqA;
+  part system : System;
+  satisfy r1 by system;
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        !has_code(&diagnostics, "satisfy_invalid_endpoint_kind"),
+        "satisfy requirement by part should be valid, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn derivation_connection_between_requirements_does_not_emit_connection_context_invalid() {
+    let doc = workspace_doc(
+        "derivation.sysml",
+        r#"package Demo {
+  requirement def OriginalReq;
+  requirement def DerivedReq;
+  requirement original : OriginalReq;
+  requirement derived : DerivedReq;
+  #derivation connection {
+    end #original ::> original;
+    end #derive ::> derived;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        !has_code(&diagnostics, "connection_context_invalid"),
+        "derivation connection should not emit connection_context_invalid, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
 fn requirement_satisfy_wrong_target_emits_kind_diagnostic() {
     let doc = workspace_doc(
         "satisfy_invalid.sysml",
         r#"package Demo {
   requirement def ReqA;
-  part def System;
+  concern def SafetyConcern;
   requirement r1 : ReqA;
-  satisfy r1 by System;
+  concern safety : SafetyConcern;
+  satisfy r1 by safety;
 }"#,
     );
     let uri = doc.uri.clone();

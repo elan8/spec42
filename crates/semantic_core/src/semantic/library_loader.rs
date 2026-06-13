@@ -74,6 +74,9 @@ pub fn resolve_library_closure(
     let mut seeds = HashSet::<PackageKey>::new();
     let mut wants_sysml_bootstrap = false;
     for source in workspace {
+        if options.bootstrap_sysml_namespace && source.content.contains("SysML::") {
+            seeds.insert(PackageKey("SysML".to_string()));
+        }
         for target in collect_import_targets_from_content(source.content) {
             if options.bootstrap_sysml_namespace
                 && (target == "sysml" || target.starts_with("sysml::"))
@@ -507,6 +510,44 @@ mod tests {
         assert!(
             loaded.iter().any(|f| f.path.contains("ScalarValues.sysml")),
             "expected ScalarValues.sysml in closure, got {:?}",
+            loaded.iter().map(|f| &f.path).collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn closure_loads_sysml_package_when_workspace_references_sysml_qualified_names() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let lib = temp.path().join("sysml.library");
+        fs::create_dir_all(&lib).expect("lib dir");
+        fs::write(
+            lib.join("SysML.sysml"),
+            r#"standard library package SysML {
+  package Systems {
+    metadata def RequirementUsage;
+    metadata def Usage;
+  }
+}"#,
+        )
+        .expect("sysml package");
+        fs::write(
+            lib.join("ScalarValues.sysml"),
+            "standard library package ScalarValues { attribute def Real; }",
+        )
+        .expect("scalar values");
+        let workspace = [WorkspaceSource {
+            path: "RequirementMetadata.sysml",
+            content: r#"package RequirementMetadata {
+  metadata def RequirementRole {
+    :> annotatedElement : SysML::RequirementUsage;
+  }
+}"#,
+        }];
+        let roots = vec![lib.to_string_lossy().replace('\\', "/")];
+        let loaded = resolve_library_closure(&workspace, &roots, &LibraryClosureOptions::default())
+            .expect("closure");
+        assert!(
+            loaded.iter().any(|f| f.path.contains("SysML.sysml")),
+            "expected SysML.sysml in closure for SysML:: references, got {:?}",
             loaded.iter().map(|f| &f.path).collect::<Vec<_>>()
         );
     }

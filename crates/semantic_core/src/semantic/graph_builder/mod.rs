@@ -3,6 +3,7 @@
 use std::collections::HashMap;
 
 use crate::semantic::text_span::TextRange;
+use sysml_v2_parser::ast::RootElement;
 use sysml_v2_parser::RootNamespace;
 use url::Url;
 
@@ -66,6 +67,14 @@ pub fn build_graph_from_doc(root: &RootNamespace, uri: &Url) -> SemanticGraph {
         } else {
             pkg_qualified_disambiguated
         };
+        let is_standard_library = matches!(
+            &node.value,
+            RootElement::LibraryPackage(lp) if lp.is_standard
+        );
+        let mut root_attrs = HashMap::new();
+        if is_standard_library {
+            root_attrs.insert("isStandardLibrary".to_string(), serde_json::json!(true));
+        }
         add_node_and_recurse(
             &mut g,
             uri,
@@ -73,7 +82,7 @@ pub fn build_graph_from_doc(root: &RootNamespace, uri: &Url) -> SemanticGraph {
             "package",
             pkg_name_display,
             span_to_range(pkg_span),
-            HashMap::new(),
+            root_attrs,
             None,
         );
         let package_node_id = NodeId::new(uri, &pkg_qualified_final);

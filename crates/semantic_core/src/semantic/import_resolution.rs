@@ -413,6 +413,26 @@ fn resolve_namespace_import_named(
     dedupe_node_ids(out)
 }
 
+fn import_namespace_target_candidates(
+    graph: &SemanticGraph,
+    import: &SemanticNode,
+    target: &str,
+) -> Vec<String> {
+    let normalized = normalized_namespace_target(target);
+    let mut candidates = Vec::new();
+    if !normalized.contains("::") {
+        if let Some(parent) = import.parent_id.as_ref().and_then(|id| graph.get_node(id)) {
+            if parent.element_kind == "package" && !parent.id.qualified_name.is_empty() {
+                candidates.push(format!("{}::{normalized}", parent.id.qualified_name));
+            }
+        }
+    }
+    if !candidates.iter().any(|candidate| candidate == &normalized) {
+        candidates.push(normalized);
+    }
+    candidates
+}
+
 fn resolve_import_targets_named(
     graph: &SemanticGraph,
     import: &SemanticNode,
@@ -422,11 +442,22 @@ fn resolve_import_targets_named(
     let Some(target) = import_target(import) else {
         return Vec::new();
     };
-    if is_import_all(import) {
-        resolve_namespace_import_named(graph, target, is_recursive(import), simple_name, stack)
-    } else {
-        resolve_membership_import_named(graph, target, is_recursive(import), simple_name, stack)
+    let mut out = Vec::new();
+    for candidate in import_namespace_target_candidates(graph, import, target) {
+        let resolved = if is_import_all(import) {
+            resolve_namespace_import_named(graph, &candidate, is_recursive(import), simple_name, stack)
+        } else {
+            resolve_membership_import_named(
+                graph,
+                &candidate,
+                is_recursive(import),
+                simple_name,
+                stack,
+            )
+        };
+        out.extend(resolved);
     }
+    dedupe_node_ids(out)
 }
 
 pub fn resolve_imported_node_ids_for_simple_name(

@@ -14,6 +14,29 @@ fn is_requirement_kind(kind: &str) -> bool {
     matches!(kind, "requirement" | "requirement def")
 }
 
+fn is_requirement_satisfy_target_kind(kind: &str) -> bool {
+    matches!(
+        kind,
+        "requirement"
+            | "requirement def"
+            | "part"
+            | "part def"
+            | "action"
+            | "action def"
+            | "port"
+            | "port def"
+            | "interface"
+            | "attribute"
+            | "attribute def"
+            | "item"
+            | "item def"
+            | "flow"
+            | "flow def"
+            | "state"
+            | "state def"
+    )
+}
+
 fn is_use_case_kind(kind: &str) -> bool {
     matches!(kind, "use case" | "use case def")
 }
@@ -55,7 +78,7 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
             continue;
         }
         let valid = if is_requirement_kind(&source_node.element_kind) {
-            is_requirement_kind(&target_node.element_kind)
+            is_requirement_satisfy_target_kind(&target_node.element_kind)
         } else if is_use_case_kind(&source_node.element_kind) {
             is_use_case_kind(&target_node.element_kind)
         } else {
