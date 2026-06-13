@@ -12,6 +12,9 @@ use crate::semantic::diagnostics::kind_rules::{
     allowed_subset_redefine_target_kinds, is_compatible_specializes_target,
     allowed_typing_target_kinds, expected_typing_definition_label, is_compatible_kind,
 };
+use crate::semantic::kinds::{
+    is_metadata_restriction_attribute, is_semantic_metadata_base_type_redefine,
+};
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::relationships::SPECIALIZES_TARGET_KINDS;
 use crate::{
@@ -168,33 +171,44 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
             let normalized = normalize_declared_type_ref(type_ref);
             if !is_builtin_type_ref(&normalized)
                 && !matches!(node.element_kind.as_str(), "subject" | "ref")
-                && !node.attributes.contains_key("subsetsFeature")
+                && !is_metadata_restriction_attribute(node)
             {
-                for target in graph.outgoing_typing_or_specializes_targets(node) {
-                    let allowed = allowed_typing_target_kinds(&node.element_kind);
-                    if !allowed.is_empty() && !is_compatible_kind(&target.element_kind, allowed) {
-                        let key = format!(
-                            "type|{}|{}|{}",
-                            node.id.qualified_name, type_ref, target.element_kind
-                        );
-                        if seen.insert(key) {
-                            let range = unresolved_type_diagnostic_range(node, type_ref)
-                                .unwrap_or_else(|| diagnostic_range(graph, node, None));
-                            let expected = expected_typing_definition_label(&node.element_kind);
-                            diagnostics.push(diag(
-                                uri,
-                                range,
-                                DiagnosticSeverity::Warning,
-                                "semantic",
-                                "incompatible_type_kind",
-                                format!(
-                                    "'{}' cannot type '{}' with '{}'; expected a compatible {} definition.",
-                                    node.element_kind,
-                                    node.name,
-                                    type_ref,
-                                    expected
-                                ),
-                            ));
+                let edge_targets = graph.outgoing_typing_or_specializes_targets(node);
+                let allowed = allowed_typing_target_kinds(&node.element_kind);
+                let edge_first_ok = !edge_targets.is_empty()
+                    && !allowed.is_empty()
+                    && edge_targets
+                        .iter()
+                        .any(|target| is_compatible_kind(&target.element_kind, allowed));
+                if !edge_first_ok {
+                    for target in edge_targets {
+                        if !allowed.is_empty()
+                            && !is_compatible_kind(&target.element_kind, allowed)
+                        {
+                            let key = format!(
+                                "type|{}|{}|{}",
+                                node.id.qualified_name, type_ref, target.element_kind
+                            );
+                            if seen.insert(key) {
+                                let range = unresolved_type_diagnostic_range(node, type_ref)
+                                    .unwrap_or_else(|| diagnostic_range(graph, node, None));
+                                let expected =
+                                    expected_typing_definition_label(&node.element_kind);
+                                diagnostics.push(diag(
+                                    uri,
+                                    range,
+                                    DiagnosticSeverity::Warning,
+                                    "semantic",
+                                    "incompatible_type_kind",
+                                    format!(
+                                        "'{}' cannot type '{}' with '{}'; expected a compatible {} definition.",
+                                        node.element_kind,
+                                        node.name,
+                                        type_ref,
+                                        expected
+                                    ),
+                                ));
+                            }
                         }
                     }
                 }
@@ -204,6 +218,16 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
         for specializes_ref in declared_specializes_refs(node) {
             let normalized = normalize_declared_type_ref(&specializes_ref);
             if normalized.is_empty() || is_builtin_type_ref(&normalized) {
+                continue;
+            }
+            let edge_targets: Vec<_> = graph
+                .outgoing_typing_or_specializes_targets(node)
+                .into_iter()
+                .filter(|target| {
+                    is_compatible_specializes_target(&node.element_kind, target)
+                })
+                .collect();
+            if !edge_targets.is_empty() {
                 continue;
             }
             for target in resolve_type_reference_targets(
@@ -368,15 +392,7 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
                     }
                 }
                 ResolveResult::Ambiguous | ResolveResult::Unresolved => {
-                    if node.name == "baseType"
-                        && trimmed == "baseType"
-                        && owner.element_kind == "metadata def"
-                        && owner
-                            .attributes
-                            .get("specializes")
-                            .and_then(|value| value.as_str())
-                            .is_some_and(|value| value.contains("SemanticMetadata"))
-                    {
+                    if is_semantic_metadata_base_type_redefine(owner, node) {
                         continue;
                     }
                     let key = format!("redefines|{}", node.id.qualified_name);

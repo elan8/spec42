@@ -16,6 +16,7 @@ use crate::semantic::relationships::{
 
 use super::expressions;
 use super::{add_node_and_recurse, qualified_name_for_node};
+use crate::semantic::resolution::resolve_expression_endpoint_qualified;
 
 fn add_end_decl(
     g: &mut SemanticGraph,
@@ -103,6 +104,9 @@ pub(super) fn add_connection_edges_from_end_typing(
     let Some(parent) = g.get_node(parent_id) else {
         return;
     };
+    if parent.element_kind == "derivation connection" {
+        return;
+    }
     let scope_prefix = parent
         .parent_id
         .as_ref()
@@ -122,7 +126,7 @@ pub(super) fn add_connection_edges_from_end_typing(
                         .get("endType")
                         .and_then(|value| value.as_str())
                         .and_then(|end_type| {
-                            expressions::resolve_expression_endpoint_legacy(
+                            resolve_expression_endpoint_qualified(
                                 g,
                                 uri,
                                 scope_prefix,

@@ -451,12 +451,7 @@ pub(super) fn parse_port_type(s: &str) -> (String, bool) {
 }
 
 pub(super) fn normalize_declared_type_ref(type_ref: &str) -> String {
-    type_ref
-        .trim()
-        .strip_prefix('~')
-        .map(str::trim)
-        .unwrap_or(type_ref.trim())
-        .to_string()
+    crate::semantic::resolution::naming::normalize_declared_type_ref(type_ref)
 }
 
 pub(super) fn is_builtin_type_ref(type_ref: &str) -> bool {

@@ -9,95 +9,20 @@ use url::Url;
 use crate::semantic::ast_util::identification_name;
 use crate::semantic::graph::{PendingExpressionRelationship, SemanticGraph};
 use crate::semantic::import_resolution::resolve_type_reference_targets;
+use crate::semantic::kinds::{self, SUBJECT_TYPE_TARGET_KINDS, VERIFIED_REQUIREMENT_TARGET_KINDS};
+pub use crate::semantic::kinds::{
+    ANNOTATED_ELEMENT_TARGET_KINDS, SPECIALIZES_TARGET_KINDS, TYPING_TARGET_KINDS,
+};
 use crate::semantic::model::{
     ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
 };
 use crate::semantic::reference_resolution::{resolve_expression_endpoint_strict, ResolveResult};
 pub use crate::semantic::resolution::naming::{
-    normalize_for_lookup, type_ref_candidates, type_ref_candidates_with_kind,
+    normalize_declared_type_ref, normalize_for_lookup, type_ref_candidates,
+    type_ref_candidates_with_kind,
 };
 use crate::semantic::root_element::root_element_body;
 
-pub(crate) const TYPING_TARGET_KINDS: &[&str] = &[
-    "part def",
-    "port def",
-    "interface",
-    "item def",
-    "attribute def",
-    "action def",
-    "actor def",
-    "occurrence def",
-    "flow def",
-    "allocation def",
-    "state def",
-    "requirement def",
-    "requirement",
-    "use case def",
-    "concern def",
-    "analysis def",
-    "verification def",
-    "view def",
-    "viewpoint def",
-    "rendering def",
-    "metadata def",
-    "enum def",
-    "alias",
-    // KerML modeled declarations (`datatype`, `class`, ...) from `.kerml` / library sources.
-    "kermlDecl",
-];
-
-/// Definitional targets for `subject robot : SomePartDef` on cases and requirements.
-const VERIFIED_REQUIREMENT_TARGET_KINDS: &[&str] = &["requirement def", "requirement"];
-
-const SUBJECT_TYPE_TARGET_KINDS: &[&str] = &[
-    "part def",
-    "port def",
-    "interface",
-    "item def",
-    "attribute def",
-    "requirement def",
-    "action def",
-    "actor def",
-    "occurrence def",
-    "flow def",
-    "allocation def",
-    "state def",
-    "use case def",
-    "concern def",
-    "analysis def",
-];
-
-/// Definitional kinds that may appear as the target of `:>` / `specializes` on definitions.
-pub const SPECIALIZES_TARGET_KINDS: &[&str] = &[
-    "part def",
-    "port def",
-    "interface",
-    "item def",
-    "attribute def",
-    "action def",
-    "actor def",
-    "occurrence def",
-    "flow def",
-    "allocation def",
-    "state def",
-    "requirement def",
-    "use case def",
-    "concern def",
-    "enum def",
-    "alias",
-    "kermlDecl",
-    "individual def",
-    "connection def",
-    "metadata def",
-    "constraint def",
-    "calc def",
-    "case def",
-    "analysis def",
-    "verification def",
-    "view def",
-    "viewpoint def",
-    "rendering def",
-];
 pub const TYPE_REFERENCE_ATTR_KEYS: &[&str] = &[
     "partType",
     "refType",
@@ -123,76 +48,6 @@ pub const TYPE_REFERENCE_ATTR_KEYS: &[&str] = &[
     "keywordType",
 ];
 
-/// Element kinds that may appear as metadata `about` / `annotatedElement` targets.
-pub const ANNOTATED_ELEMENT_TARGET_KINDS: &[&str] = &[
-    "part def",
-    "part",
-    "port def",
-    "port",
-    "action def",
-    "action",
-    "state def",
-    "state",
-    "requirement def",
-    "requirement",
-    "use case def",
-    "use case",
-    "concern def",
-    "concern",
-    "item def",
-    "item",
-    "interface",
-    "metadata def",
-    "metadata usage",
-    "constraint def",
-    "constraint",
-    "package",
-];
-
-/// Canonical set of #kind suffixes that `qualified_name_for_node` may append.
-/// Note: these are suffix spellings, not element_kind strings.
-const DISAMBIGUATION_SUFFIX_KINDS: &[&str] = &[
-    "part_def",
-    "port_def",
-    "action_def",
-    "state_def",
-    "flow_def",
-    "allocation_def",
-    "requirement_def",
-    "use_case_def",
-    "attribute_def",
-    "enum_def",
-    "item_def",
-    "actor_def",
-    "occurrence_def",
-    "interface",
-    "concern_def",
-    "analysis_def",
-    "verification_def",
-    "alias",
-    "kermlDecl",
-];
-
-fn strip_wrapping_quotes(value: &str) -> String {
-    let trimmed = value.trim();
-    if trimmed.len() >= 2
-        && ((trimmed.starts_with('\'') && trimmed.ends_with('\''))
-            || (trimmed.starts_with('"') && trimmed.ends_with('"')))
-    {
-        return trimmed[1..trimmed.len() - 1].to_string();
-    }
-    trimmed.to_string()
-}
-
-fn normalize_declared_type_ref(type_ref: &str) -> String {
-    let trimmed = type_ref
-        .trim()
-        .strip_prefix('~')
-        .map(str::trim)
-        .unwrap_or(type_ref.trim());
-    strip_wrapping_quotes(trimmed)
-}
-
 fn split_specializes_refs(raw: &str) -> Vec<String> {
     raw.split(',')
         .map(str::trim)
@@ -216,6 +71,29 @@ fn specializes_refs_from_value(value: &serde_json::Value) -> Vec<String> {
 
 fn element_kind_allowed(element_kind: &str, allowed_kinds: &[&str]) -> bool {
     allowed_kinds.contains(&element_kind)
+}
+
+fn resolve_pending_target(
+    graph: &SemanticGraph,
+    source_node: &SemanticNode,
+    target_qualified: &str,
+    allowed_kinds: &[&str],
+) -> Vec<NodeId> {
+    let mut resolved =
+        resolve_type_reference_targets(graph, source_node, target_qualified, allowed_kinds);
+    if resolved.is_empty() {
+        if let Some(simple_name) = target_qualified.rsplit("::").next() {
+            if simple_name != target_qualified {
+                resolved = resolve_type_reference_targets(
+                    graph,
+                    source_node,
+                    simple_name,
+                    allowed_kinds,
+                );
+            }
+        }
+    }
+    resolved
 }
 
 pub fn resolve_type_target_in_workspace(
@@ -449,18 +327,44 @@ pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
         }
         if g.node_index_by_id.get(&target_id).is_none() {
             if let Some(source_node) = g.get_node(&source_id) {
-                let simple_name = pending_edge
-                    .target_qualified
-                    .rsplit("::")
-                    .next()
-                    .unwrap_or(pending_edge.target_qualified.as_str());
-                let imported = crate::semantic::import_resolution::resolve_imported_node_ids_for_simple_name(
-                    g,
-                    source_node,
-                    simple_name,
-                );
-                if imported.len() == 1 {
-                    target_id = imported[0].clone();
+                let resolved = if let Some(ref target_kinds) = pending_edge.target_kinds {
+                    if target_kinds.is_empty() {
+                        Vec::new()
+                    } else {
+                        let allowed: Vec<&str> =
+                            target_kinds.iter().map(String::as_str).collect();
+                        resolve_pending_target(
+                            g,
+                            source_node,
+                            &pending_edge.target_qualified,
+                            &allowed,
+                        )
+                    }
+                } else {
+                    match pending_edge.kind {
+                        RelationshipKind::Typing => resolve_pending_target(
+                            g,
+                            source_node,
+                            &pending_edge.target_qualified,
+                            TYPING_TARGET_KINDS,
+                        ),
+                        RelationshipKind::Specializes => resolve_pending_target(
+                            g,
+                            source_node,
+                            &pending_edge.target_qualified,
+                            SPECIALIZES_TARGET_KINDS,
+                        ),
+                        RelationshipKind::Subject => resolve_pending_target(
+                            g,
+                            source_node,
+                            &pending_edge.target_qualified,
+                            VERIFIED_REQUIREMENT_TARGET_KINDS,
+                        ),
+                        _ => Vec::new(),
+                    }
+                };
+                if resolved.len() == 1 {
+                    target_id = resolved[0].clone();
                 }
             }
         }
@@ -955,8 +859,10 @@ pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
 }
 
 /// Legacy URI-scoped resolver for workspace relationship linking.
-/// Returns a list of (source NodeId, target NodeId, relationship kind) for resolved edges.
-/// This function is thread-safe and can be called in parallel across different URIs.
+/// Returns resolved cross-document edges for one URI.
+///
+/// Used by the Spec42 kernel incremental update path (`add_cross_document_edges_for_uri`).
+/// Full workspace builds should use [`crate::semantic::pipeline::build_and_link_graph`] instead.
 pub fn resolve_cross_document_edges_for_uri(
     g: &SemanticGraph,
     uri: &Url,
@@ -1124,7 +1030,7 @@ fn resolve_typing_edge_cross_document_inner(
     let mut targets =
         resolve_type_reference_targets(g, src_node, &normalized_type_ref, target_element_kinds);
     if let Some(prefix) = container_prefix {
-        for suffix_kind in DISAMBIGUATION_SUFFIX_KINDS {
+        for suffix_kind in kinds::DISAMBIGUATION_SUFFIXES {
             for candidate in
                 type_ref_candidates_with_kind(Some(prefix), &normalized_type_ref, suffix_kind)
             {

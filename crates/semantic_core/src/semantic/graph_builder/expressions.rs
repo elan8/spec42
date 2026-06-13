@@ -7,11 +7,10 @@ use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge};
 use crate::semantic::reference_resolution::{
-    resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult,
+    resolve_expression_endpoint_strict, ResolveResult,
 };
 use crate::semantic::relationships::{
     add_edge_if_both_exist, add_pending_expression_relationship, add_typing_edge_if_exists,
-    normalize_for_lookup,
 };
 use crate::semantic::relationships::{add_semantic_edge_once, AddSemanticEdgeResult};
 
@@ -585,87 +584,12 @@ pub(super) fn resolve_expression_endpoint_legacy(
     container_prefix: Option<&str>,
     expression: &str,
 ) -> Option<String> {
-    let mut candidates = Vec::new();
-    if let Some(prefix) = container_prefix {
-        candidates.push(format!("{}::{}", prefix, expression));
-    }
-    candidates.push(expression.to_string());
-
-    for candidate in &candidates {
-        let node_id = NodeId::new(uri, candidate);
-        if g.node_index_by_id.contains_key(&node_id) {
-            return Some(candidate.clone());
-        }
-    }
-
-    // Prefer strict endpoint resolution when available.
-    if let ResolveResult::Resolved(resolved) =
-        resolve_expression_endpoint_strict(g, uri, container_prefix, expression)
-    {
-        return Some(resolved.qualified_name);
-    }
-
-    if expression.contains("::") || expression.contains('.') {
-        let normalized = normalize_for_lookup(expression);
-        if let Some(node_ids) = g.node_ids_for_qualified_name(&normalized) {
-            if let Some(best_match) = node_ids
-                .iter()
-                .filter_map(|node_id| {
-                    g.get_node(node_id).and_then(|node| {
-                        (node.element_kind != "import").then_some(node_id.qualified_name.clone())
-                    })
-                })
-                .min_by_key(|qualified_name| qualified_name.len())
-            {
-                return Some(best_match);
-            }
-        }
-    }
-
-    // Fallback for member chains that only exist via typing (e.g. `instance.member` where
-    // `member` is declared on the typed definition and not materialized as a concrete node).
-    let normalized = expression.replace('.', "::");
-    let segments: Vec<&str> = normalized
-        .split("::")
-        .filter(|segment| !segment.is_empty())
-        .collect();
-    if segments.len() > 1 {
-        let owner_expr = segments[0];
-        if let ResolveResult::Resolved(mut current_id) =
-            resolve_expression_endpoint_strict(g, uri, container_prefix, owner_expr)
-        {
-            let mut resolved_all = true;
-            for member in segments.iter().skip(1) {
-                let Some(owner) = g.get_node(&current_id) else {
-                    resolved_all = false;
-                    break;
-                };
-                match resolve_member_via_type(g, owner, member) {
-                    ResolveResult::Resolved(next_id) => {
-                        current_id = next_id;
-                    }
-                    ResolveResult::Ambiguous | ResolveResult::Unresolved => {
-                        resolved_all = false;
-                        break;
-                    }
-                }
-            }
-            if resolved_all {
-                return Some(current_id.qualified_name);
-            }
-        }
-    }
-
-    let suffix = format!("::{}", expression);
-    g.nodes_by_uri
-        .get(uri)
-        .into_iter()
-        .flatten()
-        .filter(|node_id| {
-            node_id.qualified_name == expression || node_id.qualified_name.ends_with(&suffix)
-        })
-        .min_by_key(|node_id| node_id.qualified_name.len())
-        .map(|node_id| node_id.qualified_name.clone())
+    crate::semantic::resolution::resolve_expression_endpoint_qualified(
+        g,
+        uri,
+        container_prefix,
+        expression,
+    )
 }
 
 pub(super) fn add_diagnostic_node(

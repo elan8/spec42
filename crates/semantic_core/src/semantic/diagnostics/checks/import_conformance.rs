@@ -9,24 +9,8 @@ use crate::semantic::diagnostics::helpers::{
     condition_expression_is_boolean, diag, diagnostic_range, reference_token_range,
 };
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
+use crate::semantic::kinds::is_namespace;
 use crate::{SemanticDiagnostic, SemanticGraph};
-
-fn is_namespace_kind(kind: &str) -> bool {
-    matches!(
-        kind,
-        "package"
-            | "requirement def"
-            | "requirement"
-            | "use case def"
-            | "use case"
-            | "analysis def"
-            | "analysis"
-            | "verification def"
-            | "verification"
-            | "concern def"
-            | "concern"
-    )
-}
 
 fn import_is_all(node: &crate::SemanticNode) -> bool {
     node.attributes
@@ -106,7 +90,7 @@ pub(in crate::semantic::diagnostics) fn collect_import_conformance_diagnostics(
         }
 
         if let Some(resolved_kind) = resolve_import_target_kind(graph, node) {
-            if import_is_all(node) && !is_namespace_kind(&resolved_kind) {
+            if import_is_all(node) && !is_namespace(&resolved_kind) {
                 let key = format!("kind|{}", node.id.qualified_name);
                 if seen.insert(key) {
                     diagnostics.push(diag(
@@ -123,7 +107,7 @@ pub(in crate::semantic::diagnostics) fn collect_import_conformance_diagnostics(
                 }
             }
             if !import_is_all(node)
-                && is_namespace_kind(&resolved_kind)
+                && is_namespace(&resolved_kind)
                 && (target.contains("::*") || target.ends_with("::**"))
             {
                 let key = format!("membership|{}", node.id.qualified_name);
@@ -141,7 +125,7 @@ pub(in crate::semantic::diagnostics) fn collect_import_conformance_diagnostics(
                     ));
                 }
             }
-            if import_is_recursive(node) && !is_namespace_kind(&resolved_kind) {
+            if import_is_recursive(node) && !is_namespace(&resolved_kind) {
                 let key = format!("recursive|{}", node.id.qualified_name);
                 if seen.insert(key) {
                     diagnostics.push(diag(

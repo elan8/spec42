@@ -1,66 +1,11 @@
 use std::collections::HashSet;
 
 use crate::semantic::graph::SemanticGraph;
+use crate::semantic::kinds::{self, is_namespace};
 use crate::semantic::model::{NodeId, SemanticNode};
-use crate::semantic::resolution::naming::{normalize_for_lookup, type_ref_candidates_with_kind};
-
-const TYPE_DISAMBIGUATION_SUFFIX_KINDS: &[&str] = &[
-    "part_def",
-    "port_def",
-    "action_def",
-    "state_def",
-    "view_def",
-    "viewpoint_def",
-    "viewpoint",
-    "flow_def",
-    "allocation_def",
-    "requirement_def",
-    "use_case_def",
-    "attribute_def",
-    "enum_def",
-    "item_def",
-    "actor_def",
-    "occurrence_def",
-    "interface",
-    "concern_def",
-    "alias",
-    "kermlDecl",
-    "individual_def",
-    "connection_def",
-    "metadata_def",
-    "constraint_def",
-    "calc_def",
-    "case_def",
-    "analysis_def",
-    "verification_def",
-    "rendering_def",
-];
-
-fn is_namespace_kind(kind: &str) -> bool {
-    matches!(
-        kind,
-        "package"
-            | "requirement def"
-            | "requirement"
-            | "use case def"
-            | "use case"
-            | "analysis def"
-            | "analysis"
-            | "verification def"
-            | "verification"
-            | "concern def"
-            | "concern"
-    )
-}
-
-fn normalize_declared_type_ref(type_ref: &str) -> String {
-    type_ref
-        .trim()
-        .strip_prefix('~')
-        .map(str::trim)
-        .unwrap_or(type_ref.trim())
-        .to_string()
-}
+use crate::semantic::resolution::naming::{
+    normalize_declared_type_ref, normalize_for_lookup, type_ref_candidates_with_kind,
+};
 
 fn element_kind_allowed(element_kind: &str, allowed_kinds: &[&str]) -> bool {
     allowed_kinds.contains(&element_kind)
@@ -75,7 +20,7 @@ fn import_visibility(import: &SemanticNode) -> String {
         .unwrap_or_else(|| "private".to_string())
 }
 
-fn import_target(import: &SemanticNode) -> Option<&str> {
+pub(crate) fn import_target(import: &SemanticNode) -> Option<&str> {
     import
         .attributes
         .get("importTarget")
@@ -154,7 +99,7 @@ fn namespace_scope_chain(graph: &SemanticGraph, context_node: &SemanticNode) -> 
         let Some(node) = graph.get_node(&node_id) else {
             break;
         };
-        if is_namespace_kind(&node.element_kind) {
+        if is_namespace(&node.element_kind) {
             out.push(node.id.clone());
         }
         current = node.parent_id.clone();
@@ -188,7 +133,7 @@ fn namespace_node_ids_for_qualified_name(
         .filter(|id| {
             graph
                 .get_node(id)
-                .map(|node| is_namespace_kind(&node.element_kind))
+                .map(|node| is_namespace(&node.element_kind))
                 .unwrap_or(false)
         })
         .cloned()
@@ -202,7 +147,7 @@ fn owned_namespace_children(graph: &SemanticGraph, namespace_id: &NodeId) -> Vec
     graph
         .children_of(namespace)
         .into_iter()
-        .filter(|child| child.element_kind != "import" && is_namespace_kind(&child.element_kind))
+        .filter(|child| child.element_kind != "import" && is_namespace(&child.element_kind))
         .map(|child| child.id.clone())
         .collect()
 }
@@ -497,7 +442,7 @@ pub fn resolve_type_reference_targets(
         .map(|parent| parent.id.qualified_name.as_str());
 
     let mut out = Vec::new();
-    for suffix_kind in TYPE_DISAMBIGUATION_SUFFIX_KINDS {
+    for suffix_kind in kinds::DISAMBIGUATION_SUFFIXES {
         for candidate in
             type_ref_candidates_with_kind(container_prefix, &normalized_type_ref, suffix_kind)
         {
@@ -554,7 +499,7 @@ pub fn resolve_type_reference_targets(
         }
 
         if let Some(context_uri_nodes) = graph.nodes_by_uri.get(&context_node.id.uri) {
-            let local_suffixes: Vec<String> = TYPE_DISAMBIGUATION_SUFFIX_KINDS
+            let local_suffixes: Vec<String> = kinds::DISAMBIGUATION_SUFFIXES
                 .iter()
                 .map(|suffix| format!("::{}#{}", normalized_type_ref, suffix))
                 .collect();
@@ -588,4 +533,60 @@ pub fn resolve_type_reference_targets(
     }
 
     dedupe_node_ids(out)
+}
+
+/// Whether any import statement exists in an enclosing namespace scope for `context_node`.
+pub fn has_import_in_scope(graph: &SemanticGraph, context_node: &SemanticNode) -> bool {
+    has_any_import_in_scope(graph, context_node)
+}
+
+/// Whether an import node's target resolves using the same rules as graph linking.
+pub fn import_target_resolves(graph: &SemanticGraph, import_node: &SemanticNode) -> bool {
+    let Some(target) = import_target(import_node) else {
+        return false;
+    };
+
+    if is_import_all(import_node) {
+        return import_namespace_target_candidates(graph, import_node, target)
+            .iter()
+            .any(|candidate| {
+                namespace_node_ids_for_qualified_name(graph, candidate)
+                    .into_iter()
+                    .any(|namespace_id| {
+                        graph
+                            .get_node(&namespace_id)
+                            .map(|node| is_namespace(&node.element_kind))
+                            .unwrap_or(false)
+                    })
+            });
+    }
+
+    let membership_target = normalized_membership_target(target);
+    if !exact_named_members_or_disambiguated(graph, &membership_target).is_empty() {
+        return true;
+    }
+
+    for candidate in import_namespace_target_candidates(graph, import_node, &membership_target) {
+        if !exact_named_members_or_disambiguated(graph, &candidate).is_empty() {
+            return true;
+        }
+        if let Some((namespace_target, member_name)) = candidate.rsplit_once("::") {
+            let mut stack = HashSet::new();
+            for namespace_id in namespace_node_ids_for_qualified_name(graph, namespace_target) {
+                if !exported_members_named_from_namespace(
+                    graph,
+                    &namespace_id,
+                    member_name,
+                    true,
+                    &mut stack,
+                )
+                .is_empty()
+                {
+                    return true;
+                }
+            }
+        }
+    }
+
+    false
 }

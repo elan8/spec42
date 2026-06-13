@@ -3,6 +3,27 @@ pub fn normalize_for_lookup(s: &str) -> String {
     s.replace('.', "::")
 }
 
+fn strip_wrapping_quotes(value: &str) -> String {
+    let trimmed = value.trim();
+    if trimmed.len() >= 2
+        && ((trimmed.starts_with('\'') && trimmed.ends_with('\''))
+            || (trimmed.starts_with('"') && trimmed.ends_with('"')))
+    {
+        return trimmed[1..trimmed.len() - 1].to_string();
+    }
+    trimmed.to_string()
+}
+
+/// Strip conjugation prefix and optional wrapping quotes from declared type references.
+pub fn normalize_declared_type_ref(type_ref: &str) -> String {
+    let trimmed = type_ref
+        .trim()
+        .strip_prefix('~')
+        .map(str::trim)
+        .unwrap_or(type_ref.trim());
+    strip_wrapping_quotes(trimmed)
+}
+
 /// Returns candidate qualified names for resolving an unqualified type reference.
 /// If type_ref already contains "::", returns it as-is. Otherwise tries package prefixes
 /// from container_prefix (e.g. "SurveillanceDrone::Propulsion" -> "SurveillanceDrone::PropulsionUnit").

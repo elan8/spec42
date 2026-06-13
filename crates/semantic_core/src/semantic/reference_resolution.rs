@@ -4,6 +4,7 @@ use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::import_resolution::resolve_imported_node_ids_for_simple_name;
+use crate::semantic::kinds::is_namespace;
 use crate::semantic::model::{NodeId, SemanticNode};
 use crate::semantic::resolution::naming::normalize_for_lookup;
 
@@ -14,22 +15,6 @@ pub enum ResolveResult<T> {
     Unresolved,
 }
 
-fn is_namespace_kind(kind: &str) -> bool {
-    matches!(
-        kind,
-        "package"
-            | "requirement def"
-            | "requirement"
-            | "use case def"
-            | "use case"
-            | "analysis def"
-            | "analysis"
-            | "verification def"
-            | "verification"
-            | "concern def"
-            | "concern"
-    )
-}
 
 fn resolve_context_node_for_prefix<'a>(
     g: &'a SemanticGraph,
@@ -48,7 +33,7 @@ fn resolve_context_node_for_prefix<'a>(
         .flatten()
         .filter_map(|node_id| g.get_node(node_id))
         .filter(|node| {
-            is_namespace_kind(&node.element_kind)
+            is_namespace(&node.element_kind)
                 && (node.id.qualified_name == prefix || node.id.qualified_name.ends_with(&suffix))
         })
         .min_by_key(|node| node.id.qualified_name.len())

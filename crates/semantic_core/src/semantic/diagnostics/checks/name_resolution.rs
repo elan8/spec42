@@ -9,51 +9,9 @@ use crate::semantic::diagnostics::helpers::{
 };
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::import_resolution::resolve_imported_node_ids_for_simple_name;
+use crate::semantic::kinds::{is_namespace, RULE6_ALLOWED_KINDS};
 use crate::semantic::relationships::SPECIALIZES_TARGET_KINDS;
 use crate::{resolve_type_reference_targets, SemanticDiagnostic, SemanticGraph, SemanticNode};
-
-const RULE6_ALLOWED_KINDS: &[&str] = &[
-    "part def",
-    "port def",
-    "interface",
-    "item def",
-    "attribute def",
-    "action def",
-    "actor def",
-    "occurrence def",
-    "flow def",
-    "allocation def",
-    "state def",
-    "requirement def",
-    "use case def",
-    "concern def",
-    "analysis def",
-    "verification def",
-    "enum def",
-    "alias",
-    "kermlDecl",
-    "view def",
-    "viewpoint def",
-    "metadata def",
-    "rendering def",
-];
-
-fn is_namespace_kind(kind: &str) -> bool {
-    matches!(
-        kind,
-        "package"
-            | "requirement def"
-            | "requirement"
-            | "use case def"
-            | "use case"
-            | "analysis def"
-            | "analysis"
-            | "verification def"
-            | "verification"
-            | "concern def"
-            | "concern"
-    )
-}
 
 fn is_def_or_usage_kind(kind: &str) -> bool {
     matches!(
@@ -107,7 +65,7 @@ fn invalid_qualified_name_segment(
         let namespace_ok = ids.iter().all(|id| {
             graph
                 .get_node(id)
-                .map(|node| is_namespace_kind(&node.element_kind))
+                .map(|node| is_namespace(&node.element_kind))
                 .unwrap_or(false)
         });
         if !namespace_ok {

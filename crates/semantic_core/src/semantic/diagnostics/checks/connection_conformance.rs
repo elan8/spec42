@@ -51,41 +51,6 @@ fn first_unresolved_connection_segment(
     }
 }
 
-fn is_requirement_kind(kind: &str) -> bool {
-    matches!(kind, "requirement" | "requirement def")
-}
-
-fn has_derivation_edge_between(
-    graph: &SemanticGraph,
-    left: &crate::SemanticNode,
-    right: &crate::SemanticNode,
-) -> bool {
-    graph
-        .outgoing_targets_by_kind(left, RelationshipKind::Derivation)
-        .iter()
-        .any(|target| target.id == right.id)
-        || graph
-            .outgoing_targets_by_kind(right, RelationshipKind::Derivation)
-            .iter()
-            .any(|target| target.id == left.id)
-}
-
-fn is_derivation_connection_context(
-    graph: &SemanticGraph,
-    left: &crate::SemanticNode,
-    right: &crate::SemanticNode,
-) -> bool {
-    if left.element_kind == "derivation connection" || right.element_kind == "derivation connection" {
-        return true;
-    }
-    if is_requirement_kind(&left.element_kind) && is_requirement_kind(&right.element_kind) {
-        if has_derivation_edge_between(graph, left, right) {
-            return true;
-        }
-    }
-    false
-}
-
 fn port_mismatch_code(message: &str) -> Option<&'static str> {
     if message.contains("same conjugation") || message.contains("conjugated") {
         Some("conjugated_port_inconsistent")
@@ -164,9 +129,6 @@ pub(in crate::semantic::diagnostics) fn collect_connection_conformance_diagnosti
             || is_port_like(&right.element_kind)
             || is_part_like(&left.element_kind) && is_part_like(&right.element_kind))
         {
-            if is_derivation_connection_context(graph, left, right) {
-                continue;
-            }
             let key = format!(
                 "context|{}|{}",
                 left.id.qualified_name, right.id.qualified_name
