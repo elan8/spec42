@@ -99,6 +99,73 @@ fn requirement_verify_member_materializes_verified_requirement_node() {
 }
 
 #[test]
+fn verification_case_cross_package_verify_requirement_resolves_via_import() {
+    let requirements = workspace_doc(
+        "SystemRequirements.sysml",
+        r#"package SystemRequirements {
+  requirement coverFloor;
+}"#,
+    );
+    let verification = workspace_doc(
+        "Verification.sysml",
+        r#"package Verification {
+  private import SystemRequirements::*;
+  part def Device;
+  verification verifyCleaningCoverage {
+    subject robot : Device;
+    objective {
+      verify requirement coverFloor;
+    }
+  }
+}"#,
+    );
+    let uri = verification.uri.clone();
+    let (graph, _parsed) =
+        build_semantic_graph_from_documents(&[requirements, verification]).expect("semantic graph");
+
+    let diagnostics = semantic_core::collect_diagnostics_from_graph(
+        &graph,
+        &uri,
+        semantic_core::DiagnosticsOptions::default(),
+    );
+    assert!(
+        !diagnostics
+            .iter()
+            .any(|diag| diag.code == "unresolved_pending_relationship"),
+        "verification case cross-package verify should resolve via import, got: {:?}",
+        diagnostics
+            .iter()
+            .filter(|diag| diag.code == "unresolved_pending_relationship")
+            .map(|diag| &diag.message)
+            .collect::<Vec<_>>()
+    );
+    assert!(
+        !diagnostics
+            .iter()
+            .any(|diag| diag.code == "verified_requirement_invalid_target"),
+        "verified requirement should resolve to imported requirement, got: {:?}",
+        diagnostics
+            .iter()
+            .filter(|diag| diag.code == "verified_requirement_invalid_target")
+            .map(|diag| &diag.message)
+            .collect::<Vec<_>>()
+    );
+
+    let has_subject_to_requirement = graph
+        .edges_for_uri_as_strings(&uri)
+        .iter()
+        .any(|(src, tgt, kind, _)| {
+            *kind == RelationshipKind::Subject
+                && src.ends_with("::verifyCleaningCoverage")
+                && tgt.ends_with("::coverFloor")
+        });
+    assert!(
+        has_subject_to_requirement,
+        "expected Subject edge from verification case to imported requirement"
+    );
+}
+
+#[test]
 fn cross_package_verify_requirement_resolves_via_import() {
     let requirements = workspace_doc(
         "SystemRequirements.sysml",

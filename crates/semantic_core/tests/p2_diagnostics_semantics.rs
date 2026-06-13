@@ -393,12 +393,15 @@ fn requirement_constraint_bad_parameter_emits_membership_diagnostic() {
 }
 
 #[test]
-fn verification_then_action_without_verdict_emits_shape_diagnostic() {
+fn verification_then_action_without_verdict_is_valid_sysml_v2() {
     let doc = workspace_doc(
         "verify_shape.sysml",
         r#"package Demo {
   action def Step;
-  verification def BadVerify {
+  requirement reqA;
+  verification def VerifyCoverage {
+    subject s;
+    objective { verify requirement reqA; }
     then action step : Step;
   }
 }"#,
@@ -407,8 +410,8 @@ fn verification_then_action_without_verdict_emits_shape_diagnostic() {
     let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
     let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
     assert!(
-        has_code(&diagnostics, "verification_case_invalid_shape"),
-        "expected verification_case_invalid_shape, got: {:?}",
+        !has_code(&diagnostics, "verification_case_invalid_shape"),
+        "then-action verification cases without explicit return are valid SysML v2 (optional ResultExpressionMember), got: {:?}",
         diagnostics
             .iter()
             .map(|d| (&d.code, &d.message))

@@ -187,7 +187,7 @@ Spec areas: 7.21-7.25, 8.3.21-8.3.25, 8.4.17-8.4.21.
 - Done: `requirement_constraint_invalid_membership` — require constraint parameter direction/type and expression body.
 - Done: `satisfy_invalid_endpoint_kind` — requirement/use-case satisfy kind compatibility (view→viewpoint still uses viewpoint conformance checks).
 - Done: `verified_requirement_invalid_target` — verification verified-requirement membership resolution.
-- Done: `verification_case_invalid_shape` — verdict/then-action/objective shape on verification cases.
+- Done: `verification_case_invalid_shape` — multiple verdict/return clauses, or verified requirements without objective. Does **not** warn on `then action` without explicit `return` (valid per SysML v2 `CaseBody`; `ResultExpressionMember` is optional — see S42-LIM-003 / robot-vacuum showcase).
 - Done: `use_case_include_invalid_target` — include use case target resolution and kind validation.
 - Done: `case_subject_missing` / `case_objective_binding_cardinality` — subject and analysis-result binding cardinality.
 

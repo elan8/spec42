@@ -61,6 +61,22 @@ fn robot_vacuum_showcase_diagnostic_baseline() {
     assert_eq!(report.summary.error_count, 0, "expected zero errors");
     assert_eq!(
         code_counts
+            .get("verification_case_invalid_shape")
+            .copied()
+            .unwrap_or(0),
+        0,
+        "verification cases with then-action and no explicit return are valid SysML v2 (S42-LIM-003)"
+    );
+    assert_eq!(
+        code_counts
+            .get("unresolved_pending_relationship")
+            .copied()
+            .unwrap_or(0),
+        0,
+        "unqualified verify requirement names must resolve via private import SystemRequirements::*"
+    );
+    assert_eq!(
+        code_counts
             .get("unresolved_redefines_target")
             .copied()
             .unwrap_or(0),

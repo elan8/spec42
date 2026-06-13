@@ -282,11 +282,6 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
             .get("verdictCount")
             .and_then(|v| v.as_u64())
             .unwrap_or(0) as usize;
-        let then_action_count = node
-            .attributes
-            .get("thenActionCount")
-            .and_then(|v| v.as_u64())
-            .unwrap_or(0) as usize;
         let objective_count = node
             .attributes
             .get("objectiveCount")
@@ -309,22 +304,6 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
                     "verification_case_invalid_shape",
                     format!(
                         "Verification case '{}' declares multiple verdict/return clauses.",
-                        node.name
-                    ),
-                ));
-            }
-        }
-        if then_action_count > 0 && verdict_count == 0 {
-            let key = format!("verdict_missing|{}", node.id.qualified_name);
-            if seen.insert(key) {
-                diagnostics.push(diag(
-                    uri,
-                    diagnostic_range(graph, node, None),
-                    DiagnosticSeverity::Warning,
-                    "semantic",
-                    "verification_case_invalid_shape",
-                    format!(
-                        "Verification case '{}' has then-actions but no verdict/return clause.",
                         node.name
                     ),
                 ));
