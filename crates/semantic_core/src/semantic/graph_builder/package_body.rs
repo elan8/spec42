@@ -618,7 +618,18 @@ pub(super) fn build_from_package_body_element(
         PBE::FeatureDecl(feature_node) => {
             let fv = &feature_node.value;
             let name = extract_modeled_decl_name(&fv.keyword, &fv.text, "_feature");
-            if let Some(parent_id) = parent_id {
+            let semantic_metadata_parent = parent_id.and_then(|pid| {
+                g.get_node(pid).and_then(|parent| {
+                    (parent.element_kind == "metadata def"
+                        && parent
+                            .attributes
+                            .get("metaclassRole")
+                            .and_then(|value| value.as_str())
+                            == Some("SemanticMetadata"))
+                    .then_some(pid)
+                })
+            });
+            if let Some(parent_id) = semantic_metadata_parent {
                 add_kerml_library_feature_node(
                     g,
                     uri,
