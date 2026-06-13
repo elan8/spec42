@@ -222,11 +222,43 @@ pub fn is_requirement(element_kind: &str) -> bool {
 }
 
 pub fn is_metadata_restriction_attribute(node: &SemanticNode) -> bool {
-    node.attributes.contains_key("subsetsFeature")
+    node.attributes.contains_key("subsetsFeature") || is_known_metadata_redefine(node)
+}
+
+/// Feature names that may appear in metadata def restriction shorthand (`:>` / `:>>`).
+pub const METADATA_RESTRICTION_FEATURE_NAMES: &[&str] = &["annotatedElement", "baseType"];
+
+pub fn is_known_metadata_redefine(node: &SemanticNode) -> bool {
+    node.attributes
+        .get("redefines")
+        .and_then(|value| value.as_str())
+        .is_some_and(|feature| METADATA_RESTRICTION_FEATURE_NAMES.contains(&feature))
+}
+
+pub fn is_reflective_sysml_usage_type(type_ref: &str, target: &SemanticNode) -> bool {
+    type_ref.contains("SysML::")
+        && matches!(
+            target.element_kind.as_str(),
+            "metadata def" | "kermlDecl"
+        )
 }
 
 pub fn is_kerml_metadata_supertype(target: &SemanticNode) -> bool {
-    target.element_kind == "kermlDecl" && target.name == "SemanticMetadata"
+    if target
+        .attributes
+        .get("metaclassRole")
+        .and_then(|value| value.as_str())
+        == Some("SemanticMetadata")
+    {
+        return true;
+    }
+    if target.name == "SemanticMetadata"
+        && matches!(target.element_kind.as_str(), "kermlDecl" | "metadata def")
+    {
+        return true;
+    }
+    target.id.qualified_name.ends_with("::SemanticMetadata")
+        && matches!(target.element_kind.as_str(), "kermlDecl" | "metadata def")
 }
 
 pub fn is_semantic_metadata_base_type_redefine(owner: &SemanticNode, node: &SemanticNode) -> bool {

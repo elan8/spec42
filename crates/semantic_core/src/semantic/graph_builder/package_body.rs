@@ -24,7 +24,7 @@ use super::analysis_case;
 use super::attribute_body;
 use super::definition_body;
 use super::expressions;
-use super::modeled_kerml_name::extract_modeled_decl_name;
+use super::modeled_kerml_name::{extract_kerml_feature_names_from_text, extract_modeled_decl_name};
 use super::occurrence_body;
 use super::package_packages;
 use super::verification;
@@ -37,6 +37,139 @@ fn direction_to_str(direction: &InOut) -> &'static str {
         InOut::Out => "out",
         InOut::InOut => "inout",
     }
+}
+
+fn semantic_metadata_metaclass_role(display_name: &str, text: &str) -> Option<&'static str> {
+    if display_name == "SemanticMetadata" || text.contains("SemanticMetadata") {
+        Some("SemanticMetadata")
+    } else {
+        None
+    }
+}
+
+fn add_kerml_library_decl_node(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    display_name: String,
+    bnf_production: &str,
+    text: &str,
+    span: &sysml_v2_parser::Span,
+) {
+    let metaclass_role = semantic_metadata_metaclass_role(&display_name, text);
+    let element_kind = if metaclass_role.is_some() {
+        "metadata def"
+    } else {
+        "kermlDecl"
+    };
+    let qualified =
+        qualified_name_for_node(g, uri, container_prefix, &display_name, element_kind);
+    let mut attrs = HashMap::new();
+    attrs.insert(
+        "bnfProduction".to_string(),
+        serde_json::json!(bnf_production),
+    );
+    attrs.insert("text".to_string(), serde_json::json!(text));
+    if let Some(role) = metaclass_role {
+        attrs.insert("metaclassRole".to_string(), serde_json::json!(role));
+    }
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        element_kind,
+        display_name.clone(),
+        span_to_range(span),
+        attrs,
+        Some(parent_id),
+    );
+    if metaclass_role == Some("SemanticMetadata") {
+        let node_id = NodeId::new(uri, &qualified);
+        for feature_name in extract_kerml_feature_names_from_text(text) {
+            let feature_qualified = qualified_name_for_node(
+                g,
+                uri,
+                Some(node_id.qualified_name.as_str()),
+                &feature_name,
+                "attribute def",
+            );
+            add_node_and_recurse(
+                g,
+                uri,
+                &feature_qualified,
+                "attribute def",
+                feature_name,
+                span_to_range(span),
+                HashMap::new(),
+                Some(&node_id),
+            );
+        }
+    }
+}
+
+fn add_kerml_library_feature_node(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    display_name: String,
+    bnf_production: &str,
+    text: &str,
+    span: &sysml_v2_parser::Span,
+) {
+    if let Some(parent) = g.get_node(parent_id) {
+        if parent.element_kind == "metadata def"
+            && parent
+                .attributes
+                .get("metaclassRole")
+                .and_then(|value| value.as_str())
+                == Some("SemanticMetadata")
+        {
+            let qualified = qualified_name_for_node(
+                g,
+                uri,
+                Some(parent_id.qualified_name.as_str()),
+                &display_name,
+                "attribute def",
+            );
+            let mut attrs = HashMap::new();
+            attrs.insert(
+                "bnfProduction".to_string(),
+                serde_json::json!(bnf_production),
+            );
+            attrs.insert("text".to_string(), serde_json::json!(text));
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "attribute def",
+                display_name,
+                span_to_range(span),
+                attrs,
+                Some(parent_id),
+            );
+            return;
+        }
+    }
+    let qualified =
+        qualified_name_for_node(g, uri, container_prefix, &display_name, "kermlDecl");
+    let mut attrs = HashMap::new();
+    attrs.insert(
+        "bnfProduction".to_string(),
+        serde_json::json!(bnf_production),
+    );
+    attrs.insert("text".to_string(), serde_json::json!(text));
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "kermlDecl",
+        display_name,
+        span_to_range(span),
+        attrs,
+        Some(parent_id),
+    );
 }
 
 fn add_view_filter_node(
@@ -485,21 +618,34 @@ pub(super) fn build_from_package_body_element(
         PBE::FeatureDecl(feature_node) => {
             let fv = &feature_node.value;
             let name = extract_modeled_decl_name(&fv.keyword, &fv.text, "_feature");
-            let qualified =
-                qualified_name_for_node(g, uri, container_prefix, &name, "feature decl");
-            let mut attrs = HashMap::new();
-            attrs.insert("keyword".to_string(), serde_json::json!(&fv.keyword));
-            attrs.insert("text".to_string(), serde_json::json!(&fv.text));
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "feature decl",
-                name,
-                span_to_range(&feature_node.span),
-                attrs,
-                parent_id,
-            );
+            if let Some(parent_id) = parent_id {
+                add_kerml_library_feature_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    name,
+                    &fv.keyword,
+                    &fv.text,
+                    &feature_node.span,
+                );
+            } else {
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &name, "feature decl");
+                let mut attrs = HashMap::new();
+                attrs.insert("keyword".to_string(), serde_json::json!(&fv.keyword));
+                attrs.insert("text".to_string(), serde_json::json!(&fv.text));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "feature decl",
+                    name,
+                    span_to_range(&feature_node.span),
+                    attrs,
+                    parent_id,
+                );
+            }
         }
         PBE::ClassifierDecl(classifier_node) => {
             let cv = &classifier_node.value;
@@ -1821,23 +1967,15 @@ pub(super) fn build_from_package_body_element(
                 let kv = &k.value;
                 let display_name =
                     extract_modeled_decl_name(&kv.bnf_production, &kv.text, "_kermlSemantic");
-                let qualified =
-                    qualified_name_for_node(g, uri, container_prefix, &display_name, "kermlDecl");
-                let mut attrs = HashMap::new();
-                attrs.insert(
-                    "bnfProduction".to_string(),
-                    serde_json::json!(&kv.bnf_production),
-                );
-                attrs.insert("text".to_string(), serde_json::json!(&kv.text));
-                add_node_and_recurse(
+                add_kerml_library_decl_node(
                     g,
                     uri,
-                    &qualified,
-                    "kermlDecl",
+                    container_prefix,
+                    pid,
                     display_name,
-                    span_to_range(&k.span),
-                    attrs,
-                    Some(pid),
+                    &kv.bnf_production,
+                    &kv.text,
+                    &k.span,
                 );
             }
         }
@@ -1846,23 +1984,15 @@ pub(super) fn build_from_package_body_element(
                 let kv = &k.value;
                 let display_name =
                     extract_modeled_decl_name(&kv.bnf_production, &kv.text, "_kermlFeature");
-                let qualified =
-                    qualified_name_for_node(g, uri, container_prefix, &display_name, "kermlDecl");
-                let mut attrs = HashMap::new();
-                attrs.insert(
-                    "bnfProduction".to_string(),
-                    serde_json::json!(&kv.bnf_production),
-                );
-                attrs.insert("text".to_string(), serde_json::json!(&kv.text));
-                add_node_and_recurse(
+                add_kerml_library_feature_node(
                     g,
                     uri,
-                    &qualified,
-                    "kermlDecl",
+                    container_prefix,
+                    pid,
                     display_name,
-                    span_to_range(&k.span),
-                    attrs,
-                    Some(pid),
+                    &kv.bnf_production,
+                    &kv.text,
+                    &k.span,
                 );
             }
         }
@@ -1871,23 +2001,15 @@ pub(super) fn build_from_package_body_element(
                 let kv = &k.value;
                 let display_name =
                     extract_modeled_decl_name(&kv.bnf_production, &kv.text, "_extendedLibrary");
-                let qualified =
-                    qualified_name_for_node(g, uri, container_prefix, &display_name, "kermlDecl");
-                let mut attrs = HashMap::new();
-                attrs.insert(
-                    "bnfProduction".to_string(),
-                    serde_json::json!(&kv.bnf_production),
-                );
-                attrs.insert("text".to_string(), serde_json::json!(&kv.text));
-                add_node_and_recurse(
+                add_kerml_library_decl_node(
                     g,
                     uri,
-                    &qualified,
-                    "kermlDecl",
+                    container_prefix,
+                    pid,
                     display_name,
-                    span_to_range(&k.span),
-                    attrs,
-                    Some(pid),
+                    &kv.bnf_production,
+                    &kv.text,
+                    &k.span,
                 );
             }
         }

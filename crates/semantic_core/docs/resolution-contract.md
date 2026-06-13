@@ -37,7 +37,14 @@ Inside package `P`, import `Sibling::*` resolves to `P::Sibling::*` before a top
 
 ### Metadata restrictions
 
-Attributes with `subsetsFeature` (metadata restriction shorthand) use reflective KerML/SysML typing targets; normal attribute typing rules do not apply.
+Metadata def restriction features (`annotatedElement`, `baseType`) use reflective KerML/SysML typing targets; normal attribute typing rules do not apply.
+
+- Subset shorthand (`:> feature : Type`) sets `subsetsFeature` on the attribute node.
+- Redefine shorthand (`:>> feature : Type`) sets `redefines` and projects the same `subsetsFeature` when the parent is a `metadata def`.
+- Diagnostics skip Rule 6 and incompatible typing for `kinds::is_metadata_restriction_attribute`.
+- Resolved `SysML::…` targets whose element kind is `metadata def` or `kermlDecl` are allowed via `kinds::is_reflective_sysml_usage_type`.
+
+KerML `SemanticMetadata` from library sources is materialized as `metadata def` with `metaclassRole: "SemanticMetadata"` (see `package_body.rs`).
 
 ### Derivation connections
 

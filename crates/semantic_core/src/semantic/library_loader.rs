@@ -639,6 +639,56 @@ package Views {
         let roots = vec![lib.to_string_lossy().replace('\\', "/")];
         let loaded = resolve_library_closure(&workspace, &roots, &LibraryClosureOptions::default())
             .expect("closure");
-        assert!(!loaded.iter().any(|f| f.path.contains("Unused.sysml")));
+        assert!(
+            !loaded.iter().any(|f| f.path.contains("Unused.sysml")),
+            "unused library file should not load"
+        );
+    }
+
+    #[test]
+    fn closure_loads_metaobjects_when_workspace_imports_semantic_metadata() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let lib = temp.path().join("sysml.library");
+        fs::create_dir_all(&lib).expect("lib dir");
+        fs::write(
+            lib.join("Metaobjects.kerml"),
+            r#"standard library package Metaobjects {
+  abstract metaclass SemanticMetadata {
+    feature baseType;
+  }
+}"#,
+        )
+        .expect("metaobjects");
+        fs::write(
+            lib.join("SysML.sysml"),
+            r#"standard library package SysML {
+  package Systems {
+    metadata def Usage;
+  }
+}"#,
+        )
+        .expect("sysml");
+        let workspace = [WorkspaceSource {
+            path: "Profile.sysml",
+            content: r#"package Profile {
+  private import Metaobjects::SemanticMetadata;
+  metadata def Role :> SemanticMetadata {
+    :>> baseType = checks meta SysML::Usage;
+  }
+}"#,
+        }];
+        let roots = vec![lib.to_string_lossy().replace('\\', "/")];
+        let loaded = resolve_library_closure(&workspace, &roots, &LibraryClosureOptions::default())
+            .expect("closure");
+        assert!(
+            loaded.iter().any(|f| f.path.contains("Metaobjects")),
+            "expected Metaobjects in closure, got {:?}",
+            loaded.iter().map(|f| &f.path).collect::<Vec<_>>()
+        );
+        assert!(
+            loaded.iter().any(|f| f.path.contains("SysML.sysml")),
+            "expected SysML.sysml in closure for SysML::Usage, got {:?}",
+            loaded.iter().map(|f| &f.path).collect::<Vec<_>>()
+        );
     }
 }

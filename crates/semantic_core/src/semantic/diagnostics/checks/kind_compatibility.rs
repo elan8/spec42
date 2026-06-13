@@ -13,7 +13,8 @@ use crate::semantic::diagnostics::kind_rules::{
     allowed_typing_target_kinds, expected_typing_definition_label, is_compatible_kind,
 };
 use crate::semantic::kinds::{
-    is_metadata_restriction_attribute, is_semantic_metadata_base_type_redefine,
+    is_metadata_restriction_attribute, is_reflective_sysml_usage_type,
+    is_semantic_metadata_base_type_redefine,
 };
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::relationships::SPECIALIZES_TARGET_KINDS;
@@ -182,6 +183,9 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
                         .any(|target| is_compatible_kind(&target.element_kind, allowed));
                 if !edge_first_ok {
                     for target in edge_targets {
+                        if is_reflective_sysml_usage_type(type_ref, target) {
+                            continue;
+                        }
                         if !allowed.is_empty()
                             && !is_compatible_kind(&target.element_kind, allowed)
                         {
@@ -392,7 +396,9 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
                     }
                 }
                 ResolveResult::Ambiguous | ResolveResult::Unresolved => {
-                    if is_semantic_metadata_base_type_redefine(owner, node) {
+                    if is_semantic_metadata_base_type_redefine(owner, node)
+                        || is_metadata_restriction_attribute(node)
+                    {
                         continue;
                     }
                     let key = format!("redefines|{}", node.id.qualified_name);

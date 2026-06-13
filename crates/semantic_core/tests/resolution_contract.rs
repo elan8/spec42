@@ -192,3 +192,169 @@ fn contract_sibling_import_resolves_sysml_requirement_usage() {
         "SysML sibling import",
     );
 }
+
+#[test]
+fn contract_metadata_redefine_shorthand_annotated_element_no_incompatible_type_kind() {
+    let sysml = library_doc(
+        "SysML.sysml",
+        r#"standard library package SysML {
+  public import Systems::*;
+  package Systems {
+    metadata def RequirementUsage;
+  }
+}"#,
+    );
+    let workspace = workspace_doc(
+        "RedefineAnnotatedElement.sysml",
+        r#"package Demo {
+  metadata def Role {
+    :>> annotatedElement : SysML::RequirementUsage;
+  }
+}"#,
+    );
+    let uri = workspace.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[workspace, sysml]).expect("graph");
+
+    let role = graph
+        .nodes_for_uri(&uri)
+        .into_iter()
+        .find(|node| node.element_kind == "metadata def" && node.name == "Role")
+        .expect("Role metadata def");
+    let annotated = graph
+        .children_of(&role)
+        .into_iter()
+        .find(|child| child.name == "annotatedElement")
+        .expect("annotatedElement attribute");
+    assert!(
+        annotated
+            .attributes
+            .get("subsetsFeature")
+            .and_then(|value| value.as_str())
+            == Some("annotatedElement"),
+        "expected subsetsFeature projection for :>> annotatedElement"
+    );
+
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert_no_semantic_codes(
+        &diagnostics,
+        &["incompatible_type_kind", "unresolved_type_reference"],
+        ":>> annotatedElement",
+    );
+}
+
+#[test]
+fn contract_omg_style_fmea_metadata_block_no_metadata_typing_warnings() {
+    let sysml = library_doc(
+        "SysML.sysml",
+        r#"standard library package SysML {
+  public import Systems::*;
+  package Systems {
+    metadata def RequirementUsage;
+    metadata def Usage;
+  }
+}"#,
+    );
+    let metaobjects = library_doc(
+        "Metaobjects.kerml",
+        r#"standard library package Metaobjects {
+  abstract metaclass SemanticMetadata {
+    feature baseType;
+    feature annotatedElement;
+  }
+}"#,
+    );
+    let workspace = workspace_doc(
+        "FMEAMetadata.sysml",
+        include_str!("fixtures/stdlib/omg_14c_metadata_slice.sysml"),
+    );
+    let uri = workspace.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[workspace, sysml, metaobjects])
+        .expect("graph");
+
+    let semantic_metadata = graph
+        .nodes_by_uri
+        .values()
+        .flatten()
+        .find_map(|id| {
+            graph.get_node(id).filter(|node| {
+                node.name == "SemanticMetadata"
+                    && node.element_kind == "metadata def"
+                    && node
+                        .attributes
+                        .get("metaclassRole")
+                        .and_then(|value| value.as_str())
+                        == Some("SemanticMetadata")
+            })
+        });
+    assert!(
+        semantic_metadata.is_some(),
+        "expected SemanticMetadata as metadata def with metaclassRole"
+    );
+
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert_no_semantic_codes(
+        &diagnostics,
+        &[
+            "incompatible_type_kind",
+            "incompatible_specializes_kind",
+            "unresolved_redefines_target",
+        ],
+        "OMG-style FMEA metadata slice",
+    );
+}
+
+#[test]
+fn contract_imported_semantic_metadata_specializes_without_warnings() {
+    let sysml = library_doc(
+        "SysML.sysml",
+        r#"standard library package SysML {
+  public import Systems::*;
+  package Systems {
+    metadata def Usage;
+  }
+}"#,
+    );
+    let metaobjects = library_doc(
+        "Metaobjects.kerml",
+        r#"standard library package Metaobjects {
+  abstract metaclass SemanticMetadata {
+    feature baseType;
+  }
+}"#,
+    );
+    let workspace = workspace_doc(
+        "Profile.sysml",
+        r#"package Profile {
+  private import Metaobjects::SemanticMetadata;
+
+  metadata def UserRole :> SemanticMetadata {
+    :>> baseType = requirementChecks meta SysML::Usage;
+  }
+}"#,
+    );
+    let uri = workspace.uri.clone();
+    let (graph, _parsed) =
+        build_semantic_graph_from_documents(&[workspace, sysml, metaobjects]).expect("graph");
+
+    let user_role = graph
+        .nodes_for_uri(&uri)
+        .into_iter()
+        .find(|node| node.element_kind == "metadata def" && node.name == "UserRole")
+        .expect("UserRole");
+
+    assert!(
+        !graph.outgoing_typing_or_specializes_targets(user_role).is_empty(),
+        "expected specializes edge on UserRole"
+    );
+
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert_no_semantic_codes(
+        &diagnostics,
+        &[
+            "incompatible_specializes_kind",
+            "incompatible_type_kind",
+            "unresolved_redefines_target",
+        ],
+        "imported SemanticMetadata profile",
+    );
+}

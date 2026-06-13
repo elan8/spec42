@@ -92,9 +92,41 @@ fn name_after_definition_header(tokens: &[String], kw_pos: usize) -> Option<Stri
     None
 }
 
+/// Feature names declared inside KerML modeled declaration text (e.g. `feature baseType;`).
+pub(super) fn extract_kerml_feature_names_from_text(text: &str) -> Vec<String> {
+    let tokens: Vec<String> = text
+        .split_whitespace()
+        .map(|token| {
+            token
+                .trim_end_matches(';')
+                .trim_end_matches(',')
+                .trim_end_matches('{')
+                .trim_end_matches('}')
+                .to_string()
+        })
+        .filter(|token| !token.is_empty())
+        .collect();
+    let mut names = Vec::new();
+    let mut i = 0;
+    while i < tokens.len() {
+        if tokens[i].eq_ignore_ascii_case("feature") {
+            if let Some(name) = tokens.get(i + 1) {
+                let sanitized = sanitize_identifier(name);
+                if !sanitized.is_empty() {
+                    names.push(sanitized);
+                }
+                i += 2;
+                continue;
+            }
+        }
+        i += 1;
+    }
+    names
+}
+
 #[cfg(test)]
 mod tests {
-    use super::extract_modeled_decl_name;
+    use super::{extract_kerml_feature_names_from_text, extract_modeled_decl_name};
 
     #[test]
     fn datatype_real() {
@@ -138,6 +170,16 @@ mod tests {
         assert_eq!(
             extract_modeled_decl_name("action", "action def DoNavigate { }", "_x"),
             "DoNavigate"
+        );
+    }
+
+    #[test]
+    fn kerml_metaclass_body_features() {
+        assert_eq!(
+            extract_kerml_feature_names_from_text(
+                "abstract metaclass SemanticMetadata { feature baseType; feature annotatedElement; }"
+            ),
+            vec!["baseType".to_string(), "annotatedElement".to_string()]
         );
     }
 }

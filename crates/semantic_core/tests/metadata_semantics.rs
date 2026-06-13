@@ -400,3 +400,72 @@ fn semantic_metadata_restriction_allows_compatible_requirement_annotation() {
         "UserRequirementRole on requirement def should satisfy annotatedElement restriction"
     );
 }
+
+#[test]
+fn metadata_redefine_shorthand_projects_subsets_feature_for_annotated_element() {
+    let doc = SysmlDocument::from_memory_path(
+        "metadata-redefine-shorthand",
+        "redefine.sysml",
+        r#"package P {
+  metadata def Role {
+    :>> annotatedElement : SysML::RequirementUsage;
+  }
+}"#
+        .to_string(),
+        SysmlDocumentSourceKind::Workspace,
+        None,
+        None,
+    )
+    .expect("document uri");
+    let uri = doc.uri.clone();
+    let sysml = SysmlDocument::from_memory_path(
+        "metadata-redefine-shorthand-lib",
+        "SysML.sysml",
+        r#"standard library package SysML {
+  public import Systems::*;
+  package Systems {
+    metadata def RequirementUsage;
+  }
+}"#
+        .to_string(),
+        SysmlDocumentSourceKind::Library,
+        None,
+        None,
+    )
+    .expect("library doc");
+    let (graph, _parsed) =
+        build_semantic_graph_from_documents(&[doc, sysml]).expect("semantic graph should build");
+
+    let role = graph
+        .nodes_for_uri(&uri)
+        .into_iter()
+        .find(|node| node.element_kind == "metadata def" && node.name == "Role")
+        .expect("Role metadata def");
+    let annotated = graph
+        .children_of(&role)
+        .into_iter()
+        .find(|child| child.name == "annotatedElement")
+        .expect("annotatedElement");
+    assert_eq!(
+        annotated
+            .attributes
+            .get("subsetsFeature")
+            .and_then(|value| value.as_str()),
+        Some("annotatedElement")
+    );
+    assert_eq!(
+        annotated
+            .attributes
+            .get("redefines")
+            .and_then(|value| value.as_str()),
+        Some("annotatedElement")
+    );
+
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        !diagnostics
+            .iter()
+            .any(|diag| diag.code == "incompatible_type_kind"),
+        "unexpected incompatible_type_kind: {diagnostics:?}"
+    );
+}

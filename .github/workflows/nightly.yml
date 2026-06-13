@@ -37,6 +37,11 @@ jobs:
           SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
         run: cargo test -p semantic_core engineering_prefixed_units mismatched_unit_dimension_emits -- --nocapture
 
+      - name: OMG 14c metadata diagnostic ratchet
+        env:
+          SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
+        run: bash scripts/check-omg-14c-metadata-ratchet.sh
+
   vscode-visualization-deep:
     name: VS Code visualization deep tests (informational)
     runs-on: ubuntu-latest

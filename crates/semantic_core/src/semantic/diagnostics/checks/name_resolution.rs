@@ -9,7 +9,7 @@ use crate::semantic::diagnostics::helpers::{
 };
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::import_resolution::resolve_imported_node_ids_for_simple_name;
-use crate::semantic::kinds::{is_namespace, RULE6_ALLOWED_KINDS};
+use crate::semantic::kinds::{is_metadata_restriction_attribute, is_namespace, RULE6_ALLOWED_KINDS};
 use crate::semantic::relationships::SPECIALIZES_TARGET_KINDS;
 use crate::{resolve_type_reference_targets, SemanticDiagnostic, SemanticGraph, SemanticNode};
 
@@ -186,6 +186,10 @@ pub(in crate::semantic::diagnostics) fn collect_name_resolution_diagnostics(
         };
         let normalized_type_ref = normalize_declared_type_ref(type_ref);
         if is_builtin_type_ref(&normalized_type_ref) {
+            continue;
+        }
+
+        if is_metadata_restriction_attribute(node) {
             continue;
         }
 
