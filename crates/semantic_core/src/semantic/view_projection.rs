@@ -132,9 +132,7 @@ fn resolve_projection_strategy(
     normalized_view_type: &str,
     filters: &[FilterExpr],
 ) -> ProjectionStrategy {
-    if normalized_view_type == "requirementview"
-        || is_requirement_traceability_general_view(normalized_view_type, filters)
-    {
+    if is_requirement_traceability_general_view(normalized_view_type, filters) {
         return traceability_projection_strategy();
     }
     projection_strategy(normalized_view_type)
@@ -195,22 +193,20 @@ fn is_requirement_traceability_kind(qualified: &str) -> bool {
 
 fn projection_strategy(normalized_view_type: &str) -> ProjectionStrategy {
     match normalized_view_type {
-        "browserview" | "parttreeview" => ProjectionStrategy {
+        "browserview" => ProjectionStrategy {
             scope: ScopeStrategy::Structural,
             apply_filters_after_expansion: true,
             include_ancestors: false,
             edge_predicate: EdgePredicate::All,
             grid_layout: None,
         },
-        "actionflowview" | "actionview" | "statetransitionview" | "stateview" => {
-            ProjectionStrategy {
-                scope: ScopeStrategy::Descendants,
-                apply_filters_after_expansion: true,
-                include_ancestors: false,
-                edge_predicate: EdgePredicate::All,
-                grid_layout: None,
-            }
-        }
+        "actionflowview" | "statetransitionview" => ProjectionStrategy {
+            scope: ScopeStrategy::Descendants,
+            apply_filters_after_expansion: true,
+            include_ancestors: false,
+            edge_predicate: EdgePredicate::All,
+            grid_layout: None,
+        },
         "gridview" => ProjectionStrategy {
             scope: ScopeStrategy::Structural,
             apply_filters_after_expansion: true,
@@ -218,7 +214,7 @@ fn projection_strategy(normalized_view_type: &str) -> ProjectionStrategy {
             edge_predicate: EdgePredicate::All,
             grid_layout: None,
         },
-        "geometryview" | "geometricview" => ProjectionStrategy {
+        "geometryview" => ProjectionStrategy {
             scope: ScopeStrategy::Structural,
             apply_filters_after_expansion: true,
             include_ancestors: true,

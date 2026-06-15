@@ -323,26 +323,32 @@ fn view_type_for_stdlib_rendering(
 }
 
 fn resolve_effective_view_type(usage: &ViewUsageSpec, catalog: &ViewCatalog) -> String {
-    resolve_explicit_view_type(usage, catalog)
-        .or_else(|| {
-            view_type_for_stdlib_rendering(
-                usage.rendering_ref.as_deref(),
-                usage.rendering_type.as_deref(),
-            )
-            .map(str::to_string)
-        })
-        .or_else(|| {
-            usage.definition_id.as_deref().and_then(|definition_id| {
-                catalog.definitions.get(definition_id).and_then(|definition| {
-                    view_type_for_stdlib_rendering(
-                        definition.rendering_ref.as_deref(),
-                        definition.rendering_type.as_deref(),
-                    )
-                    .map(str::to_string)
-                })
+    if let Some(explicit) = resolve_explicit_view_type(usage, catalog) {
+        return explicit;
+    }
+    if usage.definition_id.is_none() {
+        if let Some(type_ref) = usage.definition_ref.as_deref() {
+            if crate::semantic::standard_views::is_non_standard_explicit_view_type(type_ref) {
+                return type_ref.to_string();
+            }
+        }
+    }
+    view_type_for_stdlib_rendering(
+        usage.rendering_ref.as_deref(),
+        usage.rendering_type.as_deref(),
+    )
+    .or_else(|| {
+        usage.definition_id.as_deref().and_then(|definition_id| {
+            catalog.definitions.get(definition_id).and_then(|definition| {
+                view_type_for_stdlib_rendering(
+                    definition.rendering_ref.as_deref(),
+                    definition.rendering_type.as_deref(),
+                )
             })
         })
-        .unwrap_or_else(|| "GeneralView".to_string())
+    })
+    .map(str::to_string)
+    .unwrap_or_else(|| "GeneralView".to_string())
 }
 
 pub fn evaluate_views(
@@ -372,6 +378,16 @@ pub fn evaluate_views(
             let mut filters = usage.filters.clone();
             let mut conforms_to = usage.conforms_to.clone();
             let effective_view_type = Some(resolve_effective_view_type(usage, catalog));
+            if usage.definition_id.is_none() {
+                if let Some(type_ref) = usage.definition_ref.as_deref() {
+                    if crate::semantic::standard_views::is_non_standard_explicit_view_type(type_ref)
+                    {
+                        issues.push(format!(
+                            "View type '{type_ref}' is not a SysML v2 standard view definition (§9.2.20 Table 34); use GeneralView with filters, a render clause, or a local view def."
+                        ));
+                    }
+                }
+            }
             if let Some(definition_id) = usage.definition_id.as_deref() {
                 if let Some(definition) = catalog.definitions.get(definition_id) {
                     filters.extend(definition.filters.clone());
@@ -797,24 +813,7 @@ pub fn build_view_candidates(
 
 pub fn renderer_view_for_view_type(effective_view_type: Option<&str>) -> Option<&'static str> {
     let view_type = effective_view_type?;
-    let normalized = normalize_kind_name(view_type);
-    match normalized.as_str() {
-        "generalview"
-        | "caseview"
-        | "analysiscaseview"
-        | "verificationcaseview"
-        | "requirementview"
-        | "structureview"
-        | "parttreeview" => Some("general-view"),
-        "interconnectionview" => Some("interconnection-view"),
-        "actionflowview" | "actionview" => Some("action-flow-view"),
-        "sequenceview" => Some("sequence-view"),
-        "statetransitionview" | "stateview" => Some("state-transition-view"),
-        "browserview" => Some("browser-view"),
-        "gridview" => Some("grid-view"),
-        "geometryview" | "geometricview" => Some("geometry-view"),
-        _ => None,
-    }
+    crate::semantic::standard_views::renderer_for_standard_view_type(view_type)
 }
 
 #[cfg(test)]
@@ -935,11 +934,9 @@ mod tests {
     }
 
     #[test]
-    fn standard_view_types_map_to_shared_renderers_or_filtered_general_view() {
+    fn standard_view_types_map_to_shared_renderers() {
         let cases = [
             ("GeneralView", Some("general-view")),
-            ("CaseView", Some("general-view")),
-            ("RequirementView", Some("general-view")),
             ("InterconnectionView", Some("interconnection-view")),
             ("ActionFlowView", Some("action-flow-view")),
             ("SequenceView", Some("sequence-view")),
@@ -947,7 +944,8 @@ mod tests {
             ("BrowserView", Some("browser-view")),
             ("GridView", Some("grid-view")),
             ("GeometryView", Some("geometry-view")),
-            ("GeometricView", Some("geometry-view")),
+            ("RequirementView", None),
+            ("CaseView", None),
             ("SafetyView", None),
         ];
         for (view_type, expected) in cases {

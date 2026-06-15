@@ -458,9 +458,7 @@ pub(super) fn is_builtin_type_ref(type_ref: &str) -> bool {
     if matches!(type_ref, "String") {
         return true;
     }
-    let normalized = normalize_declared_type_ref(type_ref);
-    crate::semantic::explicit_views::renderer_view_for_view_type(Some(normalized.as_str()))
-        .is_some()
+    crate::semantic::standard_views::is_standard_view_type(type_ref)
 }
 
 pub(super) fn attribute_value_is_string_literal(value: &str) -> bool {

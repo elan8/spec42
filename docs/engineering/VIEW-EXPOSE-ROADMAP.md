@@ -26,7 +26,9 @@ Spec42 resolves effective renderer selection in this order:
 
 **Content inference is not spec-conformant:** Spec42 does not infer `ActionFlowView` or `StateTransitionView` from exposed element kinds. For behavior-specific diagrams, type views explicitly (`: ActionFlowView`, `: StateTransitionView`) in the model.
 
-**Requirement traceability is a filtered `GeneralView`:** SysML v2 §9.2.20.2.3 does not define a separate `RequirementView` standard view type. Traceability diagrams should use `: GeneralView` with filters on requirement/verification kinds; [`view_projection.rs`](../../crates/semantic_core/src/semantic/view_projection.rs) applies relationship closure and trace-edge filtering when those filters are present. The legacy type name `RequirementView` remains a renderer alias only.
+**Requirement traceability is a filtered `GeneralView`:** SysML v2 §9.2.20.2.3 does not define a separate `RequirementView` standard view type. Traceability diagrams should use `: GeneralView` with filters on requirement/verification kinds; [`view_projection.rs`](../../crates/semantic_core/src/semantic/view_projection.rs) applies relationship closure and trace-edge filtering when those filters are present.
+
+**Standard view types only:** Spec42 implements exactly the eight view definitions from §9.2.20 Table 34 via [`standard_views.rs`](../../crates/semantic_core/src/semantic/standard_views.rs). Legacy names such as `RequirementView`, `CaseView`, or `StructureView` on a view usage (without a local `view def`) are rejected as unsupported.
 
 ## Reference model
 
@@ -39,6 +41,7 @@ External grid fixture brief (maintained outside spec42): `spec42-view-expose-fix
 | Expose resolver | `crates/semantic_core/src/semantic/reference_resolution.rs` |
 | View evaluation | `crates/semantic_core/src/semantic/explicit_views.rs` |
 | View projection | `crates/semantic_core/src/semantic/view_projection.rs` |
+| Standard view registry | `crates/semantic_core/src/semantic/standard_views.rs` |
 | View diagnostics | `crates/semantic_core/src/semantic/diagnostics/checks/view_metadata_conformance.rs` |
 | Parser (`variation part`) | `sysml-v2-parser/src/parser/part/usage.rs` |
 

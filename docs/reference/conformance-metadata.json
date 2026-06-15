@@ -15,14 +15,14 @@
     { "category": "metadata-and-quantities", "codes": ["unresolved_type_reference", "unresolved_specializes_reference", "metadata_annotation_unresolved", "metadata_about_unresolved", "metadata_binding_missing", "metadata_binding_unknown", "metadata_annotated_element_incompatible", "metadata_keyword_unresolved", "metadata_keyword_collision"], "status": "supported", "notes": "Parser 0.25.5 unit shortName on attribute defs; graph projects unitConversion metadata. Quantity library closure loads when workspace contains unit literals." }
   ],
   "views": [
-    { "id": "general-view", "renderer": "shared", "status": "complete", "notes": "General structural view with shared renderer; expose targets accept feature chains (parser 0.18.0)." },
-    { "id": "interconnection-view", "renderer": "shared", "status": "complete", "notes": "Connection-focused shared renderer." },
-    { "id": "action-flow-view", "renderer": "shared", "status": "partial", "notes": "Graph-first activity DTO with then-action AST extraction and bind/perform enrichment; succession notation and full control-node BNF remain in progress." },
-    { "id": "sequence-view", "renderer": "shared", "status": "complete", "notes": "Sequence renderer with fragments, activations, self and return messages." },
-    { "id": "state-transition-view", "renderer": "shared", "status": "partial", "notes": "Rust StateMachineDto from semantic graph; client uses server payload on primary path; full transition/region BNF sign-off in progress." },
-    { "id": "browser-view", "renderer": "shared", "status": "provisional", "notes": "Standard-view renderer while graphical notation details settle." },
-    { "id": "grid-view", "renderer": "shared", "status": "provisional", "notes": "Standard-view renderer while graphical notation details settle." },
-    { "id": "geometry-view", "renderer": "shared", "status": "provisional", "notes": "Standard-view renderer while graphical notation details settle." }
+    { "id": "general-view", "standardViewType": "GeneralView", "renderer": "shared", "status": "complete", "notes": "§9.2.20.2.3; filtered specializations include requirement traceability (expose + filter)." },
+    { "id": "interconnection-view", "standardViewType": "InterconnectionView", "renderer": "shared", "status": "complete", "notes": "§9.2.20.2.6; IBD pipeline with connection-focused projection." },
+    { "id": "action-flow-view", "standardViewType": "ActionFlowView", "renderer": "shared", "status": "partial", "notes": "§9.2.20.2.1; graph-first activity DTO. Gaps: swim lanes, full control-node BNF, conditional succession notation." },
+    { "id": "sequence-view", "standardViewType": "SequenceView", "renderer": "shared", "status": "complete", "notes": "§9.2.20.2.7; lifelines, fragments, activations." },
+    { "id": "state-transition-view", "standardViewType": "StateTransitionView", "renderer": "shared", "status": "partial", "notes": "§9.2.20.2.8; StateMachineDto from semantic graph. Gaps: full region/transition BNF sign-off." },
+    { "id": "browser-view", "standardViewType": "BrowserView", "renderer": "shared", "status": "provisional", "notes": "§9.2.20.2.2; tree projection without ancestor injection. Gaps: collapsible tree notation, filter expressions from stdlib." },
+    { "id": "grid-view", "standardViewType": "GridView", "renderer": "shared", "status": "provisional", "notes": "§9.2.20.2.5; tabular element table. Gaps: relationship matrix, data-value tabular subtypes." },
+    { "id": "geometry-view", "standardViewType": "GeometryView", "renderer": "shared", "status": "provisional", "notes": "§9.2.20.2.4; spatial item preview. Gaps: 2D/3D view params, color maps, shape rendering per spec." }
   ],
   "cliReporting": [
     { "feature": "check text/json", "status": "supported" },
