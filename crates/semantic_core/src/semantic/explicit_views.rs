@@ -24,6 +24,8 @@ pub struct ViewDefinitionSpec {
     pub id: String,
     pub name: String,
     pub filters: Vec<FilterExpr>,
+    pub rendering_ref: Option<String>,
+    pub rendering_type: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -42,6 +44,8 @@ pub struct ViewUsageSpec {
     pub filters: Vec<FilterExpr>,
     pub exposes: Vec<ExposeSpec>,
     pub conforms_to: Vec<String>,
+    pub rendering_ref: Option<String>,
+    pub rendering_type: Option<String>,
     #[allow(dead_code)]
     pub range: RangeDto,
     pub issues: Vec<String>,
@@ -168,24 +172,40 @@ fn walk_package_body(
             PackageBodyElement::ViewDef(view_def) => {
                 let name = identification_name(&view_def.identification);
                 let id = qualify_name(next_container.as_deref(), &name);
-                let filters = match &view_def.body {
-                    ViewDefBody::Brace { elements } => elements
-                        .iter()
-                        .filter_map(|member| match &member.value {
-                            ViewDefBodyElement::Filter(filter) => {
-                                Some(parse_filter_span(content, &filter.condition.span))
-                            }
-                            _ => None,
-                        })
-                        .collect(),
-                    ViewDefBody::Semicolon => Vec::new(),
+                let (filters, rendering_ref, rendering_type) = match &view_def.body {
+                    ViewDefBody::Brace { elements } => {
+                        let filters = elements
+                            .iter()
+                            .filter_map(|member| match &member.value {
+                                ViewDefBodyElement::Filter(filter) => {
+                                    Some(parse_filter_span(content, &filter.condition.span))
+                                }
+                                _ => None,
+                            })
+                            .collect();
+                        let (rendering_ref, rendering_type) =
+                            extract_rendering_from_view_def_body(elements);
+                        (filters, rendering_ref, rendering_type)
+                    }
+                    ViewDefBody::Semicolon => (Vec::new(), None, None),
                 };
-                definitions.insert(id.clone(), ViewDefinitionSpec { id, name, filters });
+                definitions.insert(
+                    id.clone(),
+                    ViewDefinitionSpec {
+                        id,
+                        name,
+                        filters,
+                        rendering_ref,
+                        rendering_type,
+                    },
+                );
             }
             PackageBodyElement::ViewUsage(view_usage) => {
                 let id = qualify_name(next_container.as_deref(), &view_usage.name);
                 let mut filters = Vec::new();
                 let mut exposes = Vec::new();
+                let mut rendering_ref = None;
+                let mut rendering_type = None;
                 if let ViewBody::Brace { elements } = &view_usage.body {
                     for member in elements {
                         match &member.value {
@@ -197,6 +217,12 @@ fn walk_package_body(
                                 filter: parse_expose_filter(content, &member.span),
                                 range: span_to_range_dto(&member.span),
                             }),
+                            ViewBodyElement::ViewRendering(rendering) => {
+                                if rendering_ref.is_none() {
+                                    rendering_ref = Some(rendering.value.name.clone());
+                                    rendering_type = rendering.value.type_name.clone();
+                                }
+                            }
                             _ => {}
                         }
                     }
@@ -209,6 +235,8 @@ fn walk_package_body(
                     filters,
                     exposes,
                     conforms_to: Vec::new(),
+                    rendering_ref,
+                    rendering_type,
                     range: span_to_range_dto(&view_usage.span),
                     issues: Vec::new(),
                 });
@@ -254,6 +282,69 @@ fn resolve_definition_id(
     }
 }
 
+fn extract_rendering_from_view_def_body(
+    elements: &[sysml_v2_parser::ast::Node<ViewDefBodyElement>],
+) -> (Option<String>, Option<String>) {
+    for member in elements {
+        if let ViewDefBodyElement::ViewRendering(rendering) = &member.value {
+            return (
+                Some(rendering.value.name.clone()),
+                rendering.value.type_name.clone(),
+            );
+        }
+    }
+    (None, None)
+}
+
+fn resolve_explicit_view_type(usage: &ViewUsageSpec, _catalog: &ViewCatalog) -> Option<String> {
+    if usage.definition_id.is_some() {
+        return None;
+    }
+    let type_ref = usage.definition_ref.as_deref()?;
+    if renderer_view_for_view_type(Some(type_ref)).is_some() {
+        Some(type_ref.to_string())
+    } else {
+        None
+    }
+}
+
+fn view_type_for_stdlib_rendering(
+    rendering_ref: Option<&str>,
+    rendering_type: Option<&str>,
+) -> Option<&'static str> {
+    let lookup = rendering_type.or(rendering_ref)?;
+    match normalize_kind_name(lookup).as_str() {
+        "asinterconnectiondiagram" => Some("InterconnectionView"),
+        "astreediagram" => Some("BrowserView"),
+        "aselementtable" => Some("GridView"),
+        "astextualnotation" => Some("GeneralView"),
+        _ => None,
+    }
+}
+
+fn resolve_effective_view_type(usage: &ViewUsageSpec, catalog: &ViewCatalog) -> String {
+    resolve_explicit_view_type(usage, catalog)
+        .or_else(|| {
+            view_type_for_stdlib_rendering(
+                usage.rendering_ref.as_deref(),
+                usage.rendering_type.as_deref(),
+            )
+            .map(str::to_string)
+        })
+        .or_else(|| {
+            usage.definition_id.as_deref().and_then(|definition_id| {
+                catalog.definitions.get(definition_id).and_then(|definition| {
+                    view_type_for_stdlib_rendering(
+                        definition.rendering_ref.as_deref(),
+                        definition.rendering_type.as_deref(),
+                    )
+                    .map(str::to_string)
+                })
+            })
+        })
+        .unwrap_or_else(|| "GeneralView".to_string())
+}
+
 pub fn evaluate_views(
     catalog: &ViewCatalog,
     semantic_graph: &crate::semantic::graph::SemanticGraph,
@@ -280,12 +371,7 @@ pub fn evaluate_views(
             let mut issues = usage.issues.clone();
             let mut filters = usage.filters.clone();
             let mut conforms_to = usage.conforms_to.clone();
-            let effective_view_type = usage
-                .definition_id
-                .as_deref()
-                .and_then(|definition_id| catalog.definitions.get(definition_id))
-                .map(|definition| definition.name.clone())
-                .or_else(|| usage.definition_ref.clone());
+            let effective_view_type = Some(resolve_effective_view_type(usage, catalog));
             if let Some(definition_id) = usage.definition_id.as_deref() {
                 if let Some(definition) = catalog.definitions.get(definition_id) {
                     filters.extend(definition.filters.clone());
@@ -1129,6 +1215,95 @@ mod tests {
         assert!(projected.contains("Pkg::Engine"));
         assert!(projected.contains("Pkg::Engine::pump"));
         assert!(projected.contains("Pkg::Pump"));
+    }
+
+    #[test]
+    fn extracts_rendering_from_view_usage() {
+        let uri = Url::parse("file:///C:/demo/model.sysml").expect("uri");
+        let content = r#"
+            package Demo {
+                part def System { part child; }
+                part system : System;
+                view connections {
+                    expose Demo::system;
+                    render asInterconnectionDiagram;
+                }
+            }
+        "#;
+        let parsed = parse(content).expect("parse");
+        let doc = WorkspaceParsedDocument {
+            uri: uri.clone(),
+            content: content.to_string(),
+            parsed,
+            parse_time_ms: 1,
+            parse_cached: false,
+        };
+
+        let catalog = build_view_catalog(std::slice::from_ref(&uri), std::slice::from_ref(&doc));
+        assert_eq!(catalog.usages.len(), 1);
+        assert_eq!(
+            catalog.usages[0].rendering_ref.as_deref(),
+            Some("asInterconnectionDiagram")
+        );
+    }
+
+    #[test]
+    fn stdlib_rendering_maps_to_view_type_and_renderer() {
+        assert_eq!(
+            super::view_type_for_stdlib_rendering(Some("asInterconnectionDiagram"), None),
+            Some("InterconnectionView")
+        );
+        assert_eq!(
+            super::renderer_view_for_view_type(Some("InterconnectionView")),
+            Some("interconnection-view")
+        );
+        assert_eq!(
+            super::view_type_for_stdlib_rendering(Some("asTreeDiagram"), None),
+            Some("BrowserView")
+        );
+        assert_eq!(
+            super::view_type_for_stdlib_rendering(Some("asElementTable"), None),
+            Some("GridView")
+        );
+    }
+
+    #[test]
+    fn rendering_only_view_is_supported_candidate() {
+        let evaluated_views = vec![EvaluatedView {
+            id: "Demo::connections".to_string(),
+            name: "connections".to_string(),
+            effective_view_type: Some("InterconnectionView".to_string()),
+            exposed_ids: HashSet::new(),
+            conforms_to: Vec::new(),
+            filters: Vec::new(),
+            visible_ids: HashSet::new(),
+            issues: Vec::new(),
+        }];
+
+        let candidates = build_view_candidates(&evaluated_views, &HashMap::new(), &HashMap::new());
+        assert!(candidates[0].supported);
+        assert_eq!(
+            candidates[0].renderer_view.as_deref(),
+            Some("interconnection-view")
+        );
+    }
+
+    #[test]
+    fn untyped_view_without_render_falls_back_to_general_view_candidate() {
+        let evaluated_views = vec![EvaluatedView {
+            id: "Demo::overview".to_string(),
+            name: "overview".to_string(),
+            effective_view_type: Some("GeneralView".to_string()),
+            exposed_ids: HashSet::new(),
+            conforms_to: Vec::new(),
+            filters: Vec::new(),
+            visible_ids: HashSet::new(),
+            issues: Vec::new(),
+        }];
+
+        let candidates = build_view_candidates(&evaluated_views, &HashMap::new(), &HashMap::new());
+        assert!(candidates[0].supported);
+        assert_eq!(candidates[0].renderer_view.as_deref(), Some("general-view"));
     }
 
     #[test]

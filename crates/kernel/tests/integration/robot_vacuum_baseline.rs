@@ -1,6 +1,7 @@
 //! Optional regression against the sysml-robot-vacuum-cleaner showcase model.
 //! Set `SYSML_ROBOT_VACUUM_DIR` to the repository root (directory containing `model/`).
 
+use kernel::build_sysml_visualization_for_paths;
 use spec42::cli::{CheckArgs, Cli, OutputFormat};
 use spec42::perform_check;
 use std::collections::HashMap;
@@ -103,5 +104,69 @@ fn robot_vacuum_showcase_diagnostic_baseline() {
             .unwrap_or(0),
         0,
         "named transitions with first source must not count as initial transitions"
+    );
+}
+
+#[test]
+#[ignore = "requires SYSML_ROBOT_VACUUM_DIR pointing at the robot vacuum showcase checkout"]
+fn robot_vacuum_showcase_model_views_are_supported() {
+    let Some(root) = std::env::var_os("SYSML_ROBOT_VACUUM_DIR") else {
+        return;
+    };
+    let root = PathBuf::from(root);
+    let model_dir = root.join("model");
+    if !model_dir.is_dir() {
+        panic!(
+            "SYSML_ROBOT_VACUUM_DIR must contain a model/ directory: {}",
+            model_dir.display()
+        );
+    }
+
+    let probe = build_sysml_visualization_for_paths(
+        &model_dir,
+        Some(&root),
+        &[],
+        "general-view",
+        None,
+    )
+    .expect("robot vacuum visualization probe");
+
+    let model_views: Vec<_> = probe
+        .view_candidates
+        .iter()
+        .filter(|candidate| candidate.id.starts_with("ModelViews::"))
+        .collect();
+    assert!(
+        model_views.len() >= 18,
+        "expected ModelViews catalog views, got {}",
+        model_views.len()
+    );
+    for candidate in &model_views {
+        assert!(
+            candidate.supported,
+            "view '{}' should be supported (view_type={:?}, renderer={:?})",
+            candidate.name, candidate.view_type, candidate.renderer_view
+        );
+    }
+
+    let operational_context = build_sysml_visualization_for_paths(
+        &model_dir,
+        Some(&root),
+        &[],
+        "interconnection-view",
+        Some("operationalContext"),
+    )
+    .expect("operational context visualization");
+    assert!(
+        operational_context.empty_state_message.is_none(),
+        "operationalContext should render via asInterconnectionDiagram mapping: {:?}",
+        operational_context.empty_state_message
+    );
+    let scene = operational_context
+        .interconnection_scene
+        .expect("interconnection scene for operationalContext");
+    assert!(
+        !scene.nodes.is_empty(),
+        "operationalContext interconnection scene should not be empty"
     );
 }
