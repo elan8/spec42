@@ -23,6 +23,8 @@ use super::action;
 use super::analysis_case;
 use super::attribute_body;
 use super::definition_body;
+use super::unit_metadata;
+use super::unit_type_promotion;
 use super::expressions;
 use super::modeled_kerml_name::{extract_kerml_feature_names_from_text, extract_modeled_decl_name};
 use super::occurrence_body;
@@ -57,6 +59,19 @@ fn add_kerml_library_decl_node(
     text: &str,
     span: &sysml_v2_parser::Span,
 ) {
+    if bnf_production.eq_ignore_ascii_case("attribute") {
+        if let Some(parsed) = unit_type_promotion::try_parse_unit_attribute_def(text) {
+            unit_type_promotion::materialize_unit_attribute_def_from_kerml(
+                g,
+                uri,
+                container_prefix,
+                parent_id,
+                &parsed,
+                &span_to_range(span),
+            );
+            return;
+        }
+    }
     let metaclass_role = semantic_metadata_metaclass_role(&display_name, text);
     let element_kind = if metaclass_role.is_some() {
         "metadata def"
@@ -746,14 +761,16 @@ pub(super) fn build_from_package_body_element(
             );
         }
         PBE::AttributeDef(ad_node) => {
-            let name = &ad_node.name;
+            let value = &ad_node.value;
+            let name = &value.name;
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, name, "attribute def");
             let range = span_to_range(&ad_node.span);
             let mut attrs = HashMap::new();
-            if let Some(ref t) = ad_node.typing {
+            if let Some(ref t) = value.typing {
                 attrs.insert("attributeType".to_string(), serde_json::json!(t));
             }
+            unit_metadata::project_attribute_def_unit_metadata(&mut attrs, value);
             add_node_and_recurse(
                 g,
                 uri,
@@ -764,7 +781,7 @@ pub(super) fn build_from_package_body_element(
                 attrs,
                 parent_id,
             );
-            if let Some(ref t) = ad_node.typing {
+            if let Some(ref t) = value.typing {
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
         }
@@ -1974,18 +1991,31 @@ pub(super) fn build_from_package_body_element(
         PBE::KermlSemanticDecl(k) => {
             if let Some(pid) = parent_id {
                 let kv = &k.value;
-                let display_name =
-                    extract_modeled_decl_name(&kv.bnf_production, &kv.text, "_kermlSemantic");
-                add_kerml_library_decl_node(
-                    g,
-                    uri,
-                    container_prefix,
-                    pid,
-                    display_name,
-                    &kv.bnf_production,
-                    &kv.text,
-                    &k.span,
-                );
+                let promoted = kv.bnf_production.eq_ignore_ascii_case("attribute")
+                    && unit_type_promotion::try_parse_unit_attribute_def(&kv.text).map(|parsed| {
+                        unit_type_promotion::materialize_unit_attribute_def_from_kerml(
+                            g,
+                            uri,
+                            container_prefix,
+                            pid,
+                            &parsed,
+                            &span_to_range(&k.span),
+                        );
+                    }).is_some();
+                if !promoted {
+                    let display_name =
+                        extract_modeled_decl_name(&kv.bnf_production, &kv.text, "_kermlSemantic");
+                    add_kerml_library_decl_node(
+                        g,
+                        uri,
+                        container_prefix,
+                        pid,
+                        display_name,
+                        &kv.bnf_production,
+                        &kv.text,
+                        &k.span,
+                    );
+                }
             }
         }
         PBE::KermlFeatureDecl(k) => {

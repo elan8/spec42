@@ -87,6 +87,11 @@ pub fn resolve_library_closure(
                 seeds.insert(PackageKey(key));
             }
         }
+        if workspace_contains_unit_literal(source.content) {
+            for pkg in QUANTITY_UNIT_CLOSURE_PACKAGES {
+                seeds.insert(PackageKey(pkg.to_string()));
+            }
+        }
     }
     if wants_sysml_bootstrap {
         for (key, entries) in &index.packages {
@@ -346,6 +351,40 @@ fn collect_import_targets_from_package_body(body: &PackageBody) -> Vec<String> {
     let mut out = Vec::new();
     walk_package_body(body, &mut out);
     out
+}
+
+const QUANTITY_UNIT_CLOSURE_PACKAGES: &[&str] = &[
+    "Measurement",
+    "ISQ",
+    "ISQBase",
+    "ISQSpaceTime",
+    "ISQMechanics",
+    "ISQElectromagnetism",
+    "ISQThermodynamics",
+    "SI",
+    "SIPrefixes",
+    "USCustomaryUnits",
+];
+
+fn workspace_contains_unit_literal(content: &str) -> bool {
+    let bytes = content.as_bytes();
+    let mut i = 0usize;
+    while i + 2 < bytes.len() {
+        if bytes[i].is_ascii_digit() {
+            let mut j = i + 1;
+            while j < bytes.len() && (bytes[j].is_ascii_digit() || bytes[j] == b'.') {
+                j += 1;
+            }
+            while j < bytes.len() && bytes[j].is_ascii_whitespace() {
+                j += 1;
+            }
+            if j < bytes.len() && bytes[j] == b'[' {
+                return true;
+            }
+        }
+        i += 1;
+    }
+    false
 }
 
 fn is_unit_catalog_path_hint(lower_full_path: &str, relative_path: &str) -> bool {

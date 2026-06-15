@@ -10,6 +10,9 @@ use crate::semantic::diagnostics::helpers::{
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::reference_resolution::resolve_expression_endpoint_strict;
 use crate::ResolveResult;
+use crate::semantic::units::{
+    is_measurement_unit_compatible, quantity_value_to_unit_type_name, unit_type_for_quantity_type_name,
+};
 use crate::UnitRegistry;
 use crate::{SemanticDiagnostic, SemanticGraph};
 
@@ -53,10 +56,9 @@ fn enum_contains_value(graph: &SemanticGraph, enum_type_ref: &str, literal: &str
         .any(|child| child.name == literal || child.name.ends_with(&format!("::{literal}")))
 }
 
-fn expected_unit_dimension_for_type(type_name: &str) -> Option<String> {
-    let base = type_name.rsplit("::").next()?.trim();
-    base.strip_suffix("Value")
-        .map(|stripped| format!("{stripped}Unit"))
+fn expected_unit_dimension_for_type(graph: &SemanticGraph, type_name: &str) -> Option<String> {
+    unit_type_for_quantity_type_name(graph, type_name)
+        .or_else(|| quantity_value_to_unit_type_name(type_name))
 }
 
 fn quantity_type_names_for_attribute(
@@ -76,17 +78,8 @@ fn quantity_type_names_for_attribute(
     names
 }
 
-fn unit_dimensions_compatible(expected: &str, actual: &str) -> bool {
-    if expected == actual {
-        return true;
-    }
-    const ALIASES: &[(&str, &str)] = &[
-        ("ElectricPotentialDifferenceUnit", "ElectricPotentialUnit"),
-        ("ElectricPotentialUnit", "ElectricPotentialDifferenceUnit"),
-    ];
-    ALIASES
-        .iter()
-        .any(|(left, right)| expected == *left && actual == *right)
+fn unit_dimensions_compatible(graph: &SemanticGraph, expected: &str, actual: &str) -> bool {
+    is_measurement_unit_compatible(graph, expected, actual)
 }
 
 pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnostics(
@@ -191,9 +184,9 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
                     let actual_dimension = units.unit_expression_dimension(unit_expr);
                     let expected_dimension = quantity_type_names_for_attribute(graph, node)
                         .iter()
-                        .find_map(|type_name| expected_unit_dimension_for_type(type_name));
+                        .find_map(|type_name| expected_unit_dimension_for_type(graph, type_name));
                     if let (Some(expected), Some(actual)) = (expected_dimension, actual_dimension) {
-                        if !unit_dimensions_compatible(&expected, &actual) {
+                        if !unit_dimensions_compatible(graph, &expected, &actual) {
                             let key = format!("unit_dim|{}", node.id.qualified_name);
                             if seen.insert(key) {
                                 diagnostics.push(diag(

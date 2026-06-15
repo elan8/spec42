@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use sysml_v2_parser::ast::{AttributeBody, AttributeBodyElement};
 use url::Url;
 
-use super::{add_node_and_recurse, expressions, qualified_name_for_node};
+use super::{add_node_and_recurse, expressions, qualified_name_for_node, unit_metadata};
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::METADATA_RESTRICTION_FEATURE_NAMES;
@@ -33,6 +33,7 @@ pub(super) fn build_from_attribute_body(
                 if let Some(ref typing) = value.typing {
                     attrs.insert("attributeType".to_string(), serde_json::json!(typing));
                 }
+                unit_metadata::project_attribute_def_unit_metadata(&mut attrs, value);
                 if let Some(expr_node) = &value.value {
                     let rendered = expressions::expression_to_debug_string(expr_node);
                     attrs.insert("value".to_string(), serde_json::json!(rendered));

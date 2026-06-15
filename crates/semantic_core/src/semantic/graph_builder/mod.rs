@@ -28,6 +28,8 @@ mod part_def;
 mod part_usage;
 mod payload;
 mod port_def;
+pub(crate) mod unit_metadata;
+pub(crate) mod unit_type_promotion;
 mod requirement_body;
 mod state;
 mod stubs;

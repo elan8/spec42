@@ -1,0 +1,1206 @@
+use std::collections::{BTreeMap, HashMap, HashSet};
+use std::path::{Path, PathBuf};
+
+use url::Url;
+
+use crate::semantic::graph::SemanticGraph;
+use crate::semantic::units::graph_ingest::ingest_units_from_graph;
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct UnitDef {
+    pub symbol: String,
+    pub dimension: String,
+    pub reference_unit: Option<String>,
+    pub conversion_factor: f64,
+    pub conversion_offset: f64,
+    /// Algebraic unit expression from `attribute newton : ForceUnit = kg * m / s^2`.
+    pub algebraic_expr: Option<String>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct UnitRegistry {
+    by_symbol: HashMap<String, UnitDef>,
+    conflicted_symbols: HashSet<String>,
+    prefixes_by_name: HashMap<String, f64>,
+    prefixes_by_symbol: HashMap<String, f64>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum UnitError {
+    UnknownUnit,
+    IncompatibleDimension,
+    UnsupportedConversion,
+    AmbiguousMetadata,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+struct ReducedUnit {
+    root_symbol: String,
+    scale: f64,
+    offset: f64,
+    dimension: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+struct CanonicalUnitExpr {
+    exponents: BTreeMap<String, i32>,
+}
+
+impl CanonicalUnitExpr {
+    fn add_power(&mut self, symbol: String, power: i32) {
+        let entry = self.exponents.entry(symbol).or_insert(0);
+        *entry += power;
+        if *entry == 0 {
+            self.exponents.retain(|_, value| *value != 0);
+        }
+    }
+}
+
+/// Base SI/engineering units used to derive prefixed literals such as `[MW]` and `[kV]`
+/// when a full OMG library is not indexed on the workspace graph.
+const MINIMAL_ENGINEERING_UNIT_CATALOG: &str = r#"
+attribute <V> volt : ElectricPotentialUnit;
+attribute <W> watt : PowerUnit;
+attribute <A> ampere : ElectricCurrentUnit;
+attribute <VA> voltampere : ApparentPowerUnit;
+attribute <h> hour : DurationUnit;
+attribute <m> metre : LengthUnit;
+"#;
+
+impl UnitRegistry {
+    /// Unified builder for diagnostics, hover, and expression evaluation.
+    pub fn build_unified(
+        graph: &SemanticGraph,
+        indexed_sources: &[(&Url, &str)],
+        extra_unit_catalogs: &[&str],
+    ) -> Self {
+        let mut registry = UnitRegistry::default();
+        let mut candidate_files = HashSet::new();
+        for uri in graph.nodes_by_uri.keys() {
+            if let Some(path) = uri_to_path(uri) {
+                if !should_ingest_unit_library_file(&path) {
+                    continue;
+                }
+                if path
+                    .extension()
+                    .and_then(|ext| ext.to_str())
+                    .is_some_and(|ext| ext.eq_ignore_ascii_case("sysml"))
+                {
+                    candidate_files.insert(path);
+                }
+            }
+        }
+        for path in candidate_files {
+            if let Ok(contents) = std::fs::read_to_string(&path) {
+                registry.ingest_file_contents(&contents);
+            }
+        }
+        for (uri, content) in indexed_sources {
+            if Self::is_unit_library_uri(uri) || content_contains_unit_definition(content) {
+                registry.ingest_file_contents(content);
+            }
+        }
+        for catalog in extra_unit_catalogs {
+            registry.ingest_file_contents(catalog);
+        }
+        ingest_units_from_graph(graph, &mut registry);
+        registry.ingest_file_contents(MINIMAL_ENGINEERING_UNIT_CATALOG);
+        registry.finalize_ingest();
+        registry
+    }
+
+    /// Builds a registry from the semantic graph and indexed sources (unified path).
+    pub fn build_for_evaluation(
+        graph: &SemanticGraph,
+        indexed_sources: &[(&Url, &str)],
+        extra_unit_catalogs: &[&str],
+    ) -> Self {
+        Self::build_unified(graph, indexed_sources, extra_unit_catalogs)
+    }
+
+    pub fn from_semantic_graph(graph: &SemanticGraph) -> Self {
+        Self::build_unified(graph, &[], &[])
+    }
+
+    /// Builds a registry from graph file URIs plus in-memory workspace/library sources
+    /// (needed when unit catalogs are open in the editor but not yet on disk).
+    pub fn from_semantic_graph_with_indexed_sources(
+        graph: &SemanticGraph,
+        indexed_sources: &[(&Url, &str)],
+    ) -> Self {
+        Self::build_unified(graph, indexed_sources, &[])
+    }
+
+    pub fn is_unit_library_uri(uri: &Url) -> bool {
+        let path_hint = uri.path();
+        if is_qudv_catalog_path_hint(path_hint) || is_domain_unit_catalog_path_hint(path_hint) {
+            return true;
+        }
+        uri_to_path(uri).is_some_and(|path| should_ingest_unit_library_file(&path))
+    }
+
+    /// Ingests linear unit definitions from SysML library text (`attribute <EUR> … : SomeUnit;`).
+    pub fn ingest_unit_catalog(&mut self, sysml_contents: &str) {
+        self.ingest_file_contents(sysml_contents);
+        self.finalize_ingest();
+    }
+
+    pub(crate) fn ingest_unit_def(&mut self, def: UnitDef) {
+        self.upsert_unit_def(def);
+    }
+
+    pub fn get(&self, symbol: &str) -> Option<&UnitDef> {
+        self.by_symbol.get(&normalize_symbol(symbol))
+    }
+
+    pub fn hover_markdown_for_unit_literal(&self, raw_unit: &str) -> Option<String> {
+        let cleaned = strip_quotes(raw_unit.trim());
+        if cleaned.is_empty() {
+            return None;
+        }
+        let factors = parse_unit_expression(&cleaned).ok()?;
+        let mut lines = vec![format!("**Unit literal** `[{}]`", cleaned), String::new()];
+        for (symbol, exp) in factors {
+            if self.conflicted_symbols.contains(&symbol) {
+                lines.push(format!("*{symbol}* — ambiguous unit metadata"));
+                continue;
+            }
+            let def = self.by_symbol.get(&symbol)?;
+            let mut line = format!("*{}*", def.symbol);
+            if exp != 1 {
+                line.push_str(&format!("^{exp}"));
+            }
+            line.push_str(&format!(" — `{}`", def.dimension));
+            if let Some(ref_unit) = &def.reference_unit {
+                line.push_str(&format!(", reference `{ref_unit}`"));
+            }
+            lines.push(line);
+        }
+        Some(lines.join("\n"))
+    }
+
+    pub fn hover_markdown_for_unknown_unit_literal(raw_unit: &str) -> String {
+        format!(
+            "**Unit literal** `[{}]`\n\nSysML value-expression unit suffix. Not found in indexed quantity/unit catalogs.",
+            raw_unit.trim()
+        )
+    }
+
+    pub fn has_symbol(&self, symbol: &str) -> bool {
+        self.by_symbol.contains_key(&normalize_symbol(symbol))
+    }
+
+    /// Returns true when every factor in a unit expression resolves against indexed catalogs.
+    pub fn is_recognized_unit_expression(&self, raw_unit: &str) -> bool {
+        if self.canonicalize_unit_expr(Some(raw_unit)).is_ok() {
+            return true;
+        }
+        let normalized = normalize_symbol(raw_unit);
+        if let Some(def) = self.by_symbol.get(&normalized) {
+            if let Some(expr) = &def.algebraic_expr {
+                return self.canonicalize_unit_expr(Some(expr)).is_ok();
+            }
+        }
+        false
+    }
+
+    /// Returns the quantity-unit dimension string for a recognized unit expression (e.g. `PowerUnit`).
+    pub fn unit_expression_dimension(&self, raw_unit: &str) -> Option<String> {
+        if let Some(dim) = self.unit_expression_dimension_inner(raw_unit) {
+            return Some(dim);
+        }
+        let normalized = normalize_symbol(raw_unit);
+        let def = self.by_symbol.get(&normalized)?;
+        let expr = def.algebraic_expr.as_deref()?;
+        self.unit_expression_dimension_inner(expr)
+    }
+
+    fn unit_expression_dimension_inner(&self, raw_unit: &str) -> Option<String> {
+        let factors = parse_unit_expression(raw_unit).ok()?;
+        let (first_symbol, _) = factors.first()?;
+        let reduced = self.reduce_to_root(first_symbol).ok()?;
+        Some(reduced.dimension)
+    }
+
+    pub fn convert_value(&self, value: f64, from: &str, to: &str) -> Result<f64, UnitError> {
+        let from_norm = normalize_symbol(from);
+        let to_norm = normalize_symbol(to);
+        if from_norm == to_norm {
+            return Ok(value);
+        }
+        let from_reduced = self.reduce_to_root(&from_norm)?;
+        let to_reduced = self.reduce_to_root(&to_norm)?;
+        if from_reduced.root_symbol != to_reduced.root_symbol
+            || from_reduced.dimension != to_reduced.dimension
+        {
+            return Err(UnitError::IncompatibleDimension);
+        }
+        let root_value = value * from_reduced.scale + from_reduced.offset;
+        Ok((root_value - to_reduced.offset) / to_reduced.scale)
+    }
+
+    pub fn compose_product(
+        &self,
+        left_value: f64,
+        left_unit: Option<&str>,
+        right_value: f64,
+        right_unit: Option<&str>,
+        divide: bool,
+    ) -> Result<(f64, Option<String>), UnitError> {
+        let (left_expr, left_scale) = self.canonicalize_unit_expr(left_unit)?;
+        let (right_expr, right_scale) = self.canonicalize_unit_expr(right_unit)?;
+        let mut out_expr = left_expr;
+        for (symbol, power) in right_expr.exponents {
+            out_expr.add_power(symbol, if divide { -power } else { power });
+        }
+        let value = if divide {
+            if right_value == 0.0 {
+                return Err(UnitError::UnsupportedConversion);
+            }
+            (left_value * left_scale) / (right_value * right_scale)
+        } else {
+            (left_value * left_scale) * (right_value * right_scale)
+        };
+        let out_unit = format_canonical_unit_expr(&out_expr);
+        Ok((value, out_unit))
+    }
+
+    fn reduce_to_root(&self, symbol: &str) -> Result<ReducedUnit, UnitError> {
+        let mut current = normalize_symbol(symbol);
+        if self.conflicted_symbols.contains(&current) {
+            return Err(UnitError::AmbiguousMetadata);
+        }
+        let mut scale = 1.0_f64;
+        let mut offset = 0.0_f64;
+        let mut guard = HashSet::new();
+        loop {
+            if !guard.insert(current.clone()) {
+                return Err(UnitError::UnsupportedConversion);
+            }
+            if self.conflicted_symbols.contains(&current) {
+                return Err(UnitError::AmbiguousMetadata);
+            }
+            let Some(def) = self.by_symbol.get(&current) else {
+                return Err(UnitError::UnknownUnit);
+            };
+            if let Some(reference) = def.reference_unit.as_ref() {
+                let reference_norm = normalize_symbol(reference);
+                let next_scale = scale * def.conversion_factor;
+                let next_offset = offset * def.conversion_factor + def.conversion_offset;
+                if !self.by_symbol.contains_key(&reference_norm) {
+                    return Ok(ReducedUnit {
+                        root_symbol: reference_norm,
+                        scale: next_scale,
+                        offset: next_offset,
+                        dimension: def.dimension.clone(),
+                    });
+                }
+                scale = next_scale;
+                offset = next_offset;
+                current = reference_norm;
+                continue;
+            }
+            return Ok(ReducedUnit {
+                root_symbol: current,
+                scale,
+                offset,
+                dimension: def.dimension.clone(),
+            });
+        }
+    }
+
+    fn canonicalize_unit_expr(
+        &self,
+        raw_unit: Option<&str>,
+    ) -> Result<(CanonicalUnitExpr, f64), UnitError> {
+        let Some(raw_unit) = raw_unit else {
+            return Ok((CanonicalUnitExpr::default(), 1.0));
+        };
+        let factors = parse_unit_expression(raw_unit)?;
+        let mut expr = CanonicalUnitExpr::default();
+        let mut scale = 1.0_f64;
+        for (symbol, power) in factors {
+            if power == 0 {
+                continue;
+            }
+            let reduced = self.reduce_to_root(&symbol)?;
+            if reduced.offset != 0.0 {
+                return Err(UnitError::UnsupportedConversion);
+            }
+            scale *= reduced.scale.powi(power);
+            let root_factors = parse_unit_expression(&reduced.root_symbol)?;
+            for (root_symbol, root_power) in root_factors {
+                expr.add_power(root_symbol, root_power * power);
+            }
+        }
+        Ok((expr, scale))
+    }
+
+    fn upsert_unit_def(&mut self, def: UnitDef) {
+        let key = normalize_symbol(&def.symbol);
+        if let Some(existing) = self.by_symbol.get(&key) {
+            if existing != &def {
+                self.conflicted_symbols.insert(key);
+            }
+            return;
+        }
+        self.by_symbol.insert(key, def);
+    }
+
+    fn ingest_file_contents(&mut self, contents: &str) {
+        let lines: Vec<&str> = contents
+            .lines()
+            .map(|line| {
+                line.find("attribute ")
+                    .map(|idx| &line[idx..])
+                    .unwrap_or(line)
+            })
+            .collect();
+        let mut idx = 0usize;
+        while idx < lines.len() {
+            let trimmed = lines[idx].trim();
+            if !trimmed.starts_with("attribute ") {
+                idx += 1;
+                continue;
+            }
+            if trimmed.contains("UnitPrefix") && !trimmed.contains('{') {
+                self.ingest_unit_prefix_line(trimmed);
+                idx += 1;
+                continue;
+            }
+            if trimmed.contains(": IntervalScale {") {
+                idx = self.ingest_interval_scale_block(&lines, idx);
+                continue;
+            }
+            if trimmed.contains('{') {
+                let mut depth = brace_delta(trimmed);
+                let mut end = idx + 1;
+                while end < lines.len() && depth > 0 {
+                    depth += brace_delta(lines[end].trim());
+                    end += 1;
+                }
+                let block = lines[idx..end]
+                    .iter()
+                    .map(|line| line.trim())
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                if block.contains("UnitPrefix") {
+                    self.ingest_unit_prefix_line(&block);
+                } else if let Some(mut def) = parse_conversion_by_prefix_def(&block) {
+                    if let Some(prefix_name) = extract_assignment(&block, "prefix") {
+                        if let Some(factor) = prefix_factor_by_name(self, &prefix_name) {
+                            def.conversion_factor = factor;
+                        }
+                    }
+                    self.upsert_unit_def(def);
+                } else if let Some(def) = parse_linear_unit_def(&block) {
+                    self.upsert_unit_def(def);
+                } else if let Some(def) = parse_named_derived_unit_def(&block) {
+                    self.upsert_unit_def(def);
+                }
+                idx = end;
+                continue;
+            }
+            if let Some(def) = parse_linear_unit_def(trimmed) {
+                self.upsert_unit_def(def);
+            } else if let Some(def) = parse_named_derived_unit_def(trimmed) {
+                self.upsert_unit_def(def);
+            }
+            idx += 1;
+        }
+    }
+
+    fn ingest_unit_prefix_line(&mut self, line: &str) {
+        let Some(name) = extract_bare_attribute_name(line) else {
+            return;
+        };
+        let factor = extract_assignment(line, "conversionFactor")
+            .and_then(|raw| parse_factor_expression(&raw));
+        if let Some(factor) = factor {
+            self.prefixes_by_name.insert(name.clone(), factor);
+        }
+        if let Some(symbol) = extract_assignment(line, "symbol") {
+            if let Some(factor) = factor {
+                self.prefixes_by_symbol.insert(symbol, factor);
+            }
+        }
+    }
+
+    fn finalize_ingest(&mut self) {
+        self.seed_default_si_prefixes();
+        self.register_well_known_compound_units();
+        self.resolve_algebraic_unit_definitions();
+        self.derive_si_prefixed_units();
+    }
+
+    fn resolve_algebraic_unit_definitions(&mut self) {
+        let algebraic: Vec<(String, String, String)> = self
+            .by_symbol
+            .iter()
+            .filter(|(_, def)| {
+                def.algebraic_expr.is_some()
+                    && def.reference_unit.is_none()
+                    && def.algebraic_expr.as_deref() != Some("")
+            })
+            .map(|(sym, def)| {
+                (
+                    sym.clone(),
+                    def.dimension.clone(),
+                    def.algebraic_expr.clone().unwrap_or_default(),
+                )
+            })
+            .collect();
+        for (symbol, dimension, expr) in algebraic {
+            let Ok((canonical, _scale)) = self.canonicalize_unit_expr(Some(&expr)) else {
+                continue;
+            };
+            let Some(canonical_unit) = format_canonical_unit_expr(&canonical) else {
+                continue;
+            };
+            self.upsert_unit_def(UnitDef {
+                symbol,
+                dimension,
+                reference_unit: Some(canonical_unit),
+                conversion_factor: 1.0,
+                conversion_offset: 0.0,
+                algebraic_expr: Some(expr),
+            });
+        }
+    }
+
+    fn seed_default_si_prefixes(&mut self) {
+        for (name, symbol, factor) in DEFAULT_SI_PREFIXES {
+            self.prefixes_by_name
+                .entry(name.to_string())
+                .or_insert(*factor);
+            self.prefixes_by_symbol
+                .entry(symbol.to_string())
+                .or_insert(*factor);
+        }
+    }
+
+    fn register_well_known_compound_units(&mut self) {
+        const COMPOUNDS: &[(&str, &[&str])] = &[("Wh", &["W", "h"]), ("VA", &["V", "A"])];
+        for (symbol, factors) in COMPOUNDS {
+            if self.has_symbol(symbol) {
+                continue;
+            }
+            if !factors.iter().all(|factor| self.has_symbol(factor)) {
+                continue;
+            }
+            let Some(dimension) = self
+                .by_symbol
+                .get(&normalize_symbol(factors[0]))
+                .map(|def| def.dimension.clone())
+            else {
+                continue;
+            };
+            self.upsert_unit_def(UnitDef {
+                symbol: symbol.to_string(),
+                dimension,
+                reference_unit: None,
+                conversion_factor: 1.0,
+                conversion_offset: 0.0,
+                algebraic_expr: None,
+            });
+        }
+    }
+
+    fn derive_si_prefixed_units(&mut self) {
+        // Only derive from root library units (no referenceUnit). Prefixed units such as
+        // `km` already carry a reference and must not seed further prefix combinations.
+        let base_symbols: Vec<String> = self
+            .by_symbol
+            .iter()
+            .filter(|(symbol, def)| {
+                !self.conflicted_symbols.contains(*symbol) && def.reference_unit.is_none()
+            })
+            .map(|(symbol, _)| symbol.clone())
+            .collect();
+        let mut prefix_symbols: Vec<(String, f64)> = self
+            .prefixes_by_symbol
+            .iter()
+            .map(|(symbol, factor)| (symbol.clone(), *factor))
+            .collect();
+        prefix_symbols.sort_by_key(|symbol| std::cmp::Reverse(symbol.0.len()));
+
+        for (prefix_symbol, prefix_factor) in &prefix_symbols {
+            for base in &base_symbols {
+                let derived = format!("{prefix_symbol}{base}");
+                if self.has_symbol(&derived) {
+                    continue;
+                }
+                let Some(base_def) = self.by_symbol.get(base) else {
+                    continue;
+                };
+                self.upsert_unit_def(UnitDef {
+                    symbol: derived,
+                    dimension: base_def.dimension.clone(),
+                    reference_unit: Some(base.clone()),
+                    conversion_factor: *prefix_factor,
+                    conversion_offset: 0.0,
+                    algebraic_expr: None,
+                });
+            }
+        }
+    }
+
+    fn ingest_interval_scale_block(&mut self, lines: &[&str], start: usize) -> usize {
+        let header = lines[start].trim();
+        let Some(scale_symbol) = extract_symbol(header) else {
+            return start + 1;
+        };
+        let mut depth = brace_delta(header);
+        let mut idx = start + 1;
+        let mut unit_symbol: Option<String> = None;
+        let mut zero_offset_kelvin: Option<f64> = None;
+        while idx < lines.len() && depth > 0 {
+            let line = lines[idx].trim();
+            if line.contains(":>> unit =") {
+                unit_symbol = extract_assignment(line, "unit");
+            }
+            if line.contains("zeroDegree") && line.contains('=') {
+                zero_offset_kelvin = parse_zero_point_kelvin(line);
+            }
+            depth += brace_delta(line);
+            idx += 1;
+        }
+
+        let Some(zero_kelvin) = zero_offset_kelvin else {
+            return idx;
+        };
+        let unit_for_scale = unit_symbol.unwrap_or_else(|| scale_symbol.clone());
+        let base_scale = self
+            .by_symbol
+            .get(&normalize_symbol(&unit_for_scale))
+            .map(|unit| unit.conversion_factor)
+            .unwrap_or(1.0);
+        let abs_def = UnitDef {
+            symbol: scale_symbol,
+            dimension: "ThermodynamicTemperatureUnit".to_string(),
+            reference_unit: Some("K".to_string()),
+            conversion_factor: base_scale,
+            conversion_offset: zero_kelvin,
+            algebraic_expr: None,
+        };
+        self.upsert_unit_def(abs_def);
+        idx
+    }
+}
+
+const DEFAULT_SI_PREFIXES: &[(&str, &str, f64)] = &[
+    ("yocto", "y", 1E-24),
+    ("zepto", "z", 1E-21),
+    ("atto", "a", 1E-18),
+    ("femto", "f", 1E-15),
+    ("pico", "p", 1E-12),
+    ("nano", "n", 1E-9),
+    ("micro", "μ", 1E-6),
+    ("milli", "m", 1E-3),
+    ("centi", "c", 1E-2),
+    ("deci", "d", 1E-1),
+    ("deca", "da", 1E1),
+    ("hecto", "h", 1E2),
+    ("kilo", "k", 1E3),
+    ("mega", "M", 1E6),
+    ("giga", "G", 1E9),
+    ("tera", "T", 1E12),
+    ("peta", "P", 1E15),
+    ("exa", "E", 1E18),
+    ("zetta", "Z", 1E21),
+    ("yotta", "Y", 1E24),
+    ("kibi", "Ki", 1024.0),
+    ("mebi", "Mi", 1_048_576.0),
+    ("gibi", "Gi", 1_073_741_824.0),
+];
+
+fn extract_bare_attribute_name(line: &str) -> Option<String> {
+    let rest = line.strip_prefix("attribute ")?.trim_start();
+    let end = rest.find([':', '{', ';']).unwrap_or(rest.len());
+    let name = rest[..end].trim();
+    if name.is_empty() {
+        None
+    } else {
+        Some(name.to_string())
+    }
+}
+
+fn prefix_factor_by_name(registry: &UnitRegistry, prefix_name: &str) -> Option<f64> {
+    registry
+        .prefixes_by_name
+        .get(prefix_name)
+        .copied()
+        .or_else(|| {
+            DEFAULT_SI_PREFIXES
+                .iter()
+                .find(|(name, _, _)| *name == prefix_name)
+                .map(|(_, _, factor)| *factor)
+        })
+}
+
+fn parse_conversion_by_prefix_def(block: &str) -> Option<UnitDef> {
+    if !block.contains("ConversionByPrefix") {
+        return None;
+    }
+    let symbol = extract_symbol(block)?;
+    let dimension = extract_dimension(block)?;
+    let _prefix_name = extract_assignment(block, "prefix")?;
+    let reference_unit = extract_assignment(block, "referenceUnit")?;
+    Some(UnitDef {
+        symbol,
+        dimension,
+        reference_unit: Some(reference_unit),
+        conversion_factor: 1.0,
+        conversion_offset: 0.0,
+        algebraic_expr: None,
+    })
+}
+
+fn parse_linear_unit_def(line: &str) -> Option<UnitDef> {
+    let symbol = extract_symbol(line).or_else(|| extract_bare_unit_name(line))?;
+    let dimension = extract_dimension(line)?;
+    let reference_unit = extract_assignment(line, "referenceUnit");
+    let conversion_factor = extract_assignment(line, "conversionFactor")
+        .and_then(|raw| parse_factor_expression(&raw))
+        .unwrap_or(1.0);
+    let algebraic_expr = extract_algebraic_unit_value(line);
+    Some(UnitDef {
+        symbol,
+        dimension,
+        reference_unit,
+        conversion_factor,
+        conversion_offset: 0.0,
+        algebraic_expr,
+    })
+}
+
+fn parse_named_derived_unit_def(line: &str) -> Option<UnitDef> {
+    if !line.starts_with("attribute ") || line.contains('<') {
+        return None;
+    }
+    let symbol = extract_bare_unit_name(line)?;
+    let dimension = extract_dimension(line)?;
+    let algebraic_expr = extract_algebraic_unit_value(line)?;
+    Some(UnitDef {
+        symbol,
+        dimension,
+        reference_unit: None,
+        conversion_factor: 1.0,
+        conversion_offset: 0.0,
+        algebraic_expr: Some(algebraic_expr),
+    })
+}
+
+fn extract_bare_unit_name(line: &str) -> Option<String> {
+    let rest = line.strip_prefix("attribute ")?.trim_start();
+    if rest.starts_with('<') {
+        return None;
+    }
+    let end = rest.find([':', '{', ';', '=']).unwrap_or(rest.len());
+    let name = rest[..end].trim();
+    if name.is_empty() || name == "def" {
+        None
+    } else {
+        Some(name.to_string())
+    }
+}
+
+fn extract_algebraic_unit_value(line: &str) -> Option<String> {
+    let eq = line.find('=')?;
+    let after = line[eq + 1..].trim_start();
+    let end = after.find(';').unwrap_or(after.len());
+    let expr = after[..end].trim();
+    if expr.is_empty() || !expr.chars().any(|c| c.is_ascii_alphabetic()) {
+        None
+    } else {
+        Some(expr.to_string())
+    }
+}
+
+fn is_qudv_catalog_path_hint(path: &str) -> bool {
+    let normalized = path.replace('\\', "/").to_ascii_lowercase();
+    normalized.contains("quantities%20and%20units")
+        || normalized.contains("quantities and units")
+        || normalized.contains("quantities_and_units")
+        || normalized.contains("qudv")
+        || normalized.ends_with("/si.sysml")
+}
+
+fn is_domain_unit_catalog_path_hint(path: &str) -> bool {
+    let normalized = path.replace('\\', "/");
+    normalized.contains("MonetaryUnits")
+        || normalized.contains("generic/units")
+        || normalized.contains("generic%2Funits")
+}
+
+fn should_ingest_unit_library_file(path: &Path) -> bool {
+    let path_str = path.to_string_lossy();
+    is_qudv_catalog_path_hint(&path_str) || is_domain_unit_catalog_path_hint(&path_str)
+}
+
+fn content_contains_unit_definition(content: &str) -> bool {
+    content.lines().any(|line| {
+        let Some((_, after_attribute)) = line.split_once("attribute <") else {
+            return false;
+        };
+        let Some((_, after_colon)) = after_attribute.split_once(':') else {
+            return false;
+        };
+        after_colon
+            .split([';', '{', '='])
+            .next()
+            .is_some_and(|dimension| dimension.contains("Unit"))
+    })
+}
+
+fn uri_to_path(uri: &Url) -> Option<PathBuf> {
+    if uri.scheme() != "file" {
+        return None;
+    }
+    uri.to_file_path().ok()
+}
+
+fn extract_symbol(line: &str) -> Option<String> {
+    let start = line.find('<')?;
+    let end = line[start + 1..].find('>')?;
+    let raw = &line[start + 1..start + 1 + end];
+    Some(strip_quotes(raw.trim()))
+}
+
+fn extract_dimension(line: &str) -> Option<String> {
+    let colon = line.find(':')?;
+    let after = line[colon + 1..].trim_start();
+    let end = after.find(['{', '=', ';']).unwrap_or(after.len());
+    let dim = after[..end].trim();
+    if dim.is_empty() {
+        None
+    } else {
+        Some(strip_quotes(dim))
+    }
+}
+
+fn extract_assignment(line: &str, key: &str) -> Option<String> {
+    let needle = format!("{key} =");
+    let idx = line.find(&needle)?;
+    let value_start = idx + needle.len();
+    let rest = line[value_start..].trim_start();
+    let end = rest.find(';').unwrap_or(rest.len());
+    let value = rest[..end].trim();
+    if value.is_empty() {
+        None
+    } else {
+        Some(strip_quotes(value))
+    }
+}
+
+fn parse_zero_point_kelvin(line: &str) -> Option<f64> {
+    let equals = line.find('=')?;
+    let bracket = line[equals + 1..].find('[')?;
+    let raw = line[equals + 1..equals + 1 + bracket].trim();
+    parse_factor_expression(raw)
+}
+
+fn brace_delta(line: &str) -> i32 {
+    line.chars().fold(0_i32, |acc, ch| {
+        if ch == '{' {
+            acc + 1
+        } else if ch == '}' {
+            acc - 1
+        } else {
+            acc
+        }
+    })
+}
+
+fn parse_factor_expression(raw: &str) -> Option<f64> {
+    let trimmed = raw.trim();
+    if let Some(div) = trimmed.find('/') {
+        let left = trimmed[..div].trim().parse::<f64>().ok()?;
+        let right = trimmed[div + 1..].trim().parse::<f64>().ok()?;
+        if right == 0.0 {
+            return None;
+        }
+        return Some(left / right);
+    }
+    trimmed.parse::<f64>().ok()
+}
+
+fn parse_unit_expression(raw: &str) -> Result<Vec<(String, i32)>, UnitError> {
+    let cleaned = strip_quotes(raw.trim());
+    if cleaned.is_empty() {
+        return Err(UnitError::UnsupportedConversion);
+    }
+    let chars: Vec<char> = cleaned.chars().collect();
+    let mut idx = 0usize;
+    let mut sign = 1_i32;
+    let mut factors = Vec::new();
+    while idx < chars.len() {
+        while idx < chars.len() && chars[idx].is_whitespace() {
+            idx += 1;
+        }
+        if idx >= chars.len() {
+            break;
+        }
+        if chars[idx] == '*' {
+            sign = 1;
+            idx += 1;
+            continue;
+        }
+        if chars[idx] == '/' {
+            sign = -1;
+            idx += 1;
+            continue;
+        }
+        let start = idx;
+        while idx < chars.len() && chars[idx] != '*' && chars[idx] != '/' {
+            idx += 1;
+        }
+        let token = chars[start..idx]
+            .iter()
+            .collect::<String>()
+            .trim()
+            .to_string();
+        if token.is_empty() || token == "1" {
+            continue;
+        }
+        let (symbol_raw, exp_raw) = if let Some(pow_idx) = token.rfind('^') {
+            (&token[..pow_idx], Some(&token[pow_idx + 1..]))
+        } else {
+            (token.as_str(), None)
+        };
+        let symbol = unit_token_symbol(symbol_raw);
+        if symbol.is_empty() || symbol == "1" {
+            continue;
+        }
+        let exponent = exp_raw
+            .and_then(|raw_exp| raw_exp.trim().parse::<i32>().ok())
+            .unwrap_or(1);
+        factors.push((symbol, exponent * sign));
+        sign = 1;
+    }
+    if factors.is_empty() {
+        return Err(UnitError::UnsupportedConversion);
+    }
+    Ok(factors)
+}
+
+fn format_canonical_unit_expr(expr: &CanonicalUnitExpr) -> Option<String> {
+    if expr.exponents.is_empty() {
+        return None;
+    }
+    let mut numerator = Vec::new();
+    let mut denominator = Vec::new();
+    for (symbol, exponent) in &expr.exponents {
+        if *exponent > 0 {
+            numerator.push(if *exponent == 1 {
+                symbol.clone()
+            } else {
+                format!("{symbol}^{exponent}")
+            });
+        } else if *exponent < 0 {
+            let abs = exponent.abs();
+            denominator.push(if abs == 1 {
+                symbol.clone()
+            } else {
+                format!("{symbol}^{abs}")
+            });
+        }
+    }
+    if denominator.is_empty() {
+        return Some(numerator.join("*"));
+    }
+    let num = if numerator.is_empty() {
+        "1".to_string()
+    } else {
+        numerator.join("*")
+    };
+    Some(format!("{num}/{}", denominator.join("*")))
+}
+
+fn normalize_symbol(value: &str) -> String {
+    strip_quotes(value.trim())
+}
+
+/// Strips optional package qualification (`SI::s` → `s`).
+fn unit_token_symbol(token: &str) -> String {
+    let normalized = normalize_symbol(token);
+    normalized
+        .rsplit_once("::")
+        .map(|(_, symbol)| normalize_symbol(symbol))
+        .unwrap_or(normalized)
+}
+
+fn strip_quotes(value: &str) -> String {
+    let mut out = value.trim().to_string();
+    if out.starts_with('\'') && out.ends_with('\'') && out.len() > 1 {
+        out = out[1..out.len() - 1].to_string();
+    }
+    out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::Path;
+
+    #[test]
+    fn parses_conversion_entries_from_line() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents(
+            "attribute <ft> 'foot' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 3.048E-01; } }",
+        );
+        let def = registry.get("ft").expect("ft def");
+        assert_eq!(def.dimension, "LengthUnit");
+        assert_eq!(def.reference_unit.as_deref(), Some("m"));
+        assert_eq!(def.conversion_factor, 0.3048);
+    }
+
+    #[test]
+    fn converts_between_compatible_units() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents("attribute <m> 'metre' : LengthUnit;");
+        registry.ingest_file_contents(
+            "attribute <ft> 'foot' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 3.048E-01; } }",
+        );
+        let converted = registry.convert_value(1.0, "m", "ft").expect("m->ft");
+        assert!((converted - 3.280839895).abs() < 1e-6);
+    }
+
+    #[test]
+    fn rejects_incompatible_dimensions() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents("attribute <m> 'metre' : LengthUnit;");
+        registry.ingest_file_contents("attribute <kg> 'kilogram' : MassUnit;");
+        let err = registry
+            .convert_value(1.0, "m", "kg")
+            .expect_err("incompatible");
+        assert_eq!(err, UnitError::IncompatibleDimension);
+    }
+
+    #[test]
+    fn parses_fractional_conversion_factor() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents("attribute <K> 'kelvin' : TemperatureDifferenceUnit;");
+        registry.ingest_file_contents(
+            "attribute <'°F'> 'degree Fahrenheit' : TemperatureDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 5/9; :>> isExact = true; } }",
+        );
+        let c = registry.convert_value(9.0, "°F", "K").expect("F->K");
+        assert!((c - 5.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn parses_affine_interval_scales_and_converts_absolute_temperatures() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents(
+            r#"
+            attribute <K> kelvin : ThermodynamicTemperatureUnit, TemperatureDifferenceUnit;
+            attribute <'°C'> 'degree celsius (temperature difference)' : TemperatureDifferenceUnit {
+                attribute :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 1; }
+            }
+            attribute <'°F'> 'degree Fahrenheit (temperature difference)' : TemperatureDifferenceUnit {
+                :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 5/9; :>> isExact = true; }
+            }
+            attribute <'°C_abs'> 'degree celsius (absolute temperature scale)' : IntervalScale {
+                attribute :>> unit = '°C';
+                private attribute zeroDegreeCelsiusInKelvin: ThermodynamicTemperatureValue = 273.15 [K];
+            }
+            attribute <'°F_abs'> 'degree fahrenheit (absolute temperature scale)' : IntervalScale {
+                :>> unit = '°F';
+                private attribute zeroDegreeFahrenheitInKelvin: ThermodynamicTemperatureValue = 229835/900 [K];
+            }
+            "#,
+        );
+        let value = registry
+            .convert_value(32.0, "°F_abs", "°C_abs")
+            .expect("absolute conversion");
+        assert!(
+            (value - 0.0).abs() < 1e-6,
+            "expected 32°F_abs to map to 0°C_abs, got {value}"
+        );
+    }
+
+    #[test]
+    fn ingests_conversion_by_prefix_units() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents(
+            "attribute <km> kilometre : LengthUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = m; } }",
+        );
+        registry.ingest_file_contents("attribute <m> 'metre' : LengthUnit;");
+        registry.finalize_ingest();
+        assert!(registry.is_recognized_unit_expression("km"));
+        let def = registry.get("km").expect("km def");
+        assert_eq!(def.dimension, "LengthUnit");
+        assert_eq!(def.reference_unit.as_deref(), Some("m"));
+        assert!((def.conversion_factor - 1E3).abs() < 1e-9);
+    }
+
+    #[test]
+    fn resolves_qualified_si_unit_literals() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents("attribute <s> second : DurationUnit;");
+        registry.finalize_ingest();
+        assert!(registry.is_recognized_unit_expression("SI::s"));
+    }
+
+    #[test]
+    fn derives_engineering_prefixed_units() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents(
+            r#"
+            attribute <V> volt : ElectricPotentialUnit;
+            attribute <W> watt : PowerUnit;
+            attribute <A> ampere : ElectricCurrentUnit;
+            attribute <h> hour: DurationUnit;
+            attribute <m> metre : LengthUnit;
+            "#,
+        );
+        registry.finalize_ingest();
+        for unit in ["kV", "MW", "MVA", "MWh", "km"] {
+            assert!(
+                registry.is_recognized_unit_expression(unit),
+                "expected derived unit {unit}"
+            );
+        }
+    }
+
+    #[test]
+    fn hover_markdown_for_known_unit_literal() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents(
+            "attribute <kV> 'kilovolt' : ElectricPotentialDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = V; :>> conversionFactor = 1E+03; } }",
+        );
+        let md = registry
+            .hover_markdown_for_unit_literal("kV")
+            .expect("kV hover");
+        assert!(md.contains("Unit literal"));
+        assert!(md.contains("kV"));
+        assert!(md.contains("ElectricPotentialDifferenceUnit"));
+    }
+
+    #[test]
+    fn hover_markdown_for_composite_unit_literal() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents("attribute <m> 'metre' : LengthUnit;");
+        registry.ingest_file_contents("attribute <s> second : TimeUnit;");
+        let md = registry
+            .hover_markdown_for_unit_literal("m/s")
+            .expect("m/s hover");
+        assert!(md.contains("m"));
+        assert!(md.contains("s"));
+    }
+
+    #[test]
+    fn ingests_supplemental_unit_catalog() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_unit_catalog(
+            "attribute <EUR> 'euro' : MonetaryUnit;\nattribute <USD> 'US dollar' : MonetaryUnit;",
+        );
+        assert!(registry.has_symbol("EUR"));
+        assert!(registry.has_symbol("USD"));
+        assert!((registry.convert_value(1.0, "EUR", "EUR").unwrap() - 1.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn ingests_unit_catalog_file_format() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_unit_catalog(
+            "attribute <EUR> 'euro' : MonetaryUnit;\nattribute <USD> 'US dollar' : MonetaryUnit;",
+        );
+        assert!(registry.has_symbol("EUR"));
+        assert_eq!(
+            registry.get("EUR").map(|def| def.dimension.as_str()),
+            Some("MonetaryUnit")
+        );
+    }
+
+    #[test]
+    fn canonicalizes_multiply_and_divide_units() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents("attribute <m> 'metre' : LengthUnit;");
+        registry.ingest_file_contents("attribute <s> second : TimeUnit;");
+        registry.ingest_file_contents(
+            "attribute <cm> 'centimetre' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 1E-02; } }",
+        );
+        let (value, unit) = registry
+            .compose_product(2.0, Some("cm"), 3.0, Some("m"), false)
+            .expect("multiply");
+        assert!((value - 0.06).abs() < 1e-9);
+        assert_eq!(unit.as_deref(), Some("m^2"));
+        let (value, unit) = registry
+            .compose_product(10.0, Some("m"), 2.0, Some("s"), true)
+            .expect("divide");
+        assert!((value - 5.0).abs() < 1e-9);
+        assert_eq!(unit.as_deref(), Some("m/s"));
+    }
+
+    #[test]
+    fn rejects_affine_units_in_multiply_divide() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents(
+            r#"
+            attribute <K> kelvin : ThermodynamicTemperatureUnit, TemperatureDifferenceUnit;
+            attribute <'°C'> 'degree celsius (temperature difference)' : TemperatureDifferenceUnit {
+                attribute :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 1; }
+            }
+            attribute <'°C_abs'> 'degree celsius (absolute temperature scale)' : IntervalScale {
+                attribute :>> unit = '°C';
+                private attribute zeroDegreeCelsiusInKelvin: ThermodynamicTemperatureValue = 273.15 [K];
+            }
+            "#,
+        );
+        let err = registry
+            .compose_product(1.0, Some("°C_abs"), 2.0, Some("m"), false)
+            .expect_err("affine in product");
+        assert_eq!(err, UnitError::UnsupportedConversion);
+    }
+
+    #[test]
+    fn resolves_algebraic_derived_units() {
+        let mut registry = UnitRegistry::default();
+        registry.ingest_file_contents("attribute <m> metre : LengthUnit;");
+        registry.ingest_file_contents("attribute <kg> kilogram : MassUnit;");
+        registry.ingest_file_contents("attribute <s> second : DurationUnit;");
+        registry.ingest_file_contents(
+            "attribute newton : ForceUnit = kg * m / s^2;",
+        );
+        registry.finalize_ingest();
+        assert!(
+            registry.is_recognized_unit_expression("newton"),
+            "algebraic derived unit should resolve"
+        );
+    }
+
+    #[test]
+    fn unit_library_uri_recognizes_kpar_quantity_roots() {
+        let uri = Url::parse(
+            "file:///C:/data/standard-library/2026-04/Quantities_and_Units_Library-1.0.0/SI.sysml",
+        )
+        .expect("uri");
+        assert!(UnitRegistry::is_unit_library_uri(&uri));
+    }
+
+    #[test]
+    fn indexed_source_with_unit_definition_does_not_need_unit_path_hint() {
+        let graph = SemanticGraph::default();
+        let uri = Url::parse("file:///C:/data/libraries/CustomMeasurements.sysml").expect("uri");
+        let content = "package CustomMeasurements { attribute <widget> widget : WidgetUnit; }";
+        let registry = UnitRegistry::build_unified(&graph, &[(&uri, content)], &[]);
+
+        assert!(registry.is_recognized_unit_expression("widget"));
+    }
+
+    #[test]
+    fn stdlib_path_contains_si_and_imperial_pairs_when_available() {
+        let path = Path::new(
+            "C:/Git/sysml-v2-release/sysml.library/Domain Libraries/Quantities and Units/USCustomaryUnits.sysml",
+        );
+        if !path.is_file() {
+            // Developer machine may not have the SysML-v2 release checkout.
+            return;
+        }
+        let contents = std::fs::read_to_string(path).expect("read customary units");
+        assert!(contents.contains("<ft>") && contents.contains("referenceUnit = m"));
+        assert!(contents.contains("<lb>") && contents.contains("referenceUnit = kg"));
+        assert!(contents.contains("<lbf>") && contents.contains("referenceUnit = N"));
+    }
+}

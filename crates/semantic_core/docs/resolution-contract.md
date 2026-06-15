@@ -50,6 +50,16 @@ KerML `SemanticMetadata` from library sources is materialized as `metadata def` 
 
 `#derivation connection` produces a `Derivation` edge between requirement endpoints. No structural `Connection` edge is emitted between those endpoints.
 
+### Unit resolution
+
+Unit literals in attribute values (`10 [kV]`) resolve through `UnitRegistry::build_unified`:
+
+1. **Catalog text** — indexed library sources and on-disk QUDV/SI paths (primary for conversion metadata).
+2. **Graph ingest** — `attribute def` nodes with `shortName` and `attributeType` `*Unit` supplement missing symbols from the linked semantic graph.
+3. **Quantity compatibility** — `incompatible_unit_dimension` compares the attribute quantity type (via typing/specialization to `*Value` → `*Unit`) against the unit literal dimension using `is_measurement_unit_compatible` (shared `MeasurementUnit` ancestry when present in the graph).
+
+Workspace models containing unit literals (`[…]` after numeric values) seed the quantity library closure (`Measurement`, `ISQ`, `SI`, `SIPrefixes`, …) even without explicit quantity imports.
+
 ## Regression gate
 
 Run before merging changes to `semantic_core`:
