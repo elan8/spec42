@@ -21,6 +21,13 @@ const GRID_CONNECTIONS_VIEW = "gridConnections";
 const SYSTEM_CONTEXT_VIEW = "systemContext";
 const powersystemsTimeoutMs = 180000;
 
+function requirePowersystemsViewsPath(): string {
+    if (!POWERSYSTEMS_VIEWS) {
+        throw new Error("SYSML_POWERSYSTEMS_DIR must be set to run power systems visualization tests");
+    }
+    return POWERSYSTEMS_VIEWS;
+}
+
 function parsePartNames(svgText: string): string[] {
     const names = new Set<string>();
     const regex = /data-element-name="([^"]+)"/g;
@@ -150,7 +157,7 @@ describe("Power Systems Interconnection Visualization", () => {
             this.skip();
         }
         await configureServerForTests();
-        const viewsDoc = await vscode.workspace.openTextDocument(POWERSYSTEMS_VIEWS);
+        const viewsDoc = await vscode.workspace.openTextDocument(requirePowersystemsViewsPath());
         await waitForLanguageServerReady(viewsDoc, powersystemsTimeoutMs);
         await waitForExtensionServerReady(powersystemsTimeoutMs);
     });
@@ -166,7 +173,7 @@ describe("Power Systems Interconnection Visualization", () => {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
         assert.ok(workspaceFolder, "expected the power systems workspace folder to be open");
 
-        const doc = await vscode.workspace.openTextDocument(POWERSYSTEMS_VIEWS);
+        const doc = await vscode.workspace.openTextDocument(requirePowersystemsViewsPath());
         await vscode.window.showTextDocument(doc, { preserveFocus: false, preview: false });
         await waitForLanguageServerReady(doc, powersystemsTimeoutMs);
 
@@ -245,7 +252,7 @@ describe("Power Systems Interconnection Visualization", () => {
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
         assert.ok(workspaceFolder, "expected the power systems workspace folder to be open");
 
-        const doc = await vscode.workspace.openTextDocument(POWERSYSTEMS_VIEWS);
+        const doc = await vscode.workspace.openTextDocument(requirePowersystemsViewsPath());
         await vscode.window.showTextDocument(doc, { preserveFocus: false, preview: false });
         await waitForLanguageServerReady(doc, powersystemsTimeoutMs);
 

@@ -14,6 +14,7 @@ package SIPrefixes {
 }
 package SI {
     attribute <m> metre : LengthUnit;
+    attribute <kg> kilogram : MassUnit;
     attribute <V> volt : ElectricPotentialUnit;
     attribute <W> watt : PowerUnit;
     attribute <A> ampere : ElectricCurrentUnit;
@@ -80,7 +81,7 @@ fn engineering_prefixed_units_resolve_from_indexed_qudv_catalog() {
         build_semantic_graph_from_documents(&[catalog_doc, usage_doc]).expect("semantic graph");
 
     let registry = UnitRegistry::build_unified(&graph, &indexed_sources, &[]);
-    for unit in ["kV", "MW", "MVA", "MWh", "km", "SI::s"] {
+    for unit in ["kg", "kV", "MW", "MVA", "MWh", "km", "SI::s"] {
         assert!(
             registry.is_recognized_unit_expression(unit),
             "expected derived unit {unit}"
@@ -170,6 +171,56 @@ fn domain_monetary_units_resolve_from_indexed_catalog() {
             .iter()
             .any(|diag| diag.code == "unknown_unit_symbol"),
         "unexpected unknown_unit_symbol for [EUR]: {diagnostics:#?}"
+    );
+}
+
+#[test]
+fn common_si_mass_unit_resolves_from_indexed_si_catalog() {
+    let catalog_uri = Url::parse("file:///stdlib/Quantities_and_Units_Library-1.0.0/SI.sysml")
+        .expect("catalog uri");
+    let catalog_content = SI_CATALOG_EXCERPT.to_string();
+    let catalog_doc = SysmlDocument {
+        uri: catalog_uri.clone(),
+        content: catalog_content.clone(),
+        path_hint: Some("Quantities_and_Units_Library-1.0.0/SI.sysml".to_string()),
+        source_kind: SysmlDocumentSourceKind::Library,
+        sha256: None,
+        byte_size: None,
+    };
+    let usage_doc = SysmlDocument::from_memory_path(
+        "mass-usage",
+        "PhysicalArchitecture.sysml",
+        r#"
+            package PhysicalArchitecture {
+                part def Component {
+                    attribute massKg = 2.5 [kg];
+                }
+            }
+        "#
+        .to_string(),
+        SysmlDocumentSourceKind::Workspace,
+        None,
+        None,
+    )
+    .expect("usage doc");
+    let usage_uri = usage_doc.uri.clone();
+    let indexed_sources = [(&catalog_uri, catalog_content.as_str())];
+    let (graph, _) =
+        build_semantic_graph_from_documents(&[catalog_doc, usage_doc]).expect("semantic graph");
+
+    let diagnostics = collect_diagnostics_from_graph(
+        &graph,
+        &usage_uri,
+        DiagnosticsOptions {
+            include_hints: false,
+            indexed_sources: &indexed_sources,
+        },
+    );
+    assert!(
+        !diagnostics
+            .iter()
+            .any(|diag| diag.code == "unknown_unit_symbol"),
+        "unexpected unknown_unit_symbol for [kg]: {diagnostics:#?}"
     );
 }
 

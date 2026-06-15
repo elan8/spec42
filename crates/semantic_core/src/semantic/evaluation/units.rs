@@ -93,7 +93,7 @@ impl UnitRegistry {
             }
         }
         for (uri, content) in indexed_sources {
-            if Self::is_unit_library_uri(uri) {
+            if Self::is_unit_library_uri(uri) || content_contains_unit_definition(content) {
                 registry.ingest_file_contents(content);
             }
         }
@@ -318,7 +318,14 @@ impl UnitRegistry {
     }
 
     fn ingest_file_contents(&mut self, contents: &str) {
-        let lines: Vec<&str> = contents.lines().collect();
+        let lines: Vec<&str> = contents
+            .lines()
+            .map(|line| {
+                line.find("attribute ")
+                    .map(|idx| &line[idx..])
+                    .unwrap_or(line)
+            })
+            .collect();
         let mut idx = 0usize;
         while idx < lines.len() {
             let trimmed = lines[idx].trim();
@@ -592,8 +599,12 @@ fn parse_linear_unit_def(line: &str) -> Option<UnitDef> {
 }
 
 fn is_qudv_catalog_path_hint(path: &str) -> bool {
-    let normalized = path.replace('\\', "/");
-    normalized.contains("Quantities%20and%20Units") || normalized.contains("Quantities and Units")
+    let normalized = path.replace('\\', "/").to_ascii_lowercase();
+    normalized.contains("quantities%20and%20units")
+        || normalized.contains("quantities and units")
+        || normalized.contains("quantities_and_units")
+        || normalized.contains("qudv")
+        || normalized.ends_with("/si.sysml")
 }
 
 fn is_domain_unit_catalog_path_hint(path: &str) -> bool {
@@ -606,6 +617,21 @@ fn is_domain_unit_catalog_path_hint(path: &str) -> bool {
 fn should_ingest_unit_library_file(path: &Path) -> bool {
     let path_str = path.to_string_lossy();
     is_qudv_catalog_path_hint(&path_str) || is_domain_unit_catalog_path_hint(&path_str)
+}
+
+fn content_contains_unit_definition(content: &str) -> bool {
+    content.lines().any(|line| {
+        let Some((_, after_attribute)) = line.split_once("attribute <") else {
+            return false;
+        };
+        let Some((_, after_colon)) = after_attribute.split_once(':') else {
+            return false;
+        };
+        after_colon
+            .split([';', '{', '='])
+            .next()
+            .is_some_and(|dimension| dimension.contains("Unit"))
+    })
 }
 
 fn uri_to_path(uri: &Url) -> Option<PathBuf> {
@@ -1007,6 +1033,25 @@ mod tests {
             .compose_product(1.0, Some("°C_abs"), 2.0, Some("m"), false)
             .expect_err("affine in product");
         assert_eq!(err, UnitError::UnsupportedConversion);
+    }
+
+    #[test]
+    fn unit_library_uri_recognizes_kpar_quantity_roots() {
+        let uri = Url::parse(
+            "file:///C:/data/standard-library/2026-04/Quantities_and_Units_Library-1.0.0/SI.sysml",
+        )
+        .expect("uri");
+        assert!(UnitRegistry::is_unit_library_uri(&uri));
+    }
+
+    #[test]
+    fn indexed_source_with_unit_definition_does_not_need_unit_path_hint() {
+        let graph = SemanticGraph::default();
+        let uri = Url::parse("file:///C:/data/libraries/CustomMeasurements.sysml").expect("uri");
+        let content = "package CustomMeasurements { attribute <widget> widget : WidgetUnit; }";
+        let registry = UnitRegistry::build_unified(&graph, &[(&uri, content)], &[]);
+
+        assert!(registry.is_recognized_unit_expression("widget"));
     }
 
     #[test]

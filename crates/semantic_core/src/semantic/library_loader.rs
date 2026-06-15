@@ -136,28 +136,23 @@ pub fn resolve_library_closure(
             });
         }
     }
-    if visited_packages
-        .iter()
-        .any(|pkg| package_needs_unit_catalogs(&pkg.0))
-    {
-        for unit in &index.unit_catalog_files {
-            let key = (unit.root.clone(), unit.path.clone());
-            if !loaded_paths.insert(key.clone()) {
-                continue;
-            }
-            let full_path = PathBuf::from(&unit.root).join(&unit.path);
-            let content = std::fs::read_to_string(&full_path).map_err(|err| {
-                format!(
-                    "failed to read library unit catalog {}: {err}",
-                    full_path.display()
-                )
-            })?;
-            files.push(LoadedLibraryFile {
-                root: unit.root.clone(),
-                path: unit.path.clone(),
-                content,
-            });
+    for unit in &index.unit_catalog_files {
+        let key = (unit.root.clone(), unit.path.clone());
+        if !loaded_paths.insert(key.clone()) {
+            continue;
         }
+        let full_path = PathBuf::from(&unit.root).join(&unit.path);
+        let content = std::fs::read_to_string(&full_path).map_err(|err| {
+            format!(
+                "failed to read library unit catalog {}: {err}",
+                full_path.display()
+            )
+        })?;
+        files.push(LoadedLibraryFile {
+            root: unit.root.clone(),
+            path: unit.path.clone(),
+            content,
+        });
     }
     files.sort_by(|a, b| {
         (a.root.as_str(), a.path.as_str()).cmp(&(b.root.as_str(), b.path.as_str()))
@@ -196,15 +191,17 @@ fn build_package_index(library_roots: &[String]) -> Result<PackageIndex, String>
                 .unwrap_or(path)
                 .to_string_lossy()
                 .replace('\\', "/");
+            let content = std::fs::read_to_string(path)
+                .map_err(|err| format!("failed to read {}: {err}", path.display()))?;
             let normalized_rel = rel.replace('\\', "/");
-            if lower.ends_with("units.sysml") || normalized_rel.contains("Quantities and Units/") {
+            if is_unit_catalog_path_hint(&lower, &normalized_rel)
+                || content_contains_unit_definition(&content)
+            {
                 unit_catalog_files.push(IndexedFile {
                     root: root.clone(),
                     path: rel.clone(),
                 });
             }
-            let content = std::fs::read_to_string(path)
-                .map_err(|err| format!("failed to read {}: {err}", path.display()))?;
             if let Some(package) = extract_package_name(&content) {
                 packages
                     .entry(PackageKey(package))
@@ -351,12 +348,30 @@ fn collect_import_targets_from_package_body(body: &PackageBody) -> Vec<String> {
     out
 }
 
-fn package_needs_unit_catalogs(package_name: &str) -> bool {
-    package_name == "ScalarValues"
-        || package_name.starts_with("ISQ")
-        || package_name.starts_with("QUDV")
-        || package_name == "Quantities"
-        || package_name.contains("Quantities and Units")
+fn is_unit_catalog_path_hint(lower_full_path: &str, relative_path: &str) -> bool {
+    let normalized_rel = relative_path.replace('\\', "/").to_ascii_lowercase();
+    lower_full_path.ends_with("units.sysml")
+        || normalized_rel.contains("quantities and units/")
+        || normalized_rel.contains("quantities%20and%20units/")
+        || normalized_rel.contains("quantities_and_units")
+        || normalized_rel.contains("qudv")
+        || normalized_rel.ends_with("/si.sysml")
+        || normalized_rel == "si.sysml"
+}
+
+fn content_contains_unit_definition(content: &str) -> bool {
+    content.lines().any(|line| {
+        let Some((_, after_attribute)) = line.split_once("attribute <") else {
+            return false;
+        };
+        let Some((_, after_colon)) = after_attribute.split_once(':') else {
+            return false;
+        };
+        after_colon
+            .split([';', '{', '='])
+            .next()
+            .is_some_and(|dimension| dimension.contains("Unit"))
+    })
 }
 
 fn enqueue_imports_from_workspace_packages(
@@ -601,13 +616,17 @@ package Views {
     }
 
     #[test]
-    fn closure_skips_unit_catalogs_without_quantity_imports() {
+    fn closure_loads_unit_catalogs_independent_of_quantity_imports() {
         let temp = tempfile::tempdir().expect("tempdir");
         let lib = temp.path().join("lib");
         let units_dir = lib.join("Quantities and Units");
         fs::create_dir_all(&units_dir).expect("units dir");
         fs::write(lib.join("Base.sysml"), "package Base { part def Y; }").expect("base");
-        fs::write(units_dir.join("units.sysml"), "package Units { }").expect("units catalog");
+        fs::write(
+            units_dir.join("units.sysml"),
+            "package Units { attribute <kg> kilogram : MassUnit; }",
+        )
+        .expect("units catalog");
         let workspace = [WorkspaceSource {
             path: "model.sysml",
             content: "package App { import Base::*; }",
@@ -616,10 +635,47 @@ package Views {
         let loaded = resolve_library_closure(&workspace, &roots, &LibraryClosureOptions::default())
             .expect("closure");
         assert!(
-            !loaded.iter().any(|f| f.path.contains("units.sysml")),
-            "unit catalogs should not load without quantity imports, got {:?}",
+            loaded.iter().any(|f| f.path.contains("units.sysml")),
+            "unit catalogs should load with the library closure, got {:?}",
             loaded.iter().map(|f| &f.path).collect::<Vec<_>>()
         );
+    }
+
+    #[test]
+    fn closure_detects_unit_catalogs_by_content() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let lib = temp.path().join("lib");
+        fs::create_dir_all(&lib).expect("lib dir");
+        fs::write(lib.join("Base.sysml"), "package Base { part def Y; }").expect("base");
+        fs::write(
+            lib.join("Measurements.sysml"),
+            "package Measurements { attribute <widget> widget : WidgetUnit; }",
+        )
+        .expect("measurements catalog");
+        let workspace = [WorkspaceSource {
+            path: "model.sysml",
+            content: "package App { import Base::*; }",
+        }];
+        let roots = vec![lib.to_string_lossy().replace('\\', "/")];
+        let loaded = resolve_library_closure(&workspace, &roots, &LibraryClosureOptions::default())
+            .expect("closure");
+        assert!(
+            loaded.iter().any(|f| f.path.contains("Measurements.sysml")),
+            "unit catalog should be detected by unit definitions, got {:?}",
+            loaded.iter().map(|f| &f.path).collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn unit_catalog_path_hint_recognizes_kpar_quantity_roots() {
+        assert!(is_unit_catalog_path_hint(
+            "c:/data/stdlib/quantities_and_units_library-1.0.0/si.sysml",
+            "Quantities_and_Units_Library-1.0.0/SI.sysml"
+        ));
+        assert!(is_unit_catalog_path_hint(
+            "c:/data/stdlib/qudv-1.0.0/uscustomaryunits.sysml",
+            "QUDV-1.0.0/USCustomaryUnits.sysml"
+        ));
     }
 
     #[test]
