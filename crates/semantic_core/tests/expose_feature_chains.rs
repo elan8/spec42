@@ -4,17 +4,17 @@ use semantic_core::{
 };
 
 const EXPOSE_FEATURE_CHAIN_SYSML: &str = r#"
-package StedinRijnmondGridExpansion {
+package RegionalGridExpansion {
     part def Architecture;
 
-    part rijnmondExpansionProject {
+    part regionalExpansionProject {
         part architecture : Architecture;
     }
 
     view def GridStructureView;
 
     view expansionStructure : GridStructureView {
-        expose StedinRijnmondGridExpansion::rijnmondExpansionProject.architecture;
+        expose RegionalGridExpansion::regionalExpansionProject.architecture;
     }
 }
 "#;
@@ -48,7 +48,7 @@ fn expose_feature_chain_resolves_nested_usage_in_view_projection() {
 
     assert!(
         view.exposed_ids
-            .contains("StedinRijnmondGridExpansion::rijnmondExpansionProject::architecture"),
+            .contains("RegionalGridExpansion::regionalExpansionProject::architecture"),
         "feature-chain expose should resolve nested architecture usage, got: {:?}",
         view.exposed_ids
     );

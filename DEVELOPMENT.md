@@ -60,7 +60,7 @@ The binary is at `target/release/spec42` (Windows: `target/release/spec42.exe`).
 "spec42.serverPath": "c:\\Git\\spec42\\target\\release\\spec42.exe"
 ```
 
-See [docs/engineering/STEDIN-PERFORMANCE-ANALYSIS.md](docs/engineering/STEDIN-PERFORMANCE-ANALYSIS.md) for measured impact.
+See [docs/engineering/POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md](docs/engineering/POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md) for measured impact.
 
 ### Embedded standard library bundle
 

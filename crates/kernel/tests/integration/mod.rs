@@ -25,6 +25,6 @@ mod references;
 mod rename;
 mod robot_vacuum_baseline;
 mod semantic_tokens;
-mod stedin_performance;
+mod powersystems_performance;
 mod webshop_library_closure;
 mod workspace;

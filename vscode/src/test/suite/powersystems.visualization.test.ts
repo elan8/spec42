@@ -13,11 +13,13 @@ import {
     waitForVisualizerOpen,
 } from "./testUtils";
 
-const STEDIN_REPO = "C:\\Git\\sysml-powersystems";
-const STEDIN_VIEWS = `${STEDIN_REPO}\\sysml\\projects\\stedin-rijnmond-grid-expansion\\Views.sysml`;
+const SYSML_POWERSYSTEMS_DIR = process.env.SYSML_POWERSYSTEMS_DIR;
+const POWERSYSTEMS_VIEWS = SYSML_POWERSYSTEMS_DIR
+    ? `${SYSML_POWERSYSTEMS_DIR}\\sysml\\projects\\regional-grid-expansion\\Views.sysml`
+    : undefined;
 const GRID_CONNECTIONS_VIEW = "gridConnections";
 const SYSTEM_CONTEXT_VIEW = "systemContext";
-const stedinTimeoutMs = 180000;
+const powersystemsTimeoutMs = 180000;
 
 function parsePartNames(svgText: string): string[] {
     const names = new Set<string>();
@@ -101,7 +103,7 @@ async function assertInterconnectionPipelineRouteQuality(
         "interconnection-view",
         selectedView
     );
-    integrationTestLog(`stedin:${label}:pipelineExport`, {
+    integrationTestLog(`powersystems:${label}:pipelineExport`, {
         passed: report?.routeSummary?.passed,
         violationCount: report?.routeSummary?.violationCount,
         violations: report?.routeSummary?.violations,
@@ -136,16 +138,21 @@ function assertConnectorEndpoint(
     assert.strictEqual(normalizeEndpoint(match.targetPartId), ownerFromEndpoint(normalizeEndpoint(match.targetId)));
 }
 
-describe("Stedin Interconnection Visualization", () => {
+describe("Power Systems Interconnection Visualization", () => {
     before(async function () {
-        this.timeout(stedinTimeoutMs);
-        if (!fs.existsSync(STEDIN_REPO) || !fs.existsSync(STEDIN_VIEWS)) {
+        this.timeout(powersystemsTimeoutMs);
+        if (
+            !SYSML_POWERSYSTEMS_DIR ||
+            !POWERSYSTEMS_VIEWS ||
+            !fs.existsSync(SYSML_POWERSYSTEMS_DIR) ||
+            !fs.existsSync(POWERSYSTEMS_VIEWS)
+        ) {
             this.skip();
         }
         await configureServerForTests();
-        const viewsDoc = await vscode.workspace.openTextDocument(STEDIN_VIEWS);
-        await waitForLanguageServerReady(viewsDoc, stedinTimeoutMs);
-        await waitForExtensionServerReady(stedinTimeoutMs);
+        const viewsDoc = await vscode.workspace.openTextDocument(POWERSYSTEMS_VIEWS);
+        await waitForLanguageServerReady(viewsDoc, powersystemsTimeoutMs);
+        await waitForExtensionServerReady(powersystemsTimeoutMs);
     });
 
     afterEach(async () => {
@@ -154,14 +161,14 @@ describe("Stedin Interconnection Visualization", () => {
     });
 
     it("renders gridConnections from the parent workspace root", async function () {
-        this.timeout(stedinTimeoutMs);
+        this.timeout(powersystemsTimeoutMs);
 
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-        assert.ok(workspaceFolder, "expected the Stedin workspace folder to be open");
+        assert.ok(workspaceFolder, "expected the power systems workspace folder to be open");
 
-        const doc = await vscode.workspace.openTextDocument(STEDIN_VIEWS);
+        const doc = await vscode.workspace.openTextDocument(POWERSYSTEMS_VIEWS);
         await vscode.window.showTextDocument(doc, { preserveFocus: false, preview: false });
-        await waitForLanguageServerReady(doc, stedinTimeoutMs);
+        await waitForLanguageServerReady(doc, powersystemsTimeoutMs);
 
         const snapshot = await vscode.commands.executeCommand<Record<string, unknown>>(
             "sysml.debug.getVisualizationForTests",
@@ -169,7 +176,7 @@ describe("Stedin Interconnection Visualization", () => {
             "interconnection-view",
             GRID_CONNECTIONS_VIEW
         );
-        integrationTestLog("stedin:gridConnections:lspSnapshot", {
+        integrationTestLog("powersystems:gridConnections:lspSnapshot", {
             selectedView: snapshot?.selectedView,
             selectedViewName: snapshot?.selectedViewName,
             viewCandidates: (snapshot?.viewCandidates as Array<{ id?: string; name?: string }> | undefined)?.map(
@@ -195,15 +202,15 @@ describe("Stedin Interconnection Visualization", () => {
         );
 
         await vscode.commands.executeCommand("sysml.showVisualizer");
-        await waitForVisualizerOpen(stedinTimeoutMs);
+        await waitForVisualizerOpen(powersystemsTimeoutMs);
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
         await seedVisualizerWebviewFromModel(
             workspaceFolder.uri,
             "interconnection-view",
             (summary) => summary.ibdConnectors >= 15 && summary.ibdParts >= 10,
             {
-                timeoutMs: stedinTimeoutMs,
-                renderTimeoutMs: stedinTimeoutMs,
+                timeoutMs: powersystemsTimeoutMs,
+                renderTimeoutMs: powersystemsTimeoutMs,
                 selectedView: GRID_CONNECTIONS_VIEW,
             }
         );
@@ -219,10 +226,10 @@ describe("Stedin Interconnection Visualization", () => {
             workspaceFolder.uri,
             "interconnection-view",
             (text) => text.includes("ibd-connector") && text.includes("feederNorth"),
-            stedinTimeoutMs
+            powersystemsTimeoutMs
         );
         const debug = parseSvgDebug(svgText);
-        integrationTestLog("stedin:gridConnections:svgDebug", debug);
+        integrationTestLog("powersystems:gridConnections:svgDebug", debug);
 
         assert.ok(debug.hasFeederNorth, "expected feederNorth in rendered SVG");
         assert.ok(debug.hasCable01, "expected cable01 in rendered SVG");
@@ -233,14 +240,14 @@ describe("Stedin Interconnection Visualization", () => {
     });
 
     it("renders systemContext connectors from the parent workspace root", async function () {
-        this.timeout(stedinTimeoutMs);
+        this.timeout(powersystemsTimeoutMs);
 
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-        assert.ok(workspaceFolder, "expected the Stedin workspace folder to be open");
+        assert.ok(workspaceFolder, "expected the power systems workspace folder to be open");
 
-        const doc = await vscode.workspace.openTextDocument(STEDIN_VIEWS);
+        const doc = await vscode.workspace.openTextDocument(POWERSYSTEMS_VIEWS);
         await vscode.window.showTextDocument(doc, { preserveFocus: false, preview: false });
-        await waitForLanguageServerReady(doc, stedinTimeoutMs);
+        await waitForLanguageServerReady(doc, powersystemsTimeoutMs);
 
         const snapshot = await vscode.commands.executeCommand<Record<string, unknown>>(
             "sysml.debug.getVisualizationForTests",
@@ -250,7 +257,7 @@ describe("Stedin Interconnection Visualization", () => {
         );
         const snapshotConnectors =
             (snapshot?.ibd as { connectors?: IbdConnectorSnapshot[] } | undefined)?.connectors ?? [];
-        integrationTestLog("stedin:systemContext:lspSnapshot", {
+        integrationTestLog("powersystems:systemContext:lspSnapshot", {
             selectedView: snapshot?.selectedView,
             selectedViewName: snapshot?.selectedViewName,
             ibdParts: (snapshot?.ibd as { parts?: unknown[] } | undefined)?.parts?.length ?? 0,
@@ -291,15 +298,15 @@ describe("Stedin Interconnection Visualization", () => {
             "systemContext"
         );
         await vscode.commands.executeCommand("sysml.showVisualizer");
-        await waitForVisualizerOpen(stedinTimeoutMs);
+        await waitForVisualizerOpen(powersystemsTimeoutMs);
         await vscode.commands.executeCommand("sysml.changeVisualizerView", "interconnection-view");
         await seedVisualizerWebviewFromModel(
             workspaceFolder.uri,
             "interconnection-view",
             (summary) => summary.ibdConnectors >= 4 && summary.ibdParts >= 10,
             {
-                timeoutMs: stedinTimeoutMs,
-                renderTimeoutMs: stedinTimeoutMs,
+                timeoutMs: powersystemsTimeoutMs,
+                renderTimeoutMs: powersystemsTimeoutMs,
                 selectedView: SYSTEM_CONTEXT_VIEW,
             }
         );
@@ -315,10 +322,10 @@ describe("Stedin Interconnection Visualization", () => {
             workspaceFolder.uri,
             "interconnection-view",
             (text) => text.includes("ibd-connector") && text.includes("tennetConnection"),
-            stedinTimeoutMs
+            powersystemsTimeoutMs
         );
         const debug = parseSvgDebug(svgText);
-        integrationTestLog("stedin:systemContext:svgDebug", debug);
+        integrationTestLog("powersystems:systemContext:svgDebug", debug);
 
         assert.ok(debug.hasTennetConnection, "expected tennetConnection in rendered SVG");
         assert.ok(debug.hasPrimarySubstation, "expected primarySubstation in rendered SVG");

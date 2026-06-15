@@ -4,17 +4,17 @@ use semantic_core::{
 };
 
 const PROJECT_SYSML: &str = r#"
-package StedinRijnmondGridExpansion {
-    public import StedinRijnmondGridExpansion::Architecture::*;
-    part rijnmondExpansionProject {
-        part architecture : RijnmondGridArchitecture;
+package RegionalGridExpansion {
+    public import RegionalGridExpansion::Architecture::*;
+    part regionalExpansionProject {
+        part architecture : RegionalGridArchitecture;
     }
 }
 "#;
 
 const ARCHITECTURE_SYSML: &str = r#"
-package StedinRijnmondGridExpansion::Architecture {
-    part def RijnmondGridArchitecture {
+package RegionalGridExpansion::Architecture {
+    part def RegionalGridArchitecture {
         part feederNorth;
         part feederSouth;
     }
@@ -22,19 +22,19 @@ package StedinRijnmondGridExpansion::Architecture {
 "#;
 
 const VIEWS_SYSML: &str = r#"
-package StedinRijnmondGridExpansion::Views {
-    public import StedinRijnmondGridExpansion::*;
+package RegionalGridExpansion::Views {
+    public import RegionalGridExpansion::*;
     view gridStructure : GeneralView {
-        expose StedinRijnmondGridExpansion::rijnmondExpansionProject.architecture;
+        expose RegionalGridExpansion::regionalExpansionProject.architecture;
         filter @SysML::PartUsage or @SysML::PartDefinition;
     }
 }
 "#;
 
 #[test]
-fn stedin_shaped_feature_chain_expose_projects_grid_topology() {
+fn powersystems_shaped_feature_chain_expose_projects_grid_topology() {
     let project = SysmlDocument::from_memory_path(
-        "stedin",
+        "powersystems",
         "Project.sysml",
         PROJECT_SYSML.to_string(),
         SysmlDocumentSourceKind::Workspace,
@@ -43,7 +43,7 @@ fn stedin_shaped_feature_chain_expose_projects_grid_topology() {
     )
     .expect("project uri");
     let architecture = SysmlDocument::from_memory_path(
-        "stedin",
+        "powersystems",
         "Architecture.sysml",
         ARCHITECTURE_SYSML.to_string(),
         SysmlDocumentSourceKind::Workspace,
@@ -52,7 +52,7 @@ fn stedin_shaped_feature_chain_expose_projects_grid_topology() {
     )
     .expect("architecture uri");
     let views = SysmlDocument::from_memory_path(
-        "stedin",
+        "powersystems",
         "Views.sysml",
         VIEWS_SYSML.to_string(),
         SysmlDocumentSourceKind::Workspace,

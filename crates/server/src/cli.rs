@@ -171,7 +171,7 @@ pub struct DiagramExportArgs {
     pub workspace_root: Option<PathBuf>,
     #[arg(long = "view", default_value = "all")]
     pub view: String,
-    /// Explicit SysML view usage name (for example `gridStructure` or `StedinRijnmondGridExpansion::Views::gridStructure`).
+    /// Explicit SysML view usage name (for example `gridStructure` or `RegionalGridExpansion::Views::gridStructure`).
     #[arg(long = "selected-view")]
     pub selected_view: Option<String>,
     #[arg(long = "format", value_enum, default_value_t = DiagramExportFormat::Svg)]

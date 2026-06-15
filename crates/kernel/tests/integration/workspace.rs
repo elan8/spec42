@@ -1359,11 +1359,17 @@ fn lsp_workspace_visualization_returns_workspace_model_payload_for_workspace_roo
 }
 
 #[test]
-fn lsp_stedin_parent_workspace_root_grid_connections_has_ibd_content() {
-    let repo_root = PathBuf::from(r"C:\Git\sysml-powersystems");
+#[ignore = "optional local drill-down; set SYSML_POWERSYSTEMS_DIR to an external grid fixture checkout"]
+fn lsp_powersystems_parent_workspace_root_grid_connections_has_ibd_content() {
+    let Some(repo_root) = std::env::var_os("SYSML_POWERSYSTEMS_DIR").map(PathBuf::from) else {
+        eprintln!(
+            "Skipping lsp_powersystems_parent_workspace_root_grid_connections_has_ibd_content: SYSML_POWERSYSTEMS_DIR is unset"
+        );
+        return;
+    };
     if !repo_root.is_dir() {
         eprintln!(
-            "Skipping lsp_stedin_parent_workspace_root_grid_connections_has_ibd_content: {} is not a directory",
+            "Skipping lsp_powersystems_parent_workspace_root_grid_connections_has_ibd_content: {} is not a directory",
             repo_root.display()
         );
         return;
@@ -1376,7 +1382,7 @@ fn lsp_stedin_parent_workspace_root_grid_connections_has_ibd_content() {
         "interconnection-view",
         Some("gridConnections"),
     )
-    .expect("build stedin visualization");
+    .expect("build power systems visualization");
 
     assert_eq!(
         response.selected_view_name.as_deref(),

@@ -61,7 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Canonical interconnection pipeline** — Language server emits `interconnectionScene` (schema version 1) for Interconnection views; shared `@spec42/diagram-renderer` prepares and lays out scenes with ELK; VS Code and export paths consume the same pipeline.
 - **IBD and interconnection scope** — Merged workspace IBD, scoped interconnection filtering, package container groups, and diagram export improvements for internal block diagrams.
-- **Visualization performance** — Lazy single-view projection, workspace visualization artifact cache (shared by Model Explorer and visualizer), per-diagram response cache, and slimmer interconnection LSP payloads. Documented in [docs/engineering/STEDIN-PERFORMANCE-ANALYSIS.md](docs/engineering/STEDIN-PERFORMANCE-ANALYSIS.md) with `stedin_system_context_performance_report` integration test.
+- **Visualization performance** — Lazy single-view projection, workspace visualization artifact cache (shared by Model Explorer and visualizer), per-diagram response cache, and slimmer interconnection LSP payloads. Documented in [docs/engineering/POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md](docs/engineering/POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md) with `powersystems_system_context_performance_report` integration test.
 - **Domain libraries bundled like stdlib** — Removed the `domain-libraries` git submodule. Elan8 domain libraries are embedded in the Spec42 server binary, materialized under the data directory on first use, and shown in the VS Code Library dashboard next to the standard library. Local dev auto-detects a sibling `../sysml-domain-libraries` checkout or uses `SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR`.
 - **Workspace lifecycle feedback** — Clear indexing/ready states for semantic queries; visualizer and Model Explorer respect lifecycle before building diagrams.
 - **Analysis typing and evaluation** — Richer analysis usage typing, inherited analysis results, and conformance-matrix updates for metadata and quantities.
@@ -78,7 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Visualization response cache** — Do not cache or serve incomplete `interconnection-view` responses (avoids stale empty scenes in integration tests and after fast view switches).
 - **Extension build** — Resolve `elkjs` when bundling `diagram-renderer` into the VS Code extension host.
-- **Interconnection integration tests** — Poll until `interconnectionScene` is ready before asserting drone/Stedin diagram invariants.
+- **Interconnection integration tests** — Poll until `interconnectionScene` is ready before asserting drone/grid diagram invariants.
 
 ## [0.29.1] - 2026-06-09
 

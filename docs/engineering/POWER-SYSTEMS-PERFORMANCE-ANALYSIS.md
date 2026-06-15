@@ -1,12 +1,12 @@
-# Stedin / Power Systems Performance Analysis
+# Power Systems Performance Analysis
 
-Analysis of loading the [sysml-powersystems](https://github.com/) workspace and opening the `systemContext` interconnection diagram. Captures measurements from March 2026 profiling on Windows (x86_64).
+Analysis of loading a regional grid expansion fixture workspace and opening the `systemContext` interconnection diagram. Captures measurements from March 2026 profiling on Windows (x86_64).
 
 ## Scenario
 
 | Item | Value |
 |------|-------|
-| Workspace | `C:\Git\sysml-powersystems` (22 SysML files, ~78 KB) |
+| Workspace | External grid fixture checkout via `SYSML_POWERSYSTEMS_DIR` (22 SysML files, ~78 KB in the March 2026 run) |
 | Diagram | `systemContext` (`interconnection-view`) |
 | Diagram size | 20 parts, 19 connectors, 19 scene edges |
 | User path | VS Code: open folder → Model Explorer indexes → open visualizer → select `systemContext` |
@@ -41,10 +41,10 @@ F5 **Launch Extension** stages `target/debug/spec42.exe` by default.
 Run locally:
 
 ```powershell
-cargo test -p kernel --test lsp_integration integration::stedin_performance::stedin_system_context_performance_report -- --ignored --nocapture
+cargo test -p kernel --test lsp_integration integration::powersystems_performance::powersystems_system_context_performance_report -- --ignored --nocapture
 ```
 
-Requires `C:\Git\sysml-powersystems` (override with `STEDIN_REPO` or `SYSML_POWERSYSTEMS_DIR`). Report written to `target/spec42-perf/stedin-system-context-performance.json`.
+Requires `SYSML_POWERSYSTEMS_DIR` pointing at an external grid fixture checkout (not bundled with spec42). Report written to `target/spec42-perf/grid-system-context-performance.json`.
 
 **Phase breakdown** (in-process, semantic graph already built):
 
@@ -157,7 +157,7 @@ flowchart TB
 |---|--------|-----------------|--------|
 | 8 | Incremental IBD: scope to exposed packages for selected view | Reduce `ibdPerUri` from 22 files to 2–3 | Large |
 | 9 | Parallel IBD in visualization path (already done for `sysml/model` workspace scope) | ~2× on IBD phase | Medium |
-| 10 | Nightly CI: run `stedin_system_context_performance_report` on release build | Regression guard | Small |
+| 10 | Nightly CI: run `powersystems_system_context_performance_report` on release build | Regression guard | Small |
 | 11 | Debounce or scope startup diagnostics for large workspaces | Reduce 612 ms+ startup tax | Medium |
 
 ### Success criteria
@@ -194,13 +194,13 @@ Open **View → Output → SysML** and correlate:
 
 | Path | Purpose |
 |------|---------|
-| `crates/kernel/tests/integration/stedin_performance.rs` | Drill-down perf test |
+| `crates/kernel/tests/integration/powersystems_performance.rs` | Drill-down perf test |
 | `crates/kernel/tests/integration/perf_report.rs` | Shared perf report helpers |
-| `target/spec42-perf/stedin-system-context-performance.json` | Latest machine-local report |
+| `target/spec42-perf/grid-system-context-performance.json` | Latest machine-local report |
 | `docs/engineering/PERFORMANCE-GUARDRAILS.md` | Nightly large-workspace budgets |
-| `vscode/src/test/suite/stedin.visualization.test.ts` | Integration test for diagram correctness |
+| `vscode/src/test/suite/powersystems.visualization.test.ts` | Integration test for diagram correctness |
 
 ## Changelog
 
 - **2026-06-12**: Implemented lazy visualization pipeline, workspace artifact cache, response cache, slim interconnection payload, and extended perf logging. Post-implementation LSP numbers recorded above.
-- **2026-06-12**: Initial analysis; added `stedin_system_context_performance_report` test and phase breakdown.
+- **2026-06-12**: Initial analysis; added `powersystems_system_context_performance_report` test and phase breakdown.

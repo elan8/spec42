@@ -22,14 +22,14 @@ function loadSceneFixture(name: string): unknown {
   return JSON.parse(readFileSync(join(fixtureDir, name), "utf8"));
 }
 
-function prepareStedinSceneFixture(name: string) {
+function prepareGridSceneFixture(name: string) {
   return prepareViewData({
     view: "interconnection-view",
     interconnectionScene: loadSceneFixture(name),
   });
 }
 
-// Regenerate fixtures: cargo test -p semantic_core --test view_expose_stedin_interconnection export_stedin -- --nocapture
+// Regenerate fixtures: cargo test -p semantic_core --test view_expose_powersystems_interconnection export_powersystems -- --nocapture
 // Regenerate ELK input goldens: UPDATE_ELK_FIXTURES=1 npm test -- layout.interconnection
 
 function maybeWriteElkGolden(fixtureBaseName: string, payload: unknown): void {
@@ -157,12 +157,12 @@ describe("interconnection layout fixtures", () => {
     expect(report.passed, report.violations.join("; ")).toBe(true);
   });
 
-  it("passes route quality checks for Stedin systemContext scene fixture", async () => {
-    const fixtureName = "stedin-system-context-scene.json";
+  it("passes route quality checks for grid systemContext scene fixture", async () => {
+    const fixtureName = "grid-system-context-scene.json";
     if (!existsSync(join(fixtureDir, fixtureName))) {
       return;
     }
-    const prepared = prepareStedinSceneFixture(fixtureName);
+    const prepared = prepareGridSceneFixture(fixtureName);
     expect(prepared.meta?.canonicalScene).toBe(true);
     expect(prepared.edges.length).toBeGreaterThanOrEqual(17);
     const layout = await layoutPrepared(prepared);
@@ -183,12 +183,12 @@ describe("interconnection layout fixtures", () => {
     expect(report.passed, report.violations.join("; ")).toBe(true);
   });
 
-  it("passes route quality checks for Stedin gridConnections scene fixture", async () => {
-    const fixtureName = "stedin-grid-connections-scene.json";
+  it("passes route quality checks for grid gridConnections scene fixture", async () => {
+    const fixtureName = "grid-connections-scene.json";
     if (!existsSync(join(fixtureDir, fixtureName))) {
       return;
     }
-    const prepared = prepareStedinSceneFixture(fixtureName);
+    const prepared = prepareGridSceneFixture(fixtureName);
     expect(prepared.meta?.canonicalScene).toBe(true);
     expect(prepared.edges.length).toBeGreaterThanOrEqual(15);
     expect(

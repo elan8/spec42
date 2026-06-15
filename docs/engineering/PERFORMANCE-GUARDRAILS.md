@@ -14,17 +14,18 @@ The report uses `vscode/testFixture/workspaces/large-workspace` and measures:
 
 The nightly step prints one `SPEC42_PERF_REPORT` JSON line, writes `target/spec42-perf/large-workspace-performance.json`, uploads both the raw log and JSON report as artifacts, and appends a compact bottleneck summary to the GitHub step summary.
 
-### Stedin / power systems drill-down (local)
+### Power systems drill-down (local, optional)
 
-For the real-world `sysml-powersystems` workspace and `systemContext` diagram:
+For a full regional grid fixture workspace and `systemContext` diagram, set `SYSML_POWERSYSTEMS_DIR` to an external checkout (spec42 does not ship or assume a default path):
 
 ```powershell
-cargo test -p kernel --test lsp_integration integration::stedin_performance::stedin_system_context_performance_report -- --ignored --nocapture
+$env:SYSML_POWERSYSTEMS_DIR = "C:\path\to\grid-fixture"
+cargo test -p kernel --test lsp_integration integration::powersystems_performance::powersystems_system_context_performance_report -- --ignored --nocapture
 ```
 
-Set `STEDIN_REPO` when the checkout is not at `C:\Git\sysml-powersystems`. Output: `target/spec42-perf/stedin-system-context-performance.json`.
+Output: `target/spec42-perf/grid-system-context-performance.json`.
 
-See [STEDIN-PERFORMANCE-ANALYSIS.md](./STEDIN-PERFORMANCE-ANALYSIS.md) for findings and improvement plan.
+See [POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md](./POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md) for findings and improvement plan.
 
 ## Initial Budgets
 

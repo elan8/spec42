@@ -226,7 +226,7 @@ fn part_feature_redefinition_does_not_emit_subset_kind_warnings() {
             part def DutchGridExpansionProject {
                 part operatorProfile : DutchOperatorProfile;
             }
-            part rijnmondExpansionProject : DutchGridExpansionProject {
+            part regionalExpansionProject : DutchGridExpansionProject {
                 part :>> operatorProfile {
                     attribute :>> operator = 1;
                     attribute :>> defaultMvVoltageClass = 2;

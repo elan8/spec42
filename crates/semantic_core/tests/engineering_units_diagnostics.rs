@@ -4,7 +4,7 @@ use semantic_core::{
     build_semantic_graph_from_documents, collect_diagnostics_from_graph, DiagnosticsOptions,
     SysmlDocument, SysmlDocumentSourceKind, UnitRegistry,
 };
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use url::Url;
 
 const SI_CATALOG_EXCERPT: &str = r#"
@@ -232,11 +232,25 @@ fn mismatched_unit_dimension_emits_incompatible_not_unknown() {
 }
 
 #[test]
+#[ignore = "optional local drill-down; set SYSML_POWERSYSTEMS_DIR to an external grid fixture checkout"]
 fn sysml_powersystems_check_has_no_engineering_unit_catalog_warnings_when_stdlib_present() {
-    let powersystems_root = Path::new(r"C:\Git\sysml-powersystems\sysml");
+    let Some(powersystems_root) = std::env::var_os("SYSML_POWERSYSTEMS_DIR").map(|root| {
+        let root = PathBuf::from(root);
+        let nested = root.join("sysml");
+        if nested.is_dir() {
+            nested
+        } else {
+            root
+        }
+    }) else {
+        return;
+    };
+    if !powersystems_root.is_dir() {
+        return;
+    }
     let stdlib_root =
         Path::new(r"C:\Git\sysml-v2-release\sysml.library\Domain Libraries\Quantities and Units");
-    if !powersystems_root.is_dir() || !stdlib_root.is_dir() {
+    if !stdlib_root.is_dir() {
         return;
     }
 
@@ -310,6 +324,6 @@ fn sysml_powersystems_check_has_no_engineering_unit_catalog_warnings_when_stdlib
         .collect();
     assert!(
         unit_warnings.is_empty(),
-        "sysml-powersystems unit catalog warnings: {unit_warnings:?}"
+        "external grid fixture unit catalog warnings: {unit_warnings:?}"
     );
 }

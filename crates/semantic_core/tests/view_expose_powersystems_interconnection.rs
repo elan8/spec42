@@ -10,16 +10,25 @@ use semantic_core::{
     SysmlDocument, SysmlDocumentSourceKind, WorkspaceParsedDocument,
 };
 
-fn load_stedin_workspace() -> Option<(
+fn optional_external_grid_fixture_sysml_root() -> Option<PathBuf> {
+    let repo_root = PathBuf::from(std::env::var_os("SYSML_POWERSYSTEMS_DIR")?);
+    let nested = repo_root.join("sysml");
+    if nested.is_dir() {
+        Some(nested)
+    } else if repo_root.is_dir() {
+        Some(repo_root)
+    } else {
+        None
+    }
+}
+
+fn load_powersystems_workspace() -> Option<(
     Vec<SysmlDocument>,
     Vec<url::Url>,
     SemanticGraph,
     Vec<WorkspaceParsedDocument>,
 )> {
-    let workspace_root = Path::new(r"C:\Git\sysml-powersystems\sysml");
-    if !workspace_root.is_dir() {
-        return None;
-    }
+    let workspace_root = optional_external_grid_fixture_sysml_root()?;
 
     let mut documents = Vec::new();
     let mut uris = Vec::new();
@@ -29,9 +38,9 @@ fn load_stedin_workspace() -> Option<(
         .filter(|e| e.path().extension().is_some_and(|ext| ext == "sysml"))
     {
         let path = entry.path();
-        let content = std::fs::read_to_string(path).expect("read stedin model");
+        let content = std::fs::read_to_string(path).expect("read power systems model");
         let doc = SysmlDocument::from_memory_path(
-            "stedin",
+            "powersystems",
             path.file_name()
                 .and_then(|n| n.to_str())
                 .unwrap_or("model.sysml"),
@@ -50,7 +59,7 @@ fn load_stedin_workspace() -> Option<(
     Some((documents, uris, graph, parsed))
 }
 
-fn stedin_interconnection_fixture_path(name: &str) -> PathBuf {
+fn powersystems_interconnection_fixture_path(name: &str) -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("..")
         .join("..")
@@ -61,7 +70,7 @@ fn stedin_interconnection_fixture_path(name: &str) -> PathBuf {
         .join(name)
 }
 
-fn build_stedin_scene(
+fn build_powersystems_scene(
     full_ibd: &IbdDataDto,
     graph_dto: &SysmlGraphDto,
     view: &EvaluatedView,
@@ -78,7 +87,7 @@ fn build_stedin_scene(
 }
 
 fn write_scene_fixture(scene: &InterconnectionSceneDto, filename: &str) {
-    let fixture_path = stedin_interconnection_fixture_path(filename);
+    let fixture_path = powersystems_interconnection_fixture_path(filename);
     if let Some(parent) = fixture_path.parent() {
         std::fs::create_dir_all(parent).expect("create fixture directory");
     }
@@ -86,16 +95,16 @@ fn write_scene_fixture(scene: &InterconnectionSceneDto, filename: &str) {
         &fixture_path,
         serde_json::to_string_pretty(scene).expect("serialize scene"),
     )
-    .expect("write stedin scene fixture");
+    .expect("write grid scene fixture fixture");
     eprintln!("wrote {}", fixture_path.display());
 }
 
 #[test]
-fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
-    let workspace_root = Path::new(r"C:\Git\sysml-powersystems\sysml");
-    if !workspace_root.is_dir() {
+#[ignore = "optional local drill-down; set SYSML_POWERSYSTEMS_DIR to an external grid fixture checkout"]
+fn powersystems_grid_connections_ibd_includes_feeder_and_cable_connectors() {
+    let Some(workspace_root) = optional_external_grid_fixture_sysml_root() else {
         return;
-    }
+    };
 
     let mut documents = Vec::new();
     let mut uris = Vec::new();
@@ -105,9 +114,9 @@ fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
         .filter(|e| e.path().extension().is_some_and(|ext| ext == "sysml"))
     {
         let path = entry.path();
-        let content = std::fs::read_to_string(path).expect("read stedin model");
+        let content = std::fs::read_to_string(path).expect("read power systems model");
         let doc = SysmlDocument::from_memory_path(
-            "stedin",
+            "powersystems",
             path.file_name()
                 .and_then(|n| n.to_str())
                 .unwrap_or("model.sysml"),
@@ -165,7 +174,7 @@ fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
         .filter(|connector| {
             connector
                 .source_id
-                .contains("rijnmondExpansionProject.architecture")
+                .contains("regionalExpansionProject.architecture")
         })
         .collect();
     assert!(
@@ -203,10 +212,10 @@ fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
         ibd.connectors.iter().all(|connector| {
             connector
                 .source_id
-                .contains("rijnmondExpansionProject.architecture")
+                .contains("regionalExpansionProject.architecture")
                 && connector
                     .target_id
-                    .contains("rijnmondExpansionProject.architecture")
+                    .contains("regionalExpansionProject.architecture")
         }),
         "gridConnections connectors should stay under architecture instance paths, got {:?}",
         ibd.connectors
@@ -344,7 +353,7 @@ fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
             .connectors
             .iter()
             .find(|connector| {
-                connector.source_id.contains("rijnmondExpansionProject.architecture")
+                connector.source_id.contains("regionalExpansionProject.architecture")
                     && !connector.source_id.contains(".Variants.")
                     && !connector.source_id.contains(".expansionAlternatives.")
                     && connector.source_id.ends_with(source_suffix)
@@ -378,7 +387,7 @@ fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
         &system_ibd,
         &system_context.id,
         &system_context.name,
-        &["Stedin.architecture".to_string()],
+        &["RegionalGridExpansion.architecture".to_string()],
         None,
     );
     assert_eq!(scene.schema_version, 1);
@@ -401,8 +410,9 @@ fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
 }
 
 #[test]
-fn export_stedin_system_context_scene() {
-    let Some((_documents, uris, graph, parsed)) = load_stedin_workspace() else {
+#[ignore = "fixture export; set SYSML_POWERSYSTEMS_DIR to regenerate grid scene JSON"]
+fn export_powersystems_system_context_scene() {
+    let Some((_documents, uris, graph, parsed)) = load_powersystems_workspace() else {
         return;
     };
     let mut full_ibd = merge_ibd_payloads(
@@ -418,13 +428,14 @@ fn export_stedin_system_context_scene() {
         .iter()
         .find(|view| view.name == "systemContext")
         .expect("systemContext view");
-    let scene = build_stedin_scene(&full_ibd, &graph_dto, system_context);
-    write_scene_fixture(&scene, "stedin-system-context-scene.json");
+    let scene = build_powersystems_scene(&full_ibd, &graph_dto, system_context);
+    write_scene_fixture(&scene, "grid-system-context-scene.json");
 }
 
 #[test]
-fn export_stedin_grid_connections_scene() {
-    let Some((_documents, uris, graph, parsed)) = load_stedin_workspace() else {
+#[ignore = "fixture export; set SYSML_POWERSYSTEMS_DIR to regenerate grid scene JSON"]
+fn export_powersystems_grid_connections_scene() {
+    let Some((_documents, uris, graph, parsed)) = load_powersystems_workspace() else {
         return;
     };
     let mut full_ibd = merge_ibd_payloads(
@@ -440,7 +451,7 @@ fn export_stedin_grid_connections_scene() {
         .iter()
         .find(|view| view.name == "gridConnections")
         .expect("gridConnections view");
-    let scene = build_stedin_scene(&full_ibd, &graph_dto, grid_connections);
+    let scene = build_powersystems_scene(&full_ibd, &graph_dto, grid_connections);
 
     assert!(
         !scene.edges.iter().any(|edge| {
@@ -477,5 +488,5 @@ fn export_stedin_grid_connections_scene() {
         scene.edges.len()
     );
 
-    write_scene_fixture(&scene, "stedin-grid-connections-scene.json");
+    write_scene_fixture(&scene, "grid-connections-scene.json");
 }

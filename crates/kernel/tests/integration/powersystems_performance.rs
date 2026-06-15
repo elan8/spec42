@@ -1,8 +1,8 @@
-//! Report-only performance drill-down for the Stedin / sysml-powersystems workspace.
+//! Report-only performance drill-down against an optional external grid fixture checkout.
 //!
-//! Run:
+//! Run (requires `SYSML_POWERSYSTEMS_DIR`):
 //! ```text
-//! cargo test -p kernel --test lsp_integration integration::stedin_performance::stedin_system_context_performance_report -- --ignored --nocapture
+//! cargo test -p kernel --test lsp_integration integration::powersystems_performance::powersystems_system_context_performance_report -- --ignored --nocapture
 //! ```
 
 use std::collections::HashMap;
@@ -25,14 +25,16 @@ use super::perf_report::{
     wait_for_startup_scan, workspace_loaded_files,
 };
 
-fn stedin_repo_root() -> PathBuf {
-    std::env::var_os("STEDIN_REPO")
-        .or_else(|| std::env::var_os("SYSML_POWERSYSTEMS_DIR"))
-        .map(PathBuf::from)
-        .unwrap_or_else(|| PathBuf::from(r"C:\Git\sysml-powersystems"))
+fn powersystems_repo_root() -> Option<PathBuf> {
+    let repo_root = PathBuf::from(std::env::var_os("SYSML_POWERSYSTEMS_DIR")?);
+    if repo_root.is_dir() {
+        Some(repo_root)
+    } else {
+        None
+    }
 }
 
-fn stedin_sysml_root(repo_root: &Path) -> PathBuf {
+fn powersystems_sysml_root(repo_root: &Path) -> PathBuf {
     let nested = repo_root.join("sysml");
     if nested.is_dir() {
         nested
@@ -61,7 +63,7 @@ struct VisualizationPhaseBreakdown {
 }
 
 fn collect_visualization_phase_breakdown(repo_root: &Path) -> VisualizationPhaseBreakdown {
-    let scan_root = stedin_sysml_root(repo_root);
+    let scan_root = powersystems_sysml_root(repo_root);
     let provider = FileSystemDocumentProvider::new(
         scan_root.clone(),
         Some(repo_root.to_path_buf()),
@@ -188,18 +190,16 @@ fn collect_visualization_phase_breakdown(repo_root: &Path) -> VisualizationPhase
 }
 
 #[test]
-#[ignore = "report-only stedin drill-down; requires sysml-powersystems checkout"]
-fn stedin_system_context_performance_report() {
-    let repo_root = stedin_repo_root();
-    if !repo_root.is_dir() {
+#[ignore = "report-only drill-down; set SYSML_POWERSYSTEMS_DIR to an external grid fixture checkout"]
+fn powersystems_system_context_performance_report() {
+    let Some(repo_root) = powersystems_repo_root() else {
         eprintln!(
-            "Skipping stedin_system_context_performance_report: {} is not a directory (set STEDIN_REPO or SYSML_POWERSYSTEMS_DIR)",
-            repo_root.display()
+            "Skipping powersystems_system_context_performance_report: SYSML_POWERSYSTEMS_DIR is unset or not a directory"
         );
         return;
-    }
+    };
 
-    let scan_root = stedin_sysml_root(&repo_root);
+    let scan_root = powersystems_sysml_root(&repo_root);
     let fixture_perf = collect_fixture_perf(&scan_root);
     let phase_breakdown = collect_visualization_phase_breakdown(&repo_root);
 
@@ -208,12 +208,12 @@ fn stedin_system_context_performance_report() {
             .canonicalize()
             .unwrap_or_else(|_| repo_root.clone()),
     )
-    .expect("stedin root uri");
+    .expect("power systems root uri");
     let views_uri = url::Url::from_file_path(
         repo_root
             .join("sysml")
             .join("projects")
-            .join("stedin-rijnmond-grid-expansion")
+            .join("regional-grid-expansion")
             .join("Views.sysml"),
     )
     .expect("Views.sysml uri");
@@ -235,7 +235,7 @@ fn stedin_system_context_performance_report() {
                 "performanceLogging": { "enabled": true },
                 "workspace": { "maxFilesPerPattern": 1000 }
             },
-            "clientInfo": { "name": "stedin-perf-report", "version": "0.1.0" }
+            "clientInfo": { "name": "powersystems-perf-report", "version": "0.1.0" }
         }
     });
     send_message(&mut stdin, &init_req.to_string());
@@ -407,7 +407,7 @@ fn stedin_system_context_performance_report() {
     let report = serde_json::json!({
         "schemaVersion": 2,
         "fixture": {
-            "name": "stedin-system-context",
+            "name": "grid-system-context",
             "path": repo_root.to_string_lossy(),
             "scanRoot": scan_root.to_string_lossy(),
             "files": fixture_perf.files,
@@ -494,7 +494,7 @@ fn stedin_system_context_performance_report() {
         "events": perf_events
     });
 
-    emit_perf_report(&report, "stedin-system-context-performance.json");
+    emit_perf_report(&report, "grid-system-context-performance.json");
 
     assert!(
         workspace_loaded_files(&workspace_model_capture.json) > 0,

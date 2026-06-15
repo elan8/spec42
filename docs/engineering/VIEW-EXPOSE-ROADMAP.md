@@ -8,11 +8,11 @@ Implementation notes for SysML v2-conformant view `expose` resolution (§7.6.6, 
 - **Done:** `evaluate_views` uses `SemanticGraph` + DTO projection (`expand_structural_scope` for inherited definition members).
 - **Done:** Parser support for `variation part` usages and `variant` members in part usage bodies (`sysml-v2-parser`).
 - **Done:** Diagnostics `view_expose_unresolved`, `view_expose_empty_result` (catalog); `view_expose_empty` unchanged.
-- **Regression:** `view_expose_*` integration tests; optional full Stedin workspace test (`view_expose_stedin.rs`).
+- **Regression:** `view_expose_*` integration tests with inline grid fixtures; optional ignored drill-down when `SYSML_POWERSYSTEMS_DIR` is set.
 
 ## Reference model
 
-External brief: [sysml-powersystems `spec42-view-expose-fixes.md`](https://github.com/elan8/sysml-powersystems/blob/main/docs/spec42-view-expose-fixes.md)
+External grid fixture brief (maintained outside spec42): `spec42-view-expose-fixes.md` in the grid fixture repository.
 
 ## Key files
 
@@ -26,7 +26,8 @@ External brief: [sysml-powersystems `spec42-view-expose-fixes.md`](https://githu
 ## Acceptance checks
 
 ```powershell
-# From spec42 repo (requires sysml-powersystems at C:\Git\sysml-powersystems)
-cargo test -p semantic_core --test view_expose_stedin
+# From spec42 repo (CI uses inline fixtures; optional ignored drill-down with SYSML_POWERSYSTEMS_DIR)
+cargo test -p semantic_core --test view_expose_powersystems_shaped
+cargo test -p semantic_core --test view_expose_powersystems_project_body
 cargo test -p semantic_core --test view_expose_inherited_parts
 ```

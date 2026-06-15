@@ -4,17 +4,17 @@ use semantic_core::{
 };
 
 const PROJECT_WITH_REDEFINES: &str = r#"
-package StedinRijnmondGridExpansion {
-    public import StedinRijnmondGridExpansion::Architecture::*;
-    part rijnmondExpansionProject : DutchGridExpansionProject {
+package RegionalGridExpansion {
+    public import RegionalGridExpansion::Architecture::*;
+    part regionalExpansionProject : DutchGridExpansionProject {
         part :>> operatorProfile {
-            attribute :>> operator = DutchGridOperator::Stedin;
+            attribute :>> operator = DutchGridOperator::RegionalOperator;
         }
-        part architecture : RijnmondGridArchitecture {
-            attribute :>> name = "Rijnmond Grid Architecture";
+        part architecture : RegionalGridArchitecture {
+            attribute :>> name = "Regional Grid Architecture";
         }
 
-        variation part expansionAlternatives : RijnmondGridArchitecture {
+        variation part expansionAlternatives : RegionalGridArchitecture {
             variant baseVariant;
         }
     }
@@ -22,13 +22,13 @@ package StedinRijnmondGridExpansion {
 "#;
 
 const ARCHITECTURE_SYSML: &str = r#"
-package StedinRijnmondGridExpansion::Architecture {
-    part def RijnmondGridArchitecture {
+package RegionalGridExpansion::Architecture {
+    part def RegionalGridArchitecture {
         part feederNorth;
     }
 }
 package DutchGridProfile {
-    enum def DutchGridOperator { enum Stedin; }
+    enum def DutchGridOperator { enum RegionalOperator; }
     part def DutchGridExpansionProject {
         part operatorProfile;
         part architecture;
@@ -39,7 +39,7 @@ package DutchGridProfile {
 #[test]
 fn project_body_with_redefines_materializes_architecture_usage() {
     let project = SysmlDocument::from_memory_path(
-        "stedin",
+        "powersystems",
         "Project.sysml",
         PROJECT_WITH_REDEFINES.to_string(),
         SysmlDocumentSourceKind::Workspace,
@@ -48,7 +48,7 @@ fn project_body_with_redefines_materializes_architecture_usage() {
     )
     .expect("project uri");
     let architecture = SysmlDocument::from_memory_path(
-        "stedin",
+        "powersystems",
         "Architecture.sysml",
         ARCHITECTURE_SYSML.to_string(),
         SysmlDocumentSourceKind::Workspace,
@@ -64,7 +64,7 @@ fn project_body_with_redefines_materializes_architecture_usage() {
         .graph
         .node_weights()
         .filter(|node| {
-            node.id.qualified_name.contains("rijnmondExpansionProject")
+            node.id.qualified_name.contains("regionalExpansionProject")
                 || node.element_kind == "kermlDecl"
         })
         .map(|node| (node.id.qualified_name.clone(), node.element_kind.clone()))
@@ -73,21 +73,21 @@ fn project_body_with_redefines_materializes_architecture_usage() {
     assert!(
         project_nodes
             .iter()
-            .any(|(name, kind)| name.contains("rijnmondExpansionProject") && kind == "part"),
-        "expected part usage for rijnmondExpansionProject, got: {project_nodes:?}"
+            .any(|(name, kind)| name.contains("regionalExpansionProject") && kind == "part"),
+        "expected part usage for regionalExpansionProject, got: {project_nodes:?}"
     );
     assert!(
         !project_nodes
             .iter()
-            .any(|(name, _)| name.contains("rijnmondExpansionProject") && name.contains("kerml")),
+            .any(|(name, _)| name.contains("regionalExpansionProject") && name.contains("kerml")),
         "project root should not collapse to kermlDecl, got: {project_nodes:?}"
     );
 
     match resolve_expression_endpoint_strict(
         &graph,
         &project.uri,
-        Some("StedinRijnmondGridExpansion"),
-        "rijnmondExpansionProject.architecture",
+        Some("RegionalGridExpansion"),
+        "regionalExpansionProject.architecture",
     ) {
         ResolveResult::Resolved(id) => {
             assert!(
@@ -102,8 +102,8 @@ fn project_body_with_redefines_materializes_architecture_usage() {
     match resolve_expose_target(
         &graph,
         None,
-        Some("StedinRijnmondGridExpansion::Views"),
-        "StedinRijnmondGridExpansion::rijnmondExpansionProject.architecture",
+        Some("RegionalGridExpansion::Views"),
+        "RegionalGridExpansion::regionalExpansionProject.architecture",
     ) {
         ExposeTargetResolution::Resolved(names) => {
             assert!(

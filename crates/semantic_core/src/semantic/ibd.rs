@@ -2077,8 +2077,8 @@ fn split_architecture_scope_root(qualified_name: &str) -> Option<(&str, &str)> {
             &qualified_name[pos + ".architecture.".len()..],
         ));
     }
-    if let Some(pos) = qualified_name.rfind(".RijnmondGridArchitecture") {
-        let end = pos + ".RijnmondGridArchitecture".len();
+    if let Some(pos) = qualified_name.rfind(".RegionalGridArchitecture") {
+        let end = pos + ".RegionalGridArchitecture".len();
         let tail = qualified_name[end..].strip_prefix('.').unwrap_or_default();
         return Some((&qualified_name[..end], tail));
     }
@@ -2086,13 +2086,13 @@ fn split_architecture_scope_root(qualified_name: &str) -> Option<(&str, &str)> {
 }
 
 fn architecture_package_prefix(qualified_name: &str) -> Option<&str> {
-    if let Some(pos) = qualified_name.find(".rijnmondExpansionProject.architecture") {
+    if let Some(pos) = qualified_name.find(".regionalExpansionProject.architecture") {
         return Some(&qualified_name[..pos]);
     }
-    if let Some(pos) = qualified_name.find(".Architecture.RijnmondGridArchitecture") {
+    if let Some(pos) = qualified_name.find(".Architecture.RegionalGridArchitecture") {
         return Some(&qualified_name[..pos]);
     }
-    if let Some(pos) = qualified_name.rfind(".RijnmondGridArchitecture") {
+    if let Some(pos) = qualified_name.rfind(".RegionalGridArchitecture") {
         return qualified_name[..pos]
             .rsplit_once('.')
             .map(|(prefix, _)| prefix);
@@ -2112,9 +2112,9 @@ fn infer_def_instance_scope_mappings(parts: &[IbdPartDto]) -> Vec<(String, Strin
         let Some((root, _)) = split_architecture_scope_root(&part.qualified_name) else {
             continue;
         };
-        if root.contains(".rijnmondExpansionProject.architecture") {
+        if root.contains(".regionalExpansionProject.architecture") {
             instance_roots.insert(root.to_string());
-        } else if root.contains("RijnmondGridArchitecture") {
+        } else if root.contains("RegionalGridArchitecture") {
             definition_roots.insert(root.to_string());
         }
     }
@@ -2693,10 +2693,10 @@ mod tests {
     #[test]
     fn finalize_merged_ibd_remapped_definition_connects_to_typed_instance() {
         let architecture = SysmlDocument::from_memory_path(
-            "stedin",
+            "powersystems",
             "Architecture.sysml",
-            r#"package StedinRijnmondGridExpansion::Architecture {
-    part def RijnmondGridArchitecture {
+            r#"package RegionalGridExpansion::Architecture {
+    part def RegionalGridArchitecture {
         part feederNorth { port outgoing; }
         part cable01 { port a; port b; }
         connect feederNorth.outgoing to cable01.a;
@@ -2709,12 +2709,12 @@ mod tests {
         )
         .expect("architecture uri");
         let project = SysmlDocument::from_memory_path(
-            "stedin",
+            "powersystems",
             "Project.sysml",
-            r#"package StedinRijnmondGridExpansion {
-    public import StedinRijnmondGridExpansion::Architecture::*;
-    part rijnmondExpansionProject {
-        part architecture : RijnmondGridArchitecture;
+            r#"package RegionalGridExpansion {
+    public import RegionalGridExpansion::Architecture::*;
+    part regionalExpansionProject {
+        part architecture : RegionalGridArchitecture;
     }
 }"#
             .to_string(),
@@ -2736,10 +2736,10 @@ mod tests {
             merged.connectors.iter().any(|connector| {
                 connector
                     .source_id
-                    .contains("rijnmondExpansionProject.architecture.feederNorth")
+                    .contains("regionalExpansionProject.architecture.feederNorth")
                     && connector
                         .target_id
-                        .contains("rijnmondExpansionProject.architecture.cable01")
+                        .contains("regionalExpansionProject.architecture.cable01")
             }),
             "expected definition-level connect mirrored to project architecture instance, got {:?}",
             merged.connectors

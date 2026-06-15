@@ -3,11 +3,11 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
-const scenePath = process.argv[2] ?? join(scriptDir, "../test-fixtures/interconnection/stedin-system-context-scene.json");
+const scenePath = process.argv[2] ?? join(scriptDir, "../test-fixtures/interconnection/grid-system-context-scene.json");
 
 if (!existsSync(scenePath)) {
   console.error(`Scene file not found: ${scenePath}`);
-  console.error("Generate it with: cargo test -p semantic_core export_stedin_system_context_scene -- --nocapture");
+  console.error("Generate it with: cargo test -p semantic_core export_powersystems_system_context_scene -- --nocapture");
   process.exit(1);
 }
 
@@ -21,7 +21,7 @@ const payload = {
 };
 
 const report = await exportInterconnectionPipeline(payload);
-const outPath = join(scriptDir, "../test-fixtures/interconnection/stedin-system-context-pipeline.json");
+const outPath = join(scriptDir, "../test-fixtures/interconnection/grid-system-context-pipeline.json");
 writeFileSync(outPath, JSON.stringify(report, null, 2));
 console.log(JSON.stringify({
   sceneNodes: scene.nodes?.length ?? 0,

@@ -18,7 +18,7 @@ Post–Phase 5 stabilization (same day):
 - **Canonical prepare path** — [interconnection-scene.ts](../shared/diagram-renderer/src/prepare/interconnection-scene.ts); [interconnection.ts](../shared/diagram-renderer/src/prepare/interconnection.ts) requires `interconnectionScene` from the language server.
 - **Layout** — ELK node ID sanitization, `edgeCoords: ROOT`, `InterconnectionLayoutDto` built during layout ([interconnection-layout-dto.ts](../shared/diagram-renderer/src/render/interconnection-layout-dto.ts), [layout.ts](../shared/diagram-renderer/src/render/layout.ts), [ibd-route.ts](../shared/diagram-renderer/src/render/ibd-route.ts)). Offset candidates are confined to layout (not semantic inference): pick the offset that best aligns ELK sections with resolved port centers.
 - **Debug export** — `sysml.debug.exportInterconnectionPipeline` (VS Code) and [pipeline-export.ts](../shared/diagram-renderer/src/pipeline-export.ts).
-- **Fixtures** — `stedin-system-context-scene.json`, `stedin-grid-connections-scene.json`, `nested-ring-minimal.json` (scene). Regenerate Stedin scenes: `cargo test -p semantic_core --test view_expose_stedin_interconnection export_stedin -- --nocapture`.
+- **Fixtures** — `grid-system-context-scene.json`, `grid-connections-scene.json`, `nested-ring-minimal.json` (scene). Regenerate grid scenes: `cargo test -p semantic_core --test view_expose_powersystems_interconnection export_powersystems -- --nocapture`.
 - **Phase 4 core (drawing)** — [drawing.ts](../shared/diagram-renderer/src/render/drawing.ts) reads port anchors and route points from `layout.interconnectionLayout` (no `_portAnchors` / `layoutRoutePoints` on attributes).
 - **Phase 5 (frontend)** — [interconnection-legacy.ts](../shared/diagram-renderer/src/prepare/interconnection-legacy.ts) deleted; IBD root-selection heuristics removed from [normalize-payload.ts](../shared/diagram-renderer/src/prepare/normalize-payload.ts); layout/routing collapsed to canonical-only path.
 
@@ -26,7 +26,7 @@ Post–Phase 5 stabilization (same day):
 
 | Test | Location | What it guards |
 |------|----------|----------------|
-| `layout.interconnection.test.ts` | `shared/diagram-renderer` | ELK input + layout DTO `containers[]` + `assessRouteQuality`; Stedin scenes + nested-ring |
+| `layout.interconnection.test.ts` | `shared/diagram-renderer` | ELK input + layout DTO `containers[]` + `assessRouteQuality`; grid scenes + nested-ring |
 | `ibd-route.test.ts` | `shared/diagram-renderer` | Orthogonal endpoint snap; container-offset selection for nested ports |
 | `drawing.interconnection.test.ts` | `shared/diagram-renderer` | Edge paths resolve from layout DTO without attribute fallback |
 | `route-quality.test.ts` | `shared/diagram-renderer` | Detached endpoints, bounds, node-boundary fallback detection |
@@ -34,8 +34,8 @@ Post–Phase 5 stabilization (same day):
 | `interconnection_elk` (unit) | `semantic_core` | Rust `build_elk_graph_from_scene` structural parity vs TS ELK input goldens |
 | `interconnection_elk_svg_from_scene_fixture` | `server` | CLI/API interconnection SVG from `interconnectionScene` (no ibd heuristic fallback) |
 | `interconnection_elk_layout_matches_typescript_golden_when_present` | `server` | Rust ELK.js layout positions within ±2px of TS goldens (when `*-elk-layout.json` present) |
-| `view_expose_stedin_interconnection` | `semantic_core` | Semantic scoping, connector invariants, scene export (skipped if Stedin repo absent) |
-| `stedin.visualization.test.ts` | `vscode` | LSP scene + `exportInterconnectionPipeline` route summary (optional soak; requires Stedin workspace) |
+| `view_expose_powersystems_interconnection` | `semantic_core` | Semantic scoping, connector invariants, scene export (skipped if power systems repo absent) |
+| `powersystems.visualization.test.ts` | `vscode` | LSP scene + `exportInterconnectionPipeline` route summary (optional soak; requires power systems workspace) |
 
 Local pipeline debug: `sysml.debug.exportInterconnectionPipeline` in VS Code, or `npm test` in `shared/diagram-renderer` against scene fixtures.
 
@@ -165,7 +165,7 @@ This makes it easy to ship fast fixes but hard to know which fields are stable. 
 
 ### 7. Tests Catch Presence, Not Diagram Quality
 
-The Stedin VS Code test currently confirms that the diagram has parts and connectors. That is useful, but it did not catch the screenshot failure because all connectors can exist and touch ports while still producing terrible routes.
+The power systems VS Code test currently confirms that the diagram has parts and connectors. That is useful, but it did not catch the screenshot failure because all connectors can exist and touch ports while still producing terrible routes.
 
 We need semantic-scene tests and layout-quality tests:
 
@@ -320,7 +320,7 @@ Goal: make layout deterministic and testable.
 - Dedicated layout contract: `InterconnectionLayoutDto` built during ELK layout.
 - ELK coordinate conversion isolated in [layout.ts](../shared/diagram-renderer/src/render/layout.ts) and [ibd-route.ts](../shared/diagram-renderer/src/render/ibd-route.ts).
 - `edgeCoords: ROOT` plus a small set of layout offsets (`edgeOwnerOffset`, `lcaOffset`) chosen by port-center fit — not semantic string guessing. Required for routes to nested ports inside compound ELK nodes.
-- Snapshot / route-quality tests on scene fixtures (Stedin, nested-ring, two-part chain).
+- Snapshot / route-quality tests on scene fixtures (grid fixtures, nested-ring, two-part chain).
 - Backend `elk_layout.rs` remains optional parity only; production layout stays in ELK.js.
 
 ### Phase 4: Draw a Resolved Scene — **core done; remainder deferred**

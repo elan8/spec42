@@ -646,7 +646,7 @@ describe("shared renderer", () => {
       nodes: [
         {
           id: "architecture",
-          label: "RijnmondGridArchitecture",
+          label: "RegionalGridArchitecture",
           kind: "package",
           attributes: { isSyntheticContainer: true },
         },
@@ -656,8 +656,8 @@ describe("shared renderer", () => {
           kind: "part",
           attributes: {
             containerId: "architecture",
-            qualifiedName: "Stedin.architecture.primarySubstation",
-            portDetails: [{ id: "Stedin.architecture.primarySubstation.hvConnection", name: "hvConnection" }],
+            qualifiedName: "RegionalGridExpansion.architecture.primarySubstation",
+            portDetails: [{ id: "RegionalGridExpansion.architecture.primarySubstation.hvConnection", name: "hvConnection" }],
           },
         },
         {
@@ -666,7 +666,7 @@ describe("shared renderer", () => {
           kind: "part",
           attributes: {
             containerId: "primarySubstation",
-            qualifiedName: "Stedin.architecture.primarySubstation.transformer",
+            qualifiedName: "RegionalGridExpansion.architecture.primarySubstation.transformer",
           },
         },
         {
@@ -675,8 +675,8 @@ describe("shared renderer", () => {
           kind: "part",
           attributes: {
             containerId: "architecture",
-            qualifiedName: "Stedin.architecture.tennetConnection",
-            portDetails: [{ id: "Stedin.architecture.tennetConnection.connection", name: "connection" }],
+            qualifiedName: "RegionalGridExpansion.architecture.tennetConnection",
+            portDetails: [{ id: "RegionalGridExpansion.architecture.tennetConnection.connection", name: "connection" }],
           },
         },
       ],
@@ -688,8 +688,8 @@ describe("shared renderer", () => {
           label: "connection",
           edgeKind: "connection",
           attributes: {
-            sourceId: "Stedin.architecture.tennetConnection.connection",
-            targetId: "Stedin.architecture.primarySubstation.hvConnection",
+            sourceId: "RegionalGridExpansion.architecture.tennetConnection.connection",
+            targetId: "RegionalGridExpansion.architecture.primarySubstation.hvConnection",
             relationType: "connection",
           },
         },
@@ -966,7 +966,7 @@ describe("shared renderer", () => {
           label: "txStationB",
           kind: "part",
           attributes: {
-            qualifiedName: "Stedin.Architecture.RijnmondGridArchitecture.txStationB",
+            qualifiedName: "RegionalGridExpansion.Architecture.RegionalGridArchitecture.txStationB",
             portDetails: [{ id: "lvConnection", name: "lvConnection" }],
           },
         },
@@ -975,7 +975,7 @@ describe("shared renderer", () => {
           label: "residentialAreaB",
           kind: "part",
           attributes: {
-            qualifiedName: "Stedin.Architecture.RijnmondGridArchitecture.residentialAreaB",
+            qualifiedName: "RegionalGridExpansion.Architecture.RegionalGridArchitecture.residentialAreaB",
             portDetails: [{ id: "gridConnection", name: "gridConnection" }],
           },
         },
@@ -988,8 +988,8 @@ describe("shared renderer", () => {
           label: "connection",
           edgeKind: "connection",
           attributes: {
-            sourceId: "Stedin.rijnmondExpansionProject.architecture.txStationB.lvConnection",
-            targetId: "Stedin.rijnmondExpansionProject.architecture.residentialAreaB.gridConnection",
+            sourceId: "RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.lvConnection",
+            targetId: "RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB.gridConnection",
             relationType: "connection",
           },
         },

@@ -13,12 +13,19 @@ const serverBinary = path.resolve(
   process.platform === "win32" ? "spec42.exe" : "spec42"
 );
 
+const workspaceFolder = process.env.SYSML_POWERSYSTEMS_DIR;
+if (!workspaceFolder) {
+  throw new Error(
+    "SYSML_POWERSYSTEMS_DIR must be set to run power-systems visualization tests"
+  );
+}
+
 export default defineConfig({
   files: [
-    "out/test/suite/stedin.visualization.test.js",
+    "out/test/suite/powersystems.visualization.test.js",
   ],
   extensionDevelopmentPath: __dirname,
-  workspaceFolder: "C:\\Git\\sysml-powersystems",
+  workspaceFolder,
   version: vscodeTestVersion,
   env: {
     SPEC42_SERVER_PATH: process.env.SPEC42_SERVER_PATH || serverBinary,
