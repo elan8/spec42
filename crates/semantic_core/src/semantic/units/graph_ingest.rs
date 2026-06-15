@@ -25,20 +25,58 @@ pub fn ingest_units_from_graph(graph: &SemanticGraph, registry: &mut UnitRegistr
         }
     }
 
-    for node_id in &node_ids {
+    ingest_non_interval_unit_defs(graph, registry, &node_ids);
+    ingest_interval_scale_unit_defs(graph, registry, &node_ids);
+}
+
+fn ingest_non_interval_unit_defs(
+    graph: &SemanticGraph,
+    registry: &mut UnitRegistry,
+    node_ids: &[crate::semantic::model::NodeId],
+) {
+    for node_id in node_ids {
         let Some(node) = graph.get_node(node_id) else {
             continue;
         };
         if !is_unit_catalog_element_kind(&node.element_kind) {
             continue;
         }
-        if unit_prefix_from_node(node).is_some() {
+        if unit_prefix_from_node(node).is_some() || is_interval_scale_node(node) {
             continue;
         }
         if let Some(def) = unit_def_from_graph_node(graph, node, registry) {
             registry.ingest_unit_def(def);
         }
     }
+}
+
+fn ingest_interval_scale_unit_defs(
+    graph: &SemanticGraph,
+    registry: &mut UnitRegistry,
+    node_ids: &[crate::semantic::model::NodeId],
+) {
+    for node_id in node_ids {
+        let Some(node) = graph.get_node(node_id) else {
+            continue;
+        };
+        if !is_unit_catalog_element_kind(&node.element_kind) {
+            continue;
+        }
+        if unit_prefix_from_node(node).is_some() || !is_interval_scale_node(node) {
+            continue;
+        }
+        if let Some(def) = unit_def_from_graph_node(graph, node, registry) {
+            registry.ingest_unit_def(def);
+        }
+    }
+}
+
+fn is_interval_scale_node(node: &SemanticNode) -> bool {
+    node.attributes
+        .get("attributeType")
+        .and_then(|v| v.as_str())
+        .map(base_type_name)
+        == Some("IntervalScale")
 }
 
 fn is_unit_catalog_element_kind(kind: &str) -> bool {

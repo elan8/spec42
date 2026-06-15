@@ -2,6 +2,33 @@ use semantic_core::{
     build_semantic_graph_from_documents, collect_diagnostics_from_graph, evaluate_expressions,
     DiagnosticsOptions, SysmlDocument, SysmlDocumentSourceKind,
 };
+use url::Url;
+
+const SI_CATALOG_EXCERPT: &str = r#"
+package SIPrefixes {
+    attribute kilo: UnitPrefix { :>> symbol = "k"; :>> conversionFactor = 1E3; }
+    attribute mega: UnitPrefix { :>> symbol = "M"; :>> conversionFactor = 1E6; }
+}
+package SI {
+    attribute <W> watt : PowerUnit;
+}
+"#;
+
+fn catalog_uri() -> Url {
+    Url::parse("file:///sysml.library/Domain%20Libraries/Quantities%20and%20Units/SI.sysml")
+        .expect("catalog uri")
+}
+
+fn catalog_document() -> SysmlDocument {
+    SysmlDocument {
+        uri: catalog_uri(),
+        content: SI_CATALOG_EXCERPT.to_string(),
+        path_hint: Some("Domain Libraries/Quantities and Units/SI.sysml".to_string()),
+        source_kind: SysmlDocumentSourceKind::Library,
+        sha256: None,
+        byte_size: None,
+    }
+}
 
 const PASSING_REQUIREMENT_SYSML: &str = r#"
 package GridRequirements {
@@ -61,7 +88,15 @@ package GridRequirements {
 "#;
 
 fn build_graph(source: &str) -> semantic_core::SemanticGraph {
-    let doc = SysmlDocument::from_memory_path(
+    build_graph_from_documents(&[document_from_source(source)])
+}
+
+fn build_graph_with_units(source: &str) -> semantic_core::SemanticGraph {
+    build_graph_from_documents(&[catalog_document(), document_from_source(source)])
+}
+
+fn document_from_source(source: &str) -> SysmlDocument {
+    SysmlDocument::from_memory_path(
         "quantity-requirement-constraints",
         "GridRequirements.sysml",
         source.to_string(),
@@ -69,8 +104,11 @@ fn build_graph(source: &str) -> semantic_core::SemanticGraph {
         None,
         None,
     )
-    .expect("document uri");
-    let (mut graph, _) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
+    .expect("document uri")
+}
+
+fn build_graph_from_documents(docs: &[SysmlDocument]) -> semantic_core::SemanticGraph {
+    let (mut graph, _) = build_semantic_graph_from_documents(docs).expect("semantic graph");
     evaluate_expressions(&mut graph);
     graph
 }
@@ -148,7 +186,7 @@ fn requirement_usage_inherits_require_constraint_from_typed_definition() {
 
 #[test]
 fn requirement_def_quantity_units_evaluate_in_constraint() {
-    let graph = build_graph(QUANTITY_UNITS_REQUIREMENT_SYSML);
+    let graph = build_graph_with_units(QUANTITY_UNITS_REQUIREMENT_SYSML);
     assert_eq!(
         node_attr(
             &graph,

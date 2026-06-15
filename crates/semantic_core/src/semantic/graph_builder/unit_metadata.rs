@@ -57,7 +57,12 @@ fn project_unit_body_metadata(
             );
         }
     }
-    if let Some(conversion) = extract_unit_conversion_from_body(body) {
+    let conversion = if typing.map(base_type_name) == Some("IntervalScale") {
+        extract_interval_scale_from_body(body)
+    } else {
+        extract_unit_conversion_from_body(body)
+    };
+    if let Some(conversion) = conversion {
         attrs.insert(
             UNIT_CONVERSION_KEY.to_string(),
             json!({
@@ -182,6 +187,22 @@ fn extract_unit_conversion_from_body(body: &AttributeBody) -> Option<UnitConvers
     extract_unit_conversion_from_text(&block_text)
 }
 
+fn extract_interval_scale_from_body(body: &AttributeBody) -> Option<UnitConversionMeta> {
+    let block_text = attribute_body_as_text(body)?;
+    let unit = extract_assignment(&block_text, "unit");
+    let zero = block_text
+        .find("zeroDegree")
+        .and_then(|idx| parse_zero_point_kelvin(&block_text[idx..]));
+    Some(UnitConversionMeta {
+        kind: "IntervalScale".to_string(),
+        reference_unit: Some("K".to_string()),
+        conversion_factor: Some(1.0),
+        prefix: None,
+        interval_unit: unit,
+        zero_offset_kelvin: zero,
+    })
+}
+
 fn attribute_def_as_text(def: &AttributeDef) -> String {
     let mut out = String::from("attribute ");
     if let Some(short) = &def.short_name {
@@ -202,6 +223,11 @@ fn attribute_def_as_text(def: &AttributeDef) -> String {
         }
         out.push_str("} ");
     }
+    if let Some(expr) = &def.value {
+        out.push_str("= ");
+        out.push_str(&expressions::expression_to_debug_string(expr));
+        out.push_str("; ");
+    }
     out
 }
 
@@ -209,9 +235,8 @@ pub fn extract_unit_conversion_from_text(text: &str) -> Option<UnitConversionMet
     if text.contains(": IntervalScale") || text.contains("IntervalScale {") {
         let unit = extract_assignment(text, "unit");
         let zero = text
-            .lines()
-            .find(|line| line.contains("zeroDegree") && line.contains('='))
-            .and_then(|line| parse_zero_point_kelvin(line));
+            .find("zeroDegree")
+            .and_then(|idx| parse_zero_point_kelvin(&text[idx..]));
         return Some(UnitConversionMeta {
             kind: "IntervalScale".to_string(),
             reference_unit: Some("K".to_string()),
@@ -260,14 +285,16 @@ fn extract_assignment(line: &str, key: &str) -> Option<String> {
 }
 
 fn parse_zero_point_kelvin(line: &str) -> Option<f64> {
-    let equals = line.find('=')?;
-    let bracket = line[equals + 1..].find('[')?;
-    let raw = line[equals + 1..equals + 1 + bracket].trim();
-    parse_factor_expression(raw)
+    let tail = line.rsplit('=').next()?.trim().trim_end_matches(';').trim();
+    let numeric = tail.split('[').next()?.trim();
+    parse_factor_expression(numeric)
 }
 
 fn parse_factor_expression(raw: &str) -> Option<f64> {
     let mut trimmed = raw.trim();
+    if trimmed.starts_with('(') && !trimmed.ends_with(')') {
+        trimmed = trimmed[1..].trim();
+    }
     while trimmed.starts_with('(') && trimmed.ends_with(')') {
         trimmed = trimmed[1..trimmed.len() - 1].trim();
     }
@@ -403,6 +430,131 @@ mod tests {
             km_conv.get("referenceUnit").and_then(|v| v.as_str()),
             Some("m"),
             "km conv json: {km_conv}"
+        );
+    }
+
+    #[test]
+    fn fahrenheit_interval_body_text_includes_zero_offset() {
+        use sysml_v2_parser::ast::{PackageBody, PackageBodyElement, RootElement};
+        use sysml_v2_parser::parse;
+
+        let content = r#"package Units {
+            attribute <'°F_abs'> 'degree fahrenheit absolute' : IntervalScale {
+                :>> unit = '°F';
+                private attribute zeroDegreeFahrenheitInKelvin: ThermodynamicTemperatureValue = 229835/900 [K];
+            }
+        }"#;
+        let parsed = parse(content).expect("parse");
+        let def = parsed
+            .elements
+            .iter()
+            .find_map(|el| match &el.value {
+                RootElement::Package(pkg) => match &pkg.value.body {
+                    PackageBody::Brace { elements } => match elements.first().map(|node| &node.value) {
+                        Some(PackageBodyElement::AttributeDef(def)) => Some(&def.value),
+                        other => panic!("expected attribute def, got {other:?}"),
+                    },
+                    _ => None,
+                },
+                _ => None,
+            })
+            .expect("def");
+        let block_text = attribute_body_as_text(&def.body).expect("body text");
+        assert!(
+            block_text.contains("zeroDegree"),
+            "block_text={block_text:?}"
+        );
+        let conversion = extract_interval_scale_from_body(&def.body).expect("conversion");
+        assert_eq!(
+            conversion.zero_offset_kelvin,
+            Some(229835.0 / 900.0),
+            "block_text={block_text:?}"
+        );
+    }
+
+    #[test]
+    fn parses_fractional_zero_offset_kelvin() {
+        let line =
+            "zeroDegreeFahrenheitInKelvin: ThermodynamicTemperatureValue = 229835/900 [K]";
+        assert_eq!(
+            parse_zero_point_kelvin(line),
+            Some(229835.0 / 900.0)
+        );
+    }
+
+    #[test]
+    fn projects_fahrenheit_interval_scale_from_catalog_shape() {
+        use url::Url;
+
+        use crate::semantic::graph_builder::build_graph_from_doc;
+        use sysml_v2_parser::parse;
+
+        let content = r#"
+        package Units {
+            attribute <K> kelvin : ThermodynamicTemperatureUnit, TemperatureDifferenceUnit;
+            attribute <'°F'> 'degree Fahrenheit' : TemperatureDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 5/9; } }
+            attribute <'°F_abs'> 'degree fahrenheit absolute' : IntervalScale {
+                :>> unit = '°F';
+                private attribute zeroDegreeFahrenheitInKelvin: ThermodynamicTemperatureValue = 229835/900 [K];
+            }
+        }
+        "#;
+        let uri = Url::parse("file:///test/f-interval.sysml").expect("uri");
+        let parsed = parse(content).expect("parse");
+        let graph = build_graph_from_doc(&parsed, &uri);
+        let f_abs = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|n| n.attributes.get(SHORT_NAME_KEY).and_then(|v| v.as_str()) == Some("°F_abs"))
+            .expect("°F_abs");
+        let conv = f_abs
+            .attributes
+            .get(UNIT_CONVERSION_KEY)
+            .expect("interval conversion");
+        assert_eq!(
+            conv.get("zeroOffsetKelvin").and_then(|v| v.as_f64()),
+            Some(229835.0 / 900.0),
+            "conv={conv}"
+        );
+    }
+
+    #[test]
+    fn projects_interval_scale_from_catalog_shape() {
+        use url::Url;
+
+        use crate::semantic::graph_builder::build_graph_from_doc;
+        use sysml_v2_parser::parse;
+
+        let content = r#"
+        package Units {
+            attribute <K> kelvin : ThermodynamicTemperatureUnit, TemperatureDifferenceUnit;
+            attribute <'°C'> 'degree celsius' : TemperatureDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 1; } }
+            attribute <'°C_abs'> 'degree celsius absolute' : IntervalScale {
+                attribute :>> unit = '°C';
+                private attribute zeroDegreeCelsiusInKelvin: ThermodynamicTemperatureValue = 273.15 [K];
+            }
+        }
+        "#;
+        let uri = Url::parse("file:///test/interval.sysml").expect("uri");
+        let parsed = parse(content).expect("parse");
+        let graph = build_graph_from_doc(&parsed, &uri);
+        let c_abs = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|n| n.attributes.get(SHORT_NAME_KEY).and_then(|v| v.as_str()) == Some("°C_abs"))
+            .expect("°C_abs");
+        let conv = c_abs
+            .attributes
+            .get(UNIT_CONVERSION_KEY)
+            .expect("interval conversion");
+        assert_eq!(conv.get("kind").and_then(|v| v.as_str()), Some("IntervalScale"));
+        assert_eq!(
+            conv.get("intervalUnit").and_then(|v| v.as_str()),
+            Some("°C")
+        );
+        assert_eq!(
+            conv.get("zeroOffsetKelvin").and_then(|v| v.as_f64()),
+            Some(273.15)
         );
     }
 

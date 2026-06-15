@@ -578,6 +578,40 @@ package SIPrefixes {
     }
 
     #[test]
+    fn converts_affine_absolute_temperature_units() {
+        let registry = registry_from_sysml(&with_prefixes(
+            r#"attribute <K> kelvin : ThermodynamicTemperatureUnit, TemperatureDifferenceUnit;
+            attribute <'°C'> 'degree celsius' : TemperatureDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 1; } }
+            attribute <'°F'> 'degree Fahrenheit' : TemperatureDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 5/9; } }
+            attribute <'°C_abs'> 'degree celsius absolute' : IntervalScale {
+                attribute :>> unit = '°C';
+                private attribute zeroDegreeCelsiusInKelvin: ThermodynamicTemperatureValue = 273.15 [K];
+            }
+            attribute <'°F_abs'> 'degree fahrenheit absolute' : IntervalScale {
+                :>> unit = '°F';
+                private attribute zeroDegreeFahrenheitInKelvin: ThermodynamicTemperatureValue = 229835/900 [K];
+            }"#,
+        ));
+        let f_abs = registry.get("°F_abs").expect("°F_abs");
+        assert!(
+            (f_abs.conversion_factor - 5.0 / 9.0).abs() < 1e-9,
+            "factor={}",
+            f_abs.conversion_factor
+        );
+        assert!(
+            (f_abs.conversion_offset - 229835.0 / 900.0).abs() < 1e-6,
+            "offset={}",
+            f_abs.conversion_offset
+        );
+        let c_abs = registry.get("°C_abs").expect("°C_abs");
+        assert!((c_abs.conversion_offset - 273.15).abs() < 1e-9);
+        let converted = registry
+            .convert_value(32.0, "°F_abs", "°C_abs")
+            .expect("°F_abs->°C_abs");
+        assert!((converted - 0.0).abs() < 1e-9, "converted={converted}");
+    }
+
+    #[test]
     fn parses_conversion_entries_from_graph() {
         let registry = registry_from_sysml(&with_prefixes(
             "attribute <m> metre : LengthUnit;\nattribute <ft> 'foot' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 3.048E-01; } }",
