@@ -2462,20 +2462,10 @@ mod tests {
     }
 
     fn register_units_fixture(graph: &mut SemanticGraph) {
-        let unique = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock")
-            .as_nanos();
-        let root: PathBuf = std::env::temp_dir().join(format!("spec42-units-{unique}"));
-        let path = root
-            .join("sysml.library")
-            .join("Domain Libraries")
-            .join("Quantities and Units");
-        fs::create_dir_all(&path).expect("create fixture path");
-        let file = path.join("FixtureUnits.sysml");
-        fs::write(
-            &file,
-            r#"
+        use crate::semantic::graph_builder::build_graph_from_doc;
+
+        const UNITS_FIXTURE_SYSML: &str = r#"
+            package Units {
                 attribute <m> 'metre' : LengthUnit;
                 attribute <s> second : TimeUnit;
                 attribute <cm> 'centimetre' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 1E-02; } }
@@ -2492,19 +2482,25 @@ mod tests {
                     :>> unit = '°F';
                     private attribute zeroDegreeFahrenheitInKelvin: ThermodynamicTemperatureValue = 229835/900 [K];
                 }
-            "#,
-        )
-        .expect("write fixture");
+            }
+        "#;
+
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock")
+            .as_nanos();
+        let root: PathBuf = std::env::temp_dir().join(format!("spec42-units-{unique}"));
+        let path = root
+            .join("sysml.library")
+            .join("Domain Libraries")
+            .join("Quantities and Units");
+        fs::create_dir_all(&path).expect("create fixture path");
+        let file = path.join("FixtureUnits.sysml");
+        fs::write(&file, UNITS_FIXTURE_SYSML).expect("write fixture");
         let uri = Url::from_file_path(&file).expect("fixture uri");
-        let _ = add_node(
-            graph,
-            &uri,
-            "Units::marker",
-            "package",
-            "marker",
-            None,
-            HashMap::new(),
-        );
+        let parsed = sysml_v2_parser::parse(UNITS_FIXTURE_SYSML).expect("parse units fixture");
+        let doc_graph = build_graph_from_doc(&parsed, &uri);
+        graph.merge(doc_graph);
     }
 
     #[test]

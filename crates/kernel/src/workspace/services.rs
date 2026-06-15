@@ -918,6 +918,13 @@ mod tests {
     }
 
     fn register_units_library_document(state: &mut ServerState) -> Url {
+        const UNITS_CATALOG: &str = r#"
+            package Units {
+                attribute <m> 'metre' : LengthUnit;
+                attribute <cm> 'centimetre' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 1E-02; } }
+                attribute <ft> 'foot' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 3.048E-01; } }
+            }
+        "#;
         let temp = tempfile::tempdir().expect("temp dir");
         let library_root = temp.path().canonicalize().expect("canonical library root");
         let units_path = library_root
@@ -931,25 +938,11 @@ mod tests {
                 .expect("fixture units parent directory exists"),
         )
         .expect("create units fixture directory");
-        fs::write(
-            &units_path,
-            r#"
-            package Units {
-                attribute <m> 'metre' : LengthUnit;
-                attribute <cm> 'centimetre' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 1E-02; } }
-                attribute <ft> 'foot' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 3.048E-01; } }
-            }
-            "#,
-        )
-        .expect("write units fixture");
+        fs::write(&units_path, UNITS_CATALOG).expect("write units fixture");
         let units_uri = Url::from_file_path(&units_path).expect("units uri");
         // Keep the temporary directory alive for the lifetime of the test process.
         std::mem::forget(temp);
-        let warning = store_document_text(
-            state,
-            &units_uri,
-            "package UnitsFixture { attribute def Marker; }".to_string(),
-        );
+        let warning = store_document_text(state, &units_uri, UNITS_CATALOG.to_string());
         assert!(warning.is_none());
         units_uri
     }

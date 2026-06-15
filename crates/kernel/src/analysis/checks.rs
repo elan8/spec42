@@ -9,7 +9,7 @@ use crate::semantic::SemanticGraph;
 pub fn compute_semantic_diagnostics(
     graph: &SemanticGraph,
     uri: &Url,
-    ctx: DiagnosticsHostContext,
+    _ctx: DiagnosticsHostContext,
 ) -> Vec<Diagnostic> {
     semantic_core::collect_diagnostics_from_graph(
         graph,
