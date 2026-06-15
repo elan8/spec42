@@ -7,13 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.31.0] - 2026-06-15
+
 ### Added
 
 - **Library import closure tests** — Kernel `validate_paths` integration test for webshop-like workspaces with duplicate domain-library packages; semantic_core tests for import-scoped closure, conditional unit catalogs, and workspace-wins graph merge.
+- **Semantic resolution contract** — New [resolution-contract.md](crates/semantic_core/docs/resolution-contract.md) documenting name-resolution pipeline stages and resolver entry points; `kinds.rs` canonical element-kind predicates; refactored graph pipeline for materialization, merging, linking, and pending resolution.
+- **Flow usage projection** — Dedicated `flow_usage` module for consistent flow edge emission across body elements.
+- **Metadata OMG 14c compliance** — Shorthand metadata redefine features, `subsetsFeature` projection for redefine shorthand, and nightly OMG 14c metadata compliance check.
+- **Import namespace resolution** — `import_namespace_target_candidates` for accurate all/membership import target generation.
+- **Requirement satisfaction diagnostics** — Checks for requirement satisfaction by parts per SysML specifications.
+- **Robot vacuum showcase test** — Integration test validating diagnostics on the showcase model.
+
+### Changed
+
+- **Parser dependency** — Bumped `sysml-v2-parser` to **0.25.4** on [crates.io](https://crates.io/crates/sysml-v2-parser); removed local patch configuration. Flow handling refactored through the new `flow_usage` module.
+- **Verification case diagnostics** — Then-action return semantics aligned with SysML v2 (verification cases with then-actions and no explicit return are valid); removed outdated then-action count checks in requirement case conformance.
+- **Semantic metadata graph building** — Improved parent ID handling for semantic metadata definitions in the graph builder.
+- **Release surface alignment** — Rust workspace, `spec42` server, VS Code extension, Zed extension, and GitHub Action examples aligned at `0.31.0`.
 
 ### Fixed
 
 - **Library import closure** — Library files enter the semantic graph only through transitive `import` closure; workspace-declared packages satisfy imports without loading same-named library copies (fixes ambiguous `view_expose_unresolved` and empty views when domain libraries include examples such as webshop). Unit catalogs (`ScalarValues`, `ISQ`, `QUDV`, etc.) load only when the closure needs them. Graph merge prefers workspace declarations when duplicate package names slip through (`spec42 check`, LSP, and filesystem provider).
+- **Import resolution** — Enhanced namespace import target resolution for all and membership imports.
+- **Cyclic state definitions** — Diagnostic checks for cyclic state definition graphs.
+- **Verdict evaluations** — Improved verdict evaluation diagnostics.
+- **Monetary units** — Correct resolution of monetary units from indexed catalogs during evaluation.
 
 ## [0.30.0] - 2026-06-12
 
@@ -625,6 +644,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.31.0]: https://github.com/elan8/spec42/releases/tag/v0.31.0
 [0.30.0]: https://github.com/elan8/spec42/releases/tag/v0.30.0
 [0.29.1]: https://github.com/elan8/spec42/releases/tag/v0.29.1
 [0.29.0]: https://github.com/elan8/spec42/releases/tag/v0.29.0
