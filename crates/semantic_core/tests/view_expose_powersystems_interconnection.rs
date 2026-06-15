@@ -390,7 +390,7 @@ fn powersystems_grid_connections_ibd_includes_feeder_and_cable_connectors() {
         &["RegionalGridExpansion.architecture".to_string()],
         None,
     );
-    assert_eq!(scene.schema_version, 1);
+    assert_eq!(scene.schema_version, 2);
     assert!(
         scene.edges.len() >= expected_paths.len(),
         "systemContext scene should expose at least {} connectors, got {}",

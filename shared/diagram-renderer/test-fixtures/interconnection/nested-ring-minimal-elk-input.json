@@ -19,18 +19,18 @@
   },
   "children": [
     {
-      "id": "node_Grid.northSouthRing",
+      "id": "occ_Grid.northSouthRing",
       "width": 420,
       "height": 100,
       "ports": [],
       "children": [
         {
-          "id": "node_Grid.northSouthRing.ringSegmentBtoC",
+          "id": "occ_Grid.northSouthRing.ringSegmentBtoC",
           "width": 280,
           "height": 140,
           "ports": [
             {
-              "id": "node_Grid.northSouthRing.ringSegmentBtoC__port__a",
+              "id": "occ_Grid.northSouthRing.ringSegmentBtoC__port__a",
               "width": 10,
               "height": 10,
               "layoutOptions": {
@@ -54,12 +54,12 @@
       }
     },
     {
-      "id": "node_Grid.txStationB",
+      "id": "occ_Grid.txStationB",
       "width": 280,
       "height": 140,
       "ports": [
         {
-          "id": "node_Grid.txStationB__port__mvConnection",
+          "id": "occ_Grid.txStationB__port__mvConnection",
           "width": 10,
           "height": 10,
           "layoutOptions": {
@@ -77,12 +77,12 @@
   ],
   "edges": [
     {
-      "id": "edge:ring-feed",
+      "id": "conn:ring-feed",
       "sources": [
-        "node_Grid.txStationB__port__mvConnection"
+        "occ_Grid.txStationB__port__mvConnection"
       ],
       "targets": [
-        "node_Grid.northSouthRing.ringSegmentBtoC__port__a"
+        "occ_Grid.northSouthRing.ringSegmentBtoC__port__a"
       ]
     }
   ]

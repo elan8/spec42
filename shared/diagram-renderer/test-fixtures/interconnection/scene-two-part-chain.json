@@ -1,7 +1,7 @@
 {
   "view": "interconnection-view",
   "interconnectionScene": {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "view": {
       "id": "fixture-two-part",
       "name": "TwoPartChain",
@@ -10,14 +10,14 @@
     },
     "nodes": [
       {
-        "id": "node:Demo.Source",
+        "id": "occ:Demo.Source",
         "semanticId": "Demo.Source",
         "qualifiedName": "Demo.Source",
         "name": "Source",
         "kind": "part"
       },
       {
-        "id": "node:Demo.Target",
+        "id": "occ:Demo.Target",
         "semanticId": "Demo.Target",
         "qualifiedName": "Demo.Target",
         "name": "Target",
@@ -26,17 +26,17 @@
     ],
     "ports": [
       {
-        "id": "port:Demo.Source.out",
+        "id": "occ:Demo.Source.out",
         "semanticId": "Demo.Source.out",
-        "ownerNodeId": "node:Demo.Source",
+        "ownerNodeId": "occ:Demo.Source",
         "name": "out",
         "direction": "out",
         "sideHint": "east"
       },
       {
-        "id": "port:Demo.Target.in",
+        "id": "occ:Demo.Target.in",
         "semanticId": "Demo.Target.in",
-        "ownerNodeId": "node:Demo.Target",
+        "ownerNodeId": "occ:Demo.Target",
         "name": "in",
         "direction": "in",
         "sideHint": "west"
@@ -44,12 +44,12 @@
     ],
     "edges": [
       {
-        "id": "edge:Demo.Source.out->Demo.Target.in:0",
+        "id": "conn:Demo.Source.out->Demo.Target.in:0",
         "kind": "connection",
-        "sourcePortId": "port:Demo.Source.out",
-        "targetPortId": "port:Demo.Target.in",
-        "sourceNodeId": "node:Demo.Source",
-        "targetNodeId": "node:Demo.Target"
+        "sourcePortId": "occ:Demo.Source.out",
+        "targetPortId": "occ:Demo.Target.in",
+        "sourceNodeId": "occ:Demo.Source",
+        "targetNodeId": "occ:Demo.Target"
       }
     ],
     "containers": [],

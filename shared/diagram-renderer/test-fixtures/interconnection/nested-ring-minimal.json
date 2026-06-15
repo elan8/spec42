@@ -2,31 +2,33 @@
   "view": "interconnection-view",
   "selectedView": "systemContext",
   "interconnectionScene": {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "view": {
       "id": "fixture-nested-ring",
       "name": "systemContext",
       "type": "InterconnectionView",
-      "rootIds": ["node:Grid.northSouthRing"]
+      "rootIds": [
+        "occ:Grid.northSouthRing"
+      ]
     },
     "nodes": [
       {
-        "id": "node:Grid.northSouthRing",
+        "id": "occ:Grid.northSouthRing",
         "semanticId": "Grid.northSouthRing",
         "qualifiedName": "Grid.northSouthRing",
         "name": "northSouthRing",
         "kind": "part"
       },
       {
-        "id": "node:Grid.northSouthRing.ringSegmentBtoC",
+        "id": "occ:Grid.northSouthRing.ringSegmentBtoC",
         "semanticId": "Grid.northSouthRing.ringSegmentBtoC",
         "qualifiedName": "Grid.northSouthRing.ringSegmentBtoC",
         "name": "ringSegmentBtoC",
         "kind": "part",
-        "parentId": "node:Grid.northSouthRing"
+        "parentId": "occ:Grid.northSouthRing"
       },
       {
-        "id": "node:Grid.txStationB",
+        "id": "occ:Grid.txStationB",
         "semanticId": "Grid.txStationB",
         "qualifiedName": "Grid.txStationB",
         "name": "txStationB",
@@ -35,17 +37,17 @@
     ],
     "ports": [
       {
-        "id": "port:Grid.northSouthRing.ringSegmentBtoC.a",
+        "id": "occ:Grid.northSouthRing.ringSegmentBtoC.a",
         "semanticId": "Grid.northSouthRing.ringSegmentBtoC.a",
-        "ownerNodeId": "node:Grid.northSouthRing.ringSegmentBtoC",
+        "ownerNodeId": "occ:Grid.northSouthRing.ringSegmentBtoC",
         "name": "a",
         "direction": "in",
         "sideHint": "west"
       },
       {
-        "id": "port:Grid.txStationB.mvConnection",
+        "id": "occ:Grid.txStationB.mvConnection",
         "semanticId": "Grid.txStationB.mvConnection",
-        "ownerNodeId": "node:Grid.txStationB",
+        "ownerNodeId": "occ:Grid.txStationB",
         "name": "mvConnection",
         "direction": "out",
         "sideHint": "east"
@@ -53,12 +55,12 @@
     ],
     "edges": [
       {
-        "id": "edge:ring-feed",
+        "id": "conn:ring-feed",
         "kind": "connection",
-        "sourcePortId": "port:Grid.txStationB.mvConnection",
-        "targetPortId": "port:Grid.northSouthRing.ringSegmentBtoC.a",
-        "sourceNodeId": "node:Grid.txStationB",
-        "targetNodeId": "node:Grid.northSouthRing.ringSegmentBtoC",
+        "sourcePortId": "occ:Grid.txStationB.mvConnection",
+        "targetPortId": "occ:Grid.northSouthRing.ringSegmentBtoC.a",
+        "sourceNodeId": "occ:Grid.txStationB",
+        "targetNodeId": "occ:Grid.northSouthRing.ringSegmentBtoC",
         "semanticId": "ring-feed"
       }
     ],

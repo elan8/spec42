@@ -140,15 +140,9 @@ export function buildInterconnectionElkBuild(prepared: InterconnectionPreparedVi
     const canonicalMatch = ports.find(
       (port) =>
         port.id === endpointText ||
-        port.attributes?.scenePortId === endpointText ||
-        port.attributes?.semanticId === endpointText,
+        port.attributes?.scenePortId === endpointText,
     );
-    if (canonicalMatch) return canonicalMatch.name;
-    const endpointLeaf = endpointText.split(".").pop()?.split("::").pop()?.trim() ?? "";
-    if (!endpointLeaf) return null;
-    const portNames = ports.map((port) => port.name);
-    const matched = portNames.find((port) => port === endpointLeaf || endpointText.endsWith(`.${port}`));
-    return matched ?? null;
+    return canonicalMatch?.name ?? null;
   };
 
   const sideForPort = (port: PreparedPort, node: PreparedNode): "WEST" | "EAST" => {

@@ -418,8 +418,8 @@ describe("shared renderer", () => {
           attributes: {
             containerId: "webshopSystem",
             portDetails: [
-              { name: "apiOut", direction: "out" },
-              { name: "catalogIn", direction: "in" },
+              { id: "occ:webshopSystem.storefront.apiOut", name: "apiOut", direction: "out", attributes: { scenePortId: "occ:webshopSystem.storefront.apiOut" } },
+              { id: "occ:webshopSystem.storefront.catalogIn", name: "catalogIn", direction: "in", attributes: { scenePortId: "occ:webshopSystem.storefront.catalogIn" } },
             ],
           },
         },
@@ -430,8 +430,8 @@ describe("shared renderer", () => {
           attributes: {
             containerId: "webshopSystem",
             portDetails: [
-              { name: "storefrontIn", direction: "in" },
-              { name: "checkoutOut", direction: "out" },
+              { id: "occ:webshopSystem.apiGateway.storefrontIn", name: "storefrontIn", direction: "in", attributes: { scenePortId: "occ:webshopSystem.apiGateway.storefrontIn" } },
+              { id: "occ:webshopSystem.apiGateway.checkoutOut", name: "checkoutOut", direction: "out", attributes: { scenePortId: "occ:webshopSystem.apiGateway.checkoutOut" } },
             ],
           },
         },
@@ -442,8 +442,8 @@ describe("shared renderer", () => {
           attributes: {
             containerId: "webshopSystem",
             portDetails: [
-              { name: "apiIn", direction: "in" },
-              { name: "ordersOut", direction: "out" },
+              { id: "occ:webshopSystem.checkoutService.apiIn", name: "apiIn", direction: "in", attributes: { scenePortId: "occ:webshopSystem.checkoutService.apiIn" } },
+              { id: "occ:webshopSystem.checkoutService.ordersOut", name: "ordersOut", direction: "out", attributes: { scenePortId: "occ:webshopSystem.checkoutService.ordersOut" } },
             ],
           },
         },
@@ -453,7 +453,7 @@ describe("shared renderer", () => {
           kind: "part",
           attributes: {
             containerId: "webshopSystem",
-            portDetails: [{ name: "ordersIn", direction: "in" }],
+            portDetails: [{ id: "occ:webshopSystem.ordersEventsTopic.ordersIn", name: "ordersIn", direction: "in", attributes: { scenePortId: "occ:webshopSystem.ordersEventsTopic.ordersIn" } }],
           },
         },
       ],
@@ -465,8 +465,8 @@ describe("shared renderer", () => {
           label: "connection",
           edgeKind: "connection",
           attributes: {
-            sourceId: "webshopSystem.storefront.apiOut",
-            targetId: "webshopSystem.apiGateway.storefrontIn",
+            sourcePortId: "occ:webshopSystem.storefront.apiOut",
+            targetPortId: "occ:webshopSystem.apiGateway.storefrontIn",
             relationType: "connection",
           },
         },
@@ -477,8 +477,8 @@ describe("shared renderer", () => {
           label: "connection",
           edgeKind: "connection",
           attributes: {
-            sourceId: "webshopSystem.apiGateway.checkoutOut",
-            targetId: "webshopSystem.checkoutService.apiIn",
+            sourcePortId: "occ:webshopSystem.apiGateway.checkoutOut",
+            targetPortId: "occ:webshopSystem.checkoutService.apiIn",
             relationType: "connection",
           },
         },
@@ -489,8 +489,8 @@ describe("shared renderer", () => {
           label: "connection",
           edgeKind: "connection",
           attributes: {
-            sourceId: "webshopSystem.checkoutService.ordersOut",
-            targetId: "webshopSystem.ordersEventsTopic.ordersIn",
+            sourcePortId: "occ:webshopSystem.checkoutService.ordersOut",
+            targetPortId: "occ:webshopSystem.ordersEventsTopic.ordersIn",
             relationType: "connection",
           },
         },

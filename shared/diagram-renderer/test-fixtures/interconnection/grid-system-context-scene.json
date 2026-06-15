@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "view": {
     "id": "RegionalGridExpansion::Views::systemContext",
     "name": "systemContext",
@@ -25,16 +25,16 @@
   },
   "nodes": [
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer",
       "name": "transformer",
       "kind": "part",
       "typeName": "HvMvTransformer",
-      "parentId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation"
+      "parentId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.cable03",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable03",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.cable03",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.cable03",
       "name": "cable03",
@@ -42,7 +42,7 @@
       "typeName": "Cable"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay",
       "name": "southFeederBay",
@@ -50,7 +50,7 @@
       "typeName": "Switchgear"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB",
       "name": "residentialAreaB",
@@ -58,7 +58,7 @@
       "typeName": "ResidentialLoadCluster"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection",
       "name": "tennetConnection",
@@ -66,7 +66,7 @@
       "typeName": "DutchHVConnection"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.cable01",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable01",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.cable01",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.cable01",
       "name": "cable01",
@@ -74,7 +74,7 @@
       "typeName": "Cable"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA",
       "name": "residentialAreaA",
@@ -82,7 +82,7 @@
       "typeName": "ResidentialLoadCluster"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation",
       "name": "primarySubstation",
@@ -90,7 +90,7 @@
       "typeName": "DutchPrimarySubstation"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationB",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationB",
       "name": "txStationB",
@@ -98,16 +98,16 @@
       "typeName": "DutchMVLVStation"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
       "name": "mvBusbar",
       "kind": "part",
       "typeName": "Busbar",
-      "parentId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation"
+      "parentId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.cable02",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable02",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.cable02",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.cable02",
       "name": "cable02",
@@ -115,16 +115,16 @@
       "typeName": "Cable"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
       "name": "ringSegmentBtoC",
       "kind": "part",
       "typeName": "DutchMsRingSegment",
-      "parentId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing"
+      "parentId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing",
       "name": "northSouthRing",
@@ -132,7 +132,7 @@
       "typeName": "DutchMsRing"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA",
       "name": "industrialClusterA",
@@ -140,7 +140,7 @@
       "typeName": "IndustrialLoadCluster"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationA",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationA",
       "name": "txStationA",
@@ -148,7 +148,7 @@
       "typeName": "DutchMVLVStation"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay",
       "name": "northFeederBay",
@@ -156,7 +156,7 @@
       "typeName": "Switchgear"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationC",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationC",
       "name": "txStationC",
@@ -164,7 +164,7 @@
       "typeName": "DutchMVLVStation"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth",
       "name": "feederNorth",
@@ -172,16 +172,16 @@
       "typeName": "DutchMVFeeder"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint",
       "name": "noTiePoint",
       "kind": "part",
       "typeName": "NormallyOpenPoint",
-      "parentId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing"
+      "parentId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing"
     },
     {
-      "id": "node:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth",
       "qualifiedName": "RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth",
       "name": "feederSouth",
@@ -191,454 +191,454 @@
   ],
   "ports": [
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.primary",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.primary",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.primary",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer",
       "name": "primary",
       "typeName": "ACHighVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.outgoing",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.outgoing",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.outgoing",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint",
       "name": "outgoing",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.cable01.a",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable01.a",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.cable01.a",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.cable01",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable01",
       "name": "a",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.mvConnection",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.mvConnection",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.mvConnection",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB",
       "name": "mvConnection",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.source",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.source",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.source",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth",
       "name": "source",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "east"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.incoming",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.incoming",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.incoming",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
       "name": "incoming",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.feederTap",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.feederTap",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.feederTap",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
       "name": "feederTap",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.cable03.b",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable03.b",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.cable03.b",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.cable03",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable03",
       "name": "b",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.incoming",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.incoming",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.incoming",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay",
       "name": "incoming",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.cable03.a",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable03.a",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.cable03.a",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.cable03",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable03",
       "name": "a",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection.connection",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection.connection",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection.connection",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection",
       "name": "connection",
       "typeName": "ACHighVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
       "name": "b",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.source",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.source",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.source",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth",
       "name": "source",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "east"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.incoming",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.incoming",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.incoming",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint",
       "name": "incoming",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.incoming",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.incoming",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.incoming",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay",
       "name": "incoming",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.cable02.b",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable02.b",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.cable02.b",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.cable02",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable02",
       "name": "b",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.hvConnection",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.hvConnection",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.hvConnection",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation",
       "name": "hvConnection",
       "typeName": "ACHighVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.mvConnection",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.mvConnection",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.mvConnection",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC",
       "name": "mvConnection",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.cable01.b",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable01.b",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.cable01.b",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.cable01",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable01",
       "name": "b",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.secondary",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.secondary",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.secondary",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer",
       "name": "secondary",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.outgoing",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.outgoing",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.outgoing",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth",
       "name": "outgoing",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.cable02.a",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable02.a",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.cable02.a",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.cable02",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable02",
       "name": "a",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA.gridConnection",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA.gridConnection",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA.gridConnection",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA",
       "name": "gridConnection",
       "typeName": "ACLowVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB.gridConnection",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB.gridConnection",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB.gridConnection",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB",
       "name": "gridConnection",
       "typeName": "ACLowVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.outgoing",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.outgoing",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.outgoing",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay",
       "name": "outgoing",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.southFeederTap",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.southFeederTap",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.southFeederTap",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
       "name": "southFeederTap",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.outgoing",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.outgoing",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.outgoing",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay",
       "name": "outgoing",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
       "name": "a",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.mvConnection",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.mvConnection",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.mvConnection",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA",
       "name": "mvConnection",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.lvConnection",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.lvConnection",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.lvConnection",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC",
       "name": "lvConnection",
       "typeName": "ACLowVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.lvConnection",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.lvConnection",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.lvConnection",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA",
       "name": "lvConnection",
       "typeName": "ACLowVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.lvConnection",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.lvConnection",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.lvConnection",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB",
       "name": "lvConnection",
       "typeName": "ACLowVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA.gridConnection",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA.gridConnection",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA.gridConnection",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA",
       "name": "gridConnection",
       "typeName": "ACLowVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.outgoing",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.outgoing",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.outgoing",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth",
       "name": "outgoing",
       "typeName": "ACMediumVoltagePort",
       "sideHint": "auto"
     },
     {
-      "id": "port:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap",
+      "id": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap",
-      "ownerNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
+      "ownerNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
       "name": "northFeederTap",
       "sideHint": "auto"
     }
   ],
   "edges": [
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.mvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a:0",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.mvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a:0",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.mvConnection",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.mvConnection",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.mvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.lvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA.gridConnection:1",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.lvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA.gridConnection:1",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.lvConnection",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA.gridConnection",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.lvConnection",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA.gridConnection",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.lvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA.gridConnection"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.source:2",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.source:2",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.outgoing",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.source",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.outgoing",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.source",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.source"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.lvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA.gridConnection:3",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.lvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA.gridConnection:3",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.lvConnection",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA.gridConnection",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.lvConnection",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA.gridConnection",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.lvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA.gridConnection"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.cable02.a:4",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.cable02.a:4",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.outgoing",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.cable02.a",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.cable02",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.outgoing",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable02.a",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable02",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.cable02.a"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b->RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.incoming:5",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b->RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.incoming:5",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.incoming",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.incoming",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b->RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.incoming"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.primary->RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.hvConnection:6",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.primary->RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.hvConnection:6",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.primary",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.hvConnection",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.primary",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.hvConnection",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.primary->RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.hvConnection"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap->RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.incoming:7",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap->RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.incoming:7",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.incoming",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.incoming",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap->RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.incoming"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.cable01.b->RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.mvConnection:8",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.cable01.b->RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.mvConnection:8",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.cable01.b",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.mvConnection",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.cable01",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable01.b",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.mvConnection",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable01",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.cable01.b->RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.mvConnection"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.cable03.b->RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.mvConnection:9",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.cable03.b->RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.mvConnection:9",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.cable03.b",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.mvConnection",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.cable03",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable03.b",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.mvConnection",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable03",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.cable03.b->RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.mvConnection"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection.connection->RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.hvConnection:10",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection.connection->RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.hvConnection:10",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection.connection",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.hvConnection",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection.connection",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.hvConnection",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection.connection->RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.hvConnection"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.southFeederTap->RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.incoming:11",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.southFeederTap->RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.incoming:11",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.southFeederTap",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.incoming",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.southFeederTap",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.incoming",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.southFeederTap->RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.incoming"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.cable03.a:12",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.cable03.a:12",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.outgoing",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.cable03.a",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.cable03",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.outgoing",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable03.a",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable03",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.cable03.a"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.mvConnection:13",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.mvConnection:13",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.outgoing",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.mvConnection",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.outgoing",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.mvConnection",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.mvConnection"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.source:14",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.source:14",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.outgoing",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.source",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.outgoing",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.source",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.source"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.cable01.a:15",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.cable01.a:15",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.outgoing",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.cable01.a",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.cable01",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.outgoing",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable01.a",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable01",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.cable01.a"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.lvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB.gridConnection:16",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.lvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB.gridConnection:16",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.lvConnection",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB.gridConnection",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.lvConnection",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB.gridConnection",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.lvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB.gridConnection"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.cable02.b->RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.mvConnection:17",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.cable02.b->RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.mvConnection:17",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.cable02.b",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.mvConnection",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.cable02",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable02.b",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.mvConnection",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.cable02",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.cable02.b->RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.mvConnection"
     },
     {
-      "id": "edge:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.secondary->RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.incoming:18",
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.secondary->RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.incoming:18",
       "kind": "connection",
-      "sourcePortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.secondary",
-      "targetPortId": "port:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.incoming",
-      "sourceNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer",
-      "targetNodeId": "node:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
+      "sourcePortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.secondary",
+      "targetPortId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.incoming",
+      "sourceNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer",
+      "targetNodeId": "occ:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
       "semanticId": "RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.secondary->RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.incoming"
     }
   ],

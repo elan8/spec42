@@ -35,6 +35,7 @@ export interface InterconnectionSceneViewDto {
 export interface InterconnectionSceneNodeDto {
   id: string;
   semanticId: string;
+  definitionId?: string;
   qualifiedName: string;
   name: string;
   kind: string;
@@ -45,6 +46,7 @@ export interface InterconnectionSceneNodeDto {
 export interface InterconnectionScenePortDto {
   id: string;
   semanticId: string;
+  definitionId?: string;
   ownerNodeId: string;
   name: string;
   typeName?: string;
@@ -61,6 +63,8 @@ export interface InterconnectionSceneEdgeDto {
   targetNodeId: string;
   semanticId?: string;
   label?: string;
+  sourceExpression?: string;
+  targetExpression?: string;
 }
 
 export interface InterconnectionSceneContainerDto {

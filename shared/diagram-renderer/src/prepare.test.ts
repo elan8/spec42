@@ -119,7 +119,7 @@ describe("shared prepareViewData", () => {
     const prepared = prepareViewData({
       view: "interconnection-view",
       interconnectionScene: {
-        schemaVersion: 1,
+        schemaVersion: 2,
         view: {
           id: "fixture-two-part",
           name: "TwoPartChain",
@@ -127,21 +127,21 @@ describe("shared prepareViewData", () => {
           rootIds: [],
         },
         nodes: [
-          { id: "node:Demo.Source", semanticId: "Demo.Source", qualifiedName: "Demo.Source", name: "Source", kind: "part" },
-          { id: "node:Demo.Target", semanticId: "Demo.Target", qualifiedName: "Demo.Target", name: "Target", kind: "part" },
+          { id: "occ:Demo.Source", semanticId: "Demo.Source", qualifiedName: "Demo.Source", name: "Source", kind: "part" },
+          { id: "occ:Demo.Target", semanticId: "Demo.Target", qualifiedName: "Demo.Target", name: "Target", kind: "part" },
         ],
         ports: [
-          { id: "port:Demo.Source.out", semanticId: "Demo.Source.out", ownerNodeId: "node:Demo.Source", name: "out", direction: "out", sideHint: "east" },
-          { id: "port:Demo.Target.in", semanticId: "Demo.Target.in", ownerNodeId: "node:Demo.Target", name: "in", direction: "in", sideHint: "west" },
+          { id: "occ:Demo.Source.out", semanticId: "Demo.Source.out", ownerNodeId: "occ:Demo.Source", name: "out", direction: "out", sideHint: "east" },
+          { id: "occ:Demo.Target.in", semanticId: "Demo.Target.in", ownerNodeId: "occ:Demo.Target", name: "in", direction: "in", sideHint: "west" },
         ],
         edges: [
           {
             id: "edge:Demo.Source.out->Demo.Target.in:0",
             kind: "connection",
-            sourcePortId: "port:Demo.Source.out",
-            targetPortId: "port:Demo.Target.in",
-            sourceNodeId: "node:Demo.Source",
-            targetNodeId: "node:Demo.Target",
+            sourcePortId: "occ:Demo.Source.out",
+            targetPortId: "occ:Demo.Target.in",
+            sourceNodeId: "occ:Demo.Source",
+            targetNodeId: "occ:Demo.Target",
           },
         ],
         containers: [],
@@ -151,7 +151,7 @@ describe("shared prepareViewData", () => {
     expect(prepared.meta?.canonicalScene).toBe(true);
     expect(prepared.nodes).toHaveLength(2);
     expect(prepared.edges).toHaveLength(1);
-    expect(prepared.edges[0].target).toBe("node:Demo.Target");
+    expect(prepared.edges[0].target).toBe("occ:Demo.Target");
   });
 
   it("returns empty prepared view when interconnectionScene is missing", () => {

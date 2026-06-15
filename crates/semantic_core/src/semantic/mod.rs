@@ -11,6 +11,7 @@ pub mod graph_builder;
 pub mod ibd;
 pub mod import_resolution;
 pub mod interconnection_elk;
+pub mod interconnection_projection;
 pub mod interconnection_scene;
 pub mod kinds;
 pub mod library_loader;

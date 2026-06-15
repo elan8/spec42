@@ -13,11 +13,11 @@ describe("prepareInterconnectionScene", () => {
     const prepared = prepareInterconnectionScene(payload.interconnectionScene, payload);
     expect(prepared.meta?.canonicalScene).toBe(true);
     expect(prepared.edges[0]).toMatchObject({
-      source: "node:Demo.Source",
-      target: "node:Demo.Target",
+      source: "occ:Demo.Source",
+      target: "occ:Demo.Target",
       attributes: {
-        sourcePortId: "port:Demo.Source.out",
-        targetPortId: "port:Demo.Target.in",
+        sourcePortId: "occ:Demo.Source.out",
+        targetPortId: "occ:Demo.Target.in",
       },
     });
   });

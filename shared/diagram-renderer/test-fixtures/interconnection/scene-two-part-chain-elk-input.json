@@ -19,12 +19,12 @@
   },
   "children": [
     {
-      "id": "node_Demo.Source",
+      "id": "occ_Demo.Source",
       "width": 280,
       "height": 140,
       "ports": [
         {
-          "id": "node_Demo.Source__port__out",
+          "id": "occ_Demo.Source__port__out",
           "width": 10,
           "height": 10,
           "layoutOptions": {
@@ -40,12 +40,12 @@
       }
     },
     {
-      "id": "node_Demo.Target",
+      "id": "occ_Demo.Target",
       "width": 280,
       "height": 140,
       "ports": [
         {
-          "id": "node_Demo.Target__port__in",
+          "id": "occ_Demo.Target__port__in",
           "width": 10,
           "height": 10,
           "layoutOptions": {
@@ -63,12 +63,12 @@
   ],
   "edges": [
     {
-      "id": "edge:Demo.Source.out->Demo.Target.in:0",
+      "id": "conn:Demo.Source.out->Demo.Target.in:0",
       "sources": [
-        "node_Demo.Source__port__out"
+        "occ_Demo.Source__port__out"
       ],
       "targets": [
-        "node_Demo.Target__port__in"
+        "occ_Demo.Target__port__in"
       ]
     }
   ]

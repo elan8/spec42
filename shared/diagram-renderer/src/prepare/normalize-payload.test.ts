@@ -115,7 +115,7 @@ describe("normalizeVisualizationPayload", () => {
 
     it("interconnection-view passes through canonical scene payload", () => {
         const scene = {
-            schemaVersion: 1,
+            schemaVersion: 2,
             view: { id: "v1", name: "Demo", type: "InterconnectionView", rootIds: [] },
             nodes: [],
             ports: [],

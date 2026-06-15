@@ -107,12 +107,12 @@ describe("interconnection layout fixtures", () => {
     expect(buildInterconnectionElkGraph(prepared)).toMatchObject({
       id: "root",
       canonicalScene: true,
-      roots: ["node:Demo.Source", "node:Demo.Target"],
+      roots: ["occ:Demo.Source", "occ:Demo.Target"],
       edges: [
         {
-          id: "edge:Demo.Source.out->Demo.Target.in:0",
-          sourcePortId: "port:Demo.Source.out",
-          targetPortId: "port:Demo.Target.in",
+          id: "conn:Demo.Source.out->Demo.Target.in:0",
+          sourcePortId: "occ:Demo.Source.out",
+          targetPortId: "occ:Demo.Target.in",
         },
       ],
     });
@@ -143,7 +143,7 @@ describe("interconnection layout fixtures", () => {
   it("prepares nested ring fixture with resolved nested target owner", () => {
     const prepared = prepareViewData(loadFixture("nested-ring-minimal.json"));
     expect(prepared.edges).toHaveLength(1);
-    expect(prepared.edges[0].target).toBe("node:Grid.northSouthRing.ringSegmentBtoC");
+    expect(prepared.edges[0].target).toBe("occ:Grid.northSouthRing.ringSegmentBtoC");
   });
 
   it("passes route quality checks for nested ring scene fixture", async () => {

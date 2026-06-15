@@ -5,7 +5,7 @@ export { prepareInterconnectionScene } from "./interconnection-scene";
 
 export function prepareInterconnection(visualization: VisualizationPayload): PreparedView {
   const scene = visualization.interconnectionScene;
-  if (scene && scene.schemaVersion >= 1) {
+  if (scene && scene.schemaVersion >= 2) {
     return prepareInterconnectionScene(scene, visualization);
   }
   return {

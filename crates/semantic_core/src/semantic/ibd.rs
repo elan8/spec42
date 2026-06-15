@@ -2077,6 +2077,16 @@ fn split_architecture_scope_root(qualified_name: &str) -> Option<(&str, &str)> {
             &qualified_name[pos + ".architecture.".len()..],
         ));
     }
+    if let Some(pos) = qualified_name.find(".Architecture.") {
+        let start = pos + ".Architecture.".len();
+        let tail = &qualified_name[start..];
+        let def_len = tail.find('.').unwrap_or(tail.len());
+        if def_len > 0 {
+            let end = start + def_len;
+            let remainder = qualified_name[end..].strip_prefix('.').unwrap_or_default();
+            return Some((&qualified_name[..end], remainder));
+        }
+    }
     if let Some(pos) = qualified_name.rfind(".RegionalGridArchitecture") {
         let end = pos + ".RegionalGridArchitecture".len();
         let tail = qualified_name[end..].strip_prefix('.').unwrap_or_default();
@@ -2086,16 +2096,14 @@ fn split_architecture_scope_root(qualified_name: &str) -> Option<(&str, &str)> {
 }
 
 fn architecture_package_prefix(qualified_name: &str) -> Option<&str> {
-    if let Some(pos) = qualified_name.find(".regionalExpansionProject.architecture") {
-        return Some(&qualified_name[..pos]);
-    }
-    if let Some(pos) = qualified_name.find(".Architecture.RegionalGridArchitecture") {
-        return Some(&qualified_name[..pos]);
-    }
-    if let Some(pos) = qualified_name.rfind(".RegionalGridArchitecture") {
+    if let Some(pos) = qualified_name.find(".architecture") {
         return qualified_name[..pos]
             .rsplit_once('.')
-            .map(|(prefix, _)| prefix);
+            .map(|(prefix, _)| prefix)
+            .or(Some(&qualified_name[..pos]));
+    }
+    if let Some(pos) = qualified_name.find(".Architecture.") {
+        return Some(&qualified_name[..pos]);
     }
     None
 }
@@ -2112,9 +2120,9 @@ fn infer_def_instance_scope_mappings(parts: &[IbdPartDto]) -> Vec<(String, Strin
         let Some((root, _)) = split_architecture_scope_root(&part.qualified_name) else {
             continue;
         };
-        if root.contains(".regionalExpansionProject.architecture") {
+        if root.ends_with(".architecture") {
             instance_roots.insert(root.to_string());
-        } else if root.contains("RegionalGridArchitecture") {
+        } else if root.contains(".Architecture.") {
             definition_roots.insert(root.to_string());
         }
     }
@@ -2236,7 +2244,7 @@ mod tests {
     use super::{
         build_container_groups, infer_port_side, prune_ibd_payload_to_connected_scope,
         prune_interconnection_definition_parts, prune_redundant_top_level_roots, IbdConnectorDto,
-        IbdPartDto, IbdPortDto,
+        IbdDataDto, IbdPartDto, IbdPortDto,
     };
 
     fn test_part(
@@ -2744,6 +2752,56 @@ mod tests {
             "expected definition-level connect mirrored to project architecture instance, got {:?}",
             merged.connectors
         );
+    }
+
+    #[test]
+    fn normalize_ibd_remaps_non_regional_architecture_ports_to_instance_paths() {
+        let mut ibd = IbdDataDto {
+            parts: vec![
+                test_part(
+                    "StedinRijnmondGridExpansion::Architecture::RijnmondGridArchitecture::feederNorth",
+                    "feederNorth",
+                    "StedinRijnmondGridExpansion.Architecture.RijnmondGridArchitecture.feederNorth",
+                    None,
+                    "part",
+                ),
+                test_part(
+                    "StedinRijnmondGridExpansion::rijnmondExpansionProject::architecture::feederNorth",
+                    "feederNorth",
+                    "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth",
+                    None,
+                    "part",
+                ),
+            ],
+            ports: vec![test_port(
+                "StedinRijnmondGridExpansion.Architecture.RijnmondGridArchitecture.feederNorth.outgoing",
+                "outgoing",
+                "StedinRijnmondGridExpansion.Architecture.RijnmondGridArchitecture.feederNorth",
+            )],
+            connectors: vec![IbdConnectorDto {
+                source: "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing".to_string(),
+                target: "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing".to_string(),
+                source_id: "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing".to_string(),
+                target_id: "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing".to_string(),
+                source_part_id: None,
+                target_part_id: None,
+                source_port_id: None,
+                target_port_id: None,
+                rel_type: "connection".to_string(),
+            }],
+            container_groups: Vec::new(),
+            package_container_groups: Vec::new(),
+            root_candidates: Vec::new(),
+            default_root: None,
+            root_views: std::collections::HashMap::new(),
+        };
+
+        super::normalize_ibd_to_instance_paths(&mut ibd);
+
+        assert!(ibd.ports.iter().any(|port| {
+            port.port_id
+                == "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture.feederNorth.outgoing"
+        }));
     }
 
     #[test]

@@ -450,10 +450,12 @@ mod tests {
             .iter()
             .find_map(|el| match &el.value {
                 RootElement::Package(pkg) => match &pkg.value.body {
-                    PackageBody::Brace { elements } => match elements.first().map(|node| &node.value) {
-                        Some(PackageBodyElement::AttributeDef(def)) => Some(&def.value),
-                        other => panic!("expected attribute def, got {other:?}"),
-                    },
+                    PackageBody::Brace { elements } => {
+                        match elements.first().map(|node| &node.value) {
+                            Some(PackageBodyElement::AttributeDef(def)) => Some(&def.value),
+                            other => panic!("expected attribute def, got {other:?}"),
+                        }
+                    }
                     _ => None,
                 },
                 _ => None,
@@ -474,12 +476,8 @@ mod tests {
 
     #[test]
     fn parses_fractional_zero_offset_kelvin() {
-        let line =
-            "zeroDegreeFahrenheitInKelvin: ThermodynamicTemperatureValue = 229835/900 [K]";
-        assert_eq!(
-            parse_zero_point_kelvin(line),
-            Some(229835.0 / 900.0)
-        );
+        let line = "zeroDegreeFahrenheitInKelvin: ThermodynamicTemperatureValue = 229835/900 [K]";
+        assert_eq!(parse_zero_point_kelvin(line), Some(229835.0 / 900.0));
     }
 
     #[test]
@@ -547,7 +545,10 @@ mod tests {
             .attributes
             .get(UNIT_CONVERSION_KEY)
             .expect("interval conversion");
-        assert_eq!(conv.get("kind").and_then(|v| v.as_str()), Some("IntervalScale"));
+        assert_eq!(
+            conv.get("kind").and_then(|v| v.as_str()),
+            Some("IntervalScale")
+        );
         assert_eq!(
             conv.get("intervalUnit").and_then(|v| v.as_str()),
             Some("°C")

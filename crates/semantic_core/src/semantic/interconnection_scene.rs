@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use crate::semantic::ibd::{
-    enrich_connector_endpoint_refs, qualified_name_to_dot, resolve_owner_part_qn_for_endpoint,
-    resolve_port_id_for_endpoint, IbdConnectorDto, IbdContainerGroupDto, IbdDataDto, IbdPartDto,
-    IbdPortDto,
+use crate::semantic::ibd::{qualified_name_to_dot, IbdContainerGroupDto, IbdDataDto, IbdPortDto};
+use crate::semantic::interconnection_projection::{
+    build_interconnection_projection, occurrence_id_for_qualified_name, ProjectedFeature,
+    ProjectionDiagnostic,
 };
 use crate::semantic::visualization_workspace::IbdScopeTrace;
 
@@ -22,6 +22,8 @@ pub struct InterconnectionSceneViewDto {
 pub struct InterconnectionNodeDto {
     pub id: String,
     pub semantic_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub definition_id: Option<String>,
     pub qualified_name: String,
     pub name: String,
     pub kind: String,
@@ -36,6 +38,8 @@ pub struct InterconnectionNodeDto {
 pub struct InterconnectionPortDto {
     pub id: String,
     pub semantic_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub definition_id: Option<String>,
     pub owner_node_id: String,
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -58,6 +62,10 @@ pub struct InterconnectionEdgeDto {
     pub semantic_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_expression: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target_expression: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -104,131 +112,6 @@ pub fn scene_container_id(qualified_name: &str) -> String {
     format!("container:{}", qualified_name_to_dot(qualified_name))
 }
 
-fn port_side_hint(port: &IbdPortDto) -> String {
-    match port.port_side.as_deref() {
-        Some("left") | Some("west") => "west".to_string(),
-        Some("right") | Some("east") => "east".to_string(),
-        _ => match port.direction.as_deref() {
-            Some("in") | Some("input") => "west".to_string(),
-            Some("out") | Some("output") => "east".to_string(),
-            _ => "auto".to_string(),
-        },
-    }
-}
-
-fn connector_kind(rel_type: &str) -> String {
-    let lower = rel_type.to_lowercase();
-    if lower.contains("binding") {
-        "binding".to_string()
-    } else if lower.contains("reference") {
-        "reference".to_string()
-    } else if lower.contains("interface") {
-        "interface".to_string()
-    } else if lower.contains("flow") {
-        "flow".to_string()
-    } else {
-        "connection".to_string()
-    }
-}
-
-fn owner_node_id_for_port(
-    port_id: &str,
-    ports: &[IbdPortDto],
-    parts: &[IbdPartDto],
-) -> Option<String> {
-    let port_dot = qualified_name_to_dot(port_id);
-    ports
-        .iter()
-        .find(|port| {
-            qualified_name_to_dot(&port.port_id) == port_dot
-                || qualified_name_to_dot(&port.id) == port_dot
-        })
-        .map(|port| scene_node_id(&port.parent_id))
-        .or_else(|| {
-            resolve_owner_part_qn_for_endpoint(port_id, parts).map(|owner| scene_node_id(&owner))
-        })
-}
-
-pub fn validate_connector_invariants(
-    connectors: &[IbdConnectorDto],
-    parts: &[IbdPartDto],
-    ports: &[IbdPortDto],
-) -> Vec<InterconnectionSceneDiagnosticDto> {
-    let mut diagnostics = Vec::new();
-    for connector in connectors {
-        let connector_id = format!(
-            "{}->{}",
-            qualified_name_to_dot(&connector.source_id),
-            qualified_name_to_dot(&connector.target_id)
-        );
-        for (endpoint, part_id, port_id, role) in [
-            (
-                &connector.source_id,
-                connector.source_part_id.as_deref(),
-                connector.source_port_id.as_deref(),
-                "source",
-            ),
-            (
-                &connector.target_id,
-                connector.target_part_id.as_deref(),
-                connector.target_port_id.as_deref(),
-                "target",
-            ),
-        ] {
-            let resolved_owner = resolve_owner_part_qn_for_endpoint(endpoint, parts);
-            let resolved_port = resolve_port_id_for_endpoint(endpoint, ports);
-            if let Some(owner) = resolved_owner.as_deref() {
-                if let Some(explicit_part) = part_id {
-                    if qualified_name_to_dot(explicit_part) != qualified_name_to_dot(owner) {
-                        diagnostics.push(InterconnectionSceneDiagnosticDto {
-                            severity: "error".to_string(),
-                            code: "connector_owner_mismatch".to_string(),
-                            message: format!(
-                                "{role}PartId {explicit_part} does not match resolved owner {owner} for endpoint {endpoint}"
-                            ),
-                            connector_id: Some(connector_id.clone()),
-                        });
-                    }
-                }
-            } else if part_id.is_some() {
-                diagnostics.push(InterconnectionSceneDiagnosticDto {
-                    severity: "warning".to_string(),
-                    code: "connector_owner_unresolved".to_string(),
-                    message: format!("Could not resolve {role} owner for endpoint {endpoint}"),
-                    connector_id: Some(connector_id.clone()),
-                });
-            }
-            if resolved_port.is_some() && port_id.is_none() {
-                diagnostics.push(InterconnectionSceneDiagnosticDto {
-                    severity: "warning".to_string(),
-                    code: "connector_port_id_missing".to_string(),
-                    message: format!(
-                        "Endpoint {endpoint} resolves to a port but {role}PortId is missing"
-                    ),
-                    connector_id: Some(connector_id.clone()),
-                });
-            }
-            if let (Some(port), Some(part)) = (port_id, part_id) {
-                let expected_owner = owner_node_id_for_port(port, ports, parts);
-                if let Some(expected) = expected_owner {
-                    let actual = scene_node_id(part);
-                    if expected != actual {
-                        diagnostics.push(InterconnectionSceneDiagnosticDto {
-                            severity: "error".to_string(),
-                            code: "connector_port_owner_mismatch".to_string(),
-                            message: format!(
-                                "{role} port {port} owner {expected} does not match {role}PartId {actual}"
-                            ),
-                            connector_id: Some(connector_id.clone()),
-                        });
-                    }
-                }
-            }
-        }
-    }
-    diagnostics
-}
-
 fn push_scope_trace_diagnostics(
     diagnostics: &mut Vec<InterconnectionSceneDiagnosticDto>,
     scope_trace: Option<&IbdScopeTrace>,
@@ -253,6 +136,17 @@ fn push_scope_trace_diagnostics(
     });
 }
 
+fn projection_diagnostic_to_scene(
+    diagnostic: ProjectionDiagnostic,
+) -> InterconnectionSceneDiagnosticDto {
+    InterconnectionSceneDiagnosticDto {
+        severity: diagnostic.severity,
+        code: diagnostic.code,
+        message: diagnostic.message,
+        connector_id: diagnostic.connector_id,
+    }
+}
+
 fn map_containers(ibd: &IbdDataDto) -> Vec<InterconnectionContainerDto> {
     let mut containers = Vec::new();
     for group in &ibd.container_groups {
@@ -260,16 +154,16 @@ fn map_containers(ibd: &IbdDataDto) -> Vec<InterconnectionContainerDto> {
     }
     for group in &ibd.package_container_groups {
         containers.push(InterconnectionContainerDto {
-            id: scene_container_id(&group.qualified_package),
+            id: occurrence_id_for_qualified_name(&group.qualified_package),
             label: group.label.clone(),
             parent_id: group
                 .parent_id
                 .as_ref()
-                .map(|parent| scene_container_id(parent)),
+                .map(|parent| occurrence_id_for_qualified_name(parent)),
             member_node_ids: group
                 .member_part_ids
                 .iter()
-                .map(|member| scene_node_id(member))
+                .map(|member| occurrence_id_for_qualified_name(member))
                 .collect(),
             depth: 0,
         });
@@ -279,18 +173,34 @@ fn map_containers(ibd: &IbdDataDto) -> Vec<InterconnectionContainerDto> {
 
 fn map_container_group(group: &IbdContainerGroupDto) -> InterconnectionContainerDto {
     InterconnectionContainerDto {
-        id: scene_container_id(&group.qualified_name),
+        id: occurrence_id_for_qualified_name(&group.qualified_name),
         label: group.label.clone(),
         parent_id: group
             .parent_id
             .as_ref()
-            .map(|parent| scene_container_id(parent)),
+            .map(|parent| occurrence_id_for_qualified_name(parent)),
         member_node_ids: group
             .member_part_ids
             .iter()
-            .map(|member| scene_node_id(member))
+            .map(|member| occurrence_id_for_qualified_name(member))
             .collect(),
         depth: group.depth,
+    }
+}
+
+fn side_hint_for_projected_port(port: &ProjectedFeature, ibd_ports: &[IbdPortDto]) -> String {
+    let matched = ibd_ports.iter().find(|candidate| {
+        occurrence_id_for_qualified_name(&candidate.port_id) == port.occurrence_id
+    });
+    match matched.and_then(|port| port.port_side.as_deref()) {
+        Some("left") | Some("west") => return "west".to_string(),
+        Some("right") | Some("east") => return "east".to_string(),
+        _ => {}
+    }
+    match matched.and_then(|port| port.direction.as_deref()) {
+        Some("in") | Some("input") => "west".to_string(),
+        Some("out") | Some("output") => "east".to_string(),
+        _ => "auto".to_string(),
     }
 }
 
@@ -301,125 +211,77 @@ pub fn build_interconnection_scene(
     root_ids: &[String],
     scope_trace: Option<&IbdScopeTrace>,
 ) -> InterconnectionSceneDto {
-    let mut connectors = ibd.connectors.clone();
-    enrich_connector_endpoint_refs(&mut connectors, &ibd.parts, &ibd.ports);
-    let mut diagnostics = validate_connector_invariants(&connectors, &ibd.parts, &ibd.ports);
+    let projection = build_interconnection_projection(ibd);
+    let mut diagnostics: Vec<InterconnectionSceneDiagnosticDto> = projection
+        .diagnostics
+        .into_iter()
+        .map(projection_diagnostic_to_scene)
+        .collect();
     push_scope_trace_diagnostics(&mut diagnostics, scope_trace);
 
-    let part_scene_ids: std::collections::HashMap<String, String> = ibd
-        .parts
+    let nodes = projection
+        .features
         .iter()
-        .map(|part| {
-            (
-                part.qualified_name.clone(),
-                scene_node_id(&part.qualified_name),
-            )
+        .filter(|feature| !feature.is_boundary)
+        .map(|feature| InterconnectionNodeDto {
+            id: feature.occurrence_id.clone(),
+            semantic_id: feature.semantic_id.clone(),
+            definition_id: feature.definition_id.clone(),
+            qualified_name: feature.qualified_name.clone(),
+            name: feature.name.clone(),
+            kind: feature.kind.clone(),
+            type_name: feature.definition_id.clone(),
+            parent_id: feature.owner_occurrence_id.clone(),
         })
-        .collect();
+        .collect::<Vec<_>>();
 
-    let nodes = ibd
-        .parts
+    let ports = projection
+        .features
         .iter()
-        .map(|part| {
-            let type_name = part
-                .attributes
-                .get("partType")
-                .and_then(|value| value.as_str())
-                .map(str::to_string);
-            InterconnectionNodeDto {
-                id: scene_node_id(&part.qualified_name),
-                semantic_id: part.node_id.clone(),
-                qualified_name: part.qualified_name.clone(),
-                name: part.name.clone(),
-                kind: if part.element_type.to_lowercase().contains("ref") {
-                    "ref".to_string()
-                } else {
-                    "part".to_string()
-                },
-                type_name,
-                parent_id: part
-                    .container_id
-                    .as_ref()
-                    .and_then(|container| part_scene_ids.get(container).cloned()),
-            }
-        })
-        .collect();
-
-    let ports = ibd
-        .ports
-        .iter()
-        .map(|port| InterconnectionPortDto {
-            id: scene_port_id(&port.port_id),
-            semantic_id: port.port_id.clone(),
-            owner_node_id: scene_node_id(&port.parent_id),
-            name: port.name.clone(),
-            type_name: port.port_type.clone(),
-            direction: port.direction.clone(),
-            side_hint: port_side_hint(port),
-        })
-        .collect();
-
-    let edges =
-        connectors
-            .iter()
-            .enumerate()
-            .filter_map(|(index, connector)| {
-                let source_port = connector
-                    .source_port_id
-                    .clone()
-                    .or_else(|| resolve_port_id_for_endpoint(&connector.source_id, &ibd.ports))?;
-                let target_port = connector
-                    .target_port_id
-                    .clone()
-                    .or_else(|| resolve_port_id_for_endpoint(&connector.target_id, &ibd.ports))?;
-                let source_owner = connector.source_part_id.clone().or_else(|| {
-                    resolve_owner_part_qn_for_endpoint(&connector.source_id, &ibd.parts)
-                })?;
-                let target_owner = connector.target_part_id.clone().or_else(|| {
-                    resolve_owner_part_qn_for_endpoint(&connector.target_id, &ibd.parts)
-                })?;
-                Some(InterconnectionEdgeDto {
-                    id: format!(
-                        "edge:{}->{}:{}",
-                        qualified_name_to_dot(&source_port),
-                        qualified_name_to_dot(&target_port),
-                        index
-                    ),
-                    kind: connector_kind(&connector.rel_type),
-                    source_port_id: scene_port_id(&source_port),
-                    target_port_id: scene_port_id(&target_port),
-                    source_node_id: scene_node_id(&source_owner),
-                    target_node_id: scene_node_id(&target_owner),
-                    semantic_id: Some(format!(
-                        "{}->{}",
-                        qualified_name_to_dot(&connector.source_id),
-                        qualified_name_to_dot(&connector.target_id)
-                    )),
-                    label: None,
+        .filter(|feature| feature.is_boundary)
+        .map(|feature| InterconnectionPortDto {
+            id: feature.occurrence_id.clone(),
+            semantic_id: feature.semantic_id.clone(),
+            definition_id: feature.definition_id.clone(),
+            owner_node_id: feature.owner_occurrence_id.clone().unwrap_or_default(),
+            name: feature.name.clone(),
+            type_name: feature.definition_id.clone(),
+            direction: ibd
+                .ports
+                .iter()
+                .find(|port| {
+                    occurrence_id_for_qualified_name(&port.port_id) == feature.occurrence_id
                 })
-            })
-            .collect();
+                .and_then(|port| port.direction.clone()),
+            side_hint: side_hint_for_projected_port(feature, &ibd.ports),
+        })
+        .collect::<Vec<_>>();
 
-    for connector in &connectors {
-        let connector_id = format!(
-            "{}->{}",
-            qualified_name_to_dot(&connector.source_id),
-            qualified_name_to_dot(&connector.target_id)
-        );
-        if resolve_port_id_for_endpoint(&connector.source_id, &ibd.ports).is_none()
-            || resolve_port_id_for_endpoint(&connector.target_id, &ibd.ports).is_none()
-        {
-            diagnostics.push(InterconnectionSceneDiagnosticDto {
-                severity: "error".to_string(),
-                code: "connector_endpoint_unresolved".to_string(),
-                message: "Connector endpoint does not resolve to a visible port".to_string(),
-                connector_id: Some(connector_id),
-            });
-        }
-    }
+    let edges: Vec<InterconnectionEdgeDto> = projection
+        .connections
+        .iter()
+        .filter_map(|connection| {
+            let source_port = connection.endpoint_feature_ids.first()?.clone();
+            let target_port = connection.endpoint_feature_ids.get(1)?.clone();
+            let source_owner = connection.endpoint_owner_ids.first()?.clone();
+            let target_owner = connection.endpoint_owner_ids.get(1)?.clone();
+            Some(InterconnectionEdgeDto {
+                id: connection.connection_id.clone(),
+                kind: connection.kind.clone(),
+                source_port_id: source_port,
+                target_port_id: target_port,
+                source_node_id: source_owner,
+                target_node_id: target_owner,
+                semantic_id: connection.semantic_id.clone(),
+                label: None,
+                source_expression: connection.source_expression.clone(),
+                target_expression: connection.target_expression.clone(),
+            })
+        })
+        .collect();
 
     InterconnectionSceneDto {
-        schema_version: 1,
+        schema_version: 2,
         view: InterconnectionSceneViewDto {
             id: view_id.to_string(),
             name: view_name.to_string(),
@@ -437,6 +299,7 @@ pub fn build_interconnection_scene(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::semantic::ibd::{IbdConnectorDto, IbdPartDto};
     use std::collections::HashMap;
 
     fn test_part(name: &str, qn: &str, container: Option<&str>) -> IbdPartDto {
@@ -513,11 +376,11 @@ mod tests {
             &["Grid.northSouthRing".to_string()],
             None,
         );
-        assert_eq!(scene.schema_version, 1);
+        assert_eq!(scene.schema_version, 2);
         assert_eq!(scene.edges.len(), 1);
         assert_eq!(
             scene.edges[0].target_node_id,
-            scene_node_id("Grid.northSouthRing.ringSegmentBtoC")
+            occurrence_id_for_qualified_name("Grid.northSouthRing.ringSegmentBtoC")
         );
         assert!(!scene
             .diagnostics

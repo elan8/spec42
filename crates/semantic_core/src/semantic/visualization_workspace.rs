@@ -22,6 +22,7 @@ use crate::semantic::extracted_model::{
 use crate::semantic::ibd::{
     self, IbdDataDto, IbdPackageContainerGroupDto, IbdPartDto, IbdRootViewDto,
 };
+use crate::semantic::interconnection_projection::occurrence_id_for_qualified_name;
 use crate::semantic::interconnection_scene::build_interconnection_scene;
 use crate::semantic::model_projection::{self, canonical_general_view_graph};
 use crate::semantic::sequence_views::{
@@ -744,7 +745,14 @@ pub fn select_interconnection_ibd_scope_with_trace(
         );
     }
 
-    let visible_scope_ibd = filter_ibd_by_visible_ids(full_ibd, selected_ids);
+    let mut scoped_source = full_ibd.clone();
+    crate::semantic::ibd::normalize_ibd_to_instance_paths(&mut scoped_source);
+    crate::semantic::ibd::enrich_connector_endpoint_refs(
+        &mut scoped_source.connectors,
+        &scoped_source.parts,
+        &scoped_source.ports,
+    );
+    let visible_scope_ibd = filter_ibd_by_visible_ids(&scoped_source, selected_ids);
     let root_prefixes: HashSet<String> = selected_exposed_ids
         .map(|exposed_ids| enrich_root_prefixes_for_interconnection(full_ibd, exposed_ids))
         .unwrap_or_default();
@@ -773,8 +781,6 @@ pub fn select_interconnection_ibd_scope_with_trace(
         };
         return (chosen, trace_result);
     }
-    let mut scoped_source = full_ibd.clone();
-    crate::semantic::ibd::normalize_ibd_to_instance_paths(&mut scoped_source);
     let mut root_scoped_ibd = filter_ibd_by_root_prefixes(&scoped_source, &root_prefixes);
     crate::semantic::ibd::enrich_connector_endpoint_refs(
         &mut root_scoped_ibd.connectors,
@@ -782,11 +788,15 @@ pub fn select_interconnection_ibd_scope_with_trace(
         &root_scoped_ibd.ports,
     );
     let architecture_scoped = architecture_scope_prefix(&root_prefixes).is_some();
-    if !root_scoped_ibd.parts.is_empty() || !root_scoped_ibd.connectors.is_empty() {
+    let root_scope_has_content =
+        !root_scoped_ibd.parts.is_empty() || !root_scoped_ibd.connectors.is_empty();
+    let root_scope_dropped_visible_connectors =
+        root_scoped_ibd.connectors.is_empty() && !visible_scope_ibd.connectors.is_empty();
+    if root_scope_has_content && !root_scope_dropped_visible_connectors {
         let trace_result = trace("root_prefixes", &visible_scope_ibd, &root_scoped_ibd);
         return (root_scoped_ibd, trace_result);
     }
-    if !architecture_scoped
+    if (!architecture_scoped || root_scope_dropped_visible_connectors)
         && (!visible_scope_ibd.parts.is_empty() || !visible_scope_ibd.connectors.is_empty())
     {
         let trace_result = trace("visible_ids_fallback", &visible_scope_ibd, &root_scoped_ibd);
@@ -1711,7 +1721,7 @@ pub fn build_sysml_visualization_from_artifacts(
                 evaluated
                     .exposed_ids
                     .iter()
-                    .map(|id| id.replace("::", "."))
+                    .map(|id| occurrence_id_for_qualified_name(id))
                     .collect::<Vec<_>>()
             })
             .filter(|ids| !ids.is_empty())
