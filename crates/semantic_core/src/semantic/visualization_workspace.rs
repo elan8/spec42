@@ -24,7 +24,9 @@ use crate::semantic::ibd::{
 };
 use crate::semantic::interconnection_projection::occurrence_id_for_qualified_name;
 use crate::semantic::interconnection_scene::build_interconnection_scene;
-use crate::semantic::model_projection::{self, canonical_general_view_graph};
+use crate::semantic::model_projection::{
+    self, canonical_general_view_graph, filter_traceability_relationship_graph,
+};
 use crate::semantic::sequence_views::{
     build_workspace_sequence_diagrams, filter_sequence_diagrams_by_exposed_ids,
 };
@@ -1679,7 +1681,16 @@ pub fn build_sysml_visualization_from_artifacts(
         })
         .unwrap_or_default();
     let selected_graph = project_graph_by_ids(graph, &projected_ids);
-    let general_view_graph = canonical_general_view_graph(&selected_graph, true);
+    let is_requirement_traceability_view =
+        selected_evaluated.is_some_and(explicit_views::is_requirement_view);
+    let general_view_graph = if is_requirement_traceability_view {
+        filter_traceability_relationship_graph(&canonical_general_view_graph(
+            &selected_graph,
+            true,
+        ))
+    } else {
+        canonical_general_view_graph(&selected_graph, true)
+    };
     let package_groups = Some(build_package_groups_from_graph(&general_view_graph));
     let workspace_model = build_workspace_model_dto_from_graph(&selected_graph, workspace_uris);
     let mut package_candidates = Vec::new();

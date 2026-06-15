@@ -377,6 +377,11 @@ pub fn evaluate_views(
                     filters.extend(definition.filters.clone());
                 }
             }
+            for expose in &usage.exposes {
+                if let Some(filter) = &expose.filter {
+                    filters.push(filter.clone());
+                }
+            }
 
             let view_uri = uri_for_qualified_name(semantic_graph, &usage.id)
                 .or_else(|| {
@@ -503,28 +508,100 @@ pub fn project_ids_for_renderer(
         map
     };
 
-    let expanded_ids = match renderer_view {
-        "general-view"
-        | "interconnection-view"
-        | "browser-view"
-        | "grid-view"
-        | "geometry-view" => expand_structural_scope(
+    let expanded_ids = if is_requirement_view(evaluated) {
+        expand_traceability_scope(
             &evaluated.exposed_ids,
-            &children_by_parent,
-            &typing_targets,
+            graph,
+            &evaluated.filters,
             &node_by_id,
-        ),
-        "state-transition-view" | "action-flow-view" => {
-            expand_descendants(&evaluated.exposed_ids, &children_by_parent)
+        )
+    } else {
+        match renderer_view {
+            "general-view"
+            | "interconnection-view"
+            | "browser-view"
+            | "grid-view"
+            | "geometry-view" => expand_structural_scope(
+                &evaluated.exposed_ids,
+                &children_by_parent,
+                &typing_targets,
+                &node_by_id,
+            ),
+            "state-transition-view" | "action-flow-view" => {
+                expand_descendants(&evaluated.exposed_ids, &children_by_parent)
+            }
+            _ => evaluated.exposed_ids.clone(),
         }
-        _ => evaluated.exposed_ids.clone(),
     };
-    let filtered_ids: HashSet<String> = expanded_ids
+    let filtered_ids: HashSet<String> = if is_requirement_view(evaluated) {
+        expanded_ids
+    } else {
+        expanded_ids
+            .iter()
+            .filter(|node_id| node_matches_all_filters(node_id, &node_by_id, &evaluated.filters))
+            .cloned()
+            .collect()
+    };
+    match renderer_view {
+        "browser-view" | "general-view" if is_requirement_view(evaluated) => filtered_ids,
+        "browser-view" => filtered_ids,
+        _ => with_ancestors(filtered_ids, &parent_by_id),
+    }
+}
+
+pub fn is_requirement_view(evaluated: &EvaluatedView) -> bool {
+    evaluated.effective_view_type.as_deref().is_some_and(|view_type| {
+        matches!(
+            normalize_kind_name(view_type).as_str(),
+            "requirementview"
+        )
+    })
+}
+
+fn is_traceability_rel_type(rel_type: &str) -> bool {
+    matches!(
+        rel_type.to_lowercase().as_str(),
+        "derivation" | "satisfy" | "verify" | "subject"
+    )
+}
+
+fn expand_traceability_scope(
+    seed_ids: &HashSet<String>,
+    graph: &crate::semantic::dto::SysmlGraphDto,
+    filters: &[FilterExpr],
+    node_by_id: &HashMap<&str, &crate::semantic::dto::GraphNodeDto>,
+) -> HashSet<String> {
+    let mut visible: HashSet<String> = seed_ids
         .iter()
-        .filter(|node_id| node_matches_all_filters(node_id, &node_by_id, &evaluated.filters))
+        .filter(|node_id| node_matches_all_filters(node_id, node_by_id, filters))
         .cloned()
         .collect();
-    with_ancestors(filtered_ids, &parent_by_id)
+
+    loop {
+        let mut changed = false;
+        for edge in &graph.edges {
+            if !is_traceability_rel_type(&edge.rel_type) {
+                continue;
+            }
+            if visible.contains(&edge.source)
+                && node_matches_all_filters(edge.target.as_str(), node_by_id, filters)
+                && visible.insert(edge.target.clone())
+            {
+                changed = true;
+            }
+            if visible.contains(&edge.target)
+                && node_matches_all_filters(edge.source.as_str(), node_by_id, filters)
+                && visible.insert(edge.source.clone())
+            {
+                changed = true;
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
+
+    visible
 }
 
 fn uri_for_qualified_name(
@@ -577,10 +654,10 @@ fn expand_structural_scope(
             }
         }
 
-        let is_part_like = node_by_id
+        let follows_typing = node_by_id
             .get(current.as_str())
-            .is_some_and(|node| is_part_like(&node.element_type));
-        if is_part_like {
+            .is_some_and(|node| is_part_like(&node.element_type) || is_action_like(&node.element_type));
+        if follows_typing {
             if let Some(targets) = typing_targets.get(current.as_str()) {
                 for target in targets {
                     stack.push((*target).to_string());
@@ -595,6 +672,11 @@ fn expand_structural_scope(
 fn is_part_like(element_type: &str) -> bool {
     let lower = element_type.to_lowercase();
     lower.contains("part")
+}
+
+fn is_action_like(element_type: &str) -> bool {
+    let lower = element_type.to_lowercase();
+    lower.contains("action")
 }
 
 fn with_ancestors(
@@ -678,6 +760,11 @@ fn map_sysml_kind_alias(wanted: &str) -> String {
         "connectiondefinition" | "connectiondef" => "connection def".to_string(),
         "stateusage" => "state".to_string(),
         "statedefinition" | "statedef" => "state def".to_string(),
+        "metadatausage" => "metadata usage".to_string(),
+        "requirementusage" => "requirement".to_string(),
+        "verificationcase" => "verification".to_string(),
+        "analysiscase" => "analysis".to_string(),
+        "package" => "package".to_string(),
         other => other.to_string(),
     }
 }
@@ -931,7 +1018,7 @@ mod tests {
         build_view_candidates, build_view_catalog, parse_filter_text, project_ids_for_renderer,
         EvaluatedView, FilterExpr,
     };
-    use crate::semantic::dto::{GraphNodeDto, PositionDto, RangeDto, SysmlGraphDto};
+    use crate::semantic::dto::{GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, SysmlGraphDto};
     use crate::semantic::workspace_graph::WorkspaceParsedDocument;
     use std::collections::{HashMap, HashSet};
     use sysml_v2_parser::parse;
@@ -1215,6 +1302,177 @@ mod tests {
         assert!(projected.contains("Pkg::Engine"));
         assert!(projected.contains("Pkg::Engine::pump"));
         assert!(projected.contains("Pkg::Pump"));
+    }
+
+    #[test]
+    fn browser_view_projection_applies_expose_kind_filters_after_expansion() {
+        fn zero_range() -> RangeDto {
+            RangeDto {
+                start: PositionDto {
+                    line: 0,
+                    character: 0,
+                },
+                end: PositionDto {
+                    line: 0,
+                    character: 0,
+                },
+            }
+        }
+
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::Robot".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "Robot".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::robot".to_string(),
+                    element_type: "part".to_string(),
+                    name: "robot".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Robot::chassis".to_string(),
+                    element_type: "part".to_string(),
+                    name: "chassis".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::Robot".to_string()),
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Robot::powerPort".to_string(),
+                    element_type: "port".to_string(),
+                    name: "powerPort".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::Robot".to_string()),
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+            ],
+            edges: vec![crate::semantic::dto::GraphEdgeDto {
+                source: "Pkg::robot".to_string(),
+                target: "Pkg::Robot".to_string(),
+                rel_type: "typing".to_string(),
+                name: None,
+            }],
+        };
+        let evaluated = EvaluatedView {
+            id: "Pkg::structure".to_string(),
+            name: "structure".to_string(),
+            effective_view_type: Some("BrowserView".to_string()),
+            exposed_ids: HashSet::from(["Pkg::robot".to_string()]),
+            conforms_to: Vec::new(),
+            filters: vec![FilterExpr::Matches("@SysML::PartUsage".to_string())],
+            visible_ids: HashSet::new(),
+            issues: Vec::new(),
+        };
+
+        let projected = project_ids_for_renderer(&evaluated, &graph, "browser-view");
+        assert!(projected.contains("Pkg::robot"));
+        assert!(projected.contains("Pkg::Robot::chassis"));
+        assert!(
+            !projected.contains("Pkg::Robot::powerPort"),
+            "PartUsage filter should exclude ports after expansion"
+        );
+    }
+
+    #[test]
+    fn requirement_view_projection_follows_traceability_links_without_structural_expansion() {
+        fn zero_range() -> RangeDto {
+            RangeDto {
+                start: PositionDto {
+                    line: 0,
+                    character: 0,
+                },
+                end: PositionDto {
+                    line: 0,
+                    character: 0,
+                },
+            }
+        }
+
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::need".to_string(),
+                    element_type: "requirement".to_string(),
+                    name: "need".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::req".to_string(),
+                    element_type: "requirement".to_string(),
+                    name: "req".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::design".to_string(),
+                    element_type: "action".to_string(),
+                    name: "design".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::unrelatedPart".to_string(),
+                    element_type: "part".to_string(),
+                    name: "unrelatedPart".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+            ],
+            edges: vec![
+                GraphEdgeDto {
+                    source: "Pkg::need".to_string(),
+                    target: "Pkg::req".to_string(),
+                    rel_type: "derivation".to_string(),
+                    name: None,
+                },
+                GraphEdgeDto {
+                    source: "Pkg::design".to_string(),
+                    target: "Pkg::req".to_string(),
+                    rel_type: "satisfy".to_string(),
+                    name: None,
+                },
+            ],
+        };
+        let evaluated = EvaluatedView {
+            id: "Pkg::trace".to_string(),
+            name: "trace".to_string(),
+            effective_view_type: Some("RequirementView".to_string()),
+            exposed_ids: HashSet::from(["Pkg::need".to_string(), "Pkg::design".to_string()]),
+            conforms_to: Vec::new(),
+            filters: Vec::new(),
+            visible_ids: HashSet::new(),
+            issues: Vec::new(),
+        };
+
+        let projected = project_ids_for_renderer(&evaluated, &graph, "general-view");
+        assert!(projected.contains("Pkg::need"));
+        assert!(projected.contains("Pkg::req"));
+        assert!(projected.contains("Pkg::design"));
+        assert!(
+            !projected.contains("Pkg::unrelatedPart"),
+            "traceability projection should not structurally expand unrelated elements"
+        );
     }
 
     #[test]

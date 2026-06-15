@@ -367,7 +367,7 @@ function applyEdgeMarker(
     path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-specializes)").style("stroke-dasharray", "5,3");
   } else if (edgeKind === "composition") {
     path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-start", "url(#general-d3-diamond)").style("marker-end", "none").style("stroke-dasharray", "6,3");
-  } else if (edgeKind === "satisfy" || edgeKind === "verify") {
+  } else if (edgeKind === "satisfy" || edgeKind === "verify" || edgeKind === "derivation") {
     path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "7,4");
   } else {
     path.style("marker-end", "url(#general-d3-arrow)");

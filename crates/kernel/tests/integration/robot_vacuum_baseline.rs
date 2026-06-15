@@ -136,9 +136,10 @@ fn robot_vacuum_showcase_model_views_are_supported() {
         .iter()
         .filter(|candidate| candidate.id.starts_with("ModelViews::"))
         .collect();
-    assert!(
-        model_views.len() >= 18,
-        "expected ModelViews catalog views, got {}",
+    assert_eq!(
+        model_views.len(),
+        3,
+        "expected exactly 3 ModelViews catalog views, got {}",
         model_views.len()
     );
     for candidate in &model_views {
@@ -149,24 +150,148 @@ fn robot_vacuum_showcase_model_views_are_supported() {
         );
     }
 
-    let operational_context = build_sysml_visualization_for_paths(
+    let product_structure = build_sysml_visualization_for_paths(
         &model_dir,
         Some(&root),
         &[],
-        "interconnection-view",
-        Some("operationalContext"),
+        "general-view",
+        Some("productStructure"),
     )
-    .expect("operational context visualization");
+    .expect("product structure visualization");
     assert!(
-        operational_context.empty_state_message.is_none(),
-        "operationalContext should render via asInterconnectionDiagram mapping: {:?}",
-        operational_context.empty_state_message
+        product_structure.empty_state_message.is_none(),
+        "productStructure should render as GeneralView: {:?}",
+        product_structure.empty_state_message
     );
-    let scene = operational_context
-        .interconnection_scene
-        .expect("interconnection scene for operationalContext");
+    assert_eq!(
+        product_structure.view_candidates
+            .iter()
+            .find(|c| c.name == "productStructure")
+            .and_then(|c| c.renderer_view.as_deref()),
+        Some("general-view"),
+        "productStructure should map to general-view renderer"
+    );
+    let tree_graph = product_structure
+        .general_view_graph
+        .as_ref()
+        .or(product_structure.graph.as_ref())
+        .expect("graph for productStructure");
+    let part_nodes: Vec<_> = tree_graph
+        .nodes
+        .iter()
+        .filter(|node| {
+            node.element_type.to_lowercase().contains("part")
+                && !node.element_type.to_lowercase().contains("def")
+        })
+        .collect();
     assert!(
-        !scene.nodes.is_empty(),
-        "operationalContext interconnection scene should not be empty"
+        part_nodes.len() >= 5,
+        "productStructure should show the robot part tree, got {} part usages",
+        part_nodes.len()
+    );
+    assert!(
+        !tree_graph
+            .nodes
+            .iter()
+            .any(|node| node.id.contains("RequirementRole#metadata")),
+        "productStructure should not include metadata annotation nodes"
+    );
+
+    let functional_architecture = build_sysml_visualization_for_paths(
+        &model_dir,
+        Some(&root),
+        &[],
+        "general-view",
+        Some("functionalArchitecture"),
+    )
+    .expect("functional architecture visualization");
+    assert!(
+        functional_architecture.empty_state_message.is_none(),
+        "functionalArchitecture should render as general-view: {:?}",
+        functional_architecture.empty_state_message
+    );
+    let func_graph = functional_architecture
+        .general_view_graph
+        .as_ref()
+        .or(functional_architecture.graph.as_ref())
+        .expect("graph for functionalArchitecture");
+    let action_nodes: Vec<_> = func_graph
+        .nodes
+        .iter()
+        .filter(|node| node.element_type.to_lowercase().contains("action"))
+        .collect();
+    assert!(
+        action_nodes.len() >= 5,
+        "functionalArchitecture should show capability actions, got {} action nodes",
+        action_nodes.len()
+    );
+
+    let requirements_traceability = build_sysml_visualization_for_paths(
+        &model_dir,
+        Some(&root),
+        &[],
+        "general-view",
+        Some("requirementsTraceability"),
+    )
+    .expect("requirements traceability visualization");
+    assert!(
+        requirements_traceability.empty_state_message.is_none(),
+        "requirementsTraceability should render as RequirementView: {:?}",
+        requirements_traceability.empty_state_message
+    );
+    assert_eq!(
+        requirements_traceability
+            .view_candidates
+            .iter()
+            .find(|c| c.name == "requirementsTraceability")
+            .and_then(|c| c.renderer_view.as_deref()),
+        Some("general-view"),
+        "requirementsTraceability should map to general-view renderer"
+    );
+    let trace_graph = requirements_traceability
+        .general_view_graph
+        .as_ref()
+        .or(requirements_traceability.graph.as_ref())
+        .expect("graph for requirementsTraceability");
+    assert!(
+        trace_graph.nodes.len() >= 10,
+        "requirementsTraceability should include linked elements, got {} nodes",
+        trace_graph.nodes.len()
+    );
+    let trace_edges: Vec<_> = trace_graph
+        .edges
+        .iter()
+        .filter(|edge| {
+            matches!(
+                edge.rel_type.to_lowercase().as_str(),
+                "derivation" | "satisfy" | "verify" | "subject"
+            )
+        })
+        .collect();
+    assert!(
+        trace_edges.len() >= 5,
+        "requirementsTraceability should show traceability links, got {} edges",
+        trace_edges.len()
+    );
+    assert!(
+        trace_graph
+            .edges
+            .iter()
+            .any(|edge| edge.rel_type.eq_ignore_ascii_case("derivation")),
+        "requirementsTraceability should include need→requirement derivation links"
+    );
+    assert!(
+        trace_graph
+            .edges
+            .iter()
+            .any(|edge| edge.rel_type.eq_ignore_ascii_case("satisfy")),
+        "requirementsTraceability should include design→requirement satisfy links"
+    );
+    assert!(
+        !trace_graph
+            .nodes
+            .iter()
+            .any(|node| node.id.contains("RequirementRole#metadata")),
+        "requirementsTraceability should not include metadata annotation nodes"
     );
 }

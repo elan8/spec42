@@ -27,6 +27,7 @@ export function normalizeEdgeKind(relationshipType: string): NormalizedEdgeKind 
   if (type.includes("reference") || type === "ref") return "reference";
   if (type.includes("satisfy")) return "satisfy";
   if (type.includes("verify")) return "verify";
+  if (type.includes("derivation") || type.includes("derive")) return "derivation";
   if (type === "typing" || type === "defined_by" || type === "defined by" || type === "definition") return "typing";
   if (type === "dependency" || type.includes("depend") || type.includes("binary-dependency")) return "dependency";
   if (type === "usage" || type === "usage-relationship") return "usage";

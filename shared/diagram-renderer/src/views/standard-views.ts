@@ -118,13 +118,21 @@ export function renderGridView(ctx: BehaviorSceneContext): { minX: number; minY:
   const rows = cells.length > 0 ? cells : ctx.prepared.nodes.map((node) => asRecord(node.attributes));
   const left = 52;
   const top = 92;
-  const columns = [
-    { key: "name", label: "Name", width: 220 },
-    { key: "kind", label: "Kind", width: 150 },
-    { key: "attributeCount", label: "Attrs", width: 80 },
-    { key: "partCount", label: "Parts", width: 80 },
-    { key: "portCount", label: "Ports", width: 80 },
-  ];
+  const traceabilityTable = Boolean(ctx.prepared.meta?.traceabilityTable);
+  const columns = traceabilityTable
+    ? [
+        { key: "name", label: "Name", width: 240 },
+        { key: "kind", label: "Kind", width: 130 },
+        { key: "package", label: "Package", width: 170 },
+        { key: "linkCount", label: "Links", width: 70 },
+      ]
+    : [
+        { key: "name", label: "Name", width: 220 },
+        { key: "kind", label: "Kind", width: 150 },
+        { key: "attributeCount", label: "Attrs", width: 80 },
+        { key: "partCount", label: "Parts", width: 80 },
+        { key: "portCount", label: "Ports", width: 80 },
+      ];
   const tableWidth = columns.reduce((sum, column) => sum + column.width, 0);
   const rowHeight = 30;
   ctx.root
