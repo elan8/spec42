@@ -46,13 +46,8 @@ pub fn materialize_unit_attribute_def_from_kerml(
     parsed: &ParsedUnitAttributeDef,
     span: &TextRange,
 ) {
-    let qualified = qualified_name_for_node(
-        g,
-        uri,
-        container_prefix,
-        &parsed.name,
-        "attribute def",
-    );
+    let qualified =
+        qualified_name_for_node(g, uri, container_prefix, &parsed.name, "attribute def");
     let mut attrs = HashMap::new();
     if let Some(ref base) = parsed.specializes {
         attrs.insert("attributeType".to_string(), serde_json::json!(base));
@@ -78,13 +73,8 @@ pub fn materialize_unit_attribute_def_from_kerml(
         }
     }
     if let Some(ref unit_type) = parsed.m_ref_unit {
-        let mref_qualified = qualified_name_for_node(
-            g,
-            uri,
-            Some(qualified.as_str()),
-            "mRef",
-            "attribute def",
-        );
+        let mref_qualified =
+            qualified_name_for_node(g, uri, Some(qualified.as_str()), "mRef", "attribute def");
         let mut mref_attrs = HashMap::new();
         mref_attrs.insert("attributeType".to_string(), serde_json::json!(unit_type));
         add_node_and_recurse(
@@ -103,9 +93,7 @@ pub fn materialize_unit_attribute_def_from_kerml(
 
 fn extract_declared_name_after_def(text: &str) -> Option<String> {
     let tokens: Vec<&str> = text.split_whitespace().collect();
-    let def_pos = tokens
-        .iter()
-        .position(|t| t.eq_ignore_ascii_case("def"))?;
+    let def_pos = tokens.iter().position(|t| t.eq_ignore_ascii_case("def"))?;
     let mut i = def_pos + 1;
     while i < tokens.len() {
         let tok = tokens[i].trim_end_matches(|c: char| !c.is_alphanumeric() && c != '_');
@@ -136,7 +124,9 @@ fn extract_specializes_target(text: &str) -> Option<String> {
     for (idx, tok) in tokens.iter().enumerate() {
         if *tok == ":>" || tok.eq_ignore_ascii_case("specializes") {
             if let Some(next) = tokens.get(idx + 1) {
-                let name = sanitize_identifier(next.trim_end_matches(|c: char| !c.is_alphanumeric() && c != '_'));
+                let name = sanitize_identifier(
+                    next.trim_end_matches(|c: char| !c.is_alphanumeric() && c != '_'),
+                );
                 if !name.is_empty() {
                     return Some(name);
                 }
@@ -152,9 +142,7 @@ fn extract_mref_unit_type(text: &str) -> Option<String> {
     let after = &text[idx..];
     let colon = after.find(':')?;
     let rest = after[colon + 1..].trim_start();
-    let end = rest
-        .find([';', '{', '}'])
-        .unwrap_or(rest.len());
+    let end = rest.find([';', '{', '}']).unwrap_or(rest.len());
     let type_name = sanitize_identifier(rest[..end].trim());
     if is_unit_type_name(&type_name) {
         Some(type_name)
@@ -175,10 +163,9 @@ mod tests {
 
     #[test]
     fn parses_unit_type_specialization() {
-        let parsed = try_parse_unit_attribute_def(
-            "abstract attribute def SimpleUnit :> MeasurementUnit;",
-        )
-        .expect("SimpleUnit");
+        let parsed =
+            try_parse_unit_attribute_def("abstract attribute def SimpleUnit :> MeasurementUnit;")
+                .expect("SimpleUnit");
         assert_eq!(parsed.name, "SimpleUnit");
         assert_eq!(parsed.specializes.as_deref(), Some("MeasurementUnit"));
     }

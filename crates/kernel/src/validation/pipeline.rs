@@ -236,16 +236,10 @@ fn collect_diagnostics_for_document(
     text: &str,
     strict_diagnostics: bool,
 ) -> Vec<Diagnostic> {
-    let indexed_sources: Vec<(&Url, &str)> = state
-        .index
-        .iter()
-        .map(|(indexed_uri, entry)| (indexed_uri, entry.content.as_str()))
-        .collect();
     diagnostics_core::collect_document_diagnostics(
         &state.semantic_graph,
         &state.library_paths,
         &config.check_providers,
-        &indexed_sources,
         uri,
         text,
         false,

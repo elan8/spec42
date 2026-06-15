@@ -12,13 +12,28 @@ const MEASUREMENT_UNIT_ROOTS: &[&str] = &[
     "ScalarMeasurementReference",
 ];
 
+pub fn base_type_name(name: &str) -> &str {
+    name.rsplit("::").next().unwrap_or(name).trim()
+}
+
 pub fn is_unit_type_name(name: &str) -> bool {
-    let base = name.rsplit("::").next().unwrap_or(name).trim();
+    let base = base_type_name(name);
     base.ends_with("Unit") || MEASUREMENT_UNIT_ROOTS.contains(&base)
 }
 
+pub fn is_unit_type_name_in_graph(graph: &SemanticGraph, name: &str) -> bool {
+    let base = base_type_name(name);
+    if is_unit_type_name(base) {
+        return true;
+    }
+    unit_type_ancestors(graph, base)
+        .iter()
+        .map(|ancestor| base_type_name(ancestor))
+        .any(|ancestor| MEASUREMENT_UNIT_ROOTS.contains(&ancestor))
+}
+
 pub fn quantity_value_to_unit_type_name(type_name: &str) -> Option<String> {
-    let base = type_name.rsplit("::").next()?.trim();
+    let base = base_type_name(type_name);
     base.strip_suffix("Value")
         .map(|stripped| format!("{stripped}Unit"))
 }
@@ -55,16 +70,12 @@ pub fn unit_type_for_quantity_value<'a>(
         .get("attributeType")
         .and_then(|v| v.as_str())
         .and_then(|type_ref| {
-            quantity_value_to_unit_type_name(type_ref).and_then(|unit_name| {
-                graph.nodes_named(&unit_name).into_iter().next()
-            })
+            quantity_value_to_unit_type_name(type_ref)
+                .and_then(|unit_name| graph.nodes_named(&unit_name).into_iter().next())
         })
 }
 
-pub fn unit_type_for_quantity_type_name(
-    graph: &SemanticGraph,
-    type_name: &str,
-) -> Option<String> {
+pub fn unit_type_for_quantity_type_name(graph: &SemanticGraph, type_name: &str) -> Option<String> {
     let normalized = type_name.rsplit("::").next().unwrap_or(type_name).trim();
     if is_unit_type_name(normalized) {
         return Some(normalized.to_string());
@@ -96,11 +107,7 @@ pub fn unit_type_for_quantity_type_name(
     quantity_value_to_unit_type_name(normalized)
 }
 
-pub fn is_measurement_unit_compatible(
-    graph: &SemanticGraph,
-    expected: &str,
-    actual: &str,
-) -> bool {
+pub fn is_measurement_unit_compatible(graph: &SemanticGraph, expected: &str, actual: &str) -> bool {
     let expected_base = expected.rsplit("::").next().unwrap_or(expected);
     let actual_base = actual.rsplit("::").next().unwrap_or(actual);
     if expected_base == actual_base {
@@ -190,5 +197,27 @@ package ElectricalQuantities {
             .expect("Voltage def");
         let unit_type = unit_type_for_quantity_type_name(&graph, "Voltage").expect("unit type");
         assert_eq!(unit_type, "ElectricPotentialDifferenceUnit");
+    }
+
+    #[test]
+    fn recognizes_custom_unit_type_by_measurement_ancestor() {
+        let uri = Url::parse("file:///test/custom-units.sysml").expect("uri");
+        let parsed = parse(
+            r#"
+            package Measurement {
+                attribute def MeasurementUnit;
+                attribute def CustomMeasure :> MeasurementUnit;
+            }
+            "#,
+        )
+        .expect("parse");
+        let mut graph = build_graph_from_doc(&parsed, &uri);
+        link_workspace_relationships(&mut graph);
+
+        assert!(is_unit_type_name_in_graph(&graph, "CustomMeasure"));
+        assert!(is_unit_type_name_in_graph(
+            &graph,
+            "Measurement::CustomMeasure"
+        ));
     }
 }

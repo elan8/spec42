@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 
 use serde_json::{json, Value};
-use sysml_v2_parser::ast::{AttributeBody, AttributeBodyElement, AttributeDef};
+use sysml_v2_parser::ast::{AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage};
 
 use crate::semantic::graph_builder::expressions;
 
@@ -11,6 +11,7 @@ use crate::semantic::graph_builder::expressions;
 pub const SHORT_NAME_KEY: &str = "shortName";
 pub const UNIT_CONVERSION_KEY: &str = "unitConversion";
 pub const UNIT_VALUE_EXPR_KEY: &str = "unitValueExpr";
+pub const UNIT_PREFIX_KEY: &str = "unitPrefix";
 
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct UnitConversionMeta {
@@ -22,10 +23,7 @@ pub struct UnitConversionMeta {
     pub zero_offset_kelvin: Option<f64>,
 }
 
-pub fn project_attribute_def_unit_metadata(
-    attrs: &mut HashMap<String, Value>,
-    def: &AttributeDef,
-) {
+pub fn project_attribute_def_unit_metadata(attrs: &mut HashMap<String, Value>, def: &AttributeDef) {
     if let Some(short) = def.short_name.as_ref().filter(|s| !s.is_empty()) {
         attrs.insert(SHORT_NAME_KEY.to_string(), json!(short));
     }
@@ -33,7 +31,33 @@ pub fn project_attribute_def_unit_metadata(
         let rendered = expressions::expression_to_debug_string(expr);
         attrs.insert(UNIT_VALUE_EXPR_KEY.to_string(), json!(rendered));
     }
-    if let Some(conversion) = extract_unit_conversion_from_body(&def.body) {
+    project_unit_body_metadata(attrs, def.typing.as_deref(), &def.body);
+}
+
+pub fn project_attribute_usage_unit_metadata(
+    attrs: &mut HashMap<String, Value>,
+    usage: &AttributeUsage,
+) {
+    project_unit_body_metadata(attrs, usage.typing.as_deref(), &usage.body);
+}
+
+fn project_unit_body_metadata(
+    attrs: &mut HashMap<String, Value>,
+    typing: Option<&str>,
+    body: &AttributeBody,
+) {
+    if typing.map(base_type_name) == Some("UnitPrefix") {
+        if let Some(prefix) = extract_unit_prefix_from_body(body) {
+            attrs.insert(
+                UNIT_PREFIX_KEY.to_string(),
+                json!({
+                    "symbol": prefix.symbol,
+                    "conversionFactor": prefix.conversion_factor,
+                }),
+            );
+        }
+    }
+    if let Some(conversion) = extract_unit_conversion_from_body(body) {
         attrs.insert(
             UNIT_CONVERSION_KEY.to_string(),
             json!({
@@ -48,32 +72,113 @@ pub fn project_attribute_def_unit_metadata(
     }
 }
 
-fn extract_unit_conversion_from_body(body: &AttributeBody) -> Option<UnitConversionMeta> {
+fn base_type_name(name: &str) -> &str {
+    name.rsplit("::").next().unwrap_or(name).trim()
+}
+
+#[derive(Debug, Clone, PartialEq)]
+struct UnitPrefixMeta {
+    symbol: Option<String>,
+    conversion_factor: f64,
+}
+
+fn extract_unit_prefix_from_body(body: &AttributeBody) -> Option<UnitPrefixMeta> {
+    let block_text = attribute_body_as_text(body)?;
+    let factor = extract_assignment(&block_text, "conversionFactor")
+        .and_then(|raw| parse_factor_expression(&raw))?;
+    Some(UnitPrefixMeta {
+        symbol: extract_assignment(&block_text, "symbol"),
+        conversion_factor: factor,
+    })
+}
+
+fn attribute_body_as_text(body: &AttributeBody) -> Option<String> {
     let AttributeBody::Brace { elements } = body else {
         return None;
     };
     let mut block_text = String::new();
     for element in elements {
-        match &element.value {
-            AttributeBodyElement::Other(text) => {
-                if !block_text.is_empty() {
-                    block_text.push(' ');
-                }
-                block_text.push_str(text.trim());
-            }
-            AttributeBodyElement::AttributeDef(nested) => {
-                let nested_text = attribute_def_as_text(&nested.value);
-                if !block_text.is_empty() {
-                    block_text.push(' ');
-                }
-                block_text.push_str(&nested_text);
-            }
-            _ => {}
-        }
+        append_body_element_text(&mut block_text, &element.value);
     }
     if block_text.is_empty() {
-        return None;
+        None
+    } else {
+        Some(block_text)
     }
+}
+
+fn append_body_element_text(out: &mut String, element: &AttributeBodyElement) {
+    match element {
+        AttributeBodyElement::Other(text) => {
+            if !out.is_empty() {
+                out.push(' ');
+            }
+            out.push_str(text.trim());
+        }
+        AttributeBodyElement::AttributeDef(nested) => {
+            if !out.is_empty() {
+                out.push(' ');
+            }
+            out.push_str(&attribute_def_as_text(&nested.value));
+        }
+        AttributeBodyElement::AttributeUsage(nested) => {
+            if !out.is_empty() {
+                out.push(' ');
+            }
+            out.push_str(&attribute_usage_as_text(&nested.value));
+        }
+        AttributeBodyElement::Doc(_) | AttributeBodyElement::Error(_) => {
+            if let AttributeBodyElement::Error(err) = element {
+                if let Some(found) = &err.value.found {
+                    if !out.is_empty() {
+                        out.push(' ');
+                    }
+                    out.push_str(found);
+                }
+            }
+        }
+    }
+}
+
+fn attribute_usage_as_text(usage: &AttributeUsage) -> String {
+    let mut out = String::new();
+    let redefines = usage.redefines.as_deref();
+    if let Some(r) = redefines {
+        out.push_str(":>> ");
+        out.push_str(r);
+        out.push(' ');
+    } else if let Some(s) = &usage.subsets {
+        out.push_str(":> ");
+        out.push_str(s);
+        out.push(' ');
+    }
+    if redefines != Some(usage.name.as_str()) && !usage.name.is_empty() {
+        out.push_str(&usage.name);
+        out.push(' ');
+    }
+    if let Some(typing) = &usage.typing {
+        out.push_str(": ");
+        out.push_str(typing);
+        out.push(' ');
+    }
+    if let AttributeBody::Brace { elements } = &usage.body {
+        out.push_str("{ ");
+        for element in elements {
+            append_body_element_text(&mut out, &element.value);
+            out.push(' ');
+        }
+        out.push_str("} ");
+    }
+    if let Some(expr) = &usage.value {
+        out.push_str("= ");
+        out.push_str(&expressions::expression_to_debug_string(expr));
+        out.push_str("; ");
+    }
+    out
+}
+
+fn extract_unit_conversion_from_body(body: &AttributeBody) -> Option<UnitConversionMeta> {
+    let block_text = attribute_body_as_text(body)?;
     extract_unit_conversion_from_text(&block_text)
 }
 
@@ -92,10 +197,8 @@ fn attribute_def_as_text(def: &AttributeDef) -> String {
     if let AttributeBody::Brace { elements } = &def.body {
         out.push_str(" { ");
         for element in elements {
-            if let AttributeBodyElement::Other(text) = &element.value {
-                out.push_str(text.trim());
-                out.push(' ');
-            }
+            append_body_element_text(&mut out, &element.value);
+            out.push(' ');
         }
         out.push_str("} ");
     }
@@ -164,22 +267,30 @@ fn parse_zero_point_kelvin(line: &str) -> Option<f64> {
 }
 
 fn parse_factor_expression(raw: &str) -> Option<f64> {
-    let trimmed = raw.trim();
-    if let Some(div) = trimmed.find('/') {
-        let left = trimmed[..div].trim().parse::<f64>().ok()?;
-        let right = trimmed[div + 1..].trim().parse::<f64>().ok()?;
+    let mut trimmed = raw.trim();
+    while trimmed.starts_with('(') && trimmed.ends_with(')') {
+        trimmed = trimmed[1..trimmed.len() - 1].trim();
+    }
+    let compact: String = trimmed.chars().filter(|c| !c.is_whitespace()).collect();
+    if let Some(div) = compact.find('/') {
+        let left = compact[..div].parse::<f64>().ok()?;
+        let right = compact[div + 1..].parse::<f64>().ok()?;
         if right == 0.0 {
             return None;
         }
         return Some(left / right);
     }
-    trimmed.parse::<f64>().ok()
+    compact.parse::<f64>().ok()
 }
 
 fn strip_quotes(value: &str) -> String {
     let mut out = value.trim().to_string();
-    if out.starts_with('\'') && out.ends_with('\'') && out.len() > 1 {
-        out = out[1..out.len() - 1].to_string();
+    if out.len() > 1 {
+        if (out.starts_with('\'') && out.ends_with('\''))
+            || (out.starts_with('"') && out.ends_with('"'))
+        {
+            out = out[1..out.len() - 1].to_string();
+        }
     }
     out
 }
@@ -187,6 +298,56 @@ fn strip_quotes(value: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn km_body_text_includes_reference_unit() {
+        use sysml_v2_parser::ast::RootElement;
+        use sysml_v2_parser::parse;
+
+        let parsed = parse(
+            "package P { attribute <km> kilometre : LengthUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = m; } } }",
+        )
+        .expect("parse");
+        let attr = parsed
+            .elements
+            .iter()
+            .find_map(|el| match &el.value {
+                RootElement::Package(pkg) => match &pkg.value.body {
+                    sysml_v2_parser::ast::PackageBody::Brace { elements } => {
+                        elements.first().map(|node| &node.value)
+                    }
+                    _ => None,
+                },
+                _ => None,
+            })
+            .expect("attr");
+        let body = match attr {
+            sysml_v2_parser::ast::PackageBodyElement::AttributeDef(def) => &def.body,
+            _ => panic!("expected attribute def"),
+        };
+        if let sysml_v2_parser::ast::AttributeBody::Brace { elements } = body {
+            let kinds: Vec<_> = elements
+                .iter()
+                .map(|el| match &el.value {
+                    AttributeBodyElement::Error(err) => {
+                        format!("Error({:?})", err.value.found)
+                    }
+                    other => format!("{other:?}"),
+                })
+                .collect();
+            assert!(
+                kinds.iter().any(|k| k.contains("referenceUnit")),
+                "body elements: {kinds:?}"
+            );
+        }
+        let text = attribute_body_as_text(body).expect("body text");
+        assert!(
+            text.contains("referenceUnit"),
+            "body text missing referenceUnit: {text}"
+        );
+        let meta = extract_unit_conversion_from_text(&text).expect("meta");
+        assert_eq!(meta.reference_unit.as_deref(), Some("m"));
+    }
 
     #[test]
     fn extracts_conversion_by_convention() {
@@ -198,11 +359,91 @@ mod tests {
     }
 
     #[test]
-    fn extracts_conversion_by_prefix() {
-        let text = ":>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = m; }";
-        let meta = extract_unit_conversion_from_text(text).expect("meta");
-        assert_eq!(meta.kind, "ConversionByPrefix");
-        assert_eq!(meta.prefix.as_deref(), Some("kilo"));
-        assert_eq!(meta.reference_unit.as_deref(), Some("m"));
+    fn projects_conversion_inside_wrapped_units_package() {
+        use url::Url;
+
+        use crate::semantic::graph_builder::build_graph_from_doc;
+        use sysml_v2_parser::parse;
+
+        let content = r#"
+        package SIPrefixes {
+            attribute kilo: UnitPrefix { :>> symbol = "k"; :>> conversionFactor = 1E3; }
+        }
+        package Units {
+            attribute <m> metre : LengthUnit;
+            attribute <km> kilometre : LengthUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = m; } }
+            attribute <ft> 'foot' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 3.048E-01; } }
+        }
+        "#;
+        let uri = Url::parse("file:///test/units.sysml").expect("uri");
+        let parsed = parse(content).expect("parse");
+        let graph = build_graph_from_doc(&parsed, &uri);
+        let km = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|n| n.name == "kilometre")
+            .expect("kilometre");
+        assert!(
+            km.attributes.contains_key(UNIT_CONVERSION_KEY),
+            "km attrs: {:?}",
+            km.attributes
+        );
+        let ft = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|n| n.name == "foot")
+            .expect("foot");
+        assert!(
+            ft.attributes.contains_key(UNIT_CONVERSION_KEY),
+            "ft attrs: {:?}",
+            ft.attributes
+        );
+        let km_conv = km.attributes.get(UNIT_CONVERSION_KEY).expect("km conv");
+        assert_eq!(
+            km_conv.get("referenceUnit").and_then(|v| v.as_str()),
+            Some("m"),
+            "km conv json: {km_conv}"
+        );
+    }
+
+    #[test]
+    fn projects_prefix_and_conversion_from_catalog_shape() {
+        use url::Url;
+
+        use crate::semantic::graph_builder::build_graph_from_doc;
+        use sysml_v2_parser::parse;
+
+        let content = r#"
+        package SIPrefixes {
+            attribute kilo: UnitPrefix { :>> symbol = "k"; :>> conversionFactor = 1E3; }
+        }
+        package SI {
+            attribute <m> metre : LengthUnit;
+            attribute <km> kilometre : LengthUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = m; } }
+        }
+        "#;
+        let uri = Url::parse("file:///test/catalog.sysml").expect("uri");
+        let parsed = parse(content).expect("parse");
+        let graph = build_graph_from_doc(&parsed, &uri);
+        let kilo = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|n| n.name == "kilo")
+            .expect("kilo");
+        assert!(
+            kilo.attributes.contains_key(UNIT_PREFIX_KEY),
+            "kilo attrs: {:?}",
+            kilo.attributes
+        );
+        let km = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|n| n.name == "kilometre")
+            .expect("kilometre");
+        assert!(
+            km.attributes.contains_key(UNIT_CONVERSION_KEY),
+            "km attrs: {:?}",
+            km.attributes
+        );
     }
 }

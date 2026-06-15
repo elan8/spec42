@@ -13,11 +13,9 @@ pub const KERNEL_INTERFACE_VERSION: u32 = 1;
 pub type CheckProvider = Arc<dyn SemanticCheckProvider>;
 pub type PipelineHook = Arc<dyn ValidationPipelineHook>;
 
-/// Host context passed to semantic check providers (indexed library/workspace sources).
+/// Host context passed to semantic check providers.
 #[derive(Debug, Clone, Copy, Default)]
-pub struct DiagnosticsHostContext<'a> {
-    pub indexed_sources: &'a [(&'a Url, &'a str)],
-}
+pub struct DiagnosticsHostContext;
 
 /// Provider of semantic/quality diagnostics. Implement this to add custom checks (e.g. naming rules, complexity).
 pub trait SemanticCheckProvider: Send + Sync {
@@ -26,12 +24,11 @@ pub trait SemanticCheckProvider: Send + Sync {
         self.compute_diagnostics_with_context(graph, uri, DiagnosticsHostContext::default())
     }
 
-    /// Returns LSP diagnostics with optional in-memory indexed sources for unit catalogs.
     fn compute_diagnostics_with_context(
         &self,
         graph: &SemanticGraph,
         uri: &Url,
-        ctx: DiagnosticsHostContext<'_>,
+        _ctx: DiagnosticsHostContext,
     ) -> Vec<Diagnostic>;
 }
 

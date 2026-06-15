@@ -14,7 +14,6 @@ pub(crate) fn collect_document_diagnostics(
     semantic_graph: &SemanticGraph,
     library_paths: &[Url],
     check_providers: &[Arc<dyn SemanticCheckProvider>],
-    indexed_sources: &[(&Url, &str)],
     uri: &Url,
     text: &str,
     block_on_any_parse_issue: bool,
@@ -76,7 +75,7 @@ pub(crate) fn collect_document_diagnostics(
     };
 
     if allow_semantic_checks {
-        let host_ctx = DiagnosticsHostContext { indexed_sources };
+        let host_ctx = DiagnosticsHostContext;
         for provider in check_providers {
             diagnostics.extend(provider.compute_diagnostics_with_context(
                 semantic_graph,

@@ -52,11 +52,13 @@ KerML `SemanticMetadata` from library sources is materialized as `metadata def` 
 
 ### Unit resolution
 
-Unit literals in attribute values (`10 [kV]`) resolve through `UnitRegistry::build_unified`:
+Unit literals in attribute values (`10 [kV]`) resolve through `UnitRegistry::from_graph`:
 
-1. **Catalog text** — indexed library sources and on-disk QUDV/SI paths (primary for conversion metadata).
-2. **Graph ingest** — `attribute def` nodes with `shortName` and `attributeType` `*Unit` supplement missing symbols from the linked semantic graph.
-3. **Quantity compatibility** — `incompatible_unit_dimension` compares the attribute quantity type (via typing/specialization to `*Value` → `*Unit`) against the unit literal dimension using `is_measurement_unit_compatible` (shared `MeasurementUnit` ancestry when present in the graph).
+1. **Graph index** — ingest `attribute` / `attribute def` nodes with `shortName`, `unitConversion`, `unitValueExpr`, and `UnitPrefix` metadata materialized during graph build (`unit_metadata.rs`, `graph_ingest.rs`).
+2. **Derivation** — SI-prefixed symbols (`kV`, `MW`), compound units (`MWh`), and algebraic derived units are computed in `finalize_ingest` from graph-ingested base symbols.
+3. **Quantity compatibility** — `incompatible_unit_dimension` compares the attribute quantity type against the unit literal dimension using `is_measurement_unit_compatible` (MeasurementUnit ancestry in the linked graph).
+
+Library closure loads QUDV/SI packages into the semantic graph when imports or unit literals require them; the registry does not re-parse catalog text or read paths from disk.
 
 Workspace models containing unit literals (`[…]` after numeric values) seed the quantity library closure (`Measurement`, `ISQ`, `SI`, `SIPrefixes`, …) even without explicit quantity imports.
 

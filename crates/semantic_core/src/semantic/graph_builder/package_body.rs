@@ -23,12 +23,12 @@ use super::action;
 use super::analysis_case;
 use super::attribute_body;
 use super::definition_body;
-use super::unit_metadata;
-use super::unit_type_promotion;
 use super::expressions;
 use super::modeled_kerml_name::{extract_kerml_feature_names_from_text, extract_modeled_decl_name};
 use super::occurrence_body;
 use super::package_packages;
+use super::unit_metadata;
+use super::unit_type_promotion;
 use super::verification;
 use super::{add_node_and_recurse, qualified_name_for_node};
 use super::{interface_def, part_def, part_usage, port_def, state, stubs, use_case};
@@ -1992,16 +1992,18 @@ pub(super) fn build_from_package_body_element(
             if let Some(pid) = parent_id {
                 let kv = &k.value;
                 let promoted = kv.bnf_production.eq_ignore_ascii_case("attribute")
-                    && unit_type_promotion::try_parse_unit_attribute_def(&kv.text).map(|parsed| {
-                        unit_type_promotion::materialize_unit_attribute_def_from_kerml(
-                            g,
-                            uri,
-                            container_prefix,
-                            pid,
-                            &parsed,
-                            &span_to_range(&k.span),
-                        );
-                    }).is_some();
+                    && unit_type_promotion::try_parse_unit_attribute_def(&kv.text)
+                        .map(|parsed| {
+                            unit_type_promotion::materialize_unit_attribute_def_from_kerml(
+                                g,
+                                uri,
+                                container_prefix,
+                                pid,
+                                &parsed,
+                                &span_to_range(&k.span),
+                            );
+                        })
+                        .is_some();
                 if !promoted {
                     let display_name =
                         extract_modeled_decl_name(&kv.bnf_production, &kv.text, "_kermlSemantic");

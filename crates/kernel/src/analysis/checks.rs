@@ -9,14 +9,13 @@ use crate::semantic::SemanticGraph;
 pub fn compute_semantic_diagnostics(
     graph: &SemanticGraph,
     uri: &Url,
-    ctx: DiagnosticsHostContext<'_>,
+    ctx: DiagnosticsHostContext,
 ) -> Vec<Diagnostic> {
     semantic_core::collect_diagnostics_from_graph(
         graph,
         uri,
         semantic_core::DiagnosticsOptions {
             include_hints: false,
-            indexed_sources: ctx.indexed_sources,
         },
     )
     .into_iter()
@@ -33,7 +32,7 @@ impl crate::host::config::SemanticCheckProvider for DefaultSemanticChecks {
         &self,
         graph: &SemanticGraph,
         uri: &Url,
-        ctx: DiagnosticsHostContext<'_>,
+        ctx: DiagnosticsHostContext,
     ) -> Vec<Diagnostic> {
         compute_semantic_diagnostics(graph, uri, ctx)
     }

@@ -27,9 +27,10 @@ package SI {
 const GRID_USAGE_SYSML: &str = r#"
 package GridQuantities {
     private import ScalarValues::*;
+    attribute def EnergyUnit;
     attribute def PowerValue;
     attribute def ElectricPotentialDifferenceValue;
-    attribute def EnergyValue;
+    attribute def EnergyValue :> EnergyUnit;
     attribute def LengthValue;
 
     part def GridAsset {
@@ -76,11 +77,10 @@ fn engineering_prefixed_units_resolve_from_indexed_qudv_catalog() {
     .expect("usage doc");
     let usage_uri = usage_doc.uri.clone();
 
-    let indexed_sources = [(&catalog_uri, catalog_content.as_str())];
     let (graph, _) =
         build_semantic_graph_from_documents(&[catalog_doc, usage_doc]).expect("semantic graph");
 
-    let registry = UnitRegistry::build_unified(&graph, &indexed_sources, &[]);
+    let registry = UnitRegistry::from_graph(&graph);
     for unit in ["kg", "kV", "MW", "MVA", "MWh", "km", "SI::s"] {
         assert!(
             registry.is_recognized_unit_expression(unit),
@@ -93,7 +93,6 @@ fn engineering_prefixed_units_resolve_from_indexed_qudv_catalog() {
         &usage_uri,
         DiagnosticsOptions {
             include_hints: false,
-            indexed_sources: &indexed_sources,
         },
     );
     let unit_diags: Vec<_> = diagnostics
@@ -148,11 +147,10 @@ fn domain_monetary_units_resolve_from_indexed_catalog() {
     )
     .expect("usage doc");
     let usage_uri = usage_doc.uri.clone();
-    let indexed_sources = [(&catalog_uri, catalog_content.as_str())];
     let (graph, _) =
         build_semantic_graph_from_documents(&[catalog_doc, usage_doc]).expect("semantic graph");
 
-    let registry = UnitRegistry::build_unified(&graph, &indexed_sources, &[]);
+    let registry = UnitRegistry::from_graph(&graph);
     assert!(
         registry.is_recognized_unit_expression("EUR"),
         "EUR should be indexed from MonetaryUnits catalog"
@@ -163,7 +161,6 @@ fn domain_monetary_units_resolve_from_indexed_catalog() {
         &usage_uri,
         DiagnosticsOptions {
             include_hints: false,
-            indexed_sources: &indexed_sources,
         },
     );
     assert!(
@@ -204,7 +201,6 @@ fn common_si_mass_unit_resolves_from_indexed_si_catalog() {
     )
     .expect("usage doc");
     let usage_uri = usage_doc.uri.clone();
-    let indexed_sources = [(&catalog_uri, catalog_content.as_str())];
     let (graph, _) =
         build_semantic_graph_from_documents(&[catalog_doc, usage_doc]).expect("semantic graph");
 
@@ -213,7 +209,6 @@ fn common_si_mass_unit_resolves_from_indexed_si_catalog() {
         &usage_uri,
         DiagnosticsOptions {
             include_hints: false,
-            indexed_sources: &indexed_sources,
         },
     );
     assert!(
@@ -257,7 +252,6 @@ fn mismatched_unit_dimension_emits_incompatible_not_unknown() {
     )
     .expect("usage doc");
     let usage_uri = usage_doc.uri.clone();
-    let indexed_sources = [(&catalog_uri, catalog_content.as_str())];
     let (graph, _) =
         build_semantic_graph_from_documents(&[catalog_doc, usage_doc]).expect("semantic graph");
     let diagnostics = collect_diagnostics_from_graph(
@@ -265,7 +259,6 @@ fn mismatched_unit_dimension_emits_incompatible_not_unknown() {
         &usage_uri,
         DiagnosticsOptions {
             include_hints: false,
-            indexed_sources: &indexed_sources,
         },
     );
     assert!(
@@ -279,6 +272,74 @@ fn mismatched_unit_dimension_emits_incompatible_not_unknown() {
             .iter()
             .any(|diag| diag.code == "unknown_unit_symbol"),
         "km should be recognized: {diagnostics:?}"
+    );
+}
+
+#[test]
+fn energy_value_accepts_mwh_but_rejects_mw() {
+    let catalog_uri = catalog_uri();
+    let catalog_content = SI_CATALOG_EXCERPT.to_string();
+    let catalog_doc = SysmlDocument {
+        uri: catalog_uri.clone(),
+        content: catalog_content.clone(),
+        path_hint: Some("Domain Libraries/Quantities and Units/SI.sysml".to_string()),
+        source_kind: SysmlDocumentSourceKind::Library,
+        sha256: None,
+        byte_size: None,
+    };
+    let usage_doc = SysmlDocument::from_memory_path(
+        "energy-usage",
+        "EnergyUsage.sysml",
+        r#"
+            package EnergyUsage {
+                attribute def EnergyUnit;
+                attribute def EnergyValue :> EnergyUnit;
+                part def Battery {
+                    attribute capacityOk : EnergyValue;
+                    attribute capacityWrong : EnergyValue;
+                }
+                part battery : Battery {
+                    attribute :>> capacityOk : EnergyValue = 20 [MWh];
+                    attribute :>> capacityWrong : EnergyValue = 20 [MW];
+                }
+            }
+        "#
+        .to_string(),
+        SysmlDocumentSourceKind::Workspace,
+        None,
+        None,
+    )
+    .expect("usage doc");
+    let usage_uri = usage_doc.uri.clone();
+    let (graph, _) =
+        build_semantic_graph_from_documents(&[catalog_doc, usage_doc]).expect("semantic graph");
+    let diagnostics = collect_diagnostics_from_graph(
+        &graph,
+        &usage_uri,
+        DiagnosticsOptions {
+            include_hints: false,
+        },
+    );
+    let incompatible: Vec<_> = diagnostics
+        .iter()
+        .filter(|diag| diag.code == "incompatible_unit_dimension")
+        .collect();
+    assert_eq!(
+        incompatible.len(),
+        1,
+        "expected only [MW] to be incompatible with EnergyValue: {diagnostics:#?}"
+    );
+    assert!(
+        incompatible
+            .iter()
+            .any(|diag| diag.message.contains("capacityWrong")),
+        "expected capacityWrong diagnostic: {incompatible:#?}"
+    );
+    assert!(
+        !diagnostics
+            .iter()
+            .any(|diag| diag.code == "unknown_unit_symbol"),
+        "MWh/MW should both be recognized: {diagnostics:#?}"
     );
 }
 
@@ -354,16 +415,11 @@ fn sysml_powersystems_check_has_no_engineering_unit_catalog_warnings_when_stdlib
     };
 
     let (graph, _) = build_semantic_graph_from_documents(&documents).expect("powersystems graph");
-    let indexed_refs: Vec<(&Url, &str)> = documents
-        .iter()
-        .map(|doc| (&doc.uri, doc.content.as_str()))
-        .collect();
     let diagnostics = collect_diagnostics_from_graph(
         &graph,
         &target_uri,
         DiagnosticsOptions {
             include_hints: false,
-            indexed_sources: &indexed_refs,
         },
     );
     let unit_warnings: Vec<_> = diagnostics

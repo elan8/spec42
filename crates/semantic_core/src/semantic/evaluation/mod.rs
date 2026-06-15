@@ -137,16 +137,12 @@ impl Quantity {
 }
 
 pub fn evaluate_expressions(graph: &mut SemanticGraph) {
-    evaluate_expressions_with_unit_catalogs(graph, &[], &[]);
+    evaluate_expressions_with_unit_catalogs(graph);
 }
 
-pub fn evaluate_expressions_with_unit_catalogs(
-    graph: &mut SemanticGraph,
-    indexed_sources: &[(&url::Url, &str)],
-    extra_unit_catalogs: &[&str],
-) {
+pub fn evaluate_expressions_with_unit_catalogs(graph: &mut SemanticGraph) {
     crate::semantic::analysis_typing::prepare_analysis_evaluation_context(graph);
-    let units = UnitRegistry::build_for_evaluation(graph, indexed_sources, extra_unit_catalogs);
+    let units = UnitRegistry::from_graph(graph);
     let outcomes = {
         let mut engine = EvalEngine::new(graph, units.clone());
         graph

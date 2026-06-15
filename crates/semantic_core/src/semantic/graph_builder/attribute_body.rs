@@ -61,6 +61,7 @@ pub(super) fn build_from_attribute_body(
                 if let Some(ref typing) = value.typing {
                     attrs.insert("attributeType".to_string(), serde_json::json!(typing));
                 }
+                unit_metadata::project_attribute_usage_unit_metadata(&mut attrs, value);
                 if let Some(ref s) = value.subsets {
                     attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
                 }

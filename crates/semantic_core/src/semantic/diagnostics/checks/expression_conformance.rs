@@ -9,10 +9,11 @@ use crate::semantic::diagnostics::helpers::{
 };
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::reference_resolution::resolve_expression_endpoint_strict;
-use crate::ResolveResult;
 use crate::semantic::units::{
-    is_measurement_unit_compatible, quantity_value_to_unit_type_name, unit_type_for_quantity_type_name,
+    is_measurement_unit_compatible, quantity_value_to_unit_type_name,
+    unit_type_for_quantity_type_name,
 };
+use crate::ResolveResult;
 use crate::UnitRegistry;
 use crate::{SemanticDiagnostic, SemanticGraph};
 

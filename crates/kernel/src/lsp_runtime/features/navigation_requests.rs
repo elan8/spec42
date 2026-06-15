@@ -109,12 +109,7 @@ fn resolve_hover_reference_target<'a>(
 }
 
 fn unit_registry_for_hover(state: &ServerState) -> UnitRegistry {
-    let indexed_sources: Vec<(&Url, &str)> = state
-        .index
-        .iter()
-        .map(|(uri, entry)| (uri, entry.content.as_str()))
-        .collect();
-    UnitRegistry::build_unified(&state.semantic_graph, &indexed_sources, &[])
+    UnitRegistry::from_graph(&state.semantic_graph)
 }
 
 fn unit_literal_hover_markdown(state: &ServerState, text: &str, pos: Position) -> Option<String> {

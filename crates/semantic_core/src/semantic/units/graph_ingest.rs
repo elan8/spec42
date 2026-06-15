@@ -2,57 +2,125 @@
 
 use serde_json::Value;
 
-use crate::semantic::units::registry::{UnitDef, UnitRegistry};
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::graph_builder::unit_metadata::{SHORT_NAME_KEY, UNIT_CONVERSION_KEY};
+use crate::semantic::graph_builder::unit_metadata::{
+    SHORT_NAME_KEY, UNIT_CONVERSION_KEY, UNIT_PREFIX_KEY, UNIT_VALUE_EXPR_KEY,
+};
 use crate::semantic::model::SemanticNode;
-use crate::semantic::units::type_resolver::is_unit_type_name;
+use crate::semantic::units::registry::{UnitDef, UnitRegistry};
+use crate::semantic::units::type_resolver::{base_type_name, is_unit_type_name_in_graph};
 
 pub fn ingest_units_from_graph(graph: &SemanticGraph, registry: &mut UnitRegistry) {
     let node_ids: Vec<_> = graph.node_index_by_id.keys().cloned().collect();
-    for node_id in node_ids {
-        let Some(node) = graph.get_node(&node_id) else {
+
+    for node_id in &node_ids {
+        let Some(node) = graph.get_node(node_id) else {
             continue;
         };
-        if node.element_kind != "attribute def" {
+        if !is_unit_catalog_element_kind(&node.element_kind) {
             continue;
         }
-        if let Some(def) = unit_def_from_graph_node(node) {
-            if !registry.has_symbol(&def.symbol) {
-                registry.ingest_unit_def(def);
-            }
+        if let Some((name, symbol, factor)) = unit_prefix_from_node(node) {
+            registry.ingest_unit_prefix(&name, symbol.as_deref(), factor);
+        }
+    }
+
+    for node_id in &node_ids {
+        let Some(node) = graph.get_node(node_id) else {
+            continue;
+        };
+        if !is_unit_catalog_element_kind(&node.element_kind) {
+            continue;
+        }
+        if unit_prefix_from_node(node).is_some() {
+            continue;
+        }
+        if let Some(def) = unit_def_from_graph_node(graph, node, registry) {
+            registry.ingest_unit_def(def);
         }
     }
 }
 
-fn unit_def_from_graph_node(node: &SemanticNode) -> Option<UnitDef> {
-    let symbol = node
+fn is_unit_catalog_element_kind(kind: &str) -> bool {
+    kind == "attribute def" || kind == "attribute"
+}
+
+fn unit_prefix_from_node(node: &SemanticNode) -> Option<(String, Option<String>, f64)> {
+    if node
+        .attributes
+        .get("attributeType")
+        .and_then(|v| v.as_str())
+        .map(base_type_name)
+        != Some("UnitPrefix")
+    {
+        return None;
+    }
+    let obj = node.attributes.get(UNIT_PREFIX_KEY)?.as_object()?;
+    let factor = obj.get("conversionFactor").and_then(|v| v.as_f64())?;
+    let symbol = obj
+        .get("symbol")
+        .and_then(|v| v.as_str())
+        .map(str::to_string);
+    Some((node.name.clone(), symbol, factor))
+}
+
+fn unit_def_from_graph_node(
+    graph: &SemanticGraph,
+    node: &SemanticNode,
+    registry: &UnitRegistry,
+) -> Option<UnitDef> {
+    let attribute_type = node
+        .attributes
+        .get("attributeType")
+        .and_then(|v| v.as_str())?;
+    let attribute_type_base = base_type_name(attribute_type);
+    if attribute_type_base == "UnitPrefix" {
+        return None;
+    }
+
+    let short_name = node
         .attributes
         .get(SHORT_NAME_KEY)
         .and_then(|v| v.as_str())
         .map(str::to_string)
-        .filter(|s| !s.is_empty())
-        .or_else(|| {
-            let dimension = node.attributes.get("attributeType").and_then(|v| v.as_str())?;
-            is_unit_type_name(dimension).then(|| node.name.clone())
-        })?;
-    let dimension = node
+        .filter(|s| !s.is_empty());
+    let unit_value_expr = node
         .attributes
-        .get("attributeType")
+        .get(UNIT_VALUE_EXPR_KEY)
         .and_then(|v| v.as_str())
         .map(str::to_string)
-        .filter(|d| is_unit_type_name(d))?;
+        .filter(|s| !s.is_empty());
+    let has_conversion = node.attributes.contains_key(UNIT_CONVERSION_KEY);
+
+    let symbol = short_name.or_else(|| {
+        if unit_value_expr.is_some() || has_conversion {
+            Some(node.name.clone())
+        } else {
+            None
+        }
+    })?;
+
+    let dimension = if attribute_type_base == "IntervalScale" {
+        "ThermodynamicTemperatureUnit".to_string()
+    } else if is_unit_type_name_in_graph(graph, attribute_type) {
+        attribute_type_base.to_string()
+    } else {
+        return None;
+    };
+
     let mut reference_unit = None;
     let mut conversion_factor = 1.0_f64;
     let mut conversion_offset = 0.0_f64;
     if let Some(meta) = node.attributes.get(UNIT_CONVERSION_KEY) {
-        apply_conversion_meta(meta, &mut reference_unit, &mut conversion_factor, &mut conversion_offset);
+        apply_conversion_meta(
+            meta,
+            registry,
+            &mut reference_unit,
+            &mut conversion_factor,
+            &mut conversion_offset,
+        );
     }
-    let algebraic_expr = node
-        .attributes
-        .get("unitValueExpr")
-        .and_then(|v| v.as_str())
-        .map(str::to_string);
+    let algebraic_expr = unit_value_expr;
     Some(UnitDef {
         symbol,
         dimension,
@@ -65,6 +133,7 @@ fn unit_def_from_graph_node(node: &SemanticNode) -> Option<UnitDef> {
 
 fn apply_conversion_meta(
     meta: &Value,
+    registry: &UnitRegistry,
     reference_unit: &mut Option<String>,
     conversion_factor: &mut f64,
     conversion_offset: &mut f64,
@@ -89,20 +158,17 @@ fn apply_conversion_meta(
                 .and_then(|v| v.as_str())
                 .map(str::to_string);
             if let Some(prefix) = obj.get("prefix").and_then(|v| v.as_str()) {
-                if prefix == "kilo" {
-                    *conversion_factor = 1E3;
-                } else if prefix == "mega" {
-                    *conversion_factor = 1E6;
-                } else if prefix == "milli" {
-                    *conversion_factor = 1E-3;
+                if let Some(factor) = registry.prefix_factor_by_name(prefix) {
+                    *conversion_factor = factor;
                 }
             }
         }
         "IntervalScale" => {
             *reference_unit = Some("K".to_string());
             if let Some(interval_unit) = obj.get("intervalUnit").and_then(|v| v.as_str()) {
-                // absolute scale references difference unit for linear factor
-                let _ = interval_unit;
+                if let Some(base) = registry.get(interval_unit) {
+                    *conversion_factor = base.conversion_factor;
+                }
             }
             if let Some(zero) = obj.get("zeroOffsetKelvin").and_then(|v| v.as_f64()) {
                 *conversion_offset = zero;

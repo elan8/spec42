@@ -5,11 +5,16 @@ use semantic_core::{
 };
 
 const SI_CATALOG: &str = r#"
+package SIPrefixes {
+    attribute kilo: UnitPrefix { :>> symbol = "k"; :>> conversionFactor = 1E3; }
+    attribute mega: UnitPrefix { :>> symbol = "M"; :>> conversionFactor = 1E6; }
+}
 package SI {
     attribute <m> metre : LengthUnit;
     attribute <kg> kilogram : MassUnit;
     attribute <V> volt : ElectricPotentialUnit;
     attribute <W> watt : PowerUnit;
+    attribute <s> second : DurationUnit;
     attribute <km> kilometre : LengthUnit {
         :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = m; }
     }
@@ -58,19 +63,37 @@ fn graph_backed_registry_recognizes_materialized_units() {
         None,
     )
     .expect("document");
-    let uri = doc.uri.clone();
     let (graph, _) = build_semantic_graph_from_documents(&[doc]).expect("graph should build");
-    let registry = UnitRegistry::build_unified(&graph, &[(&uri, SI_CATALOG)], &[]);
+    let registry = UnitRegistry::from_graph(&graph);
     assert!(registry.is_recognized_unit_expression("m"));
     assert!(registry.is_recognized_unit_expression("km"));
     assert!(registry.is_recognized_unit_expression("kV"));
 }
 
 #[test]
+fn graph_only_registry_parity_with_engineering_catalog() {
+    let catalog_doc = SysmlDocument::from_memory_path(
+        "si-catalog",
+        "SI.sysml",
+        SI_CATALOG.to_string(),
+        SysmlDocumentSourceKind::Library,
+        None,
+        None,
+    )
+    .expect("document");
+    let (graph, _) = build_semantic_graph_from_documents(&[catalog_doc]).expect("graph");
+    let registry = UnitRegistry::from_graph(&graph);
+    for unit in ["m", "kg", "kV", "MW", "km", "SI::s"] {
+        assert!(
+            registry.is_recognized_unit_expression(unit),
+            "expected graph-only unit {unit}"
+        );
+    }
+}
+
+#[test]
 fn library_closure_seeds_quantity_packages_on_unit_literals() {
-    use semantic_core::{
-        resolve_library_closure, LibraryClosureOptions, WorkspaceSource,
-    };
+    use semantic_core::{resolve_library_closure, LibraryClosureOptions, WorkspaceSource};
     use std::fs;
 
     let temp = tempfile::tempdir().expect("tempdir");
@@ -123,8 +146,7 @@ fn measurement_unit_taxonomy_materializes_as_attribute_defs_with_edges() {
     )
     .expect("document");
     let uri = doc.uri.clone();
-    let (mut graph, _) =
-        build_semantic_graph_from_documents(&[doc]).expect("graph should build");
+    let (mut graph, _) = build_semantic_graph_from_documents(&[doc]).expect("graph should build");
     link_workspace_relationships(&mut graph);
 
     let length_unit = graph
@@ -149,5 +171,9 @@ fn measurement_unit_taxonomy_materializes_as_attribute_defs_with_edges() {
         "ElectricPotentialDifferenceUnit",
         "ElectricPotentialUnit"
     ));
-    assert!(!is_measurement_unit_compatible(&graph, "PowerUnit", "LengthUnit"));
+    assert!(!is_measurement_unit_compatible(
+        &graph,
+        "PowerUnit",
+        "LengthUnit"
+    ));
 }
