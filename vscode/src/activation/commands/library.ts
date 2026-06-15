@@ -33,7 +33,7 @@ export function registerLibraryCommands(
     vscode.commands.registerCommand("sysml.library.showStdLibStatus", async () => {
       const cfg = getStandardLibraryConfig();
       void vscode.window.showInformationMessage(
-        `The SysML standard library is bundled with the Spec42 language server (release ${cfg.version}). Add extra library roots with spec42.libraryPaths if needed.`
+        `The SysML standard library is bundled with the Spec42 language server as ${cfg.format.toUpperCase()} (release ${cfg.version}). Add extra library roots with spec42.libraryPaths if needed.`
       );
     })
   );
@@ -42,7 +42,7 @@ export function registerLibraryCommands(
     vscode.commands.registerCommand("sysml.library.showDomainLibrariesStatus", async () => {
       const cfg = getDomainLibrariesConfig();
       void vscode.window.showInformationMessage(
-        `Elan8 domain libraries are bundled with the Spec42 language server (revision ${cfg.version}). They materialize under your Spec42 data directory on first use.`
+        `Elan8 domain libraries are bundled with the Spec42 language server as ${cfg.format.toUpperCase()} (revision ${cfg.version}). They materialize under your Spec42 data directory on first use.`
       );
     })
   );

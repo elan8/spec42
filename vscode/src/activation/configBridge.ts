@@ -11,12 +11,14 @@ export type StandardLibraryConfig = {
   enabled: boolean;
   version: string;
   repo: string;
+  format: string;
   contentPath: string;
 };
 
 export type DomainLibrariesConfig = {
   version: string;
   repo: string;
+  format: string;
   contentPath: string;
 };
 
@@ -67,6 +69,8 @@ export function getStandardLibraryConfig(): StandardLibraryConfig {
       STANDARD_LIBRARY_DEFAULTS.version,
     repo:
       getConfigString("standardLibrary.repo") ?? STANDARD_LIBRARY_DEFAULTS.repo,
+    format:
+      getConfigString("standardLibrary.format") ?? STANDARD_LIBRARY_DEFAULTS.format,
     contentPath:
       getConfigString("standardLibrary.contentPath") ??
       STANDARD_LIBRARY_DEFAULTS.contentPath,
@@ -80,6 +84,8 @@ export function getDomainLibrariesConfig(): DomainLibrariesConfig {
       DOMAIN_LIBRARIES_DEFAULTS.version,
     repo:
       getConfigString("domainLibraries.repo") ?? DOMAIN_LIBRARIES_DEFAULTS.repo,
+    format:
+      getConfigString("domainLibraries.format") ?? DOMAIN_LIBRARIES_DEFAULTS.format,
     contentPath: DOMAIN_LIBRARIES_DEFAULTS.contentPath,
   };
 }

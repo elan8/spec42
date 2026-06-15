@@ -10,10 +10,12 @@ import {
 
 type StdlibHeading = {
   pinnedVersion: string;
+  format: string;
 };
 
 type DomainLibrariesHeading = {
   pinnedVersion: string;
+  format: string;
 };
 
 type DomainLibrariesDoctorStatus = {
@@ -173,9 +175,13 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
     sysand: SysandStatusViewModel,
     domainDoctor: DomainLibrariesDoctorStatus
   ): LibraryDashboardStatus {
+    const stdlibHeading = this.options.getStdlibHeading();
+    const domainHeading = this.options.getDomainLibrariesHeading();
     return buildLibraryDashboardStatus({
-      pinnedVersion: this.options.getStdlibHeading().pinnedVersion,
-      domainPinnedVersion: this.options.getDomainLibrariesHeading().pinnedVersion,
+      pinnedVersion: stdlibHeading.pinnedVersion,
+      format: stdlibHeading.format,
+      domainPinnedVersion: domainHeading.pinnedVersion,
+      domainFormat: domainHeading.format,
       domainResolvedPath: domainDoctor.resolvedPath,
       domainSourceKind: domainDoctor.sourceKind,
       configuredPaths: this.options.getConfiguredLibraryPaths(),
@@ -252,13 +258,16 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
   <link nonce="${nonce}" rel="stylesheet" href="${codiconsCss}">
   <style>
     body { font-family: var(--vscode-font-family); color: var(--vscode-foreground); padding: 8px; }
-    .section { border-top: 1px solid var(--vscode-panel-border); padding: 8px 0; }
+    .section { border-top: 1px solid var(--vscode-panel-border); padding: 7px 0; }
     .section:first-child { border-top: none; padding-top: 0; }
     .section-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .title { font-weight: 600; }
     .muted { color: var(--vscode-descriptionForeground); font-size: 12px; }
-    .detail { margin-top: 4px; color: var(--vscode-descriptionForeground); font-size: 12px; line-height: 1.35; }
-    .actions { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+    .detail { margin-top: 3px; color: var(--vscode-descriptionForeground); font-size: 12px; line-height: 1.35; word-break: break-word; }
+    .compact-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 5px; color: var(--vscode-descriptionForeground); font-size: 12px; }
+    .metric { color: var(--vscode-foreground); }
+    .path { font-family: var(--vscode-editor-font-family); font-size: 11px; }
+    .actions { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; }
     .icon-btn { border: 1px solid var(--vscode-button-border, var(--vscode-panel-border)); background: transparent; color: var(--vscode-foreground); border-radius: 4px; min-width: 24px; height: 24px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0 6px; }
     .icon-btn:hover { background: var(--vscode-toolbar-hoverBackground); }
     .pill { font-size: 11px; border-radius: 3px; padding: 1px 5px; border: 1px solid var(--vscode-panel-border); }
@@ -320,15 +329,34 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       return btn;
     }
 
+    function compactRow(values) {
+      const row = el('div', 'compact-row');
+      values.filter(Boolean).forEach(value => row.appendChild(el('span', 'metric', String(value))));
+      return row;
+    }
+
+    function formatBundle(format) {
+      const normalized = String(format || '').trim();
+      return normalized ? normalized.toUpperCase() : 'bundled';
+    }
+
+    function countText(packages, symbols) {
+      return String(packages || 0) + ' packages / ' + String(symbols || 0) + ' symbols';
+    }
+
     function renderDashboard(status) {
       const nodes = [];
 
       const std = el('div', 'section');
       const stdHead = el('div', 'section-head');
       stdHead.appendChild(el('div', 'title', 'Standard Library'));
-      stdHead.appendChild(el('span', 'pill ok', 'bundled'));
+      stdHead.appendChild(el('span', 'pill ok', formatBundle(status?.stdlib?.format)));
       std.appendChild(stdHead);
-      std.appendChild(el('div', 'detail', 'Release ' + (status?.stdlib?.pinnedVersion || 'unknown') + ' is bundled with the Spec42 language server.'));
+      std.appendChild(compactRow([
+        'Release ' + (status?.stdlib?.pinnedVersion || 'unknown'),
+        countText(status?.stdlib?.packageCount, status?.stdlib?.symbolCount),
+        'server-bundled'
+      ]));
       const stdActions = el('div', 'actions');
       stdActions.appendChild(button('Show standard library information', 'info', 'showStdlibInfo'));
       std.appendChild(stdActions);
@@ -339,15 +367,17 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       const domainHead = el('div', 'section-head');
       domainHead.appendChild(el('div', 'title', 'Domain Libraries'));
       const domainPillClass = domain.available ? 'ok' : 'warning';
-      const domainPillLabel = domain.sourceKind === 'bundled' || domain.available ? 'bundled' : 'unavailable';
+      const domainPillLabel = domain.available ? formatBundle(domain.format) : 'unavailable';
       domainHead.appendChild(el('span', 'pill ' + domainPillClass, domainPillLabel));
       domainSection.appendChild(domainHead);
-      const domainDetail = 'Revision ' + (domain.pinnedVersion || 'unknown') + ' is bundled with the Spec42 language server.';
-      domainSection.appendChild(el('div', 'detail', domainDetail));
+      domainSection.appendChild(compactRow([
+        'Revision ' + (domain.pinnedVersion || 'unknown'),
+        countText(domain.packageCount, domain.symbolCount),
+        domain.sourceKind === 'bundled' ? 'server-bundled' : (domain.sourceKind || '')
+      ]));
       if (domain.resolvedPath) {
-        domainSection.appendChild(el('div', 'detail', 'Resolved path: ' + domain.resolvedPath));
+        domainSection.appendChild(el('div', 'detail path', domain.resolvedPath));
       }
-      domainSection.appendChild(el('div', 'detail', String(domain.packageCount || 0) + ' package(s), ' + String(domain.symbolCount || 0) + ' symbol(s) indexed.'));
       const domainActions = el('div', 'actions');
       domainActions.appendChild(button('Show domain libraries information', 'info', 'showDomainLibrariesInfo'));
       domainSection.appendChild(domainActions);
@@ -360,7 +390,10 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       const missing = Array.isArray(custom.missingPaths) ? custom.missingPaths : [];
       customHead.appendChild(el('span', 'pill ' + (missing.length ? 'warning' : 'info'), String((custom.configuredPaths || []).length) + ' path(s)'));
       customSection.appendChild(customHead);
-      customSection.appendChild(el('div', 'detail', String(custom.packageCount || 0) + ' package(s), ' + String(custom.symbolCount || 0) + ' symbol(s) indexed.'));
+      customSection.appendChild(compactRow([
+        countText(custom.packageCount, custom.symbolCount),
+        missing.length ? String(missing.length) + ' missing' : 'configured paths healthy'
+      ]));
       if (missing.length) {
         const list = el('ul', 'warning-list');
         missing.forEach(path => list.appendChild(el('li', '', path)));
@@ -388,7 +421,7 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
         sysand.projectRoot ? 'project: ' + sysand.projectRoot : 'no project manifest',
         String((sysand.dependencyRoots || []).length) + ' dependency root(s)',
         sysand.lockPresent ? 'lockfile present' : ''
-      ].filter(Boolean).join(' · ');
+      ].filter(Boolean).join(' / ');
       sysandSection.appendChild(el('div', 'detail', sysandDetails));
       if (Array.isArray(sysand.warnings) && sysand.warnings.length) {
         const list = el('ul', 'warning-list');

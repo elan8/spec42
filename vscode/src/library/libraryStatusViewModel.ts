@@ -42,6 +42,7 @@ export type SysandStatusViewModel = {
 
 export type DomainLibrariesStatusViewModel = {
   pinnedVersion: string;
+  format: string;
   available: boolean;
   resolvedPath?: string;
   sourceKind: string;
@@ -52,7 +53,10 @@ export type DomainLibrariesStatusViewModel = {
 export type LibraryDashboardStatus = {
   stdlib: {
     pinnedVersion: string;
+    format: string;
     available: boolean;
+    packageCount: number;
+    symbolCount: number;
   };
   domain: DomainLibrariesStatusViewModel;
   custom: {
@@ -223,7 +227,9 @@ export function flattenLibrarySearchResults(
 
 export function buildLibraryDashboardStatus(params: {
   pinnedVersion: string;
+  format: string;
   domainPinnedVersion: string;
+  domainFormat: string;
   domainResolvedPath?: string;
   domainSourceKind: string;
   configuredPaths: string[];
@@ -236,10 +242,14 @@ export function buildLibraryDashboardStatus(params: {
   return {
     stdlib: {
       pinnedVersion: params.pinnedVersion,
+      format: params.format,
       available: true,
+      packageCount: params.summary.standardPackages,
+      symbolCount: params.summary.standardSymbols,
     },
     domain: {
       pinnedVersion: params.domainPinnedVersion,
+      format: params.domainFormat,
       available: domainAvailable,
       resolvedPath: params.domainResolvedPath,
       sourceKind: params.domainSourceKind,

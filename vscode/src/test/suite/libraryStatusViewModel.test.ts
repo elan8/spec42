@@ -97,7 +97,9 @@ describe("libraryStatusViewModel", () => {
   it("builds dashboard status with domain section and missing custom paths", () => {
     const status = buildLibraryDashboardStatus({
       pinnedVersion: STANDARD_LIBRARY_DEFAULTS.version,
+      format: STANDARD_LIBRARY_DEFAULTS.format,
       domainPinnedVersion: DOMAIN_LIBRARIES_DEFAULTS.version,
+      domainFormat: DOMAIN_LIBRARIES_DEFAULTS.format,
       domainResolvedPath: "C:/data/domain-libraries/versions/dc378a9/tree",
       domainSourceKind: "bundled",
       configuredPaths: ["C:/libs/domain"],
@@ -121,7 +123,11 @@ describe("libraryStatusViewModel", () => {
     });
 
     assert.strictEqual(status.stdlib.available, true);
+    assert.strictEqual(status.stdlib.format, STANDARD_LIBRARY_DEFAULTS.format);
+    assert.strictEqual(status.stdlib.packageCount, 1);
+    assert.strictEqual(status.stdlib.symbolCount, 10);
     assert.strictEqual(status.domain.pinnedVersion, DOMAIN_LIBRARIES_DEFAULTS.version);
+    assert.strictEqual(status.domain.format, DOMAIN_LIBRARIES_DEFAULTS.format);
     assert.strictEqual(status.domain.available, true);
     assert.strictEqual(status.domain.packageCount, 3);
     assert.strictEqual(status.domain.symbolCount, 12);

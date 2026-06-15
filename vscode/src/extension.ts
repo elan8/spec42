@@ -91,10 +91,14 @@ export function activate(context: vscode.ExtensionContext): void {
       getStdlibHeading: () => ({
         pinnedVersion:
           getConfigString("standardLibrary.version") ?? STANDARD_LIBRARY_DEFAULTS.version,
+        format:
+          getConfigString("standardLibrary.format") ?? STANDARD_LIBRARY_DEFAULTS.format,
       }),
       getDomainLibrariesHeading: () => ({
         pinnedVersion:
           getConfigString("domainLibraries.version") ?? DOMAIN_LIBRARIES_DEFAULTS.version,
+        format:
+          getConfigString("domainLibraries.format") ?? DOMAIN_LIBRARIES_DEFAULTS.format,
       }),
       getDomainLibrariesStatus: handles.readDomainLibrariesStatus,
       getConfiguredLibraryPaths: () => handles.libraryPaths,
