@@ -12,8 +12,8 @@ use crate::semantic::activity_graph::enrich_activity_diagrams_from_graph;
 use crate::semantic::dto::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, RelationshipDto, SysmlElementDto, SysmlGraphDto,
     SysmlModelStatsDto, SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto,
-    SysmlVisualizationResultDto, WorkspaceFileModelDto, WorkspaceModelDto,
-    WorkspaceModelSummaryDto,
+    SysmlVisualizationProjectionHintsDto, SysmlVisualizationResultDto, WorkspaceFileModelDto,
+    WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
 use crate::semantic::explicit_views;
 use crate::semantic::extracted_model::{
@@ -24,9 +24,8 @@ use crate::semantic::ibd::{
 };
 use crate::semantic::interconnection_projection::occurrence_id_for_qualified_name;
 use crate::semantic::interconnection_scene::build_interconnection_scene;
-use crate::semantic::model_projection::{
-    self, canonical_general_view_graph, filter_traceability_relationship_graph,
-};
+use crate::semantic::model_projection::{self, canonical_general_view_graph};
+use crate::semantic::view_projection::{apply_edge_predicate, project_view};
 use crate::semantic::sequence_views::{
     build_workspace_sequence_diagrams, filter_sequence_diagrams_by_exposed_ids,
 };
@@ -1581,6 +1580,7 @@ pub fn build_sysml_visualization_from_artifacts(
                     model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
                     parse_cached: false,
                 }),
+                projection_hints: None,
             },
             meta,
         ));
@@ -1619,6 +1619,7 @@ pub fn build_sysml_visualization_from_artifacts(
                     model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
                     parse_cached: false,
                 }),
+                projection_hints: None,
             },
             meta,
         ));
@@ -1662,6 +1663,7 @@ pub fn build_sysml_visualization_from_artifacts(
                     model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
                     parse_cached: false,
                 }),
+                projection_hints: None,
             },
             meta,
         ));
@@ -1675,22 +1677,27 @@ pub fn build_sysml_visualization_from_artifacts(
     let selected_evaluated = evaluated_views
         .iter()
         .find(|evaluated| evaluated.id == selected_view_id);
-    let projected_ids = selected_evaluated
-        .map(|evaluated| {
-            explicit_views::project_ids_for_renderer(evaluated, graph, resolved_view.as_str())
-        })
-        .unwrap_or_default();
+    let (projected_ids, edge_predicate, projection_hints) =
+        if let Some(evaluated) = selected_evaluated {
+            let projected = project_view(evaluated, graph);
+            let hints = projected.hints.grid_layout.map(|layout| {
+                SysmlVisualizationProjectionHintsDto {
+                    grid_layout: Some(layout),
+                }
+            });
+            (projected.node_ids, projected.edge_predicate, hints)
+        } else {
+            (
+                HashSet::new(),
+                crate::semantic::view_projection::EdgePredicate::All,
+                None,
+            )
+        };
     let selected_graph = project_graph_by_ids(graph, &projected_ids);
-    let is_requirement_traceability_view =
-        selected_evaluated.is_some_and(explicit_views::is_requirement_view);
-    let general_view_graph = if is_requirement_traceability_view {
-        filter_traceability_relationship_graph(&canonical_general_view_graph(
-            &selected_graph,
-            true,
-        ))
-    } else {
-        canonical_general_view_graph(&selected_graph, true)
-    };
+    let general_view_graph = apply_edge_predicate(
+        &canonical_general_view_graph(&selected_graph, true),
+        edge_predicate,
+    );
     let package_groups = Some(build_package_groups_from_graph(&general_view_graph));
     let workspace_model = build_workspace_model_dto_from_graph(&selected_graph, workspace_uris);
     let mut package_candidates = Vec::new();
@@ -1820,6 +1827,7 @@ pub fn build_sysml_visualization_from_artifacts(
                 model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
                 parse_cached: false,
             }),
+            projection_hints,
         },
         meta,
     ))

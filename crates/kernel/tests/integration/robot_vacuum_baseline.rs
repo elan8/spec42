@@ -207,8 +207,17 @@ fn robot_vacuum_showcase_model_views_are_supported() {
     .expect("functional architecture visualization");
     assert!(
         functional_architecture.empty_state_message.is_none(),
-        "functionalArchitecture should render as general-view: {:?}",
+        "functionalArchitecture should render as GeneralView: {:?}",
         functional_architecture.empty_state_message
+    );
+    assert_eq!(
+        functional_architecture
+            .view_candidates
+            .iter()
+            .find(|c| c.name == "functionalArchitecture")
+            .and_then(|c| c.renderer_view.as_deref()),
+        Some("general-view"),
+        "functionalArchitecture should map to general-view renderer"
     );
     let func_graph = functional_architecture
         .general_view_graph
@@ -236,7 +245,7 @@ fn robot_vacuum_showcase_model_views_are_supported() {
     .expect("requirements traceability visualization");
     assert!(
         requirements_traceability.empty_state_message.is_none(),
-        "requirementsTraceability should render as RequirementView: {:?}",
+        "requirementsTraceability should render as filtered GeneralView: {:?}",
         requirements_traceability.empty_state_message
     );
     assert_eq!(
@@ -247,6 +256,14 @@ fn robot_vacuum_showcase_model_views_are_supported() {
             .and_then(|c| c.renderer_view.as_deref()),
         Some("general-view"),
         "requirementsTraceability should map to general-view renderer"
+    );
+    assert!(
+        requirements_traceability
+            .projection_hints
+            .as_ref()
+            .and_then(|hints| hints.grid_layout.as_deref())
+            == Some("traceability"),
+        "requirementsTraceability should expose traceability projection hints"
     );
     let trace_graph = requirements_traceability
         .general_view_graph

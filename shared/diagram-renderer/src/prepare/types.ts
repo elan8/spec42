@@ -231,6 +231,7 @@ export interface VisualizationPayload extends UnknownRecord {
   graph?: UnknownRecord;
   generalViewGraph?: UnknownRecord;
   ibd?: UnknownRecord;
+  projectionHints?: UnknownRecord;
   diagrams?: UnknownArray;
   activityDiagrams?: UnknownArray;
   sequenceDiagrams?: UnknownArray;

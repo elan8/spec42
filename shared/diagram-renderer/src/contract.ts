@@ -46,6 +46,9 @@ export interface SharedVisualizationPayload {
   };
   generalViewGraph?: unknown;
   ibd?: SharedIbdPayload;
+  projectionHints?: {
+    gridLayout?: string;
+  };
   /** Normalized behavior diagrams (extension prepare or server DTO). */
   diagrams?: unknown[];
   activityDiagrams?: unknown[];

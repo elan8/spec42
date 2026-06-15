@@ -1,5 +1,5 @@
 import type { PreparedView, UnknownRecord, VisualizationPayload } from "./types";
-import { asArray, asRecord, asString, elementTypeOf, isPackage, isSyntheticPackage, nodeRange, nodeUri } from "./util";
+import { asArray, asRecord, asString, elementTypeOf, nodeRange, nodeUri } from "./util";
 
 function graphNodesForStandardView(visualization: VisualizationPayload): UnknownRecord[] {
   const graph = asRecord(visualization?.generalViewGraph ?? visualization?.graph);
@@ -14,16 +14,6 @@ function graphEdgesForStandardView(visualization: VisualizationPayload): Unknown
 function qualifiedNameOf(node: UnknownRecord): string {
   const attrs = asRecord(node.attributes);
   return asString(node.id ?? node.qualifiedName ?? attrs.qualifiedName ?? node.name);
-}
-
-function isMetadataUsage(node: UnknownRecord): boolean {
-  const kind = elementTypeOf(node).toLowerCase();
-  return kind.includes("metadata");
-}
-
-function isDefinitionElement(node: UnknownRecord): boolean {
-  const kind = elementTypeOf(node).toLowerCase();
-  return kind.includes("def");
 }
 
 function traceabilityLinkCount(nodeId: string, edges: UnknownRecord[]): number {
@@ -45,9 +35,13 @@ function packageLabelOf(qualifiedName: string): string {
   return segments.length > 1 ? segments[0] : "";
 }
 
+function gridLayoutHint(visualization: VisualizationPayload): string | undefined {
+  const hints = asRecord(visualization?.projectionHints);
+  return asString(hints.gridLayout) || undefined;
+}
+
 export function prepareBrowser(visualization: VisualizationPayload): PreparedView {
   const graphNodes = graphNodesForStandardView(visualization)
-    .filter((node) => !isSyntheticPackage(node) && !isPackage(node) && !isDefinitionElement(node))
     .map((node) => ({
       id: asString(node.id),
       label: asString(node.name ?? node.qualifiedName ?? node.id, "Unnamed"),
@@ -76,8 +70,8 @@ export function prepareBrowser(visualization: VisualizationPayload): PreparedVie
 
 export function prepareGrid(visualization: VisualizationPayload): PreparedView {
   const graphEdges = graphEdgesForStandardView(visualization);
+  const traceabilityLayout = gridLayoutHint(visualization) === "traceability";
   const cells = graphNodesForStandardView(visualization)
-    .filter((node) => !isSyntheticPackage(node) && !isPackage(node) && !isMetadataUsage(node) && !isDefinitionElement(node))
     .map((node) => {
       const attrs = asRecord(node.attributes);
       const qualifiedName = qualifiedNameOf(node);
@@ -98,7 +92,6 @@ export function prepareGrid(visualization: VisualizationPayload): PreparedView {
       };
     })
     .sort((left, right) => left.qualifiedName.localeCompare(right.qualifiedName));
-  const traceabilityTable = cells.some((cell) => cell.linkCount > 0);
   return {
     title: asString(visualization?.selectedViewName, "Grid View"),
     view: "grid-view",
@@ -111,12 +104,12 @@ export function prepareGrid(visualization: VisualizationPayload): PreparedView {
       attributes: cell,
     })),
     edges: [],
-    meta: { cells, traceabilityTable, provisional: true },
+    meta: { cells, traceabilityTable: traceabilityLayout, provisional: true },
   };
 }
 
 export function prepareGeometry(visualization: VisualizationPayload): PreparedView {
-  const graphNodes = graphNodesForStandardView(visualization).filter((node) => !isSyntheticPackage(node));
+  const graphNodes = graphNodesForStandardView(visualization);
   const graphEdges = graphEdgesForStandardView(visualization);
   const elements = graphNodes
     .filter((node) => {

@@ -57,25 +57,6 @@ pub fn canonical_general_view_graph(
     }
 }
 
-/// Keep only traceability relationship edges for requirement/traceability diagrams.
-pub fn filter_traceability_relationship_graph(graph: &SysmlGraphDto) -> SysmlGraphDto {
-    let edges: Vec<GraphEdgeDto> = graph
-        .edges
-        .iter()
-        .filter(|edge| {
-            matches!(
-                edge.rel_type.to_lowercase().as_str(),
-                "derivation" | "satisfy" | "verify" | "subject"
-            )
-        })
-        .cloned()
-        .collect();
-    SysmlGraphDto {
-        nodes: graph.nodes.clone(),
-        edges,
-    }
-}
-
 fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) -> SysmlGraphDto {
     let node_by_id: HashMap<&str, &GraphNodeDto> = graph
         .nodes

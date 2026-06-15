@@ -1153,6 +1153,7 @@ mod tests {
             ibd: None,
             interconnection_scene: None,
             stats: None,
+            projection_hints: None,
         };
         let svg = native_svg(&payload, "general-view");
         assert!(svg.contains("data-element-id=\"P::x\""));
@@ -1198,6 +1199,7 @@ mod tests {
             ibd: None,
             interconnection_scene: Some(scene),
             stats: None,
+            projection_hints: None,
         };
         let svg = elk_svg(&payload, "interconnection-view").expect("interconnection svg");
         assert!(!svg.is_empty());

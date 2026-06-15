@@ -468,140 +468,9 @@ pub fn evaluate_views(
 pub fn project_ids_for_renderer(
     evaluated: &EvaluatedView,
     graph: &crate::semantic::dto::SysmlGraphDto,
-    renderer_view: &str,
+    _renderer_view: &str,
 ) -> HashSet<String> {
-    let node_by_id: HashMap<&str, &crate::semantic::dto::GraphNodeDto> = graph
-        .nodes
-        .iter()
-        .map(|node| (node.id.as_str(), node))
-        .collect();
-    let parent_by_id: HashMap<&str, &str> = graph
-        .nodes
-        .iter()
-        .filter_map(|node| {
-            node.parent_id
-                .as_deref()
-                .map(|parent| (node.id.as_str(), parent))
-        })
-        .collect();
-    let children_by_parent: HashMap<&str, Vec<&str>> = {
-        let mut map = HashMap::new();
-        for node in &graph.nodes {
-            if let Some(parent_id) = node.parent_id.as_deref() {
-                map.entry(parent_id)
-                    .or_insert_with(Vec::new)
-                    .push(node.id.as_str());
-            }
-        }
-        map
-    };
-    let typing_targets: HashMap<&str, Vec<&str>> = {
-        let mut map = HashMap::new();
-        for edge in &graph.edges {
-            let rel_type = edge.rel_type.to_lowercase();
-            if rel_type == "typing" || rel_type == "specializes" {
-                map.entry(edge.source.as_str())
-                    .or_insert_with(Vec::new)
-                    .push(edge.target.as_str());
-            }
-        }
-        map
-    };
-
-    let expanded_ids = if is_requirement_view(evaluated) {
-        expand_traceability_scope(
-            &evaluated.exposed_ids,
-            graph,
-            &evaluated.filters,
-            &node_by_id,
-        )
-    } else {
-        match renderer_view {
-            "general-view"
-            | "interconnection-view"
-            | "browser-view"
-            | "grid-view"
-            | "geometry-view" => expand_structural_scope(
-                &evaluated.exposed_ids,
-                &children_by_parent,
-                &typing_targets,
-                &node_by_id,
-            ),
-            "state-transition-view" | "action-flow-view" => {
-                expand_descendants(&evaluated.exposed_ids, &children_by_parent)
-            }
-            _ => evaluated.exposed_ids.clone(),
-        }
-    };
-    let filtered_ids: HashSet<String> = if is_requirement_view(evaluated) {
-        expanded_ids
-    } else {
-        expanded_ids
-            .iter()
-            .filter(|node_id| node_matches_all_filters(node_id, &node_by_id, &evaluated.filters))
-            .cloned()
-            .collect()
-    };
-    match renderer_view {
-        "browser-view" | "general-view" if is_requirement_view(evaluated) => filtered_ids,
-        "browser-view" => filtered_ids,
-        _ => with_ancestors(filtered_ids, &parent_by_id),
-    }
-}
-
-pub fn is_requirement_view(evaluated: &EvaluatedView) -> bool {
-    evaluated.effective_view_type.as_deref().is_some_and(|view_type| {
-        matches!(
-            normalize_kind_name(view_type).as_str(),
-            "requirementview"
-        )
-    })
-}
-
-fn is_traceability_rel_type(rel_type: &str) -> bool {
-    matches!(
-        rel_type.to_lowercase().as_str(),
-        "derivation" | "satisfy" | "verify" | "subject"
-    )
-}
-
-fn expand_traceability_scope(
-    seed_ids: &HashSet<String>,
-    graph: &crate::semantic::dto::SysmlGraphDto,
-    filters: &[FilterExpr],
-    node_by_id: &HashMap<&str, &crate::semantic::dto::GraphNodeDto>,
-) -> HashSet<String> {
-    let mut visible: HashSet<String> = seed_ids
-        .iter()
-        .filter(|node_id| node_matches_all_filters(node_id, node_by_id, filters))
-        .cloned()
-        .collect();
-
-    loop {
-        let mut changed = false;
-        for edge in &graph.edges {
-            if !is_traceability_rel_type(&edge.rel_type) {
-                continue;
-            }
-            if visible.contains(&edge.source)
-                && node_matches_all_filters(edge.target.as_str(), node_by_id, filters)
-                && visible.insert(edge.target.clone())
-            {
-                changed = true;
-            }
-            if visible.contains(&edge.target)
-                && node_matches_all_filters(edge.source.as_str(), node_by_id, filters)
-                && visible.insert(edge.source.clone())
-            {
-                changed = true;
-            }
-        }
-        if !changed {
-            break;
-        }
-    }
-
-    visible
+    crate::semantic::view_projection::project_ids_for_renderer(evaluated, graph)
 }
 
 fn uri_for_qualified_name(
@@ -613,70 +482,6 @@ fn uri_for_qualified_name(
         .node_weights()
         .find(|node| node.id.qualified_name == qualified_name)
         .map(|node| node.id.uri.as_str().to_string())
-}
-
-fn expand_descendants(
-    root_ids: &HashSet<String>,
-    children_by_parent: &HashMap<&str, Vec<&str>>,
-) -> HashSet<String> {
-    let mut expanded = root_ids.clone();
-    let mut stack: Vec<String> = root_ids.iter().cloned().collect();
-    while let Some(current) = stack.pop() {
-        if let Some(children) = children_by_parent.get(current.as_str()) {
-            for child in children {
-                let child_string = (*child).to_string();
-                if expanded.insert(child_string.clone()) {
-                    stack.push(child_string);
-                }
-            }
-        }
-    }
-    expanded
-}
-
-fn expand_structural_scope(
-    root_ids: &HashSet<String>,
-    children_by_parent: &HashMap<&str, Vec<&str>>,
-    typing_targets: &HashMap<&str, Vec<&str>>,
-    node_by_id: &HashMap<&str, &crate::semantic::dto::GraphNodeDto>,
-) -> HashSet<String> {
-    let mut expanded = HashSet::new();
-    let mut stack: Vec<String> = root_ids.iter().cloned().collect();
-
-    while let Some(current) = stack.pop() {
-        if !expanded.insert(current.clone()) {
-            continue;
-        }
-
-        if let Some(children) = children_by_parent.get(current.as_str()) {
-            for child in children {
-                stack.push((*child).to_string());
-            }
-        }
-
-        let follows_typing = node_by_id
-            .get(current.as_str())
-            .is_some_and(|node| is_part_like(&node.element_type) || is_action_like(&node.element_type));
-        if follows_typing {
-            if let Some(targets) = typing_targets.get(current.as_str()) {
-                for target in targets {
-                    stack.push((*target).to_string());
-                }
-            }
-        }
-    }
-
-    expanded
-}
-
-fn is_part_like(element_type: &str) -> bool {
-    let lower = element_type.to_lowercase();
-    lower.contains("part")
-}
-
-fn is_action_like(element_type: &str) -> bool {
-    let lower = element_type.to_lowercase();
-    lower.contains("action")
 }
 
 fn with_ancestors(
@@ -695,7 +500,7 @@ fn with_ancestors(
     visible_ids
 }
 
-fn node_matches_all_filters(
+pub(crate) fn node_matches_all_filters(
     node_id: &str,
     node_by_id: &HashMap<&str, &crate::semantic::dto::GraphNodeDto>,
     filters: &[FilterExpr],
@@ -1457,10 +1262,10 @@ mod tests {
         let evaluated = EvaluatedView {
             id: "Pkg::trace".to_string(),
             name: "trace".to_string(),
-            effective_view_type: Some("RequirementView".to_string()),
+            effective_view_type: Some("GeneralView".to_string()),
             exposed_ids: HashSet::from(["Pkg::need".to_string(), "Pkg::design".to_string()]),
             conforms_to: Vec::new(),
-            filters: Vec::new(),
+            filters: vec![FilterExpr::Matches("@SysML::RequirementUsage".to_string())],
             visible_ids: HashSet::new(),
             issues: Vec::new(),
         };

@@ -148,3 +148,126 @@ fn view_def_rendering_is_inherited_when_usage_is_untyped() {
     let candidate = candidate_for(&view);
     assert_eq!(candidate.renderer_view.as_deref(), Some("browser-view"));
 }
+
+#[test]
+fn general_view_part_usage_filter_excludes_non_part_elements() {
+    let content = r#"
+        package Pkg {
+            part def Robot { part chassis; port p; }
+            part robot : Robot;
+            view structure : GeneralView {
+                expose Pkg::robot;
+                filter @SysML::PartUsage;
+            }
+        }
+    "#;
+    let view = evaluate_fixture(content, "structure");
+    let graph_dto = {
+        let doc = semantic_core::SysmlDocument::from_memory_path(
+            "workspace",
+            "model.sysml",
+            content.to_string(),
+            semantic_core::SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("document");
+        let uri = doc.uri.clone();
+        let (graph, parsed) =
+            semantic_core::build_semantic_graph_from_documents(&[doc]).expect("graph");
+        let parsed_doc = parsed.into_iter().find(|e| e.uri == uri).expect("parsed");
+        let catalog = build_view_catalog(std::slice::from_ref(&uri), &[parsed_doc]);
+        let _ = evaluate_views(&catalog, &graph, &semantic_core::build_workspace_graph_dto_for_uris(
+            &graph,
+            std::slice::from_ref(&uri),
+        ));
+        semantic_core::build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri))
+    };
+    let projected = semantic_core::project_view(&view, &graph_dto);
+    let node_kinds: Vec<_> = graph_dto
+        .nodes
+        .iter()
+        .filter(|node| projected.node_ids.contains(&node.id))
+        .map(|node| node.element_type.to_lowercase())
+        .collect();
+    assert!(node_kinds.iter().any(|kind| kind.contains("part") && !kind.contains("def")));
+    assert!(!node_kinds.iter().any(|kind| kind.contains("port")));
+}
+
+#[test]
+fn general_view_requirement_filter_projection_follows_traceability_links() {
+    let content = r#"
+        package Pkg {
+            requirement need;
+            requirement req;
+            part design;
+            satisfy req by design;
+            #derivation connection {
+                end #original ::> need;
+                end #derive ::> req;
+            }
+            view trace : GeneralView {
+                expose Pkg::need;
+                expose Pkg::design;
+                filter @SysML::RequirementUsage or @SysML::PartUsage;
+            }
+        }
+    "#;
+    let view = evaluate_fixture(content, "trace");
+    assert_eq!(view.effective_view_type.as_deref(), Some("GeneralView"));
+    let graph_dto = {
+        let doc = semantic_core::SysmlDocument::from_memory_path(
+            "workspace",
+            "model.sysml",
+            content.to_string(),
+            semantic_core::SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("document");
+        let uri = doc.uri.clone();
+        let (graph, _) =
+            semantic_core::build_semantic_graph_from_documents(&[doc]).expect("graph");
+        semantic_core::build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri))
+    };
+    let projected = semantic_core::project_view(&view, &graph_dto);
+    assert!(projected.node_ids.iter().any(|id| id.contains("need")));
+    assert!(projected.node_ids.iter().any(|id| id.contains("req")));
+    assert!(projected.node_ids.iter().any(|id| id.contains("design")));
+    assert_eq!(
+        projected.hints.grid_layout.as_deref(),
+        Some("traceability")
+    );
+}
+
+#[test]
+fn browser_view_projection_omits_ancestors_outside_scope() {
+    let content = r#"
+        package Pkg {
+            part def Robot { part chassis; }
+            part robot : Robot;
+            view tree : BrowserView {
+                expose Pkg::robot;
+                filter @SysML::PartUsage;
+            }
+        }
+    "#;
+    let view = evaluate_fixture(content, "tree");
+    let graph_dto = {
+        let doc = semantic_core::SysmlDocument::from_memory_path(
+            "workspace",
+            "model.sysml",
+            content.to_string(),
+            semantic_core::SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("document");
+        let uri = doc.uri.clone();
+        let (graph, _) =
+            semantic_core::build_semantic_graph_from_documents(&[doc]).expect("graph");
+        semantic_core::build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri))
+    };
+    let projected = semantic_core::project_view(&view, &graph_dto);
+    assert!(!projected.node_ids.iter().any(|id| id == "Pkg"));
+}

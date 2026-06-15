@@ -165,6 +165,7 @@ pub(crate) fn build_sysml_visualization_response(
             model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
             parse_cached: false,
         }),
+        projection_hints: None,
     })
 }
 

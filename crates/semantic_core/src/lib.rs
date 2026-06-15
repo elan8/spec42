@@ -9,7 +9,8 @@ pub use semantic::diagnostics::{
 pub use semantic::dto::{
     range_to_dto, visualization_model_not_ready, GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto,
     RelationshipDto, SysmlElementDto, SysmlGraphDto, SysmlModelStatsDto,
-    SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto, SysmlVisualizationResultDto,
+    SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto,
+    SysmlVisualizationProjectionHintsDto, SysmlVisualizationResultDto,
     SysmlVisualizationViewCandidateDto, WorkspaceFileModelDto, WorkspaceModelDto,
     WorkspaceModelSummaryDto,
 };
@@ -17,10 +18,12 @@ pub use semantic::evaluation::{
     evaluate_expressions, evaluate_expressions_with_unit_catalogs, UnitRegistry,
 };
 pub use semantic::explicit_views::{
-    build_view_candidates, build_view_catalog, evaluate_views, is_requirement_view,
-    project_ids_for_renderer,
+    build_view_candidates, build_view_catalog, evaluate_views, project_ids_for_renderer,
     renderer_view_for_view_type, EvaluatedView, ExposeSpec, FilterExpr, ViewCatalog,
     ViewDefinitionSpec, ViewUsageSpec,
+};
+pub use semantic::view_projection::{
+    apply_edge_predicate, project_view, EdgePredicate, ProjectedView, ProjectionHints,
 };
 pub use semantic::extracted_model::extract_activity_diagrams;
 pub use semantic::graph::{PendingExpressionRelationship, PendingRelationship, SemanticGraph};

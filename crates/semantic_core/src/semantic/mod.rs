@@ -27,6 +27,7 @@ pub mod source;
 pub mod state_views;
 pub mod text_span;
 pub mod units;
+pub mod view_projection;
 pub mod visualization_entry;
 pub mod visualization_workspace;
 pub mod workspace_graph;

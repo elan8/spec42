@@ -148,6 +148,13 @@ pub struct SysmlVisualizationGroupDto {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct SysmlVisualizationProjectionHintsDto {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub grid_layout: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SysmlVisualizationResultDto {
     pub version: u32,
     pub view: String,
@@ -182,6 +189,8 @@ pub struct SysmlVisualizationResultDto {
     pub interconnection_scene: Option<InterconnectionSceneDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stats: Option<SysmlModelStatsDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub projection_hints: Option<SysmlVisualizationProjectionHintsDto>,
 }
 
 #[allow(dead_code)]
@@ -217,6 +226,7 @@ pub fn visualization_model_not_ready(
         ibd: None,
         interconnection_scene: None,
         stats: None,
+        projection_hints: None,
     }
 }
 

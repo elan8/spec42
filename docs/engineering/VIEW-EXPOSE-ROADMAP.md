@@ -9,6 +9,7 @@ Implementation notes for SysML v2-conformant view `expose` resolution (§7.6.6, 
 - **Done:** Parser support for `variation part` usages and `variant` members in part usage bodies (`sysml-v2-parser`).
 - **Done:** Diagnostics `view_expose_unresolved`, `view_expose_empty_result` (catalog); `view_expose_empty` unchanged.
 - **Done:** View rendering resolution in [`explicit_views.rs`](../../crates/semantic_core/src/semantic/explicit_views.rs): `render asInterconnectionDiagram`, `asTreeDiagram`, `asElementTable`, and `asTextualNotation` map to supported renderers; inherited rendering from `view def`; `GeneralView` fallback for untyped views without `render`.
+- **Done:** Spec-driven view projection in [`view_projection.rs`](../../crates/semantic_core/src/semantic/view_projection.rs): effective view type selects node scope expansion, ancestor inclusion, and edge predicates; workspace applies `projection_hints` for renderer layout (e.g. traceability grid).
 - **Regression:** `view_expose_*` integration tests with inline grid fixtures; optional ignored drill-down when `SYSML_POWERSYSTEMS_DIR` is set.
 - **Regression:** `view_rendering_resolution` integration tests for rendering-only views, explicit-type precedence, and view-def rendering inheritance.
 
@@ -25,6 +26,8 @@ Spec42 resolves effective renderer selection in this order:
 
 **Content inference is not spec-conformant:** Spec42 does not infer `ActionFlowView` or `StateTransitionView` from exposed element kinds. For behavior-specific diagrams, type views explicitly (`: ActionFlowView`, `: StateTransitionView`) in the model.
 
+**Requirement traceability is a filtered `GeneralView`:** SysML v2 §9.2.20.2.3 does not define a separate `RequirementView` standard view type. Traceability diagrams should use `: GeneralView` with filters on requirement/verification kinds; [`view_projection.rs`](../../crates/semantic_core/src/semantic/view_projection.rs) applies relationship closure and trace-edge filtering when those filters are present. The legacy type name `RequirementView` remains a renderer alias only.
+
 ## Reference model
 
 External grid fixture brief (maintained outside spec42): `spec42-view-expose-fixes.md` in the grid fixture repository.
@@ -35,6 +38,7 @@ External grid fixture brief (maintained outside spec42): `spec42-view-expose-fix
 |------|------|
 | Expose resolver | `crates/semantic_core/src/semantic/reference_resolution.rs` |
 | View evaluation | `crates/semantic_core/src/semantic/explicit_views.rs` |
+| View projection | `crates/semantic_core/src/semantic/view_projection.rs` |
 | View diagnostics | `crates/semantic_core/src/semantic/diagnostics/checks/view_metadata_conformance.rs` |
 | Parser (`variation part`) | `sysml-v2-parser/src/parser/part/usage.rs` |
 
